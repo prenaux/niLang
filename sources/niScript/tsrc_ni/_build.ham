@@ -1,0 +1,19 @@
+if [ SubDirOnce TOP niScript tsrc_ni ] = 1 { return ; }
+if ! $(TARGET_FEATURE_CONSOLE) { return ; }
+
+tkDefTest Test_niScript_ni ;
+
+SRC = [ tkPkgSrc nip ] ;
+
+for _i in $(SRC) {
+  local t = Test_niScript_$(_i:B) ;
+  niTest $(t) : $(_i) ;
+  DEPENDS $(t) : niLang niScript niTestInterop ni ;
+  DEPENDS Test_niScript_ni : $(t) ;
+  DEPENDS Run_Test_niScript_ni : Run_$(t) ;
+}
+
+tkIncludeDep TOP niLang ;
+tkIncludeDep TOP niScript ;
+tkIncludeDep TOP niTestInterop ;
+tkIncludeDep TOP ni ;

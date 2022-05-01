@@ -1,0 +1,13 @@
+#########################################################################
+#
+# -- Ni C++ Generator --
+#
+#########################################################################
+if [ SubDirOnce TOP jvm ni-gen-cpp ] = 1 { return ; }
+
+niDefJar ni-gen-cpp : 1,0,0 ;
+
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niBuildJar $(SRC) : ni-common : : : ni.generator.cpp.Builder ] ;
+
+tkDepends ni-gen-cpp : ni-common : TOP jvm ni-common ;

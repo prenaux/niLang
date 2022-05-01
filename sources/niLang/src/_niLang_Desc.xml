@@ -1,0 +1,62 @@
+<?xml version='1.0'?>
+<module name='niLang'
+        version='1,0,0' 
+        desc='niLang module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='yes'
+        genentrypoint='no'
+        unknowntype='Ptr'
+        interfacesheaderpath='Lang.h'
+>
+  <objecttype  name='Lang'  />
+  <objecttype  name='CryptoRand'  />
+  <objecttype  name='CryptoHash'  />
+  <objecttype  name='Crypto'  />
+  <objecttype  name='Math'  />
+  <objecttype  name='Concurrent'  />
+  <objecttype  name='FilePatternRegex'  />
+  <objecttype  name='PCRE'  />
+  <objecttype  name='DataTable'  />
+  <objecttype  name='Console'  />
+  <objecttype  name='OSWindowGeneric'  />
+  <objecttype  name='Zip'  />
+  <objecttype  name='URLFileHandlerManifestFileSystem'  />
+  <objecttype  name='URLFileHandlerURL'  />
+  <objecttype  name='URLFileHandlerFileSystem'  />
+  <objecttype  name='URLFileHandlerZip'  />
+  <objecttype  name='URLFileHandlerPrefixed'  />
+  <include>niLang/src/_idl/ICollection.h.idl.xml</include>
+  <include>niLang/src/_idl/IConcurrent.h.idl.xml</include>
+  <include>niLang/src/_idl/IConsole.h.idl.xml</include>
+  <include>niLang/src/_idl/ICrypto.h.idl.xml</include>
+  <include>niLang/src/_idl/IDataTable.h.idl.xml</include>
+  <include>niLang/src/_idl/IDeviceResource.h.idl.xml</include>
+  <include>niLang/src/_idl/IExpression.h.idl.xml</include>
+  <include>niLang/src/_idl/IFile.h.idl.xml</include>
+  <include>niLang/src/_idl/IFileSystem.h.idl.xml</include>
+  <include>niLang/src/_idl/IGameCtrl.h.idl.xml</include>
+  <include>niLang/src/_idl/IHString.h.idl.xml</include>
+  <include>niLang/src/_idl/IJson.h.idl.xml</include>
+  <include>niLang/src/_idl/ILang.h.idl.xml</include>
+  <include>niLang/src/_idl/IMath.h.idl.xml</include>
+  <include>niLang/src/_idl/IOSProcess.h.idl.xml</include>
+  <include>niLang/src/_idl/IOSWindow.h.idl.xml</include>
+  <include>niLang/src/_idl/IProf.h.idl.xml</include>
+  <include>niLang/src/_idl/IRegex.h.idl.xml</include>
+  <include>niLang/src/_idl/IScriptingHost.h.idl.xml</include>
+  <include>niLang/src/_idl/ISerializable.h.idl.xml</include>
+  <include>niLang/src/_idl/ISinkList.h.idl.xml</include>
+  <include>niLang/src/_idl/IStringTokenizer.h.idl.xml</include>
+  <include>niLang/src/_idl/ITime.h.idl.xml</include>
+  <include>niLang/src/_idl/IToString.h.idl.xml</include>
+  <include>niLang/src/_idl/IXml.h.idl.xml</include>
+  <include>niLang/src/_idl/IZip.h.idl.xml</include>
+  <include>niLang/src/_idl/ObjModel.h.idl.xml</include>
+  <include>niLang/src/_idl/StringBase.h.idl.xml</include>
+  <include>niLang/src/_idl/StringDef.h.idl.xml</include>
+  <include>niLang/src/_idl/StringLib.h.idl.xml</include>
+  <include>niLang/src/_idl/StringLibIt.h.idl.xml</include>
+  <include>niLang/src/_idl/Types.h.idl.xml</include>
+  <include>niLang/src/_idl/Var.h.idl.xml</include>
+</module>

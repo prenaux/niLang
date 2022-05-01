@@ -1,0 +1,615 @@
+if ! $(TK_DIR) {
+  EXIT "E/ TK_DIR not defined make sure that _rules_base.ham is included." ;
+}
+if ! $(TK_DIR_JARS) {
+  EXIT "E/ TK_DIR_JARS not defined make sure that _rules_base.ham is included." ;
+}
+if ! $(BUILD_JNI) {
+  EXIT "E/ JAVA Build Disabled, _rules_java.jam shouldn't be included." ;
+}
+if ! $(JAVA_HOME) {
+  EXIT "E/ Java Home is not defined." ;
+}
+
+NO_JAVAGEN ?= 0 ;
+NO_DEPS_GENJNI ?= $(NO_DEPS) ;
+
+DEFINES += niJNI ;
+
+JVM_MODULE_EXT = _jvm ;
+
+# niDefJar lib_name : version : jar's nature ;
+rule niDefJar {
+  local d = $(TK_DIR_JARS) ;
+  tkDefPackage $(1) : $(2) : jar : $(d) ;
+}
+
+if $(OS) = NT {
+  JAVA_ENVPATHSEP = ";" ;
+}
+else {
+  JAVA_ENVPATHSEP = ":" ;
+}
+
+JAVA_BUILD_SCRIPTS ?= $(NILANG_BUILD_SCRIPTS) ;
+
+############################################################################
+## JVM Config
+
+JDK_INCLUDE = [ FDirName $(JAVA_HOME) include ] ;
+if $(HAM_CPP_TOOLSET) = VISUALC {
+  JDK_INCLUDE += [ FDirName $(JAVA_HOME) include win32 ] ;
+} else if $(OSX) = 1 {
+  JDK_INCLUDE += [ FDirName $(JAVA_HOME) include darwin ] ;
+}
+HDRS +=  $(JDK_INCLUDE) ;
+
+# BOOT_CLASSPATH ?= -bootclasspath "$JAVA_HOME/jre/lib/rt.jar" ;
+BOOT_CLASSPATH ?= ;
+
+NILANG_DIR_JARS ?= [ FDirName $(NILANG_DIR) libs jars ] ;
+
+JAR_NI_DATA = $(NILANG_DIR_JARS)/ni-data.jar ;
+JAR_NI_SCRIPTS = $(NILANG_DIR_JARS)/ni-scripts.jar ;
+JAR_NI_COMMON = $(NILANG_DIR_JARS)/ni-common.jar ;
+
+NILANG_DIR_THIRDPARTY ?= [ FDirName $(NILANG_DIR) sources thirdparty ] ;
+
+JAR_JUNIT3 = $(NILANG_DIR_THIRDPARTY)/junit3/junit3.jar ;
+if ! [ FExists $(JAR_JUNIT3) ] {
+  JAR_JUNIT3 = $(NILANG_DIR_JARS)/junit3.jar ;
+  if ! [ FExists $(JAR_JUNIT3) ] {
+    EXIT "E/Java rules cannot find '$(JAR_JUNIT3)'." ;
+  }
+}
+
+NI_JVM_CLASSPATH = ;
+
+############################################################################
+## Java Compiler
+JAVAC_DEBUG ?= 1 ; # Turn on debug infos by default
+
+# Java 1.6 is what Android support, so we're limited to that atm
+NI_JAVAC_FLAGS = $(BOOT_CLASSPATH) -Xlint:all -Xlint:-rawtypes -encoding UTF-8 -target 1.6 -source 1.6 ;
+if $(JAVAC_DEBUG) = 0 {
+  NI_JAVAC_FLAGS += -g:none ;
+}
+else {
+  NI_JAVAC_FLAGS += -g ;
+}
+
+actions niJavaC_ {
+  javac $(NI_JAVAC_FLAGS) $(NI_JVM_CLASSPATH) -d $(JAVAC_DSTDIR) -sourcepath $(JAVAC_SRCDIR) $(>)
+}
+
+rule niJavaC {
+  Depends $(<) : $(>) ;
+  NI_JAVAC_FLAGS on $(<) = ;
+  NI_JAVAC_FLAGS on $(<) += $(NI_JAVAC_FLAGS) $(NI_SUBDIR_JAVAC_FLAGS) ;
+  local SRCDIR = [ FDirName $(SUBDIR) src ] ;
+  local DSTDIR = [ FDirName $(OBJDIR) src ] ;
+  JAVAC_SRCDIR on $(<) = [ FQuote $(SRCDIR:J=$(JAVA_ENVPATHSEP)) ] ;
+  JAVAC_DSTDIR on $(<) = [ FQuote $(DSTDIR) ] ;
+  if $(FLYMAKE) = 1 {
+    if [ FGristFiles $(CHK_SOURCES) ] = $(>) {
+      niJavaC_ $(<) : $(>) ;
+    }
+  }
+  else {
+    niJavaC_ $(<) : $(>) ;
+  }
+}
+
+############################################################################
+## Java Generation
+rule niXSLGenModuleJava {
+  MakeDirForTarget $(<) : $(<:D) ;
+  DEPENDS $(<) : $(>) ;
+  # ALWAYS $(<) ;
+}
+actions niXSLGenModuleJava {
+  . ham-bash-lib.sh
+  pushd "$(<:D)"
+  errcheck $? niXSLGenModuleJava "cd classList file directory failed."
+  if [ -e "_fileList.list" ]; then
+    echo "# Removing previously generated files..."
+    xargs rm < _fileList.list
+    # errcheck $? niXSLGenModuleJava "Cannot remove previous files."
+  fi
+  echo "# Generating file list..."
+  xslt_tools-xslt1 "$(JAVA_BUILD_SCRIPTS)$(SLASH)GenModuleJavaList.xslt" "$(>)" _fileList.list
+  errcheck $? niXSLGenModuleJava "Cannot generate file list."
+  echo "# Generating java files..."
+  xslt_tools-xslt2 "$(JAVA_BUILD_SCRIPTS)$(SLASH)GenModuleJava.xslt" "$(>)" "$(<)"
+  errcheck $? niXSLGenModuleJava "Cannot generate java files."
+  echo "# Done."
+}
+
+# niGenJava MODULE
+rule niGenJava
+{
+  local MODULE = $(<) ;
+  local MODULE_JVM = $(<)$(JVM_MODULE_EXT) ;
+  local t = genJava_$(MODULE) ;
+  NotFile $(t) ;
+  DEPENDS $(t) : tkdir ;
+
+  local xslScriptJava = $(JAVA_BUILD_SCRIPTS)$(SLASH)GenModuleJava.xslt ;
+  local xml = [ FSubDirAbsName .. src _$(MODULE)_ModuleDef.xml ] ;
+  local classList = [ FSubDirAbsName src ni $(MODULE) _classList.list ] ;
+  Clean cleanJava : $(classList) ;
+  Clean clean : $(classList) ;
+
+  if ! ( $(NO_JAVAGEN) = 1 ) {
+    niXSLGenModuleJava $(classList) : $(xml) ;
+    DEPENDS $(classList) : $(xslScriptJava) ;
+    DEPENDS $(t) : $(classList) ;
+    DEPENDS genJava : $(t) ;
+    DEPENDS gen : genJava ;
+    DEPENDS pass1 : genJava ;
+  }
+
+  return $(classList) ;
+}
+
+############################################################################
+## JNI Interop Generation
+
+# Gather the source files that sould be built with the JVM
+rule niPkgSrcGenJNI {
+  local r = ;
+  local dir = .. java src $(<) ;
+  if [ FExists [ FDirName $(SUBDIR) $(dir) ] ] = 1 {
+    r += [ SrcSubDirGlob $(PACKAGE) : $(dir) : $(OBJDIR) : java ] ;
+  }
+  return $(r) ;
+}
+
+rule niPkgSrcGenJNIClassNames {
+  local r = ;
+  local dir = .. java src ni $(<) ;
+  local dirName = [ FDirName $(SUBDIR) $(dir) ] ;
+  if [ FExists $(dirName) ] = 1 {
+    local files = [ SrcSubDirGlob $(PACKAGE) : $(dir) : $(OBJDIR) : java ] ;
+    for _n in $(files) {
+      local toJoin = ni $(<) $(_n:B) ;
+      r += $(toJoin:J=.) ;
+    }
+  }
+  return $(r) ;
+}
+
+# niGetPackageGenJavaFiles MODULENAME : MODULESUBDIR
+# List generated java files from ModuleDef.xml
+rule niGetPackageGenJavaFiles {
+  local pkg = $(PACKAGE) ;
+  if $(<) {
+    pkg = $(<) ;
+  }
+  local subdir = ;
+  if $(>) {
+    subdir = $(>) ;
+  }
+  if ! $(niGetPackageGenJavaFiles_$(pkg)) {
+    local xmlAbs = [ FSubDirAbsName $(subdir) _$(pkg)_ModuleDef.xml ] ;
+    local javaFiles = [ Split [
+      ExecCmd "xsltproc \"$(JAVA_BUILD_SCRIPTS)$(SLASH)GenModuleJavaList.xslt\" \"$(xmlAbs)\""
+    ] : "%w" ] ;
+    niGetPackageGenJavaFiles_$(pkg) = $(javaFiles) ;
+  }
+  return $(niGetPackageGenJavaFiles_$(pkg)) ;
+}
+
+# niPkgClassFiles MODULENAME : MODULESUBDIR : ALREADY LISTED CLASSES FILES
+# List generated java files from ModuleDef.xml
+rule niPkgClassFiles {
+  local r = ;
+  local GEN_FILES = [ niGetPackageGenJavaFiles $(<) : $(>) ] ;
+  for _f in $(GEN_FILES) {
+    local cn = "ni."$(<)"."$(_f:B) ;
+    local found = 0 ;
+    for _s in $(3) {
+      if $(_s) = $(cn) {
+        found = 1 ;
+      }
+    }
+    if $(found) = 0 {
+      r += $(cn) ;
+    }
+  }
+  return $(r) ;
+}
+
+actions niGenJNICpp {
+  . ham-bash-lib.sh
+  java -cp "$(NILANG_DIR_JARS)/ni-common.jar$(JAVA_ENVPATHSEP)$(NILANG_DIR_JARS)/ni-gen-cpp.jar" ni.generator.cpp.Builder -module $(PACKAGE) -lib "$(TK_DIR_JARS)/." -lib "$(TK_DIR_JARS)/." $(GENBASE) -d "$(DSTDIR)" $(CLASSES) -o "$(DSTFILE:B)"
+  errcheck $? BuildJNI "Can't generate C++ JNI code."
+}
+
+rule niGenJNICpp {
+  # DEPENDS $(<) : $(>) ;
+  if ! ( $(NO_DEPS_GENJNI) = 1 ) {
+    DEPENDS $(<) : [ niJavaLibPath ni-gen-cpp ] ;
+    DEPENDS $(<) : [ niJavaLibPath $(PACKAGE)$(JVM_MODULE_EXT) ] ;
+  }
+
+  local DSTFILE = $(<[0]) ;
+  local SRCDIR = [ FDirName $(BASEOBJDIR) $(BUILDOUT_JVM) $(PACKAGE) src ] ;
+  local DSTDIR = [ FSubDirAbsName $(DSTFILE:D) ] ;
+  if ! $(DSTDIR) {
+    DSTDIR = "." ;
+  }
+  if $(4) = genBase {
+    GENBASE on $(<) = "-base _$(PACKAGE)_JNIBase" ;
+  }
+  else {
+    GENBASE on $(<) = ;
+  }
+  PACKAGE on $(<) = $(PACKAGE) ;
+  DSTFILE on $(<) = $(DSTFILE) ;
+  SRCDIR on $(<) = $(SRCDIR) ;
+  DSTDIR on $(<) = $(DSTDIR) ;
+  CLASSES on $(<) = $(3) ;
+  DEPENDS genJNI : $(<) ;
+  DEPENDS gen : genJNI ;
+}
+
+# niGenJNI SRC : PKG NAME : JVM Module : ?genBase : additional classes ;
+rule niGenJNI
+{
+  local t = genJNI_$(PACKAGE) ;
+  NotFile $(t) ;
+  DEPENDS $(t) : tkdir ;
+
+  local ret ;
+
+  if ! ( $(NO_JAVAGEN) = 1 ) {
+    local javaDir = ;
+    local classes = ;
+    local jarPath = [ niJavaLibPath $(3) ] ;
+    if $(>) {
+      classList = [ FSubDirAbsName .. java src ni $(PACKAGE) _classList.list ] ;
+      classes += [ niPkgSrcGenJNIClassNames $(>) ] ;
+    }
+    classes += [ niPkgClassFiles $(PACKAGE) : : $(classes) ] ;
+    classes += $(5) ;
+
+    local retCpp = _$(PACKAGE)_JNI.cpp ;
+    ret += $(retCpp) ;
+    local cpp = [ FGristFiles $(retCpp) ] ;
+    LOCATE on $(cpp) = $(LOCATE_SOURCE) ;
+    niGenJNICpp $(cpp) : $(jarPath) : $(classes) ;
+    DEPENDS $(t) : $(cpp) ;
+
+    if $(4) = genBase {
+      local retBaseCpp = _$(PACKAGE)_JNIBase.cpp ;
+      ret += $(retBaseCpp) ;
+      local baseCpp = [ FGristFiles $(retBaseCpp) ] ;
+      LOCATE on $(baseCpp) = $(LOCATE_SOURCE) ;
+      niGenJNICpp $(baseCpp) : $(jarPath) : $(classes) : genBase ;
+      DEPENDS $(t) : $(baseCpp) ;
+    }
+  }
+
+  DEPENDS genJNI : $(t) ;
+  DEPENDS $(<) : $(r) ;
+
+  return $(ret) ;
+}
+
+############################################################################
+## General rules
+
+actions niLibJar {
+  echo "jar cf $(<) -C $(>) ."
+  jar cf "$(<)" -C "$(>)" .
+}
+
+actions niExeJar {
+  jar cfe "$(<)" $(ENTRY_POINT) -C "$(>)" .
+}
+
+rule niJavaLibPath {
+  local pkgJar ;
+  # Look for the jar in the toolkit's jar folder
+  pkgJar = [ FDirName $(TK_DIR_JARS) $(<:S=.jar) ] ;
+  if [ FExists $(pkgJar) ] {
+    return $(pkgJar) ;
+  }
+  # Look for the jar in the niLang toolkit's jar folder (should be necessary
+  # only for the build tools)
+  pkgJar = [ FDirName $(NILANG_DIR_JARS) $(<:S=.jar) ] ;
+  if [ FExists $(pkgJar) ] {
+    return $(pkgJar) ;
+  }
+  # err... not found :(
+  # EXIT "Can't find library:" $(<:S=.jar) ;
+  return [ FDirName $(TK_DIR_JARS) $(<:S=.jar) ] ;
+}
+
+# niClassPaths TARGET : LIBRARIES : JAR LIBS ;
+rule niClassPaths {
+  local cp = ;
+  # Jar Libs
+  cp += $(3) ;
+  DEPENDS $(<) : $(3) ;
+  # lib folder
+  if [ FExists [ FDirName $(SUBDIR) lib ] ] {
+    cp += [ FDirName $(SUBDIR) lib ] ;
+  }
+  # Libraries
+  for _i in $(2) {
+    local jarPath = [ niJavaLibPath $(_i) ] ;
+    DEPENDS $(<) : $(jarPath) ;
+    cp += $(jarPath) ;
+  }
+  return $(cp) ;
+}
+
+actions niJavaDoc_ {
+  if [[ ! -e $(HAM_JAVADOC_OUTPUT) ]]; then
+    echo "E/HAM_JAVADOC_OUTPUT output folder not defined."
+    exit -1
+  fi
+  echo "# Generating JavaDoc"
+  javadoc -notimestamp -version -author $(JAVADOC_CP) -d "$(<:D)" "$(>)"
+  echo "# Copying CSS"
+  cp $(HAM_JAVADOC_OUTPUT)/*.css $(<:D)/
+  echo "# Patching class list"
+  echo "<BR/><FONT CLASS=\"FrameItemFont\">[ <A HREF=\"../index.html\" title=\"niModules\" target=\"_top\">niModules</A> ]</FONT><BR/><BR/>" >> $(<:D)/allclasses-frame.html
+  echo "<BR/><FONT CLASS=\"FrameItemFont\">[ <A HREF=\"../index.html\" title=\"niModules\" target=\"_top\">niModules</A> ]</FONT><BR/><BR/>" >> $(<:D)/allclasses-noframe.html
+  echo "# Done"
+}
+rule niJavaDoc_ {
+  DEPENDS $(<) : $(>) ;
+}
+
+# niJavaDoc SRC : LIBRARIES : JAR LIBS
+rule niJavaDoc {
+  local t = javaDoc_$(PACKAGE) ;
+  local s = [ FGristFiles $(<) ] ;
+  local d = [ FDirName $(HAM_JAVADOC_OUTPUT) $(PACKAGE) index.html ] ;
+  local cp = [ niClassPaths $(_s) : $(2) : $(3) ] ;
+  if $(cp) {
+    JAVADOC_CP on $(d) = -classpath [ FQuote $(cp:J=$(JAVA_ENVPATHSEP)) ] ;
+  }
+  niJavaDoc_ $(d) : $(s) ;
+  DEPENDS $(d) : tkdir ;
+  DEPENDS $(t) : $(d) ;
+  DEPENDS javaDoc : $(t) ;
+  return $(d) ;
+}
+
+# Gather the source files that sould be built with the JVM
+rule niPkgAllJvmSrc {
+  local BD = [ FDirName $(SUBDIR) src ] ;
+  local FD = [ ListDirsR $(BD) ] ;
+  local F2 = [ ListFiles $(FD) : *.java ] ;
+  local F3 = [ ListStrAfterI $(F2) : $(SUBDIR) ] ;
+  return $(F3) ;
+}
+
+# Gather the source files that sould be built with the JVM
+rule niPkgSrcJVM {
+  local r = ;
+  if [ FExists [ FDirName $(SUBDIR) src $(<) ] ] = 1 {
+    r += [ SrcSubDirGlob $(PACKAGE) : src $(<) : $(OBJDIR) : java ] ;
+  }
+  return $(r) ;
+}
+
+# Copy to redist folder, destination name is the package's name
+rule niCopyToRedist {
+  DEPENDS $(<) : tkdir ;
+  local p = [ tkFile $(<:BS) : $(<) : $(OUTDIR) ] ;
+  DEPENDS copyRedist : $(p) ;
+  return $(p) ;
+}
+
+# niJarFromJavaC TARGET_APK : .CLASSFILES : LIBRARIES : JAR LIBS : entry-point
+rule niJarFromJavaC {
+  local _s _j ;
+  _j = [ FGristFiles [ FDirName $(OBJDIR) $(<:S=.jar) ] ] ;
+  _s = [ FGristFiles $(>) ] ;
+
+  local cp = [ niClassPaths $(_s) : $(3) : $(4) ] ;
+  if $(cp) {
+    NI_JVM_CLASSPATH on $(_s) = -classpath [ FQuote $(cp:J=$(JAVA_ENVPATHSEP)) ] ;
+  }
+  if ! $(_j:D) {
+    MakeLocate $(_j) : $(LOCATE_TARGET) ;
+  }
+  DEPENDS $(_j) : $(_s) ;
+  DEPENDS jar : $(_j) ;
+
+  Clean cleanJar : $(_j) ;
+  Clean clean : $(_j) ;
+  if $(5) {
+    ENTRY_POINT on $(_j) = $(5) ;
+    niExeJar $(_j) : [ FDirName $(OBJDIR) src ] : $(_s) ;
+  }
+  else {
+    niLibJar $(_j) : [ FDirName $(OBJDIR) src ] : $(_s) ;
+  }
+  DEPENDS $(<) : $(_j) ;
+
+  # Copy jar libs dependencies in the jars directory
+  for _i in $(4) {
+    local p = [ tkFile $(_i:B)$(_i:S) : $(_i) : $(TK_DIR_JARS) ] ;
+    DEPENDS $(_j) : $(p) ;
+  }
+
+  return $(_j) ;
+}
+
+# niJarSrc TARGET_APK
+rule niJarSrc {
+  local _s = [ FGristFiles $(>) ] ;
+  local psrc = $(<)-sources ;
+  local jsrc = [ FGristFiles [ FDirName $(OBJDIR) $(psrc:S=.jar) ] ] ;
+  DEPENDS $(jsrc) : $(_s) ;
+  MakeDirForTarget $(jsrc) : $(jsrc:D) ;
+  niLibJar $(jsrc) : [ FDirName $(SUBDIR) src ] : ;
+  return $(jsrc) ;
+}
+
+# Build library SRC : LIBRARIES : JAR LIBS : javadoc pkgsrc : entry-point
+rule niBuildJar {
+  local s = $(<) ;
+  local t = $(PKGBUILD) ;
+  local _javadoc = 0 ;
+  local _pkgsrc = ;
+  local _applet = ;
+  for _i in $(4) {
+    switch $(_i) {
+      case javadoc :
+        _javadoc = 1 ;
+      case pkgsrc :
+        _pkgsrc = 1 ;
+      case applet :
+        _applet = 1 ;
+    }
+  }
+
+  local libs = $(2) ;
+  if $(PACKAGE) != ni-common {
+    libs = [ ListAddFrontOnce $(libs) : ni-common ] ;
+  }
+
+  # After niLibFromJavaC so that class path is set properly
+  Objects $(s) ;
+
+  # Build the jar
+  local jlib = [ niJarFromJavaC $(t) : $(s:S=$(SUFJAVAC)) : $(libs) : $(3) : $(5) ] ;
+  local jlibDest = [ niCopyToRedist $(jlib) ] ;
+  tkDepends+Package jarLib : $(jlibDest) ;
+  if $(_pkgsrc) = 1 {
+    local jsrc = [ niJarSrc $(t) : $(s) ] ;
+    local jsrcDest = [ niCopyToRedist $(jsrc) ] ;
+    tkDepends+Package jarSrc : $(jsrcDest) ;
+  }
+
+  FlyMakeSetup check-syntax : $(CHK_SOURCES) : noremovetemp ;
+
+  # Build JavaDoc
+  if $(PKGGROUP) = jar || $(4) = javadoc {
+    niJavaDoc $(<) : $(libs) : $(3) ;
+  }
+
+  if $(5) {
+    local cp = [ niClassPaths $(PACKAGE) : $(libs) : $(3) ] ;
+    cp += $(JAR_NI_SCRIPTS) ;
+    cp += $(JAR_NI_DATA) ;
+    cp = $(cp:J=$(JAVA_ENVPATHSEP))$(JAVA_ENVPATHSEP) ;
+    if $(_applet) = 1 {
+      niRunApplet Run_$(PACKAGE) : $(PACKAGE) : $(5) : $(cp) : $(OUTDIR) ;
+    }
+    else {
+      niRunJava Run_$(PACKAGE) : $(PACKAGE) : $(5) : $(cp) : $(OUTDIR) ;
+    }
+  }
+
+  DEPENDS $(PKGGROUP) : $(PACKAGE) ;  # Group's deps
+  return $(jlib) ;
+}
+
+rule UserObject
+{
+  # Create the destination directory for the .class files
+  local d = $(<:S=$(SUFJAVAC)) ;
+  local dir = [ FDirName $(OBJDIR) $(d:D) ] ;
+  MakeDirForTarget $(d) : $(dir) ;
+  # Java compilation
+  switch $(>:S) {
+    case .java : niJavaC $(d) : $(>) ;
+    case * : File $(<) : $(>) ;
+  }
+}
+
+NI_RUN_JVM_CLASSPATH = "$(TK_DIR_JARS)/*$(JAVA_ENVPATHSEP)" ;
+
+rule niRunJava {
+  NotFile runJava ;
+  DEPENDS runJava : $(<) ;
+  DEPENDS $(<) : $(>) ;
+  if ! $(3) {
+    EXIT "niRunJava: Run Class not specified." ;
+  }
+  if ! $(4) {
+    EXIT "niRunJava: ClassPath not specified." ;
+  }
+  if ! $(5) {
+    EXIT "niRunJava: Run directory not specified." ;
+  }
+  JAVA_RUN_CLASS on $(<) = $(3) ;
+  JAVA_RUN_CLASS on Debug_$(>) = $(3) ;
+  JAVA_CLASSPATH on $(<) = $(4) ;
+  JAVA_CLASSPATH on Debug_$(>) = $(4) ;
+  RUN_DIR on $(<) = $(5) ;
+  RUN_DIR on Debug_$(>) = $(5) ;
+  local javaFixture = $(FIXTURE) ;
+  javaFixture ?= AllTests ;
+  JAVA_FIXTURE on $(<) = $(javaFixture) ;
+  JAVA_FIXTURE on Debug_$(>) = $(javaFixture) ;
+  niGDBJava Debug_$(>) : $(>) ;
+}
+
+actions niRunJava
+{
+  cd $(RUN_DIR:/)
+  java -Djava.library.path="$(TK_DIR_BIN)" -Dni.build.default=$(BUILD) -XstartOnFirstThread -Xcheck:jni -classpath "$(JAVA_CLASSPATH)$(JAVA_ENVPATHSEP)$(RUN_DIR)/$(>:S=.jar)" $(JAVA_RUN_CLASS) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(JAVA_FIXTURE)
+}
+
+actions niGDBJava
+{
+  cd $(RUN_DIR:/)
+  export _NT_SYMBOL_PATH="$(RUN_SYMBOLS_DIR)"
+  "$RUN_DEBUGGER" $RUN_DEBUGGER_PARAMS $(DBG0) $(DBG1) $(DBG2) $(DBG3) $(DBG4) $(DBG5) $(JAVA_HOME)/bin/java$(SUFEXE) -Djava.library.path="$(TK_DIR_BIN)" -Dni.build.default=$(BUILD) -Xcheck:jni -classpath "$(JAVA_CLASSPATH)$(JAVA_ENVPATHSEP)$(RUN_DIR)/$(>:S=.jar)" $(JAVA_RUN_CLASS) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(JAVA_FIXTURE) & true
+}
+
+rule niRunApplet {
+  NotFile runJava ;
+  DEPENDS runJava : $(<) ;
+  DEPENDS $(<) : $(>) ;
+  if ! $(3) {
+    EXIT "niRunApplet: Run Class not specified." ;
+  }
+  if ! $(4) {
+    EXIT "niRunApplet: ClassPath not specified." ;
+  }
+  if ! $(5) {
+    EXIT "niRunApplet: Run directory not specified." ;
+  }
+  JAVA_RUN_CLASS on $(<) = $(3) ;
+  JAVA_CLASSPATH on $(<) = $(4) ;
+  RUN_DIR on $(<) = $(5) ;
+  local javaFixture = $(FIXTURE) ;
+  javaFixture ?= AllTests ;
+  JAVA_FIXTURE on $(<) = $(javaFixture) ;
+  niGDBJava Debug_$(>) : $(>) ;
+}
+actions niRunApplet
+{
+  cd $(RUN_DIR:/)
+  appletviewer $(A0) $(A1) $(A2) $(A3) $(A4) -J-Djava.security.policy=_java-applet-test-policy -J-Djava.library.path="$(TK_DIR_BIN)" -J-Dni.build.default=$(BUILD) -J-Xcheck:jni -J-classpath -J"$(JAVA_CLASSPATH)$(JAVA_ENVPATHSEP)$(RUN_DIR)/$(>:S=.jar)" $(JAVA_RUN_CLASS)
+}
+
+#----------------------------------------------------------------------
+#     DataJar
+#----------------------------------------------------------------------
+
+# niBuildDataJar TARGET : FILES ;
+rule niBuildDataJar {
+  local d = [ FDirName $(TK_DIR_JARS) $(<:S=.jar) ] ;
+  OBJDIR on $(d) = $(OBJDIR) ;
+  DEPENDS $(d) : $(>) ;
+  MakeDirForTarget $(d) : $(TK_DIR_JARS) ;
+  niBuildDataJar_ $(d) : $(>) ;
+  DEPENDS $(<) : $(d) ;
+  DEPENDS data-jar : $(<) ;
+  DEPENDS jar : $(<) ;
+  DEPENDS all : jar ;
+}
+actions niBuildDataJar_ {
+  jar cf "$(<)" -C "$(OBJDIR)" ./
+}

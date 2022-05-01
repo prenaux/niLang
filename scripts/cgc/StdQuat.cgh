@@ -1,0 +1,35 @@
+#pragma once
+#ifndef __STDQUAT_CGH_2459A5C8_AC02_4DF4_87BA_BEC63E4CA2E8__
+#define __STDQUAT_CGH_2459A5C8_AC02_4DF4_87BA_BEC63E4CA2E8__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+float4 QuatConjugate(float4 Q1) {
+  return Q1 * float4(-1,-1,-1,1);
+}
+
+float4 QuatMul(float4 Q1, float4 Q2)
+{
+  float q1x, q1y, q1z, q1w;
+  float q2x, q2y, q2z, q2w;
+
+  q1x = Q1.x; q1y = Q1.y; q1z = Q1.z; q1w = Q1.w;
+  q2x = Q2.x; q2y = Q2.y; q2z = Q2.z; q2w = Q2.w;
+
+  float4 c;
+  c.x = q1w * q2x + q1x * q2w - q1y * q2z + q1z * q2y;
+  c.y = q1w * q2y + q1y * q2w - q1z * q2x + q1x * q2z;
+  c.z = q1w * q2z + q1z * q2w - q1x * q2y + q1y * q2x;
+  c.w = q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z;
+  return c;
+}
+
+float4 QuatRotatePoint(float4 Q1, float4 P) {
+
+  float4 p = float4(P.x,P.y,P.z,P.w);
+  return QuatMul(QuatMul(Q1,p),QuatConjugate(Q1));
+
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDQUAT_CGH_2459A5C8_AC02_4DF4_87BA_BEC63E4CA2E8__

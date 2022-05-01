@@ -1,0 +1,84 @@
+#include "../API/niUI/IWidgetSearchBar.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSearchContainer **/
+/** iSearchContainer -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iSearchContainer)
+/** ni -> iSearchContainer::AddResult/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iSearchContainer::AddResult/2 **/
+IDLC_METH_BEGIN(ni,iSearchContainer,AddResult,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(achar*,aaszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszValue)
+	IDLC_METH_CALL_VOID(ni,iSearchContainer,AddResult,2,(anIndex,aaszValue))
+IDLC_METH_END(ni,iSearchContainer,AddResult,2)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iSearchContainer)
+
+#endif // if niMinFeatures(20)
+/** interface : iSearchable **/
+/** iSearchable -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iSearchable)
+/** ni -> iSearchable::OnSelect/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iSearchable::OnSelect/1 **/
+IDLC_METH_BEGIN(ni,iSearchable,OnSelect,1)
+	IDLC_DECL_VAR(tU32,nIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,nIndex)
+	IDLC_METH_CALL_VOID(ni,iSearchable,OnSelect,1,(nIndex))
+IDLC_METH_END(ni,iSearchable,OnSelect,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iSearchable::GetCorpus/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iSearchable::GetCorpus/1 **/
+IDLC_METH_BEGIN(ni,iSearchable,GetCorpus,1)
+	IDLC_DECL_VAR(iSearchContainer*,apContainer)
+	IDLC_BUF_TO_INTF(iSearchContainer,apContainer)
+	IDLC_METH_CALL_VOID(ni,iSearchable,GetCorpus,1,(apContainer))
+IDLC_METH_END(ni,iSearchable,GetCorpus,1)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iSearchable)
+
+#endif // if niMinFeatures(20)
+/** interface : iWidgetSearchBar **/
+/** iWidgetSearchBar -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iWidgetSearchBar)
+/** ni -> iWidgetSearchBar::SetSearchable/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetSearchBar::SetSearchable/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSearchBar,SetSearchable,1)
+	IDLC_DECL_VAR(iSearchable*,aS)
+	IDLC_BUF_TO_INTF(iSearchable,aS)
+	IDLC_METH_CALL_VOID(ni,iWidgetSearchBar,SetSearchable,1,(aS))
+IDLC_METH_END(ni,iWidgetSearchBar,SetSearchable,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetSearchBar::GetSearchable/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetSearchBar::GetSearchable/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSearchBar,GetSearchable,0)
+	IDLC_DECL_RETVAR(iSearchable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSearchBar,GetSearchable,0,())
+	IDLC_RET_FROM_INTF(iSearchable,_Ret)
+IDLC_METH_END(ni,iWidgetSearchBar,GetSearchable,0)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iWidgetSearchBar)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

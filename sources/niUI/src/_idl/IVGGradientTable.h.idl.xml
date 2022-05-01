@@ -1,0 +1,219 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eVGGradientType">
+			<comments desc="Gradient type. "/>
+			<value min_features="20" name="eVGGradientType_Linear" value="0 ">
+				<comments desc="Linear gradient. "/>
+			</value>
+			<value min_features="20" name="eVGGradientType_Radial" value="1 ">
+				<comments desc="Radial/circle gradient. "/>
+			</value>
+			<value min_features="20" name="eVGGradientType_Cross" value="2 ">
+				<comments desc="Cross gradient. "/>
+			</value>
+			<value min_features="20" name="eVGGradientType_SqrtCross" value="3 ">
+				<comments desc="Square root cross gradient. "/>
+			</value>
+			<value min_features="20" name="eVGGradientType_Conic" value="4 ">
+				<comments desc="Conic gradient. "/>
+			</value>
+			<value min_features="20" name="eVGGradientType_Diamond" value="5 ">
+				<comments desc="Diamond gradient. "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iVGGradientTable"
+			uuid1="D508082D-9992-4EEB-A8A7-0ADEE6E26648"
+			uuid2="0xd508082d,0x9992,0x4eeb,0xa8,0xa7,0x0a,0xde,0xe6,0xe2,0x66,0x48">
+			<comments desc="Gradient table. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="copy"
+				min_features="20"
+				name="Copy"
+				num_parameters="1">
+				<comments desc="Copy another table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="const iVGGradientTable *"
+					typec="const iVGGradientTable*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="20"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this table. "/>
+				<return type="iVGGradientTable *" typec="iVGGradientTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				min_features="20"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size of the table. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setColor"
+				min_features="20"
+				name="SetColor"
+				num_parameters="2"
+				property="set"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Set the color of the gradient at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor"
+				min_features="20"
+				name="GetColor"
+				num_parameters="1"
+				property="get"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Get the color of the gradient at the specified index. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setColorRange"
+				min_features="20"
+				name="SetColorRange"
+				num_parameters="3"
+				property="set"
+				property_name2="colorRange"
+				property_name="color_range">
+				<comments desc="Set a range of color. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anStart"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anEnd"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="generateTwoColors"
+				min_features="20"
+				name="GenerateTwoColors"
+				num_parameters="2">
+				<comments desc="Generate a gradient between two colors. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aStartColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aEndColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="generateStops"
+				min_features="20"
+				name="GenerateStops"
+				num_parameters="2">
+				<comments desc="Generate a gradient between specified stops. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apOffsets"
+					type="const tF32CVec *"
+					typec="const tF32CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apColors"
+					type="const tVec4fCVec *"
+					typec="const tVec4fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createImage"
+				min_features="20"
+				name="CreateImage"
+				num_parameters="7">
+				<comments desc="Create an image containing the gradient. "/>
+				<return type="iVGImage *" typec="iVGImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eVGGradientType"
+					typec="eVGGradientType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aWrapType"
+					type="eVGWrapType"
+					typec="eVGWrapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anD1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="anD2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

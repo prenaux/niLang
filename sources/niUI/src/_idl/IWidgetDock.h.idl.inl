@@ -1,0 +1,160 @@
+#include "../API/niUI/IWidgetDock.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetDockable **/
+IDLC_BEGIN_INTF(ni,iWidgetDockable)
+/** ni -> iWidgetDockable::GetDockName/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockable,GetDockName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockable,GetDockName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetDockable,GetDockName,0)
+
+/** ni -> iWidgetDockable::GetIsDocked/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockable,GetIsDocked,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockable,GetIsDocked,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetDockable,GetIsDocked,0)
+
+IDLC_END_INTF(ni,iWidgetDockable)
+
+/** interface : iWidgetDockingManager **/
+IDLC_BEGIN_INTF(ni,iWidgetDockingManager)
+/** ni -> iWidgetDockingManager::SetFlags/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,SetFlags,1)
+	IDLC_DECL_VAR(tWidgetDockingManagerFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tWidgetDockingManagerFlags,aFlags)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,SetFlags,1,(aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,SetFlags,1)
+
+/** ni -> iWidgetDockingManager::GetFlags/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetFlags,0)
+	IDLC_DECL_RETVAR(tWidgetDockingManagerFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetFlags,0,())
+	IDLC_RET_FROM_ENUM(tWidgetDockingManagerFlags,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetFlags,0)
+
+/** ni -> iWidgetDockingManager::GetDockAreaFromPageName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetDockAreaFromPageName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetDockAreaFromPageName,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetDockAreaFromPageName,1)
+
+/** ni -> iWidgetDockingManager::GetDockAreaHovered/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetDockAreaHovered,1)
+	IDLC_DECL_VAR(sVec2f,avPos)
+	IDLC_BUF_TO_BASE(ni::eType_Vec2f,avPos)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetDockAreaHovered,1,(avPos))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetDockAreaHovered,1)
+
+/** ni -> iWidgetDockingManager::DockWidget/2 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,DockWidget,2)
+	IDLC_DECL_VAR(tU32,anDock)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anDock)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,DockWidget,2,(anDock,apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,DockWidget,2)
+
+/** ni -> iWidgetDockingManager::UndockWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,UndockWidget,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,UndockWidget,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,UndockWidget,1)
+
+/** ni -> iWidgetDockingManager::GetNumDockedWidgets/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetNumDockedWidgets,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetNumDockedWidgets,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetNumDockedWidgets,0)
+
+/** ni -> iWidgetDockingManager::GetDockedWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetDockedWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetDockedWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetDockedWidget,1)
+
+/** ni -> iWidgetDockingManager::GetNumDockAreas/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetNumDockAreas,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetNumDockAreas,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetNumDockAreas,0)
+
+/** ni -> iWidgetDockingManager::GetDockArea/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetDockArea,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetDockArea,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetDockArea,1)
+
+/** ni -> iWidgetDockingManager::SetDockAreaTabContextMenu/1 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,SetDockAreaTabContextMenu,1)
+	IDLC_DECL_VAR(iWidget*,apMenu)
+	IDLC_BUF_TO_INTF(iWidget,apMenu)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,SetDockAreaTabContextMenu,1,(apMenu))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,SetDockAreaTabContextMenu,1)
+
+/** ni -> iWidgetDockingManager::GetDockAreaTabContextMenu/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,GetDockAreaTabContextMenu,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,GetDockAreaTabContextMenu,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,GetDockAreaTabContextMenu,0)
+
+/** ni -> iWidgetDockingManager::AddDockArea/4 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,AddDockArea,4)
+	IDLC_DECL_VAR(tU32,anParent)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anParent)
+	IDLC_DECL_VAR(tU32,aPos)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aPos)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eType_Vec4f,aRect)
+	IDLC_DECL_VAR(tBool,abLocal)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLocal)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetDockingManager,AddDockArea,4,(anParent,aPos,aRect,abLocal))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetDockingManager,AddDockArea,4)
+
+/** ni -> iWidgetDockingManager::ClearDockAreas/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,ClearDockAreas,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetDockingManager,ClearDockAreas,0,())
+IDLC_METH_END(ni,iWidgetDockingManager,ClearDockAreas,0)
+
+/** ni -> iWidgetDockingManager::CleanDockAreas/0 **/
+IDLC_METH_BEGIN(ni,iWidgetDockingManager,CleanDockAreas,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetDockingManager,CleanDockAreas,0,())
+IDLC_METH_END(ni,iWidgetDockingManager,CleanDockAreas,0)
+
+IDLC_END_INTF(ni,iWidgetDockingManager)
+
+IDLC_END_NAMESPACE()
+// EOF //

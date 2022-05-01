@@ -1,0 +1,30 @@
+#########################################################################
+#
+# -- niScript -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niScript src ] = 1 { return ; }
+
+tkDefModuleLib niScript : 1,0,0 : niScript ;
+niImportModuleDll niLang ;
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"niScript module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"yes"'
+  genentrypoint='"no"'
+  unknowntype='"Ptr"'
+;
+niModule_OT name='"ScriptVM"' ;
+niModule_OT name='"URLFileHandlerScript"' ;
+niModule_Includes $(IDLS) ;
+niModule_End ;

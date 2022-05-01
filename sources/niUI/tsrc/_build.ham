@@ -1,0 +1,20 @@
+if [ SubDirOnce TOP niUI tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTest Test_niUI : 1.0.0 ;
+niImportModuleLibs niAppLib ;
+niImportModuleLibs niUnitTest ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
+
+runInDir Test_niUI ;
+
+# Dependencies
+tkDepends Test_niUI : niLang : TOP niLang src ;
+tkDepends Test_niUI : niUI : TOP niUI src ;
+tkDepends Test_niUI : niUnitTest : TOP niUnitTest src ;
+tkDepends Test_niUI : niAppLib : TOP niAppLib src ;

@@ -1,0 +1,38 @@
+#include "../API/niUI/IWidgetProgressBar.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetProgressBar **/
+IDLC_BEGIN_INTF(ni,iWidgetProgressBar)
+/** ni -> iWidgetProgressBar::SetRange/2 **/
+IDLC_METH_BEGIN(ni,iWidgetProgressBar,SetRange,2)
+	IDLC_DECL_VAR(tF32,afMin)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMin)
+	IDLC_DECL_VAR(tF32,afMax)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMax)
+	IDLC_METH_CALL_VOID(ni,iWidgetProgressBar,SetRange,2,(afMin,afMax))
+IDLC_METH_END(ni,iWidgetProgressBar,SetRange,2)
+
+/** ni -> iWidgetProgressBar::SetProgress/1 **/
+IDLC_METH_BEGIN(ni,iWidgetProgressBar,SetProgress,1)
+	IDLC_DECL_VAR(tF32,afPos)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPos)
+	IDLC_METH_CALL_VOID(ni,iWidgetProgressBar,SetProgress,1,(afPos))
+IDLC_METH_END(ni,iWidgetProgressBar,SetProgress,1)
+
+/** ni -> iWidgetProgressBar::GetProgress/0 **/
+IDLC_METH_BEGIN(ni,iWidgetProgressBar,GetProgress,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetProgressBar,GetProgress,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetProgressBar,GetProgress,0)
+
+IDLC_END_INTF(ni,iWidgetProgressBar)
+
+IDLC_END_NAMESPACE()
+// EOF //

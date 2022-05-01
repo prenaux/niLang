@@ -1,0 +1,164 @@
+#include "../API/niSound/ISoundDriver.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSoundDriverBufferDataSink **/
+IDLC_BEGIN_INTF(ni,iSoundDriverBufferDataSink)
+/** ni -> iSoundDriverBufferDataSink::OnSoundDriverBufferDataSink/2 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBufferDataSink,OnSoundDriverBufferDataSink,2)
+	IDLC_DECL_VAR(void*,ptr)
+	IDLC_BUF_TO_PTR(ni::eType_Ptr,ptr)
+	IDLC_DECL_VAR(tU32,size)
+	IDLC_BUF_TO_BASE(ni::eType_U32,size)
+	IDLC_METH_CALL_VOID(ni,iSoundDriverBufferDataSink,OnSoundDriverBufferDataSink,2,(ptr,size))
+IDLC_METH_END(ni,iSoundDriverBufferDataSink,OnSoundDriverBufferDataSink,2)
+
+IDLC_END_INTF(ni,iSoundDriverBufferDataSink)
+
+/** interface : iSoundDriverBuffer **/
+IDLC_BEGIN_INTF(ni,iSoundDriverBuffer)
+/** ni -> iSoundDriverBuffer::SwitchIn/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,SwitchIn,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,SwitchIn,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,SwitchIn,0)
+
+/** ni -> iSoundDriverBuffer::SwitchOut/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,SwitchOut,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,SwitchOut,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,SwitchOut,0)
+
+/** ni -> iSoundDriverBuffer::Play/2 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,Play,2)
+	IDLC_DECL_VAR(eSoundFormat,aFormat)
+	IDLC_BUF_TO_ENUM(eSoundFormat,aFormat)
+	IDLC_DECL_VAR(tU32,anFreq)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFreq)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,Play,2,(aFormat,anFreq))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,Play,2)
+
+/** ni -> iSoundDriverBuffer::Stop/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,Stop,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,Stop,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,Stop,0)
+
+/** ni -> iSoundDriverBuffer::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,GetSize,0)
+	IDLC_DECL_RETVAR(tSize,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,GetSize,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Size,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,GetSize,0)
+
+/** ni -> iSoundDriverBuffer::SetSink/1 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,SetSink,1)
+	IDLC_DECL_VAR(iSoundDriverBufferDataSink*,apSink)
+	IDLC_BUF_TO_INTF(iSoundDriverBufferDataSink,apSink)
+	IDLC_METH_CALL_VOID(ni,iSoundDriverBuffer,SetSink,1,(apSink))
+IDLC_METH_END(ni,iSoundDriverBuffer,SetSink,1)
+
+/** ni -> iSoundDriverBuffer::GetSink/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,GetSink,0)
+	IDLC_DECL_RETVAR(iSoundDriverBufferDataSink*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriverBuffer,GetSink,0,())
+	IDLC_RET_FROM_INTF(iSoundDriverBufferDataSink,_Ret)
+IDLC_METH_END(ni,iSoundDriverBuffer,GetSink,0)
+
+/** ni -> iSoundDriverBuffer::UpdateBuffer/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriverBuffer,UpdateBuffer,0)
+	IDLC_METH_CALL_VOID(ni,iSoundDriverBuffer,UpdateBuffer,0,())
+IDLC_METH_END(ni,iSoundDriverBuffer,UpdateBuffer,0)
+
+IDLC_END_INTF(ni,iSoundDriverBuffer)
+
+/** interface : iSoundDriver **/
+IDLC_BEGIN_INTF(ni,iSoundDriver)
+/** ni -> iSoundDriver::GetName/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,GetName,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,GetName,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iSoundDriver,GetName,0)
+
+/** ni -> iSoundDriver::GetCaps/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,GetCaps,0)
+	IDLC_DECL_RETVAR(tSoundDriverCapFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,GetCaps,0,())
+	IDLC_RET_FROM_ENUM(tSoundDriverCapFlags,_Ret)
+IDLC_METH_END(ni,iSoundDriver,GetCaps,0)
+
+/** ni -> iSoundDriver::Startup/3 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,Startup,3)
+	IDLC_DECL_VAR(eSoundFormat,aFormat)
+	IDLC_BUF_TO_ENUM(eSoundFormat,aFormat)
+	IDLC_DECL_VAR(tU32,anFrequency)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFrequency)
+	IDLC_DECL_VAR(tIntPtr,aWindowHandle)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aWindowHandle)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,Startup,3,(aFormat,anFrequency,aWindowHandle))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriver,Startup,3)
+
+/** ni -> iSoundDriver::Shutdown/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,Shutdown,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,Shutdown,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriver,Shutdown,0)
+
+/** ni -> iSoundDriver::SwitchIn/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,SwitchIn,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,SwitchIn,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriver,SwitchIn,0)
+
+/** ni -> iSoundDriver::SwitchOut/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,SwitchOut,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,SwitchOut,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundDriver,SwitchOut,0)
+
+/** ni -> iSoundDriver::GetBuffer/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,GetBuffer,0)
+	IDLC_DECL_RETVAR(iSoundDriverBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,GetBuffer,0,())
+	IDLC_RET_FROM_INTF(iSoundDriverBuffer,_Ret)
+IDLC_METH_END(ni,iSoundDriver,GetBuffer,0)
+
+/** ni -> iSoundDriver::GetMixer/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,GetMixer,0)
+	IDLC_DECL_RETVAR(iSoundMixer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,GetMixer,0,())
+	IDLC_RET_FROM_INTF(iSoundMixer,_Ret)
+IDLC_METH_END(ni,iSoundDriver,GetMixer,0)
+
+/** ni -> iSoundDriver::GetMixer3D/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,GetMixer3D,0)
+	IDLC_DECL_RETVAR(iSoundMixer3D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundDriver,GetMixer3D,0,())
+	IDLC_RET_FROM_INTF(iSoundMixer3D,_Ret)
+IDLC_METH_END(ni,iSoundDriver,GetMixer3D,0)
+
+/** ni -> iSoundDriver::Update/0 **/
+IDLC_METH_BEGIN(ni,iSoundDriver,Update,0)
+	IDLC_METH_CALL_VOID(ni,iSoundDriver,Update,0,())
+IDLC_METH_END(ni,iSoundDriver,Update,0)
+
+IDLC_END_INTF(ni,iSoundDriver)
+
+IDLC_END_NAMESPACE()
+// EOF //

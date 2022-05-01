@@ -1,0 +1,40 @@
+::Import("unittest.ni")
+::Import("closure.ni")
+::Import("algo.ni")
+
+function ::printFunFreeVars(aFun,aDots) {
+  if (!aDots) aDots = ""
+  foreach (i in aFun.GetNumFreeVars()) {
+    local fv = aFun.GetFreeVar(i)
+    ::println(aDots + "... freeVar["+i+"]: " + ::lang.toString(fv))
+    if (typeof fv == "function") {
+      ::printFunFreeVars(fv,aDots+".")
+    }
+  }
+}
+
+::TEST("closure",#() {
+  local t = {
+    #add() => a + b
+  }
+  t.a <- 111
+  t.b <- 222
+  ::CHECK_EQUAL(333,t.add())
+
+  local u = { a = 444, b = 333 }
+  ::CHECK_EQUAL(777,t.add.call(u))
+  ::CHECK(!::closure.isClosure(t.add))
+
+  local addU = ::closure.new(u,t.add)
+  ::println(".... addU ....")
+  ::printFunFreeVars(addU)
+  ::CHECK_EQUAL(777,addU())
+  ::CHECK(::closure.isClosure(addU))
+
+  local v = { a = 777, b = 222 }
+  local addV = ::closure.new(v,addU)
+  ::println(".... addV ....")
+  ::printFunFreeVars(addV)
+  ::CHECK_EQUAL(999,addV())
+  ::CHECK(::closure.isClosure(addV))
+})

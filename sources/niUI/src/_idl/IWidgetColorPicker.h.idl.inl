@@ -1,0 +1,131 @@
+#include "../API/niUI/IWidgetColorPicker.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetColorPicker **/
+IDLC_BEGIN_INTF(ni,iWidgetColorPicker)
+/** ni -> iWidgetColorPicker::SetHSV/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetHSV,1)
+	IDLC_DECL_VAR(sColor3f,avHSV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avHSV)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetHSV,1,(avHSV))
+IDLC_METH_END(ni,iWidgetColorPicker,SetHSV,1)
+
+/** ni -> iWidgetColorPicker::GetHSV/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetHSV,0)
+	IDLC_DECL_RETVAR(sColor3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetHSV,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetHSV,0)
+
+/** ni -> iWidgetColorPicker::SetRGBA/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetRGBA,1)
+	IDLC_DECL_VAR(sColor4f,avRGBA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avRGBA)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetRGBA,1,(avRGBA))
+IDLC_METH_END(ni,iWidgetColorPicker,SetRGBA,1)
+
+/** ni -> iWidgetColorPicker::GetRGBA/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetRGBA,0)
+	IDLC_DECL_RETVAR(sColor4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetRGBA,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetRGBA,0)
+
+/** ni -> iWidgetColorPicker::SetRGB/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetRGB,1)
+	IDLC_DECL_VAR(sColor3f,avRGB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avRGB)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetRGB,1,(avRGB))
+IDLC_METH_END(ni,iWidgetColorPicker,SetRGB,1)
+
+/** ni -> iWidgetColorPicker::GetRGB/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetRGB,0)
+	IDLC_DECL_RETVAR(sColor3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetRGB,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetRGB,0)
+
+/** ni -> iWidgetColorPicker::SetAlpha/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetAlpha,1)
+	IDLC_DECL_VAR(tF32,afAlpha)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afAlpha)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetAlpha,1,(afAlpha))
+IDLC_METH_END(ni,iWidgetColorPicker,SetAlpha,1)
+
+/** ni -> iWidgetColorPicker::GetAlpha/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetAlpha,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetAlpha,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetAlpha,0)
+
+/** ni -> iWidgetColorPicker::SetBrightness/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetBrightness,1)
+	IDLC_DECL_VAR(tF32,afBrightness)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afBrightness)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetBrightness,1,(afBrightness))
+IDLC_METH_END(ni,iWidgetColorPicker,SetBrightness,1)
+
+/** ni -> iWidgetColorPicker::GetBrightness/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetBrightness,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetBrightness,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetBrightness,0)
+
+/** ni -> iWidgetColorPicker::SetMaxBrightness/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetMaxBrightness,1)
+	IDLC_DECL_VAR(tF32,afMaxBrightness)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afMaxBrightness)
+	IDLC_METH_CALL_VOID(ni,iWidgetColorPicker,SetMaxBrightness,1,(afMaxBrightness))
+IDLC_METH_END(ni,iWidgetColorPicker,SetMaxBrightness,1)
+
+/** ni -> iWidgetColorPicker::GetMaxBrightness/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetMaxBrightness,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetMaxBrightness,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetMaxBrightness,0)
+
+/** ni -> iWidgetColorPicker::SetColorName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetColorName,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,SetColorName,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,SetColorName,1)
+
+/** ni -> iWidgetColorPicker::GetColorName/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetColorName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetColorName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetColorName,0)
+
+/** ni -> iWidgetColorPicker::SetExpression/1 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,SetExpression,1)
+	IDLC_DECL_VAR(iHString*,ahspExpression)
+	IDLC_BUF_TO_INTF(iHString,ahspExpression)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,SetExpression,1,(ahspExpression))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,SetExpression,1)
+
+/** ni -> iWidgetColorPicker::GetExpression/0 **/
+IDLC_METH_BEGIN(ni,iWidgetColorPicker,GetExpression,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetColorPicker,GetExpression,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iWidgetColorPicker,GetExpression,0)
+
+IDLC_END_INTF(ni,iWidgetColorPicker)
+
+IDLC_END_NAMESPACE()
+// EOF //

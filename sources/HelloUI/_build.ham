@@ -1,0 +1,14 @@
+SubDir TOP HelloUI ;
+
+if $(TARGET_FEATURE_EXE) {
+  SubInclude TOP HelloUI cpp ;
+}
+if $(TARGET_FEATURE_CONSOLE) {
+  SubInclude TOP HelloUI ni ;
+}
+if $(BUILD_JNI) {
+  SubInclude TOP HelloUI java ;
+}
+if $(ANDROID) {
+  SubInclude TOP HelloUI android ;
+}

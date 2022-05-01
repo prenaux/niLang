@@ -1,0 +1,705 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iRunnable" uuid1="D9BA854F-6310-4BE8-A9B7-0DF74ECE7B35" uuid2="0xd9ba854f,0x6310,0x4be8,0xa9,0xb7,0x0d,0xf7,0x4e,0xce,0x7b,0x35">
+			<comments desc="Runnable interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="run" name="Run" num_parameters="0">
+				<comments desc=""/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+		</interface>
+		<interface name="iCallback" uuid1="8CCC2096-A1B2-4BF3-9C78-410278419F4C" uuid2="0x8ccc2096,0xa1b2,0x4bf3,0x9c,0x78,0x41,0x02,0x78,0x41,0x9f,0x4c">
+			<comments desc="Callback interface. ">
+				<remark text="A callback is similar to a runnable excepted that it accepts up to two parameters. If it used as a runnable both parameters are set to null. "/>
+			</comments>
+			<parents>
+				<parent name="iRunnable"/>
+			</parents>
+			<method java_name="runCallback" name="RunCallback" num_parameters="2">
+				<comments desc=""/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iRunnableQueue" uuid1="3C6398C4-7AEA-4AEA-8426-2F4CC71DA0A9" uuid2="0x3c6398c4,0x7aea,0x4aea,0x84,0x26,0x2f,0x4c,0xc7,0x1d,0xa0,0xa9">
+			<comments desc="Runnable queue interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getThreadID"
+				name="GetThreadID"
+				num_parameters="0"
+				property="get"
+				property_name2="threadID"
+				property_name="thread_id">
+				<comments desc="Get the runnable queue&apos;s owner thread. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the number of runnable currently in the queue. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isEmpty"
+				name="IsEmpty"
+				num_parameters="0">
+				<comments desc="Check whether any runnable is in the queue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="add" name="Add" num_parameters="1">
+				<comments desc="Queue a runnable. " return="eFalse if the queue is full, else eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="peek" name="Peek" num_parameters="0">
+				<comments desc="Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty or if called from another thread than the owner thread. "/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="poll" name="Poll" num_parameters="0">
+				<comments desc="Retrieves and removes the head of this queue, or returns null if this queue is empty or if called from another thread than the owner thread. "/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="waitForRunnable" name="WaitForRunnable" num_parameters="1">
+				<comments desc="Wait for a runnable to be in the queue. " return="eFalse if the called from another thread than the other thread. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeOut"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrappercreate="iMessageHandler_CreateDispatchWrapper"
+			name="iMessageHandler"
+			uuid1="A38A4904-29BF-462A-9E84-BAF90EDD6DC3"
+			uuid2="0xa38a4904,0x29bf,0x462a,0x9e,0x84,0xba,0xf9,0x0e,0xdd,0x6d,0xc3">
+			<comments desc="Message handler interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getThreadID"
+				name="GetThreadID"
+				num_parameters="0"
+				optional="yes"
+				property="get"
+				property_name2="threadID"
+				property_name="thread_id">
+				<comments desc="Get the message handler&apos;s owner thread. That is the thread where HandleMessage will be called. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method java_name="handleMessage" name="HandleMessage" num_parameters="3">
+				<comments desc="Called when a message should be handled. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anMsg"
+					type="const tU32"
+					typec="const tU32"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iMessageDesc" uuid1="EBA551C4-82A5-4269-AC3E-A175F5A04FFD" uuid2="0xeba551c4,0x82a5,0x4269,0xac,0x3e,0xa1,0x75,0xf5,0xa0,0x4f,0xfd">
+			<comments desc="Message description interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getHandler"
+				name="GetHandler"
+				num_parameters="0"
+				property="get"
+				property_name2="handler"
+				property_name="handler">
+				<comments desc="Get the message handler. "/>
+				<return type="iMessageHandler *" typec="iMessageHandler*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getID"
+				name="GetID"
+				num_parameters="0"
+				property="get"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Get the message id. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getA"
+				name="GetA"
+				num_parameters="0"
+				property="get"
+				property_name2="a"
+				property_name="a">
+				<comments desc="Get the message parameter A. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getB"
+				name="GetB"
+				num_parameters="0"
+				property="get"
+				property_name2="b"
+				property_name="b">
+				<comments desc="Get the message parameter B. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iMessageQueue" uuid1="DA9D184A-DFDB-49E0-91B8-CF17AE02CA1C" uuid2="0xda9d184a,0xdfdb,0x49e0,0x91,0xb8,0xcf,0x17,0xae,0x02,0xca,0x1c">
+			<comments desc="Message queue interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getThreadID"
+				name="GetThreadID"
+				num_parameters="0"
+				property="get"
+				property_name2="threadID"
+				property_name="thread_id">
+				<comments desc="Get the message queue&apos;s owner thread. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the number of message currently in the queue. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isEmpty"
+				name="IsEmpty"
+				num_parameters="0">
+				<comments desc="Check whether any message is in the queue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="add" name="Add" num_parameters="4">
+				<comments desc="Queue a message. " return="eFalse if the queue is full or if the message handler&apos;s thread is not the same as the message queue&apos;s thread, else eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="peek"
+				name="Peek"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Retrieves, but does not remove, the head of this queue, or returns eFalse if this queue is empty or if called from another thread than the owner thread. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter
+					last="1"
+					name="apMessageDesc"
+					type="sMessageDesc *"
+					typec="sMessageDesc*"/>
+			</method>
+			<method java_name="peekDesc" name="PeekDesc" num_parameters="0">
+				<comments desc="Same as \see Peek but returns a new iMessageDesc object. "/>
+				<return type="Ptr&lt;iMessageDesc&gt;" typec="Ptr&lt;iMessageDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="poll"
+				name="Poll"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Retrieves and removes the head of this queue, or returns eFalse if this queue is empty or if called from another thread than the owner thread. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter
+					last="1"
+					name="apMessageDesc"
+					type="sMessageDesc *"
+					typec="sMessageDesc*"/>
+			</method>
+			<method java_name="pollDesc" name="PollDesc" num_parameters="0">
+				<comments desc="Same as \see Poll but returns a new iMessageDesc object. "/>
+				<return type="Ptr&lt;iMessageDesc&gt;" typec="Ptr&lt;iMessageDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pollAndDispatch" name="PollAndDispatch" num_parameters="0">
+				<comments desc="Retrieves, removes and call the message handler of the head of this queue, or returns eFalse if this queue is empty or if called from another thread than the owner thread. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="waitForMessage" name="WaitForMessage" num_parameters="1">
+				<comments desc="Wait for a message to be in the queue. " return="eFalse if the called from another thread than the other thread. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeOut"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iFuture" uuid1="CA4F4D13-5556-4177-BB7F-41855A4093AC" uuid2="0xca4f4d13,0x5556,0x4177,0xbb,0x7f,0x41,0x85,0x5a,0x40,0x93,0xac">
+			<comments desc="Future interface.  A Future represents the result of an asynchronous computation. Methods are provided to check if the computation is complete, to wait for its completion, and to retrieve the result of the computation. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="cancel" name="Cancel" num_parameters="0">
+				<comments desc="Cancel the task associated with the future. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCancelled"
+				name="GetIsCancelled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCancelled"
+				property_name="is_cancelled">
+				<comments desc="Check whether the task has been cancelled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsDone"
+				name="GetIsDone"
+				num_parameters="0"
+				property="get"
+				property_name2="isDone"
+				property_name="is_done">
+				<comments desc="Return true if this task completed. ">
+					<remark text="Equivalent to Wait(0). "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="doWait" name="Wait" num_parameters="1">
+				<comments desc="Wait for the value to be set. " return="eFalse if the value hasn&apos;t be set in the specified timeout. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeOut"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getValue"
+				name="GetValue"
+				num_parameters="0"
+				property="get"
+				property_name2="value"
+				property_name="value">
+				<comments desc="Return the result of the computation, returns null if the task is not completed. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+		</interface>
+		<interface name="iFutureValue" uuid1="B79D1F47-0F71-495A-8D23-5550CE576A59" uuid2="0xb79d1f47,0x0f71,0x495a,0x8d,0x23,0x55,0x50,0xce,0x57,0x6a,0x59">
+			<comments desc="Future value. "/>
+			<parents>
+				<parent name="iFuture"/>
+			</parents>
+			<method
+				java_name="setValue"
+				name="SetValue"
+				num_parameters="1"
+				property="set"
+				property_name2="value"
+				property_name="value">
+				<comments desc="Sets and signal the future. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="reset" name="Reset" num_parameters="0">
+				<comments desc="Reset the future to the unset &amp; not-canceled state. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+		<interface name="iExecutor" uuid1="4990B16A-D3CF-42C0-B933-5A9BC06B655F" uuid2="0x4990b16a,0xd3cf,0x42c0,0xb9,0x33,0x5a,0x9b,0xc0,0x6b,0x65,0x5f">
+			<comments desc="Executes the submitted iRunnable tasks.  This interface provides a way of decoupling task submission from the mechanism of how each task will be run, including the details of thread use, scheduling, etc.  An executor is normally used instead of explicitly creating threads. However the it does not strictly require the execution to be asynchronous. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getIsShutdown"
+				name="GetIsShutdown"
+				num_parameters="0"
+				property="get"
+				property_name2="isShutdown"
+				property_name="is_shutdown">
+				<comments desc="Returns true if this executor has been shut down. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsTerminated"
+				name="GetIsTerminated"
+				num_parameters="0"
+				property="get"
+				property_name2="isTerminated"
+				property_name="is_terminated">
+				<comments desc="Returns true if all tasks have completed following shut down. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="execute" name="Execute" num_parameters="1">
+				<comments desc="Executes the given runnable at some time in the future.  The runnable might execute in a new thread, a thread pool, or in the calling thread, at the discretion of the executor implementation.  " return="false if the executor has been invalidated and cannot execute anymore runnable. ">
+					<params text="aRunnable the runnable to execute. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="submit" name="Submit" num_parameters="1">
+				<comments desc="Executes the given runnable at some time in the future.  The runnable might execute in a new thread, a thread pool, or in the calling thread, at the discretion of the executor implementation.  " return="A iFuture that is set to the return value of the runnable when it returns. NULL if the executor has been invalidated and cannot execute anymore runnable. ">
+					<params text="aRunnable the runnable to execute. "/>
+				</comments>
+				<return type="Ptr&lt;ni::iFuture&gt;" typec="Ptr&lt;ni::iFuture&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="shutdown" name="Shutdown" num_parameters="1">
+				<comments desc="Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted. Blocks until all tasks have completed execution or the timeout occurs. " return="true if this executor terminated and false if the timeout elapsed before termination. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeOut"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="shutdownNow" name="ShutdownNow" num_parameters="1">
+				<comments desc="Attempts to cancel all actively executing tasks, halts the processing of waiting tasks. Blocks until all tasks have completed execution or the timeout occurs. " return="true if this executor terminated and false if the timeout elapsed before termination. ">
+					<remark text="Invalidate calls ShutdownNow(eInvalidHandle). "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeOut"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="1">
+				<comments desc="Update the executor. " return="The duration (in milliseconds) of the execution of the runnables. Always 0 for immediate and thread pool executors. ">
+					<remark text="On multi-threaded platforms this call is superflous for all but the cooperative executors. For the default executors provided in iConcurrent this should be called in the main app&apos;s for the main executor (which is always cooperative). "/>
+					<params text="anTimeSliceInMs the suggested maximum time allocated to execute the runnables queued in the executor, at least one runnable is executed per update if any are queued. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anTimeSliceInMs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iConcurrent" uuid1="8553D3D4-95F9-4438-B970-06A9F06A74A7" uuid2="0x8553d3d4,0x95f9,0x4438,0xb9,0x70,0x06,0xa9,0xf0,0x6a,0x74,0xa7">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getMainThreadID"
+				name="GetMainThreadID"
+				num_parameters="0"
+				property="get"
+				property_name2="mainThreadID"
+				property_name="main_thread_id">
+				<comments desc=""/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentThreadID"
+				name="GetCurrentThreadID"
+				num_parameters="0"
+				property="get"
+				property_name2="currentThreadID"
+				property_name="current_thread_id">
+				<comments desc=""/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method java_name="createRunnableQueue" name="CreateRunnableQueue" num_parameters="2">
+				<comments desc="Create a runnable queue for the specified thread. "/>
+				<return type="iRunnableQueue *" typec="iRunnableQueue*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aThreadID"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="aMaxItems"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createExecutorCooperative" name="CreateExecutorCooperative" num_parameters="2">
+				<comments desc="Create a cooperative executor. "/>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aThreadID"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="aMaxItems"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createExecutorImmediate" name="CreateExecutorImmediate" num_parameters="0">
+				<comments desc="Create an immediate executor. "/>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createExecutorThreadPool" name="CreateExecutorThreadPool" num_parameters="1">
+				<comments desc="Create a threaded executor. ">
+					<remark text="Always fails on single-threaded platforms. "/>
+				</comments>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aNumThreads"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="getExecutorCPU"
+				name="GetExecutorCPU"
+				num_parameters="0"
+				property="get"
+				property_name2="executorCPU"
+				property_name="executor_cpu">
+				<comments desc="Get the default executor.  The default executor is created with one thread for 2 logical cores, with at least one thread. It should be used for CPU intensive tasks.  ">
+					<remark text="On purely single-threaded platforms returns GetExecutorMain().  "/>
+				</comments>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getExecutorIO"
+				name="GetExecutorIO"
+				num_parameters="0"
+				property="get"
+				property_name2="executorIO"
+				property_name="executor_io">
+				<comments desc="Get the IO executor.  The IO executor is created with 2 threads per logical core. It should be used for IO bound tasks.  ">
+					<remark text="On purely single-threaded platforms returns GetExecutorMain().  "/>
+				</comments>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getExecutorMain"
+				name="GetExecutorMain"
+				num_parameters="0"
+				property="get"
+				property_name2="executorMain"
+				property_name="executor_main">
+				<comments desc="Get the cooperative executor bound to the main thread. ">
+					<remark text="All the runnable submitted to this executor are garanteed to be executed in the main thread. "/>
+				</comments>
+				<return type="iExecutor *" typec="iExecutor*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="threadRun" name="ThreadRun" num_parameters="1">
+				<comments desc="Creates a new thread and run the runnable in it. "/>
+				<return type="Ptr&lt;iFuture&gt;" typec="Ptr&lt;iFuture&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFutureValue" name="CreateFutureValue" num_parameters="0">
+				<comments desc="Create a future value object. "/>
+				<return type="iFutureValue *" typec="iFutureValue*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createMessageDesc" name="CreateMessageDesc" num_parameters="4">
+				<comments desc="Create a message desc object. "/>
+				<return type="Ptr&lt;iMessageDesc&gt;" typec="Ptr&lt;iMessageDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createMessageQueue" name="CreateMessageQueue" num_parameters="2">
+				<comments desc="Create a message queue for the specified thread. ">
+					<remark text="Only one message queue can be created per thread, subsequent calls to create a queue for the same thread will fail. "/>
+				</comments>
+				<return type="Ptr&lt;iMessageQueue&gt;" typec="Ptr&lt;iMessageQueue&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anThreadID"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="aMaxItems"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMessageQueue"
+				name="GetMessageQueue"
+				num_parameters="1"
+				property="get"
+				property_name2="messageQueue"
+				property_name="message_queue">
+				<comments desc="Get the message queue associated with the specified thread. "/>
+				<return type="Ptr&lt;iMessageQueue&gt;" typec="Ptr&lt;iMessageQueue&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anThreadID"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method java_name="sendMessage" name="SendMessage" num_parameters="4">
+				<comments desc="Send a message to the specified message handler. " return="eTrue if the message as been added to the handler&apos;s thread message queue or if the handler has been called immediatly. Otherwise returns eFalse. ">
+					<remark text="If the handler&apos;s thread is the same as the current thread then the handler is called immediatly. Otherwise the message queue&apos;s of the handler&apos;s thread is retrieved and the message is pushed in the queue. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="queueMessage" name="QueueMessage" num_parameters="4">
+				<comments desc="Queue a message in the messge queue of the message handler&apos;s thread. " return="eTrue if the message as been added to the handler&apos;s thread message queue. Otherwise returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

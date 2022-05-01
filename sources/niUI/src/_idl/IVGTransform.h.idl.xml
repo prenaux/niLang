@@ -1,0 +1,685 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eVGTransform">
+			<comments desc="VG transform type. "/>
+			<value min_features="20" name="eVGTransform_Path" value="0 ">
+				<comments desc="Path to surface transform. "/>
+			</value>
+			<value min_features="20" name="eVGTransform_Image" value="1 ">
+				<comments desc="Image to surface transform. "/>
+			</value>
+			<value min_features="20" name="eVGTransform_FillPaint" value="2 ">
+				<comments desc="Fill paint to user transform. "/>
+			</value>
+			<value min_features="20" name="eVGTransform_StrokePaint" value="3 ">
+				<comments desc="Stroke paint to user transform. "/>
+			</value>
+			<value min_features="20" name="eVGTransform_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum min_features="20" name="eVGTransformValue">
+			<comments desc="VG transform value. "/>
+			<value min_features="20" name="eVGTransformValue_ScaleX" value="0 ">
+				<comments desc="ScaleX (m0) component. "/>
+			</value>
+			<value min_features="20" name="eVGTransformValue_RotationSkew0" value="1 ">
+				<comments desc="RotationSkew0 (m1) component. "/>
+			</value>
+			<value min_features="20" name="eVGTransformValue_RotationSkew1" value="2 ">
+				<comments desc="RotationSkew1 (m2) component. "/>
+			</value>
+			<value min_features="20" name="eVGTransformValue_ScaleY" value="3 ">
+				<comments desc="RotationSkew1 (m3) component. "/>
+			</value>
+			<value min_features="20" name="eVGTransformValue_TranslateX" value="4 ">
+				<comments desc="RotationSkew1 (m4) component. "/>
+			</value>
+			<value min_features="20" name="eVGTransformValue_TranslateY" value="5 ">
+				<comments desc="RotationSkew1 (m5) component. "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iVGTransform"
+			uuid1="399C48D6-E2CA-4560-8266-C482484EBD5D"
+			uuid2="0x399c48d6,0xe2ca,0x4560,0x82,0x66,0xc4,0x82,0x48,0x4e,0xbd,0x5d">
+			<comments desc="VG transform interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="copy"
+				min_features="20"
+				name="Copy"
+				num_parameters="1">
+				<comments desc="Copy another transform. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="20"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this transform. "/>
+				<return type="iVGTransform *" typec="iVGTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="push"
+				min_features="20"
+				name="Push"
+				num_parameters="0">
+				<comments desc="Push the transform states on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="pop"
+				min_features="20"
+				name="Pop"
+				num_parameters="0">
+				<comments desc="Pop the transfrom states from the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setMatrix"
+				min_features="20"
+				name="SetMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Set the 3x2 transform matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				min_features="20"
+				name="GetMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the 3x2 transform matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setValue"
+				min_features="20"
+				name="SetValue"
+				num_parameters="2"
+				property="set"
+				property_name2="value"
+				property_name="value">
+				<comments desc="Set a value of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aType"
+					type="eVGTransformValue"
+					typec="eVGTransformValue"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="afValue"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getValue"
+				min_features="20"
+				name="GetValue"
+				num_parameters="1"
+				property="get"
+				property_name2="value"
+				property_name="value">
+				<comments desc="Get a value of the transform. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eVGTransformValue"
+					typec="eVGTransformValue"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setValues"
+				min_features="20"
+				name="SetValues"
+				num_parameters="6">
+				<comments desc="Set all values. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="m0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="m5"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="identity"
+				min_features="20"
+				name="Identity"
+				num_parameters="0">
+				<comments desc="Set the transform to identity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="invert"
+				min_features="20"
+				name="Invert"
+				num_parameters="0">
+				<comments desc="Invert the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsIdentity"
+				min_features="20"
+				name="GetIsIdentity"
+				num_parameters="0"
+				property="get"
+				property_name2="isIdentity"
+				property_name="is_identity">
+				<comments desc="Check whether the transform is identity. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="isEqual"
+				min_features="20"
+				name="IsEqual"
+				num_parameters="1">
+				<comments desc="Check whether the transform is equal the passed transform. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDeterminant"
+				min_features="20"
+				name="GetDeterminant"
+				num_parameters="0">
+				<comments desc="Get the transform&apos;s determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="flipX"
+				min_features="20"
+				name="FlipX"
+				num_parameters="0">
+				<comments desc="Flip the transform&apos;s X-axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="flipY"
+				min_features="20"
+				name="FlipY"
+				num_parameters="0">
+				<comments desc="Flip the transform&apos;s Y-axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="transform"
+				min_features="20"
+				name="Transform"
+				num_parameters="1">
+				<comments desc="Transform a vertex. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="avV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="transformRotate"
+				min_features="20"
+				name="TransformRotate"
+				num_parameters="1">
+				<comments desc="Transform a vertex with the rotational part (2x2) of the transform only. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="avV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="multiply"
+				min_features="20"
+				name="Multiply"
+				num_parameters="1">
+				<comments desc="Multiply the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="preMultiply"
+				min_features="20"
+				name="PreMultiply"
+				num_parameters="1">
+				<comments desc="PreMultiply the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="multiplyMatrix"
+				min_features="20"
+				name="MultiplyMatrix"
+				num_parameters="1">
+				<comments desc="Multiply the transform by a matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="preMultiplyMatrix"
+				min_features="20"
+				name="PreMultiplyMatrix"
+				num_parameters="1">
+				<comments desc="PreMultiply the transform by a matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="multiplyValues"
+				min_features="20"
+				name="MultiplyValues"
+				num_parameters="6">
+				<comments desc="Multiply the transform by values. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="m0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="m5"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="preMultiplyValues"
+				min_features="20"
+				name="PreMultiplyValues"
+				num_parameters="6">
+				<comments desc="PreMultiply the transform by values. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="m0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="m4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="m5"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="rotate"
+				min_features="20"
+				name="Rotate"
+				num_parameters="1">
+				<comments desc="Rotate the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afRadians"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="preRotate"
+				min_features="20"
+				name="PreRotate"
+				num_parameters="1">
+				<comments desc="PreRotate the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afRadians"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="rotateAround"
+				min_features="20"
+				name="RotateAround"
+				num_parameters="2">
+				<comments desc="Rotate the transform around the specified position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadians"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="preRotateAround"
+				min_features="20"
+				name="PreRotateAround"
+				num_parameters="2">
+				<comments desc="PreRotate the transform around the specified position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadians"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="translate"
+				min_features="20"
+				name="Translate"
+				num_parameters="1">
+				<comments desc="Translate the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="preTranslate"
+				min_features="20"
+				name="PreTranslate"
+				num_parameters="1">
+				<comments desc="PreTranslate the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="scaling"
+				min_features="20"
+				name="Scaling"
+				num_parameters="1">
+				<comments desc="Scale the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="preScaling"
+				min_features="20"
+				name="PreScaling"
+				num_parameters="1">
+				<comments desc="PreScale the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="skew"
+				min_features="20"
+				name="Skew"
+				num_parameters="1">
+				<comments desc="Skew the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="preSkew"
+				min_features="20"
+				name="PreSkew"
+				num_parameters="1">
+				<comments desc="PreSkew the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="lineSegment"
+				min_features="20"
+				name="LineSegment"
+				num_parameters="3">
+				<comments desc="Generates a transform that point in the direction of a line segment. ">
+					<remark text="If afDist &gt; 0.0f it will be used to scale in function of the line&apos;s length. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aStart"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aEnd"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afDist"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="preLineSegment"
+				min_features="20"
+				name="PreLineSegment"
+				num_parameters="3">
+				<comments desc="Generates a transform that point in the direction of a line segment. \see ni::iVGTransform::LineSegment "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aStart"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aEnd"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afDist"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRotation"
+				min_features="20"
+				name="GetRotation"
+				num_parameters="0"
+				property="get"
+				property_name2="rotation"
+				property_name="rotation">
+				<comments desc="Get the transform&apos;s rotation. ">
+					<remark text="Could be inaccurate with degenerate transforms. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScale"
+				min_features="20"
+				name="GetScale"
+				num_parameters="0"
+				property="get"
+				property_name2="scale"
+				property_name="scale">
+				<comments desc="Get the transform&apos;s scale. ">
+					<remark text="Could be inaccurate with degenerate transforms. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTranslation"
+				min_features="20"
+				name="GetTranslation"
+				num_parameters="0"
+				property="get"
+				property_name2="translation"
+				property_name="translation">
+				<comments desc="Get the transform&apos;s translation. ">
+					<remark text="Could be inaccurate with degenerate transforms. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScaling"
+				min_features="20"
+				name="GetScaling"
+				num_parameters="0"
+				property="get"
+				property_name2="scaling"
+				property_name="scaling">
+				<comments desc="Get the transform&apos;s scaling. ">
+					<remark text="Could be inaccurate with degenerate transforms. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

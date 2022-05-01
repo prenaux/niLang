@@ -1,0 +1,661 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eExpressionVariableType">
+			<comments desc="Expression variables types. "/>
+			<value name="eExpressionVariableType_Float" value="0 ">
+				<comments desc="Real number variable type. Constructors: -x, x, x.y, -x.y "/>
+			</value>
+			<value name="eExpressionVariableType_Vec2" value="1 ">
+				<comments desc="2D vector variable type. Constructors: Vec2() "/>
+			</value>
+			<value name="eExpressionVariableType_Vec3" value="2 ">
+				<comments desc="3D vector variable type. Constructors: Vec3(), RGB() "/>
+			</value>
+			<value name="eExpressionVariableType_Vec4" value="3 ">
+				<comments desc="4D vector variable type. Constructors: Vec4(), RGBA(), Quat(), Plane() "/>
+			</value>
+			<value name="eExpressionVariableType_Matrix" value="4 ">
+				<comments desc="Matrix variable type. Constructors: Matrix() "/>
+			</value>
+			<value name="eExpressionVariableType_String" value="5 ">
+				<comments desc="String type. Constructors: &quot;string&quot;, &apos;string&apos; "/>
+			</value>
+		</enum>
+		<enum name="eExpressionVariableFlags">
+			<comments desc="Expression variables flags. "/>
+			<value name="eExpressionVariableFlags_Default" value="0 ">
+				<comments desc="Default flags value. "/>
+			</value>
+			<value name="eExpressionVariableFlags_Reserved" value="niBit ( 0 ) ">
+				<comments desc="Variable is reserved. ">
+					<remark text="Reserved variables cant be removed. "/>
+				</comments>
+			</value>
+			<value name="eExpressionVariableFlags_Constant" value="niBit ( 1 ) ">
+				<comments desc="Constant variable, read-only. "/>
+			</value>
+			<value name="eExpressionVariableFlags_Color" value="niBit ( 2 ) ">
+				<comments desc="Variable is the result of a color function. "/>
+			</value>
+			<value name="eExpressionVariableFlags_Quat" value="niBit ( 3 ) ">
+				<comments desc="Variable is the result of a quaternion function. "/>
+			</value>
+		</enum>
+		<interface name="iExpressionVariable" uuid1="69569E99-6B3A-444C-B375-D2CEB3749B4B" uuid2="0x69569e99,0x6b3a,0x444c,0xb3,0x75,0xd2,0xce,0xb3,0x74,0x9b,0x4b">
+			<comments desc="Expression variable interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="setName" name="SetName" num_parameters="1">
+				<comments desc="Set the variable name. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspString"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0">
+				<comments desc="Get the variable name. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the specified variable. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apVar"
+					type="const iExpressionVariable *"
+					typec="const iExpressionVariable*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this variable. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the variable&apos;s type. "/>
+				<return type="eExpressionVariableType" typec="eExpressionVariableType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the variable&apos;s flags. "/>
+				<return type="tExpressionVariableFlags" typec="tExpressionVariableFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setFloat"
+				name="SetFloat"
+				num_parameters="1"
+				property="set"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Set the float value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				name="GetFloat"
+				num_parameters="0"
+				property="get"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Get the float value of the variable. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setVec2"
+				name="SetVec2"
+				num_parameters="1"
+				property="set"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Set the vector2 value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2"
+				name="GetVec2"
+				num_parameters="0"
+				property="get"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Get the vector2 value of the variable. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setVec3"
+				name="SetVec3"
+				num_parameters="1"
+				property="set"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get the vector3 value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3"
+				name="GetVec3"
+				num_parameters="0"
+				property="get"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get the vector3 value of the variable. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setVec4"
+				name="SetVec4"
+				num_parameters="1"
+				property="set"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get the vector4 value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4"
+				name="GetVec4"
+				num_parameters="0"
+				property="get"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get the vector4 value of the variable. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setMatrix"
+				name="SetMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the matrix value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				name="GetMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the matrix value of the variable. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setString"
+				name="SetString"
+				num_parameters="1"
+				property="set"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the string value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const cString &amp;"
+					typec="const cString&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				name="GetString"
+				num_parameters="0"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the string value of the variable. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+		</interface>
+		<interface name="iExpression" uuid1="0506909D-5223-4D8B-876B-01F5A40C92F9" uuid2="0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9">
+			<comments desc="Expression interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="eval" name="Eval" num_parameters="0">
+				<comments desc="Eval the expression and returns the result. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEvalResult"
+				name="GetEvalResult"
+				num_parameters="0"
+				property="get"
+				property_name2="evalResult"
+				property_name="eval_result">
+				<comments desc="Get the result returned by the last Eval. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getContext"
+				name="GetContext"
+				num_parameters="0"
+				property="get"
+				property_name2="context"
+				property_name="context">
+				<comments desc="Get the context. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrapper="yes"
+			name="iExpressionURLResolver"
+			uuid1="7802DC51-FDAF-4DE0-B07E-8B5D08901368"
+			uuid2="0x7802dc51,0xfdaf,0x4de0,0xb0,0x7e,0x8b,0x5d,0x08,0x90,0x13,0x68">
+			<comments desc="Expression URL resolver interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="resolveURL" name="ResolveURL" num_parameters="1">
+				<comments desc=""/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iExpressionContext" uuid1="A870ED3F-D227-467C-98A2-8AF1411ABEE2" uuid2="0xa870ed3f,0xd227,0x467c,0x98,0xa2,0x8a,0xf1,0x41,0x1a,0xbe,0xe2">
+			<comments desc="Expression context. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getParentContext"
+				name="GetParentContext"
+				num_parameters="0"
+				property="get"
+				property_name2="parentContext"
+				property_name="parent_context">
+				<comments desc="Get the parent context. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createContext" name="CreateContext" num_parameters="0">
+				<comments desc="Create a child context. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVariable" name="CreateVariable" num_parameters="3">
+				<comments desc="Create a new variable. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eExpressionVariableType"
+					typec="eExpressionVariableType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="eExpressionVariableFlags_Default "
+					last="1"
+					name="aFlags"
+					type="tExpressionVariableFlags"
+					typec="tExpressionVariableFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createVariableFromExpr" name="CreateVariableFromExpr" num_parameters="3">
+				<comments desc="Create a variable from an expression. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eExpressionVariableFlags_Default "
+					last="1"
+					name="aFlags"
+					type="tExpressionVariableFlags"
+					typec="tExpressionVariableFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createVariableFromRunnable" name="CreateVariableFromRunnable" num_parameters="4">
+				<comments desc="Create a variable whos value is fetched from a runnable. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eExpressionVariableType"
+					typec="eExpressionVariableType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eExpressionVariableFlags_Default "
+					last="1"
+					name="aFlags"
+					type="tExpressionVariableFlags"
+					typec="tExpressionVariableFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createVariableFromVar" name="CreateVariableFromVar" num_parameters="3">
+				<comments desc="Create a variable initialized with the value of the specified variant. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aInitialValue"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eExpressionVariableFlags_Default "
+					last="1"
+					name="aFlags"
+					type="tExpressionVariableFlags"
+					typec="tExpressionVariableFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="addVariable" name="AddVariable" num_parameters="1">
+				<comments desc="Add a variable to the expression context. ">
+					<remark text="Not duplicate or empty variable names are allowed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apVar"
+					type="iExpressionVariable *"
+					typec="iExpressionVariable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeVariable" name="RemoveVariable" num_parameters="1">
+				<comments desc="Remove a variable from the expression context. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apVariable"
+					type="iExpressionVariable *"
+					typec="iExpressionVariable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findVariable"
+				name="FindVariable"
+				num_parameters="1">
+				<comments desc="Find the variable with the specified name. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createExpression" name="CreateExpression" num_parameters="1">
+				<comments desc="Create a new expression. "/>
+				<return type="iExpression *" typec="iExpression*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="eval" name="Eval" num_parameters="1">
+				<comments desc="Evaluate an expression. "/>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getUnknownSymbols" name="GetUnknownSymbols" num_parameters="2">
+				<comments desc="Get the unknown symbols into the specified expression. ">
+					<params text="aaszExpr the expression to retrieve the symbols from. "/>
+					<params text="apList the string list where the symbols will be place \see ni::tStringCVec "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apList"
+					type="tStringCVec *"
+					typec="tStringCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setGlobalEnumSearch"
+				name="SetGlobalEnumSearch"
+				num_parameters="1"
+				property="set"
+				property_name2="globalEnumSearch"
+				property_name="global_enum_search">
+				<comments desc="Allows the parser to search in all registered modules enumerations. ">
+					<remark text="Disabled by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlobalEnumSearch"
+				name="GetGlobalEnumSearch"
+				num_parameters="0"
+				property="get"
+				property_name2="globalEnumSearch"
+				property_name="global_enum_search">
+				<comments desc="Get the global enum search status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="addEnumDef" name="AddEnumDef" num_parameters="1">
+				<comments desc="Add an enumeration definition. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumDef"
+				name="GetEnumDef"
+				num_parameters="1"
+				property="get"
+				property_name2="enumDef"
+				property_name="enum_def">
+				<comments desc="Get the specified enumeration. "/>
+				<return type="const sEnumDef *" typec="const sEnumDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDefaultEnumDef"
+				name="SetDefaultEnumDef"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultEnumDef"
+				property_name="default_enum_def">
+				<comments desc="Set the default enumeration definition. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultEnumDef"
+				name="GetDefaultEnumDef"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultEnumDef"
+				property_name="default_enum_def">
+				<comments desc="Get the default enumeration definition. "/>
+				<return type="const sEnumDef *" typec="const sEnumDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumValueString"
+				name="GetEnumValueString"
+				num_parameters="1">
+				<comments desc="Get an enumeration value string. ">
+					<remark text="Uses the registered enumerations. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="anValue"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumFlagsString"
+				name="GetEnumFlagsString"
+				num_parameters="1">
+				<comments desc="Get an enumeration flags string. ">
+					<remark text="Uses the registered enumerations. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="anValue"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="registerURLResolver" name="RegisterURLResolver" num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszProtocol"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apResolver"
+					type="iExpressionURLResolver *"
+					typec="iExpressionURLResolver*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="unregisterURLResolver" name="UnregisterURLResolver" num_parameters="1">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszProtocol"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findURLResolver"
+				name="FindURLResolver"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="iExpressionURLResolver *" typec="iExpressionURLResolver*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszProtocol"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

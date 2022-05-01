@@ -1,0 +1,313 @@
+#pragma once
+#ifndef __STDPIXELINPUT_CGH_BF1A82E9_AA29_4F11_B5B2_FB4571723C71__
+#define __STDPIXELINPUT_CGH_BF1A82E9_AA29_4F11_B5B2_FB4571723C71__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+#include "StdVertexOutput.cgh"
+#include "StdSampler.cgh" // stdInitSamplers()
+
+// Standard pixel input
+struct StdPixelInput
+{
+  float4    Position;
+  float2    ScreenPos;
+  float4    TexCoos[2];
+  float3x3  TanFrame;
+  float4    ColorA;
+  float3    Normal;
+  sGradient Gradient;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////
+StdPixelInput stdPixelInput_GetIdentity() {
+  StdPixelInput o;
+  o.Position = float4(0,0,0,1);
+  o.ScreenPos = float2(0,0);
+  o.TexCoos[0] = float4(0,0,0,0);
+  o.TexCoos[1] = float4(0,0,0,0);
+  o.ColorA = float4(1,1,1,1);
+  o.TanFrame = float3x3(1,0,0,0,1,0,0,0,1);
+  o.Normal = float3(0,1,0);
+  o.Gradient = Gradient_GetIdentity();
+  return o;
+}
+// Global pixel input
+static StdPixelInput gPI = stdPixelInput_GetIdentity();
+
+///////////////////////////////////////////////
+void stdPixelInput_InitFromVertexOutput(StdVertexOutput aIN) {
+  StdPixelInput o = stdPixelInput_GetIdentity();
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Depth only rendering
+#if eShaderFlags_DepthOnly
+  o.Position = aIN.Position;
+  o.TexCoos[0] = aIN.Tex1;
+  o.TexCoos[1] = aIN.Tex1;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Other rendering
+#else
+
+  // Compute screen position
+  float4 clipPosition;
+#if eShaderFlags_Quad
+  clipPosition = aIN.Position;
+#else
+  clipPosition = aIN.PositionH;
+#endif
+  if (!kShaderFlags_Quad) {
+    o.ScreenPos = (((clipPosition.xy/clipPosition.w)*float2(0.5,-0.5)+0.5))*fpsViewportRes.xy+fpsViewportRes.zw;
+  }
+  else {
+    // use the texture 1 coordinate assuming its set for a fullscreen quad (0:1)
+    o.ScreenPos = aIN.Tex1.xy*fpsViewportRes.xy+fpsViewportRes.zw;
+  }
+
+  //// Quad mode ////
+#if eShaderFlags_Quad
+  o.Position = aIN.Position;
+  o.ColorA = aIN.ColorA;
+  o.TexCoos[0] = aIN.Tex1;
+
+  //// Normal mode ////
+#else // #if eShaderFlags_Quad
+  o.Position = aIN.Position;
+  o.TexCoos[0] = aIN.Tex1;
+  o.TexCoos[1] = aIN.Tex2;
+  o.ColorA = aIN.ColorA;
+  o.Normal = normalize(aIN.Normal);
+#endif // #if eShaderFlags_Quad
+
+  // Compute the tangent frame
+  o.Gradient = Gradient_Compute(o.Position.xyz,o.TexCoos[0].xy);
+
+#endif // #if eShaderFlags_DepthOnly
+
+  gPI = o;
+
+#if !eShaderFlags_Quad && !eShaderFlags_DepthOnly
+  gPI.TanFrame = stdUtil_ComputeCotangentFrame(gPI.Normal,gPI.Gradient);
+#endif
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetViewDirWorldSpace() {
+  return fpsCameraViewForward.xyz;
+}
+float3 stdPixelInput_GetViewDirViewSpace() {
+  return float3(0,0,1);
+}
+float3 stdPixelInput_GetViewDir() {
+  if (kShaderFlags_WorldSpace) {
+    return stdPixelInput_GetViewDirWorldSpace();
+  }
+  else {
+    return stdPixelInput_GetViewDirViewSpace();
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetViewPosObjectSpace() {
+  return mul(float4(fpsCameraViewPosition.xyz,1),fpsInvWorldMatrix);
+}
+float3 stdPixelInput_GetViewPosWorldSpace() {
+  return fpsCameraViewPosition.xyz;
+}
+float3 stdPixelInput_GetViewPosViewSpace() {
+  return float3(0,0,0);
+}
+float3 stdPixelInput_GetViewPos() {
+  if (kShaderFlags_WorldSpace) {
+    return stdPixelInput_GetViewPosWorldSpace();
+  }
+  else {
+    return stdPixelInput_GetViewPosViewSpace();
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPositionObjectSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return mul(gPI.Position,fpsInvWorldMatrix);
+  }
+  else {
+    return mul(gPI.Position,fpsInvWorldViewMatrix);
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPositionObjectSpaceOffset(float3 offset) {
+  float4 pos = gPI.Position;
+  pos.xyz += offset;
+  if (kShaderFlags_WorldSpace) {
+    return mul(pos,fpsInvWorldMatrix);
+  }
+  else {
+    return mul(pos,fpsInvWorldViewMatrix);
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPositionWorldSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return gPI.Position;
+  }
+  else {
+    return mul(gPI.Position,fpsInvViewMatrix);
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPositionViewSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return mul(gPI.Position,fpsViewMatrix);
+  }
+  else {
+    return gPI.Position;
+  }
+}
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPositionProjectionSpace() {
+  if (kShaderFlags_WorldSpace){
+    float4x4 viewProjection = mul(fpsViewMatrix,fpsProjectionMatrix);
+    return mul(gPI.Position,viewProjection);
+  }
+  else {
+    return mul(gPI.Position,fpsProjectionMatrix);
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetPosition() {
+  if (kShaderFlags_WorldSpace) {
+    return stdPixelInput_GetPositionWorldSpace();
+  }
+  else {
+    return stdPixelInput_GetPositionViewSpace();
+  }
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetEyeVecWorldSpace() {
+  return fpsCameraViewPosition.xyz-stdPixelInput_GetPositionWorldSpace().xyz;
+}
+float3 stdPixelInput_GetEyeDirWorldSpace() {
+  return normalize(stdPixelInput_GetEyeVecWorldSpace());
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetEyeVecViewSpace() {
+  return float3(0,0,0)-stdPixelInput_GetPositionViewSpace().xyz;
+}
+float3 stdPixelInput_GetEyeDirViewSpace() {
+  return normalize(stdPixelInput_GetEyeVecViewSpace().xyz);
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetEyeVec() {
+  if (kShaderFlags_WorldSpace) {
+    return stdPixelInput_GetEyeVecWorldSpace();
+  }
+  else {
+    return stdPixelInput_GetEyeVecViewSpace();
+  }
+}
+float3 stdPixelInput_GetEyeDir() {
+  return normalize(stdPixelInput_GetEyeVec());
+}
+
+///////////////////////////////////////////////
+// Normalized
+float2 stdPixelInput_GetScreenPos() {
+  return gPI.ScreenPos;
+}
+
+//////////////////////////./////////////////////
+// In window coordinates
+float2 stdPixelInput_GetScreenPosAbs() {
+  return gPI.ScreenPos*fpsScreenRes.zw;
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetNormalObjectSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return normalize(mul(gPI.Normal,fpsInvWorldMatrix));
+  }
+  else {
+    return normalize(mul(gPI.Normal,fpsInvWorldViewMatrix));
+  }
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetNormalWorldSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return gPI.Normal;
+  }
+  else {
+    return normalize(mul(gPI.Normal,fpsInvViewMatrix));
+  }
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetNormalViewSpace() {
+  if (kShaderFlags_WorldSpace) {
+    return normalize(mul(gPI.Normal,fpsViewMatrix));
+  }
+  else {
+    return gPI.Normal;
+  }
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetNormal() {
+  return gPI.Normal;
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetColorA() {
+  return gPI.ColorA;
+}
+
+///////////////////////////////////////////////
+sGradient stdPixelInput_GetGradient() {
+  return gPI.Gradient;
+}
+
+///////////////////////////////////////////////
+float3x3 stdPixelInput_GetTanFrame() {
+  return gPI.TanFrame;
+}
+
+///////////////////////////////////////////////
+float stdPixelInput_GetTexCoo1(int index) {
+  return gPI.TexCoos[index].x;
+}
+
+///////////////////////////////////////////////
+float2 stdPixelInput_GetTexCoo2(int index) {
+  return gPI.TexCoos[index].xy;
+}
+
+///////////////////////////////////////////////
+float3 stdPixelInput_GetTexCoo3(int index) {
+  return gPI.TexCoos[index].xyz;
+}
+
+///////////////////////////////////////////////
+float4 stdPixelInput_GetTexCoo4(int index) {
+  return gPI.TexCoos[index].xyzw;
+}
+
+///////////////////////////////////////////////
+float stdPixelInput_GetDepth() {
+  float4 pos = stdPixelInput_GetPositionProjectionSpace();
+  return (pos.z/pos.w);
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDPIXELINPUT_CGH_BF1A82E9_AA29_4F11_B5B2_FB4571723C71__

@@ -1,0 +1,16 @@
+#pragma once
+#ifndef __STDFOG_CGH_7FD7854E_632F_452C_8116_9D1525E4C82E__
+#define __STDFOG_CGH_7FD7854E_632F_452C_8116_9D1525E4C82E__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+
+///////////////////////////////////////////////
+float3 stdFog_Exp(float aLinearZ, float3 aColor, float3 aFogColor, float aFogDensity) {
+  float F = 1.0f / exp(abs(aLinearZ)*aFogDensity);
+  return lerp(aFogColor,aColor,F);
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDFOG_CGH_7FD7854E_632F_452C_8116_9D1525E4C82E__

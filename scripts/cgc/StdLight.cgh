@@ -1,0 +1,208 @@
+#pragma once
+#ifndef __STDLIGHT_CGH_6CB2701E_E4F5_478D_860A_3F04B4C22051__
+#define __STDLIGHT_CGH_6CB2701E_E4F5_478D_860A_3F04B4C22051__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdUniforms.cgh"
+#include "StdSampler.cgh"
+#include "StdLightFlags.cgh"
+
+// Standard light type
+#define eStdLightType_None    0
+#define eStdLightType_Spot    1
+#define eStdLightType_Point   2
+#define eStdLightType_Dir     3
+#define eStdLightType_Area    4
+
+// Standard light attenuation
+#define eStdLightAttType_None          0
+#define eStdLightAttType_Linear        1
+#define eStdLightAttType_Bicubic       2
+#define eStdLightAttType_InvSqFalloff  3
+
+// Standard light shadow filter
+#define eStdLightShadowFilter_None  0
+#define eStdLightShadowFilter_Noise 1
+#define eStdLightShadowFilter_Blur  2
+
+// Number of lights set
+static const int kNumLights = eLight_NumLights;
+
+// Standard light structure
+struct StdLight {
+  // Light type.
+  int   Type;
+  // Light attenuation type.
+  int   AttType;
+  // Light shadow filter.
+  int   ShadowFilter;
+  // Whether the light produce specular highlights.
+  bool  bSpecular;
+  // Whether the light is physically based, mainly means that the light
+  // intensity is in Lumens - which should be used with IES profiles. Changes
+  // the attenuation to an inverse square falloff
+  bool  bPBL;
+  // Whether the light adds the material's emissive component
+  bool  bEmissive;
+  // Whether the light's shadow map is in world space
+  bool  bShadowMapWorldSpace;
+
+  // Cookie sampler. eMaterialChannel_T5
+  StdSampler Cookie;
+  // Shadow map sampler. Color is the shadow color. eMaterialChannel_T6
+  StdSampler ShadowMap;
+  // IBL diffuse sampler. eMaterialChannel_T7
+  StdSampler IBLDiffuse;
+  // LTC1 profile sampler. eMaterialChannel_T2
+  StdSampler LTC1;
+  // IES or LTC2 profile sampler. eMaterialChannel_T3
+  StdSampler LTC2IES;
+
+  float4 Position;  // w = 1/radius
+  float4 PositionWorldSpace; // w = 1/radius
+  float4 PositionViewSpace;  // w = 1/radius
+  float3 Diffuse;   // 3:color*intensity
+  float  CosineBias;
+  float3 Specular;  // 3:color*intensity
+  float  SpecularHighlightIntensity;
+  float4 Direction;
+  float4 DirectionWorldSpace;
+  float4 DirectionViewSpace;
+  float4 Spot;  // (cos(phi/2), cos(theta/2), phi, theta
+  float4 NearFar;   // (NearPlane,FarPlane,Intensity,Bias)
+  float4x4 WorldToLightMatrix;
+  float4x4 ViewProjectionMatrix;
+  float4x4 CookieMatrix;
+  float4x4 ShadowMapMatrix;
+  float ShadowBlur;
+  float4 AreaSize;	// (area width, area width edge, area height, area height edge)
+  float4 AreaRound;	// (area round)
+
+  float3 ShapeViewSpace[4];
+};
+
+///////////////////////////////////////////////
+//! Get get a standard light, translate the uniform into a light structure
+StdLight stdLight_GetLight(const int index) {
+  StdLight l = (StdLight)0;
+
+  // Light 0
+  if ((index < kNumLights) && index == 0) {
+    l.bSpecular = eLight0Flags_Specular;
+    l.bPBL = eLight0Flags_PBL;
+    l.bEmissive = eLight0Flags_Emissive;
+    l.bShadowMapWorldSpace = eLight0Flags_ShadowMapWorldSpace;
+
+    if (eLight0Flags_Area) {
+      l.Type = eStdLightType_Area;
+    }
+    else if (eLight0Flags_Spot) {
+      l.Type = eStdLightType_Spot;
+    }
+    else if (eLight0Flags_Dir) {
+      l.Type = eStdLightType_Dir;
+    }
+    else if (eLight0Flags_Point) {
+      l.Type = eStdLightType_Point;
+    }
+    else {
+      l.Type = eStdLightType_None;
+    }
+
+    if (l.bPBL) {
+      l.AttType = eStdLightAttType_InvSqFalloff;
+    }
+    else if (eLight0Flags_Attenuation) {
+      l.AttType = eStdLightAttType_Linear;
+    }
+    else {
+      l.AttType = eStdLightAttType_None;
+    }
+
+    if (eLight0Flags_ShadowFilterBlur) {
+      l.ShadowFilter = eStdLightShadowFilter_Blur;
+    }
+    else if (eLight0Flags_ShadowFilterNoise) {
+      l.ShadowFilter = eStdLightShadowFilter_Noise;
+    }
+    else {
+      l.ShadowFilter = eStdLightShadowFilter_None;
+    }
+
+    // GETLIGHTFROMUNIFORMS(0)
+    l.Position = kShaderFlags_WorldSpace ? fpsLightPosition0 : fpsLightPositionCameraViewSpace0;
+    l.PositionWorldSpace = fpsLightPosition0;
+    l.PositionViewSpace = fpsLightPositionCameraViewSpace0;
+    l.Diffuse = fpsLightDiffuseColor0.xyz;
+    l.CosineBias = fpsLightDiffuseColor0.a;
+    l.Specular = fpsLightSpecularColor0.xyz;
+    l.SpecularHighlightIntensity = fpsLightSpecularColor0.a;
+    l.Direction = kShaderFlags_WorldSpace ? fpsLightDirection0 : fpsLightDirectionCameraViewSpace0;
+    l.DirectionWorldSpace = fpsLightDirection0;
+    l.DirectionViewSpace = fpsLightDirectionCameraViewSpace0;
+    l.Spot = fpsLightSpot0;
+    l.WorldToLightMatrix = fpsLightWorldToLightMatrix0;
+    l.ViewProjectionMatrix = fpsLightViewProjectionMatrix0;
+    l.CookieMatrix = fpsLightCookieMatrix0;
+    l.ShadowMapMatrix = fpsLightShadowMapMatrix0;
+    l.NearFar = fpsLightNearFar0;
+    l.AreaSize = fpsLightAreaSize0;
+    l.AreaRound = fpsLightAreaRound0.x;
+    l.ShapeViewSpace[0] = float3(fpsLightShapeMatrix0._11,fpsLightShapeMatrix0._12,fpsLightShapeMatrix0._13);
+    l.ShapeViewSpace[1] = float3(fpsLightShapeMatrix0._21,fpsLightShapeMatrix0._22,fpsLightShapeMatrix0._23);
+    l.ShapeViewSpace[2] = float3(fpsLightShapeMatrix0._31,fpsLightShapeMatrix0._32,fpsLightShapeMatrix0._33);
+    l.ShapeViewSpace[3] = float3(fpsLightShapeMatrix0._41,fpsLightShapeMatrix0._42,fpsLightShapeMatrix0._43);
+
+    // Cookie (Channel:T5)
+    l.Cookie.HasTexture = eMaterialChannel_HasT5;
+    l.Cookie.SamplerIndex = eMaterialChannel_T5;
+    l.Cookie.IsFP = false;
+    l.Cookie.IsDepth = false;
+    l.Cookie.TexCooIndex = 0;
+    l.Cookie.Color = float4(1,1,1,1);
+    l.Cookie.Res = fpsMaterialT5Res0;
+
+    // ShadowMap (Channel:T6)
+    l.ShadowMap.HasTexture = eMaterialChannel_HasT6;
+    l.ShadowMap.SamplerIndex = eMaterialChannel_T6;
+    l.ShadowMap.IsFP = eLight0Flags_ShadowMapFP;
+    l.ShadowMap.IsDepth = eLight0Flags_ShadowMapDepth;
+    l.ShadowMap.TexCooIndex = 0;
+    l.ShadowMap.Color = float4(fpsLightShadowColor0.x,fpsLightShadowColor0.y,fpsLightShadowColor0.z,1);
+    l.ShadowBlur = fpsLightShadowColor0.w;
+    l.ShadowMap.Res = fpsMaterialT6Res0;
+
+    // IBLDiffuse texture (Channel:T7)
+    l.IBLDiffuse.HasTexture = eMaterialChannel_HasT7;
+    l.IBLDiffuse.SamplerIndex = eMaterialChannel_T7;
+    l.IBLDiffuse.IsFP = false;
+    l.IBLDiffuse.IsDepth = false;
+    l.IBLDiffuse.TexCooIndex = 0;
+    l.IBLDiffuse.Color = float4(1,1,1,1);
+    l.IBLDiffuse.Res = fpsMaterialT7Res0;
+
+    // LTC1 texture (Channel:T2)
+    l.LTC1.HasTexture = eMaterialChannel_HasT2;
+    l.LTC1.SamplerIndex = eMaterialChannel_T2;
+    l.LTC1.IsFP = false;
+    l.LTC1.IsDepth = false;
+    l.LTC1.TexCooIndex = 0;
+    l.LTC1.Color = float4(1,1,1,1);
+    l.LTC1.Res = fpsMaterialT2Res0;
+
+    // LTC2IES texture (Channel:T3)
+    l.LTC2IES.HasTexture = eMaterialChannel_HasT3;
+    l.LTC2IES.SamplerIndex = eMaterialChannel_T3;
+    l.LTC2IES.IsFP = false;
+    l.LTC2IES.IsDepth = false;
+    l.LTC2IES.TexCooIndex = 0;
+    l.LTC2IES.Color = float4(1,1,1,1);
+    l.LTC2IES.Res = fpsMaterialT3Res0;
+  }
+
+  return l;
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDLIGHT_CGH_6CB2701E_E4F5_478D_860A_3F04B4C22051__

@@ -1,0 +1,64 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eBitmapCubeFace">
+			<comments desc="Bitmap cube faces. ">
+				<remark text="The coordinate system is Left-Handed as in DX7/8. "/>
+			</comments>
+			<value name="eBitmapCubeFace_PositiveX" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eBitmapCubeFace_NegativeX" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eBitmapCubeFace_PositiveY" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eBitmapCubeFace_NegativeY" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eBitmapCubeFace_PositiveZ" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eBitmapCubeFace_NegativeZ" value="5 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iBitmapCube" uuid1="8DA50FFA-7FD2-404C-85E0-BC52511EF4C4" uuid2="0x8da50ffa,0x7fd2,0x404c,0x85,0xe0,0xbc,0x52,0x51,0x1e,0xf4,0xc4">
+			<comments desc="Cube bitmap interface. "/>
+			<parents>
+				<parent name="iBitmapBase"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFace"
+				name="GetFace"
+				num_parameters="1"
+				property="get"
+				property_name2="face"
+				property_name="face">
+				<comments desc="Get the content of the indicated face. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Face"
+					type="eBitmapCubeFace"
+					typec="eBitmapCubeFace"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createResized"
+				name="CreateResized"
+				num_parameters="1">
+				<comments desc="Create a resized cube map. "/>
+				<return type="iBitmapCube *" typec="iBitmapCube*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="nW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

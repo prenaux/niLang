@@ -1,0 +1,18 @@
+#########################################################################
+#
+# -- niCURL_jvm -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niCURL java ] = 1 { return ; }
+
+niDefJar niCURL_jvm : 1,0,0 ;
+
+### SOURCES #############################################################
+SRC =
+  [ niPkgAllJvmSrc ]
+;
+
+JAR = [ niBuildJar $(SRC) : niLang_jvm : : pkgsrc ] ;
+DEPENDS $(JAR) : [ niGenJava niCURL ] ;
+
+tkDepends $(PACKAGE) : niCURL : TOP niCURL src ;

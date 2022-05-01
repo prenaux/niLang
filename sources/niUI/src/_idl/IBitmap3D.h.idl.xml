@@ -1,0 +1,334 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iBitmap3D" uuid1="5523E61D-74F6-4AF8-BF42-DC760A6144EC" uuid2="0x5523e61d,0x74f6,0x4af8,0xbf,0x42,0xdc,0x76,0x0a,0x61,0x44,0xec">
+			<comments desc="3D Bitmap interface. "/>
+			<parents>
+				<parent name="iBitmapBase"/>
+			</parents>
+			<method
+				java_name="setMemoryAddress"
+				name="SetMemoryAddress"
+				noautomation="yes"
+				num_parameters="4">
+				<comments desc="Set the memory address. " return="eFalse if apAddre is NULL, else eTrue. ">
+					<remark text="If abFreeData the memory must have been allocated with niNew or niMalloc. "/>
+					<params text="apAddr is the address of the bitmap&apos;s data. "/>
+					<params text="abFreeData: if eTrue the data will be freed automatically when the bitmap is released. "/>
+					<params text="anRowPitch: if != eInvalidHandle will adjust the bitmap&apos;s row pitch. "/>
+					<params text="anSlicePitch: if != eInvalidHandle will adjust the bitmap&apos;s slice pitch. "/>
+				</comments>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="apAddr" type="tPtr" typec="tPtr"/>
+				<parameter name="abFreeData" type="tBool" typec="tBool"/>
+				<parameter
+					default="eInvalidHandle "
+					name="anRowPitch"
+					type="tU32"
+					typec="tU32"/>
+				<parameter
+					default="eInvalidHandle "
+					last="1"
+					name="anSlicePitch"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRowPitch"
+				name="GetRowPitch"
+				num_parameters="0"
+				property="get"
+				property_name2="rowPitch"
+				property_name="row_pitch">
+				<comments desc="Get the number of bytes per row "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSlicePitch"
+				name="GetSlicePitch"
+				num_parameters="0"
+				property="get"
+				property_name2="slicePitch"
+				property_name="slice_pitch">
+				<comments desc="Get the number of bytes per slice "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getData"
+				name="GetData"
+				noautomation="yes"
+				num_parameters="0"
+				property="get"
+				property_name2="data"
+				property_name="data">
+				<comments desc="Get the data pointer. "/>
+				<return type="tPtr" typec="tPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSlicePtr"
+				name="GetSlicePtr"
+				noautomation="yes"
+				num_parameters="1"
+				property="get"
+				property_name2="slicePtr"
+				property_name="slice_ptr">
+				<comments desc="Get the slice data pointer. "/>
+				<return type="tPtr" typec="tPtr"/>
+				<parameter
+					last="1"
+					name="anSlice"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createSliceBitmap"
+				name="CreateSliceBitmap"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Create a 2d bitmap which points to the memory of the specified slice. ">
+					<remark text="Creates a bitmap that points to the slice data, that bitmap DOES NOT own the memory, if the 3d bitmap&apos;s memory is deleted that new bitmaps become invalid. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*"/>
+				<parameter
+					last="1"
+					name="anSlice"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createResized"
+				name="CreateResized"
+				num_parameters="3">
+				<comments desc="Create a resized copy of this bitmap. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMipMap"
+				name="GetMipMap"
+				num_parameters="1"
+				property="get"
+				property_name2="mipMap"
+				property_name="mip_map">
+				<comments desc="Get the indicated mip map. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLevel"
+				name="GetLevel"
+				num_parameters="1"
+				property="get"
+				property_name2="level"
+				property_name="level">
+				<comments desc="Get the bitmap at the specified level. ">
+					<remark text="0 is the main surface, 1 is the first mip map, and so on. "/>
+				</comments>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="beginUnpackPixels" name="BeginUnpackPixels" num_parameters="0">
+				<comments desc="Begin unpacking pixels. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="endUnpackPixels" name="EndUnpackPixels" num_parameters="0">
+				<comments desc="End unpacking pixels. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="blit" name="Blit" num_parameters="4">
+				<comments desc="Blit a bitmap in this bitmap. ">
+					<remark text="Clipping and pixel format conversion are automatically performed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="const iBitmap3D *"
+					typec="const iBitmap3D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="avSrcMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="avDestMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					last="1"
+					name="avSize"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="putPixel"
+				name="PutPixel"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Put a pixel at the specified position. "/>
+				<return type="void" typec="void"/>
+				<parameter name="avPos" type="const sVec3i &amp;" typec="const sVec3i&amp;"/>
+				<parameter
+					last="1"
+					name="col"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPixel"
+				name="GetPixel"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Get a pixel at the specified position. "/>
+				<return type="tPtr" typec="tPtr"/>
+				<parameter name="avPos" type="const sVec3i &amp;" typec="const sVec3i&amp;"/>
+				<parameter
+					last="1"
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				java_name="clear"
+				name="Clear"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Clear the bitmap "/>
+				<return type="void" typec="void"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				java_name="clearBox"
+				name="ClearBox"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Clear the bitmap ">
+					<remark text="The right, bottom and back edges are not filled. "/>
+				</comments>
+				<return type="void" typec="void"/>
+				<parameter name="avMin" type="const sVec3i &amp;" typec="const sVec3i&amp;"/>
+				<parameter name="avMax" type="const sVec3i &amp;" typec="const sVec3i&amp;"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method java_name="putPixelf" name="PutPixelf" num_parameters="2">
+				<comments desc="Put a pixel at the specified position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avPos"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPixelf"
+				name="GetPixelf"
+				num_parameters="1">
+				<comments desc="Get a pixel at the specified position. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearf" name="Clearf" num_parameters="1">
+				<comments desc="Clear the bitmap. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearBoxf" name="ClearBoxf" num_parameters="3">
+				<comments desc="Clear the bitmap. ">
+					<remark text="The right and bottom edges are not filled. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avMax"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

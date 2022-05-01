@@ -1,0 +1,496 @@
+#include "../API/niLang/IConcurrent.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iRunnable **/
+IDLC_BEGIN_INTF(ni,iRunnable)
+/** ni -> iRunnable::Run/0 **/
+IDLC_METH_BEGIN(ni,iRunnable,Run,0)
+	IDLC_DECL_RETVAR(Var,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnable,Run,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Variant,_Ret)
+IDLC_METH_END(ni,iRunnable,Run,0)
+
+IDLC_END_INTF(ni,iRunnable)
+
+/** interface : iCallback **/
+IDLC_BEGIN_INTF(ni,iCallback)
+/** ni -> iCallback::RunCallback/2 **/
+IDLC_METH_BEGIN(ni,iCallback,RunCallback,2)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_DECL_RETVAR(Var,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCallback,RunCallback,2,(avarA,avarB))
+	IDLC_RET_FROM_BASE(ni::eType_Variant,_Ret)
+IDLC_METH_END(ni,iCallback,RunCallback,2)
+
+IDLC_END_INTF(ni,iCallback)
+
+/** interface : iRunnableQueue **/
+IDLC_BEGIN_INTF(ni,iRunnableQueue)
+/** ni -> iRunnableQueue::GetThreadID/0 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,GetThreadID,0)
+	IDLC_DECL_RETVAR(tU64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,GetThreadID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U64,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,GetThreadID,0)
+
+/** ni -> iRunnableQueue::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,GetSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,GetSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,GetSize,0)
+
+/** ni -> iRunnableQueue::IsEmpty/0 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,IsEmpty,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,IsEmpty,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,IsEmpty,0)
+
+/** ni -> iRunnableQueue::Add/1 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,Add,1)
+	IDLC_DECL_VAR(iRunnable*,apRunnable)
+	IDLC_BUF_TO_INTF(iRunnable,apRunnable)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,Add,1,(apRunnable))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,Add,1)
+
+/** ni -> iRunnableQueue::Peek/0 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,Peek,0)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,Peek,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,Peek,0)
+
+/** ni -> iRunnableQueue::Poll/0 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,Poll,0)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,Poll,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,Poll,0)
+
+/** ni -> iRunnableQueue::WaitForRunnable/1 **/
+IDLC_METH_BEGIN(ni,iRunnableQueue,WaitForRunnable,1)
+	IDLC_DECL_VAR(tU32,anTimeOut)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRunnableQueue,WaitForRunnable,1,(anTimeOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRunnableQueue,WaitForRunnable,1)
+
+IDLC_END_INTF(ni,iRunnableQueue)
+
+/** interface : iMessageHandler **/
+IDLC_BEGIN_INTF(ni,iMessageHandler)
+/** ni -> iMessageHandler::GetThreadID/0 **/
+IDLC_METH_BEGIN(ni,iMessageHandler,GetThreadID,0)
+	IDLC_DECL_RETVAR(tU64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageHandler,GetThreadID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U64,_Ret)
+IDLC_METH_END(ni,iMessageHandler,GetThreadID,0)
+
+/** ni -> iMessageHandler::HandleMessage/3 **/
+IDLC_METH_BEGIN(ni,iMessageHandler,HandleMessage,3)
+	IDLC_DECL_VAR(tU32,anMsg)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_U32,anMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_METH_CALL_VOID(ni,iMessageHandler,HandleMessage,3,(anMsg,avarA,avarB))
+IDLC_METH_END(ni,iMessageHandler,HandleMessage,3)
+
+IDLC_END_INTF(ni,iMessageHandler)
+
+/** interface : iMessageDesc **/
+IDLC_BEGIN_INTF(ni,iMessageDesc)
+/** ni -> iMessageDesc::GetHandler/0 **/
+IDLC_METH_BEGIN(ni,iMessageDesc,GetHandler,0)
+	IDLC_DECL_RETVAR(iMessageHandler*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageDesc,GetHandler,0,())
+	IDLC_RET_FROM_INTF(iMessageHandler,_Ret)
+IDLC_METH_END(ni,iMessageDesc,GetHandler,0)
+
+/** ni -> iMessageDesc::GetID/0 **/
+IDLC_METH_BEGIN(ni,iMessageDesc,GetID,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageDesc,GetID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMessageDesc,GetID,0)
+
+/** ni -> iMessageDesc::GetA/0 **/
+IDLC_METH_BEGIN(ni,iMessageDesc,GetA,0)
+	IDLC_DECL_RETREFVAR(Var&,_Ret,Var)
+	IDLC_METH_CALL(_Ret,ni,iMessageDesc,GetA,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iMessageDesc,GetA,0)
+
+/** ni -> iMessageDesc::GetB/0 **/
+IDLC_METH_BEGIN(ni,iMessageDesc,GetB,0)
+	IDLC_DECL_RETREFVAR(Var&,_Ret,Var)
+	IDLC_METH_CALL(_Ret,ni,iMessageDesc,GetB,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iMessageDesc,GetB,0)
+
+IDLC_END_INTF(ni,iMessageDesc)
+
+/** interface : iMessageQueue **/
+IDLC_BEGIN_INTF(ni,iMessageQueue)
+/** ni -> iMessageQueue::GetThreadID/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,GetThreadID,0)
+	IDLC_DECL_RETVAR(tU64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,GetThreadID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U64,_Ret)
+IDLC_METH_END(ni,iMessageQueue,GetThreadID,0)
+
+/** ni -> iMessageQueue::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,GetSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,GetSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMessageQueue,GetSize,0)
+
+/** ni -> iMessageQueue::IsEmpty/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,IsEmpty,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,IsEmpty,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMessageQueue,IsEmpty,0)
+
+/** ni -> iMessageQueue::Add/4 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,Add,4)
+	IDLC_DECL_VAR(iMessageHandler*,apHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apHandler)
+	IDLC_DECL_VAR(tU32,anMsg)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,Add,4,(apHandler,anMsg,avarA,avarB))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMessageQueue,Add,4)
+
+/** ni -> iMessageQueue::Peek/1 -> NO AUTOMATION **/
+/** ni -> iMessageQueue::PeekDesc/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,PeekDesc,0)
+	IDLC_DECL_RETVAR(Ptr<iMessageDesc>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,PeekDesc,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iMessageQueue,PeekDesc,0)
+
+/** ni -> iMessageQueue::Poll/1 -> NO AUTOMATION **/
+/** ni -> iMessageQueue::PollDesc/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,PollDesc,0)
+	IDLC_DECL_RETVAR(Ptr<iMessageDesc>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,PollDesc,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iMessageQueue,PollDesc,0)
+
+/** ni -> iMessageQueue::PollAndDispatch/0 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,PollAndDispatch,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,PollAndDispatch,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMessageQueue,PollAndDispatch,0)
+
+/** ni -> iMessageQueue::WaitForMessage/1 **/
+IDLC_METH_BEGIN(ni,iMessageQueue,WaitForMessage,1)
+	IDLC_DECL_VAR(tU32,anTimeOut)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMessageQueue,WaitForMessage,1,(anTimeOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMessageQueue,WaitForMessage,1)
+
+IDLC_END_INTF(ni,iMessageQueue)
+
+/** interface : iFuture **/
+IDLC_BEGIN_INTF(ni,iFuture)
+/** ni -> iFuture::Cancel/0 **/
+IDLC_METH_BEGIN(ni,iFuture,Cancel,0)
+	IDLC_METH_CALL_VOID(ni,iFuture,Cancel,0,())
+IDLC_METH_END(ni,iFuture,Cancel,0)
+
+/** ni -> iFuture::GetIsCancelled/0 **/
+IDLC_METH_BEGIN(ni,iFuture,GetIsCancelled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFuture,GetIsCancelled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFuture,GetIsCancelled,0)
+
+/** ni -> iFuture::GetIsDone/0 **/
+IDLC_METH_BEGIN(ni,iFuture,GetIsDone,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFuture,GetIsDone,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFuture,GetIsDone,0)
+
+/** ni -> iFuture::Wait/1 **/
+IDLC_METH_BEGIN(ni,iFuture,Wait,1)
+	IDLC_DECL_VAR(tU32,anTimeOut)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFuture,Wait,1,(anTimeOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFuture,Wait,1)
+
+/** ni -> iFuture::GetValue/0 **/
+IDLC_METH_BEGIN(ni,iFuture,GetValue,0)
+	IDLC_DECL_RETVAR(Var,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFuture,GetValue,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Variant,_Ret)
+IDLC_METH_END(ni,iFuture,GetValue,0)
+
+IDLC_END_INTF(ni,iFuture)
+
+/** interface : iFutureValue **/
+IDLC_BEGIN_INTF(ni,iFutureValue)
+/** ni -> iFutureValue::SetValue/1 **/
+IDLC_METH_BEGIN(ni,iFutureValue,SetValue,1)
+	IDLC_DECL_VAR(Var,aValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aValue)
+	IDLC_METH_CALL_VOID(ni,iFutureValue,SetValue,1,(aValue))
+IDLC_METH_END(ni,iFutureValue,SetValue,1)
+
+/** ni -> iFutureValue::Reset/0 **/
+IDLC_METH_BEGIN(ni,iFutureValue,Reset,0)
+	IDLC_METH_CALL_VOID(ni,iFutureValue,Reset,0,())
+IDLC_METH_END(ni,iFutureValue,Reset,0)
+
+IDLC_END_INTF(ni,iFutureValue)
+
+/** interface : iExecutor **/
+IDLC_BEGIN_INTF(ni,iExecutor)
+/** ni -> iExecutor::GetIsShutdown/0 **/
+IDLC_METH_BEGIN(ni,iExecutor,GetIsShutdown,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,GetIsShutdown,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iExecutor,GetIsShutdown,0)
+
+/** ni -> iExecutor::GetIsTerminated/0 **/
+IDLC_METH_BEGIN(ni,iExecutor,GetIsTerminated,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,GetIsTerminated,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iExecutor,GetIsTerminated,0)
+
+/** ni -> iExecutor::Execute/1 **/
+IDLC_METH_BEGIN(ni,iExecutor,Execute,1)
+	IDLC_DECL_VAR(iRunnable*,aRunnable)
+	IDLC_BUF_TO_INTF(iRunnable,aRunnable)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,Execute,1,(aRunnable))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iExecutor,Execute,1)
+
+/** ni -> iExecutor::Submit/1 **/
+IDLC_METH_BEGIN(ni,iExecutor,Submit,1)
+	IDLC_DECL_VAR(iRunnable*,aRunnable)
+	IDLC_BUF_TO_INTF(iRunnable,aRunnable)
+	IDLC_DECL_RETVAR(Ptr<ni::iFuture>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,Submit,1,(aRunnable))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iExecutor,Submit,1)
+
+/** ni -> iExecutor::Shutdown/1 **/
+IDLC_METH_BEGIN(ni,iExecutor,Shutdown,1)
+	IDLC_DECL_VAR(tU32,anTimeOut)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,Shutdown,1,(anTimeOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iExecutor,Shutdown,1)
+
+/** ni -> iExecutor::ShutdownNow/1 **/
+IDLC_METH_BEGIN(ni,iExecutor,ShutdownNow,1)
+	IDLC_DECL_VAR(tU32,anTimeOut)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,ShutdownNow,1,(anTimeOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iExecutor,ShutdownNow,1)
+
+/** ni -> iExecutor::Update/1 **/
+IDLC_METH_BEGIN(ni,iExecutor,Update,1)
+	IDLC_DECL_VAR(tU32,anTimeSliceInMs)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeSliceInMs)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExecutor,Update,1,(anTimeSliceInMs))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iExecutor,Update,1)
+
+IDLC_END_INTF(ni,iExecutor)
+
+/** interface : iConcurrent **/
+IDLC_BEGIN_INTF(ni,iConcurrent)
+/** ni -> iConcurrent::GetMainThreadID/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetMainThreadID,0)
+	IDLC_DECL_RETVAR(tU64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetMainThreadID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U64,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetMainThreadID,0)
+
+/** ni -> iConcurrent::GetCurrentThreadID/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetCurrentThreadID,0)
+	IDLC_DECL_RETVAR(tU64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetCurrentThreadID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U64,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetCurrentThreadID,0)
+
+/** ni -> iConcurrent::CreateRunnableQueue/2 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateRunnableQueue,2)
+	IDLC_DECL_VAR(tU64,aThreadID)
+	IDLC_BUF_TO_BASE(ni::eType_U64,aThreadID)
+	IDLC_DECL_VAR(tU32,aMaxItems)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aMaxItems)
+	IDLC_DECL_RETVAR(iRunnableQueue*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateRunnableQueue,2,(aThreadID,aMaxItems))
+	IDLC_RET_FROM_INTF(iRunnableQueue,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateRunnableQueue,2)
+
+/** ni -> iConcurrent::CreateExecutorCooperative/2 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateExecutorCooperative,2)
+	IDLC_DECL_VAR(tU64,aThreadID)
+	IDLC_BUF_TO_BASE(ni::eType_U64,aThreadID)
+	IDLC_DECL_VAR(tU32,aMaxItems)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aMaxItems)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateExecutorCooperative,2,(aThreadID,aMaxItems))
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateExecutorCooperative,2)
+
+/** ni -> iConcurrent::CreateExecutorImmediate/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateExecutorImmediate,0)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateExecutorImmediate,0,())
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateExecutorImmediate,0)
+
+/** ni -> iConcurrent::CreateExecutorThreadPool/1 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateExecutorThreadPool,1)
+	IDLC_DECL_VAR(tI32,aNumThreads)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aNumThreads)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateExecutorThreadPool,1,(aNumThreads))
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateExecutorThreadPool,1)
+
+/** ni -> iConcurrent::GetExecutorCPU/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetExecutorCPU,0)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetExecutorCPU,0,())
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetExecutorCPU,0)
+
+/** ni -> iConcurrent::GetExecutorIO/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetExecutorIO,0)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetExecutorIO,0,())
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetExecutorIO,0)
+
+/** ni -> iConcurrent::GetExecutorMain/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetExecutorMain,0)
+	IDLC_DECL_RETVAR(iExecutor*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetExecutorMain,0,())
+	IDLC_RET_FROM_INTF(iExecutor,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetExecutorMain,0)
+
+/** ni -> iConcurrent::ThreadRun/1 **/
+IDLC_METH_BEGIN(ni,iConcurrent,ThreadRun,1)
+	IDLC_DECL_VAR(iRunnable*,apRunnable)
+	IDLC_BUF_TO_INTF(iRunnable,apRunnable)
+	IDLC_DECL_RETVAR(Ptr<iFuture>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,ThreadRun,1,(apRunnable))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iConcurrent,ThreadRun,1)
+
+/** ni -> iConcurrent::CreateFutureValue/0 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateFutureValue,0)
+	IDLC_DECL_RETVAR(iFutureValue*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateFutureValue,0,())
+	IDLC_RET_FROM_INTF(iFutureValue,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateFutureValue,0)
+
+/** ni -> iConcurrent::CreateMessageDesc/4 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateMessageDesc,4)
+	IDLC_DECL_VAR(iMessageHandler*,apHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apHandler)
+	IDLC_DECL_VAR(tU32,anMsg)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_DECL_RETVAR(Ptr<iMessageDesc>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateMessageDesc,4,(apHandler,anMsg,avarA,avarB))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateMessageDesc,4)
+
+/** ni -> iConcurrent::CreateMessageQueue/2 **/
+IDLC_METH_BEGIN(ni,iConcurrent,CreateMessageQueue,2)
+	IDLC_DECL_VAR(tU64,anThreadID)
+	IDLC_BUF_TO_BASE(ni::eType_U64,anThreadID)
+	IDLC_DECL_VAR(tU32,aMaxItems)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aMaxItems)
+	IDLC_DECL_RETVAR(Ptr<iMessageQueue>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,CreateMessageQueue,2,(anThreadID,aMaxItems))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iConcurrent,CreateMessageQueue,2)
+
+/** ni -> iConcurrent::GetMessageQueue/1 **/
+IDLC_METH_BEGIN(ni,iConcurrent,GetMessageQueue,1)
+	IDLC_DECL_VAR(tU64,anThreadID)
+	IDLC_BUF_TO_BASE(ni::eType_U64,anThreadID)
+	IDLC_DECL_RETVAR(Ptr<iMessageQueue>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,GetMessageQueue,1,(anThreadID))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iConcurrent,GetMessageQueue,1)
+
+/** ni -> iConcurrent::SendMessage/4 **/
+IDLC_METH_BEGIN(ni,iConcurrent,SendMessage,4)
+	IDLC_DECL_VAR(iMessageHandler*,apHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apHandler)
+	IDLC_DECL_VAR(tU32,anMsg)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,SendMessage,4,(apHandler,anMsg,avarA,avarB))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConcurrent,SendMessage,4)
+
+/** ni -> iConcurrent::QueueMessage/4 **/
+IDLC_METH_BEGIN(ni,iConcurrent,QueueMessage,4)
+	IDLC_DECL_VAR(iMessageHandler*,apHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apHandler)
+	IDLC_DECL_VAR(tU32,anMsg)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConcurrent,QueueMessage,4,(apHandler,anMsg,avarA,avarB))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConcurrent,QueueMessage,4)
+
+IDLC_END_INTF(ni,iConcurrent)
+
+IDLC_END_NAMESPACE()
+// EOF //

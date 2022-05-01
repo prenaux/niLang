@@ -1,0 +1,366 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eBoundingVolumeType">
+			<comments desc="Bounding volume type. "/>
+			<value name="eBoundingVolumeType_AABB" value="0 ">
+				<comments desc="AABB volume type. "/>
+			</value>
+			<value name="eBoundingVolumeType_Sphere" value="1 ">
+				<comments desc="Sphere volume type. "/>
+			</value>
+			<value name="eBoundingVolumeType_ConvexHull" value="2 ">
+				<comments desc="Convex hull volume type. "/>
+			</value>
+			<value name="eBoundingVolumeType_User" value="2 ">
+				<comments desc="User volume type "/>
+			</value>
+		</enum>
+		<interface name="iBoundingVolume" uuid1="489EBD21-5B90-46DB-A857-5C6E8D3B89BA" uuid2="0x489ebd21,0x5b90,0x46db,0xa8,0x57,0x5c,0x6e,0x8d,0x3b,0x89,0xba">
+			<comments desc="Bounding volume interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another bounding volume in this volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="iBoundingVolume *"
+					typec="iBoundingVolume*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Create a copy of the bounding volume. "/>
+				<return type="iBoundingVolume *" typec="iBoundingVolume*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the bounding volume type. "/>
+				<return type="eBoundingVolumeType" typec="eBoundingVolumeType" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="begin" name="Begin" num_parameters="1">
+				<comments desc="Begin the computation of the bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abReset"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="end" name="End" num_parameters="0">
+				<comments desc="End the computation of the bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="addPoint" name="AddPoint" num_parameters="1">
+				<comments desc="Add a point inside the bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avPoint"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setCenter"
+				name="SetCenter"
+				num_parameters="1"
+				property="set"
+				property_name2="center"
+				property_name="center">
+				<comments desc="Set the center. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCenter"
+				name="GetCenter"
+				num_parameters="0"
+				property="get"
+				property_name2="center"
+				property_name="center">
+				<comments desc="Get the center. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setRadius"
+				name="SetRadius"
+				num_parameters="1"
+				property="set"
+				property_name2="radius"
+				property_name="radius">
+				<comments desc="Set the radius. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRadius"
+				name="GetRadius"
+				num_parameters="0"
+				property="get"
+				property_name2="radius"
+				property_name="radius">
+				<comments desc="Get the radius. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setExtents"
+				name="SetExtents"
+				num_parameters="1"
+				property="set"
+				property_name2="extents"
+				property_name="extents">
+				<comments desc="Set the extents. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avExtends"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExtents"
+				name="GetExtents"
+				num_parameters="0"
+				property="get"
+				property_name2="extents"
+				property_name="extents">
+				<comments desc="Get the extents. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setSize"
+				name="SetSize"
+				num_parameters="1"
+				property="set"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Set the size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setMin"
+				name="SetMin"
+				num_parameters="1"
+				property="set"
+				property_name2="min"
+				property_name="min">
+				<comments desc="Set the minimum value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMin"
+				name="GetMin"
+				num_parameters="0"
+				property="get"
+				property_name2="min"
+				property_name="min">
+				<comments desc="Get the minimum value. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setMax"
+				name="SetMax"
+				num_parameters="1"
+				property="set"
+				property_name2="max"
+				property_name="max">
+				<comments desc="Set the maximum value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMax"
+				name="GetMax"
+				num_parameters="0"
+				property="get"
+				property_name2="max"
+				property_name="max">
+				<comments desc="Get the maximum value. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="translate" name="Translate" num_parameters="1">
+				<comments desc="Translate the bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="rotate" name="Rotate" num_parameters="1">
+				<comments desc="Rotate the bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="amtxRotation"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="transform" name="Transform" num_parameters="1">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="inflate" name="Inflate" num_parameters="1">
+				<comments desc="Inflate the bounding volume by the given percentage. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afPercent"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectAABB"
+				name="IntersectAABB"
+				num_parameters="3">
+				<comments desc="Intersect with an AABB. "/>
+				<return type="eIntersectionResult" typec="eIntersectionResult" typei="ni::eType_Enum"/>
+				<parameter
+					name="apResult"
+					type="iIntersection *"
+					typec="iIntersection*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectRay"
+				name="IntersectRay"
+				num_parameters="3">
+				<comments desc="Intersect with a ray. "/>
+				<return type="eIntersectionResult" typec="eIntersectionResult" typei="ni::eType_Enum"/>
+				<parameter
+					name="apResult"
+					type="iIntersection *"
+					typec="iIntersection*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avOrg"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectPoint"
+				name="IntersectPoint"
+				num_parameters="2">
+				<comments desc="Intersect with a point. "/>
+				<return type="eIntersectionResult" typec="eIntersectionResult" typei="ni::eType_Enum"/>
+				<parameter
+					name="apResult"
+					type="iIntersection *"
+					typec="iIntersection*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aPosition"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectFrustum"
+				name="IntersectFrustum"
+				num_parameters="2">
+				<comments desc="Intersect with a frustum. "/>
+				<return type="eIntersectionResult" typec="eIntersectionResult" typei="ni::eType_Enum"/>
+				<parameter
+					name="apResult"
+					type="iIntersection *"
+					typec="iIntersection*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFrustum"
+					type="const iFrustum *"
+					typec="const iFrustum*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

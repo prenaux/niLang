@@ -1,0 +1,207 @@
+#include "../API/niLang/ITime.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iTime **/
+IDLC_BEGIN_INTF(ni,iTime)
+/** ni -> iTime::UpdateFromCurrentSystemTime/0 **/
+IDLC_METH_BEGIN(ni,iTime,UpdateFromCurrentSystemTime,0)
+	IDLC_METH_CALL_VOID(ni,iTime,UpdateFromCurrentSystemTime,0,())
+IDLC_METH_END(ni,iTime,UpdateFromCurrentSystemTime,0)
+
+/** ni -> iTime::SetYear/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetYear,1)
+	IDLC_DECL_VAR(tI32,anYear)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anYear)
+	IDLC_METH_CALL_VOID(ni,iTime,SetYear,1,(anYear))
+IDLC_METH_END(ni,iTime,SetYear,1)
+
+/** ni -> iTime::GetYear/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetYear,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetYear,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iTime,GetYear,0)
+
+/** ni -> iTime::SetMonth/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetMonth,1)
+	IDLC_DECL_VAR(tU8,anMonth)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anMonth)
+	IDLC_METH_CALL_VOID(ni,iTime,SetMonth,1,(anMonth))
+IDLC_METH_END(ni,iTime,SetMonth,1)
+
+/** ni -> iTime::GetMonth/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetMonth,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetMonth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetMonth,0)
+
+/** ni -> iTime::SetDay/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetDay,1)
+	IDLC_DECL_VAR(tU8,anDay)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anDay)
+	IDLC_METH_CALL_VOID(ni,iTime,SetDay,1,(anDay))
+IDLC_METH_END(ni,iTime,SetDay,1)
+
+/** ni -> iTime::GetDay/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetDay,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetDay,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetDay,0)
+
+/** ni -> iTime::GetWeekday/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetWeekday,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetWeekday,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetWeekday,0)
+
+/** ni -> iTime::SetHour/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetHour,1)
+	IDLC_DECL_VAR(tU8,anHour)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anHour)
+	IDLC_METH_CALL_VOID(ni,iTime,SetHour,1,(anHour))
+IDLC_METH_END(ni,iTime,SetHour,1)
+
+/** ni -> iTime::GetHour/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetHour,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetHour,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetHour,0)
+
+/** ni -> iTime::SetMinute/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetMinute,1)
+	IDLC_DECL_VAR(tU8,anMinute)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anMinute)
+	IDLC_METH_CALL_VOID(ni,iTime,SetMinute,1,(anMinute))
+IDLC_METH_END(ni,iTime,SetMinute,1)
+
+/** ni -> iTime::GetMinute/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetMinute,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetMinute,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetMinute,0)
+
+/** ni -> iTime::SetSecond/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetSecond,1)
+	IDLC_DECL_VAR(tU8,anSecond)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anSecond)
+	IDLC_METH_CALL_VOID(ni,iTime,SetSecond,1,(anSecond))
+IDLC_METH_END(ni,iTime,SetSecond,1)
+
+/** ni -> iTime::GetSecond/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetSecond,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetSecond,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iTime,GetSecond,0)
+
+/** ni -> iTime::Copy/1 **/
+IDLC_METH_BEGIN(ni,iTime,Copy,1)
+	IDLC_DECL_VAR(iTime*,apTime)
+	IDLC_BUF_TO_INTF(iTime,apTime)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,Copy,1,(apTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTime,Copy,1)
+
+/** ni -> iTime::Clone/0 **/
+IDLC_METH_BEGIN(ni,iTime,Clone,0)
+	IDLC_DECL_RETVAR(iTime*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,Clone,0,())
+	IDLC_RET_FROM_INTF(iTime,_Ret)
+IDLC_METH_END(ni,iTime,Clone,0)
+
+/** ni -> iTime::SetDayLightSaving/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetDayLightSaving,1)
+	IDLC_DECL_VAR(ni::tBool,abDayLightSaving)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abDayLightSaving)
+	IDLC_METH_CALL_VOID(ni,iTime,SetDayLightSaving,1,(abDayLightSaving))
+IDLC_METH_END(ni,iTime,SetDayLightSaving,1)
+
+/** ni -> iTime::GetDayLightSaving/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetDayLightSaving,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetDayLightSaving,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTime,GetDayLightSaving,0)
+
+/** ni -> iTime::SetTimeZone/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetTimeZone,1)
+	IDLC_DECL_VAR(tI32,anTimeZone)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anTimeZone)
+	IDLC_METH_CALL_VOID(ni,iTime,SetTimeZone,1,(anTimeZone))
+IDLC_METH_END(ni,iTime,SetTimeZone,1)
+
+/** ni -> iTime::GetTimeZone/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetTimeZone,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetTimeZone,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iTime,GetTimeZone,0)
+
+/** ni -> iTime::SetUnixTimeSecs/1 **/
+IDLC_METH_BEGIN(ni,iTime,SetUnixTimeSecs,1)
+	IDLC_DECL_VAR(tI64,anFmt)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anFmt)
+	IDLC_METH_CALL_VOID(ni,iTime,SetUnixTimeSecs,1,(anFmt))
+IDLC_METH_END(ni,iTime,SetUnixTimeSecs,1)
+
+/** ni -> iTime::GetUnixTimeSecs/0 **/
+IDLC_METH_BEGIN(ni,iTime,GetUnixTimeSecs,0)
+	IDLC_DECL_RETVAR(tI64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,GetUnixTimeSecs,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I64,_Ret)
+IDLC_METH_END(ni,iTime,GetUnixTimeSecs,0)
+
+/** ni -> iTime::Compare/1 **/
+IDLC_METH_BEGIN(ni,iTime,Compare,1)
+	IDLC_DECL_VAR(iTime*,apTime)
+	IDLC_BUF_TO_INTF(iTime,apTime)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,Compare,1,(apTime))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iTime,Compare,1)
+
+/** ni -> iTime::ParseString/2 **/
+IDLC_METH_BEGIN(ni,iTime,ParseString,2)
+	IDLC_DECL_VAR(achar*,szString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,szString)
+	IDLC_DECL_VAR(achar*,aszFormat)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszFormat)
+	IDLC_DECL_RETVAR(iTime*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,ParseString,2,(szString,aszFormat))
+	IDLC_RET_FROM_INTF(iTime,_Ret)
+IDLC_METH_END(ni,iTime,ParseString,2)
+
+/** ni -> iTime::Format/1 **/
+IDLC_METH_BEGIN(ni,iTime,Format,1)
+	IDLC_DECL_VAR(achar*,aszFormat)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszFormat)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,Format,1,(aszFormat))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iTime,Format,1)
+
+/** ni -> iTime::AddSeconds/1 **/
+IDLC_METH_BEGIN(ni,iTime,AddSeconds,1)
+	IDLC_DECL_VAR(tI64,anSeconds)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anSeconds)
+	IDLC_DECL_RETVAR(iTime*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTime,AddSeconds,1,(anSeconds))
+	IDLC_RET_FROM_INTF(iTime,_Ret)
+IDLC_METH_END(ni,iTime,AddSeconds,1)
+
+IDLC_END_INTF(ni,iTime)
+
+IDLC_END_NAMESPACE()
+// EOF //

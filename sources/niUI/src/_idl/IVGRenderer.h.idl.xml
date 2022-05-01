@@ -1,0 +1,14 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			dispatchwrapper="yes"
+			name="iVGRenderer"
+			uuid1="B7C502A2-E49F-1849-89FE-018CA07A0DD0"
+			uuid2="0xb7c502a2,0xe49f,0x1849,0x89,0xfe,0x01,0x8c,0xa0,0x7a,0x0d,0xd0">
+			<comments desc="VGRenderer interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,13 @@
+if [ SubDirOnce TOP genuuid ] = 1 { return ; }
+if ! $(TARGET_FEATURE_CONSOLE) { return ; }
+
+tkDefTool genuuid : 1.0.0 ;
+niImportModuleLibs niLang ;
+
+SRC = genuuid.cpp ;
+
+runInDir genuuid ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : minsz : $(CHK_SOURCES) ] ;
+
+### DEPENDENCIES #####################################################
+tkDepends genuuid : niLang : TOP niLang ;

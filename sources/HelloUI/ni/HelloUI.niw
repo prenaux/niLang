@@ -1,0 +1,105 @@
+::Import("app.ni")
+
+local widgetSink = ::delegate(::gui.baseWidgetSink {
+  function OnSinkAttached(aW,aA,aB) {
+    local w = aW.uicontext.CreateWidget(
+      "Button",
+      aW,
+      ::Vec4(0,0,200,200),
+      ::eWidgetStyle.HoldFocus,
+      "ID_Button");
+    w.text = "HelloUI.";
+    w.dock_style = ::eWidgetDockStyle.SnapCenter;
+
+    w = aW.uicontext.CreateWidget(
+      "EditBox",
+      aW,
+      ::Vec4(0,0,350,40),
+      ::eWidgetStyle.HoldFocus,
+      "ID_EditBox");
+    w.text = "Type Here";
+    w.dock_style = ::eWidgetDockStyle.SnapTopCenter;
+
+    _overlay <- ::gGraphics.CreateOverlayResource("icons/misc/placeholder.png")
+    if (_overlay) {
+      _iconX <- 0
+      _iconY <- 0
+      _velX <- 15
+      _velY <- 10
+    }
+  }
+
+  _clickCount = 0
+  function ID_Button(aW,aCmd) {
+    if (aCmd.id == ::eWidgetButtonCmd.Clicked) {
+      ::dbg("Clicked the button.");
+      aCmd.sender.text = ::format("HelloUI, clickCount: %d", ++_clickCount);
+    }
+  }
+
+  function ID_EditBox(aW,aCmd) {
+    if (aCmd.id == ::eWidgetEditBoxCmd.Modified) {
+      ::gUIContext.root_widget.FindWidget("ID_Button").text = aCmd.sender.text
+    }
+  }
+
+  function OnPaint(aW, aMousePos, aCanvas) {
+    if (_overlay) {
+      aCanvas.Flush();
+      local i = 0;
+      _overlay.filtering = true;
+      _overlay.blend_mode = ::eBlendMode.NoBlending;
+      aCanvas.BlitOverlay(::Rect(i*64,0,64,64),_overlay);
+      aCanvas.Flush();
+      ++i;
+      _overlay.filtering = false;
+      _overlay.blend_mode = ::eBlendMode.NoBlending;
+      aCanvas.BlitOverlay(::Rect(i*64,0,64,64),_overlay);
+      aCanvas.Flush();
+      ++i;
+      _overlay.filtering = true;
+      _overlay.blend_mode = ::eBlendMode.Translucent;
+      aCanvas.BlitOverlay(::Rect(i*64,0,64,64),_overlay);
+      aCanvas.Flush();
+      ++i;
+      _overlay.filtering = false;
+      _overlay.blend_mode = ::eBlendMode.Translucent;
+      aCanvas.BlitOverlay(::Rect(i*64,0,64,64),_overlay);
+      aCanvas.Flush();
+      ++i;
+
+      local w = 64;
+      local h = 64;
+      _overlay.filtering = true;
+      _overlay.blend_mode = ::eBlendMode.Translucent;
+      local dt = ::gLang.frame_time;
+      _iconX += _velX * dt * 25.0;
+      _iconY += _velY * dt * 25.0;
+      local widgetRect = aW.widget_rect;
+      if (_iconX < widgetRect.x) {
+        _iconX = widgetRect.x;
+        _velX = -_velX;
+      }
+      else if (_iconX > (widgetRect.z-w)) {
+        _iconX = (widgetRect.z-w);
+        _velX = -_velX;
+      }
+
+      if (_iconY < widgetRect.y) {
+        _iconY = widgetRect.y;
+        _velY = -_velY;
+      }
+      else if (_iconY > (widgetRect.w-h)) {
+        _iconY = (widgetRect.w-h);
+        _velY = -_velY;
+      }
+
+      aCanvas.BlitOverlay(::Rect(_iconX,_iconY,w,h),_overlay);
+      aCanvas.Flush();
+    }
+  }
+});
+
+::app.queueStartup(#() : (widgetSink) {
+  ::gUIContext.root_widget.AddSink(widgetSink)
+})

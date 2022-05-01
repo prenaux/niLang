@@ -1,0 +1,513 @@
+#include "../API/niUI/IFont.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iFont **/
+IDLC_BEGIN_INTF(ni,iFont)
+/** ni -> iFont::GetName/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetName,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetName,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iFont,GetName,0)
+
+/** ni -> iFont::GetFamilyName/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetFamilyName,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetFamilyName,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iFont,GetFamilyName,0)
+
+/** ni -> iFont::GetStyleName/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetStyleName,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetStyleName,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iFont,GetStyleName,0)
+
+/** ni -> iFont::GetFilePath/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetFilePath,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetFilePath,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iFont,GetFilePath,0)
+
+/** ni -> iFont::GetIsFixedResolution/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetIsFixedResolution,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetIsFixedResolution,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,GetIsFixedResolution,0)
+
+/** ni -> iFont::GetHasKerning/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetHasKerning,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetHasKerning,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,GetHasKerning,0)
+
+/** ni -> iFont::GetMaxResolution/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetMaxResolution,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetMaxResolution,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetMaxResolution,0)
+
+/** ni -> iFont::GetIsInstance/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetIsInstance,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetIsInstance,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,GetIsInstance,0)
+
+/** ni -> iFont::CreateFontInstance/1 **/
+IDLC_METH_BEGIN(ni,iFont,CreateFontInstance,1)
+	IDLC_DECL_VAR(iMaterial*,apMaterial)
+	IDLC_BUF_TO_INTF(iMaterial,apMaterial)
+	IDLC_DECL_RETVAR(iFont*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,CreateFontInstance,1,(apMaterial))
+	IDLC_RET_FROM_INTF(iFont,_Ret)
+IDLC_METH_END(ni,iFont,CreateFontInstance,1)
+
+/** ni -> iFont::SetTabSize/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetTabSize,1)
+	IDLC_DECL_VAR(tU32,ulNumChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulNumChar)
+	IDLC_METH_CALL_VOID(ni,iFont,SetTabSize,1,(ulNumChar))
+IDLC_METH_END(ni,iFont,SetTabSize,1)
+
+/** ni -> iFont::GetTabSize/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetTabSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetTabSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetTabSize,0)
+
+/** ni -> iFont::SetFiltering/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetFiltering,1)
+	IDLC_DECL_VAR(tBool,abLinear)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLinear)
+	IDLC_METH_CALL_VOID(ni,iFont,SetFiltering,1,(abLinear))
+IDLC_METH_END(ni,iFont,SetFiltering,1)
+
+/** ni -> iFont::GetFiltering/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetFiltering,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetFiltering,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,GetFiltering,0)
+
+/** ni -> iFont::SetColor/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetColor,1)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iFont,SetColor,1,(anColor))
+IDLC_METH_END(ni,iFont,SetColor,1)
+
+/** ni -> iFont::GetColor/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetColor,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetColor,0)
+
+/** ni -> iFont::SetBlendMode/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetBlendMode,1)
+	IDLC_DECL_VAR(eBlendMode,aMode)
+	IDLC_BUF_TO_ENUM(eBlendMode,aMode)
+	IDLC_METH_CALL_VOID(ni,iFont,SetBlendMode,1,(aMode))
+IDLC_METH_END(ni,iFont,SetBlendMode,1)
+
+/** ni -> iFont::GetBlendMode/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetBlendMode,0)
+	IDLC_DECL_RETVAR(eBlendMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetBlendMode,0,())
+	IDLC_RET_FROM_ENUM(eBlendMode,_Ret)
+IDLC_METH_END(ni,iFont,GetBlendMode,0)
+
+/** ni -> iFont::SetSizeAndResolution/3 **/
+IDLC_METH_BEGIN(ni,iFont,SetSizeAndResolution,3)
+	IDLC_DECL_VAR(sVec2f,avSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avSize)
+	IDLC_DECL_VAR(tU32,anResolution)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_U32,anResolution)
+	IDLC_DECL_VAR(tF32,afContentsScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afContentsScale)
+	IDLC_METH_CALL_VOID(ni,iFont,SetSizeAndResolution,3,(avSize,anResolution,afContentsScale))
+IDLC_METH_END(ni,iFont,SetSizeAndResolution,3)
+
+/** ni -> iFont::GetResolution/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetResolution,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetResolution,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetResolution,0)
+
+/** ni -> iFont::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetSize,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iFont,GetSize,0)
+
+/** ni -> iFont::SetDistanceField/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetDistanceField,1)
+	IDLC_DECL_VAR(tBool,abDistanceField)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abDistanceField)
+	IDLC_METH_CALL_VOID(ni,iFont,SetDistanceField,1,(abDistanceField))
+IDLC_METH_END(ni,iFont,SetDistanceField,1)
+
+/** ni -> iFont::GetDistanceField/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetDistanceField,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetDistanceField,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,GetDistanceField,0)
+
+/** ni -> iFont::GetCharWidth/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetCharWidth,1)
+	IDLC_DECL_VAR(tU32,c)
+	IDLC_BUF_TO_BASE(ni::eType_U32,c)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCharWidth,1,(c))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetCharWidth,1)
+
+/** ni -> iFont::GetCharHeight/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetCharHeight,1)
+	IDLC_DECL_VAR(tU32,c)
+	IDLC_BUF_TO_BASE(ni::eType_U32,c)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCharHeight,1,(c))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetCharHeight,1)
+
+/** ni -> iFont::GetMaxCharWidth/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetMaxCharWidth,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetMaxCharWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetMaxCharWidth,0)
+
+/** ni -> iFont::GetMaxCharHeight/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetMaxCharHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetMaxCharHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetMaxCharHeight,0)
+
+/** ni -> iFont::GetAverageCharWidth/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetAverageCharWidth,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetAverageCharWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetAverageCharWidth,0)
+
+/** ni -> iFont::GetAverageCharHeight/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetAverageCharHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetAverageCharHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetAverageCharHeight,0)
+
+/** ni -> iFont::GetAscent/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetAscent,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetAscent,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetAscent,0)
+
+/** ni -> iFont::GetDescent/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetDescent,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetDescent,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetDescent,0)
+
+/** ni -> iFont::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetHeight,0)
+
+/** ni -> iFont::GetFirstChar/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetFirstChar,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetFirstChar,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetFirstChar,0)
+
+/** ni -> iFont::GetLastChar/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetLastChar,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetLastChar,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetLastChar,0)
+
+/** ni -> iFont::GetAdvance/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetAdvance,1)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetAdvance,1,(anChar))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetAdvance,1)
+
+/** ni -> iFont::GetKerning/2 **/
+IDLC_METH_BEGIN(ni,iFont,GetKerning,2)
+	IDLC_DECL_VAR(tU32,anPrevChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPrevChar)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetKerning,2,(anPrevChar,anChar))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetKerning,2)
+
+/** ni -> iFont::SetLineSpacing/1 **/
+IDLC_METH_BEGIN(ni,iFont,SetLineSpacing,1)
+	IDLC_DECL_VAR(tF32,afSpacing)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afSpacing)
+	IDLC_METH_CALL_VOID(ni,iFont,SetLineSpacing,1,(afSpacing))
+IDLC_METH_END(ni,iFont,SetLineSpacing,1)
+
+/** ni -> iFont::GetLineSpacing/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetLineSpacing,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetLineSpacing,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetLineSpacing,0)
+
+/** ni -> iFont::GetLineHeight/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetLineHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetLineHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iFont,GetLineHeight,0)
+
+/** ni -> iFont::UpdateMaterial/1 **/
+IDLC_METH_BEGIN(ni,iFont,UpdateMaterial,1)
+	IDLC_DECL_VAR(tBool,abUpdateMaterialStates)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abUpdateMaterialStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,UpdateMaterial,1,(abUpdateMaterialStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,UpdateMaterial,1)
+
+/** ni -> iFont::CacheText/1 **/
+IDLC_METH_BEGIN(ni,iFont,CacheText,1)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,CacheText,1,(aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,CacheText,1)
+
+/** ni -> iFont::CacheRange/2 **/
+IDLC_METH_BEGIN(ni,iFont,CacheRange,2)
+	IDLC_DECL_VAR(tU32,anFirst)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFirst)
+	IDLC_DECL_VAR(tU32,anLast)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anLast)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,CacheRange,2,(anFirst,anLast))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,CacheRange,2)
+
+/** ni -> iFont::ClearCache/0 **/
+IDLC_METH_BEGIN(ni,iFont,ClearCache,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,ClearCache,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFont,ClearCache,0)
+
+/** ni -> iFont::GetCacheID/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetCacheID,0)
+	IDLC_DECL_RETVAR(tIntPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCacheID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
+IDLC_METH_END(ni,iFont,GetCacheID,0)
+
+/** ni -> iFont::GetMaterial/0 **/
+IDLC_METH_BEGIN(ni,iFont,GetMaterial,0)
+	IDLC_DECL_RETVAR(iMaterial*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetMaterial,0,())
+	IDLC_RET_FROM_INTF(iMaterial,_Ret)
+IDLC_METH_END(ni,iFont,GetMaterial,0)
+
+/** ni -> iFont::GetCharTexCoo/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetCharTexCoo,1)
+	IDLC_DECL_VAR(tU32,c)
+	IDLC_BUF_TO_BASE(ni::eType_U32,c)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCharTexCoo,1,(c))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFont,GetCharTexCoo,1)
+
+/** ni -> iFont::GetCharTexture/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetCharTexture,1)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(iTexture*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCharTexture,1,(anChar))
+	IDLC_RET_FROM_INTF(iTexture,_Ret)
+IDLC_METH_END(ni,iFont,GetCharTexture,1)
+
+/** ni -> iFont::GetCharBitmap/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetCharBitmap,1)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(iBitmap2D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetCharBitmap,1,(anChar))
+	IDLC_RET_FROM_INTF(iBitmap2D,_Ret)
+IDLC_METH_END(ni,iFont,GetCharBitmap,1)
+
+/** ni -> iFont::BlitChar/4 **/
+IDLC_METH_BEGIN(ni,iFont,BlitChar,4)
+	IDLC_DECL_VAR(iBitmap2D*,apBmp)
+	IDLC_BUF_TO_INTF(iBitmap2D,apBmp)
+	IDLC_DECL_VAR(tI32,anX)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anX)
+	IDLC_DECL_VAR(tI32,anY)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anY)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(sVec2i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,BlitChar,4,(apBmp,anX,anY,anChar))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2i,_Ret)
+IDLC_METH_END(ni,iFont,BlitChar,4)
+
+/** ni -> iFont::BlitCharStretch/4 **/
+IDLC_METH_BEGIN(ni,iFont,BlitCharStretch,4)
+	IDLC_DECL_VAR(iBitmap2D*,apBmp)
+	IDLC_BUF_TO_INTF(iBitmap2D,apBmp)
+	IDLC_DECL_VAR(tI32,anX)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anX)
+	IDLC_DECL_VAR(tI32,anY)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anY)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_RETVAR(sVec2i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,BlitCharStretch,4,(apBmp,anX,anY,anChar))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2i,_Ret)
+IDLC_METH_END(ni,iFont,BlitCharStretch,4)
+
+/** ni -> iFont::BlitCharEx/7 **/
+IDLC_METH_BEGIN(ni,iFont,BlitCharEx,7)
+	IDLC_DECL_VAR(iBitmap2D*,apBmp)
+	IDLC_BUF_TO_INTF(iBitmap2D,apBmp)
+	IDLC_DECL_VAR(tI32,anX)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anX)
+	IDLC_DECL_VAR(tI32,anY)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anY)
+	IDLC_DECL_VAR(tI32,anW)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anW)
+	IDLC_DECL_VAR(tI32,anH)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anH)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_DECL_VAR(eBlendMode,aBlendMode)
+	IDLC_BUF_TO_ENUM(eBlendMode,aBlendMode)
+	IDLC_DECL_RETVAR(sVec2i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,BlitCharEx,7,(apBmp,anX,anY,anW,anH,anChar,aBlendMode))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2i,_Ret)
+IDLC_METH_END(ni,iFont,BlitCharEx,7)
+
+/** ni -> iFont::ComputeTextSize/3 **/
+IDLC_METH_BEGIN(ni,iFont,ComputeTextSize,3)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_VAR(tFontFormatFlags,aFormat)
+	IDLC_BUF_TO_ENUM(tFontFormatFlags,aFormat)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,ComputeTextSize,3,(aRect,aaszText,aFormat))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFont,ComputeTextSize,3)
+
+/** ni -> iFont::DrawText/5 **/
+IDLC_METH_BEGIN(ni,iFont,DrawText,5)
+	IDLC_DECL_VAR(ni::iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(ni::iCanvas,apCanvas)
+	IDLC_DECL_VAR(sRectf,aposRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aposRect)
+	IDLC_DECL_VAR(tF32,afZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afZ)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_VAR(tFontFormatFlags,aFormat)
+	IDLC_BUF_TO_ENUM(tFontFormatFlags,aFormat)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,DrawText,5,(apCanvas,aposRect,afZ,aaszText,aFormat))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFont,DrawText,5)
+
+/** ni -> iFont::GetGlyphIndexFromName/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphIndexFromName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphIndexFromName,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphIndexFromName,1)
+
+/** ni -> iFont::GetGlyphIndexFromCodepoint/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphIndexFromCodepoint,1)
+	IDLC_DECL_VAR(tU32,anCodepoint)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_U32,anCodepoint)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphIndexFromCodepoint,1,(anCodepoint))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphIndexFromCodepoint,1)
+
+/** ni -> iFont::GetGlyphName/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphName,1)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphName,1,(anGlyphIndex))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphName,1)
+
+/** ni -> iFont::EnumGlyphs/0 **/
+IDLC_METH_BEGIN(ni,iFont,EnumGlyphs,0)
+	IDLC_DECL_RETVAR(Ptr<tU32CMap>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,EnumGlyphs,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iFont,EnumGlyphs,0)
+
+/** ni -> iFont::GetGlyphCodePointFromName/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphCodePointFromName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphCodePointFromName,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphCodePointFromName,1)
+
+/** ni -> iFont::GetGlyphPath/4 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphPath,4)
+	IDLC_DECL_VAR(iVGPath*,apPath)
+	IDLC_BUF_TO_INTF(iVGPath,apPath)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_VAR(sVec2f,avOffset)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avOffset)
+	IDLC_DECL_VAR(tF32,afScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afScale)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphPath,4,(apPath,anGlyphIndex,avOffset,afScale))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphPath,4)
+
+IDLC_END_INTF(ni,iFont)
+
+IDLC_END_NAMESPACE()
+// EOF //

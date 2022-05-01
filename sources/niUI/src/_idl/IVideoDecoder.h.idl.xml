@@ -1,0 +1,284 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eVideoDecoderFlags">
+			<comments desc="Video decoder flags. "/>
+			<value name="eVideoDecoderFlags_TargetBitmap" value="niBit ( 0 ) ">
+				<comments desc="Bitmap target. ">
+					<remark text="Manual update only. "/>
+					<remark text="If no target type is specified no actual decoding will occur. "/>
+				</comments>
+			</value>
+			<value name="eVideoDecoderFlags_TargetTexture" value="niBit ( 1 ) ">
+				<comments desc="Texture target. ">
+					<remark text="Update the decoder when binded in the renderer. "/>
+					<remark text="If no target type is specified no actual decoding will occur. "/>
+				</comments>
+			</value>
+			<value name="eVideoDecoderFlags_Sound" value="niBit ( 2 ) ">
+				<comments desc="If available decode and sync sound stream with the video. "/>
+			</value>
+		</enum>
+		<interface name="iVideoDecoder" uuid1="0AEBF271-83DE-40DA-ABC0-4F6A37EED3DB" uuid2="0x0aebf271,0x83de,0x40da,0xab,0xc0,0x4f,0x6a,0x37,0xee,0xd3,0xdb">
+			<comments desc="Video decoder interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getVideoDecoderName"
+				name="GetVideoDecoderName"
+				num_parameters="0"
+				property="get"
+				property_name2="videoDecoderName"
+				property_name="video_decoder_name">
+				<comments desc="Get the name of the decoder used. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVideoFps"
+				name="GetVideoFps"
+				num_parameters="0"
+				property="get"
+				property_name2="videoFps"
+				property_name="video_fps">
+				<comments desc="Get the original number of frames per second of the video. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the decoder flags. "/>
+				<return type="tVideoDecoderFlags" typec="tVideoDecoderFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLength"
+				name="GetLength"
+				num_parameters="0"
+				property="get"
+				property_name2="length"
+				property_name="length">
+				<comments desc="Get the video&apos;s length. " return="The length in seconds of the video. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setTime"
+				name="SetTime"
+				num_parameters="1"
+				property="set"
+				property_name2="time"
+				property_name="time">
+				<comments desc="Set the current time. ">
+					<params text="afTime is the time to set. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afTime"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTime"
+				name="GetTime"
+				num_parameters="0"
+				property="get"
+				property_name2="time"
+				property_name="time">
+				<comments desc="Get the current time. " return="The current time. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setPause"
+				name="SetPause"
+				num_parameters="1"
+				property="set"
+				property_name2="pause"
+				property_name="pause">
+				<comments desc="Set pause. ">
+					<remark text="This will pause the thread is the decoder is asyncronous. "/>
+					<params text="abPause, if eTrue the update and decoding will be paused. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abPause"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPause"
+				name="GetPause"
+				num_parameters="0"
+				property="get"
+				property_name2="pause"
+				property_name="pause">
+				<comments desc="Get the pause status. " return="eTrue if the decoder is in pause mode, else eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the time&apos;s speed. ">
+					<params text="afSpeed is the speed to set, 1 is the original speed, 2 is twice faster, 0.5 half the original speed and so on. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afSpeed"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the time&apos;s speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setNumLoops"
+				name="SetNumLoops"
+				num_parameters="1"
+				property="set"
+				property_name2="numLoops"
+				property_name="num_loops">
+				<comments desc="Set the number of time the time should loop. ">
+					<remark text="eInvalidHandle means infinite looping (the default value). "/>
+					<remark text="Unless infinite, the number of loops decrease every time the video is looped until it reaches zero and the video stops. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anLoop"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumLoops"
+				name="GetNumLoops"
+				num_parameters="0"
+				property="get"
+				property_name2="numLoops"
+				property_name="num_loops">
+				<comments desc="Get the number of loop. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="2">
+				<comments desc="Update the video. " return="eFalse if the target&apos;s update failed, else eTrue. ">
+					<params text="abUpdateTarget, if eTrue will update the target else only the current frame and time will be updated. "/>
+					<params text="afFrameTime is the time elapsed since the last frame. If you dont want the method to compute the new frame set it to zero. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="abUpdateTarget"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afFrameTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="getTargetTexture"
+				name="GetTargetTexture"
+				num_parameters="0"
+				property="get"
+				property_name2="targetTexture"
+				property_name="target_texture">
+				<comments desc="Get the target texture. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getTargetBitmap"
+				name="GetTargetBitmap"
+				num_parameters="0"
+				property="get"
+				property_name2="targetBitmap"
+				property_name="target_bitmap">
+				<comments desc="Get the target bitmap. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSoundTracks"
+				name="GetNumSoundTracks"
+				num_parameters="0"
+				property="get"
+				property_name2="numSoundTracks"
+				property_name="num_sound_tracks">
+				<comments desc="Get the number of sound tracks attached to the video. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getSoundTrackData"
+				name="GetSoundTrackData"
+				num_parameters="1"
+				property="get"
+				property_name2="soundTrackData"
+				property_name="sound_track_data">
+				<comments desc="Get a sound data of a track associated with the video. ">
+					<remark text="Note that sound is always decoded at the original speed its found in the video. The video speed needs to be handled manually, by using iSoundSource::SetSpeed for example, to keep the sound properly in sync with the video. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anNumTrack"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setUpdateOnBind"
+				name="SetUpdateOnBind"
+				num_parameters="1"
+				property="set"
+				property_name2="updateOnBind"
+				property_name="update_on_bind">
+				<comments desc="Set whether the video should automatically be updated when bound for rendering. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abUpdateOnBind"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUpdateOnBind"
+				name="GetUpdateOnBind"
+				num_parameters="0"
+				property="get"
+				property_name2="updateOnBind"
+				property_name="update_on_bind">
+				<comments desc="Get whether the video should automatically be updated when bound for rendering. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,252 @@
+#include "../API/niUI/IBitmapBase.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iBitmapFormat **/
+IDLC_BEGIN_INTF(ni,iBitmapFormat)
+/** ni -> iBitmapFormat::Copy/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,Copy,1)
+	IDLC_DECL_VAR(iBitmapFormat*,apFormat)
+	IDLC_BUF_TO_INTF(iBitmapFormat,apFormat)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,Copy,1,(apFormat))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,Copy,1)
+
+/** ni -> iBitmapFormat::Clone/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,Clone,0)
+	IDLC_DECL_RETVAR(iBitmapFormat*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,Clone,0,())
+	IDLC_RET_FROM_INTF(iBitmapFormat,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,Clone,0)
+
+/** ni -> iBitmapFormat::Reset/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,Reset,0)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,Reset,0,())
+IDLC_METH_END(ni,iBitmapFormat,Reset,0)
+
+/** ni -> iBitmapFormat::SetType/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetType,1)
+	IDLC_DECL_VAR(eBitmapType,aV)
+	IDLC_BUF_TO_ENUM(eBitmapType,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetType,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetType,1)
+
+/** ni -> iBitmapFormat::GetType/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetType,0)
+	IDLC_DECL_RETVAR(eBitmapType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetType,0,())
+	IDLC_RET_FROM_ENUM(eBitmapType,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetType,0)
+
+/** ni -> iBitmapFormat::SetWidth/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetWidth,1)
+	IDLC_DECL_VAR(tU32,aV)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetWidth,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetWidth,1)
+
+/** ni -> iBitmapFormat::GetWidth/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetWidth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetWidth,0)
+
+/** ni -> iBitmapFormat::SetHeight/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetHeight,1)
+	IDLC_DECL_VAR(tU32,aV)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetHeight,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetHeight,1)
+
+/** ni -> iBitmapFormat::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetHeight,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetHeight,0)
+
+/** ni -> iBitmapFormat::SetDepth/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetDepth,1)
+	IDLC_DECL_VAR(tU32,aV)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetDepth,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetDepth,1)
+
+/** ni -> iBitmapFormat::GetDepth/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetDepth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetDepth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetDepth,0)
+
+/** ni -> iBitmapFormat::SetNumMipMaps/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetNumMipMaps,1)
+	IDLC_DECL_VAR(tU32,aV)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetNumMipMaps,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetNumMipMaps,1)
+
+/** ni -> iBitmapFormat::GetNumMipMaps/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetNumMipMaps,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetNumMipMaps,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetNumMipMaps,0)
+
+/** ni -> iBitmapFormat::SetPixelFormat/1 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,SetPixelFormat,1)
+	IDLC_DECL_VAR(iPixelFormat*,aV)
+	IDLC_BUF_TO_INTF(iPixelFormat,aV)
+	IDLC_METH_CALL_VOID(ni,iBitmapFormat,SetPixelFormat,1,(aV))
+IDLC_METH_END(ni,iBitmapFormat,SetPixelFormat,1)
+
+/** ni -> iBitmapFormat::GetPixelFormat/0 **/
+IDLC_METH_BEGIN(ni,iBitmapFormat,GetPixelFormat,0)
+	IDLC_DECL_RETVAR(iPixelFormat*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapFormat,GetPixelFormat,0,())
+	IDLC_RET_FROM_INTF(iPixelFormat,_Ret)
+IDLC_METH_END(ni,iBitmapFormat,GetPixelFormat,0)
+
+IDLC_END_INTF(ni,iBitmapFormat)
+
+/** interface : iBitmapBase **/
+IDLC_BEGIN_INTF(ni,iBitmapBase)
+/** ni -> iBitmapBase::GetType/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetType,0)
+	IDLC_DECL_RETVAR(eBitmapType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetType,0,())
+	IDLC_RET_FROM_ENUM(eBitmapType,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetType,0)
+
+/** ni -> iBitmapBase::GetWidth/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetWidth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetWidth,0)
+
+/** ni -> iBitmapBase::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetHeight,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetHeight,0)
+
+/** ni -> iBitmapBase::GetDepth/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetDepth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetDepth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetDepth,0)
+
+/** ni -> iBitmapBase::GetPixelFormat/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetPixelFormat,0)
+	IDLC_DECL_RETVAR(iPixelFormat*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetPixelFormat,0,())
+	IDLC_RET_FROM_INTF(iPixelFormat,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetPixelFormat,0)
+
+/** ni -> iBitmapBase::CreateMipMaps/2 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,CreateMipMaps,2)
+	IDLC_DECL_VAR(tU32,anNumMipMaps)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anNumMipMaps)
+	IDLC_DECL_VAR(tBool,abCompute)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abCompute)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,CreateMipMaps,2,(anNumMipMaps,abCompute))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmapBase,CreateMipMaps,2)
+
+/** ni -> iBitmapBase::RemoveMipMaps/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,RemoveMipMaps,0)
+	IDLC_METH_CALL_VOID(ni,iBitmapBase,RemoveMipMaps,0,())
+IDLC_METH_END(ni,iBitmapBase,RemoveMipMaps,0)
+
+/** ni -> iBitmapBase::GetNumMipMaps/0 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GetNumMipMaps,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GetNumMipMaps,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GetNumMipMaps,0)
+
+/** ni -> iBitmapBase::Clone/1 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,Clone,1)
+	IDLC_DECL_VAR(ePixelFormatBlit,eBlit)
+	IDLC_BUF_TO_ENUM(ePixelFormatBlit,eBlit)
+	IDLC_DECL_RETVAR(iBitmapBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,Clone,1,(eBlit))
+	IDLC_RET_FROM_INTF(iBitmapBase,_Ret)
+IDLC_METH_END(ni,iBitmapBase,Clone,1)
+
+/** ni -> iBitmapBase::CreateConvertedFormat/1 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,CreateConvertedFormat,1)
+	IDLC_DECL_VAR(iPixelFormat*,pFmt)
+	IDLC_BUF_TO_INTF(iPixelFormat,pFmt)
+	IDLC_DECL_RETVAR(iBitmapBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,CreateConvertedFormat,1,(pFmt))
+	IDLC_RET_FROM_INTF(iBitmapBase,_Ret)
+IDLC_METH_END(ni,iBitmapBase,CreateConvertedFormat,1)
+
+/** ni -> iBitmapBase::CreateGammaCorrected/1 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,CreateGammaCorrected,1)
+	IDLC_DECL_VAR(tF32,factor)
+	IDLC_BUF_TO_BASE(ni::eType_F32,factor)
+	IDLC_DECL_RETVAR(iBitmapBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,CreateGammaCorrected,1,(factor))
+	IDLC_RET_FROM_INTF(iBitmapBase,_Ret)
+IDLC_METH_END(ni,iBitmapBase,CreateGammaCorrected,1)
+
+/** ni -> iBitmapBase::GammaCorrect/1 **/
+IDLC_METH_BEGIN(ni,iBitmapBase,GammaCorrect,1)
+	IDLC_DECL_VAR(tF32,factor)
+	IDLC_BUF_TO_BASE(ni::eType_F32,factor)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapBase,GammaCorrect,1,(factor))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmapBase,GammaCorrect,1)
+
+IDLC_END_INTF(ni,iBitmapBase)
+
+/** interface : iBitmapLoader **/
+IDLC_BEGIN_INTF(ni,iBitmapLoader)
+/** ni -> iBitmapLoader::LoadBitmap/2 **/
+IDLC_METH_BEGIN(ni,iBitmapLoader,LoadBitmap,2)
+	IDLC_DECL_VAR(iGraphics*,apGraphics)
+	IDLC_BUF_TO_INTF(iGraphics,apGraphics)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_RETVAR(iBitmapBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapLoader,LoadBitmap,2,(apGraphics,apFile))
+	IDLC_RET_FROM_INTF(iBitmapBase,_Ret)
+IDLC_METH_END(ni,iBitmapLoader,LoadBitmap,2)
+
+IDLC_END_INTF(ni,iBitmapLoader)
+
+/** interface : iBitmapSaver **/
+IDLC_BEGIN_INTF(ni,iBitmapSaver)
+/** ni -> iBitmapSaver::SaveBitmap/4 **/
+IDLC_METH_BEGIN(ni,iBitmapSaver,SaveBitmap,4)
+	IDLC_DECL_VAR(iGraphics*,apGraphics)
+	IDLC_BUF_TO_INTF(iGraphics,apGraphics)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(iBitmapBase*,apBmp)
+	IDLC_BUF_TO_INTF(iBitmapBase,apBmp)
+	IDLC_DECL_VAR(tU32,anCompression)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCompression)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmapSaver,SaveBitmap,4,(apGraphics,apFile,apBmp,anCompression))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmapSaver,SaveBitmap,4)
+
+IDLC_END_INTF(ni,iBitmapSaver)
+
+IDLC_END_NAMESPACE()
+// EOF //

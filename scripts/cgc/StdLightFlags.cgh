@@ -1,0 +1,52 @@
+#pragma once
+#ifndef __STDLIGHTFLAGS_CGH_255EEFCB_2D04_4FE9_B81D_2943F6A96B45__
+#define __STDLIGHTFLAGS_CGH_255EEFCB_2D04_4FE9_B81D_2943F6A96B45__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#ifndef eLight_NumLights
+#define eLight_NumLights 0
+#endif
+
+#ifndef eLight0Flags_Area
+#define eLight0Flags_Area 0
+#endif
+#ifndef eLight0Flags_Spot
+#define eLight0Flags_Spot 0
+#endif
+#ifndef eLight0Flags_Point
+#define eLight0Flags_Point  0
+#endif
+#ifndef eLight0Flags_Dir
+#define eLight0Flags_Dir 0
+#endif
+#ifndef eLight0Flags_Specular
+#define eLight0Flags_Specular 0
+#endif
+#ifndef eLight0Flags_PBL
+#define eLight0Flags_PBL 0
+#endif
+#ifndef eLight0Flags_Emissive
+#define eLight0Flags_Emissive 0
+#endif
+#ifndef eLight0Flags_Attenuation
+#define eLight0Flags_Attenuation 0
+#endif
+#ifndef eLight0Flags_ShadowMapFP
+#define eLight0Flags_ShadowMapFP 0
+#endif
+#ifndef eLight0Flags_ShadowMapDepth
+#define eLight0Flags_ShadowMapDepth 0
+#endif
+#ifndef eLight0Flags_ShadowMapWorldSpace
+#define eLight0Flags_ShadowMapWorldSpace 0
+#endif
+#ifndef eLight0Flags_ShadowFilterNoise
+#define eLight0Flags_ShadowFilterNoise 0
+#endif
+#ifndef eLight0Flags_ShadowFilterBlur
+#define eLight0Flags_ShadowFilterBlur 0
+#endif
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDLIGHTFLAGS_CGH_255EEFCB_2D04_4FE9_B81D_2943F6A96B45__

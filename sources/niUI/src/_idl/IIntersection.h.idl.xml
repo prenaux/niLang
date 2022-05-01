@@ -1,0 +1,127 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eIntersectionResult">
+			<comments desc="Intersection result. "/>
+			<value name="eIntersectionResult_None" value="0 ">
+				<comments desc="No intersection result. "/>
+			</value>
+			<value name="eIntersectionResult_Inside" value="1 ">
+				<comments desc="Inside the bounding volume. "/>
+			</value>
+			<value name="eIntersectionResult_Intersect" value="2 ">
+				<comments desc="Intersect the bounding volume. "/>
+			</value>
+		</enum>
+		<interface name="iIntersection" uuid1="64C8B5C4-4D70-46E4-B534-9DA2854D1928" uuid2="0x64c8b5c4,0x4d70,0x46e4,0xb5,0x34,0x9d,0xa2,0x85,0x4d,0x19,0x28">
+			<comments desc="Intersection result interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setResult"
+				name="SetResult"
+				num_parameters="1"
+				property="set"
+				property_name2="result"
+				property_name="result">
+				<comments desc="Set the intersection result. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aResult"
+					type="eIntersectionResult"
+					typec="eIntersectionResult"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getResult"
+				name="GetResult"
+				num_parameters="0">
+				<comments desc="Get the intersection result. "/>
+				<return type="eIntersectionResult" typec="eIntersectionResult" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setPosition"
+				name="SetPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Set the intersection&apos;s position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the intersection&apos;s position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setBaryCentric"
+				name="SetBaryCentric"
+				num_parameters="1"
+				property="set"
+				property_name2="baryCentric"
+				property_name="bary_centric">
+				<comments desc="Set the intersection&apos;s barycentric coordinate. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avBC"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBaryCentric"
+				name="GetBaryCentric"
+				num_parameters="0"
+				property="get"
+				property_name2="baryCentric"
+				property_name="bary_centric">
+				<comments desc="Get the intersection&apos;s barycentric coordinate. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setPolygonIndex"
+				name="SetPolygonIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="polygonIndex"
+				property_name="polygon_index">
+				<comments desc="Set the index of the intersected polygon. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPolygonIndex"
+				name="GetPolygonIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="polygonIndex"
+				property_name="polygon_index">
+				<comments desc="Get the index of the intersected polygon. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,856 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eMaterialFlags">
+			<comments desc="Material flags. "/>
+			<value name="eMaterialFlags_DoubleSided" value="niBit ( 0 ) ">
+				<comments desc="Material is double sided. ">
+					<remark text="This is independant of the culling mode, the graphics driver is responsible for making sure that double sided materials are drawn both sides when this flag is set. "/>
+				</comments>
+			</value>
+			<value name="eMaterialFlags_Translucent" value="niBit ( 1 ) ">
+				<comments desc="Material is translucent. "/>
+			</value>
+			<value name="eMaterialFlags_Transparent" value="niBit ( 2 ) ">
+				<comments desc="Material is transparent. ">
+					<remark text="A transparent material is alpha tested, the alpha test key value is in the alpha channel of the Base Channel color. "/>
+				</comments>
+			</value>
+			<value name="eMaterialFlags_DiffuseModulate" value="niBit ( 3 ) ">
+				<comments desc="Multiply the diffuse channel texture by the diffuse channel&apos;s color. "/>
+			</value>
+			<value name="eMaterialFlags_Vertex" value="niBit ( 4 ) ">
+				<comments desc="The material is vertex lit. "/>
+			</value>
+			<value name="eMaterialFlags_HeightMap" value="niBit ( 5 ) ">
+				<comments desc="The material has a height map. "/>
+			</value>
+			<value name="eMaterialFlags_NormalMap" value="niBit ( 6 ) ">
+				<comments desc="The material uses a normal map. Otherwise it&apos;s considered to be a grayscale bump. "/>
+			</value>
+			<value name="eMaterialFlags_Refraction" value="niBit ( 7 ) ">
+				<comments desc="The material is refracting. "/>
+			</value>
+			<value name="eMaterialFlags_Decal" value="niBit ( 8 ) ">
+				<comments desc="The material is used as a decal. "/>
+			</value>
+			<value name="eMaterialFlags_TileMap" value="niBit ( 9 ) ">
+				<comments desc="The material is a tilemap. "/>
+			</value>
+			<value name="eMaterialFlags_DepthOnly" value="niBit ( 10 ) ">
+				<comments desc="The material should only be drawn in the depth buffer. (no color write) "/>
+			</value>
+			<value name="eMaterialFlags_NoShadow" value="niBit ( 11 ) ">
+				<comments desc="The material doesn&apos;t cast shadow. "/>
+			</value>
+			<value name="eMaterialFlags_NoLighting" value="niBit ( 12 ) ">
+				<comments desc="The material shouldn&apos;t be lit. "/>
+			</value>
+			<value name="eMaterialFlags_NoDraw" value="niBit ( 13 ) ">
+				<comments desc="The material isnt drawn. "/>
+			</value>
+			<value name="eMaterialFlags_DistanceField" value="niBit ( 14 ) ">
+				<comments desc="The material&apos;s opacity channel contains a distance field. "/>
+			</value>
+			<value name="eMaterialFlags_TransparentAA" value="niBit ( 15 ) ">
+				<comments desc="Enable transparent (alpha-tested) anti-aliasing. "/>
+			</value>
+			<value name="eMaterialFlags_NoCollision" value="niBit ( 16 ) ">
+				<comments desc="No collision mesh should be associated with this material. "/>
+			</value>
+			<value name="eMaterialFlags_PolygonOffset" value="niBit ( 17 ) ">
+				<comments desc="Using polygon offset in this material "/>
+			</value>
+		</enum>
+		<enum name="eMaterialChannel">
+			<comments desc="Material channel "/>
+			<value name="eMaterialChannel_Base" value="0 ">
+				<comments desc="Base texture map. RGB : Diffuse/albedo color Alpha : Opacity Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_Opacity" value="1 ">
+				<comments desc="Opacity/Detail texture map. RGB : Detail Alpha : Opacity/Detail Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_Bump" value="2 ">
+				<comments desc="Bump map. RGB : Normal map. Alpha : Height map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_Specular" value="3 ">
+				<comments desc="Specular map. RGB : Specular color Grayscale : Gloss. Specular color alpha contains the specular power. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_Environment" value="4 ">
+				<comments desc="Environment map. RGB : Color Default Blend mode : Modulate "/>
+			</value>
+			<value name="eMaterialChannel_Ambient" value="5 ">
+				<comments desc="Light/ambient map. RGB : Light color Alpha : Light intensity Default Blend mode : Modulate "/>
+			</value>
+			<value name="eMaterialChannel_Emissive" value="6 ">
+				<comments desc="Emissive map. RGB : Color Alpha : Directional coefficient. Default Blend mode : Additive "/>
+			</value>
+			<value name="eMaterialChannel_Refraction" value="7 ">
+				<comments desc="Refraction direction map. RGB : Refraction direction Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T0" value="8 ">
+				<comments desc="User 0 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T1" value="9 ">
+				<comments desc="User 1 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T2" value="10 ">
+				<comments desc="User 2 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T3" value="11 ">
+				<comments desc="User 3 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T4" value="12 ">
+				<comments desc="User 4 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T5" value="13 ">
+				<comments desc="User 5 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T6" value="14 ">
+				<comments desc="User 6 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_T7" value="15 ">
+				<comments desc="User 7 map. Default Blend mode : NoBlending "/>
+			</value>
+			<value name="eMaterialChannel_Last" value="16 ">
+				<comments desc="\internal Default Blend mode : NoBlending "/>
+			</value>
+		</enum>
+		<enum name="eMaterialExpression">
+			<comments desc="Material expressions "/>
+			<value name="eMaterialExpression_Tex0" value="0 ">
+				<comments desc="Texture channel 0 matrix expression. Shader uniform: float4 fpsExprTex0. ">
+					<remark text="Works with the fixed pipeline. "/>
+				</comments>
+			</value>
+			<value name="eMaterialExpression_Tex1" value="1 ">
+				<comments desc="Texture channel 1 matrix expression. Shader uniform: float4 fpsExprTex1. ">
+					<remark text="Works with the fixed pipeline. "/>
+				</comments>
+			</value>
+			<value name="eMaterialExpression_Matrix0" value="2 ">
+				<comments desc="Generic matrix expression. Shader uniform: float4x4 fpsExprMatrix0. ">
+					<remark text="The usage depends on the shader / render path actually used. "/>
+				</comments>
+			</value>
+			<value name="eMaterialExpression_Matrix1" value="3 ">
+				<comments desc="Generic matrix expression. Shader uniform: float4x4 fpsExprMatrix1. ">
+					<remark text="The usage depends on the shader / render path actually used. "/>
+				</comments>
+			</value>
+			<value name="eMaterialExpression_Last" value="4">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iMaterial" uuid1="3D0F9569-2D97-4EFD-ABE2-853FBFAFBC88" uuid2="0x3d0f9569,0x2d97,0x4efd,0xab,0xe2,0x85,0x3f,0xbf,0xaf,0xbc,0x88">
+			<comments desc="Material interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the parent graphics object. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setName"
+				name="SetName"
+				num_parameters="1"
+				property="set"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Set the material&apos;s name. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the material&apos;s name. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setClass"
+				name="SetClass"
+				num_parameters="1"
+				property="set"
+				property_name2="class"
+				property_name="class">
+				<comments desc="Set the material&apos;s class. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClassName"
+				name="GetClass"
+				num_parameters="0"
+				property="get"
+				property_name2="class"
+				property_name="class">
+				<comments desc="Get the material&apos;s class. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidth"
+				name="GetWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="width"
+				property_name="width">
+				<comments desc="Get the texture width. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the texture height. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepth"
+				name="GetDepth"
+				num_parameters="0"
+				property="get"
+				property_name2="depth"
+				property_name="depth">
+				<comments desc="Get the texture depth. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Set the material&apos;s flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tMaterialFlags"
+					typec="tMaterialFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the material&apos;s flags. "/>
+				<return type="tMaterialFlags" typec="tMaterialFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setBlendMode"
+				name="SetBlendMode"
+				num_parameters="1"
+				property="set"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Set the material&apos;s blend mode. ">
+					<remark text="Shortcut to base sampler&apos;s blend mode. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBlendMode"
+				name="GetBlendMode"
+				num_parameters="0"
+				property="get"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Get the material&apos;s blend mode. ">
+					<remark text="Shortcut to base sampler&apos;s blend mode. "/>
+				</comments>
+				<return type="eBlendMode" typec="eBlendMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setRasterizerStates"
+				name="SetRasterizerStates"
+				num_parameters="1"
+				property="set"
+				property_name2="rasterizerStates"
+				property_name="rasterizer_states">
+				<comments desc="Set the material&apos;s rasterizer states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRasterizerStates"
+				name="GetRasterizerStates"
+				num_parameters="0"
+				property="get"
+				property_name2="rasterizerStates"
+				property_name="rasterizer_states">
+				<comments desc="Get the material&apos;s rasterizer states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setDepthStencilStates"
+				name="SetDepthStencilStates"
+				num_parameters="1"
+				property="set"
+				property_name2="depthStencilStates"
+				property_name="depth_stencil_states">
+				<comments desc="Set the material&apos;s depth stencil states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthStencilStates"
+				name="GetDepthStencilStates"
+				num_parameters="0"
+				property="get"
+				property_name2="depthStencilStates"
+				property_name="depth_stencil_states">
+				<comments desc="Get the material&apos;s depth stencil states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setPolygonOffset"
+				name="SetPolygonOffset"
+				num_parameters="1"
+				property="set"
+				property_name2="polygonOffset"
+				property_name="polygon_offset">
+				<comments desc="Set the material&apos;s polygon offset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avOffset"
+					type="const ni::sVec2f &amp;"
+					typec="const ni::sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPolygonOffset"
+				name="GetPolygonOffset"
+				num_parameters="0"
+				property="get"
+				property_name2="polygonOffset"
+				property_name="polygon_offset">
+				<comments desc="Get the material&apos;s polygon offset. "/>
+				<return type="ni::sVec2f" typec="ni::sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasShader"
+				name="GetHasShader"
+				num_parameters="0"
+				property="get"
+				property_name2="hasShader"
+				property_name="has_shader">
+				<comments desc="Get whether any shader is set. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setShader"
+				name="SetShader"
+				num_parameters="2"
+				property="set"
+				property_name2="shader"
+				property_name="shader">
+				<comments desc="Set the specified shader. ">
+					<remark text="Not cloned with the material. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apProgram"
+					type="iShader *"
+					typec="iShader*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShader"
+				name="GetShader"
+				num_parameters="1"
+				property="get"
+				property_name2="shader"
+				property_name="shader">
+				<comments desc="Get the specified shader. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setShaderConstants"
+				name="SetShaderConstants"
+				num_parameters="1"
+				property="set"
+				property_name2="shaderConstants"
+				property_name="shader_constants">
+				<comments desc="Set the material constant buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBuffer"
+					type="iShaderConstants *"
+					typec="iShaderConstants*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderConstants"
+				name="GetShaderConstants"
+				num_parameters="0"
+				property="get"
+				property_name2="shaderConstants"
+				property_name="shader_constants">
+				<comments desc="Get the material constant buffer. "/>
+				<return type="iShaderConstants *" typec="iShaderConstants*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasChannelTexture"
+				name="HasChannelTexture"
+				num_parameters="1">
+				<comments desc="Check if the material has the specified channel texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setChannelTexture"
+				name="SetChannelTexture"
+				num_parameters="2"
+				property="set"
+				property_name2="channelTexture"
+				property_name="channel_texture">
+				<comments desc="Set a material channel texture. ">
+					<remark text="Not cloned with the material. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelTexture"
+				name="GetChannelTexture"
+				num_parameters="1"
+				property="get"
+				property_name2="channelTexture"
+				property_name="channel_texture">
+				<comments desc="Get a material channel texture. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setChannelColor"
+				name="SetChannelColor"
+				num_parameters="2"
+				property="set"
+				property_name2="channelColor"
+				property_name="channel_color">
+				<comments desc="Set a material channel color. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelColor"
+				name="GetChannelColor"
+				num_parameters="1"
+				property="get"
+				property_name2="channelColor"
+				property_name="channel_color">
+				<comments desc="Get a material channel color. "/>
+				<return type="const sColor4f &amp;" typec="const sColor4f&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setChannelSamplerStates"
+				name="SetChannelSamplerStates"
+				num_parameters="2"
+				property="set"
+				property_name2="channelSamplerStates"
+				property_name="channel_sampler_states">
+				<comments desc="Set the sampler states of the specified texture channel. ">
+					<remark text="If the sampler states are not specified the default states are used. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelSamplerStates"
+				name="GetChannelSamplerStates"
+				num_parameters="1"
+				property="get"
+				property_name2="channelSamplerStates"
+				property_name="channel_sampler_states">
+				<comments desc="Get the sampler states of the specified texture channel. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="aChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="copyChannel" name="CopyChannel" num_parameters="3">
+				<comments desc="Copy the channel properties from another material. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aDestChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apSource"
+					type="const iMaterial *"
+					typec="const iMaterial*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSrcChannel"
+					type="eMaterialChannel"
+					typec="eMaterialChannel"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the source material. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMat"
+					type="const iMaterial *"
+					typec="const iMaterial*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this material. "/>
+				<return type="iMaterial *" typec="iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serialize" name="Serialize" num_parameters="3">
+				<comments desc="Serialize the material in a data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aMode"
+					type="eSerializeMode"
+					typec="eSerializeMode"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspBasePath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the material description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				java_name="setExpression"
+				name="SetExpression"
+				num_parameters="2"
+				property="set"
+				property_name2="expression"
+				property_name="expression">
+				<comments desc="Set an expression of the material. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="ahspExpr"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpression"
+				name="GetExpression"
+				num_parameters="1"
+				property="get"
+				property_name2="expression"
+				property_name="expression">
+				<comments desc="Get the expression of the material. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpressionValueMatrix"
+				name="GetExpressionValueMatrix"
+				num_parameters="1"
+				property="get"
+				property_name2="expressionValueMatrix"
+				property_name="expression_value_matrix">
+				<comments desc="Get the matrix result of the specified material expression. ">
+					<remark text="Returns identity if no valid expression is set. "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpressionValueVector"
+				name="GetExpressionValueVector"
+				num_parameters="1"
+				property="get"
+				property_name2="expressionValueVector"
+				property_name="expression_value_vector">
+				<comments desc="Get the vector4 result of the specified material expression. ">
+					<remark text="Returns zero if no valid expression is set. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="setExpressionObject" name="SetExpressionObject" num_parameters="3">
+				<comments desc="Set an expression object on the material. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="ahspExpr"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apExpr"
+					type="iExpression *"
+					typec="iExpression*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getExpressionObject" name="GetExpressionObject" num_parameters="1">
+				<comments desc="Get the expression object. "/>
+				<return type="iExpression *" typec="iExpression*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aExpr"
+					type="eMaterialExpression"
+					typec="eMaterialExpression"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setUserdata"
+				name="SetUserdata"
+				num_parameters="2"
+				property="set"
+				property_name2="userdata"
+				property_name="userdata">
+				<comments desc="Set a userdata. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apUserdata"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserdata"
+				name="GetUserdata"
+				num_parameters="1"
+				property="get"
+				property_name2="userdata"
+				property_name="userdata">
+				<comments desc="Get a userdata. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumUserdata"
+				name="GetNumUserdata"
+				num_parameters="0"
+				property="get"
+				property_name2="numUserdata"
+				property_name="num_userdata">
+				<comments desc="Get the number of userdata. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserdataName"
+				name="GetUserdataName"
+				num_parameters="1"
+				property="get"
+				property_name2="userdataName"
+				property_name="userdata_name">
+				<comments desc="Get the name of the user data at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserdataFromIndex"
+				name="GetUserdataFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="userdataFromIndex"
+				property_name="userdata_from_index">
+				<comments desc="Get the userdata at the specified index. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

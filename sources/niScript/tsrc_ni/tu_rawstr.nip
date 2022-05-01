@@ -1,0 +1,225 @@
+::Import("unittest.ni")
+::Import("regex.ni")
+::Import("sexp.ni")
+
+::FIXTURE("rawstr")
+
+::TEST("rawstr","curly",#() {
+  ::println("---")
+  ::println({[
+
+    A Raw String Using curly brackets, one empty line before, one empty line after.
+    Curly raw strings have their leading indentation stripped, following the indentation
+    on the first non empty line.
+
+    some great identation {
+      yes this is indented yey
+    }
+
+  ]})
+  ::println("---")
+  ::println("---")
+  ::println({[
+    A Raw String Using curly brackets, no empty line
+    some great identation {
+      yes this is indented yey
+    }
+  ]})
+  ::println("---")
+
+  local hamHome = "/foo/bar/ham/home";
+  local text = "";
+  text += ::format({[export HAM_HOME="%s"]},hamHome) + "\n"
+  // text += ::format({[echo ... HAM_HOME: $HAM_HOME]}) + "\n"
+
+  text += ::format({[export WORK="%s"]},hamHome.removedirback()) + "\n"
+  // text += ::format({[echo ... WORK: $WORK]}) + "\n"
+
+  text += ::format({[export BUILD_BIN_LOA="%s"]},"testosarch") + "\n"
+  text += ::format({[export BUILD="%s"]},"testbuild") + "\n"
+
+  text += {[export BASH_START_PATH=""]} + "\n"
+  text += {[export BASH_START_SILENT="yes"]} + "\n"
+  text += {[. "$HAM_HOME/bin/ham-bash-setenv.sh"]} + "\n"
+})
+
+::TEST("rawstr","curly-sexp",#() {
+  local r = {[ nilrt_PrintStringln(aText); ]};
+  local Sr = $(
+    meta
+    :native
+    :target:cpp {[ nilrt_PrintStringln(aText); ]})
+  ::println("... curly-r:" r);
+  ::println("... curly-Sr:" ::sexp.toIndentedString(Sr));
+})
+
+::TEST("rawstr","curly-concat",#() {
+  local hamHome = "/foo/bar/ham/home";
+  local text = "";
+  text += ::format({[export HAM_HOME="%s"]},hamHome) + "\n"
+  // text += ::format({[echo ... HAM_HOME: $HAM_HOME]}) + "\n"
+
+  text += ::format({[export WORK="%s"]},hamHome.removedirback()) + "\n"
+  // text += ::format({[echo ... WORK: $WORK]}) + "\n"
+
+  text += ::format({[export BUILD_BIN_LOA="%s"]},"testosarch") + "\n"
+  text += ::format({[export BUILD="%s"]},"testbuild") + "\n"
+
+  text += {[export BASH_START_PATH=""]} + "\n"
+  text += {[export BASH_START_SILENT="yes"]} + "\n"
+  text += {[. "$HAM_HOME/bin/ham-bash-setenv.sh"]} + "\n"
+  ::println("---")
+  ::println(text);
+  ::println("---")
+})
+
+
+::TEST("rawstr","angle",#() {
+  ::println("---")
+  ::println(<{
+
+    A Raw String Using angle brackets, one empty line before, one empty line after.
+    Angle raw strings have their leading indentation stripped, following the indentation
+    on the first non empty line.
+
+    some great identation {
+      yes this is indented yey
+    }
+
+  }>)
+  ::println("---")
+  ::println("---")
+  ::println(<{
+    A Raw String Using angle brackets, no empty line
+    some great identation {
+      yes this is indented yey
+    }
+  }>)
+  ::println("---")
+
+  local hamHome = "/foo/bar/ham/home";
+  local text = "";
+  text += ::format(<{export HAM_HOME="%s"}>,hamHome) + "\n"
+  // text += ::format(<{echo ... HAM_HOME: $HAM_HOME}>) + "\n"
+
+  text += ::format(<{export WORK="%s"}>,hamHome.removedirback()) + "\n"
+  // text += ::format(<{echo ... WORK: $WORK}>) + "\n"
+
+  text += ::format(<{export BUILD_BIN_LOA="%s"}>,"testosarch") + "\n"
+  text += ::format(<{export BUILD="%s"}>,"testbuild") + "\n"
+
+  text += <{export BASH_START_PATH=""}> + "\n"
+  text += <{export BASH_START_SILENT="yes"}> + "\n"
+  text += <{. "$HAM_HOME/bin/ham-bash-setenv.sh"}> + "\n"
+})
+
+::TEST("rawstr","angle-sexp",#() {
+  local r = <{ nilrt_PrintStringln(aText); }>;
+  local Sr = $(
+    meta
+    :native
+    :target:cpp <{ nilrt_PrintStringln(aText); }>)
+  ::println("... angle-r:" r);
+  ::println("... angle-Sr:" ::sexp.toIndentedString(Sr));
+})
+
+::TEST("rawstr","angle-concat",#() {
+  local hamHome = "/foo/bar/ham/home";
+  local text = "";
+  text += ::format(<{export HAM_HOME="%s"}>,hamHome) + "\n"
+  // text += ::format(<{echo ... HAM_HOME: $HAM_HOME}>) + "\n"
+
+  text += ::format(<{export WORK="%s"}>,hamHome.removedirback()) + "\n"
+  // text += ::format(<{echo ... WORK: $WORK}>) + "\n"
+
+  text += ::format(<{export BUILD_BIN_LOA="%s"}>,"testosarch") + "\n"
+  text += ::format(<{export BUILD="%s"}>,"testbuild") + "\n"
+
+  text += <{export BASH_START_PATH=""}> + "\n"
+  text += <{export BASH_START_SILENT="yes"}> + "\n"
+  text += <{. "$HAM_HOME/bin/ham-bash-setenv.sh"}> + "\n"
+  ::println("---")
+  ::println(text);
+  ::println("---")
+})
+
+::TEST("rawstr","triple",#() {
+  ::println("---")
+  ::println("""
+A Raw String Using tripe quote string
+""")
+
+  ::println("---")
+
+  ::println("---")
+  ::println("""
+
+A Raw String Using tripe quote string with empty new line at the beginig and the end
+
+""")
+  ::println("---")
+
+  ::println("---")
+  ::println("""
+
+    A Raw String Using triple quotes with identation. Leading spaces *not* stripped.
+
+    some great identation {
+      yes this is indented yey
+    }
+
+    nothing is stripped excepted the first and last empty lines, here
+    the text ends with a line that is lead by two spaces, this is *not* stripped
+
+  """)
+  ::println("---")
+})
+
+::TEST("rawstr","singleline",#() {
+  local sv = ::format(""" -F \"%s\"""","yata")
+  ::println("sv: '" + sv + "'")
+  ::CHECK_EQUAL(" -F \"yata\"", sv)
+});
+
+::TEST("rawstr","quoteintriple",#() {
+  local sv = """Floor('123.0')+1"""
+  ::CHECK_EQUAL("Floor(\'123.0\')+1",sv)
+
+  local sv = """Floor("123.0")+1"""
+  ::CHECK_EQUAL("Floor(\"123.0\")+1",sv)
+
+  local sv = """Floor(""123.0"")+1"""
+  ::CHECK_EQUAL("Floor(\"\"123.0\"\")+1",sv)
+})
+
+::TEST("rawstr","billTheCat",#() {
+  local billTheCat = """
+ <------- ____
+  &&&    /    \  __ _____,
+    `-- |  o   \'  `  &&/
+       `|      | o  },-'
+         \____( )__/
+         ,'    \'   \
+ /~~~~~~|.      |   .}~~~\
+  ,-----( .     |   .}--.
+        | .    /\___/
+         `----^,\ \
+                \_/
+""";
+  ::println(billTheCat);
+
+  local billTheCat = {[
+ <------- ____
+  &&&    /    \  __ _____,
+    `-- |  o   \'  `  &&/
+       `|      | o  },-'
+         \____( )__/
+         ,'    \'   \
+ /~~~~~~|.      |   .}~~~\
+  ,-----( .     |   .}--.
+        | .    /\___/
+         `----^,\ \
+                \_/
+]};
+  ::println(billTheCat);
+})

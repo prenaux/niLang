@@ -1,0 +1,23 @@
+if [ SubDirOnce TOP HelloUI cpp ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTool HelloUI_cpp : 1.0.0 ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+if ! $(EMBEDDED) =  1 {
+  niImportModuleDll niScript ;
+}
+niImportModuleLibs niAppLib ;
+
+SRC = [ tkPkgSrc ] ;
+
+runInDir HelloUI_cpp ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : data : $(CHK_SOURCES) ] ;
+
+### DEPENDENCIES #####################################################
+tkDepends HelloUI_cpp : niLang : TOP niLang src ;
+tkDepends HelloUI_cpp : niUI : TOP niUI src ;
+tkDepends HelloUI_cpp : niAppLib : TOP niAppLib src ;
+if ! $(EMBEDDED) =  1 {
+  tkDepends HelloUI_cpp : niScript : TOP niScript src ;
+}

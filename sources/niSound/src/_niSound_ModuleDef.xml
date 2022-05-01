@@ -1,0 +1,2601 @@
+<niIDL
+	author="niLang Authors"
+	copyright="(c) 2022 The niLang Authors"
+	desc="Sound module"
+	initfunctions="no"
+	name="niSound"
+	version="1,0,0">
+	<dependencies>
+		<dependency name="niLang"/>
+	</dependencies>
+	<objecttypes>
+		<objecttype
+			class="cSoundFactory"
+			desc="Sound Factory Object"
+			name="SoundFactory"
+			type="ni::iSoundFactory"/>
+	</objecttypes>
+	<includes>
+		<include>niSound/src/_idl/ISoundBuffer.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundData.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundDriver.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundFactory.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundFormat.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundMixer.h.idl.xml</include>
+		<include>niSound/src/_idl/ISoundSource.h.idl.xml</include>
+	</includes>
+	<namespace name="ni" source="niSound/src/_idl/ISoundBuffer.h.idl.xml">
+		<interface name="iSoundBuffer" uuid1="CA0F6AFF-998C-401F-9AFF-ADAF39BA76B3" uuid2="0xca0f6aff,0x998c,0x401f,0x9a,0xff,0xad,0xaf,0x39,0xba,0x76,0xb3">
+			<comments desc="Sound buffer interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method java_name="createInstance" name="CreateInstance" num_parameters="0">
+				<comments desc="Create an instance of this sound buffer. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsInstance"
+				name="GetIsInstance"
+				num_parameters="0"
+				property="get"
+				property_name2="isInstance"
+				property_name="is_instance">
+				<comments desc="Get whether the sound buffer is an instance. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsStreamed"
+				name="GetIsStreamed"
+				num_parameters="0"
+				property="get"
+				property_name2="isStreamed"
+				property_name="is_streamed">
+				<comments desc="Get whether the sound is streamed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the sound buffer&apos;s format. "/>
+				<return type="eSoundFormat" typec="eSoundFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrequency"
+				name="GetFrequency"
+				num_parameters="0"
+				property="get"
+				property_name2="frequency"
+				property_name="frequency">
+				<comments desc="Get the sound buffer frequency. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStreamSoundData"
+				name="GetStreamSoundData"
+				num_parameters="0"
+				property="get"
+				property_name2="streamSoundData"
+				property_name="stream_sound_data">
+				<comments desc="Get the streamed sound data. "/>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resetPosition" name="ResetPosition" num_parameters="0">
+				<comments desc="Reset the sound buffer position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="3">
+				<comments desc="Retrieve data in the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anBytes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abLoop"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundData.h.idl.xml">
+		<enum name="eSoundFormat">
+			<comments desc="Common sound formats. "/>
+			<value name="eSoundFormat_Unknown" value="0 ">
+				<comments desc="Unknown format "/>
+			</value>
+			<value name="eSoundFormat_Mono8" value="( 8 ) | ( ( 1 ) &lt;&lt;8 ) ">
+				<comments desc="Mono 8 bits. "/>
+			</value>
+			<value name="eSoundFormat_Stereo8" value="( 8 ) | ( ( 2 ) &lt;&lt;8 ) ">
+				<comments desc="Stereo 8 bits. "/>
+			</value>
+			<value name="eSoundFormat_Mono16" value="( 16 ) | ( ( 1 ) &lt;&lt;8 ) ">
+				<comments desc="Mono 16 bits. "/>
+			</value>
+			<value name="eSoundFormat_Stereo16" value="( 16 ) | ( ( 2 ) &lt;&lt;8 ) ">
+				<comments desc="Stereo 16 bits. "/>
+			</value>
+		</enum>
+		<interface name="iSoundData" uuid1="2FE75840-416E-4D36-82FF-B43D17F40B05" uuid2="0x2fe75840,0x416e,0x4d36,0x82,0xff,0xb4,0x3d,0x17,0xf4,0x0b,0x05">
+			<comments desc="Sound data interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the sound data. ">
+					<remark text="This is necessary for streaming as streamed data need separate read pointers. "/>
+				</comments>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the sound&apos;s format bits. "/>
+				<return type="eSoundFormat" typec="eSoundFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrequency"
+				name="GetFrequency"
+				num_parameters="0"
+				property="get"
+				property_name2="frequency"
+				property_name="frequency">
+				<comments desc="Get the sound frequency in hertz. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="2">
+				<comments desc="Read a chunk of the specified size. " return="The number of bytes read and a negative value on error. ">
+					<params text="aptrOut is the buffer where to output the data. "/>
+					<params text="anSize is the number of bytes to read. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="apOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="reset" name="Reset" num_parameters="0">
+				<comments desc="Reset data stream to the begining. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLength"
+				name="GetLength"
+				num_parameters="0"
+				property="get"
+				property_name2="length"
+				property_name="length">
+				<comments desc="Get the sound length in frames. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iSoundDataLoader" uuid1="6CE55475-A8CA-4D0C-8BAE-3EE1217C4E14" uuid2="0x6ce55475,0xa8ca,0x4d0c,0x8b,0xae,0x3e,0xe1,0x21,0x7c,0x4e,0x14">
+			<comments desc="Sound data loader plugin interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="loadSoundData" name="LoadSoundData" num_parameters="1">
+				<comments desc=""/>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundDriver.h.idl.xml">
+		<enum name="eSoundDriverCapFlags">
+			<comments desc="Sound driver caps. "/>
+			<value name="eSoundDriverCapFlags_Buffer" value="niBit ( 0 ) ">
+				<comments desc="Access directly the primary sound buffer. "/>
+			</value>
+			<value name="eSoundDriverCapFlags_Mixer" value="niBit ( 1 ) ">
+				<comments desc="Own 2d sound mixer. "/>
+			</value>
+			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit ( 2 ) ">
+				<comments desc="Own 3d sound mixer. "/>
+			</value>
+		</enum>
+		<interface name="iSoundDriverBufferDataSink" uuid1="17F3F5D0-A4FE-4E30-BB8C-9B7BCD759185" uuid2="0x17f3f5d0,0xa4fe,0x4e30,0xbb,0x8c,0x9b,0x7b,0xcd,0x75,0x91,0x85">
+			<comments desc="Sound driver data callback. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onSoundDriverBufferDataSink" name="OnSoundDriverBufferDataSink" num_parameters="2">
+				<comments desc="Called when data needs to be written to the buffer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="ptr"
+					type="void *"
+					typec="void*"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="size"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iSoundDriverBuffer" uuid1="FE0E1AFA-668C-43BC-9003-50FA775941A3" uuid2="0xfe0e1afa,0x668c,0x43bc,0x90,0x03,0x50,0xfa,0x77,0x59,0x41,0xa3">
+			<comments desc="Sound driver buffer. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="Switch in the application. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="Switch out of the applicatio. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="play" name="Play" num_parameters="2">
+				<comments desc="Play the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFormat"
+					type="eSoundFormat"
+					typec="eSoundFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anFreq"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="stop" name="Stop" num_parameters="0">
+				<comments desc="Stop the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0">
+				<comments desc="Get the size of the sound buffer. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method java_name="setSink" name="SetSink" num_parameters="1">
+				<comments desc="Set the get sound data sink. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iSoundDriverBufferDataSink *"
+					typec="iSoundDriverBufferDataSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSink"
+				name="GetSink"
+				num_parameters="0">
+				<comments desc="Get the sound data sink. "/>
+				<return type="iSoundDriverBufferDataSink *" typec="iSoundDriverBufferDataSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateBuffer" name="UpdateBuffer" num_parameters="0">
+				<comments desc="Update the sound buffer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+		<interface name="iSoundDriver" uuid1="9B0219CB-3F6B-4C8B-9100-E31DB7724169" uuid2="0x9b0219cb,0x3f6b,0x4c8b,0x91,0x00,0xe3,0x1d,0xb7,0x72,0x41,0x69">
+			<comments desc="Sound driver interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the driver&apos;s name. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaps"
+				name="GetCaps"
+				num_parameters="0"
+				property="get"
+				property_name2="caps"
+				property_name="caps">
+				<comments desc="Get the driver&apos;s caps. "/>
+				<return type="tSoundDriverCapFlags" typec="tSoundDriverCapFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="startup" name="Startup" num_parameters="3">
+				<comments desc="Startup the sound driver. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFormat"
+					type="eSoundFormat"
+					typec="eSoundFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anFrequency"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aWindowHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="shutdown" name="Shutdown" num_parameters="0">
+				<comments desc="Shutdown the sound driver. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="To call when the application is activated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="To call when the application is deactivated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBuffer"
+				name="GetBuffer"
+				num_parameters="0"
+				property="get"
+				property_name2="buffer"
+				property_name="buffer">
+				<comments desc="Get the driver&apos;s sound buffer. "/>
+				<return type="iSoundDriverBuffer *" typec="iSoundDriverBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer"
+				name="GetMixer"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer"
+				property_name="mixer">
+				<comments desc="Get the driver&apos;s mixer. "/>
+				<return type="iSoundMixer *" typec="iSoundMixer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer3D"
+				name="GetMixer3D"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer3D"
+				property_name="mixer3d">
+				<comments desc="Get the driver&apos;s 3d mixer. "/>
+				<return type="iSoundMixer3D *" typec="iSoundMixer3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update the driver&apos;s computations. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundFactory.h.idl.xml">
+		<interface name="iSoundFactory" uuid1="76551A09-010B-4074-97C3-54582B3CE655" uuid2="0x76551a09,0x010b,0x4074,0x97,0xc3,0x54,0x58,0x2b,0x3c,0xe6,0x55">
+			<comments desc="Sound factory interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getNumDrivers"
+				name="GetNumDrivers"
+				num_parameters="0"
+				property="get"
+				property_name2="numDrivers"
+				property_name="num_drivers">
+				<comments desc="Get the number of sound drivers available. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriver"
+				name="GetDriver"
+				num_parameters="1"
+				property="get"
+				property_name2="driver"
+				property_name="driver">
+				<comments desc="Get the driver at the specified index. "/>
+				<return type="iSoundDriver *" typec="iSoundDriver*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriverName"
+				name="GetDriverName"
+				num_parameters="1"
+				property="get"
+				property_name2="driverName"
+				property_name="driver_name">
+				<comments desc="Get the name of the sound driver at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriverCaps"
+				name="GetDriverCaps"
+				num_parameters="1"
+				property="get"
+				property_name2="driverCaps"
+				property_name="driver_caps">
+				<comments desc="Get the caps of the sound driver at the specified index. "/>
+				<return type="tSoundDriverCapFlags" typec="tSoundDriverCapFlags" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriverIndex"
+				name="GetDriverIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="driverIndex"
+				property_name="driver_index">
+				<comments desc="Get the index of the driver with the specified name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="startupDriver" name="StartupDriver" num_parameters="4">
+				<comments desc="Initialize the specified sound driver. ">
+					<remark text="The bits, channels and frequency parameters are used mostly by the software sound mixer, with a hardware accelerated mixer driver those parameters might be ignored. "/>
+					<params text="anDriver is the index of the driver to start. If eInvalidHandle the best driver available will be selected. "/>
+					<params text="aFormat is the format to use in the driver. "/>
+					<params text="anFrequency is the frequency to use in the driver. "/>
+					<params text="aWindowHandle, if not NULL specify the window handle to pass to the sound driver. This is ignored by some drivers, and is usefull only when using the sound module without the full SDK, since the SDK will already holds a proper window handle. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anDriver"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aFormat"
+					type="eSoundFormat"
+					typec="eSoundFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anFrequency"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aWindowHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="shutdownDriver" name="ShutdownDriver" num_parameters="0">
+				<comments desc="Shutdown the current sound driver. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActiveDriver"
+				name="GetActiveDriver"
+				num_parameters="0"
+				property="get"
+				property_name2="activeDriver"
+				property_name="active_driver">
+				<comments desc="Get the active driver. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBuffer"
+				name="GetBuffer"
+				num_parameters="0"
+				property="get"
+				property_name2="buffer"
+				property_name="buffer">
+				<comments desc="Get the driver&apos;s sound buffer. "/>
+				<return type="iSoundDriverBuffer *" typec="iSoundDriverBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer"
+				name="GetMixer"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer"
+				property_name="mixer">
+				<comments desc="Get the sound mixer. "/>
+				<return type="iSoundMixer *" typec="iSoundMixer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer3D"
+				name="GetMixer3D"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer3D"
+				property_name="mixer3d">
+				<comments desc="Get the 3d sound mixer. "/>
+				<return type="iSoundMixer3D *" typec="iSoundMixer3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="To call when the application is activated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="To call when the application is deactivated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="1">
+				<comments desc="Find the first free channel. Find the first free channel, possibily over a used channel with the specified priority. Update the sounds. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="loadSoundData" name="LoadSoundData" num_parameters="1">
+				<comments desc="Load sound data from the specified file. "/>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSoundBufferEx" name="CreateSoundBufferEx" num_parameters="3">
+				<comments desc="Create a sound buffer from the specified sound data. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apData"
+					type="iSoundData *"
+					typec="iSoundData*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abStream"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSoundBuffer" name="CreateSoundBuffer" num_parameters="3">
+				<comments desc="Create a sound buffer from the specified file. ">
+					<remark text="This method will load sound data internally. "/>
+				</comments>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abStream"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSoundBufferFromRes" name="CreateSoundBufferFromRes" num_parameters="2">
+				<comments desc="Create a sound buffer from the specified resource. "/>
+				<return type="ni::iSoundBuffer *" typec="ni::iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abStream"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="getSoundBuffer"
+				name="GetSoundBuffer"
+				num_parameters="1"
+				property="get"
+				property_name2="soundBuffer"
+				property_name="sound_buffer">
+				<comments desc="Get the sound buffer with the given name. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSoundSource" name="CreateSoundSource" num_parameters="1">
+				<comments desc="Create a new sound source. "/>
+				<return type="iSoundSource *" typec="iSoundSource*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBuffer"
+					type="iSoundBuffer *"
+					typec="iSoundBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setListenerPosition"
+				name="SetListenerPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerPosition"
+				property_name="listener_position">
+				<comments desc="Set the listener&apos;s position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerPosition"
+				name="GetListenerPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerPosition"
+				property_name="listener_position">
+				<comments desc="Get the listener&apos;s position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerVelocity"
+				name="SetListenerVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerVelocity"
+				property_name="listener_velocity">
+				<comments desc="Set the listener&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerVelocity"
+				name="GetListenerVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerVelocity"
+				property_name="listener_velocity">
+				<comments desc="Get the listener&apos;s velocity. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerForward"
+				name="SetListenerForward"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerForward"
+				property_name="listener_forward">
+				<comments desc="Set the listener&apos;s forward/looking direction. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerForward"
+				name="GetListenerForward"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerForward"
+				property_name="listener_forward">
+				<comments desc="Get the listener&apos;s forward/looking direction. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerUp"
+				name="SetListenerUp"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerUp"
+				property_name="listener_up">
+				<comments desc="Set the listener&apos;s up direction. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerUp"
+				name="GetListenerUp"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerUp"
+				property_name="listener_up">
+				<comments desc="Get the listener&apos;s up direction. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerDistanceScale"
+				name="SetListenerDistanceScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerDistanceScale"
+				property_name="listener_distance_scale">
+				<comments desc="Set the listener&apos;s distance scale. ">
+					<remark text="By default 0.1 - aka the default unit system 10 units = 1 meter "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerDistanceScale"
+				name="GetListenerDistanceScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerDistanceScale"
+				property_name="listener_distance_scale">
+				<comments desc="Get the listener&apos;s distance scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setListenerRolloffScale"
+				name="SetListenerRolloffScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerRolloffScale"
+				property_name="listener_rolloff_scale">
+				<comments desc="Set the listener&apos;s rolloff scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerRolloffScale"
+				name="GetListenerRolloffScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerRolloffScale"
+				property_name="listener_rolloff_scale">
+				<comments desc="Get the listener&apos;s rolloff scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setListenerDopplerScale"
+				name="SetListenerDopplerScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerDopplerScale"
+				property_name="listener_doppler_scale">
+				<comments desc="Set the listener&apos;s doppler scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerDopplerScale"
+				name="GetListenerDopplerScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerDopplerScale"
+				property_name="listener_doppler_scale">
+				<comments desc="Get the listener&apos;s doppler scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="musicPlay" name="MusicPlay" num_parameters="4">
+				<comments desc="Play a music. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSoundSource"
+					type="iSoundSource *"
+					typec="iSoundSource*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afVolume"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSpeed"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afBlendTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="musicStop" name="MusicStop" num_parameters="1">
+				<comments desc="Stop the current music. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afBlendTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="musicSpeed" name="MusicSpeed" num_parameters="2">
+				<comments desc="Set the new speed of the music. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="afSpeed"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afBlendTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="musicVolume" name="MusicVolume" num_parameters="2">
+				<comments desc="Set the new volume of the music. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="afVolume"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afBlendTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundFormat.h.idl.xml">
+		<interface name="iSoundFormat" uuid1="03D84992-AE0A-4EBC-BEFF-9A4B6816F19D" uuid2="0x03d84992,0xae0a,0x4ebc,0xbe,0xff,0x9a,0x4b,0x68,0x16,0xf1,0x9d">
+			<comments desc="Utility format object. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the full format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBaseFormat"
+				name="GetBaseFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="baseFormat"
+				property_name="base_format">
+				<comments desc="Get the base format (format without extra parameter). "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setBits"
+				name="SetBits"
+				num_parameters="1"
+				property="set"
+				property_name2="bits"
+				property_name="bits">
+				<comments desc="Set format&apos;s bits. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBits"
+				name="GetBits"
+				num_parameters="0"
+				property="get"
+				property_name2="bits"
+				property_name="bits">
+				<comments desc="Get format&apos;s bits. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setChannels"
+				name="SetChannels"
+				num_parameters="1"
+				property="set"
+				property_name2="channels"
+				property_name="channels">
+				<comments desc="Set format&apos;s num channels. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannels"
+				name="GetChannels"
+				num_parameters="0"
+				property="get"
+				property_name2="channels"
+				property_name="channels">
+				<comments desc="Get format&apos;s num channels. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setExtra"
+				name="SetExtra"
+				num_parameters="1"
+				property="set"
+				property_name2="extra"
+				property_name="extra">
+				<comments desc="Set format&apos;s extra parameter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExtra"
+				name="GetExtra"
+				num_parameters="0"
+				property="get"
+				property_name2="extra"
+				property_name="extra">
+				<comments desc="Get format&apos;s extra parameter. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSampleSize"
+				name="GetSampleSize"
+				num_parameters="0"
+				property="get"
+				property_name2="sampleSize"
+				property_name="sample_size">
+				<comments desc="Get the format&apos;s sample size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrameSize"
+				name="GetFrameSize"
+				num_parameters="0"
+				property="get"
+				property_name2="frameSize"
+				property_name="frame_size">
+				<comments desc="Get the format&apos;s frame size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundMixer.h.idl.xml">
+		<enum name="eSoundMode">
+			<comments desc="Sound mode "/>
+			<value name="eSoundMode_Normal2D" value="0 ">
+				<comments desc="Normal 2D sound playing. ">
+					<remark text="Ignores all 3d properties. "/>
+				</comments>
+			</value>
+			<value name="eSoundMode_Normal3D" value="1 ">
+				<comments desc="Normal 3D sound playing. ">
+					<remark text="Ignores panning. "/>
+				</comments>
+			</value>
+			<value name="eSoundMode_Relative3D" value="2 ">
+				<comments desc="Listener relative 3d sound playing. ">
+					<remark text="Ignores panning. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iSoundMixer" uuid1="A45CFB5D-7391-4BF6-92D9-6D4E741FF114" uuid2="0xa45cfb5d,0x7391,0x4bf6,0x92,0xd9,0x6d,0x4e,0x74,0x1f,0xf1,0x14">
+			<comments desc="Sound mixer interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="To call when the application is activated. ">
+					<remark text="Usually the owner of the mixer will call it. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="To call when the application is deactivated. ">
+					<remark text="Usually the owner of the mixer will call it. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setAmplification"
+				name="SetAmplification"
+				num_parameters="1"
+				property="set"
+				property_name2="amplification"
+				property_name="amplification">
+				<comments desc="Set the amplification of the mixer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ampli"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAmplification"
+				name="GetAmplification"
+				num_parameters="0"
+				property="get"
+				property_name2="amplification"
+				property_name="amplification">
+				<comments desc="Get the amplification of the mixer. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setSaturationCheck"
+				name="SetSaturationCheck"
+				num_parameters="1"
+				property="set"
+				property_name2="saturationCheck"
+				property_name="saturation_check">
+				<comments desc="Set the saturation check of the mixer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="check"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSaturationCheck"
+				name="GetSaturationCheck"
+				num_parameters="0"
+				property="get"
+				property_name2="saturationCheck"
+				property_name="saturation_check">
+				<comments desc="Get the saturation check of the mixer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setReverseStereo"
+				name="SetReverseStereo"
+				num_parameters="1"
+				property="set"
+				property_name2="reverseStereo"
+				property_name="reverse_stereo">
+				<comments desc="Set the reverse stereo of the mixer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="reverse"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReverseStereo"
+				name="GetReverseStereo"
+				num_parameters="0"
+				property="get"
+				property_name2="reverseStereo"
+				property_name="reverse_stereo">
+				<comments desc="Get the reverse stereo of the mixer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setMasterVolume"
+				name="SetMasterVolume"
+				num_parameters="1"
+				property="set"
+				property_name2="masterVolume"
+				property_name="master_volume">
+				<comments desc="Set the master volume of the mixer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="vol"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMasterVolume"
+				name="GetMasterVolume"
+				num_parameters="0"
+				property="get"
+				property_name2="masterVolume"
+				property_name="master_volume">
+				<comments desc="Get the master volume of the mixer. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChannels"
+				name="GetNumChannels"
+				num_parameters="0">
+				<comments desc="Get the number of channels available. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="startChannel" name="StartChannel" num_parameters="1">
+				<comments desc="Start playing the specified channel. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="stopChannel" name="StopChannel" num_parameters="1">
+				<comments desc="Stop playing the specified channel. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="stopAllChannels" name="StopAllChannels" num_parameters="0">
+				<comments desc="Stop playing all channels. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setChannelMasterVolume"
+				name="SetChannelMasterVolume"
+				num_parameters="2"
+				property="set"
+				property_name2="channelMasterVolume"
+				property_name="channel_master_volume">
+				<comments desc="Set the master volume of the specified channel. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="vol"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelMasterVolume"
+				name="GetChannelMasterVolume"
+				num_parameters="1"
+				property="get"
+				property_name2="channelMasterVolume"
+				property_name="channel_master_volume">
+				<comments desc="Get the master volume of the specified channel. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelMasterPan"
+				name="SetChannelMasterPan"
+				num_parameters="2"
+				property="set"
+				property_name2="channelMasterPan"
+				property_name="channel_master_pan">
+				<comments desc="Set the master pan of the specified channel. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pan"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelMasterPan"
+				name="GetChannelMasterPan"
+				num_parameters="1"
+				property="get"
+				property_name2="channelMasterPan"
+				property_name="channel_master_pan">
+				<comments desc="Get the master pan of the specified channel. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelBuffer"
+				name="SetChannelBuffer"
+				num_parameters="2"
+				property="set"
+				property_name2="channelBuffer"
+				property_name="channel_buffer">
+				<comments desc="Set the buffer of the specified channel. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anChan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apBuffer"
+					type="iSoundBuffer *"
+					typec="iSoundBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelBuffer"
+				name="GetChannelBuffer"
+				num_parameters="1"
+				property="get"
+				property_name2="channelBuffer"
+				property_name="channel_buffer">
+				<comments desc="Get the buffer of the specified channel. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anChan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelVolume"
+				name="SetChannelVolume"
+				num_parameters="2"
+				property="set"
+				property_name2="channelVolume"
+				property_name="channel_volume">
+				<comments desc="Set the volume of the specified channel. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="vol"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelVolume"
+				name="GetChannelVolume"
+				num_parameters="1"
+				property="get"
+				property_name2="channelVolume"
+				property_name="channel_volume">
+				<comments desc="Get the volume of the specified channel. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelPan"
+				name="SetChannelPan"
+				num_parameters="2"
+				property="set"
+				property_name2="channelPan"
+				property_name="channel_pan">
+				<comments desc="Set the panning of the specified channel. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pan"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelPan"
+				name="GetChannelPan"
+				num_parameters="1"
+				property="get"
+				property_name2="channelPan"
+				property_name="channel_pan">
+				<comments desc="Get the panning of the specified channel. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelFrequency"
+				name="SetChannelFrequency"
+				num_parameters="2"
+				property="set"
+				property_name2="channelFrequency"
+				property_name="channel_frequency">
+				<comments desc="Set the frequency of the specified channel. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="frequency"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelFrequency"
+				name="GetChannelFrequency"
+				num_parameters="1"
+				property="get"
+				property_name2="channelFrequency"
+				property_name="channel_frequency">
+				<comments desc="Get the frequency of the specified channel. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelLoop"
+				name="SetChannelLoop"
+				num_parameters="2"
+				property="set"
+				property_name2="channelLoop"
+				property_name="channel_loop">
+				<comments desc="Set whether the specified channel loops. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="loop"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelLoop"
+				name="GetChannelLoop"
+				num_parameters="1"
+				property="get"
+				property_name2="channelLoop"
+				property_name="channel_loop">
+				<comments desc="Get whether the specified channel loops. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelPause"
+				name="SetChannelPause"
+				num_parameters="2"
+				property="set"
+				property_name2="channelPause"
+				property_name="channel_pause">
+				<comments desc="Set whether the specified channel is paused. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pause"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelPause"
+				name="GetChannelPause"
+				num_parameters="1"
+				property="get"
+				property_name2="channelPause"
+				property_name="channel_pause">
+				<comments desc="Get whether the specified channel is paused. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsChannelBusy"
+				name="GetIsChannelBusy"
+				num_parameters="1"
+				property="get"
+				property_name2="isChannelBusy"
+				property_name="is_channel_busy">
+				<comments desc="Get whether the specified channel is busy (playing, or, playing and paused). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelUserID"
+				name="SetChannelUserID"
+				num_parameters="2"
+				property="set"
+				property_name2="channelUserID"
+				property_name="channel_user_id">
+				<comments desc="Set the user id of the specified channel. ">
+					<remark text="Stop channel reset the user id to zero. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anUserId"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelUserID"
+				name="GetChannelUserID"
+				num_parameters="1"
+				property="get"
+				property_name2="channelUserID"
+				property_name="channel_user_id">
+				<comments desc="Get the user id of the specified channel. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="updateMixer" name="UpdateMixer" num_parameters="0">
+				<comments desc="Update the sound mixer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<interface name="iSoundMixer3D" uuid1="EDEDED66-BEA9-4DC4-ACD5-276CFE1F72FB" uuid2="0xededed66,0xbea9,0x4dc4,0xac,0xd5,0x27,0x6c,0xfe,0x1f,0x72,0xfb">
+			<comments desc="Sound mixer 3d interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFirst3DChannel"
+				name="GetFirst3DChannel"
+				num_parameters="0"
+				property="get"
+				property_name2="first3DChannel"
+				property_name="first3dchannel">
+				<comments desc="Get the index of the first 3d channel. ">
+					<remark text="The 3d channels are at the end, so from first 3d channel to the last channel index are all 3d channels. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsChannel3D"
+				name="GetIsChannel3D"
+				num_parameters="1"
+				property="get"
+				property_name2="isChannel3D"
+				property_name="is_channel3d">
+				<comments desc="Get whether the specified channel is 3d. ">
+					<remark text="3D channels dont support panning "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelMode"
+				name="SetChannelMode"
+				num_parameters="2"
+				property="set"
+				property_name2="channelMode"
+				property_name="channel_mode">
+				<comments desc="Set the channel&apos;s 3d mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eSoundMode"
+					typec="eSoundMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelMode"
+				name="GetChannelMode"
+				num_parameters="1"
+				property="get"
+				property_name2="channelMode"
+				property_name="channel_mode">
+				<comments desc="Get the channel&apos;s 3d mode. "/>
+				<return type="eSoundMode" typec="eSoundMode" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelPosition"
+				name="SetChannelPosition"
+				num_parameters="2"
+				property="set"
+				property_name2="channelPosition"
+				property_name="channel_position">
+				<comments desc="Set the channel&apos;s 3d Position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avPosition"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getChannelPosition"
+				name="GetChannelPosition"
+				num_parameters="1"
+				property="get"
+				property_name2="channelPosition"
+				property_name="channel_position">
+				<comments desc="Get the channel&apos;s 3d Position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelVelocity"
+				name="SetChannelVelocity"
+				num_parameters="2"
+				property="set"
+				property_name2="channelVelocity"
+				property_name="channel_velocity">
+				<comments desc="Set the channel&apos;s 3d Velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avVelocity"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getChannelVelocity"
+				name="GetChannelVelocity"
+				num_parameters="1"
+				property="get"
+				property_name2="channelVelocity"
+				property_name="channel_velocity">
+				<comments desc="Get the channel&apos;s 3d Velocity. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelMinDistance"
+				name="SetChannelMinDistance"
+				num_parameters="2"
+				property="set"
+				property_name2="channelMinDistance"
+				property_name="channel_min_distance">
+				<comments desc="Set the channel&apos;s 3D minimum distance. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afMinDistance"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelMinDistance"
+				name="GetChannelMinDistance"
+				num_parameters="1"
+				property="get"
+				property_name2="channelMinDistance"
+				property_name="channel_min_distance">
+				<comments desc="Set the channel&apos;s 3D minimum distance. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelMaxDistance"
+				name="SetChannelMaxDistance"
+				num_parameters="2"
+				property="set"
+				property_name2="channelMaxDistance"
+				property_name="channel_max_distance">
+				<comments desc="Set the channel&apos;s 3D maximum distance. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afMaxDistance"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelMaxDistance"
+				name="GetChannelMaxDistance"
+				num_parameters="1"
+				property="get"
+				property_name2="channelMaxDistance"
+				property_name="channel_max_distance">
+				<comments desc="Set the channel&apos;s 3D maximum distance. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelConeInner"
+				name="SetChannelConeInner"
+				num_parameters="2"
+				property="set"
+				property_name2="channelConeInner"
+				property_name="channel_cone_inner">
+				<comments desc="Set the channel&apos;s 3D cone inside angle. ">
+					<remark text="The angle&apos;s range is 0 (no cone) to 2pi/360deg (full sphere). The angle is in radian. "/>
+					<remark text="Default is zero, no cone attenuation. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afInsideAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelConeInner"
+				name="GetChannelConeInner"
+				num_parameters="1"
+				property="get"
+				property_name2="channelConeInner"
+				property_name="channel_cone_inner">
+				<comments desc="Set the channel&apos;s 3D cone inside angle. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelConeOuter"
+				name="SetChannelConeOuter"
+				num_parameters="2"
+				property="set"
+				property_name2="channelConeOuter"
+				property_name="channel_cone_outer">
+				<comments desc="Set the channel&apos;s 3D cone outside angle. ">
+					<remark text="The angle&apos;s range is 0 (no cone) to 2pi/360deg (full sphere). The angle is in radian. "/>
+					<remark text="Default is zero, no cone attenuation. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afOutsideAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelConeOuter"
+				name="GetChannelConeOuter"
+				num_parameters="1"
+				property="get"
+				property_name2="channelConeOuter"
+				property_name="channel_cone_outer">
+				<comments desc="Set the channel&apos;s 3D cone outside angle. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelConeOuterVolume"
+				name="SetChannelConeOuterVolume"
+				num_parameters="2"
+				property="set"
+				property_name2="channelConeOuterVolume"
+				property_name="channel_cone_outer_volume">
+				<comments desc="Sets the volume of the sound outside the outer angle of the sound projection cone. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anOuterVolume"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelConeOuterVolume"
+				name="GetChannelConeOuterVolume"
+				num_parameters="1"
+				property="get"
+				property_name2="channelConeOuterVolume"
+				property_name="channel_cone_outer_volume">
+				<comments desc="Set the channel&apos;s 3D cone outside angle. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setChannelConeDirection"
+				name="SetChannelConeDirection"
+				num_parameters="2"
+				property="set"
+				property_name2="channelConeDirection"
+				property_name="channel_cone_direction">
+				<comments desc="Set the channel&apos;s 3D cone direction. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannelConeDirection"
+				name="GetChannelConeDirection"
+				num_parameters="1"
+				property="get"
+				property_name2="channelConeDirection"
+				property_name="channel_cone_direction">
+				<comments desc="Set the channel&apos;s 3D cone direction. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="nchan"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setListenerPosition"
+				name="SetListenerPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerPosition"
+				property_name="listener_position">
+				<comments desc="Set the listener&apos;s position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerPosition"
+				name="GetListenerPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerPosition"
+				property_name="listener_position">
+				<comments desc="Get the listener&apos;s position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerVelocity"
+				name="SetListenerVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerVelocity"
+				property_name="listener_velocity">
+				<comments desc="Set the listener&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerVelocity"
+				name="GetListenerVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerVelocity"
+				property_name="listener_velocity">
+				<comments desc="Get the listener&apos;s velocity. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerForward"
+				name="SetListenerForward"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerForward"
+				property_name="listener_forward">
+				<comments desc="Set the listener&apos;s forward/looking direction. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerForward"
+				name="GetListenerForward"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerForward"
+				property_name="listener_forward">
+				<comments desc="Get the listener&apos;s forward/looking direction. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerUp"
+				name="SetListenerUp"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerUp"
+				property_name="listener_up">
+				<comments desc="Set the listener&apos;s up direction. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerUp"
+				name="GetListenerUp"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerUp"
+				property_name="listener_up">
+				<comments desc="Get the listener&apos;s up direction. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setListenerDistanceScale"
+				name="SetListenerDistanceScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerDistanceScale"
+				property_name="listener_distance_scale">
+				<comments desc="Set the listener&apos;s distance scale. ">
+					<remark text="By default 0.1 - aka the default unit system 10 units = 1 meter "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerDistanceScale"
+				name="GetListenerDistanceScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerDistanceScale"
+				property_name="listener_distance_scale">
+				<comments desc="Get the listener&apos;s distance scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setListenerRolloffScale"
+				name="SetListenerRolloffScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerRolloffScale"
+				property_name="listener_rolloff_scale">
+				<comments desc="Set the listener&apos;s rolloff scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerRolloffScale"
+				name="GetListenerRolloffScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerRolloffScale"
+				property_name="listener_rolloff_scale">
+				<comments desc="Get the listener&apos;s rolloff scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setListenerDopplerScale"
+				name="SetListenerDopplerScale"
+				num_parameters="1"
+				property="set"
+				property_name2="listenerDopplerScale"
+				property_name="listener_doppler_scale">
+				<comments desc="Set the listener&apos;s doppler scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getListenerDopplerScale"
+				name="GetListenerDopplerScale"
+				num_parameters="0"
+				property="get"
+				property_name2="listenerDopplerScale"
+				property_name="listener_doppler_scale">
+				<comments desc="Get the listener&apos;s doppler scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="updateMixer3D" name="UpdateMixer3D" num_parameters="0">
+				<comments desc="Update the 3d sounds mixer. ">
+					<remark text="This function will usually be called once per frame. It can be ignored if no 3d sounds has been modified. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niSound/src/_idl/ISoundSource.h.idl.xml">
+		<interface name="iSoundSource" uuid1="6FAE2F58-754C-4369-A3F6-5171FC7CA23E" uuid2="0x6fae2f58,0x754c,0x4369,0xa3,0xf6,0x51,0x71,0xfc,0x7c,0xa2,0x3e">
+			<comments desc="Sound source interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				java_name="setSoundBuffer"
+				name="SetSoundBuffer"
+				num_parameters="1"
+				property="set"
+				property_name2="soundBuffer"
+				property_name="sound_buffer">
+				<comments desc="Set the sound buffer. ">
+					<remark text="If currently playing the sound source is stopped first. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBuffer"
+					type="iSoundBuffer *"
+					typec="iSoundBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSoundBuffer"
+				name="GetSoundBuffer"
+				num_parameters="0"
+				property="get"
+				property_name2="soundBuffer"
+				property_name="sound_buffer">
+				<comments desc="Get the sound buffer. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMode"
+				name="SetMode"
+				num_parameters="1"
+				property="set"
+				property_name2="mode"
+				property_name="mode">
+				<comments desc="Set the sound mode. ">
+					<remark text="The sound mode is changed only next time the sound source starts to play. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eSoundMode"
+					typec="eSoundMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMode"
+				name="GetMode"
+				num_parameters="0"
+				property="get"
+				property_name2="mode"
+				property_name="mode">
+				<comments desc="Get the sound mode. "/>
+				<return type="eSoundMode" typec="eSoundMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setPosition"
+				name="SetPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Set the source&apos;s position. ">
+					<remark text="Zero by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the source&apos;s position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setVelocity"
+				name="SetVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Set the source&apos;s velocity. ">
+					<remark text="Zero by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avVel"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVelocity"
+				name="GetVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Get the source&apos;s velocity. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setMinDistance"
+				name="SetMinDistance"
+				num_parameters="1"
+				property="set"
+				property_name2="minDistance"
+				property_name="min_distance">
+				<comments desc="Set the minimum audible distance. ">
+					<remark text="10 by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="fMin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMinDistance"
+				name="GetMinDistance"
+				num_parameters="0"
+				property="get"
+				property_name2="minDistance"
+				property_name="min_distance">
+				<comments desc="Get the minimum audible distance. ">
+					<remark text="0 by default. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setMaxDistance"
+				name="SetMaxDistance"
+				num_parameters="1"
+				property="set"
+				property_name2="maxDistance"
+				property_name="max_distance">
+				<comments desc="Set the maximum audible distance. ">
+					<remark text="1000 by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="fMax"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxDistance"
+				name="GetMaxDistance"
+				num_parameters="0"
+				property="get"
+				property_name2="maxDistance"
+				property_name="max_distance">
+				<comments desc="Get the maximum audible distance. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setPan"
+				name="SetPan"
+				num_parameters="1"
+				property="set"
+				property_name2="pan"
+				property_name="pan">
+				<comments desc="Set the sound panning. ">
+					<remark text="0 by default, -1 left, 1 right. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afPanning"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPan"
+				name="GetPan"
+				num_parameters="0"
+				property="get"
+				property_name2="pan"
+				property_name="pan">
+				<comments desc="Get the sound volume. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setVolume"
+				name="SetVolume"
+				num_parameters="1"
+				property="set"
+				property_name2="volume"
+				property_name="volume">
+				<comments desc="Set the sound volume. ">
+					<remark text="1 by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afVolume"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVolume"
+				name="GetVolume"
+				num_parameters="0"
+				property="get"
+				property_name2="volume"
+				property_name="volume">
+				<comments desc="Get the sound volume. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the sound speed. ">
+					<remark text="1 by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afPitch"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the sound speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setLoop"
+				name="SetLoop"
+				num_parameters="1"
+				property="set"
+				property_name2="loop"
+				property_name="loop">
+				<comments desc="Set the source in loop mode. ">
+					<remark text="eFalse by default. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abLoop"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLoop"
+				name="GetLoop"
+				num_parameters="0"
+				property="get"
+				property_name2="loop"
+				property_name="loop">
+				<comments desc="Get the source loop mode. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="play" name="Play" num_parameters="0">
+				<comments desc="Starts playing the sound. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="stop" name="Stop" num_parameters="0">
+				<comments desc="Stops playing the sound. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="pause" name="Pause" num_parameters="0">
+				<comments desc="Pause the sound. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsPlaying"
+				name="GetIsPlaying"
+				num_parameters="0"
+				property="get"
+				property_name2="isPlaying"
+				property_name="is_playing">
+				<comments desc="Check if the sound is currently playing. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsPaused"
+				name="GetIsPaused"
+				num_parameters="0"
+				property="get"
+				property_name2="isPaused"
+				property_name="is_paused">
+				<comments desc="Check if the sound is currently paused. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="play2D" name="Play2D" num_parameters="3">
+				<comments desc="Play as a 2d sound FX. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="afVolume"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSpeed"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afPan"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="play3D" name="Play3D" num_parameters="6">
+				<comments desc="Play as a 3d sound FX. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="afVolume"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSpeed"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="avPosition"
+					type="ni::sVec3f"
+					typec="ni::sVec3f"
+					typei="ni::eType_Vec3f"/>
+				<parameter
+					name="abListenerRelative"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="afMinDistance"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afMaxDistance"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

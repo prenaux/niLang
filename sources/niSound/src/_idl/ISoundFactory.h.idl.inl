@@ -1,0 +1,339 @@
+#include "../API/niSound/ISoundFactory.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSoundFactory **/
+IDLC_BEGIN_INTF(ni,iSoundFactory)
+/** ni -> iSoundFactory::GetNumDrivers/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetNumDrivers,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetNumDrivers,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetNumDrivers,0)
+
+/** ni -> iSoundFactory::GetDriver/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetDriver,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iSoundDriver*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetDriver,1,(anIndex))
+	IDLC_RET_FROM_INTF(iSoundDriver,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetDriver,1)
+
+/** ni -> iSoundFactory::GetDriverName/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetDriverName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetDriverName,1,(anIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetDriverName,1)
+
+/** ni -> iSoundFactory::GetDriverCaps/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetDriverCaps,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tSoundDriverCapFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetDriverCaps,1,(anIndex))
+	IDLC_RET_FROM_ENUM(tSoundDriverCapFlags,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetDriverCaps,1)
+
+/** ni -> iSoundFactory::GetDriverIndex/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetDriverIndex,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetDriverIndex,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetDriverIndex,1)
+
+/** ni -> iSoundFactory::StartupDriver/4 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,StartupDriver,4)
+	IDLC_DECL_VAR(tU32,anDriver)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anDriver)
+	IDLC_DECL_VAR(eSoundFormat,aFormat)
+	IDLC_BUF_TO_ENUM(eSoundFormat,aFormat)
+	IDLC_DECL_VAR(tU32,anFrequency)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFrequency)
+	IDLC_DECL_VAR(tIntPtr,aWindowHandle)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aWindowHandle)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,StartupDriver,4,(anDriver,aFormat,anFrequency,aWindowHandle))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,StartupDriver,4)
+
+/** ni -> iSoundFactory::ShutdownDriver/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,ShutdownDriver,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,ShutdownDriver,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,ShutdownDriver,0)
+
+/** ni -> iSoundFactory::GetActiveDriver/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetActiveDriver,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetActiveDriver,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetActiveDriver,0)
+
+/** ni -> iSoundFactory::GetBuffer/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetBuffer,0)
+	IDLC_DECL_RETVAR(iSoundDriverBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetBuffer,0,())
+	IDLC_RET_FROM_INTF(iSoundDriverBuffer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetBuffer,0)
+
+/** ni -> iSoundFactory::GetMixer/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetMixer,0)
+	IDLC_DECL_RETVAR(iSoundMixer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetMixer,0,())
+	IDLC_RET_FROM_INTF(iSoundMixer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetMixer,0)
+
+/** ni -> iSoundFactory::GetMixer3D/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetMixer3D,0)
+	IDLC_DECL_RETVAR(iSoundMixer3D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetMixer3D,0,())
+	IDLC_RET_FROM_INTF(iSoundMixer3D,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetMixer3D,0)
+
+/** ni -> iSoundFactory::SwitchIn/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SwitchIn,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,SwitchIn,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,SwitchIn,0)
+
+/** ni -> iSoundFactory::SwitchOut/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SwitchOut,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,SwitchOut,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,SwitchOut,0)
+
+/** ni -> iSoundFactory::Update/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,Update,1)
+	IDLC_DECL_VAR(ni::tF32,afDeltaTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDeltaTime)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,Update,1,(afDeltaTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,Update,1)
+
+/** ni -> iSoundFactory::LoadSoundData/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,LoadSoundData,1)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_RETVAR(iSoundData*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,LoadSoundData,1,(apFile))
+	IDLC_RET_FROM_INTF(iSoundData,_Ret)
+IDLC_METH_END(ni,iSoundFactory,LoadSoundData,1)
+
+/** ni -> iSoundFactory::CreateSoundBufferEx/3 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,CreateSoundBufferEx,3)
+	IDLC_DECL_VAR(iSoundData*,apData)
+	IDLC_BUF_TO_INTF(iSoundData,apData)
+	IDLC_DECL_VAR(tBool,abStream)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStream)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iSoundBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,CreateSoundBufferEx,3,(apData,abStream,ahspName))
+	IDLC_RET_FROM_INTF(iSoundBuffer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,CreateSoundBufferEx,3)
+
+/** ni -> iSoundFactory::CreateSoundBuffer/3 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,CreateSoundBuffer,3)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(tBool,abStream)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStream)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iSoundBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,CreateSoundBuffer,3,(apFile,abStream,ahspName))
+	IDLC_RET_FROM_INTF(iSoundBuffer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,CreateSoundBuffer,3)
+
+/** ni -> iSoundFactory::CreateSoundBufferFromRes/2 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,CreateSoundBufferFromRes,2)
+	IDLC_DECL_VAR(ni::iHString*,ahspName)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspName)
+	IDLC_DECL_VAR(ni::tBool,abStream)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStream)
+	IDLC_DECL_RETVAR(ni::iSoundBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,CreateSoundBufferFromRes,2,(ahspName,abStream))
+	IDLC_RET_FROM_INTF(ni::iSoundBuffer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,CreateSoundBufferFromRes,2)
+
+/** ni -> iSoundFactory::GetSoundBuffer/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetSoundBuffer,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iSoundBuffer*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetSoundBuffer,1,(ahspName))
+	IDLC_RET_FROM_INTF(iSoundBuffer,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetSoundBuffer,1)
+
+/** ni -> iSoundFactory::CreateSoundSource/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,CreateSoundSource,1)
+	IDLC_DECL_VAR(iSoundBuffer*,apBuffer)
+	IDLC_BUF_TO_INTF(iSoundBuffer,apBuffer)
+	IDLC_DECL_RETVAR(iSoundSource*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,CreateSoundSource,1,(apBuffer))
+	IDLC_RET_FROM_INTF(iSoundSource,_Ret)
+IDLC_METH_END(ni,iSoundFactory,CreateSoundSource,1)
+
+/** ni -> iSoundFactory::SetListenerPosition/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerPosition,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerPosition,1,(aV))
+IDLC_METH_END(ni,iSoundFactory,SetListenerPosition,1)
+
+/** ni -> iSoundFactory::GetListenerPosition/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerPosition,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerPosition,0)
+
+/** ni -> iSoundFactory::SetListenerVelocity/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerVelocity,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerVelocity,1,(aV))
+IDLC_METH_END(ni,iSoundFactory,SetListenerVelocity,1)
+
+/** ni -> iSoundFactory::GetListenerVelocity/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerVelocity,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerVelocity,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerVelocity,0)
+
+/** ni -> iSoundFactory::SetListenerForward/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerForward,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerForward,1,(aV))
+IDLC_METH_END(ni,iSoundFactory,SetListenerForward,1)
+
+/** ni -> iSoundFactory::GetListenerForward/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerForward,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerForward,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerForward,0)
+
+/** ni -> iSoundFactory::SetListenerUp/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerUp,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerUp,1,(aV))
+IDLC_METH_END(ni,iSoundFactory,SetListenerUp,1)
+
+/** ni -> iSoundFactory::GetListenerUp/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerUp,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerUp,0)
+
+/** ni -> iSoundFactory::SetListenerDistanceScale/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerDistanceScale,1)
+	IDLC_DECL_VAR(tF32,afScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afScale)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerDistanceScale,1,(afScale))
+IDLC_METH_END(ni,iSoundFactory,SetListenerDistanceScale,1)
+
+/** ni -> iSoundFactory::GetListenerDistanceScale/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerDistanceScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerDistanceScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerDistanceScale,0)
+
+/** ni -> iSoundFactory::SetListenerRolloffScale/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerRolloffScale,1)
+	IDLC_DECL_VAR(tF32,afScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afScale)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerRolloffScale,1,(afScale))
+IDLC_METH_END(ni,iSoundFactory,SetListenerRolloffScale,1)
+
+/** ni -> iSoundFactory::GetListenerRolloffScale/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerRolloffScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerRolloffScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerRolloffScale,0)
+
+/** ni -> iSoundFactory::SetListenerDopplerScale/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,SetListenerDopplerScale,1)
+	IDLC_DECL_VAR(tF32,afScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afScale)
+	IDLC_METH_CALL_VOID(ni,iSoundFactory,SetListenerDopplerScale,1,(afScale))
+IDLC_METH_END(ni,iSoundFactory,SetListenerDopplerScale,1)
+
+/** ni -> iSoundFactory::GetListenerDopplerScale/0 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,GetListenerDopplerScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,GetListenerDopplerScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iSoundFactory,GetListenerDopplerScale,0)
+
+/** ni -> iSoundFactory::MusicPlay/4 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,MusicPlay,4)
+	IDLC_DECL_VAR(iSoundSource*,apSoundSource)
+	IDLC_BUF_TO_INTF(iSoundSource,apSoundSource)
+	IDLC_DECL_VAR(ni::tF32,afVolume)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afVolume)
+	IDLC_DECL_VAR(ni::tF32,afSpeed)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSpeed)
+	IDLC_DECL_VAR(ni::tF32,afBlendTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBlendTime)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,MusicPlay,4,(apSoundSource,afVolume,afSpeed,afBlendTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,MusicPlay,4)
+
+/** ni -> iSoundFactory::MusicStop/1 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,MusicStop,1)
+	IDLC_DECL_VAR(ni::tF32,afBlendTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBlendTime)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,MusicStop,1,(afBlendTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,MusicStop,1)
+
+/** ni -> iSoundFactory::MusicSpeed/2 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,MusicSpeed,2)
+	IDLC_DECL_VAR(ni::tF32,afSpeed)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSpeed)
+	IDLC_DECL_VAR(ni::tF32,afBlendTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBlendTime)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,MusicSpeed,2,(afSpeed,afBlendTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,MusicSpeed,2)
+
+/** ni -> iSoundFactory::MusicVolume/2 **/
+IDLC_METH_BEGIN(ni,iSoundFactory,MusicVolume,2)
+	IDLC_DECL_VAR(ni::tF32,afVolume)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afVolume)
+	IDLC_DECL_VAR(ni::tF32,afBlendTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBlendTime)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFactory,MusicVolume,2,(afVolume,afBlendTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSoundFactory,MusicVolume,2)
+
+IDLC_END_INTF(ni,iSoundFactory)
+
+IDLC_END_NAMESPACE()
+// EOF //

@@ -1,0 +1,223 @@
+#include "../API/niLang/IProf.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iProfDraw **/
+IDLC_BEGIN_INTF(ni,iProfDraw)
+/** ni -> iProfDraw::BeginDraw/1 **/
+IDLC_METH_BEGIN(ni,iProfDraw,BeginDraw,1)
+	IDLC_DECL_VAR(tBool,abTranslucent)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abTranslucent)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,BeginDraw,1,(abTranslucent))
+IDLC_METH_END(ni,iProfDraw,BeginDraw,1)
+
+/** ni -> iProfDraw::EndDraw/0 **/
+IDLC_METH_BEGIN(ni,iProfDraw,EndDraw,0)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,EndDraw,0,())
+IDLC_METH_END(ni,iProfDraw,EndDraw,0)
+
+/** ni -> iProfDraw::DrawRect/5 **/
+IDLC_METH_BEGIN(ni,iProfDraw,DrawRect,5)
+	IDLC_DECL_VAR(tF32,x0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x0)
+	IDLC_DECL_VAR(tF32,y0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y0)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,DrawRect,5,(x0,y0,x1,y1,anColor))
+IDLC_METH_END(ni,iProfDraw,DrawRect,5)
+
+/** ni -> iProfDraw::DrawLine/5 **/
+IDLC_METH_BEGIN(ni,iProfDraw,DrawLine,5)
+	IDLC_DECL_VAR(tF32,x0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x0)
+	IDLC_DECL_VAR(tF32,y0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y0)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,DrawLine,5,(x0,y0,x1,y1,anColor))
+IDLC_METH_END(ni,iProfDraw,DrawLine,5)
+
+/** ni -> iProfDraw::GetTextHeight/0 **/
+IDLC_METH_BEGIN(ni,iProfDraw,GetTextHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProfDraw,GetTextHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iProfDraw,GetTextHeight,0)
+
+/** ni -> iProfDraw::GetTextWidth/1 **/
+IDLC_METH_BEGIN(ni,iProfDraw,GetTextWidth,1)
+	IDLC_DECL_VAR(achar*,aText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aText)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProfDraw,GetTextWidth,1,(aText))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iProfDraw,GetTextWidth,1)
+
+/** ni -> iProfDraw::BeginText/0 **/
+IDLC_METH_BEGIN(ni,iProfDraw,BeginText,0)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,BeginText,0,())
+IDLC_METH_END(ni,iProfDraw,BeginText,0)
+
+/** ni -> iProfDraw::EndText/0 **/
+IDLC_METH_BEGIN(ni,iProfDraw,EndText,0)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,EndText,0,())
+IDLC_METH_END(ni,iProfDraw,EndText,0)
+
+/** ni -> iProfDraw::Text/4 **/
+IDLC_METH_BEGIN(ni,iProfDraw,Text,4)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_DECL_VAR(achar*,aText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aText)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iProfDraw,Text,4,(x,y,aText,anColor))
+IDLC_METH_END(ni,iProfDraw,Text,4)
+
+IDLC_END_INTF(ni,iProfDraw)
+
+/** interface : iProf **/
+IDLC_BEGIN_INTF(ni,iProf)
+/** ni -> iProf::SetRecord/1 **/
+IDLC_METH_BEGIN(ni,iProf,SetRecord,1)
+	IDLC_DECL_VAR(tBool,abRecord)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abRecord)
+	IDLC_METH_CALL_VOID(ni,iProf,SetRecord,1,(abRecord))
+IDLC_METH_END(ni,iProf,SetRecord,1)
+
+/** ni -> iProf::GetRecord/0 **/
+IDLC_METH_BEGIN(ni,iProf,GetRecord,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProf,GetRecord,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iProf,GetRecord,0)
+
+/** ni -> iProf::Update/0 **/
+IDLC_METH_BEGIN(ni,iProf,Update,0)
+	IDLC_METH_CALL_VOID(ni,iProf,Update,0,())
+IDLC_METH_END(ni,iProf,Update,0)
+
+/** ni -> iProf::GetZoneStackDummy/0 -> NO AUTOMATION **/
+/** ni -> iProf::GetZoneStack/0 -> NO AUTOMATION **/
+/** ni -> iProf::SetZoneStack/1 -> NO AUTOMATION **/
+/** ni -> iProf::StackAppend/1 -> NO AUTOMATION **/
+/** ni -> iProf::GetTimeStamp/1 -> NO AUTOMATION **/
+/** ni -> iProf::SetReportMode/1 **/
+IDLC_METH_BEGIN(ni,iProf,SetReportMode,1)
+	IDLC_DECL_VAR(eProfilerReportMode,aMode)
+	IDLC_BUF_TO_ENUM(eProfilerReportMode,aMode)
+	IDLC_METH_CALL_VOID(ni,iProf,SetReportMode,1,(aMode))
+IDLC_METH_END(ni,iProf,SetReportMode,1)
+
+/** ni -> iProf::GetReportMode/0 **/
+IDLC_METH_BEGIN(ni,iProf,GetReportMode,0)
+	IDLC_DECL_RETVAR(eProfilerReportMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProf,GetReportMode,0,())
+	IDLC_RET_FROM_ENUM(eProfilerReportMode,_Ret)
+IDLC_METH_END(ni,iProf,GetReportMode,0)
+
+/** ni -> iProf::InputMoveCursor/1 **/
+IDLC_METH_BEGIN(ni,iProf,InputMoveCursor,1)
+	IDLC_DECL_VAR(tI32,anDelta)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anDelta)
+	IDLC_METH_CALL_VOID(ni,iProf,InputMoveCursor,1,(anDelta))
+IDLC_METH_END(ni,iProf,InputMoveCursor,1)
+
+/** ni -> iProf::InputSelect/0 **/
+IDLC_METH_BEGIN(ni,iProf,InputSelect,0)
+	IDLC_METH_CALL_VOID(ni,iProf,InputSelect,0,())
+IDLC_METH_END(ni,iProf,InputSelect,0)
+
+/** ni -> iProf::InputSelectParent/0 **/
+IDLC_METH_BEGIN(ni,iProf,InputSelectParent,0)
+	IDLC_METH_CALL_VOID(ni,iProf,InputSelectParent,0,())
+IDLC_METH_END(ni,iProf,InputSelectParent,0)
+
+/** ni -> iProf::InputMoveFrame/1 **/
+IDLC_METH_BEGIN(ni,iProf,InputMoveFrame,1)
+	IDLC_DECL_VAR(tI32,anDelta)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anDelta)
+	IDLC_METH_CALL_VOID(ni,iProf,InputMoveFrame,1,(anDelta))
+IDLC_METH_END(ni,iProf,InputMoveFrame,1)
+
+/** ni -> iProf::InputSetFrame/1 **/
+IDLC_METH_BEGIN(ni,iProf,InputSetFrame,1)
+	IDLC_DECL_VAR(tI32,anFrame)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anFrame)
+	IDLC_METH_CALL_VOID(ni,iProf,InputSetFrame,1,(anFrame))
+IDLC_METH_END(ni,iProf,InputSetFrame,1)
+
+/** ni -> iProf::InputSetCursor/1 **/
+IDLC_METH_BEGIN(ni,iProf,InputSetCursor,1)
+	IDLC_DECL_VAR(tI32,anLine)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anLine)
+	IDLC_METH_CALL_VOID(ni,iProf,InputSetCursor,1,(anLine))
+IDLC_METH_END(ni,iProf,InputSetCursor,1)
+
+/** ni -> iProf::TextReport/2 **/
+IDLC_METH_BEGIN(ni,iProf,TextReport,2)
+	IDLC_DECL_VAR(tU32,cols)
+	IDLC_BUF_TO_BASE(ni::eType_U32,cols)
+	IDLC_DECL_VAR(tU32,rows)
+	IDLC_BUF_TO_BASE(ni::eType_U32,rows)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProf,TextReport,2,(cols,rows))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iProf,TextReport,2)
+
+/** ni -> iProf::DrawTable/6 **/
+IDLC_METH_BEGIN(ni,iProf,DrawTable,6)
+	IDLC_DECL_VAR(ni::iProfDraw*,drawer)
+	IDLC_BUF_TO_INTF(ni::iProfDraw,drawer)
+	IDLC_DECL_VAR(tF32,sx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,sx)
+	IDLC_DECL_VAR(tF32,sy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,sy)
+	IDLC_DECL_VAR(tF32,full_width)
+	IDLC_BUF_TO_BASE(ni::eType_F32,full_width)
+	IDLC_DECL_VAR(tF32,height)
+	IDLC_BUF_TO_BASE(ni::eType_F32,height)
+	IDLC_DECL_VAR(tI32,precision)
+	IDLC_BUF_TO_BASE(ni::eType_I32,precision)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProf,DrawTable,6,(drawer,sx,sy,full_width,height,precision))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iProf,DrawTable,6)
+
+/** ni -> iProf::DrawGraph/5 **/
+IDLC_METH_BEGIN(ni,iProf,DrawGraph,5)
+	IDLC_DECL_VAR(ni::iProfDraw*,drawer)
+	IDLC_BUF_TO_INTF(ni::iProfDraw,drawer)
+	IDLC_DECL_VAR(tF32,sx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,sx)
+	IDLC_DECL_VAR(tF32,sy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,sy)
+	IDLC_DECL_VAR(tF32,x_spacing)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x_spacing)
+	IDLC_DECL_VAR(tF32,y_spacing)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y_spacing)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iProf,DrawGraph,5,(drawer,sx,sy,x_spacing,y_spacing))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iProf,DrawGraph,5)
+
+IDLC_END_INTF(ni,iProf)
+
+IDLC_END_NAMESPACE()
+// EOF //

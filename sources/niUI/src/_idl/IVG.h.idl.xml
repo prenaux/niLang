@@ -1,0 +1,10 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iVG" uuid1="99E0B322-BFA4-BA4D-AB46-E616935D4271" uuid2="0x99e0b322,0xbfa4,0xba4d,0xab,0x46,0xe6,0x16,0x93,0x5d,0x42,0x71">
+			<comments desc="Vector graphics interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+		</interface>
+	</namespace>
+</niIDL>

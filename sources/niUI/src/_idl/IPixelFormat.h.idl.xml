@@ -1,0 +1,888 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="ePixelFormatBlit">
+			<comments desc="Pixel Format Blitting flags. "/>
+			<value name="ePixelFormatBlit_Normal" value="0x00000000 ">
+				<comments desc="Normal blitting. "/>
+			</value>
+			<value name="ePixelFormatBlit_MirrorLeftRight" value="0x00000001 ">
+				<comments desc="Mirrored left right blitting. "/>
+			</value>
+			<value name="ePixelFormatBlit_MirrorUpDown" value="0x00000002 ">
+				<comments desc="Mirrored up down blitting. "/>
+			</value>
+			<value name="ePixelFormatBlit_MirrorDiagonal" value="ePixelFormatBlit_MirrorLeftRight|ePixelFormatBlit_MirrorUpDown ">
+				<comments desc="Diagonal mirror. Equivalent to a Pi rad rotation. "/>
+			</value>
+		</enum>
+		<enum name="ePixelFormatCaps">
+			<comments desc="Pixel format capabilities. "/>
+			<value name="ePixelFormatCaps_BuildPixel" value="niBit ( 0 ) ">
+				<comments desc="Support the build pixel methods. "/>
+			</value>
+			<value name="ePixelFormatCaps_UnpackPixel" value="niBit ( 1 ) ">
+				<comments desc="Support pixel unpacking. "/>
+			</value>
+			<value name="ePixelFormatCaps_Blit" value="niBit ( 2 ) ">
+				<comments desc="Support standard blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitMirrorLeftRight" value="niBit ( 3 ) ">
+				<comments desc="Support mirrored left right blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitMirrorUpDown" value="niBit ( 4 ) ">
+				<comments desc="Support mirrored up down blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitStretch" value="niBit ( 5 ) ">
+				<comments desc="Support stretched blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitStretchHalf" value="niBit ( 6 ) ">
+				<comments desc="Support stretched blitting of half size only (for mipmaps generation). "/>
+			</value>
+			<value name="ePixelFormatCaps_Signed" value="niBit ( 7 ) ">
+				<comments desc="Is a signed pixel format. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitAlpha" value="niBit ( 8 ) ">
+				<comments desc="Support standard alpha blended blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitAlphaMirrorLeftRight" value="niBit ( 9 ) ">
+				<comments desc="Support mirrored left right alpha blended blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitAlphaMirrorUpDown" value="niBit ( 10 ) ">
+				<comments desc="Support mirrored up down alpha blended blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitAlphaStretch" value="niBit ( 11 ) ">
+				<comments desc="Support stretched alpha blended blitting. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlitAlphaStretchHalf" value="niBit ( 12 ) ">
+				<comments desc="Support stretched alpha blended blitting of half size only (for mipmaps generation). "/>
+			</value>
+			<value name="ePixelFormatCaps_Clear" value="niBit ( 13 ) ">
+				<comments desc="Support a specialize clear method. "/>
+			</value>
+			<value name="ePixelFormatCaps_BlockCompressed" value="niBit ( 14 ) ">
+				<comments desc="Block compressed format. ">
+					<remark text="This includes format such as DXT formats (DX9/GL) and ASTC (GL/iOS/Android). "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iPixelFormat" uuid1="DC0B6CE3-FD1C-4283-B6B8-768E85A272A4" uuid2="0xdc0b6ce3,0xfd1c,0x4283,0xb6,0xb8,0x76,0x8e,0x85,0xa2,0x72,0xa4">
+			<comments desc="Pixel Format interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="isSamePixelFormat"
+				name="IsSamePixelFormat"
+				num_parameters="1">
+				<comments desc="Test if the given pixel format is the same as this pixel format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="pPixFmt"
+					type="const iPixelFormat *"
+					typec="const iPixelFormat*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumParameters"
+				name="GetNumParameters"
+				num_parameters="0"
+				property="get"
+				property_name2="numParameters"
+				property_name="num_parameters">
+				<comments desc="Get the number of parameters of the pixel format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setParameter"
+				name="SetParameter"
+				num_parameters="2"
+				property="set"
+				property_name2="parameter"
+				property_name="parameter">
+				<comments desc="Set a parameter of the pixel format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ulParameter"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ulValue"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParameter"
+				name="GetParameter"
+				num_parameters="1"
+				property="get"
+				property_name2="parameter"
+				property_name="parameter">
+				<comments desc="Get a parameter of the pixel format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ulParameter"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the pixel format. "/>
+				<return type="iPixelFormat *" typec="iPixelFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the pixel format, format string. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaps"
+				name="GetCaps"
+				num_parameters="0"
+				property="get"
+				property_name2="caps"
+				property_name="caps">
+				<comments desc="Get the pixel format capabilities. "/>
+				<return type="ePixelFormatCaps" typec="ePixelFormatCaps" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBitsPerPixel"
+				name="GetBitsPerPixel"
+				num_parameters="0"
+				property="get"
+				property_name2="bitsPerPixel"
+				property_name="bits_per_pixel">
+				<comments desc="Get the number of bits per pixel. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBytesPerPixel"
+				name="GetBytesPerPixel"
+				num_parameters="0"
+				property="get"
+				property_name2="bytesPerPixel"
+				property_name="bytes_per_pixel">
+				<comments desc="Get the number of bytes per pixel. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="3">
+				<comments desc="Get the size in bytes of a surface using this pixel format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="ulW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ulD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumComponents"
+				name="GetNumComponents"
+				num_parameters="0"
+				property="get"
+				property_name2="numComponents"
+				property_name="num_components">
+				<comments desc="Get the number of components of the pixel format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumRBits"
+				name="GetNumRBits"
+				num_parameters="0"
+				property="get"
+				property_name2="numRBits"
+				property_name="num_rbits">
+				<comments desc="Get the number of red bits. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumGBits"
+				name="GetNumGBits"
+				num_parameters="0"
+				property="get"
+				property_name2="numGBits"
+				property_name="num_gbits">
+				<comments desc="Get the number of green bits. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumBBits"
+				name="GetNumBBits"
+				num_parameters="0"
+				property="get"
+				property_name2="numBBits"
+				property_name="num_bbits">
+				<comments desc="Get the number of blue bits. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumABits"
+				name="GetNumABits"
+				num_parameters="0"
+				property="get"
+				property_name2="numABits"
+				property_name="num_abits">
+				<comments desc="Get the number of alpha bits. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="buildPixelub"
+				name="BuildPixelub"
+				num_parameters="5">
+				<comments desc="Build a pixel using unsigned byte values. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="r"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					name="g"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					name="b"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="a"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="buildPixelus"
+				name="BuildPixelus"
+				num_parameters="5">
+				<comments desc="Build a pixel using unsigned short values. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="r"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+				<parameter
+					name="g"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+				<parameter
+					name="b"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="a"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="buildPixelul"
+				name="BuildPixelul"
+				num_parameters="5">
+				<comments desc="Build a pixel using unsigned short values. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="r"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="g"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="b"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="a"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="buildPixelf"
+				name="BuildPixelf"
+				num_parameters="5">
+				<comments desc="Build a pixel using floating point values. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="r"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="g"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					default="0.0f "
+					last="1"
+					name="a"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="beginUnpackPixels" name="BeginUnpackPixels" num_parameters="6">
+				<comments desc="Begin pixel unpacking. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="pSurface"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulX"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulY"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ulH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="endUnpackPixels" name="EndUnpackPixels" num_parameters="0">
+				<comments desc="End pixel unpacking. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="unpackPixelub"
+				name="UnpackPixelub"
+				num_parameters="1">
+				<comments desc="Unpack a pixel in an unsigned byte color. "/>
+				<return type="sColor4ub" typec="sColor4ub" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="unpackPixelus"
+				name="UnpackPixelus"
+				num_parameters="1">
+				<comments desc="Unpack a pixel in an unsigned short color. ">
+					<remark text="Return a Vec4i in with member in the 0-0xFFFF range. "/>
+				</comments>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="unpackPixelul"
+				name="UnpackPixelul"
+				num_parameters="1">
+				<comments desc="Unpack a pixel in an unsigned long color. "/>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="unpackPixelf"
+				name="UnpackPixelf"
+				num_parameters="1">
+				<comments desc="Unpack a pixel in a floating point color. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="7">
+				<comments desc="Clear a surface with a specified color. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="pDst"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulDestPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="w"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="h"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apClearColor"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="blit"
+				name="Blit"
+				num_parameters="12">
+				<comments desc="Blit a surface of any pixel format to a surface of this pixel format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="pDst"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulDestPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulSrcPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrcFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="w"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="h"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="blitFlags"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="blitStretch"
+				name="BlitStretch"
+				num_parameters="15">
+				<comments desc="Blit stretch a surface of any pixel format to a surface of this pixel format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="pDst"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulDestPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulDestWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulDestHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dw"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dh"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulSrcPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrcFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sw"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="sh"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="blitAlpha"
+				name="BlitAlpha"
+				num_parameters="15">
+				<comments desc="Blit a surface of any pixel format to a surface of this pixel format. ">
+					<remark text="The source and destination color are used to replace missing components in the source/destination format. "/>
+					<remark text="If the passed blending mode is not supported the method will return false to be handled by the reference implementation. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="pDst"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulDestPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulSrcPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrcFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="w"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="h"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="blitFlags"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aSourceColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="blitAlphaStretch"
+				name="BlitAlphaStretch"
+				num_parameters="18">
+				<comments desc="Blit stretch a surface of any pixel format to a surface of this pixel format. ">
+					<remark text="The source and destination color are used to replace missing components in the source/destination format. "/>
+					<remark text="If the passed blending mode is not supported the method will return false to be handled by the reference implementation. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="pDst"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulDestPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulDestWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulDestHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dw"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="dh"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulSrcPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pSrcFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sy"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sw"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="sh"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aSourceColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

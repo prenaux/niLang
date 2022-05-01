@@ -1,0 +1,462 @@
+#pragma once
+#ifndef __STDSAMPLER_CGH_4C3BA778_A794_4F18_8287_62117FA0A9DB__
+#define __STDSAMPLER_CGH_4C3BA778_A794_4F18_8287_62117FA0A9DB__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+#include "StdMaterialFlags.cgh"
+#include "StdUtils.cgh"
+
+//! Sampler
+struct StdSampler {
+  bool    HasTexture;
+  bool    IsFP; // is a floating point format ?
+  bool    IsDepth; // is a depth texture ?
+  int     SamplerIndex;
+  int     TexCooIndex;
+  float4  Color;
+  float4  Res;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Initialize the samplers
+sampler gAllSamplers[16] : register(s0);
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// 1D Sampling
+#define stdTex1D(index,t)             tex1D(gAllSamplers[index],t)
+#define stdTex1DBias(index,t)         tex1Dbias(gAllSamplers[index],t)
+#define stdTex1DLod(index,t)          tex1Dlod(gAllSamplers[index],t)
+#define stdTex1DProj(index,t)         tex1Dproj(gAllSamplers[index],t)
+#define stdTex1DGrad(index,t,ddx,ddy) tex1Dgrad(gAllSamplers[index],t,ddx,ddy)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// 2D Sampling
+#define stdTex2D(index,t)             tex2D(gAllSamplers[index],t)
+#define stdTex2DBias(index,t)         tex2Dbias(gAllSamplers[index],t)
+#define stdTex2DLod(index,t)          tex2Dlod(gAllSamplers[index],t)
+#define stdTex2DProj(index,t)         tex2Dproj(gAllSamplers[index],t)
+#define stdTex2DGrad(index,t,ddx,ddy) tex2Dgrad(gAllSamplers[index],t,ddx,ddy)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// 3D sampling
+#define stdTex3D(index,t)             tex3D(gAllSamplers[index],t)
+#define stdTex3DBias(index,t)         tex3Dbias(gAllSamplers[index],t)
+#define stdTex3DLod(index,t)          tex3Dlod(gAllSamplers[index],t)
+#define stdTex3DProj(index,t)         tex3Dproj(gAllSamplers[index],t)
+#define stdTex3DGrad(index,t,ddx,ddy) tex3Dgrad(gAllSamplers[index],t,ddx,ddy)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// CUBE sampling
+#define stdTexCube(index,t)             texCUBE(gAllSamplers[index],t)
+#define stdTexCubeBias(index,t)         texCUBEbias(gAllSamplers[index],t)
+#define stdTexCubeLod(index,t)          texCUBElod(gAllSamplers[index],t)
+#define stdTexCubeProj(index,t)         texCUBEproj(gAllSamplers[index],t)
+#define stdTexCubeGrad(index,t,ddx,ddy) texCUBEgrad(gAllSamplers[index],t,ddx,ddy)
+
+///////////////////////////////////////////////
+//! 1D sampling of a channel
+float4 stdSampler_Tex1D(StdSampler c, float t) {
+  if (c.HasTexture)
+    return stdTex1D(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex1DBias(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex1DBias(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex1DLod(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex1DLod(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex1DProj(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex1DProj(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex1DGrad(StdSampler c, float t, float ddx, float ddy) {
+  if (c.HasTexture)
+    return stdTex1DGrad(c.SamplerIndex,t,ddx,ddy);
+  else
+    return c.Color;
+}
+
+///////////////////////////////////////////////
+//! 2D sampling of a channel
+float4 stdSampler_Tex2D(StdSampler c, float2 t) {
+  if (c.HasTexture)
+    return stdTex2D(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex2DBias(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex2DBias(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex2DLod(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex2DLod(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex2DProj(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex2DProj(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex2DGrad(StdSampler c, float2 t, float2 ddx, float2 ddy) {
+  if (c.HasTexture)
+    return stdTex2DGrad(c.SamplerIndex,t,ddx,ddy);
+  else
+    return c.Color;
+}
+
+///////////////////////////////////////////////
+//! 3D sampling of a channel
+float4 stdSampler_Tex3D(StdSampler c, float3 t) {
+  if (c.HasTexture)
+    return stdTex3D(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex3DBias(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex3DBias(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex3DLod(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex3DLod(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex3DProj(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTex3DProj(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_Tex3DGrad(StdSampler c, float3 t, float3 ddx, float3 ddy) {
+  if (c.HasTexture)
+    return stdTex3DGrad(c.SamplerIndex,t,ddx,ddy);
+  else
+    return c.Color;
+}
+
+///////////////////////////////////////////////
+//! Cube sampling of a channel
+float4 stdSampler_TexCube(StdSampler c, float3 t) {
+  if (c.HasTexture)
+    return stdTexCube(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_TexCubeBias(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTexCubeBias(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_TexCubeLod(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTexCubeLod(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_TexCubeProj(StdSampler c, float4 t) {
+  if (c.HasTexture)
+    return stdTexCubeProj(c.SamplerIndex,t);
+  else
+    return c.Color;
+}
+float4 stdSampler_TexCubeGrad(StdSampler c, float3 t, float3 ddx, float3 ddy) {
+  if (c.HasTexture)
+    return stdTexCubeGrad(c.SamplerIndex,t,ddx,ddy);
+  else
+    return c.Color;
+}
+
+//--------------------------------------------------------------------------------------------
+//
+//  High level sampling functions
+//
+//--------------------------------------------------------------------------------------------
+
+///////////////////////////////////////////////
+float4 stdSampler_Environment(StdSampler aSampler, bool abFlat, float3 aNormal, float3 aViewDir) {
+  if (aSampler.HasTexture) {
+    float4 envCol = float4(0,0,0,0);
+    float3 coo = reflect(aViewDir,aNormal);
+    if (abFlat) {
+      envCol = stdSampler_Tex2D(aSampler,stdUtil_VectorToSphereMapCoo(coo));
+    }
+    else {
+      envCol = stdSampler_TexCube(aSampler,coo);
+    }
+    return envCol;
+  }
+  else {
+    return aSampler.Color;
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdSampler_GlossyReflection(
+    StdSampler aSampler, bool abFlat, float3 aNormal, float3 aViewDir, float3 aPositionVS, float aGloss)
+{
+  if (aSampler.HasTexture) {
+    float4 envCol = float4(0,0,0,0);
+#if eShaderFlags_Fast
+    float3 coo = reflect(aViewDir,aNormal);
+    if (abFlat) {
+      envCol = stdSampler_Tex2D(aSampler,stdUtil_VectorToSphereMapCoo(coo));
+    }
+    else {
+      envCol = stdSampler_TexCube(aSampler,coo);
+    }
+    // attenuate the gloss in the fast path because without the normal maps
+    // its too brigh most of the time
+    envCol *= min((aGloss + 0.5f) * 0.8f, 0.8f);
+#else
+    // TODO: Add a uniform for the number of mipmaps
+    float numMips = 7.0f;
+    float mipOffset = 1.0f; // makes the reflection a bit blurrier...
+    float mip = clamp(((1 - aGloss) * (numMips - 1)) + mipOffset, 0.0f, numMips-1.0f);
+    // TODO: This works ok... but it'll probably need to be in a uniform later on
+    float sharpMaxDistance = 2500.0f;
+    mip += ((aPositionVS.z/sharpMaxDistance) * (numMips - 1));
+    float3 coo = reflect(aViewDir,aNormal);
+    if (abFlat) {
+      envCol = stdSampler_Tex2DLod(aSampler,float4(stdUtil_VectorToSphereMapCoo(coo),0,mip));
+    }
+    else {
+      envCol = stdSampler_TexCubeLod(aSampler,float4(coo,mip));
+    }
+#endif
+    return envCol;
+  }
+  else {
+    return aSampler.Color;
+  }
+}
+
+///////////////////////////////////////////////
+float3 stdSampler_NormalMap(StdSampler aSampler, float4 aBaseTexCoo, bool abUseLod) {
+  float3 normal = stdUtil_ToSigned(
+      abUseLod ? stdSampler_Tex2DLod(aSampler,aBaseTexCoo).xyz : stdSampler_Tex2D(aSampler,aBaseTexCoo).xyz);
+  return normal;
+}
+
+///////////////////////////////////////////////
+// Lookup a tangent space normal map where X is stored in the alpha channel and Y in the green channel.
+float3 stdSampler_NormalMapAG(StdSampler aSampler, float4 aBaseTexCoo, bool abUseLod) {
+  float3 normal;
+  normal.xy = stdUtil_ToSigned(
+      abUseLod ? stdSampler_Tex2DLod(aSampler,aBaseTexCoo).ag : stdSampler_Tex2D(aSampler,aBaseTexCoo).ag);
+  normal.z = sqrt(1 - normal.x*normal.x - normal.y*normal.y);
+  return normal;
+}
+
+// This function allows the user to perturb the normal using an arbitrary method
+// to obtain the derivative of the height w.r.t. screen-space.
+// A few typical examples of this are the listing 2 method dHdxy_fwd()
+// and derivative maps which can be adapted to derivatives w.r.t. screen-space using dHdxy_derivmap().
+// Furthermore, such derivatives can be mixed prior to perturbation.
+float3 perturbNormalArb(sGradient aGrad, float3 surf_norm, float2 dHdxy)
+{
+	float3 vSigmaX = aGrad.xPos;
+	float3 vSigmaY = aGrad.yPos;
+	float3 vN = surf_norm;		// normalized
+
+	float3 R1 = cross(vSigmaY,vN);
+	float3 R2 = cross(vN,vSigmaX);
+
+	float fDet = dot(vSigmaX, R1);
+
+	float3 vGrad = sign(fDet) * ( dHdxy.x * R1 + dHdxy.y * R2 );
+	return normalize( abs(fDet)*surf_norm - vGrad);
+}
+
+// We can obtain the derivative of the height w.r.t. screen-space from a precomputed derivative map
+// using the chain rule. The code is taken from the following post
+// http://mmikkelsen3d.blogspot.com/2011/07/derivative-maps.html
+// set bFlipVertDeriv to true if the texture coordinate texST has an inverted second component
+// relative to the direction in which the derivative was evaluated.
+float2 dHdxy_derivmap(sGradient aGrad, StdSampler aSampler, float4 texST, bool abUseLod, bool bFlipVertDeriv = false)
+{
+  float4 sampled = abUseLod ? stdSampler_Tex2DLod(aSampler,texST) : stdSampler_Tex2D(aSampler,texST);
+
+	// texture space derivative remapped to normalized coordinates
+	float2 vDim = aSampler.Res.xy;
+	float2 dHdST = (2*sampled.xy-1) /*/ vDim*/;
+	dHdST.y *= (bFlipVertDeriv ? -1 : 1);
+
+	// chain rule
+	float2 dSTdx = aGrad.xTex;
+	float2 dSTdy = aGrad.yTex;
+	return float2( dot(dHdST.xy, dSTdx.xy), dot(dHdST.xy, dSTdy.xy));
+}
+
+static const float bumpNormalMapRange = 3.0;
+static const float bumpGreyscaleRange = 10.0;
+
+///////////////////////////////////////////////
+// Sample a normal
+float3 stdSampler_Normal(StdSampler aSampler,
+                         float4 aBaseTexCoo,
+                         bool abIsNormalMap,
+                         float3 aVertexNormal,
+                         float3x3 aTanFrame,
+                         sGradient aGrad,
+                         bool abUseLod)
+{
+  float3 normal = aVertexNormal;
+  if (aSampler.HasTexture) {
+    if (abIsNormalMap) {
+      float bumpScale = aSampler.Color.a * bumpNormalMapRange;
+
+      /// Lookup a normal map
+      normal = stdSampler_NormalMap(aSampler,aBaseTexCoo,abUseLod);
+      float3x3 m = aTanFrame;
+      m[0] *= bumpScale;
+      m[1] *= bumpScale;
+      normal = mul(normal,m);
+    }
+    else {
+#define _BUMPH(V) (V).r
+
+      float bumpScale = aSampler.Color.a * bumpGreyscaleRange;
+
+      float2 grad;
+
+      // Cheapest sampling, blocky
+      float height00 = abUseLod ?
+          _BUMPH(stdSampler_Tex2DLod(aSampler,aBaseTexCoo)) :
+          _BUMPH(stdSampler_Tex2D(aSampler,aBaseTexCoo));
+      float height10 =
+          _BUMPH(
+              abUseLod ?
+              stdSampler_Tex2DLod(aSampler,OffsetLodTexCoo(aBaseTexCoo,aSampler.Res.x)) :
+              stdSampler_Tex2D(aSampler,aBaseTexCoo+aSampler.Res.x));
+      float height01 =
+          _BUMPH(
+              abUseLod ?
+              stdSampler_Tex2DLod(aSampler,OffsetLodTexCoo(aBaseTexCoo,aSampler.Res.y)) :
+              stdSampler_Tex2D(aSampler,aBaseTexCoo+aSampler.Res.y));
+      grad.x = height10 - height00;
+      grad.y = height01 - height00;
+
+      float3x3 m = aTanFrame;
+      float3 tangent = m[0] * bumpScale;
+      float3 binormal = m[1] * bumpScale;
+      float3 pert = (grad.x * tangent + grad.y * binormal);
+      normal = normalize(aVertexNormal + pert);
+
+#undef _BUMPH
+    }
+  }
+
+  return normal;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+StdSampler stdSampler_GetTexture(int aIndex, int aTexCooIndex) {
+  StdSampler s = (StdSampler)0;
+  s.HasTexture = true;
+  s.TexCooIndex = aTexCooIndex;
+
+  if (aIndex == 0)  {
+    s.SamplerIndex = 0;
+    s.Color = fpsMaterialBaseColor0;
+    s.Res = fpsMaterialBaseRes0;
+  }
+  else if (aIndex == 1) {
+    s.SamplerIndex = 1;
+    s.Color = fpsMaterialOpacityColor0;
+    s.Res = fpsMaterialOpacityRes0;
+  }
+  else if (aIndex == 2) {
+    s.SamplerIndex = 2;
+    s.Color = fpsMaterialBumpColor0;
+    s.Res = fpsMaterialBumpRes0;
+  }
+  else if (aIndex == 3) {
+    s.SamplerIndex = 3;
+    s.Color = fpsMaterialSpecularColor0;
+    s.Res = fpsMaterialSpecularRes0;
+  }
+  else if (aIndex == 4) {
+    s.SamplerIndex = 4;
+    s.Color = fpsMaterialEnvironmentColor0;
+    s.Res = fpsMaterialEnvironmentRes0;
+  }
+  else if (aIndex == 5) {
+    s.SamplerIndex = 5;
+    s.Color = fpsMaterialAmbientColor0;
+    s.Res = fpsMaterialAmbientRes0;
+  }
+  else if (aIndex == 6) {
+    s.SamplerIndex = 6;
+    s.Color = fpsMaterialEmissiveColor0;
+    s.Res = fpsMaterialEmissiveRes0;
+  }
+  else if (aIndex == 7) {
+    s.SamplerIndex = 7;
+    s.Color = fpsMaterialRefractionColor0;
+    s.Res = fpsMaterialRefractionRes0;
+  }
+  else if (aIndex == 8) {
+    s.SamplerIndex = 8;
+    s.Color = fpsMaterialT0Color0;
+    s.Res = fpsMaterialT0Res0;
+  }
+  else if (aIndex == 9) {
+    s.SamplerIndex = 9;
+    s.Color = fpsMaterialT1Color0;
+    s.Res = fpsMaterialT1Res0;
+  }
+  else if (aIndex == 10)  {
+    s.SamplerIndex = 10;
+    s.Color = fpsMaterialT2Color0;
+    s.Res = fpsMaterialT2Res0;
+  }
+  else if (aIndex == 11)  {
+    s.SamplerIndex = 11;
+    s.Color = fpsMaterialT3Color0;
+    s.Res = fpsMaterialT3Res0;
+  }
+  else if (aIndex == 12)  {
+    s.SamplerIndex = 12;
+    s.Color = fpsMaterialT4Color0;
+    s.Res = fpsMaterialT4Res0;
+  }
+  else if (aIndex == 13)  {
+    s.SamplerIndex = 13;
+    s.Color = fpsMaterialT5Color0;
+    s.Res = fpsMaterialT5Res0;
+  }
+  else if (aIndex == 14)  {
+    s.SamplerIndex = 14;
+    s.Color = fpsMaterialT6Color0;
+    s.Res = fpsMaterialT6Res0;
+  }
+  else if (aIndex == 15)  {
+    s.SamplerIndex = 15;
+    s.Color = fpsMaterialT7Color0;
+    s.Res = fpsMaterialT7Res0;
+  }
+
+  return s;
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDSAMPLER_CGH_4C3BA778_A794_4F18_8287_62117FA0A9DB__

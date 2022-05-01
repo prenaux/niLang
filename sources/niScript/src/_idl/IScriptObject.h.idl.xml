@@ -1,0 +1,288 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="15" name="eScriptObjectType">
+			<comments desc="Script object type. "/>
+			<value min_features="15" name="eScriptObjectType_Unknown" value="0 ">
+				<comments desc="Unknown object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Function" value="1 ">
+				<comments desc="Function object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Table" value="2 ">
+				<comments desc="Table object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Null" value="3 ">
+				<comments desc="Null object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Int" value="4 ">
+				<comments desc="Integer object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Float" value="5 ">
+				<comments desc="Float object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_String" value="6 ">
+				<comments desc="String object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_UserData" value="7 ">
+				<comments desc="UserData object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Array" value="8 ">
+				<comments desc="Array object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_VM" value="9 ">
+				<comments desc="VM object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_IUnknown" value="0x0400 ">
+				<comments desc="iUnknown object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec2" value="11 ">
+				<comments desc="Vec2 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec3" value="12 ">
+				<comments desc="Vec3 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec4" value="13 ">
+				<comments desc="Vec4 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Matrix" value="14 ">
+				<comments desc="Matrix object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_UUID" value="15 ">
+				<comments desc="UUID object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Last" value="16 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface
+			min_features="15"
+			name="iScriptObject"
+			uuid1="8359934F-EC0D-4BB3-8168-CD782C3E5FAD"
+			uuid2="0x8359934f,0xec0d,0x4bb3,0x81,0x68,0xcd,0x78,0x2c,0x3e,0x5f,0xad">
+			<comments desc="Script object reference interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getVM"
+				min_features="15"
+				name="GetVM"
+				num_parameters="0"
+				property="get"
+				property_name2="vm"
+				property_name="vm">
+				<comments desc="Parent script VM. "/>
+				<return type="iScriptVM *" typec="iScriptVM*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				min_features="15"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the script object&apos;s type. "/>
+				<return type="eScriptObjectType" typec="eScriptObjectType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="15"
+				name="Clone"
+				num_parameters="1">
+				<comments desc="Clone the object reference. "/>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abHoldRef"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="enumObjects"
+				min_features="15"
+				name="EnumObjects"
+				num_parameters="0">
+				<comments desc="Enumerate all objects in this table. "/>
+				<return type="tScriptObjectPtrCVec *" typec="tScriptObjectPtrCVec*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInt"
+				min_features="15"
+				name="GetInt"
+				num_parameters="0">
+				<comments desc="Get the integer value. " return="niMaxI32 if the type of the object is not integer. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				min_features="15"
+				name="GetFloat"
+				num_parameters="0"
+				property="get"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Get the float value. " return="niMaxF64 if the type of the object is not float. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				min_features="15"
+				name="GetString"
+				num_parameters="0"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the string value. " return="NULL if the type of the object is not string. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHString"
+				min_features="15"
+				name="GetHString"
+				num_parameters="0"
+				property="get"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Get the hstring value. " return="NULL if the type of the object is not string. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknown"
+				min_features="15"
+				name="GetIUnknown"
+				num_parameters="0"
+				property="get"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Get the IUnknown pointer value. " return="NULL if the type of the object is not iUnknown. ">
+					<remark text="Make sure that the user data is really a IUnknown pointer otherwise the pointer returned will be garbage. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknownEx"
+				min_features="15"
+				name="GetIUnknownEx"
+				num_parameters="1">
+				<comments desc="Get the IUnknown object, will get the interface also from iDispatch table. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2"
+				min_features="15"
+				name="GetVec2"
+				num_parameters="0"
+				property="get"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Get the Vec2 value. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3"
+				min_features="15"
+				name="GetVec3"
+				num_parameters="0"
+				property="get"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get the Vec3 value. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4"
+				min_features="15"
+				name="GetVec4"
+				num_parameters="0"
+				property="get"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get the Vec4 value. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				min_features="15"
+				name="GetMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the Matrix value. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUUID"
+				min_features="15"
+				name="GetUUID"
+				num_parameters="0"
+				property="get"
+				property_name2="uuid"
+				property_name="uuid">
+				<comments desc="Get the UUID value. "/>
+				<return type="const tUUID &amp;" typec="const tUUID&amp;" typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumParameters"
+				min_features="15"
+				name="GetNumParameters"
+				num_parameters="0"
+				property="get"
+				property_name2="numParameters"
+				property_name="num_parameters">
+				<comments desc="Get the number of parameters of the function. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumFreeVars"
+				min_features="15"
+				name="GetNumFreeVars"
+				num_parameters="0"
+				property="get"
+				property_name2="numFreeVars"
+				property_name="num_free_vars">
+				<comments desc="Get the number of free variables of the function. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumCallParameters"
+				min_features="15"
+				name="GetNumCallParameters"
+				num_parameters="0"
+				property="get"
+				property_name2="numCallParameters"
+				property_name="num_call_parameters">
+				<comments desc="Get the number of parameters of the function minus the number of free variables. ">
+					<remark text="This is the number of parameters to push on the stack to call the function. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

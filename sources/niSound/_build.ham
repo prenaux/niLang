@@ -1,0 +1,5 @@
+SubDir TOP niSound ;
+
+SubInclude TOP niSound src ;
+SubInclude TOP niSound tsrc ;
+SubInclude TOP niSound java ;

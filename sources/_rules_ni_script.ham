@@ -1,0 +1,80 @@
+# niRunInDir WHAT : INDIR : PARAMS ;
+rule niRunInDir {
+  runInDir_ Run_$(<) : ni : $(2) : $(3) ;
+  runInDebugger_ Debug_$(<) : ni : $(2) : $(3) ;
+}
+rule niwRunInDir {
+  runInDir_ Run_$(<) : niw : $(2) : $(3) ;
+  runInDebugger_ Debug_$(<) : niw : $(2) : $(3) ;
+}
+
+# niScriptSrc SRC : TOADDONCE ;
+rule niScriptSrc {
+  local _i ;
+  local r ;
+  local s = $(<) ;
+
+  for _i in $(>) {
+    s = [ ListAddBackOnce $(s) : $(_i) ] ;
+  }
+
+  for _i in [ FGristFiles $(<) ] {
+    r += [ FDirName $(SEARCH_SOURCE) $(_i) ] ;
+  }
+
+  return $(r) ;
+}
+
+rule niToolkitScriptDirs {
+  local _tk ;
+  local r ;
+  for _tk in $(1) {
+    r += [ FDirName [ tkFindToolkitDir $(_tk) ] scripts ] ;
+  }
+  return $(r) ;
+}
+
+# niRunInDir TARGET : MAIN : SRC : SCRIPT_INCS ;
+rule niScript {
+  local TARGET = $(1) ;
+  local SRC = [ niScriptSrc $(3) : $(2) ] ;
+  local APPSCRIPT ;
+
+  local SCRIPT_INCS = [ niToolkitScriptDirs niLang ] ;
+  if $(4) {
+    SCRIPT_INCS += $(4) ;
+  }
+  SCRIPT_INCS = [ FIncludesDash $(SCRIPT_INCS) ] ;
+
+  if $(2:S) = .nip {
+    APPSCRIPT = -e $(2) ;
+    NI_APPSCRIPT on Run_$(TARGET) = $(APPSCRIPT) ;
+    NI_APPSCRIPT on Debug_$(TARGET) = $(APPSCRIPT) ;
+    niRunInDir $(TARGET) : $(SUBDIR) : $(SCRIPT_INCS) -e $(2) ;
+    DEPENDS $(TARGET) : ni ;
+  }
+  else if $(2:S) = .niw {
+    APPSCRIPT = -A main -e $(2) ;
+    NI_APPSCRIPT on Run_$(TARGET) = $(APPSCRIPT) ;
+    NI_APPSCRIPT on Debug_$(TARGET) = $(APPSCRIPT) ;
+    niwRunInDir $(TARGET) : $(SUBDIR) : $(SCRIPT_INCS) -A main -e $(2) ;
+    DEPENDS $(TARGET) : niw ;
+  }
+  else {
+    APPSCRIPT = -A niScript -e app.ni -startApp $(2) ;
+    NI_APPSCRIPT on Run_$(TARGET) = $(APPSCRIPT) ;
+    NI_APPSCRIPT on Debug_$(TARGET) = $(APPSCRIPT) ;
+    niwRunInDir $(TARGET) : $(SUBDIR) : $(SCRIPT_INCS) -A niTest -e app.ni -startApp $(2) ;
+    DEPENDS $(TARGET) : niw ;
+  }
+
+  DEPENDS $(TARGET) : $(SRC) ;
+}
+
+# niRunInDir TARGET : MAIN : SRC : SCRIPT_INCS ;
+rule niTest {
+  local TARGET = $(1) ;
+  niScript $(TARGET) : $(2) : $(3) : $(4) ;
+  DEPENDS tests : $(TARGET) ;
+  DEPENDS Run_tests : Run_$(TARGET) ;
+}

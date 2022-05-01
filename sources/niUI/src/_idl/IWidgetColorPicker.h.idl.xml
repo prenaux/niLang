@@ -1,0 +1,238 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetColorPickerCmd">
+			<comments desc="Color picker notification messages. "/>
+			<value name="eWidgetColorPickerCmd_ColorChanged" value="0 ">
+				<comments desc="Sent when the color changed. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetColorPickerStyle">
+			<comments desc="Color picker style. "/>
+			<value name="eWidgetColorPickerStyle_Brightness" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Show the brightness control. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetColorPicker" uuid1="DE06C422-DFBA-4BBB-BABA-35812A4244D4" uuid2="0xde06c422,0xdfba,0x4bbb,0xba,0xba,0x35,0x81,0x2a,0x42,0x44,0xd4">
+			<comments desc="Widget ColorPicker viewer. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setHSV"
+				name="SetHSV"
+				num_parameters="1"
+				property="set"
+				property_name2="hsv"
+				property_name="hsv">
+				<comments desc="Set the color picker&apos;s current color in HSV format. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avHSV"
+					type="const sColor3f &amp;"
+					typec="const sColor3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHSV"
+				name="GetHSV"
+				num_parameters="0"
+				property="get"
+				property_name2="hsv"
+				property_name="hsv">
+				<comments desc="Get the color picker&apos;s current color in HSV format. "/>
+				<return type="sColor3f" typec="sColor3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setRGBA"
+				name="SetRGBA"
+				num_parameters="1"
+				property="set"
+				property_name2="rgba"
+				property_name="rgba">
+				<comments desc="Set the color picker&apos;s current color in RGBA format. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avRGBA"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRGBA"
+				name="GetRGBA"
+				num_parameters="0"
+				property="get"
+				property_name2="rgba"
+				property_name="rgba">
+				<comments desc="Get the color picker&apos;s current color in RGBA format. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setRGB"
+				name="SetRGB"
+				num_parameters="1"
+				property="set"
+				property_name2="rgb"
+				property_name="rgb">
+				<comments desc="Set the color picker&apos;s current color in RGB format. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avRGB"
+					type="const sColor3f &amp;"
+					typec="const sColor3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRGB"
+				name="GetRGB"
+				num_parameters="0"
+				property="get"
+				property_name2="rgb"
+				property_name="rgb">
+				<comments desc="Get the color picker&apos;s current color in RGB format. "/>
+				<return type="sColor3f" typec="sColor3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setAlpha"
+				name="SetAlpha"
+				num_parameters="1"
+				property="set"
+				property_name2="alpha"
+				property_name="alpha">
+				<comments desc="Set the color picker&apos;s current color alpha. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afAlpha"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAlpha"
+				name="GetAlpha"
+				num_parameters="0"
+				property="get"
+				property_name2="alpha"
+				property_name="alpha">
+				<comments desc="Get the color picker&apos;s current color alpha. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setBrightness"
+				name="SetBrightness"
+				num_parameters="1"
+				property="set"
+				property_name2="brightness"
+				property_name="brightness">
+				<comments desc="Set the color picker&apos;s current color brightness. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afBrightness"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBrightness"
+				name="GetBrightness"
+				num_parameters="0"
+				property="get"
+				property_name2="brightness"
+				property_name="brightness">
+				<comments desc="Get the color picker&apos;s current color brightness. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setMaxBrightness"
+				name="SetMaxBrightness"
+				num_parameters="1"
+				property="set"
+				property_name2="maxBrightness"
+				property_name="max_brightness">
+				<comments desc="Set the color picker&apos;s current color maximum brightness. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afMaxBrightness"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxBrightness"
+				name="GetMaxBrightness"
+				num_parameters="0"
+				property="get"
+				property_name2="maxBrightness"
+				property_name="max_brightness">
+				<comments desc="Get the color picker&apos;s current color maximum brightness. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setColorName"
+				name="SetColorName"
+				num_parameters="1"
+				property="set"
+				property_name2="colorName"
+				property_name="color_name">
+				<comments desc="Set the color picker&apos;s current color from a color name. \see ni::eColor "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorName"
+				name="GetColorName"
+				num_parameters="0"
+				property="get"
+				property_name2="colorName"
+				property_name="color_name">
+				<comments desc="Get the color picker&apos;s current color as color name. \see ni::eColor "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setExpression"
+				name="SetExpression"
+				num_parameters="1"
+				property="set"
+				property_name2="expression"
+				property_name="expression">
+				<comments desc="Set the color picker&apos;s current color from a mathematic expression. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspExpression"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpression"
+				name="GetExpression"
+				num_parameters="0"
+				property="get"
+				property_name2="expression"
+				property_name="expression">
+				<comments desc="Get the color picker&apos;s current color as a mathematic expression. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

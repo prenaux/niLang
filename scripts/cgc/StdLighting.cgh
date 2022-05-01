@@ -1,0 +1,694 @@
+#pragma once
+#ifndef __STDLIGHTING_CGH_9F2F130A_DF77_4908_BAE9_9F1395042AC5__
+#define __STDLIGHTING_CGH_9F2F130A_DF77_4908_BAE9_9F1395042AC5__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdPixelInput.cgh"
+#include "StdMaterial.cgh"
+#include "StdFresnel.cgh"
+#include "StdShadowMap.cgh"
+#include "StdLTC.cgh"
+#include "StdUtils.cgh"
+
+static const float kfMaxSpecularPow = 300.0f;
+
+#define BRDF_OLDSCHOOL 0
+#define BRDF_METAL 1
+#define BRDF_FROSTBITE 2
+#define BRDF_DEFAULT BRDF_OLDSCHOOL
+
+#define AREA_LIGHT_TWO_SIDED false
+// LTC_CLIPPING_NONE allows us to keep the cosine bias, and its marginally quicker
+#define AREA_LIGHT_CLIPPING LTC_CLIPPING_NONE
+#define AREA_LIGHT_LTC_INTENSITY (niPif * 2.0)
+#define AREA_LIGHT_MRP_SPEC_INTENSITY (niPif)
+
+// ni1ByPi - 1/pi is the physical accurate way
+// #define PBR_ILLUMINANCE_SCALE ni1ByPi
+
+// no scaling is to match the luminance of our legacy pipelines
+#define PBR_ILLUMINANCE_SCALE 1.0
+
+float OldSchool_SpecularPower(float3 N, float3 V, float3 L, float G) {
+  // Phong specular
+  float3 R = 2*dot(N,L)*N - L;
+  float  F = max(0,dot(V,R));
+
+  // Blinn-Phong (same as FFP)
+  // float3 H = normalize(V + L);
+  // float NdotH = dot(H,N);
+  // float F = NdotH;
+
+  float  S = G*kfMaxSpecularPow+4.0f;
+  return max(pow(F,S),0);
+}
+
+float3 OldSchool_SpecularGGX(float3 N, float3 V, float3 L, float G, float3 F0)
+{
+  float roughness = 1.0 - G;
+	float alpha = roughness*roughness;
+
+	float3 H = normalize(V+L);
+
+	float dotNL = saturate(dot(N,L));
+	float dotLH = saturate(dot(L,H));
+	float dotNH = saturate(dot(N,H));
+
+	// D
+	float alphaSqr = alpha*alpha;
+	float pi = 3.14159f;
+	float denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0f;
+	float D = alphaSqr/(pi * denom * denom);
+
+	// F
+	float dotLH5 = pow(1.0f-dotLH,5);
+	float3 F = F0 + (1.0-F0)*(dotLH5);
+
+	// V
+	float k = alpha/2.0f;
+	float k2 = k*k;
+	float invK2 = 1.0f-k2;
+	float vis = 1.0/(dotLH*dotLH*invK2 + k2);
+
+	float3 specular = dotNL * D * F * vis;
+	return specular;
+}
+
+vec3 BRDFd_Oldschool(vec3 albedo) {
+	return albedo * PBR_ILLUMINANCE_SCALE;
+}
+
+vec3 BRDFs_Oldschool(vec3 norm, vec3 wo, vec3 wi,
+                     vec3 albedo, vec3 env,
+                     float metallic, float roughness, float cosBias)
+{
+  float G = 1.0 - roughness;
+  float3 F0 = albedo;
+  float3 L = wi;
+  float3 S = env * 10.0f;
+  float3 V = wo;
+  float3 N = norm;
+#if eShaderFlags_Fast
+  S += OldSchool_SpecularPower(N, V, wi, G);
+#else
+  S += OldSchool_SpecularGGX(N, V, wi, G, F0) * F0;
+#endif
+  S *= stdFresnel_SchlickGlossy(saturate(dot(V,N)), F0, G);
+  return S;
+}
+
+void BRDF_Oldschool(out vec3 fd, out vec3 fs,
+                    vec3 norm, vec3 wo, vec3 wi,
+                    vec3 albedoD, vec3 albedoS, vec3 env,
+                    float metallic, float roughness, float cosBias)
+{
+	fd = BRDFd_Oldschool(albedoD);
+	fs = BRDFs_Oldschool(norm,wo,wi,albedoS,env,metallic,roughness,cosBias);
+}
+
+vec3 BRDFd_Frostbite(vec3 N, vec3 V, vec3 L, vec3 albedo, float metallic, float roughness, float cosBias) {
+	return (1 - metallic) * DisneyDiffuseFr(N, V, L, roughness) * albedo * PBR_ILLUMINANCE_SCALE;
+}
+
+vec3 BRDFs_Frostbite(vec3 N, vec3 V, vec3 L,
+                     vec3 albedo, vec3 env,
+                     float metallic, float roughness, float cosBias)
+{
+	vec3 H = normalize(V + L);
+
+	float NoV = abs(dot(N, V)) + 0.00001; // avoid artifact
+	float LoH = stdUtil_CosineBiasSat(dot(L, H), cosBias); // saturate(dot(L, H));
+	float NoH = saturate(dot(N, H));
+	float NoL = saturate(dot(N, L));
+
+	float roughness2 = roughness * roughness; // squaring remapping
+
+	vec3 F = SchlickFr(LoH, albedo, metallic);
+	float Vis = SchlickGGX_SmithG_Vis_HC(NoV, NoL, roughness2);
+	float D = SchlickGGX_D(NoH, roughness2);
+
+	return (D+env) * F * Vis * PBR_ILLUMINANCE_SCALE;
+}
+
+void BRDF_Frostbite(out vec3 fd, out vec3 fs,
+                    vec3 norm, vec3 wo, vec3 wi,
+                    vec3 albedoD, vec3 albedoS, vec3 env,
+                    float metallic, float roughness, float cosBias)
+{
+	fd = BRDFd_Frostbite(norm,wo,wi,albedoD,metallic,roughness,cosBias);
+	fs = BRDFs_Frostbite(norm,wo,wi,albedoS,env,metallic,roughness,cosBias);
+}
+
+void BRDF_MetalWorkflow(out vec3 fd, out vec3 fs,
+                        vec3 norm, vec3 wo, vec3 wi,
+                        vec3 albedoD, vec3 albedoS, vec3 env,
+                        float metallic, float roughness, float cosBias)
+{
+	vec3 wh = normalize(wo + wi);
+
+	float D = SchlickGGX_D(norm, wh, roughness, cosBias);
+	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness, cosBias);
+	vec3 F = SchlickFr(wo, wh, albedoS, metallic);
+
+	vec3 kS = F;
+	vec3 kD = (1-metallic) * (1 - kS);
+
+	fd = kD * albedoD * PBR_ILLUMINANCE_SCALE;
+	fs = (D+env) * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
+}
+
+vec3 BRDFd_MetalWorkflow(vec3 wo, vec3 wi, vec3 albedo, float metallic, float cosBias) {
+	vec3 wh = normalize(wo + wi);
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+	vec3 kD = (1 - metallic) * (1 - F);
+	return kD * albedo * PBR_ILLUMINANCE_SCALE;
+}
+
+vec3 BRDFs_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi,
+                         vec3 albedo, vec3 env,
+                         float metallic, float roughness, float cosBias)
+{
+	vec3 wh = normalize(wo + wi);
+
+	float D = SchlickGGX_D(norm, wh, roughness, cosBias);
+	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness, cosBias);
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+
+	return (D+env) * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
+}
+
+void BRDF(out vec3 fd, out vec3 fs,
+          int ID,
+          vec3 norm, vec3 wo, vec3 wi,
+          vec3 albedoD, vec3 albedoS, vec3 env,
+          float metallic, float roughness, float cosBias) {
+	if (ID == BRDF_OLDSCHOOL)
+		BRDF_Oldschool(fd, fs, norm, wo, wi, albedoD, albedoS, env, metallic, roughness, cosBias);
+	else if (ID == BRDF_METAL)
+		BRDF_MetalWorkflow(fd, fs, norm, wo, wi, albedoD, albedoS, env, metallic, roughness, cosBias);
+	else if (ID == BRDF_FROSTBITE)
+		BRDF_Frostbite(fd, fs, norm, wo, wi, albedoD, albedoS, env, metallic, roughness, cosBias);
+	else {
+		fd = vec3(0,0,0);
+		fs = vec3(0,0,0);
+	}
+}
+
+vec3 BRDFd(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float cosBias) {
+	if (ID == BRDF_OLDSCHOOL)
+		return BRDFd_Oldschool(albedo);
+	else if (ID == BRDF_METAL)
+		return BRDFd_MetalWorkflow(wo, wi, albedo, metallic, cosBias);
+	else if (ID == BRDF_FROSTBITE)
+		return BRDFd_Frostbite(norm, wo, wi, albedo, metallic, roughness, cosBias);
+	else
+		return vec3(0,0,0);
+}
+
+vec3 BRDFs(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, vec3 env, float metallic, float roughness, float cosBias) {
+	if (ID == BRDF_OLDSCHOOL)
+		return BRDFs_Oldschool(norm, wo, wi, albedo, env, metallic, roughness, cosBias);
+	else if (ID == BRDF_METAL)
+		return BRDFs_MetalWorkflow(norm, wo, wi, albedo, env, metallic, roughness, cosBias);
+	else if (ID == BRDF_FROSTBITE)
+		return BRDFs_Frostbite(norm, wo, wi, albedo, env, metallic, roughness, cosBias);
+	else
+		return vec3(0,0,0);
+}
+
+float3 stdLighting_SampleCookie(StdSampledMaterial m, StdLight l) {
+  float3 cookieColor = vec3(1,1,1);
+  if (l.Type == eStdLightType_Point) {
+    float3 toPosDir = normalize(l.PositionWorldSpace.xyz - m.PositionWorldSpace.xyz);
+    cookieColor = stdSampler_TexCube(l.Cookie,mul(toPosDir,l.CookieMatrix)).xyz;
+  }
+  else {
+    cookieColor = stdSampler_Tex2DProj(l.Cookie,mul(float4(m.Position.xyz,1),l.CookieMatrix)).xyz;
+  }
+  return cookieColor;
+}
+
+float3 IlluminanceD(StdSampledMaterial m, StdLight l) {
+  float3 diffuse = l.Diffuse.xyz;
+  if (l.IBLDiffuse.HasTexture) {
+    diffuse *= stdSampler_TexCube(l.IBLDiffuse,m.NormalWorldSpace).xyz;
+  }
+  return diffuse;
+}
+
+float3 IlluminanceS(StdSampledMaterial m, StdLight l) {
+  float3 specColor = l.Specular.xyz;
+  return specColor * l.SpecularHighlightIntensity;
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_GetLightSpacePosition(StdLight aLight, float4 aPos, bool abWorldSpace)
+{
+  float4 pos = aPos;
+  if (!abWorldSpace) {
+    pos = mul(pos,fpsInvViewMatrix);
+  }
+  return mul(pos,aLight.WorldToLightMatrix);
+}
+float3 stdLighting_GetLightSpacePosition(StdLight aLight, float3 aPos, bool abWorldSpace)
+{
+  return stdLighting_GetLightSpacePosition(aLight,float4(aPos,1),abWorldSpace).xyz;
+}
+
+///////////////////////////////////////////////
+float stdLighting_Attenuation(const int aType, const float afLen, const float aInvLightRange)
+{
+  float a = 1.0f;
+  if (aType == eStdLightAttType_None) {
+  }
+  else if (aType == eStdLightAttType_InvSqFalloff) {
+    // Physically accurate inverse square falloff. But requires a proper HDR
+    // pipeline and use a better luminance unit for lights (lumens for
+    // example).
+    float x = saturate(1-pow(afLen*aInvLightRange,4));
+    a = pow(x,2) / (pow(afLen,2) + 1);
+  }
+  else if (aType == eStdLightAttType_Linear) {
+    a = saturate(1-(afLen*aInvLightRange));
+  }
+  else if (aType == eStdLightAttType_Bicubic) {
+    float u = saturate(1-(aInvLightRange*afLen));
+    a = saturate(u*u*(3-(2*u)));
+  }
+
+  return a;
+}
+
+///////////////////////////////////////////////
+float stdLighting_Attenuation(StdLight aLight, float afLen) {
+  return stdLighting_Attenuation(aLight.AttType, afLen, aLight.Position.w);
+}
+
+///////////////////////////////////////////////
+//! Compute the barn shape.
+float stdLighting_BarnShaping(float3 avLSLitPos,
+                              float aW, float aWE,
+                              float aH, float aHE,
+                              float aRound)
+{
+  float2 Pproj = avLSLitPos.xy/avLSLitPos.z;
+  float a = aW;
+  float A = aW + aWE;
+  float b = aH;
+  float B = aH + aHE;
+  float2 pos = abs(Pproj);
+  float exp1 = 2.0 / aRound;
+  float exp2 = -aRound / 2.0;
+  float inner = a * b * pow(pow(b*pos.x,exp1)+pow(a*pos.y,exp1),exp2);
+  float outer = A * B * pow(pow(B*pos.x,exp1)+pow(A*pos.y,exp1),exp2);
+  return 1 - smoothstep(inner, outer, 1);
+}
+
+///////////////////////////////////////////////
+float3 stdLighting_ApplyShadowAndEmissive(StdSampledMaterial m, StdLight l, float3 C, float afShadow)
+{
+  float3 r = lerp(l.ShadowMap.Color.rgb * C, C, afShadow);
+  if (l.bEmissive) {
+    r += m.Emissive * l.NearFar.z;
+  }
+  return r;
+}
+
+///////////////////////////////////////////////
+float3 stdLighting_Final(
+    StdSampledMaterial m, StdLight l,
+    float3 aLightDir,
+    float afAttenuation,
+    float afShadow)
+{
+  float metallic = stdUtil_Luminance(m.Specular.xyz);
+  float roughness = 1.0 - m.Gloss;
+  float3 V = stdPixelInput_GetEyeDir();
+  float3 N = m.Normal;
+
+  vec3 env = float3(0,0,0);
+  if (m.bEnvironment) {
+    env += m.Environment * fpsMaterialEnvironmentColor0.a;
+  }
+
+  float3 fd, fs;
+  BRDF(fd, fs, BRDF_DEFAULT,
+       N, V, aLightDir,
+       m.Diffuse.xyz, m.Specular.xyz, env,
+       metallic, roughness, l.CosineBias);
+
+  fd *= IlluminanceD(m,l) * stdLighting_SampleCookie(m,l);
+  fs *= IlluminanceS(m,l);
+
+  float NdotL = stdUtil_CosineBiasSat(dot(aLightDir,N),l.CosineBias);
+  return stdLighting_ApplyShadowAndEmissive(m,l,fd+fs,afAttenuation*NdotL*afShadow);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_Dir(StdSampledMaterial aMat, StdLight aLight)
+{
+  float4 final = float4(0,0,0,0);
+  float3 toPosDir = aLight.Position.xyz - aMat.Position.xyz;
+  float shadowFactor = 1.0f;
+
+  float dist = length(toPosDir);
+  float att = stdLighting_Attenuation(aLight, dist);
+
+  // shadow map
+  if (aLight.ShadowMap.HasTexture) {
+    float4 posShadowMapSpace = stdLighting_ComputePositionInShadowMapSpace(aMat,aLight);
+    shadowFactor = stdLighting_Shadow(aLight.ShadowMap,
+                                      aLight.ShadowFilter,
+                                      posShadowMapSpace,
+                                      aLight.NearFar.w,
+                                      aLight.ShadowBlur);
+  }
+  final.rgb = stdLighting_Final(
+      aMat,aLight,
+      -aLight.Direction.xyz,
+      att,shadowFactor);
+  return final;
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_NoLighting(StdSampledMaterial m)
+{
+  float3 diffuse = m.Diffuse;
+  if (m.bEnvironment) {
+    diffuse = lerp(diffuse,m.Environment,m.EnvironmentAlpha);
+  }
+  if (m.bEmissive) {
+    diffuse += m.Emissive;
+  }
+  return float4(diffuse,m.Opacity);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_Point(StdSampledMaterial aMat, StdLight aLight)
+{
+  float4 final = float4(0,0,0,0);
+  float3 lp = aLight.Position.xyz;
+  float3 toPosDir = aLight.Position.xyz - aMat.Position.xyz;
+  float dist = length(toPosDir);
+  toPosDir /= dist;
+  float att = stdLighting_Attenuation(aLight, dist);
+  final.rgb = stdLighting_Final(aMat,aLight,toPosDir,att,1.0f);
+  return final;
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_SpotLight(StdSampledMaterial aMat, StdLight aLight)
+{
+#define SPOT_INVSQFALLOFF
+#define COSPHI2   (aLight.Spot.x) // Outer cone
+#define COSTHETA2 (aLight.Spot.y) // Inner cone
+  float3 toPosDir = aLight.Position.xyz - aMat.Position.xyz;
+  float dist = length(toPosDir);
+  toPosDir /= dist;
+
+  float3 ldir = aLight.Direction.xyz;
+  float4 final = float4(0,0,0,0);
+  float cosA = dot(ldir,-toPosDir);
+  float shadowFactor = 1.0f;
+  float att = 1.0f;
+#ifdef SPOT_INVSQFALLOFF
+  float spotFalloff = stdLighting_Attenuation(eStdLightAttType_InvSqFalloff, cosA-COSPHI2, 1.0f/(COSTHETA2-COSPHI2));
+#endif
+  if (cosA > COSPHI2)
+  {
+    // shadow map
+    if (aLight.ShadowMap.HasTexture) {
+      float4 posShadowMapSpace = stdLighting_ComputePositionInShadowMapSpace(aMat,aLight);
+      shadowFactor = stdLighting_Shadow(aLight.ShadowMap,
+                                        aLight.ShadowFilter,
+                                        posShadowMapSpace,
+                                        aLight.NearFar.w,
+                                        aLight.ShadowBlur);
+    }
+
+    att = stdLighting_Attenuation(aLight, dist);
+    if (aLight.LTC2IES.HasTexture) {
+      float2 uv;
+      // keep the original IES light FOV
+      // uv.x = acos(cosA) / kPi;
+      uv.x = acos(cosA) / aLight.Spot.w;
+
+      uv.y = (dist * aLight.Position.w);
+      float sample = stdSampler_Tex2D(aLight.LTC2IES, uv).r;
+      att *= sample;
+    }
+    else if (cosA <= COSTHETA2)
+    {
+#ifdef SPOT_INVSQFALLOFF
+      att *= 1.0f-spotFalloff;
+#else
+      att *= (cosA-COSPHI2)/(COSTHETA2-COSPHI2);
+#endif
+    }
+  }
+  else {
+    att = 0.0f;
+    shadowFactor = 0.0f;
+#ifdef SPOT_INVSQFALLOFF
+    aLight.ShadowMap.Color.rgb = lerp(float3(0,0,0), aLight.ShadowMap.Color.rgb, spotFalloff);
+#endif
+  }
+
+  final.rgb = stdLighting_Final(aMat,aLight,toPosDir,att,shadowFactor);
+  return final;
+#undef COSPHI2
+#undef COSTHETA2
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_AreaLight_LTC(StdSampledMaterial aMat, StdLight aLight)
+{
+  float3 P = aMat.PositionViewSpace.xyz;
+  float3 V = stdPixelInput_GetEyeDirViewSpace();
+  float3 N = aMat.NormalViewSpace;
+  float3 Shape[4] = aLight.ShapeViewSpace;
+  float3 lightPos = aLight.PositionViewSpace;
+
+  // attenuation
+  float3 toPosVec = aLight.PositionViewSpace.xyz - aMat.PositionViewSpace.xyz;
+  float dist = length(toPosVec);
+  float3 toPosDir = toPosVec/dist;
+
+  // distance based attenuation
+  float att = 1.0;
+  att *= stdLighting_Attenuation(aLight, length(lightPos-P));
+
+  // shadow attenuation
+  if (aLight.ShadowMap.HasTexture) {
+    float4 posShadowMapSpace = stdLighting_ComputePositionInShadowMapSpace(aMat,aLight);
+    att *= stdLighting_Shadow(aLight.ShadowMap,
+                              aLight.ShadowFilter,
+                              posShadowMapSpace,
+                              aLight.NearFar.w,
+                              aLight.ShadowBlur);
+  }
+
+  // diffuse term
+  float3 matAndLightDiffuse = aMat.Diffuse.xyz * IlluminanceD(aMat,aLight);
+  float3 ltcDiffuse = stdLTC_Evaluate(
+    aLight.Cookie,
+    aLight.LTC2IES,
+    N, V,
+    P, float3x3(1,0,0,0,1,0,0,0,1), Shape,
+    AREA_LIGHT_TWO_SIDED,
+    AREA_LIGHT_CLIPPING
+  );
+  float3 D = matAndLightDiffuse * ltcDiffuse * AREA_LIGHT_LTC_INTENSITY;
+
+  // Specular term
+  float3 S = float3(0,0,0);
+  if (aLight.bSpecular && aLight.SpecularHighlightIntensity > 0) {
+    float3 matAndLightSpecular = aMat.Specular.xyz * IlluminanceS(aMat,aLight);
+    float ndotv = saturate(dot(N,V));
+    float roughness = 1.0 - aMat.Gloss;
+    float2 uv = float2(roughness, sqrt(1.0 - ndotv));
+
+    float4 t1 = stdLTC_SampleLUT(aLight.LTC1, uv);
+    float3x3 Minv = float3x3(
+      float3(t1.x, 0, t1.z),
+      float3(  0,  1,    0),
+      float3(t1.y, 0, t1.w)
+    );
+
+    float3 ltcSpecular = stdLTC_Evaluate(
+      aLight.Cookie,
+      aLight.LTC2IES,
+      N, V,
+      P, Minv, Shape,
+      AREA_LIGHT_TWO_SIDED, AREA_LIGHT_CLIPPING);
+
+#if 0
+    // This is more physically accurate, it "whiteshifts / has more energy" for colored specular under high fresnel
+    float4 t2 = stdLTC_SampleLUT(aLight.LTC2IES, uv);
+    ltcSpecular *= matAndLightSpecular*t2.x + (1.0 - matAndLightSpecular)*t2.y;
+#else
+    ltcSpecular *= matAndLightSpecular;
+#endif
+
+    S += ltcSpecular * AREA_LIGHT_LTC_INTENSITY;
+  }
+
+  // final composition
+  float3 C = D + S;
+#if AREA_LIGHT_CLIPPING == LTC_CLIPPING_NONE
+  att *= stdUtil_CosineBiasSat(dot(toPosDir,N),aLight.CosineBias);
+#endif
+  C = stdLighting_ApplyShadowAndEmissive(aMat,aLight,C,att);
+  return float4(C,aMat.Opacity);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_AreaLight_MRP(StdSampledMaterial aMat, StdLight aLight)
+{
+  float3 P = aMat.PositionViewSpace.xyz;
+  float3 V = stdPixelInput_GetEyeDirViewSpace();
+  float3 N = aMat.NormalViewSpace;
+
+  // light basis
+  float3 lightPos = aLight.PositionViewSpace;
+  float3 lightDir = mul(stdUtil_MatrixGetForward(aLight.WorldToLightMatrix),fpsViewMatrix);
+  float3 lightRight = mul(stdUtil_MatrixGetRight(aLight.WorldToLightMatrix),fpsViewMatrix);
+
+  // attenuation
+  vec3 MRP = AreaLight_MRP(lightPos, lightDir, lightRight, aLight.AreaSize.xz, P, reflect(-V,N));
+  vec3 toPosVec = MRP - P;
+  // float3 toPosVec = aLight.PositionViewSpace.xyz - P;
+  float dist = length(toPosVec);
+  float3 toPosDir = toPosVec/dist;
+
+  // distance based attenuation
+  float att = 1.0;
+  att *= stdLighting_Attenuation(aLight, length(lightPos-P));
+
+  // shadow attenuation
+  if (aLight.ShadowMap.HasTexture) {
+    float4 posShadowMapSpace = stdLighting_ComputePositionInShadowMapSpace(aMat,aLight);
+    att *= stdLighting_Shadow(aLight.ShadowMap,
+                              aLight.ShadowFilter,
+                              posShadowMapSpace,
+                              aLight.NearFar.w,
+                              aLight.ShadowBlur);
+  }
+
+  // diffuse term
+  float3 matAndLightDiffuse = aMat.Diffuse.xyz * IlluminanceD(aMat,aLight);
+  float3 D = AreaLight_Illuminance(lightPos, lightDir, lightRight, aLight.AreaSize.xz, P, N) * matAndLightDiffuse;
+
+  // Specular term
+  float3 S = float3(0,0,0);
+  if (aLight.bSpecular && aLight.SpecularHighlightIntensity > 0) {
+    float3 matAndLightSpecular = aMat.Specular.xyz * IlluminanceS(aMat,aLight);
+    float3 P = OldSchool_SpecularPower(N,V,toPosDir,aMat.Gloss);
+    // float3 P = OldSchool_SpecularGGX(N,V,toPosDir,aMat.Gloss,matAndLightSpecular);
+    S += P * matAndLightSpecular * aLight.SpecularHighlightIntensity;
+    if (aMat.bEnvironment) {
+      S += aMat.Environment * 10.0f * fpsMaterialEnvironmentColor0.a;
+    }
+    S *= stdFresnel_SchlickGlossy(saturate(dot(toPosDir,N)), matAndLightSpecular, aMat.Gloss);
+  }
+
+  // final composition
+  float3 C = D + S;
+  C = stdLighting_ApplyShadowAndEmissive(aMat,aLight,C,att);
+  return float4(C,aMat.Opacity);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_AreaLight_LTCMRP(StdSampledMaterial aMat, StdLight aLight)
+{
+  float3 P = aMat.PositionViewSpace.xyz;
+  float3 V = stdPixelInput_GetEyeDirViewSpace();
+  float3 N = aMat.NormalViewSpace;
+  float3 Shape[4] = aLight.ShapeViewSpace;
+
+  // light basis
+  float3 lightPos = aLight.PositionViewSpace;
+  float3 lightDir = mul(stdUtil_MatrixGetForward(aLight.WorldToLightMatrix),fpsViewMatrix);
+  float3 lightRight = mul(stdUtil_MatrixGetRight(aLight.WorldToLightMatrix),fpsViewMatrix);
+
+  // distance based attenuation
+  float att = 1.0;
+  att *= stdLighting_Attenuation(aLight, length(lightPos-P));
+
+  // shadow attenuation
+  if (aLight.ShadowMap.HasTexture) {
+    float4 posShadowMapSpace = stdLighting_ComputePositionInShadowMapSpace(aMat,aLight);
+    att *= stdLighting_Shadow(aLight.ShadowMap,
+                              aLight.ShadowFilter,
+                              posShadowMapSpace,
+                              aLight.NearFar.w,
+                              aLight.ShadowBlur);
+  }
+
+  // diffuse term
+  float3 D = float3(0,0,0);
+  {
+    float3 ltcDiffuse = stdLTC_EvaluateNoClip(
+      aLight.Cookie,
+      N, V, P,
+      float3x3(1,0,0,0,1,0,0,0,1),
+      Shape,
+      AREA_LIGHT_TWO_SIDED
+    );
+    float3 matAndLightDiffuse = aMat.Diffuse.xyz * IlluminanceD(aMat,aLight) * AREA_LIGHT_LTC_INTENSITY;
+    D = matAndLightDiffuse * ltcDiffuse;
+  }
+
+  // Specular term
+  float3 S = float3(0,0,0);
+  if (aLight.bSpecular && aLight.SpecularHighlightIntensity > 0) {
+    vec3 MRPs = AreaLight_MRP(lightPos, lightDir, lightRight, aLight.AreaSize.xz, P, reflect(-V,N));
+    vec3 toPosVec = MRPs - P;
+    float dist2 = dot(toPosVec,toPosVec);
+    float dist = length(toPosVec);
+    float3 toPosDir = toPosVec/dist;
+
+    float3 matAndLightSpecular = aMat.Specular.xyz * IlluminanceS(aMat,aLight) * AREA_LIGHT_MRP_SPEC_INTENSITY;
+    float3 P = sqr(OldSchool_SpecularPower(N,V,toPosDir,aMat.Gloss));
+    // float3 P = OldSchool_SpecularGGX(N,V,toPosDir,aMat.Gloss,matAndLightSpecular);
+    S += P * matAndLightSpecular * aLight.SpecularHighlightIntensity;
+
+    if (aMat.bEnvironment) {
+      S += aMat.Environment * 10.0f * fpsMaterialEnvironmentColor0.a;
+    }
+    S *= stdFresnel_SchlickGlossy(saturate(dot(toPosDir,N)), matAndLightSpecular, aMat.Gloss);
+  }
+
+  // final composition
+  float3 C = D + S;
+  float NdotL = stdUtil_CosineBiasSat(dot(-lightDir,N),aLight.CosineBias);
+  C = stdLighting_ApplyShadowAndEmissive(aMat,aLight,C,att * NdotL);
+  return float4(C,aMat.Opacity);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting(StdSampledMaterial aMat, StdLight aLight, float4 aDefault) {
+  float4 res = aDefault;
+  if (aLight.Type == eStdLightType_None) {
+    res = stdLighting_NoLighting(aMat);
+  }
+  else if (aLight.Type == eStdLightType_Point) {
+    res = stdLighting_Point(aMat,aLight);
+  }
+  else if (aLight.Type == eStdLightType_Dir) {
+    res = stdLighting_Dir(aMat,aLight);
+  }
+  else if (aLight.Type == eStdLightType_Spot) {
+    res = stdLighting_SpotLight(aMat,aLight);
+  }
+  else if (aLight.Type == eStdLightType_Area) {
+    res = stdLighting_AreaLight_LTC(aMat,aLight);
+    // res = stdLighting_AreaLight_MRP(aMat,aLight);
+    // res = stdLighting_AreaLight_LTCMRP(aMat,aLight);
+  }
+  return res;
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDLIGHTING_CGH_9F2F130A_DF77_4908_BAE9_9F1395042AC5__

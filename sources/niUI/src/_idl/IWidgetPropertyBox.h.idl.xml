@@ -1,0 +1,50 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			dispatchwrapper="yes"
+			min_features="20"
+			name="iWidgetPropertyBox"
+			uuid1="A0370D2B-9D59-416F-9394-35C0EE08C928"
+			uuid2="0xa0370d2b,0x9d59,0x416f,0x93,0x94,0x35,0xc0,0xee,0x08,0xc9,0x28">
+			<comments desc="PropertyBox widget interface. ">
+				<remark text="To notifications of the datatable&apos;s modifications register a iDataTableSink int the datatable of the property box. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setDataTable"
+				min_features="20"
+				name="SetDataTable"
+				num_parameters="1"
+				property="set"
+				property_name2="dataTable"
+				property_name="data_table">
+				<comments desc="Set the property box&apos;s data table. ">
+					<remark text="By default an empty data table is created with the property box. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDataTable"
+				min_features="20"
+				name="GetDataTable"
+				num_parameters="0"
+				property="get"
+				property_name2="dataTable"
+				property_name="data_table">
+				<comments desc="Get the property box&apos;s data table. ">
+					<remark text="By default an empty data table is created with the property box. "/>
+				</comments>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

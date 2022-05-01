@@ -1,0 +1,135 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iSoundFormat" uuid1="03D84992-AE0A-4EBC-BEFF-9A4B6816F19D" uuid2="0x03d84992,0xae0a,0x4ebc,0xbe,0xff,0x9a,0x4b,0x68,0x16,0xf1,0x9d">
+			<comments desc="Utility format object. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the full format. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBaseFormat"
+				name="GetBaseFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="baseFormat"
+				property_name="base_format">
+				<comments desc="Get the base format (format without extra parameter). "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setBits"
+				name="SetBits"
+				num_parameters="1"
+				property="set"
+				property_name2="bits"
+				property_name="bits">
+				<comments desc="Set format&apos;s bits. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBits"
+				name="GetBits"
+				num_parameters="0"
+				property="get"
+				property_name2="bits"
+				property_name="bits">
+				<comments desc="Get format&apos;s bits. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setChannels"
+				name="SetChannels"
+				num_parameters="1"
+				property="set"
+				property_name2="channels"
+				property_name="channels">
+				<comments desc="Set format&apos;s num channels. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChannels"
+				name="GetChannels"
+				num_parameters="0"
+				property="get"
+				property_name2="channels"
+				property_name="channels">
+				<comments desc="Get format&apos;s num channels. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setExtra"
+				name="SetExtra"
+				num_parameters="1"
+				property="set"
+				property_name2="extra"
+				property_name="extra">
+				<comments desc="Set format&apos;s extra parameter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExtra"
+				name="GetExtra"
+				num_parameters="0"
+				property="get"
+				property_name2="extra"
+				property_name="extra">
+				<comments desc="Get format&apos;s extra parameter. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSampleSize"
+				name="GetSampleSize"
+				num_parameters="0"
+				property="get"
+				property_name2="sampleSize"
+				property_name="sample_size">
+				<comments desc="Get the format&apos;s sample size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrameSize"
+				name="GetFrameSize"
+				num_parameters="0"
+				property="get"
+				property_name2="frameSize"
+				property_name="frame_size">
+				<comments desc="Get the format&apos;s frame size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,30 @@
+√ <- "√"
+::println("ROOT: " + ::√ + " " + √)
+
+::Import("unittest.ni")
+::Import("algo.ni")
+::Import("lang.ni")
+::Import("tu_algo_data.ni")
+
+::∑ <- ::algo.sum
+::∏ <- ::algo.prod
+
+::TEST("unicode-identifiers", #{
+  local α = 2;
+  local β = 3;
+  local γ = 4;
+  local Γ = [ α β γ ]
+  ::CHECK_EQUAL(9 ::∑(Γ))
+  ::CHECK_EQUAL(9 ::∑( [ 2 3 4 ] ))
+  ::CHECK_EQUAL(24 ::∏(Γ))
+  ::CHECK_EQUAL(24 ::∏( [ 2 3 4 ] ))
+
+  // sum of all numbers
+  ::CHECK_EQUAL(28 ::algo.sum(::nums,))
+  // sum of double of all numbers
+  ::CHECK_EQUAL(56 ::algo.sum(::algo.map(::nums,#(x)=>x*2)))
+  // sum of odd numbers
+  ::CHECK_EQUAL(16 ::algo.sum(::algo.take(::nums,#(x)=>x%2==1)))
+  // sum of even numbers
+  ::CHECK_EQUAL(12 ::algo.sum(::algo.take(::nums,#(x)=>x%2==0)))
+})

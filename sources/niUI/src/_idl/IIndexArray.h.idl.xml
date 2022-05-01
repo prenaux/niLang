@@ -1,0 +1,99 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iIndexArray" uuid1="A1AB22BF-95B1-43FE-923C-9EEF84CA8341" uuid2="0xa1ab22bf,0x95b1,0x43fe,0x92,0x3c,0x9e,0xef,0x84,0xca,0x83,0x41">
+			<comments desc="Index array interface ">
+				<remark text="Bindable "/>
+			</comments>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getPrimitiveType"
+				name="GetPrimitiveType"
+				num_parameters="0"
+				property="get"
+				property_name2="primitiveType"
+				property_name="primitive_type">
+				<comments desc="Get the primitive type of this index array. "/>
+				<return type="eGraphicsPrimitiveType" typec="eGraphicsPrimitiveType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumIndices"
+				name="GetNumIndices"
+				num_parameters="0"
+				property="get"
+				property_name2="numIndices"
+				property_name="num_indices">
+				<comments desc="Get the number of indices in the given index array. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxVertexIndex"
+				name="GetMaxVertexIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="maxVertexIndex"
+				property_name="max_vertex_index">
+				<comments desc="Get the maximum vertex index that can be used in this index array. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUsage"
+				name="GetUsage"
+				num_parameters="0"
+				property="get"
+				property_name2="usage"
+				property_name="usage">
+				<comments desc="Get the usage of the given vertex array. "/>
+				<return type="eArrayUsage" typec="eArrayUsage" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="lock" name="Lock" num_parameters="3">
+				<comments desc="Lock index array memory to enable writting and reading in it. " return="a pointer to the index data. ">
+					<remark text="pass 0 for ulFirstIndex and ulNumIndex to lock the entire array. "/>
+					<remark text="This method should be considered as slow as it may perform some processing to adapt the indices data to the renderer&apos;s supported format. "/>
+					<params text="ulFirstIndex is the offset in the index data to lock. "/>
+					<params text="ulNumIndex is the number of index to lock. "/>
+					<params text="aLock specify the locking mode. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulFirstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulNumIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aLock"
+					type="eLock"
+					typec="eLock"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="unlock" name="Unlock" num_parameters="0">
+				<comments desc="Unlock vertex array memory. ">
+					<remark text="This method should be considered as slow as it may perform some processing to adapt the indices data to the renderer&apos;s supported format. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsLocked"
+				name="GetIsLocked"
+				num_parameters="0"
+				property="get"
+				property_name2="isLocked"
+				property_name="is_locked">
+				<comments desc="Return true if the array is locked. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,46 @@
+::Import("unittest.ni")
+::Import("oo.ni")
+
+::FIXTURE("oo")
+
+::my <- {}
+
+::my.Vec3 <- ::delegate(::oo.base, {
+  _x = 0, _y = 0, _z = 0
+  function _initialize(x,y,z) {
+    ::println("... Vec3's initialized")
+    _x = x
+    _y = y
+    _z = z
+  }
+  function _invalidate() {
+    ::println("... Vec3 ("+_tostring()+") invalidate")
+  }
+  function _add(b) {
+    return new(
+      _x + b._x,
+      _y + b._y,
+      _z + b._z)
+  }
+  function _tostring() {
+    return "MyVec3("+_x+","+_y+","+_z+")"
+  }
+  function _cmp(b) {
+    if (_x != b._x) return b._x-_x;
+    if (_y != b._y) return b._y-_y;
+    if (_z != b._z) return b._z-_z;
+    return 0;
+  }
+})
+
+::TEST("oo","base",#() {
+  local x = ::my.Vec3.new(1,2,3)
+  local y = ::my.Vec3.new(4,5,6)
+  local z = ::my.Vec3.new(5,7,9)
+  local zz = x + y
+  ::println("x: " + x)
+  ::println("y: " + y)
+  ::println("z: " + z)
+  ::println("zz: " + zz)
+  ::CHECK_EQUAL(z,zz);
+})

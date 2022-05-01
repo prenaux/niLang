@@ -1,0 +1,22 @@
+#include "../API/niLang/IToString.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iToString **/
+IDLC_BEGIN_INTF(ni,iToString)
+/** ni -> iToString::ToString/0 **/
+IDLC_METH_BEGIN(ni,iToString,ToString,0)
+	IDLC_DECL_RETVAR(ni::cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iToString,ToString,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iToString,ToString,0)
+
+IDLC_END_INTF(ni,iToString)
+
+IDLC_END_NAMESPACE()
+// EOF //

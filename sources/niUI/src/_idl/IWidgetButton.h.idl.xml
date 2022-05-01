@@ -1,0 +1,330 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetButtonStyle">
+			<comments desc=""/>
+			<value name="eWidgetButtonStyle_OnOff" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Toggle button. "/>
+			</value>
+			<value name="eWidgetButtonStyle_CheckBox" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Check box button. "/>
+			</value>
+			<value name="eWidgetButtonStyle_RadioButton" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Radio button. "/>
+			</value>
+			<value name="eWidgetButtonStyle_TabButton" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="Tab button. "/>
+			</value>
+			<value name="eWidgetButtonStyle_Select" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="Draw the button in a selected state when checked. "/>
+			</value>
+			<value name="eWidgetButtonStyle_NoText" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+				<comments desc="Dont draw the text. "/>
+			</value>
+			<value name="eWidgetButtonStyle_Sticky" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+				<comments desc="The button will stay pressed and &apos;click&apos; once it has been pressed, even if the mouse moves out of it. "/>
+			</value>
+			<value name="eWidgetButtonStyle_NoFrame" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+				<comments desc="Dont draw the button frame. "/>
+			</value>
+			<value name="eWidgetButtonStyle_IconFit" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+				<comments desc="Set the icon size automatically to fit into the button. ">
+					<remark text="Fit keeps the ratio of the button. "/>
+				</comments>
+			</value>
+			<value name="eWidgetButtonStyle_IconStretch" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+				<comments desc="Set the icon size automatically to fill the button. ">
+					<remark text="Stretch doesnt keep the icon ratio. "/>
+				</comments>
+			</value>
+			<value name="eWidgetButtonStyle_IconLeft" value="0 ">
+				<comments desc="The icon position is on the left. The text position is on the right. ">
+					<remark text="This is the default if not position is specified. "/>
+				</comments>
+			</value>
+			<value name="eWidgetButtonStyle_IconRight" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+				<comments desc="The icon position is on the right. The text position is on the left. "/>
+			</value>
+			<value name="eWidgetButtonStyle_IconTop" value="niBit ( eWidgetStyle_MaxBit+11 ) ">
+				<comments desc="The icon position is on the top. The text position is in the bottom. "/>
+			</value>
+			<value name="eWidgetButtonStyle_IconBottom" value="niBit ( eWidgetStyle_MaxBit+12 ) ">
+				<comments desc="The icon position is in the bottom. The text position is on the top. "/>
+			</value>
+			<value name="eWidgetButtonStyle_IconCenter" value="niBit ( eWidgetStyle_MaxBit+13 ) ">
+				<comments desc="The icon position is in the center. The text position is over the icon. "/>
+			</value>
+			<value name="eWidgetButtonStyle_TextLeft" value="niBit ( eWidgetStyle_MaxBit+14 ) ">
+				<comments desc="The text is left/top aligned. "/>
+			</value>
+			<value name="eWidgetButtonStyle_TextRight" value="niBit ( eWidgetStyle_MaxBit+15 ) ">
+				<comments desc="The text is right/bottom aligned. "/>
+			</value>
+			<value name="eWidgetButtonStyle_TextCenter" value="0 ">
+				<comments desc="The text is center aligned. ">
+					<remark text="This is the default if no text position is specified. "/>
+				</comments>
+			</value>
+			<value name="eWidgetButtonStyle_BitmapButton" value="eWidgetButtonStyle_IconCenter ">
+				<comments desc="Bitmap button. Text is drawn over the icon. "/>
+			</value>
+			<value name="eWidgetButtonStyle_IconButton" value="eWidgetButtonStyle_IconTop ">
+				<comments desc="Icon button, same as bitmap button excepted that the text is drawn below the icon. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetButtonCmd">
+			<comments desc="Button notification messages. "/>
+			<value name="eWidgetButtonCmd_Clicked" value="0 ">
+				<comments desc="The button has been clicked. "/>
+			</value>
+			<value name="eWidgetButtonCmd_Pushed" value="1 ">
+				<comments desc="The button has been pushed. "/>
+			</value>
+			<value name="eWidgetButtonCmd_UnPushed" value="2 ">
+				<comments desc="The button has been unpushed. "/>
+			</value>
+			<value name="eWidgetButtonCmd_Checked" value="3 ">
+				<comments desc="The button has been checked. "/>
+			</value>
+			<value name="eWidgetButtonCmd_UnChecked" value="4 ">
+				<comments desc="The button has been unchecked. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetButton" uuid1="719EEAC7-6CB0-4C6A-95BE-2420DEE10EB8" uuid2="0x719eeac7,0x6cb0,0x4c6a,0x95,0xbe,0x24,0x20,0xde,0xe1,0x0e,0xb8">
+			<comments desc="Button widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setIcon"
+				name="SetIcon"
+				num_parameters="1"
+				property="set"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Set the button&apos;s icon "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apIcon"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIcon"
+				name="GetIcon"
+				num_parameters="0"
+				property="get"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Get the button&apos;s icon "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIconPressed"
+				name="SetIconPressed"
+				num_parameters="1"
+				property="set"
+				property_name2="iconPressed"
+				property_name="icon_pressed">
+				<comments desc="Set the button&apos;s icon in pressed state. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apIcon"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIconPressed"
+				name="GetIconPressed"
+				num_parameters="0"
+				property="get"
+				property_name2="iconPressed"
+				property_name="icon_pressed">
+				<comments desc="Get the button&apos;s icon in pressed state. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIconHover"
+				name="SetIconHover"
+				num_parameters="1"
+				property="set"
+				property_name2="iconHover"
+				property_name="icon_hover">
+				<comments desc="Set the button&apos;s icon in hover state. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apIcon"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIconHover"
+				name="GetIconHover"
+				num_parameters="0"
+				property="get"
+				property_name2="iconHover"
+				property_name="icon_hover">
+				<comments desc="Get the button&apos;s icon in hover state. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIconSize"
+				name="SetIconSize"
+				num_parameters="1"
+				property="set"
+				property_name2="iconSize"
+				property_name="icon_size">
+				<comments desc="Set the button&apos;s icon size. ">
+					<remark text="If zero the size of the icon image is used. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIconSize"
+				name="GetIconSize"
+				num_parameters="0"
+				property="get"
+				property_name2="iconSize"
+				property_name="icon_size">
+				<comments desc="Get the button&apos;s icon size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setCheck"
+				name="SetCheck"
+				num_parameters="1"
+				property="set"
+				property_name2="check"
+				property_name="check">
+				<comments desc="Set the button check status "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abCkecked"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCheck"
+				name="GetCheck"
+				num_parameters="0"
+				property="get"
+				property_name2="check"
+				property_name="check">
+				<comments desc="Get the button check status "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setGroupID"
+				name="SetGroupID"
+				num_parameters="1"
+				property="set"
+				property_name2="groupID"
+				property_name="group_id">
+				<comments desc="Set the button&apos;s group id. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGroupID"
+				name="GetGroupID"
+				num_parameters="0"
+				property="get"
+				property_name2="groupID"
+				property_name="group_id">
+				<comments desc="Get the button&apos;s group id. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIconMargin"
+				name="SetIconMargin"
+				num_parameters="1"
+				property="set"
+				property_name2="iconMargin"
+				property_name="icon_margin">
+				<comments desc="Set the icon margin. ">
+					<remark text="Default margin is Vec4(3,3,3,3) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMargin"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIconMargin"
+				name="GetIconMargin"
+				num_parameters="0"
+				property="get"
+				property_name2="iconMargin"
+				property_name="icon_margin">
+				<comments desc="Get the icon margin. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIconDrawRect"
+				name="GetIconDrawRect"
+				num_parameters="0"
+				property="get"
+				property_name2="iconDrawRect"
+				property_name="icon_draw_rect">
+				<comments desc="Get the icon&apos;s drawing rectangle, client rectangle relative. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setDrawFrameFlags"
+				name="SetDrawFrameFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="drawFrameFlags"
+				property_name="draw_frame_flags">
+				<comments desc="Set the draw frame flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tRectFrameFlags"
+					typec="tRectFrameFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDrawFrameFlags"
+				name="GetDrawFrameFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="drawFrameFlags"
+				property_name="draw_frame_flags">
+				<comments desc="Get the draw frame flags. "/>
+				<return type="tRectFrameFlags" typec="tRectFrameFlags" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

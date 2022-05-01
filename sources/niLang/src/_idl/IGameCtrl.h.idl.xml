@@ -1,0 +1,228 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eGameCtrlAxis">
+			<comments desc="Game controller axis "/>
+			<value name="eGameCtrlAxis_LX" value="0 ">
+				<comments desc="Left X Axis. "/>
+			</value>
+			<value name="eGameCtrlAxis_LY" value="1 ">
+				<comments desc="Left Y Axis. "/>
+			</value>
+			<value name="eGameCtrlAxis_LZ" value="2 ">
+				<comments desc="Left Z Axis. "/>
+			</value>
+			<value name="eGameCtrlAxis_RX" value="3 ">
+				<comments desc="Right X Axis. "/>
+			</value>
+			<value name="eGameCtrlAxis_RY" value="4 ">
+				<comments desc="Right Y Axis. "/>
+			</value>
+			<value name="eGameCtrlAxis_RZ" value="5 ">
+				<comments desc="Right Z AXis. "/>
+			</value>
+			<value name="eGameCtrlAxis_Last" value="6 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGameCtrlButton">
+			<comments desc="Game controller buttons. "/>
+			<value name="eGameCtrlButton_A" value="0 ">
+				<comments desc="A "/>
+			</value>
+			<value name="eGameCtrlButton_B" value="1 ">
+				<comments desc="B "/>
+			</value>
+			<value name="eGameCtrlButton_X" value="2 ">
+				<comments desc="X "/>
+			</value>
+			<value name="eGameCtrlButton_Y" value="3 ">
+				<comments desc="Y "/>
+			</value>
+			<value name="eGameCtrlButton_LeftBlock" value="4 ">
+				<comments desc="Left Block "/>
+			</value>
+			<value name="eGameCtrlButton_RightBlock" value="5 ">
+				<comments desc="Right Block "/>
+			</value>
+			<value name="eGameCtrlButton_Back" value="6 ">
+				<comments desc="Back "/>
+			</value>
+			<value name="eGameCtrlButton_Start" value="7 ">
+				<comments desc="Start "/>
+			</value>
+			<value name="eGameCtrlButton_LeftThumb" value="8 ">
+				<comments desc="Left Thumb "/>
+			</value>
+			<value name="eGameCtrlButton_RightThumb" value="9 ">
+				<comments desc="Right Thumb "/>
+			</value>
+			<value name="eGameCtrlButton_LeftTrigger" value="10 ">
+				<comments desc="LeftTrigger "/>
+			</value>
+			<value name="eGameCtrlButton_RightTrigger" value="11 ">
+				<comments desc="RightTrigger "/>
+			</value>
+			<value name="eGameCtrlButton_DPadUp" value="12 ">
+				<comments desc="Up "/>
+			</value>
+			<value name="eGameCtrlButton_DPadDown" value="13 ">
+				<comments desc="Down "/>
+			</value>
+			<value name="eGameCtrlButton_DPadLeft" value="14 ">
+				<comments desc="Left "/>
+			</value>
+			<value name="eGameCtrlButton_DPadRight" value="15 ">
+				<comments desc="Right "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iGameCtrl"
+			uuid1="14F09DF7-3842-46EF-9967-BBC6557758B7"
+			uuid2="0x14f09df7,0x3842,0x46ef,0x99,0x67,0xbb,0xc6,0x55,0x77,0x58,0xb7">
+			<comments desc="Game controller interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update the device states. ">
+					<remark text="All the get methods depends on Update being called first to get the latest value as most game controllers are polled and not event based. "/>
+					<remark text="Return true if any state changed since the last update, eFalse otherwise. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsConnected"
+				name="GetIsConnected"
+				num_parameters="0"
+				property="get"
+				property_name2="isConnected"
+				property_name="is_connected">
+				<comments desc="Return eTrue if the device is connected. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Name of the input device. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndex"
+				name="GetIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="index"
+				property_name="index">
+				<comments desc="Get the index of the game controller. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumButtons"
+				name="GetNumButtons"
+				num_parameters="0"
+				property="get"
+				property_name2="numButtons"
+				property_name="num_buttons">
+				<comments desc="Return the number of buttons of the game controller. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getButton"
+				name="GetButton"
+				num_parameters="1"
+				property="get"
+				property_name2="button"
+				property_name="button">
+				<comments desc="Return the force applied on the button. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="ulButton"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumAxis"
+				name="GetNumAxis"
+				num_parameters="0"
+				property="get"
+				property_name2="numAxis"
+				property_name="num_axis">
+				<comments desc="Return the number of axis of the game controller. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getAxis"
+				name="GetAxis"
+				num_parameters="1"
+				property="get"
+				property_name2="axis"
+				property_name="axis">
+				<comments desc="Return the position of the given axis "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="axis"
+					type="eGameCtrlAxis"
+					typec="eGameCtrlAxis"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCanVibrate"
+				name="GetCanVibrate"
+				num_parameters="0"
+				property="get"
+				property_name2="canVibrate"
+				property_name="can_vibrate">
+				<comments desc="Get whether the game controller can vibrate. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="vibrate" name="Vibrate" num_parameters="1">
+				<comments desc="Set the left &amp; right motor vibrations. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aSpeed"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasBattery"
+				name="GetHasBattery"
+				num_parameters="0"
+				property="get"
+				property_name2="hasBattery"
+				property_name="has_battery">
+				<comments desc="Get whether the controller has a battery. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBatteryLevel"
+				name="GetBatteryLevel"
+				num_parameters="0"
+				property="get"
+				property_name2="batteryLevel"
+				property_name="battery_level">
+				<comments desc="Get the battery level. ">
+					<remark text="0 is empty, 1.0 is full. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

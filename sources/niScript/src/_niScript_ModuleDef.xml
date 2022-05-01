@@ -1,0 +1,1100 @@
+<niIDL
+	author="niLang Authors"
+	copyright="(c) 2022 The niLang Authors"
+	desc="niScript module"
+	genentrypoint="no"
+	initfunctions="yes"
+	name="niScript"
+	unknowntype="Ptr"
+	version="1,0,0">
+	<dependencies/>
+	<objecttypes>
+		<objecttype name="ScriptVM"/>
+		<objecttype name="URLFileHandlerScript"/>
+	</objecttypes>
+	<includes>
+		<include>niScript/src/_idl/IScriptObject.h.idl.xml</include>
+		<include>niScript/src/_idl/IScriptVM.h.idl.xml</include>
+		<include>niScript/src/_idl/VMAPI.h.idl.xml</include>
+	</includes>
+	<namespace name="ni" source="niScript/src/_idl/IScriptObject.h.idl.xml">
+		<enum min_features="15" name="eScriptObjectType">
+			<comments desc="Script object type. "/>
+			<value min_features="15" name="eScriptObjectType_Unknown" value="0 ">
+				<comments desc="Unknown object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Function" value="1 ">
+				<comments desc="Function object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Table" value="2 ">
+				<comments desc="Table object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Null" value="3 ">
+				<comments desc="Null object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Int" value="4 ">
+				<comments desc="Integer object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Float" value="5 ">
+				<comments desc="Float object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_String" value="6 ">
+				<comments desc="String object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_UserData" value="7 ">
+				<comments desc="UserData object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Array" value="8 ">
+				<comments desc="Array object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_VM" value="9 ">
+				<comments desc="VM object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_IUnknown" value="0x0400 ">
+				<comments desc="iUnknown object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec2" value="11 ">
+				<comments desc="Vec2 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec3" value="12 ">
+				<comments desc="Vec3 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Vec4" value="13 ">
+				<comments desc="Vec4 object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Matrix" value="14 ">
+				<comments desc="Matrix object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_UUID" value="15 ">
+				<comments desc="UUID object type. "/>
+			</value>
+			<value min_features="15" name="eScriptObjectType_Last" value="16 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface
+			min_features="15"
+			name="iScriptObject"
+			uuid1="8359934F-EC0D-4BB3-8168-CD782C3E5FAD"
+			uuid2="0x8359934f,0xec0d,0x4bb3,0x81,0x68,0xcd,0x78,0x2c,0x3e,0x5f,0xad">
+			<comments desc="Script object reference interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getVM"
+				min_features="15"
+				name="GetVM"
+				num_parameters="0"
+				property="get"
+				property_name2="vm"
+				property_name="vm">
+				<comments desc="Parent script VM. "/>
+				<return type="iScriptVM *" typec="iScriptVM*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				min_features="15"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the script object&apos;s type. "/>
+				<return type="eScriptObjectType" typec="eScriptObjectType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="15"
+				name="Clone"
+				num_parameters="1">
+				<comments desc="Clone the object reference. "/>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abHoldRef"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="enumObjects"
+				min_features="15"
+				name="EnumObjects"
+				num_parameters="0">
+				<comments desc="Enumerate all objects in this table. "/>
+				<return type="tScriptObjectPtrCVec *" typec="tScriptObjectPtrCVec*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInt"
+				min_features="15"
+				name="GetInt"
+				num_parameters="0">
+				<comments desc="Get the integer value. " return="niMaxI32 if the type of the object is not integer. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				min_features="15"
+				name="GetFloat"
+				num_parameters="0"
+				property="get"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Get the float value. " return="niMaxF64 if the type of the object is not float. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				min_features="15"
+				name="GetString"
+				num_parameters="0"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the string value. " return="NULL if the type of the object is not string. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHString"
+				min_features="15"
+				name="GetHString"
+				num_parameters="0"
+				property="get"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Get the hstring value. " return="NULL if the type of the object is not string. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknown"
+				min_features="15"
+				name="GetIUnknown"
+				num_parameters="0"
+				property="get"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Get the IUnknown pointer value. " return="NULL if the type of the object is not iUnknown. ">
+					<remark text="Make sure that the user data is really a IUnknown pointer otherwise the pointer returned will be garbage. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknownEx"
+				min_features="15"
+				name="GetIUnknownEx"
+				num_parameters="1">
+				<comments desc="Get the IUnknown object, will get the interface also from iDispatch table. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2"
+				min_features="15"
+				name="GetVec2"
+				num_parameters="0"
+				property="get"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Get the Vec2 value. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3"
+				min_features="15"
+				name="GetVec3"
+				num_parameters="0"
+				property="get"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get the Vec3 value. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4"
+				min_features="15"
+				name="GetVec4"
+				num_parameters="0"
+				property="get"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get the Vec4 value. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				min_features="15"
+				name="GetMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the Matrix value. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUUID"
+				min_features="15"
+				name="GetUUID"
+				num_parameters="0"
+				property="get"
+				property_name2="uuid"
+				property_name="uuid">
+				<comments desc="Get the UUID value. "/>
+				<return type="const tUUID &amp;" typec="const tUUID&amp;" typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumParameters"
+				min_features="15"
+				name="GetNumParameters"
+				num_parameters="0"
+				property="get"
+				property_name2="numParameters"
+				property_name="num_parameters">
+				<comments desc="Get the number of parameters of the function. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumFreeVars"
+				min_features="15"
+				name="GetNumFreeVars"
+				num_parameters="0"
+				property="get"
+				property_name2="numFreeVars"
+				property_name="num_free_vars">
+				<comments desc="Get the number of free variables of the function. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumCallParameters"
+				min_features="15"
+				name="GetNumCallParameters"
+				num_parameters="0"
+				property="get"
+				property_name2="numCallParameters"
+				property_name="num_call_parameters">
+				<comments desc="Get the number of parameters of the function minus the number of free variables. ">
+					<remark text="This is the number of parameters to push on the stack to call the function. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niScript/src/_idl/IScriptVM.h.idl.xml">
+		<interface
+			min_features="15"
+			name="iScriptObjectEnumSink"
+			uuid1="C8E07068-B84A-4ADC-A298-2B5DA21C6900"
+			uuid2="0xc8e07068,0xb84a,0x4adc,0xa2,0x98,0x2b,0x5d,0xa2,0x1c,0x69,0x00">
+			<comments desc="Script object enumeration sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onScriptObjectEnumSinkFound"
+				min_features="15"
+				name="OnScriptObjectEnumSinkFound"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apVM"
+					type="iScriptVM *"
+					typec="iScriptVM*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apKey"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apValue"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<enum min_features="15" name="eScriptRaiseErrorMode">
+			<comments desc="Script raise error mode "/>
+			<value min_features="15" name="eScriptRaiseErrorMode_Silent" value="0 ">
+				<comments desc="Never automatically generate an error message "/>
+			</value>
+			<value min_features="15" name="eScriptRaiseErrorMode_Error" value="1 ">
+				<comments desc="Generates a simple error message "/>
+			</value>
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortCallstack" value="2 ">
+				<comments desc="Generates a short callstack (default) "/>
+			</value>
+			<value min_features="15" name="eScriptRaiseErrorMode_Callstack" value="3 ">
+				<comments desc="Generates a verbose callstack "/>
+			</value>
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortLocals" value="4 ">
+				<comments desc="Generates a short callstack with locals "/>
+			</value>
+			<value min_features="15" name="eScriptRaiseErrorMode_Locals" value="5 ">
+				<comments desc="Generates a verbose callstack with locals "/>
+			</value>
+		</enum>
+		<interface
+			min_features="15"
+			name="iScriptVM"
+			uuid1="50BC7FF5-0E32-4390-8C5E-B960A2BEE902"
+			uuid2="0x50bc7ff5,0x0e32,0x4390,0x8c,0x5e,0xb9,0x60,0xa2,0xbe,0xe9,0x02">
+			<comments desc="Script Virtual Machine interface. "/>
+			<parents>
+				<parent name="iScriptingHost"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getHandle"
+				min_features="15"
+				name="GetHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="handle"
+				property_name="handle">
+				<comments desc="Get the VM&apos;s handle. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParentVM"
+				min_features="15"
+				name="GetParentVM"
+				num_parameters="0"
+				property="get"
+				property_name2="parentVM"
+				property_name="parent_vm">
+				<comments desc="Get the parent VM. "/>
+				<return type="iScriptVM *" typec="iScriptVM*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="compile"
+				min_features="15"
+				name="Compile"
+				num_parameters="2">
+				<comments desc="Compile the given file. " return="An object that contains the compiled code. ">
+					<remark text="This does not run the compiled code. "/>
+					<params text="apFile containes the code to compile. "/>
+					<params text="aaszName is the name to give to the closure. If NULL the file source path is used as name. "/>
+				</comments>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="compileString"
+				min_features="15"
+				name="CompileString"
+				num_parameters="2">
+				<comments desc="Compile the given string. " return="A closure that contains the compiled code. ">
+					<remark text="This does not run the compiled code. "/>
+					<params text="aaszCode containes the code to compile. "/>
+					<params text="aaszName is the name to give to the closure. If NULL [VM::String] is used. "/>
+				</comments>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszCode"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="compileGetIUnknownObject"
+				min_features="15"
+				name="CompileGetIUnknownObject"
+				num_parameters="4">
+				<comments desc="Compile the given file and get the specified IUnknown object. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apThisTable"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszObjectName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="run"
+				min_features="15"
+				name="Run"
+				num_parameters="2">
+				<comments desc="Run the specified text. " return="eFalse on error, else eTrue. ">
+					<params text="apThis is the &apos;this&apos; table to use for the call, if null use the root table. "/>
+					<params text="aaszCommand is the text to run. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apThis"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszCommand"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="collectGarbage"
+				min_features="15"
+				name="CollectGarbage"
+				num_parameters="0">
+				<comments desc="Collect garbage. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="enableDebugInfos"
+				min_features="15"
+				name="EnableDebugInfos"
+				num_parameters="1">
+				<comments desc="Enable debug informations in the compiled script. ">
+					<remark text="This will enable or disable debug infos for all scripts compiled after the call to the method. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="areDebugInfosEnabled"
+				min_features="15"
+				name="AreDebugInfosEnabled"
+				num_parameters="0">
+				<comments desc="Return eTrue if debug infos are enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setErrorLineOffset"
+				min_features="15"
+				name="SetErrorLineOffset"
+				num_parameters="1"
+				property="set"
+				property_name2="errorLineOffset"
+				property_name="error_line_offset">
+				<comments desc="Set the line error reporting offset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anOffset"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getErrorLineOffset"
+				min_features="15"
+				name="GetErrorLineOffset"
+				num_parameters="0"
+				property="get"
+				property_name2="errorLineOffset"
+				property_name="error_line_offset">
+				<comments desc="Get the line error reporting offset. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setRaiseErrorMode"
+				min_features="15"
+				name="SetRaiseErrorMode"
+				num_parameters="1"
+				property="set"
+				property_name2="raiseErrorMode"
+				property_name="raise_error_mode">
+				<comments desc="Set the current raise error mode. " return="The previous raise error mode. "/>
+				<return type="eScriptRaiseErrorMode" typec="eScriptRaiseErrorMode" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eScriptRaiseErrorMode"
+					typec="eScriptRaiseErrorMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRaiseErrorMode"
+				min_features="15"
+				name="GetRaiseErrorMode"
+				num_parameters="0"
+				property="get"
+				property_name2="raiseErrorMode"
+				property_name="raise_error_mode">
+				<comments desc="Get the current raise error mode. "/>
+				<return type="eScriptRaiseErrorMode" typec="eScriptRaiseErrorMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setLogRaiseError"
+				min_features="15"
+				name="SetLogRaiseError"
+				num_parameters="1"
+				property="set"
+				property_name2="logRaiseError"
+				property_name="log_raise_error">
+				<comments desc="Set whether each error raised should be logged. ">
+					<remark text="The default is eLogFlags_Debug in debug builds and 0 (disabled) in release builds. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aLog"
+					type="tLogFlags"
+					typec="tLogFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLogRaiseError"
+				min_features="15"
+				name="GetLogRaiseError"
+				num_parameters="0"
+				property="get"
+				property_name2="logRaiseError"
+				property_name="log_raise_error">
+				<comments desc="Get whether each error raised should be logged. "/>
+				<return type="tLogFlags" typec="tLogFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="registerFunction"
+				min_features="15"
+				name="RegisterFunction"
+				num_parameters="2">
+				<comments desc="Register a function in the active table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFunction"
+					type="const sMethodDef *"
+					typec="const sMethodDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="pushRootTable"
+				min_features="15"
+				name="PushRootTable"
+				num_parameters="0">
+				<comments desc="Push the root table on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="pushString"
+				min_features="15"
+				name="PushString"
+				num_parameters="2">
+				<comments desc="Push a string on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="-1 "
+					last="1"
+					name="anLen"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="pushInteger"
+				min_features="15"
+				name="PushInteger"
+				num_parameters="1">
+				<comments desc="Push an integer on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anValue"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="pushFloat"
+				min_features="15"
+				name="PushFloat"
+				num_parameters="1">
+				<comments desc="Push a float on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afValue"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="pushInterface"
+				min_features="15"
+				name="PushInterface"
+				num_parameters="1">
+				<comments desc="Push an interface on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apInterface"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="pushVariant"
+				min_features="15"
+				name="PushVariant"
+				num_parameters="1">
+				<comments desc="Push a variant on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="pushObject"
+				min_features="15"
+				name="PushObject"
+				num_parameters="1">
+				<comments desc="Push a script object on the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apObject"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="pop"
+				min_features="15"
+				name="Pop"
+				num_parameters="1">
+				<comments desc="Pop n object of the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anNumPop"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStackSize"
+				min_features="15"
+				name="GetStackSize"
+				num_parameters="0">
+				<comments desc="Get the stack size. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setStackSize"
+				min_features="15"
+				name="SetStackSize"
+				num_parameters="1">
+				<comments desc="Set the stack size. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="createSlot"
+				min_features="15"
+				name="CreateSlot"
+				num_parameters="1">
+				<comments desc="Create a new slot. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="idx"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImportFileSystems"
+				min_features="15"
+				name="GetImportFileSystems"
+				num_parameters="0"
+				property="get"
+				property_name2="importFileSystems"
+				property_name="import_file_systems">
+				<comments desc="Get the list of file systems used by the script protocol URLFile handler. ">
+					<remark text="By default the root file system and ni.dir.scripts folder are added. "/>
+				</comments>
+				<return type="tInterfaceCVec&lt;iFileSystem&gt; *" typec="tInterfaceCVec&lt;iFileSystem&gt;*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="importFileOpen"
+				min_features="15"
+				name="ImportFileOpen"
+				num_parameters="1">
+				<comments desc="Open a file using the script protocol by default if no procotol is specified. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="doImport"
+				min_features="15"
+				name="Import"
+				num_parameters="2">
+				<comments desc="Call the system Import function. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPathOrFile"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDestTable"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="newImport"
+				min_features="15"
+				name="NewImport"
+				num_parameters="2">
+				<comments desc="Call the system NewImport function. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPathOrFile"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDestTable"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createTable"
+				min_features="15"
+				name="CreateTable"
+				num_parameters="2">
+				<comments desc="Create a new table. " return="NULL if the table&apos;s creation failed. ">
+					<params text="apDelegate is an optional delegate table. "/>
+					<params text="anNumPop "/>
+				</comments>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					name="apDelegate"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anNumPop"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="createObject"
+				min_features="15"
+				name="CreateObject"
+				num_parameters="2">
+				<comments desc="Create a new script object. "/>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eInvalidHandle "
+					name="anIndex"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anNumPop"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="createObjectGet"
+				min_features="15"
+				name="CreateObjectGet"
+				num_parameters="3">
+				<comments desc="Create an object the pushed table. " return="NULL if the object can&apos;t be found or that the type doesn&apos;t match aRequiredType. ">
+					<params text="aaszKey is the name of the object to get. "/>
+					<params text="aRequiredType is the type that the object should have. If eScriptObjectType_Last this is ignored. "/>
+					<params text="anNumPop is the number of pop, by defaul the object is pushed on the stack. "/>
+				</comments>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eScriptObjectType_Last "
+					name="aRequiredType"
+					type="eScriptObjectType"
+					typec="eScriptObjectType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anNumPop"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="call"
+				min_features="15"
+				name="Call"
+				num_parameters="2">
+				<comments desc="Call a function. " return="eFalse if the call fails else eTrue. ">
+					<remark text="Pops anNumParameters number of parameters of the stack, and call the closure in the stack. "/>
+					<params text="anNumParams number of parameters to pop of the stack, should be at least one, aka the this table. "/>
+					<params text="abPushRet if eTrue the return value will be pushed in the stack when the function returns. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anNumParams"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abPushRet"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="writeClosure"
+				min_features="15"
+				name="WriteClosure"
+				num_parameters="2">
+				<comments desc="Write a closure. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apObject"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="readClosure"
+				min_features="15"
+				name="ReadClosure"
+				num_parameters="1">
+				<comments desc="Read a closure. "/>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="scriptCall"
+				min_features="15"
+				name="ScriptCall"
+				noautomation="yes"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="aaszModule" type="const achar *" typec="const achar*"/>
+				<parameter name="aaszFunc" type="const achar *" typec="const achar*"/>
+				<parameter name="apParams" type="const Var *" typec="const Var*"/>
+				<parameter name="anNumParams" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="apRet"
+					type="Var *"
+					typec="Var*"/>
+			</method>
+			<method
+				java_name="scriptVar"
+				min_features="15"
+				name="ScriptVar"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszModule"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszVar"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="evalString"
+				min_features="15"
+				name="EvalString"
+				num_parameters="2">
+				<comments desc="Evaluate the specified string. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszCode"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="canEvalImpl"
+				min_features="15"
+				name="CanEvalImpl"
+				num_parameters="2">
+				<comments desc="Check whether the scripting host can evaluate the specified code resource. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspCodeResource"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="evalImpl"
+				min_features="15"
+				name="EvalImpl"
+				num_parameters="3">
+				<comments desc="Evaluate the specified implementation from the specified &apos;code resource&apos;. ">
+					<remark text="The code resource can be a file name, class name, or whathever is relevant as an implementation identifier depending on the type of the scripting host. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspCodeResource"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="service"
+				min_features="15"
+				name="Service"
+				num_parameters="1">
+				<comments desc="Service the scripting host. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abForceGC"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niScript/src/_idl/VMAPI.h.idl.xml"/>
+</niIDL>

@@ -1,0 +1,267 @@
+::Import("lang.ni")
+
+local o = "";
+local fp = ::fs.fileOpenWrite("src/selena/common/math/Swz.java");
+local res = {}
+function permute(level, permuted, used, original) : (res) {
+	local length = original.len();
+	if(level == length) { // permutation complete, display
+        res[permuted] <- 1
+	} else {
+		for (local i = 0; i < length; i++) { // try to add an unused character
+			if (!used[i]) {
+				used[i] = true;
+                // find the permutations starting with this string
+				permute(level+1, original[i].ToChar() + permuted, used, original);
+				used[i] = false;
+			}
+		}
+    }
+}
+
+permute(0, "", [0,0], "xx");
+permute(0, "", [0,0], "xy");
+permute(0, "", [0,0], "xz");
+permute(0, "", [0,0], "xw");
+
+permute(0, "", [0,0], "yx");
+permute(0, "", [0,0], "yy");
+permute(0, "", [0,0], "yz");
+permute(0, "", [0,0], "yw");
+
+permute(0, "", [0,0], "zx");
+permute(0, "", [0,0], "zy");
+permute(0, "", [0,0], "zz");
+permute(0, "", [0,0], "zw");
+
+permute(0, "", [0,0], "wx");
+permute(0, "", [0,0], "wy");
+permute(0, "", [0,0], "wz");
+permute(0, "", [0,0], "ww");
+
+permute(0, "", [0,0,0], "xyz");
+permute(0, "", [0,0,0], "xxy");
+permute(0, "", [0,0,0], "xxz");
+permute(0, "", [0,0,0], "xxx");
+permute(0, "", [0,0,0], "yyx");
+permute(0, "", [0,0,0], "yyz");
+permute(0, "", [0,0,0], "yyy");
+permute(0, "", [0,0,0], "zzx");
+permute(0, "", [0,0,0], "zzy");
+permute(0, "", [0,0,0], "zzz");
+
+permute(0, "", [0,0,0,0], "xyzw");
+
+permute(0, "", [0,0,0,0], "xxyy");
+permute(0, "", [0,0,0,0], "xxzz");
+permute(0, "", [0,0,0,0], "xxww");
+permute(0, "", [0,0,0,0], "xxxx");
+permute(0, "", [0,0,0,0], "xxxy");
+permute(0, "", [0,0,0,0], "xxxz");
+permute(0, "", [0,0,0,0], "xxxw");
+
+permute(0, "", [0,0,0,0], "xyyy");
+permute(0, "", [0,0,0,0], "xyzz");
+permute(0, "", [0,0,0,0], "xyww");
+permute(0, "", [0,0,0,0], "xyxx");
+permute(0, "", [0,0,0,0], "xyxy");
+permute(0, "", [0,0,0,0], "xyxz");
+permute(0, "", [0,0,0,0], "xyxw");
+
+permute(0, "", [0,0,0,0], "xzyy");
+permute(0, "", [0,0,0,0], "xzzz");
+permute(0, "", [0,0,0,0], "xzww");
+permute(0, "", [0,0,0,0], "xzxx");
+permute(0, "", [0,0,0,0], "xzxy");
+permute(0, "", [0,0,0,0], "xzxz");
+permute(0, "", [0,0,0,0], "xzxw");
+
+permute(0, "", [0,0,0,0], "xwyy");
+permute(0, "", [0,0,0,0], "xwzz");
+permute(0, "", [0,0,0,0], "xwww");
+permute(0, "", [0,0,0,0], "xwxx");
+permute(0, "", [0,0,0,0], "xwxy");
+permute(0, "", [0,0,0,0], "xwxz");
+permute(0, "", [0,0,0,0], "xwxw");
+
+permute(0, "", [0,0,0,0], "yyxx");
+permute(0, "", [0,0,0,0], "yyzz");
+permute(0, "", [0,0,0,0], "yyww");
+permute(0, "", [0,0,0,0], "yyyy");
+permute(0, "", [0,0,0,0], "yyyx");
+permute(0, "", [0,0,0,0], "yyyz")
+permute(0, "", [0,0,0,0], "yyyw");
+
+permute(0, "", [0,0,0,0], "yxxx");
+permute(0, "", [0,0,0,0], "yxzz");
+permute(0, "", [0,0,0,0], "yxww");
+permute(0, "", [0,0,0,0], "yxyy");
+permute(0, "", [0,0,0,0], "yxyx");
+permute(0, "", [0,0,0,0], "yxyz")
+permute(0, "", [0,0,0,0], "yxyw");
+
+permute(0, "", [0,0,0,0], "yzxx");
+permute(0, "", [0,0,0,0], "yzzz");
+permute(0, "", [0,0,0,0], "yzww");
+permute(0, "", [0,0,0,0], "yzyy");
+permute(0, "", [0,0,0,0], "yzyx");
+permute(0, "", [0,0,0,0], "yzyz")
+permute(0, "", [0,0,0,0], "yzyw");
+
+permute(0, "", [0,0,0,0], "ywxx");
+permute(0, "", [0,0,0,0], "ywzz");
+permute(0, "", [0,0,0,0], "ywww");
+permute(0, "", [0,0,0,0], "ywyy");
+permute(0, "", [0,0,0,0], "ywyx");
+permute(0, "", [0,0,0,0], "ywyz")
+permute(0, "", [0,0,0,0], "ywyw");
+
+permute(0, "", [0,0,0,0], "zzxx");
+permute(0, "", [0,0,0,0], "zzyy");
+permute(0, "", [0,0,0,0], "zzww");
+permute(0, "", [0,0,0,0], "zzzz");
+permute(0, "", [0,0,0,0], "zzzx");
+permute(0, "", [0,0,0,0], "zzzy");
+permute(0, "", [0,0,0,0], "zzzw");
+
+permute(0, "", [0,0,0,0], "zxxx");
+permute(0, "", [0,0,0,0], "zxyy");
+permute(0, "", [0,0,0,0], "zxww");
+permute(0, "", [0,0,0,0], "zxzz");
+permute(0, "", [0,0,0,0], "zxzx");
+permute(0, "", [0,0,0,0], "zxzy");
+permute(0, "", [0,0,0,0], "zxzw");
+
+permute(0, "", [0,0,0,0], "zyxx");
+permute(0, "", [0,0,0,0], "zyyy");
+permute(0, "", [0,0,0,0], "zyww");
+permute(0, "", [0,0,0,0], "zyzz");
+permute(0, "", [0,0,0,0], "zyzx");
+permute(0, "", [0,0,0,0], "zyzy");
+permute(0, "", [0,0,0,0], "zyzw");
+
+permute(0, "", [0,0,0,0], "zwxx");
+permute(0, "", [0,0,0,0], "zwyy");
+permute(0, "", [0,0,0,0], "zwww");
+permute(0, "", [0,0,0,0], "zwzz");
+permute(0, "", [0,0,0,0], "zwzx");
+permute(0, "", [0,0,0,0], "zwzy");
+permute(0, "", [0,0,0,0], "zwzw");
+
+permute(0, "", [0,0,0,0], "wwxx");
+permute(0, "", [0,0,0,0], "wwyy");
+permute(0, "", [0,0,0,0], "wwzz");
+permute(0, "", [0,0,0,0], "wwww");
+permute(0, "", [0,0,0,0], "wwwx");
+permute(0, "", [0,0,0,0], "wwwy");
+permute(0, "", [0,0,0,0], "wwwz");
+
+permute(0, "", [0,0,0,0], "wxxx");
+permute(0, "", [0,0,0,0], "wxyy");
+permute(0, "", [0,0,0,0], "wxzz");
+permute(0, "", [0,0,0,0], "wxww");
+permute(0, "", [0,0,0,0], "wxwx");
+permute(0, "", [0,0,0,0], "wxwy");
+permute(0, "", [0,0,0,0], "wxwz");
+
+permute(0, "", [0,0,0,0], "wyxx");
+permute(0, "", [0,0,0,0], "wyyy");
+permute(0, "", [0,0,0,0], "wyzz");
+permute(0, "", [0,0,0,0], "wyww");
+permute(0, "", [0,0,0,0], "wywx");
+permute(0, "", [0,0,0,0], "wywy");
+permute(0, "", [0,0,0,0], "wywz");
+
+permute(0, "", [0,0,0,0], "wzxx");
+permute(0, "", [0,0,0,0], "wzyy");
+permute(0, "", [0,0,0,0], "wzzz");
+permute(0, "", [0,0,0,0], "wzww");
+permute(0, "", [0,0,0,0], "wzwx");
+permute(0, "", [0,0,0,0], "wzwy");
+permute(0, "", [0,0,0,0], "wzwz");
+
+local f = []
+foreach (k,v in res) {
+    f.append(k)
+}
+f.sort(function(a,b) {
+    if (a.len() == b.len())
+        return a.Cmp(b)
+    return a.len()-b.len()
+})
+
+foreach (v in f) {
+    ::println(v)
+}
+
+::println("Found "+f.len()+" permutations.")
+
+function w(s) : (fp) {
+    s = s || ""
+    fp.WriteString(s);
+}
+function wln(s) : (fp) {
+    s = s || ""
+    fp.WriteString(s+"\n");
+}
+function wi(s) : (fp) {
+    s = s || ""
+    fp.WriteString("    "+s);
+}
+function wiln(s) : (fp) {
+    s = s || ""
+    fp.WriteString("    "+s+"\n");
+}
+
+local compNames = ["x","y","z","w"]
+local vecTypes = ["Vec2","Vec3","Vec4"]
+local minVT = { x = 0, y = 0, z = 1, w = 2 }
+function gen(v) : (w,wln,wi,wiln,compNames,vecTypes,minVT) {
+    local vt = vecTypes[v.len()-2]
+    local retType = [vt+"l",vt+"f"];
+    local parType = ["l","f"];
+    local vtMin = 0
+    foreach (c in v) {
+        local ch = c.ToChar()
+        if (minVT[ch] > vtMin)
+            vtMin = minVT[ch];
+    }
+    foreach (i,r in retType) {
+        for (local t = vtMin; t < vecTypes.len(); ++t) {
+            local pt = vecTypes[t]+parType[i]
+            wiln("public static "+r+" "+v+"("+r+" o, final "+pt+" v) {")
+            wiln("    if (o == null) { o = new "+r+"(); }");
+            wi("   ");
+            for (local s = 0; s < v.len(); ++s) {
+                w(" o."+compNames[s]+" = v."+v[s].ToChar()+";")
+            }
+            wln();
+            wiln("    return o;");
+            wiln("}")
+            wiln("public static "+r+" "+v+"(final "+pt+" v) {")
+            wiln("    return "+v+"(null, v);");
+            wiln("}\n")
+        }
+    }
+}
+
+wln("// AUTO-GENERATED DOT NOT EDIT");
+wln("package selena.common.math;")
+wln()
+wln("import ni.types.Vec2f;")
+wln("import ni.types.Vec2i;")
+wln("import ni.types.Vec3f;")
+wln("import ni.types.Vec3i;")
+wln("import ni.types.Vec4f;")
+wln("import ni.types.Vec4i;")
+wln()
+wln("/**")
+wln(" * Vector Swizzling operators.")
+wln(" */")
+wln("public class Swz {")
+wln("    protected Swz() {}")
+wln()
+foreach (v in f) {
+    gen(v)
+}
+wln("}")

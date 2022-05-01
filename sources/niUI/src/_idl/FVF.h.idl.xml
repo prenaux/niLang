@@ -1,0 +1,170 @@
+<niIDL>
+	<namespace name="ni">
+		<variable
+			name="kMaxVertexSize"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="256"/>
+		<enum name="eFVF">
+			<comments desc="FVF components "/>
+			<value name="eFVF_Position" value="0x00000002 ">
+				<comments desc="3D Position (float3). "/>
+			</value>
+			<value name="eFVF_PositionB1" value="0x00000006 ">
+				<comments desc="3D Position (float3), and one weight (float1). "/>
+			</value>
+			<value name="eFVF_PositionB2" value="0x00000008 ">
+				<comments desc="3D Position (float3), and two weights (float2). "/>
+			</value>
+			<value name="eFVF_PositionB3" value="0x0000000a ">
+				<comments desc="3D Position (float3), and three weights (float3). "/>
+			</value>
+			<value name="eFVF_PositionB4" value="0x0000000c ">
+				<comments desc="3D Position (float3), and four weights (float4). "/>
+			</value>
+			<value name="eFVF_Normal" value="0x00000010 ">
+				<comments desc="3D Normal (float3). "/>
+			</value>
+			<value name="eFVF_PointSize" value="0x00000020 ">
+				<comments desc="Point size (float). "/>
+			</value>
+			<value name="eFVF_ColorA" value="0x00000040 ">
+				<comments desc="ColorA (ULColor). "/>
+			</value>
+			<value name="eFVF_Reserved1" value="0x00000080 ">
+				<comments desc="Reserved (was ColorB). "/>
+			</value>
+			<value name="eFVF_Tex1" value="0x00000100 ">
+				<comments desc="First texture coordinate (index 0). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex2" value="0x00000200 ">
+				<comments desc="Second texture coordinate (index 1). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex3" value="0x00000300 ">
+				<comments desc="Third texture coordinate (index 2). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex4" value="0x00000400 ">
+				<comments desc="Fourth texture coordinate (index 3). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex5" value="0x00000500 ">
+				<comments desc="Fifth texture coordinate (index 4). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex6" value="0x00000600 ">
+				<comments desc="Sixth texture coordinate (index 5). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex7" value="0x00000700 ">
+				<comments desc="Seventh texture coordinate (index 6). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Tex8" value="0x00000800 ">
+				<comments desc="Eigth texture coordinate (index 7). ">
+					<remark text="The number of dimensions of the texture coordinate can be specified with eFVF_TexCooSizeN. The default is 2 dimensions. "/>
+				</comments>
+			</value>
+			<value name="eFVF_Indices" value="0x00001000 ">
+				<comments desc="Indices (ULColor). "/>
+			</value>
+		</enum>
+		<variable
+			name="knFVFTexCountMask"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="0xf00"/>
+		<variable
+			name="knFVFTexCountShift"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="0xf00"/>
+		<enum name="eVertexFormat">
+			<comments desc=""/>
+			<value name="eVertexFormat_P" value="eFVF_Position ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PA" value="eFVF_Position|eFVF_ColorA ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PN" value="eFVF_Position|eFVF_Normal ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PNA" value="eFVF_Position|eFVF_Normal|eFVF_ColorA ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PNT1" value="eFVF_Position|eFVF_Normal|eFVF_Tex1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PNAT1" value="eFVF_Position|eFVF_Normal|eFVF_ColorA|eFVF_Tex1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PNT2" value="eFVF_Position|eFVF_Normal|eFVF_Tex2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PNAT2" value="eFVF_Position|eFVF_Normal|eFVF_ColorA|eFVF_Tex2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PB4INT1" value="eFVF_PositionB4|eFVF_Indices|eFVF_Normal|eFVF_Tex1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexFormat_PB4INAT1" value="eFVF_PositionB4|eFVF_Indices|eFVF_Normal|eFVF_ColorA|eFVF_Tex1 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eVertexStreamIndex">
+			<comments desc=""/>
+			<value name="eVertexStreamIndex_Position" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Weights" value="11 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Indices" value="12 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Normal" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_ColorA" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex1" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex2" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex3" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex4" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex5" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex6" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex7" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eVertexStreamIndex_Tex8" value="8 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+	</namespace>
+</niIDL>

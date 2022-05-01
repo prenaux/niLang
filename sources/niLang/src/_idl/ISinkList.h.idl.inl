@@ -1,0 +1,77 @@
+#include "../API/niLang/ISinkList.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSinkList **/
+IDLC_BEGIN_INTF(ni,iSinkList)
+/** ni -> iSinkList::GetSinkUUID/0 **/
+IDLC_METH_BEGIN(ni,iSinkList,GetSinkUUID,0)
+	IDLC_DECL_RETREFVAR(tUUID&,_Ret,tUUID)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,GetSinkUUID,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iSinkList,GetSinkUUID,0)
+
+/** ni -> iSinkList::Clear/0 **/
+IDLC_METH_BEGIN(ni,iSinkList,Clear,0)
+	IDLC_METH_CALL_VOID(ni,iSinkList,Clear,0,())
+IDLC_METH_END(ni,iSinkList,Clear,0)
+
+/** ni -> iSinkList::HasSink/1 **/
+IDLC_METH_BEGIN(ni,iSinkList,HasSink,1)
+	IDLC_DECL_VAR(iUnknown*,apSink)
+	IDLC_BUF_TO_INTF(iUnknown,apSink)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,HasSink,1,(apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSinkList,HasSink,1)
+
+/** ni -> iSinkList::AddSink/1 **/
+IDLC_METH_BEGIN(ni,iSinkList,AddSink,1)
+	IDLC_DECL_VAR(iUnknown*,apSink)
+	IDLC_BUF_TO_INTF(iUnknown,apSink)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,AddSink,1,(apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSinkList,AddSink,1)
+
+/** ni -> iSinkList::RemoveSink/1 **/
+IDLC_METH_BEGIN(ni,iSinkList,RemoveSink,1)
+	IDLC_DECL_VAR(iUnknown*,apSink)
+	IDLC_BUF_TO_INTF(iUnknown,apSink)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,RemoveSink,1,(apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSinkList,RemoveSink,1)
+
+/** ni -> iSinkList::AddFrontSink/1 **/
+IDLC_METH_BEGIN(ni,iSinkList,AddFrontSink,1)
+	IDLC_DECL_VAR(iUnknown*,apSink)
+	IDLC_BUF_TO_INTF(iUnknown,apSink)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,AddFrontSink,1,(apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSinkList,AddFrontSink,1)
+
+/** ni -> iSinkList::SetMute/1 **/
+IDLC_METH_BEGIN(ni,iSinkList,SetMute,1)
+	IDLC_DECL_VAR(tBool,abMute)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abMute)
+	IDLC_METH_CALL_VOID(ni,iSinkList,SetMute,1,(abMute))
+IDLC_METH_END(ni,iSinkList,SetMute,1)
+
+/** ni -> iSinkList::GetMute/0 **/
+IDLC_METH_BEGIN(ni,iSinkList,GetMute,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSinkList,GetMute,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSinkList,GetMute,0)
+
+IDLC_END_INTF(ni,iSinkList)
+
+IDLC_END_NAMESPACE()
+// EOF //

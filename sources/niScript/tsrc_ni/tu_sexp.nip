@@ -1,0 +1,877 @@
+::Import("lang.ni")
+::Import("assert.ni")
+::Import("sexp.ni")
+
+::sexp.eval <- #(a,c,sf) {
+  sf = sf || ::sexp.sforms
+  c = c || ::sexp.context
+  local e
+  if (typeof a == "array") {
+    e = a[0]
+  }
+  else {
+    e = a
+    a = null
+  }
+  switch (typeof e) {
+    case "string": {
+      // String literal ?
+      if (e[0] == '`') {
+        return e.slice(1)
+      }
+      // Special form ?
+      if (e in sf) {
+        // ::println("... sf["+e+"]: " + ::lang.toString(c))
+        return sf[e].call(c,a)
+      }
+      // In Context ?
+      if (e in c) {
+        local cv = c[e]
+        if (typeof cv == "function") {
+          return cv.call(c,a)
+        }
+        else {
+          return cv
+        }
+      }
+
+      // ::println("...... the context: " + ::lang.toString(c))
+      // ::println("...... the context's parent: " + ::lang.toString(c.GetDelegate()))
+      throw "Symbol '"+e+"' not bound."
+    }
+    case "int":
+    case "float": {
+      return e
+    }
+    case "array": {
+      local cv = c.eval(e,c)
+      return (typeof cv == "function") ?
+        cv.call(c,a) : cv
+    }
+    default:
+    throw "Invalid type '"+typeof(e)+"' as first member of S-Exp"
+  }
+}
+
+::sexp.deval <- #(a,c,sf) {
+  local r = null
+  local rem = ::SetRaiseErrorMode(0)
+  try {
+    r = ::sexp.eval(a,c,sf)
+    ::println("D/ " + toString(a) + "\nI/ " + toString(r))
+  }
+  catch (e) {
+    ::println("D/ " + toString(a) + "\nE/ " + toString(e))
+  }
+  ::SetRaiseErrorMode(rem)
+  return r
+}
+
+::sexp.feval <- #(a,c,sf) {
+  sf = sf || ::sexp.sforms
+  c = c || ::sexp.context
+  local r = ::sexp.eval(a,c,sf)
+  // ::println(".... feval c: " + ::lang.toString(c))
+  return (typeof r == "function") ?
+    #(aA,aB,aC,aD,aE) : (c,r) => r.call(c,[r,aA,aB,aC,aD,aE]) :
+  #() : (r) => r
+}
+
+::sexp.sforms <- {
+  // Define a value in the current context
+  // (define var exp)
+  // (define (funcname p0 ... pN) exp0 ... expN)
+  define = #(a) {
+    if (a.len() != 3)
+      throw "sform 'define': Invalid number of expressions '"+a.len()+"'.";
+
+    local name, exp
+    if (typeof a[1] == "array" &&
+        !a[1].empty() &&
+        typeof a[1][0] == "string")
+    {
+      ::SetRaiseErrorMode(~0)
+      name = a[1][0]
+      exp = @(lambda) % [ a[1].slice(1) ] % a.slice(2)
+      // ::println("... is array name: '"+name+"' -> "+::sexp.toString(exp))
+    }
+    else if (typeof a[1] == "string") {
+      // ::println("... is string name")
+      name = a[1]
+      exp = a[2]
+    }
+    else {
+      throw "sform 'define': name definition is invalid."
+    }
+
+    local r = this.eval(exp,this)
+    // ::println("... define '"+name+"' = "+::lang.toString(r));
+    this[name] <- r
+    return r;
+  }
+
+  // Evaluate all expressions without creating a new context
+  // (begin exp0 ... expN)
+  ,["do"] = #(a) {
+    // ::println("... begin: " + ::lang.toString(a))
+    local c = this
+    local r = null
+    local alen = a.len()
+    for (local i = 1; i < alen; ++i) {
+      r = this.eval(a[i],c)
+    }
+    return r
+  }
+
+  // Creates a new context and evaluate all expressions in that context
+  // (begin exp0 ... expN)
+  begin = #(a) {
+    // ::println("... begin: " + ::lang.toString(a))
+    local c = ::delegate(this, {})
+    local r = null
+    local alen = a.len()
+    for (local i = 1; i < alen; ++i) {
+      r = this.eval(a[i],c)
+    }
+    return r
+  }
+
+  // Binds a name to a value in the current context
+  // (let ((name0 exp0) (name1 exp0) ... (nameN expN)) exp0 ... expN)
+  // (let (name exp) exp0 ... expN)
+  let = #(a) {
+    if (a.len() < 3)
+      throw "sform 'let': Invalid number of expressions '"+a.len()+"'.";
+    if (typeof a[1] != "array")
+      throw "sform 'let': Bindings must be an array."
+
+    local c = ::delegate(this,{})
+    local toBind = a[1]
+    if (!toBind.empty()) {
+      if (typeof toBind[0] == "array") {
+        foreach (b in toBind) {
+          // ::println(".... bind '"+b[0]+"' = " + ::lang.toString(b[1]))
+          c[b[0]] <- this.eval(b[1],this)
+        }
+      }
+      else {
+        c[toBind[0]] <- this.eval(toBind[1],this)
+      }
+    }
+
+    // ::println(".... let context: " + ::lang.toString(c))
+    local r = null
+    local len = a.len()
+    for (local i = 2; i < len; ++i) {
+      r = c.eval(a[i],c)
+    }
+    return r
+  }
+
+  // Create a callable function
+  // (lamda (p0 ... pN) exp0 ... expN)
+  lambda = #(a) {
+    if (a.len() < 3)
+      throw "sform 'lambda': Invalid number of expressions '"+a.len()+"'.";
+
+    local params = a[1]
+    local exps = a.slice(2)
+    return #(a) : (params,exps) {
+      // ::println("... this: " + ::lang.toString(this))
+      // ::println("... a: " + ::lang.toString(a))
+      // ::println("... params: " + ::lang.toString(params))
+      // ::println("... exps: " + ::lang.toString(exps))
+      // ::println("... baseContext: " + ::lang.toString(baseContext))
+      local c = ::delegate(this,{})
+      if (!params.empty()) {
+        if (!a) {
+          foreach (p in params) {
+            c[p] <- null
+          }
+        }
+        else {
+          local alen = a.len();
+          local i = 1; // first element is null or the lambda expression itself
+          foreach (p in params) {
+            c[p] <-
+              i < alen ?
+              this.eval(a[i],c) :
+              null
+            ++i
+          }
+        }
+      }
+      local r
+      foreach (e in exps) {
+        r = this.eval(e,c)
+      }
+      return r
+    }
+  }
+
+  // (defun name (p0 ... pn) exp0 ... expN)
+  defun = #(a) {
+    if (a.len() != 4)
+      throw "sform 'defun': Invalid number of expressions '"+a.len()+"'.";
+    if (typeof a[1] != "string")
+      throw "sform 'defun': Symbol must be a string."
+    return ::sexp.sforms.define.call(
+      this,
+      ["define", a[1], [ "lambda", a[2] ] % a.slice(3) ])
+  }
+
+  // (cond (test0 clause0) ... (testN clauseN))
+  cond = #(a) {
+    local alen = a.len()
+    if (alen < 2)
+      throw "sform 'cond': Invalid number of expressions '"+a.len()+"'.";
+    for (local i = 1; i < alen; ++i) {
+      local t = a[i]
+      if (typeof t != "array")
+        throw "sform 'cond': expression ["+(i-1)+"] not an array."
+      local r = this.eval(t[0],this)
+      if (r) {
+        local tlen = t.len()
+        for (local i = 1; i < tlen; ++i) {
+          r = this.eval(t[i],this)
+        }
+        return r
+      }
+    }
+    return null
+  }
+
+  // (if (test) (then0 ... thenN) (else))
+  ,["if"] = #(a) {
+    local alen = a.len()
+    if (alen < 3)
+      throw "sform 'if': Invalid number of expressions '"+a.len()+"'.";
+    local t = a[1]
+    if (typeof t != "array")
+      throw "sform 'if': test is not an array."
+    local r = this.eval(t,this)
+    if (r) {
+      r = this.eval(a[2],this)
+    }
+    else {
+      if (alen < 4)
+        return null
+      for (local i = 3; i < alen; ++i) {
+        r = this.eval(a[i],this)
+      }
+    }
+    // ::println(".... if: " + ::lang.toString(r))
+    return r
+  }
+
+  _recur = #(a) {
+    // ::println("_recur: " + ::lang.toString(a))
+    return a ? a : "recur"
+  }
+
+  // Binds a name to a value in the current context and provide a jump point
+  // that can be reached with the "recur" special form.
+  // 'recur' must have at least one expression which will be evaluated and bound
+  //         to name0
+  // (loop ((name0 exp0) (name1 exp0) ... (nameN expN)) exp0 ... expN)
+  // (loop (name exp) exp0 ... expN)
+  // (recur exp0-'will be bound to name0' ... expN-'will be bound to nameN')
+  loop = #(a) {
+    if (a.len() < 3)
+      throw "sform 'loop': Invalid number of expressions '"+a.len()+"'.";
+    if (typeof a[1] != "array")
+      throw "sform 'loop': Bindings must be an array."
+
+    ::SetRaiseErrorMode(~0)
+
+    local c = ::delegate(this, { recur = ::sexp.sforms._recur })
+    local toBind = a[1]
+    if (!toBind.empty()) {
+      if (typeof toBind[0] == "array") {
+        foreach (b in toBind) {
+          // ::println(".... bind '"+b[0]+"' = " + ::lang.toString(b[1]))
+          c[b[0]] <- c.eval(b[1],c)
+        }
+      }
+      else {
+        c[toBind[0]] <- c.eval(toBind[1],c)
+      }
+    }
+
+    // ::println(".... let context: " + ::lang.toString(c))
+    local r = null
+    local len = a.len()
+    local lcount = 0
+    while (1) {
+      // ::println("... c = " + ::lang.toString(c))
+      // ::println("... lcount = " + (lcount++))
+      local shouldLoop = false
+      for (local i = 2; i < len; ++i) {
+        local e = a[i]
+        r = c.eval(e,c)
+        // ::println("... c: " + ::lang.toString(c))
+        // ::println("... r: " + ::lang.toString(r))
+        if (r == "recur") {
+          // ::println(".... loop recur: " + ::sexp.toString(e))
+          shouldLoop = true
+        }
+        else if (typeof r == "array" && r[0] == "recur") {
+          // ::println(".... loop recur array: " + ::sexp.toString(r))
+          local rlen = r.len()
+          if (!toBind.empty()) {
+            if (e.len() < 2)
+              throw "sform 'loop': recur has an invalid number of expression '"+elen+"'."
+            if (typeof toBind[0] == "array") {
+              local ri = 1
+              foreach (b in toBind) {
+                local v = c.eval(r[ri],c)
+                c[b[0]] <- v
+                // ::println(".... bind '"+b[0]+"' = " + ::lang.toString(v))
+                if (++ri >= rlen)
+                  break
+              }
+            }
+            else {
+              local v = c.eval(r[1],c)
+              // ::println(".... bind single '"+toBind[0]+"' = " + ::lang.toString(v))
+              c[toBind[0]] <- v
+            }
+          }
+          else {
+            if (r.len() > 1)
+              throw "sform 'loop': recur has an invalid number of expression '"+elen+"'."
+          }
+          shouldLoop = true
+        }
+      }
+      // ::println("... r: " + ::lang.toString(r))
+      if (!shouldLoop)
+        break
+    }
+    return r
+  }
+}
+
+::sexp.context <- {
+  eval = (#() => ::sexp.eval)(),
+  dbg = #(a) {
+    local o = "D/";
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return o
+    local r
+    for (local i = 1; i < sz; ++i) {
+      o += ::sexp.toString(a[i]) + " = "
+      r = eval(a[i],this)
+      o += ::lang.toString(r)
+    }
+    ::println(o)
+    return r
+  },
+  print = #(a) {
+    local o = ""
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return o
+    for (local i = 1; i < sz; ++i) {
+      o += ::lang.toString(eval(a[i],this))
+    }
+    ::print(o)
+    return o
+  },
+  println = #(a) {
+    local o = ""
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return o
+    for (local i = 1; i < sz; ++i) {
+      o += ::lang.toString(eval(a[i],this))
+    }
+    ::println(o)
+    return o
+  },
+  ["true"] = true,
+  ["false"] = false,
+  ["else"] = true,
+  ["null"] = null,
+  ["+"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc += eval(a[i],this)
+    }
+    return acc
+  },
+  ["-"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc -= eval(a[i],this)
+    }
+    return acc
+  },
+  ["/"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc /= eval(a[i],this)
+    }
+    return acc
+  },
+  ["%"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc %= eval(a[i],this)
+    }
+    return acc
+  },
+  ["*"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc *= eval(a[i],this)
+    }
+    return acc
+  },
+  ["="] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      if (ref != eval(a[i],this))
+        return false
+    }
+    return true
+  },
+  ["!="] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      if (ref == eval(a[i],this))
+        return false
+    }
+    return true
+  },
+  ["<"] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      local n = eval(a[i],this)
+      if (ref >= n)
+        return false
+      ref = n
+    }
+    return true
+  },
+  ["<="] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      local n = eval(a[i],this)
+      if (ref > n)
+        return false
+      ref = n
+    }
+    return true
+  },
+  [">"] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      local n = eval(a[i],this)
+      if (ref <= n)
+        return false
+      ref = n
+    }
+    return true
+  },
+  [">="] = #(a) {
+    local sz = a.len()
+    if (sz < 3) // not valid test
+      return null
+    local ref = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      local n = eval(a[i],this)
+      if (ref < n)
+        return false
+      ref = n
+    }
+    return true
+  },
+  // (false? exp0 ... expN)
+  ["false?"] = #(a) {
+    local sz = a.len()
+    if (sz < 2) // not valid test
+      return null
+    for (local i = 1; i < sz; ++i) {
+      if (eval(a[i],this))
+        return false
+    }
+    return true
+  },
+  // (true? exp0 ... expN)
+  ["true?"] = #(a) {
+    local sz = a.len()
+    if (sz < 2) // not valid test
+      return null
+    for (local i = 1; i < sz; ++i) {
+      if (!eval(a[i],this))
+        return false
+    }
+    return true
+  },
+  ["|"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc |= eval(a[i],this)
+    }
+    return acc
+  },
+  ["&"] = #(a) {
+    local sz = a.len()
+    if (sz == 1) // not additional elements...
+      return null
+    local acc = eval(a[1],this)
+    for (local i = 2; i < sz; ++i) {
+      acc &= eval(a[i],this)
+    }
+    return acc
+  },
+}
+::sexp.context["zero?"] <- ::sexp.context["false?"]
+::sexp.context["null?"] <- ::sexp.context["false?"]
+::sexp.context["or"] <- ::sexp.context["|"]
+::sexp.context["and"] <- ::sexp.context["&"]
+
+// Add sexp to the array system delegate
+{
+  local d = ::GetLangDelegate("array")
+  d.eval <- #(c,sf) => ::sexp.eval(this,c,sf)
+  d.deval <- #(c,sf) => ::sexp.deval(this,c,sf)
+  d.feval <- #(c,sf) => ::sexp.feval(this,c,sf)
+}
+
+// local x = @(1 2 3 (4 5 6) "abc" "def" "geh")
+// local x = [1 2 3, [4 5 6] "abc" "def" "geh"]
+local x = @(
+  (defun make-agl-expand ()
+   (make-hippie-expand-function
+     (agl-try-complete-with-calc-result
+      try-expand-dabbrev-visible
+      try-expand-dabbrev
+      try-expand-dabbrev-all-buffers) t))
+  (defun kill-current-buffer ()
+   "Kill the current buffer, without confirmation."
+   (interactive)
+   { x = 123, y = 456 }
+   (save-buffer)
+   (kill-buffer (current-buffer)))
+  (global-set-key (meta delete) kill-current-buffer)
+)
+
+local y = @(define roger (x y z) 1)
+
+::println("Hello World ! : " + ::lang.toString(y));
+
+if (1) {
+  // Single element evals
+  @("Hello World").deval();
+  @({[Hello Raw World]}).deval();
+  @(456).deval();
+
+  // SICP, Chapter 1
+  ::assertEquals(
+    486,
+    @(486).deval());
+  ::assertEquals(
+    486,
+    @(+ 137 349).deval());
+  ::assertEquals(
+    486,
+    @(+,137,349).deval());
+  ::assertEquals(
+    486,
+    @(+, 137, 349).deval());
+  @(- 1000 334).deval();
+  @(* 5 99).deval();
+  @(/ 10 5).deval();
+  @(+ 2.7 10).deval();
+
+  @(+ 21 35 12 7).deval();
+  @(+ (* 3 5)).deval();
+  @(+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6)).deval();
+
+  @(+ (* 3
+       (+ (* 2 4)
+        (+ 3 5)))
+    (+ (- 10 7)
+     6)).deval();
+
+  // Ch1 - SECTION 1.1.2
+  @(define size 2).deval();
+  @(size).deval();
+  @(* 5 size).deval();
+
+  @(define pi 3.14159).deval();
+  @(define radius 10).deval();
+  @(* pi (* radius radius)).deval();
+  @(define circumference (* 2 pi radius)).deval();
+  @(circumference).deval();
+
+  // Let
+  @(let (x 123) x).deval();
+  @(let ((a 11) (b 22)) (+ a b)).deval();
+
+  // Lambda
+  ::assertEquals(
+    4,
+    @((lambda (x) (* x x)) 2).deval())
+  ::assertEquals(
+    null,
+    @((lambda (x) (* x x))).deval())
+  ::assertEquals(
+    9,
+    @(begin
+      (define square (lambda (x) (* x x)))
+      (square 3)).deval());
+  ::assertEquals(
+    16,
+    @(lambda (x) (* x x)).feval()(4))
+
+  // defun
+  {
+    local f = @(defun square (x) (* x x)).feval();
+    ::assertEquals(9,f(3))
+    ::println("F: " + f(3))
+  }
+  {
+    local g = @(defun square (x) (* x x)).feval();
+    ::assertEquals(4,g(2))
+    ::println("G: " + g(2))
+  }
+  ::assertEquals(
+    25,
+    @(begin
+      (defun square (x) (* x x))
+      (square 5)).deval());
+  ::assertEquals(
+    125,
+    @(begin
+      (define (cube x) (* x x x))
+      (cube 5)).deval());
+
+  // cond
+  ::assertEquals(
+    123,
+    @(cond (true 123)).deval())
+  ::assertEquals(
+    123,
+    @(cond (else 123)).deval())
+  ::assertEquals(
+    456,
+    @(cond
+      (0 123)
+      (else 456)).deval())
+  ::assertEquals(
+    null,
+    @(cond
+      (0 123)
+      (0 456)).deval())
+
+  // if
+  ::assertEquals(
+    123,
+    @(if (< 123 456) 123).deval())
+  ::assertEquals(
+    null,
+    @(if (< 123 5) 123).deval())
+  ::assertEquals(
+    3,
+    @(if (< 123 5) 123 1 2 3).deval())
+  ::assertEquals(
+    5,
+    @(if (> 123 5) (do 4 5) (do 1 2 3)).deval())
+  ::assertEquals(
+    3,
+    @(if (< 123 5) (do 4 5) (do 1 2 3)).deval())
+
+  // tests
+  ::assertEquals(
+    true,
+    @(= 0 0).deval())
+  ::assertEquals(
+    true,
+    @(= 2 2 2 2).deval())
+  ::assertEquals(
+    true,
+    @(< 1 2 3 4).deval())
+  ::assertEquals(
+    false,
+    @(< 1 2 1 4).deval())
+  ::assertEquals(
+    true,
+    @(> 4 3 2 1).deval())
+  ::assertEquals(
+    false,
+    @(> 4 3 7 4).deval())
+
+  // identifier
+  local x = 123.456
+  ::assertEquals(
+    123.456,
+    @(`x`).deval())
+  local a = 78
+  local b = 22
+  ::assertEquals(
+    200,
+    (@(*) % [ @(+) % a % b ] % 2).deval())
+  ::assertEquals(
+    200,
+    @(* (+ `a` `b`) 2).deval())
+
+  local t0
+  local t1
+  {
+    function fact_iter(product, counter, max) {
+      if (counter > max)
+        return product
+      return fact_iter(counter*product,
+                       counter+1,
+                       max)
+    }
+    function factorial(x) {
+      return fact_iter(1,1,x)
+    }
+    ::println("Factorial(10): " + factorial(10))
+    local t = ::clock()
+    for (local i = 0; i < 1000; ++i) {
+      factorial(10)
+    }
+    t = ::clock() - t
+    ::println("Factorial(10), 1000 times : " + t + "s")
+    t0 = t
+  }
+
+  {
+    /*
+    @(define (fact-iter product counter max)
+      (cond
+       ((> counter max) product)
+       (else
+           (fact-iter
+            (* counter product)
+            (+ counter 1)
+            max)))).deval()
+    local factorial = @(lambda (n) (fact-iter 1 1 n)).feval()
+    */
+
+    /*
+    local factorial = @(do
+        (define fact-iter (lambda (product counter max)
+         (cond
+          ((> counter max) product)
+          (else
+              (fact-iter
+               (* counter product)
+               (+ counter 1)
+               max)))))
+        (lambda (x) (fact-iter 1 1 x))).feval()
+    */
+    /*
+    local factorial = @(
+        lambda (n)
+        (define (iter product counter)
+         (cond
+          ((> counter n) product)
+          (else
+              (iter
+               (* counter product)
+               (+ counter 1)))))
+        (iter 1 1)).feval()
+    */
+    local factorial =
+      @(lambda (n)
+        (loop ((acc 1) (cnt n))
+         (if (zero? cnt)
+           acc
+          (recur (* acc cnt) (- cnt 1))))).feval()
+    ::println("Factorial(10): " + ::lang.toString(factorial(10)))
+    local t = ::clock();
+    for (local i = 0; i < 1000; ++i) {
+      factorial(10)
+    }
+    t = ::clock() - t
+    ::println("Factorial(10), 1000 times : " + t + "s")
+    t1 = t
+  }
+  ::println("Perf Factor: " + t1 / t0);
+}
+
+if (1) {
+  // some predicate...
+  ::assert(@(false? 0).deval() == true)
+  ::assert(@(false? 1).deval() == false)
+  ::assert(@(false? 1 2 3 4).deval() == false)
+  ::assert(@(false? 1 2 0 4).deval() == false)
+  ::assert(@(zero? 0).deval() == true)
+  ::assert(@(null? 0).deval() == true)
+  ::assert(@(true? 0).deval() == false)
+  ::assert(@(true? 1).deval() == true)
+  ::assert(@(true? 1 2 3 4).deval() == true)
+  ::assert(@(true? 1 2 0 4).deval() == false);
+
+  // print
+  @(println "Hello World: " 123 ".").deval();
+  @(dbg 123).deval();
+
+  // loop
+  @(loop (x 0)
+    (if (>= x 10)
+      x
+     (dbg x) (recur (+ x 1)))).deval();
+  @(loop (x 0)
+    (if (< x 10)
+      (do (dbg x)
+        (define x (+ x 1))
+       recur)
+     x)).deval();
+}
+
+// Nested sexp
+if (1) {
+  local nestedSExp = @(`"narf" @(Foo Bar)`)
+  ::println("nestedSExp:" nestedSExp);
+
+  local nestedSExp2 = @(`"narf" @(Foo Bar `"Ni" @(Hao) "Ma"`)`)
+  ::println("nestedSExp2:" nestedSExp2);
+
+  local dims = 2, id = "theId-";
+  local nestedSExp3 = @(
+    `dims > 1 ?
+      @(Button id `id+"bt"` width 22 dock_style DockRight `@(Foo `id+"warf"` Bar)`) :
+      []`)
+  ::println("nestedSExp3:" nestedSExp3);
+}

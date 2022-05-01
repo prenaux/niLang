@@ -1,0 +1,31 @@
+#########################################################################
+#
+# -- niTestInterop -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niTestInterop src ] = 1 { return ; }
+
+tkDefModule niTestInterop : 1,0,0 : niTestInterop ;
+niImportModuleDll niLang ;
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+SRC += [ niGenJNI $(SRC) : niTestInterop : : ] ;
+DEPENDS genJNI : niLang_jvm ;
+
+tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_JNI) ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"TestInterop module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"no"'
+: $(SRC) ;
+niModule_Dep "niLang" ;
+niModule_OT name='"TestInterop"' desc='"TestInterop Object"' class='"cTestInterop"' type='"ni::iTestInterop"' ;
+niModule_Includes $(IDLS) ;
+niModule_End ;

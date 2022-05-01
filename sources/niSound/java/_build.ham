@@ -1,0 +1,20 @@
+#########################################################################
+#
+# -- niSound_jvm, -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niSound java ] = 1 { return ; }
+if ! $(BUILD_JNI) { return ; }
+
+niDefJar niSound_jvm : 1,0,0 ;
+
+### SOURCES #############################################################
+SRC =
+  [ niPkgAllJvmSrc ]
+;
+
+JAR = [ niBuildJar $(SRC)
+: niLang_jvm niUI_jvm
+:
+: pkgsrc ] ;
+DEPENDS $(JAR) : [ niGenJava niSound ] ;

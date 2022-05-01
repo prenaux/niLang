@@ -1,0 +1,230 @@
+::Import("unittest.ni")
+
+::SmallTable <- {
+}
+::SmallTotal <- 0
+for (local i = 0; i < (::lang.isDebugVM() ? 10 : 100); ++i) {
+  ::SmallTable[i] <- "str: " + i
+  ::SmallTotal += i
+}
+
+::BigTable <- {
+}
+::BigTotal <- 0
+for (local i = 0; i < (::lang.isDebugVM() ? 1000 : 10000); ++i) {
+  ::BigTable[i] <- "str: " + i
+  ::BigTotal += i
+}
+
+TEST("table", #() {
+  local acc = 0;
+  foreach (k,v in ::BigTable) {
+    acc += k
+  }
+  ::CHECK_EQUAL(::BigTotal, acc)
+})
+
+TEST("table-nested", #() {
+  local len = 0;
+  local acc = 0;
+  local t = ::SmallTable.Clone()
+  foreach (k,v in t) {
+    foreach (k1,v1 in t) {
+      foreach (k2,v2 in t) {
+        acc += k2
+        ++len;
+      }
+    }
+  }
+  ::CHECK_EQUAL(::SmallTotal*::SmallTable.len()*::SmallTable.len(), acc)
+  ::CHECK_EQUAL(::SmallTable.len()*::SmallTable.len()*::SmallTable.len(), len)
+})
+
+TEST("table-nested-remove", #() {
+  local len = 0;
+  local acc = 0;
+  local t = ::SmallTable.Clone()
+  local thrown
+  try {
+    foreach (k,v in t) {
+      foreach (k1,v1 in t) {
+        foreach (k2,v2 in t) {
+          acc += k2
+          ++len;
+        }
+        if (k1 == 5) {
+          delete t[t.len()-1]
+        }
+      }
+    }
+  }
+  catch (e) {
+    ::dbg("Caught: " + e)
+    thrown = e
+  }
+  ::CHECK_EQUAL("Table modified while iterating.",thrown)
+  if (::lang.isDebugVM()) {
+    ::CHECK_EQUAL(270, acc)
+    ::CHECK_EQUAL(60, len)
+  }
+  else {
+    ::CHECK_EQUAL(29700, acc)
+    ::CHECK_EQUAL(600, len)
+  }
+})
+
+TEST("table-nexti", #() {
+  local Range = {
+    _start = 0
+    _last = 0
+    function _nexti(itr) {
+      local r
+      if (itr == null) {
+        r = _start;
+        itr = [r,r]
+      }
+      else {
+        r = ++itr[0]
+      }
+      if (r >= _last)
+        return null
+      itr[0] = r
+      itr[1] = r
+      return itr
+    }
+    function new(aBegin,aLast) {
+      // this is a bit messy on purpose to test that methods in
+      // delegates are called properly
+      local t = this.Clone()
+      t._start = aBegin
+      t._last = aLast
+      if (t._last < t._start)
+        throw "Invalid range, begin > last"
+      local r = ::delegate(t, {})
+      r.__SetCanCallMetaMethod(true)
+      return r
+    }
+  }
+  local a = ["alpha","beta","gamma","delta","eta"]
+  local numIt = 0
+  foreach (ri,i in Range.new(2,a.len())) {
+    ::println("...  a["+i+"]: " + a[i])
+    ::println("... ra["+ri+"]: " + a[ri])
+    ++numIt
+  }
+  ::CHECK_EQUAL(3,numIt)
+  ::CHECK_EQUAL(5,a.len())
+})
+
+TEST("string", #() {
+  local str = "small-小-medium-中-big-大";
+  local numIt = 0
+  foreach (i,c in str) {
+    ::println("... c["+i+"]: " + c.tochar())
+    ++numIt
+  }
+  ::println("... len: " + str.len())
+  ::println("... numChars: " + str.GetNumChars())
+  ::CHECK_EQUAL(22,numIt)
+  ::CHECK_EQUAL(str.GetNumChars(),numIt)
+  ::CHECK_EQUAL(28,str.len())
+})
+
+TEST("int", #() {
+  local a = ["alpha","beta","gamma","delta","eta"]
+  local numIt = 0
+  foreach (ri,i in a.len()) {
+    ::println("...  a["+i+"]: " + a[i])
+    ::println("... ra["+ri+"]: " + a[ri])
+    ++numIt
+  }
+  ::CHECK_EQUAL(5,a.len())
+  ::CHECK_EQUAL(a.len(),numIt)
+})
+
+TEST("Vector1", #() {
+  local a = ::Vector("String") % ["alpha"]
+  {
+    local numIt = 0
+    foreach (i,v in a) {
+      ::println("... itc["+i+"]: " + v)
+      ::CHECK_EQUAL("alpha",v)
+      ::CHECK(!!v)
+      ++numIt
+    }
+    ::CHECK_EQUAL(1,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+
+  {
+    local numIt = 0
+    foreach (i,v in a.Iterator()) {
+      ::println("... it["+i+"]: " + v)
+      ::CHECK_EQUAL("alpha",v)
+      ::CHECK(!!v)
+      ++numIt
+    }
+    ::CHECK_EQUAL(1,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+
+  {
+    local numIt = 0
+    foreach (ri,i in a.len()) {
+      ::println("...  a["+i+"]: " + a[i])
+      ::println("... ra["+ri+"]: " + a[ri])
+      ::CHECK(!!a[i])
+      ::CHECK(!!a[ri])
+      ++numIt
+    }
+    ::CHECK_EQUAL(1,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+})
+
+TEST("Vector", #() {
+  local a = ::Vector("String") % ["alpha","beta","gamma","delta","eta"]
+  {
+    local numIt = 0
+    foreach (i,v in a) {
+      ::println("... itc["+i+"]: " + v)
+      ::CHECK(!!v)
+      ++numIt
+    }
+    ::CHECK_EQUAL(5,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+
+  {
+    local numIt = 0
+    foreach (i,v in a.Iterator()) {
+      ::println("... it["+i+"]: " + v)
+      ::CHECK(!!v)
+      ++numIt
+    }
+    ::CHECK_EQUAL(5,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+
+  {
+    local numIt = 0
+    foreach (ri,i in a.len()) {
+      ::println("...  a["+i+"]: " + a[i])
+      ::println("... ra["+ri+"]: " + a[ri])
+      ++numIt
+    }
+    ::CHECK_EQUAL(5,a.len())
+    ::CHECK_EQUAL(a.len(),numIt)
+  }
+})
+
+TEST("import_file_systems", #() {
+
+  // add the import file systems to gResources...
+  foreach (fs in ::GetThisVM().import_file_systems) {
+    ::println("FS:" fs)
+    local dir = fs.base_container
+    ::println("DIR:" dir)
+  }
+
+});

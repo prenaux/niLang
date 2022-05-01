@@ -1,0 +1,294 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iGraphicsContext" uuid1="F61A7DB5-532F-4C23-90F5-B586F99C7853" uuid2="0xf61a7db5,0x532f,0x4c23,0x90,0xf5,0xb5,0x86,0xf9,0x9c,0x78,0x53">
+			<comments desc="Graphics context description interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the context&apos;s graphics object. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriver"
+				name="GetDriver"
+				num_parameters="0"
+				property="get"
+				property_name2="driver"
+				property_name="driver">
+				<comments desc="Get the context&apos;s driver. "/>
+				<return type="iGraphicsDriver *" typec="iGraphicsDriver*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidth"
+				name="GetWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="width"
+				property_name="width">
+				<comments desc="Get the context width. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the context height. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearBuffers" name="ClearBuffers" num_parameters="4">
+				<comments desc="Clear the specified main buffers. ">
+					<params text="clearBuffer specifies the buffers to clear. "/>
+					<params text="anColor is the color to use to clear the color buffer. "/>
+					<params text="afDepth is the value to use to clear the depth buffer. "/>
+					<params text="anStencil is the value to use to clear the stencil buffer. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="clearBuffer"
+					type="tClearBuffersFlags"
+					typec="tClearBuffersFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="afDepth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anStencil"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRenderTarget"
+				name="GetRenderTarget"
+				num_parameters="1"
+				property="get"
+				property_name2="renderTarget"
+				property_name="render_target">
+				<comments desc="Get the render target set on the specified index. ">
+					<remark text="Might be ignored by some contexts "/>
+				</comments>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthStencil"
+				name="GetDepthStencil"
+				num_parameters="0"
+				property="get"
+				property_name2="depthStencil"
+				property_name="depth_stencil">
+				<comments desc="Get the depth stencil target. ">
+					<remark text="Might be ignored by some contexts "/>
+				</comments>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="display" name="Display" num_parameters="2">
+				<comments desc="Display the canvas in its destination window/context. ">
+					<remark text="Should be called once rendering to the context is finished, this will flush and unlock shared resources for drivers that dont fully support multi-threaded rendering. If you do not wish to show the content of the context use eGraphicsDisplayFlags_Skip. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFlags"
+					type="tGraphicsDisplayFlags"
+					typec="tGraphicsDisplayFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="drawOperation" name="DrawOperation" num_parameters="1">
+				<comments desc="Draw the specified draw operation. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDrawOp"
+					type="iDrawOperation *"
+					typec="iDrawOperation*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="captureFrontBuffer"
+				name="CaptureFrontBuffer"
+				num_parameters="0">
+				<comments desc="Capture the front buffer. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setViewport"
+				name="SetViewport"
+				num_parameters="1"
+				property="set"
+				property_name2="viewport"
+				property_name="viewport">
+				<comments desc="Set the viewport. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getViewport"
+				name="GetViewport"
+				num_parameters="0"
+				property="get"
+				property_name2="viewport"
+				property_name="viewport">
+				<comments desc="Get the viewport. "/>
+				<return type="sRecti" typec="sRecti" typei="ni::eType_Vec4i"/>
+			</method>
+			<method
+				java_name="setScissorRect"
+				name="SetScissorRect"
+				num_parameters="1"
+				property="set"
+				property_name2="scissorRect"
+				property_name="scissor_rect">
+				<comments desc="Set the scissor rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScissorRect"
+				name="GetScissorRect"
+				num_parameters="0"
+				property="get"
+				property_name2="scissorRect"
+				property_name="scissor_rect">
+				<comments desc="Get the scissor rectangle. "/>
+				<return type="sRecti" typec="sRecti" typei="ni::eType_Vec4i"/>
+			</method>
+			<method
+				java_name="setFixedStates"
+				name="SetFixedStates"
+				num_parameters="1"
+				property="set"
+				property_name2="fixedStates"
+				property_name="fixed_states">
+				<comments desc="Set the default fixed pipeline states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iFixedStates *"
+					typec="iFixedStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFixedStates"
+				name="GetFixedStates"
+				num_parameters="0"
+				property="get"
+				property_name2="fixedStates"
+				property_name="fixed_states">
+				<comments desc="Get the default fixed pipeline states. "/>
+				<return type="iFixedStates *" typec="iFixedStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMaterial"
+				name="SetMaterial"
+				num_parameters="1"
+				property="set"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Set the default material states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMat"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterial"
+				name="GetMaterial"
+				num_parameters="0"
+				property="get"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Get the default material states. "/>
+				<return type="const iMaterial *" typec="const iMaterial*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iGraphicsContextRT" uuid1="16B1A400-2499-C141-A651-1C46CAC313C3" uuid2="0x16b1a400,0x2499,0xc141,0xa6,0x51,0x1c,0x46,0xca,0xc3,0x13,0xc3">
+			<comments desc="Render target graphics context interface. "/>
+			<parents>
+				<parent name="iGraphicsContext"/>
+			</parents>
+			<method java_name="changeRenderTarget" name="ChangeRenderTarget" num_parameters="2">
+				<comments desc="Change a render target. ">
+					<remark text="the RT must use the same pixel format as the specified render target. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apRT"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="changeDepthStencil" name="ChangeDepthStencil" num_parameters="1">
+				<comments desc="Change the depth stencil. ">
+					<remark text="the DS must use the same pixel format as the current depth stencil. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDS"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

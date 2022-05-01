@@ -1,0 +1,510 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eTransformFlags">
+			<comments desc="Transform flags. Default is eTransformFlags_InheritAll "/>
+			<value name="eTransformFlags_InheritPositionX" value="niBit ( 0 ) ">
+				<comments desc="Inherit the position X axis. "/>
+			</value>
+			<value name="eTransformFlags_InheritPositionY" value="niBit ( 1 ) ">
+				<comments desc="Inherit the position Y axis. "/>
+			</value>
+			<value name="eTransformFlags_InheritPositionZ" value="niBit ( 2 ) ">
+				<comments desc="Inherit the position Z axis. "/>
+			</value>
+			<value name="eTransformFlags_InheritPosition" value="niBit ( 0 ) |niBit ( 1 ) |niBit ( 2 ) ">
+				<comments desc="Inherit the position XYZ axis. "/>
+			</value>
+			<value name="eTransformFlags_InheritRotation" value="niBit ( 3 ) ">
+				<comments desc="Inherit the rotation. "/>
+			</value>
+			<value name="eTransformFlags_InheritScale" value="niBit ( 4 ) ">
+				<comments desc="Parent scalings are also apply on children. "/>
+			</value>
+			<value name="eTransformFlags_InheritPositionRotation" value="eTransformFlags_InheritPosition|eTransformFlags_InheritRotation ">
+				<comments desc="Inherit the position and rotation. "/>
+			</value>
+			<value name="eTransformFlags_InheritAll" value="eTransformFlags_InheritPositionRotation|eTransformFlags_InheritScale ">
+				<comments desc="Inherit all. "/>
+			</value>
+		</enum>
+		<enum name="eTransformInternalFlags">
+			<comments desc="Transform internal flags. "/>
+			<value name="eTransformInternalFlags_Dirty" value="niBit ( 8 ) ">
+				<comments desc="The transform will have to be recomputed. "/>
+			</value>
+			<value name="eTransformInternalFlags_UseScale" value="niBit ( 9 ) ">
+				<comments desc="The transform uses a scaling factor. "/>
+			</value>
+		</enum>
+		<interface name="iTransform" uuid1="2B890822-2BFF-426D-A646-51691C1649B4" uuid2="0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4">
+			<comments desc="iTransform is the interface for positionning and orienting. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the transform description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the transform. "/>
+				<return type="iTransform *" typec="iTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another transform in this transform. ">
+					<remark text="This function should be prefered to copying the world matrix of the transform. The scale of the transform is stored separatly and will be lost if not copied aswell. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="const iTransform *"
+					typec="const iTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setDirty" name="SetDirty" num_parameters="0">
+				<comments desc="Mark the transform as &quot;Dirty&quot;. " return="The previous value of the sync counter, garanteed to be different of the current counter. ">
+					<remark text="If the transform isn&apos;t already marked as dirty it increases the update count. "/>
+				</comments>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Set the transform flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFlags"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the transform flags. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				java_name="setSyncCounter"
+				name="SetSyncCounter"
+				num_parameters="1"
+				property="set"
+				property_name2="syncCounter"
+				property_name="sync_counter">
+				<comments desc="Set the synchronization counter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFlags"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSyncCounter"
+				name="GetSyncCounter"
+				num_parameters="0"
+				property="get"
+				property_name2="syncCounter"
+				property_name="sync_counter">
+				<comments desc="Get the synchronization counter. ">
+					<remark text="The counter can be used to synchronize updates. "/>
+				</comments>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				java_name="setParent"
+				name="SetParent"
+				num_parameters="1"
+				property="set"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Set the parent transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apParent"
+					type="iTransform *"
+					typec="iTransform*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParent"
+				name="GetParent"
+				num_parameters="0"
+				property="get"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Get the parent transform. "/>
+				<return type="iTransform *" typec="iTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="identity" name="Identity" num_parameters="0">
+				<comments desc="Set the transform to identity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setWorldMatrix"
+				name="SetWorldMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="worldMatrix"
+				property_name="world_matrix">
+				<comments desc="Set the world matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWorldMatrix"
+				name="GetWorldMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="worldMatrix"
+				property_name="world_matrix">
+				<comments desc="Get the world matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setLocalMatrix"
+				name="SetLocalMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="localMatrix"
+				property_name="local_matrix">
+				<comments desc="Set the local matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalMatrix"
+				name="GetLocalMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="localMatrix"
+				property_name="local_matrix">
+				<comments desc="Get the local matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method java_name="multiplyWorldMatrix" name="MultiplyWorldMatrix" num_parameters="1">
+				<comments desc="Multiply the world matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="preMultiplyWorldMatrix" name="PreMultiplyWorldMatrix" num_parameters="1">
+				<comments desc="Pre-Multiply the world matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="multiplyLocalMatrix" name="MultiplyLocalMatrix" num_parameters="1">
+				<comments desc="Multiply the local matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="preMultiplyLocalMatrix" name="PreMultiplyLocalMatrix" num_parameters="1">
+				<comments desc="Pre-Multiply the local matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="lookAt" name="LookAt" num_parameters="2">
+				<comments desc="Set the transform&apos;s orientation that the forward vector points at a specified world position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avLookAt"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avUp"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setWorldPosition"
+				name="SetWorldPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="worldPosition"
+				property_name="world_position">
+				<comments desc="Set the world position of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWorldPosition"
+				name="GetWorldPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="worldPosition"
+				property_name="world_position">
+				<comments desc="Get the world position of the transform. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setLocalPosition"
+				name="SetLocalPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="localPosition"
+				property_name="local_position">
+				<comments desc="Set the local position of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalPosition"
+				name="GetLocalPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="localPosition"
+				property_name="local_position">
+				<comments desc="Get the local position of the transform. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="translate" name="Translate" num_parameters="1">
+				<comments desc="Translate the local position of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="preTranslate" name="PreTranslate" num_parameters="1">
+				<comments desc="PreTranslate the local position of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setWorldRotation"
+				name="SetWorldRotation"
+				num_parameters="1"
+				property="set"
+				property_name2="worldRotation"
+				property_name="world_rotation">
+				<comments desc="Set the world rotation of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setLocalRotation"
+				name="SetLocalRotation"
+				num_parameters="1"
+				property="set"
+				property_name2="localRotation"
+				property_name="local_rotation">
+				<comments desc="Set the local rotation of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="rotate" name="Rotate" num_parameters="1">
+				<comments desc="Rotate the local rotation of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="preRotate" name="PreRotate" num_parameters="1">
+				<comments desc="PreRotate the local rotation of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setScale"
+				name="SetScale"
+				num_parameters="1"
+				property="set"
+				property_name2="scale"
+				property_name="scale">
+				<comments desc="Set the scale of the transform. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aScale"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScale"
+				name="GetScale"
+				num_parameters="0"
+				property="get"
+				property_name2="scale"
+				property_name="scale">
+				<comments desc="Return the scale of the transform. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="createPreOffsetTransform" name="CreatePreOffsetTransform" num_parameters="0">
+				<comments desc="Create a pre offset transform. ">
+					<remark text="The created transform will be the new parent of this transform. The current parent of this transform becoming the parent of the offset transform. "/>
+				</comments>
+				<return type="iTransform *" typec="iTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createPostOffsetTransform" name="CreatePostOffsetTransform" num_parameters="0">
+				<comments desc="Create a post offset transform. ">
+					<remark text="The created transform will have this transform as parent. "/>
+				</comments>
+				<return type="iTransform *" typec="iTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRight"
+				name="GetRight"
+				num_parameters="0"
+				property="get"
+				property_name2="right"
+				property_name="right">
+				<comments desc="Get the right (X) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUp"
+				name="GetUp"
+				num_parameters="0"
+				property="get"
+				property_name2="up"
+				property_name="up">
+				<comments desc="Get the up (Y) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getForward"
+				name="GetForward"
+				num_parameters="0"
+				property="get"
+				property_name2="forward"
+				property_name="forward">
+				<comments desc="Get the forward (Z) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvRight"
+				name="GetInvRight"
+				num_parameters="0"
+				property="get"
+				property_name2="invRight"
+				property_name="inv_right">
+				<comments desc="Get the inverse transform right (X) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvUp"
+				name="GetInvUp"
+				num_parameters="0"
+				property="get"
+				property_name2="invUp"
+				property_name="inv_up">
+				<comments desc="Get the inverse transform up (Y) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvForward"
+				name="GetInvForward"
+				num_parameters="0"
+				property="get"
+				property_name2="invForward"
+				property_name="inv_forward">
+				<comments desc="Get the inverse transform forward (Z) vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

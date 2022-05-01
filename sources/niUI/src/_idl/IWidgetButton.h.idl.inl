@@ -1,0 +1,136 @@
+#include "../API/niUI/IWidgetButton.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetButton **/
+IDLC_BEGIN_INTF(ni,iWidgetButton)
+/** ni -> iWidgetButton::SetIcon/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetIcon,1)
+	IDLC_DECL_VAR(iOverlay*,apIcon)
+	IDLC_BUF_TO_INTF(iOverlay,apIcon)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetIcon,1,(apIcon))
+IDLC_METH_END(ni,iWidgetButton,SetIcon,1)
+
+/** ni -> iWidgetButton::GetIcon/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIcon,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIcon,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIcon,0)
+
+/** ni -> iWidgetButton::SetIconPressed/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetIconPressed,1)
+	IDLC_DECL_VAR(iOverlay*,apIcon)
+	IDLC_BUF_TO_INTF(iOverlay,apIcon)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetIconPressed,1,(apIcon))
+IDLC_METH_END(ni,iWidgetButton,SetIconPressed,1)
+
+/** ni -> iWidgetButton::GetIconPressed/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIconPressed,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIconPressed,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIconPressed,0)
+
+/** ni -> iWidgetButton::SetIconHover/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetIconHover,1)
+	IDLC_DECL_VAR(iOverlay*,apIcon)
+	IDLC_BUF_TO_INTF(iOverlay,apIcon)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetIconHover,1,(apIcon))
+IDLC_METH_END(ni,iWidgetButton,SetIconHover,1)
+
+/** ni -> iWidgetButton::GetIconHover/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIconHover,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIconHover,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIconHover,0)
+
+/** ni -> iWidgetButton::SetIconSize/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetIconSize,1)
+	IDLC_DECL_VAR(sVec2f,avSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avSize)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetIconSize,1,(avSize))
+IDLC_METH_END(ni,iWidgetButton,SetIconSize,1)
+
+/** ni -> iWidgetButton::GetIconSize/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIconSize,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIconSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIconSize,0)
+
+/** ni -> iWidgetButton::SetCheck/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetCheck,1)
+	IDLC_DECL_VAR(tBool,abCkecked)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abCkecked)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetCheck,1,(abCkecked))
+IDLC_METH_END(ni,iWidgetButton,SetCheck,1)
+
+/** ni -> iWidgetButton::GetCheck/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetCheck,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetCheck,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetCheck,0)
+
+/** ni -> iWidgetButton::SetGroupID/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetGroupID,1)
+	IDLC_DECL_VAR(iHString*,aVal)
+	IDLC_BUF_TO_INTF(iHString,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,SetGroupID,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetButton,SetGroupID,1)
+
+/** ni -> iWidgetButton::GetGroupID/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetGroupID,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetGroupID,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetGroupID,0)
+
+/** ni -> iWidgetButton::SetIconMargin/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetIconMargin,1)
+	IDLC_DECL_VAR(sVec4f,avMargin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avMargin)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetIconMargin,1,(avMargin))
+IDLC_METH_END(ni,iWidgetButton,SetIconMargin,1)
+
+/** ni -> iWidgetButton::GetIconMargin/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIconMargin,0)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIconMargin,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIconMargin,0)
+
+/** ni -> iWidgetButton::GetIconDrawRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetIconDrawRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetIconDrawRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetIconDrawRect,0)
+
+/** ni -> iWidgetButton::SetDrawFrameFlags/1 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,SetDrawFrameFlags,1)
+	IDLC_DECL_VAR(tRectFrameFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tRectFrameFlags,aFlags)
+	IDLC_METH_CALL_VOID(ni,iWidgetButton,SetDrawFrameFlags,1,(aFlags))
+IDLC_METH_END(ni,iWidgetButton,SetDrawFrameFlags,1)
+
+/** ni -> iWidgetButton::GetDrawFrameFlags/0 **/
+IDLC_METH_BEGIN(ni,iWidgetButton,GetDrawFrameFlags,0)
+	IDLC_DECL_RETVAR(tRectFrameFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetButton,GetDrawFrameFlags,0,())
+	IDLC_RET_FROM_ENUM(tRectFrameFlags,_Ret)
+IDLC_METH_END(ni,iWidgetButton,GetDrawFrameFlags,0)
+
+IDLC_END_INTF(ni,iWidgetButton)
+
+IDLC_END_NAMESPACE()
+// EOF //

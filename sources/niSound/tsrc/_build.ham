@@ -1,0 +1,18 @@
+if [ SubDirOnce TOP niSound tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTest Test_niSound : 1.0.0 ;
+niImportModuleDll niLang ;
+niImportModuleDll niSound ;
+niImportModuleDll_niUI ;
+niImportModuleLibs niAppLib ;
+niImportModuleLibs niUnitTest ;
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
+
+runInDir Test_niSound ;
+
+# Dependencies
+tkDepends Test_niSound : niSound : TOP niSound src ;

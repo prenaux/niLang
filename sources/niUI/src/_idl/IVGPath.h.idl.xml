@@ -1,0 +1,1871 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eVGPathCommand">
+			<comments desc="VGPath commands. "/>
+			<value min_features="20" name="eVGPathCommand_Stop" value="0 ">
+				<comments desc="Stop command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_MoveTo" value="1 ">
+				<comments desc="MoveTo command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_LineTo" value="2 ">
+				<comments desc="LineTo command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_Curve3" value="3 ">
+				<comments desc="Quadric curve command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_Curve4" value="4 ">
+				<comments desc="Cubic curve command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_CurveN" value="5 ">
+				<comments desc="N curve command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_Catrom" value="6 ">
+				<comments desc="Catrom command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_UBSpline" value="7 ">
+				<comments desc="UBSpline command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_EndPoly" value="0x0F ">
+				<comments desc="End poly command. "/>
+			</value>
+			<value min_features="20" name="eVGPathCommand_Mask" value="0x0F ">
+				<comments desc="Command mask. "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			min_features="20"
+			name="iVGPathTesselatedRenderer"
+			uuid1="4629B016-9A7A-44BB-8F6C-24F5886DE462"
+			uuid2="0x4629b016,0x9a7a,0x44bb,0x8f,0x6c,0x24,0xf5,0x88,0x6d,0xe4,0x62">
+			<comments desc="VGPathTesselatedRenderer interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="beginAddPath"
+				min_features="20"
+				name="BeginAddPath"
+				num_parameters="2">
+				<comments desc="Called when begining to render a path. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abStroke"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="endAddPath"
+				min_features="20"
+				name="EndAddPath"
+				num_parameters="2">
+				<comments desc="Called when end adding a path. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abStroke"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPathApproximationScale"
+				min_features="20"
+				name="GetPathApproximationScale"
+				num_parameters="1">
+				<comments desc="Called to request the approximation scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="addPathPolygons"
+				min_features="20"
+				name="AddPathPolygons"
+				num_parameters="3">
+				<comments desc="Called to add the path&apos;s polygons. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apTess"
+					type="iVGPolygonTesselator *"
+					typec="iVGPolygonTesselator*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abStroke"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iVGPath"
+			uuid1="01302541-1712-47B1-80A9-E2B161539F96"
+			uuid2="0x01302541,0x1712,0x47b1,0x80,0xa9,0xe2,0xb1,0x61,0x53,0x9f,0x96">
+			<comments desc="VGPath interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="copy"
+				min_features="20"
+				name="Copy"
+				num_parameters="1">
+				<comments desc="Copy the specified path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPath"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="20"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this path. "/>
+				<return type="iVGPath *" typec="iVGPath*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="clear"
+				min_features="20"
+				name="Clear"
+				num_parameters="0">
+				<comments desc="Clear the path. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="addVertex"
+				min_features="20"
+				name="AddVertex"
+				num_parameters="2">
+				<comments desc="Add a vertex to the path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="avVertex"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aCommand"
+					type="eVGPathCommand"
+					typec="eVGPathCommand"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="addPath"
+				min_features="20"
+				name="AddPath"
+				num_parameters="1">
+				<comments desc="Add another path to the end of this path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPath"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumVertices"
+				min_features="20"
+				name="GetNumVertices"
+				num_parameters="0"
+				property="get"
+				property_name2="numVertices"
+				property_name="num_vertices">
+				<comments desc="Get the number of vertices in the path. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setVertex"
+				min_features="20"
+				name="SetVertex"
+				num_parameters="2"
+				property="set"
+				property_name2="vertex"
+				property_name="vertex">
+				<comments desc="Set the vertex at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avVertex"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVertex"
+				min_features="20"
+				name="GetVertex"
+				num_parameters="1"
+				property="get"
+				property_name2="vertex"
+				property_name="vertex">
+				<comments desc="Get the vertex at the specified index. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setCommand"
+				min_features="20"
+				name="SetCommand"
+				num_parameters="2"
+				property="set"
+				property_name2="command"
+				property_name="command">
+				<comments desc="Set the command at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aCmd"
+					type="eVGPathCommand"
+					typec="eVGPathCommand"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCommand"
+				min_features="20"
+				name="GetCommand"
+				num_parameters="1"
+				property="get"
+				property_name2="command"
+				property_name="command">
+				<comments desc="Get the command at the specified index. "/>
+				<return type="eVGPathCommand" typec="eVGPathCommand" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="resetIterator"
+				min_features="20"
+				name="ResetIterator"
+				num_parameters="0">
+				<comments desc="Reset the iterator. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNextIterator"
+				min_features="20"
+				name="GetNextIterator"
+				num_parameters="0"
+				property="get"
+				property_name2="nextIterator"
+				property_name="next_iterator">
+				<comments desc="Get the next vertex of the iterator. "/>
+				<return type="eVGPathCommand" typec="eVGPathCommand" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVertexIterator"
+				min_features="20"
+				name="GetVertexIterator"
+				num_parameters="0"
+				property="get"
+				property_name2="vertexIterator"
+				property_name="vertex_iterator">
+				<comments desc="Get the current vertex of the iterator. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="flipX"
+				min_features="20"
+				name="FlipX"
+				num_parameters="2">
+				<comments desc="Flip the path along the X-axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="flipY"
+				min_features="20"
+				name="FlipY"
+				num_parameters="2">
+				<comments desc="Flip the path along the Y-axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="moveTo"
+				min_features="20"
+				name="MoveTo"
+				num_parameters="2">
+				<comments desc="Move to the specified position. ">
+					<remark text="Maps to the &apos;M&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="moveToRel"
+				min_features="20"
+				name="MoveToRel"
+				num_parameters="2">
+				<comments desc="Move to the specified position, relativly to the previous vertex. ">
+					<remark text="Maps to the &apos;m&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="lineTo"
+				min_features="20"
+				name="LineTo"
+				num_parameters="2">
+				<comments desc="Add a line to the specified position. ">
+					<remark text="Maps to the &apos;L&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="lineToRel"
+				min_features="20"
+				name="LineToRel"
+				num_parameters="2">
+				<comments desc="">
+					<remark text="Maps to the &apos;l&apos; path command, relativly to the previous vertex. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="hlineTo"
+				min_features="20"
+				name="HLineTo"
+				num_parameters="1">
+				<comments desc="Add an horizontal line to the specified column. ">
+					<remark text="Maps to the &apos;H&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="hlineToRel"
+				min_features="20"
+				name="HLineToRel"
+				num_parameters="1">
+				<comments desc="">
+					<remark text="Maps to the &apos;h&apos; path command, relativly to the previous vertex. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="vlineTo"
+				min_features="20"
+				name="VLineTo"
+				num_parameters="1">
+				<comments desc="Add a vertical line to the specified line. ">
+					<remark text="Maps to the &apos;V&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="vlineToRel"
+				min_features="20"
+				name="VLineToRel"
+				num_parameters="1">
+				<comments desc="Add a vertical line to the specified line, relativly to the previous vertex. ">
+					<remark text="Maps to the &apos;v&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve3"
+				min_features="20"
+				name="Curve3"
+				num_parameters="4">
+				<comments desc="Quadratic Bezier curveto. ">
+					<remark text="Maps to the &apos;Q&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve3Rel"
+				min_features="20"
+				name="Curve3Rel"
+				num_parameters="4">
+				<comments desc="Quadratic Bezier curveto. ">
+					<remark text="Maps to the &apos;q&apos; path command, relativly to the previous vertex. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve3Prev"
+				min_features="20"
+				name="Curve3Prev"
+				num_parameters="2">
+				<comments desc="Shorthand/smooth quadratic Bezier curveto. ">
+					<remark text="Maps to the &apos;T&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve3PrevRel"
+				min_features="20"
+				name="Curve3PrevRel"
+				num_parameters="2">
+				<comments desc="Shorthand/smooth quadratic Bezier curveto, relativly to the previous vertex. ">
+					<remark text="Maps to the &apos;t&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4"
+				min_features="20"
+				name="Curve4"
+				num_parameters="6">
+				<comments desc="Cubic Bezier curveto. ">
+					<remark text="Maps to the &apos;C&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4Rel"
+				min_features="20"
+				name="Curve4Rel"
+				num_parameters="6">
+				<comments desc="Cubic Bezier curveto, relativly to the previous vertex. ">
+					<remark text="Maps to the &apos;c&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4Prev"
+				min_features="20"
+				name="Curve4Prev"
+				num_parameters="4">
+				<comments desc="Shorthand/smooth cubic Bezier curveto. ">
+					<remark text="Maps to the &apos;S&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4PrevRel"
+				min_features="20"
+				name="Curve4PrevRel"
+				num_parameters="4">
+				<comments desc="Shorthand/smooth cubic Bezier curveto, relativly to the previous vertex. ">
+					<remark text="Maps to the &apos;s&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4K"
+				min_features="20"
+				name="Curve4K"
+				num_parameters="3">
+				<comments desc="Cubic curve with auto control point computation, relativly to the previous vertex. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="k"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="curve4KRel"
+				min_features="20"
+				name="Curve4KRel"
+				num_parameters="3">
+				<comments desc="Cubic curve with auto control point computation. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="k"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="hermite"
+				min_features="20"
+				name="Hermite"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="hermiteRel"
+				min_features="20"
+				name="HermiteRel"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="ubspline"
+				min_features="20"
+				name="UBSpline"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="ubsplineRel"
+				min_features="20"
+				name="UBSplineRel"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="catrom"
+				min_features="20"
+				name="Catrom"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="catromRel"
+				min_features="20"
+				name="CatromRel"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y3"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y4"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="arcTo"
+				min_features="20"
+				name="ArcTo"
+				num_parameters="7">
+				<comments desc="Elliptical arc. ">
+					<remark text="Maps to the SVG &apos;A&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="rx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="ry"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="large_arc_flag"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="sweep_flag"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="arcToRel"
+				min_features="20"
+				name="ArcToRel"
+				num_parameters="7">
+				<comments desc="Elliptical arc, relativly to the previous vertex. ">
+					<remark text="Maps to the SVG &apos;a&apos; path command. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="rx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="ry"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="large_arc_flag"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="sweep_flag"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="closePolygon"
+				min_features="20"
+				name="ClosePolygon"
+				num_parameters="0">
+				<comments desc="Close the current path&apos;s polygon. ">
+					<remark text="Maps to the SVG &apos;Z&apos; and &apos;z&apos; path commands. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="rect"
+				min_features="20"
+				name="Rect"
+				num_parameters="4">
+				<comments desc="Add a rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="width"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="roundedRect"
+				min_features="20"
+				name="RoundedRect"
+				num_parameters="6">
+				<comments desc="Add a rounded rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="width"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="rx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="ry"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="rectCentered"
+				min_features="20"
+				name="RectCentered"
+				num_parameters="4">
+				<comments desc="Add a centered rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="cx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="cy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="width"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="roundedRectCentered"
+				min_features="20"
+				name="RoundedRectCentered"
+				num_parameters="6">
+				<comments desc="Add a rounded centered rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="cx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="cy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="width"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="rx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="ry"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="speechBubbleRect"
+				min_features="20"
+				name="SpeechBubbleRect"
+				num_parameters="10">
+				<comments desc="Add a speech bubble rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="y"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="w"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="h"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="rx"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="ry"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="tx"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="ty"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="arrowGap"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="arrowLen"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				java_name="circle"
+				min_features="20"
+				name="Circle"
+				num_parameters="3">
+				<comments desc="Add a circle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="cx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="cy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="radius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="ellipse"
+				min_features="20"
+				name="Ellipse"
+				num_parameters="4">
+				<comments desc="Add an ellipse. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="cx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="cy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="rx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="ry"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="line"
+				min_features="20"
+				name="Line"
+				num_parameters="4">
+				<comments desc="Add a line. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="polyline"
+				min_features="20"
+				name="Polyline"
+				num_parameters="1">
+				<comments desc="Add a polyline. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apVerts"
+					type="const tVec2fCVec *"
+					typec="const tVec2fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="polygon"
+				min_features="20"
+				name="Polygon"
+				num_parameters="1">
+				<comments desc="Add a polygon. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apVerts"
+					type="const tVec2fCVec *"
+					typec="const tVec2fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="star"
+				min_features="20"
+				name="Star"
+				num_parameters="6">
+				<comments desc="Add a star shape. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="xc"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="yc"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r2"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="n"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="0.0 "
+					last="1"
+					name="start_angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="text"
+				min_features="20"
+				name="Text"
+				num_parameters="3">
+				<comments desc="Add a text. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="textAlongOnePath"
+				min_features="20"
+				name="TextAlongOnePath"
+				num_parameters="7">
+				<comments desc="Add a text along a path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPath"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abPreserveXScale"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="afBaseLength"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSegmentApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afCurvesApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="textAlongTwoPaths"
+				min_features="20"
+				name="TextAlongTwoPaths"
+				num_parameters="9">
+				<comments desc="Add a text between two paths. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPath1"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPath2"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abPreserveXScale"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="afBaseHeight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afBaseLength"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSegmentApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afCurvesApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="toBSpline"
+				min_features="20"
+				name="ToBSpline"
+				num_parameters="1">
+				<comments desc="Transform the path to a bspline "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afInterpolationStep"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="translate"
+				min_features="20"
+				name="Translate"
+				num_parameters="1">
+				<comments desc="Translate the path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avTranslate"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="rotate"
+				min_features="20"
+				name="Rotate"
+				num_parameters="1">
+				<comments desc="Rotate the path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afRadians"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="scale"
+				min_features="20"
+				name="Scale"
+				num_parameters="1">
+				<comments desc="Scale the path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avScale"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="transform"
+				min_features="20"
+				name="Transform"
+				num_parameters="1">
+				<comments desc="Transform the path with the specified transform. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="transformAlongOnePath"
+				min_features="20"
+				name="TransformAlongOnePath"
+				num_parameters="5">
+				<comments desc="Transform the path along another path "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPath"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abPreserveXScale"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="afBaseLength"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSegmentApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afCurvesApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="transformAlongTwoPaths"
+				min_features="20"
+				name="TransformAlongTwoPaths"
+				num_parameters="7">
+				<comments desc="Transform the path against two other paths "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPath1"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPath2"
+					type="const iVGPath *"
+					typec="const iVGPath*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abPreserveXScale"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="afBaseHeight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afBaseLength"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afSegmentApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afCurvesApproxScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="arrangeOrientations"
+				min_features="20"
+				name="ArrangeOrientations"
+				num_parameters="1">
+				<comments desc="Make all polygons follow the same orientation. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoundingRect"
+				min_features="20"
+				name="GetBoundingRect"
+				num_parameters="1">
+				<comments desc="Get the path&apos;s bounding box. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="renderTesselated"
+				min_features="20"
+				name="RenderTesselated"
+				num_parameters="3">
+				<comments desc="Render the tesselated path. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPath"
+					type="iVGPathTesselatedRenderer *"
+					typec="iVGPathTesselatedRenderer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apTransform"
+					type="const iVGTransform *"
+					typec="const iVGTransform*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="addSVGPath"
+				min_features="20"
+				name="AddSVGPath"
+				num_parameters="1">
+				<comments desc="Add a SVG path. ">
+					<remark text="The syntax of the path is the same as SVG paths. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="addPolylinePath"
+				min_features="20"
+				name="AddPolylinePath"
+				num_parameters="1">
+				<comments desc="Add a polyline path. ">
+					<remark text="The syntax of the path is the same as SVG polyline element. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="addPolygonPath"
+				min_features="20"
+				name="AddPolygonPath"
+				num_parameters="1">
+				<comments desc="Add a polygon path. ">
+					<remark text="The syntax of the path is the same as SVG polygon element. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSVGPath"
+				min_features="20"
+				name="GetSVGPath"
+				num_parameters="0"
+				property="get"
+				property_name2="svgpath"
+				property_name="svgpath">
+				<comments desc="Get the path in a SVG string form. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

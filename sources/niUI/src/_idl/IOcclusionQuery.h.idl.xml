@@ -1,0 +1,59 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eOcclusionQueryStatus">
+			<comments desc="Occlusion query status. "/>
+			<value name="eOcclusionQueryStatus_NotIssued" value="0 ">
+				<comments desc="No query has been issued yet. "/>
+			</value>
+			<value name="eOcclusionQueryStatus_Began" value="1 ">
+				<comments desc="The query has began but is not ended yet. "/>
+			</value>
+			<value name="eOcclusionQueryStatus_Pending" value="2 ">
+				<comments desc="Waiting for the query to return. "/>
+			</value>
+			<value name="eOcclusionQueryStatus_Successful" value="3 ">
+				<comments desc="The query status is available. "/>
+			</value>
+			<value name="eOcclusionQueryStatus_Failed" value="4 ">
+				<comments desc="The query failed. "/>
+			</value>
+		</enum>
+		<interface name="iOcclusionQuery" uuid1="9BDA9D89-23E7-4CF7-AAA7-C95BA7EDAE2A" uuid2="0x9bda9d89,0x23e7,0x4cf7,0xaa,0xa7,0xc9,0x5b,0xa7,0xed,0xae,0x2a">
+			<comments desc="Occlusion query object. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="begin" name="Begin" num_parameters="0">
+				<comments desc="Begin the query. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="end" name="End" num_parameters="0">
+				<comments desc="End the query. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="getStatus" name="GetStatus" num_parameters="1">
+				<comments desc="Get the status of the query. ">
+					<params text="abWait if eTrue the function will wait until the query is successful or fails. "/>
+				</comments>
+				<return type="eOcclusionQueryStatus" typec="eOcclusionQueryStatus" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="abWait"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getResult"
+				name="GetResult"
+				num_parameters="0"
+				property="get"
+				property_name2="result"
+				property_name="result">
+				<comments desc="Get the result of the query. " return="the number of pixels drawn between begin/end. eInvalidHandle if the result is not yet available. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

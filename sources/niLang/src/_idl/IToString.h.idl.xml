@@ -1,0 +1,30 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eRawToStringEncoding">
+			<comments desc=""/>
+			<value name="eRawToStringEncoding_Hex" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eRawToStringEncoding_Base64" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eRawToStringEncoding_Base32" value="2 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iToString" uuid1="78B80893-3543-408E-AA0F-ACA5598C2D05" uuid2="0x78b80893,0x3543,0x408e,0xaa,0x0f,0xac,0xa5,0x59,0x8c,0x2d,0x05">
+			<comments desc="iToString interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="toString"
+				name="ToString"
+				num_parameters="0">
+				<comments desc="Convert the object to a string. "/>
+				<return type="ni::cString" typec="ni::cString" typei="ni::eType_String"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

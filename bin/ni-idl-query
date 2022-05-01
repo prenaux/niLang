@@ -1,0 +1,6 @@
+#!/bin/bash
+CWD=`pwd`
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$CWD"
+. "$SCRIPT_DIR/ni-bash-setenv.sh" ra
+"${NIVM}" "$SCRIPT_DIR/../scripts/tools/idl_query.ni" "$@"

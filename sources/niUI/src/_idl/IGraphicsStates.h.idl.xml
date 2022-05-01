@@ -1,0 +1,1308 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			name="iSamplerStates"
+			serialize="1"
+			uuid1="86963478-914D-4E43-8459-A1DC87F583F9"
+			uuid2="0x86963478,0x914d,0x4e43,0x84,0x59,0xa1,0xdc,0x87,0xf5,0x83,0xf9">
+			<comments desc="Sampler states interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another sampler states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="const iSamplerStates *"
+					typec="const iSamplerStates*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this sampler states. "/>
+				<return type="iSamplerStates *" typec="iSamplerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCompiled"
+				name="GetIsCompiled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCompiled"
+				property_name="is_compiled">
+				<comments desc="Return whether the sampler states are compiled (read-only) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFilter"
+				name="SetFilter"
+				num_parameters="1"
+				property="set"
+				property_name2="filter"
+				property_name="filter"
+				serialize="1">
+				<comments desc="Set the filtering mode. (default eSamplerFilter_Point) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFilter"
+					type="eSamplerFilter"
+					typec="eSamplerFilter"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFilter"
+				name="GetFilter"
+				num_parameters="0"
+				property="get"
+				property_name2="filter"
+				property_name="filter"
+				serialize="1">
+				<comments desc="Get the filtering mode. "/>
+				<return type="eSamplerFilter" typec="eSamplerFilter" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setWrapS"
+				name="SetWrapS"
+				num_parameters="1"
+				property="set"
+				property_name2="wrapS"
+				property_name="wrap_s"
+				serialize="1">
+				<comments desc="Set the S-axis wrapping mode. (default eSamplerWrap_Clamp) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aWrap"
+					type="eSamplerWrap"
+					typec="eSamplerWrap"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWrapS"
+				name="GetWrapS"
+				num_parameters="0"
+				property="get"
+				property_name2="wrapS"
+				property_name="wrap_s"
+				serialize="1">
+				<comments desc="Get the S-axis wrapping mode. "/>
+				<return type="eSamplerWrap" typec="eSamplerWrap" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setWrapT"
+				name="SetWrapT"
+				num_parameters="1"
+				property="set"
+				property_name2="wrapT"
+				property_name="wrap_t"
+				serialize="1">
+				<comments desc="Set the T-axis wrapping mode. (default eSamplerWrap_Clamp) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aWrap"
+					type="eSamplerWrap"
+					typec="eSamplerWrap"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWrapT"
+				name="GetWrapT"
+				num_parameters="0"
+				property="get"
+				property_name2="wrapT"
+				property_name="wrap_t"
+				serialize="1">
+				<comments desc="Get the T-axis wrapping mode. "/>
+				<return type="eSamplerWrap" typec="eSamplerWrap" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setWrapR"
+				name="SetWrapR"
+				num_parameters="1"
+				property="set"
+				property_name2="wrapR"
+				property_name="wrap_r"
+				serialize="1">
+				<comments desc="Set the R-axis wrapping mode. (default eSamplerWrap_Clamp) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aWrap"
+					type="eSamplerWrap"
+					typec="eSamplerWrap"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWrapR"
+				name="GetWrapR"
+				num_parameters="0"
+				property="get"
+				property_name2="wrapR"
+				property_name="wrap_r"
+				serialize="1">
+				<comments desc="Get the R-axis wrapping mode. "/>
+				<return type="eSamplerWrap" typec="eSamplerWrap" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setBorderColor"
+				name="SetBorderColor"
+				num_parameters="1"
+				property="set"
+				property_name2="borderColor"
+				property_name="border_color"
+				serialize="1">
+				<comments desc="Set the border color, for border sampler wrap mode. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBorderColor"
+				name="GetBorderColor"
+				num_parameters="0"
+				property="get"
+				property_name2="borderColor"
+				property_name="border_color"
+				serialize="1">
+				<comments desc="Get the border color. "/>
+				<return type="const sColor4f &amp;" typec="const sColor4f&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the states description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the states. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="ni::iDataTable *"
+					typec="ni::iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			name="iDepthStencilStates"
+			serialize="1"
+			uuid1="FDB9705C-32D0-41FB-A041-549DC23C7BCD"
+			uuid2="0xfdb9705c,0x32d0,0x41fb,0xa0,0x41,0x54,0x9d,0xc2,0x3c,0x7b,0xcd">
+			<comments desc="DepthStencil states "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another depth-stencil states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="const iDepthStencilStates *"
+					typec="const iDepthStencilStates*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this depth-stencil states. "/>
+				<return type="iDepthStencilStates *" typec="iDepthStencilStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCompiled"
+				name="GetIsCompiled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCompiled"
+				property_name="is_compiled">
+				<comments desc="Return whether the depth-stencil states are compiled (read-only) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setDepthTest"
+				name="SetDepthTest"
+				num_parameters="1"
+				property="set"
+				property_name2="depthTest"
+				property_name="depth_test"
+				serialize="1">
+				<comments desc="Set whether the depth test is enabled. (default false) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthTest"
+				name="GetDepthTest"
+				num_parameters="0"
+				property="get"
+				property_name2="depthTest"
+				property_name="depth_test"
+				serialize="1">
+				<comments desc="Get whether the depth test is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setDepthTestWrite"
+				name="SetDepthTestWrite"
+				num_parameters="1"
+				property="set"
+				property_name2="depthTestWrite"
+				property_name="depth_test_write"
+				serialize="1">
+				<comments desc="Set whether the depth test write is enabled. (default true) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthTestWrite"
+				name="GetDepthTestWrite"
+				num_parameters="0"
+				property="get"
+				property_name2="depthTestWrite"
+				property_name="depth_test_write"
+				serialize="1">
+				<comments desc="Get whether the depth test write is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setDepthTestCompare"
+				name="SetDepthTestCompare"
+				num_parameters="1"
+				property="set"
+				property_name2="depthTestCompare"
+				property_name="depth_test_compare"
+				serialize="1">
+				<comments desc="Set depth test compare function. (default eGraphicsCompare_LessEqual) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eGraphicsCompare"
+					typec="eGraphicsCompare"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthTestCompare"
+				name="GetDepthTestCompare"
+				num_parameters="0"
+				property="get"
+				property_name2="depthTestCompare"
+				property_name="depth_test_compare"
+				serialize="1">
+				<comments desc="Get depth test compare function. "/>
+				<return type="eGraphicsCompare" typec="eGraphicsCompare" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilMode"
+				name="SetStencilMode"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilMode"
+				property_name="stencil_mode"
+				serialize="1">
+				<comments desc="Set the stencil mode. (default eStencilMode_None) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilMode"
+					typec="eStencilMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilMode"
+				name="GetStencilMode"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilMode"
+				property_name="stencil_mode"
+				serialize="1">
+				<comments desc="Get the stencil mode. "/>
+				<return type="eStencilMode" typec="eStencilMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilRef"
+				name="SetStencilRef"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilRef"
+				property_name="stencil_ref"
+				serialize="1">
+				<comments desc="Set the stencil reference value. (default 0) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilRef"
+				name="GetStencilRef"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilRef"
+				property_name="stencil_ref"
+				serialize="1">
+				<comments desc="Get the stencil reference value. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setStencilMask"
+				name="SetStencilMask"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilMask"
+				property_name="stencil_mask"
+				serialize="1">
+				<comments desc="Set the stencil mask. (default 0xFFFFFFFF) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilMask"
+				name="GetStencilMask"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilMask"
+				property_name="stencil_mask"
+				serialize="1">
+				<comments desc="Get the stencil mask. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setStencilFrontCompare"
+				name="SetStencilFrontCompare"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilFrontCompare"
+				property_name="stencil_front_compare"
+				serialize="1">
+				<comments desc="Set the stencil front test compare function. (eGraphicsCompare_Never) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eGraphicsCompare"
+					typec="eGraphicsCompare"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilFrontCompare"
+				name="GetStencilFrontCompare"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilFrontCompare"
+				property_name="stencil_front_compare"
+				serialize="1">
+				<comments desc="Get the stencil front test compare function. "/>
+				<return type="eGraphicsCompare" typec="eGraphicsCompare" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilFrontFail"
+				name="SetStencilFrontFail"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilFrontFail"
+				property_name="stencil_front_fail"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil front test fail. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilFrontFail"
+				name="GetStencilFrontFail"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilFrontFail"
+				property_name="stencil_front_fail"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil front test fail. "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilFrontPassDepthFail"
+				name="SetStencilFrontPassDepthFail"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilFrontPassDepthFail"
+				property_name="stencil_front_pass_depth_fail"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil front test pass and the depth test fail. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilFrontPassDepthFail"
+				name="GetStencilFrontPassDepthFail"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilFrontPassDepthFail"
+				property_name="stencil_front_pass_depth_fail"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil front test pass and the depth test fail. (eStencilOp_Keep) "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilFrontPassDepthPass"
+				name="SetStencilFrontPassDepthPass"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilFrontPassDepthPass"
+				property_name="stencil_front_pass_depth_pass"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil front test pass and the depth test pass. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilFrontPassDepthPass"
+				name="GetStencilFrontPassDepthPass"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilFrontPassDepthPass"
+				property_name="stencil_front_pass_depth_pass"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil front test pass and the depth test pass. "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilBackCompare"
+				name="SetStencilBackCompare"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilBackCompare"
+				property_name="stencil_back_compare"
+				serialize="1">
+				<comments desc="Set the stencil back test compare function. (eGraphicsCompare_Never) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eGraphicsCompare"
+					typec="eGraphicsCompare"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilBackCompare"
+				name="GetStencilBackCompare"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilBackCompare"
+				property_name="stencil_back_compare"
+				serialize="1">
+				<comments desc="Get the stencil back test compare function. "/>
+				<return type="eGraphicsCompare" typec="eGraphicsCompare" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilBackFail"
+				name="SetStencilBackFail"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilBackFail"
+				property_name="stencil_back_fail"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil back test fail. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilBackFail"
+				name="GetStencilBackFail"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilBackFail"
+				property_name="stencil_back_fail"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil back test fail. "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilBackPassDepthFail"
+				name="SetStencilBackPassDepthFail"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilBackPassDepthFail"
+				property_name="stencil_back_pass_depth_fail"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil back test pass and the depth test fail. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilBackPassDepthFail"
+				name="GetStencilBackPassDepthFail"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilBackPassDepthFail"
+				property_name="stencil_back_pass_depth_fail"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil back test pass and the depth test fail. "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setStencilBackPassDepthPass"
+				name="SetStencilBackPassDepthPass"
+				num_parameters="1"
+				property="set"
+				property_name2="stencilBackPassDepthPass"
+				property_name="stencil_back_pass_depth_pass"
+				serialize="1">
+				<comments desc="Set the stencil operation when the stencil back test pass and the depth test pass. (eStencilOp_Keep) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eStencilOp"
+					typec="eStencilOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStencilBackPassDepthPass"
+				name="GetStencilBackPassDepthPass"
+				num_parameters="0"
+				property="get"
+				property_name2="stencilBackPassDepthPass"
+				property_name="stencil_back_pass_depth_pass"
+				serialize="1">
+				<comments desc="Get the stencil operation when the stencil back test pass and the depth test pass. "/>
+				<return type="eStencilOp" typec="eStencilOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the states description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the states. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="ni::iDataTable *"
+					typec="ni::iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			name="iRasterizerStates"
+			serialize="1"
+			uuid1="8712BD8C-0924-481D-9222-EEFAC173C941"
+			uuid2="0x8712bd8c,0x0924,0x481d,0x92,0x22,0xee,0xfa,0xc1,0x73,0xc9,0x41">
+			<comments desc="Rasterizer states "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another rasterizer states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="const iRasterizerStates *"
+					typec="const iRasterizerStates*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this rasterizer states. "/>
+				<return type="iRasterizerStates *" typec="iRasterizerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCompiled"
+				name="GetIsCompiled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCompiled"
+				property_name="is_compiled">
+				<comments desc="Return whether the rasterizer states are compiled (read-only) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setWireframe"
+				name="SetWireframe"
+				num_parameters="1"
+				property="set"
+				property_name2="wireframe"
+				property_name="wireframe"
+				serialize="1">
+				<comments desc="Set wireframe rendering. (default false) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abWireframe"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWireframe"
+				name="GetWireframe"
+				num_parameters="0"
+				property="get"
+				property_name2="wireframe"
+				property_name="wireframe"
+				serialize="1">
+				<comments desc="Get wireframe rendering. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setCullingMode"
+				name="SetCullingMode"
+				num_parameters="1"
+				property="set"
+				property_name2="cullingMode"
+				property_name="culling_mode"
+				serialize="1">
+				<comments desc="Set the culling mode. (default eCullingMode_None) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eCullingMode"
+					typec="eCullingMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCullingMode"
+				name="GetCullingMode"
+				num_parameters="0"
+				property="get"
+				property_name2="cullingMode"
+				property_name="culling_mode"
+				serialize="1">
+				<comments desc="Get the culling mode. "/>
+				<return type="eCullingMode" typec="eCullingMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setColorWriteMask"
+				name="SetColorWriteMask"
+				num_parameters="1"
+				property="set"
+				property_name2="colorWriteMask"
+				property_name="color_write_mask"
+				serialize="1">
+				<comments desc="Set the color write mask. (default eColorWriteMask_All) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aMask"
+					type="eColorWriteMask"
+					typec="eColorWriteMask"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorWriteMask"
+				name="GetColorWriteMask"
+				num_parameters="0"
+				property="get"
+				property_name2="colorWriteMask"
+				property_name="color_write_mask"
+				serialize="1">
+				<comments desc="Get the color write mask. "/>
+				<return type="eColorWriteMask" typec="eColorWriteMask" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setScissorTest"
+				name="SetScissorTest"
+				num_parameters="1"
+				property="set"
+				property_name2="scissorTest"
+				property_name="scissor_test"
+				serialize="1">
+				<comments desc="Set whether the scissor test is enabled. (default false) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abTest"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScissorTest"
+				name="GetScissorTest"
+				num_parameters="0"
+				property="get"
+				property_name2="scissorTest"
+				property_name="scissor_test"
+				serialize="1">
+				<comments desc="Get whether the scissor test is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setDepthBiasFactor"
+				name="SetDepthBiasFactor"
+				num_parameters="1"
+				property="set"
+				property_name2="depthBiasFactor"
+				property_name="depth_bias_factor"
+				serialize="1">
+				<comments desc="Set the depth bias factor. (default 0) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthBiasFactor"
+				name="GetDepthBiasFactor"
+				num_parameters="0"
+				property="get"
+				property_name2="depthBiasFactor"
+				property_name="depth_bias_factor"
+				serialize="1">
+				<comments desc="Get the depth bias factor. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDepthBiasUnitScale"
+				name="SetDepthBiasUnitScale"
+				num_parameters="1"
+				property="set"
+				property_name2="depthBiasUnitScale"
+				property_name="depth_bias_unit_scale"
+				serialize="1">
+				<comments desc="Set the depth bias unit scale factor. (default 0) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthBiasUnitScale"
+				name="GetDepthBiasUnitScale"
+				num_parameters="0"
+				property="get"
+				property_name2="depthBiasUnitScale"
+				property_name="depth_bias_unit_scale"
+				serialize="1">
+				<comments desc="Get the depth bias unit scale factor. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the states description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the states. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="ni::iDataTable *"
+					typec="ni::iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			name="iFixedStates"
+			serialize="1"
+			uuid1="E5ED8D23-C0B6-443B-9B90-C5F4495D620F"
+			uuid2="0xe5ed8d23,0xc0b6,0x443b,0x9b,0x90,0xc5,0xf4,0x49,0x5d,0x62,0x0f">
+			<comments desc="Graphics fixed pipeline states interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another fixed pipeline states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="const iFixedStates *"
+					typec="const iFixedStates*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this fixed pipeline states. "/>
+				<return type="iFixedStates *" typec="iFixedStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setCameraViewMatrix"
+				name="SetCameraViewMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="cameraViewMatrix"
+				property_name="camera_view_matrix"
+				serialize="1">
+				<comments desc="Set the fixed pipeline camera view matrix. (default identity) ">
+					<remark text="This function will set the view matrix aswell "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setOnlyCameraViewMatrix"
+				name="SetOnlyCameraViewMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="onlyCameraViewMatrix"
+				property_name="only_camera_view_matrix">
+				<comments desc="Set only the fixed pipeline camera view matrix. (default identity) ">
+					<remark text="This function wont modify the view matrix "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraViewMatrix"
+				name="GetCameraViewMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraViewMatrix"
+				property_name="camera_view_matrix"
+				serialize="1">
+				<comments desc="Get the fixed pipeline camera view matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraInvViewMatrix"
+				name="GetCameraInvViewMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraInvViewMatrix"
+				property_name="camera_inv_view_matrix">
+				<comments desc="Get the inverse camera view matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setCameraProjectionMatrix"
+				name="SetCameraProjectionMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="cameraProjectionMatrix"
+				property_name="camera_projection_matrix"
+				serialize="1">
+				<comments desc="Set the fixed pipeline camera projection matrix. (default identity) ">
+					<remark text="This function will set the projection matrix aswell "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setOnlyCameraProjectionMatrix"
+				name="SetOnlyCameraProjectionMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="onlyCameraProjectionMatrix"
+				property_name="only_camera_projection_matrix">
+				<comments desc="Set only the fixed pipeline camera projection matrix. (default identity) ">
+					<remark text="This function wont modify the projection matrix "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraProjectionMatrix"
+				name="GetCameraProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraProjectionMatrix"
+				property_name="camera_projection_matrix"
+				serialize="1">
+				<comments desc="Get the fixed pipeline camera projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraInvProjectionMatrix"
+				name="GetCameraInvProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraInvProjectionMatrix"
+				property_name="camera_inv_projection_matrix">
+				<comments desc="Get the inverse camera projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraViewProjectionMatrix"
+				name="GetCameraViewProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraViewProjectionMatrix"
+				property_name="camera_view_projection_matrix">
+				<comments desc="Get the camera view projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCameraInvViewProjectionMatrix"
+				name="GetCameraInvViewProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="cameraInvViewProjectionMatrix"
+				property_name="camera_inv_view_projection_matrix">
+				<comments desc="Get the camera inverse view projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setViewMatrix"
+				name="SetViewMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="viewMatrix"
+				property_name="view_matrix"
+				serialize="1">
+				<comments desc="Set the fixed pipeline view matrix. (default identity) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getViewMatrix"
+				name="GetViewMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="viewMatrix"
+				property_name="view_matrix"
+				serialize="1">
+				<comments desc="Get the fixed pipeline view matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setProjectionMatrix"
+				name="SetProjectionMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="projectionMatrix"
+				property_name="projection_matrix"
+				serialize="1">
+				<comments desc="Set the fixed pipeline projection matrix. (default identity) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProjectionMatrix"
+				name="GetProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="projectionMatrix"
+				property_name="projection_matrix"
+				serialize="1">
+				<comments desc="Get the fixed pipeline projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvViewMatrix"
+				name="GetInvViewMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="invViewMatrix"
+				property_name="inv_view_matrix">
+				<comments desc="Get the inverse view matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getViewProjectionMatrix"
+				name="GetViewProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="viewProjectionMatrix"
+				property_name="view_projection_matrix">
+				<comments desc="Get the view projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvViewProjectionMatrix"
+				name="GetInvViewProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="invViewProjectionMatrix"
+				property_name="inv_view_projection_matrix">
+				<comments desc="Get the inverse view projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInvProjectionMatrix"
+				name="GetInvProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="invProjectionMatrix"
+				property_name="inv_projection_matrix">
+				<comments desc="Get the inverse projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method java_name="setLookAtMatrices" name="SetLookAtMatrices" num_parameters="8">
+				<comments desc="Set a look at matrix and perspective projection in the view and projection matrices. ">
+					<params text="abSetCameraMatrices if true the camera and render matrices will be set, if false only the render matrices will be set. "/>
+					<params text="avEye is the position of the camera "/>
+					<params text="avAt is the target of the camera "/>
+					<params text="avUp is the up direction of the camera "/>
+					<params text="afFovY is the vertical field of view of the camera, in radians "/>
+					<params text="afAspect is the aspect ratio of the projection (width/height) "/>
+					<params text="afNear is the distance of the near clip plane "/>
+					<params text="afFar is the distance of the far clip plane "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="abSetCameraMatrices"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="avEye"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avAt"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avUp"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afFovY"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afAspect"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afNear"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afFar"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setOrthoMatrices" name="SetOrthoMatrices" num_parameters="4">
+				<comments desc="Set an orthographic projection in the view and projection matrices. ">
+					<remark text="Takes in account ni::eGraphicsCaps_OrthoProjectionOffset "/>
+					<remark text="This is meant to be used to do ortho projections at the screen&apos;s resolution. To do generic ortho projection generate your ortho projection matrix using MatrixOrthoOffCenterLH (for example) and set the view matrix to identity. "/>
+					<params text="abSetCameraMatrices if true the camera and render matrices will be set, if false only the render matrices will be set. "/>
+					<params text="arectViewport defines the orthographic projection area. "/>
+					<params text="afNear is the distance of the near clip plane "/>
+					<params text="afFar is the distance of the far clip plane "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="abSetCameraMatrices"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="arectViewport"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afNear"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afFar"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the states description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the states. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="ni::iDataTable *"
+					typec="ni::iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

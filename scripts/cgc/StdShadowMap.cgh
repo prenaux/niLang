@@ -1,0 +1,283 @@
+#pragma once
+#ifndef __STDSHADOWMAP_CGH_DBAED1B3_B09F_4639_B8CA_23568C6B8F0C__
+#define __STDSHADOWMAP_CGH_DBAED1B3_B09F_4639_B8CA_23568C6B8F0C__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdPixelInput.cgh"
+#include "StdUniforms.cgh"
+#include "StdSampler.cgh"
+#include "StdMaterial.cgh"
+#include "StdLight.cgh"
+#include "StdUtils.cgh"
+
+#ifndef eShadowMap_PackFloatToRGBA
+#define eShadowMap_PackFloatToRGBA 0
+#endif
+
+///////////////////////////////////////////////
+float4 stdShadowMap_PackLinearDepth(float d) {
+#if eShadowMap_PackFloatToRGBA
+  return stdUtil_PackLinearFloatToRGBA(d);
+#else
+  return float4(d,0,0,0);
+#endif
+}
+float stdShadowMap_UnpackLinearDepth(float4 v, bool abIsFP) {
+  if (abIsFP) {
+    return v.x;
+  }
+  else {
+    return stdUtil_UnpackLinearFloatFromRGBA(v);
+  }
+}
+
+///////////////////////////////////////////////
+float4 stdShadowMap_Compute(StdSampledMaterial m, StdLight l) {
+  float d = stdPixelInput_GetDepth();
+#ifdef eShadowMap_PackFloatToRGBA
+  return stdUtil_PackFloatToRGBA(d);
+#else
+  return float4(d,0,0,0);
+#endif
+}
+
+///////////////////////////////////////////////
+// Sample a shadow map
+float stdSampler_Shadow(StdSampler aSampler, float4 aPos)
+{
+  if (aSampler.HasTexture) {
+    if (aSampler.IsDepth) {
+      return stdSampler_Tex2DProj(aSampler,aPos).x;
+    }
+    else {
+      float depth;
+      if (aSampler.IsFP) {
+        depth = stdSampler_Tex2DProj(aSampler,aPos).x;
+      }
+      else {
+        depth = stdUtil_UnpackFloatFromRGBA(stdSampler_Tex2DProj(aSampler,aPos));
+      }
+      float shadow = 1.0f;
+      if (depth < 1.0f) // make sure the depth looked up is in the valid range
+      {
+        shadow = (aPos.z/aPos.w) < depth;
+      }
+      return shadow;
+    }
+  }
+  else {
+    return 1.0f;
+  }
+}
+
+///////////////////////////////////////////////
+// Sample a shadow map with offset
+float stdSampler_ShadowOffset(StdSampler aSampler, float4 aPos, float2 aOff)
+{
+  aPos.xy += aOff * aPos.w;
+  return stdSampler_Shadow(aSampler,aPos);
+}
+
+///////////////////////////////////////////////
+float4 stdLighting_ComputePositionInShadowMapSpace(StdSampledMaterial aMat, StdLight aLight) {
+  if (aLight.bShadowMapWorldSpace) {
+    return mul(float4(aMat.PositionWorldSpace.xyz,1),aLight.ShadowMapMatrix);
+  }
+  else {
+    return mul(float4(aMat.PositionViewSpace.xyz,1),aLight.ShadowMapMatrix);
+  }
+}
+
+static const float2 kPoissonFilter4[4] = {
+  float2(0.7047772f, 0.2345208f),
+  float2(-0.245407f, 0.5333875f),
+  float2(-0.6152927f, -0.2781072f),
+  float2(0.1751557f, -0.7127246f)
+};
+
+static const float2 kPoissonFilter8[7] = {
+  float2(-0.6173295f, -0.4556456f),
+  float2(0.07910301f, -0.4771617f),
+  float2(-0.8127975f, 0.4120311f),
+  float2(0.2875299f, 0.3713942f),
+  float2(-0.03670927f, 0.9765522f),
+  float2(0.7560313f, -0.5911615f),
+  float2(0.9189606f, 0.04905212f)
+};
+
+static const float2 kPoissonFilter12[12] = {
+  float2(0.0670924f, 0.467954f),
+  float2(-0.6976255f, 0.6050023f),
+  float2(0.5651025f, -0.1157888f),
+  float2(0.6026188f, 0.4332873f),
+  float2(-0.4495299f, -0.1642176f),
+  float2(0.3542885f, 0.9153785f),
+  float2(0.1586978f, -0.4340755f),
+  float2(-0.1616379f, 0.9780778f),
+  float2(-0.9209855f, -0.3365876f),
+  float2(-0.3211852f, -0.6928762f),
+  float2(0.4954234f, -0.8162746f),
+  float2(-0.9833153f, 0.1627185f)
+};
+
+static const float2 kPoissonFilter16[16] = {
+  float2(0.1526328f, 0.2710292f),
+  float2(-0.518338f, 0.4442602f),
+  float2(0.7251174f, 0.1682694f),
+  float2(0.4124711f, -0.1342101f),
+  float2(0.09381182f, 0.6671929f),
+  float2(-0.08002006f, -0.1216712f),
+  float2(0.4849632f, 0.5350797f),
+  float2(0.2688247f, -0.5195963f),
+  float2(-0.2878604f, 0.9113864f),
+  float2(0.8252882f, -0.440051f),
+  float2(-0.6129289f, -0.6933479f),
+  float2(-0.8568581f, -0.2017662f),
+  float2(-0.04500702f, -0.9132385f),
+  float2(-0.4665122f, -0.01107495f),
+  float2(-0.1535808f, -0.5151251f),
+  float2(0.428522f, -0.9015542f)
+};
+
+static const float2 kSquareFilter4[4] = {
+  float2( 0.5, 0.5),
+  float2(-0.5, 0.5),
+  float2( 0.5,-0.5),
+  float2(-0.5,-0.5)
+};
+
+static const float2 kSquareFilter16[16] = {
+  float2(-1.5f,-1.5f),
+  float2(-0.5f,-1.5f),
+  float2( 0.5f,-1.5f),
+  float2( 1.5f,-1.5f),
+  float2(-1.5f,-0.5f),
+  float2(-0.5f,-0.5f),
+  float2( 0.5f,-0.5f),
+  float2( 1.5f,-0.5f),
+  float2(-1.5f,0.5f),
+  float2(-0.5f,0.5f),
+  float2( 0.5f,0.5f),
+  float2( 1.5f,0.5f),
+  float2(-1.5f,1.5f),
+  float2(-0.5f,1.5f),
+  float2( 0.5f,1.5f),
+  float2( 1.5f,1.5f)
+};
+
+// use a lot of ops...
+#define SHADOWMAP_FILTER_RAND_ARRAY kPoissonFilter8
+#define SHADOWMAP_FILTER_RANDOMIZE_OFFSETS (int(8.0*stdUtil_Random(seed3, index))%8)
+
+#define SHADOWMAP_BLUR_12SAMPLES
+
+///////////////////////////////////////////////
+float stdLighting_Shadow(StdSampler aSampler, int aType, float4 aPosShadowMapSpace, float afBias, float afBlur)
+{
+  float shadow;
+
+#if hlsl_ps_2_0
+  if (aType == eStdLightShadowFilter_Blur)
+    aType = eStdLightShadowFilter_None;
+#endif
+
+  // apply bias
+  aPosShadowMapSpace.z += afBias * aPosShadowMapSpace.w;
+
+  float2 texCooOffsetScale = aSampler.Res.xy * afBlur;
+  if (aType == eStdLightShadowFilter_Blur) {
+    float sum = 0.0f;
+    float4 s;
+
+#if eShaderFlags_Fast
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[0]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[2]*texCooOffsetScale);
+    sum += dot(s.xy,float2(1,1))*0.5f;
+    shadow = sum;
+#else
+#ifdef SHADOWMAP_BLUR_12SAMPLES
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[0]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[1]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[2]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[3]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[4]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[5]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[6]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[7]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[8]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[9]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[10]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter12[11]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    shadow = sum / 3.0;
+#else
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[0]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[1]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[2]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[3]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[4]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[5]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[6]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[7]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[8]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[9]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[10]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[11]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[12]*texCooOffsetScale);
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[13]*texCooOffsetScale);
+    s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[14]*texCooOffsetScale);
+    s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, kPoissonFilter16[15]*texCooOffsetScale);
+    sum += dot(s,float4(1,1,1,1))*0.25f;
+    shadow = sum * 0.25f;
+#endif // SHADOWMAP_BLUR_12SAMPLES
+#endif // eShaderFlags_Fast
+  }
+  else if (aType == eStdLightShadowFilter_Noise) {
+    float sum = 0.0f;
+    float4 s;
+
+    int index = 0;
+    float3 seed3 = floor(stdPixelInput_GetPositionWorldSpace().xyz*30.0f);
+
+    index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+
+    index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+
+    // sum += dot(s,float4(1,1,1,1))*0.25f;
+    // sum += dot(s.xyz,float3(1,1,1))/3.0f;
+    sum += dot(s.xy,float2(1,1))/2.0f;
+
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.x = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.y = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.z = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+    // index = SHADOWMAP_FILTER_RANDOMIZE_OFFSETS;
+    // s.w = stdSampler_ShadowOffset(aSampler, aPosShadowMapSpace, SHADOWMAP_FILTER_RAND_ARRAY[index]*texCooOffsetScale);
+    // sum += dot(s,float4(1,1,1,1))*0.25f;
+
+    shadow = sum /*/ 2.0*/;
+  }
+  else /*if (aType == eStdLightShadowFilter_None)*/ {
+    shadow = stdSampler_Shadow(aSampler, aPosShadowMapSpace).x;
+  }
+
+  return shadow;
+}
+
+#endif // __STDSHADOWMAP_CGH_DBAED1B3_B09F_4639_B8CA_23568C6B8F0C__

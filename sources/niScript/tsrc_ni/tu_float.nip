@@ -1,0 +1,10 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+
+::FIXTURE(["float"])
+
+::TEST("float" "max_int" function() {
+  local dbl = 9007199254740991.0; // 1.0;
+  while (dbl + 1 != dbl) dbl++;
+  ::println(::format("Max integer value: %.0f (-1: %f, +1: %f)", dbl, dbl-1, dbl+1));
+})

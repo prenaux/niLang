@@ -1,0 +1,508 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eCURLMessage">
+			<comments desc="CURL message. "/>
+			<value name="eCURLMessage_Started" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;t&apos; ) ">
+				<comments desc="The request started. ">
+					<params text="A: unused "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_ResponseCode" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;o&apos; ) ">
+				<comments desc="Received a response code from the server. ">
+					<params text="A: the last received HTTP or FTP code. "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_ReceivingHeader" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;h&apos; ) ">
+				<comments desc="Started receiving the header. ">
+					<params text="A: unused "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_ReceivingData" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;r&apos; ) ">
+				<comments desc="Started receiving the data. ">
+					<params text="A: unused "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_ReceivedPart" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;m&apos; ) ">
+				<comments desc="Received a part. ">
+					<remark text="Sent by URLGetMultiPart, it includes the part&apos;s header which has a content type which looks like &apos;Content-Type: multipart/x-mixed-replace;boundary=ipcamera&apos;. "/>
+					<params text="A: iFile, buffer file which contains the data of the part. "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_Sending" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;s&apos; ) ">
+				<comments desc="Started sending data. ">
+					<params text="A: unused "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_Completed" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;C&apos; ) ">
+				<comments desc="The request has successfully completed. ">
+					<params text="A: Response code (200, 404, ...) "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_Failed" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;F&apos; ) ">
+				<comments desc="The request failed. ">
+					<params text="A: error message string "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+			<value name="eCURLMessage_Progress" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;p&apos; ) ">
+				<comments desc="Progress message ">
+					<params text="A: Vec4i(dlNow,dlTotal,upNow,upTotal) "/>
+					<params text="B: iFuture, which can be used to cancel the request "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eCURLHttpAuth">
+			<comments desc="HTTP authentication modes ">
+				<remark text="This uses the same value as CURLOPT_HTTPAUTH options in libcurl for convenience. "/>
+			</comments>
+			<value name="eCURLHttpAuth_None" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Basic" value="niBit ( 0 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Digest" value="niBit ( 1 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Gssnegotiate" value="niBit ( 2 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Ntlm" value="niBit ( 3 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_DigestIE" value="niBit ( 4 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_NtlmWB" value="niBit ( 5 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Only" value="niBit ( 31 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_Any" value="~eCURLHttpAuth_DigestIE ">
+				<comments desc=""/>
+			</value>
+			<value name="eCURLHttpAuth_AnySafe" value="~ ( eCURLHttpAuth_Basic|eCURLHttpAuth_DigestIE ) ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iCURL" uuid1="5266EB8E-A915-42F8-9938-C8A1870F4E02" uuid2="0x5266eb8e,0xa915,0x42f8,0x99,0x38,0xc8,0xa1,0x87,0x0f,0x4e,0x02">
+			<comments desc="CURL interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getVersion"
+				name="GetVersion"
+				num_parameters="0"
+				property="get"
+				property_name2="version"
+				property_name="version">
+				<comments desc=""/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProtocols"
+				name="GetProtocols"
+				num_parameters="0"
+				property="get"
+				property_name2="protocols"
+				property_name="protocols">
+				<comments desc=""/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				java_name="setConnectionTimeoutInSecs"
+				name="SetConnectionTimeoutInSecs"
+				num_parameters="1"
+				property="set"
+				property_name2="connectionTimeoutInSecs"
+				property_name="connection_timeout_in_secs">
+				<comments desc="">
+					<remark text="Default is 10 secs. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anInSecs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConnectionTimeoutInSecs"
+				name="GetConnectionTimeoutInSecs"
+				num_parameters="0"
+				property="get"
+				property_name2="connectionTimeoutInSecs"
+				property_name="connection_timeout_in_secs">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setRequestTimeoutInSecs"
+				name="SetRequestTimeoutInSecs"
+				num_parameters="1"
+				property="set"
+				property_name2="requestTimeoutInSecs"
+				property_name="request_timeout_in_secs">
+				<comments desc="">
+					<remark text="Default is 60 secs. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anInSecs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRequestTimeoutInSecs"
+				name="GetRequestTimeoutInSecs"
+				num_parameters="0"
+				property="get"
+				property_name2="requestTimeoutInSecs"
+				property_name="request_timeout_in_secs">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setUserAgent"
+				name="SetUserAgent"
+				num_parameters="1"
+				property="set"
+				property_name2="userAgent"
+				property_name="user_agent">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszUserAgent"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserAgent"
+				name="GetUserAgent"
+				num_parameters="0"
+				property="get"
+				property_name2="userAgent"
+				property_name="user_agent">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setUserName"
+				name="SetUserName"
+				num_parameters="1"
+				property="set"
+				property_name2="userName"
+				property_name="user_name">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszUserName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserName"
+				name="GetUserName"
+				num_parameters="0"
+				property="get"
+				property_name2="userName"
+				property_name="user_name">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setUserPass"
+				name="SetUserPass"
+				num_parameters="1"
+				property="set"
+				property_name2="userPass"
+				property_name="user_pass">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszUserPass"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserPass"
+				name="GetUserPass"
+				num_parameters="0"
+				property="get"
+				property_name2="userPass"
+				property_name="user_pass">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHttpAuth"
+				name="SetHttpAuth"
+				num_parameters="1"
+				property="set"
+				property_name2="httpAuth"
+				property_name="http_auth">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aHttpAuth"
+					type="eCURLHttpAuth"
+					typec="eCURLHttpAuth"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHttpAuth"
+				name="GetHttpAuth"
+				num_parameters="0"
+				property="get"
+				property_name2="httpAuth"
+				property_name="http_auth">
+				<comments desc=""/>
+				<return type="const eCURLHttpAuth" typec="const eCURLHttpAuth" typei="ni::eTypeFlags_Constant|ni::eType_Enum"/>
+			</method>
+			<method java_name="urlget" name="URLGet" num_parameters="5">
+				<comments desc=""/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMessageHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvHeader"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlpostFile" name="URLPostFile" num_parameters="7">
+				<comments desc=""/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMessageHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvHeader"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPostData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aContentType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlpostFields" name="URLPostFields" num_parameters="7">
+				<comments desc=""/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMessageHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvHeader"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPostFields"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aContentType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="urlpostRaw"
+				name="URLPostRaw"
+				noautomation="yes"
+				num_parameters="8">
+				<comments desc=""/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;"/>
+				<parameter name="apMessageHandler" type="iMessageHandler *" typec="iMessageHandler*"/>
+				<parameter name="aURL" type="const achar *" typec="const achar*"/>
+				<parameter name="apRecvData" type="iFile *" typec="iFile*"/>
+				<parameter name="apRecvHeader" type="iFile *" typec="iFile*"/>
+				<parameter name="aPostData" type="tPtr" typec="tPtr"/>
+				<parameter name="anPostDataSize" type="tSize" typec="tSize"/>
+				<parameter
+					default="NULL "
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aContentType"
+					type="const achar *"
+					typec="const achar*"/>
+			</method>
+			<method java_name="urlpostMultiPart" name="URLPostMultiPart" num_parameters="5">
+				<comments desc="Post with Content-Type: multipart/form-data. Fields are similar to the command line version of CURL, @path will upload the file located at the specified location. "/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMessageHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRecvHeader"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apPostFields"
+					type="tStringCMap *"
+					typec="tStringCMap*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlgetMultiPart" name="URLGetMultiPart" num_parameters="3">
+				<comments desc=""/>
+				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMessageHandler"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aPartExt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlgetString" name="URLGetString" num_parameters="1">
+				<comments desc="Does a simple get on a URL and return the result as a string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlgetDataTable" name="URLGetDataTable" num_parameters="2">
+				<comments desc="Does a simple get on a URL and return the result as a datatable. ">
+					<remark text="For this to work the endpoint is assumed to return a json response. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apResult"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

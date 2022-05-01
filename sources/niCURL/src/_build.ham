@@ -1,0 +1,38 @@
+#########################################################################
+#
+# -- niCURL -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niCURL src ] = 1 { return ; }
+
+tkDefModuleLib niCURL : 1,0,0 : niCURL ;
+niImportModuleDll niLang ;
+
+if ! ( $(USE_SYSTEM_LIBCURL) = 1 ) {
+  SubDirHdrs $(SUBDIR) libCURL include ;
+}
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+SRC += [ niGenJNI $(SRC) : niCURL ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+niCURL_LinkLibs_Deps $(PKGTARGET) ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"CURL module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"no"'
+;
+niModule_Dep "niLang" ;
+niModule_OT name='"CURL"' desc='"CURL Object"' type='"ni::iCURL"' ;
+niModule_Includes $(IDLS) ;
+niModule_End ;
+
+if ! $(USE_SYSTEM_LIBCURL) {
+  SubInclude TOP niCURL src libCURL ;
+}

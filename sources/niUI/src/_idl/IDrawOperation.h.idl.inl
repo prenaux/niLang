@@ -1,0 +1,199 @@
+#include "../API/niUI/IDrawOperation.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iDrawOperation **/
+IDLC_BEGIN_INTF(ni,iDrawOperation)
+/** ni -> iDrawOperation::Copy/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,Copy,1)
+	IDLC_DECL_VAR(iDrawOperation*,apDO)
+	IDLC_BUF_TO_INTF(iDrawOperation,apDO)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,Copy,1,(apDO))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDrawOperation,Copy,1)
+
+/** ni -> iDrawOperation::Clone/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,Clone,0)
+	IDLC_DECL_RETVAR(iDrawOperation*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,Clone,0,())
+	IDLC_RET_FROM_INTF(iDrawOperation,_Ret)
+IDLC_METH_END(ni,iDrawOperation,Clone,0)
+
+/** ni -> iDrawOperation::GetIsCompiled/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetIsCompiled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetIsCompiled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetIsCompiled,0)
+
+/** ni -> iDrawOperation::SetPriority/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetPriority,1)
+	IDLC_DECL_VAR(tU32,anPriority)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPriority)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetPriority,1,(anPriority))
+IDLC_METH_END(ni,iDrawOperation,SetPriority,1)
+
+/** ni -> iDrawOperation::GetPriority/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetPriority,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetPriority,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetPriority,0)
+
+/** ni -> iDrawOperation::SetVertexArray/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetVertexArray,1)
+	IDLC_DECL_VAR(iVertexArray*,apVertexArray)
+	IDLC_BUF_TO_INTF(iVertexArray,apVertexArray)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetVertexArray,1,(apVertexArray))
+IDLC_METH_END(ni,iDrawOperation,SetVertexArray,1)
+
+/** ni -> iDrawOperation::GetVertexArray/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetVertexArray,0)
+	IDLC_DECL_RETVAR(iVertexArray*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetVertexArray,0,())
+	IDLC_RET_FROM_INTF(iVertexArray,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetVertexArray,0)
+
+/** ni -> iDrawOperation::SetPrimitiveType/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetPrimitiveType,1)
+	IDLC_DECL_VAR(eGraphicsPrimitiveType,aPrim)
+	IDLC_BUF_TO_ENUM(eGraphicsPrimitiveType,aPrim)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetPrimitiveType,1,(aPrim))
+IDLC_METH_END(ni,iDrawOperation,SetPrimitiveType,1)
+
+/** ni -> iDrawOperation::GetPrimitiveType/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetPrimitiveType,0)
+	IDLC_DECL_RETVAR(eGraphicsPrimitiveType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetPrimitiveType,0,())
+	IDLC_RET_FROM_ENUM(eGraphicsPrimitiveType,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetPrimitiveType,0)
+
+/** ni -> iDrawOperation::SetIndexArray/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetIndexArray,1)
+	IDLC_DECL_VAR(iIndexArray*,apIndexArray)
+	IDLC_BUF_TO_INTF(iIndexArray,apIndexArray)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetIndexArray,1,(apIndexArray))
+IDLC_METH_END(ni,iDrawOperation,SetIndexArray,1)
+
+/** ni -> iDrawOperation::GetIndexArray/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetIndexArray,0)
+	IDLC_DECL_RETVAR(iIndexArray*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetIndexArray,0,())
+	IDLC_RET_FROM_INTF(iIndexArray,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetIndexArray,0)
+
+/** ni -> iDrawOperation::SetFirstIndex/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetFirstIndex,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetFirstIndex,1,(anIndex))
+IDLC_METH_END(ni,iDrawOperation,SetFirstIndex,1)
+
+/** ni -> iDrawOperation::GetFirstIndex/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetFirstIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetFirstIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetFirstIndex,0)
+
+/** ni -> iDrawOperation::SetNumIndices/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetNumIndices,1)
+	IDLC_DECL_VAR(tU32,anNumIndices)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anNumIndices)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetNumIndices,1,(anNumIndices))
+IDLC_METH_END(ni,iDrawOperation,SetNumIndices,1)
+
+/** ni -> iDrawOperation::GetNumIndices/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetNumIndices,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetNumIndices,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetNumIndices,0)
+
+/** ni -> iDrawOperation::SetBaseVertexIndex/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetBaseVertexIndex,1)
+	IDLC_DECL_VAR(tU32,anBaseVertexIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anBaseVertexIndex)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetBaseVertexIndex,1,(anBaseVertexIndex))
+IDLC_METH_END(ni,iDrawOperation,SetBaseVertexIndex,1)
+
+/** ni -> iDrawOperation::GetBaseVertexIndex/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetBaseVertexIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetBaseVertexIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetBaseVertexIndex,0)
+
+/** ni -> iDrawOperation::SetMatrix/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,apMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,apMatrix)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetMatrix,1,(apMatrix))
+IDLC_METH_END(ni,iDrawOperation,SetMatrix,1)
+
+/** ni -> iDrawOperation::GetMatrix/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetMatrix,0)
+
+/** ni -> iDrawOperation::SetMaterial/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetMaterial,1)
+	IDLC_DECL_VAR(iMaterial*,apMaterial)
+	IDLC_BUF_TO_INTF(iMaterial,apMaterial)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetMaterial,1,(apMaterial))
+IDLC_METH_END(ni,iDrawOperation,SetMaterial,1)
+
+/** ni -> iDrawOperation::GetMaterial/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetMaterial,0)
+	IDLC_DECL_RETVAR(iMaterial*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetMaterial,0,())
+	IDLC_RET_FROM_INTF(iMaterial,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetMaterial,0)
+
+/** ni -> iDrawOperation::SetLocalBoundingVolume/1 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,SetLocalBoundingVolume,1)
+	IDLC_DECL_VAR(iBoundingVolume*,apBV)
+	IDLC_BUF_TO_INTF(iBoundingVolume,apBV)
+	IDLC_METH_CALL_VOID(ni,iDrawOperation,SetLocalBoundingVolume,1,(apBV))
+IDLC_METH_END(ni,iDrawOperation,SetLocalBoundingVolume,1)
+
+/** ni -> iDrawOperation::GetLocalBoundingVolume/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetLocalBoundingVolume,0)
+	IDLC_DECL_RETVAR(iBoundingVolume*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetLocalBoundingVolume,0,())
+	IDLC_RET_FROM_INTF(iBoundingVolume,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetLocalBoundingVolume,0)
+
+/** ni -> iDrawOperation::GetBoundingVolume/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetBoundingVolume,0)
+	IDLC_DECL_RETVAR(iBoundingVolume*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetBoundingVolume,0,())
+	IDLC_RET_FROM_INTF(iBoundingVolume,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetBoundingVolume,0)
+
+/** ni -> iDrawOperation::GetCenter/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetCenter,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetCenter,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetCenter,0)
+
+/** ni -> iDrawOperation::GetFVF/0 **/
+IDLC_METH_BEGIN(ni,iDrawOperation,GetFVF,0)
+	IDLC_DECL_RETVAR(tFVF,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDrawOperation,GetFVF,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDrawOperation,GetFVF,0)
+
+IDLC_END_INTF(ni,iDrawOperation)
+
+IDLC_END_NAMESPACE()
+// EOF //

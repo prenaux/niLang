@@ -1,0 +1,670 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			min_features="20"
+			name="iWidgetToolbarGroup"
+			uuid1="F0AD342B-5139-4DEA-988F-1EFA94871659"
+			uuid2="0xf0ad342b,0x5139,0x4dea,0x98,0x8f,0x1e,0xfa,0x94,0x87,0x16,0x59">
+			<comments desc="Toolbar group widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setWidthFromChildren"
+				min_features="20"
+				name="SetWidthFromChildren"
+				num_parameters="0">
+				<comments desc="Set the width of the group from the total with of the children. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setCommandDestination"
+				min_features="20"
+				name="SetCommandDestination"
+				num_parameters="1"
+				property="set"
+				property_name2="commandDestination"
+				property_name="command_destination">
+				<comments desc="Set the destination message handler for the commands received by the group. ">
+					<remark text="Set to eInvalidHandle to disable. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apMT"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCommandDestination"
+				min_features="20"
+				name="GetCommandDestination"
+				num_parameters="0"
+				property="get"
+				property_name2="commandDestination"
+				property_name="command_destination">
+				<comments desc="Get the destination message handler for the commands received by the toolbar. "/>
+				<return type="iMessageHandler *" typec="iMessageHandler*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iWidgetToolbar"
+			uuid1="8E50495C-6577-4693-8059-8E9BAB98DE8E"
+			uuid2="0x8e50495c,0x6577,0x4693,0x80,0x59,0x8e,0x9b,0xab,0x98,0xde,0x8e">
+			<comments desc="Toolbar widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setHeight"
+				min_features="20"
+				name="SetHeight"
+				num_parameters="1"
+				property="set"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Set the toolbar&apos;s height in pixels. ">
+					<remark text="Default is 120 pixels. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afHeight"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				min_features="20"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the toolbar&apos;s height. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setAutoHide"
+				min_features="20"
+				name="SetAutoHide"
+				num_parameters="1"
+				property="set"
+				property_name2="autoHide"
+				property_name="auto_hide">
+				<comments desc="Set whether the toolbar should auto-hide. ">
+					<remark text="Default is true. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abAutoHide"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAutoHide"
+				min_features="20"
+				name="GetAutoHide"
+				num_parameters="0"
+				property="get"
+				property_name2="autoHide"
+				property_name="auto_hide">
+				<comments desc="Get whether the toolbar should auto-hide. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setAutoHideBackground"
+				min_features="20"
+				name="SetAutoHideBackground"
+				num_parameters="1"
+				property="set"
+				property_name2="autoHideBackground"
+				property_name="auto_hide_background">
+				<comments desc="Set whether the toolbar should draw the bottom background when unfolded in auto-hide mode. ">
+					<remark text="Default is false. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abAutoHide"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAutoHideBackground"
+				min_features="20"
+				name="GetAutoHideBackground"
+				num_parameters="0"
+				property="get"
+				property_name2="autoHideBackground"
+				property_name="auto_hide_background">
+				<comments desc="Get whether the toolbar should draw the bottom background when unfolded in auto-hide mode. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setShowPage"
+				min_features="20"
+				name="SetShowPage"
+				num_parameters="1"
+				property="set"
+				property_name2="showPage"
+				property_name="show_page">
+				<comments desc="Set whether the toolbar&apos;s active page should be visible. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abShowPage"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShowPage"
+				min_features="20"
+				name="GetShowPage"
+				num_parameters="0"
+				property="get"
+				property_name2="showPage"
+				property_name="show_page">
+				<comments desc="Get whether the toolbar&apos;s active page is visible. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTopBar"
+				min_features="20"
+				name="GetTopBar"
+				num_parameters="0"
+				property="get"
+				property_name2="topBar"
+				property_name="top_bar">
+				<comments desc="Get the top bar widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBottomBar"
+				min_features="20"
+				name="GetBottomBar"
+				num_parameters="0"
+				property="get"
+				property_name2="bottomBar"
+				property_name="bottom_bar">
+				<comments desc="Get the bottom bar widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setCommandDestination"
+				min_features="20"
+				name="SetCommandDestination"
+				num_parameters="1"
+				property="set"
+				property_name2="commandDestination"
+				property_name="command_destination">
+				<comments desc="Set the destination message target for the commands received by the toolbar. ">
+					<remark text="Set to eInvalidHandle to disable. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apMH"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCommandDestination"
+				min_features="20"
+				name="GetCommandDestination"
+				num_parameters="0"
+				property="get"
+				property_name2="commandDestination"
+				property_name="command_destination">
+				<comments desc="Get the destination message for the commands received by the toolbar. "/>
+				<return type="iMessageHandler *" typec="iMessageHandler*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="updateToolbar"
+				min_features="20"
+				name="UpdateToolbar"
+				num_parameters="0">
+				<comments desc="Updates the toolbar. ">
+					<remark text="Removes all empty or invalid pages, removes all invalid top widgets and recomputes the layout. "/>
+					<remark text="Should be called after invalidating any toolbar group. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="hidePopup"
+				min_features="20"
+				name="HidePopup"
+				num_parameters="0">
+				<comments desc="Hide the toolbar pop-up. ">
+					<remark text="Hides the toolbar pop-up shown in &quot;AutoHide&quot; mode. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumPages"
+				min_features="20"
+				name="GetNumPages"
+				num_parameters="0"
+				property="get"
+				property_name2="numPages"
+				property_name="num_pages">
+				<comments desc="Get the number of pages in the toolbar. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageWidget"
+				min_features="20"
+				name="GetPageWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="pageWidget"
+				property_name="page_widget">
+				<comments desc="Get the widget of the page at the specified index. "/>
+				<return type="ni::iWidget *" typec="ni::iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageIndex"
+				min_features="20"
+				name="GetPageIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="pageIndex"
+				property_name="page_index">
+				<comments desc="Get the index of the page with the specified ID. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="initPage"
+				min_features="20"
+				name="InitPage"
+				num_parameters="2">
+				<comments desc="Initialize/Add a toolbar with the specified ID and name. ">
+					<remark text="Empty and invalid pages are removed automatically when UpdateToolbar is called. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPageName"
+				min_features="20"
+				name="SetPageName"
+				num_parameters="2"
+				property="set"
+				property_name2="pageName"
+				property_name="page_name">
+				<comments desc="Set the name/title of the specified page. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageName"
+				min_features="20"
+				name="GetPageName"
+				num_parameters="1"
+				property="get"
+				property_name2="pageName"
+				property_name="page_name">
+				<comments desc="Get the name/title of the specified page. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPageEnabled"
+				min_features="20"
+				name="SetPageEnabled"
+				num_parameters="2"
+				property="set"
+				property_name2="pageEnabled"
+				property_name="page_enabled">
+				<comments desc="Set whether the specifed page is enabled. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageEnabled"
+				min_features="20"
+				name="GetPageEnabled"
+				num_parameters="1"
+				property="get"
+				property_name2="pageEnabled"
+				property_name="page_enabled">
+				<comments desc="Get whether the specifed page is enabled. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setActivePageIndex"
+				min_features="20"
+				name="SetActivePageIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="activePageIndex"
+				property_name="active_page_index">
+				<comments desc="Set the active&apos;s page index. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anActivePage"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePageIndex"
+				min_features="20"
+				name="GetActivePageIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="activePageIndex"
+				property_name="active_page_index">
+				<comments desc="Get the active&apos;s pages index. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setActivePageID"
+				min_features="20"
+				name="SetActivePageID"
+				num_parameters="1"
+				property="set"
+				property_name2="activePageID"
+				property_name="active_page_id">
+				<comments desc="Set the active&apos;s page ID. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePageID"
+				min_features="20"
+				name="GetActivePageID"
+				num_parameters="0"
+				property="get"
+				property_name2="activePageID"
+				property_name="active_page_id">
+				<comments desc="Get the active&apos;s page ID. "/>
+				<return type="ni::iHString *" typec="ni::iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumTopWidgets"
+				min_features="20"
+				name="GetNumTopWidgets"
+				num_parameters="0"
+				property="get"
+				property_name2="numTopWidgets"
+				property_name="num_top_widgets">
+				<comments desc="Get the number of widgets in the top bar. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTopWidget"
+				min_features="20"
+				name="GetTopWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="topWidget"
+				property_name="top_widget">
+				<comments desc="Get the top bar widget at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTopWidgetIndex"
+				min_features="20"
+				name="GetTopWidgetIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="topWidgetIndex"
+				property_name="top_widget_index">
+				<comments desc="Get the index of the specified top bar widget. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTopWidgetFromID"
+				min_features="20"
+				name="GetTopWidgetFromID"
+				num_parameters="1"
+				property="get"
+				property_name2="topWidgetFromID"
+				property_name="top_widget_from_id">
+				<comments desc="Get the top bar widget with the specified ID. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setTopWidgetCommandDestination"
+				min_features="20"
+				name="SetTopWidgetCommandDestination"
+				num_parameters="2"
+				property="set"
+				property_name2="topWidgetCommandDestination"
+				property_name="top_widget_command_destination">
+				<comments desc="Set the command destination of the specified top widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apCmdDest"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTopWidgetCommandDestination"
+				min_features="20"
+				name="GetTopWidgetCommandDestination"
+				num_parameters="1"
+				property="get"
+				property_name2="topWidgetCommandDestination"
+				property_name="top_widget_command_destination">
+				<comments desc="Get the command destination of the specified top widget. "/>
+				<return type="iMessageHandler *" typec="iMessageHandler*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="addTopWidget"
+				min_features="20"
+				name="AddTopWidget"
+				num_parameters="3">
+				<comments desc="Add a top bar widget. ">
+					<remark text="Invalid top bar widgets are removed automatically when UpdateToolbar is called. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afWidth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="apCmdDest"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="addGroup"
+				min_features="20"
+				name="AddGroup"
+				num_parameters="5">
+				<comments desc="Add a group in the specified page. If the page doesn&apos;t already exist it is added. ">
+					<remark text="Calls UpdateToolbar "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspPageID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspPageName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspGroupID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspGroupName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apCmdDest"
+					type="iMessageHandler *"
+					typec="iMessageHandler*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGroup"
+				min_features="20"
+				name="GetGroup"
+				num_parameters="1"
+				property="get"
+				property_name2="group"
+				property_name="group">
+				<comments desc="Get the group with the specified ID. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="removeGroup"
+				min_features="20"
+				name="RemoveGroup"
+				num_parameters="1">
+				<comments desc="Remove the specified group. ">
+					<remark text="Calls UpdateToolbar "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

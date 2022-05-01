@@ -1,0 +1,2118 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eEnumToStringFlags">
+			<comments desc="Enum to string flags "/>
+			<value name="eEnumToStringFlags_Full" value="niBit ( 0 ) ">
+				<comments desc="Dont use the specified enum as default enumeration (will fully qualify the enumeration value&apos;s name). "/>
+			</value>
+			<value name="eEnumToStringFlags_Flags" value="niBit ( 1 ) ">
+				<comments desc="Handle the enumeration as a set of flags. "/>
+			</value>
+			<value name="eEnumToStringFlags_GlobalSearch" value="niBit ( 2 ) ">
+				<comments desc="Search all registered enumerations if the specified fully qualified enumeration can&apos;t be found. "/>
+			</value>
+		</enum>
+		<enum name="eSystemMessage">
+			<comments desc="System messages id. "/>
+			<value name="eSystemMessage_Exit" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;x&apos; ) ">
+				<comments desc="The application exits. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eSystemMessage_SetupParentWindow" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;W&apos; ) ">
+				<comments desc="Sent to a child process to notify which is the actual parent window. ">
+					<params text="A: parent window handle "/>
+				</comments>
+			</value>
+			<value name="eSystemMessage_SetupClientWindow" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;w&apos; ) ">
+				<comments desc="Sent to a parent process to notify which is the actual child window created. ">
+					<remark text="Sent as reply of SetupParentWindow "/>
+					<params text="A: parent window handle "/>
+				</comments>
+			</value>
+			<value name="eSystemMessage_Log" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;L&apos; ) ">
+				<comments desc="Log message. ">
+					<params text="A: log type "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eSystemMessage_OpenFile" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;O&apos; ) ">
+				<comments desc="Open file. ">
+					<params text="A: file path "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eClipboardType">
+			<comments desc="Clipboard types "/>
+			<value name="eClipboardType_System" value="0 ">
+				<comments desc="System clipboard. "/>
+			</value>
+			<value name="eClipboardType_Memory1" value="1 ">
+				<comments desc="Memory clipboard 1. "/>
+			</value>
+			<value name="eClipboardType_Memory2" value="2 ">
+				<comments desc="Memory clipboard 2. "/>
+			</value>
+			<value name="eClipboardType_Memory3" value="3 ">
+				<comments desc="Memory clipboard 3. "/>
+			</value>
+			<value name="eClipboardType_Memory4" value="4 ">
+				<comments desc="Memory clipboard 4. "/>
+			</value>
+			<value name="eClipboardType_Memory5" value="5 ">
+				<comments desc="Memory clipboard 5. "/>
+			</value>
+			<value name="eClipboardType_Memory6" value="6 ">
+				<comments desc="Memory clipboard 6. "/>
+			</value>
+			<value name="eClipboardType_Memory7" value="7 ">
+				<comments desc="Memory clipboard 7. "/>
+			</value>
+			<value name="eClipboardType_Memory8" value="8 ">
+				<comments desc="Memory clipboard 8. "/>
+			</value>
+			<value name="eClipboardType_Memory9" value="9 ">
+				<comments desc="Memory clipboard 9. "/>
+			</value>
+			<value name="eClipboardType_Memory10" value="10 ">
+				<comments desc="Memory clipboard 10. "/>
+			</value>
+			<value name="eClipboardType_Last" value="11 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iLang" uuid1="8E2CEBD1-783B-4B0B-B7B3-62A387D190B1" uuid2="0x8e2cebd1,0x783b,0x4b0b,0xb7,0xb3,0x62,0xa3,0x87,0xd1,0x90,0xb1">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getProcessManager"
+				min_features="15"
+				name="GetProcessManager"
+				num_parameters="0"
+				property="get"
+				property_name2="processManager"
+				property_name="process_manager">
+				<comments desc="Get the platform&apos;s process manager. "/>
+				<return type="iOSProcessManager *" typec="iOSProcessManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="exit" name="Exit" num_parameters="1">
+				<comments desc="Forcefully exit the application. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aulErrorCode"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="onExit" name="OnExit" num_parameters="1">
+				<comments desc="Adds a runnable that will be called when the application exits through iLang::Exit(). " return="eTrue if OnExit is supported, else eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apRunnable"
+					type="iRunnable *"
+					typec="iRunnable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fatalError" name="FatalError" num_parameters="1">
+				<comments desc="Show an error message box then exit. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aszMsg"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="setEnv"
+				name="SetEnv"
+				num_parameters="2"
+				property="set"
+				property_name2="env"
+				property_name="env">
+				<comments desc="Set an OS environment variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszEnv"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnv"
+				name="GetEnv"
+				num_parameters="1"
+				property="get"
+				property_name2="env"
+				property_name="env">
+				<comments desc="Get an OS environment variable. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszEnv"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="installCrashHandler" name="InstallCrashHandler" num_parameters="0">
+				<comments desc="Install a crash handler. ">
+					<remark text="A crash handler shows a dialog box and offer the user the opportunity to save a core dump of the application when crashing, and ideally the opportunity to upload it to a server or send it to a specific email address. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProperties"
+				name="GetProperties"
+				num_parameters="0"
+				property="get"
+				property_name2="properties"
+				property_name="properties">
+				<comments desc="Get the system properties. "/>
+				<return type="const tStringCMap *" typec="const tStringCMap*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasProperty"
+				name="HasProperty"
+				num_parameters="1">
+				<comments desc="Check whether the specified system property exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setProperty"
+				name="SetProperty"
+				num_parameters="2"
+				property="set"
+				property_name2="property"
+				property_name="property">
+				<comments desc="Set the specified system property. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProperty"
+				name="GetProperty"
+				num_parameters="1"
+				property="get"
+				property_name2="property"
+				property_name="property">
+				<comments desc="Get the specified system property. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="registerModuleDef" name="RegisterModuleDef" num_parameters="1">
+				<comments desc="Register a module definition. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDef"
+					type="const iModuleDef *"
+					typec="const iModuleDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumModuleDefs"
+				name="GetNumModuleDefs"
+				num_parameters="0"
+				property="get"
+				property_name2="numModuleDefs"
+				property_name="num_module_defs">
+				<comments desc="Get the number of modules registered. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getModuleDef"
+				name="GetModuleDef"
+				num_parameters="1"
+				property="get"
+				property_name2="moduleDef"
+				property_name="module_def">
+				<comments desc="Get the module at the specified index. "/>
+				<return type="const iModuleDef *" typec="const iModuleDef*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getModuleDefIndex"
+				name="GetModuleDefIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="moduleDefIndex"
+				property_name="module_def_index">
+				<comments desc="Get the index of the module with the specified name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadModuleDef" name="LoadModuleDef" num_parameters="2">
+				<comments desc="Load a module definition from a DLL. "/>
+				<return type="const iModuleDef *" typec="const iModuleDef*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aaszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCreateInstanceMap"
+				name="GetCreateInstanceMap"
+				num_parameters="0"
+				property="get"
+				property_name2="createInstanceMap"
+				property_name="create_instance_map">
+				<comments desc="Create instance map. "/>
+				<return type="tCreateInstanceCMap *" typec="tCreateInstanceCMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createInstance" name="CreateInstance" num_parameters="3">
+				<comments desc="Create instance of the specified object type. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aOID"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="niVarNull "
+					name="aVarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="niVarNull "
+					last="1"
+					name="aVarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlobalInstanceMap"
+				name="GetGlobalInstanceMap"
+				num_parameters="0"
+				property="get"
+				property_name2="globalInstanceMap"
+				property_name="global_instance_map">
+				<comments desc="Get the global instance map. "/>
+				<return type="tGlobalInstanceCMap *" typec="tGlobalInstanceCMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setGlobalInstance"
+				name="SetGlobalInstance"
+				num_parameters="2"
+				property="set"
+				property_name2="globalInstance"
+				property_name="global_instance">
+				<comments desc="Set a global instance. ">
+					<remark text="All registered global instance will be included in the query interface on iLang objects. By example if you register an object that implements iResource you can do QueryInterface&lt;iResource&gt;(GetLang()) and it will return the instance of the registered global instance. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apInstance"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlobalInstance"
+				name="GetGlobalInstance"
+				num_parameters="1"
+				property="get"
+				property_name2="globalInstance"
+				property_name="global_instance">
+				<comments desc="Get a global instance. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="registerEnumDef" name="RegisterEnumDef" num_parameters="1">
+				<comments desc="Register an enumeration definition. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getEnumDef" name="GetEnumDef" num_parameters="1">
+				<comments desc="Get an enum definition from the specified name. "/>
+				<return type="const sEnumDef *" typec="const sEnumDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aEID"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInterfaceName"
+				name="GetInterfaceName"
+				num_parameters="1"
+				property="get"
+				property_name2="interfaceName"
+				property_name="interface_name">
+				<comments desc="Get the name of the interface with the specified UUID. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aUUID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInterfaceUUID"
+				name="GetInterfaceUUID"
+				num_parameters="1"
+				property="get"
+				property_name2="interfaceUUID"
+				property_name="interface_uuid">
+				<comments desc="Get the UUID of the interface with the specified name. "/>
+				<return type="const tUUID &amp;" typec="const tUUID&amp;" typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspStr"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInterfaceDefFromUUID"
+				name="GetInterfaceDefFromUUID"
+				num_parameters="1">
+				<comments desc="Get the interface definition from the specified UUID. "/>
+				<return type="const sInterfaceDef *" typec="const sInterfaceDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aUUID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDefaultLocale"
+				name="SetDefaultLocale"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultLocale"
+				property_name="default_locale">
+				<comments desc="Set the default locale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultLocale"
+				name="GetDefaultLocale"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultLocale"
+				property_name="default_locale">
+				<comments desc="Get the default locale. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumLocales"
+				name="GetNumLocales"
+				num_parameters="0"
+				property="get"
+				property_name2="numLocales"
+				property_name="num_locales">
+				<comments desc="Return the number of locales that have at least one localized string. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocale"
+				name="GetLocale"
+				num_parameters="1"
+				property="get"
+				property_name2="locale"
+				property_name="locale">
+				<comments desc="Return the name of the locale at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearLocalization" name="ClearLocalization" num_parameters="1">
+				<comments desc="Remove all localized strings of the specified locale. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setLocalization" name="SetLocalization" num_parameters="3">
+				<comments desc="Set the localization of the specified &apos;native&apos; string. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspNative"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspLocalized"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setLocalizationMap" name="SetLocalizationMap" num_parameters="2">
+				<comments desc="Set the localization of the specified of all strings in the specified map. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apLocalizationMap"
+					type="const tStringCMap *"
+					typec="const tStringCMap*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalizationMap"
+				name="GetLocalizationMap"
+				num_parameters="2">
+				<comments desc="Get all localized strings of the specified locale. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apLocalizedMap"
+					type="tStringCMap *"
+					typec="tStringCMap*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMarkMissingLocalization"
+				name="SetMarkMissingLocalization"
+				num_parameters="1"
+				property="set"
+				property_name2="markMissingLocalization"
+				property_name="mark_missing_localization">
+				<comments desc="Set whether the string table should mark missing locale translations. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abMarkMissing"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMarkMissingLocalization"
+				name="GetMarkMissingLocalization"
+				num_parameters="0"
+				property="get"
+				property_name2="markMissingLocalization"
+				property_name="mark_missing_localization">
+				<comments desc="Get whether the string table should mark missing locale translations. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMissingLocalization"
+				name="GetMissingLocalization"
+				num_parameters="1">
+				<comments desc="Get all missing strings of the specified locale. ">
+					<remark text="This retrieves all strings which should have been translated but are not. "/>
+				</comments>
+				<return type="tStringCVec *" typec="tStringCVec*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="locale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createLocalUUID" name="CreateLocalUUID" num_parameters="0">
+				<comments desc="Create a local UUID. ">
+					<remark text="A local UUID is garanteed to be unique only on the local computer. "/>
+					<remark text="Generating a local UUID can be considered to be faster in general. "/>
+				</comments>
+				<return type="tUUID" typec="tUUID" typei="ni::eType_UUID"/>
+			</method>
+			<method java_name="createGlobalUUID" name="CreateGlobalUUID" num_parameters="0">
+				<comments desc="Create a global UUID. ">
+					<remark text="A gloabl UUID is garanteed to be unique among all computers. "/>
+					<remark text="Generating a global UUID should be considered as being a slow operation. "/>
+				</comments>
+				<return type="tUUID" typec="tUUID" typei="ni::eType_UUID"/>
+			</method>
+			<method
+				java_name="setLogFilter"
+				name="SetLogFilter"
+				num_parameters="1"
+				property="set"
+				property_name2="logFilter"
+				property_name="log_filter">
+				<comments desc="Set the log filter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="exclude"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLogFilter"
+				name="GetLogFilter"
+				num_parameters="0"
+				property="get"
+				property_name2="logFilter"
+				property_name="log_filter">
+				<comments desc="Get the log filter. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="log" name="Log" num_parameters="5">
+				<comments desc="Log a message. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="type"
+					type="tLogFlags"
+					typec="tLogFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="file"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="func"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="line"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="msg"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRootFS"
+				name="GetRootFS"
+				num_parameters="0"
+				property="get"
+				property_name2="rootFS"
+				property_name="root_fs">
+				<comments desc="Get the root file system. "/>
+				<return type="iFileSystem *" typec="iFileSystem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createFileSystemDir"
+				name="CreateFileSystemDir"
+				num_parameters="2">
+				<comments desc="Create a directory file system. "/>
+				<return type="iFileSystem *" typec="iFileSystem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRights"
+					type="tFileSystemRightsFlags"
+					typec="tFileSystemRightsFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createFileSystemHashed"
+				name="CreateFileSystemHashed"
+				num_parameters="1">
+				<comments desc="Creates a file system that store the file using its hashed file name. ">
+					<remark text="This allows to use anything as filename and use the underlying file system more as a key/value store. "/>
+				</comments>
+				<return type="iFileSystem *" typec="iFileSystem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFS"
+					type="const iFileSystem *"
+					typec="const iFileSystem*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFile" name="CreateFile" num_parameters="1">
+				<comments desc="Create a file from the specified file base. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseWriteDummy" name="CreateFileBaseWriteDummy" num_parameters="0">
+				<comments desc="Create a dummy file base. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileWriteDummy" name="CreateFileWriteDummy" num_parameters="0">
+				<comments desc="Create a dummy file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseMemory" name="CreateFileBaseMemory" num_parameters="4">
+				<comments desc="Create a memory file base. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMem"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="abFree"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileMemory" name="CreateFileMemory" num_parameters="4">
+				<comments desc="Create a memory file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apMem"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="abFree"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseMemoryAlloc" name="CreateFileBaseMemoryAlloc" num_parameters="2">
+				<comments desc="Create a memory file base. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileMemoryAlloc" name="CreateFileMemoryAlloc" num_parameters="2">
+				<comments desc="Create a memory file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseDynamicMemory" name="CreateFileBaseDynamicMemory" num_parameters="2">
+				<comments desc="Create a dynamic memory file base. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileDynamicMemory" name="CreateFileDynamicMemory" num_parameters="2">
+				<comments desc="Create a dynamic memory file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseWindow" name="CreateFileBaseWindow" num_parameters="5">
+				<comments desc="Create a file base window. ">
+					<remark text="If AutoSeekSet is true SeekSet will be called before each read/write operations which allows to have multiple file windows on the same file and read from them concurently. However that method is usually quite slow, a better approach is to open a new shared file handle of the base file with and create the file window with the offset and auto seek set disabled. "/>
+				</comments>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anBase"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+				<parameter
+					name="anSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+				<parameter
+					name="aaszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abAutoSeekSet"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createFileWindow" name="CreateFileWindow" num_parameters="5">
+				<comments desc="Create a file window. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anBase"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+				<parameter
+					name="anSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+				<parameter
+					name="aaszPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abAutoSeekSet"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createFileBaseBufferEncoder" name="CreateFileBaseBufferEncoder" num_parameters="2">
+				<comments desc="Create a file base buffer encoder. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apEnc"
+					type="iBufferEncoder *"
+					typec="iBufferEncoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBufferEncoder" name="CreateFileBufferEncoder" num_parameters="2">
+				<comments desc="Create a file buffer encoder. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apEnc"
+					type="iBufferEncoder *"
+					typec="iBufferEncoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileBaseBufferDecoder" name="CreateFileBaseBufferDecoder" num_parameters="3">
+				<comments desc="Create a file base buffer decoder. ">
+					<params text="apBase "/>
+					<params text="apDec "/>
+					<params text="aDecodedSize specifies the size of the file when decoded. Pass zero to autodetect. Should be specified whenever possible, without it the whole file is decoded to determin the its size. "/>
+				</comments>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDec"
+					type="iBufferDecoder *"
+					typec="iBufferDecoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aDecodedSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="createFileBufferDecoder" name="CreateFileBufferDecoder" num_parameters="3">
+				<comments desc="Create a file buffer decoder. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBase"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDec"
+					type="iBufferDecoder *"
+					typec="iBufferDecoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aDecodedSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="fileBufferEncode" name="FileBufferEncode" num_parameters="4">
+				<comments desc="Encodes a file using the specified buffer encoder. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apEnc"
+					type="iBufferEncoder *"
+					typec="iBufferEncoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileBufferDecode" name="FileBufferDecode" num_parameters="5">
+				<comments desc="Decodes a file using the specified buffer decoder. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apDec"
+					type="iBufferDecoder *"
+					typec="iBufferDecoder*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anDestSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="runCommand" name="RunCommand" num_parameters="1">
+				<comments desc="Run the specified OS command. ">
+					<remark text="This is equivalent to typing a command on the OS&apos;s command line/console. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="startPath" name="StartPath" num_parameters="1">
+				<comments desc="Start the specified file/path. ">
+					<remark text="This opens a file/path with the default application set to open the file/path&apos;s type. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="aaszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentTime"
+				name="GetCurrentTime"
+				num_parameters="0"
+				property="get"
+				property_name2="currentTime"
+				property_name="current_time">
+				<comments desc="Get the current time. "/>
+				<return type="const iTime *" typec="const iTime*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="timerInSeconds"
+				name="TimerInSeconds"
+				num_parameters="0">
+				<comments desc="Get the current value of the lowest level timer available in seconds. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method java_name="resetFrameTime" name="ResetFrameTime" num_parameters="0">
+				<comments desc="Reset the frame time. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="updateFrameTime" name="UpdateFrameTime" num_parameters="1">
+				<comments desc="Update the frame. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afElapsedTime"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTotalFrameTime"
+				name="GetTotalFrameTime"
+				num_parameters="0"
+				property="get"
+				property_name2="totalFrameTime"
+				property_name="total_frame_time">
+				<comments desc="Get the total time since the last ResetFrameTime. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrameTime"
+				name="GetFrameTime"
+				num_parameters="0"
+				property="get"
+				property_name2="frameTime"
+				property_name="frame_time">
+				<comments desc="Get the time taken by the last frame. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrameNumber"
+				name="GetFrameNumber"
+				num_parameters="0"
+				property="get"
+				property_name2="frameNumber"
+				property_name="frame_number">
+				<comments desc="Get the current frame number. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrameRate"
+				name="GetFrameRate"
+				num_parameters="0"
+				property="get"
+				property_name2="frameRate"
+				property_name="frame_rate">
+				<comments desc="Get the frame rate. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAverageFrameRate"
+				name="GetAverageFrameRate"
+				num_parameters="0"
+				property="get"
+				property_name2="averageFrameRate"
+				property_name="average_frame_rate">
+				<comments desc="Get the average frame rate per seconds. ">
+					<remark text="This value is estimated every second, it shouldn&apos;t be used for accurate measurment. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="jsonParseFile"
+				min_features="20"
+				name="JsonParseFile"
+				num_parameters="2">
+				<comments desc="Parse Json contained in the specified file. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="ni::iJsonParserSink *"
+					typec="ni::iJsonParserSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="jsonParseString"
+				min_features="20"
+				name="JsonParseString"
+				num_parameters="2">
+				<comments desc="Parse Json contained in the specified string. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aString"
+					type="const ni::cString &amp;"
+					typec="const ni::cString&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="ni::iJsonParserSink *"
+					typec="ni::iJsonParserSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createJsonSinkWriter"
+				min_features="20"
+				name="CreateJsonSinkWriter"
+				num_parameters="2">
+				<comments desc="Create a Json writer to write to the specified sink. "/>
+				<return type="ni::iJsonWriter *" typec="ni::iJsonWriter*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="ni::iJsonWriterSink *"
+					typec="ni::iJsonWriterSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abPrettyPrint"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="createJsonFileWriter"
+				min_features="20"
+				name="CreateJsonFileWriter"
+				num_parameters="2">
+				<comments desc="Create a Json writer to write to the specified file. "/>
+				<return type="ni::iJsonWriter *" typec="ni::iJsonWriter*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abPrettyPrint"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="xmlParseFile"
+				min_features="20"
+				name="XmlParseFile"
+				num_parameters="2">
+				<comments desc="Parse Xml contained in the specified file. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="ni::iXmlParserSink *"
+					typec="ni::iXmlParserSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="xmlParseString"
+				min_features="20"
+				name="XmlParseString"
+				num_parameters="2">
+				<comments desc="Parse Xml contained in the specified string. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aString"
+					type="const ni::cString &amp;"
+					typec="const ni::cString&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="ni::iXmlParserSink *"
+					typec="ni::iXmlParserSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpressionContext"
+				name="GetExpressionContext"
+				num_parameters="0"
+				property="get"
+				property_name2="expressionContext"
+				property_name="expression_context">
+				<comments desc="Get the root expression context. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createExpressionContext" name="CreateExpressionContext" num_parameters="0">
+				<comments desc="Create a new expression context. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="eval" name="Eval" num_parameters="1">
+				<comments desc="Evaluate the specified expression. ">
+					<remark text="If the evaluated expression fails it returns an empty string variable named &quot;EVALERR&quot;. This means that Eval() always returns a valid variable object and so their is no need to check for a NULL pointer. "/>
+				</comments>
+				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="enumToString" name="EnumToString" num_parameters="3">
+				<comments desc="Convert an enum value to an expression string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="anValue"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="stringToEnum" name="StringToEnum" num_parameters="3">
+				<comments desc="Convert an expression string to an enum value. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="addScriptingHost"
+				min_features="15"
+				name="AddScriptingHost"
+				num_parameters="2">
+				<comments desc="Add a scripting host. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apHost"
+					type="iScriptingHost *"
+					typec="iScriptingHost*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="removeScriptingHost"
+				min_features="15"
+				name="RemoveScriptingHost"
+				num_parameters="1">
+				<comments desc="Remove a scripting host. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumScriptingHosts"
+				min_features="15"
+				name="GetNumScriptingHosts"
+				num_parameters="0"
+				property="get"
+				property_name2="numScriptingHosts"
+				property_name="num_scripting_hosts">
+				<comments desc="Get the number of scripting hosts. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScriptingHostName"
+				min_features="15"
+				name="GetScriptingHostName"
+				num_parameters="1"
+				property="get"
+				property_name2="scriptingHostName"
+				property_name="scripting_host_name">
+				<comments desc="Get the name of the scripting host at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getScriptingHost"
+				min_features="15"
+				name="GetScriptingHost"
+				num_parameters="1"
+				property="get"
+				property_name2="scriptingHost"
+				property_name="scripting_host">
+				<comments desc="Get the scripting host at the specified index. "/>
+				<return type="iScriptingHost *" typec="iScriptingHost*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getScriptingHostFromName"
+				min_features="15"
+				name="GetScriptingHostFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="scriptingHostFromName"
+				property_name="scripting_host_from_name">
+				<comments desc="Get the scripting host from the specified name. "/>
+				<return type="iScriptingHost *" typec="iScriptingHost*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScriptingHostIndex"
+				min_features="15"
+				name="GetScriptingHostIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="scriptingHostIndex"
+				property_name="scripting_host_index">
+				<comments desc="Get the index of the specified scripting host. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apHost"
+					type="iScriptingHost *"
+					typec="iScriptingHost*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="serviceAllScriptingHosts"
+				min_features="15"
+				name="ServiceAllScriptingHosts"
+				num_parameters="1">
+				<comments desc="Service all scripting hosts. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abForceGC"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="findScriptingHost"
+				min_features="15"
+				name="FindScriptingHost"
+				num_parameters="2">
+				<comments desc="Get the first scripting host that can evaluate the code resources. "/>
+				<return type="iScriptingHost *" typec="iScriptingHost*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspCodeResource"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProf"
+				name="GetProf"
+				num_parameters="0"
+				property="get"
+				property_name2="prof"
+				property_name="prof">
+				<comments desc="Get the profiler instance. "/>
+				<return type="iProf *" typec="iProf*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlgetProtocol" name="URLGetProtocol" num_parameters="1">
+				<comments desc="Get the protocol that will be used to access the specified URL. ">
+					<remark text="If no protocol is specified returns the &quot;file&quot; protocol if an absolute file path is detected (the path starts with a drive letter or / or \) else return the &quot;default&quot; protocol. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlgetHandler" name="URLGetHandler" num_parameters="1">
+				<comments desc="Get the URL file handler that will be used to access the specified URL. ">
+					<remark text="If no protocol is specified the &quot;default&quot; protocol is assumed. "/>
+				</comments>
+				<return type="iURLFileHandler *" typec="iURLFileHandler*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlopen" name="URLOpen" num_parameters="1">
+				<comments desc="Open a synchronous stream to the specified URL. ">
+					<remark text="The operation is blocking, if necessary the whole file is downloaded before the function returns. "/>
+					<remark text="The operation is handed to a URLFileHandler which is retrived according to the protocol specified in the URL. For example for http://foo.com/stuff.jpg the GlobalInstance &quot;URLFileHandler.http&quot; is retrieved as file handler. "/>
+					<remark text="The RootFS is set as the default and file protocol handlers. "/>
+				</comments>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlexists" name="URLExists" num_parameters="1">
+				<comments desc="Validates the specified URL and if possible checks whether the resource the URL points to actually exists. ">
+					<remark text="\see ni::iLang::URLOpen for precision about URL handling. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlfindFilePath" name="URLFindFilePath" num_parameters="3">
+				<comments desc="Find the path/url matching the specified resource, basepath and with the extensions derived from the specified loader prefix. ">
+					<remark text="Example: found = URLFindFilePath(&quot;foo.bar&quot;, &quot;data/&quot;, &quot;BitmapLoader.&quot;) "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aszRes"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszBasePath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aLoaderPrefix"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createHString" name="CreateHString" num_parameters="1">
+				<comments desc="Create a new HString. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const cString &amp;"
+					typec="const cString&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadLocalization" name="LoadLocalization" num_parameters="1">
+				<comments desc="Load a localization table. ">
+					<remark text="The table&apos;s format is \&lt;Localization&gt;\&lt;String native=&quot;Hello&quot; fr=&quot;Bonjour&quot; cn=&quot;nihao&quot; /&gt;\&lt;/Localization&gt; "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="isSerializedObject" name="IsSerializedObject" num_parameters="3">
+				<comments desc="Check if the file contains an object of the specified type. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aID"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apObjSize"
+					type="tI64 *"
+					typec="tI64*"
+					typei="ni::eType_I64|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serializeObject" name="SerializeObject" num_parameters="4">
+				<comments desc="Serialize an object. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apObject"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aMode"
+					type="eSerializeMode"
+					typec="eSerializeMode"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apObjSize"
+					type="tI64 *"
+					typec="tI64*"
+					typei="ni::eType_I64|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="readSerializationHeader"
+				name="ReadSerializationHeader"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Read serialization header. "/>
+				<return type="tI64" typec="tI64"/>
+				<parameter name="apFile" type="iFile *" typec="iFile*"/>
+				<parameter name="apID" type="cString *" typec="cString*"/>
+				<parameter
+					last="1"
+					name="apSize"
+					type="tI64 *"
+					typec="tI64*"/>
+			</method>
+			<method
+				java_name="writeSerializationHeader"
+				name="WriteSerializationHeader"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Write serialization header. "/>
+				<return type="tI64" typec="tI64"/>
+				<parameter name="apFile" type="iFile *" typec="iFile*"/>
+				<parameter name="apID" type="const achar *" typec="const achar*"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tI64"
+					typec="tI64"/>
+			</method>
+			<method java_name="createDeviceResourceManager" name="CreateDeviceResourceManager" num_parameters="1">
+				<comments desc="Create a new device resource manager. "/>
+				<return type="iDeviceResourceManager *" typec="iDeviceResourceManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSystemMessageHandlers"
+				name="GetSystemMessageHandlers"
+				num_parameters="0"
+				property="get"
+				property_name2="systemMessageHandlers"
+				property_name="system_message_handlers">
+				<comments desc="Get the system message targets. "/>
+				<return type="tMessageHandlerSinkLst *" typec="tMessageHandlerSinkLst*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDataTable" name="CreateDataTable" num_parameters="1">
+				<comments desc="Create a data table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="4">
+				<comments desc="Serialize the specified data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aMode"
+					type="eSerializeMode"
+					typec="eSerializeMode"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apTable"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDataTableWriteStack" name="CreateDataTableWriteStack" num_parameters="1">
+				<comments desc="Create a data table write stack. "/>
+				<return type="iDataTableWriteStack *" typec="iDataTableWriteStack*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDataTableWriteStackFromName" name="CreateDataTableWriteStackFromName" num_parameters="1">
+				<comments desc="Create a data table write stack. "/>
+				<return type="iDataTableWriteStack *" typec="iDataTableWriteStack*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDataTableReadStack" name="CreateDataTableReadStack" num_parameters="1">
+				<comments desc="Create a data table read stack. "/>
+				<return type="iDataTableReadStack *" typec="iDataTableReadStack*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getAbsoluteDataTablePath" name="GetAbsoluteDataTablePath" num_parameters="2">
+				<comments desc="Build an absolute path to the specified datatable and property. ">
+					<remark text="If anPropIndex == eInvalidHandle the path points to the datatable and not the property "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anPropIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setClipboard"
+				name="SetClipboard"
+				num_parameters="2"
+				property="set"
+				property_name2="clipboard"
+				property_name="clipboard">
+				<comments desc="Set the data of the specified clipboard. ">
+					<remark text="The datatable should have a at least a type member, type can be :&lt;br&gt; &lt;ul&gt; &lt;li&gt;text : Has a &apos;text&apos; property of type string containing the text&lt;/li&gt; &lt;li&gt;bitmap : Has a &apos;bitmap&apos; property of type iUnknown containing the bitmap&lt;/li&gt; &lt;/ul&gt; "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aType"
+					type="eClipboardType"
+					typec="eClipboardType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClipboard"
+				name="GetClipboard"
+				num_parameters="1"
+				property="get"
+				property_name2="clipboard"
+				property_name="clipboard">
+				<comments desc="Get the data of the specified clipboard. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eClipboardType"
+					typec="eClipboardType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumMonitors"
+				name="GetNumMonitors"
+				num_parameters="0"
+				property="get"
+				property_name2="numMonitors"
+				property_name="num_monitors">
+				<comments desc="Get the number of monitors connected to the comptuer. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitorIndex"
+				name="GetMonitorIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="monitorIndex"
+				property_name="monitor_index">
+				<comments desc="Get the index of the monitor with the specified OS handle. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitorHandle"
+				name="GetMonitorHandle"
+				num_parameters="1"
+				property="get"
+				property_name2="monitorHandle"
+				property_name="monitor_handle">
+				<comments desc="Get the OS handle to the monitor at the specified index. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitorName"
+				name="GetMonitorName"
+				num_parameters="1"
+				property="get"
+				property_name2="monitorName"
+				property_name="monitor_name">
+				<comments desc="Get the name of the monitor at the specified index. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitorRect"
+				name="GetMonitorRect"
+				num_parameters="1"
+				property="get"
+				property_name2="monitorRect"
+				property_name="monitor_rect">
+				<comments desc="Get the rectangle of the monitor at the specified index. "/>
+				<return type="sRecti" typec="sRecti" typei="ni::eType_Vec4i"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitorFlags"
+				name="GetMonitorFlags"
+				num_parameters="1"
+				property="get"
+				property_name2="monitorFlags"
+				property_name="monitor_flags">
+				<comments desc="Get the flags of the monitor at the specified index. "/>
+				<return type="tOSMonitorFlags" typec="tOSMonitorFlags" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createWindow" name="CreateWindow" num_parameters="5">
+				<comments desc="Create a new OS window. "/>
+				<return type="iOSWindow *" typec="iOSWindow*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apParent"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aCreate"
+					type="tOSWindowCreateFlags"
+					typec="tOSWindowCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aStyle"
+					type="tOSWindowStyleFlags"
+					typec="tOSWindowStyleFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createWindowEx" name="CreateWindowEx" num_parameters="2">
+				<comments desc="Create a an OS window from a generic OS window handle. "/>
+				<return type="iOSWindow *" typec="iOSWindow*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aOSWindowHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="aCreate"
+					type="tOSWindowCreateFlags"
+					typec="tOSWindowCreateFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="messageBox" name="MessageBox" num_parameters="4">
+				<comments desc="Displays a native modal message box. "/>
+				<return type="eOSMessageBoxReturn" typec="eOSMessageBoxReturn" typei="ni::eType_Enum"/>
+				<parameter
+					name="apParent"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tOSMessageBoxFlags"
+					typec="tOSMessageBoxFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="openFileDialog" name="OpenFileDialog" num_parameters="4">
+				<comments desc="Displays a native file open dialog box. " return="An empty string if the user canceled, else the file path selected. ">
+					<params text="aParent is the parent window. "/>
+					<params text="aTitle title of the dialog. &quot;Open&quot; by default. "/>
+					<params text="aFilter the file extension filters. Example &quot;pdf;txt;*&quot;, &apos;*&apos; means that all extensions are accepted. "/>
+					<params text="aInitDir the directory to start from. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aParent"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFilter"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aInitDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="saveFileDialog" name="SaveFileDialog" num_parameters="4">
+				<comments desc="Displays a native file save dialog box. " return="An empty string if the user canceled, else the file path selected. ">
+					<params text="aParent is the parent window. "/>
+					<params text="aTitle title of the dialog. &quot;Open&quot; by default. "/>
+					<params text="aFilter the file extension filters. Example &quot;pdf;txt;*&quot;, &apos;*&apos; means that all extensions are accepted. "/>
+					<params text="aInitDir the directory to start from. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aParent"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFilter"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aInitDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pickDirectoryDialog" name="PickDirectoryDialog" num_parameters="3">
+				<comments desc="Displays a native directory picker dialog box. " return="An empty string if the user canceled, else the file path selected. ">
+					<params text="aParent is the parent window. "/>
+					<params text="aTitle title of the dialog. &quot;Open&quot; by default. "/>
+					<params text="aInitDir the directory to start from. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aParent"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aInitDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumGameCtrls"
+				name="GetNumGameCtrls"
+				num_parameters="0"
+				property="get"
+				property_name2="numGameCtrls"
+				property_name="num_game_ctrls">
+				<comments desc="Get the number of game controllers available on the system. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGameCtrl"
+				name="GetGameCtrl"
+				num_parameters="1"
+				property="get"
+				property_name2="gameCtrl"
+				property_name="game_ctrl">
+				<comments desc="Get a game controller input device interface. " return="NULL if the interface can&apos;t be get, else a pointer to a valid iGameCtrl interface. ">
+					<params text="aulIdx is the index of the game controller that will be managed by the created interface. "/>
+				</comments>
+				<return type="iGameCtrl *" typec="iGameCtrl*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

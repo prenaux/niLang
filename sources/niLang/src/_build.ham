@@ -1,0 +1,62 @@
+#########################################################################
+#
+# -- niLang -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niLang src ] = 1 { return ; }
+
+tkDefModuleLib niLang : 1,0,0 : niLang ;
+SubDirHdrs $(SUBDIR) API ;
+SubDirHdrs $(SUBDIR) mbedtls include ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+### JNI ###
+SRC += [ niGenJNI $(SRC) : niLang : : genBase : ] ;
+### ZLib ###
+SRC_EXTRA += [ tkPkgSrcSubDir zlib ] ;
+### mbedtls ###
+SRC_EXTRA += [ tkPkgSrcSubDir mbedtls library ] ;
+if $(FEATURES) >= 15 {
+  ### VM ###
+  SRC_EXTRA += [ tkPkgSrcSubDir sq ] ;
+  ### double-conversion ###
+  SRC_EXTRA += [ tkPkgSrcSubDir double-conversion ] ;
+  ### PCRE ###
+  SRC_EXTRA += [ tkPkgSrcSubDir pcre ] ;
+}
+
+IDLS = [ niBuildModuleDef ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"niLang module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"yes"'
+  genentrypoint='"no"'
+  unknowntype='"Ptr"'
+  interfacesheaderpath='"Lang.h"'
+;
+
+niModule_OT name='"Lang"' ;
+niModule_OT name='"CryptoRand"' ;
+niModule_OT name='"CryptoHash"' ;
+niModule_OT name='"Crypto"' ;
+niModule_OT name='"Math"' ;
+niModule_OT name='"Concurrent"' ;
+niModule_OT name='"FilePatternRegex"' ;
+niModule_OT name='"PCRE"' ;
+niModule_OT name='"DataTable"' ;
+niModule_OT name='"Console"' ;
+niModule_OT name='"OSWindowGeneric"' ;
+niModule_OT name='"Zip"' ;
+niModule_OT name='"URLFileHandlerManifestFileSystem"' ;
+niModule_OT name='"URLFileHandlerURL"' ;
+niModule_OT name='"URLFileHandlerFileSystem"' ;
+niModule_OT name='"URLFileHandlerZip"' ;
+niModule_OT name='"URLFileHandlerPrefixed"' ;
+
+niModule_Includes $(IDLS) ;
+niModule_End ;

@@ -1,0 +1,34 @@
+::Import("unittest.ni")
+::Import("xml.ni")
+
+::FIXTURE("xml")
+
+local parseTests = [
+  {
+    name = "Empty"
+    data =  {[
+    ]}
+    function checkException(e) {
+      ::CHECK_EQUAL("Empty Xml",e)
+      return true
+    }
+  }
+  {
+    name = "Invalid1"
+    data =  {[<doc attr]}
+  }
+]
+
+foreach (t in parseTests) {
+  ::TEST("xml",t.name,#() : (t) {
+    try {
+      local parsed = ::xml.parseXml(t.data)
+      t.?checkParsed(parsed)
+    }
+    catch (e) {
+      if (t.?checkException(e) == true)
+        return
+      throw "E/XML Parser Test Exception: " + e
+    }
+  })
+}

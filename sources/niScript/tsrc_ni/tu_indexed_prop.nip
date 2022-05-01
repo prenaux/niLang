@@ -1,0 +1,29 @@
+::Import("niTestInterop")
+::Import("unittest.ni")
+::Import("lang.ni")
+
+::FIXTURE("IndexedProperty")
+
+::TEST("IndexedProperty" "indexed_u32" #{
+  local testInterop = ::CreateInstance("niTestInterop.TestInterop")
+  local objIndexedProp
+  {
+    local obj = testInterop.CreateTestInteropObject(100);
+    ::CHECK_EQUAL(100,obj.num_items);
+    obj.indexed_u32[10] = 123
+    ::CHECK_EQUAL(123,obj.indexed_u32[10]);
+
+    objIndexedProp = obj.indexed_u32
+    objIndexedProp[10] = 888
+    ::CHECK_EQUAL(888,objIndexedProp[10]);
+    ::CHECK_EQUAL(888,obj.indexed_u32[10]);
+
+    ::dbg("num refs:" obj.GetNumRefs())
+    ::dbg("num interop obj:" testInterop.num_test_interop_objects)
+    obj = null;
+  }
+
+  ::dbg("num interop obj:" testInterop.num_test_interop_objects)
+  objIndexedProp[10] = 777
+  ::CHECK_EQUAL(777,objIndexedProp[10]);
+})

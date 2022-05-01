@@ -1,0 +1,41 @@
+#include "../API/niLang/Types.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** interface : iUnknown **/
+/** iUnknown -> NO AUTOMATION **/
+/** ni -> iUnknown::IsOK/0 -> NO AUTOMATION **/
+/** ni -> iUnknown::AddRef/0 -> NO AUTOMATION **/
+/** ni -> iUnknown::Release/0 -> NO AUTOMATION **/
+/** ni -> iUnknown::DeleteThis/0 -> NO AUTOMATION **/
+/** ni -> iUnknown::Invalidate/0 -> NO AUTOMATION **/
+/** ni -> iUnknown::QueryInterface/1 -> NO AUTOMATION **/
+/** ni -> iUnknown::ListInterfaces/2 -> NO AUTOMATION **/
+/** ni -> iUnknown::SetNumRefs/1 -> NO AUTOMATION **/
+/** ni -> iUnknown::GetNumRefs/0 -> NO AUTOMATION **/
+/** interface : iDispatch **/
+/** iDispatch -> NO AUTOMATION **/
+/** ni -> iDispatch::InitializeMethods/2 -> NO AUTOMATION **/
+/** ni -> iDispatch::CallMethod/5 -> NO AUTOMATION **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
+IDLC_END_NAMESPACE()
+// EOF //

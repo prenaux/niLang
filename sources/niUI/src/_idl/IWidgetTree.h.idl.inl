@@ -1,0 +1,608 @@
+#include "../API/niUI/IWidgetTree.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetTreeNode **/
+IDLC_BEGIN_INTF(ni,iWidgetTreeNode)
+/** ni -> iWidgetTreeNode::GetParentWidget/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetParentWidget,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetParentWidget,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetParentWidget,0)
+
+/** ni -> iWidgetTreeNode::GetParentNode/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetParentNode,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetParentNode,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetParentNode,0)
+
+/** ni -> iWidgetTreeNode::GetNodeRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetNodeRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetNodeRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetNodeRect,0)
+
+/** ni -> iWidgetTreeNode::GetScrolledNodeRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetScrolledNodeRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetScrolledNodeRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetScrolledNodeRect,0)
+
+/** ni -> iWidgetTreeNode::GetAbsoluteNodeRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetAbsoluteNodeRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetAbsoluteNodeRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetAbsoluteNodeRect,0)
+
+/** ni -> iWidgetTreeNode::GetTextRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetTextRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetTextRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetTextRect,0)
+
+/** ni -> iWidgetTreeNode::GetScrolledTextRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetScrolledTextRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetScrolledTextRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetScrolledTextRect,0)
+
+/** ni -> iWidgetTreeNode::GetAbsoluteTextRect/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetAbsoluteTextRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetAbsoluteTextRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetAbsoluteTextRect,0)
+
+/** ni -> iWidgetTreeNode::GetIndex/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetIndex,0)
+
+/** ni -> iWidgetTreeNode::GetTreeIndex/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetTreeIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetTreeIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetTreeIndex,0)
+
+/** ni -> iWidgetTreeNode::GetNumChildNodes/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetNumChildNodes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetNumChildNodes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetNumChildNodes,0)
+
+/** ni -> iWidgetTreeNode::GetChildNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetChildNode,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetChildNode,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetChildNode,1)
+
+/** ni -> iWidgetTreeNode::GetChildNodeIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetChildNodeIndex,1)
+	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
+	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetChildNodeIndex,1,(apNode))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetChildNodeIndex,1)
+
+/** ni -> iWidgetTreeNode::GetChildNodeFromName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetChildNodeFromName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetChildNodeFromName,1,(aaszName))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetChildNodeFromName,1)
+
+/** ni -> iWidgetTreeNode::AddChildNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,AddChildNode,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,AddChildNode,1,(aaszName))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,AddChildNode,1)
+
+/** ni -> iWidgetTreeNode::AddChildNodeBefore/2 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,AddChildNodeBefore,2)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,AddChildNodeBefore,2,(aaszName,anIndex))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,AddChildNodeBefore,2)
+
+/** ni -> iWidgetTreeNode::RemoveChildNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,RemoveChildNode,1)
+	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
+	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,RemoveChildNode,1,(apNode))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,RemoveChildNode,1)
+
+/** ni -> iWidgetTreeNode::Clear/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,Clear,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,Clear,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,Clear,0)
+
+/** ni -> iWidgetTreeNode::FindNodeFromName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,FindNodeFromName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,FindNodeFromName,1,(aaszName))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,FindNodeFromName,1)
+
+/** ni -> iWidgetTreeNode::FindNodeFromUserdata/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,FindNodeFromUserdata,1)
+	IDLC_DECL_VAR(iUnknown*,apUserdata)
+	IDLC_BUF_TO_INTF(iUnknown,apUserdata)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,FindNodeFromUserdata,1,(apUserdata))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,FindNodeFromUserdata,1)
+
+/** ni -> iWidgetTreeNode::FindNodeFromWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,FindNodeFromWidget,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,FindNodeFromWidget,1,(apWidget))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,FindNodeFromWidget,1)
+
+/** ni -> iWidgetTreeNode::FindNodeFromPosition/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,FindNodeFromPosition,1)
+	IDLC_DECL_VAR(sVec2f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,FindNodeFromPosition,1,(avPos))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,FindNodeFromPosition,1)
+
+/** ni -> iWidgetTreeNode::GetPrevSibling/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetPrevSibling,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetPrevSibling,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetPrevSibling,0)
+
+/** ni -> iWidgetTreeNode::GetNextSibling/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetNextSibling,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetNextSibling,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetNextSibling,0)
+
+/** ni -> iWidgetTreeNode::GetAbove/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetAbove,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetAbove,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetAbove,0)
+
+/** ni -> iWidgetTreeNode::GetBelow/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetBelow,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetBelow,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetBelow,0)
+
+/** ni -> iWidgetTreeNode::SetFlags/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetFlags,1)
+	IDLC_DECL_VAR(tWidgetTreeNodeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tWidgetTreeNodeFlags,aFlags)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetFlags,1,(aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetFlags,1)
+
+/** ni -> iWidgetTreeNode::GetFlags/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetFlags,0)
+	IDLC_DECL_RETVAR(tWidgetTreeNodeFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetFlags,0,())
+	IDLC_RET_FROM_ENUM(tWidgetTreeNodeFlags,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetFlags,0)
+
+/** ni -> iWidgetTreeNode::SetName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetName,1)
+	IDLC_DECL_VAR(achar*,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetName,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetName,1)
+
+/** ni -> iWidgetTreeNode::GetName/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetName,0)
+
+/** ni -> iWidgetTreeNode::SetIcon/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetIcon,1)
+	IDLC_DECL_VAR(iOverlay*,aVal)
+	IDLC_BUF_TO_INTF(iOverlay,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetIcon,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetIcon,1)
+
+/** ni -> iWidgetTreeNode::GetIcon/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetIcon,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetIcon,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetIcon,0)
+
+/** ni -> iWidgetTreeNode::SetSelected/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetSelected,1)
+	IDLC_DECL_VAR(tBool,abSelected)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abSelected)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetSelected,1,(abSelected))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetSelected,1)
+
+/** ni -> iWidgetTreeNode::GetSelected/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetSelected,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetSelected,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetSelected,0)
+
+/** ni -> iWidgetTreeNode::SetExpanded/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetExpanded,1)
+	IDLC_DECL_VAR(tBool,abExpanded)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abExpanded)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetExpanded,1,(abExpanded))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetExpanded,1)
+
+/** ni -> iWidgetTreeNode::GetExpanded/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetExpanded,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetExpanded,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetExpanded,0)
+
+/** ni -> iWidgetTreeNode::SetUserdata/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetUserdata,1)
+	IDLC_DECL_VAR(iUnknown*,apUserData)
+	IDLC_BUF_TO_INTF(iUnknown,apUserData)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetUserdata,1,(apUserData))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetUserdata,1)
+
+/** ni -> iWidgetTreeNode::GetUserdata/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetUserdata,0)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetUserdata,0,())
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetUserdata,0)
+
+/** ni -> iWidgetTreeNode::SetWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetWidget,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetWidget,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetWidget,1)
+
+/** ni -> iWidgetTreeNode::GetWidget/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetWidget,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetWidget,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetWidget,0)
+
+/** ni -> iWidgetTreeNode::SetTextColor/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetTextColor,1)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iWidgetTreeNode,SetTextColor,1,(anColor))
+IDLC_METH_END(ni,iWidgetTreeNode,SetTextColor,1)
+
+/** ni -> iWidgetTreeNode::GetTextColor/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetTextColor,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetTextColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetTextColor,0)
+
+/** ni -> iWidgetTreeNode::SetTextBackColor/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetTextBackColor,1)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_METH_CALL_VOID(ni,iWidgetTreeNode,SetTextBackColor,1,(anColor))
+IDLC_METH_END(ni,iWidgetTreeNode,SetTextBackColor,1)
+
+/** ni -> iWidgetTreeNode::GetTextBackColor/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetTextBackColor,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetTextBackColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetTextBackColor,0)
+
+/** ni -> iWidgetTreeNode::SetRowColor/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetRowColor,1)
+	IDLC_DECL_VAR(tU32,anRow)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anRow)
+	IDLC_METH_CALL_VOID(ni,iWidgetTreeNode,SetRowColor,1,(anRow))
+IDLC_METH_END(ni,iWidgetTreeNode,SetRowColor,1)
+
+/** ni -> iWidgetTreeNode::GetRowColor/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetRowColor,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetRowColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetRowColor,0)
+
+/** ni -> iWidgetTreeNode::SetAttributes/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetAttributes,1)
+	IDLC_DECL_VAR(tU32,anAttributes)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anAttributes)
+	IDLC_METH_CALL_VOID(ni,iWidgetTreeNode,SetAttributes,1,(anAttributes))
+IDLC_METH_END(ni,iWidgetTreeNode,SetAttributes,1)
+
+/** ni -> iWidgetTreeNode::GetAttributes/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetAttributes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetAttributes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetAttributes,0)
+
+/** ni -> iWidgetTreeNode::SetVisibleAttributesMask/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetVisibleAttributesMask,1)
+	IDLC_DECL_VAR(tU32,anAttributes)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anAttributes)
+	IDLC_METH_CALL_VOID(ni,iWidgetTreeNode,SetVisibleAttributesMask,1,(anAttributes))
+IDLC_METH_END(ni,iWidgetTreeNode,SetVisibleAttributesMask,1)
+
+/** ni -> iWidgetTreeNode::GetVisibleAttributesMask/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetVisibleAttributesMask,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetVisibleAttributesMask,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetVisibleAttributesMask,0)
+
+IDLC_END_INTF(ni,iWidgetTreeNode)
+
+/** interface : iWidgetTree **/
+IDLC_BEGIN_INTF(ni,iWidgetTree)
+/** ni -> iWidgetTree::GetRootNode/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetRootNode,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetRootNode,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetRootNode,0)
+
+/** ni -> iWidgetTree::GetNumNodes/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNumNodes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNumNodes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNumNodes,0)
+
+/** ni -> iWidgetTree::GetNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNode,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNode,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNode,1)
+
+/** ni -> iWidgetTree::GetNumSelectedNodes/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNumSelectedNodes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNumSelectedNodes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNumSelectedNodes,0)
+
+/** ni -> iWidgetTree::GetSelectedNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetSelectedNode,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetSelectedNode,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetSelectedNode,1)
+
+/** ni -> iWidgetTree::Clear/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,Clear,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,Clear,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,Clear,0)
+
+/** ni -> iWidgetTree::ClearSelection/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,ClearSelection,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,ClearSelection,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,ClearSelection,0)
+
+/** ni -> iWidgetTree::GetNodeFromPosition/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNodeFromPosition,1)
+	IDLC_DECL_VAR(sVec2f,avAbsPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avAbsPos)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNodeFromPosition,1,(avAbsPos))
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNodeFromPosition,1)
+
+/** ni -> iWidgetTree::GetNodeDropMode/2 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNodeDropMode,2)
+	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
+	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
+	IDLC_DECL_VAR(sVec2f,avAbsPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avAbsPos)
+	IDLC_DECL_RETVAR(eWidgetTreeNodeDropMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNodeDropMode,2,(apNode,avAbsPos))
+	IDLC_RET_FROM_ENUM(eWidgetTreeNodeDropMode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNodeDropMode,2)
+
+/** ni -> iWidgetTree::SetSecondarySelection/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SetSecondarySelection,1)
+	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
+	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
+	IDLC_METH_CALL_VOID(ni,iWidgetTree,SetSecondarySelection,1,(apNode))
+IDLC_METH_END(ni,iWidgetTree,SetSecondarySelection,1)
+
+/** ni -> iWidgetTree::GetSecondarySelection/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetSecondarySelection,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetSecondarySelection,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetSecondarySelection,0)
+
+/** ni -> iWidgetTree::GetPivotSelection/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetPivotSelection,0)
+	IDLC_DECL_RETVAR(iWidgetTreeNode*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetPivotSelection,0,())
+	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetPivotSelection,0)
+
+/** ni -> iWidgetTree::ScrollToNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,ScrollToNode,1)
+	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
+	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
+	IDLC_METH_CALL_VOID(ni,iWidgetTree,ScrollToNode,1,(apNode))
+IDLC_METH_END(ni,iWidgetTree,ScrollToNode,1)
+
+/** ni -> iWidgetTree::SaveTreeStates/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SaveTreeStates,1)
+	IDLC_DECL_VAR(iDataTable*,apStates)
+	IDLC_BUF_TO_INTF(iDataTable,apStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,SaveTreeStates,1,(apStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,SaveTreeStates,1)
+
+/** ni -> iWidgetTree::LoadTreeStates/2 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,LoadTreeStates,2)
+	IDLC_DECL_VAR(iDataTable*,apStates)
+	IDLC_BUF_TO_INTF(iDataTable,apStates)
+	IDLC_DECL_VAR(ni::tBool,abLoadMatchingNames)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLoadMatchingNames)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,LoadTreeStates,2,(apStates,abLoadMatchingNames))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,LoadTreeStates,2)
+
+/** ni -> iWidgetTree::PushStates/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,PushStates,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,PushStates,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,PushStates,0)
+
+/** ni -> iWidgetTree::PopStates/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,PopStates,1)
+	IDLC_DECL_VAR(ni::tBool,abLoadMatchingNames)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLoadMatchingNames)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,PopStates,1,(abLoadMatchingNames))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,PopStates,1)
+
+/** ni -> iWidgetTree::SetNumVisibleAttributes/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SetNumVisibleAttributes,1)
+	IDLC_DECL_VAR(tU32,anCount)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCount)
+	IDLC_METH_CALL_VOID(ni,iWidgetTree,SetNumVisibleAttributes,1,(anCount))
+IDLC_METH_END(ni,iWidgetTree,SetNumVisibleAttributes,1)
+
+/** ni -> iWidgetTree::GetNumVisibleAttributes/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetNumVisibleAttributes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNumVisibleAttributes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetNumVisibleAttributes,0)
+
+/** ni -> iWidgetTree::SetAttributeIcon/2 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SetAttributeIcon,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(iOverlay*,apIcon)
+	IDLC_BUF_TO_INTF(iOverlay,apIcon)
+	IDLC_METH_CALL_VOID(ni,iWidgetTree,SetAttributeIcon,2,(anIndex,apIcon))
+IDLC_METH_END(ni,iWidgetTree,SetAttributeIcon,2)
+
+/** ni -> iWidgetTree::GetAttributeIcon/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetAttributeIcon,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetAttributeIcon,1,(anIndex))
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetAttributeIcon,1)
+
+/** ni -> iWidgetTree::SetAttributeName/2 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SetAttributeName,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_METH_CALL_VOID(ni,iWidgetTree,SetAttributeName,2,(anIndex,ahspName))
+IDLC_METH_END(ni,iWidgetTree,SetAttributeName,2)
+
+/** ni -> iWidgetTree::GetAttributeName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetAttributeName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetAttributeName,1,(anIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetAttributeName,1)
+
+/** ni -> iWidgetTree::SetHoverNode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,SetHoverNode,1)
+	IDLC_DECL_VAR(tU32,anNodeTreeIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anNodeTreeIndex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,SetHoverNode,1,(anNodeTreeIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTree,SetHoverNode,1)
+
+/** ni -> iWidgetTree::GetHoverNode/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTree,GetHoverNode,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetHoverNode,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetTree,GetHoverNode,0)
+
+IDLC_END_INTF(ni,iWidgetTree)
+
+IDLC_END_NAMESPACE()
+// EOF //

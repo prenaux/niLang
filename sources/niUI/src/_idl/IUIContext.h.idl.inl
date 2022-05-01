@@ -1,0 +1,784 @@
+#include "../API/niUI/IUIContext.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iUIContext **/
+IDLC_BEGIN_INTF(ni,iUIContext)
+/** ni -> iUIContext::GetGraphics/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetGraphics,0)
+	IDLC_DECL_RETVAR(iGraphics*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetGraphics,0,())
+	IDLC_RET_FROM_INTF(iGraphics,_Ret)
+IDLC_METH_END(ni,iUIContext,GetGraphics,0)
+
+/** ni -> iUIContext::GetGraphicsContext/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetGraphicsContext,0)
+	IDLC_DECL_RETVAR(iGraphicsContext*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetGraphicsContext,0,())
+	IDLC_RET_FROM_INTF(iGraphicsContext,_Ret)
+IDLC_METH_END(ni,iUIContext,GetGraphicsContext,0)
+
+/** ni -> iUIContext::SendWindowMessage/3 **/
+IDLC_METH_BEGIN(ni,iUIContext,SendWindowMessage,3)
+	IDLC_DECL_VAR(eOSWindowMessage,aMsg)
+	IDLC_BUF_TO_ENUM(eOSWindowMessage,aMsg)
+	IDLC_DECL_VAR(Var,avarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarA)
+	IDLC_DECL_VAR(Var,avarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,avarB)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SendWindowMessage,3,(aMsg,avarA,avarB))
+IDLC_METH_END(ni,iUIContext,SendWindowMessage,3)
+
+/** ni -> iUIContext::SetInputModifiers/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetInputModifiers,1)
+	IDLC_DECL_VAR(tU32,anInputModifier)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInputModifier)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetInputModifiers,1,(anInputModifier))
+IDLC_METH_END(ni,iUIContext,SetInputModifiers,1)
+
+/** ni -> iUIContext::GetInputModifiers/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetInputModifiers,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetInputModifiers,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetInputModifiers,0)
+
+/** ni -> iUIContext::SetDefaultInputSubmitFlags/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDefaultInputSubmitFlags,1)
+	IDLC_DECL_VAR(tUIInputSubmitFlags,aSubmitFlags)
+	IDLC_BUF_TO_ENUM(tUIInputSubmitFlags,aSubmitFlags)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetDefaultInputSubmitFlags,1,(aSubmitFlags))
+IDLC_METH_END(ni,iUIContext,SetDefaultInputSubmitFlags,1)
+
+/** ni -> iUIContext::GetDefaultInputSubmitFlags/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDefaultInputSubmitFlags,0)
+	IDLC_DECL_RETVAR(tUIInputSubmitFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDefaultInputSubmitFlags,0,())
+	IDLC_RET_FROM_ENUM(tUIInputSubmitFlags,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDefaultInputSubmitFlags,0)
+
+/** ni -> iUIContext::SetHoverDelay/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetHoverDelay,1)
+	IDLC_DECL_VAR(tF32,afDelay)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDelay)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetHoverDelay,1,(afDelay))
+IDLC_METH_END(ni,iUIContext,SetHoverDelay,1)
+
+/** ni -> iUIContext::GetHoverDelay/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetHoverDelay,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetHoverDelay,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetHoverDelay,0)
+
+/** ni -> iUIContext::SetHoverInputModifiers/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetHoverInputModifiers,1)
+	IDLC_DECL_VAR(tU32,anInputModifiers)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInputModifiers)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetHoverInputModifiers,1,(anInputModifiers))
+IDLC_METH_END(ni,iUIContext,SetHoverInputModifiers,1)
+
+/** ni -> iUIContext::GetHoverInputModifiers/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetHoverInputModifiers,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetHoverInputModifiers,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetHoverInputModifiers,0)
+
+/** ni -> iUIContext::SetImageMap/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetImageMap,1)
+	IDLC_DECL_VAR(iImageMap*,apImageMap)
+	IDLC_BUF_TO_INTF(iImageMap,apImageMap)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetImageMap,1,(apImageMap))
+IDLC_METH_END(ni,iUIContext,SetImageMap,1)
+
+/** ni -> iUIContext::GetImageMap/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetImageMap,0)
+	IDLC_DECL_RETVAR(iImageMap*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetImageMap,0,())
+	IDLC_RET_FROM_INTF(iImageMap,_Ret)
+IDLC_METH_END(ni,iUIContext,GetImageMap,0)
+
+/** ni -> iUIContext::SetErrorOverlay/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetErrorOverlay,1)
+	IDLC_DECL_VAR(iOverlay*,apOverlay)
+	IDLC_BUF_TO_INTF(iOverlay,apOverlay)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SetErrorOverlay,1,(apOverlay))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SetErrorOverlay,1)
+
+/** ni -> iUIContext::GetErrorOverlay/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetErrorOverlay,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetErrorOverlay,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iUIContext,GetErrorOverlay,0)
+
+/** ni -> iUIContext::ClearSkins/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,ClearSkins,0)
+	IDLC_METH_CALL_VOID(ni,iUIContext,ClearSkins,0,())
+IDLC_METH_END(ni,iUIContext,ClearSkins,0)
+
+/** ni -> iUIContext::AddSkin/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,AddSkin,1)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,AddSkin,1,(apDT))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,AddSkin,1)
+
+/** ni -> iUIContext::AddSkinFromRes/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,AddSkinFromRes,1)
+	IDLC_DECL_VAR(iHString*,ahspRes)
+	IDLC_BUF_TO_INTF(iHString,ahspRes)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,AddSkinFromRes,1,(ahspRes))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,AddSkinFromRes,1)
+
+/** ni -> iUIContext::RemoveSkin/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,RemoveSkin,1)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,RemoveSkin,1,(ahspSkin))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,RemoveSkin,1)
+
+/** ni -> iUIContext::SetDefaultSkin/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDefaultSkin,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SetDefaultSkin,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SetDefaultSkin,1)
+
+/** ni -> iUIContext::GetDefaultSkin/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDefaultSkin,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDefaultSkin,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDefaultSkin,0)
+
+/** ni -> iUIContext::GetNumSkins/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetNumSkins,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetNumSkins,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetNumSkins,0)
+
+/** ni -> iUIContext::GetSkinName/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetSkinName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetSkinName,1,(anIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iUIContext,GetSkinName,1)
+
+/** ni -> iUIContext::GetSkinIndex/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetSkinIndex,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetSkinIndex,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetSkinIndex,1)
+
+/** ni -> iUIContext::GetSkinDataTable/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetSkinDataTable,1)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_RETVAR(iDataTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetSkinDataTable,1,(ahspSkin))
+	IDLC_RET_FROM_INTF(iDataTable,_Ret)
+IDLC_METH_END(ni,iUIContext,GetSkinDataTable,1)
+
+/** ni -> iUIContext::ApplySkin/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,ApplySkin,2)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,ApplySkin,2,(apWidget,ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,ApplySkin,2)
+
+/** ni -> iUIContext::FindSkinFont/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,FindSkinFont,4)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_VAR(iHString*,ahspClass)
+	IDLC_BUF_TO_INTF(iHString,ahspClass)
+	IDLC_DECL_VAR(iHString*,ahspState)
+	IDLC_BUF_TO_INTF(iHString,ahspState)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iFont*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,FindSkinFont,4,(ahspSkin,ahspClass,ahspState,ahspName))
+	IDLC_RET_FROM_INTF(iFont,_Ret)
+IDLC_METH_END(ni,iUIContext,FindSkinFont,4)
+
+/** ni -> iUIContext::FindSkinCursor/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,FindSkinCursor,4)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_VAR(iHString*,ahspClass)
+	IDLC_BUF_TO_INTF(iHString,ahspClass)
+	IDLC_DECL_VAR(iHString*,ahspState)
+	IDLC_BUF_TO_INTF(iHString,ahspState)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,FindSkinCursor,4,(ahspSkin,ahspClass,ahspState,ahspName))
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iUIContext,FindSkinCursor,4)
+
+/** ni -> iUIContext::FindSkinElement/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,FindSkinElement,4)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_VAR(iHString*,ahspClass)
+	IDLC_BUF_TO_INTF(iHString,ahspClass)
+	IDLC_DECL_VAR(iHString*,ahspState)
+	IDLC_BUF_TO_INTF(iHString,ahspState)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,FindSkinElement,4,(ahspSkin,ahspClass,ahspState,ahspName))
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iUIContext,FindSkinElement,4)
+
+/** ni -> iUIContext::FindSkinColor/5 **/
+IDLC_METH_BEGIN(ni,iUIContext,FindSkinColor,5)
+	IDLC_DECL_VAR(sColor4f,aDefault)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aDefault)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_VAR(iHString*,ahspClass)
+	IDLC_BUF_TO_INTF(iHString,ahspClass)
+	IDLC_DECL_VAR(iHString*,ahspState)
+	IDLC_BUF_TO_INTF(iHString,ahspState)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(sColor4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,FindSkinColor,5,(aDefault,ahspSkin,ahspClass,ahspState,ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iUIContext,FindSkinColor,5)
+
+/** ni -> iUIContext::HasWidgetSinkClass/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,HasWidgetSinkClass,1)
+	IDLC_DECL_VAR(achar*,aszClassName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszClassName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,HasWidgetSinkClass,1,(aszClassName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,HasWidgetSinkClass,1)
+
+/** ni -> iUIContext::CreateWidgetSink/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetSink,2)
+	IDLC_DECL_VAR(achar*,aszClassName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszClassName)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(iWidgetSink*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetSink,2,(aszClassName,apWidget))
+	IDLC_RET_FROM_INTF(iWidgetSink,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetSink,2)
+
+/** ni -> iUIContext::CreateWidgetSinkFromScript/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iUIContext::CreateWidgetSinkFromScript/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetSinkFromScript,1)
+	IDLC_DECL_VAR(iHString*,ahspRes)
+	IDLC_BUF_TO_INTF(iHString,ahspRes)
+	IDLC_DECL_RETVAR(iWidgetSink*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetSinkFromScript,1,(ahspRes))
+	IDLC_RET_FROM_INTF(iWidgetSink,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetSinkFromScript,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iUIContext::CreateWidget/5 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidget,5)
+	IDLC_DECL_VAR(achar*,aszClassName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszClassName)
+	IDLC_DECL_VAR(iWidget*,apwParent)
+	IDLC_BUF_TO_INTF(iWidget,apwParent)
+	IDLC_DECL_VAR(sRectf,arectPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,arectPos)
+	IDLC_DECL_VAR(tU32,anStyle)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anStyle)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidget,5,(aszClassName,apwParent,arectPos,anStyle,ahspID))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidget,5)
+
+/** ni -> iUIContext::CreateWidgetRaw/5 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetRaw,5)
+	IDLC_DECL_VAR(achar*,aszClassName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszClassName)
+	IDLC_DECL_VAR(iWidget*,apwParent)
+	IDLC_BUF_TO_INTF(iWidget,apwParent)
+	IDLC_DECL_VAR(sRectf,arectPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,arectPos)
+	IDLC_DECL_VAR(tU32,anStyle)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anStyle)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetRaw,5,(aszClassName,apwParent,arectPos,anStyle,ahspID))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetRaw,5)
+
+/** ni -> iUIContext::CreateWidgetFromDataTable/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetFromDataTable,4)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_VAR(iWidget*,apwParent)
+	IDLC_BUF_TO_INTF(iWidget,apwParent)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_VAR(iHString*,ahspTitle)
+	IDLC_BUF_TO_INTF(iHString,ahspTitle)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetFromDataTable,4,(apDT,apwParent,ahspID,ahspTitle))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetFromDataTable,4)
+
+/** ni -> iUIContext::CreateWidgetFromResource/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetFromResource,4)
+	IDLC_DECL_VAR(iHString*,ahspRes)
+	IDLC_BUF_TO_INTF(iHString,ahspRes)
+	IDLC_DECL_VAR(iWidget*,apwParent)
+	IDLC_BUF_TO_INTF(iWidget,apwParent)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_VAR(iHString*,ahspTitle)
+	IDLC_BUF_TO_INTF(iHString,ahspTitle)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetFromResource,4,(ahspRes,apwParent,ahspID,ahspTitle))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetFromResource,4)
+
+/** ni -> iUIContext::GetRootWidget/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetRootWidget,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetRootWidget,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,GetRootWidget,0)
+
+/** ni -> iUIContext::SetActiveWidget/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetActiveWidget,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SetActiveWidget,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SetActiveWidget,1)
+
+/** ni -> iUIContext::GetActiveWidget/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetActiveWidget,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetActiveWidget,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,GetActiveWidget,0)
+
+/** ni -> iUIContext::GetNumWidgets/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetNumWidgets,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetNumWidgets,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetNumWidgets,0)
+
+/** ni -> iUIContext::GetWidget/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,GetWidget,1)
+
+/** ni -> iUIContext::SerializeWidget/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,SerializeWidget,4)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_VAR(tWidgetSerializeFlags,anFlags)
+	IDLC_BUF_TO_ENUM(tWidgetSerializeFlags,anFlags)
+	IDLC_DECL_VAR(iRegex*,apFilter)
+	IDLC_BUF_TO_INTF(iRegex,apFilter)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SerializeWidget,4,(apWidget,apDT,anFlags,apFilter))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SerializeWidget,4)
+
+/** ni -> iUIContext::CreateWidgetCommand/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateWidgetCommand,0)
+	IDLC_DECL_RETVAR(iWidgetCommand*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateWidgetCommand,0,())
+	IDLC_RET_FROM_INTF(iWidgetCommand,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateWidgetCommand,0)
+
+/** ni -> iUIContext::SendCommand/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,SendCommand,2)
+	IDLC_DECL_VAR(iWidget*,apDest)
+	IDLC_BUF_TO_INTF(iWidget,apDest)
+	IDLC_DECL_VAR(iWidgetCommand*,apCmd)
+	IDLC_BUF_TO_INTF(iWidgetCommand,apCmd)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SendCommand,2,(apDest,apCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SendCommand,2)
+
+/** ni -> iUIContext::Draw/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,Draw,0)
+	IDLC_METH_CALL_VOID(ni,iUIContext,Draw,0,())
+IDLC_METH_END(ni,iUIContext,Draw,0)
+
+/** ni -> iUIContext::DrawCursor/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,DrawCursor,1)
+	IDLC_DECL_VAR(iOSWindow*,apWindow)
+	IDLC_BUF_TO_INTF(iOSWindow,apWindow)
+	IDLC_METH_CALL_VOID(ni,iUIContext,DrawCursor,1,(apWindow))
+IDLC_METH_END(ni,iUIContext,DrawCursor,1)
+
+/** ni -> iUIContext::Update/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,Update,1)
+	IDLC_DECL_VAR(tF32,fTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fTime)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,Update,1,(fTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,Update,1)
+
+/** ni -> iUIContext::Resize/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,Resize,2)
+	IDLC_DECL_VAR(sRectf,aRootRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRootRect)
+	IDLC_DECL_VAR(tF32,afContentsScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afContentsScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,Resize,2,(aRootRect,afContentsScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,Resize,2)
+
+/** ni -> iUIContext::GetContentsScale/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetContentsScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetContentsScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetContentsScale,0)
+
+/** ni -> iUIContext::SetDebugDraw/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDebugDraw,1)
+	IDLC_DECL_VAR(tBool,abDebug)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abDebug)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetDebugDraw,1,(abDebug))
+IDLC_METH_END(ni,iUIContext,SetDebugDraw,1)
+
+/** ni -> iUIContext::GetDebugDraw/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDebugDraw,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDebugDraw,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDebugDraw,0)
+
+/** ni -> iUIContext::SetCursor/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetCursor,1)
+	IDLC_DECL_VAR(iOverlay*,pCursor)
+	IDLC_BUF_TO_INTF(iOverlay,pCursor)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SetCursor,1,(pCursor))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SetCursor,1)
+
+/** ni -> iUIContext::GetCursor/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetCursor,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetCursor,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iUIContext,GetCursor,0)
+
+/** ni -> iUIContext::GetCursorPosition/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetCursorPosition,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetCursorPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iUIContext,GetCursorPosition,0)
+
+/** ni -> iUIContext::InitializeDefaultToolbar/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iUIContext::InitializeDefaultToolbar/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,InitializeDefaultToolbar,0)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InitializeDefaultToolbar,0,())
+IDLC_METH_END(ni,iUIContext,InitializeDefaultToolbar,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iUIContext::SetToolbar/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iUIContext::SetToolbar/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetToolbar,1)
+	IDLC_DECL_VAR(iWidget*,apToolbar)
+	IDLC_BUF_TO_INTF(iWidget,apToolbar)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,SetToolbar,1,(apToolbar))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,SetToolbar,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iUIContext::GetToolbar/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iUIContext::GetToolbar/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetToolbar,0)
+	IDLC_DECL_RETVAR(ni::iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetToolbar,0,())
+	IDLC_RET_FROM_INTF(ni::iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,GetToolbar,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iUIContext::SetDrawOpCapture/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDrawOpCapture,1)
+	IDLC_DECL_VAR(tBool,abEnabled)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abEnabled)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetDrawOpCapture,1,(abEnabled))
+IDLC_METH_END(ni,iUIContext,SetDrawOpCapture,1)
+
+/** ni -> iUIContext::GetDrawOpCapture/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDrawOpCapture,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDrawOpCapture,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDrawOpCapture,0)
+
+/** ni -> iUIContext::DrawWidget/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,DrawWidget,2)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,DrawWidget,2,(apWidget,apCanvas))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,DrawWidget,2)
+
+/** ni -> iUIContext::DrawTransformedWidget/3 **/
+IDLC_METH_BEGIN(ni,iUIContext,DrawTransformedWidget,3)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
+	IDLC_DECL_VAR(sMatrixf,aBaseMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aBaseMatrix)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,DrawTransformedWidget,3,(apWidget,apCanvas,aBaseMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,DrawTransformedWidget,3)
+
+/** ni -> iUIContext::SetDragStartDistance/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDragStartDistance,1)
+	IDLC_DECL_VAR(tU32,anPixelDistance)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPixelDistance)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetDragStartDistance,1,(anPixelDistance))
+IDLC_METH_END(ni,iUIContext,SetDragStartDistance,1)
+
+/** ni -> iUIContext::GetDragStartDistance/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDragStartDistance,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDragStartDistance,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDragStartDistance,0)
+
+/** ni -> iUIContext::SetDragFingerStartDistance/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetDragFingerStartDistance,2)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_VAR(tU32,anPixelDistance)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPixelDistance)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetDragFingerStartDistance,2,(anFinger,anPixelDistance))
+IDLC_METH_END(ni,iUIContext,SetDragFingerStartDistance,2)
+
+/** ni -> iUIContext::GetDragFingerStartDistance/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetDragFingerStartDistance,1)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetDragFingerStartDistance,1,(anFinger))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUIContext,GetDragFingerStartDistance,1)
+
+/** ni -> iUIContext::GetFingerPosition/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetFingerPosition,1)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetFingerPosition,1,(anFinger))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iUIContext,GetFingerPosition,1)
+
+/** ni -> iUIContext::GetFingerDown/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetFingerDown,1)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetFingerDown,1,(anFinger))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,GetFingerDown,1)
+
+/** ni -> iUIContext::ClearShortcuts/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,ClearShortcuts,0)
+	IDLC_METH_CALL_VOID(ni,iUIContext,ClearShortcuts,0,())
+IDLC_METH_END(ni,iUIContext,ClearShortcuts,0)
+
+/** ni -> iUIContext::AddShortcut/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,AddShortcut,2)
+	IDLC_DECL_VAR(tU32,anKey)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anKey)
+	IDLC_DECL_VAR(iHString*,ahspCmd)
+	IDLC_BUF_TO_INTF(iHString,ahspCmd)
+	IDLC_METH_CALL_VOID(ni,iUIContext,AddShortcut,2,(anKey,ahspCmd))
+IDLC_METH_END(ni,iUIContext,AddShortcut,2)
+
+/** ni -> iUIContext::RemoveShortcut/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,RemoveShortcut,1)
+	IDLC_DECL_VAR(tU32,anKey)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anKey)
+	IDLC_METH_CALL_VOID(ni,iUIContext,RemoveShortcut,1,(anKey))
+IDLC_METH_END(ni,iUIContext,RemoveShortcut,1)
+
+/** ni -> iUIContext::GetShortcutCommand/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetShortcutCommand,1)
+	IDLC_DECL_VAR(tU32,anKey)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anKey)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetShortcutCommand,1,(anKey))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iUIContext,GetShortcutCommand,1)
+
+/** ni -> iUIContext::GetKeyDown/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetKeyDown,1)
+	IDLC_DECL_VAR(tU8,aKey)
+	IDLC_BUF_TO_BASE(ni::eType_U8,aKey)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetKeyDown,1,(aKey))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,GetKeyDown,1)
+
+/** ni -> iUIContext::InputFingerMove/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputFingerMove,2)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_VAR(sVec3f,avPosition)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPosition)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputFingerMove,2,(anFinger,avPosition))
+IDLC_METH_END(ni,iUIContext,InputFingerMove,2)
+
+/** ni -> iUIContext::InputFingerRelativeMove/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputFingerRelativeMove,2)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_VAR(sVec3f,avRelMove)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avRelMove)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputFingerRelativeMove,2,(anFinger,avRelMove))
+IDLC_METH_END(ni,iUIContext,InputFingerRelativeMove,2)
+
+/** ni -> iUIContext::InputFingerPress/3 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputFingerPress,3)
+	IDLC_DECL_VAR(tU32,anFinger)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anFinger)
+	IDLC_DECL_VAR(sVec3f,avPosition)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPosition)
+	IDLC_DECL_VAR(tBool,abDown)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abDown)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputFingerPress,3,(anFinger,avPosition,abDown))
+IDLC_METH_END(ni,iUIContext,InputFingerPress,3)
+
+/** ni -> iUIContext::InputKeyPress/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputKeyPress,2)
+	IDLC_DECL_VAR(eKey,aKey)
+	IDLC_BUF_TO_ENUM(eKey,aKey)
+	IDLC_DECL_VAR(tBool,abDown)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abDown)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputKeyPress,2,(aKey,abDown))
+IDLC_METH_END(ni,iUIContext,InputKeyPress,2)
+
+/** ni -> iUIContext::InputKeyChar/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputKeyChar,2)
+	IDLC_DECL_VAR(tU32,aCharCodePoint)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aCharCodePoint)
+	IDLC_DECL_VAR(eKey,aKeyLeadingToKeyChar)
+	IDLC_BUF_TO_ENUM(eKey,aKeyLeadingToKeyChar)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputKeyChar,2,(aCharCodePoint,aKeyLeadingToKeyChar))
+IDLC_METH_END(ni,iUIContext,InputKeyChar,2)
+
+/** ni -> iUIContext::InputMouseWheel/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputMouseWheel,1)
+	IDLC_DECL_VAR(tF32,afDelta)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afDelta)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputMouseWheel,1,(afDelta))
+IDLC_METH_END(ni,iUIContext,InputMouseWheel,1)
+
+/** ni -> iUIContext::InputDoubleClick/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputDoubleClick,1)
+	IDLC_DECL_VAR(ePointerButton,aPointer)
+	IDLC_BUF_TO_ENUM(ePointerButton,aPointer)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputDoubleClick,1,(aPointer))
+IDLC_METH_END(ni,iUIContext,InputDoubleClick,1)
+
+/** ni -> iUIContext::InputRelativeMouseMove/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputRelativeMouseMove,1)
+	IDLC_DECL_VAR(sVec2f,avRelMove)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avRelMove)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputRelativeMouseMove,1,(avRelMove))
+IDLC_METH_END(ni,iUIContext,InputRelativeMouseMove,1)
+
+/** ni -> iUIContext::InputGameCtrl/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputGameCtrl,1)
+	IDLC_DECL_VAR(iGameCtrl*,apGameController)
+	IDLC_BUF_TO_INTF(iGameCtrl,apGameController)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputGameCtrl,1,(apGameController))
+IDLC_METH_END(ni,iUIContext,InputGameCtrl,1)
+
+/** ni -> iUIContext::InputPinch/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,InputPinch,2)
+	IDLC_DECL_VAR(tF32,afScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afScale)
+	IDLC_DECL_VAR(eGestureState,aState)
+	IDLC_BUF_TO_ENUM(eGestureState,aState)
+	IDLC_METH_CALL_VOID(ni,iUIContext,InputPinch,2,(afScale,aState))
+IDLC_METH_END(ni,iUIContext,InputPinch,2)
+
+/** ni -> iUIContext::GetFocusedWidget/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetFocusedWidget,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetFocusedWidget,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iUIContext,GetFocusedWidget,0)
+
+/** ni -> iUIContext::CreateProfDraw/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateProfDraw,2)
+	IDLC_DECL_VAR(iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
+	IDLC_DECL_VAR(iFont*,apFont)
+	IDLC_BUF_TO_INTF(iFont,apFont)
+	IDLC_DECL_RETVAR(iProfDraw*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateProfDraw,2,(apCanvas,apFont))
+	IDLC_RET_FROM_INTF(iProfDraw,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateProfDraw,2)
+
+IDLC_END_INTF(ni,iUIContext)
+
+IDLC_END_NAMESPACE()
+// EOF //

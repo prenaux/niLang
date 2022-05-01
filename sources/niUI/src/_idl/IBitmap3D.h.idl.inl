@@ -1,0 +1,138 @@
+#include "../API/niUI/IBitmap3D.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iBitmap3D **/
+IDLC_BEGIN_INTF(ni,iBitmap3D)
+/** ni -> iBitmap3D::SetMemoryAddress/4 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::GetRowPitch/0 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetRowPitch,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetRowPitch,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetRowPitch,0)
+
+/** ni -> iBitmap3D::GetSlicePitch/0 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetSlicePitch,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetSlicePitch,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetSlicePitch,0)
+
+/** ni -> iBitmap3D::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetSize,0)
+
+/** ni -> iBitmap3D::GetData/0 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::GetSlicePtr/1 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::CreateSliceBitmap/1 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::CreateResized/3 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,CreateResized,3)
+	IDLC_DECL_VAR(tU32,anW)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anW)
+	IDLC_DECL_VAR(tU32,anH)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anH)
+	IDLC_DECL_VAR(tU32,anD)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anD)
+	IDLC_DECL_RETVAR(iBitmap3D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,CreateResized,3,(anW,anH,anD))
+	IDLC_RET_FROM_INTF(iBitmap3D,_Ret)
+IDLC_METH_END(ni,iBitmap3D,CreateResized,3)
+
+/** ni -> iBitmap3D::GetMipMap/1 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetMipMap,1)
+	IDLC_DECL_VAR(tU32,ulIdx)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulIdx)
+	IDLC_DECL_RETVAR(iBitmap3D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetMipMap,1,(ulIdx))
+	IDLC_RET_FROM_INTF(iBitmap3D,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetMipMap,1)
+
+/** ni -> iBitmap3D::GetLevel/1 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetLevel,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iBitmap3D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetLevel,1,(anIndex))
+	IDLC_RET_FROM_INTF(iBitmap3D,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetLevel,1)
+
+/** ni -> iBitmap3D::BeginUnpackPixels/0 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,BeginUnpackPixels,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,BeginUnpackPixels,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmap3D,BeginUnpackPixels,0)
+
+/** ni -> iBitmap3D::EndUnpackPixels/0 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,EndUnpackPixels,0)
+	IDLC_METH_CALL_VOID(ni,iBitmap3D,EndUnpackPixels,0,())
+IDLC_METH_END(ni,iBitmap3D,EndUnpackPixels,0)
+
+/** ni -> iBitmap3D::Blit/4 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,Blit,4)
+	IDLC_DECL_VAR(iBitmap3D*,apSrc)
+	IDLC_BUF_TO_INTF(iBitmap3D,apSrc)
+	IDLC_DECL_VAR(sVec3i,avSrcMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avSrcMin)
+	IDLC_DECL_VAR(sVec3i,avDestMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avDestMin)
+	IDLC_DECL_VAR(sVec3i,avSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avSize)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,Blit,4,(apSrc,avSrcMin,avDestMin,avSize))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iBitmap3D,Blit,4)
+
+/** ni -> iBitmap3D::PutPixel/2 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::GetPixel/2 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::Clear/1 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::ClearBox/3 -> NO AUTOMATION **/
+/** ni -> iBitmap3D::PutPixelf/2 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,PutPixelf,2)
+	IDLC_DECL_VAR(sVec3i,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sColor4f,avCol)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avCol)
+	IDLC_METH_CALL_VOID(ni,iBitmap3D,PutPixelf,2,(avPos,avCol))
+IDLC_METH_END(ni,iBitmap3D,PutPixelf,2)
+
+/** ni -> iBitmap3D::GetPixelf/1 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,GetPixelf,1)
+	IDLC_DECL_VAR(sVec3i,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_RETVAR(sColor4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iBitmap3D,GetPixelf,1,(avPos))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iBitmap3D,GetPixelf,1)
+
+/** ni -> iBitmap3D::Clearf/1 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,Clearf,1)
+	IDLC_DECL_VAR(sColor4f,avCol)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avCol)
+	IDLC_METH_CALL_VOID(ni,iBitmap3D,Clearf,1,(avCol))
+IDLC_METH_END(ni,iBitmap3D,Clearf,1)
+
+/** ni -> iBitmap3D::ClearBoxf/3 **/
+IDLC_METH_BEGIN(ni,iBitmap3D,ClearBoxf,3)
+	IDLC_DECL_VAR(sVec3i,avMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avMin)
+	IDLC_DECL_VAR(sVec3i,avMax)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer,avMax)
+	IDLC_DECL_VAR(sColor4f,avCol)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avCol)
+	IDLC_METH_CALL_VOID(ni,iBitmap3D,ClearBoxf,3,(avMin,avMax,avCol))
+IDLC_METH_END(ni,iBitmap3D,ClearBoxf,3)
+
+IDLC_END_INTF(ni,iBitmap3D)
+
+IDLC_END_NAMESPACE()
+// EOF //

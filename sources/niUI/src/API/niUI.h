@@ -1,0 +1,62 @@
+#ifndef __UI_56095421_H__
+#define __UI_56095421_H__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include <niLang.h>
+
+#include "niUI/GraphicsEnum.h"
+#include "niUI/IPixelFormat.h"
+#include "niUI/IBitmapBase.h"
+#include "niUI/IBitmap2D.h"
+#include "niUI/IBitmapCube.h"
+#include "niUI/IBitmap3D.h"
+#include "niUI/IFrustum.h"
+#include "niUI/ICamera.h"
+#include "niUI/ITransform.h"
+#include "niUI/ITexture.h"
+#include "niUI/IVertexArray.h"
+#include "niUI/IShader.h"
+#include "niUI/IMaterial.h"
+#include "niUI/IMaterialLibrary.h"
+#include "niUI/IOcclusionQuery.h"
+#include "niUI/IIndexArray.h"
+#include "niUI/IGeometry.h"
+#include "niUI/IGraphicsStates.h"
+#include "niUI/IGraphicsContext.h"
+#include "niUI/IGraphicsDriver.h"
+#include "niUI/IDrawOperation.h"
+#include "niUI/IDrawOperationSet.h"
+#include "niUI/IFont.h"
+#include "niUI/IOverlay.h"
+#include "niUI/IImageMap.h"
+#include "niUI/IImage.h"
+#include "niUI/ICanvas.h"
+#include "niUI/IGraphics.h"
+
+#include "niUI/UIMessages.h"
+#include "niUI/IWidget.h"
+#include "niUI/IWidgetCanvas.h"
+#include "niUI/IWidgetButton.h"
+#include "niUI/IWidgetScrollBar.h"
+#include "niUI/IWidgetListBox.h"
+#include "niUI/IWidgetEditBox.h"
+#include "niUI/IWidgetComboBox.h"
+#include "niUI/IWidgetProgressBar.h"
+#include "niUI/IWidgetGroup.h"
+#include "niUI/IWidgetTab.h"
+#include "niUI/IWidgetLabel.h"
+#include "niUI/IWidgetMenu.h"
+#include "niUI/IWidgetTree.h"
+#include "niUI/IWidgetForm.h"
+#include "niUI/IWidgetToolbar.h"
+#include "niUI/IWidgetDock.h"
+#include "niUI/IWidgetSplitter.h"
+#include "niUI/IWidgetPropertyBox.h"
+#include "niUI/IWidgetColorPicker.h"
+#include "niUI/IWidgetSearchBar.h"
+#include "niUI/IWidgetText.h"
+#include "niUI/IUIContext.h"
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __UI_56095421_H__

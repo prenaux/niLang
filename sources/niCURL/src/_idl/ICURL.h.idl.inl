@@ -1,0 +1,223 @@
+#include "../API/niCURL/ICURL.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iCURL **/
+IDLC_BEGIN_INTF(ni,iCURL)
+/** ni -> iCURL::GetVersion/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetVersion,0)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetVersion,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iCURL,GetVersion,0)
+
+/** ni -> iCURL::GetProtocols/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetProtocols,0)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetProtocols,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iCURL,GetProtocols,0)
+
+/** ni -> iCURL::SetConnectionTimeoutInSecs/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetConnectionTimeoutInSecs,1)
+	IDLC_DECL_VAR(tU32,anInSecs)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInSecs)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetConnectionTimeoutInSecs,1,(anInSecs))
+IDLC_METH_END(ni,iCURL,SetConnectionTimeoutInSecs,1)
+
+/** ni -> iCURL::GetConnectionTimeoutInSecs/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetConnectionTimeoutInSecs,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetConnectionTimeoutInSecs,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iCURL,GetConnectionTimeoutInSecs,0)
+
+/** ni -> iCURL::SetRequestTimeoutInSecs/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetRequestTimeoutInSecs,1)
+	IDLC_DECL_VAR(tU32,anInSecs)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInSecs)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetRequestTimeoutInSecs,1,(anInSecs))
+IDLC_METH_END(ni,iCURL,SetRequestTimeoutInSecs,1)
+
+/** ni -> iCURL::GetRequestTimeoutInSecs/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetRequestTimeoutInSecs,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetRequestTimeoutInSecs,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iCURL,GetRequestTimeoutInSecs,0)
+
+/** ni -> iCURL::SetUserAgent/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetUserAgent,1)
+	IDLC_DECL_VAR(achar*,aaszUserAgent)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszUserAgent)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetUserAgent,1,(aaszUserAgent))
+IDLC_METH_END(ni,iCURL,SetUserAgent,1)
+
+/** ni -> iCURL::GetUserAgent/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetUserAgent,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetUserAgent,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCURL,GetUserAgent,0)
+
+/** ni -> iCURL::SetUserName/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetUserName,1)
+	IDLC_DECL_VAR(achar*,aaszUserName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszUserName)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetUserName,1,(aaszUserName))
+IDLC_METH_END(ni,iCURL,SetUserName,1)
+
+/** ni -> iCURL::GetUserName/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetUserName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetUserName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCURL,GetUserName,0)
+
+/** ni -> iCURL::SetUserPass/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetUserPass,1)
+	IDLC_DECL_VAR(achar*,aaszUserPass)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszUserPass)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetUserPass,1,(aaszUserPass))
+IDLC_METH_END(ni,iCURL,SetUserPass,1)
+
+/** ni -> iCURL::GetUserPass/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetUserPass,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetUserPass,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCURL,GetUserPass,0)
+
+/** ni -> iCURL::SetHttpAuth/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetHttpAuth,1)
+	IDLC_DECL_VAR(eCURLHttpAuth,aHttpAuth)
+	IDLC_BUF_TO_ENUM(eCURLHttpAuth,aHttpAuth)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetHttpAuth,1,(aHttpAuth))
+IDLC_METH_END(ni,iCURL,SetHttpAuth,1)
+
+/** ni -> iCURL::GetHttpAuth/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetHttpAuth,0)
+	IDLC_DECL_RETVAR(eCURLHttpAuth,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetHttpAuth,0,())
+	IDLC_RET_FROM_ENUM(eCURLHttpAuth,_Ret)
+IDLC_METH_END(ni,iCURL,GetHttpAuth,0)
+
+/** ni -> iCURL::URLGet/5 **/
+IDLC_METH_BEGIN(ni,iCURL,URLGet,5)
+	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMessageHandler)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(iFile*,apRecvData)
+	IDLC_BUF_TO_INTF(iFile,apRecvData)
+	IDLC_DECL_VAR(iFile*,apRecvHeader)
+	IDLC_BUF_TO_INTF(iFile,apRecvHeader)
+	IDLC_DECL_VAR(tStringCVec*,apHeaders)
+	IDLC_BUF_TO_INTF(tStringCVec,apHeaders)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLGet,5,(apMessageHandler,aURL,apRecvData,apRecvHeader,apHeaders))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iCURL,URLGet,5)
+
+/** ni -> iCURL::URLPostFile/7 **/
+IDLC_METH_BEGIN(ni,iCURL,URLPostFile,7)
+	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMessageHandler)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(iFile*,apRecvData)
+	IDLC_BUF_TO_INTF(iFile,apRecvData)
+	IDLC_DECL_VAR(iFile*,apRecvHeader)
+	IDLC_BUF_TO_INTF(iFile,apRecvHeader)
+	IDLC_DECL_VAR(iFile*,apPostData)
+	IDLC_BUF_TO_INTF(iFile,apPostData)
+	IDLC_DECL_VAR(tStringCVec*,apHeaders)
+	IDLC_BUF_TO_INTF(tStringCVec,apHeaders)
+	IDLC_DECL_VAR(achar*,aContentType)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aContentType)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLPostFile,7,(apMessageHandler,aURL,apRecvData,apRecvHeader,apPostData,apHeaders,aContentType))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iCURL,URLPostFile,7)
+
+/** ni -> iCURL::URLPostFields/7 **/
+IDLC_METH_BEGIN(ni,iCURL,URLPostFields,7)
+	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMessageHandler)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(iFile*,apRecvData)
+	IDLC_BUF_TO_INTF(iFile,apRecvData)
+	IDLC_DECL_VAR(iFile*,apRecvHeader)
+	IDLC_BUF_TO_INTF(iFile,apRecvHeader)
+	IDLC_DECL_VAR(achar*,aPostFields)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aPostFields)
+	IDLC_DECL_VAR(tStringCVec*,apHeaders)
+	IDLC_BUF_TO_INTF(tStringCVec,apHeaders)
+	IDLC_DECL_VAR(achar*,aContentType)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aContentType)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLPostFields,7,(apMessageHandler,aURL,apRecvData,apRecvHeader,aPostFields,apHeaders,aContentType))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iCURL,URLPostFields,7)
+
+/** ni -> iCURL::URLPostRaw/8 -> NO AUTOMATION **/
+/** ni -> iCURL::URLPostMultiPart/5 **/
+IDLC_METH_BEGIN(ni,iCURL,URLPostMultiPart,5)
+	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMessageHandler)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(iFile*,apRecvData)
+	IDLC_BUF_TO_INTF(iFile,apRecvData)
+	IDLC_DECL_VAR(iFile*,apRecvHeader)
+	IDLC_BUF_TO_INTF(iFile,apRecvHeader)
+	IDLC_DECL_VAR(tStringCMap*,apPostFields)
+	IDLC_BUF_TO_INTF(tStringCMap,apPostFields)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLPostMultiPart,5,(apMessageHandler,aURL,apRecvData,apRecvHeader,apPostFields))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iCURL,URLPostMultiPart,5)
+
+/** ni -> iCURL::URLGetMultiPart/3 **/
+IDLC_METH_BEGIN(ni,iCURL,URLGetMultiPart,3)
+	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMessageHandler)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(achar*,aPartExt)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aPartExt)
+	IDLC_DECL_RETVAR(Ptr<iRunnable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLGetMultiPart,3,(apMessageHandler,aURL,aPartExt))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iCURL,URLGetMultiPart,3)
+
+/** ni -> iCURL::URLGetString/1 **/
+IDLC_METH_BEGIN(ni,iCURL,URLGetString,1)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLGetString,1,(aURL))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iCURL,URLGetString,1)
+
+/** ni -> iCURL::URLGetDataTable/2 **/
+IDLC_METH_BEGIN(ni,iCURL,URLGetDataTable,2)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_VAR(iDataTable*,apResult)
+	IDLC_BUF_TO_INTF(iDataTable,apResult)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,URLGetDataTable,2,(aURL,apResult))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iCURL,URLGetDataTable,2)
+
+IDLC_END_INTF(ni,iCURL)
+
+IDLC_END_NAMESPACE()
+// EOF //

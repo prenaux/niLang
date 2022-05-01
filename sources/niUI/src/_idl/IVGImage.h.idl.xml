@@ -1,0 +1,243 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eVGWrapType">
+			<comments desc="VG wrap type. "/>
+			<value name="eVGWrapType_Clamp" value="0 ">
+				<comments desc="Clamp, the edge color is used when outside of the source rectangle. "/>
+			</value>
+			<value name="eVGWrapType_Repeat" value="1 ">
+				<comments desc="Repeat, the source is repeated at each source rectangle boundary. "/>
+			</value>
+			<value name="eVGWrapType_Mirror" value="2 ">
+				<comments desc="Mirror, the source is mirror at each source rectangle boundary. "/>
+			</value>
+			<value name="eVGWrapType_Pad" value="3 ">
+				<comments desc="Padding, the background color is used when outside of the source rectangle. ">
+					<remark text="Not supported by gradients. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eVGImageFilter">
+			<comments desc="VG Image filter. "/>
+			<value name="eVGImageFilter_Point" value="0 ">
+				<comments desc="No filter. "/>
+			</value>
+			<value name="eVGImageFilter_Bilinear" value="1 ">
+				<comments desc="Bilinear filter. "/>
+			</value>
+			<value name="eVGImageFilter_Bicubic" value="2 ">
+				<comments desc="Bicubic filter. "/>
+			</value>
+			<value name="eVGImageFilter_Spline16" value="3 ">
+				<comments desc="Spline16 filter. "/>
+			</value>
+			<value name="eVGImageFilter_Spline36" value="4 ">
+				<comments desc="Spline36 filter. "/>
+			</value>
+			<value name="eVGImageFilter_Hanning" value="5 ">
+				<comments desc="Hanning filter. "/>
+			</value>
+			<value name="eVGImageFilter_Hamming" value="6 ">
+				<comments desc="Hamming filter. "/>
+			</value>
+			<value name="eVGImageFilter_Hermite" value="7 ">
+				<comments desc="Hermite filter. "/>
+			</value>
+			<value name="eVGImageFilter_Kaiser" value="8 ">
+				<comments desc="Kaiser filter. "/>
+			</value>
+			<value name="eVGImageFilter_Quadric" value="9 ">
+				<comments desc="Quadric filter. "/>
+			</value>
+			<value name="eVGImageFilter_Catrom" value="10 ">
+				<comments desc="Catrom filter. "/>
+			</value>
+			<value name="eVGImageFilter_Gaussian" value="11 ">
+				<comments desc="Gaussian filter. "/>
+			</value>
+			<value name="eVGImageFilter_Bessel" value="12 ">
+				<comments desc="Bessel filter. "/>
+			</value>
+			<value name="eVGImageFilter_Mitchell" value="13 ">
+				<comments desc="Mitchell filter. "/>
+			</value>
+			<value name="eVGImageFilter_Sinc" value="14 ">
+				<comments desc="Sinc filter. "/>
+			</value>
+			<value name="eVGImageFilter_Lanczos" value="15 ">
+				<comments desc="Lanczos filter. "/>
+			</value>
+			<value name="eVGImageFilter_Blackman" value="16 ">
+				<comments desc="Blackman filter. "/>
+			</value>
+			<value name="eVGImageFilter_Last" value="17 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eVGImageUsage">
+			<comments desc="VGImage usage. "/>
+			<value name="eVGImageUsage_Source" value="0 ">
+				<comments desc="The usage is read-only to be used a source for rendering. ">
+					<remark text="No dirty region is added. "/>
+				</comments>
+			</value>
+			<value name="eVGImageUsage_Target" value="1 ">
+				<comments desc="The usage is write-only to be used as a render target. ">
+					<remark text="For texture this will force the creation of a render target texture. Once a render target has been created the image will always remain a render target. "/>
+				</comments>
+			</value>
+			<value name="eVGImageUsage_DepthStencil" value="2 ">
+				<comments desc="For GetTexture only, grabs the depth stencil for rendering. "/>
+			</value>
+		</enum>
+		<interface name="iVGImage" uuid1="848A96E9-4B5C-43CF-9C61-A26DF54C7F07" uuid2="0x848a96e9,0x4b5c,0x43cf,0x9c,0x61,0xa2,0x6d,0xf5,0x4c,0x7f,0x07">
+			<comments desc="VGImage interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the specified image. ">
+					<remark text="Copy the bitmap&apos;s content. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apImage"
+					type="iVGImage *"
+					typec="iVGImage*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this image. ">
+					<remark text="Clone the bitmap&apos;s content. "/>
+				</comments>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasBitmap"
+				name="GetHasBitmap"
+				num_parameters="0"
+				property="get"
+				property_name2="hasBitmap"
+				property_name="has_bitmap">
+				<comments desc="Get whether a bitmap is already initialized in the image. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="grabBitmap" name="GrabBitmap" num_parameters="2">
+				<comments desc="Grab the image as a bitmap to be used for some other operations. ">
+					<remark text="This function only adds a dirty rectangles and manage the bitmap&apos;s update from the texture. "/>
+					<remark text="Pass a Null rectangle to identity the whole image size. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aLock"
+					type="eVGImageUsage"
+					typec="eVGImageUsage"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aDirtyRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasTexture"
+				name="GetHasTexture"
+				num_parameters="0"
+				property="get"
+				property_name2="hasTexture"
+				property_name="has_texture">
+				<comments desc="Get whether a texture is already initialized in the image. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasDepthStencil"
+				name="GetHasDepthStencil"
+				num_parameters="0"
+				property="get"
+				property_name2="hasDepthStencil"
+				property_name="has_depth_stencil">
+				<comments desc="Get whether a depth stencil is already initialized in the image. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="grabTexture" name="GrabTexture" num_parameters="2">
+				<comments desc="Grab the image as a texture to be used for some other operations. ">
+					<remark text="This function only adds a dirty rectangles and manage the texture&apos;s update from the bitmap. "/>
+					<remark text="Pass a Null rectangle to identity the whole image size. "/>
+				</comments>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aLock"
+					type="eVGImageUsage"
+					typec="eVGImageUsage"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aDirtyRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidth"
+				name="GetWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="width"
+				property_name="width">
+				<comments desc="Get the image&apos;s width. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the image&apos;s height. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the image&apos;s size in a vector2f. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method java_name="resize" name="Resize" num_parameters="2">
+				<comments desc="Resize the image. ">
+					<remark text="This will clear the image&apos;s content. "/>
+					<remark text="Resize will fail if the size is smaller than one. "/>
+					<remark text="When resize fail the previous image&apos;s state is preserved. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anNewWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anNewHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

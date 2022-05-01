@@ -1,0 +1,258 @@
+#----------------------------------------------------------------------
+#     DX9 SDK
+#----------------------------------------------------------------------
+if $(WINDOWS) = 1 {
+  SDK_DIR_DX9_2004 = [ FDirName $(HAM_HOME) toolsets dx9sdk2004 dist ] ;
+  rule SDK_DX9_2004_Hdrs {
+    SubDirHdrs $(SDK_DIR_DX9_2004) include ;
+  }
+  rule SDK_DX9_2004_LinkLibs {
+    LINKLIBS on $(<) ?= $(LINKLIBS) ;
+    LINKLIBS on $(<) +=
+      [ FQuoteDirName $(SDK_DIR_DX9_2004) lib $(OSPLAT:L) d3dx9.lib ]
+      -NODEFAULTLIB:libcp.lib
+    ;
+  }
+
+  SDK_DIR_DX9_2010 = [ FDirName $(HAM_HOME) toolsets dx9sdk2010 dist ] ;
+  rule SDK_DX9_2010_Hdrs {
+    SubDirHdrs $(SDK_DIR_DX9_2010) include ;
+  }
+  rule SDK_DX9_2010_LinkLibs {
+    LINKLIBS on $(<) ?= $(LINKLIBS) ;
+    LINKLIBS on $(<) +=
+      [ FQuoteDirName $(SDK_DIR_DX9_2010) lib $(OSPLAT:L) d3dx9.lib ]
+    ;
+  }
+
+  SDK_DIR_DSHOW = [ FDirName $(HAM_HOME) toolsets dx9sdk2004 dist ] ;
+  rule SDK_DShow_Hdrs {
+    SubDirHdrs $(SDK_DIR_DSHOW) include ;
+  }
+}
+
+#----------------------------------------------------------------------
+#     MBEDTLS
+#----------------------------------------------------------------------
+MBEDTLS = [ FDirName $(WORK) niLang sources niLang src mbedtls ] ;
+rule MBEDTLS_Hdrs {
+  SubDirHdrs $(MBEDTLS) include ;
+}
+
+#----------------------------------------------------------------------
+#     Custom rules to simplify static linking
+#----------------------------------------------------------------------
+
+if $(NO_THREADS) = 1 {
+  ECHO "I/NO_THREADS, no video player." ;
+}
+else {
+  NI_VIDEO_USE_IPCAM ?= 1 ;
+  NI_VIDEO_USE_OGG ?= 1 ;
+  NI_VIDEO_USE_THEORAPLAYER ?= 1 ;
+
+  # Pierre: FFmpeg is disabled, I'm keeping this here so that the next personn
+  # that thinks about using FFmpeg knows that we've already done it. And while
+  # it works FFmpeg is not acceptable in production as it is generally very
+  # unstable and will make your apps crash in various fun ways. What we always
+  # end up doing is to rewrite the codec we need, such as MJpeg for the IP
+  # camera. If you need video use OGG, use MJpeg for IP cameras, and if you
+  # really need something else use the OS's builtin APIs. FFmpeg is not worth
+  # it...
+  NI_VIDEO_USE_FFMPEG ?= 0 ;
+  if $(IOS) = 1 {
+    NI_VIDEO_USE_FFMPEG ?= 1 ;
+    FFMPEG_USE_SDK = 1 ;
+    FFMPEG_SDK_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 ios ] ;
+    FFMPEG_SDK_LIB_DIR = [ FDirName $(FFMPEG_SDK_DIR) lib ] ;
+    if $(NI_VIDEO_USE_FFMPEG) = 1 && ! [ FExists $(FFMPEG_SDK_DIR) ] {
+      EXIT "E/IOS using FFMpeg SDK but it can't be found at:" $(FFMPEG_SDK_DIR) ;
+    }
+  }
+  else if $(WINDOWS) = 1 {
+    NI_VIDEO_USE_FFMPEG ?= 1 ;
+    FFMPEG_USE_SDK = 1 ;
+    FFMPEG_SDK_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 nt-x86 ] ;
+    FFMPEG_SDK_LIB_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 nt-x86 lib $(CPU_ARCH) ] ;
+    FFMPEG_SDK_BIN_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 nt-x86 bin $(CPU_ARCH) ] ;
+    if $(NI_VIDEO_USE_FFMPEG) = 1 && ! [ FExists $(FFMPEG_SDK_DIR) ] {
+      EXIT "E/Windows using FFMpeg SDK but it can't be found at:" $(FFMPEG_SDK_DIR) ;
+    }
+  }
+  else if $(BIN_LOA) = osx-x64 {
+    NI_VIDEO_USE_FFMPEG ?= 1 ;
+    FFMPEG_USE_SDK = 1 ;
+    FFMPEG_SDK_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 osx-x64 ] ;
+    FFMPEG_SDK_LIB_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 osx-x64 lib ] ;
+    FFMPEG_SDK_BIN_DIR = [ FDirName $(HAM_HOME) pods ffmpeg-v3 osx-x64 bin ] ;
+    if $(NI_VIDEO_USE_FFMPEG) = 1 && ! [ FExists $(FFMPEG_SDK_DIR) ] {
+      EXIT "E/macOS using FFMpeg SDK but it can't be found at:" $(FFMPEG_SDK_DIR) ;
+    }
+  }
+  else if $(LINUX) = 1 || $(LOA_OS) = qnx {
+    NI_VIDEO_USE_FFMPEG = 0 ;
+    NI_VIDEO_USE_OGG = 0 ;
+    NI_VIDEO_USE_THEORAPLAYER = 0 ;
+    NI_VIDEO_USE_IPCAM = 0 ;
+  }
+}
+
+if $(WINDOWS) = 1 {
+  NI_VIDEO_USE_DSHOW ?= 1 ;
+  NI_VIDEO_USE_WEBCAM ?= 1 ;
+}
+
+rule niUI_Link_CopyDeps {
+  if $(WINDOWS) = 1 && $(NI_VIDEO_USE_FFMPEG) = 1 && $(FFMPEG_USE_SDK) = 1 {
+    local FFMPEG_DLLS = avcodec-57 avformat-57 avutil-55 postproc-54 swresample-2 swscale-4 ;
+    for dll in $(FFMPEG_DLLS) {
+      local src = [ FDirName $(FFMPEG_SDK_BIN_DIR) $(dll:S=$(SUFDLL)) ] ;
+      local dst = [ FDirName $(TK_DIR_BIN) $(dll:S=$(SUFDLL)) ] ;
+      # ECHO "... FFMPEG DLL "$(src)" -> "$(dst) ;
+      File $(dst) : $(src) ;
+      DEPENDS $(<) : $(dst) ;
+    }
+  }
+}
+
+rule niUI_LinkLibs_Deps {
+  niUI_Link_CopyDeps $(<) ;
+  tkLinkLibs $(<) : libMojoshader ;
+  if $(NI_VIDEO_USE_FFMPEG) = 1 {
+    if $(FFMPEG_USE_SDK) = 1 {
+      if $(WINDOWS) = 1 {
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) avutil-55$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) avcodec-57$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) avformat-57$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : Ws2_32.lib ;
+        TargetLinkFlags $(<) : -DELAYLOAD:avcodec-57.dll -DELAYLOAD:avformat-57.dll -DELAYLOAD:avutil-55.dll ;
+      }
+      else if $(BIN_LOA) = osx-x64 {
+        TargetLinkLibs $(<) :
+        -framework QuartzCore -framework QuartzCore -framework AppKit -framework OpenGL -framework QuartzCore -framework AppKit -framework OpenGL -framework QTKit -framework Foundation -framework QuartzCore -framework CoreVideo -framework Foundation -framework AVFoundation -framework CoreMedia -framework CoreFoundation -framework VideoToolbox -framework CoreMedia -framework CoreVideo -framework CoreFoundation -framework AudioToolbox -framework CoreMedia -framework VideoDecodeAcceleration -framework CoreFoundation -framework QuartzCore -framework CoreServices -framework Security -liconv -lbz2 ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libavutil$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libavfilter$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libavcodec$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libavformat$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libpostproc$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libswresample$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libswscale$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libfdk-aac$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libmp3lame$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libx264$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libx265$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libvpx$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libvidstab$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libopencore-amrwb$(SUFLIB) ] ;
+        TargetLinkLibs $(<) : [ FQuoteDirName $(FFMPEG_SDK_LIB_DIR) libopencore-amrnb$(SUFLIB) ] ;
+      }
+      else if $(IOS) = 1 {
+        # nothing to do, this has to be done in Xcode
+      }
+      else {
+        EXIT "E/Unknown platform to link ffmpeg !" ;
+      }
+    }
+    else {
+      tkLinkLibs $(<) : niUI_ffmpeg_base ;
+      tkLinkLibs $(<) : niUI_ffmpeg_codecs ;
+    }
+  }
+  if $(NI_VIDEO_USE_OGG) = 1 || $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
+    tkLinkLibs $(<) : niUI_ogg ;
+    if ! $(NO_THREADS) = 1 {
+      tkLinkLibs $(<) : niUI_theoraplayer ;
+    }
+  }
+  if $(WINDOWS) = 1 {
+    SDK_DX9_2004_LinkLibs $(<) ;
+  }
+  if $(NI_VIDEO_USE_WEBCAM) = 1 {
+    if $(WINDOWS) = 1 {
+      TargetLinkLibs $(<) : Mf.lib Mfplat.lib Mfreadwrite.lib Mfuuid.lib Shlwapi.lib Ole32.lib ;
+      TargetLinkFlags $(<) : -DELAYLOAD:mf.dll -DELAYLOAD:mfplat.dll -DELAYLOAD:mfreadwrite.dll -DELAYLOAD:Shlwapi.dll -DELAYLOAD:Ole32.dll ;
+    }
+  }
+}
+
+rule niUI_LinkLibs {
+  niUI_LinkLibs_Deps $(<) ;
+  if $(NI_VIDEO_USE_IPCAM) = 1 {
+    niCURL_LinkLibs $(<) ;
+  }
+  tkLinkLibs $(<) : niUI ;
+}
+
+rule niUI_LinkDll {
+  if $(NO_DLL) {
+    niUI_LinkLibs $(<) ;
+  }
+  else {
+    niUI_Link_CopyDeps $(<) ;
+    if $(NI_VIDEO_USE_IPCAM) = 1 {
+      niCURL_LinkDll $(<) ;
+    }
+    tkLinkDll $(<) : niUI ;
+  }
+}
+
+rule niImportModuleLibs_niUI {
+  niImportModuleHdrs niUI : $(1) ;
+  niUI_LinkLibs $(PKGTARGET) ;
+}
+
+rule niImportModuleDll_niUI {
+  niImportModuleHdrs niUI : $(1) ;
+  niUI_LinkDll $(PKGTARGET) ;
+}
+
+if $(JSCC) = 1 || $(WINRT) = 1 {
+  NO_NI_CURL = 1 ;
+}
+else if $(LINUX) = 1 || $(LOA_OS) = qnx {
+  USE_SYSTEM_LIBCURL = 1 ;
+}
+
+if ! $(NO_NI_CURL) = 1 {
+  rule niCURL_LinkLibs_Deps {
+    if $(USE_SYSTEM_LIBCURL) = 1 {
+      LINKLIBS on $(<) += -lcurl ;
+    }
+    else {
+      tkLinkLibs $(<) : libCURL ;
+    }
+  }
+
+  rule niCURL_LinkLibs {
+    niCURL_LinkLibs_Deps $(<) ;
+    tkLinkLibs $(<) : niCURL ;
+  }
+
+  rule niCURL_LinkDll {
+    if $(NO_DLL) = 1 {
+      niCURL_LinkLibs $(<) ;
+    }
+    else {
+      tkLinkDll $(<) : niCURL ;
+    }
+  }
+}
+else {
+  # No CURL, empty rules...
+  rule niCURL_LinkLibs_Deps {
+  }
+  rule niCURL_LinkLibs {
+  }
+  rule niCURL_LinkDll {
+  }
+}
+
+rule niImportModuleLibs_niCURL {
+  niImportModuleHdrs niCURL : $(1) ;
+  niCURL_LinkLibs $(PKGTARGET) ;
+}
+
+rule niImportModuleDll_niCURL {
+  niImportModuleHdrs niCURL : $(1) ;
+  niCURL_LinkDll $(PKGTARGET) ;
+}

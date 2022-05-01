@@ -1,0 +1,464 @@
+#include "../API/niUI/IVGTransform.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iVGTransform **/
+/** iVGTransform -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iVGTransform)
+/** ni -> iVGTransform::Copy/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Copy/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Copy,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,Copy,1,(apTransform))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGTransform,Copy,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Clone/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Clone/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Clone,0)
+	IDLC_DECL_RETVAR(iVGTransform*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,Clone,0,())
+	IDLC_RET_FROM_INTF(iVGTransform,_Ret)
+IDLC_METH_END(ni,iVGTransform,Clone,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Push/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Push/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Push,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,Push,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGTransform,Push,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Pop/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Pop/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Pop,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,Pop,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGTransform,Pop,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::SetMatrix/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::SetMatrix/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,SetMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,SetMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iVGTransform,SetMatrix,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetMatrix/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetMatrix/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetMatrix,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::SetValue/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::SetValue/2 **/
+IDLC_METH_BEGIN(ni,iVGTransform,SetValue,2)
+	IDLC_DECL_VAR(eVGTransformValue,aType)
+	IDLC_BUF_TO_ENUM(eVGTransformValue,aType)
+	IDLC_DECL_VAR(tF32,afValue)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afValue)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,SetValue,2,(aType,afValue))
+IDLC_METH_END(ni,iVGTransform,SetValue,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetValue/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetValue/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetValue,1)
+	IDLC_DECL_VAR(eVGTransformValue,aType)
+	IDLC_BUF_TO_ENUM(eVGTransformValue,aType)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetValue,1,(aType))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetValue,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::SetValues/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::SetValues/6 **/
+IDLC_METH_BEGIN(ni,iVGTransform,SetValues,6)
+	IDLC_DECL_VAR(tF32,m0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m0)
+	IDLC_DECL_VAR(tF32,m1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m1)
+	IDLC_DECL_VAR(tF32,m2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m2)
+	IDLC_DECL_VAR(tF32,m3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m3)
+	IDLC_DECL_VAR(tF32,m4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m4)
+	IDLC_DECL_VAR(tF32,m5)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m5)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,SetValues,6,(m0,m1,m2,m3,m4,m5))
+IDLC_METH_END(ni,iVGTransform,SetValues,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Identity/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Identity/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Identity,0)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Identity,0,())
+IDLC_METH_END(ni,iVGTransform,Identity,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Invert/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Invert/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Invert,0)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Invert,0,())
+IDLC_METH_END(ni,iVGTransform,Invert,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetIsIdentity/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetIsIdentity/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetIsIdentity,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetIsIdentity,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetIsIdentity,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::IsEqual/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::IsEqual/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,IsEqual,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,IsEqual,1,(apTransform))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGTransform,IsEqual,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetDeterminant/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetDeterminant/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetDeterminant,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetDeterminant,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetDeterminant,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::FlipX/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::FlipX/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,FlipX,0)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,FlipX,0,())
+IDLC_METH_END(ni,iVGTransform,FlipX,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::FlipY/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::FlipY/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,FlipY,0)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,FlipY,0,())
+IDLC_METH_END(ni,iVGTransform,FlipY,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Transform/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Transform/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Transform,1)
+	IDLC_DECL_VAR(sVec2f,avV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avV)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,Transform,1,(avV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGTransform,Transform,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::TransformRotate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::TransformRotate/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,TransformRotate,1)
+	IDLC_DECL_VAR(sVec2f,avV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avV)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,TransformRotate,1,(avV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGTransform,TransformRotate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Multiply/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Multiply/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Multiply,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Multiply,1,(apTransform))
+IDLC_METH_END(ni,iVGTransform,Multiply,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreMultiply/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreMultiply/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreMultiply,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreMultiply,1,(apTransform))
+IDLC_METH_END(ni,iVGTransform,PreMultiply,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::MultiplyMatrix/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::MultiplyMatrix/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,MultiplyMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,MultiplyMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iVGTransform,MultiplyMatrix,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreMultiplyMatrix/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreMultiplyMatrix/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreMultiplyMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreMultiplyMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iVGTransform,PreMultiplyMatrix,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::MultiplyValues/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::MultiplyValues/6 **/
+IDLC_METH_BEGIN(ni,iVGTransform,MultiplyValues,6)
+	IDLC_DECL_VAR(tF32,m0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m0)
+	IDLC_DECL_VAR(tF32,m1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m1)
+	IDLC_DECL_VAR(tF32,m2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m2)
+	IDLC_DECL_VAR(tF32,m3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m3)
+	IDLC_DECL_VAR(tF32,m4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m4)
+	IDLC_DECL_VAR(tF32,m5)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m5)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,MultiplyValues,6,(m0,m1,m2,m3,m4,m5))
+IDLC_METH_END(ni,iVGTransform,MultiplyValues,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreMultiplyValues/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreMultiplyValues/6 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreMultiplyValues,6)
+	IDLC_DECL_VAR(tF32,m0)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m0)
+	IDLC_DECL_VAR(tF32,m1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m1)
+	IDLC_DECL_VAR(tF32,m2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m2)
+	IDLC_DECL_VAR(tF32,m3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m3)
+	IDLC_DECL_VAR(tF32,m4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m4)
+	IDLC_DECL_VAR(tF32,m5)
+	IDLC_BUF_TO_BASE(ni::eType_F32,m5)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreMultiplyValues,6,(m0,m1,m2,m3,m4,m5))
+IDLC_METH_END(ni,iVGTransform,PreMultiplyValues,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Rotate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Rotate/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Rotate,1)
+	IDLC_DECL_VAR(tF32,afRadians)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadians)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Rotate,1,(afRadians))
+IDLC_METH_END(ni,iVGTransform,Rotate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreRotate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreRotate/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreRotate,1)
+	IDLC_DECL_VAR(tF32,afRadians)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadians)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreRotate,1,(afRadians))
+IDLC_METH_END(ni,iVGTransform,PreRotate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::RotateAround/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::RotateAround/2 **/
+IDLC_METH_BEGIN(ni,iVGTransform,RotateAround,2)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_VAR(tF32,afRadians)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadians)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,RotateAround,2,(aV,afRadians))
+IDLC_METH_END(ni,iVGTransform,RotateAround,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreRotateAround/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreRotateAround/2 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreRotateAround,2)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_VAR(tF32,afRadians)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadians)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreRotateAround,2,(aV,afRadians))
+IDLC_METH_END(ni,iVGTransform,PreRotateAround,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Translate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Translate/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Translate,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Translate,1,(aV))
+IDLC_METH_END(ni,iVGTransform,Translate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreTranslate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreTranslate/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreTranslate,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreTranslate,1,(aV))
+IDLC_METH_END(ni,iVGTransform,PreTranslate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Scaling/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Scaling/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Scaling,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Scaling,1,(aV))
+IDLC_METH_END(ni,iVGTransform,Scaling,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreScaling/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreScaling/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreScaling,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreScaling,1,(aV))
+IDLC_METH_END(ni,iVGTransform,PreScaling,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::Skew/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::Skew/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,Skew,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,Skew,1,(aV))
+IDLC_METH_END(ni,iVGTransform,Skew,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreSkew/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreSkew/1 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreSkew,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreSkew,1,(aV))
+IDLC_METH_END(ni,iVGTransform,PreSkew,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::LineSegment/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::LineSegment/3 **/
+IDLC_METH_BEGIN(ni,iVGTransform,LineSegment,3)
+	IDLC_DECL_VAR(sVec2f,aStart)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aStart)
+	IDLC_DECL_VAR(sVec2f,aEnd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aEnd)
+	IDLC_DECL_VAR(tF32,afDist)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDist)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,LineSegment,3,(aStart,aEnd,afDist))
+IDLC_METH_END(ni,iVGTransform,LineSegment,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::PreLineSegment/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::PreLineSegment/3 **/
+IDLC_METH_BEGIN(ni,iVGTransform,PreLineSegment,3)
+	IDLC_DECL_VAR(sVec2f,aStart)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aStart)
+	IDLC_DECL_VAR(sVec2f,aEnd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aEnd)
+	IDLC_DECL_VAR(tF32,afDist)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDist)
+	IDLC_METH_CALL_VOID(ni,iVGTransform,PreLineSegment,3,(aStart,aEnd,afDist))
+IDLC_METH_END(ni,iVGTransform,PreLineSegment,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetRotation/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetRotation/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetRotation,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetRotation,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetRotation,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetScale/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetScale/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetScale,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetTranslation/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetTranslation/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetTranslation,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetTranslation,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetTranslation,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGTransform::GetScaling/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGTransform::GetScaling/0 **/
+IDLC_METH_BEGIN(ni,iVGTransform,GetScaling,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGTransform,GetScaling,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGTransform,GetScaling,0)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iVGTransform)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

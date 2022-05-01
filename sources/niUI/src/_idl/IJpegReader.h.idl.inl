@@ -1,0 +1,96 @@
+#include "../API/niUI/IJpegReader.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iJpegReader **/
+IDLC_BEGIN_INTF(ni,iJpegReader)
+/** ni -> iJpegReader::ReadHeaderTables/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,ReadHeaderTables,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,ReadHeaderTables,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJpegReader,ReadHeaderTables,0)
+
+/** ni -> iJpegReader::BeginRead/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,BeginRead,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,BeginRead,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJpegReader,BeginRead,0)
+
+/** ni -> iJpegReader::EndRead/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,EndRead,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,EndRead,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJpegReader,EndRead,0)
+
+/** ni -> iJpegReader::DiscardBuffer/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,DiscardBuffer,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,DiscardBuffer,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJpegReader,DiscardBuffer,0)
+
+/** ni -> iJpegReader::GetFile/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,GetFile,0)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,GetFile,0,())
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iJpegReader,GetFile,0)
+
+/** ni -> iJpegReader::GetWidth/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,GetWidth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,GetWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iJpegReader,GetWidth,0)
+
+/** ni -> iJpegReader::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,GetHeight,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iJpegReader,GetHeight,0)
+
+/** ni -> iJpegReader::GetNumComponents/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,GetNumComponents,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,GetNumComponents,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iJpegReader,GetNumComponents,0)
+
+/** ni -> iJpegReader::GetColorSpace/0 **/
+IDLC_METH_BEGIN(ni,iJpegReader,GetColorSpace,0)
+	IDLC_DECL_RETVAR(eColorSpace,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,GetColorSpace,0,())
+	IDLC_RET_FROM_ENUM(eColorSpace,_Ret)
+IDLC_METH_END(ni,iJpegReader,GetColorSpace,0)
+
+/** ni -> iJpegReader::ReadScanline/1 **/
+IDLC_METH_BEGIN(ni,iJpegReader,ReadScanline,1)
+	IDLC_DECL_VAR(iFile*,apOut)
+	IDLC_BUF_TO_INTF(iFile,apOut)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,ReadScanline,1,(apOut))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJpegReader,ReadScanline,1)
+
+/** ni -> iJpegReader::ReadBitmap/1 **/
+IDLC_METH_BEGIN(ni,iJpegReader,ReadBitmap,1)
+	IDLC_DECL_VAR(iGraphics*,apGraphics)
+	IDLC_BUF_TO_INTF(iGraphics,apGraphics)
+	IDLC_DECL_RETVAR(iBitmap2D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJpegReader,ReadBitmap,1,(apGraphics))
+	IDLC_RET_FROM_INTF(iBitmap2D,_Ret)
+IDLC_METH_END(ni,iJpegReader,ReadBitmap,1)
+
+IDLC_END_INTF(ni,iJpegReader)
+
+IDLC_END_NAMESPACE()
+// EOF //

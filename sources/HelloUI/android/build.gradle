@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 21
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        applicationId "ni.samples.HelloUI"
+        minSdkVersion 21
+        targetSdkVersion 21
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.6
+        targetCompatibility = 1.6
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs 'src'
+            java.srcDirs += '../../niLang/java/src'
+            java.srcDirs += '../../niUI/java/src'
+            java.srcDirs += '../../jvm/ni-common/src'
+            java.srcDirs += '../../jvm/ni-app/src'
+            java.srcDirs += '../../jvm/ni-app-native/src'
+            java.srcDirs += '../../jvm/ni-app-android/src'
+            java.srcDirs += '../java/src'
+
+            res.srcDirs 'res'
+            manifest.srcFile 'AndroidManifest.xml'
+            jniLibs.srcDirs = ["libs"]
+        }
+    }
+
+    dependencies {
+        implementation files('libs/niLang-data.jar')
+    }
+}

@@ -1,0 +1,19 @@
+#########################################################################
+#
+# -- niTestInterop_jvm -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niTestInterop java ] = 1 { return ; }
+if ! $(BUILD_JNI) { return ; }
+
+niDefJar niTestInterop_jvm : 1,0,0 ;
+
+### SOURCES #############################################################
+SRC =
+ [ niPkgSrcJVM ni niTestInterop ]
+;
+
+JAR = [ niBuildJar $(SRC) : niLang_jvm : : pkgsrc ] ;
+DEPENDS $(JAR) : [ niGenJava niTestInterop ] ;
+
+tkDepends $(PACKAGE) : niTestInterop : TOP niTestInterop src ;

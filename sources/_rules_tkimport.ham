@@ -1,0 +1,11 @@
+NILANG_DIR = [ tkFindToolkitDir niLang ] ;
+
+include [ FDirName $(NILANG_DIR) sources _rules_ni_base.ham ] ;
+include [ FDirName $(NILANG_DIR) sources _rules_ni_script.ham ] ;
+include [ FDirName $(NILANG_DIR) sources _rules_sdks.ham ] ;
+if $(BUILD_JNI) {
+  include [ FDirName $(NILANG_DIR) sources _rules_ni_java.ham ] ;
+}
+if $(ANDROID) = 1 {
+  include [ FDirName $(NILANG_DIR) sources _rules_ni_android.ham ] ;
+}

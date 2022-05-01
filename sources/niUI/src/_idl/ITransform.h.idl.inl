@@ -1,0 +1,297 @@
+#include "../API/niUI/ITransform.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iTransform **/
+IDLC_BEGIN_INTF(ni,iTransform)
+/** ni -> iTransform::GetDescStructPtr/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetDescStructPtr,0)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetDescStructPtr,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iTransform,GetDescStructPtr,0)
+
+/** ni -> iTransform::Clone/0 **/
+IDLC_METH_BEGIN(ni,iTransform,Clone,0)
+	IDLC_DECL_RETVAR(iTransform*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,Clone,0,())
+	IDLC_RET_FROM_INTF(iTransform,_Ret)
+IDLC_METH_END(ni,iTransform,Clone,0)
+
+/** ni -> iTransform::Copy/1 **/
+IDLC_METH_BEGIN(ni,iTransform,Copy,1)
+	IDLC_DECL_VAR(iTransform*,apSrc)
+	IDLC_BUF_TO_INTF(iTransform,apSrc)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,Copy,1,(apSrc))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTransform,Copy,1)
+
+/** ni -> iTransform::SetDirty/0 **/
+IDLC_METH_BEGIN(ni,iTransform,SetDirty,0)
+	IDLC_DECL_RETVAR(tU16,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,SetDirty,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U16,_Ret)
+IDLC_METH_END(ni,iTransform,SetDirty,0)
+
+/** ni -> iTransform::SetFlags/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetFlags,1)
+	IDLC_DECL_VAR(tU16,anFlags)
+	IDLC_BUF_TO_BASE(ni::eType_U16,anFlags)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetFlags,1,(anFlags))
+IDLC_METH_END(ni,iTransform,SetFlags,1)
+
+/** ni -> iTransform::GetFlags/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetFlags,0)
+	IDLC_DECL_RETVAR(tU16,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetFlags,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U16,_Ret)
+IDLC_METH_END(ni,iTransform,GetFlags,0)
+
+/** ni -> iTransform::SetSyncCounter/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetSyncCounter,1)
+	IDLC_DECL_VAR(tU16,anFlags)
+	IDLC_BUF_TO_BASE(ni::eType_U16,anFlags)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetSyncCounter,1,(anFlags))
+IDLC_METH_END(ni,iTransform,SetSyncCounter,1)
+
+/** ni -> iTransform::GetSyncCounter/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetSyncCounter,0)
+	IDLC_DECL_RETVAR(tU16,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetSyncCounter,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U16,_Ret)
+IDLC_METH_END(ni,iTransform,GetSyncCounter,0)
+
+/** ni -> iTransform::SetParent/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetParent,1)
+	IDLC_DECL_VAR(iTransform*,apParent)
+	IDLC_BUF_TO_INTF(iTransform,apParent)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetParent,1,(apParent))
+IDLC_METH_END(ni,iTransform,SetParent,1)
+
+/** ni -> iTransform::GetParent/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetParent,0)
+	IDLC_DECL_RETVAR(iTransform*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetParent,0,())
+	IDLC_RET_FROM_INTF(iTransform,_Ret)
+IDLC_METH_END(ni,iTransform,GetParent,0)
+
+/** ni -> iTransform::Identity/0 **/
+IDLC_METH_BEGIN(ni,iTransform,Identity,0)
+	IDLC_METH_CALL_VOID(ni,iTransform,Identity,0,())
+IDLC_METH_END(ni,iTransform,Identity,0)
+
+/** ni -> iTransform::SetWorldMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetWorldMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetWorldMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,SetWorldMatrix,1)
+
+/** ni -> iTransform::GetWorldMatrix/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetWorldMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetWorldMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iTransform,GetWorldMatrix,0)
+
+/** ni -> iTransform::SetLocalMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetLocalMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetLocalMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,SetLocalMatrix,1)
+
+/** ni -> iTransform::GetLocalMatrix/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetLocalMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetLocalMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iTransform,GetLocalMatrix,0)
+
+/** ni -> iTransform::MultiplyWorldMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,MultiplyWorldMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,MultiplyWorldMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,MultiplyWorldMatrix,1)
+
+/** ni -> iTransform::PreMultiplyWorldMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,PreMultiplyWorldMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,PreMultiplyWorldMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,PreMultiplyWorldMatrix,1)
+
+/** ni -> iTransform::MultiplyLocalMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,MultiplyLocalMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,MultiplyLocalMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,MultiplyLocalMatrix,1)
+
+/** ni -> iTransform::PreMultiplyLocalMatrix/1 **/
+IDLC_METH_BEGIN(ni,iTransform,PreMultiplyLocalMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,PreMultiplyLocalMatrix,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,PreMultiplyLocalMatrix,1)
+
+/** ni -> iTransform::LookAt/2 **/
+IDLC_METH_BEGIN(ni,iTransform,LookAt,2)
+	IDLC_DECL_VAR(sVec3f,avLookAt)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avLookAt)
+	IDLC_DECL_VAR(sVec3f,avUp)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avUp)
+	IDLC_METH_CALL_VOID(ni,iTransform,LookAt,2,(avLookAt,avUp))
+IDLC_METH_END(ni,iTransform,LookAt,2)
+
+/** ni -> iTransform::SetWorldPosition/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetWorldPosition,1)
+	IDLC_DECL_VAR(sVec3f,v)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,v)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetWorldPosition,1,(v))
+IDLC_METH_END(ni,iTransform,SetWorldPosition,1)
+
+/** ni -> iTransform::GetWorldPosition/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetWorldPosition,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetWorldPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetWorldPosition,0)
+
+/** ni -> iTransform::SetLocalPosition/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetLocalPosition,1)
+	IDLC_DECL_VAR(sVec3f,v)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,v)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetLocalPosition,1,(v))
+IDLC_METH_END(ni,iTransform,SetLocalPosition,1)
+
+/** ni -> iTransform::GetLocalPosition/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetLocalPosition,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetLocalPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetLocalPosition,0)
+
+/** ni -> iTransform::Translate/1 **/
+IDLC_METH_BEGIN(ni,iTransform,Translate,1)
+	IDLC_DECL_VAR(sVec3f,v)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,v)
+	IDLC_METH_CALL_VOID(ni,iTransform,Translate,1,(v))
+IDLC_METH_END(ni,iTransform,Translate,1)
+
+/** ni -> iTransform::PreTranslate/1 **/
+IDLC_METH_BEGIN(ni,iTransform,PreTranslate,1)
+	IDLC_DECL_VAR(sVec3f,v)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,v)
+	IDLC_METH_CALL_VOID(ni,iTransform,PreTranslate,1,(v))
+IDLC_METH_END(ni,iTransform,PreTranslate,1)
+
+/** ni -> iTransform::SetWorldRotation/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetWorldRotation,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetWorldRotation,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,SetWorldRotation,1)
+
+/** ni -> iTransform::SetLocalRotation/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetLocalRotation,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetLocalRotation,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,SetLocalRotation,1)
+
+/** ni -> iTransform::Rotate/1 **/
+IDLC_METH_BEGIN(ni,iTransform,Rotate,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,Rotate,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,Rotate,1)
+
+/** ni -> iTransform::PreRotate/1 **/
+IDLC_METH_BEGIN(ni,iTransform,PreRotate,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iTransform,PreRotate,1,(aMatrix))
+IDLC_METH_END(ni,iTransform,PreRotate,1)
+
+/** ni -> iTransform::SetScale/1 **/
+IDLC_METH_BEGIN(ni,iTransform,SetScale,1)
+	IDLC_DECL_VAR(sVec3f,aScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aScale)
+	IDLC_METH_CALL_VOID(ni,iTransform,SetScale,1,(aScale))
+IDLC_METH_END(ni,iTransform,SetScale,1)
+
+/** ni -> iTransform::GetScale/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetScale,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetScale,0)
+
+/** ni -> iTransform::CreatePreOffsetTransform/0 **/
+IDLC_METH_BEGIN(ni,iTransform,CreatePreOffsetTransform,0)
+	IDLC_DECL_RETVAR(iTransform*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,CreatePreOffsetTransform,0,())
+	IDLC_RET_FROM_INTF(iTransform,_Ret)
+IDLC_METH_END(ni,iTransform,CreatePreOffsetTransform,0)
+
+/** ni -> iTransform::CreatePostOffsetTransform/0 **/
+IDLC_METH_BEGIN(ni,iTransform,CreatePostOffsetTransform,0)
+	IDLC_DECL_RETVAR(iTransform*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,CreatePostOffsetTransform,0,())
+	IDLC_RET_FROM_INTF(iTransform,_Ret)
+IDLC_METH_END(ni,iTransform,CreatePostOffsetTransform,0)
+
+/** ni -> iTransform::GetRight/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetRight,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetRight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetRight,0)
+
+/** ni -> iTransform::GetUp/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetUp,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetUp,0)
+
+/** ni -> iTransform::GetForward/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetForward,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetForward,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetForward,0)
+
+/** ni -> iTransform::GetInvRight/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetInvRight,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetInvRight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetInvRight,0)
+
+/** ni -> iTransform::GetInvUp/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetInvUp,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetInvUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetInvUp,0)
+
+/** ni -> iTransform::GetInvForward/0 **/
+IDLC_METH_BEGIN(ni,iTransform,GetInvForward,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTransform,GetInvForward,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iTransform,GetInvForward,0)
+
+IDLC_END_INTF(ni,iTransform)
+
+IDLC_END_NAMESPACE()
+// EOF //

@@ -1,0 +1,30 @@
+::Import("lang.ni")
+::Import("assert.ni")
+::Import("sexp.ni")
+
+local sy1 = "$alpha[narf]".parsesymbol()
+::println("sy1:" sy1)
+
+local sy1 = "alpha[narf]".parsesymbol()
+::println("sy1:" sy1)
+
+local md1 = "something[ foo = bar, ]".parsemetadata()
+::println("md1:" md1)
+
+local md2 = "somewhere[foo=bar,alpha=beta,gamma=  lambda, 7 = 8 ]".parsemetadata()
+::println("md2:" md2)
+
+local md3 = "somewhere[foo=bar,alpha=beta,gamma=  lambda, 7 = 8   ".parsemetadata()
+::println("md3:" md3)
+
+local md4 = "somewhere[foo,".parsemetadata()
+::println("md4:" md4)
+
+local md5 = "somewhere[foo".parsemetadata()
+::println("md5:" md5)
+
+local md6 = "somewhere[  foo   ".parsemetadata()
+::println("md6:" md6)
+
+local md7 = "somewhere[  foo, bar= beta  gamma   ".parsemetadata()
+::println("md7:" md7)

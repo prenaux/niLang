@@ -1,0 +1,29 @@
+_ip <- {
+  _value = {
+    function exec() {
+      ::print("EXEC\n")
+    }
+    function tostring() {
+      return "YEY"
+    }
+  }
+}
+
+function test() {
+  x <- 0
+  local withBlock = _ip._value
+
+  // delete x // SUCCEEDS
+  // ;++x // SUCCEEDS
+  ++x // FAILS
+  // x++ // SUCCEEDS
+
+  ::print("NARF:" + withBlock.tostring() + "\n")
+  if (withBlock.tostring() != "YEY")
+    throw "OUCH."
+}
+
+function main() {
+  test()
+}
+

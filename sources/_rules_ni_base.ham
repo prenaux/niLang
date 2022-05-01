@@ -1,0 +1,401 @@
+#----------------------------------------------------------------------
+#     Check toolsets...
+#----------------------------------------------------------------------
+TOOLSET_ERRMSG = "
+I/Example toolset setup command :
+$ . ham-toolset xslt_tools default
+" ;
+
+if ! ( $(FLYMAKE) = 1 ) {
+  if ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__xslt_tools) = 1 ) {
+    EXIT "E/'xslt_tools' toolset not set." $(TOOLSET_ERRMSG) ;
+  }
+}
+else {
+  # Flymake
+  NO_MODULEDEF = 1 ;
+}
+
+if ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_10_x86) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_13_x64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_15_x64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_15_x86) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_19_x64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__macos_x64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__macos_arm64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__adr_50_arm7) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__adr_50_arm64) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__ios) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__emscripten) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__qnx) = 1 ) &&
+   ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__gcc_470) = 1 )
+{
+  EXIT "E/_rules_ni_base.ham: No compatible C++ compiler toolset set." $(TOOLSET_ERRMSG) ;
+}
+
+if ! ( $(NILANG_BUILD) = 1 ) {
+  if ! $(NILANG_DIR) {
+    EXIT "E/NILANG_DIR not set." ;
+  }
+  if ! [ FExists $(NILANG_DIR) ] {
+    EXIT "E/NILANG_DIR doesn't exist:" $(NILANG_DIR) ;
+  }
+}
+
+DEPENDS pass1 : tkimport ;
+
+#----------------------------------------------------------------------
+#     Build tools
+#----------------------------------------------------------------------
+NILANG_DIR ?= $(TK_DIR) ;
+NILANG_BUILD_DIR_BIN ?= [ FDirName $(NILANG_DIR) bin $(BUILD_BIN_LOA) ] ;
+NILANG_SCRIPTS ?= [ FDirName $(NILANG_DIR) scripts ] ;
+NILANG_BUILD_SCRIPTS ?= [ FDirName $(NILANG_DIR) scripts tools ] ;
+
+NI_RA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
+NI_DA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT_DA)$(BUILD_SUFEXE) ] ;
+
+NICGC_RA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) nicgc_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
+NICGC_DA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) nicgc_$(BUILDEXT_DA)$(BUILD_SUFEXE) ] ;
+
+NI_RA_CMD = $(NI_RA_EXE) ;
+NI_DA_CMD = $(NI_DA_EXE) -e ;
+
+# Use by the build scripts
+if $(DEBUG_TOOLS) = 1 {
+  NI_CMD = $(NI_DA_CMD) ;
+  NI_EXE = $(NI_DA_EXE) ;
+  NICGC_EXE = $(NICGC_DA_EXE) ;
+}
+else {
+  NI_CMD = $(NI_RA_CMD) ;
+  NI_EXE = $(NI_RA_EXE) ;
+  NICGC_EXE = $(NICGC_RA_EXE) ;
+}
+
+if $(DEBUG_TOOLS) = 1 {
+  NI_CMD += -e ;
+}
+NI_CMD += -I "$(NILANG_SCRIPTS)" ;
+
+if ! $(NI_EXE) || ! [ FExists $(NI_EXE) ] {
+  ECHO "W/Can't find Ni executable " $(NI_EXE) " disabled ModuleDef generation." ;
+  NO_MODULEDEF = 1 ;
+}
+
+# This is necessary to support includes where the include file name is the same
+# in multiple folders. (as is stdafx.h)
+rule niHdrGrist {
+  HDRGRIST = $(SUBDIR) ;
+}
+SUBDIRRULES += niHdrGrist ;
+
+#----------------------------------------------------------------------
+#     IDL generation
+#----------------------------------------------------------------------
+
+# niGenIDLs TARGET : $(MODULE) : LOCATE DIR (relative to TK_DIR_INCLUDE) : ADDDIRS : API_BASETARGET ;
+rule niGenIDLs {
+  local t = IDL_$(<) ;
+  local l = ;
+  local IDLS = ;
+
+  # API copy and IDL setups
+  if $(3) {
+    ECHO "W/niGenIDLs: $(<): We do not copy the APIs to TK_DIR_INCLUDE anymore." ;
+  }
+
+  local IDLDIR = [ FDirName $(SUBDIR) _idl ] ;
+  local VMCALLS = ;
+  for _i in $(>) {
+    local s = $(_i) ;
+    # ECHO "S: " $(s) ;
+    local f = [ FDirName $(IDLDIR) $(_i:B)$(_i:S) ] ;
+    # ECHO "F: " $(f) ;
+    local d = $(f)".idl.xml" ;
+    local x = $(f)".idl.inl" ;
+    # 	local v = $(f)".idl.inl.prev" ;
+    MakeLocate $(<) : $(IDLDIR) ;
+    IDLS += $(d) ;
+    #     IDLS += [ FDirName API $(3) $(_i)".idl.xml" ] ;
+    DEPENDS $(<) : $(d) ;
+    VMCALLS += $(x) ;
+    niIDL $(d) $(x) : $(s) ;
+  }
+  DEPENDS $(<) : $(VMCALLS) ;
+
+  return $(IDLS) ;
+}
+
+# niModuleIDLs API_HEADERS : API_INC_DIR (rel to TK_DIR_INCLUDE) ;
+rule niModuleIDLs {
+  ECHO "W/niModuleIDLs is deprecated use niBuildModuleDef instead of niModuleIDLs. ($(<[0]))" ;
+}
+
+if ! $(NOBASETOOLS) {
+  # niIDL target : source ;
+  # REM: Requires the fully qualified path (absolute path)
+  rule niIDL {
+    DEPENDS $(<) : $(NILANG_BUILD_SCRIPTS)$(SLASH)IDLGen.ni ;
+    DEPENDS $(<) : $(>) ;
+    DEPENDS idls : $(<) ; # idls depends on output
+  }
+  actions niIDL {
+    "$(NI_CMD)" -I "$(NILANG_BUILD_SCRIPTS)$(SLASH)" "$(NILANG_BUILD_SCRIPTS)$(SLASH)niIDLGen.ni" "$(>)" "$(<)"
+  }
+
+  rule niSetRunDirFor {
+    local d = $(>) ;
+    if ! $(d) {
+      d = $(PACKAGE_DIR) ;
+    }
+    RUN_DIR on $(<) = [ FDirName $(d) ] ;
+  }
+
+  # Touch is to update the _Desc.xml file to the latest date so that it isnt
+  # considered necessary to update it next time.
+  rule niMergeXML {
+    DEPENDS $(<) : $(>) ;
+    Touch $(>) ;
+    niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niMergeXML {
+    pushd "$(RUN_DIR)"
+    "$(NI_CMD)" "$(NILANG_BUILD_SCRIPTS)$(SLASH)MergeXML.ni" niIDL "$(>)" "$(<)"
+  }
+
+  rule niXSLGenModuleDefCPP {
+    DEPENDS $(<) : $(>) ;
+    # niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niXSLGenModuleDefCPP {
+    xslt_tools-xslt1 "$(NILANG_BUILD_SCRIPTS)$(SLASH)GenModuleDefCPP.xslt" "$(>)" "$(<)"
+  }
+
+  rule niXSLGenModuleDefH {
+    DEPENDS $(<) : $(>) ;
+    # niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niXSLGenModuleDefH {
+    xslt_tools-xslt1 "$(NILANG_BUILD_SCRIPTS)$(SLASH)GenModuleDefH.xslt" "$(>)" "$(<)"
+  }
+}
+
+rule niGenModuleDef {
+  ECHO "W/niGenModuleDef is deprecated, you should use niBuildModuleDef which also generates the IDLs." "$(PACKAGE)" ;
+}
+
+# niBuildModuleDef_ PACKAGE : IDLS ;
+rule niBuildModuleDef_
+{
+  local PACKAGE = $(1) ;
+  local t = ModuleDef_$(PACKAGE) ;
+  local tidl = IDL_$(PACKAGE) ;
+
+  NotFile $(t) ;
+  DEPENDS $(t) : $(2) ;
+  DEPENDS $(t) : tkdir ;
+
+  local xslScriptCpp = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefCPP.xslt ] ;
+  local cpp = [ FGristFiles _$(PACKAGE)_ModuleDef.cpp ] ;
+  LOCATE on $(cpp) = $(LOCATE_SOURCE) ;
+
+  local xslScriptH = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefH.xslt ] ;
+  local h = [ FGristFiles [ FDirName API $(PACKAGE)_ModuleDef.h ] ] ;
+  LOCATE on $(h) = $(LOCATE_SOURCE) ;
+
+  local xml = [ FGetAbsolutePath [ FDirName $(SUBDIR) _$(PACKAGE)_ModuleDef.xml ] ] ;
+
+# We dont want that, we need them to build if cant generate them (bootstrap build)
+#   Clean clean : $(cpp) $(h) $(xml) ;
+
+  if ! ( $(NO_MODULEDEF) = 1 ) {
+    DEPENDS $(MODXML) : $(tidl) ;
+    niMergeXML $(xml) : $(MODXML) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(h) : $(xslScriptH) ;
+    DEPENDS moduledefh : $(h) ;
+    niXSLGenModuleDefH $(h) : $(xml) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(cpp) : $(xslScriptCpp) ;
+    DEPENDS moduledefcpp : $(cpp) ;
+    niXSLGenModuleDefCPP $(cpp) : $(xml) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(t) : $(cpp) $(h) ;
+  }
+
+  DEPENDS $(PACKAGE) : $(t) ;
+
+  # moduledef depends on target
+  DEPENDS moduledef : $(t) ;
+  DEPENDS pass1 : moduledef ;
+
+  return $(xml) ;
+}
+
+rule niGlobModuleAPI {
+  local allFiles = ;
+  local d = [ FDirName $(SUBDIR) API $(<) ] ;
+  local files = [ GlobSrc $(d) : .h ] ;
+  allFiles += $(d)/$(files) ;
+  local d = [ FDirName $(SUBDIR) API niPlugins ] ;
+  local files = [ GlobSrc $(d) : .h ] ;
+  allFiles += $(d)/$(files) ;
+  return $(allFiles) ;
+}
+
+rule niBuildModuleDef {
+  local API = [ niGlobModuleAPI $(PACKAGE) ] ;
+  # ECHO "... niBuildModuleDef: $(t): API:" $(API) ;
+
+  NotFile IDL_$(PACKAGE) ;
+  local IDLS = [ niGenIDLs IDL_$(PACKAGE) : $(API) ] ;
+  # ECHO "... niBuildModuleDef: $(t): IDLS:" $(IDLS) ;
+
+  niBuildModuleDef_ $(PACKAGE) : $(IDLS) ;
+  return $(IDLS) ;
+}
+
+# niImportModuleHdrs MODULENAME
+# niImportModuleHdrs MODULENAME : TOOLKITNAME
+rule niImportModuleHdrs {
+  local moduleName = $(1) ;
+  if $(2) {
+    SubDirHdrs $(WORK) $(2) sources $(moduleName) src API ;
+  }
+  else {
+    SubDirHdrs $(TOP) $(moduleName) src API ;
+  }
+}
+
+rule niImportModuleDll {
+  niImportModuleHdrs $(1) : $(2) ;
+  tkPkgLinkDll $(1) ;
+}
+
+rule niImportModuleLibs {
+  niImportModuleHdrs $(1) : $(2) ;
+  tkPkgLinkLibs $(1) ;
+}
+
+#----------------------------------------------------------------------
+#     Modules
+#----------------------------------------------------------------------
+
+rule niModule_Begin
+{
+  if ! $(MODXML_CREATE) {
+    if ! [ FExists $(MODXML) ] {
+      MODXML_CREATE = 1 ;
+    }
+    else {
+      MODXML_CREATE = ;
+    }
+  }
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "<?xml version='1.0'?>" : create nl ;
+    FEcho $(MODXML) : "<module name='$(PACKAGE)'" : nl ;
+    FEcho $(MODXML) : "        version='$(VERSION)' " : nl ;
+    for _i in $(<) {
+      FEcho $(MODXML) : "        $(_i)" : nl ;
+    }
+    FEcho $(MODXML) : ">" : nl ;
+  }
+}
+
+rule niModule_Includes
+{
+  if $(MODXML_CREATE) {
+    local SORTED = [ SORTI $(<) ] ;
+    for _i in $(SORTED) {
+      FEcho $(MODXML) : "  <include>$(_i)</include>" : nl ;
+    }
+  }
+}
+
+rule niModule_End
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "</module>" : nl ;
+  }
+  MODXML_CREATE = ;
+}
+
+# niModule_NS Namespace
+rule niModule_NS
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <namespace name='$(<)' />" : nl ;
+  }
+}
+
+# niModule_Dep Dependency
+rule niModule_Dep
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <dependency name='$(<)' />" : nl ;
+  }
+}
+
+# niModule_WeakDep Dependency
+rule niModule_WeakDep
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <dependency name='$(<)' weak='yes'  />" : nl ;
+  }
+}
+
+# niModule_OT [ PROPERTY=VAL ]
+rule niModule_OT
+{
+  if $(MODXML_CREATE) {
+    local o = "  <objecttype " ;
+    o += $(<) ;
+    o += " />" ;
+    FEcho $(MODXML) : $(o) : nl ;
+  }
+}
+
+#----------------------------------------------------------------------
+#     Java
+#----------------------------------------------------------------------
+rule niGenJNI {
+}
+
+#----------------------------------------------------------------------
+#     Shaders
+#----------------------------------------------------------------------
+if $(SHADER_DEBUG) = 1 {
+  SHADER_CGC1_FLAGS += -d ;
+  SHADER_CGC1_DEFS += -DDEBUG=1 ;
+}
+
+rule niShaderLibraryPath {
+  local SHADERS_OUTPUT_DIR = [ FDirName $(TK_DIR) data $(PACKAGE) shaders ] ;
+  return [ FDirName $(SHADERS_OUTPUT_DIR) $(1:S=.cgl) ] ;
+}
+
+rule niShouldBuildShaderLibrary {
+  local shaderLibraryPath = [ niShaderLibraryPath $(1) ] ;
+  if [ FExists $(shaderLibraryPath) ] {
+    # ECHO "I/Found shader library:" $(shaderLibraryPath) ;
+    return 0 ;
+  }
+  else {
+    ECHO "I/Missing shader library:" $(shaderLibraryPath) ;
+    return 1 ;
+  }
+}
+
+rule niShader {
+  local TARGET_SUFFIX = [ FShaderTargetSuffix $(>) ] ;
+  local SHADERS_OUTPUT_DIR = [ FDirName $(TK_DIR) data $(PACKAGE) shaders ] ;
+  local o = [ shaderObject [ FDirName $(SHADERS_OUTPUT_DIR) $(<:S=$(TARGET_SUFFIX)) ] : [ FDirName $(SUBDIR) shaders $(>) ] : $(3) ] ;
+  DEPENDS $(PACKAGE)_shader_$(o:BS=) : $(o) ;
+  DEPENDS $(PACKAGE)_shaders : $(PACKAGE)_shader_$(o:BS=) ;
+  DEPENDS $(PACKAGE) : $(PACKAGE)_shaders ;
+  # Don't add this since it cant be resolved in other toolkits, which leads to
+  # the shaders to always being rebuilt
+  # DEPENDS $(o) : nicgc ;
+  return $(o) ;
+}

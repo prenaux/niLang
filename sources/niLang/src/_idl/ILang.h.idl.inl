@@ -1,0 +1,1290 @@
+#include "../API/niLang/ILang.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iLang **/
+IDLC_BEGIN_INTF(ni,iLang)
+/** ni -> iLang::GetProcessManager/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetProcessManager/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetProcessManager,0)
+	IDLC_DECL_RETVAR(iOSProcessManager*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetProcessManager,0,())
+	IDLC_RET_FROM_INTF(iOSProcessManager,_Ret)
+IDLC_METH_END(ni,iLang,GetProcessManager,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::Exit/1 **/
+IDLC_METH_BEGIN(ni,iLang,Exit,1)
+	IDLC_DECL_VAR(tU32,aulErrorCode)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aulErrorCode)
+	IDLC_METH_CALL_VOID(ni,iLang,Exit,1,(aulErrorCode))
+IDLC_METH_END(ni,iLang,Exit,1)
+
+/** ni -> iLang::OnExit/1 **/
+IDLC_METH_BEGIN(ni,iLang,OnExit,1)
+	IDLC_DECL_VAR(iRunnable*,apRunnable)
+	IDLC_BUF_TO_INTF(iRunnable,apRunnable)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,OnExit,1,(apRunnable))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,OnExit,1)
+
+/** ni -> iLang::FatalError/1 **/
+IDLC_METH_BEGIN(ni,iLang,FatalError,1)
+	IDLC_DECL_VAR(achar*,aszMsg)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszMsg)
+	IDLC_METH_CALL_VOID(ni,iLang,FatalError,1,(aszMsg))
+IDLC_METH_END(ni,iLang,FatalError,1)
+
+/** ni -> iLang::SetEnv/2 **/
+IDLC_METH_BEGIN(ni,iLang,SetEnv,2)
+	IDLC_DECL_VAR(achar*,aaszEnv)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszEnv)
+	IDLC_DECL_VAR(achar*,aaszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszValue)
+	IDLC_METH_CALL_VOID(ni,iLang,SetEnv,2,(aaszEnv,aaszValue))
+IDLC_METH_END(ni,iLang,SetEnv,2)
+
+/** ni -> iLang::GetEnv/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetEnv,1)
+	IDLC_DECL_VAR(achar*,aaszEnv)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszEnv)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetEnv,1,(aaszEnv))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,GetEnv,1)
+
+/** ni -> iLang::InstallCrashHandler/0 **/
+IDLC_METH_BEGIN(ni,iLang,InstallCrashHandler,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,InstallCrashHandler,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,InstallCrashHandler,0)
+
+/** ni -> iLang::GetProperties/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetProperties,0)
+	IDLC_DECL_RETVAR(const tStringCMap*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetProperties,0,())
+	IDLC_RET_FROM_INTF(const tStringCMap,_Ret)
+IDLC_METH_END(ni,iLang,GetProperties,0)
+
+/** ni -> iLang::HasProperty/1 **/
+IDLC_METH_BEGIN(ni,iLang,HasProperty,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,HasProperty,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,HasProperty,1)
+
+/** ni -> iLang::SetProperty/2 **/
+IDLC_METH_BEGIN(ni,iLang,SetProperty,2)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(achar*,aaszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszValue)
+	IDLC_METH_CALL_VOID(ni,iLang,SetProperty,2,(aaszName,aaszValue))
+IDLC_METH_END(ni,iLang,SetProperty,2)
+
+/** ni -> iLang::GetProperty/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetProperty,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetProperty,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,GetProperty,1)
+
+/** ni -> iLang::RegisterModuleDef/1 **/
+IDLC_METH_BEGIN(ni,iLang,RegisterModuleDef,1)
+	IDLC_DECL_VAR(iModuleDef*,apDef)
+	IDLC_BUF_TO_INTF(iModuleDef,apDef)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,RegisterModuleDef,1,(apDef))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,RegisterModuleDef,1)
+
+/** ni -> iLang::GetNumModuleDefs/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetNumModuleDefs,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetNumModuleDefs,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetNumModuleDefs,0)
+
+/** ni -> iLang::GetModuleDef/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetModuleDef,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(const iModuleDef*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetModuleDef,1,(anIndex))
+	IDLC_RET_FROM_INTF(const iModuleDef,_Ret)
+IDLC_METH_END(ni,iLang,GetModuleDef,1)
+
+/** ni -> iLang::GetModuleDefIndex/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetModuleDefIndex,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetModuleDefIndex,1,(aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetModuleDefIndex,1)
+
+/** ni -> iLang::LoadModuleDef/2 **/
+IDLC_METH_BEGIN(ni,iLang,LoadModuleDef,2)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_VAR(achar*,aaszFile)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszFile)
+	IDLC_DECL_RETVAR(const iModuleDef*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,LoadModuleDef,2,(aName,aaszFile))
+	IDLC_RET_FROM_INTF(const iModuleDef,_Ret)
+IDLC_METH_END(ni,iLang,LoadModuleDef,2)
+
+/** ni -> iLang::GetCreateInstanceMap/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetCreateInstanceMap,0)
+	IDLC_DECL_RETVAR(tCreateInstanceCMap*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetCreateInstanceMap,0,())
+	IDLC_RET_FROM_INTF(tCreateInstanceCMap,_Ret)
+IDLC_METH_END(ni,iLang,GetCreateInstanceMap,0)
+
+/** ni -> iLang::CreateInstance/3 **/
+IDLC_METH_BEGIN(ni,iLang,CreateInstance,3)
+	IDLC_DECL_VAR(achar*,aOID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aOID)
+	IDLC_DECL_VAR(Var,aVarA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aVarA)
+	IDLC_DECL_VAR(Var,aVarB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aVarB)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateInstance,3,(aOID,aVarA,aVarB))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iLang,CreateInstance,3)
+
+/** ni -> iLang::GetGlobalInstanceMap/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetGlobalInstanceMap,0)
+	IDLC_DECL_RETVAR(tGlobalInstanceCMap*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetGlobalInstanceMap,0,())
+	IDLC_RET_FROM_INTF(tGlobalInstanceCMap,_Ret)
+IDLC_METH_END(ni,iLang,GetGlobalInstanceMap,0)
+
+/** ni -> iLang::SetGlobalInstance/2 **/
+IDLC_METH_BEGIN(ni,iLang,SetGlobalInstance,2)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(iUnknown*,apInstance)
+	IDLC_BUF_TO_INTF(iUnknown,apInstance)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SetGlobalInstance,2,(aaszName,apInstance))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,SetGlobalInstance,2)
+
+/** ni -> iLang::GetGlobalInstance/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetGlobalInstance,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetGlobalInstance,1,(aaszName))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iLang,GetGlobalInstance,1)
+
+/** ni -> iLang::RegisterEnumDef/1 **/
+IDLC_METH_BEGIN(ni,iLang,RegisterEnumDef,1)
+	IDLC_DECL_VAR(sEnumDef*,apEnumDef)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer,apEnumDef)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,RegisterEnumDef,1,(apEnumDef))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,RegisterEnumDef,1)
+
+/** ni -> iLang::GetEnumDef/1 **/
+IDLC_METH_INVALID_BEGIN(ni,iLang,GetEnumDef,1)
+IDLC_METH_INVALID_END(ni,iLang,GetEnumDef,1)
+
+/** ni -> iLang::GetInterfaceName/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetInterfaceName,1)
+	IDLC_DECL_VAR(tUUID,aUUID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,aUUID)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetInterfaceName,1,(aUUID))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iLang,GetInterfaceName,1)
+
+/** ni -> iLang::GetInterfaceUUID/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetInterfaceUUID,1)
+	IDLC_DECL_VAR(iHString*,ahspStr)
+	IDLC_BUF_TO_INTF(iHString,ahspStr)
+	IDLC_DECL_RETREFVAR(tUUID&,_Ret,tUUID)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetInterfaceUUID,1,(ahspStr))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iLang,GetInterfaceUUID,1)
+
+/** ni -> iLang::GetInterfaceDefFromUUID/1 **/
+IDLC_METH_INVALID_BEGIN(ni,iLang,GetInterfaceDefFromUUID,1)
+IDLC_METH_INVALID_END(ni,iLang,GetInterfaceDefFromUUID,1)
+
+/** ni -> iLang::SetDefaultLocale/1 **/
+IDLC_METH_BEGIN(ni,iLang,SetDefaultLocale,1)
+	IDLC_DECL_VAR(iHString*,ahspLocale)
+	IDLC_BUF_TO_INTF(iHString,ahspLocale)
+	IDLC_METH_CALL_VOID(ni,iLang,SetDefaultLocale,1,(ahspLocale))
+IDLC_METH_END(ni,iLang,SetDefaultLocale,1)
+
+/** ni -> iLang::GetDefaultLocale/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetDefaultLocale,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetDefaultLocale,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iLang,GetDefaultLocale,0)
+
+/** ni -> iLang::GetNumLocales/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetNumLocales,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetNumLocales,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetNumLocales,0)
+
+/** ni -> iLang::GetLocale/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetLocale,1)
+	IDLC_DECL_VAR(tU32,abIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,abIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetLocale,1,(abIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iLang,GetLocale,1)
+
+/** ni -> iLang::ClearLocalization/1 **/
+IDLC_METH_BEGIN(ni,iLang,ClearLocalization,1)
+	IDLC_DECL_VAR(iHString*,ahspLocale)
+	IDLC_BUF_TO_INTF(iHString,ahspLocale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,ClearLocalization,1,(ahspLocale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,ClearLocalization,1)
+
+/** ni -> iLang::SetLocalization/3 **/
+IDLC_METH_BEGIN(ni,iLang,SetLocalization,3)
+	IDLC_DECL_VAR(iHString*,ahspLocale)
+	IDLC_BUF_TO_INTF(iHString,ahspLocale)
+	IDLC_DECL_VAR(iHString*,ahspNative)
+	IDLC_BUF_TO_INTF(iHString,ahspNative)
+	IDLC_DECL_VAR(iHString*,ahspLocalized)
+	IDLC_BUF_TO_INTF(iHString,ahspLocalized)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SetLocalization,3,(ahspLocale,ahspNative,ahspLocalized))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,SetLocalization,3)
+
+/** ni -> iLang::SetLocalizationMap/2 **/
+IDLC_METH_BEGIN(ni,iLang,SetLocalizationMap,2)
+	IDLC_DECL_VAR(iHString*,ahspLocale)
+	IDLC_BUF_TO_INTF(iHString,ahspLocale)
+	IDLC_DECL_VAR(tStringCMap*,apLocalizationMap)
+	IDLC_BUF_TO_INTF(tStringCMap,apLocalizationMap)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SetLocalizationMap,2,(ahspLocale,apLocalizationMap))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,SetLocalizationMap,2)
+
+/** ni -> iLang::GetLocalizationMap/2 **/
+IDLC_METH_BEGIN(ni,iLang,GetLocalizationMap,2)
+	IDLC_DECL_VAR(iHString*,ahspLocale)
+	IDLC_BUF_TO_INTF(iHString,ahspLocale)
+	IDLC_DECL_VAR(tStringCMap*,apLocalizedMap)
+	IDLC_BUF_TO_INTF(tStringCMap,apLocalizedMap)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetLocalizationMap,2,(ahspLocale,apLocalizedMap))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetLocalizationMap,2)
+
+/** ni -> iLang::SetMarkMissingLocalization/1 **/
+IDLC_METH_BEGIN(ni,iLang,SetMarkMissingLocalization,1)
+	IDLC_DECL_VAR(tBool,abMarkMissing)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abMarkMissing)
+	IDLC_METH_CALL_VOID(ni,iLang,SetMarkMissingLocalization,1,(abMarkMissing))
+IDLC_METH_END(ni,iLang,SetMarkMissingLocalization,1)
+
+/** ni -> iLang::GetMarkMissingLocalization/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetMarkMissingLocalization,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMarkMissingLocalization,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,GetMarkMissingLocalization,0)
+
+/** ni -> iLang::GetMissingLocalization/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMissingLocalization,1)
+	IDLC_DECL_VAR(iHString*,locale)
+	IDLC_BUF_TO_INTF(iHString,locale)
+	IDLC_DECL_RETVAR(tStringCVec*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMissingLocalization,1,(locale))
+	IDLC_RET_FROM_INTF(tStringCVec,_Ret)
+IDLC_METH_END(ni,iLang,GetMissingLocalization,1)
+
+/** ni -> iLang::CreateLocalUUID/0 **/
+IDLC_METH_BEGIN(ni,iLang,CreateLocalUUID,0)
+	IDLC_DECL_RETVAR(tUUID,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateLocalUUID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_UUID,_Ret)
+IDLC_METH_END(ni,iLang,CreateLocalUUID,0)
+
+/** ni -> iLang::CreateGlobalUUID/0 **/
+IDLC_METH_BEGIN(ni,iLang,CreateGlobalUUID,0)
+	IDLC_DECL_RETVAR(tUUID,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateGlobalUUID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_UUID,_Ret)
+IDLC_METH_END(ni,iLang,CreateGlobalUUID,0)
+
+/** ni -> iLang::SetLogFilter/1 **/
+IDLC_METH_BEGIN(ni,iLang,SetLogFilter,1)
+	IDLC_DECL_VAR(tU32,exclude)
+	IDLC_BUF_TO_BASE(ni::eType_U32,exclude)
+	IDLC_METH_CALL_VOID(ni,iLang,SetLogFilter,1,(exclude))
+IDLC_METH_END(ni,iLang,SetLogFilter,1)
+
+/** ni -> iLang::GetLogFilter/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetLogFilter,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetLogFilter,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetLogFilter,0)
+
+/** ni -> iLang::Log/5 **/
+IDLC_METH_BEGIN(ni,iLang,Log,5)
+	IDLC_DECL_VAR(tLogFlags,type)
+	IDLC_BUF_TO_ENUM(tLogFlags,type)
+	IDLC_DECL_VAR(achar*,file)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,file)
+	IDLC_DECL_VAR(achar*,func)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,func)
+	IDLC_DECL_VAR(tU32,line)
+	IDLC_BUF_TO_BASE(ni::eType_U32,line)
+	IDLC_DECL_VAR(achar*,msg)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,msg)
+	IDLC_METH_CALL_VOID(ni,iLang,Log,5,(type,file,func,line,msg))
+IDLC_METH_END(ni,iLang,Log,5)
+
+/** ni -> iLang::GetRootFS/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetRootFS,0)
+	IDLC_DECL_RETVAR(iFileSystem*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetRootFS,0,())
+	IDLC_RET_FROM_INTF(iFileSystem,_Ret)
+IDLC_METH_END(ni,iLang,GetRootFS,0)
+
+/** ni -> iLang::CreateFileSystemDir/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileSystemDir,2)
+	IDLC_DECL_VAR(achar*,aaszDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszDir)
+	IDLC_DECL_VAR(tFileSystemRightsFlags,aRights)
+	IDLC_BUF_TO_ENUM(tFileSystemRightsFlags,aRights)
+	IDLC_DECL_RETVAR(iFileSystem*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileSystemDir,2,(aaszDir,aRights))
+	IDLC_RET_FROM_INTF(iFileSystem,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileSystemDir,2)
+
+/** ni -> iLang::CreateFileSystemHashed/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileSystemHashed,1)
+	IDLC_DECL_VAR(iFileSystem*,apFS)
+	IDLC_BUF_TO_INTF(iFileSystem,apFS)
+	IDLC_DECL_RETVAR(iFileSystem*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileSystemHashed,1,(apFS))
+	IDLC_RET_FROM_INTF(iFileSystem,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileSystemHashed,1)
+
+/** ni -> iLang::CreateFile/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFile,1)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFile,1,(apBase))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFile,1)
+
+/** ni -> iLang::CreateFileBaseWriteDummy/0 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseWriteDummy,0)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseWriteDummy,0,())
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseWriteDummy,0)
+
+/** ni -> iLang::CreateFileWriteDummy/0 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileWriteDummy,0)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileWriteDummy,0,())
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileWriteDummy,0)
+
+/** ni -> iLang::CreateFileBaseMemory/4 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseMemory,4)
+	IDLC_DECL_VAR(tPtr,apMem)
+	IDLC_BUF_TO_PTR(ni::eType_Ptr,apMem)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(tBool,abFree)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abFree)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseMemory,4,(apMem,anSize,abFree,aszPath))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseMemory,4)
+
+/** ni -> iLang::CreateFileMemory/4 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileMemory,4)
+	IDLC_DECL_VAR(tPtr,apMem)
+	IDLC_BUF_TO_PTR(ni::eType_Ptr,apMem)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(tBool,abFree)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abFree)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileMemory,4,(apMem,anSize,abFree,aszPath))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileMemory,4)
+
+/** ni -> iLang::CreateFileBaseMemoryAlloc/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseMemoryAlloc,2)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseMemoryAlloc,2,(anSize,aszPath))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseMemoryAlloc,2)
+
+/** ni -> iLang::CreateFileMemoryAlloc/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileMemoryAlloc,2)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileMemoryAlloc,2,(anSize,aszPath))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileMemoryAlloc,2)
+
+/** ni -> iLang::CreateFileBaseDynamicMemory/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseDynamicMemory,2)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseDynamicMemory,2,(anSize,aszPath))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseDynamicMemory,2)
+
+/** ni -> iLang::CreateFileDynamicMemory/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileDynamicMemory,2)
+	IDLC_DECL_VAR(tSize,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSize)
+	IDLC_DECL_VAR(achar*,aszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszPath)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileDynamicMemory,2,(anSize,aszPath))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileDynamicMemory,2)
+
+/** ni -> iLang::CreateFileBaseWindow/5 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseWindow,5)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(tI64,anBase)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anBase)
+	IDLC_DECL_VAR(tI64,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anSize)
+	IDLC_DECL_VAR(achar*,aaszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszPath)
+	IDLC_DECL_VAR(tBool,abAutoSeekSet)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abAutoSeekSet)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseWindow,5,(apBase,anBase,anSize,aaszPath,abAutoSeekSet))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseWindow,5)
+
+/** ni -> iLang::CreateFileWindow/5 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileWindow,5)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(tI64,anBase)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anBase)
+	IDLC_DECL_VAR(tI64,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_I64,anSize)
+	IDLC_DECL_VAR(achar*,aaszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszPath)
+	IDLC_DECL_VAR(tBool,abAutoSeekSet)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abAutoSeekSet)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileWindow,5,(apBase,anBase,anSize,aaszPath,abAutoSeekSet))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileWindow,5)
+
+/** ni -> iLang::CreateFileBaseBufferEncoder/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseBufferEncoder,2)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(iBufferEncoder*,apEnc)
+	IDLC_BUF_TO_INTF(iBufferEncoder,apEnc)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseBufferEncoder,2,(apBase,apEnc))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseBufferEncoder,2)
+
+/** ni -> iLang::CreateFileBufferEncoder/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBufferEncoder,2)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(iBufferEncoder*,apEnc)
+	IDLC_BUF_TO_INTF(iBufferEncoder,apEnc)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBufferEncoder,2,(apBase,apEnc))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBufferEncoder,2)
+
+/** ni -> iLang::CreateFileBaseBufferDecoder/3 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBaseBufferDecoder,3)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(iBufferDecoder*,apDec)
+	IDLC_BUF_TO_INTF(iBufferDecoder,apDec)
+	IDLC_DECL_VAR(tSize,aDecodedSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,aDecodedSize)
+	IDLC_DECL_RETVAR(iFileBase*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBaseBufferDecoder,3,(apBase,apDec,aDecodedSize))
+	IDLC_RET_FROM_INTF(iFileBase,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBaseBufferDecoder,3)
+
+/** ni -> iLang::CreateFileBufferDecoder/3 **/
+IDLC_METH_BEGIN(ni,iLang,CreateFileBufferDecoder,3)
+	IDLC_DECL_VAR(iFileBase*,apBase)
+	IDLC_BUF_TO_INTF(iFileBase,apBase)
+	IDLC_DECL_VAR(iBufferDecoder*,apDec)
+	IDLC_BUF_TO_INTF(iBufferDecoder,apDec)
+	IDLC_DECL_VAR(tSize,aDecodedSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,aDecodedSize)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateFileBufferDecoder,3,(apBase,apDec,aDecodedSize))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,CreateFileBufferDecoder,3)
+
+/** ni -> iLang::FileBufferEncode/4 **/
+IDLC_METH_BEGIN(ni,iLang,FileBufferEncode,4)
+	IDLC_DECL_VAR(iBufferEncoder*,apEnc)
+	IDLC_BUF_TO_INTF(iBufferEncoder,apEnc)
+	IDLC_DECL_VAR(iFile*,apSrc)
+	IDLC_BUF_TO_INTF(iFile,apSrc)
+	IDLC_DECL_VAR(tSize,anSrcSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSrcSize)
+	IDLC_DECL_VAR(iFile*,apDest)
+	IDLC_BUF_TO_INTF(iFile,apDest)
+	IDLC_DECL_RETVAR(tSize,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,FileBufferEncode,4,(apEnc,apSrc,anSrcSize,apDest))
+	IDLC_RET_FROM_PTR(ni::eType_Size,_Ret)
+IDLC_METH_END(ni,iLang,FileBufferEncode,4)
+
+/** ni -> iLang::FileBufferDecode/5 **/
+IDLC_METH_BEGIN(ni,iLang,FileBufferDecode,5)
+	IDLC_DECL_VAR(iBufferDecoder*,apDec)
+	IDLC_BUF_TO_INTF(iBufferDecoder,apDec)
+	IDLC_DECL_VAR(iFile*,apSrc)
+	IDLC_BUF_TO_INTF(iFile,apSrc)
+	IDLC_DECL_VAR(tSize,anSrcSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSrcSize)
+	IDLC_DECL_VAR(iFile*,apDest)
+	IDLC_BUF_TO_INTF(iFile,apDest)
+	IDLC_DECL_VAR(tSize,anDestSize)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anDestSize)
+	IDLC_DECL_RETVAR(tSize,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,FileBufferDecode,5,(apDec,apSrc,anSrcSize,apDest,anDestSize))
+	IDLC_RET_FROM_PTR(ni::eType_Size,_Ret)
+IDLC_METH_END(ni,iLang,FileBufferDecode,5)
+
+/** ni -> iLang::RunCommand/1 **/
+IDLC_METH_BEGIN(ni,iLang,RunCommand,1)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,RunCommand,1,(aaszCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iLang,RunCommand,1)
+
+/** ni -> iLang::StartPath/1 **/
+IDLC_METH_BEGIN(ni,iLang,StartPath,1)
+	IDLC_DECL_VAR(achar*,aaszFile)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszFile)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,StartPath,1,(aaszFile))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iLang,StartPath,1)
+
+/** ni -> iLang::GetCurrentTime/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetCurrentTime,0)
+	IDLC_DECL_RETVAR(const iTime*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetCurrentTime,0,())
+	IDLC_RET_FROM_INTF(const iTime,_Ret)
+IDLC_METH_END(ni,iLang,GetCurrentTime,0)
+
+/** ni -> iLang::TimerInSeconds/0 **/
+IDLC_METH_BEGIN(ni,iLang,TimerInSeconds,0)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,TimerInSeconds,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iLang,TimerInSeconds,0)
+
+/** ni -> iLang::ResetFrameTime/0 **/
+IDLC_METH_BEGIN(ni,iLang,ResetFrameTime,0)
+	IDLC_METH_CALL_VOID(ni,iLang,ResetFrameTime,0,())
+IDLC_METH_END(ni,iLang,ResetFrameTime,0)
+
+/** ni -> iLang::UpdateFrameTime/1 **/
+IDLC_METH_BEGIN(ni,iLang,UpdateFrameTime,1)
+	IDLC_DECL_VAR(tF64,afElapsedTime)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,afElapsedTime)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,UpdateFrameTime,1,(afElapsedTime))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,UpdateFrameTime,1)
+
+/** ni -> iLang::GetTotalFrameTime/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetTotalFrameTime,0)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetTotalFrameTime,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iLang,GetTotalFrameTime,0)
+
+/** ni -> iLang::GetFrameTime/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetFrameTime,0)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetFrameTime,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iLang,GetFrameTime,0)
+
+/** ni -> iLang::GetFrameNumber/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetFrameNumber,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetFrameNumber,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetFrameNumber,0)
+
+/** ni -> iLang::GetFrameRate/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetFrameRate,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetFrameRate,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iLang,GetFrameRate,0)
+
+/** ni -> iLang::GetAverageFrameRate/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetAverageFrameRate,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetAverageFrameRate,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetAverageFrameRate,0)
+
+/** ni -> iLang::JsonParseFile/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::JsonParseFile/2 **/
+IDLC_METH_BEGIN(ni,iLang,JsonParseFile,2)
+	IDLC_DECL_VAR(ni::iFile*,apFile)
+	IDLC_BUF_TO_INTF(ni::iFile,apFile)
+	IDLC_DECL_VAR(ni::iJsonParserSink*,apSink)
+	IDLC_BUF_TO_INTF(ni::iJsonParserSink,apSink)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,JsonParseFile,2,(apFile,apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,JsonParseFile,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::JsonParseString/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::JsonParseString/2 **/
+IDLC_METH_BEGIN(ni,iLang,JsonParseString,2)
+	IDLC_DECL_VAR(ni::cString,aString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer,aString)
+	IDLC_DECL_VAR(ni::iJsonParserSink*,apSink)
+	IDLC_BUF_TO_INTF(ni::iJsonParserSink,apSink)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,JsonParseString,2,(aString,apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,JsonParseString,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::CreateJsonSinkWriter/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::CreateJsonSinkWriter/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateJsonSinkWriter,2)
+	IDLC_DECL_VAR(ni::iJsonWriterSink*,apSink)
+	IDLC_BUF_TO_INTF(ni::iJsonWriterSink,apSink)
+	IDLC_DECL_VAR(ni::tBool,abPrettyPrint)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPrettyPrint)
+	IDLC_DECL_RETVAR(ni::iJsonWriter*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateJsonSinkWriter,2,(apSink,abPrettyPrint))
+	IDLC_RET_FROM_INTF(ni::iJsonWriter,_Ret)
+IDLC_METH_END(ni,iLang,CreateJsonSinkWriter,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::CreateJsonFileWriter/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::CreateJsonFileWriter/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateJsonFileWriter,2)
+	IDLC_DECL_VAR(ni::iFile*,apFile)
+	IDLC_BUF_TO_INTF(ni::iFile,apFile)
+	IDLC_DECL_VAR(ni::tBool,abPrettyPrint)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPrettyPrint)
+	IDLC_DECL_RETVAR(ni::iJsonWriter*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateJsonFileWriter,2,(apFile,abPrettyPrint))
+	IDLC_RET_FROM_INTF(ni::iJsonWriter,_Ret)
+IDLC_METH_END(ni,iLang,CreateJsonFileWriter,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::XmlParseFile/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::XmlParseFile/2 **/
+IDLC_METH_BEGIN(ni,iLang,XmlParseFile,2)
+	IDLC_DECL_VAR(ni::iFile*,apFile)
+	IDLC_BUF_TO_INTF(ni::iFile,apFile)
+	IDLC_DECL_VAR(ni::iXmlParserSink*,apSink)
+	IDLC_BUF_TO_INTF(ni::iXmlParserSink,apSink)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,XmlParseFile,2,(apFile,apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,XmlParseFile,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::XmlParseString/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iLang::XmlParseString/2 **/
+IDLC_METH_BEGIN(ni,iLang,XmlParseString,2)
+	IDLC_DECL_VAR(ni::cString,aString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer,aString)
+	IDLC_DECL_VAR(ni::iXmlParserSink*,apSink)
+	IDLC_BUF_TO_INTF(ni::iXmlParserSink,apSink)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,XmlParseString,2,(aString,apSink))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,XmlParseString,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iLang::GetExpressionContext/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetExpressionContext,0)
+	IDLC_DECL_RETVAR(iExpressionContext*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetExpressionContext,0,())
+	IDLC_RET_FROM_INTF(iExpressionContext,_Ret)
+IDLC_METH_END(ni,iLang,GetExpressionContext,0)
+
+/** ni -> iLang::CreateExpressionContext/0 **/
+IDLC_METH_BEGIN(ni,iLang,CreateExpressionContext,0)
+	IDLC_DECL_RETVAR(iExpressionContext*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateExpressionContext,0,())
+	IDLC_RET_FROM_INTF(iExpressionContext,_Ret)
+IDLC_METH_END(ni,iLang,CreateExpressionContext,0)
+
+/** ni -> iLang::Eval/1 **/
+IDLC_METH_BEGIN(ni,iLang,Eval,1)
+	IDLC_DECL_VAR(achar*,aaszExpr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszExpr)
+	IDLC_DECL_RETVAR(iExpressionVariable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,Eval,1,(aaszExpr))
+	IDLC_RET_FROM_INTF(iExpressionVariable,_Ret)
+IDLC_METH_END(ni,iLang,Eval,1)
+
+/** ni -> iLang::EnumToString/3 **/
+IDLC_METH_BEGIN(ni,iLang,EnumToString,3)
+	IDLC_DECL_VAR(tU32,anValue)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anValue)
+	IDLC_DECL_VAR(sEnumDef*,apEnumDef)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer,apEnumDef)
+	IDLC_DECL_VAR(tEnumToStringFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tEnumToStringFlags,aFlags)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,EnumToString,3,(anValue,apEnumDef,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,EnumToString,3)
+
+/** ni -> iLang::StringToEnum/3 **/
+IDLC_METH_BEGIN(ni,iLang,StringToEnum,3)
+	IDLC_DECL_VAR(achar*,aExpr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aExpr)
+	IDLC_DECL_VAR(sEnumDef*,apEnumDef)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer,apEnumDef)
+	IDLC_DECL_VAR(tEnumToStringFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tEnumToStringFlags,aFlags)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,StringToEnum,3,(aExpr,apEnumDef,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,StringToEnum,3)
+
+/** ni -> iLang::AddScriptingHost/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::AddScriptingHost/2 **/
+IDLC_METH_BEGIN(ni,iLang,AddScriptingHost,2)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(iScriptingHost*,apHost)
+	IDLC_BUF_TO_INTF(iScriptingHost,apHost)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,AddScriptingHost,2,(ahspName,apHost))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,AddScriptingHost,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::RemoveScriptingHost/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::RemoveScriptingHost/1 **/
+IDLC_METH_BEGIN(ni,iLang,RemoveScriptingHost,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,RemoveScriptingHost,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,RemoveScriptingHost,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetNumScriptingHosts/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetNumScriptingHosts/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetNumScriptingHosts,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetNumScriptingHosts,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetNumScriptingHosts,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetScriptingHostName/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetScriptingHostName/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetScriptingHostName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetScriptingHostName,1,(anIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iLang,GetScriptingHostName,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetScriptingHost/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetScriptingHost/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetScriptingHost,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iScriptingHost*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetScriptingHost,1,(anIndex))
+	IDLC_RET_FROM_INTF(iScriptingHost,_Ret)
+IDLC_METH_END(ni,iLang,GetScriptingHost,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetScriptingHostFromName/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetScriptingHostFromName/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetScriptingHostFromName,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iScriptingHost*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetScriptingHostFromName,1,(ahspName))
+	IDLC_RET_FROM_INTF(iScriptingHost,_Ret)
+IDLC_METH_END(ni,iLang,GetScriptingHostFromName,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetScriptingHostIndex/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::GetScriptingHostIndex/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetScriptingHostIndex,1)
+	IDLC_DECL_VAR(iScriptingHost*,apHost)
+	IDLC_BUF_TO_INTF(iScriptingHost,apHost)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetScriptingHostIndex,1,(apHost))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetScriptingHostIndex,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::ServiceAllScriptingHosts/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::ServiceAllScriptingHosts/1 **/
+IDLC_METH_BEGIN(ni,iLang,ServiceAllScriptingHosts,1)
+	IDLC_DECL_VAR(tBool,abForceGC)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abForceGC)
+	IDLC_METH_CALL_VOID(ni,iLang,ServiceAllScriptingHosts,1,(abForceGC))
+IDLC_METH_END(ni,iLang,ServiceAllScriptingHosts,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::FindScriptingHost/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iLang::FindScriptingHost/2 **/
+IDLC_METH_BEGIN(ni,iLang,FindScriptingHost,2)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(iHString*,ahspCodeResource)
+	IDLC_BUF_TO_INTF(iHString,ahspCodeResource)
+	IDLC_DECL_RETVAR(iScriptingHost*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,FindScriptingHost,2,(ahspContext,ahspCodeResource))
+	IDLC_RET_FROM_INTF(iScriptingHost,_Ret)
+IDLC_METH_END(ni,iLang,FindScriptingHost,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iLang::GetProf/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetProf,0)
+	IDLC_DECL_RETVAR(iProf*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetProf,0,())
+	IDLC_RET_FROM_INTF(iProf,_Ret)
+IDLC_METH_END(ni,iLang,GetProf,0)
+
+/** ni -> iLang::URLGetProtocol/1 **/
+IDLC_METH_BEGIN(ni,iLang,URLGetProtocol,1)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,URLGetProtocol,1,(aURL))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,URLGetProtocol,1)
+
+/** ni -> iLang::URLGetHandler/1 **/
+IDLC_METH_BEGIN(ni,iLang,URLGetHandler,1)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_RETVAR(iURLFileHandler*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,URLGetHandler,1,(aURL))
+	IDLC_RET_FROM_INTF(iURLFileHandler,_Ret)
+IDLC_METH_END(ni,iLang,URLGetHandler,1)
+
+/** ni -> iLang::URLOpen/1 **/
+IDLC_METH_BEGIN(ni,iLang,URLOpen,1)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,URLOpen,1,(aURL))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iLang,URLOpen,1)
+
+/** ni -> iLang::URLExists/1 **/
+IDLC_METH_BEGIN(ni,iLang,URLExists,1)
+	IDLC_DECL_VAR(achar*,aURL)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aURL)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,URLExists,1,(aURL))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,URLExists,1)
+
+/** ni -> iLang::URLFindFilePath/3 **/
+IDLC_METH_BEGIN(ni,iLang,URLFindFilePath,3)
+	IDLC_DECL_VAR(achar*,aszRes)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszRes)
+	IDLC_DECL_VAR(achar*,aszBasePath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszBasePath)
+	IDLC_DECL_VAR(achar*,aLoaderPrefix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aLoaderPrefix)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,URLFindFilePath,3,(aszRes,aszBasePath,aLoaderPrefix))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,URLFindFilePath,3)
+
+/** ni -> iLang::CreateHString/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateHString,1)
+	IDLC_DECL_VAR(cString,aStr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer,aStr)
+	IDLC_DECL_RETVAR(Ptr<iHString>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateHString,1,(aStr))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iLang,CreateHString,1)
+
+/** ni -> iLang::LoadLocalization/1 **/
+IDLC_METH_BEGIN(ni,iLang,LoadLocalization,1)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,LoadLocalization,1,(apDT))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,LoadLocalization,1)
+
+/** ni -> iLang::IsSerializedObject/3 **/
+IDLC_METH_BEGIN(ni,iLang,IsSerializedObject,3)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(achar*,aID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aID)
+	IDLC_DECL_VAR(tI64*,apObjSize)
+	IDLC_BUF_TO_NULL(ni::eType_I64|ni::eTypeFlags_Pointer,apObjSize)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,IsSerializedObject,3,(apFile,aID,apObjSize))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,IsSerializedObject,3)
+
+/** ni -> iLang::SerializeObject/4 **/
+IDLC_METH_BEGIN(ni,iLang,SerializeObject,4)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(iUnknown*,apObject)
+	IDLC_BUF_TO_INTF(iUnknown,apObject)
+	IDLC_DECL_VAR(eSerializeMode,aMode)
+	IDLC_BUF_TO_ENUM(eSerializeMode,aMode)
+	IDLC_DECL_VAR(tI64*,apObjSize)
+	IDLC_BUF_TO_NULL(ni::eType_I64|ni::eTypeFlags_Pointer,apObjSize)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SerializeObject,4,(apFile,apObject,aMode,apObjSize))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iLang,SerializeObject,4)
+
+/** ni -> iLang::ReadSerializationHeader/3 -> NO AUTOMATION **/
+/** ni -> iLang::WriteSerializationHeader/3 -> NO AUTOMATION **/
+/** ni -> iLang::CreateDeviceResourceManager/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateDeviceResourceManager,1)
+	IDLC_DECL_VAR(achar*,aszType)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszType)
+	IDLC_DECL_RETVAR(iDeviceResourceManager*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateDeviceResourceManager,1,(aszType))
+	IDLC_RET_FROM_INTF(iDeviceResourceManager,_Ret)
+IDLC_METH_END(ni,iLang,CreateDeviceResourceManager,1)
+
+/** ni -> iLang::GetSystemMessageHandlers/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetSystemMessageHandlers,0)
+	IDLC_DECL_RETVAR(tMessageHandlerSinkLst*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetSystemMessageHandlers,0,())
+	IDLC_RET_FROM_INTF(tMessageHandlerSinkLst,_Ret)
+IDLC_METH_END(ni,iLang,GetSystemMessageHandlers,0)
+
+/** ni -> iLang::CreateDataTable/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateDataTable,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iDataTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateDataTable,1,(aaszName))
+	IDLC_RET_FROM_INTF(iDataTable,_Ret)
+IDLC_METH_END(ni,iLang,CreateDataTable,1)
+
+/** ni -> iLang::SerializeDataTable/4 **/
+IDLC_METH_BEGIN(ni,iLang,SerializeDataTable,4)
+	IDLC_DECL_VAR(achar*,aaszType)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszType)
+	IDLC_DECL_VAR(eSerializeMode,aMode)
+	IDLC_BUF_TO_ENUM(eSerializeMode,aMode)
+	IDLC_DECL_VAR(iDataTable*,apTable)
+	IDLC_BUF_TO_INTF(iDataTable,apTable)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SerializeDataTable,4,(aaszType,aMode,apTable,apFile))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,SerializeDataTable,4)
+
+/** ni -> iLang::CreateDataTableWriteStack/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateDataTableWriteStack,1)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(iDataTableWriteStack*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateDataTableWriteStack,1,(apDT))
+	IDLC_RET_FROM_INTF(iDataTableWriteStack,_Ret)
+IDLC_METH_END(ni,iLang,CreateDataTableWriteStack,1)
+
+/** ni -> iLang::CreateDataTableWriteStackFromName/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateDataTableWriteStackFromName,1)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iDataTableWriteStack*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateDataTableWriteStackFromName,1,(aaszName))
+	IDLC_RET_FROM_INTF(iDataTableWriteStack,_Ret)
+IDLC_METH_END(ni,iLang,CreateDataTableWriteStackFromName,1)
+
+/** ni -> iLang::CreateDataTableReadStack/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateDataTableReadStack,1)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(iDataTableReadStack*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateDataTableReadStack,1,(apDT))
+	IDLC_RET_FROM_INTF(iDataTableReadStack,_Ret)
+IDLC_METH_END(ni,iLang,CreateDataTableReadStack,1)
+
+/** ni -> iLang::GetAbsoluteDataTablePath/2 **/
+IDLC_METH_BEGIN(ni,iLang,GetAbsoluteDataTablePath,2)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_VAR(tU32,anPropIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPropIndex)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetAbsoluteDataTablePath,2,(apDT,anPropIndex))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,GetAbsoluteDataTablePath,2)
+
+/** ni -> iLang::SetClipboard/2 **/
+IDLC_METH_BEGIN(ni,iLang,SetClipboard,2)
+	IDLC_DECL_VAR(eClipboardType,aType)
+	IDLC_BUF_TO_ENUM(eClipboardType,aType)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SetClipboard,2,(aType,apDT))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iLang,SetClipboard,2)
+
+/** ni -> iLang::GetClipboard/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetClipboard,1)
+	IDLC_DECL_VAR(eClipboardType,aType)
+	IDLC_BUF_TO_ENUM(eClipboardType,aType)
+	IDLC_DECL_RETVAR(iDataTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetClipboard,1,(aType))
+	IDLC_RET_FROM_INTF(iDataTable,_Ret)
+IDLC_METH_END(ni,iLang,GetClipboard,1)
+
+/** ni -> iLang::GetNumMonitors/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetNumMonitors,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetNumMonitors,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetNumMonitors,0)
+
+/** ni -> iLang::GetMonitorIndex/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMonitorIndex,1)
+	IDLC_DECL_VAR(tIntPtr,aHandle)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aHandle)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMonitorIndex,1,(aHandle))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetMonitorIndex,1)
+
+/** ni -> iLang::GetMonitorHandle/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMonitorHandle,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tIntPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMonitorHandle,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
+IDLC_METH_END(ni,iLang,GetMonitorHandle,1)
+
+/** ni -> iLang::GetMonitorName/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMonitorName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMonitorName,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iLang,GetMonitorName,1)
+
+/** ni -> iLang::GetMonitorRect/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMonitorRect,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(sRecti,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMonitorRect,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4i,_Ret)
+IDLC_METH_END(ni,iLang,GetMonitorRect,1)
+
+/** ni -> iLang::GetMonitorFlags/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetMonitorFlags,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tOSMonitorFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetMonitorFlags,1,(anIndex))
+	IDLC_RET_FROM_ENUM(tOSMonitorFlags,_Ret)
+IDLC_METH_END(ni,iLang,GetMonitorFlags,1)
+
+/** ni -> iLang::CreateWindow/5 **/
+IDLC_METH_BEGIN(ni,iLang,CreateWindow,5)
+	IDLC_DECL_VAR(iOSWindow*,apParent)
+	IDLC_BUF_TO_INTF(iOSWindow,apParent)
+	IDLC_DECL_VAR(achar*,aaszTitle)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszTitle)
+	IDLC_DECL_VAR(sRecti,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_VAR(tOSWindowCreateFlags,aCreate)
+	IDLC_BUF_TO_ENUM(tOSWindowCreateFlags,aCreate)
+	IDLC_DECL_VAR(tOSWindowStyleFlags,aStyle)
+	IDLC_BUF_TO_ENUM(tOSWindowStyleFlags,aStyle)
+	IDLC_DECL_RETVAR(iOSWindow*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateWindow,5,(apParent,aaszTitle,aRect,aCreate,aStyle))
+	IDLC_RET_FROM_INTF(iOSWindow,_Ret)
+IDLC_METH_END(ni,iLang,CreateWindow,5)
+
+/** ni -> iLang::CreateWindowEx/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateWindowEx,2)
+	IDLC_DECL_VAR(tIntPtr,aOSWindowHandle)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aOSWindowHandle)
+	IDLC_DECL_VAR(tOSWindowCreateFlags,aCreate)
+	IDLC_BUF_TO_ENUM(tOSWindowCreateFlags,aCreate)
+	IDLC_DECL_RETVAR(iOSWindow*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateWindowEx,2,(aOSWindowHandle,aCreate))
+	IDLC_RET_FROM_INTF(iOSWindow,_Ret)
+IDLC_METH_END(ni,iLang,CreateWindowEx,2)
+
+/** ni -> iLang::MessageBox/4 **/
+IDLC_METH_BEGIN(ni,iLang,MessageBox,4)
+	IDLC_DECL_VAR(iOSWindow*,apParent)
+	IDLC_BUF_TO_INTF(iOSWindow,apParent)
+	IDLC_DECL_VAR(achar*,aaszTitle)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszTitle)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_VAR(tOSMessageBoxFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tOSMessageBoxFlags,aFlags)
+	IDLC_DECL_RETVAR(eOSMessageBoxReturn,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,MessageBox,4,(apParent,aaszTitle,aaszText,aFlags))
+	IDLC_RET_FROM_ENUM(eOSMessageBoxReturn,_Ret)
+IDLC_METH_END(ni,iLang,MessageBox,4)
+
+/** ni -> iLang::OpenFileDialog/4 **/
+IDLC_METH_BEGIN(ni,iLang,OpenFileDialog,4)
+	IDLC_DECL_VAR(iOSWindow*,aParent)
+	IDLC_BUF_TO_INTF(iOSWindow,aParent)
+	IDLC_DECL_VAR(achar*,aTitle)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aTitle)
+	IDLC_DECL_VAR(achar*,aFilter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aFilter)
+	IDLC_DECL_VAR(achar*,aInitDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aInitDir)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,OpenFileDialog,4,(aParent,aTitle,aFilter,aInitDir))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,OpenFileDialog,4)
+
+/** ni -> iLang::SaveFileDialog/4 **/
+IDLC_METH_BEGIN(ni,iLang,SaveFileDialog,4)
+	IDLC_DECL_VAR(iOSWindow*,aParent)
+	IDLC_BUF_TO_INTF(iOSWindow,aParent)
+	IDLC_DECL_VAR(achar*,aTitle)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aTitle)
+	IDLC_DECL_VAR(achar*,aFilter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aFilter)
+	IDLC_DECL_VAR(achar*,aInitDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aInitDir)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,SaveFileDialog,4,(aParent,aTitle,aFilter,aInitDir))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,SaveFileDialog,4)
+
+/** ni -> iLang::PickDirectoryDialog/3 **/
+IDLC_METH_BEGIN(ni,iLang,PickDirectoryDialog,3)
+	IDLC_DECL_VAR(iOSWindow*,aParent)
+	IDLC_BUF_TO_INTF(iOSWindow,aParent)
+	IDLC_DECL_VAR(achar*,aTitle)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aTitle)
+	IDLC_DECL_VAR(achar*,aInitDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aInitDir)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,PickDirectoryDialog,3,(aParent,aTitle,aInitDir))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iLang,PickDirectoryDialog,3)
+
+/** ni -> iLang::GetNumGameCtrls/0 **/
+IDLC_METH_BEGIN(ni,iLang,GetNumGameCtrls,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetNumGameCtrls,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,GetNumGameCtrls,0)
+
+/** ni -> iLang::GetGameCtrl/1 **/
+IDLC_METH_BEGIN(ni,iLang,GetGameCtrl,1)
+	IDLC_DECL_VAR(tU32,aulIdx)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aulIdx)
+	IDLC_DECL_RETVAR(iGameCtrl*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,GetGameCtrl,1,(aulIdx))
+	IDLC_RET_FROM_INTF(iGameCtrl,_Ret)
+IDLC_METH_END(ni,iLang,GetGameCtrl,1)
+
+IDLC_END_INTF(ni,iLang)
+
+IDLC_END_NAMESPACE()
+// EOF //

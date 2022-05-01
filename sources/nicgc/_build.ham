@@ -1,0 +1,5 @@
+SubDir TOP nicgc ;
+
+if ! ( $(EMBEDDED) = 1 ) {
+  SubInclude TOP nicgc src ;
+}

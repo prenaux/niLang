@@ -1,0 +1,286 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eMaterialSerializeFlags">
+			<comments desc="Material Serialization flags. "/>
+			<value name="eMaterialSerializeFlags_Write" value="niBit ( 0 ) ">
+				<comments desc="Serialize write. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_Read" value="niBit ( 1 ) ">
+				<comments desc="Serialize read. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_Textures" value="niBit ( 2 ) ">
+				<comments desc="Serialize all the textures data in the file. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_Compress" value="niBit ( 3 ) ">
+				<comments desc="Compress the content for best hardware usage. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_NamesOnly" value="niBit ( 4 ) ">
+				<comments desc="Serialize only the name of the materials. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_ReadExistingOnly" value="niBit ( 5 ) ">
+				<comments desc="Read only if the material was alreadu in the library. "/>
+			</value>
+			<value name="eMaterialSerializeFlags_TextureNoMipMaps" value="niBit ( 19 ) ">
+				<comments desc="Don&apos;t serialize the texture&apos;s mip maps. ">
+					<remark text="Mip maps will be recomputed when the library/material is loaded. "/>
+				</comments>
+			</value>
+			<value name="eMaterialSerializeFlags_TextureMaxResLo" value="niBit ( 20 ) ">
+				<comments desc="Texture max res value lower bit. (4 bits value) ">
+					<remark text="(FLAGS|(RES&lt;&lt;20)), RES is the maximum resolution between 0 and 15 the maximum resolution is 2^RES. "/>
+				</comments>
+			</value>
+			<value name="eMaterialSerializeFlags_TextureMaxResHi" value="niBit ( 24 ) ">
+				<comments desc="Texture max res value higher bit. (4 bits value) "/>
+			</value>
+			<value name="eMaterialSerializeFlags_TextureCompressionLo" value="niBit ( 25 ) ">
+				<comments desc="Texture compression value lower bit. (7 bits value) ">
+					<remark text="(FLAGS|(COMP&lt;&lt;25)), COMP should be a value between 0 and 100, 0 == no loss compression "/>
+				</comments>
+			</value>
+			<value name="eMaterialSerializeFlags_TextureCompressionHi" value="niBit ( 31 ) ">
+				<comments desc="Texture compression value higher bit. (7 bits value) "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iMaterialLibrarySink"
+			uuid1="DD70858C-D1F5-459A-9963-7FE61DB43698"
+			uuid2="0xdd70858c,0xd1f5,0x459a,0x99,0x63,0x7f,0xe6,0x1d,0xb4,0x36,0x98">
+			<comments desc="Material library sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onMaterialLibrarySink_MaterialAdded"
+				name="OnMaterialLibrarySink_MaterialAdded"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="Called when a material is added. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apLib"
+					type="iMaterialLibrary *"
+					typec="iMaterialLibrary*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apMat"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onMaterialLibrarySink_MaterialRemoved"
+				name="OnMaterialLibrarySink_MaterialRemoved"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="Called when a material is removed. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apLib"
+					type="iMaterialLibrary *"
+					typec="iMaterialLibrary*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apMat"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iMaterialLibrary" uuid1="BDED3EE6-BB4C-45A8-9497-E58C3871B609" uuid2="0xbded3ee6,0xbb4c,0x45a8,0x94,0x97,0xe5,0x8c,0x38,0x71,0xb6,0x09">
+			<comments desc="Material library interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getSinkList"
+				name="GetSinkList"
+				num_parameters="0"
+				property="get"
+				property_name2="sinkList"
+				property_name="sink_list">
+				<comments desc="Get the sink list. "/>
+				<return type="tMaterialLibrarySinkLst *" typec="tMaterialLibrarySinkLst*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="2">
+				<comments desc="Copy the material library. ">
+					<params text="apSrc is the source library to copy "/>
+					<params text="abCloneMats sets whether the materials will be cloned, or just their pointer transfered. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="const iMaterialLibrary *"
+					typec="const iMaterialLibrary*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abCloneMats"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="1">
+				<comments desc="Clone the material library. "/>
+				<return type="iMaterialLibrary *" typec="iMaterialLibrary*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abCloneMats"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="clearMaterials" name="ClearMaterials" num_parameters="0">
+				<comments desc="Remove all materials. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="addMaterial" name="AddMaterial" num_parameters="1">
+				<comments desc="Add a material. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="ni::iMaterial *"
+					typec="ni::iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeMaterial" name="RemoveMaterial" num_parameters="1">
+				<comments desc="Remove a material. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="ni::iMaterial *"
+					typec="ni::iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumMaterials"
+				name="GetNumMaterials"
+				num_parameters="0"
+				property="get"
+				property_name2="numMaterials"
+				property_name="num_materials">
+				<comments desc="Get the number of materials. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterial"
+				name="GetMaterial"
+				num_parameters="1"
+				property="get"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Get the material at the specified index. "/>
+				<return type="ni::iMaterial *" typec="ni::iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterialFromName"
+				name="GetMaterialFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="materialFromName"
+				property_name="material_from_name">
+				<comments desc="Get the material from the specified name. "/>
+				<return type="ni::iMaterial *" typec="ni::iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterialIndex"
+				name="GetMaterialIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="materialIndex"
+				property_name="material_index">
+				<comments desc="Get the index of the specified material. "/>
+				<return type="ni::tU32" typec="ni::tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="ni::iMaterial *"
+					typec="ni::iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the library in a datatable. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="ni::iDataTable *"
+					typec="ni::iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tMaterialSerializeFlags"
+					typec="tMaterialSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="serializeFile" name="SerializeFile" num_parameters="2">
+				<comments desc="Serialize the library in a file. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tMaterialSerializeFlags"
+					typec="tMaterialSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setBasePath"
+				name="SetBasePath"
+				num_parameters="1"
+				property="set"
+				property_name2="basePath"
+				property_name="base_path">
+				<comments desc="Set the material library&apos;s base path. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspBasePath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBasePath"
+				name="GetBasePath"
+				num_parameters="0"
+				property="get"
+				property_name2="basePath"
+				property_name="base_path">
+				<comments desc="Get the material library&apos;s base path. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

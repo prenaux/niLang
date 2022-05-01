@@ -1,0 +1,106 @@
+#include "../API/niUI/IWidgetForm.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetForm **/
+IDLC_BEGIN_INTF(ni,iWidgetForm)
+/** ni -> iWidgetForm::SetTitle/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,SetTitle,1)
+	IDLC_DECL_VAR(achar*,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,SetTitle,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetForm,SetTitle,1)
+
+/** ni -> iWidgetForm::GetTitle/0 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetTitle,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetTitle,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetTitle,0)
+
+/** ni -> iWidgetForm::SetResizeBorderArea/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,SetResizeBorderArea,1)
+	IDLC_DECL_VAR(tF32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,SetResizeBorderArea,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetForm,SetResizeBorderArea,1)
+
+/** ni -> iWidgetForm::GetResizeBorderArea/0 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetResizeBorderArea,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetResizeBorderArea,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetResizeBorderArea,0)
+
+/** ni -> iWidgetForm::GetNumTitleWidgets/0 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetNumTitleWidgets,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetNumTitleWidgets,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetNumTitleWidgets,0)
+
+/** ni -> iWidgetForm::GetTitleWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetTitleWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetTitleWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetTitleWidget,1)
+
+/** ni -> iWidgetForm::GetTitleWidgetIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetTitleWidgetIndex,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetTitleWidgetIndex,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetTitleWidgetIndex,1)
+
+/** ni -> iWidgetForm::GetTitleWidgetFromID/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetTitleWidgetFromID,1)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetTitleWidgetFromID,1,(ahspID))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetTitleWidgetFromID,1)
+
+/** ni -> iWidgetForm::AddTitleWidget/2 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,AddTitleWidget,2)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(tF32,afWidth)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afWidth)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,AddTitleWidget,2,(apWidget,afWidth))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetForm,AddTitleWidget,2)
+
+/** ni -> iWidgetForm::SetFormFrameFlags/1 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,SetFormFrameFlags,1)
+	IDLC_DECL_VAR(tRectFrameFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tRectFrameFlags,aFlags)
+	IDLC_METH_CALL_VOID(ni,iWidgetForm,SetFormFrameFlags,1,(aFlags))
+IDLC_METH_END(ni,iWidgetForm,SetFormFrameFlags,1)
+
+/** ni -> iWidgetForm::GetFormFrameFlags/0 **/
+IDLC_METH_BEGIN(ni,iWidgetForm,GetFormFrameFlags,0)
+	IDLC_DECL_RETVAR(tRectFrameFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetForm,GetFormFrameFlags,0,())
+	IDLC_RET_FROM_ENUM(tRectFrameFlags,_Ret)
+IDLC_METH_END(ni,iWidgetForm,GetFormFrameFlags,0)
+
+IDLC_END_INTF(ni,iWidgetForm)
+
+IDLC_END_NAMESPACE()
+// EOF //

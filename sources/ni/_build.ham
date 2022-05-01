@@ -1,0 +1,5 @@
+SubDir TOP ni ;
+
+if ! ( $(EMBEDDED) = 1 ) {
+  SubInclude TOP ni src ;
+}

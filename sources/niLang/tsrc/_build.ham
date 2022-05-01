@@ -1,0 +1,17 @@
+if [ SubDirOnce TOP niLang tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTest Test_niLang : 1.0.0 ;
+MBEDTLS_Hdrs $(BUILD_SRC) ;
+
+niImportModuleLibs niUnitTest ;
+niImportModuleDll niLang ;
+if ! ( $(EMBEDDED) = 1 ) {
+  niImportModuleDll Test_RTCpp ;
+}
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
+
+runInDir Test_niLang ;

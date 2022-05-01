@@ -1,0 +1,423 @@
+#include "../API/niUI/ICamera.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iCamera **/
+IDLC_BEGIN_INTF(ni,iCamera)
+/** ni -> iCamera::Copy/1 **/
+IDLC_METH_BEGIN(ni,iCamera,Copy,1)
+	IDLC_DECL_VAR(iCamera*,pSrc)
+	IDLC_BUF_TO_INTF(iCamera,pSrc)
+	IDLC_METH_CALL_VOID(ni,iCamera,Copy,1,(pSrc))
+IDLC_METH_END(ni,iCamera,Copy,1)
+
+/** ni -> iCamera::Clone/0 **/
+IDLC_METH_BEGIN(ni,iCamera,Clone,0)
+	IDLC_DECL_RETVAR(iCamera*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,Clone,0,())
+	IDLC_RET_FROM_INTF(iCamera,_Ret)
+IDLC_METH_END(ni,iCamera,Clone,0)
+
+/** ni -> iCamera::GetWorldMatrix/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetWorldMatrix,0)
+	IDLC_DECL_RETVAR(ni::sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetWorldMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iCamera,GetWorldMatrix,0)
+
+/** ni -> iCamera::GetViewMatrix/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetViewMatrix,0)
+	IDLC_DECL_RETVAR(ni::sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetViewMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iCamera,GetViewMatrix,0)
+
+/** ni -> iCamera::GetProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetProjectionMatrix,0)
+	IDLC_DECL_RETVAR(ni::sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iCamera,GetProjectionMatrix,0)
+
+/** ni -> iCamera::GetFrustum/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetFrustum,0)
+	IDLC_DECL_RETVAR(ni::iFrustum*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetFrustum,0,())
+	IDLC_RET_FROM_INTF(ni::iFrustum,_Ret)
+IDLC_METH_END(ni,iCamera,GetFrustum,0)
+
+/** ni -> iCamera::GetRay/3 **/
+IDLC_METH_BEGIN(ni,iCamera,GetRay,3)
+	IDLC_DECL_VAR(ni::tF32,afX)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afX)
+	IDLC_DECL_VAR(ni::tF32,afY)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afY)
+	IDLC_DECL_VAR(ni::sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetRay,3,(afX,afY,aRect))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetRay,3)
+
+/** ni -> iCamera::GetRayStart/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetRayStart,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetRayStart,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetRayStart,0)
+
+/** ni -> iCamera::GetScreenPosition/2 **/
+IDLC_METH_BEGIN(ni,iCamera,GetScreenPosition,2)
+	IDLC_DECL_VAR(ni::sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(ni::sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetScreenPosition,2,(avPos,aRect))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetScreenPosition,2)
+
+/** ni -> iCamera::SetViewMatrix/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetViewMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aViewMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aViewMatrix)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetViewMatrix,1,(aViewMatrix))
+IDLC_METH_END(ni,iCamera,SetViewMatrix,1)
+
+/** ni -> iCamera::SetProjectionMatrix/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetProjectionMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aProjMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aProjMatrix)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetProjectionMatrix,1,(aProjMatrix))
+IDLC_METH_END(ni,iCamera,SetProjectionMatrix,1)
+
+/** ni -> iCamera::SetFromWorldMatrix/2 **/
+IDLC_METH_BEGIN(ni,iCamera,SetFromWorldMatrix,2)
+	IDLC_DECL_VAR(ni::sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_VAR(tBool,abSetUp)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abSetUp)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetFromWorldMatrix,2,(aMatrix,abSetUp))
+IDLC_METH_END(ni,iCamera,SetFromWorldMatrix,2)
+
+/** ni -> iCamera::SetProjection/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetProjection,1)
+	IDLC_DECL_VAR(eCameraProjectionType,aProjectionType)
+	IDLC_BUF_TO_ENUM(eCameraProjectionType,aProjectionType)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetProjection,1,(aProjectionType))
+IDLC_METH_END(ni,iCamera,SetProjection,1)
+
+/** ni -> iCamera::GetProjection/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetProjection,0)
+	IDLC_DECL_RETVAR(eCameraProjectionType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetProjection,0,())
+	IDLC_RET_FROM_ENUM(eCameraProjectionType,_Ret)
+IDLC_METH_END(ni,iCamera,GetProjection,0)
+
+/** ni -> iCamera::SetViewport/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetViewport,1)
+	IDLC_DECL_VAR(ni::sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetViewport,1,(aRect))
+IDLC_METH_END(ni,iCamera,SetViewport,1)
+
+/** ni -> iCamera::GetViewport/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetViewport,0)
+	IDLC_DECL_RETVAR(ni::sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetViewport,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iCamera,GetViewport,0)
+
+/** ni -> iCamera::SetFov/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetFov,1)
+	IDLC_DECL_VAR(ni::tF32,fFOV)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fFOV)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetFov,1,(fFOV))
+IDLC_METH_END(ni,iCamera,SetFov,1)
+
+/** ni -> iCamera::GetFov/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetFov,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetFov,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetFov,0)
+
+/** ni -> iCamera::SetAspect/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetAspect,1)
+	IDLC_DECL_VAR(ni::tF32,fAspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fAspect)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetAspect,1,(fAspect))
+IDLC_METH_END(ni,iCamera,SetAspect,1)
+
+/** ni -> iCamera::GetAspect/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetAspect,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetAspect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetAspect,0)
+
+/** ni -> iCamera::GetAbsoluteAspect/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetAbsoluteAspect,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetAbsoluteAspect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetAbsoluteAspect,0)
+
+/** ni -> iCamera::SetNearClipPlane/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetNearClipPlane,1)
+	IDLC_DECL_VAR(ni::tF32,afD)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afD)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetNearClipPlane,1,(afD))
+IDLC_METH_END(ni,iCamera,SetNearClipPlane,1)
+
+/** ni -> iCamera::GetNearClipPlane/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetNearClipPlane,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetNearClipPlane,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetNearClipPlane,0)
+
+/** ni -> iCamera::SetFarClipPlane/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetFarClipPlane,1)
+	IDLC_DECL_VAR(ni::tF32,afD)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afD)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetFarClipPlane,1,(afD))
+IDLC_METH_END(ni,iCamera,SetFarClipPlane,1)
+
+/** ni -> iCamera::GetFarClipPlane/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetFarClipPlane,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetFarClipPlane,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetFarClipPlane,0)
+
+/** ni -> iCamera::SetOrthoSize/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetOrthoSize,1)
+	IDLC_DECL_VAR(tF32,afSize)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSize)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetOrthoSize,1,(afSize))
+IDLC_METH_END(ni,iCamera,SetOrthoSize,1)
+
+/** ni -> iCamera::GetOrthoSize/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetOrthoSize,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetOrthoSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetOrthoSize,0)
+
+/** ni -> iCamera::SetPosition/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetPosition,1)
+	IDLC_DECL_VAR(ni::sVec3f,vPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vPos)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetPosition,1,(vPos))
+IDLC_METH_END(ni,iCamera,SetPosition,1)
+
+/** ni -> iCamera::GetPosition/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetPosition,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetPosition,0)
+
+/** ni -> iCamera::SetTarget/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetTarget,1)
+	IDLC_DECL_VAR(ni::sVec3f,avTarget)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avTarget)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetTarget,1,(avTarget))
+IDLC_METH_END(ni,iCamera,SetTarget,1)
+
+/** ni -> iCamera::GetTarget/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetTarget,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetTarget,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetTarget,0)
+
+/** ni -> iCamera::SetTargetUp/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetTargetUp,1)
+	IDLC_DECL_VAR(ni::sVec3f,avUp)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avUp)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetTargetUp,1,(avUp))
+IDLC_METH_END(ni,iCamera,SetTargetUp,1)
+
+/** ni -> iCamera::GetTargetUp/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetTargetUp,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetTargetUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetTargetUp,0)
+
+/** ni -> iCamera::SetTargetDistance/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetTargetDistance,1)
+	IDLC_DECL_VAR(ni::tF32,afDist)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDist)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetTargetDistance,1,(afDist))
+IDLC_METH_END(ni,iCamera,SetTargetDistance,1)
+
+/** ni -> iCamera::GetTargetDistance/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetTargetDistance,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetTargetDistance,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetTargetDistance,0)
+
+/** ni -> iCamera::SetPositionDistance/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetPositionDistance,1)
+	IDLC_DECL_VAR(ni::tF32,afDist)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDist)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetPositionDistance,1,(afDist))
+IDLC_METH_END(ni,iCamera,SetPositionDistance,1)
+
+/** ni -> iCamera::GetPositionDistance/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetPositionDistance,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetPositionDistance,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iCamera,GetPositionDistance,0)
+
+/** ni -> iCamera::SetTargetDirection/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetTargetDirection,1)
+	IDLC_DECL_VAR(ni::sVec3f,avDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avDir)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetTargetDirection,1,(avDir))
+IDLC_METH_END(ni,iCamera,SetTargetDirection,1)
+
+/** ni -> iCamera::GetTargetDirection/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetTargetDirection,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetTargetDirection,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetTargetDirection,0)
+
+/** ni -> iCamera::SetMoveType/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetMoveType,1)
+	IDLC_DECL_VAR(eCameraMoveType,aMode)
+	IDLC_BUF_TO_ENUM(eCameraMoveType,aMode)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetMoveType,1,(aMode))
+IDLC_METH_END(ni,iCamera,SetMoveType,1)
+
+/** ni -> iCamera::GetMoveType/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetMoveType,0)
+	IDLC_DECL_RETVAR(eCameraMoveType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetMoveType,0,())
+	IDLC_RET_FROM_ENUM(eCameraMoveType,_Ret)
+IDLC_METH_END(ni,iCamera,GetMoveType,0)
+
+/** ni -> iCamera::MoveSidewards/1 **/
+IDLC_METH_BEGIN(ni,iCamera,MoveSidewards,1)
+	IDLC_DECL_VAR(ni::tF32,delta)
+	IDLC_BUF_TO_BASE(ni::eType_F32,delta)
+	IDLC_METH_CALL_VOID(ni,iCamera,MoveSidewards,1,(delta))
+IDLC_METH_END(ni,iCamera,MoveSidewards,1)
+
+/** ni -> iCamera::MoveUp/1 **/
+IDLC_METH_BEGIN(ni,iCamera,MoveUp,1)
+	IDLC_DECL_VAR(ni::tF32,delta)
+	IDLC_BUF_TO_BASE(ni::eType_F32,delta)
+	IDLC_METH_CALL_VOID(ni,iCamera,MoveUp,1,(delta))
+IDLC_METH_END(ni,iCamera,MoveUp,1)
+
+/** ni -> iCamera::MoveForward/1 **/
+IDLC_METH_BEGIN(ni,iCamera,MoveForward,1)
+	IDLC_DECL_VAR(ni::tF32,delta)
+	IDLC_BUF_TO_BASE(ni::eType_F32,delta)
+	IDLC_METH_CALL_VOID(ni,iCamera,MoveForward,1,(delta))
+IDLC_METH_END(ni,iCamera,MoveForward,1)
+
+/** ni -> iCamera::SetMove/1 **/
+IDLC_METH_BEGIN(ni,iCamera,SetMove,1)
+	IDLC_DECL_VAR(ni::sVec3f,avMove)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMove)
+	IDLC_METH_CALL_VOID(ni,iCamera,SetMove,1,(avMove))
+IDLC_METH_END(ni,iCamera,SetMove,1)
+
+/** ni -> iCamera::GetMove/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetMove,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetMove,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetMove,0)
+
+/** ni -> iCamera::RotateTarget/2 **/
+IDLC_METH_BEGIN(ni,iCamera,RotateTarget,2)
+	IDLC_DECL_VAR(ni::sVec3f,avAxis)
+	IDLC_BUF_TO_BASE(ni::eType_Vec3f,avAxis)
+	IDLC_DECL_VAR(ni::tF32,afAngle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afAngle)
+	IDLC_METH_CALL_VOID(ni,iCamera,RotateTarget,2,(avAxis,afAngle))
+IDLC_METH_END(ni,iCamera,RotateTarget,2)
+
+/** ni -> iCamera::RotateTargetUp/2 **/
+IDLC_METH_BEGIN(ni,iCamera,RotateTargetUp,2)
+	IDLC_DECL_VAR(ni::sVec3f,avAxis)
+	IDLC_BUF_TO_BASE(ni::eType_Vec3f,avAxis)
+	IDLC_DECL_VAR(ni::tF32,afAngle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afAngle)
+	IDLC_METH_CALL_VOID(ni,iCamera,RotateTargetUp,2,(avAxis,afAngle))
+IDLC_METH_END(ni,iCamera,RotateTargetUp,2)
+
+/** ni -> iCamera::AddYaw/1 **/
+IDLC_METH_BEGIN(ni,iCamera,AddYaw,1)
+	IDLC_DECL_VAR(ni::tF32,a)
+	IDLC_BUF_TO_BASE(ni::eType_F32,a)
+	IDLC_METH_CALL_VOID(ni,iCamera,AddYaw,1,(a))
+IDLC_METH_END(ni,iCamera,AddYaw,1)
+
+/** ni -> iCamera::AddPitch/1 **/
+IDLC_METH_BEGIN(ni,iCamera,AddPitch,1)
+	IDLC_DECL_VAR(ni::tF32,a)
+	IDLC_BUF_TO_BASE(ni::eType_F32,a)
+	IDLC_METH_CALL_VOID(ni,iCamera,AddPitch,1,(a))
+IDLC_METH_END(ni,iCamera,AddPitch,1)
+
+/** ni -> iCamera::AddRoll/1 **/
+IDLC_METH_BEGIN(ni,iCamera,AddRoll,1)
+	IDLC_DECL_VAR(ni::tF32,a)
+	IDLC_BUF_TO_BASE(ni::eType_F32,a)
+	IDLC_METH_CALL_VOID(ni,iCamera,AddRoll,1,(a))
+IDLC_METH_END(ni,iCamera,AddRoll,1)
+
+/** ni -> iCamera::OrbitUp/1 **/
+IDLC_METH_BEGIN(ni,iCamera,OrbitUp,1)
+	IDLC_DECL_VAR(ni::tF32,afA)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afA)
+	IDLC_METH_CALL_VOID(ni,iCamera,OrbitUp,1,(afA))
+IDLC_METH_END(ni,iCamera,OrbitUp,1)
+
+/** ni -> iCamera::OrbitSidewards/1 **/
+IDLC_METH_BEGIN(ni,iCamera,OrbitSidewards,1)
+	IDLC_DECL_VAR(ni::tF32,afA)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afA)
+	IDLC_METH_CALL_VOID(ni,iCamera,OrbitSidewards,1,(afA))
+IDLC_METH_END(ni,iCamera,OrbitSidewards,1)
+
+/** ni -> iCamera::GetForward/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetForward,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetForward,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetForward,0)
+
+/** ni -> iCamera::GetRight/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetRight,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetRight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetRight,0)
+
+/** ni -> iCamera::GetUp/0 **/
+IDLC_METH_BEGIN(ni,iCamera,GetUp,0)
+	IDLC_DECL_RETVAR(ni::sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCamera,GetUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iCamera,GetUp,0)
+
+IDLC_END_INTF(ni,iCamera)
+
+IDLC_END_NAMESPACE()
+// EOF //

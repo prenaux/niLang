@@ -1,0 +1,336 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			dispatchwrapper="yes"
+			name="iCommandSink"
+			uuid1="4C99779B-AEDF-404C-9543-70C3786E6FAC"
+			uuid2="0x4c99779b,0xaedf,0x404c,0x95,0x43,0x70,0xc3,0x78,0x6e,0x6f,0xac">
+			<comments desc="Command sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0">
+				<comments desc="Name of the command. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNamespace"
+				name="GetNamespace"
+				num_parameters="0">
+				<comments desc="Namespace of the command. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescription"
+				name="GetDescription"
+				num_parameters="0">
+				<comments desc="Description of the command "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onRun" name="OnRun" num_parameters="2">
+				<comments desc="Run the command. " return="the result of the command execution. ">
+					<params text="avArgs are the arguments. "/>
+					<params text="apConsole is the console instance the command is run from. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="avArgs"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apConsole"
+					type="iConsole *"
+					typec="iConsole*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrapper="yes"
+			name="iConsoleSink"
+			uuid1="415F0FC4-3E03-49EA-B21B-68A510821E19"
+			uuid2="0x415f0fc4,0x3e03,0x49ea,0xb2,0x1b,0x68,0xa5,0x10,0x82,0x1e,0x19">
+			<comments desc="Console sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onConsoleSink_NamespaceVariableChanged" name="OnConsoleSink_NamespaceVariableChanged" num_parameters="2">
+				<comments desc="Called when a variable value changed "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onConsoleSink_BeforeRunCommand" name="OnConsoleSink_BeforeRunCommand" num_parameters="1">
+				<comments desc="Called before a console command is ran. " return="false to disallow the command run "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onConsoleSink_AfterRunCommand" name="OnConsoleSink_AfterRunCommand" num_parameters="1">
+				<comments desc="Called after a console command is ran. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onConsoleSink_BeforeRunScript" name="OnConsoleSink_BeforeRunScript" num_parameters="2">
+				<comments desc="Called before a script command is ran. " return="false to disallow the script run "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apHost"
+					type="iScriptingHost *"
+					typec="iScriptingHost*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onConsoleSink_AfterRunScript" name="OnConsoleSink_AfterRunScript" num_parameters="2">
+				<comments desc="Called after a script command is ran. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apHost"
+					type="iScriptingHost *"
+					typec="iScriptingHost*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iConsole" uuid1="064C5F0A-32BB-4A7C-9A8D-F88CBDC51350" uuid2="0x064c5f0a,0x32bb,0x4a7c,0x9a,0x8d,0xf8,0x8c,0xbd,0xc5,0x13,0x50">
+			<comments desc="Console interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getSinkList"
+				name="GetSinkList"
+				num_parameters="0"
+				property="get"
+				property_name2="sinkList"
+				property_name="sink_list">
+				<comments desc="Get the console sink list. "/>
+				<return type="tConsoleSinkLst *" typec="tConsoleSinkLst*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addNamespace" name="AddNamespace" num_parameters="1">
+				<comments desc="Add a namespace. ">
+					<remark text="if the namespace already exists add a reference to it. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aszNamespace"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeNamespace" name="RemoveNamespace" num_parameters="1">
+				<comments desc="Remove a namespace. Delete all sinks, commands and variables in the namespace. " return="eFalse if the namespace don&apos;t exists, else return eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszNamespace"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addVariable" name="AddVariable" num_parameters="2">
+				<comments desc="Add a new string variable. " return="eFalse if the variable already exists or that the namespace is not registered, else eTrue. ">
+					<params text="aszName name of the variable to create. "/>
+					<params text="aszValue is the string value to give to the variable. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeVariable" name="RemoveVariable" num_parameters="1">
+				<comments desc="Remove a variable. " return="eFalse if the variable can&apos;t be found and so can&apos;t be removed, else eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setVariable" name="SetVariable" num_parameters="2">
+				<comments desc="Set the string value of a variable. " return="eFalse if the variable don&apos;t exists and so can&apos;t be set, else eTrue. ">
+					<params text="aszName name of the variable to set. "/>
+					<params text="aszValue is the string value to give to the variable. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getVariable" name="GetVariable" num_parameters="1">
+				<comments desc="Get the string value of a variable. " return="the value of the variable or an empty string if it doesn&apos;t exist ">
+					<params text="aszName name of the variable to get. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="commandExists" name="CommandExists" num_parameters="1">
+				<comments desc="Return eTrue if the given command exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addCommand" name="AddCommand" num_parameters="1">
+				<comments desc="Add a command in the console. " return="eFalse if the command already exists or that the namespace don&apos;t exists, else eTrue. ">
+					<params text="pCmd is the command sink that will be called when the command is runned. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="pCmd"
+					type="iCommandSink *"
+					typec="iCommandSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeCommand" name="RemoveCommand" num_parameters="1">
+				<comments desc="Remove a command of the console. " return="eFalse if the command can&apos;t be found and so can&apos;t be removed, else eTrue. ">
+					<params text="aszName is the name of the command to remove. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCommandDescription"
+				name="GetCommandDescription"
+				num_parameters="1">
+				<comments desc="Get the description of a command. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aszCommand"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="runCommand" name="RunCommand" num_parameters="1">
+				<comments desc="Run a command. " return="the value returned by the Run() method of iCommandSink or eFalse if the command don&apos;t exists. ">
+					<params text="aszCommand is the raw command to parse. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszCommand"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="completeCommandLine" name="CompleteCommandLine" num_parameters="2">
+				<comments desc="Complete the given command line. " return="The completed command line, if no match is found returns an empty string. ">
+					<params text="aaszCmd is the command line to complete. "/>
+					<params text="abNext if eTrue returns the next match, else the previous one. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aaszCmd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTrue "
+					last="1"
+					name="abNext"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumCommands"
+				name="GetNumCommands"
+				num_parameters="0">
+				<comments desc="Get the number of commands in the queue. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="pushCommand" name="PushCommand" num_parameters="1">
+				<comments desc="Queue a command to be run later on. " return="eFalse if the command can&apos;t be queue, else eTrue. ">
+					<params text="aszCommand is the raw command to parse. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszCommand"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="popCommand" name="PopCommand" num_parameters="0">
+				<comments desc="Pop a command from the queue. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method java_name="popAndRunAllCommands" name="PopAndRunAllCommands" num_parameters="0">
+				<comments desc="Pop and run all commands in the queue. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

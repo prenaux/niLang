@@ -1,0 +1,46 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetLabelStyle">
+			<comments desc="Label widget style. "/>
+			<value name="eWidgetLabelStyle_TransparentBackground" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetLabelStyle_DWORD" value="0xFFFFFFFF">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iWidgetLabel" uuid1="A407259F-7FA3-4EAC-9BF0-582C5CB34E76" uuid2="0xa407259f,0x7fa3,0x4eac,0x9b,0xf0,0x58,0x2c,0x5c,0xb3,0x4e,0x76">
+			<comments desc="Label widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setFontFormatFlags"
+				name="SetFontFormatFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="fontFormatFlags"
+				property_name="font_format_flags">
+				<comments desc="Set the label&apos;s font format flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tFontFormatFlags"
+					typec="tFontFormatFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFontFormatFlags"
+				name="GetFontFormatFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="fontFormatFlags"
+				property_name="font_format_flags">
+				<comments desc="Get the label&apos;s font format flags. "/>
+				<return type="tFontFormatFlags" typec="tFontFormatFlags" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

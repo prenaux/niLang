@@ -1,0 +1,176 @@
+#pragma once
+#ifndef __STDUNIFORMS_CGH_8D7E7591_D5FC_4712_93E4_1EDE2F4BC1BA__
+#define __STDUNIFORMS_CGH_8D7E7591_D5FC_4712_93E4_1EDE2F4BC1BA__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+
+uniform float4x4 fpsWorldMatrix;
+uniform float4x4 fpsInvWorldMatrix;
+
+uniform float4x4 fpsWorldViewMatrix;
+uniform float4x4 fpsInvWorldViewMatrix;
+
+uniform float4x4 fpsWorldViewProjectionMatrix;
+uniform float4x4 fpsInvWorldViewProjectionMatrix;
+
+uniform float4x4 fpsViewMatrix;
+uniform float4x4 fpsInvViewMatrix;
+
+uniform float4x4 fpsProjectionMatrix;
+uniform float4x4 fpsInvProjectionMatrix;
+
+uniform float4x4 fpsViewProjectionMatrix;
+uniform float4x4 fpsInvViewProjectionMatrix;
+
+uniform float4x4 fpsCameraViewMatrix;
+uniform float4x4 fpsCameraInvViewMatrix;
+uniform float4x4 fpsCameraProjectionMatrix;
+uniform float4x4 fpsCameraInvProjectionMatrix;
+uniform float4x4 fpsCameraViewProjectionMatrix;
+uniform float4x4 fpsCameraInvViewProjectionMatrix;
+
+uniform float4x4 fpsTextureMatrix0;
+uniform float4x4 fpsTextureMatrix1;
+
+uniform float4 fpsWorldScale; // normalize(1,1,1) axis * world matrix -> (scale.x,scale.y,scale.x,normal sign)
+
+uniform float4 fpsViewPosition;
+uniform float4 fpsViewForward;
+uniform float4 fpsViewUp;
+uniform float4 fpsViewRight;
+
+uniform float4 fpsCameraViewPosition;
+uniform float4 fpsCameraViewForward;
+uniform float4 fpsCameraViewUp;
+uniform float4 fpsCameraViewRight;
+uniform float4 fpsCameraClipPlanes; // (near,far,1/near,1/far)
+
+uniform float4 fpsWorldCameraViewPosition;
+uniform float4 fpsWorldCameraViewForward;
+uniform float4 fpsWorldCameraViewUp;
+uniform float4 fpsWorldCameraViewRight;
+uniform float4 fpsWorldViewPosition;
+uniform float4 fpsWorldViewForward;
+uniform float4 fpsWorldViewUp;
+uniform float4 fpsWorldViewRight;
+
+// (1/sw,1/sh,sw,sh)
+// remark This is the resolution of the render target [0]
+uniform float4 fpsScreenRes;
+// Viewport in screenspace
+uniform float4 fpsViewport;
+// sRectf vp = apGraphics->GetViewport().ToFloat();
+// tF32 fRTW = tF32(pTex->GetWidth());
+// tF32 fRTH = tF32(pTex->GetHeight());
+// tF32 fVPX = vp.x*(1.0f/fRTW);
+// tF32 fVPY = vp.y*(1.0f/fRTH);
+// tF32 fVPW = vp.GetWidth();
+// tF32 fVPH = vp.GetHeight();
+// float4((fVPW/fRTW), (fVPH/fRTH), fVPX+0.5f/fRTW, fVPY+0.5f/fRTH)
+uniform float4 fpsViewportRes;
+// float4(vp.x1/rtW,vp.y1/rtH,vp.x2/rtW,vp.y2/rtH)
+uniform float4 fpsViewportTexCoos;
+// float4(vp.x1/rtW+border,vp.y1/rtH+border,vp.x2/rtW-border,vp.y2/rtH-border)
+uniform float4 fpsViewportClampTexCoos;
+
+// (elapsed time, root timeline time, sin(elapsed time), frame time)
+uniform float4 fpsTime;
+uniform float4 fpsFogColor;  // (r,g,b,density)
+
+uniform float4x4 fpsExprMatrix0;
+uniform float4x4 fpsExprMatrix1;
+uniform float4 fpsExprTex0;
+uniform float4 fpsExprTex1;
+
+/// Material 0
+uniform float4 fpsMaterialBaseColor0;
+uniform float4 fpsMaterialBaseRes0;
+uniform float4 fpsMaterialOpacityColor0;
+uniform float4 fpsMaterialOpacityRes0;
+uniform float4 fpsMaterialBumpColor0;
+uniform float4 fpsMaterialBumpRes0;
+uniform float4 fpsMaterialSpecularColor0;
+uniform float4 fpsMaterialSpecularRes0;
+uniform float4 fpsMaterialEnvironmentColor0;
+uniform float4 fpsMaterialEnvironmentRes0;
+uniform float4 fpsMaterialAmbientColor0;
+uniform float4 fpsMaterialAmbientRes0;
+uniform float4 fpsMaterialRefractionColor0;
+uniform float4 fpsMaterialRefractionRes0;
+uniform float4 fpsMaterialEmissiveColor0;
+uniform float4 fpsMaterialEmissiveRes0;
+uniform float4 fpsMaterialT0Color0;
+uniform float4 fpsMaterialT0Res0;
+uniform float4 fpsMaterialT1Color0;
+uniform float4 fpsMaterialT1Res0;
+uniform float4 fpsMaterialT2Color0;
+uniform float4 fpsMaterialT2Res0;
+uniform float4 fpsMaterialT3Color0;
+uniform float4 fpsMaterialT3Res0;
+uniform float4 fpsMaterialT4Color0;
+uniform float4 fpsMaterialT4Res0;
+uniform float4 fpsMaterialT5Color0;
+uniform float4 fpsMaterialT5Res0;
+uniform float4 fpsMaterialT6Color0;
+uniform float4 fpsMaterialT6Res0;
+uniform float4 fpsMaterialT7Color0;
+uniform float4 fpsMaterialT7Res0;
+
+/// Material 1
+uniform float4 fpsMaterialBaseColor1;
+uniform float4 fpsMaterialBaseRes1;
+uniform float4 fpsMaterialOpacityColor1;
+uniform float4 fpsMaterialOpacityRes1;
+uniform float4 fpsMaterialBumpColor1;
+uniform float4 fpsMaterialBumpRes1;
+uniform float4 fpsMaterialSpecularColor1;
+uniform float4 fpsMaterialSpecularRes1;
+uniform float4 fpsMaterialEnvironmentColor1;
+uniform float4 fpsMaterialEnvironmentRes1;
+uniform float4 fpsMaterialAmbientColor1;
+uniform float4 fpsMaterialAmbientRes1;
+uniform float4 fpsMaterialRefractionColor1;
+uniform float4 fpsMaterialRefractionRes1;
+uniform float4 fpsMaterialEmissiveColor1;
+uniform float4 fpsMaterialEmissiveRes1;
+uniform float4 fpsMaterialT0Color1;
+uniform float4 fpsMaterialT0Res1;
+uniform float4 fpsMaterialT1Color1;
+uniform float4 fpsMaterialT1Res1;
+uniform float4 fpsMaterialT2Color1;
+uniform float4 fpsMaterialT2Res1;
+uniform float4 fpsMaterialT3Color1;
+uniform float4 fpsMaterialT3Res1;
+uniform float4 fpsMaterialT4Color1;
+uniform float4 fpsMaterialT4Res1;
+uniform float4 fpsMaterialT5Color1;
+uniform float4 fpsMaterialT5Res1;
+uniform float4 fpsMaterialT6Color1;
+uniform float4 fpsMaterialT6Res1;
+uniform float4 fpsMaterialT7Color1;
+uniform float4 fpsMaterialT7Res1;
+
+/// Light0
+uniform float4 fpsLightPosition0;
+uniform float4 fpsLightPositionCameraViewSpace0;
+uniform float4 fpsLightDiffuseColor0;
+uniform float4 fpsLightSpecularColor0;
+uniform float4 fpsLightDirection0;
+uniform float4 fpsLightDirectionCameraViewSpace0;
+uniform float4 fpsLightSpot0;
+// float4(shadowColor,shadowBlur)
+uniform float4 fpsLightShadowColor0;
+uniform float4 fpsLightNearFar0;
+uniform float4x4 fpsLightWorldToLightMatrix0;
+uniform float4x4 fpsLightViewProjectionMatrix0;
+uniform float4x4 fpsLightCookieMatrix0;
+uniform float4x4 fpsLightShadowMapMatrix0;
+uniform float4 fpsLightAreaSize0;
+uniform float4 fpsLightAreaRound0;
+// quad: float4x4(point0, point1, point2, point3)
+uniform float4x4 fpsLightShapeMatrix0;
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDUNIFORMS_CGH_8D7E7591_D5FC_4712_93E4_1EDE2F4BC1BA__

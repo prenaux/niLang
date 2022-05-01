@@ -1,0 +1,824 @@
+#pragma once
+#ifndef __STDMATERIAL_CGH_E605D5B8_5AD5_45B2_8D51_EC1AA6D4D035__
+#define __STDMATERIAL_CGH_E605D5B8_5AD5_45B2_8D51_EC1AA6D4D035__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+#include "StdMaterialFlags.cgh"
+#include "StdSampler.cgh"
+#include "StdPixelInput.cgh"
+#include "StdRelief.cgh"
+#include "StdTileMap.cgh"
+#include "StdFog.cgh"
+
+// Standard material flags.
+struct StdMaterialFlags {
+  bool DoubleSided;
+  bool Translucent;
+  bool AlphaTest;
+  bool NormalMap;
+  bool HeightMap;
+  bool FlatEnv;
+  bool Refraction;
+  bool TileMap;
+  bool Decal;
+  bool DistanceField;
+} Flags;
+
+// Standard material
+struct StdMaterial {
+  StdMaterialFlags Flags;
+  StdSampler Ambient;
+  StdSampler Base;
+  StdSampler Opacity;
+  StdSampler Bump;
+  StdSampler Specular;
+  StdSampler Environment;
+  StdSampler Emissive;
+  StdSampler Refraction;
+  StdSampler T0;
+  StdSampler T1;
+  StdSampler T2;
+  StdSampler T3;
+  StdSampler T4;
+  StdSampler T5;
+  StdSampler T6;
+  StdSampler T7;
+};
+
+// Sampled material
+struct StdSampledMaterial {
+  bool  bAmbient;
+  bool  bDoubleSided;
+  bool  bTranslucent;
+  bool  bRefraction;
+  bool  bAlphaTest;
+  bool  bEmissive;
+  bool  bNormalMap;
+  bool  bHeightMap;
+  bool  bTileMap;
+  bool  bDecal;
+  bool  bEnvironment;
+  bool  bDistanceField;
+  float3  Position;
+  float3  PositionWorldSpace;
+  float3  PositionViewSpace;
+  float3  EyeVec;
+  float3  EyeDir;
+  float   EyeDist;
+  float   Depth;
+  float3  Ambient;
+  float3  Base;
+  float3  Environment;
+  float   EnvironmentAlpha;
+  float3  Diffuse;
+  float   AlphaRef;
+  float   Opacity;
+  float3  Normal;
+  float3  NormalWorldSpace;
+  float3  NormalViewSpace;
+  float3  Specular;
+  float   Gloss;
+  float3  Emissive;
+  float   DirCoef;
+  float3  Refraction;
+  float2  RefractionCoef;
+  float4  TestOutput;
+};
+
+///////////////////////////////////////////////
+//! Get the current material
+StdMaterial stdMat_GetMaterial() {
+  StdMaterial m;
+
+  // Initialize the flags
+  m.Flags.DoubleSided = eMaterialFlags_DoubleSided;
+  m.Flags.Translucent = eMaterialFlags_Translucent;
+  m.Flags.AlphaTest = eMaterialFlags_AlphaTest;
+  m.Flags.NormalMap = eMaterialFlags_NormalMap;
+  m.Flags.HeightMap = eMaterialFlags_HeightMap;
+  m.Flags.FlatEnv = eMaterialFlags_FlatEnv;
+  m.Flags.Refraction = eMaterialFlags_Refraction;
+  m.Flags.TileMap = eMaterialFlags_TileMap;
+  m.Flags.Decal = eMaterialFlags_Decal;
+  m.Flags.DistanceField = eMaterialFlags_DistanceField;
+
+  m.Base.HasTexture = eMaterialChannel_HasBase;
+  m.Base.IsFP = false;
+  m.Base.IsDepth = false;
+  m.Base.SamplerIndex = eMaterialChannel_Base;
+  m.Base.Color = fpsMaterialBaseColor0;
+  m.Base.Res = fpsMaterialBaseRes0;
+  m.Base.TexCooIndex = 0;
+
+  m.Opacity.HasTexture = eMaterialChannel_HasOpacity;
+  m.Opacity.IsFP = false;
+  m.Opacity.IsDepth = false;
+  m.Opacity.SamplerIndex = eMaterialChannel_Opacity;
+  m.Opacity.Color = fpsMaterialOpacityColor0;
+  m.Opacity.Res = fpsMaterialOpacityRes0;
+  m.Opacity.TexCooIndex = 0;
+
+  m.Bump.HasTexture = eMaterialChannel_HasBump;
+  m.Bump.IsFP = false;
+  m.Bump.IsDepth = false;
+  m.Bump.SamplerIndex = eMaterialChannel_Bump;
+  m.Bump.Color = fpsMaterialBumpColor0;
+  m.Bump.Res = fpsMaterialBumpRes0;
+  m.Bump.TexCooIndex = 0;
+
+  m.Specular.HasTexture = eMaterialChannel_HasSpecular;
+  m.Specular.IsFP = false;
+  m.Specular.IsDepth = false;
+  m.Specular.SamplerIndex = eMaterialChannel_Specular;
+  m.Specular.Color = fpsMaterialSpecularColor0;
+  m.Specular.Res = fpsMaterialSpecularRes0;
+  m.Specular.TexCooIndex = 0;
+
+  m.Environment.HasTexture = eMaterialChannel_HasEnvironment;
+  m.Environment.IsFP = false;
+  m.Environment.IsDepth = false;
+  m.Environment.SamplerIndex = eMaterialChannel_Environment;
+  m.Environment.Color = fpsMaterialEnvironmentColor0;
+  m.Environment.Res = fpsMaterialEnvironmentRes0;
+  m.Environment.TexCooIndex = 0;
+
+  m.Ambient.HasTexture = eMaterialChannel_HasAmbient;
+  m.Ambient.IsFP = false;
+  m.Ambient.IsDepth = false;
+  m.Ambient.SamplerIndex = eMaterialChannel_Ambient;
+  m.Ambient.Color = fpsMaterialAmbientColor0;
+  m.Ambient.Res = fpsMaterialAmbientRes0;
+  m.Ambient.TexCooIndex = 1;
+
+  m.Emissive.HasTexture = eMaterialChannel_HasEmissive;
+  m.Emissive.IsFP = false;
+  m.Emissive.IsDepth = false;
+  m.Emissive.SamplerIndex = eMaterialChannel_Emissive;
+  m.Emissive.Color = fpsMaterialEmissiveColor0;
+  m.Emissive.Res = fpsMaterialEmissiveRes0;
+  m.Emissive.TexCooIndex = 0;
+
+  m.Refraction.HasTexture = eMaterialChannel_HasRefraction;
+  m.Refraction.IsFP = false;
+  m.Refraction.IsDepth = false;
+  m.Refraction.SamplerIndex = eMaterialChannel_Refraction;
+  m.Refraction.Color = fpsMaterialRefractionColor0;
+  m.Refraction.Res = fpsMaterialRefractionRes0;
+  m.Refraction.TexCooIndex = 0;
+
+  m.T0.HasTexture = eMaterialChannel_HasT0;
+  m.T0.IsFP = false;
+  m.T0.IsDepth = false;
+  m.T0.SamplerIndex = eMaterialChannel_T0;
+  m.T0.Color = fpsMaterialT0Color0;
+  m.T0.Res = fpsMaterialT0Res0;
+  m.T0.TexCooIndex = 0;
+
+  m.T1.HasTexture = eMaterialChannel_HasT1;
+  m.T1.IsFP = false;
+  m.T1.IsDepth = false;
+  m.T1.SamplerIndex = eMaterialChannel_T1;
+  m.T1.Color = fpsMaterialT1Color0;
+  m.T1.Res = fpsMaterialT1Res0;
+  m.T1.TexCooIndex = 0;
+
+  m.T2.HasTexture = eMaterialChannel_HasT2;
+  m.T2.IsFP = false;
+  m.T2.IsDepth = false;
+  m.T2.SamplerIndex = eMaterialChannel_T2;
+  m.T2.Color = fpsMaterialT2Color0;
+  m.T2.Res = fpsMaterialT2Res0;
+  m.T2.TexCooIndex = 0;
+
+  m.T3.HasTexture = eMaterialChannel_HasT3;
+  m.T3.IsFP = false;
+  m.T3.IsDepth = false;
+  m.T3.SamplerIndex = eMaterialChannel_T3;
+  m.T3.Color = fpsMaterialT3Color0;
+  m.T3.Res = fpsMaterialT3Res0;
+  m.T3.TexCooIndex = 0;
+
+  m.T4.HasTexture = eMaterialChannel_HasT4;
+  m.T4.IsFP = false;
+  m.T4.IsDepth = false;
+  m.T4.SamplerIndex = eMaterialChannel_T4;
+  m.T4.Color = fpsMaterialT4Color0;
+  m.T4.Res = fpsMaterialT4Res0;
+  m.T4.TexCooIndex = 0;
+
+  m.T5.HasTexture = eMaterialChannel_HasT5;
+  m.T5.IsFP = false;
+  m.T5.IsDepth = false;
+  m.T5.SamplerIndex = eMaterialChannel_T5;
+  m.T5.Color = fpsMaterialT5Color0;
+  m.T5.Res = fpsMaterialT5Res0;
+  m.T5.TexCooIndex = 0;
+
+  m.T6.HasTexture = eMaterialChannel_HasT6;
+  m.T6.IsFP = false;
+  m.T6.IsDepth = false;
+  m.T6.SamplerIndex = eMaterialChannel_T6;
+  m.T6.Color = fpsMaterialT6Color0;
+  m.T6.Res = fpsMaterialT6Res0;
+  m.T6.TexCooIndex = 0;
+
+  m.T7.HasTexture = eMaterialChannel_HasT7;
+  m.T7.IsFP = false;
+  m.T7.IsDepth = false;
+  m.T7.SamplerIndex = eMaterialChannel_T7;
+  m.T7.Color = fpsMaterialT7Color0;
+  m.T7.Res = fpsMaterialT7Res0;
+  m.T7.TexCooIndex = 0;
+
+  return m;
+}
+
+//--------------------------------------------------------------------------------------------
+//
+//  Material channel texture lookup functions
+//
+//--------------------------------------------------------------------------------------------
+
+///////////////////////////////////////////////
+//! Material get channel.
+StdSampler stdMat_GetSampler(StdMaterial aMat, int aChannel) {
+  if (aChannel == eMaterialChannel_Ambient)          { return aMat.Ambient; }
+  else if (aChannel == eMaterialChannel_Base)        { return aMat.Base; }
+  else if (aChannel == eMaterialChannel_Opacity)     { return aMat.Opacity; }
+  else if (aChannel == eMaterialChannel_Bump)        { return aMat.Bump; }
+  else if (aChannel == eMaterialChannel_Specular)    { return aMat.Specular; }
+  else if (aChannel == eMaterialChannel_Environment) { return aMat.Environment; }
+  else if (aChannel == eMaterialChannel_Emissive)    { return aMat.Emissive; }
+  else if (aChannel == eMaterialChannel_Refraction)  { return aMat.Refraction; }
+  else if (aChannel == eMaterialChannel_T0)          { return aMat.T0; }
+  else if (aChannel == eMaterialChannel_T1)          { return aMat.T1; }
+  else if (aChannel == eMaterialChannel_T2)          { return aMat.T2; }
+  else if (aChannel == eMaterialChannel_T3)          { return aMat.T3; }
+  else if (aChannel == eMaterialChannel_T4)          { return aMat.T4; }
+  else if (aChannel == eMaterialChannel_T5)          { return aMat.T5; }
+  else if (aChannel == eMaterialChannel_T6)          { return aMat.T6; }
+  else if (aChannel == eMaterialChannel_T7)          { return aMat.T7; }
+  return (StdSampler)0;
+}
+
+///////////////////////////////////////////////
+//! Material whether has texture.
+bool stdMat_GetHasTexture(StdMaterial aMat, int aChannel) {
+  return stdMat_GetSampler(aMat,aChannel).HasTexture;
+}
+
+///////////////////////////////////////////////
+//! Material get texture coordinate index.
+int stdMat_GetTexCooIndex(StdMaterial aMat, int aChannel) {
+  return stdMat_GetSampler(aMat,aChannel).TexCooIndex;
+}
+
+///////////////////////////////////////////////
+//! Material get color.
+float4 stdMat_GetColor(StdMaterial aMat, int aChannel) {
+  return stdMat_GetSampler(aMat,aChannel).Color;
+}
+
+///////////////////////////////////////////////
+//! Material get resolution.
+float4 stdMat_GetRes(StdMaterial aMat, int aChannel) {
+  return stdMat_GetSampler(aMat,aChannel).Res;
+}
+
+///////////////////////////////////////////////
+//! Material get 1D texture coordinate
+float1 stdMat_GetTexCoo1(StdMaterial aMat, int aChannel) {
+  return stdPixelInput_GetTexCoo1(stdMat_GetTexCooIndex(aMat,aChannel));
+}
+
+///////////////////////////////////////////////
+//! Material get 2D texture coordinate
+float2 stdMat_GetTexCoo2(StdMaterial aMat, int aChannel) {
+  return stdPixelInput_GetTexCoo2(stdMat_GetTexCooIndex(aMat,aChannel));
+}
+
+///////////////////////////////////////////////
+//! Material get 3D texture coordinate
+float3 stdMat_GetTexCoo3(StdMaterial aMat, int aChannel) {
+  return stdPixelInput_GetTexCoo3(stdMat_GetTexCooIndex(aMat,aChannel));
+}
+
+///////////////////////////////////////////////
+//! Material get 4D texture coordinate
+float4 stdMat_GetTexCoo4(StdMaterial aMat, int aChannel) {
+  return stdPixelInput_GetTexCoo4(stdMat_GetTexCooIndex(aMat,aChannel));
+}
+
+///////////////////////////////////////////////
+//! Material 1D texture lookup
+#define stdMat_Tex1D_(m,channel,t)  stdSampler_Tex1D(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex1D(m,channel)     stdMat_Tex1D_(m,channel,stdMat_GetTexCoo1(m,channel))
+#define stdMat_Tex1DGrad_(m,channel,t,ddx,ddy) stdSampler_Tex1DGrad(stdMat_GetSampler(m,channel),t,ddx,ddy)
+#define stdMat_Tex1DGrad(m,channel,ddx,ddy)  stdMat_Tex1DGrad_(m,channel,stdMat_GetTexCoo1(m,channel),ddx,ddy)
+#define stdMat_Tex1DBias(m,channel,t)  stdSampler_Tex1DBias(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex1DLod(m,channel,t)  stdSampler_Tex1DLod(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex1DProj(m,channel,t) stdSampler_Tex1DProj(stdMat_GetSampler(m,channel),t)
+
+///////////////////////////////////////////////
+//! Material 2D texture lookup
+#define stdMat_Tex2D_(m,channel,t)  stdSampler_Tex2D(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex2D(m,channel)     stdMat_Tex2D_(m,channel,stdMat_GetTexCoo2(m,channel))
+#define stdMat_Tex2DGrad_(m,channel,t,ddx,ddy) stdSampler_Tex2DGrad(stdMat_GetSampler(m,channel),t,ddx,ddy)
+#define stdMat_Tex2DGrad(m,channel,ddx,ddy)  stdMat_Tex2DGrad_(m,channel,stdMat_GetTexCoo2(m,channel),ddx,ddy)
+#define stdMat_Tex2DBias(m,channel,t)  stdSampler_Tex2DBias(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex2DLod(m,channel,t)  stdSampler_Tex2DLod(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex2DProj(m,channel,t) stdSampler_Tex2DProj(stdMat_GetSampler(m,channel),t)
+
+// Lookup a 2D texture potentially from a tilemap
+float4 stdMat_TileMap2D(StdMaterial aMat, int aChannel) {
+  if (aMat.Flags.TileMap) {
+    return stdMat_Tex2DLod(aMat,aChannel,gPI.TexCoos[0]);
+  }
+  else {
+    return stdMat_Tex2D_(aMat,aChannel,gPI.TexCoos[0].xy);
+  }
+}
+
+///////////////////////////////////////////////
+//! Material 3D texture lookup
+#define stdMat_Tex3D_(m,channel,t)  stdSampler_Tex3D(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex3D(m,channel)     stdMat_Tex3D_(m,channel,stdMat_GetTexCoo3(m,channel))
+#define stdMat_Tex3DGrad_(m,channel,t,ddx,ddy) stdSampler_Tex3DGrad(stdMat_GetSampler(m,channel),t,ddx,ddy)
+#define stdMat_Tex3DGrad(m,channel,ddx,ddy)  stdMat_Tex3DGrad_(m,channel,stdMat_GetTexCoo3(m,channel),ddx,ddy)
+#define stdMat_Tex3DBias(m,channel,t)  stdSampler_Tex3DBias(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex3DLod(m,channel,t)  stdSampler_Tex3DLod(stdMat_GetSampler(m,channel),t)
+#define stdMat_Tex3DProj(m,channel,t) stdSampler_Tex3DProj(stdMat_GetSampler(m,channel),t)
+
+///////////////////////////////////////////////
+//! Material Cube texture lookup
+#define stdMat_TexCube_(m,channel,t)  stdSampler_TexCube(stdMat_GetSampler(m,channel),t)
+#define stdMat_TexCube(m,channel)     stdMat_TexCube_(m,channel,stdMat_GetTexCoo3(m,channel))
+#define stdMat_TexCubeGrad_(m,channel,t,ddx,ddy) stdSampler_TexCubeGrad(stdMat_GetSampler(m,channel),t,ddx,ddy)
+#define stdMat_TexCubeGrad(m,channel,ddx,ddy)  stdMat_TexCubeGrad_(m,channel,stdMat_GetTexCoo3(m,channel),ddx,ddy)
+#define stdMat_TexCubeBias(m,channel,t)  stdSampler_TexCubeBias(stdMat_GetSampler(m,channel),t)
+#define stdMat_TexCubeLod(m,channel,t)  stdSampler_TexCubeLod(stdMat_GetSampler(m,channel),t)
+#define stdMat_TexCubeProj(m,channel,t) stdSampler_TexCubeProj(stdMat_GetSampler(m,channel),t)
+
+//--------------------------------------------------------------------------------------------
+//
+//  High level material sampling functions
+//
+//--------------------------------------------------------------------------------------------
+
+///////////////////////////////////////////////
+//! Sample the base alpha
+float stdMat_BaseAlpha(StdMaterial aMat) {
+  float a = 1.0f;
+  if (aMat.Base.HasTexture) {
+    // get the opacity from the alpha of the base/diffuse texture
+    a = stdMat_TileMap2D(aMat,eMaterialChannel_Base).a;
+  }
+  else {
+    // use the texture's base color
+    a = aMat.Base.Color.a;
+  }
+  return a;
+}
+
+///////////////////////////////////////////////
+//! Sample the opacity
+float stdMat_Opacity(StdMaterial aMat) {
+  // Has opacity map ?
+  float a = 1.0f;
+  if (stdMat_GetHasTexture(aMat,eMaterialChannel_Opacity)) {
+    // get the opacity from the opacity channel
+    a = stdMat_TileMap2D(aMat,eMaterialChannel_Opacity).r;
+    // multiply by the base/diffuse's alpha
+    a *= aMat.Base.Color.a;
+  }
+  else {
+    if (aMat.Base.HasTexture) {
+      // get the opacity from the alpha of the base/diffuse texture
+      a = stdMat_TileMap2D(aMat,eMaterialChannel_Base).a;
+      // multiply by the base/diffuse's alpha
+      a *= aMat.Base.Color.a;
+    }
+    else {
+      // use the texture's base color
+      a = aMat.Base.Color.a;
+    }
+  }
+  // Used by UI components to tweak alpha
+  a *= stdPixelInput_GetColorA().a;
+
+  if (aMat.Flags.DistanceField) {
+    float smoothing = aMat.Opacity.Color.r;
+    float distance = a;
+    a = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
+  }
+
+  return a;
+}
+
+///////////////////////////////////////////////
+//! Sample the environment map
+float4 stdMat_Environment(StdMaterial aMat, float3 aNormal, float3 aViewDir) {
+  float4 a = stdSampler_Environment(
+      stdMat_GetSampler(aMat,eMaterialChannel_Environment),
+      aMat.Flags.FlatEnv,
+      aNormal,
+      aViewDir);
+  return a;
+}
+
+///////////////////////////////////////////////
+//! Sample the glossy reflection
+float4 stdMat_GlossyReflection(StdMaterial aMat, float3 aNormal, float3 aViewDir, float3 aPosVS, float aGloss) {
+  float4 a = stdSampler_GlossyReflection(
+      stdMat_GetSampler(aMat,eMaterialChannel_Environment),
+      aMat.Flags.FlatEnv,
+      aNormal,
+      aViewDir,
+      aPosVS,
+      aGloss);
+  return a;
+}
+
+///////////////////////////////////////////////
+// Sample the normal
+float3 stdMat_Normal(StdMaterial aMat) {
+#if eShaderFlags_Fast
+  if (!aMat.Flags.Refraction) {
+    return stdPixelInput_GetNormal();
+  }
+#endif
+
+  float3 a = stdSampler_Normal(
+    stdMat_GetSampler(aMat,eMaterialChannel_Bump),
+    gPI.TexCoos[0],
+    aMat.Flags.NormalMap,
+    stdPixelInput_GetNormal(),
+    stdPixelInput_GetTanFrame(),
+    stdPixelInput_GetGradient(),
+    aMat.Flags.TileMap);
+
+  return normalize(a);
+}
+
+///////////////////////////////////////////////
+StdSampledMaterial stdMat_GetSampledMaterial(inout StdMaterial aMat, bool abAlphaTest) {
+  StdSampledMaterial o = (StdSampledMaterial)0;
+
+  o.bAmbient = aMat.Ambient.HasTexture;
+  o.bEmissive = aMat.Emissive.HasTexture;
+  o.bEnvironment = aMat.Environment.HasTexture;
+  o.bDoubleSided = aMat.Flags.DoubleSided;
+  o.bTranslucent = aMat.Flags.Translucent;
+  o.bAlphaTest = aMat.Flags.AlphaTest;
+  o.bRefraction = aMat.Flags.Refraction;
+  o.bNormalMap = aMat.Flags.NormalMap;
+  o.bHeightMap = aMat.Flags.HeightMap;
+  o.bTileMap = aMat.Flags.TileMap;
+  o.bDecal = aMat.Flags.Decal;
+  o.bDistanceField = aMat.Flags.DistanceField;
+
+  if (o.bDecal) {
+    float2 screenPos = stdPixelInput_GetScreenPos();
+
+    float3 eyePos = stdTex2D(eMaterialChannel_T1,screenPos).xyz;
+    float3 worldPos = mul(float4(eyePos,1), fpsInvViewMatrix).xyz;
+
+    // here I swap y/z so that its projected in the opposite direction of object's Y axis so that
+    // we can easily place decals as we would place regular geometries... especially usefull with
+    // the brush placement tool in the editor
+    float4 objPos = mul(float4(worldPos.xyz,1),fpsInvWorldMatrix).xzyw;
+
+    // New texture coordinate
+    {
+      float3 box = ((objPos.xyz / objPos.w) * 0.1f) + 0.5f;
+      gPI.TexCoos[0].xy = float2(box.x,1.0 - box.y);
+
+      // things outside of the texture box won't be visible, this avoid leakage outside of the box
+      clip(box.xyz);
+      clip(0.99f - box.xyz);
+    }
+
+    // set the new pixel position
+    o.PositionViewSpace = eyePos;
+    o.PositionWorldSpace = worldPos;
+    if (kShaderFlags_WorldSpace) {
+      o.Position = o.PositionWorldSpace;
+    }
+    else {
+      o.Position = o.PositionViewSpace;
+    }
+    gPI.Normal = o.Position;
+
+    // Compute the gradient values
+    gPI.Gradient = Gradient_Compute(o.Position,objPos.xy);
+
+    // Compute the new normals
+    float3 eyeNormal, worldNormal;
+    if (true) {
+      // Sample normal maps from the normals buffer
+      eyeNormal = normalize(stdUtil_ToSigned(stdTex2D(eMaterialChannel_T0,screenPos).xyz));
+      worldNormal = mul(eyeNormal, (float3x3)fpsInvViewMatrix).xyz;
+    }
+    else {
+      // Compute the plain surface normal (without normal map)
+      eyeNormal = normalize(cross(gPI.Gradient.xPos, gPI.Gradient.yPos));
+      worldNormal = mul(eyeNormal, (float3x3)fpsInvViewMatrix).xyz;
+      // REMARK: This looks like crap... looks like ddx/ddy isnt precise enought,
+      //         also it makes the thing look flat shaded...
+    }
+
+    // Set the new normal
+    o.NormalViewSpace = eyeNormal;
+    o.NormalWorldSpace = worldNormal;
+    if (kShaderFlags_WorldSpace) {
+      o.Normal = o.NormalWorldSpace;
+    }
+    else {
+      o.Normal = o.NormalViewSpace;
+    }
+    gPI.Normal = o.Normal;
+
+    // Compute the fading/clipping based on the decals angle with the surface normal
+    float3 objDir = normalize(float3(fpsInvWorldMatrix._12,fpsInvWorldMatrix._22,fpsInvWorldMatrix._32));
+
+    // Sample opacity
+    o.Opacity = stdMat_Opacity(aMat);
+
+    // Change the opacity so that it fades out with the fading angle, alpha test will take care of clipping
+    float fading = dot(worldNormal,objDir);
+    o.Opacity *= saturate(fading*3.0f-0.25f);
+
+    // Compute the new tangent frame
+#if !eShaderFlags_DepthOnly
+    gPI.TanFrame = stdUtil_ComputeCotangentFrame(o.Normal,gPI.Gradient);
+#endif
+  }
+  else {
+    o.Position = stdPixelInput_GetPosition().xyz;
+    o.PositionWorldSpace = stdPixelInput_GetPositionWorldSpace().xyz;
+    o.PositionViewSpace = stdPixelInput_GetPositionViewSpace().xyz;
+    o.Opacity = stdMat_Opacity(aMat);
+  }
+
+  o.AlphaRef = aMat.Opacity.Color.a+0.0001f;
+  if (abAlphaTest && (o.bAlphaTest || o.bDistanceField)) {
+    stdUtil_AlphaTest(o.Opacity, o.AlphaRef);
+  }
+
+  o.EyeVec = stdPixelInput_GetEyeVec();
+  o.EyeDist = length(o.EyeVec);
+  o.EyeDir = stdPixelInput_GetEyeDir();
+  o.Depth = stdPixelInput_GetDepth();
+
+  // TileMap
+  if (o.bTileMap) {
+    float3 texWeights = stdPixelInput_GetColorA();
+
+    float3 matIds = fpsMaterialT3Color0.xyz;
+    float tcA = matIds.x;
+    float tcB = matIds.y;
+    float tcC = matIds.z;
+
+    StdMaterial aMat = stdMat_GetMaterial();
+
+    // Repeat the UV (equivalent to Repeat texture addressing mode)
+    float4 uvA = computeTexCooFromIndex(tcA);
+#ifndef eStdTileMap_UseTexLod
+    float2 gradUV = gPI.TexCoos[0].xy * tileMapTexGradScale;
+    float2 uvddx = ddx(gradUV);
+    float2 uvddy = ddy(gradUV);
+#endif
+
+#ifdef eStdTileMap_UseTexLod
+    float4 colA = stdMat_Tex2DLod(aMat, eMaterialChannel_Base, uvA);
+#else
+    float4 colA = stdMat_Tex2DGrad_(aMat, eMaterialChannel_Base, uvA, uvddx, uvddy);
+#endif
+    float lumA = 1.0f - colA.a; //stdUtil_Luminance(colA.xyz);
+
+    float4 uvB = computeTexCooFromIndex(tcB);
+#ifdef eStdTileMap_UseTexLod
+    float4 colB = stdMat_Tex2DLod(aMat, eMaterialChannel_Base, uvB);
+#else
+    float4 colB = stdMat_Tex2DGrad_(aMat, eMaterialChannel_Base, uvB, uvddx, uvddy);
+#endif
+    float lumB = 1.0f - colB.a; //stdUtil_Luminance(colB.xyz);
+
+    float4 uvC = computeTexCooFromIndex(tcC);
+#ifdef eStdTileMap_UseTexLod
+    float4 colC = stdMat_Tex2DLod(aMat, eMaterialChannel_Base, uvC);
+#else
+    float4 colC = stdMat_Tex2DGrad_(aMat, eMaterialChannel_Base, uvC, uvddx, uvddy);
+#endif
+    float lumC = 1.0f - colC.a; //stdUtil_Luminance(colC.xyz);
+
+    float4 uvFinal;
+    float3 weights =
+        blend3(lumA, texWeights.x, uvA, lumB, texWeights.y, uvB, lumC, texWeights.z, uvC, uvFinal);
+
+    gPI.TexCoos[0] = uvFinal;
+    gPI.Gradient.xTex = ddx(uvFinal.xy);
+    gPI.Gradient.yTex = ddy(uvFinal.xy);
+
+    o.Base = colA * weights.x + colB * weights.y + colC * weights.z;
+  }
+  else {
+#if !eShaderFlags_Fast
+    // HeightMap, relief mapping. THIS MUST BE BEFORE ANY OTHER TEXTURE SAMPLING
+    // because it modifies the texcoo0. Not compatible with tilemap.
+    if (o.bHeightMap) {
+      float4 texCoo = gPI.TexCoos[0];
+      ReliefMapping(
+        gPI.Position,
+        aMat.Bump,
+        stdPixelInput_GetTanFrame(),
+        o.EyeDir,
+        texCoo,
+        true,
+        false,
+        reliefDefaultRange,
+        reliefDefaultSearchSteps.x,
+        reliefDefaultSearchSteps.y,
+        o.bTileMap);
+      gPI.TexCoos[0] = texCoo;
+      o.Position = gPI.Position;
+      o.PositionViewSpace = o.Position;
+      o.PositionWorldSpace = mul(float4(o.PositionViewSpace,1), fpsInvViewMatrix).xyz;
+    }
+#endif
+    // Base sampling
+    o.Base = stdMat_Tex2D(aMat,eMaterialChannel_Base).xyz;
+    if (aMat.Base.HasTexture) {
+      o.Base *= aMat.Base.Color.xyz;
+    }
+  }
+
+  // apply vertex color
+  o.Base *= stdPixelInput_GetColorA().xyz;
+#if eShaderFlags_LinearColorSpace
+  o.Base *= o.Base;
+#endif
+
+  // Normal sampling
+  if (!o.bDecal || (o.bDecal && stdMat_GetSampler(aMat,eMaterialChannel_Bump).HasTexture)) {
+    o.Normal = stdMat_Normal(aMat);
+    if (kShaderFlags_WorldSpace) {
+      o.NormalWorldSpace = o.Normal;
+      o.NormalViewSpace = mul(o.Normal,(float3x3)fpsViewMatrix);
+    }
+    else {
+      o.NormalViewSpace = o.Normal;
+      o.NormalWorldSpace = mul(o.Normal,(float3x3)fpsInvViewMatrix);
+    }
+    o.Normal = o.NormalViewSpace;
+  }
+
+  // Ambient/lightmap sampling
+  if (o.bAmbient) {
+    o.Ambient = aMat.Ambient.Color.xyz;
+    o.Ambient *= stdMat_Tex2D(aMat,eMaterialChannel_Ambient).xyz;
+  }
+  else {
+    o.Ambient = aMat.Ambient.Color.xyz;
+  }
+#if eShaderFlags_LinearColorSpace
+  o.Ambient *= o.Ambient;
+#endif
+
+  // Specular sampling
+  o.Specular = aMat.Specular.Color.rgb;
+  o.Gloss = aMat.Specular.Color.a;
+  if (aMat.Specular.HasTexture) {
+    float4 colSampSpec = stdMat_TileMap2D(aMat,eMaterialChannel_Specular);
+    o.Specular *= colSampSpec.rgb;
+    o.Gloss *= colSampSpec.a;
+  }
+
+  // Lookup emissive
+  if (o.bEmissive) {
+    float4 colSampEmissive = stdMat_TileMap2D(aMat,eMaterialChannel_Emissive);
+    float4 emissiveCoef = aMat.Emissive.Color;
+    o.Emissive = colSampEmissive.rgb * emissiveCoef.xyz * (2.0f * emissiveCoef.w);
+    o.DirCoef = colSampEmissive.a;
+#if eShaderFlags_LinearColorSpace
+    o.Emissive *= o.Emissive;
+#endif
+  }
+  else {
+    // Keep default value (0/black)
+  }
+
+  // Lookup refraction
+#if eMaterialFlags_Refraction
+  if (aMat.Flags.Refraction) {
+    float4 rColor = aMat.Refraction.Color;
+
+    float distFactor = (1.0f-saturate(o.EyeDist*0.001f));
+    rColor.r *= distFactor;
+
+    float2 rUV0 = stdPixelInput_GetScreenPos();
+    float scaleFactor = rColor.r * 0.07f;
+    float2 rUV = rUV0 + (o.NormalViewSpace.xy * scaleFactor);
+    rUV = max(fpsViewportClampTexCoos.xy,rUV);
+    rUV = min(fpsViewportClampTexCoos.zw,rUV);
+
+#if eMaterialFlags_UseRefractionMask
+    // reduce color leakage
+    float4 vRefrA = stdMat_Tex2D_(aMat,eMaterialChannel_Refraction,rUV);
+    float4 vRefrB = stdMat_Tex2D_(aMat,eMaterialChannel_Refraction,rUV0);
+    float4 rTex = lerp(vRefrA,vRefrB,vRefrA.w);
+#else
+    float4 rTex = stdMat_Tex2D_(aMat,eMaterialChannel_Refraction,rUV);
+#endif
+    o.Refraction = rTex.rgb;
+
+    // Dont re-apply the correction the source texture already contains
+    // the gamma-corrected color
+    // #if eShaderFlags_LinearColorSpace
+    //    o.Refraction *= o.Refraction;
+    // #endif
+    o.RefractionCoef = float2(rColor.r,rColor.a);
+  }
+#endif
+
+  if (aMat.Environment.HasTexture) {
+    float3 N = o.NormalWorldSpace;
+    float3 E = -stdPixelInput_GetEyeDirWorldSpace();
+
+    float3 env;
+    {
+#if 0
+      // Environment
+      env = stdMat_Environment(aMat,N,E).xyz;
+      env *= aMat.Environment.Color.rgb;
+#else
+      // Glossy reflection
+      env = stdMat_GlossyReflection(
+      aMat,
+          N,
+          E,
+          o.PositionViewSpace,
+          o.Gloss).xyz;
+#endif
+    }
+
+#if eShaderFlags_LinearColorSpace
+    env *= env;
+#endif
+    o.Environment = env;
+    o.EnvironmentAlpha = aMat.Environment.Color.a;
+    o.bEnvironment = true;
+  }
+
+  o.Diffuse = o.Base;
+  if (o.bAmbient) {
+    o.Diffuse *= o.Ambient;
+  }
+  return o;
+}
+
+///////////////////////////////////////////////
+StdSampledMaterial stdMat_GetSampledMaterial(inout StdMaterial aMat) {
+  return stdMat_GetSampledMaterial(aMat,true);
+}
+StdSampledMaterial stdMat_GetSampledMaterialNoAlphaTest(inout StdMaterial aMat) {
+  return stdMat_GetSampledMaterial(aMat,false);
+}
+
+///////////////////////////////////////////////
+StdSampledMaterial stdMat_GetSampledMaterial() {
+  StdMaterial m = stdMat_GetMaterial();
+  return stdMat_GetSampledMaterial(m);
+}
+
+///////////////////////////////////////////////
+StdSampledMaterial stdMat_GetSampledMaterialNoAlphaTest() {
+  StdMaterial m = stdMat_GetMaterial();
+  return stdMat_GetSampledMaterialNoAlphaTest(m);
+}
+
+///////////////////////////////////////////////
+float4 stdMat_GetFinalColor(StdSampledMaterial m, float4 r, bool hasLights) {
+  if (m.bRefraction) {
+    r.xyz = lerp(r.xyz,m.Refraction.rgb,m.RefractionCoef.y);
+  }
+#if eShaderFlags_LinearColorSpace
+  {
+    r.xyz = sqrt(r.xyz);
+  }
+#endif
+#if eShaderFlags_FogExp
+  {
+    r.xyz = stdFog_Exp(m.PositionViewSpace.z,r.xyz,fpsFogColor.xyz,fpsFogColor.w);
+  }
+#endif
+  if (m.bTranslucent && hasLights) {
+    r.xyz *= r.a;
+  }
+  return r;
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDMATERIAL_CGH_E605D5B8_5AD5_45B2_8D51_EC1AA6D4D035__

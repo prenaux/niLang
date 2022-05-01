@@ -1,0 +1,385 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="15" name="eOSProcessSpawnFlags">
+			<comments desc="OS Process spawning flags. "/>
+			<value min_features="15" name="eOSProcessSpawnFlags_None" value="0 ">
+				<comments desc="No flags/default "/>
+			</value>
+			<value min_features="15" name="eOSProcessSpawnFlags_StdFiles" value="niBit ( 0 ) ">
+				<comments desc="Create stdin/out/err. ">
+					<remark text="Indicates that we want to redirect stdin/ou/err to our own handles. The implication is that we can and must drain stdout/err to retrieve its output. "/>
+				</comments>
+			</value>
+			<value min_features="15" name="eOSProcessSpawnFlags_DifferentStdOutAndStdErr" value="niBit ( 1 ) ">
+				<comments desc="Indicates that we want different pipes for StdOut and StdErr. ">
+					<remark text="This means that both stdout and stderr need to be drained. "/>
+				</comments>
+			</value>
+			<value min_features="15" name="eOSProcessSpawnFlags_SandBox" value="niBit ( 2 ) ">
+				<comments desc="Create the process in sand boxed environment. ">
+					<remark text="A process in a SandBox will have limited rights to access sensitive informations in the OS. "/>
+					<remark text="Not all OS&apos;s are capable of creating sandboxed processes. "/>
+				</comments>
+			</value>
+			<value min_features="15" name="eOSProcessSpawnFlags_Detached" value="niBit ( 3 ) ">
+				<comments desc="Create the process an independant process. ">
+					<remark text="This is needed to launch other applications independantly, such as in the case of a launcher starting another app. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum min_features="15" name="eOSProcessFile">
+			<comments desc="OS Process standard file objects. "/>
+			<value min_features="15" name="eOSProcessFile_StdIn" value="0 ">
+				<comments desc="Stdin file object. "/>
+			</value>
+			<value min_features="15" name="eOSProcessFile_StdOut" value="1 ">
+				<comments desc="Stdout file object. "/>
+			</value>
+			<value min_features="15" name="eOSProcessFile_StdErr" value="2 ">
+				<comments desc="Stderr file object. "/>
+			</value>
+			<value min_features="15" name="eOSProcessFile_Last" value="3 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface
+			min_features="15"
+			name="iOSProcess"
+			uuid1="F297A4C9-1C07-4E6E-B804-2336F8760FAD"
+			uuid2="0xf297a4c9,0x1c07,0x4e6e,0xb8,0x04,0x23,0x36,0xf8,0x76,0x0f,0xad">
+			<comments desc="OS Process object interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getExePath"
+				min_features="15"
+				name="GetExePath"
+				num_parameters="0"
+				property="get"
+				property_name2="exePath"
+				property_name="exe_path">
+				<comments desc="Get the path of the executable from which the process has been spawned. ">
+					<remark text="Might be empty. "/>
+				</comments>
+				<return type="const ni::achar *" typec="const ni::achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCommandLine"
+				min_features="15"
+				name="GetCommandLine"
+				num_parameters="0"
+				property="get"
+				property_name2="commandLine"
+				property_name="command_line">
+				<comments desc="Get the command line used to spawn the process. ">
+					<remark text="Might be empty. "/>
+				</comments>
+				<return type="const ni::achar *" typec="const ni::achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPID"
+				min_features="15"
+				name="GetPID"
+				num_parameters="0"
+				property="get"
+				property_name2="pid"
+				property_name="pid">
+				<comments desc="Get the process&apos;s PID. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParentPID"
+				min_features="15"
+				name="GetParentPID"
+				num_parameters="0"
+				property="get"
+				property_name2="parentPID"
+				property_name="parent_pid">
+				<comments desc="Get the parent process&apos;s PID. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isParentProcess"
+				min_features="15"
+				name="IsParentProcess"
+				num_parameters="1">
+				<comments desc="Check whether the parent process is a parent of this process. " return="The distance of the parent, 1 is the direct parent, 2 is the parent of the parent, and so on. Returns 0 if the specified PID is not the parent of this process. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aParentPID"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCurrent"
+				min_features="15"
+				name="GetIsCurrent"
+				num_parameters="0"
+				property="get"
+				property_name2="isCurrent"
+				property_name="is_current">
+				<comments desc="Get whether the process is the current process. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDidCrash"
+				min_features="15"
+				name="GetDidCrash"
+				num_parameters="0"
+				property="get"
+				property_name2="didCrash"
+				property_name="did_crash">
+				<comments desc="Get the termination status (exit code) of the process and return true if the status indicates that the process crashed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="kill"
+				min_features="15"
+				name="Kill"
+				num_parameters="2">
+				<comments desc="Attempts to kill the process, giving it a specified exit code. " return="true if successful, false otherwise. ">
+					<params text="anExitCode the exit code to give to the process once terminated. "/>
+					<params text="abWait: if true wait for the process to be actually be terminated before returning. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anExitCode"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+				<parameter
+					last="1"
+					name="abWait"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="doWait"
+				min_features="15"
+				name="Wait"
+				num_parameters="1">
+				<comments desc="Wait for the process to exit. " return="true if the process exited cleanly within the given time limit. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anTimeoutMs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="waitForExitCode"
+				min_features="15"
+				name="WaitForExitCode"
+				num_parameters="1">
+				<comments desc="Waits for process to exit. In POSIX systems, if the process hasn&apos;t been signaled then returns the exit code; otherwise it&apos;s considered a failure. On Windows the exit code is always returned. " return="&apos;x&apos; is true the process exited cleanly within the given time limit, false otherwise. &apos;y&apos; is the process&apos;s exit code. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					last="1"
+					name="anTimeoutMs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="terminate"
+				min_features="15"
+				name="Terminate"
+				num_parameters="1">
+				<comments desc="Terminates the process with extreme prejudice. The given result code will be the exit code of the process. If the process has already exited, this will do nothing. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aResultCode"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFile"
+				min_features="15"
+				name="GetFile"
+				num_parameters="1"
+				property="get"
+				property_name2="file"
+				property_name="file">
+				<comments desc="Get a standard file object beloging to the process. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFile"
+					type="eOSProcessFile"
+					typec="eOSProcessFile"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			min_features="15"
+			name="iOSProcessEnumSink"
+			uuid1="C3EDAC6C-A769-441D-890C-AB4CE299D23C"
+			uuid2="0xc3edac6c,0xa769,0x441d,0x89,0x0c,0xab,0x4c,0xe2,0x99,0xd2,0x3c">
+			<comments desc="OS Process enum sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onOSProcessEnumSink"
+				min_features="15"
+				name="OnOSProcessEnumSink"
+				num_parameters="3">
+				<comments desc="Called when a process has been found. " return="false to interrupt the enumeration, true to continue. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aPID"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+				<parameter
+					name="aParentPID"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="aaszExeName"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="15"
+			name="iOSProcessManager"
+			uuid1="D396E429-444E-46FF-A2A4-BF664B328090"
+			uuid2="0xd396e429,0x444e,0x46ff,0xa2,0xa4,0xbf,0x66,0x4b,0x32,0x80,0x90">
+			<comments desc="OS Process Manager "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getCurrentProcessID"
+				min_features="15"
+				name="GetCurrentProcessID"
+				num_parameters="0"
+				property="get"
+				property_name2="currentProcessID"
+				property_name="current_process_id">
+				<comments desc="Return the id of the current process. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentProcess"
+				min_features="15"
+				name="GetCurrentProcess"
+				num_parameters="0"
+				property="get"
+				property_name2="currentProcess"
+				property_name="current_process">
+				<comments desc="Return a process object of the current process. "/>
+				<return type="iOSProcess *" typec="iOSProcess*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createProcess"
+				min_features="15"
+				name="CreateProcess"
+				num_parameters="1">
+				<comments desc="Create a process object from the specified process id. "/>
+				<return type="iOSProcess *" typec="iOSProcess*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aPID"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+			</method>
+			<method
+				java_name="spawnProcess"
+				min_features="15"
+				name="SpawnProcess"
+				num_parameters="2">
+				<comments desc="Spawn a new process. \see ni::iOSProcessManager::SpawnProcessEx "/>
+				<return type="iOSProcess *" typec="iOSProcess*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszCmdLine"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSpawn"
+					type="tOSProcessSpawnFlags"
+					typec="tOSProcessSpawnFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="spawnProcessEx"
+				min_features="15"
+				name="SpawnProcessEx"
+				num_parameters="4">
+				<comments desc="Spawn a new process with the specified working directory and environment variables. ">
+					<params text="aaszCmdLine the command line of the process to spawn. "/>
+					<params text="aaszWorkDir if not NULL specifies the working directory from where the process will start. "/>
+					<params text="apEnvs if not NULL specifies the environment variables that will be set for the new process. "/>
+					<params text="aSpawn the spawn flags. \see ni::eOSProcessSpawnFlags "/>
+				</comments>
+				<return type="iOSProcess *" typec="iOSProcess*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszCmdLine"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszWorkDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnvs"
+					type="const tStringCMap *"
+					typec="const tStringCMap*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSpawn"
+					type="tOSProcessSpawnFlags"
+					typec="tOSProcessSpawnFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="enumProcesses"
+				min_features="15"
+				name="EnumProcesses"
+				num_parameters="2">
+				<comments desc="Enumerates all processes. " return="The number of processes enumerated. ">
+					<remark text="If apSink is NULL returns the number of processes that passed the filter. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="apFilter"
+					type="ni::iRegex *"
+					typec="ni::iRegex*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iOSProcessEnumSink *"
+					typec="iOSProcessEnumSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,14 @@
+#########################################################################
+#
+# -- ni-app-native --
+#
+#########################################################################
+if [ SubDirOnce TOP jvm ni-app-native ] = 1 { return ; }
+
+niDefJar ni-app-native : 1,0,0 ;
+
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niBuildJar $(SRC)
+: ni-app niLang_jvm niUI_jvm
+:
+: pkgsrc ] ;

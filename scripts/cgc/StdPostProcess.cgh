@@ -1,0 +1,118 @@
+#pragma once
+#ifndef __STDPOSTPROCESS_CGH_BD199639_5827_46F1_B921_175755DAB074__
+#define __STDPOSTPROCESS_CGH_BD199639_5827_46F1_B921_175755DAB074__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdPixelInput.cgh"
+#include "StdUniforms.cgh"
+#include "StdSampler.cgh"
+
+///////////////////////////////////////////////
+float2 stdPP_GetTexCoo() {
+  // For eShaderFlags_Quad=1
+  // return stdPixelInput_GetTexCoo2(0);
+  // Should work anywhere? used by eMaterialFlags_Decal=1
+  return stdPixelInput_GetScreenPos();
+}
+
+///////////////////////////////////////////////
+float4 stdPP_SimpleBlur(const int aKernelWidth, const int aKernelHeight, int anSampler, float2 avBaseCoo, float2 avSamplerRes)
+{
+  float incX = avSamplerRes.x;
+  float incY = avSamplerRes.y;
+  float invWeight = 1.0f/float(aKernelWidth*aKernelHeight);
+  float fStartX = avBaseCoo.x + (float((aKernelWidth-1)/-2)*avSamplerRes.x);
+  float fStartY = avBaseCoo.y + (float((aKernelHeight-1)/-2)*avSamplerRes.y);
+  float4 sample = float4(0,0,0,0);
+  float fY = fStartY;
+  eStd_ForUnroll for (int y = 0; y < aKernelHeight; ++y) {
+    float fX = fStartX;
+    eStd_ForUnroll for (int x = 0; x < aKernelWidth; ++x) {
+      sample += stdTex2D(anSampler, float2(fX,fY));
+      fX += incX;
+    }
+    fY += incY;
+  }
+  return sample * invWeight;
+}
+
+///////////////////////////////////////////////
+float4 stdPP_Gauss9x9(int anSampler, float2 avBaseCoo, float2 avSamplerRes)
+{
+  float vMul[9] = { 0.05,  0.1, 0.25,  0.3, 0.0, 0.3, 0.25, 0.1, 0.05 };
+  int aKernelWidth = 9;
+  int aKernelHeight = 9;
+  float incX = avSamplerRes.x;
+  float incY = avSamplerRes.y;
+  float fStartX = avBaseCoo.x + (float((aKernelWidth-1)/-2)*avSamplerRes.x);
+  float fStartY = avBaseCoo.y + (float((aKernelHeight-1)/-2)*avSamplerRes.y);
+  float mulSum = 0.0f;
+  float4 sample = float4(0,0,0,0);
+  float fY = fStartY;
+  for (int y = 0; y < aKernelHeight; ++y) {
+    float yMul = vMul[y];
+    float fX = fStartX;
+    for (int x = 0; x < aKernelWidth; ++x) {
+      float xMul = vMul[x];
+      float mul = 1.0f - (xMul * yMul);
+      sample += stdTex2D(anSampler, float2(fX,fY)) * mul;
+      mulSum += mul;
+      fX += incX;
+    }
+    fY += incY;
+  }
+  return sample / mulSum;
+}
+
+///////////////////////////////////////////////
+float stdPP_getDepth(int anSampler, float2 texCoo) {
+  float fCoreDepth = stdTex2D(anSampler,texCoo).x;
+  return fCoreDepth;
+}
+
+///////////////////////////////////////////////
+float4 stdPP_Gauss9x9Depth(int anSampler,
+                           int anDepthSampler,
+                           float2 avBaseCoo,
+                           float2 avSamplerRes,
+                           const bool abHz)
+{
+  float vMul[9] = { 0.05,  0.1, 0.25,  0.3, 0.0, 0.3, 0.25, 0.1, 0.05 };
+  float vOffset[9] = {-3.35, -2.35, -1.35, -0.35, 0.0, 0.35,  1.35, 2.35,  3.35};
+
+  float fCoreDepth = stdPP_getDepth(anDepthSampler,avBaseCoo);
+  float fMinDepth =  fCoreDepth - (0.1f * fpsCameraClipPlanes.w);
+  float fOffMul = 1.25f * (abHz?avSamplerRes.x:avSamplerRes.y);
+
+  float mulSum = 0.0f;
+  float4 sample = float4(0,0,0,0);
+  eStd_ForUnroll for (int x = 0; x < 9; ++x) {
+    float fCooOff = vOffset[x] * fOffMul;
+    float2 tc = avBaseCoo + (abHz ? float2(fCooOff,0) : float2(0,fCooOff));
+    float  fMul   = vMul[x];
+    float4 fCol   = stdTex2D(anSampler, tc);
+    float  fDepth = stdTex2D(anDepthSampler, tc);
+    if (fDepth < fMinDepth)
+      fMul = 0.0f;
+    /*    if (fDepth > fCoreDepth) */
+    /*      fMul *= 2.0f; */
+    fCol   *= fMul;
+    sample += fCol;
+    mulSum += fMul;
+  }
+  return sample / mulSum;
+}
+
+///////////////////////////////////////////////
+float4 stdPP_FinalColor(float4 aCol) {
+  float4 c = fpsMaterialBaseColor0;
+  return float4(aCol.rgb*c.rgb,c.w);
+}
+float4 stdPP_FinalColor(float3 aCol) {
+  float4 c = fpsMaterialBaseColor0;
+  return float4(aCol.rgb*c.rgb,c.w);
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDPOSTPROCESS_CGH_BD199639_5827_46F1_B921_175755DAB074__

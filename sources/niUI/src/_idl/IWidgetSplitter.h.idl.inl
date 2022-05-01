@@ -1,0 +1,238 @@
+#include "../API/niUI/IWidgetSplitter.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetSplitter **/
+IDLC_BEGIN_INTF(ni,iWidgetSplitter)
+/** ni -> iWidgetSplitter::AddSplitterFront/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,AddSplitterFront,1)
+	IDLC_DECL_VAR(tF32,afPos)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPos)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,AddSplitterFront,1,(afPos))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,AddSplitterFront,1)
+
+/** ni -> iWidgetSplitter::AddSplitterBack/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,AddSplitterBack,1)
+	IDLC_DECL_VAR(tF32,afPos)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPos)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,AddSplitterBack,1,(afPos))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,AddSplitterBack,1)
+
+/** ni -> iWidgetSplitter::RemoveSplitter/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,RemoveSplitter,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,RemoveSplitter,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,RemoveSplitter,1)
+
+/** ni -> iWidgetSplitter::GetNumSplitters/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetNumSplitters,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetNumSplitters,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetNumSplitters,0)
+
+/** ni -> iWidgetSplitter::GetNumSplitterWidgets/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetNumSplitterWidgets,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetNumSplitterWidgets,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetNumSplitterWidgets,0)
+
+/** ni -> iWidgetSplitter::GetSplitterWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterWidget,1)
+
+/** ni -> iWidgetSplitter::GetSplitterWidgetIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterWidgetIndex,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterWidgetIndex,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterWidgetIndex,1)
+
+/** ni -> iWidgetSplitter::RemoveSplitterWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,RemoveSplitterWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,RemoveSplitterWidget,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,RemoveSplitterWidget,1)
+
+/** ni -> iWidgetSplitter::AddSplitterBefore/2 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,AddSplitterBefore,2)
+	IDLC_DECL_VAR(tU32,anWidget)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anWidget)
+	IDLC_DECL_VAR(tF32,afPos)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPos)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,AddSplitterBefore,2,(anWidget,afPos))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,AddSplitterBefore,2)
+
+/** ni -> iWidgetSplitter::AddSplitterAfter/2 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,AddSplitterAfter,2)
+	IDLC_DECL_VAR(tU32,anWidget)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anWidget)
+	IDLC_DECL_VAR(tF32,afPos)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPos)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,AddSplitterAfter,2,(anWidget,afPos))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,AddSplitterAfter,2)
+
+/** ni -> iWidgetSplitter::SetSplitterPosition/2 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterPosition,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(tF32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,SetSplitterPosition,2,(anIndex,aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterPosition,2)
+
+/** ni -> iWidgetSplitter::GetSplitterPosition/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterPosition,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterPosition,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterPosition,1)
+
+/** ni -> iWidgetSplitter::SetSplitterMinPosition/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterMinPosition,1)
+	IDLC_DECL_VAR(tF32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,SetSplitterMinPosition,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterMinPosition,1)
+
+/** ni -> iWidgetSplitter::GetSplitterMinPosition/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterMinPosition,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterMinPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterMinPosition,0)
+
+/** ni -> iWidgetSplitter::SetSplitterSize/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterSize,1)
+	IDLC_DECL_VAR(tF32,afSize)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSize)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,SetSplitterSize,1,(afSize))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterSize,1)
+
+/** ni -> iWidgetSplitter::GetSplitterSize/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterSize,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterSize,0)
+
+/** ni -> iWidgetSplitter::SwapSplitterWidget/2 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SwapSplitterWidget,2)
+	IDLC_DECL_VAR(tU32,anA)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anA)
+	IDLC_DECL_VAR(tU32,anB)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anB)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,SwapSplitterWidget,2,(anA,anB))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,SwapSplitterWidget,2)
+
+/** ni -> iWidgetSplitter::SetSplitterBorderSize/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterBorderSize,1)
+	IDLC_DECL_VAR(tF32,afSize)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSize)
+	IDLC_METH_CALL_VOID(ni,iWidgetSplitter,SetSplitterBorderSize,1,(afSize))
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterBorderSize,1)
+
+/** ni -> iWidgetSplitter::GetSplitterBorderSize/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterBorderSize,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterBorderSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterBorderSize,0)
+
+/** ni -> iWidgetSplitter::SetSplitterResizableBorders/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterResizableBorders,1)
+	IDLC_DECL_VAR(tU32,aEdges)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aEdges)
+	IDLC_METH_CALL_VOID(ni,iWidgetSplitter,SetSplitterResizableBorders,1,(aEdges))
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterResizableBorders,1)
+
+/** ni -> iWidgetSplitter::GetSplitterResizableBorders/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterResizableBorders,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterResizableBorders,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterResizableBorders,0)
+
+/** ni -> iWidgetSplitter::SetSplitterParentDockRectMinimumSize/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterParentDockRectMinimumSize,1)
+	IDLC_DECL_VAR(sVec2f,avMinSize)
+	IDLC_BUF_TO_BASE(ni::eType_Vec2f,avMinSize)
+	IDLC_METH_CALL_VOID(ni,iWidgetSplitter,SetSplitterParentDockRectMinimumSize,1,(avMinSize))
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterParentDockRectMinimumSize,1)
+
+/** ni -> iWidgetSplitter::GetSplitterParentDockRectMinimumSize/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterParentDockRectMinimumSize,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterParentDockRectMinimumSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterParentDockRectMinimumSize,0)
+
+/** ni -> iWidgetSplitter::SetSplitterFillerIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterFillerIndex,1)
+	IDLC_DECL_VAR(ni::tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_METH_CALL_VOID(ni,iWidgetSplitter,SetSplitterFillerIndex,1,(anIndex))
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterFillerIndex,1)
+
+/** ni -> iWidgetSplitter::GetSplitterFillerIndex/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterFillerIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterFillerIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterFillerIndex,0)
+
+/** ni -> iWidgetSplitter::SetSplitterFoldMode/1 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,SetSplitterFoldMode,1)
+	IDLC_DECL_VAR(eWidgetSplitterFoldMode,aFoldMode)
+	IDLC_BUF_TO_ENUM(eWidgetSplitterFoldMode,aFoldMode)
+	IDLC_METH_CALL_VOID(ni,iWidgetSplitter,SetSplitterFoldMode,1,(aFoldMode))
+IDLC_METH_END(ni,iWidgetSplitter,SetSplitterFoldMode,1)
+
+/** ni -> iWidgetSplitter::GetSplitterFoldMode/0 **/
+IDLC_METH_BEGIN(ni,iWidgetSplitter,GetSplitterFoldMode,0)
+	IDLC_DECL_RETVAR(eWidgetSplitterFoldMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetSplitter,GetSplitterFoldMode,0,())
+	IDLC_RET_FROM_ENUM(eWidgetSplitterFoldMode,_Ret)
+IDLC_METH_END(ni,iWidgetSplitter,GetSplitterFoldMode,0)
+
+IDLC_END_INTF(ni,iWidgetSplitter)
+
+IDLC_END_NAMESPACE()
+// EOF //

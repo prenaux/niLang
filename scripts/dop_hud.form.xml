@@ -1,0 +1,104 @@
+<Form
+	title="DrawOp HUD"
+	id="__ID_DrawOpCaptureHUD__"
+	rect="Rect(5,5,500,400)"
+	code="dop_hud.ni"
+	paint_cache_enabled="true">
+    <Widget class="Dummy" dock_style="eWidgetDockStyle.DockFill">
+        <Widget class="Dummy" height="22" dock_style="eWidgetDockStyle.DockBottom">
+            <Widget id="ID_StopAtEnabled" class="Button"
+                    width="22"
+                    checked="true"
+                    dock_style="eWidgetDockStyle.DockLeft"
+                    style="eWidgetStyle.HoldFocus|
+                           eWidgetButtonStyle.OnOff|
+                           eWidgetButtonStyle.CheckBox" />
+            <Widget id="ID_StopAtBreakBegin" class="Button" text="[B]"
+                    width="22"
+                    dock_style="eWidgetDockStyle.DockLeft" />
+            <Widget id="ID_StopAtBreakEnd" class="Button" text="[E]"
+                    width="22"
+                    dock_style="eWidgetDockStyle.DockLeft" />
+            <Widget id="ID_StopAt" class="ScrollBar"
+                    height="22"
+                    dock_style="eWidgetDockStyle.DockFill"
+                    style="eWidgetStyle.HoldFocus|
+                           eWidgetScrollBarStyle.Slider|
+                           eWidgetScrollBarStyle.Horz" />
+        </Widget>
+        <Widget id="ID_Tabs" class="Tab" dock_style="eWidgetDockStyle.DockFill">
+            <Widget id="DrawOp" class="Dummy" dock_style="eWidgetDockStyle.DockFill">
+                <Widget id="ID_Count" class="EditBox" text=""
+                        height="22"
+                        dock_style="eWidgetDockStyle.DockFill"
+                        style="eWidgetEditBoxStyle.MultiLine|eWidgetEditBoxStyle.ReadOnly|eWidgetStyle.HoldFocus" />
+            </Widget>
+            <Widget id="Context" class="Dummy" dock_style="eWidgetDockStyle.DockFill">
+                <Widget id="ID_PBContext" class="PropertyBox" text=""
+                        dock_style="eWidgetDockStyle.DockFill"
+                        style="eWidgetStyle.HoldFocus" />
+            </Widget>
+<!--             <Widget id="DrawOp" class="Dummy" dock_style="eWidgetDockStyle.DockFill"> -->
+<!--                 <Widget id="ID_PBDrawOp" class="PropertyBox" text="" -->
+<!--                         dock_style="eWidgetDockStyle.DockFill" -->
+<!--                         style="eWidgetStyle.HoldFocus" /> -->
+<!--             </Widget> -->
+            <Widget id="RT" class="Dummy" dock_style="eWidgetDockStyle.DockFill">
+                <Widget id="ID_RT" class="Canvas" text=""
+                        dock_style="eWidgetDockStyle.DockFill"
+                        style="eWidgetCanvasStyle.ScrollH|eWidgetCanvasStyle.ScrollV" />
+            </Widget>
+            <Widget id="Texs" class="Dummy" dock_style="eWidgetDockStyle.DockFill">
+                <Widget
+                    class="Dummy"
+                    dock_style="eWidgetDockStyle.DockBottom"
+                    height="22"
+                    style="eWidgetStyle.HoldFocus"
+                    ><Children>
+                    <Widget
+                        class="Button"
+                        id="ID_RefreshList"
+                        dock_style="eWidgetDockStyle.DockLeft"
+                        width="22"
+                        text="R"
+                        />
+                    <Widget
+                        class="ComboBox"
+                        id="ID_TexList"
+                        dock_style="eWidgetDockStyle.DockFill"
+                        style="eWidgetStyle.HoldFocus"
+                        />
+                    </Children></Widget>
+                <Widget
+                    class="Dummy"
+                    dock_style="eWidgetDockStyle.DockTop"
+                    height="22"
+                    style="eWidgetStyle.HoldFocus"
+                    ><Children>
+                    <Widget
+                        class="Label"
+                        id="ID_ZoomLabel"
+                        dock_style="eWidgetDockStyle.DockRight"
+                        style="eWidgetStyle.HoldFocus|eWidgetEditBoxStyle.ReadOnly"
+                        width="50"
+                        text="100%"
+                        font_format_flags="eFontFormatFlags.CenterH|eFontFormatFlags.CenterV"
+                        />
+                    <Widget
+                        class="EditBox"
+                        id="ID_Label"
+                        dock_style="eWidgetDockStyle.DockFill"
+                        style="eWidgetStyle.HoldFocus|eWidgetEditBoxStyle.ReadOnly"
+                        text="Label text"
+                        />
+                    </Children></Widget>
+                <Widget
+                    class="Canvas"
+                    id="ID_TextureView"
+                    dock_style="eWidgetDockStyle.DockFill"
+                    style="eWidgetStyle.HoldFocus|eWidgetCanvasStyle.ScrollH|eWidgetCanvasStyle.ScrollV"
+                    />
+           </Widget>
+         </Widget>
+    </Widget>
+</Form>

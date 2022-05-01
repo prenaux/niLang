@@ -1,0 +1,212 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eTextureFlags">
+			<comments desc="Texture flags. "/>
+			<value name="eTextureFlags_Default" value="0 ">
+				<comments desc="Texture default. "/>
+			</value>
+			<value name="eTextureFlags_SystemMemory" value="niBit ( 0 ) ">
+				<comments desc="Texture is in system memory. ">
+					<remark text="Textures in system memory also implements the iBitmap interface matching it&apos;s type. "/>
+				</comments>
+			</value>
+			<value name="eTextureFlags_RenderTarget" value="niBit ( 1 ) ">
+				<comments desc="Texture is a render target. ">
+					<remark text="Excludes Dynamic and DepthStencil flags. "/>
+				</comments>
+			</value>
+			<value name="eTextureFlags_DepthStencil" value="niBit ( 2 ) ">
+				<comments desc="Texture is a depth stencil. ">
+					<remark text="Excludes Dynamic and RenderTarget flags. "/>
+				</comments>
+			</value>
+			<value name="eTextureFlags_Dynamic" value="niBit ( 3 ) ">
+				<comments desc="Texture is a dynamic and so can be locked. ">
+					<remark text="Excludes DepthStencil and RenderTarget flags. "/>
+				</comments>
+			</value>
+			<value name="eTextureFlags_MipMaps" value="niBit ( 4 ) ">
+				<comments desc="Texture has mip maps. "/>
+			</value>
+			<value name="eTextureFlags_AutoGenMipMaps" value="niBit ( 5 ) ">
+				<comments desc="Texture has automatically generated mip maps. ">
+					<remark text="This will automatically add eTextureFlags_MipMaps. "/>
+					<remark text="Mipmaps will be generated only when the level 0 surface is modified. "/>
+				</comments>
+			</value>
+			<value name="eTextureFlags_Surface" value="niBit ( 6 ) ">
+				<comments desc="The texture is a surface. It cant be bound as a source texture to be rasterized, but can be used for blitting, locked and as render target. "/>
+			</value>
+			<value name="eTextureFlags_SubTexture" value="niBit ( 7 ) ">
+				<comments desc="Is a sub texture. "/>
+			</value>
+			<value name="eTextureFlags_Overlay" value="niBit ( 8 ) ">
+				<comments desc="Overlay texture. An overlay texture is a texture that will use only clamp addressing without mipmaps, and that is generaly non-pow2. "/>
+			</value>
+			<value name="eTextureFlags_Virtual" value="niBit ( 9 ) ">
+				<comments desc="Virtual texture. The actual texture data are provided through bind only. \see ni::iDeviceResource::Bind "/>
+			</value>
+			<value name="eTextureFlags_RTAA4Samples" value="niBit ( 10 ) ">
+				<comments desc="Texture is an antialiased render target with 4 samples. "/>
+			</value>
+			<value name="eTextureFlags_RTAA8Samples" value="niBit ( 11 ) ">
+				<comments desc="Texture is an antialiased render target with 8 samples. "/>
+			</value>
+			<value name="eTextureFlags_RTAA16Samples" value="niBit ( 12 ) ">
+				<comments desc="Texture is an antialiased render target with 16 samples. "/>
+			</value>
+			<value name="eTextureFlags_RTAA_All" value="eTextureFlags_RTAA4Samples|eTextureFlags_RTAA8Samples|eTextureFlags_RTAA16Samples ">
+				<comments desc="All RTAA flags, can be used to test whether a texture is antialiased. "/>
+			</value>
+			<value name="eTextureFlags_RTFlipped" value="niBit ( 15 ) ">
+				<comments desc="Render target is flipped. ">
+					<remark text="Shader projection matrices should be flipped when rendering in a render target that has this flags set. The fixed/plain rendering pipeline does the flipping automatically. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eTextureBlitFlags">
+			<comments desc="Texture blit flags. "/>
+			<value name="eTextureBlitFlags_None" value="0 ">
+				<comments desc="No flags "/>
+			</value>
+			<value name="eTextureBlitFlags_BilinearFilter" value="niBit ( 0 ) ">
+				<comments desc="Bilinear filtering. "/>
+			</value>
+			<value name="eTextureBlitFlags_Frequent" value="niBit ( 1 ) ">
+				<comments desc="Optimization flags that notify that the bliting will happen frequently. ">
+					<remark text="The flag is used as an hint for the implementation to cache some data. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iTexture" uuid1="604AF5DB-7590-444A-947C-D320BB95F78C" uuid2="0x604af5db,0x7590,0x444a,0x94,0x7c,0xd3,0x20,0xbb,0x95,0xf7,0x8c">
+			<comments desc="Texture interface ">
+				<remark text="Bindable "/>
+			</comments>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the texture type. "/>
+				<return type="eBitmapType" typec="eBitmapType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidth"
+				name="GetWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="width"
+				property_name="width">
+				<comments desc="Get the texture width. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the texture height. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepth"
+				name="GetDepth"
+				num_parameters="0"
+				property="get"
+				property_name2="depth"
+				property_name="depth">
+				<comments desc="Get the texture depth. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPixelFormat"
+				name="GetPixelFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="pixelFormat"
+				property_name="pixel_format">
+				<comments desc="Get the texture&apos;s pixel format. "/>
+				<return type="iPixelFormat *" typec="iPixelFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumMipMaps"
+				name="GetNumMipMaps"
+				num_parameters="0"
+				property="get"
+				property_name2="numMipMaps"
+				property_name="num_mip_maps">
+				<comments desc="Get the number of mipmaps of the texture. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the texture flags. "/>
+				<return type="tTextureFlags" typec="tTextureFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSubTexture"
+				name="GetSubTexture"
+				num_parameters="1"
+				property="get"
+				property_name2="subTexture"
+				property_name="sub_texture">
+				<comments desc="Get a sub texture. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iGLTexture" uuid1="A960DAC0-7F0E-0000-C891-B3B1FF7F0000" uuid2="0xa960dac0,0x7f0e,0x0000,0xc8,0x91,0xb3,0xb1,0xff,0x7f,0x00,0x00">
+			<comments desc=""/>
+			<parents>
+				<parent name="iTexture"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGLHandle"
+				name="GetGLHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="glhandle"
+				property_name="glhandle">
+				<comments desc="Get the OpenGL handle. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGLFBOHandle"
+				name="GetGLFBOHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="glfbohandle"
+				property_name="glfbohandle">
+				<comments desc="Get the OpenGL FBO handle. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,134 @@
+#ifndef _SQSTATE_H_
+#define _SQSTATE_H_
+
+#include "sqvector.h"
+#include "sqobject.h"
+#include <niLang/IHString.h>
+#include <niLang/Utils/Hash.h> // for HashUUID
+#include <niLang/Utils/ThreadImpl.h>
+
+struct SQTable;
+struct SQObjectPtr;
+
+struct SQSharedState
+{
+ private:
+  SQSharedState();
+  ~SQSharedState();
+  tBool Init();
+
+ public:
+  static tBool _Initialize();
+
+  SQObjectPtrVec _metamethods;
+  SQObjectPtrVec _systemstrings;
+  SQObjectPtr _refs_table;
+
+#ifndef NO_GARBAGE_COLLECTOR
+  int CollectGarbage(SQCollectable** tchain);
+  static void MarkObject(SQObjectPtr &o,SQCollectable **chain);
+  bool _isCollecting;
+  SQCollectable* _gc_chain_ptr;
+  ThreadMutex _gc_chain_mutex;
+  int _gc_chain_sync;
+  int _gc_chain_lastgc_sync;
+  astl::set<SQObjectPtr,SQObjectPtrSortByPtr> _gc_roots;
+  int GetNumRoots();
+  int AddRoot(const SQObjectPtr& o);
+  int RemoveRoot(const SQObjectPtr& o);
+#endif
+
+  SQObjectPtr _table_default_delegate;
+  static SQRegFunction _table_default_delegate_funcz[];
+  SQObjectPtr _array_default_delegate;
+  static SQRegFunction _array_default_delegate_funcz[];
+  SQObjectPtr _string_default_delegate;
+  static SQRegFunction _string_default_delegate_funcz[];
+  SQObjectPtr _number_default_delegate;
+  static SQRegFunction _number_default_delegate_funcz[];
+  SQObjectPtr _closure_default_delegate;
+  static SQRegFunction _closure_default_delegate_funcz[];
+
+  SQObjectPtr _idxprop_default_delegate;
+  static SQRegFunction _idxprop_default_delegate_funcz[];
+  SQObjectPtr _vec2f_default_delegate;
+  static SQRegFunction _vec2f_default_delegate_funcz[];
+  SQObjectPtr _vec3f_default_delegate;
+  static SQRegFunction _vec3f_default_delegate_funcz[];
+  SQObjectPtr _vec4f_default_delegate;
+  static SQRegFunction _vec4f_default_delegate_funcz[];
+  SQObjectPtr _matrixf_default_delegate;
+  static SQRegFunction _matrixf_default_delegate_funcz[];
+  SQObjectPtr _uuid_default_delegate;
+  static SQRegFunction _uuid_default_delegate_funcz[];
+  SQObjectPtr _enum_default_delegate;
+  static SQRegFunction _enum_default_delegate_funcz[];
+  SQObjectPtr _method_default_delegate;
+  static SQRegFunction _method_default_delegate_funcz[];
+
+  SQCOMPILERERROR _compilererrorhandler;
+  bool _debuginfo;
+
+  const SQObjectPtr& GetInterfaceDelegate(HSQUIRRELVM v, const tUUID& aID);
+  typedef astl::hash_map<tUUID,SQObjectPtr> tDelegateMap;
+  tDelegateMap  mmapDelegates;
+
+  const SQObjectPtr& GetEnumDefTable(const sEnumDef* apEnumDef);
+  typedef astl::hash_map<tIntPtr,SQObjectPtr> tEnumDefMap;
+  tEnumDefMap mmapEnumDefs;
+
+  SQObjectPtr _typeStr_null;
+  SQObjectPtr _typeStr_int;
+  SQObjectPtr _typeStr_float;
+  SQObjectPtr _typeStr_string;
+  SQObjectPtr _typeStr_table;
+  SQObjectPtr _typeStr_array;
+  SQObjectPtr _typeStr_function;
+  SQObjectPtr _typeStr_userdata;
+  SQObjectPtr _typeStr_vm;
+  SQObjectPtr _typeStr_iunknown;
+  const SQObjectPtr& GetTypeNameObj(SQObjectType type) const;
+  const achar* GetTypeNameStr(SQObjectType type) const;
+  const SQObjectPtr& GetTypeNameObj(const SQObject& o) const {
+    return GetTypeNameObj(_sqtype(o));
+  }
+  const achar* GetTypeNameStr(const SQObject& o) const {
+    return GetTypeNameStr(_sqtype(o));
+  }
+
+  tBool mbLangDelegatesLocked;
+  const SQObjectPtr& GetLangDelegate(HSQUIRRELVM v, const achar* delID);
+  void LockLangDelegates();
+};
+
+extern SQSharedState* _gSS;
+tBool SQSharedState_Initialize();
+
+#define _ss() _gSS
+
+#define _table_ddel   _table(_ss()->_table_default_delegate)
+#define _array_ddel   _table(_ss()->_array_default_delegate)
+#define _string_ddel  _table(_ss()->_string_default_delegate)
+#define _number_ddel  _table(_ss()->_number_default_delegate)
+#define _closure_ddel _table(_ss()->_closure_default_delegate)
+#define _idxprop_ddel _table(_ss()->_idxprop_default_delegate)
+#define _vec2f_ddel   _table(_ss()->_vec2f_default_delegate)
+#define _vec3f_ddel   _table(_ss()->_vec3f_default_delegate)
+#define _vec4f_ddel   _table(_ss()->_vec4f_default_delegate)
+#define _matrixf_ddel _table(_ss()->_matrixf_default_delegate)
+#define _uuid_ddel    _table(_ss()->_uuid_default_delegate)
+#define _enum_ddel    _table(_ss()->_enum_default_delegate)
+#define _method_ddel  _table(_ss()->_method_default_delegate)
+
+#ifdef SQUNICODE //rsl REAL STRING LEN
+#define rsl(l) ((l)<<1)
+#else
+#define rsl(l) (l)
+#endif
+
+bool CompileTypemask(SQIntVec &res,const SQChar *typemask);
+
+void *sq_vm_malloc(unsigned int size);
+void *sq_vm_realloc(void *p,unsigned int oldsize,unsigned int size);
+void sq_vm_free(void *p,unsigned int size);
+#endif //_SQSTATE_H_

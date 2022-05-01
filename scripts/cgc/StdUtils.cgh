@@ -1,0 +1,652 @@
+#pragma once
+#ifndef __STDUTILS_CGH_F7A3E681_E5A5_487B_A9BF_D70D58835A93__
+#define __STDUTILS_CGH_F7A3E681_E5A5_487B_A9BF_D70D58835A93__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+#include "StdUniforms.cgh"
+
+float4 gPixelDebugOutput = float4(0,0,0,0);
+
+static const float kFastSine_B = 4/kPi;
+static const float kFastSine_C = -4/(kPi*kPi);
+static const float kFastSine_Q = 0.775;
+static const float kFastSine_P = 0.225;
+
+///////////////////////////////////////////////
+float stdUtil_ToPiRange(float x) {
+  return fmod(x,k2Pi)-kPi;
+}
+
+///////////////////////////////////////////////
+//! Fast sine approximation 12% relative error [-pi,pi]
+float stdUtil_FastSine(float x) {
+  float y = kFastSine_B * x + kFastSine_C * x * abs(x);
+  return y;
+}
+
+///////////////////////////////////////////////
+//! Extra precision version of FastSine, 0.01% relative error [-pi,pi]
+float stdUtil_FastSineX(float x) {
+  float y = kFastSine_B * x + kFastSine_C * x * abs(x);
+  y = kFastSine_P * (y * abs(y) - y) + y;   // Q * y + P * y * abs(y)
+  return y;
+}
+
+///////////////////////////////////////////////
+float stdUtil_TimedCycle(float x) {
+  //     return stdUtil_FastSineX(stdUtil_ToPiRange(x));
+  return stdUtil_FastSine(stdUtil_ToPiRange(x));
+  //     return sin(x);
+}
+
+///////////////////////////////////////////////
+// assumes a normalized view normal
+float2 stdUtil_SSRefract(const float2 aUV0, const float3 aViewNormal, const float afScale)
+{
+  float2 rUV = aUV0 + (aViewNormal.xz * afScale);
+  rUV = max(fpsViewportClampTexCoos.xy,rUV);
+  rUV = min(fpsViewportClampTexCoos.zw,rUV);
+  return rUV;
+}
+
+// assumes a normalized world normal
+float2 stdUtil_SSRefractW(const float2 aUV0, const float3 aWorldNormal, const float afScale)
+{
+  float3 viewNormal = mul(aWorldNormal,fpsCameraViewMatrix);
+  return stdUtil_SSRefract(aUV0,viewNormal,afScale);
+}
+
+///////////////////////////////////////////////
+float4x4 stdUtil_MatrixBuildVec4Transpose(float4 V1, float4 V2, float4 V3, float4 V4) {
+  float4 instMatrixRow1 = float4(V1.x,V2.x,V3.x,V4.x);
+  float4 instMatrixRow2 = float4(V1.y,V2.y,V3.y,V4.y);
+  float4 instMatrixRow3 = float4(V1.z,V2.z,V3.z,V4.z);
+  float4 instMatrixRow4 = float4(V1.w,V2.w,V3.w,V4.w);
+  return float4x4(instMatrixRow1,instMatrixRow2,instMatrixRow3,instMatrixRow4);
+}
+
+///////////////////////////////////////////////
+float4x4 stdUtil_MatrixBuildVec4(float4 V1, float4 V2, float4 V3, float4 V4) {
+  return float4x4(V1,V2,V3,V4);
+}
+
+///////////////////////////////////////////////
+float4x4 stdUtil_MatrixIdentity() {
+  return float4x4(
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1);
+}
+
+///////////////////////////////////////////////
+// The per-color weighting to be used for luminance calculations in RGB order.
+static const float3 kLuminanceVector    = float3(0.2125f, 0.7154f, 0.0721f);
+float1 stdUtil_Luminance(float3 aColor) {
+  return dot(aColor,kLuminanceVector);
+}
+
+///////////////////////////////////////////////
+float2 stdUtil_ParallaxOffset(float aHeight, float aScale, float3 aViewDir) {
+  float height = (aHeight*0.2-0.1)*aScale;
+  return aViewDir.xy * height;
+}
+
+///////////////////////////////////////////////
+// perform alpha testing, alphaRef == 0 does not clip
+void stdUtil_AlphaTest(float alpha, float alphaRef)
+{
+  // 0.004 is ~(1/256) which should be equivalent to "1" in an 8bit value, the
+  // epsilon for regular RGB textures
+  clip((alpha-alphaRef)+0.004);
+}
+
+///////////////////////////////////////////////
+// From signed to unsigned values
+float4 stdUtil_ToUnsigned(float4 v) {
+  return v*0.5f+0.5f;
+}
+float3 stdUtil_ToUnsigned(float3 v) {
+  return v*0.5f+0.5f;
+}
+float2 stdUtil_ToUnsigned(float2 v) {
+  return v*0.5f+0.5f;
+}
+float1 stdUtil_ToUnsigned(float1 v) {
+  return v*0.5f+0.5f;
+}
+
+///////////////////////////////////////////////
+// From unsigned values
+float4 stdUtil_ToSigned(float4 v) {
+  return v*2.0f-1.0f;
+}
+float3 stdUtil_ToSigned(float3 v) {
+  return v*2.0f-1.0f;
+}
+float2 stdUtil_ToSigned(float2 v) {
+  return v*2.0f-1.0f;
+}
+float1 stdUtil_ToSigned(float1 v) {
+  return v*2.0f-1.0f;
+}
+
+///////////////////////////////////////////////
+float3 stdUtil_MatrixGetRight(float4x4 aMtx) {
+  return float3(
+      aMtx._11,
+      aMtx._21,
+      aMtx._31
+                );
+}
+
+///////////////////////////////////////////////
+float3 stdUtil_MatrixGetUp(float4x4 aMtx) {
+  return float3(
+      aMtx._12,
+      aMtx._22,
+      aMtx._32
+                );
+}
+
+///////////////////////////////////////////////
+float3 stdUtil_MatrixGetForward(float4x4 aMtx) {
+  return float3(
+      aMtx._13,
+      aMtx._23,
+      aMtx._33
+                );
+}
+
+///////////////////////////////////////////////
+float2 stdUtil_PackFloatToRG(float v) {
+  const float2 vPack = { 1.0f, 256.0f };
+  return vPack * v;
+}
+float stdUtil_UnpackFloatFromRG(float2 v) {
+  const float2 vUnpack = { 1.0f/1.0f, 1.0f/256.0f };
+  return dot(v,vUnpack);
+}
+
+///////////////////////////////////////////////
+float3 stdUtil_PackFloatToRGB(float v) {
+  const float3 vPack = { 1.0f, 256.0f, 65536.0f };
+  return vPack * v;
+}
+float stdUtil_UnpackFloatFromRGB(float3 v) {
+  const float3 vUnpack = { 1.0f/1.0f, 1.0f/256.0f, 1.0f/65536.0f };
+  return dot(v,vUnpack);
+}
+
+///////////////////////////////////////////////
+float4 stdUtil_PackFloatToRGBA(float v) {
+  // const float4 vPack = { 1.0f, 256.0f, 65536.0f, 16777216.0f };
+  // return vPack * v;
+  float4 enc = float4(1.0, 255.0, 65025.0, 160581375.0) * v;
+  enc = frac(enc);
+  enc -= enc.yzww * float4(1.0/255.0,1.0/255.0,1.0/255.0,0.0);
+  return enc;
+}
+float stdUtil_UnpackFloatFromRGBA(float4 v) {
+  // const float4 vUnpack = { 1.0f/1.0f, 1.0f/256.0f, 1.0f/65536.0f, 1.0f/16777216.0f };
+  // return dot(v,vUnpack);
+  return dot( v, float4(1.0, 1/255.0, 1/65025.0, 1/160581375.0) );
+}
+
+///////////////////////////////////////////////
+float4 stdUtil_PackLinearFloatToRGBA(float v) {
+  const float4 vPack = { 1.0f, 256.0f, 65536.0f, 16777216.0f };
+  return vPack * v;
+}
+float stdUtil_UnpackLinearFloatFromRGBA(float4 v) {
+  const float4 vUnpack = { 1.0f/1.0f, 1.0f/256.0f, 1.0f/65536.0f, 1.0f/16777216.0f };
+  return dot(v,vUnpack);
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_Invert3x3(float3x3 M)
+{
+  float D = determinant( M );
+  float3x3 T = transpose( M );
+  return float3x3(
+      cross(T[1],T[2]),
+      cross(T[2],T[0]),
+      cross(T[0],T[1])) / D;
+}
+half3x3 stdUtil_Invert3x3(half3x3 M)
+{
+  half D = determinant( M );
+  half3x3 T = transpose( M );
+  return half3x3(
+      cross(T[1],T[2]),
+      cross(T[2],T[0]),
+      cross(T[0],T[1])) / D;
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_Invert3x3NoD( float3x3 M )
+{
+  float3x3 T = transpose( M );
+  return float3x3(
+      cross(T[1],T[2]),
+      cross(T[2],T[0]),
+      cross(T[0],T[1]));
+}
+half3x3 stdUtil_Invert3x3NoD( half3x3 M )
+{
+  half3x3 T = transpose( M );
+  return half3x3(
+      cross(T[1],T[2]),
+      cross(T[2],T[0]),
+      cross(T[0],T[1]));
+}
+
+///////////////////////////////////////////////
+struct sGradient
+{
+  float2 xTex;
+  float2 yTex;
+  float3 xPos;
+  float3 yPos;
+};
+sGradient Gradient_GetIdentity() {
+  sGradient g;
+  g.xTex = float2(1/256.0f,0.0f);
+  g.yTex = float2(0.0f,1/256.0f);
+  g.xPos = float3(1,0,0);
+  g.yPos = float3(0,1,0);
+  return g;
+}
+sGradient Gradient_Compute(float3 P, float2 uv) {
+  sGradient g;
+  g.xTex = ddx(uv);
+  g.yTex = ddy(uv);
+  g.xPos = ddx(P);
+  g.yPos = ddy(P);
+  return g;
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_ComputeTangentFrame00(float3 N, sGradient g)
+{
+  // Implementayion with full matrix inverse
+  // straight from theory.
+
+  // get edge vectors of the pixel triangle
+  float3 dp1 = g.xPos;
+  float3 dp2 = g.yPos;
+  float2 duv1 = g.xTex;
+  float2 duv2 = g.yTex;
+
+  // solve the linear system
+  float3x3 M = float3x3( dp1, dp2, cross( dp1, dp2 ) );
+  float3x3 inverseM = stdUtil_Invert3x3( M );
+  float3 T = mul( inverseM, float3( duv1.x, duv2.x, 0 ) );
+  float3 B = mul( inverseM, float3( duv1.y, duv2.y, 0 ) );
+
+  // construct tangent frame
+  //     float maxLength = max( length(T), length(B) );
+  //     return float3x3( T / maxLength, B / maxLength, N );
+  return float3x3( normalize(T), normalize(B), N );
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_ComputeTangentFrame01(float3 N, sGradient g)
+{
+  // Optimisation 1:
+  // normalize T and B and spare the determinant.
+
+  // get edge vectors of the pixel triangle
+  float3 dp1 = g.xPos;
+  float3 dp2 = g.yPos;
+  float2 duv1 = g.xTex;
+  float2 duv2 = g.yTex;
+
+  // solve the linear system
+  float3x3 M = float3x3( dp1, dp2, cross( dp1, dp2 ) );
+  float3x3 inverseM = stdUtil_Invert3x3NoD( M );
+  float3 T = mul( inverseM, float3( duv1.x, duv2.x, 0 ) );
+  float3 B = mul( inverseM, float3( duv1.y, duv2.y, 0 ) );
+
+  // construct tangent frame
+  return float3x3( normalize(T), normalize(B), N );
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_ComputeTangentFrame02(float3 N, sGradient g)
+{
+  // Optimisation 2:
+  // eliminate the double transpose
+
+  // get edge vectors of the pixel triangle
+  float3 dp1 = g.xPos;
+  float3 dp2 = g.yPos;
+  float2 duv1 = g.xTex;
+  float2 duv2 = g.yTex;
+
+  // solve the linear system
+  float3x3 M = float3x3( dp1, dp2, cross( dp1, dp2 ) );
+  float2x3 inversetransposeM = float2x3( cross( M[1], M[2] ), cross( M[2], M[0] ) );
+  float3 T = mul( float2( duv1.x, duv2.x ), inversetransposeM );
+  float3 B = mul( float2( duv1.y, duv2.y ), inversetransposeM );
+
+  // construct tangent frame
+  return float3x3( normalize(T), normalize(B), N);
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_ComputeTangentFrame03(float3 N, sGradient g)
+{
+  // Optimisation 3:
+  // assume M is orthogonal
+
+  // get edge vectors of the pixel triangle
+  float3 dp1 = g.xPos;
+  float3 dp2 = g.yPos;
+  float2 duv1 = g.xTex;
+  float2 duv2 = g.yTex;
+
+  // solve the linear system
+  // (not much solving is left going here)
+  float2x3 M = float2x3( dp1, dp2 );
+  float3 T = mul( float2( duv1.x, duv2.x ), M );
+  float3 B = mul( float2( duv1.y, duv2.y ), M );
+
+  // construct tangent frame
+  return float3x3( normalize(T), normalize(B), N );
+}
+
+///////////////////////////////////////////////
+float3x3 stdUtil_ComputeCotangentFrame(float3 N, sGradient g)
+{
+  // Optimized and corrected version, from http://www.thetenthplanet.de/archives/1180
+
+  // get edge vectors of the pixel triangle
+  float3 dp1 = g.xPos;
+  float3 dp2 = g.yPos;
+  float2 duv1 = g.xTex;
+  float2 duv2 = g.yTex;
+
+  // solve the linear system
+  float3 dp2perp = cross(dp2, N);
+  float3 dp1perp = cross(N, dp1);
+  float3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+  float3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+  // construct a scale-invariant frame
+  float invmax = rsqrt(max(dot(T,T), dot(B,B)));
+  return float3x3(T * invmax, B * invmax, N);
+}
+
+///////////////////////////////////////////////
+float stdUtil_LinearStep(float min, float max, float v)
+{
+  return clamp((v - min) / (max - min), 0, 1);
+}
+
+float stdUtil_InvLinearStep(float min, float max, float v)
+{
+  return (v * (max - min)) + min;
+}
+
+///////////////////////////////////////////////
+// Rescale into [0, 1]
+float stdUtil_RescaleDistanceInRange(float2 aNearFar, float Distance) {
+  return stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance);
+}
+float2 stdUtil_RescaleDistanceInRange(float2 aNearFar, float2 Distance) {
+  float2 r = {
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.x),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.y)
+  };
+  return r;
+}
+float3 stdUtil_RescaleDistanceInRange(float2 aNearFar, float3 Distance) {
+  float3 r = {
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.x),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.y),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.z)
+  };
+  return r;
+}
+float4 stdUtil_RescaleDistanceInRange(float2 aNearFar, float4 Distance) {
+  float4 r = {
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.x),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.y),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.z),
+    stdUtil_LinearStep(aNearFar.x, aNearFar.y, Distance.w)
+  };
+  return r;
+}
+
+///////////////////////////////////////////////
+float2 stdUtil_GetClipSpaceScreenPos(float2 pos) {
+  return float2(
+      pos.x*2-1.0f,
+      (1-pos.y)*2-1.0f
+                );
+}
+
+///////////////////////////////////////////////
+float3 stdUtil_GetWorldPositionFromDepth(float depth,
+                                         float2 csp,
+                                         float4x4 invVP)
+{
+  float4 pos = mul(float4(csp.x,csp.y,depth,1),invVP);
+  return pos.xyz/pos.w;
+}
+
+///////////////////////////////////////////////
+float CurveCosT(const float t) {
+  return (cos(lerp(niPif,0.0,t))+1.0)/2.0;
+}
+float cosLerp(float a, float b, float t) {
+  return lerp(a,b,CurveCosT(t));
+}
+float2 cosLerp(float2 a, float2 b, float t) {
+  return lerp(a,b,CurveCosT(t));
+}
+float3 cosLerp(float3 a, float3 b, float t) {
+  return lerp(a,b,CurveCosT(t));
+}
+float4 cosLerp(float4 a, float4 b, float t) {
+  return lerp(a,b,CurveCosT(t));
+}
+
+///////////////////////////////////////////////
+float stdUtil_Random(float4 seed4) {
+  float dot_product = dot(seed4, float4(12.9898,78.233,45.164,94.673));
+  return fract(sin(dot_product) * 43758.5453);
+}
+
+float stdUtil_Random(float3 seed3, int index) {
+  return stdUtil_Random(float4(seed3,(float)index));
+}
+
+///////////////////////////////////////////////
+// For debugging purpose....
+float3 stdUtil_GetDepthVisColor(float2 aNearFar, float z)
+{
+  float2 nearFar = aNearFar;
+  float3 r = float3(0,0,0);
+
+  // 6 steps
+  float step = nearFar.y/6;
+  if (z < (step*0.05)) {
+    // white - black
+    r = lerp(float3(1,1,1),float3(0,0.7,0),
+             stdUtil_RescaleDistanceInRange(float2(step*0,step*0.05),z));
+  }
+  else if (z < (step*0.25)) {
+    // black - cyan
+    r = lerp(float3(0,0.7,0),float3(0,0.7,0.7),
+             stdUtil_RescaleDistanceInRange(float2(step*0.05,step*0.25),z));
+  }
+  else if (z < (step*1.0)) {
+    // cyan - red
+    r = lerp(float3(0,0.7,0.7),float3(1,0,0),
+             stdUtil_RescaleDistanceInRange(float2(step*0.25,step*1.0),z));
+  }
+  else if (z < (step*2)) {
+    // red-yellow
+    r = lerp(float3(1,0,0),float3(1,1,0),
+             stdUtil_RescaleDistanceInRange(float2(step*1.0,step*2),z));
+  }
+  else if (z < (step*3)) {
+    // yellow-green
+    r = lerp(float3(1,1,0),float3(0,1,0),
+             stdUtil_RescaleDistanceInRange(float2(step*2,step*3),z));
+  }
+  else if (z < (step*4)) {
+    // green-cyan
+    r = lerp(float3(0,1,0),float3(0,1,1),
+             stdUtil_RescaleDistanceInRange(float2(step*3,step*4),z));
+  }
+  else if (z < (step*5)) {
+    // cyan-blue
+    r = lerp(float3(0,1,1),float3(0,0,1),
+             stdUtil_RescaleDistanceInRange(float2(step*4,step*5),z));
+  }
+  else {
+    // blue-black
+    r = lerp(float3(0,0,1),float3(0,0,0),
+             stdUtil_RescaleDistanceInRange(float2(step*5,step*6),z));
+  }
+  return r;
+}
+
+///////////////////////////////////////////////
+float3 ColorAdjustContrast(const float3 C, float c)
+{
+  float3 Out;
+  Out.x = 0.5f + c * (C.x - 0.5f);
+  Out.y = 0.5f + c * (C.y - 0.5f);
+  Out.z = 0.5f + c * (C.z - 0.5f);
+  return Out;
+}
+
+///////////////////////////////////////////////
+float3 ColorAdjustSaturation(const float3 C, float s)
+{
+  float3 Out;
+  // Approximate values for each component's contribution to luminance.
+  // Based upon the NTSC standard described in ITU-R Recommendation BT.709.
+  float grey = C.x * 0.2125f + C.y * 0.7154f + C.z * 0.0721f;
+  Out.x = grey + s * (C.x - grey);
+  Out.y = grey + s * (C.y - grey);
+  Out.z = grey + s * (C.z - grey);
+  return Out;
+}
+
+///////////////////////////////////////////////
+inline float3 ColorConvert_RGB_HSL(const float3 aRGB) {
+  float R = aRGB.x;
+  float G = aRGB.y;
+  float B = aRGB.z;
+
+  float Min = min( R, min(G, B) );    //Min. value of RGB
+  float Max = max( R, max(G, B) );    //Max. value of RGB
+  float del_Max = Max - Min;          //Delta RGB value
+
+  float H = 0, S = 0, L = 0;
+
+  L = ( Max + Min ) / float(2);
+
+  if ( del_Max == 0 )                     //This is a gray, no chroma...
+  {
+    H = 0;                                //HSL results = 0 ÷ 1
+    S = 0;
+  }
+  else                                    //Chromatic data...
+  {
+    if ( L < float(0.5) )
+      S = del_Max / ( Max + Min );
+    else
+      S = del_Max / ( float(2) - Max - Min );
+
+    float del_R = ( ( ( Max - R ) / float(6) ) + ( del_Max / float(2) ) ) / del_Max;
+    float del_G = ( ( ( Max - G ) / float(6) ) + ( del_Max / float(2) ) ) / del_Max;
+    float del_B = ( ( ( Max - B ) / float(6) ) + ( del_Max / float(2) ) ) / del_Max;
+
+    if      ( R == Max ) H = del_B - del_G;
+    else if ( G == Max ) H = ( float(1) / float(3) ) + del_R - del_B;
+    else if ( B == Max ) H = ( float(2) / float(3) ) + del_G - del_R;
+
+    if ( H < 0 ) H += float(1);
+    if ( H > 1 ) H -= float(1);
+  }
+
+  return float3(H,S,L);
+}
+
+///////////////////////////////////////////////
+inline float Hue_2_RGB(float v1, float v2, float vH ) {
+  if ( vH < float(0) ) vH += float(1);
+  if ( vH > float(1) ) vH -= float(1);
+
+  if ( ( float(6) * vH ) < float(1) )
+    v1 = ( v1 + ( v2 - v1 ) * float(6) * vH );
+  else if ( ( float(2) * vH ) < float(1) )
+    v1 = ( v2 );
+  else if ( ( float(3) * vH ) < float(2) )
+    v1 = ( v1 + ( v2 - v1 ) * ( ( float(2) / float(3) ) - vH ) * float(6) );
+
+  return ( v1 );
+}
+
+///////////////////////////////////////////////
+inline float3 ColorConvert_HSL_RGB(const float3 aHSL) {
+  float R,G,B;
+  float H = aHSL.x;
+  float S = aHSL.y;
+  float L = aHSL.z;
+  if ( S == 0 )                       //HSL values = 0 ÷ 1
+  {
+    R = L;                      //RGB results = 0 ÷ 255
+    G = L;
+    B = L;
+  }
+  else
+  {
+    float var_1, var_2;
+
+    if ( L < float(0.5) )
+      var_2 = L * ( float(1) + S );
+    else
+      var_2 = ( L + S ) - ( S * L );
+
+    var_1 = float(2) * L - var_2;
+
+    R = Hue_2_RGB( var_1, var_2, H + ( float(1) / float(3) ) );
+    G = Hue_2_RGB( var_1, var_2, H );
+    B = Hue_2_RGB( var_1, var_2, H - ( float(1) / float(3) ) );
+  }
+
+  return float3(R,G,B);
+}
+
+///////////////////////////////////////////////
+inline float4 OffsetLodTexCoo(float4 texCoo, float2 offset) {
+  return float4(
+      texCoo.xy+offset,
+      texCoo.z,
+      texCoo.w);
+}
+
+///////////////////////////////////////////////
+float2 stdUtil_VectorToSphereMapCoo(float3 r) {
+  float m = -2.0 * sqrt( r.x*r.x + r.y*r.y + (r.z+1.0)*(r.z+1.0) );
+  return float2(r.x/m + 0.5,
+                r.y/m + 0.5);
+}
+
+///////////////////////////////////////////////
+float stdUtil_CosineBias(float v, float b) {
+  return max(0.0,v * (1.0f-b) + b);
+}
+float stdUtil_CosineBiasSat(float v, float b) {
+  return saturate(stdUtil_CosineBias(v,b));
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDUTILS_CGH_F7A3E681_E5A5_487B_A9BF_D70D58835A93__

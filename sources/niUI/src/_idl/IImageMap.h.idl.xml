@@ -1,0 +1,425 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eImageMapSerializeFlags">
+			<comments desc="Image map serialization flags. "/>
+			<value name="eImageMapSerializeFlags_Write" value="niBit ( 0 ) ">
+				<comments desc="Serialize write "/>
+			</value>
+			<value name="eImageMapSerializeFlags_Read" value="niBit ( 1 ) ">
+				<comments desc="Serialize read "/>
+			</value>
+		</enum>
+		<interface name="iImageMap" uuid1="A5A4C988-BC75-4A36-B054-B96CB9D2541B" uuid2="0xa5a4c988,0xbc75,0x4a36,0xb0,0x54,0xb9,0x6c,0xb9,0xd2,0x54,0x1b">
+			<comments desc="Image map interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setMaxNumPages"
+				name="SetMaxNumPages"
+				num_parameters="1"
+				property="set"
+				property_name2="maxNumPages"
+				property_name="max_num_pages">
+				<comments desc="Set the maximum number of pages. ">
+					<remark text="Zero, the default value, means no limit. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMax"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxNumPages"
+				name="GetMaxNumPages"
+				num_parameters="0"
+				property="get"
+				property_name2="maxNumPages"
+				property_name="max_num_pages">
+				<comments desc="Get the maximum number of pages. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setPageSize"
+				name="SetPageSize"
+				num_parameters="1"
+				property="set"
+				property_name2="pageSize"
+				property_name="page_size">
+				<comments desc="Set the resolution of a page. ">
+					<remark text="Default is 1024 or the maximum texture size on the current hardware. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageSize"
+				name="GetPageSize"
+				num_parameters="0"
+				property="get"
+				property_name2="pageSize"
+				property_name="page_size">
+				<comments desc="Get the resolution of a page. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setPageMipMaps"
+				name="SetPageMipMaps"
+				num_parameters="1"
+				property="set"
+				property_name2="pageMipMaps"
+				property_name="page_mip_maps">
+				<comments desc="Set the number of mipmaps of a page. ">
+					<remark text="Reset by set page size if the number of mipmaps is != 0 (the default) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageMipMaps"
+				name="GetPageMipMaps"
+				num_parameters="0"
+				property="get"
+				property_name2="pageMipMaps"
+				property_name="page_mip_maps">
+				<comments desc="Get the number of mipmaps of a page. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setComputeMipMapsPerPage"
+				name="SetComputeMipMapsPerPage"
+				num_parameters="1"
+				property="set"
+				property_name2="computeMipMapsPerPage"
+				property_name="compute_mip_maps_per_page">
+				<comments desc="Set whether the mipmaps are computed for the whole page after an image has been added. That is regardless of whether the image added had mipmap itself. ">
+					<remark text="Default is eFalse. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abComputeMipMapsPerPage"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getComputeMipMapsPerPage"
+				name="GetComputeMipMapsPerPage"
+				num_parameters="0"
+				property="get"
+				property_name2="computeMipMapsPerPage"
+				property_name="compute_mip_maps_per_page">
+				<comments desc="Get whether the mipmaps are computed for the whole page after an image has been added. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setPageFormat"
+				name="SetPageFormat"
+				num_parameters="1"
+				property="set"
+				property_name2="pageFormat"
+				property_name="page_format">
+				<comments desc="Set the page format. ">
+					<remark text="The default is R8G8B8A8 "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspFormat"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageFormat"
+				name="GetPageFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="pageFormat"
+				property_name="page_format">
+				<comments desc="Get the page format. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumPages"
+				name="GetNumPages"
+				num_parameters="0"
+				property="get"
+				property_name2="numPages"
+				property_name="num_pages">
+				<comments desc="Get the number of pages in the image map. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPage"
+				name="GetPage"
+				num_parameters="1"
+				property="get"
+				property_name2="page"
+				property_name="page">
+				<comments desc="Get the specified page in the image map. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the image map. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setDefaultImageBlendMode"
+				name="SetDefaultImageBlendMode"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultImageBlendMode"
+				property_name="default_image_blend_mode">
+				<comments desc="Set the default blend mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultImageBlendMode"
+				name="GetDefaultImageBlendMode"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultImageBlendMode"
+				property_name="default_image_blend_mode">
+				<comments desc="Get the default blend mode. "/>
+				<return type="eBlendMode" typec="eBlendMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setDefaultImageFilter"
+				name="SetDefaultImageFilter"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultImageFilter"
+				property_name="default_image_filter">
+				<comments desc="Set the default filtering. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abFiltering"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultImageFilter"
+				name="GetDefaultImageFilter"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultImageFilter"
+				property_name="default_image_filter">
+				<comments desc="Get the default filtering. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumImages"
+				name="GetNumImages"
+				num_parameters="0"
+				property="get"
+				property_name2="numImages"
+				property_name="num_images">
+				<comments desc="Get the number of images. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImage"
+				name="GetImage"
+				num_parameters="1"
+				property="get"
+				property_name2="image"
+				property_name="image">
+				<comments desc="Get the image at the specified index. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImageIndex"
+				name="GetImageIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="imageIndex"
+				property_name="image_index">
+				<comments desc="Get the index of the image at the specified index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apImage"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImageFromName"
+				name="GetImageFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="imageFromName"
+				property_name="image_from_name">
+				<comments desc="Get the first image with the given name. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addImage" name="AddImage" num_parameters="2">
+				<comments desc="Add an image to the image map. " return="An new image packed in the image map, if failed returns NULL. ">
+					<remark text="The returned overlay is owned by the image map, when the image map is released or invalidated the overlay will be invalidated. "/>
+				</comments>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBitmap"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addImageFromResource" name="AddImageFromResource" num_parameters="2">
+				<comments desc="Add an image to the image map loading from a resource. " return="An new image packed in the image map, if failed returns NULL. ">
+					<remark text="The returned overlay is owned by the image map, when the image map is released or invalidated the overlay will be invalidated. "/>
+					<params text="ahspName is the name of the image, if the name isnt not specified the resource path is used as name. "/>
+					<params text="ahspRes is the path of the resource. "/>
+				</comments>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addImageFromIconSet" name="AddImageFromIconSet" num_parameters="5">
+				<comments desc="Add an image to the image map loading from a icon set folder. " return="An new image packed in the image map, if failed returns NULL. ">
+					<remark text="The returned overlay is owned by the image map, when the image map is released or invalidated the overlay will be invalidated. "/>
+					<remark text="This method will try to load all mip map levels from several folders, up to maxres down to minres, missing versions will be generated automatically. "/>
+					<remark text="The path for the images is folder/[res]x[res]/res "/>
+					<params text="ahspName is the name of the image, if the name isnt not specified the resource path is used as name. "/>
+					<params text="ahspFolder is the base folder name. "/>
+					<params text="ahspRes is the path of the resource. "/>
+					<params text="anMaxRes is the maximum icon resolution to use. "/>
+					<params text="anMinRes is the minimum icon resolution to use. "/>
+				</comments>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspFolder"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anMaxRes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anMinRes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="removeImage" name="RemoveImage" num_parameters="1">
+				<comments desc="Remove an image from the image map. ">
+					<remark text="Removing an image will invalidate the overlay and repack the cache, this operation should be considered slow. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apImage"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShouldSerialize"
+				name="GetShouldSerialize"
+				num_parameters="0"
+				property="get"
+				property_name2="shouldSerialize"
+				property_name="should_serialize">
+				<comments desc="Get whether the image map has been modified since the last serialize read. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="serialize" name="Serialize" num_parameters="2">
+				<comments desc="Serialize the image map to/from the specified file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tImageMapSerializeFlags"
+					typec="tImageMapSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

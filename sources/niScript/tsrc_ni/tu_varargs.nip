@@ -1,0 +1,40 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+::Import("assert.ni")
+
+//==========================================================================
+// Some random playground stuff...
+//==========================================================================
+function bli(a, b, c, d, e, f) {
+  ::println("a:" a ", b:" b ", c:" c ", d:" d ", e:" e ", f:" f)
+}
+
+function bli2(_args_) {
+  ::println("BLI2");
+  foreach (i,a in _args_) {
+    ::println("a[" i "]: " a)
+  }
+}
+
+bli("123" "456" "789" "ddd" "eee" "fff")
+bli2("123" "456" "789" "ddd" "eee" "fff")
+println("123" "456" "789" "ddd" "eee" "fff")
+::println("123" "456" "789" "ddd" "eee" "fff")
+
+//==========================================================================
+// Simple test
+//==========================================================================
+::TEST("simple" #{
+  local function join(_args_) {
+    local r = "";
+    foreach (i,a in _args_) {
+      r += a;
+      if (i != (_args_.GetSize()-1))
+        r += ",";
+    }
+    return r;
+  }
+
+  ::CHECK_EQUAL("foo,bar,123,456" join("foo" "bar" 123 456))
+  ::CHECK_EQUAL("4,6,7,3" join(4 6 7 3))
+})

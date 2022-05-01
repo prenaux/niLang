@@ -1,0 +1,17 @@
+#########################################################################
+#
+# -- niLang_jvm, -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niLang java ] = 1 { return ; }
+if ! $(BUILD_JNI) { return ; }
+
+niDefJar niLang_jvm : 1,0,0 ;
+
+### SOURCES #############################################################
+SRC =
+  [ niPkgAllJvmSrc ]
+;
+
+JAR = [ niBuildJar $(SRC) : : : pkgsrc ] ;
+DEPENDS $(JAR) : [ niGenJava niLang ] ;

@@ -1,0 +1,10 @@
+if [ SubDirOnce TOP niAppLib src ] = 1 { return ; }
+
+tkDefLib niAppLib : 1,0,0 : niAppLib ;
+niImportModuleHdrs niLang ;
+niImportModuleHdrs niUI ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+
+tkBuildPackage $(SRC) : : $(CHK_SOURCES) ;

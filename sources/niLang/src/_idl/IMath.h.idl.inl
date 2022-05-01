@@ -1,0 +1,4225 @@
+#include "../API/niLang/IMath.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iMath **/
+IDLC_BEGIN_INTF(ni,iMath)
+/** ni -> iMath::Sqrt/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Sqrt/1 **/
+IDLC_METH_BEGIN(ni,iMath,Sqrt,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Sqrt,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Sqrt,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Sin/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Sin/1 **/
+IDLC_METH_BEGIN(ni,iMath,Sin,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Sin,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Sin,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Cos/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Cos/1 **/
+IDLC_METH_BEGIN(ni,iMath,Cos,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Cos,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Cos,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ASin/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ASin/1 **/
+IDLC_METH_BEGIN(ni,iMath,ASin,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ASin,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ASin,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ACos/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ACos/1 **/
+IDLC_METH_BEGIN(ni,iMath,ACos,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ACos,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ACos,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Tan/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Tan/1 **/
+IDLC_METH_BEGIN(ni,iMath,Tan,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Tan,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Tan,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ATan/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ATan/1 **/
+IDLC_METH_BEGIN(ni,iMath,ATan,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ATan,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ATan,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ATan2/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ATan2/2 **/
+IDLC_METH_BEGIN(ni,iMath,ATan2,2)
+	IDLC_DECL_VAR(tF64,x)
+	IDLC_BUF_TO_BASE(ni::eType_F64,x)
+	IDLC_DECL_VAR(tF64,y)
+	IDLC_BUF_TO_BASE(ni::eType_F64,y)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ATan2,2,(x,y))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ATan2,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::LogX/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::LogX/2 **/
+IDLC_METH_BEGIN(ni,iMath,LogX,2)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_VAR(tF64,n)
+	IDLC_BUF_TO_BASE(ni::eType_F64,n)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,LogX,2,(v,n))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,LogX,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::LogE/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::LogE/1 **/
+IDLC_METH_BEGIN(ni,iMath,LogE,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,LogE,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,LogE,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Log2/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Log2/1 **/
+IDLC_METH_BEGIN(ni,iMath,Log2,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Log2,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Log2,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Log10/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Log10/1 **/
+IDLC_METH_BEGIN(ni,iMath,Log10,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Log10,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Log10,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Pow/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Pow/2 **/
+IDLC_METH_BEGIN(ni,iMath,Pow,2)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_VAR(tF64,e)
+	IDLC_BUF_TO_BASE(ni::eType_F64,e)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Pow,2,(v,e))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Pow,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Floor/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Floor/1 **/
+IDLC_METH_BEGIN(ni,iMath,Floor,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Floor,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Floor,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Ceil/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Ceil/1 **/
+IDLC_METH_BEGIN(ni,iMath,Ceil,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Ceil,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Ceil,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Exp/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Exp/1 **/
+IDLC_METH_BEGIN(ni,iMath,Exp,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Exp,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Exp,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Abs/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Abs/1 **/
+IDLC_METH_BEGIN(ni,iMath,Abs,1)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Abs,1,(v))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Abs,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ToRad/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ToRad/1 **/
+IDLC_METH_BEGIN(ni,iMath,ToRad,1)
+	IDLC_DECL_VAR(tF64,afDeg)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afDeg)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ToRad,1,(afDeg))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ToRad,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ToDeg/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ToDeg/1 **/
+IDLC_METH_BEGIN(ni,iMath,ToDeg,1)
+	IDLC_DECL_VAR(tF64,afRad)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afRad)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ToDeg,1,(afRad))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ToDeg,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Min/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Min/2 **/
+IDLC_METH_BEGIN(ni,iMath,Min,2)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Min,2,(a,b))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Min,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Min3/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Min3/3 **/
+IDLC_METH_BEGIN(ni,iMath,Min3,3)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,c)
+	IDLC_BUF_TO_BASE(ni::eType_F64,c)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Min3,3,(a,b,c))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Min3,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Max/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Max/2 **/
+IDLC_METH_BEGIN(ni,iMath,Max,2)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Max,2,(a,b))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Max,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Max3/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Max3/3 **/
+IDLC_METH_BEGIN(ni,iMath,Max3,3)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,c)
+	IDLC_BUF_TO_BASE(ni::eType_F64,c)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Max3,3,(a,b,c))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Max3,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Clamp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Clamp/3 **/
+IDLC_METH_BEGIN(ni,iMath,Clamp,3)
+	IDLC_DECL_VAR(tF64,v)
+	IDLC_BUF_TO_BASE(ni::eType_F64,v)
+	IDLC_DECL_VAR(tF64,afMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afMin)
+	IDLC_DECL_VAR(tF64,afMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Clamp,3,(v,afMin,afMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Clamp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ClampZeroOne/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ClampZeroOne/1 **/
+IDLC_METH_BEGIN(ni,iMath,ClampZeroOne,1)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ClampZeroOne,1,(a))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ClampZeroOne,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Lerp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Lerp/3 **/
+IDLC_METH_BEGIN(ni,iMath,Lerp,3)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,f)
+	IDLC_BUF_TO_BASE(ni::eType_F64,f)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Lerp,3,(a,b,f))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Lerp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::BlendIntoAccumulator/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::BlendIntoAccumulator/3 **/
+IDLC_METH_BEGIN(ni,iMath,BlendIntoAccumulator,3)
+	IDLC_DECL_VAR(tF64,accumulator)
+	IDLC_BUF_TO_BASE(ni::eType_F64,accumulator)
+	IDLC_DECL_VAR(tF64,newValue)
+	IDLC_BUF_TO_BASE(ni::eType_F64,newValue)
+	IDLC_DECL_VAR(tF64,smoothRate)
+	IDLC_BUF_TO_BASE(ni::eType_F64,smoothRate)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,BlendIntoAccumulator,3,(accumulator,newValue,smoothRate))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,BlendIntoAccumulator,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandSeed/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandSeed/1 **/
+IDLC_METH_BEGIN(ni,iMath,RandSeed,1)
+	IDLC_DECL_VAR(tU32,ulSeed)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulSeed)
+	IDLC_METH_CALL_VOID(ni,iMath,RandSeed,1,(ulSeed))
+IDLC_METH_END(ni,iMath,RandSeed,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandInt/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandInt/0 **/
+IDLC_METH_BEGIN(ni,iMath,RandInt,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandInt,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,RandInt,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandIntRange/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandIntRange/2 **/
+IDLC_METH_BEGIN(ni,iMath,RandIntRange,2)
+	IDLC_DECL_VAR(tI32,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aMin)
+	IDLC_DECL_VAR(tI32,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aMax)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandIntRange,2,(aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,RandIntRange,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandFloat/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandFloat/0 **/
+IDLC_METH_BEGIN(ni,iMath,RandFloat,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandFloat,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,RandFloat,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandFloatRange/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandFloatRange/2 **/
+IDLC_METH_BEGIN(ni,iMath,RandFloatRange,2)
+	IDLC_DECL_VAR(tF32,afMin)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMin)
+	IDLC_DECL_VAR(tF32,afMax)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMax)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandFloatRange,2,(afMin,afMax))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,RandFloatRange,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,RandNormal,1)
+	IDLC_DECL_VAR(tF32,sigma)
+	IDLC_BUF_TO_BASE(ni::eType_F32,sigma)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandNormal,1,(sigma))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,RandNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandomDirection/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandomDirection/1 **/
+IDLC_METH_BEGIN(ni,iMath,RandomDirection,1)
+	IDLC_DECL_VAR(sVec3f,vN)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vN)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandomDirection,1,(vN))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,RandomDirection,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandomDirectionEx/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandomDirectionEx/2 **/
+IDLC_METH_BEGIN(ni,iMath,RandomDirectionEx,2)
+	IDLC_DECL_VAR(sVec3f,avN)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avN)
+	IDLC_DECL_VAR(tF32,afDeviAngle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afDeviAngle)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandomDirectionEx,2,(avN,afDeviAngle))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,RandomDirectionEx,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RotateRay/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RotateRay/2 **/
+IDLC_METH_BEGIN(ni,iMath,RotateRay,2)
+	IDLC_DECL_VAR(sVec3f,avIn)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avIn)
+	IDLC_DECL_VAR(sVec3f,avN)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avN)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RotateRay,2,(avIn,avN))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,RotateRay,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandColorA/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandColorA/1 **/
+IDLC_METH_BEGIN(ni,iMath,RandColorA,1)
+	IDLC_DECL_VAR(tU8,aA)
+	IDLC_BUF_TO_BASE(ni::eType_U8,aA)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandColorA,1,(aA))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMath,RandColorA,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandColorAf/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandColorAf/1 **/
+IDLC_METH_BEGIN(ni,iMath,RandColorAf,1)
+	IDLC_DECL_VAR(tF32,aA)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aA)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandColorAf,1,(aA))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMath,RandColorAf,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RandColor/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RandColor/0 **/
+IDLC_METH_BEGIN(ni,iMath,RandColor,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RandColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMath,RandColor,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Add/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Add/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Add,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Add,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Add,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Sub/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Sub/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Sub,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Sub,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Sub,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Mul/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Mul/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Mul,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Mul,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Mul,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Div/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Div/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Div,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Div,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Div,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Scale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Scale/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Scale,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(tF32,afRight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Scale,2,(aLeft,afRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Scale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Compare/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Compare/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Compare,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Compare,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Compare,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Length/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Length/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Length,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Length,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Length,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2LengthSq/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2LengthSq/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2LengthSq,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2LengthSq,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec2LengthSq,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Normalize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Normalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Normalize,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Normalize,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Normalize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2IsNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2IsNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2IsNormal,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2IsNormal,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,Vec2IsNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Dot/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Dot/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Dot,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Dot,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Dot,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Lerp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Lerp/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Lerp,3)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(tF32,afF)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afF)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Lerp,3,(aLeft,aRight,afF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Lerp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Lerp2/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Lerp2/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Lerp2,3)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(sVec2f,aF)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aF)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Lerp2,3,(aLeft,aRight,aF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Lerp2,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2BlendIntoAccumulator/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2BlendIntoAccumulator/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2BlendIntoAccumulator,3)
+	IDLC_DECL_VAR(sVec2f,accumulator)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,accumulator)
+	IDLC_DECL_VAR(sVec2f,newValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,newValue)
+	IDLC_DECL_VAR(tF32,smoothRate)
+	IDLC_BUF_TO_BASE(ni::eType_F32,smoothRate)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2BlendIntoAccumulator,3,(accumulator,newValue,smoothRate))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2BlendIntoAccumulator,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Abs/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Abs/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Abs,1)
+	IDLC_DECL_VAR(sVec2f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Abs,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Abs,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Min/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Min/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Min,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Min,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Min,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Max/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Max/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Max,2)
+	IDLC_DECL_VAR(sVec2f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec2f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Max,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Max,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2CatmullRom/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2CatmullRom/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2CatmullRom,5)
+	IDLC_DECL_VAR(sVec2f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec2f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec2f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec2f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2CatmullRom,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2CatmullRom,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Hermite/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Hermite/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Hermite,5)
+	IDLC_DECL_VAR(sVec2f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec2f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec2f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec2f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Hermite,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Hermite,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2BaryCentric/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2BaryCentric/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2BaryCentric,5)
+	IDLC_DECL_VAR(sVec2f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec2f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec2f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(tF32,u)
+	IDLC_BUF_TO_BASE(ni::eType_F32,u)
+	IDLC_DECL_VAR(tF32,v)
+	IDLC_BUF_TO_BASE(ni::eType_F32,v)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2BaryCentric,5,(V1,V2,V3,u,v))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2BaryCentric,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2Transform/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2Transform/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2Transform,2)
+	IDLC_DECL_VAR(sVec2f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2Transform,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2Transform,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2TransformCoord/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2TransformCoord/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2TransformCoord,2)
+	IDLC_DECL_VAR(sVec2f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2TransformCoord,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2TransformCoord,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2TransformNormal/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2TransformNormal/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2TransformNormal,2)
+	IDLC_DECL_VAR(sVec2f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec2TransformNormal,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,Vec2TransformNormal,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2TransformCoordArray/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2TransformCoordArray/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2TransformCoordArray,2)
+	IDLC_DECL_VAR(tVec2fCVec*,apVecs)
+	IDLC_BUF_TO_INTF(tVec2fCVec,apVecs)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iMath,Vec2TransformCoordArray,2,(apVecs,aMatrix))
+IDLC_METH_END(ni,iMath,Vec2TransformCoordArray,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec2TransformNormalArray/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec2TransformNormalArray/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec2TransformNormalArray,2)
+	IDLC_DECL_VAR(tVec2fCVec*,apVecs)
+	IDLC_BUF_TO_INTF(tVec2fCVec,apVecs)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iMath,Vec2TransformNormalArray,2,(apVecs,aMatrix))
+IDLC_METH_END(ni,iMath,Vec2TransformNormalArray,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Add/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Add/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Add,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Add,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Add,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Sub/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Sub/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Sub,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Sub,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Sub,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Mul/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Mul/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Mul,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Mul,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Mul,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Div/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Div/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Div,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Div,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Div,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Scale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Scale/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Scale,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(tF32,afRight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Scale,2,(aLeft,afRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Scale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Compare/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Compare/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Compare,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Compare,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Compare,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Length/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Length/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Length,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Length,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Length,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3LengthSq/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3LengthSq/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3LengthSq,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3LengthSq,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec3LengthSq,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Normalize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Normalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Normalize,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Normalize,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Normalize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3IsNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3IsNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3IsNormal,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3IsNormal,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,Vec3IsNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Dot/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Dot/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Dot,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Dot,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Dot,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Cross/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Cross/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Cross,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Cross,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Cross,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Lerp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Lerp/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Lerp,3)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(tF32,afF)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afF)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Lerp,3,(aLeft,aRight,afF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Lerp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Lerp2/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Lerp2/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Lerp2,3)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(sVec3f,aF)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aF)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Lerp2,3,(aLeft,aRight,aF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Lerp2,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3BlendIntoAccumulator/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3BlendIntoAccumulator/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3BlendIntoAccumulator,3)
+	IDLC_DECL_VAR(sVec3f,accumulator)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,accumulator)
+	IDLC_DECL_VAR(sVec3f,newValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,newValue)
+	IDLC_DECL_VAR(tF32,smoothRate)
+	IDLC_BUF_TO_BASE(ni::eType_F32,smoothRate)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3BlendIntoAccumulator,3,(accumulator,newValue,smoothRate))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3BlendIntoAccumulator,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Abs/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Abs/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Abs,1)
+	IDLC_DECL_VAR(sVec3f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Abs,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Abs,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Min/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Min/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Min,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Min,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Min,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Max/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Max/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Max,2)
+	IDLC_DECL_VAR(sVec3f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec3f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Max,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Max,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3CatmullRom/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3CatmullRom/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3CatmullRom,5)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec3f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3CatmullRom,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3CatmullRom,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Hermite/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Hermite/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Hermite,5)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec3f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Hermite,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Hermite,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3BaryCentric/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3BaryCentric/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3BaryCentric,5)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(tF32,u)
+	IDLC_BUF_TO_BASE(ni::eType_F32,u)
+	IDLC_DECL_VAR(tF32,v)
+	IDLC_BUF_TO_BASE(ni::eType_F32,v)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3BaryCentric,5,(V1,V2,V3,u,v))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3BaryCentric,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Transform/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Transform/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Transform,2)
+	IDLC_DECL_VAR(sVec3f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Transform,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Transform,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3TransformCoord/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3TransformCoord/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3TransformCoord,2)
+	IDLC_DECL_VAR(sVec3f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3TransformCoord,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3TransformCoord,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3TransformNormal/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3TransformNormal/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3TransformNormal,2)
+	IDLC_DECL_VAR(sVec3f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3TransformNormal,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3TransformNormal,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3TransformCoordArray/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3TransformCoordArray/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3TransformCoordArray,2)
+	IDLC_DECL_VAR(tVec3fCVec*,apVecs)
+	IDLC_BUF_TO_INTF(tVec3fCVec,apVecs)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iMath,Vec3TransformCoordArray,2,(apVecs,aMatrix))
+IDLC_METH_END(ni,iMath,Vec3TransformCoordArray,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3TransformNormalArray/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3TransformNormalArray/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3TransformNormalArray,2)
+	IDLC_DECL_VAR(tVec3fCVec*,apVecs)
+	IDLC_BUF_TO_INTF(tVec3fCVec,apVecs)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iMath,Vec3TransformNormalArray,2,(apVecs,aMatrix))
+IDLC_METH_END(ni,iMath,Vec3TransformNormalArray,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Unproject/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Unproject/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Unproject,3)
+	IDLC_DECL_VAR(sVec3f,avIn)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avIn)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_VAR(sMatrixf,amtxViewProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxViewProj)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Unproject,3,(avIn,aVP,amtxViewProj))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Unproject,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Project/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Project/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Project,3)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,amtxWVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWVP)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Project,3,(avPos,amtxWVP,aRect))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Project,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3ProjectRHW/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3ProjectRHW/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3ProjectRHW,3)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,amtxWVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWVP)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3ProjectRHW,3,(avPos,amtxWVP,aRect))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3ProjectRHW,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3Reflect/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3Reflect/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3Reflect,2)
+	IDLC_DECL_VAR(sVec3f,Dir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Dir)
+	IDLC_DECL_VAR(sVec3f,Normal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Normal)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3Reflect,2,(Dir,Normal))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3Reflect,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Add/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Add/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Add,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Add,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Add,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Sub/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Sub/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Sub,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Sub,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Sub,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Mul/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Mul/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Mul,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Mul,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Mul,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Div/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Div/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Div,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Div,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Div,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Scale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Scale/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Scale,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(tF32,afRight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Scale,2,(aLeft,afRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Scale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Compare/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Compare/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Compare,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Compare,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Compare,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Length/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Length/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Length,1)
+	IDLC_DECL_VAR(sVec4f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Length,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Length,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4LengthSq/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4LengthSq/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4LengthSq,1)
+	IDLC_DECL_VAR(sVec4f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4LengthSq,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec4LengthSq,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Normalize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Normalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Normalize,1)
+	IDLC_DECL_VAR(sVec4f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Normalize,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Normalize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4IsNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4IsNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4IsNormal,1)
+	IDLC_DECL_VAR(sVec4f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4IsNormal,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,Vec4IsNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Dot/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Dot/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Dot,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Dot,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Dot,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Cross/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Cross/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Cross,3)
+	IDLC_DECL_VAR(sVec4f,aA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aA)
+	IDLC_DECL_VAR(sVec4f,aB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aB)
+	IDLC_DECL_VAR(sVec4f,aC)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aC)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Cross,3,(aA,aB,aC))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Cross,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Lerp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Lerp/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Lerp,3)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(tF32,afF)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afF)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Lerp,3,(aLeft,aRight,afF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Lerp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Lerp2/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Lerp2/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Lerp2,3)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_VAR(sVec4f,aF)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aF)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Lerp2,3,(aLeft,aRight,aF))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Lerp2,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4BlendIntoAccumulator/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4BlendIntoAccumulator/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4BlendIntoAccumulator,3)
+	IDLC_DECL_VAR(sVec4f,accumulator)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,accumulator)
+	IDLC_DECL_VAR(sVec4f,newValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,newValue)
+	IDLC_DECL_VAR(tF32,smoothRate)
+	IDLC_BUF_TO_BASE(ni::eType_F32,smoothRate)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4BlendIntoAccumulator,3,(accumulator,newValue,smoothRate))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4BlendIntoAccumulator,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Abs/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Abs/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Abs,1)
+	IDLC_DECL_VAR(sVec4f,aV)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aV)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Abs,1,(aV))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Abs,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Min/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Min/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Min,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Min,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Min,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Max/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Max/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Max,2)
+	IDLC_DECL_VAR(sVec4f,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sVec4f,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Max,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Max,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4CatmullRom/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4CatmullRom/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4CatmullRom,5)
+	IDLC_DECL_VAR(sVec4f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec4f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec4f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec4f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4CatmullRom,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4CatmullRom,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Hermite/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Hermite/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Hermite,5)
+	IDLC_DECL_VAR(sVec4f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec4f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec4f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(sVec4f,V4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V4)
+	IDLC_DECL_VAR(tF32,s)
+	IDLC_BUF_TO_BASE(ni::eType_F32,s)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Hermite,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Hermite,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4BaryCentric/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4BaryCentric/5 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4BaryCentric,5)
+	IDLC_DECL_VAR(sVec4f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec4f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec4f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_VAR(tF32,u)
+	IDLC_BUF_TO_BASE(ni::eType_F32,u)
+	IDLC_DECL_VAR(tF32,v)
+	IDLC_BUF_TO_BASE(ni::eType_F32,v)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4BaryCentric,5,(V1,V2,V3,u,v))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4BaryCentric,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4Transform/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4Transform/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4Transform,2)
+	IDLC_DECL_VAR(sVec4f,aVec)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVec)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec4Transform,2,(aVec,aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,Vec4Transform,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec4TransformArray/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec4TransformArray/2 **/
+IDLC_METH_BEGIN(ni,iMath,Vec4TransformArray,2)
+	IDLC_DECL_VAR(tVec4fCVec*,apVecs)
+	IDLC_BUF_TO_INTF(tVec4fCVec,apVecs)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_METH_CALL_VOID(ni,iMath,Vec4TransformArray,2,(apVecs,aMatrix))
+IDLC_METH_END(ni,iMath,Vec4TransformArray,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixIdentity/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixIdentity/0 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixIdentity,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixIdentity,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixIdentity,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixIsIdentity/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixIsIdentity/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixIsIdentity,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixIsIdentity,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,MatrixIsIdentity,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixAdd/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixAdd/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixAdd,2)
+	IDLC_DECL_VAR(sMatrixf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sMatrixf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixAdd,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixAdd,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSub/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSub/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSub,2)
+	IDLC_DECL_VAR(sMatrixf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sMatrixf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSub,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSub,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixScale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixScale/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixScale,2)
+	IDLC_DECL_VAR(sMatrixf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(tF32,afRight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRight)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixScale,2,(aLeft,afRight))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixScale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixLerp/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixLerp/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixLerp,3)
+	IDLC_DECL_VAR(sMatrixf,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_VAR(sMatrixf,B)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,B)
+	IDLC_DECL_VAR(tF32,fFac)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fFac)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixLerp,3,(A,B,fFac))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixLerp,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixCompare/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixCompare/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixCompare,2)
+	IDLC_DECL_VAR(sMatrixf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sMatrixf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixCompare,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,MatrixCompare,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixMultiply/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixMultiply/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixMultiply,2)
+	IDLC_DECL_VAR(sMatrixf,M1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M1)
+	IDLC_DECL_VAR(sMatrixf,M2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M2)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixMultiply,2,(M1,M2))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixMultiply,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDeterminant2/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDeterminant2/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDeterminant2,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDeterminant2,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDeterminant2,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDeterminant3/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDeterminant3/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDeterminant3,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDeterminant3,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDeterminant3,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDeterminant/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDeterminant/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDeterminant,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDeterminant,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDeterminant,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetHandeness/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetHandeness/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetHandeness,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetHandeness,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetHandeness,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixInverse/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixInverse/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixInverse,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixInverse,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixInverse,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTransformInverse/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTransformInverse/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTransformInverse,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTransformInverse,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTransformInverse,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixLookAtRH/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixLookAtRH/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixLookAtRH,3)
+	IDLC_DECL_VAR(sVec3f,Eye)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Eye)
+	IDLC_DECL_VAR(sVec3f,At)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,At)
+	IDLC_DECL_VAR(sVec3f,Up)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Up)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixLookAtRH,3,(Eye,At,Up))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixLookAtRH,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixLookAtLH/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixLookAtLH/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixLookAtLH,3)
+	IDLC_DECL_VAR(sVec3f,Eye)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Eye)
+	IDLC_DECL_VAR(sVec3f,At)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,At)
+	IDLC_DECL_VAR(sVec3f,Up)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,Up)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixLookAtLH,3,(Eye,At,Up))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixLookAtLH,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixOrthoRH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixOrthoRH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixOrthoRH,4)
+	IDLC_DECL_VAR(tF32,w)
+	IDLC_BUF_TO_BASE(ni::eType_F32,w)
+	IDLC_DECL_VAR(tF32,h)
+	IDLC_BUF_TO_BASE(ni::eType_F32,h)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixOrthoRH,4,(w,h,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixOrthoRH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixOrthoLH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixOrthoLH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixOrthoLH,4)
+	IDLC_DECL_VAR(tF32,w)
+	IDLC_BUF_TO_BASE(ni::eType_F32,w)
+	IDLC_DECL_VAR(tF32,h)
+	IDLC_BUF_TO_BASE(ni::eType_F32,h)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixOrthoLH,4,(w,h,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixOrthoLH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixOrthoOffCenterRH/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixOrthoOffCenterRH/6 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixOrthoOffCenterRH,6)
+	IDLC_DECL_VAR(tF32,l)
+	IDLC_BUF_TO_BASE(ni::eType_F32,l)
+	IDLC_DECL_VAR(tF32,r)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_VAR(tF32,b)
+	IDLC_BUF_TO_BASE(ni::eType_F32,b)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixOrthoOffCenterRH,6,(l,r,t,b,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixOrthoOffCenterRH,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixOrthoOffCenterLH/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixOrthoOffCenterLH/6 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixOrthoOffCenterLH,6)
+	IDLC_DECL_VAR(tF32,l)
+	IDLC_BUF_TO_BASE(ni::eType_F32,l)
+	IDLC_DECL_VAR(tF32,r)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_VAR(tF32,b)
+	IDLC_BUF_TO_BASE(ni::eType_F32,b)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixOrthoOffCenterLH,6,(l,r,t,b,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixOrthoOffCenterLH,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveRH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveRH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveRH,4)
+	IDLC_DECL_VAR(tF32,w)
+	IDLC_BUF_TO_BASE(ni::eType_F32,w)
+	IDLC_DECL_VAR(tF32,h)
+	IDLC_BUF_TO_BASE(ni::eType_F32,h)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveRH,4,(w,h,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveRH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveLH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveLH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveLH,4)
+	IDLC_DECL_VAR(tF32,w)
+	IDLC_BUF_TO_BASE(ni::eType_F32,w)
+	IDLC_DECL_VAR(tF32,h)
+	IDLC_BUF_TO_BASE(ni::eType_F32,h)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveLH,4,(w,h,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveLH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveFovRH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveFovRH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveFovRH,4)
+	IDLC_DECL_VAR(tF32,fovy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fovy)
+	IDLC_DECL_VAR(tF32,aspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aspect)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveFovRH,4,(fovy,aspect,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveFovRH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveFovLH/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveFovLH/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveFovLH,4)
+	IDLC_DECL_VAR(tF32,fovy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fovy)
+	IDLC_DECL_VAR(tF32,aspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aspect)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveFovLH,4,(fovy,aspect,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveFovLH,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveOffCenterRH/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveOffCenterRH/6 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveOffCenterRH,6)
+	IDLC_DECL_VAR(tF32,l)
+	IDLC_BUF_TO_BASE(ni::eType_F32,l)
+	IDLC_DECL_VAR(tF32,r)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_VAR(tF32,b)
+	IDLC_BUF_TO_BASE(ni::eType_F32,b)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveOffCenterRH,6,(l,r,t,b,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveOffCenterRH,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixPerspectiveOffCenterLH/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixPerspectiveOffCenterLH/6 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixPerspectiveOffCenterLH,6)
+	IDLC_DECL_VAR(tF32,l)
+	IDLC_BUF_TO_BASE(ni::eType_F32,l)
+	IDLC_DECL_VAR(tF32,r)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_VAR(tF32,b)
+	IDLC_BUF_TO_BASE(ni::eType_F32,b)
+	IDLC_DECL_VAR(tF32,zn)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zn)
+	IDLC_DECL_VAR(tF32,zf)
+	IDLC_BUF_TO_BASE(ni::eType_F32,zf)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixPerspectiveOffCenterLH,6,(l,r,t,b,zn,zf))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixPerspectiveOffCenterLH,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixReflect/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixReflect/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixReflect,1)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixReflect,1,(Plane))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixReflect,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationAxis/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationAxis/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationAxis,2)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationAxis,2,(V,angle))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationAxis,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationQuat/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationQuat/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationQuat,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationQuat,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationQuat,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationX/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationX/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationX,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationX,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationX,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationY/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationY/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationY,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationY,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationY,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationZ/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationZ/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationZ,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationZ,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationZ,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotationYawPitchRoll/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotationYawPitchRoll/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotationYawPitchRoll,3)
+	IDLC_DECL_VAR(tF32,yaw)
+	IDLC_BUF_TO_BASE(ni::eType_F32,yaw)
+	IDLC_DECL_VAR(tF32,pitch)
+	IDLC_BUF_TO_BASE(ni::eType_F32,pitch)
+	IDLC_DECL_VAR(tF32,roll)
+	IDLC_BUF_TO_BASE(ni::eType_F32,roll)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotationYawPitchRoll,3,(yaw,pitch,roll))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotationYawPitchRoll,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDecomposeYawPitchRoll/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDecomposeYawPitchRoll/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDecomposeYawPitchRoll,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDecomposeYawPitchRoll,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDecomposeYawPitchRoll,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixScaling/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixScaling/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixScaling,1)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixScaling,1,(V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixScaling,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixVecScale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixVecScale/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixVecScale,2)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixVecScale,2,(M,V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixVecScale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixShadow/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixShadow/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixShadow,2)
+	IDLC_DECL_VAR(sVec4f,vLight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,vLight)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixShadow,2,(vLight,Plane))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixShadow,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTranslation/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTranslation/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTranslation,1)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTranslation,1,(V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTranslation,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTranspose/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTranspose/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTranspose,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTranspose,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTranspose,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTranspose3x3/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTranspose3x3/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTranspose3x3,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTranspose3x3,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTranspose3x3,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTextureOffset/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTextureOffset/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTextureOffset,3)
+	IDLC_DECL_VAR(tF32,fBias)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fBias)
+	IDLC_DECL_VAR(tI32,nTexW)
+	IDLC_BUF_TO_BASE(ni::eType_I32,nTexW)
+	IDLC_DECL_VAR(tI32,nTexH)
+	IDLC_BUF_TO_BASE(ni::eType_I32,nTexH)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTextureOffset,3,(fBias,nTexW,nTexH))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTextureOffset,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixTextureOffset2/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixTextureOffset2/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixTextureOffset2,4)
+	IDLC_DECL_VAR(tF32,fBias)
+	IDLC_BUF_TO_BASE(ni::eType_F32,fBias)
+	IDLC_DECL_VAR(tI32,nTexW)
+	IDLC_BUF_TO_BASE(ni::eType_I32,nTexW)
+	IDLC_DECL_VAR(tI32,nTexH)
+	IDLC_BUF_TO_BASE(ni::eType_I32,nTexH)
+	IDLC_DECL_VAR(tI32,nDepthBits)
+	IDLC_BUF_TO_BASE(ni::eType_I32,nDepthBits)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixTextureOffset2,4,(fBias,nTexW,nTexH,nDepthBits))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixTextureOffset2,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetForward/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetForward/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetForward,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetForward,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetForward,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetUp/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetUp/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetUp,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetUp,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetUp,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetRight/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetRight/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetRight,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetRight,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetRight,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetTranslation/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetTranslation/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetTranslation,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetTranslation,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetTranslation,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetForward/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetForward/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetForward,2)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetForward,2,(M,V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetForward,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetUp/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetUp/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetUp,2)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetUp,2,(M,V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetUp,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetRight/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetRight/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetRight,2)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetRight,2,(M,V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetRight,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetTranslation/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetTranslation/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetTranslation,2)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetTranslation,2,(M,V))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetTranslation,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixIsNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixIsNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixIsNormal,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixIsNormal,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,MatrixIsNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixIsOrthogonal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixIsOrthogonal/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixIsOrthogonal,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixIsOrthogonal,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,MatrixIsOrthogonal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixIsOrthoNormal/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixIsOrthoNormal/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixIsOrthoNormal,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixIsOrthoNormal,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,MatrixIsOrthoNormal,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetRotation/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetRotation/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetRotation,2)
+	IDLC_DECL_VAR(sMatrixf,In)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,In)
+	IDLC_DECL_VAR(sMatrixf,RotM)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,RotM)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetRotation,2,(In,RotM))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetRotation,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixToEuler/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixToEuler/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixToEuler,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixToEuler,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixToEuler,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixToCoordinateSystem/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixToCoordinateSystem/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixToCoordinateSystem,4)
+	IDLC_DECL_VAR(sVec3f,avRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avRight)
+	IDLC_DECL_VAR(sVec3f,avUp)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avUp)
+	IDLC_DECL_VAR(sVec3f,avFwd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avFwd)
+	IDLC_DECL_VAR(sVec3f,avOrg)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avOrg)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixToCoordinateSystem,4,(avRight,avUp,avFwd,avOrg))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixToCoordinateSystem,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixGetProjectedTranslation/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixGetProjectedTranslation/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixGetProjectedTranslation,1)
+	IDLC_DECL_VAR(sMatrixf,In)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,In)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixGetProjectedTranslation,1,(In))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixGetProjectedTranslation,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetProjectedTranslation/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetProjectedTranslation/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetProjectedTranslation,2)
+	IDLC_DECL_VAR(sMatrixf,In)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,In)
+	IDLC_DECL_VAR(sVec3f,avT)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avT)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetProjectedTranslation,2,(In,avT))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetProjectedTranslation,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixSetNotRotation/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixSetNotRotation/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixSetNotRotation,2)
+	IDLC_DECL_VAR(sMatrixf,In)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,In)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixSetNotRotation,2,(In,M))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixSetNotRotation,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixRotate/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixRotate/2 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixRotate,2)
+	IDLC_DECL_VAR(sMatrixf,M1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M1)
+	IDLC_DECL_VAR(sMatrixf,M2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M2)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixRotate,2,(M1,M2))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixRotate,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixViewport/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixViewport/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixViewport,3)
+	IDLC_DECL_VAR(sVec4f,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_VAR(tF32,afMinZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMinZ)
+	IDLC_DECL_VAR(tF32,afMaxZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMaxZ)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixViewport,3,(aVP,afMinZ,afMaxZ))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixViewport,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixAdjustViewport/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixAdjustViewport/4 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixAdjustViewport,4)
+	IDLC_DECL_VAR(sVec4f,aContextVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aContextVP)
+	IDLC_DECL_VAR(sVec4f,aVirtualVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVirtualVP)
+	IDLC_DECL_VAR(tF32,afMinZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMinZ)
+	IDLC_DECL_VAR(tF32,afMaxZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afMaxZ)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixAdjustViewport,4,(aContextVP,aVirtualVP,afMinZ,afMaxZ))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixAdjustViewport,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDecomposeGetTranslation/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDecomposeGetTranslation/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDecomposeGetTranslation,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDecomposeGetTranslation,1,(aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDecomposeGetTranslation,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDecomposeGetZYX/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDecomposeGetZYX/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDecomposeGetZYX,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDecomposeGetZYX,1,(aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDecomposeGetZYX,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDecomposeGetQuat/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDecomposeGetQuat/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDecomposeGetQuat,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDecomposeGetQuat,1,(aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDecomposeGetQuat,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixDecomposeGetScale/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixDecomposeGetScale/1 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixDecomposeGetScale,1)
+	IDLC_DECL_VAR(sMatrixf,aMatrix)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aMatrix)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixDecomposeGetScale,1,(aMatrix))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,MatrixDecomposeGetScale,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixCompose/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixCompose/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixCompose,3)
+	IDLC_DECL_VAR(sVec3f,aT)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aT)
+	IDLC_DECL_VAR(sVec3f,aZYX)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aZYX)
+	IDLC_DECL_VAR(sVec4f,aS)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aS)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixCompose,3,(aT,aZYX,aS))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixCompose,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MatrixComposeQ/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MatrixComposeQ/3 **/
+IDLC_METH_BEGIN(ni,iMath,MatrixComposeQ,3)
+	IDLC_DECL_VAR(sVec3f,aT)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aT)
+	IDLC_DECL_VAR(sQuatf,aQ)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aQ)
+	IDLC_DECL_VAR(sVec4f,aS)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aS)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MatrixComposeQ,3,(aT,aQ,aS))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,MatrixComposeQ,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatIdentity/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatIdentity/0 **/
+IDLC_METH_BEGIN(ni,iMath,QuatIdentity,0)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatIdentity,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatIdentity,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatIsIdentity/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatIsIdentity/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatIsIdentity,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatIsIdentity,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,QuatIsIdentity,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatAdd/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatAdd/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatAdd,2)
+	IDLC_DECL_VAR(sQuatf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sQuatf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatAdd,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatAdd,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatSub/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatSub/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatSub,2)
+	IDLC_DECL_VAR(sQuatf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sQuatf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatSub,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatSub,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatScale/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatScale/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatScale,2)
+	IDLC_DECL_VAR(sQuatf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(tF32,afRight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRight)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatScale,2,(aLeft,afRight))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatScale,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatCompare/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatCompare/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatCompare,2)
+	IDLC_DECL_VAR(sQuatf,aLeft)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aLeft)
+	IDLC_DECL_VAR(sQuatf,aRight)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRight)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatCompare,2,(aLeft,aRight))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,QuatCompare,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatBaryCentric/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatBaryCentric/5 **/
+IDLC_METH_BEGIN(ni,iMath,QuatBaryCentric,5)
+	IDLC_DECL_VAR(sQuatf,Q1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q1)
+	IDLC_DECL_VAR(sQuatf,Q2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q2)
+	IDLC_DECL_VAR(sQuatf,Q3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q3)
+	IDLC_DECL_VAR(tF32,f)
+	IDLC_BUF_TO_BASE(ni::eType_F32,f)
+	IDLC_DECL_VAR(tF32,g)
+	IDLC_BUF_TO_BASE(ni::eType_F32,g)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatBaryCentric,5,(Q1,Q2,Q3,f,g))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatBaryCentric,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatConjugate/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatConjugate/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatConjugate,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatConjugate,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatConjugate,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatDot/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatDot/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatDot,2)
+	IDLC_DECL_VAR(sQuatf,Q1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q1)
+	IDLC_DECL_VAR(sQuatf,Q2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q2)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatDot,2,(Q1,Q2))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,QuatDot,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatExp/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatExp/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatExp,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatExp,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatExp,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatInverse/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatInverse/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatInverse,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatInverse,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatInverse,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatLength/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatLength/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatLength,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatLength,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,QuatLength,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatLengthSq/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatLengthSq/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatLengthSq,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatLengthSq,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,QuatLengthSq,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatLn/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatLn/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatLn,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatLn,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatLn,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatMultiply/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatMultiply/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatMultiply,2)
+	IDLC_DECL_VAR(sQuatf,Q1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q1)
+	IDLC_DECL_VAR(sQuatf,Q2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q2)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatMultiply,2,(Q1,Q2))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatMultiply,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatNormalize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatNormalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatNormalize,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatNormalize,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatNormalize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationAxis/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationAxis/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationAxis,2)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationAxis,2,(V,angle))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationAxis,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationX/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationX/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationX,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationX,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationX,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationY/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationY/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationY,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationY,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationY,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationZ/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationZ/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationZ,1)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationZ,1,(angle))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationZ,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationXYZ/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationXYZ/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationXYZ,1)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationXYZ,1,(V))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationXYZ,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationMatrix/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationMatrix/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationMatrix,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationMatrix,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationYawPitchRoll/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationYawPitchRoll/3 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationYawPitchRoll,3)
+	IDLC_DECL_VAR(tF32,yaw)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,yaw)
+	IDLC_DECL_VAR(tF32,pitch)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,pitch)
+	IDLC_DECL_VAR(tF32,roll)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,roll)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationYawPitchRoll,3,(yaw,pitch,roll))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationYawPitchRoll,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatRotationVector/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatRotationVector/2 **/
+IDLC_METH_BEGIN(ni,iMath,QuatRotationVector,2)
+	IDLC_DECL_VAR(sVec3f,vFrom)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vFrom)
+	IDLC_DECL_VAR(sVec3f,vTo)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vTo)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatRotationVector,2,(vFrom,vTo))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatRotationVector,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatSlerp/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatSlerp/4 **/
+IDLC_METH_BEGIN(ni,iMath,QuatSlerp,4)
+	IDLC_DECL_VAR(sQuatf,Q1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q1)
+	IDLC_DECL_VAR(sQuatf,Q2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q2)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_VAR(eQuatSlerp,mode)
+	IDLC_BUF_TO_ENUM(eQuatSlerp,mode)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatSlerp,4,(Q1,Q2,t,mode))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatSlerp,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatSquad/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatSquad/5 **/
+IDLC_METH_BEGIN(ni,iMath,QuatSquad,5)
+	IDLC_DECL_VAR(sQuatf,Q1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q1)
+	IDLC_DECL_VAR(sQuatf,Q2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q2)
+	IDLC_DECL_VAR(sQuatf,Q3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q3)
+	IDLC_DECL_VAR(sQuatf,Q4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q4)
+	IDLC_DECL_VAR(tF32,t)
+	IDLC_BUF_TO_BASE(ni::eType_F32,t)
+	IDLC_DECL_RETVAR(sQuatf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatSquad,5,(Q1,Q2,Q3,Q4,t))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatSquad,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatToAxisAngle/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatToAxisAngle/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatToAxisAngle,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatToAxisAngle,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,QuatToAxisAngle,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::QuatToEuler/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::QuatToEuler/1 **/
+IDLC_METH_BEGIN(ni,iMath,QuatToEuler,1)
+	IDLC_DECL_VAR(sQuatf,Q)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Q)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,QuatToEuler,1,(Q))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,QuatToEuler,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneDot/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneDot/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneDot,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec4f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneDot,2,(P,V))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,PlaneDot,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneDotCoord/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneDotCoord/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneDotCoord,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneDotCoord,2,(P,V))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,PlaneDotCoord,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneDotNormal/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneDotNormal/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneDotNormal,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneDotNormal,2,(P,V))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,PlaneDotNormal,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneDistance/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneDistance/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneDistance,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,V)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneDistance,2,(P,V))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,PlaneDistance,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneFromPointNormal/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneFromPointNormal/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneFromPointNormal,2)
+	IDLC_DECL_VAR(sVec3f,vPoint)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vPoint)
+	IDLC_DECL_VAR(sVec3f,vNormal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,vNormal)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneFromPointNormal,2,(vPoint,vNormal))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneFromPointNormal,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneFromPoints/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneFromPoints/3 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneFromPoints,3)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,V3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V3)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneFromPoints,3,(V1,V2,V3))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneFromPoints,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneIntersectLine/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneIntersectLine/3 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneIntersectLine,3)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneIntersectLine,3,(P,V1,V2))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneIntersectLine,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneIntersectRay/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneIntersectRay/3 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneIntersectRay,3)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,avRayPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avRayPos)
+	IDLC_DECL_VAR(sVec3f,avRayDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avRayDir)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneIntersectRay,3,(P,avRayPos,avRayDir))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneIntersectRay,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneNormalize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneNormalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneNormalize,1)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneNormalize,1,(P))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneNormalize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneTransform/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneTransform/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneTransform,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneTransform,2,(P,M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneTransform,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneTransformInversedMatrix/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneTransformInversedMatrix/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneTransformInversedMatrix,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneTransformInversedMatrix,2,(P,M))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneTransformInversedMatrix,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneIntersection/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneIntersection/3 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneIntersection,3)
+	IDLC_DECL_VAR(sPlanef,PA)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,PA)
+	IDLC_DECL_VAR(sPlanef,PB)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,PB)
+	IDLC_DECL_VAR(sPlanef,PC)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,PC)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneIntersection,3,(PA,PB,PC))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneIntersection,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneClosest/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneClosest/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneClosest,2)
+	IDLC_DECL_VAR(sPlanef,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_VAR(sVec3f,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneClosest,2,(P,A))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,PlaneClosest,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneType/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneType/1 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneType,1)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_DECL_RETVAR(ePlaneType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneType,1,(Plane))
+	IDLC_RET_FROM_ENUM(ePlaneType,_Ret)
+IDLC_METH_END(ni,iMath,PlaneType,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneMaxType/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneMaxType/1 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneMaxType,1)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_DECL_RETVAR(ePlaneType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneMaxType,1,(Plane))
+	IDLC_RET_FROM_ENUM(ePlaneType,_Ret)
+IDLC_METH_END(ni,iMath,PlaneMaxType,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneExtractCoordinateSystem/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneExtractCoordinateSystem/2 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneExtractCoordinateSystem,2)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_DECL_VAR(sVec3f,avFwdDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avFwdDir)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneExtractCoordinateSystem,2,(Plane,avFwdDir))
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iMath,PlaneExtractCoordinateSystem,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::PlaneIntersectSphere/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::PlaneIntersectSphere/3 **/
+IDLC_METH_BEGIN(ni,iMath,PlaneIntersectSphere,3)
+	IDLC_DECL_VAR(sPlanef,plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,plane)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(tF32,afRadius)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afRadius)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,PlaneIntersectSphere,3,(plane,avCenter,afRadius))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,PlaneIntersectSphere,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleAreaNormal/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleAreaNormal/3 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleAreaNormal,3)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleAreaNormal,3,(V0,V1,V2))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iMath,TriangleAreaNormal,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleIsDegenerate/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleIsDegenerate/3 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleIsDegenerate,3)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleIsDegenerate,3,(V0,V1,V2))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,TriangleIsDegenerate,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleIntersectTriangle/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleIntersectTriangle/6 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleIntersectTriangle,6)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,U0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,U0)
+	IDLC_DECL_VAR(sVec3f,U1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,U1)
+	IDLC_DECL_VAR(sVec3f,U2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,U2)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleIntersectTriangle,6,(V0,V1,V2,U0,U1,U2))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,TriangleIntersectTriangle,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleIntersectRay/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleIntersectRay/5 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleIntersectRay,5)
+	IDLC_DECL_VAR(sVec3f,avOrigin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avOrigin)
+	IDLC_DECL_VAR(sVec3f,avDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avDir)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleIntersectRay,5,(avOrigin,avDir,V0,V1,V2))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,TriangleIntersectRay,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleIntersectRayCull/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleIntersectRayCull/5 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleIntersectRayCull,5)
+	IDLC_DECL_VAR(sVec3f,avOrigin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avOrigin)
+	IDLC_DECL_VAR(sVec3f,avDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avDir)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleIntersectRayCull,5,(avOrigin,avDir,V0,V1,V2))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,TriangleIntersectRayCull,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleIntersectAABB/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleIntersectAABB/5 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleIntersectAABB,5)
+	IDLC_DECL_VAR(sVec3f,V0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V0)
+	IDLC_DECL_VAR(sVec3f,V1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V1)
+	IDLC_DECL_VAR(sVec3f,V2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,V2)
+	IDLC_DECL_VAR(sVec3f,avMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMin)
+	IDLC_DECL_VAR(sVec3f,avMax)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMax)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleIntersectAABB,5,(V0,V1,V2,avMin,avMax))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,TriangleIntersectAABB,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::TriangleBaryCentric/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::TriangleBaryCentric/4 **/
+IDLC_METH_BEGIN(ni,iMath,TriangleBaryCentric,4)
+	IDLC_DECL_VAR(sVec3f,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_VAR(sVec3f,B)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,B)
+	IDLC_DECL_VAR(sVec3f,C)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,C)
+	IDLC_DECL_VAR(sVec3f,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,TriangleBaryCentric,4,(A,B,C,P))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,TriangleBaryCentric,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::WrapFloat/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::WrapFloat/3 **/
+IDLC_METH_BEGIN(ni,iMath,WrapFloat,3)
+	IDLC_DECL_VAR(tF32,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aX)
+	IDLC_DECL_VAR(tF32,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aMin)
+	IDLC_DECL_VAR(tF32,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aMax)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,WrapFloat,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,WrapFloat,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::WrapInt/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::WrapInt/3 **/
+IDLC_METH_BEGIN(ni,iMath,WrapInt,3)
+	IDLC_DECL_VAR(tI32,aX)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aX)
+	IDLC_DECL_VAR(tI32,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aMin)
+	IDLC_DECL_VAR(tI32,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aMax)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,WrapInt,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iMath,WrapInt,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::WrapRad/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::WrapRad/1 **/
+IDLC_METH_BEGIN(ni,iMath,WrapRad,1)
+	IDLC_DECL_VAR(tF32,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aX)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,WrapRad,1,(aX))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,WrapRad,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::WrapRad2/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::WrapRad2/1 **/
+IDLC_METH_BEGIN(ni,iMath,WrapRad2,1)
+	IDLC_DECL_VAR(tF32,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aX)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,WrapRad2,1,(aX))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,WrapRad2,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::GetAngleFromPoints2D/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::GetAngleFromPoints2D/2 **/
+IDLC_METH_BEGIN(ni,iMath,GetAngleFromPoints2D,2)
+	IDLC_DECL_VAR(sVec2f,aStartPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aStartPos)
+	IDLC_DECL_VAR(sVec2f,aGoalPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,aGoalPos)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,GetAngleFromPoints2D,2,(aStartPos,aGoalPos))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,GetAngleFromPoints2D,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::GetAngleFromPoints3D/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::GetAngleFromPoints3D/2 **/
+IDLC_METH_BEGIN(ni,iMath,GetAngleFromPoints3D,2)
+	IDLC_DECL_VAR(sVec3f,aStartPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aStartPos)
+	IDLC_DECL_VAR(sVec3f,aGoalPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aGoalPos)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,GetAngleFromPoints3D,2,(aStartPos,aGoalPos))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,GetAngleFromPoints3D,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ClassifyPoint/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ClassifyPoint/2 **/
+IDLC_METH_BEGIN(ni,iMath,ClassifyPoint,2)
+	IDLC_DECL_VAR(sPlanef,plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,plane)
+	IDLC_DECL_VAR(sVec3f,point)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,point)
+	IDLC_DECL_RETVAR(eClassify,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ClassifyPoint,2,(plane,point))
+	IDLC_RET_FROM_ENUM(eClassify,_Ret)
+IDLC_METH_END(ni,iMath,ClassifyPoint,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::IsPointInsideEdge/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::IsPointInsideEdge/3 **/
+IDLC_METH_BEGIN(ni,iMath,IsPointInsideEdge,3)
+	IDLC_DECL_VAR(sVec3f,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_VAR(sVec3f,B)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,B)
+	IDLC_DECL_VAR(sVec3f,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,IsPointInsideEdge,3,(A,B,P))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,IsPointInsideEdge,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ClosestPointOnLine/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ClosestPointOnLine/3 **/
+IDLC_METH_BEGIN(ni,iMath,ClosestPointOnLine,3)
+	IDLC_DECL_VAR(sVec3f,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_VAR(sVec3f,B)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,B)
+	IDLC_DECL_VAR(sVec3f,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ClosestPointOnLine,3,(A,B,P))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,ClosestPointOnLine,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ClosestPointOnTriangle/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ClosestPointOnTriangle/4 **/
+IDLC_METH_BEGIN(ni,iMath,ClosestPointOnTriangle,4)
+	IDLC_DECL_VAR(sVec3f,A)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,A)
+	IDLC_DECL_VAR(sVec3f,B)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,B)
+	IDLC_DECL_VAR(sVec3f,C)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,C)
+	IDLC_DECL_VAR(sVec3f,P)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,P)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ClosestPointOnTriangle,4,(A,B,C,P))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,ClosestPointOnTriangle,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::GetAngularDifference/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::GetAngularDifference/2 **/
+IDLC_METH_BEGIN(ni,iMath,GetAngularDifference,2)
+	IDLC_DECL_VAR(tF32,afA)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afA)
+	IDLC_DECL_VAR(tF32,afB)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afB)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,GetAngularDifference,2,(afA,afB))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,GetAngularDifference,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::GetScreenPosition/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::GetScreenPosition/3 **/
+IDLC_METH_BEGIN(ni,iMath,GetScreenPosition,3)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,mtxVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxVP)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,GetScreenPosition,3,(avPos,mtxVP,aRect))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,GetScreenPosition,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3SphericalToCartesian/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3SphericalToCartesian/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3SphericalToCartesian,1)
+	IDLC_DECL_VAR(sVec3f,avS)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avS)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3SphericalToCartesian,1,(avS))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3SphericalToCartesian,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3CartesianToSpherical/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3CartesianToSpherical/1 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3CartesianToSpherical,1)
+	IDLC_DECL_VAR(sVec3f,avC)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avC)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3CartesianToSpherical,1,(avC))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3CartesianToSpherical,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3OrbitPitch/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3OrbitPitch/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3OrbitPitch,3)
+	IDLC_DECL_VAR(sVec3f,aTarget)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aTarget)
+	IDLC_DECL_VAR(sVec3f,aPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aPos)
+	IDLC_DECL_VAR(tF32,afPitch)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPitch)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3OrbitPitch,3,(aTarget,aPos,afPitch))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3OrbitPitch,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3OrbitYaw/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3OrbitYaw/3 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3OrbitYaw,3)
+	IDLC_DECL_VAR(sVec3f,aTarget)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aTarget)
+	IDLC_DECL_VAR(sVec3f,aPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aPos)
+	IDLC_DECL_VAR(tF32,afYaw)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afYaw)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3OrbitYaw,3,(aTarget,aPos,afYaw))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3OrbitYaw,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Vec3OrbitYawPitch/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Vec3OrbitYawPitch/4 **/
+IDLC_METH_BEGIN(ni,iMath,Vec3OrbitYawPitch,4)
+	IDLC_DECL_VAR(sVec3f,aTarget)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aTarget)
+	IDLC_DECL_VAR(sVec3f,aPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aPos)
+	IDLC_DECL_VAR(tF32,afYaw)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afYaw)
+	IDLC_DECL_VAR(tF32,afPitch)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afPitch)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Vec3OrbitYawPitch,4,(aTarget,aPos,afYaw,afPitch))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iMath,Vec3OrbitYawPitch,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelScaleX/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelScaleX/4 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelScaleX,4)
+	IDLC_DECL_VAR(sVec3f,aPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aPos)
+	IDLC_DECL_VAR(sMatrixf,amtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,amtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelScaleX,4,(aPos,amtxWorldView,amtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelScaleX,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelScaleY/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelScaleY/4 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelScaleY,4)
+	IDLC_DECL_VAR(sVec3f,aPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,aPos)
+	IDLC_DECL_VAR(sMatrixf,amtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,amtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelScaleY,4,(aPos,amtxWorldView,amtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelScaleY,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelWorldSizeX/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelWorldSizeX/5 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelWorldSizeX,5)
+	IDLC_DECL_VAR(tF32,afPixelSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afPixelSize)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,mtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,mtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelWorldSizeX,5,(afPixelSize,avPos,mtxWorldView,mtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelWorldSizeX,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelWorldSizeY/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelWorldSizeY/5 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelWorldSizeY,5)
+	IDLC_DECL_VAR(tF32,afPixelSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afPixelSize)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,mtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,mtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelWorldSizeY,5,(afPixelSize,avPos,mtxWorldView,mtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelWorldSizeY,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelWorldSizeVec2/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelWorldSizeVec2/5 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelWorldSizeVec2,5)
+	IDLC_DECL_VAR(tF32,afPixelSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afPixelSize)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,mtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,mtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelWorldSizeVec2,5,(afPixelSize,avPos,mtxWorldView,mtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelWorldSizeVec2,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ComputePixelWorldSize/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ComputePixelWorldSize/5 **/
+IDLC_METH_BEGIN(ni,iMath,ComputePixelWorldSize,5)
+	IDLC_DECL_VAR(tF32,afPixelSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afPixelSize)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(sMatrixf,amtxWorldView)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWorldView)
+	IDLC_DECL_VAR(sMatrixf,amtxProj)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxProj)
+	IDLC_DECL_VAR(sRectf,aVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aVP)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ComputePixelWorldSize,5,(afPixelSize,avPos,amtxWorldView,amtxProj,aVP))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,ComputePixelWorldSize,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det2x2f/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det2x2f/4 **/
+IDLC_METH_BEGIN(ni,iMath,Det2x2f,4)
+	IDLC_DECL_VAR(tF32,a)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a)
+	IDLC_DECL_VAR(tF32,b)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,b)
+	IDLC_DECL_VAR(tF32,c)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,c)
+	IDLC_DECL_VAR(tF32,d)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,d)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det2x2f,4,(a,b,c,d))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Det2x2f,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det3x3f/9 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det3x3f/9 **/
+IDLC_METH_BEGIN(ni,iMath,Det3x3f,9)
+	IDLC_DECL_VAR(tF32,a0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a0)
+	IDLC_DECL_VAR(tF32,a1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a1)
+	IDLC_DECL_VAR(tF32,a2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a2)
+	IDLC_DECL_VAR(tF32,a3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a3)
+	IDLC_DECL_VAR(tF32,a4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a4)
+	IDLC_DECL_VAR(tF32,a5)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a5)
+	IDLC_DECL_VAR(tF32,a6)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a6)
+	IDLC_DECL_VAR(tF32,a7)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a7)
+	IDLC_DECL_VAR(tF32,a8)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a8)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det3x3f,9,(a0,a1,a2,a3,a4,a5,a6,a7,a8))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Det3x3f,9)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det4x4f/16 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det4x4f/16 **/
+IDLC_METH_BEGIN(ni,iMath,Det4x4f,16)
+	IDLC_DECL_VAR(tF32,a0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a0)
+	IDLC_DECL_VAR(tF32,a1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a1)
+	IDLC_DECL_VAR(tF32,a2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a2)
+	IDLC_DECL_VAR(tF32,a3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a3)
+	IDLC_DECL_VAR(tF32,a4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a4)
+	IDLC_DECL_VAR(tF32,a5)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a5)
+	IDLC_DECL_VAR(tF32,a6)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a6)
+	IDLC_DECL_VAR(tF32,a7)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a7)
+	IDLC_DECL_VAR(tF32,a8)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a8)
+	IDLC_DECL_VAR(tF32,a9)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a9)
+	IDLC_DECL_VAR(tF32,a10)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a10)
+	IDLC_DECL_VAR(tF32,a11)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a11)
+	IDLC_DECL_VAR(tF32,a12)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a12)
+	IDLC_DECL_VAR(tF32,a13)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a13)
+	IDLC_DECL_VAR(tF32,a14)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a14)
+	IDLC_DECL_VAR(tF32,a15)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,a15)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det4x4f,16,(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,Det4x4f,16)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det2x2d/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det2x2d/4 **/
+IDLC_METH_BEGIN(ni,iMath,Det2x2d,4)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,c)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,c)
+	IDLC_DECL_VAR(tF64,d)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,d)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det2x2d,4,(a,b,c,d))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Det2x2d,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det3x3d/9 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det3x3d/9 **/
+IDLC_METH_BEGIN(ni,iMath,Det3x3d,9)
+	IDLC_DECL_VAR(tF64,a0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a0)
+	IDLC_DECL_VAR(tF64,a1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a1)
+	IDLC_DECL_VAR(tF64,a2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a2)
+	IDLC_DECL_VAR(tF64,a3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a3)
+	IDLC_DECL_VAR(tF64,a4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a4)
+	IDLC_DECL_VAR(tF64,a5)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a5)
+	IDLC_DECL_VAR(tF64,a6)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a6)
+	IDLC_DECL_VAR(tF64,a7)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a7)
+	IDLC_DECL_VAR(tF64,a8)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a8)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det3x3d,9,(a0,a1,a2,a3,a4,a5,a6,a7,a8))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Det3x3d,9)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::Det4x4d/16 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::Det4x4d/16 **/
+IDLC_METH_BEGIN(ni,iMath,Det4x4d,16)
+	IDLC_DECL_VAR(tF64,a0)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a0)
+	IDLC_DECL_VAR(tF64,a1)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a1)
+	IDLC_DECL_VAR(tF64,a2)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a2)
+	IDLC_DECL_VAR(tF64,a3)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a3)
+	IDLC_DECL_VAR(tF64,a4)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a4)
+	IDLC_DECL_VAR(tF64,a5)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a5)
+	IDLC_DECL_VAR(tF64,a6)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a6)
+	IDLC_DECL_VAR(tF64,a7)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a7)
+	IDLC_DECL_VAR(tF64,a8)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a8)
+	IDLC_DECL_VAR(tF64,a9)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a9)
+	IDLC_DECL_VAR(tF64,a10)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a10)
+	IDLC_DECL_VAR(tF64,a11)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a11)
+	IDLC_DECL_VAR(tF64,a12)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a12)
+	IDLC_DECL_VAR(tF64,a13)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a13)
+	IDLC_DECL_VAR(tF64,a14)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a14)
+	IDLC_DECL_VAR(tF64,a15)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F64,a15)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,Det4x4d,16,(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,Det4x4d,16)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::FovHzToVt/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::FovHzToVt/2 **/
+IDLC_METH_BEGIN(ni,iMath,FovHzToVt,2)
+	IDLC_DECL_VAR(tF32,afHFov)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afHFov)
+	IDLC_DECL_VAR(tF32,afWbyHAspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afWbyHAspect)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,FovHzToVt,2,(afHFov,afWbyHAspect))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,FovHzToVt,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::FovVtToHz/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::FovVtToHz/2 **/
+IDLC_METH_BEGIN(ni,iMath,FovVtToHz,2)
+	IDLC_DECL_VAR(tF32,afVFov)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afVFov)
+	IDLC_DECL_VAR(tF32,afWbyHAspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afWbyHAspect)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,FovVtToHz,2,(afVFov,afWbyHAspect))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iMath,FovVtToHz,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ClampT/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::ClampT/3 **/
+IDLC_METH_BEGIN(ni,iMath,ClampT,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ClampT,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ClampT,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::RepeatT/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::RepeatT/3 **/
+IDLC_METH_BEGIN(ni,iMath,RepeatT,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,RepeatT,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,RepeatT,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::MirrorT/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::MirrorT/3 **/
+IDLC_METH_BEGIN(ni,iMath,MirrorT,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,MirrorT,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,MirrorT,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CycleT/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CycleT/3 **/
+IDLC_METH_BEGIN(ni,iMath,CycleT,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CycleT,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CycleT,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveStep/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveStep/3 **/
+IDLC_METH_BEGIN(ni,iMath,CurveStep,3)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,t)
+	IDLC_BUF_TO_BASE(ni::eType_F64,t)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveStep,3,(a,b,t))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveStep,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveLinear/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveLinear/3 **/
+IDLC_METH_BEGIN(ni,iMath,CurveLinear,3)
+	IDLC_DECL_VAR(tF64,V1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V1)
+	IDLC_DECL_VAR(tF64,V2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V2)
+	IDLC_DECL_VAR(tF64,s)
+	IDLC_BUF_TO_BASE(ni::eType_F64,s)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveLinear,3,(V1,V2,s))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveLinear,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveCos/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveCos/3 **/
+IDLC_METH_BEGIN(ni,iMath,CurveCos,3)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_VAR(tF64,b)
+	IDLC_BUF_TO_BASE(ni::eType_F64,b)
+	IDLC_DECL_VAR(tF64,t)
+	IDLC_BUF_TO_BASE(ni::eType_F64,t)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveCos,3,(a,b,t))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveCos,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveHermite/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveHermite/5 **/
+IDLC_METH_BEGIN(ni,iMath,CurveHermite,5)
+	IDLC_DECL_VAR(tF64,V1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V1)
+	IDLC_DECL_VAR(tF64,T1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,T1)
+	IDLC_DECL_VAR(tF64,V2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V2)
+	IDLC_DECL_VAR(tF64,T2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,T2)
+	IDLC_DECL_VAR(tF64,s)
+	IDLC_BUF_TO_BASE(ni::eType_F64,s)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveHermite,5,(V1,T1,V2,T2,s))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveHermite,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveCatmullRom/5 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveCatmullRom/5 **/
+IDLC_METH_BEGIN(ni,iMath,CurveCatmullRom,5)
+	IDLC_DECL_VAR(tF64,V1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V1)
+	IDLC_DECL_VAR(tF64,V2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V2)
+	IDLC_DECL_VAR(tF64,V3)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V3)
+	IDLC_DECL_VAR(tF64,V4)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V4)
+	IDLC_DECL_VAR(tF64,s)
+	IDLC_BUF_TO_BASE(ni::eType_F64,s)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveCatmullRom,5,(V1,V2,V3,V4,s))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveCatmullRom,5)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveCardinal/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveCardinal/4 **/
+IDLC_METH_BEGIN(ni,iMath,CurveCardinal,4)
+	IDLC_DECL_VAR(tF64,V1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V1)
+	IDLC_DECL_VAR(tF64,V2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V2)
+	IDLC_DECL_VAR(tF64,s)
+	IDLC_BUF_TO_BASE(ni::eType_F64,s)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveCardinal,4,(V1,V2,s,a))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveCardinal,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CurveCardinal4/6 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CurveCardinal4/6 **/
+IDLC_METH_BEGIN(ni,iMath,CurveCardinal4,6)
+	IDLC_DECL_VAR(tF64,V1)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V1)
+	IDLC_DECL_VAR(tF64,V2)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V2)
+	IDLC_DECL_VAR(tF64,V3)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V3)
+	IDLC_DECL_VAR(tF64,V4)
+	IDLC_BUF_TO_BASE(ni::eType_F64,V4)
+	IDLC_DECL_VAR(tF64,s)
+	IDLC_BUF_TO_BASE(ni::eType_F64,s)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CurveCardinal4,6,(V1,V2,V3,V4,s,a))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CurveCardinal4,6)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CycleLinear/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CycleLinear/3 **/
+IDLC_METH_BEGIN(ni,iMath,CycleLinear,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CycleLinear,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CycleLinear,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CycleCos/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CycleCos/3 **/
+IDLC_METH_BEGIN(ni,iMath,CycleCos,3)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CycleCos,3,(aX,aMin,aMax))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CycleCos,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::CycleCardinal/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iMath::CycleCardinal/4 **/
+IDLC_METH_BEGIN(ni,iMath,CycleCardinal,4)
+	IDLC_DECL_VAR(tF64,aX)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aX)
+	IDLC_DECL_VAR(tF64,aMin)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMin)
+	IDLC_DECL_VAR(tF64,aMax)
+	IDLC_BUF_TO_BASE(ni::eType_F64,aMax)
+	IDLC_DECL_VAR(tF64,a)
+	IDLC_BUF_TO_BASE(ni::eType_F64,a)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,CycleCardinal,4,(aX,aMin,aMax,a))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,CycleCardinal,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iMath::ProbSum/1 **/
+IDLC_METH_BEGIN(ni,iMath,ProbSum,1)
+	IDLC_DECL_VAR(tF64CVec*,apProbs)
+	IDLC_BUF_TO_INTF(tF64CVec,apProbs)
+	IDLC_DECL_RETVAR(tF64,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ProbSum,1,(apProbs))
+	IDLC_RET_FROM_BASE(ni::eType_F64,_Ret)
+IDLC_METH_END(ni,iMath,ProbSum,1)
+
+/** ni -> iMath::ProbNormalize/1 **/
+IDLC_METH_BEGIN(ni,iMath,ProbNormalize,1)
+	IDLC_DECL_VAR(tF64CVec*,apProbs)
+	IDLC_BUF_TO_INTF(tF64CVec,apProbs)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ProbNormalize,1,(apProbs))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,ProbNormalize,1)
+
+/** ni -> iMath::ProbSampleBuildAliasMethodArrays/3 **/
+IDLC_METH_BEGIN(ni,iMath,ProbSampleBuildAliasMethodArrays,3)
+	IDLC_DECL_VAR(tF64CVec*,apProbs)
+	IDLC_BUF_TO_INTF(tF64CVec,apProbs)
+	IDLC_DECL_VAR(tF64CVec*,apAMQ)
+	IDLC_BUF_TO_INTF(tF64CVec,apAMQ)
+	IDLC_DECL_VAR(tU32CVec*,apAMA)
+	IDLC_BUF_TO_INTF(tU32CVec,apAMA)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ProbSampleBuildAliasMethodArrays,3,(apProbs,apAMQ,apAMA))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,ProbSampleBuildAliasMethodArrays,3)
+
+/** ni -> iMath::ProbSampleAliasMethod/3 **/
+IDLC_METH_BEGIN(ni,iMath,ProbSampleAliasMethod,3)
+	IDLC_DECL_VAR(tU32CVec*,apResults)
+	IDLC_BUF_TO_INTF(tU32CVec,apResults)
+	IDLC_DECL_VAR(tF64CVec*,apAMQ)
+	IDLC_BUF_TO_INTF(tF64CVec,apAMQ)
+	IDLC_DECL_VAR(tU32CVec*,apAMA)
+	IDLC_BUF_TO_INTF(tU32CVec,apAMA)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMath,ProbSampleAliasMethod,3,(apResults,apAMQ,apAMA))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMath,ProbSampleAliasMethod,3)
+
+IDLC_END_INTF(ni,iMath)
+
+IDLC_END_NAMESPACE()
+// EOF //

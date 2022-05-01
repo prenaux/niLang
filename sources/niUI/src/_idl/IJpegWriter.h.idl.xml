@@ -1,0 +1,103 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eJpegWriteFlags">
+			<comments desc="Jpeg write flags "/>
+			<value name="eJpegWriteFlags_None" value="0 ">
+				<comments desc="No flags. "/>
+			</value>
+			<value name="eJpegWriteFlags_YCoCg" value="niBit ( 0 ) ">
+				<comments desc="Use the custom YCoCg color space. "/>
+			</value>
+			<value name="eJpegWriteFlags_Alpha" value="niBit ( 1 ) ">
+				<comments desc="Has an alpha channel, implies the use of the YCoCg(A) colorspace. "/>
+			</value>
+		</enum>
+		<interface name="iJpegWriter" uuid1="D8DDBBF9-9609-44EE-80E5-7A99973AF903" uuid2="0xd8ddbbf9,0x9609,0x44ee,0x80,0xe5,0x7a,0x99,0x97,0x3a,0xf9,0x03">
+			<comments desc="Jpeg writer interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="beginWrite" name="BeginWrite" num_parameters="7">
+				<comments desc="Begin writing a new jpeg file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aInCS"
+					type="eColorSpace"
+					typec="eColorSpace"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anC"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anQuality"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tJpegWriteFlags"
+					typec="tJpegWriteFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="endWrite" name="EndWrite" num_parameters="0">
+				<comments desc="End writing the jpeg file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="writeScanline" name="WriteScanline" num_parameters="1">
+				<comments desc="Write a scanline. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="writeBitmap" name="WriteBitmap" num_parameters="4">
+				<comments desc="Write a 2d bitmap. ">
+					<remark text="Supports R8G8B8 and R8G8B8A8. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBmp"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anQuality"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tJpegWriteFlags"
+					typec="tJpegWriteFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

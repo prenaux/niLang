@@ -1,0 +1,249 @@
+#include "../API/niLang/IConsole.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iCommandSink **/
+IDLC_BEGIN_INTF(ni,iCommandSink)
+/** ni -> iCommandSink::GetName/0 **/
+IDLC_METH_BEGIN(ni,iCommandSink,GetName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCommandSink,GetName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCommandSink,GetName,0)
+
+/** ni -> iCommandSink::GetNamespace/0 **/
+IDLC_METH_BEGIN(ni,iCommandSink,GetNamespace,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCommandSink,GetNamespace,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCommandSink,GetNamespace,0)
+
+/** ni -> iCommandSink::GetDescription/0 **/
+IDLC_METH_BEGIN(ni,iCommandSink,GetDescription,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCommandSink,GetDescription,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iCommandSink,GetDescription,0)
+
+/** ni -> iCommandSink::OnRun/2 **/
+IDLC_METH_BEGIN(ni,iCommandSink,OnRun,2)
+	IDLC_DECL_VAR(tStringCVec*,avArgs)
+	IDLC_BUF_TO_INTF(tStringCVec,avArgs)
+	IDLC_DECL_VAR(iConsole*,apConsole)
+	IDLC_BUF_TO_INTF(iConsole,apConsole)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCommandSink,OnRun,2,(avArgs,apConsole))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iCommandSink,OnRun,2)
+
+IDLC_END_INTF(ni,iCommandSink)
+
+/** interface : iConsoleSink **/
+IDLC_BEGIN_INTF(ni,iConsoleSink)
+/** ni -> iConsoleSink::OnConsoleSink_NamespaceVariableChanged/2 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(achar*,aaszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszValue)
+	IDLC_METH_CALL_VOID(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2,(aaszName,aaszValue))
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2)
+
+/** ni -> iConsoleSink::OnConsoleSink_BeforeRunCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_BeforeRunCommand,1)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsoleSink,OnConsoleSink_BeforeRunCommand,1,(aaszCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_BeforeRunCommand,1)
+
+/** ni -> iConsoleSink::OnConsoleSink_AfterRunCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_AfterRunCommand,1)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_METH_CALL_VOID(ni,iConsoleSink,OnConsoleSink_AfterRunCommand,1,(aaszCmd))
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_AfterRunCommand,1)
+
+/** ni -> iConsoleSink::OnConsoleSink_BeforeRunScript/2 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_BeforeRunScript,2)
+	IDLC_DECL_VAR(iScriptingHost*,apHost)
+	IDLC_BUF_TO_INTF(iScriptingHost,apHost)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsoleSink,OnConsoleSink_BeforeRunScript,2,(apHost,aaszCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_BeforeRunScript,2)
+
+/** ni -> iConsoleSink::OnConsoleSink_AfterRunScript/2 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_AfterRunScript,2)
+	IDLC_DECL_VAR(iScriptingHost*,apHost)
+	IDLC_BUF_TO_INTF(iScriptingHost,apHost)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_METH_CALL_VOID(ni,iConsoleSink,OnConsoleSink_AfterRunScript,2,(apHost,aaszCmd))
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_AfterRunScript,2)
+
+IDLC_END_INTF(ni,iConsoleSink)
+
+/** interface : iConsole **/
+IDLC_BEGIN_INTF(ni,iConsole)
+/** ni -> iConsole::GetSinkList/0 **/
+IDLC_METH_BEGIN(ni,iConsole,GetSinkList,0)
+	IDLC_DECL_RETVAR(tConsoleSinkLst*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,GetSinkList,0,())
+	IDLC_RET_FROM_INTF(tConsoleSinkLst,_Ret)
+IDLC_METH_END(ni,iConsole,GetSinkList,0)
+
+/** ni -> iConsole::AddNamespace/1 **/
+IDLC_METH_BEGIN(ni,iConsole,AddNamespace,1)
+	IDLC_DECL_VAR(achar*,aszNamespace)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszNamespace)
+	IDLC_METH_CALL_VOID(ni,iConsole,AddNamespace,1,(aszNamespace))
+IDLC_METH_END(ni,iConsole,AddNamespace,1)
+
+/** ni -> iConsole::RemoveNamespace/1 **/
+IDLC_METH_BEGIN(ni,iConsole,RemoveNamespace,1)
+	IDLC_DECL_VAR(achar*,aszNamespace)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszNamespace)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,RemoveNamespace,1,(aszNamespace))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,RemoveNamespace,1)
+
+/** ni -> iConsole::AddVariable/2 **/
+IDLC_METH_BEGIN(ni,iConsole,AddVariable,2)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_VAR(achar*,aszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,AddVariable,2,(aszName,aszValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,AddVariable,2)
+
+/** ni -> iConsole::RemoveVariable/1 **/
+IDLC_METH_BEGIN(ni,iConsole,RemoveVariable,1)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,RemoveVariable,1,(aszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,RemoveVariable,1)
+
+/** ni -> iConsole::SetVariable/2 **/
+IDLC_METH_BEGIN(ni,iConsole,SetVariable,2)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_VAR(achar*,aszValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,SetVariable,2,(aszName,aszValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,SetVariable,2)
+
+/** ni -> iConsole::GetVariable/1 **/
+IDLC_METH_BEGIN(ni,iConsole,GetVariable,1)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,GetVariable,1,(aszName))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iConsole,GetVariable,1)
+
+/** ni -> iConsole::CommandExists/1 **/
+IDLC_METH_BEGIN(ni,iConsole,CommandExists,1)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,CommandExists,1,(aszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,CommandExists,1)
+
+/** ni -> iConsole::AddCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsole,AddCommand,1)
+	IDLC_DECL_VAR(iCommandSink*,pCmd)
+	IDLC_BUF_TO_INTF(iCommandSink,pCmd)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,AddCommand,1,(pCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,AddCommand,1)
+
+/** ni -> iConsole::RemoveCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsole,RemoveCommand,1)
+	IDLC_DECL_VAR(achar*,aszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,RemoveCommand,1,(aszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,RemoveCommand,1)
+
+/** ni -> iConsole::GetCommandDescription/1 **/
+IDLC_METH_BEGIN(ni,iConsole,GetCommandDescription,1)
+	IDLC_DECL_VAR(achar*,aszCommand)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszCommand)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,GetCommandDescription,1,(aszCommand))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iConsole,GetCommandDescription,1)
+
+/** ni -> iConsole::RunCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsole,RunCommand,1)
+	IDLC_DECL_VAR(achar*,aszCommand)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszCommand)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,RunCommand,1,(aszCommand))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,RunCommand,1)
+
+/** ni -> iConsole::CompleteCommandLine/2 **/
+IDLC_METH_BEGIN(ni,iConsole,CompleteCommandLine,2)
+	IDLC_DECL_VAR(achar*,aaszCmd)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmd)
+	IDLC_DECL_VAR(tBool,abNext)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abNext)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,CompleteCommandLine,2,(aaszCmd,abNext))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iConsole,CompleteCommandLine,2)
+
+/** ni -> iConsole::GetNumCommands/0 **/
+IDLC_METH_BEGIN(ni,iConsole,GetNumCommands,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,GetNumCommands,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iConsole,GetNumCommands,0)
+
+/** ni -> iConsole::PushCommand/1 **/
+IDLC_METH_BEGIN(ni,iConsole,PushCommand,1)
+	IDLC_DECL_VAR(achar*,aszCommand)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aszCommand)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,PushCommand,1,(aszCommand))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iConsole,PushCommand,1)
+
+/** ni -> iConsole::PopCommand/0 **/
+IDLC_METH_BEGIN(ni,iConsole,PopCommand,0)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,PopCommand,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iConsole,PopCommand,0)
+
+/** ni -> iConsole::PopAndRunAllCommands/0 **/
+IDLC_METH_BEGIN(ni,iConsole,PopAndRunAllCommands,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iConsole,PopAndRunAllCommands,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iConsole,PopAndRunAllCommands,0)
+
+IDLC_END_INTF(ni,iConsole)
+
+IDLC_END_NAMESPACE()
+// EOF //

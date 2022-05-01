@@ -1,0 +1,26 @@
+TK_NAME = "niLang" ;
+TK_DIR = [ FGetAbsolutePath [ FDirName $(TOP) .. ] ] ;
+TOP_DIR = [ FDirName $(TK_DIR) sources ] ;
+NILANG_BUILD = 1 ;
+
+Import toolkit.ham ;
+include [ FDirName $(TOP_DIR) _rules_ni_base.ham ] ;
+include [ FDirName $(TOP_DIR) _rules_ni_script.ham ] ;
+include [ FDirName $(TOP_DIR) _rules_sdks.ham ] ;
+
+#----------------------------------------------------------------------
+#     Java rules
+#----------------------------------------------------------------------
+if $(BUILD_JNI) && ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__build_jni) = 1 ) {
+  EXIT "W/BUILD_JNI set without the build_jni toolset." ;
+}
+
+if $(BUILD_JNI) {
+  include [ FDirName $(TOP_DIR) _rules_ni_java.ham ] ;
+}
+if $(ANDROID) = 1 {
+  include [ FDirName $(TOP_DIR) _rules_ni_android.ham ] ;
+}
+if $(EMSCRIPTEN) = 1 {
+  include [ FDirName $(TOP_DIR) _rules_ni_emscripten.ham ] ;
+}

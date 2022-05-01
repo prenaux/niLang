@@ -1,0 +1,14 @@
+#########################################################################
+#
+# -- ni-app-android --
+#
+#########################################################################
+if [ SubDirOnce TOP jvm ni-app-android ] = 1 { return ; }
+
+niDefJar ni-app-android : 1,0,0 ;
+
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niBuildJar $(SRC)
+: ni-app niLang_jvm niUI_jvm
+: $(JAR_ANDROID_PLATFORM)
+: pkgsrc ] ;

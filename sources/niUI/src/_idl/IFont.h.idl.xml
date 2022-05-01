@@ -1,0 +1,936 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eFontFormatFlags">
+			<comments desc="Font format flags. "/>
+			<value name="eFontFormatFlags_CenterH" value="niBit ( 0 ) ">
+				<comments desc="Text will be horizontally centered. "/>
+			</value>
+			<value name="eFontFormatFlags_CenterV" value="niBit ( 1 ) ">
+				<comments desc="Text will be vertically centered. "/>
+			</value>
+			<value name="eFontFormatFlags_Right" value="niBit ( 2 ) ">
+				<comments desc="Text will be right aligned. "/>
+			</value>
+			<value name="eFontFormatFlags_Bottom" value="niBit ( 3 ) ">
+				<comments desc="Text will be bottom aligned. "/>
+			</value>
+			<value name="eFontFormatFlags_ClipH" value="niBit ( 4 ) ">
+				<comments desc="Clip text horizontally. "/>
+			</value>
+			<value name="eFontFormatFlags_ClipV" value="niBit ( 5 ) ">
+				<comments desc="Clip text vertically. "/>
+			</value>
+			<value name="eFontFormatFlags_Border" value="niBit ( 6 ) ">
+				<comments desc="Draw a border around the text. "/>
+			</value>
+			<value name="eFontFormatFlags_Kerning" value="niBit ( 7 ) ">
+				<comments desc="Use kerning if available in the font. "/>
+			</value>
+			<value name="eFontFormatFlags_NoUnitSnap" value="niBit ( 8 ) ">
+				<comments desc="Dont snap to the unit grid after layout. ">
+					<remark text="Snapping is needed for pixel perfect text rendering, since if the text starts on a pixel fraction it will look blurry. Snapping is the default but you will want to turn it off if you&apos;re drawing animated text, text in a 3D space or you take care of the snapping yourself. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eFontLoadFlags">
+			<comments desc="Get font flags. "/>
+			<value name="eFontLoadFlags_Registered" value="niBit ( 0 ) ">
+				<comments desc="Search in the registered fonts. "/>
+			</value>
+			<value name="eFontLoadFlags_SystemFirst" value="niBit ( 1 ) ">
+				<comments desc="Search in the system fonts before searching in the registered fonts. "/>
+			</value>
+			<value name="eFontLoadFlags_SystemLast" value="niBit ( 2 ) ">
+				<comments desc="Search in the system fonts after searching in the registered fonts. "/>
+			</value>
+			<value name="eFontLoadFlags_ClosestMatch" value="niBit ( 3 ) ">
+				<comments desc="Look for the closest match in the name. ">
+					<remark text="If not specified will look for exact match only. "/>
+					<remark text="Match is always case insensitive. "/>
+				</comments>
+			</value>
+			<value name="eFontLoadFlags_Bold" value="niBit ( 4 ) ">
+				<comments desc="Get bold font. "/>
+			</value>
+			<value name="eFontLoadFlags_Italic" value="niBit ( 5 ) ">
+				<comments desc="Get italic font. "/>
+			</value>
+			<value name="eFontLoadFlags_Default" value="eFontLoadFlags_Registered|eFontLoadFlags_SystemLast|eFontLoadFlags_ClosestMatch ">
+				<comments desc="Default flags. "/>
+			</value>
+		</enum>
+		<interface name="iFont" uuid1="4605C928-77BA-45DF-9505-184677E78692" uuid2="0x4605c928,0x77ba,0x45df,0x95,0x05,0x18,0x46,0x77,0xe7,0x86,0x92">
+			<comments desc="Font interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the name of the font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFamilyName"
+				name="GetFamilyName"
+				num_parameters="0"
+				property="get"
+				property_name2="familyName"
+				property_name="family_name">
+				<comments desc="Get the family name of the font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStyleName"
+				name="GetStyleName"
+				num_parameters="0"
+				property="get"
+				property_name2="styleName"
+				property_name="style_name">
+				<comments desc="Get the style name of the font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFilePath"
+				name="GetFilePath"
+				num_parameters="0"
+				property="get"
+				property_name2="filePath"
+				property_name="file_path">
+				<comments desc="Get the file path of the font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsFixedResolution"
+				name="GetIsFixedResolution"
+				num_parameters="0"
+				property="get"
+				property_name2="isFixedResolution"
+				property_name="is_fixed_resolution">
+				<comments desc="Return eTrue if the pixel size if fixed. ">
+					<remark text="Fixed size fonts are generaly bitmap fonts. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasKerning"
+				name="GetHasKerning"
+				num_parameters="0"
+				property="get"
+				property_name2="hasKerning"
+				property_name="has_kerning">
+				<comments desc="Return eTrue if the font has kerning informations. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxResolution"
+				name="GetMaxResolution"
+				num_parameters="0"
+				property="get"
+				property_name2="maxResolution"
+				property_name="max_resolution">
+				<comments desc="Return the maximum pixel size. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsInstance"
+				name="GetIsInstance"
+				num_parameters="0"
+				property="get"
+				property_name2="isInstance"
+				property_name="is_instance">
+				<comments desc="Return eTrue if this font is an instance. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createFontInstance" name="CreateFontInstance" num_parameters="1">
+				<comments desc="Create an instance of this font. ">
+					<params text="apMaterial is the material that the font will use instead of creating its own. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setTabSize"
+				name="SetTabSize"
+				num_parameters="1"
+				property="set"
+				property_name2="tabSize"
+				property_name="tab_size">
+				<comments desc="Set the tabulation size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ulNumChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTabSize"
+				name="GetTabSize"
+				num_parameters="0"
+				property="get"
+				property_name2="tabSize"
+				property_name="tab_size">
+				<comments desc="Get the tabulation size. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setFiltering"
+				name="SetFiltering"
+				num_parameters="1"
+				property="set"
+				property_name2="filtering"
+				property_name="filtering">
+				<comments desc="Set the filtering mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abLinear"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFiltering"
+				name="GetFiltering"
+				num_parameters="0"
+				property="get"
+				property_name2="filtering"
+				property_name="filtering">
+				<comments desc="Get the filtering mode. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setColor"
+				name="SetColor"
+				num_parameters="1"
+				property="set"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Set the default font color. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor"
+				name="GetColor"
+				num_parameters="0"
+				property="get"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Get the default font color. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setBlendMode"
+				name="SetBlendMode"
+				num_parameters="1"
+				property="set"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Set the blending mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBlendMode"
+				name="GetBlendMode"
+				num_parameters="0"
+				property="get"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Get the blending mode. "/>
+				<return type="eBlendMode" typec="eBlendMode" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="setSizeAndResolution" name="SetSizeAndResolution" num_parameters="3">
+				<comments desc="Set the font size and resolution taking into account the contents scale. ">
+					<remark text="If the avSize is (0,0) the size set is the resolution. Note that the effective resolution set will be modified by the contents scale, so GetResolution() will not always return anResolution. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anResolution"
+					type="const tU32"
+					typec="const tU32"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getResolution"
+				name="GetResolution"
+				num_parameters="0"
+				property="get"
+				property_name2="resolution"
+				property_name="resolution">
+				<comments desc="Get the character&apos;s resolution. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the character rendering size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setDistanceField"
+				name="SetDistanceField"
+				num_parameters="1"
+				property="set"
+				property_name2="distanceField"
+				property_name="distance_field">
+				<comments desc="Set whether the glyphs are using a distance field. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abDistanceField"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDistanceField"
+				name="GetDistanceField"
+				num_parameters="0"
+				property="get"
+				property_name2="distanceField"
+				property_name="distance_field">
+				<comments desc="Get whether the glyphs are using a distance field. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCharWidth"
+				name="GetCharWidth"
+				num_parameters="1"
+				property="get"
+				property_name2="charWidth"
+				property_name="char_width">
+				<comments desc="Return the width of a character. ">
+					<remark text="Passing zero will return the default width. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCharHeight"
+				name="GetCharHeight"
+				num_parameters="1"
+				property="get"
+				property_name2="charHeight"
+				property_name="char_height">
+				<comments desc="Return the height of a character. ">
+					<remark text="Passing zero will return the default height. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxCharWidth"
+				name="GetMaxCharWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="maxCharWidth"
+				property_name="max_char_width">
+				<comments desc="Return the maximum char width. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxCharHeight"
+				name="GetMaxCharHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="maxCharHeight"
+				property_name="max_char_height">
+				<comments desc="Return the maximum char height. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAverageCharWidth"
+				name="GetAverageCharWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="averageCharWidth"
+				property_name="average_char_width">
+				<comments desc="Return the average char width. ">
+					<remark text="Generally defined as the width of the letter x. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAverageCharHeight"
+				name="GetAverageCharHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="averageCharHeight"
+				property_name="average_char_height">
+				<comments desc="Return the average char height. ">
+					<remark text="Generally defined as the height of the letter x. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAscent"
+				name="GetAscent"
+				num_parameters="0"
+				property="get"
+				property_name2="ascent"
+				property_name="ascent">
+				<comments desc="Get the ascent (units above the base line) of characters. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescent"
+				name="GetDescent"
+				num_parameters="0"
+				property="get"
+				property_name2="descent"
+				property_name="descent">
+				<comments desc="Get the descent (units below the base line) of characters. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the height of the font (ascent + descent + linegap). "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFirstChar"
+				name="GetFirstChar"
+				num_parameters="0"
+				property="get"
+				property_name2="firstChar"
+				property_name="first_char">
+				<comments desc="Get the value of the first character defined in the font. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLastChar"
+				name="GetLastChar"
+				num_parameters="0"
+				property="get"
+				property_name2="lastChar"
+				property_name="last_char">
+				<comments desc="Get the value of the last character defined in the font. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAdvance"
+				name="GetAdvance"
+				num_parameters="1">
+				<comments desc="Get the advance for the specified character. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKerning"
+				name="GetKerning"
+				num_parameters="2">
+				<comments desc="Get the kerning for the specified character. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="anPrevChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setLineSpacing"
+				name="SetLineSpacing"
+				num_parameters="1"
+				property="set"
+				property_name2="lineSpacing"
+				property_name="line_spacing">
+				<comments desc="Set the normalized line spacing. ">
+					<remark text="The "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afSpacing"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLineSpacing"
+				name="GetLineSpacing"
+				num_parameters="0"
+				property="get"
+				property_name2="lineSpacing"
+				property_name="line_spacing">
+				<comments desc="Get the normalized spacing a line. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLineHeight"
+				name="GetLineHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="lineHeight"
+				property_name="line_height">
+				<comments desc="Get the a line&apos;s height. ">
+					<remark text="GetHeight() * GetLineSpacing() "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="updateMaterial" name="UpdateMaterial" num_parameters="1">
+				<comments desc="Update the font&apos;s material. " return="eFalse on failure, else eTrue. ">
+					<params text="abUpdateMaterialStates if true the states will set otherwise only the material&apos;s base channel texture is set to the current glyph cache&apos;s texture. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abUpdateMaterialStates"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="cacheText" name="CacheText" num_parameters="1">
+				<comments desc="Cache the caracters contained in the passed string. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="cacheRange" name="CacheRange" num_parameters="2">
+				<comments desc="Cache a range of character. ">
+					<remark text="First and Last will be included in the cache. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anFirst"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anLast"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearCache" name="ClearCache" num_parameters="0">
+				<comments desc="Clear the glyph and texture caches. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCacheID"
+				name="GetCacheID"
+				num_parameters="0"
+				property="get"
+				property_name2="cacheID"
+				property_name="cache_id">
+				<comments desc="Get the ID of the current cache. ">
+					<remark text="The cache ID changes every time the cache is cleared. "/>
+					<remark text="The ID can be used to detect changes in the font cache. For example to relayout geometries that depend on the font&apos;s internal texture cache. "/>
+				</comments>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterial"
+				name="GetMaterial"
+				num_parameters="0"
+				property="get"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Get the material used for the font&apos;s rendering. "/>
+				<return type="iMaterial *" typec="iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCharTexCoo"
+				name="GetCharTexCoo"
+				num_parameters="1"
+				property="get"
+				property_name2="charTexCoo"
+				property_name="char_tex_coo">
+				<comments desc="Get the texture coordinate of a character. ">
+					<remark text="This has the side effect of caching the characters. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCharTexture"
+				name="GetCharTexture"
+				num_parameters="1"
+				property="get"
+				property_name2="charTexture"
+				property_name="char_texture">
+				<comments desc="Get the texture in which the specified glyph is cached. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCharBitmap"
+				name="GetCharBitmap"
+				num_parameters="1"
+				property="get"
+				property_name2="charBitmap"
+				property_name="char_bitmap">
+				<comments desc="Get the bitmaps in which the specified glyph is cached. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="blitChar" name="BlitChar" num_parameters="4">
+				<comments desc="Blit a character to the specified bitmap using the pixel size. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					name="apBmp"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anX"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anY"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="blitCharStretch" name="BlitCharStretch" num_parameters="4">
+				<comments desc="Blit a character to the specified bitmap to the current font size. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					name="apBmp"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anX"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anY"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="blitCharEx" name="BlitCharEx" num_parameters="7">
+				<comments desc="Blit a character to the specified bitmap with the specified size and blend mode. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					name="apBmp"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anX"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anY"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anH"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="computeTextSize" name="ComputeTextSize" num_parameters="3">
+				<comments desc="Compute text size in pixels. ">
+					<params text="aRect: If not Null the rectangle will be used as &apos;target&apos; box where the text should be drawn, the compted text will take into account word wrapping, etc. in that box. "/>
+					<params text="aaszText is the text to compute the size of. "/>
+					<params text="aFormat: if 0 the format flags set is used, else the specified format is used. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFormat"
+					type="tFontFormatFlags"
+					typec="tFontFormatFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="drawText" name="DrawText" num_parameters="5">
+				<comments desc="Draw text layed out in the specified rectangle. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="apCanvas"
+					type="ni::iCanvas *"
+					typec="ni::iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aposRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFormat"
+					type="tFontFormatFlags"
+					typec="tFontFormatFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphIndexFromName"
+				name="GetGlyphIndexFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphIndexFromName"
+				property_name="glyph_index_from_name">
+				<comments desc="Get the glyph index from its name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphIndexFromCodepoint"
+				name="GetGlyphIndexFromCodepoint"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphIndexFromCodepoint"
+				property_name="glyph_index_from_codepoint">
+				<comments desc="Get the glyph index from its codepoint. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anCodepoint"
+					type="const tU32"
+					typec="const tU32"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphName"
+				name="GetGlyphName"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphName"
+				property_name="glyph_name">
+				<comments desc="Get the glyph name from its codepoint. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="anGlyphIndex"
+					type="const tU32"
+					typec="const tU32"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="enumGlyphs"
+				name="EnumGlyphs"
+				num_parameters="0">
+				<comments desc="Enumerate all the glyphs with a codepoint in the font. " return="Map&lt;GlyphIndex:tU32,Codepoint:tU32&gt; "/>
+				<return type="Ptr&lt;tU32CMap&gt;" typec="Ptr&lt;tU32CMap&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphCodePointFromName"
+				name="GetGlyphCodePointFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphCodePointFromName"
+				property_name="glyph_code_point_from_name">
+				<comments desc="Get the glyph&apos;s codepoint from its name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphPath"
+				name="GetGlyphPath"
+				num_parameters="4">
+				<comments desc="Get a glyph&apos;s outline to the specified path. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="apPath"
+					type="iVGPath *"
+					typec="iVGPath*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anGlyphIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avOffset"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

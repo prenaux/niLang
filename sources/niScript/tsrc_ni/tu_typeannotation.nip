@@ -1,0 +1,59 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+::Import("assert.ni")
+
+::FIXTURE("typeannotation")
+
+function ::getString(string aKey, string aDefault) string {
+  return aDefault
+}
+
+function ::getModuleString(foo:String aKey, foo : bar:String aDefault) foo:bar:fiz:String {
+  return aDefault
+}
+
+function ::getMultiString(foo:String aKey, foo:String|foo:Stuff aDefault) foo:String | void {
+  return aDefault
+}
+
+::TEST("typeannotation","base",#() {
+  local fun = ::getString
+
+  ::CHECK_EQUAL(1+2,fun.GetNumParams()) // 1 for the implicit this parameter, 2 for the declared params
+
+  ::CHECK_EQUAL("aKey",fun.GetParamName(1))
+  ::CHECK_EQUAL("string",fun.GetParamType(1))
+
+  ::CHECK_EQUAL("aDefault",fun.GetParamName(2))
+  ::CHECK_EQUAL("string",fun.GetParamType(2))
+
+  ::CHECK_EQUAL("string",fun.GetReturnType())
+})
+
+::TEST("typeannotation","module",#() {
+  local fun = ::getModuleString
+
+  ::CHECK_EQUAL(1+2,fun.GetNumParams()) // 1 for the implicit this parameter, 2 for the declared params
+
+  ::CHECK_EQUAL("aKey",fun.GetParamName(1))
+  ::CHECK_EQUAL("foo:String",fun.GetParamType(1))
+
+  ::CHECK_EQUAL("aDefault",fun.GetParamName(2))
+  ::CHECK_EQUAL("foo:bar:String",fun.GetParamType(2))
+
+  ::CHECK_EQUAL("foo:bar:fiz:String",fun.GetReturnType())
+})
+
+::TEST("typeannotation","multi",#() {
+  local fun = ::getMultiString
+
+  ::CHECK_EQUAL(1+2,fun.GetNumParams()) // 1 for the implicit this parameter, 2 for the declared params
+
+  ::CHECK_EQUAL("aKey",fun.GetParamName(1))
+  ::CHECK_EQUAL("foo:String",fun.GetParamType(1))
+
+  ::CHECK_EQUAL("aDefault",fun.GetParamName(2))
+  ::CHECK_EQUAL("foo:String|foo:Stuff",fun.GetParamType(2))
+
+  ::CHECK_EQUAL("foo:String|void",fun.GetReturnType())
+})

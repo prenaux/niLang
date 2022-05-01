@@ -1,0 +1,308 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iHString" uuid1="0F0162E8-64C3-4276-9E1E-42BC02424323" uuid2="0x0f0162e8,0x64c3,0x4276,0x9e,0x1e,0x42,0xbc,0x02,0x42,0x43,0x23">
+			<comments desc="HString interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getChars"
+				name="GetChars"
+				num_parameters="0"
+				property="get"
+				property_name2="chars"
+				property_name="chars">
+				<comments desc="Get the string&apos;s characters. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLength"
+				name="GetLength"
+				num_parameters="0"
+				property="get"
+				property_name2="length"
+				property_name="length">
+				<comments desc="Get the string&apos;s length. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cmp"
+				name="Cmp"
+				num_parameters="1">
+				<comments desc="Compare this string with another HString. ">
+					<remark text="If the passed string is not from the same string table a regular string compare will be performed. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="ahspString"
+					type="const iHString *"
+					typec="const iHString*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="icmp"
+				name="ICmp"
+				num_parameters="1">
+				<comments desc="Case insensitive compare with another HString. ">
+					<remark text="If the passed string is not from the same string table a regular string compare will be performed. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="ahspString"
+					type="const iHString *"
+					typec="const iHString*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalized"
+				name="GetLocalized"
+				num_parameters="0"
+				property="get"
+				property_name2="localized"
+				property_name="localized">
+				<comments desc="Get the string localized in the default locale. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalizedEx"
+				name="GetLocalizedEx"
+				num_parameters="1">
+				<comments desc="Get the string localized in the specified locale. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="locale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isLocalized"
+				name="IsLocalized"
+				num_parameters="1">
+				<comments desc="Get the whether the string is localized in the specified locale. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="locale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createCharIt"
+				name="CreateCharIt"
+				num_parameters="1">
+				<comments desc="Return a character iterator to iterate over the string starting at the specified byte offset. " return="NULL if the offset is out of range, else the new iterator. "/>
+				<return type="iHStringCharIt *" typec="iHStringCharIt*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createRangeIt"
+				name="CreateRangeIt"
+				num_parameters="2">
+				<comments desc="Return a character iterator to iterate over the specifed byte range in the string. " return="NULL if the offset or size is out of range, else the new iterator. "/>
+				<return type="iHStringCharIt *" typec="iHStringCharIt*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="offset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="size"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iHStringCharIt" uuid1="A6885894-F6A9-40FB-8206-571F3C974278" uuid2="0xa6885894,0xf6a9,0x40fb,0x82,0x06,0x57,0x1f,0x3c,0x97,0x42,0x78">
+			<comments desc="HString character iterator interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getString"
+				name="GetString"
+				num_parameters="0"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the string being iterated. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the iterator. "/>
+				<return type="iHStringCharIt *" typec="iHStringCharIt*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsStart"
+				name="GetIsStart"
+				num_parameters="0"
+				property="get"
+				property_name2="isStart"
+				property_name="is_start">
+				<comments desc="Get whether the current position is the start of the iterator. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEnd"
+				name="GetIsEnd"
+				num_parameters="0"
+				property="get"
+				property_name2="isEnd"
+				property_name="is_end">
+				<comments desc="Get whether the current position is the end of the iterator. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the current position from the start of the iterator in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="toStart" name="ToStart" num_parameters="0">
+				<comments desc="Move the iterator to its starting point. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="toEnd" name="ToEnd" num_parameters="0">
+				<comments desc="Move the iterator to its end point. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChars"
+				name="GetNumChars"
+				num_parameters="0"
+				property="get"
+				property_name2="numChars"
+				property_name="num_chars">
+				<comments desc="Get the number of characters covered by the iterator. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumBytes"
+				name="GetNumBytes"
+				num_parameters="0"
+				property="get"
+				property_name2="numBytes"
+				property_name="num_bytes">
+				<comments desc="Get the number of bytes covered by the iterator. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="peekNext"
+				name="PeekNext"
+				num_parameters="0">
+				<comments desc="Return the next character in the string without moving the iterator. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="next" name="Next" num_parameters="0">
+				<comments desc="Return the next character in the string moving the iterator forward. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="peekPrior"
+				name="PeekPrior"
+				num_parameters="0">
+				<comments desc="Return the previous character in the string without moving the iterator. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="prior" name="Prior" num_parameters="0">
+				<comments desc="Return the next character in the string moving the iterator backward. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="peekAdvance"
+				name="PeekAdvance"
+				num_parameters="1">
+				<comments desc="Return the nth character in the string without moving the iterator. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="fwd"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="advance" name="Advance" num_parameters="1">
+				<comments desc="Return the nth character in the string moving the iterator forward. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="n"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="peekRewind"
+				name="PeekRewind"
+				num_parameters="1">
+				<comments desc="Return the nth previous character in the string without moving the iterator. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="back"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="rewind" name="Rewind" num_parameters="1">
+				<comments desc="Return the nth previous character in the string moving the iterator backward. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="n"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="toPosition" name="ToPosition" num_parameters="1">
+				<comments desc="Move the iterator to the specified position in bytes. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anOffsetInBytes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="astl"/>
+	<namespace name="eastl"/>
+</niIDL>

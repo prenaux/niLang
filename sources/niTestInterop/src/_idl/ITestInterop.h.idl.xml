@@ -1,0 +1,2405 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="1" name="eTestInterop">
+			<comments desc=""/>
+			<value min_features="1" name="eTestInterop_A" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="1" name="eTestInterop_B" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="30" name="eTestInterop_C" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="200" name="eTestInterop_NeverThere" value="3 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eTestInteropFlags">
+			<comments desc=""/>
+			<value name="eTestInteropFlags_A" value="niBit ( 0 ) ">
+				<comments desc="This is the flag A. ">
+					<remark text="This test remarks... "/>
+				</comments>
+			</value>
+			<value name="eTestInteropFlags_B" value="niBit ( 1 ) ">
+				<comments desc="This is the flag B. ">
+					<remark text="This test remarks... "/>
+				</comments>
+			</value>
+			<value name="eTestInteropFlags_C" value="niBit ( 2 ) ">
+				<comments desc="This is the flag C. ">
+					<remark text="This test remarks... "/>
+				</comments>
+			</value>
+			<value name="eTestInteropFlags_All" value="eTestInteropFlags_A|eTestInteropFlags_B|eTestInteropFlags_C ">
+				<comments desc="Combines all flags. "/>
+			</value>
+		</enum>
+		<interface name="iTestInteropObject" uuid1="488DA121-4087-4D75-957A-74A8C6070703" uuid2="0x488da121,0x4087,0x4d75,0x95,0x7a,0x74,0xa8,0xc6,0x07,0x07,0x03">
+			<comments desc="Test interop object "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setNumItems"
+				name="SetNumItems"
+				num_parameters="1"
+				property="set"
+				property_name2="numItems"
+				property_name="num_items">
+				<comments desc="Set the number of items for indexed properties. ">
+					<remark text="Default is 100. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aNumItems"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumItems"
+				name="GetNumItems"
+				num_parameters="0"
+				property="get"
+				property_name2="numItems"
+				property_name="num_items">
+				<comments desc="Get the number of items for indexed properties. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method java_name="setTestInterop" name="SetTestInterop" num_parameters="1">
+				<comments desc="Set values from the test interop structure. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apStruct"
+					type="sTestInterop *"
+					typec="sTestInterop*"
+					typei="ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInterop"
+				name="GetTestInterop"
+				num_parameters="0">
+				<comments desc="Get values from the test interop structure. "/>
+				<return type="sTestInterop *" typec="sTestInterop*" typei="ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setTestInteropConst" name="SetTestInteropConst" num_parameters="1">
+				<comments desc="Set values from the test interop structure. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apStruct"
+					type="const sTestInterop *"
+					typec="const sTestInterop*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInteropConst"
+				name="GetTestInteropConst"
+				num_parameters="0">
+				<comments desc="Get values from the test interop structure. "/>
+				<return type="const sTestInterop *" typec="const sTestInterop*" typei="ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setTestInteropRef" name="SetTestInteropRef" num_parameters="1">
+				<comments desc="Set values from the test interop structure reference. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStruct"
+					type="sTestInterop &amp;"
+					typec="sTestInterop&amp;"
+					typei="ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInteropRef"
+				name="GetTestInteropRef"
+				num_parameters="0">
+				<comments desc="Get values from the test interop structure. "/>
+				<return type="sTestInterop &amp;" typec="sTestInterop&amp;" typei="ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setTestInteropConstRef" name="SetTestInteropConstRef" num_parameters="1">
+				<comments desc="Set values from the test interop structure reference. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStruct"
+					type="const sTestInterop &amp;"
+					typec="const sTestInterop&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInteropConstRef"
+				name="GetTestInteropConstRef"
+				num_parameters="0">
+				<comments desc="Get values from the test interop structure. "/>
+				<return type="const sTestInterop &amp;" typec="const sTestInterop&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setEnum"
+				name="SetEnum"
+				num_parameters="1"
+				property="set"
+				property_name2="enum"
+				property_name="enum"
+				serialize="1">
+				<comments desc="Set an enumeration value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="eTestInterop"
+					typec="eTestInterop"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnum"
+				name="GetEnum"
+				num_parameters="0"
+				property="get"
+				property_name2="enum"
+				property_name="enum"
+				serialize="1">
+				<comments desc="Get an enumeration value. "/>
+				<return type="eTestInterop" typec="eTestInterop" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags"
+				serialize="1">
+				<comments desc="Set flags value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tTestInteropFlags"
+					typec="tTestInteropFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags"
+				serialize="1">
+				<comments desc="Get flags value. "/>
+				<return type="tTestInteropFlags" typec="tTestInteropFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setIntPtr"
+				name="SetIntPtr"
+				num_parameters="1"
+				property="set"
+				property_name2="intPtr"
+				property_name="int_ptr"
+				serialize="1">
+				<comments desc="Set a IntPtr value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIntPtr"
+				name="GetIntPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="intPtr"
+				property_name="int_ptr"
+				serialize="1">
+				<comments desc="Get a IntPtr value. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setUIntPtr"
+				name="SetUIntPtr"
+				num_parameters="1"
+				property="set"
+				property_name2="uintPtr"
+				property_name="uint_ptr"
+				serialize="1">
+				<comments desc="Set a UIntPtr value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUIntPtr"
+				name="GetUIntPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="uintPtr"
+				property_name="uint_ptr"
+				serialize="1">
+				<comments desc="Get a UIntPtr value. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setI8"
+				name="SetI8"
+				num_parameters="1"
+				property="set"
+				property_name2="i8"
+				property_name="i8"
+				serialize="1">
+				<comments desc="Set a I8 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tI8"
+					typec="tI8"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getI8"
+				name="GetI8"
+				num_parameters="0"
+				property="get"
+				property_name2="i8"
+				property_name="i8"
+				serialize="1">
+				<comments desc="Get a I8 value. "/>
+				<return type="tI8" typec="tI8" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setU8"
+				name="SetU8"
+				num_parameters="1"
+				property="set"
+				property_name2="u8"
+				property_name="u8"
+				serialize="1">
+				<comments desc="Set a U8 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getU8"
+				name="GetU8"
+				num_parameters="0"
+				property="get"
+				property_name2="u8"
+				property_name="u8"
+				serialize="1">
+				<comments desc="Get a U8 value. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setI16"
+				name="SetI16"
+				num_parameters="1"
+				property="set"
+				property_name2="i16"
+				property_name="i16"
+				serialize="1">
+				<comments desc="Set a I16 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tI16"
+					typec="tI16"
+					typei="ni::eType_I16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getI16"
+				name="GetI16"
+				num_parameters="0"
+				property="get"
+				property_name2="i16"
+				property_name="i16"
+				serialize="1">
+				<comments desc="Get a I16 value. "/>
+				<return type="tI16" typec="tI16" typei="ni::eType_I16"/>
+			</method>
+			<method
+				java_name="setU16"
+				name="SetU16"
+				num_parameters="1"
+				property="set"
+				property_name2="u16"
+				property_name="u16"
+				serialize="1">
+				<comments desc="Set a U16 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getU16"
+				name="GetU16"
+				num_parameters="0"
+				property="get"
+				property_name2="u16"
+				property_name="u16"
+				serialize="1">
+				<comments desc="Get a U16 value. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method
+				java_name="setI32"
+				name="SetI32"
+				num_parameters="1"
+				property="set"
+				property_name2="i32"
+				property_name="i32"
+				serialize="1">
+				<comments desc="Set a I32 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getI32"
+				name="GetI32"
+				num_parameters="0"
+				property="get"
+				property_name2="i32"
+				property_name="i32"
+				serialize="1">
+				<comments desc="Get a I32 value. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setU32"
+				name="SetU32"
+				num_parameters="1"
+				property="set"
+				property_name2="u32"
+				property_name="u32"
+				serialize="1">
+				<comments desc="Set a U32 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getU32"
+				name="GetU32"
+				num_parameters="0"
+				property="get"
+				property_name2="u32"
+				property_name="u32"
+				serialize="1">
+				<comments desc="Get a U32 value. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setI64"
+				name="SetI64"
+				num_parameters="1"
+				property="set"
+				property_name2="i64"
+				property_name="i64"
+				serialize="1">
+				<comments desc="Set a I64 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getI64"
+				name="GetI64"
+				num_parameters="0"
+				property="get"
+				property_name2="i64"
+				property_name="i64"
+				serialize="1">
+				<comments desc="Get a I64 value. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="setU64"
+				name="SetU64"
+				num_parameters="1"
+				property="set"
+				property_name2="u64"
+				property_name="u64"
+				serialize="1">
+				<comments desc="Set a U64 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getU64"
+				name="GetU64"
+				num_parameters="0"
+				property="get"
+				property_name2="u64"
+				property_name="u64"
+				serialize="1">
+				<comments desc="Get a U64 value. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				java_name="setF32"
+				name="SetF32"
+				num_parameters="1"
+				property="set"
+				property_name2="f32"
+				property_name="f32"
+				serialize="1">
+				<comments desc="Set a F32 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getF32"
+				name="GetF32"
+				num_parameters="0"
+				property="get"
+				property_name2="f32"
+				property_name="f32"
+				serialize="1">
+				<comments desc="Get a F32 value. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setF64"
+				name="SetF64"
+				num_parameters="1"
+				property="set"
+				property_name2="f64"
+				property_name="f64"
+				serialize="1">
+				<comments desc="Set a F64 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getF64"
+				name="GetF64"
+				num_parameters="0"
+				property="get"
+				property_name2="f64"
+				property_name="f64"
+				serialize="1">
+				<comments desc="Get a F64 value. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setVar"
+				name="SetVar"
+				num_parameters="1"
+				property="set"
+				property_name2="var"
+				property_name="var">
+				<comments desc="Set a Variant value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVar"
+				name="GetVar"
+				num_parameters="0"
+				property="get"
+				property_name2="var"
+				property_name="var">
+				<comments desc="Get a Variant value. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+			<method
+				java_name="setVec2l"
+				name="SetVec2l"
+				num_parameters="1"
+				property="set"
+				property_name2="vec2l"
+				property_name="vec2l"
+				serialize="1">
+				<comments desc="Set a Vec2i value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2l"
+				name="GetVec2l"
+				num_parameters="0"
+				property="get"
+				property_name2="vec2l"
+				property_name="vec2l"
+				serialize="1">
+				<comments desc="Get a Vec2i value. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				java_name="setVec2f"
+				name="SetVec2f"
+				num_parameters="1"
+				property="set"
+				property_name2="vec2f"
+				property_name="vec2f"
+				serialize="1">
+				<comments desc="Set a Vec2f value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2f"
+				name="GetVec2f"
+				num_parameters="0"
+				property="get"
+				property_name2="vec2f"
+				property_name="vec2f"
+				serialize="1">
+				<comments desc="Get a Vec2f value. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setVec3l"
+				name="SetVec3l"
+				num_parameters="1"
+				property="set"
+				property_name2="vec3l"
+				property_name="vec3l"
+				serialize="1">
+				<comments desc="Set a Vec3i value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3l"
+				name="GetVec3l"
+				num_parameters="0"
+				property="get"
+				property_name2="vec3l"
+				property_name="vec3l"
+				serialize="1">
+				<comments desc="Get a Vec3i value. "/>
+				<return type="sVec3i" typec="sVec3i" typei="ni::eType_Vec3i"/>
+			</method>
+			<method
+				java_name="setVec3f"
+				name="SetVec3f"
+				num_parameters="1"
+				property="set"
+				property_name2="vec3f"
+				property_name="vec3f"
+				serialize="1">
+				<comments desc="Set a Vec3f value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3f"
+				name="GetVec3f"
+				num_parameters="0"
+				property="get"
+				property_name2="vec3f"
+				property_name="vec3f"
+				serialize="1">
+				<comments desc="Get a Vec3f value. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setVec4l"
+				name="SetVec4l"
+				num_parameters="1"
+				property="set"
+				property_name2="vec4l"
+				property_name="vec4l"
+				serialize="1">
+				<comments desc="Set a Vec4i value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4l"
+				name="GetVec4l"
+				num_parameters="0"
+				property="get"
+				property_name2="vec4l"
+				property_name="vec4l"
+				serialize="1">
+				<comments desc="Get a Vec4i value. "/>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+			</method>
+			<method
+				java_name="setVec4f"
+				name="SetVec4f"
+				num_parameters="1"
+				property="set"
+				property_name2="vec4f"
+				property_name="vec4f"
+				serialize="1">
+				<comments desc="Set a Vec4f value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4f"
+				name="GetVec4f"
+				num_parameters="0"
+				property="get"
+				property_name2="vec4f"
+				property_name="vec4f"
+				serialize="1">
+				<comments desc="Get a Vec4f value. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setMatrixf"
+				name="SetMatrixf"
+				num_parameters="1"
+				property="set"
+				property_name2="matrixf"
+				property_name="matrixf"
+				serialize="1">
+				<comments desc="Set a Matrixf value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrixf"
+				name="GetMatrixf"
+				num_parameters="0"
+				property="get"
+				property_name2="matrixf"
+				property_name="matrixf"
+				serialize="1">
+				<comments desc="Get a Matrixf value. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method java_name="setMatrixfValues" name="SetMatrixfValues" num_parameters="16">
+				<comments desc="Set the matrix "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="a00"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a01"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a02"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a03"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a10"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a11"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a12"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a13"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a20"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a21"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a22"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a23"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a30"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a31"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="a32"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="a33"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setACharStrZ"
+				name="SetACharStrZ"
+				num_parameters="1"
+				property="set"
+				property_name2="acharStrZ"
+				property_name="achar_str_z"
+				serialize="1">
+				<comments desc="Set a achar stringz value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getACharStrZ"
+				name="GetACharStrZ"
+				num_parameters="0"
+				property="get"
+				property_name2="acharStrZ"
+				property_name="achar_str_z"
+				serialize="1">
+				<comments desc="Get a achar stringz value. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setString"
+				name="SetString"
+				num_parameters="1"
+				property="set"
+				property_name2="string"
+				property_name="string"
+				serialize="1">
+				<comments desc="Set a string value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="cString"
+					typec="cString"
+					typei="ni::eType_String"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				name="GetString"
+				num_parameters="0"
+				property="get"
+				property_name2="string"
+				property_name="string"
+				serialize="1">
+				<comments desc="Get a string value. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				java_name="setStringCRef"
+				name="SetStringCRef"
+				num_parameters="1"
+				property="set"
+				property_name2="stringCRef"
+				property_name="string_cref"
+				serialize="1">
+				<comments desc="Set a string const ref value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const cString &amp;"
+					typec="const cString&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStringCRef"
+				name="GetStringCRef"
+				num_parameters="0"
+				property="get"
+				property_name2="stringCRef"
+				property_name="string_cref"
+				serialize="1">
+				<comments desc="Get a string const ref value. "/>
+				<return type="const cString &amp;" typec="const cString&amp;" typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHString"
+				name="SetHString"
+				num_parameters="1"
+				property="set"
+				property_name2="hstring"
+				property_name="hstring"
+				serialize="1">
+				<comments desc="Set a string value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspStr"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHString"
+				name="GetHString"
+				num_parameters="0"
+				property="get"
+				property_name2="hstring"
+				property_name="hstring"
+				serialize="1">
+				<comments desc="Get a string value. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIndexedU32"
+				name="SetIndexedU32"
+				num_parameters="2"
+				property="set"
+				property_name2="indexedU32"
+				property_name="indexed_u32">
+				<comments desc="Set an indexed U32 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndexedU32"
+				name="GetIndexedU32"
+				num_parameters="1"
+				property="get"
+				property_name2="indexedU32"
+				property_name="indexed_u32">
+				<comments desc="Get an indexed U32 value. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setMappedU32"
+				name="SetMappedU32"
+				num_parameters="2"
+				property="set"
+				property_name2="mappedU32"
+				property_name="mapped_u32">
+				<comments desc="Set a &apos;mapped&apos; U32 value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMappedU32"
+				name="GetMappedU32"
+				num_parameters="1"
+				property="get"
+				property_name2="mappedU32"
+				property_name="mapped_u32">
+				<comments desc="Get a &apos;mapped&apos; U32 value. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPtr"
+				name="SetPtr"
+				num_parameters="1"
+				property="set"
+				property_name2="ptr"
+				property_name="ptr">
+				<comments desc="Set a Ptr value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPtr"
+				name="GetPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="ptr"
+				property_name="ptr">
+				<comments desc="Get a Ptr value. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="writeRawBuffer" name="WriteRawBuffer" num_parameters="2">
+				<comments desc="Write to the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="readRawBuffer" name="ReadRawBuffer" num_parameters="2">
+				<comments desc="Read from the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aData"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="writeRawBufferVoid" name="WriteRawBufferVoid" num_parameters="2">
+				<comments desc="Write to the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apIn"
+					type="const void *"
+					typec="const void*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="readRawBufferVoid" name="ReadRawBufferVoid" num_parameters="2">
+				<comments desc="Read from the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apOut"
+					type="void *"
+					typec="void*"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="writeRawBufferU32" name="WriteRawBufferU32" num_parameters="2">
+				<comments desc="Write to the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apIn"
+					type="const tU32 *"
+					typec="const tU32*"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="readRawBufferU32" name="ReadRawBufferU32" num_parameters="2">
+				<comments desc="Read from the internal raw buffer. ">
+					<remark text="The buffer is 4K in size. "/>
+				</comments>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apOut"
+					type="tU32 *"
+					typec="tU32*"
+					typei="ni::eType_U32|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setIndexedIUnknown"
+				name="SetIndexedIUnknown"
+				num_parameters="2"
+				property="set"
+				property_name2="indexedIUnknown"
+				property_name="indexed_iunknown">
+				<comments desc="Set an indexed IUnknown value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="ni::iUnknown *"
+					typec="ni::iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndexedIUnknown"
+				name="GetIndexedIUnknown"
+				num_parameters="1"
+				property="get"
+				property_name2="indexedIUnknown"
+				property_name="indexed_iunknown">
+				<comments desc="Get an indexed IUnknown value. "/>
+				<return type="ni::iUnknown *" typec="ni::iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setMappedIUnknown"
+				name="SetMappedIUnknown"
+				num_parameters="2"
+				property="set"
+				property_name2="mappedIUnknown"
+				property_name="mapped_iunknown">
+				<comments desc="Set a &apos;mapped&apos; IUnknown value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="ni::iUnknown *"
+					typec="ni::iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMappedIUnknown"
+				name="GetMappedIUnknown"
+				num_parameters="1"
+				property="get"
+				property_name2="mappedIUnknown"
+				property_name="mapped_iunknown">
+				<comments desc="Get a &apos;mapped&apos; IUnknown value. "/>
+				<return type="ni::iUnknown *" typec="ni::iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setTestInteropObject"
+				name="SetTestInteropObject"
+				num_parameters="1"
+				property="set"
+				property_name2="testInteropObject"
+				property_name="test_interop_object">
+				<comments desc="Set a TestInteropObject value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInteropObject"
+				name="GetTestInteropObject"
+				num_parameters="0"
+				property="get"
+				property_name2="testInteropObject"
+				property_name="test_interop_object">
+				<comments desc="Get a TestInteropObject value. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIndexedTestInteropObject"
+				name="SetIndexedTestInteropObject"
+				num_parameters="2"
+				property="set"
+				property_name2="indexedTestInteropObject"
+				property_name="indexed_test_interop_object">
+				<comments desc="Set an indexed TestInteropObject value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndexedTestInteropObject"
+				name="GetIndexedTestInteropObject"
+				num_parameters="1"
+				property="get"
+				property_name2="indexedTestInteropObject"
+				property_name="indexed_test_interop_object">
+				<comments desc="Get an indexed TestInteropObject value. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIndex"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setMappedTestInteropObject"
+				name="SetMappedTestInteropObject"
+				num_parameters="2"
+				property="set"
+				property_name2="mappedTestInteropObject"
+				property_name="mapped_test_interop_object">
+				<comments desc="Set a &apos;mapped&apos; TestInteropObject value. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMappedTestInteropObject"
+				name="GetMappedTestInteropObject"
+				num_parameters="1"
+				property="get"
+				property_name2="mappedTestInteropObject"
+				property_name="mapped_test_interop_object">
+				<comments desc="Get a &apos;mapped&apos; TestInteropObject value. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setU32Vec"
+				name="SetU32Vec"
+				num_parameters="1"
+				property="set"
+				property_name2="u32vec"
+				property_name="u32vec">
+				<comments desc="Set the object&apos;s U32Vec "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apVec"
+					type="tU32CVec *"
+					typec="tU32CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getU32Vec"
+				name="GetU32Vec"
+				num_parameters="0"
+				property="get"
+				property_name2="u32vec"
+				property_name="u32vec">
+				<comments desc="Get the object&apos;s U32Vec "/>
+				<return type="tU32CVec *" typec="tU32CVec*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setStringMap"
+				name="SetStringMap"
+				num_parameters="1"
+				property="set"
+				property_name2="stringMap"
+				property_name="string_map">
+				<comments desc="Set the object&apos;s StringMap "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apMap"
+					type="tStringCMap *"
+					typec="tStringCMap*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStringMap"
+				name="GetStringMap"
+				num_parameters="0"
+				property="get"
+				property_name2="stringMap"
+				property_name="string_map">
+				<comments desc="Get the object&apos;s StringMap "/>
+				<return type="tStringCMap *" typec="tStringCMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="func32" name="Func32" num_parameters="32">
+				<comments desc="Function with 32 parameters "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="a00"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a01"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a02"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a03"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a10"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a11"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a12"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a13"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a20"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a21"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a22"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a23"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a30"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a31"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a32"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a33"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a40"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a41"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a42"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a43"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a50"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a51"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a52"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a53"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a60"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a61"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a62"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a63"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a70"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a71"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a72"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="a73"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="func33" name="Func33" num_parameters="33">
+				<comments desc="Function with 33 parameters "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="a00"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a01"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a02"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a03"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a10"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a11"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a12"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a13"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a20"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a21"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a22"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a23"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a30"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a31"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a32"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a33"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a40"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a41"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a42"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a43"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a50"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a51"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a52"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a53"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a60"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a61"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a62"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a63"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a70"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a71"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a72"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a73"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="firstOops"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="func48" name="Func48" num_parameters="40">
+				<comments desc="Function with 40 parameters "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="a00"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a01"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a02"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a03"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a10"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a11"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a12"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a13"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a20"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a21"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a22"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a23"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a30"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a31"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a32"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a33"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a40"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a41"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a42"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a43"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a50"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a51"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a52"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a53"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a60"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a61"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a62"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a63"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a70"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a71"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a72"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a73"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a80"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a81"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a82"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a83"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a90"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a91"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="a92"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="a93"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrapper="yes"
+			name="iTestInteropSink"
+			uuid1="ECD3E0D2-95AF-4F70-A5D0-CA8CF22C0D89"
+			uuid2="0xecd3e0d2,0x95af,0x4f70,0xa5,0xd0,0xca,0x8c,0xf2,0x2c,0x0d,0x89">
+			<comments desc="Test interop sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onTestInteropSink_Void" name="OnTestInteropSink_Void" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Void_I32"
+				name="OnTestInteropSink_Void_I32"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tI32"
+					typec="ni::tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Void_I64"
+				name="OnTestInteropSink_Void_I64"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tI64"
+					typec="ni::tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Void_Ptr"
+				name="OnTestInteropSink_Void_Ptr"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tIntPtr"
+					typec="ni::tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Var_Var"
+				name="OnTestInteropSink_Var_Var"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="ni::Var" typec="ni::Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const ni::Var &amp;"
+					typec="const ni::Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Vec3f_String"
+				name="OnTestInteropSink_Vec3f_String"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aaszStr"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Vec3f_CObject"
+				name="OnTestInteropSink_Vec3f_CObject"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="apObj"
+					type="const iTestInteropObject *"
+					typec="const iTestInteropObject*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Vec3f_Object"
+				name="OnTestInteropSink_Vec3f_Object"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="apObj"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Object_CObject"
+				name="OnTestInteropSink_Object_CObject"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apObj"
+					type="const iTestInteropObject *"
+					typec="const iTestInteropObject*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Object_Object"
+				name="OnTestInteropSink_Object_Object"
+				num_parameters="1"
+				optional="yes">
+				<comments desc=""/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apObj"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Object_Object2"
+				name="OnTestInteropSink_Object_Object2"
+				num_parameters="3"
+				optional="yes">
+				<comments desc=""/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="a"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="b"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="apObj"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onTestInteropSink_Object_ObjectVec3f"
+				name="OnTestInteropSink_Object_ObjectVec3f"
+				num_parameters="2"
+				optional="yes">
+				<comments desc=""/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apObj"
+					type="iTestInteropObject *"
+					typec="iTestInteropObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="c"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iTestInteropForEach" uuid1="EF4EEBBD-8394-488E-A7F9-BE9C06A36E2D" uuid2="0xef4eebbd,0x8394,0x488e,0xa7,0xf9,0xbe,0x9c,0x06,0xa3,0x6e,0x2d">
+			<comments desc="Test interop foreach interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="forEachObject_OnTestInteropSink_Void" name="ForEachObject_OnTestInteropSink_Void" num_parameters="1">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Void_I32" name="ForEachObject_OnTestInteropSink_Void_I32" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tI32"
+					typec="ni::tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Void_I64" name="ForEachObject_OnTestInteropSink_Void_I64" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tI64"
+					typec="ni::tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Void_Ptr" name="ForEachObject_OnTestInteropSink_Void_Ptr" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="ni::tPtr"
+					typec="ni::tPtr"
+					typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Var_Var" name="ForEachObject_OnTestInteropSink_Var_Var" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="Var"
+					typec="Var"
+					typei="ni::eType_Variant"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Vec3f_String" name="ForEachObject_OnTestInteropSink_Vec3f_String" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszStr"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Vec3f_CObject" name="ForEachObject_OnTestInteropSink_Vec3f_CObject" num_parameters="1">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Vec3f_Object" name="ForEachObject_OnTestInteropSink_Vec3f_Object" num_parameters="1">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Object_CObject" name="ForEachObject_OnTestInteropSink_Object_CObject" num_parameters="1">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Object_Object" name="ForEachObject_OnTestInteropSink_Object_Object" num_parameters="1">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Object_Object2" name="ForEachObject_OnTestInteropSink_Object_Object2" num_parameters="3">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="a"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="b"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="forEachObject_OnTestInteropSink_Object_ObjectVec3f" name="ForEachObject_OnTestInteropSink_Object_ObjectVec3f" num_parameters="2">
+				<comments desc="Call the sink for each object, adds the values returned, if any. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iTestInteropSink *"
+					typec="iTestInteropSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iTestInterop" uuid1="D9724BED-E665-4AEE-876C-BEC9E115BA96" uuid2="0xd9724bed,0xe665,0x4aee,0x87,0x6c,0xbe,0xc9,0xe1,0x15,0xba,0x96">
+			<comments desc="Test interop interface. "/>
+			<parents>
+				<parent name="iTestInteropForEach"/>
+			</parents>
+			<method
+				java_name="featureSetNeverThere"
+				min_features="200"
+				name="FeatureSetNeverThere"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="featureSetFull"
+				min_features="30"
+				name="FeatureSetFull"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="featureSetEmbedded"
+				min_features="20"
+				name="FeatureSetEmbedded"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="featureSetLight" name="FeatureSetLight" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="generateCrash" name="GenerateCrash" num_parameters="1">
+				<comments desc="Emulate a crash. \see CrashRpt.h "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+				<parameter
+					last="1"
+					name="anExceptionType"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumTestInteropObjects"
+				name="GetNumTestInteropObjects"
+				num_parameters="0"
+				property="get"
+				property_name2="numTestInteropObjects"
+				property_name="num_test_interop_objects">
+				<comments desc="Get the number of test interop objects created. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTestInteropObject"
+				name="GetTestInteropObject"
+				num_parameters="1"
+				property="get"
+				property_name2="testInteropObject"
+				property_name="test_interop_object">
+				<comments desc="Get the test interop object at the specified index. "/>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="ni::tSize"
+					typec="ni::tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="createTestInteropObject" name="CreateTestInteropObject" num_parameters="1">
+				<comments desc="Create a test interop object. ">
+					<remark text="This is here mostly to test that IDLGen prints a warning on raw pointer factory functions. "/>
+				</comments>
+				<return type="iTestInteropObject *" typec="iTestInteropObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anNumItems"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createTestInteropObjectPtr" name="CreateTestInteropObjectPtr" num_parameters="1">
+				<comments desc="Create a test interop object. "/>
+				<return type="Ptr&lt;iTestInteropObject&gt;" typec="Ptr&lt;iTestInteropObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anNumItems"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

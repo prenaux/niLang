@@ -1,0 +1,543 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="15" name="ePCREOptionsFlags">
+			<comments desc="PCRE option flags "/>
+			<value min_features="15" name="ePCREOptionsFlags_Caseless" value="0x00000001 ">
+				<comments desc="Do caseless (case insensitive) matching. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Multiline" value="0x00000002 ">
+				<comments desc="&apos;^&apos; and &apos;$&apos; match newlines within data. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_DotAll" value="0x00000004 ">
+				<comments desc="&apos;.&apos; matches anything including NL. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Extended" value="0x00000008 ">
+				<comments desc="Ignore whitespace and # comments. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Anchored" value="0x00000010 ">
+				<comments desc="Force pattern anchoring. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_DollarEndOnly" value="0x00000020 ">
+				<comments desc="&apos;$&apos; not to match newline at end. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Extra" value="0x00000040 ">
+				<comments desc="PCRE extra features (not much use currently). "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NotBOL" value="0x00000080 ">
+				<comments desc="This option specifies that first character of the subject string is not the beginning of a line, so the circumflex metacharacter should not match before it. Setting this without MULTILINE (at compile time) causes circumflex never to match. This option affects only the behaviour of the circumflex metacharacter. It does not affect &apos;\\A&apos;. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NotEOL" value="0x00000100 ">
+				<comments desc="This option specifies that the end of the subject string is not the end of a line, so the dollar metacharacter should not match it nor (except in multiline mode) a newline immediately before it. Setting this without PCRE_MULTILINE (at compile time) causes dollar never to match. This option affects only the behaviour of the dollar metacharacter. It does not affect &apos;\\Z&apos; or &apos;\\z&apos;. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Ungreedy" value="0x00000200 ">
+				<comments desc="Invert greediness of quantifiers. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NotEmpty" value="0x00000400 ">
+				<comments desc="An empty string is not considered to be a valid match if this option is set. If there are alternatives in the pattern, they are tried. If all the alternatives match the empty string, the entire match fails. For example, if the pattern. &quot;a?b?&quot; is applied to a string not beginning with &quot;a&quot; or &quot;b&quot;, it matches the empty string at the start of the subject. With NOTEMPTY set, this match is not valid, so PCRE searches further into the string for occurrences of &quot;a&quot; or &quot;b&quot;. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_UTF8" value="0x00000800 ">
+				<comments desc="Run in UTF-8 mode. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NoAutoCapture" value="0x00001000 ">
+				<comments desc="Disable numbered capturing parentheses (named ones available). "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NoUTF8Check" value="0x00002000 ">
+				<comments desc="Do not check the pattern for UTF-8 validity. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_AutoCallout" value="0x00004000 ">
+				<comments desc="Compile automatic callouts. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_DFAShortest" value="0x00010000 ">
+				<comments desc="Setting this option causes the matching algorithm to stop as soon as it has found one match. Because of the way the alternative algorithm works, this is necessarily the shortest possible match at the first possible matching point in the subject string. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_FirstLine" value="0x00040000 ">
+				<comments desc="Force matching to be before newline. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_DupNames" value="0x00080000 ">
+				<comments desc="Allow duplicate names for subpatterns. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NewLineCR" value="0x00100000 ">
+				<comments desc="Set CR as the newline sequence. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NewLineLF" value="0x00200000 ">
+				<comments desc="Set LF as the newline sequence. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NewLineCRLF" value="0x00300000 ">
+				<comments desc="Set CRLF as the newline sequence. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NewLineAny" value="0x00400000 ">
+				<comments desc="Recognize any Unicode newline sequence. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_NewLineAnyCRLF" value="0x00500000 ">
+				<comments desc="Recognize CR, LF, and CRLF as newline sequences. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_BsrAnyCRLF" value="0x00800000 ">
+				<comments desc="&apos;\\R&apos; matches only CR, LF, or CRLF. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_BsrUnicode" value="0x01000000 ">
+				<comments desc="&apos;\\R&apos; matches all Unicode line endings "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Global" value="niBit ( 30 ) ">
+				<comments desc="Global regular expression. "/>
+			</value>
+			<value min_features="15" name="ePCREOptionsFlags_Optimize" value="niBit ( 31 ) ">
+				<comments desc="Optimize the regular expression. "/>
+			</value>
+		</enum>
+		<enum min_features="15" name="ePCREError">
+			<comments desc="PCRE compilation error "/>
+			<value min_features="15" name="ePCREError_OK" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_NoMatch" value="( -1 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_Null" value="( -2 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadOption" value="( -3 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadMagic" value="( -4 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_UnknownOpcode" value="( -5 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_NoMemory" value="( -6 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_NoSubstring" value="( -7 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_MatchLimit" value="( -8 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_Callout" value="( -9 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadUTF8" value="( -10 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadUTF8Offset" value="( -11 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_Partial" value="( -12 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadPartial" value="( -13 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_Internal" value="( -14 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadCount" value="( -15 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_DFA_UITEM" value="( -16 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_DFA_UCOND" value="( -17 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_DFA_UMLIMIT" value="( -18 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_DFA_WSSIZE" value="( -19 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_DFA_RECURSE" value="( -20 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_RecursionLimit" value="( -21 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_NullWSLimit" value="( -22 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadNewLine" value="( -23 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_LoopLimit" value="( -24 ) ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="ePCREError_BadRegexString" value="( -1000 ) ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iRegex" uuid1="C48D7F86-D623-4327-B9DB-DB359E1BC0E6" uuid2="0xc48d7f86,0xd623,0x4327,0xb9,0xdb,0xdb,0x35,0x9e,0x1b,0xc0,0xe6">
+			<comments desc="Generic regular expression interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getImplType"
+				name="GetImplType"
+				num_parameters="0"
+				property="get"
+				property_name2="implType"
+				property_name="impl_type">
+				<comments desc="Get the implementation type of the regular experssion. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="doesMatch"
+				name="DoesMatch"
+				num_parameters="1">
+				<comments desc="Search for the next match of the expression. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="15"
+			name="iPCRE"
+			uuid1="B168FD05-0FA2-4238-8B44-515FEC762424"
+			uuid2="0xb168fd05,0x0fa2,0x4238,0x8b,0x44,0x51,0x5f,0xec,0x76,0x24,0x24">
+			<comments desc="PCRE Regular Expression interface. "/>
+			<parents>
+				<parent name="iRegex"/>
+			</parents>
+			<method
+				java_name="compile"
+				min_features="15"
+				name="Compile"
+				num_parameters="2">
+				<comments desc="Compile a regular expression. ">
+					<params text="aaszRegEx is the regular expression to compile. "/>
+					<params text="aaszOpt is perl style character modifier.&lt;br/&gt; &lt;ul&gt; &lt;li&gt;g = ePCREOptionsFlags_Global&lt;/li&gt; &lt;li&gt;i = ePCREOptionsFlags_Caseless&lt;/li&gt; &lt;li&gt;m = ePCREOptionsFlags_Multiline&lt;/li&gt; &lt;li&gt;s = ePCREOptionsFlags_DotAll&lt;/li&gt; &lt;li&gt;x = ePCREOptionsFlags_Extended&lt;/li&gt; &lt;li&gt;U = ePCREOptionsFlags_Ungreedy&lt;/li&gt; &lt;/ul&gt; "/>
+				</comments>
+				<return type="ePCREError" typec="ePCREError" typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszRegEx"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszOpt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="compile2"
+				min_features="15"
+				name="Compile2"
+				num_parameters="2">
+				<comments desc="Compile a regular expression. ">
+					<remark text="Uses option flags directly. "/>
+				</comments>
+				<return type="ePCREError" typec="ePCREError" typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszRegEx"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aOpt"
+					type="tPCREOptionsFlags"
+					typec="tPCREOptionsFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCompiled"
+				min_features="15"
+				name="GetIsCompiled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCompiled"
+				property_name="is_compiled">
+				<comments desc="Get whether the last compile has been successfull. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLastCompileError"
+				min_features="15"
+				name="GetLastCompileError"
+				num_parameters="0"
+				property="get"
+				property_name2="lastCompileError"
+				property_name="last_compile_error">
+				<comments desc="Get the last compilation error code. "/>
+				<return type="ePCREError" typec="ePCREError" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLastCompileErrorDesc"
+				min_features="15"
+				name="GetLastCompileErrorDesc"
+				num_parameters="0"
+				property="get"
+				property_name2="lastCompileErrorDesc"
+				property_name="last_compile_error_desc">
+				<comments desc="Get the last compilation error description. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLastCompileErrorOffset"
+				min_features="15"
+				name="GetLastCompileErrorOffset"
+				num_parameters="0"
+				property="get"
+				property_name2="lastCompileErrorOffset"
+				property_name="last_compile_error_offset">
+				<comments desc="Get the last compilation error offset. ">
+					<remark text="The offset is the &apos;index&apos; of the character in the compiled regex where the error has been detected. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getOptions"
+				min_features="15"
+				name="GetOptions"
+				num_parameters="0"
+				property="get"
+				property_name2="options"
+				property_name="options">
+				<comments desc="Get the options used during the last compilation. "/>
+				<return type="tPCREOptionsFlags" typec="tPCREOptionsFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="reset"
+				min_features="15"
+				name="Reset"
+				num_parameters="0">
+				<comments desc="Resets the regex object. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumMarkers"
+				min_features="15"
+				name="GetNumMarkers"
+				num_parameters="0"
+				property="get"
+				property_name2="numMarkers"
+				property_name="num_markers">
+				<comments desc="Get the number of matches returned by the last Match/Sub call. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMarker"
+				min_features="15"
+				name="GetMarker"
+				num_parameters="1"
+				property="get"
+				property_name2="marker"
+				property_name="marker">
+				<comments desc="Get the range of the last match. ">
+					<remark text="A range is &apos;x&apos; first character index matched, &apos;y&apos; last character index matched. "/>
+				</comments>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				min_features="15"
+				name="GetString"
+				num_parameters="1"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get the substring in string matched at the specified index. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumNamed"
+				min_features="15"
+				name="GetNumNamed"
+				num_parameters="0"
+				property="get"
+				property_name2="numNamed"
+				property_name="num_named">
+				<comments desc="Get the number of named subpatterns. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNamedName"
+				min_features="15"
+				name="GetNamedName"
+				num_parameters="1"
+				property="get"
+				property_name2="namedName"
+				property_name="named_name">
+				<comments desc="Get the name of the subpattern at the specified index. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNamedMarker"
+				min_features="15"
+				name="GetNamedMarker"
+				num_parameters="1"
+				property="get"
+				property_name2="namedMarker"
+				property_name="named_marker">
+				<comments desc="Get the range of a named match. ">
+					<remark text="A range is &apos;x&apos; first character index matched, &apos;y&apos; last character index matched. "/>
+					<remark text="Convenience for GetMarker(GetNamedIndex(NAME)) "/>
+				</comments>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNamedString"
+				min_features="15"
+				name="GetNamedString"
+				num_parameters="1"
+				property="get"
+				property_name2="namedString"
+				property_name="named_string">
+				<comments desc="Get the substring in string matched at the specified index. ">
+					<remark text="Convenience for GetString(GetNamedIndex(NAME)) "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNamedIndex"
+				min_features="15"
+				name="GetNamedIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="namedIndex"
+				property_name="named_index">
+				<comments desc="Get the index of a named subpattern. " return="eInvalidHandle if the subpattern hasnt been matched. ">
+					<remark text="The index points in the markers. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matchRaw"
+				min_features="15"
+				name="MatchRaw"
+				num_parameters="1">
+				<comments desc="Match against this regular expression. " return="The number of matches found, -1 on error. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="match"
+				min_features="15"
+				name="Match"
+				num_parameters="2">
+				<comments desc="Match against this regular expression. " return="The number of matches found, -1 on error. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="ahspString"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="split"
+				min_features="15"
+				name="Split"
+				num_parameters="2">
+				<comments desc="Splits based on delimiters matching the regex. ">
+					<params text="aaszString is the string to process "/>
+					<params text="anMaxFields is the maximum number of fields to split out. Zero (0) means split all fields, but discard any trailing empty bits. Negative means split all fields and keep trailing empty bits. Positive means keep up to N fields including any empty fields lass than N. Anything remaining is in the last field. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anMaxFields"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="sub"
+				min_features="15"
+				name="Sub"
+				num_parameters="3">
+				<comments desc="Substitues out whatever matches the regex for the second parameter. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszReplacement"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abDoDollarSub"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,5 @@
+SubDir TOP niAppLib ;
+
+if ! ( $(WINRT) = 1 ) {
+  SubInclude TOP niAppLib src ;
+}

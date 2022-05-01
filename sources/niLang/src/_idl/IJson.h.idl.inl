@@ -1,0 +1,242 @@
+#include "../API/niLang/IJson.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iJsonParserSink **/
+/** iJsonParserSink -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iJsonParserSink)
+/** ni -> iJsonParserSink::OnJsonParserSink_Error/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonParserSink::OnJsonParserSink_Error/3 **/
+IDLC_METH_BEGIN(ni,iJsonParserSink,OnJsonParserSink_Error,3)
+	IDLC_DECL_VAR(achar*,aaszReason)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszReason)
+	IDLC_DECL_VAR(tU32,anLine)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anLine)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_METH_CALL_VOID(ni,iJsonParserSink,OnJsonParserSink_Error,3,(aaszReason,anLine,anCol))
+IDLC_METH_END(ni,iJsonParserSink,OnJsonParserSink_Error,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonParserSink::OnJsonParserSink_Value/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonParserSink::OnJsonParserSink_Value/2 **/
+IDLC_METH_BEGIN(ni,iJsonParserSink,OnJsonParserSink_Value,2)
+	IDLC_DECL_VAR(eJsonType,aType)
+	IDLC_BUF_TO_ENUM(eJsonType,aType)
+	IDLC_DECL_VAR(achar*,aValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aValue)
+	IDLC_METH_CALL_VOID(ni,iJsonParserSink,OnJsonParserSink_Value,2,(aType,aValue))
+IDLC_METH_END(ni,iJsonParserSink,OnJsonParserSink_Value,2)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iJsonParserSink)
+
+#endif // if niMinFeatures(20)
+/** interface : iJsonWriterSink **/
+/** iJsonWriterSink -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iJsonWriterSink)
+/** ni -> iJsonWriterSink::OnJsonWriterSink_Error/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriterSink::OnJsonWriterSink_Error/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriterSink,OnJsonWriterSink_Error,1)
+	IDLC_DECL_VAR(achar*,aaszReason)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszReason)
+	IDLC_METH_CALL_VOID(ni,iJsonWriterSink,OnJsonWriterSink_Error,1,(aaszReason))
+IDLC_METH_END(ni,iJsonWriterSink,OnJsonWriterSink_Error,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriterSink::OnJsonWriterSink_Write/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriterSink::OnJsonWriterSink_Write/2 **/
+IDLC_METH_BEGIN(ni,iJsonWriterSink,OnJsonWriterSink_Write,2)
+	IDLC_DECL_VAR(eJsonType,aValue)
+	IDLC_BUF_TO_ENUM(eJsonType,aValue)
+	IDLC_DECL_VAR(achar*,aaszString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszString)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriterSink,OnJsonWriterSink_Write,2,(aValue,aaszString))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriterSink,OnJsonWriterSink_Write,2)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iJsonWriterSink)
+
+#endif // if niMinFeatures(20)
+/** interface : iJsonWriter **/
+/** iJsonWriter -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iJsonWriter)
+/** ni -> iJsonWriter::Reset/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::Reset/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,Reset,0)
+	IDLC_METH_CALL_VOID(ni,iJsonWriter,Reset,0,())
+IDLC_METH_END(ni,iJsonWriter,Reset,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ArrayBegin/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ArrayBegin/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ArrayBegin,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ArrayBegin,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ArrayBegin,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ArrayEnd/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ArrayEnd/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ArrayEnd,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ArrayEnd,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ArrayEnd,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectBegin/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectBegin/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectBegin,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectBegin,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectBegin,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectEnd/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectEnd/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectEnd,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectEnd,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectEnd,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::Name/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::Name/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,Name,1)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,Name,1,(aName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,Name,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ValueString/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ValueString/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ValueString,1)
+	IDLC_DECL_VAR(achar*,aStr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aStr)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ValueString,1,(aStr))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ValueString,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ValueNumber/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ValueNumber/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ValueNumber,1)
+	IDLC_DECL_VAR(achar*,aStr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aStr)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ValueNumber,1,(aStr))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ValueNumber,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ValueBool/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ValueBool/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ValueBool,1)
+	IDLC_DECL_VAR(tBool,abItem)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abItem)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ValueBool,1,(abItem))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ValueBool,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ValueNull/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ValueNull/0 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ValueNull,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ValueNull,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ValueNull,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectString/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectString/2 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectString,2)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_VAR(achar*,aStr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aStr)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectString,2,(aName,aStr))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectString,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectNumber/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectNumber/2 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectNumber,2)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_VAR(achar*,aStr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aStr)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectNumber,2,(aName,aStr))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectNumber,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectBool/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectBool/2 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectBool,2)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_VAR(tBool,abValue)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectBool,2,(aName,abValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectBool,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iJsonWriter::ObjectNull/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iJsonWriter::ObjectNull/1 **/
+IDLC_METH_BEGIN(ni,iJsonWriter,ObjectNull,1)
+	IDLC_DECL_VAR(achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iJsonWriter,ObjectNull,1,(aName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iJsonWriter,ObjectNull,1)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iJsonWriter)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

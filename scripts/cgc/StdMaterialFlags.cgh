@@ -1,0 +1,150 @@
+#pragma once
+#ifndef __STDMATERIALFLAGS_CGH_C7FAB4BA_0EE3_4CE2_B589_F761C2FCA33D__
+#define __STDMATERIALFLAGS_CGH_C7FAB4BA_0EE3_4CE2_B589_F761C2FCA33D__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#ifndef eMaterialFlags_DoubleSided
+#define eMaterialFlags_DoubleSided 0
+#endif
+
+#ifndef eMaterialFlags_Translucent
+#define eMaterialFlags_Translucent 0
+#endif
+
+#ifndef eMaterialFlags_AlphaTest
+#define eMaterialFlags_AlphaTest 0
+#endif
+
+#ifndef eMaterialFlags_NormalMap
+#define eMaterialFlags_NormalMap 0
+#endif
+
+#ifndef eMaterialFlags_HeightMap
+#define eMaterialFlags_HeightMap 0
+#endif
+
+#ifndef eMaterialFlags_FlatEnv
+#define eMaterialFlags_FlatEnv 0
+#endif
+
+#ifndef eMaterialFlags_Refraction
+#define eMaterialFlags_Refraction 0
+#endif
+
+#ifndef eMaterialFlags_UseRefractionMask
+#define eMaterialFlags_UseRefractionMask 0
+#endif
+
+#ifndef eMaterialFlags_TileMap
+#define eMaterialFlags_TileMap 0
+#endif
+
+#ifndef eMaterialFlags_DistanceField
+#define eMaterialFlags_DistanceField 0
+#endif
+
+#ifndef eMaterialFlags_Decal
+#define eMaterialFlags_Decal 0
+#endif
+
+#ifndef eMaterialChannel_HasAmbient
+#define eMaterialChannel_HasAmbient 0
+#endif
+#ifndef eMaterialChannel_HasBase
+#define eMaterialChannel_HasBase 0
+#endif
+#ifndef eMaterialChannel_HasOpacity
+#define eMaterialChannel_HasOpacity 0
+#endif
+#ifndef eMaterialChannel_HasBump
+#define eMaterialChannel_HasBump 0
+#endif
+#ifndef eMaterialChannel_HasSpecular
+#define eMaterialChannel_HasSpecular 0
+#endif
+#ifndef eMaterialChannel_HasEnvironment
+#define eMaterialChannel_HasEnvironment 0
+#endif
+#ifndef eMaterialChannel_HasEmissive
+#define eMaterialChannel_HasEmissive 0
+#endif
+#ifndef eMaterialChannel_HasRefraction
+#define eMaterialChannel_HasRefraction 0
+#endif
+#ifndef eMaterialChannel_HasT0
+#define eMaterialChannel_HasT0  0
+#endif
+#ifndef eMaterialChannel_HasT1
+#define eMaterialChannel_HasT1  0
+#endif
+#ifndef eMaterialChannel_HasT2
+#define eMaterialChannel_HasT2  0
+#endif
+#ifndef eMaterialChannel_HasT3
+#define eMaterialChannel_HasT3  0
+#endif
+#ifndef eMaterialChannel_HasT4
+#define eMaterialChannel_HasT4  0
+#endif
+#ifndef eMaterialChannel_HasT5
+#define eMaterialChannel_HasT5  0
+#endif
+#ifndef eMaterialChannel_HasT6
+#define eMaterialChannel_HasT6  0
+#endif
+#ifndef eMaterialChannel_HasT7
+#define eMaterialChannel_HasT7  0
+#endif
+
+#ifndef eMaterialChannel_Base
+#define eMaterialChannel_Base 0
+#endif
+#ifndef eMaterialChannel_Opacity
+#define eMaterialChannel_Opacity 1
+#endif
+#ifndef eMaterialChannel_Bump
+#define eMaterialChannel_Bump 2
+#endif
+#ifndef eMaterialChannel_Specular
+#define eMaterialChannel_Specular 3
+#endif
+#ifndef eMaterialChannel_Environment
+#define eMaterialChannel_Environment 4
+#endif
+#ifndef eMaterialChannel_Ambient
+#define eMaterialChannel_Ambient 5
+#endif
+#ifndef eMaterialChannel_Emissive
+#define eMaterialChannel_Emissive 6
+#endif
+#ifndef eMaterialChannel_Refraction
+#define eMaterialChannel_Refraction 7
+#endif
+#ifndef eMaterialChannel_T0
+#define eMaterialChannel_T0 8
+#endif
+#ifndef eMaterialChannel_T1
+#define eMaterialChannel_T1 9
+#endif
+#ifndef eMaterialChannel_T2
+#define eMaterialChannel_T2 10
+#endif
+#ifndef eMaterialChannel_T3
+#define eMaterialChannel_T3 11
+#endif
+#ifndef eMaterialChannel_T4
+#define eMaterialChannel_T4 12
+#endif
+#ifndef eMaterialChannel_T5
+#define eMaterialChannel_T5 13
+#endif
+#ifndef eMaterialChannel_T6
+#define eMaterialChannel_T6 14
+#endif
+#ifndef eMaterialChannel_T7
+#define eMaterialChannel_T7 15
+#endif
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDMATERIALFLAGS_CGH_C7FAB4BA_0EE3_4CE2_B589_F761C2FCA33D__

@@ -1,0 +1,1411 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eUIInputModifier">
+			<comments desc="UI input modifiers. ">
+				<remark text="The key values are intentionally the same as ni::eKeyMod "/>
+			</comments>
+			<value name="eUIInputModifier_A" value="niBit ( 16 ) ">
+				<comments desc="Modifier A. "/>
+			</value>
+			<value name="eUIInputModifier_Control" value="eUIInputModifier_A ">
+				<comments desc="Modifier A. "/>
+			</value>
+			<value name="eUIInputModifier_Command" value="eUIInputModifier_A ">
+				<comments desc="Modifier A. "/>
+			</value>
+			<value name="eUIInputModifier_AddSelection" value="eUIInputModifier_A ">
+				<comments desc="Modifier A. "/>
+			</value>
+			<value name="eUIInputModifier_B" value="niBit ( 17 ) ">
+				<comments desc="Modifier B. "/>
+			</value>
+			<value name="eUIInputModifier_Shift" value="eUIInputModifier_B ">
+				<comments desc="Modifier B. "/>
+			</value>
+			<value name="eUIInputModifier_AddSelectionRange" value="eUIInputModifier_B ">
+				<comments desc="Modifier B. "/>
+			</value>
+			<value name="eUIInputModifier_C" value="niBit ( 18 ) ">
+				<comments desc="Modifier C. "/>
+			</value>
+			<value name="eUIInputModifier_Alt" value="eUIInputModifier_C ">
+				<comments desc="Modifier C. "/>
+			</value>
+			<value name="eUIInputModifier_Shortcut" value="eUIInputModifier_C ">
+				<comments desc="Modifier C. "/>
+			</value>
+			<value name="eUIInputModifier_KeyDownRepeat" value="niBit ( 31 ) ">
+				<comments desc="KeyDown is repeating. "/>
+			</value>
+		</enum>
+		<enum name="eUIInputSubmitFlags">
+			<comments desc="UI input submit. "/>
+			<value name="eUIInputSubmitFlags_Disabled" value="0 ">
+				<comments desc="Disabled "/>
+			</value>
+			<value name="eUIInputSubmitFlags_SubmitA" value="niBit ( 0 ) ">
+				<comments desc="Input action Submit A. ">
+					<remark text="Standard is Enter and NumPadEnter. "/>
+				</comments>
+			</value>
+			<value name="eUIInputSubmitFlags_SubmitB" value="niBit ( 1 ) ">
+				<comments desc="Input action Submit B. ">
+					<remark text="Standard is Space bar. "/>
+				</comments>
+			</value>
+			<value name="eUIInputSubmitFlags_SubmitC" value="niBit ( 2 ) ">
+				<comments desc="Input action Submit C. ">
+					<remark text="Standard is Ctrl+Enter. "/>
+				</comments>
+			</value>
+			<value name="eUIInputSubmitFlags_LeftClick" value="niBit ( 3 ) ">
+				<comments desc="Left click. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_LeftDoubleClick" value="niBit ( 4 ) ">
+				<comments desc="Left double click. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_RightClick" value="niBit ( 5 ) ">
+				<comments desc="Right click. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_RightDoubleClick" value="niBit ( 6 ) ">
+				<comments desc="Right double click. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_StandardButton" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftClick ">
+				<comments desc="Button standard. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_StandardIcon" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftDoubleClick ">
+				<comments desc="Icon standard. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_StandardSingleLineText" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitC ">
+				<comments desc="Single Line Text box standard. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_StandardMultiLineText" value="eUIInputSubmitFlags_SubmitC ">
+				<comments desc="Multi Line Text box standard. "/>
+			</value>
+			<value name="eUIInputSubmitFlags_Default" value="eUIInputSubmitFlags_Disabled ">
+				<comments desc="UI Context default input submit flags default. "/>
+			</value>
+		</enum>
+		<interface name="iUIContext" uuid1="2C6B89CB-0E9E-41FC-92BB-AE6AA3EE442C" uuid2="0x2c6b89cb,0x0e9e,0x41fc,0x92,0xbb,0xae,0x6a,0xa3,0xee,0x44,0x2c">
+			<comments desc="UI Context interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the parent graphics object. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGraphicsContext"
+				name="GetGraphicsContext"
+				num_parameters="0"
+				property="get"
+				property_name2="graphicsContext"
+				property_name="graphics_context">
+				<comments desc="Get the parent graphics context attached to this UI context. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="sendWindowMessage" name="SendWindowMessage" num_parameters="3">
+				<comments desc="Send a Window message to the UI context. ">
+					<remark text="This method should be called in the application&apos;s window message sink to send input to the UI context. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aMsg"
+					type="eOSWindowMessage"
+					typec="eOSWindowMessage"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setInputModifiers"
+				name="SetInputModifiers"
+				num_parameters="1"
+				property="set"
+				property_name2="inputModifiers"
+				property_name="input_modifiers">
+				<comments desc="Set the input modifiers. \see ni::eUIInputModifier "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anInputModifier"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInputModifiers"
+				name="GetInputModifiers"
+				num_parameters="0"
+				property="get"
+				property_name2="inputModifiers"
+				property_name="input_modifiers">
+				<comments desc="Get the input modifiers. \see ni::eUIInputModifier "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDefaultInputSubmitFlags"
+				name="SetDefaultInputSubmitFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultInputSubmitFlags"
+				property_name="default_input_submit_flags">
+				<comments desc="Set the default input submit flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aSubmitFlags"
+					type="tUIInputSubmitFlags"
+					typec="tUIInputSubmitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultInputSubmitFlags"
+				name="GetDefaultInputSubmitFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultInputSubmitFlags"
+				property_name="default_input_submit_flags">
+				<comments desc="Get the default input submit flags. "/>
+				<return type="tUIInputSubmitFlags" typec="tUIInputSubmitFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setHoverDelay"
+				name="SetHoverDelay"
+				num_parameters="1"
+				property="set"
+				property_name2="hoverDelay"
+				property_name="hover_delay">
+				<comments desc="Set the hovering delay in seconds. ">
+					<remark text="Default is 0 which means that it is disabled. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afDelay"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverDelay"
+				name="GetHoverDelay"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverDelay"
+				property_name="hover_delay">
+				<comments desc="Get the hovering delay in seconds. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setHoverInputModifiers"
+				name="SetHoverInputModifiers"
+				num_parameters="1"
+				property="set"
+				property_name2="hoverInputModifiers"
+				property_name="hover_input_modifiers">
+				<comments desc="Set the input modifier required to enable the hover. \see ni::eUIInputModifier "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anInputModifiers"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverInputModifiers"
+				name="GetHoverInputModifiers"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverInputModifiers"
+				property_name="hover_input_modifiers">
+				<comments desc="Get the input modifier required to enable the hover. \see ni::eUIInputModifier "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setImageMap"
+				name="SetImageMap"
+				num_parameters="1"
+				property="set"
+				property_name2="imageMap"
+				property_name="image_map">
+				<comments desc="Set the context&apos;s image map. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apImageMap"
+					type="iImageMap *"
+					typec="iImageMap*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImageMap"
+				name="GetImageMap"
+				num_parameters="0"
+				property="get"
+				property_name2="imageMap"
+				property_name="image_map">
+				<comments desc="Get the context&apos;s image map. "/>
+				<return type="iImageMap *" typec="iImageMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setErrorOverlay"
+				name="SetErrorOverlay"
+				num_parameters="1"
+				property="set"
+				property_name2="errorOverlay"
+				property_name="error_overlay">
+				<comments desc="Get the error overlay. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apOverlay"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getErrorOverlay"
+				name="GetErrorOverlay"
+				num_parameters="0"
+				property="get"
+				property_name2="errorOverlay"
+				property_name="error_overlay">
+				<comments desc="Get the error overlay. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearSkins" name="ClearSkins" num_parameters="0">
+				<comments desc="Remove all skins loaded. ">
+					<remark text="The default skin will remain. "/>
+					<remark text="A SkinChanged message will be broadcasted to all widgets when the skins are cleared. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addSkin" name="AddSkin" num_parameters="1">
+				<comments desc="Add a new skin. ">
+					<remark text="If a skin with the specified name has already been loaded the method will fail. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addSkinFromRes" name="AddSkinFromRes" num_parameters="1">
+				<comments desc="Add a new skin from the specified resource. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeSkin" name="RemoveSkin" num_parameters="1">
+				<comments desc="Unload a skin. ">
+					<remark text="The default skin cannot be removed "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDefaultSkin"
+				name="SetDefaultSkin"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultSkin"
+				property_name="default_skin">
+				<comments desc="Set the default skin. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultSkin"
+				name="GetDefaultSkin"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultSkin"
+				property_name="default_skin">
+				<comments desc="Get the default skin. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSkins"
+				name="GetNumSkins"
+				num_parameters="0"
+				property="get"
+				property_name2="numSkins"
+				property_name="num_skins">
+				<comments desc="Get the number of skins. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinName"
+				name="GetSkinName"
+				num_parameters="1"
+				property="get"
+				property_name2="skinName"
+				property_name="skin_name">
+				<comments desc="Get the name of the skin at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinIndex"
+				name="GetSkinIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="skinIndex"
+				property_name="skin_index">
+				<comments desc="Get the index of the skin with the specified name. ">
+					<remark text="Return eInvalidHandle if the skin does not exist. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinDataTable"
+				name="GetSkinDataTable"
+				num_parameters="1"
+				property="get"
+				property_name2="skinDataTable"
+				property_name="skin_data_table">
+				<comments desc="Get the data table associated with the specified skin. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="applySkin" name="ApplySkin" num_parameters="2">
+				<comments desc="Apply the specified skin to a widget and all its children. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinFont"
+				name="FindSkinFont"
+				num_parameters="4">
+				<comments desc="Find the font of the specified item in the widget&apos;s skin. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinCursor"
+				name="FindSkinCursor"
+				num_parameters="4">
+				<comments desc="Find the cursor of the specified item in the widget&apos;s skin. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinElement"
+				name="FindSkinElement"
+				num_parameters="4">
+				<comments desc="Find the element of the specified item in the widget&apos;s skin. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinColor"
+				name="FindSkinColor"
+				num_parameters="5">
+				<comments desc="Find the color of the specified item in the widget&apos;s skin. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aDefault"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasWidgetSinkClass"
+				name="HasWidgetSinkClass"
+				num_parameters="1">
+				<comments desc="Check whether the specified widget sink class can be created. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidgetSink" name="CreateWidgetSink" num_parameters="2">
+				<comments desc="Create a widget sink of the specified class. "/>
+				<return type="iWidgetSink *" typec="iWidgetSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createWidgetSinkFromScript"
+				min_features="15"
+				name="CreateWidgetSinkFromScript"
+				num_parameters="1">
+				<comments desc="Create a widget sink from the the specified script script. "/>
+				<return type="iWidgetSink *" typec="iWidgetSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidget" name="CreateWidget" num_parameters="5">
+				<comments desc="Create a widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apwParent"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRectf : : Null ( ) "
+					name="arectPos"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					name="anStyle"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidgetRaw" name="CreateWidgetRaw" num_parameters="5">
+				<comments desc="Create a widget without attaching any sink to it. ">
+					<remark text="Use ni::iWidget::AddSink, ni::iWidget::AddPostSink, ni::iWidget::AddClassSink or ni::iWidget::AddClassPostSink to add custom or registered sink. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apwParent"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRectf : : Null ( ) "
+					name="arectPos"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					name="anStyle"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidgetFromDataTable" name="CreateWidgetFromDataTable" num_parameters="4">
+				<comments desc="Create a widget from the specified datatable. " return="The newly created widget. ">
+					<remark text="apwParent is the parent widget, if specified the datatable is loaded in a Canvas widget with a fill dock style, if not the datatable is loaded in a Form widget with a snap center dock style. "/>
+					<remark text="ahspID if not null is the id of the widget (overwrite the &apos;id&apos; property in the datatable). "/>
+					<remark text="ahspTitle if not null is the title of the form widget (overwrite the &apos;title&apos; property in the datatable). "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apwParent"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspTitle"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidgetFromResource" name="CreateWidgetFromResource" num_parameters="4">
+				<comments desc="Create a widget from a datatable in the specified resource. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apwParent"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspTitle"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRootWidget"
+				name="GetRootWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="rootWidget"
+				property_name="root_widget">
+				<comments desc="Get the root widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setActiveWidget"
+				name="SetActiveWidget"
+				num_parameters="1"
+				property="set"
+				property_name2="activeWidget"
+				property_name="active_widget">
+				<comments desc="Set the active widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActiveWidget"
+				name="GetActiveWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="activeWidget"
+				property_name="active_widget">
+				<comments desc="Get the active widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumWidgets"
+				name="GetNumWidgets"
+				num_parameters="0"
+				property="get"
+				property_name2="numWidgets"
+				property_name="num_widgets">
+				<comments desc="Get the number of widgets created. ">
+					<remark text="This function is meant for debugging purpose. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidget"
+				name="GetWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="widget"
+				property_name="widget">
+				<comments desc="Get the widget at the specified index. ">
+					<remark text="This function is meant for debugging purpose. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="serializeWidget" name="SerializeWidget" num_parameters="4">
+				<comments desc="Serialize the specified widget. " return="eFalse if failed, else eTrue. ">
+					<params text="apWidget is the widget to serialize. "/>
+					<params text="apDT is the source/destination data table. "/>
+					<params text="anFlags is the serialization flags. "/>
+					<params text="apFilter regular expression that determines which class will be serialized. Is NULL all classes will be serialized. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anFlags"
+					type="tWidgetSerializeFlags"
+					typec="tWidgetSerializeFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apFilter"
+					type="iRegex *"
+					typec="iRegex*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createWidgetCommand" name="CreateWidgetCommand" num_parameters="0">
+				<comments desc="Create a widget command instance. "/>
+				<return type="iWidgetCommand *" typec="iWidgetCommand*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="sendCommand" name="SendCommand" num_parameters="2">
+				<comments desc="Send a command to the specified widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apCmd"
+					type="iWidgetCommand *"
+					typec="iWidgetCommand*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="draw" name="Draw" num_parameters="0">
+				<comments desc="Draw the GUI. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="drawCursor" name="DrawCursor" num_parameters="1">
+				<comments desc="Draw the current mouse cursor or set it as hardware cursor on the specified window if it is specified and supported by the graphics context. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apWindow"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="1">
+				<comments desc="Updates the GUI. " return="eTrue if succeeded, eFalse if failed. ">
+					<remark text="Update will fail if called from inside a widget&apos;s message handler. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="fTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="resize" name="Resize" num_parameters="2">
+				<comments desc="Resize the UI context. " return="eTrue if succeeded, eFalse if failed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aRootRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getContentsScale"
+				name="GetContentsScale"
+				num_parameters="0"
+				property="get"
+				property_name2="contentsScale"
+				property_name="contents_scale">
+				<comments desc="Get the contents&apos; scale factor. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDebugDraw"
+				name="SetDebugDraw"
+				num_parameters="1"
+				property="set"
+				property_name2="debugDraw"
+				property_name="debug_draw">
+				<comments desc="Set whether debug draw is enabled. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abDebug"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDebugDraw"
+				name="GetDebugDraw"
+				num_parameters="0"
+				property="get"
+				property_name2="debugDraw"
+				property_name="debug_draw">
+				<comments desc="Get whether debug draw is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setCursor"
+				name="SetCursor"
+				num_parameters="1"
+				property="set"
+				property_name2="cursor"
+				property_name="cursor">
+				<comments desc="Set the current mouse cursor. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="pCursor"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursor"
+				name="GetCursor"
+				num_parameters="0"
+				property="get"
+				property_name2="cursor"
+				property_name="cursor">
+				<comments desc="Get the current mouse cursor. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorPosition"
+				name="GetCursorPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorPosition"
+				property_name="cursor_position">
+				<comments desc="Get the cursor position. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="initializeDefaultToolbar"
+				min_features="20"
+				name="InitializeDefaultToolbar"
+				num_parameters="0">
+				<comments desc="Initialize the a toolbar in the root widget. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setToolbar"
+				min_features="20"
+				name="SetToolbar"
+				num_parameters="1"
+				property="set"
+				property_name2="toolbar"
+				property_name="toolbar">
+				<comments desc="Set the UI default toolbar. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apToolbar"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getToolbar"
+				min_features="20"
+				name="GetToolbar"
+				num_parameters="0"
+				property="get"
+				property_name2="toolbar"
+				property_name="toolbar">
+				<comments desc="Get the UI default toolbar. "/>
+				<return type="ni::iWidget *" typec="ni::iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDrawOpCapture"
+				name="SetDrawOpCapture"
+				num_parameters="1"
+				property="set"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Set whether the draw operation capture hud is enabled. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDrawOpCapture"
+				name="GetDrawOpCapture"
+				num_parameters="0"
+				property="get"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Get whether the draw operation capture hud is enabled. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="drawWidget" name="DrawWidget" num_parameters="2">
+				<comments desc="Draw the specified widget in the specified canvas. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="drawTransformedWidget" name="DrawTransformedWidget" num_parameters="3">
+				<comments desc="Draw the specified widget in the specified canvas. The widget is transformed using the specified matrix. Clipping and scissoring is disabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBaseMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDragStartDistance"
+				name="SetDragStartDistance"
+				num_parameters="1"
+				property="set"
+				property_name2="dragStartDistance"
+				property_name="drag_start_distance">
+				<comments desc="Set the drag start distance. ">
+					<remark text="This define the minimum number of pixels the cursor has to move before a drag start message is sent. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anPixelDistance"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDragStartDistance"
+				name="GetDragStartDistance"
+				num_parameters="0"
+				property="get"
+				property_name2="dragStartDistance"
+				property_name="drag_start_distance">
+				<comments desc="Get the drag start distance. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDragFingerStartDistance"
+				name="SetDragFingerStartDistance"
+				num_parameters="2"
+				property="set"
+				property_name2="dragFingerStartDistance"
+				property_name="drag_finger_start_distance">
+				<comments desc="Set the drag finger start distance. ">
+					<remark text="This define the minimum number of pixels a finger has to move before a drag start message is sent. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anPixelDistance"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDragFingerStartDistance"
+				name="GetDragFingerStartDistance"
+				num_parameters="1"
+				property="get"
+				property_name2="dragFingerStartDistance"
+				property_name="drag_finger_start_distance">
+				<comments desc="Get the drag finger start distance. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFingerPosition"
+				name="GetFingerPosition"
+				num_parameters="1"
+				property="get"
+				property_name2="fingerPosition"
+				property_name="finger_position">
+				<comments desc="Get a finger&apos;s latest screen position and pressure. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFingerDown"
+				name="GetFingerDown"
+				num_parameters="1"
+				property="get"
+				property_name2="fingerDown"
+				property_name="finger_down">
+				<comments desc="Get a finger&apos;s latest down state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearShortcuts" name="ClearShortcuts" num_parameters="0">
+				<comments desc="Remove all shortcuts. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addShortcut" name="AddShortcut" num_parameters="2">
+				<comments desc="Add a shortcut. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anKey"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspCmd"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeShortcut" name="RemoveShortcut" num_parameters="1">
+				<comments desc="Remove a shortcut. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anKey"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShortcutCommand"
+				name="GetShortcutCommand"
+				num_parameters="1"
+				property="get"
+				property_name2="shortcutCommand"
+				property_name="shortcut_command">
+				<comments desc="Get the command of the specified shortcut. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anKey"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKeyDown"
+				name="GetKeyDown"
+				num_parameters="1"
+				property="get"
+				property_name2="keyDown"
+				property_name="key_down">
+				<comments desc="Get a keyboard key&apos;s down state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aKey"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method java_name="inputFingerMove" name="InputFingerMove" num_parameters="2">
+				<comments desc="">
+					<params text="avPosition is in UI units. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avPosition"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="inputFingerRelativeMove" name="InputFingerRelativeMove" num_parameters="2">
+				<comments desc="">
+					<params text="avRelMove is in UI units. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avRelMove"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="inputFingerPress" name="InputFingerPress" num_parameters="3">
+				<comments desc="">
+					<params text="avPosition is in UI units. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avPosition"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abDown"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="inputKeyPress" name="InputKeyPress" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aKey"
+					type="eKey"
+					typec="eKey"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="abDown"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="inputKeyChar" name="InputKeyChar" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aCharCodePoint"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aKeyLeadingToKeyChar"
+					type="eKey"
+					typec="eKey"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="inputMouseWheel" name="InputMouseWheel" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afDelta"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method java_name="inputDoubleClick" name="InputDoubleClick" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aPointer"
+					type="ePointerButton"
+					typec="ePointerButton"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="inputRelativeMouseMove" name="InputRelativeMouseMove" num_parameters="1">
+				<comments desc="">
+					<params text="avRelMove is in UI units. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avRelMove"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="inputGameCtrl" name="InputGameCtrl" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apGameController"
+					type="iGameCtrl *"
+					typec="iGameCtrl*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="inputPinch" name="InputPinch" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aState"
+					type="const eGestureState"
+					typec="const eGestureState"
+					typei="ni::eTypeFlags_Constant|ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFocusedWidget"
+				name="GetFocusedWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="focusedWidget"
+				property_name="focused_widget">
+				<comments desc="Get the focused widget, that is the widget that is receiving the input messages. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createProfDraw"
+				name="CreateProfDraw"
+				num_parameters="2">
+				<comments desc="Create an iProfDraw instance which uses the specifed canvas and font. "/>
+				<return type="iProfDraw *" typec="iProfDraw*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

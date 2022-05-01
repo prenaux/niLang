@@ -1,0 +1,16 @@
+::Import("lang.ni");
+
+local table = {
+  alpha = 1
+  beta = 1
+  gamma = 1
+  aaa = 1
+  ,[123] = 123
+  ,[1] = 123
+  ,[123.0] = 123
+  ,[1.0] = 123
+}
+
+foreach (k,v in table) {
+  ::println(k "=" v)
+}

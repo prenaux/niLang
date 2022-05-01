@@ -1,0 +1,45 @@
+#include "../API/niUI/IOcclusionQuery.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iOcclusionQuery **/
+IDLC_BEGIN_INTF(ni,iOcclusionQuery)
+/** ni -> iOcclusionQuery::Begin/0 **/
+IDLC_METH_BEGIN(ni,iOcclusionQuery,Begin,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOcclusionQuery,Begin,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOcclusionQuery,Begin,0)
+
+/** ni -> iOcclusionQuery::End/0 **/
+IDLC_METH_BEGIN(ni,iOcclusionQuery,End,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOcclusionQuery,End,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOcclusionQuery,End,0)
+
+/** ni -> iOcclusionQuery::GetStatus/1 **/
+IDLC_METH_BEGIN(ni,iOcclusionQuery,GetStatus,1)
+	IDLC_DECL_VAR(tBool,abWait)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abWait)
+	IDLC_DECL_RETVAR(eOcclusionQueryStatus,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOcclusionQuery,GetStatus,1,(abWait))
+	IDLC_RET_FROM_ENUM(eOcclusionQueryStatus,_Ret)
+IDLC_METH_END(ni,iOcclusionQuery,GetStatus,1)
+
+/** ni -> iOcclusionQuery::GetResult/0 **/
+IDLC_METH_BEGIN(ni,iOcclusionQuery,GetResult,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOcclusionQuery,GetResult,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iOcclusionQuery,GetResult,0)
+
+IDLC_END_INTF(ni,iOcclusionQuery)
+
+IDLC_END_NAMESPACE()
+// EOF //

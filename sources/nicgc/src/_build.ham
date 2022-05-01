@@ -1,0 +1,26 @@
+if [ SubDirOnce TOP nicgc src ] = 1 { return ; }
+if ! $(TARGET_FEATURE_CONSOLE) { return ; }
+
+tkDefTool nicgc : 1.0.0 ;
+tkPkgLinkLibs libMojoshader ;
+# Using static libraries so that nicgc is easily copyable
+niImportModuleLibs niLang ;
+niImportModuleLibs_niCURL ;
+
+# SubDirHdrs $(SUBDIR) spirv-tools include ;
+if $(WINDOWS) = 1 {
+  SDK_DX9_2004_Hdrs $(BUILD_SRC) ;
+  SDK_DX9_2004_LinkLibs $(PKGTARGET) ;
+  # SDK_DX9_2010_Hdrs $(BUILD_SRC) ;
+  # SDK_DX9_2010_LinkLibs $(PKGTARGET) ;
+}
+
+SRC = [ tkPkgSrc ] ;
+runInDir nicgc ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch minsz exc : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+### DEPENDENCIES #####################################################
+tkDepends nicgc : niLang : TOP niLang ;
+tkDepends nicgc : niCURL : TOP niCURL ;
+SubInclude TOP nicgc src mojoshader ;

@@ -1,0 +1,228 @@
+#########################################################################
+#
+# -- niUI -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niUI src ] = 1 { return ; }
+
+tkDefModuleLib niUI : 1,0,0 : niUI ;
+SubDirHdrs $(SUBDIR) API ;
+
+niImportModuleDll niLang ;
+niImportModuleLibs libMojoshader ;
+if $(NI_VIDEO_USE_IPCAM) = 1 {
+  niImportModuleDll niCURL ;
+}
+
+if $(WINDOWS) = 1 {
+  SDK_DX9_2004_Hdrs $(BUILD_SRC) ;
+}
+
+if $(NI_VIDEO_USE_DSHOW) = 1 {
+  SDK_DShow_Hdrs $(BUILD_SRC) ;
+}
+
+if $(NI_VIDEO_USE_OGG) = 1 {
+  SubDirHdrs $(SUBDIR) ogg libvorbis include ;
+  SubDirHdrs $(SUBDIR) ogg libogg include ;
+  SubDirHdrs $(SUBDIR) ogg libtheora include ;
+}
+
+if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
+  SubDirHdrs $(SUBDIR) theoraplayer ;
+}
+
+SubDirHdrs $(SUBDIR) ft include ;
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+
+SRC = [ tkPkgSrc ] ;
+SRC += [ niGenJNI $(SRC) : niUI ] ;
+
+# CSS Flexbox layout
+NoCare [ FDirName $(WORK) css-layout dist css-layout.h ] ;
+tkFileCopy [ FGristFiles [ FDirName $(SUBDIR) css-layout.h ] ] : [ FDirName $(WORK) css-layout dist css-layout.h ] ;
+INCLUDES [ FGristFiles UIContext.cpp ] : [ FGristFiles [ FDirName $(SUBDIR) css-layout.h ] ] ;
+
+# Freetype (see ftmodule.h for more infos)
+SRC_EXTRA +=
+[ SrcSubDir $(PACKAGE) : ft autofit : $(OBJDIR) : autofit.c ]
+[ SrcSubDir $(PACKAGE) : ft base : $(OBJDIR) :
+  ftbase.c ftbitmap.c ftdebug.c ftglyph.c ftinit.c ftmm.c ftsystem.c
+]
+[ SrcSubDir $(PACKAGE) : ft bdf : $(OBJDIR) : bdf.c ]
+[ SrcSubDir $(PACKAGE) : ft cache : $(OBJDIR) : ftcache.c ]
+[ SrcSubDir $(PACKAGE) : ft cff : $(OBJDIR) : cff.c ]
+[ SrcSubDir $(PACKAGE) : ft cid : $(OBJDIR) : type1cid.c ]
+[ SrcSubDir $(PACKAGE) : ft gzip : $(OBJDIR) : ftgzip.c ]
+[ SrcSubDir $(PACKAGE) : ft lzw : $(OBJDIR) : ftlzw.c ]
+[ SrcSubDir $(PACKAGE) : ft otvalid : $(OBJDIR) : otvalid.c ]
+[ SrcSubDir $(PACKAGE) : ft pcf : $(OBJDIR) : pcf.c ]
+[ SrcSubDir $(PACKAGE) : ft pfr : $(OBJDIR) : pfr.c ]
+[ SrcSubDir $(PACKAGE) : ft psaux : $(OBJDIR) : psaux.c ]
+[ SrcSubDir $(PACKAGE) : ft pshinter : $(OBJDIR) : pshinter.c ]
+[ SrcSubDir $(PACKAGE) : ft psnames : $(OBJDIR) : psnames.c ]
+[ SrcSubDir $(PACKAGE) : ft raster : $(OBJDIR) : raster.c ]
+[ SrcSubDir $(PACKAGE) : ft sfnt : $(OBJDIR) : sfnt.c ]
+[ SrcSubDir $(PACKAGE) : ft smooth : $(OBJDIR) : smooth.c ]
+[ SrcSubDir $(PACKAGE) : ft truetype : $(OBJDIR) : truetype.c ]
+[ SrcSubDir $(PACKAGE) : ft type1 : $(OBJDIR) : type1.c ]
+[ SrcSubDir $(PACKAGE) : ft type42 : $(OBJDIR) : type42.c ]
+[ SrcSubDir $(PACKAGE) : ft winfonts : $(OBJDIR) : winfnt.c ]
+;
+
+SRC_EXTRA += [ SrcSubDir $(PACKAGE) : jpeglib : $(OBJDIR) :
+  jcapimin.c jcapistd.c jccoefct.c jccolor.c
+  jcdctmgr.c jchuff.c jcinit.c jcmainct.c jcmarker.c
+  jcmaster.c jcomapi.c jcparam.c jcphuff.c jcprepct.c
+  jcsample.c jctrans.c jdapimin.c jdapistd.c jdatadst.c
+  jdatasrc.c jdcoefct.c jdcolor.c jddctmgr.c jdhuff.c
+  jdinput.c jdmainct.c jdmarker.c jdmaster.c jdmerge.c
+  jdphuff.c jdpostct.c jdsample.c jdtrans.c jerror.c
+  jfdctflt.c jfdctfst.c jfdctint.c jidctflt.c jidctfst.c
+  jidctint.c jidctred.c jmemmgr.c jmemnobs.c jquant1.c
+  jquant2.c jutils.c
+#   rdbmp.c rdcolmap.c rdgif.c cdjpeg.c
+#   rdppm.c rdrle.c rdswitch.c rdtarga.c transupp.c
+#   wrbmp.c wrgif.c wrppm.c wrrle.c wrtarga.c
+] ;
+
+# DXT
+if ! ( $(EMBEDDED) = 1 ) {
+  SRC_EXTRA += [ tkPkgSrcSubDir libDXTn ] ;
+}
+
+# PNG
+SRC_EXTRA += [ tkPkgSrcSubDir libpng ] ;
+
+# MojoShader
+if ! $(IOSMAC) {
+  SRC_EXTRA += [ tkPkgSrcSubDir mojoshader ] ;
+}
+
+# Webcam (Escapi)
+if $(WINDOWS) = 1 && $(NI_VIDEO_USE_WEBCAM) = 1 {
+  SRC_EXTRA += [ tkPkgSrcSubDir escapi ] ;
+}
+
+# AGG
+SRC_EXTRA += [ tkPkgSrcSubDir agg ] ;
+SRC_EXTRA += [ tkPkgSrcSubDir libtess2 ] ;
+
+# Shaders
+rule fixedShaderBase {
+  local o = ;
+  o += [ niShader $(1) : $(2) : $(3) ] ;
+  o += [ niShader $(1)_translucent : $(2) : $(3) eMaterialFlags_Translucent=1 ] ;
+  o += [ niShader $(1)_opacity_translucent : $(2) : $(3) eMaterialChannel_HasOpacity=1 eMaterialFlags_Translucent=1 ] ;
+  o += [ niShader $(1)_distancefield : $(2) : $(3) eMaterialFlags_DistanceField=1 ] ;
+  o += [ niShader $(1)_alphatest : $(2) : $(3) eMaterialFlags_AlphaTest=1 ] ;
+  o += [ niShader $(1)_opacity_alphatest : $(2) : $(3) eMaterialChannel_HasOpacity=1 eMaterialFlags_AlphaTest=1 ] ;
+  o += [ niShader $(1)_base : $(2) : eMaterialChannel_HasBase=1 $(3) ] ;
+  o += [ niShader $(1)_base_translucent : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_Translucent=1 ] ;
+  o += [ niShader $(1)_base_opacity_translucent : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialChannel_HasOpacity=1 eMaterialFlags_Translucent=1 ] ;
+  o += [ niShader $(1)_base_distancefield : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_DistanceField=1 ] ;
+  o += [ niShader $(1)_base_alphatest : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_AlphaTest=1 ] ;
+  o += [ niShader $(1)_base_opacity_alphatest : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialChannel_HasOpacity=1 eMaterialFlags_AlphaTest=1 ] ;
+  return $(o) ;
+}
+
+# decal cannot have refraction
+rule fixedShader {
+  local o = ;
+  o += [ fixedShaderBase $(1) : $(2) : $(3) ] ;
+  o += [ fixedShaderBase $(1)_decal : $(2) : $(3) eMaterialFlags_Decal=1 ] ;
+  return $(o) ;
+}
+
+niShader fixed_vs_p : fixed_vs.cgc : eFVF_Position=1 ;
+niShader fixed_vs_pa : fixed_vs.cgc : eFVF_Position=1 eFVF_ColorA=1 ;
+niShader fixed_vs_pn : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 ;
+niShader fixed_vs_pna : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 ;
+niShader fixed_vs_pnt1 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_Tex1=2 ;
+niShader fixed_vs_pnat1 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 ;
+niShader fixed_vs_pnt2 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_Tex1=2 eFVF_Tex2=2 ;
+niShader fixed_vs_pnat2 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 eFVF_Tex2=2 ;
+niShader fixed_vs_pb4int1 : fixed_vs.cgc : eFVF_PositionB4=1 eFVF_Indices=1 eFVF_Normal=1 eFVF_Tex1=2 ;
+niShader fixed_vs_pb4inat1 : fixed_vs.cgc : eFVF_PositionB4=1 eFVF_Indices=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 ;
+
+fixedShader fixed_ps : fixed_ps.cgc : ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+ObjectDefines $(BUILD_SRC) : agg_real=float ;
+
+### Platform dependent SDKs #############################################
+if $(ANDROID) = 1 {
+  LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
+  LINKLIBS on $(PKGTARGET) += -lGLESv2 ;
+}
+
+if $(NI_VIDEO_USE_OGG) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_OGG=1 ;
+}
+
+if $(NI_VIDEO_USE_FFMPEG) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_FFMPEG=1 ;
+}
+
+if $(NI_VIDEO_USE_DSHOW) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_DSHOW=1 ;
+}
+
+if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_THEORAPLAYER=1 ;
+}
+
+if $(NI_VIDEO_USE_WEBCAM) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_WEBCAM=1 ;
+}
+
+if $(NI_VIDEO_USE_IPCAM) = 1 {
+  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_IPCAM=1 ;
+}
+
+niUI_LinkLibs_Deps $(PKGTARGET) ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"UI module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"no"'
+  interfacesheaderpath='"niUI_ModuleDef.h"'
+;
+niModule_Dep "niLang" ;
+niModule_OT name='"Graphics"' desc='"Graphics Object"' type='"ni::iGraphics"' ;
+niModule_OT name='"JpegWriter"' desc='"Jpeg Writer Object"' type='"ni::iJpegWriter"' ;
+niModule_OT name='"JpegReader"' desc='"Jpeg Reader Object"' type='"ni::iJpegReader"' ;
+niModule_OT name='"Intersection"' desc='"Intersection result"' type='"ni::iIntersection"' ;
+niModule_OT name='"Camera"' desc='"Camera"' type='"ni::iCamera"' ;
+niModule_OT name='"NUSpline"' desc='"Non-uniform spline"' type='"ni::iNUSpline"' ;
+niModule_OT name='"UIContext"' ;
+niModule_OT category='"BitmapLoader"' name='"bmp"' type='"ni::iBitmapLoader"' ;
+niModule_OT category='"BitmapSaver"' name='"bmp"' type='"ni::iBitmapSaver"' ;
+niModule_OT category='"BitmapLoader"' name='"jpeg"' type='"ni::iBitmapLoader"' ;
+niModule_OT category='"BitmapSaver"' name='"jpeg"' type='"ni::iBitmapSaver"' ;
+niModule_OT category='"BitmapLoader"' name='"png"' type='"ni::iBitmapLoader"' ;
+niModule_OT category='"BitmapSaver"' name='"png"' type='"ni::iBitmapSaver"' ;
+niModule_OT category='"BitmapLoader"' name='"tga"' type='"ni::iBitmapLoader"' ;
+niModule_OT category='"BitmapSaver"' name='"tga"' type='"ni::iBitmapSaver"' ;
+niModule_OT category='"BitmapLoader"' name='"dds"' type='"ni::iBitmapLoader"' ;
+niModule_Includes $(IDLS) ;
+niModule_End ;
+
+### Dependencies ########################################################
+if $(NI_VIDEO_USE_IPCAM) = 1 {
+  SubInclude TOP niCURL src ;
+}
+if $(NI_VIDEO_USE_OGG) = 1 {
+  SubInclude TOP niUI src ogg ;
+}
+if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
+  SubInclude TOP niUI src theoraplayer ;
+}
+SubInclude TOP nicgc src mojoshader ;

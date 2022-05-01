@@ -1,0 +1,107 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eSerializeFlags">
+			<comments desc="Serialization flags. "/>
+			<value name="eSerializeFlags_Write" value="niBit ( 0 ) ">
+				<comments desc="Serialize write. "/>
+			</value>
+			<value name="eSerializeFlags_Read" value="niBit ( 1 ) ">
+				<comments desc="Serialize read. "/>
+			</value>
+			<value name="eSerializeFlags_Category1" value="niBit ( 2 ) ">
+				<comments desc="Serialization category 1. "/>
+			</value>
+			<value name="eSerializeFlags_Category2" value="niBit ( 3 ) ">
+				<comments desc="Serialization category 2. "/>
+			</value>
+			<value name="eSerializeFlags_Category3" value="niBit ( 4 ) ">
+				<comments desc="Serialization category 3. "/>
+			</value>
+			<value name="eSerializeFlags_Category4" value="niBit ( 5 ) ">
+				<comments desc="Serialization category 4. "/>
+			</value>
+			<value name="eSerializeFlags_Category5" value="niBit ( 6 ) ">
+				<comments desc="Serialization category 5. "/>
+			</value>
+			<value name="eSerializeFlags_Category6" value="niBit ( 7 ) ">
+				<comments desc="Serialization category 6. "/>
+			</value>
+			<value name="eSerializeFlags_Category7" value="niBit ( 8 ) ">
+				<comments desc="Serialization category 7. "/>
+			</value>
+			<value name="eSerializeFlags_Category8" value="niBit ( 9 ) ">
+				<comments desc="Serialization category 8. "/>
+			</value>
+			<value name="eSerializeFlags_CategoryBase" value="eSerializeFlags_Category1|eSerializeFlags_Category2|eSerializeFlags_Category3|eSerializeFlags_Category4 ">
+				<comments desc="Serialization category 1 to 4 (base). "/>
+			</value>
+			<value name="eSerializeFlags_CategoryExtended" value="eSerializeFlags_Category5|eSerializeFlags_Category6|eSerializeFlags_Category7|eSerializeFlags_Category8 ">
+				<comments desc="Serialization category 4 to 8 (extended). "/>
+			</value>
+			<value name="eSerializeFlags_CategoryAll" value="eSerializeFlags_CategoryBase|eSerializeFlags_CategoryExtended ">
+				<comments desc="Serialization all category. "/>
+			</value>
+			<value name="eSerializeFlags_TypeInfoMetadata" value="niBit ( 10 ) ">
+				<comments desc="Serialize write will also write type information metadata. ">
+					<remark text="The 11th bit is reserved to set whether or not &apos;edit&apos; metadata should be serialized. This can be, and is, assumed by serialization flags for other object types. This allow the C++ serialization code to be shortened a lot with the use of the DataTable serialization macros (see DataTableSerialize.h). "/>
+				</comments>
+			</value>
+			<value name="eSerializeFlags_Raw" value="niBit ( 11 ) ">
+				<comments desc="Raw serialization, dont put object serialization header. ">
+					<remark text="This is relevant for file/stream serialization. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eSerializeMode">
+			<comments desc="Serialization mode "/>
+			<value name="eSerializeMode_Write" value="eSerializeFlags_Write ">
+				<comments desc="Write mode. "/>
+			</value>
+			<value name="eSerializeMode_WriteRaw" value="eSerializeFlags_Write|eSerializeFlags_Raw ">
+				<comments desc="Write raw mode. ">
+					<remark text="Means that no object header will be written. "/>
+				</comments>
+			</value>
+			<value name="eSerializeMode_Read" value="eSerializeFlags_Read ">
+				<comments desc="Read mode. "/>
+			</value>
+			<value name="eSerializeMode_ReadRaw" value="eSerializeFlags_Read|eSerializeFlags_Raw ">
+				<comments desc="Read raw mode. ">
+					<remark text="Means that no object header will be checked for. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iSerializable" uuid1="1E9334FC-E622-4932-BB73-EDF0C9DC1C90" uuid2="0x1e9334fc,0xe622,0x4932,0xbb,0x73,0xed,0xf0,0xc9,0xdc,0x1c,0x90">
+			<comments desc="iSerializable interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getSerializeObjectTypeID"
+				name="GetSerializeObjectTypeID"
+				num_parameters="0">
+				<comments desc="Get the object type ID. " return="NULL if there is no object type. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serialize" name="Serialize" num_parameters="2">
+				<comments desc="Serialize the object. " return="The number of bytes serialized, eInvalidHandle on error. ">
+					<params text="apFile is the file interface where the object must be serialized. "/>
+					<params text="aMode "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eSerializeMode"
+					typec="eSerializeMode"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

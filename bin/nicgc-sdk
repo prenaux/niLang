@@ -1,0 +1,16 @@
+#!/bin/bash
+CWD=`pwd`
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$CWD"
+. "$SCRIPT_DIR/ni-bash-setenv.sh" ra
+
+if [ -e "$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
+    export NI_CGC_EXE="$DIR1/$BIN_LOA/nicgc_$BUILD$BIN_EXT"
+elif [ -e "$DIR1/bin/$BIN_LOA/nicgc_$BUILD$BIN_EXT" ]; then
+    export NI_CGC_EXE="$DIR1/bin/$BIN_LOA/nicgc_$BUILD$BIN_EXT"
+elif [ -e "$DIR2/$BIN_LOA/nicgc_$BUILD$BIN_EXT" ]; then
+    export NI_CGC_EXE="$DIR2/$BIN_LOA/nicgc_$BUILD$BIN_EXT"
+else
+    export NI_CGC_EXE="cantfind_ni_$BUILD"
+fi
+"${NI_CGC_EXE}" "$@"

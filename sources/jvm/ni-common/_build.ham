@@ -1,0 +1,5 @@
+if [ SubDirOnce TOP jvm ni-common ] = 1 { return ; }
+
+niDefJar ni-common : 1,0,0 ;
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niBuildJar $(SRC) : : : pkgsrc ] ;

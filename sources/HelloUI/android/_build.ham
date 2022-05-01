@@ -1,0 +1,15 @@
+#########################################################################
+#
+# -- HelloUI_Android --
+#
+#########################################################################
+if [ SubDirOnce TOP HelloUI android ] = 1 { return ; }
+
+tkDefApk HelloUI_android : 1,0,0 ;
+
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niAndroidBuildApp $(SRC)
+: HelloUI_java
+: :
+: ni.samples.HelloUI
+: HelloActivity ] ;

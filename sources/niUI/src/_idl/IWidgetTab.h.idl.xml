@@ -1,0 +1,418 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetTabCmd">
+			<comments desc="Tab widget notify message. "/>
+			<value name="eWidgetTabCmd_ActivatePage" value="0 ">
+				<comments desc="A page has been activated. "/>
+			</value>
+			<value name="eWidgetTabCmd_AddPage" value="1 ">
+				<comments desc="A page has been added. "/>
+			</value>
+			<value name="eWidgetTabCmd_RemovePage" value="2 ">
+				<comments desc="A page has been removed. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetTab" uuid1="D7908465-A722-4BD3-BDE1-27E7C2C95819" uuid2="0xd7908465,0xa722,0x4bd3,0xbd,0xe1,0x27,0xe7,0xc2,0xc9,0x58,0x19">
+			<comments desc="Tab widget. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="addPage" name="AddPage" num_parameters="2">
+				<comments desc="Add a page. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removePage" name="RemovePage" num_parameters="1">
+				<comments desc="Remove a page. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasPage"
+				name="HasPage"
+				num_parameters="1">
+				<comments desc="Check if the specified page is in the tab. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumPages"
+				name="GetNumPages"
+				num_parameters="0"
+				property="get"
+				property_name2="numPages"
+				property_name="num_pages">
+				<comments desc="Get the number of pages. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPage"
+				name="GetPage"
+				num_parameters="1"
+				property="get"
+				property_name2="page"
+				property_name="page">
+				<comments desc="Get the page at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageButton"
+				name="GetPageButton"
+				num_parameters="1"
+				property="get"
+				property_name2="pageButton"
+				property_name="page_button">
+				<comments desc="Get the button associated with the page at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageFromName"
+				name="GetPageFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="pageFromName"
+				property_name="page_from_name">
+				<comments desc="Get the page with the specified name. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageFromID"
+				name="GetPageFromID"
+				num_parameters="1"
+				property="get"
+				property_name2="pageFromID"
+				property_name="page_from_id">
+				<comments desc="Get the page with the specified ID. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPageName"
+				name="SetPageName"
+				num_parameters="2"
+				property="set"
+				property_name2="pageName"
+				property_name="page_name">
+				<comments desc="Set the name of the specified page. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageName"
+				name="GetPageName"
+				num_parameters="1"
+				property="get"
+				property_name2="pageName"
+				property_name="page_name">
+				<comments desc="Get the name of the specified page. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPageIndex"
+				name="SetPageIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="pageIndex"
+				property_name="page_index">
+				<comments desc="Set the index of the specified page. ">
+					<remark text="Will swap with the page at the specified index. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPageIndex"
+				name="GetPageIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="pageIndex"
+				property_name="page_index">
+				<comments desc="Get the index of the specified page. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="movePageLeft" name="MovePageLeft" num_parameters="2">
+				<comments desc="Move the specified type to the left. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anLeft"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="movePageRight" name="MovePageRight" num_parameters="2">
+				<comments desc="Move the specified type to the right. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setMinNumPagesToShowTabs"
+				name="SetMinNumPagesToShowTabs"
+				num_parameters="1"
+				property="set"
+				property_name2="minNumPagesToShowTabs"
+				property_name="min_num_pages_to_show_tabs">
+				<comments desc="Set the number of pages necessary to show the tabs. ">
+					<remark text="Default is two. If set to &lt;= 1 when any page is added the tabs are displayed, otherwise can be set to 2 for example to show the tab page only if they are at least two pages visible. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMinNumPages"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMinNumPagesToShowTabs"
+				name="GetMinNumPagesToShowTabs"
+				num_parameters="0"
+				property="get"
+				property_name2="minNumPagesToShowTabs"
+				property_name="min_num_pages_to_show_tabs">
+				<comments desc="Get the number of pages necessary to show the tabs. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setActivePage"
+				name="SetActivePage"
+				num_parameters="1"
+				property="set"
+				property_name2="activePage"
+				property_name="active_page">
+				<comments desc="Activate the specified page. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPage"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePage"
+				name="GetActivePage"
+				num_parameters="0"
+				property="get"
+				property_name2="activePage"
+				property_name="active_page">
+				<comments desc="Get the active page. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setActivePageName"
+				name="SetActivePageName"
+				num_parameters="1"
+				property="set"
+				property_name2="activePageName"
+				property_name="active_page_name">
+				<comments desc="Activate the page with the specified name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePageName"
+				name="GetActivePageName"
+				num_parameters="0"
+				property="get"
+				property_name2="activePageName"
+				property_name="active_page_name">
+				<comments desc="Get the name of the active page. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setActivePageIndex"
+				name="SetActivePageIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="activePageIndex"
+				property_name="active_page_index">
+				<comments desc="Activate the page with the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePageIndex"
+				name="GetActivePageIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="activePageIndex"
+				property_name="active_page_index">
+				<comments desc="Get the index of the active page. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setActivePageID"
+				name="SetActivePageID"
+				num_parameters="1"
+				property="set"
+				property_name2="activePageID"
+				property_name="active_page_id">
+				<comments desc="Activate the page with the specified id. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActivePageID"
+				name="GetActivePageID"
+				num_parameters="0"
+				property="get"
+				property_name2="activePageID"
+				property_name="active_page_id">
+				<comments desc="Get the id of the active page. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setForceActivated"
+				name="SetForceActivated"
+				num_parameters="1"
+				property="set"
+				property_name2="forceActivated"
+				property_name="force_activated">
+				<comments desc="Set the forced activated state. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abForce"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getForceActivated"
+				name="GetForceActivated"
+				num_parameters="1"
+				property="get"
+				property_name2="forceActivated"
+				property_name="force_activated">
+				<comments desc="Get the forced activated state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abForce"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

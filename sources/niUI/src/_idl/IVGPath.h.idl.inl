@@ -1,0 +1,1107 @@
+#include "../API/niUI/IVGPath.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iVGPathTesselatedRenderer **/
+/** iVGPathTesselatedRenderer -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iVGPathTesselatedRenderer)
+/** ni -> iVGPathTesselatedRenderer::BeginAddPath/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPathTesselatedRenderer::BeginAddPath/2 **/
+IDLC_METH_BEGIN(ni,iVGPathTesselatedRenderer,BeginAddPath,2)
+	IDLC_DECL_VAR(iVGStyle*,apStyle)
+	IDLC_BUF_TO_INTF(iVGStyle,apStyle)
+	IDLC_DECL_VAR(tBool,abStroke)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStroke)
+	IDLC_METH_CALL_VOID(ni,iVGPathTesselatedRenderer,BeginAddPath,2,(apStyle,abStroke))
+IDLC_METH_END(ni,iVGPathTesselatedRenderer,BeginAddPath,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPathTesselatedRenderer::EndAddPath/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPathTesselatedRenderer::EndAddPath/2 **/
+IDLC_METH_BEGIN(ni,iVGPathTesselatedRenderer,EndAddPath,2)
+	IDLC_DECL_VAR(iVGStyle*,apStyle)
+	IDLC_BUF_TO_INTF(iVGStyle,apStyle)
+	IDLC_DECL_VAR(tBool,abStroke)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStroke)
+	IDLC_METH_CALL_VOID(ni,iVGPathTesselatedRenderer,EndAddPath,2,(apStyle,abStroke))
+IDLC_METH_END(ni,iVGPathTesselatedRenderer,EndAddPath,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPathTesselatedRenderer::GetPathApproximationScale/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPathTesselatedRenderer::GetPathApproximationScale/1 **/
+IDLC_METH_BEGIN(ni,iVGPathTesselatedRenderer,GetPathApproximationScale,1)
+	IDLC_DECL_VAR(iVGStyle*,apStyle)
+	IDLC_BUF_TO_INTF(iVGStyle,apStyle)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPathTesselatedRenderer,GetPathApproximationScale,1,(apStyle))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iVGPathTesselatedRenderer,GetPathApproximationScale,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPathTesselatedRenderer::AddPathPolygons/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPathTesselatedRenderer::AddPathPolygons/3 **/
+IDLC_METH_BEGIN(ni,iVGPathTesselatedRenderer,AddPathPolygons,3)
+	IDLC_DECL_VAR(iVGPolygonTesselator*,apTess)
+	IDLC_BUF_TO_INTF(iVGPolygonTesselator,apTess)
+	IDLC_DECL_VAR(iVGStyle*,apStyle)
+	IDLC_BUF_TO_INTF(iVGStyle,apStyle)
+	IDLC_DECL_VAR(tBool,abStroke)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abStroke)
+	IDLC_METH_CALL_VOID(ni,iVGPathTesselatedRenderer,AddPathPolygons,3,(apTess,apStyle,abStroke))
+IDLC_METH_END(ni,iVGPathTesselatedRenderer,AddPathPolygons,3)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iVGPathTesselatedRenderer)
+
+#endif // if niMinFeatures(20)
+/** interface : iVGPath **/
+/** iVGPath -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iVGPath)
+/** ni -> iVGPath::Copy/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Copy/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Copy,1)
+	IDLC_DECL_VAR(iVGPath*,apPath)
+	IDLC_BUF_TO_INTF(iVGPath,apPath)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Copy,1,(apPath))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Copy,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Clone/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Clone/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,Clone,0)
+	IDLC_DECL_RETVAR(iVGPath*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Clone,0,())
+	IDLC_RET_FROM_INTF(iVGPath,_Ret)
+IDLC_METH_END(ni,iVGPath,Clone,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Clear/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Clear/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,Clear,0)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Clear,0,())
+IDLC_METH_END(ni,iVGPath,Clear,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::AddVertex/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::AddVertex/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,AddVertex,2)
+	IDLC_DECL_VAR(sVec2f,avVertex)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avVertex)
+	IDLC_DECL_VAR(eVGPathCommand,aCommand)
+	IDLC_BUF_TO_ENUM(eVGPathCommand,aCommand)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,AddVertex,2,(avVertex,aCommand))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,AddVertex,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::AddPath/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::AddPath/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,AddPath,1)
+	IDLC_DECL_VAR(iVGPath*,apPath)
+	IDLC_BUF_TO_INTF(iVGPath,apPath)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,AddPath,1,(apPath))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,AddPath,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetNumVertices/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetNumVertices/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetNumVertices,0)
+	IDLC_DECL_RETVAR(tSize,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetNumVertices,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Size,_Ret)
+IDLC_METH_END(ni,iVGPath,GetNumVertices,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::SetVertex/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::SetVertex/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,SetVertex,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(sVec2f,avVertex)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avVertex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,SetVertex,2,(anIndex,avVertex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,SetVertex,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetVertex/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetVertex/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetVertex,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetVertex,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGPath,GetVertex,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::SetCommand/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::SetCommand/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,SetCommand,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(eVGPathCommand,aCmd)
+	IDLC_BUF_TO_ENUM(eVGPathCommand,aCmd)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,SetCommand,2,(anIndex,aCmd))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,SetCommand,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetCommand/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetCommand/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetCommand,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(eVGPathCommand,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetCommand,1,(anIndex))
+	IDLC_RET_FROM_ENUM(eVGPathCommand,_Ret)
+IDLC_METH_END(ni,iVGPath,GetCommand,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ResetIterator/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ResetIterator/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,ResetIterator,0)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ResetIterator,0,())
+IDLC_METH_END(ni,iVGPath,ResetIterator,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetNextIterator/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetNextIterator/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetNextIterator,0)
+	IDLC_DECL_RETVAR(eVGPathCommand,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetNextIterator,0,())
+	IDLC_RET_FROM_ENUM(eVGPathCommand,_Ret)
+IDLC_METH_END(ni,iVGPath,GetNextIterator,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetVertexIterator/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetVertexIterator/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetVertexIterator,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetVertexIterator,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iVGPath,GetVertexIterator,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::FlipX/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::FlipX/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,FlipX,2)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_METH_CALL_VOID(ni,iVGPath,FlipX,2,(x1,x2))
+IDLC_METH_END(ni,iVGPath,FlipX,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::FlipY/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::FlipY/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,FlipY,2)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_METH_CALL_VOID(ni,iVGPath,FlipY,2,(y1,y2))
+IDLC_METH_END(ni,iVGPath,FlipY,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::MoveTo/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::MoveTo/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,MoveTo,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,MoveTo,2,(x,y))
+IDLC_METH_END(ni,iVGPath,MoveTo,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::MoveToRel/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::MoveToRel/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,MoveToRel,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,MoveToRel,2,(x,y))
+IDLC_METH_END(ni,iVGPath,MoveToRel,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::LineTo/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::LineTo/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,LineTo,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,LineTo,2,(x,y))
+IDLC_METH_END(ni,iVGPath,LineTo,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::LineToRel/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::LineToRel/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,LineToRel,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,LineToRel,2,(x,y))
+IDLC_METH_END(ni,iVGPath,LineToRel,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::HLineTo/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::HLineTo/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,HLineTo,1)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_METH_CALL_VOID(ni,iVGPath,HLineTo,1,(x))
+IDLC_METH_END(ni,iVGPath,HLineTo,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::HLineToRel/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::HLineToRel/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,HLineToRel,1)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_METH_CALL_VOID(ni,iVGPath,HLineToRel,1,(x))
+IDLC_METH_END(ni,iVGPath,HLineToRel,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::VLineTo/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::VLineTo/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,VLineTo,1)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,VLineTo,1,(y))
+IDLC_METH_END(ni,iVGPath,VLineTo,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::VLineToRel/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::VLineToRel/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,VLineToRel,1)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,VLineToRel,1,(y))
+IDLC_METH_END(ni,iVGPath,VLineToRel,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve3/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve3/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve3,4)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve3,4,(x1,y1,x,y))
+IDLC_METH_END(ni,iVGPath,Curve3,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve3Rel/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve3Rel/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve3Rel,4)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve3Rel,4,(x1,y1,x,y))
+IDLC_METH_END(ni,iVGPath,Curve3Rel,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve3Prev/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve3Prev/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve3Prev,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve3Prev,2,(x,y))
+IDLC_METH_END(ni,iVGPath,Curve3Prev,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve3PrevRel/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve3PrevRel/2 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve3PrevRel,2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve3PrevRel,2,(x,y))
+IDLC_METH_END(ni,iVGPath,Curve3PrevRel,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4,6)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4,6,(x1,y1,x2,y2,x,y))
+IDLC_METH_END(ni,iVGPath,Curve4,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4Rel/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4Rel/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4Rel,6)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4Rel,6,(x1,y1,x2,y2,x,y))
+IDLC_METH_END(ni,iVGPath,Curve4Rel,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4Prev/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4Prev/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4Prev,4)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4Prev,4,(x2,y2,x,y))
+IDLC_METH_END(ni,iVGPath,Curve4Prev,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4PrevRel/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4PrevRel/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4PrevRel,4)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4PrevRel,4,(x2,y2,x,y))
+IDLC_METH_END(ni,iVGPath,Curve4PrevRel,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4K/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4K/3 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4K,3)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,k)
+	IDLC_BUF_TO_BASE(ni::eType_F32,k)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4K,3,(x2,y2,k))
+IDLC_METH_END(ni,iVGPath,Curve4K,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Curve4KRel/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Curve4KRel/3 **/
+IDLC_METH_BEGIN(ni,iVGPath,Curve4KRel,3)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,k)
+	IDLC_BUF_TO_BASE(ni::eType_F32,k)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Curve4KRel,3,(x2,y2,k))
+IDLC_METH_END(ni,iVGPath,Curve4KRel,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Hermite/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Hermite/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,Hermite,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Hermite,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,Hermite,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::HermiteRel/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::HermiteRel/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,HermiteRel,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,HermiteRel,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,HermiteRel,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::UBSpline/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::UBSpline/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,UBSpline,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,UBSpline,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,UBSpline,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::UBSplineRel/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::UBSplineRel/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,UBSplineRel,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,UBSplineRel,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,UBSplineRel,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Catrom/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Catrom/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,Catrom,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Catrom,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,Catrom,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::CatromRel/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::CatromRel/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,CatromRel,6)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_VAR(tF32,x3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x3)
+	IDLC_DECL_VAR(tF32,y3)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y3)
+	IDLC_DECL_VAR(tF32,x4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x4)
+	IDLC_DECL_VAR(tF32,y4)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y4)
+	IDLC_METH_CALL_VOID(ni,iVGPath,CatromRel,6,(x2,y2,x3,y3,x4,y4))
+IDLC_METH_END(ni,iVGPath,CatromRel,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ArcTo/7 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ArcTo/7 **/
+IDLC_METH_BEGIN(ni,iVGPath,ArcTo,7)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eType_F32,ry)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_VAR(tBool,large_arc_flag)
+	IDLC_BUF_TO_BASE(ni::eType_I8,large_arc_flag)
+	IDLC_DECL_VAR(tBool,sweep_flag)
+	IDLC_BUF_TO_BASE(ni::eType_I8,sweep_flag)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ArcTo,7,(rx,ry,angle,large_arc_flag,sweep_flag,x,y))
+IDLC_METH_END(ni,iVGPath,ArcTo,7)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ArcToRel/7 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ArcToRel/7 **/
+IDLC_METH_BEGIN(ni,iVGPath,ArcToRel,7)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eType_F32,ry)
+	IDLC_DECL_VAR(tF32,angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,angle)
+	IDLC_DECL_VAR(tBool,large_arc_flag)
+	IDLC_BUF_TO_BASE(ni::eType_I8,large_arc_flag)
+	IDLC_DECL_VAR(tBool,sweep_flag)
+	IDLC_BUF_TO_BASE(ni::eType_I8,sweep_flag)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ArcToRel,7,(rx,ry,angle,large_arc_flag,sweep_flag,x,y))
+IDLC_METH_END(ni,iVGPath,ArcToRel,7)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ClosePolygon/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ClosePolygon/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,ClosePolygon,0)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ClosePolygon,0,())
+IDLC_METH_END(ni,iVGPath,ClosePolygon,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Rect/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Rect/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Rect,4)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_DECL_VAR(tF32,width)
+	IDLC_BUF_TO_BASE(ni::eType_F32,width)
+	IDLC_DECL_VAR(tF32,height)
+	IDLC_BUF_TO_BASE(ni::eType_F32,height)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Rect,4,(x,y,width,height))
+IDLC_METH_END(ni,iVGPath,Rect,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::RoundedRect/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::RoundedRect/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,RoundedRect,6)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y)
+	IDLC_DECL_VAR(tF32,width)
+	IDLC_BUF_TO_BASE(ni::eType_F32,width)
+	IDLC_DECL_VAR(tF32,height)
+	IDLC_BUF_TO_BASE(ni::eType_F32,height)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eType_F32,ry)
+	IDLC_METH_CALL_VOID(ni,iVGPath,RoundedRect,6,(x,y,width,height,rx,ry))
+IDLC_METH_END(ni,iVGPath,RoundedRect,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::RectCentered/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::RectCentered/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,RectCentered,4)
+	IDLC_DECL_VAR(tF32,cx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cx)
+	IDLC_DECL_VAR(tF32,cy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cy)
+	IDLC_DECL_VAR(tF32,width)
+	IDLC_BUF_TO_BASE(ni::eType_F32,width)
+	IDLC_DECL_VAR(tF32,height)
+	IDLC_BUF_TO_BASE(ni::eType_F32,height)
+	IDLC_METH_CALL_VOID(ni,iVGPath,RectCentered,4,(cx,cy,width,height))
+IDLC_METH_END(ni,iVGPath,RectCentered,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::RoundedRectCentered/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::RoundedRectCentered/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,RoundedRectCentered,6)
+	IDLC_DECL_VAR(tF32,cx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cx)
+	IDLC_DECL_VAR(tF32,cy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cy)
+	IDLC_DECL_VAR(tF32,width)
+	IDLC_BUF_TO_BASE(ni::eType_F32,width)
+	IDLC_DECL_VAR(tF32,height)
+	IDLC_BUF_TO_BASE(ni::eType_F32,height)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eType_F32,ry)
+	IDLC_METH_CALL_VOID(ni,iVGPath,RoundedRectCentered,6,(cx,cy,width,height,rx,ry))
+IDLC_METH_END(ni,iVGPath,RoundedRectCentered,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::SpeechBubbleRect/10 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::SpeechBubbleRect/10 **/
+IDLC_METH_BEGIN(ni,iVGPath,SpeechBubbleRect,10)
+	IDLC_DECL_VAR(tF32,x)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,x)
+	IDLC_DECL_VAR(tF32,y)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,y)
+	IDLC_DECL_VAR(tF32,w)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,w)
+	IDLC_DECL_VAR(tF32,h)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,h)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,ry)
+	IDLC_DECL_VAR(tF32,tx)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,tx)
+	IDLC_DECL_VAR(tF32,ty)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,ty)
+	IDLC_DECL_VAR(tF32,arrowGap)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,arrowGap)
+	IDLC_DECL_VAR(tF32,arrowLen)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,arrowLen)
+	IDLC_METH_CALL_VOID(ni,iVGPath,SpeechBubbleRect,10,(x,y,w,h,rx,ry,tx,ty,arrowGap,arrowLen))
+IDLC_METH_END(ni,iVGPath,SpeechBubbleRect,10)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Circle/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Circle/3 **/
+IDLC_METH_BEGIN(ni,iVGPath,Circle,3)
+	IDLC_DECL_VAR(tF32,cx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cx)
+	IDLC_DECL_VAR(tF32,cy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cy)
+	IDLC_DECL_VAR(tF32,radius)
+	IDLC_BUF_TO_BASE(ni::eType_F32,radius)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Circle,3,(cx,cy,radius))
+IDLC_METH_END(ni,iVGPath,Circle,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Ellipse/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Ellipse/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Ellipse,4)
+	IDLC_DECL_VAR(tF32,cx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cx)
+	IDLC_DECL_VAR(tF32,cy)
+	IDLC_BUF_TO_BASE(ni::eType_F32,cy)
+	IDLC_DECL_VAR(tF32,rx)
+	IDLC_BUF_TO_BASE(ni::eType_F32,rx)
+	IDLC_DECL_VAR(tF32,ry)
+	IDLC_BUF_TO_BASE(ni::eType_F32,ry)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Ellipse,4,(cx,cy,rx,ry))
+IDLC_METH_END(ni,iVGPath,Ellipse,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Line/4 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Line/4 **/
+IDLC_METH_BEGIN(ni,iVGPath,Line,4)
+	IDLC_DECL_VAR(tF32,x1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x1)
+	IDLC_DECL_VAR(tF32,y1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y1)
+	IDLC_DECL_VAR(tF32,x2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,x2)
+	IDLC_DECL_VAR(tF32,y2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,y2)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Line,4,(x1,y1,x2,y2))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Line,4)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Polyline/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Polyline/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Polyline,1)
+	IDLC_DECL_VAR(tVec2fCVec*,apVerts)
+	IDLC_BUF_TO_INTF(tVec2fCVec,apVerts)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Polyline,1,(apVerts))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Polyline,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Polygon/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Polygon/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Polygon,1)
+	IDLC_DECL_VAR(tVec2fCVec*,apVerts)
+	IDLC_BUF_TO_INTF(tVec2fCVec,apVerts)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Polygon,1,(apVerts))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Polygon,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Star/6 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Star/6 **/
+IDLC_METH_BEGIN(ni,iVGPath,Star,6)
+	IDLC_DECL_VAR(tF32,xc)
+	IDLC_BUF_TO_BASE(ni::eType_F32,xc)
+	IDLC_DECL_VAR(tF32,yc)
+	IDLC_BUF_TO_BASE(ni::eType_F32,yc)
+	IDLC_DECL_VAR(tF32,r1)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r1)
+	IDLC_DECL_VAR(tF32,r2)
+	IDLC_BUF_TO_BASE(ni::eType_F32,r2)
+	IDLC_DECL_VAR(tU32,n)
+	IDLC_BUF_TO_BASE(ni::eType_U32,n)
+	IDLC_DECL_VAR(tF32,start_angle)
+	IDLC_BUF_TO_BASE(ni::eType_F32,start_angle)
+	IDLC_METH_CALL_VOID(ni,iVGPath,Star,6,(xc,yc,r1,r2,n,start_angle))
+IDLC_METH_END(ni,iVGPath,Star,6)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Text/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Text/3 **/
+IDLC_METH_BEGIN(ni,iVGPath,Text,3)
+	IDLC_DECL_VAR(iFont*,apFont)
+	IDLC_BUF_TO_INTF(iFont,apFont)
+	IDLC_DECL_VAR(sVec2f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Text,3,(apFont,avPos,aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Text,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::TextAlongOnePath/7 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::TextAlongOnePath/7 **/
+IDLC_METH_BEGIN(ni,iVGPath,TextAlongOnePath,7)
+	IDLC_DECL_VAR(iFont*,apFont)
+	IDLC_BUF_TO_INTF(iFont,apFont)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_VAR(iVGPath*,apPath)
+	IDLC_BUF_TO_INTF(iVGPath,apPath)
+	IDLC_DECL_VAR(tBool,abPreserveXScale)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPreserveXScale)
+	IDLC_DECL_VAR(tF32,afBaseLength)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseLength)
+	IDLC_DECL_VAR(tF32,afSegmentApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSegmentApproxScale)
+	IDLC_DECL_VAR(tF32,afCurvesApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afCurvesApproxScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,TextAlongOnePath,7,(apFont,aaszText,apPath,abPreserveXScale,afBaseLength,afSegmentApproxScale,afCurvesApproxScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,TextAlongOnePath,7)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::TextAlongTwoPaths/9 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::TextAlongTwoPaths/9 **/
+IDLC_METH_BEGIN(ni,iVGPath,TextAlongTwoPaths,9)
+	IDLC_DECL_VAR(iFont*,apFont)
+	IDLC_BUF_TO_INTF(iFont,apFont)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_VAR(iVGPath*,apPath1)
+	IDLC_BUF_TO_INTF(iVGPath,apPath1)
+	IDLC_DECL_VAR(iVGPath*,apPath2)
+	IDLC_BUF_TO_INTF(iVGPath,apPath2)
+	IDLC_DECL_VAR(tBool,abPreserveXScale)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPreserveXScale)
+	IDLC_DECL_VAR(tF32,afBaseHeight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseHeight)
+	IDLC_DECL_VAR(tF32,afBaseLength)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseLength)
+	IDLC_DECL_VAR(tF32,afSegmentApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSegmentApproxScale)
+	IDLC_DECL_VAR(tF32,afCurvesApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afCurvesApproxScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,TextAlongTwoPaths,9,(apFont,aaszText,apPath1,apPath2,abPreserveXScale,afBaseHeight,afBaseLength,afSegmentApproxScale,afCurvesApproxScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,TextAlongTwoPaths,9)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ToBSpline/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ToBSpline/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,ToBSpline,1)
+	IDLC_DECL_VAR(tF32,afInterpolationStep)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afInterpolationStep)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ToBSpline,1,(afInterpolationStep))
+IDLC_METH_END(ni,iVGPath,ToBSpline,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Translate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Translate/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Translate,1)
+	IDLC_DECL_VAR(sVec2f,avTranslate)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avTranslate)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Translate,1,(avTranslate))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Translate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Rotate/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Rotate/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Rotate,1)
+	IDLC_DECL_VAR(tF32,afRadians)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadians)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Rotate,1,(afRadians))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Rotate,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Scale/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Scale/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Scale,1)
+	IDLC_DECL_VAR(sVec2f,avScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Scale,1,(avScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Scale,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::Transform/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::Transform/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,Transform,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,Transform,1,(apTransform))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,Transform,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::TransformAlongOnePath/5 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::TransformAlongOnePath/5 **/
+IDLC_METH_BEGIN(ni,iVGPath,TransformAlongOnePath,5)
+	IDLC_DECL_VAR(iVGPath*,apPath)
+	IDLC_BUF_TO_INTF(iVGPath,apPath)
+	IDLC_DECL_VAR(tBool,abPreserveXScale)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPreserveXScale)
+	IDLC_DECL_VAR(tF32,afBaseLength)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseLength)
+	IDLC_DECL_VAR(tF32,afSegmentApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSegmentApproxScale)
+	IDLC_DECL_VAR(tF32,afCurvesApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afCurvesApproxScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,TransformAlongOnePath,5,(apPath,abPreserveXScale,afBaseLength,afSegmentApproxScale,afCurvesApproxScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,TransformAlongOnePath,5)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::TransformAlongTwoPaths/7 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::TransformAlongTwoPaths/7 **/
+IDLC_METH_BEGIN(ni,iVGPath,TransformAlongTwoPaths,7)
+	IDLC_DECL_VAR(iVGPath*,apPath1)
+	IDLC_BUF_TO_INTF(iVGPath,apPath1)
+	IDLC_DECL_VAR(iVGPath*,apPath2)
+	IDLC_BUF_TO_INTF(iVGPath,apPath2)
+	IDLC_DECL_VAR(tBool,abPreserveXScale)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPreserveXScale)
+	IDLC_DECL_VAR(tF32,afBaseHeight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseHeight)
+	IDLC_DECL_VAR(tF32,afBaseLength)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afBaseLength)
+	IDLC_DECL_VAR(tF32,afSegmentApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afSegmentApproxScale)
+	IDLC_DECL_VAR(tF32,afCurvesApproxScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afCurvesApproxScale)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,TransformAlongTwoPaths,7,(apPath1,apPath2,abPreserveXScale,afBaseHeight,afBaseLength,afSegmentApproxScale,afCurvesApproxScale))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,TransformAlongTwoPaths,7)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::ArrangeOrientations/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::ArrangeOrientations/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,ArrangeOrientations,1)
+	IDLC_DECL_VAR(tBool,abCW)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abCW)
+	IDLC_METH_CALL_VOID(ni,iVGPath,ArrangeOrientations,1,(abCW))
+IDLC_METH_END(ni,iVGPath,ArrangeOrientations,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetBoundingRect/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetBoundingRect/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetBoundingRect,1)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetBoundingRect,1,(apTransform))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iVGPath,GetBoundingRect,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::RenderTesselated/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::RenderTesselated/3 **/
+IDLC_METH_BEGIN(ni,iVGPath,RenderTesselated,3)
+	IDLC_DECL_VAR(iVGPathTesselatedRenderer*,apPath)
+	IDLC_BUF_TO_INTF(iVGPathTesselatedRenderer,apPath)
+	IDLC_DECL_VAR(iVGTransform*,apTransform)
+	IDLC_BUF_TO_INTF(iVGTransform,apTransform)
+	IDLC_DECL_VAR(iVGStyle*,apStyle)
+	IDLC_BUF_TO_INTF(iVGStyle,apStyle)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,RenderTesselated,3,(apPath,apTransform,apStyle))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,RenderTesselated,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::AddSVGPath/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::AddSVGPath/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,AddSVGPath,1)
+	IDLC_DECL_VAR(achar*,aaszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszPath)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,AddSVGPath,1,(aaszPath))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,AddSVGPath,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::AddPolylinePath/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::AddPolylinePath/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,AddPolylinePath,1)
+	IDLC_DECL_VAR(achar*,aaszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszPath)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,AddPolylinePath,1,(aaszPath))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,AddPolylinePath,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::AddPolygonPath/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::AddPolygonPath/1 **/
+IDLC_METH_BEGIN(ni,iVGPath,AddPolygonPath,1)
+	IDLC_DECL_VAR(achar*,aaszPath)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszPath)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,AddPolygonPath,1,(aaszPath))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVGPath,AddPolygonPath,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iVGPath::GetSVGPath/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPath::GetSVGPath/0 **/
+IDLC_METH_BEGIN(ni,iVGPath,GetSVGPath,0)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPath,GetSVGPath,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iVGPath,GetSVGPath,0)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iVGPath)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

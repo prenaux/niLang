@@ -1,0 +1,71 @@
+#########################################################################
+#
+# -- theoraplayer -- library
+#
+#########################################################################
+if [ SubDirOnce TOP niUI src theoraplayer ] = 1 { return ; }
+
+tkDefLib niUI_theoraplayer : 1,0,0 ;
+niImportModuleHdrs niLang ;
+SubDirHdrs $(SUBDIR) YUV ;
+SubDirHdrs $(SUBDIR) YUV libyuv include ;
+
+if $(NI_VIDEO_USE_FFMPEG) = 1 && $(FFMPEG_USE_SDK) = 1 {
+  SubDirHdrs $(FFMPEG_SDK_DIR) include ;
+}
+if $(NI_VIDEO_USE_OGG) = 1 {
+  SubDirHdrs $(SUBDIR) .. ogg libtheora include ;
+  SubDirHdrs $(SUBDIR) .. ogg libogg include ;
+  SubDirHdrs $(SUBDIR) .. ogg libvorbis include ;
+}
+
+if $(ANDROID) = 1 {
+  SubDirHdrs $(SUBDIR) YUV android ;
+}
+
+SRC = [ tkPkgSrcSubDirNoHdrs ] ;
+
+SRC += [ tkPkgSrcSubDirNoHdrs YUV ] ;
+SRC += [ tkPkgSrcSubDirNoHdrs YUV C ] ;
+SRC += [ tkPkgSrcSubDirNoHdrs YUV libyuv ] ;
+SRC += [ tkPkgSrcSubDirNoHdrs YUV libyuv src ] ;
+if $(ANDROID) = 1 {
+  SRC += [ tkPkgSrcSubDirNoHdrs YUV android ] ;
+}
+
+if $(NI_VIDEO_USE_OGG) = 1 || $(NI_VIDEO_USE_FFMPEG) = 1 {
+  if $(NI_VIDEO_USE_OGG) = 1 {
+    SRC += [ tkPkgSrcSubDirNoHdrs Theora ] ;
+  }
+  if $(NI_VIDEO_USE_FFMPEG) = 1 {
+    SRC += [ tkPkgSrcSubDirNoHdrs FFmpeg ] ;
+  }
+}
+
+## Build
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) ] ;
+
+if $(NI_VIDEO_USE_FFMPEG) = 1 && $(FFMPEG_USE_SDK) = 1 {
+  ObjectDefines $(BUILD_SRC) : __FFMPEG ;
+}
+if $(NI_VIDEO_USE_OGG) = 1 {
+  ObjectDefines $(BUILD_SRC) : __THEORA ;
+}
+if $(ANDROID) = 1 {
+  ObjectDefines $(BUILD_SRC) : _ANDROID ;
+}
+else if $(WINRT) = 1 {
+  ObjectDefines $(BUILD_SRC) : _WINRT ;
+}
+else if $(OSX) = 1 {
+  if $(MACOSX_ARCH:U) = ARM64 {
+    # Disable NEON because ARM64 asm isn't the same as standard NEON
+    ObjectDefines $(BUILD_SRC) : LIBYUV_DISABLE_NEON ;
+  }
+}
+else if $(IOS) = 1 {
+  if $(IOS_ARCH) = ARM64 {
+    # Disable NEON because ARM64 asm isn't the same as standard NEON
+    ObjectDefines $(BUILD_SRC) : LIBYUV_DISABLE_NEON ;
+  }
+}

@@ -1,0 +1,781 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eUIMessage">
+			<comments desc="UI message ">
+				<remark text="G, general messages "/>
+				<remark text="L, layout messages "/>
+				<remark text="P, painting/drawing messages "/>
+				<remark text="I, input messages "/>
+				<remark text="F, finger messages "/>
+				<remark text="A, action messages "/>
+				<remark text="C, click messages "/>
+				<remark text="S, serialization messages "/>
+				<remark text="Z, user messages "/>
+				<remark text="X, context messages, sent only to the root widget "/>
+			</comments>
+			<value name="eUIMessage_SinkAttached" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 0 ) ">
+				<comments desc="Message sent to the sink being added. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SinkDetached" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 1 ) ">
+				<comments desc="Message sent to the sink being removed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ChildAdded" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 2 ) ">
+				<comments desc="A child widget has been added. ">
+					<params text="A: the child added "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ChildRemoved" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 3 ) ">
+				<comments desc="A child widget has been removed. ">
+					<params text="A: the child removed "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Destroy" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 4 ) ">
+				<comments desc="The widget has been destroyed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Notify" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 5 ) ">
+				<comments desc="Notification of message received by a child widget. ">
+					<params text="A: the widget that received the notified message. "/>
+					<params text="B: iMessage instance that contains the message. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SetCursor" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 6 ) ">
+				<comments desc="Received when the widget should set the cursor. ">
+					<remark text="If no cursor is set the default cursor will be set. "/>
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SetFocus" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 7 ) ">
+				<comments desc="Received when the widget gets focus. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LostFocus" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 8 ) ">
+				<comments desc="">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Activate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 9 ) ">
+				<comments desc="The widget has been activated. ">
+					<remark text="A widget can be activated manually using iUIContext::Activate, or before receiving focus if the style eWidgetStyle_FocusActivate is set. "/>
+					<remark text="When a widget is activated it is not put on Top of the ZOrder, if it&apos;s the desired behavior then the widget should set itself on the top when this message is received. "/>
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Deactivate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 10 ) ">
+				<comments desc="The widget has been deactivated. ">
+					<remark text="A widget is deactivated when another widget is activated. "/>
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Command" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 11 ) ">
+				<comments desc="A child widget has send a command. ">
+					<remark text="The command message is sent to the parent widget if it is not handled. "/>
+					<remark text="The standard Form widget always handle this message. "/>
+					<params text="A: a iWidgetCommand instance. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Timer" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 12 ) ">
+				<comments desc="Message sent when a timer expires. ">
+					<params text="A: timer id "/>
+					<params text="B: timer duration "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Enabled" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 13 ) ">
+				<comments desc="Enabled message, sent when a widget is enabled or disabled. ">
+					<params text="A: eTrue if the widget is enabled, eFalse if the widget is disabled. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Visible" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 14 ) ">
+				<comments desc="Visible message, sent when a widget is made visible or invisible. ">
+					<params text="A: eTrue if the widget is made visible, eFalse if the widget is made invisible. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Layout" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 15 ) ">
+				<comments desc="The widget should update its layout. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_StyleChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 16 ) ">
+				<comments desc="The widget&apos;s style has been changed. ">
+					<params text="A: previous style "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FontChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 17 ) ">
+				<comments desc="The widget&apos;s font has been changed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_TextChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 18 ) ">
+				<comments desc="Text changed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SetText" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 19 ) ">
+				<comments desc="Called when the text should be set, when iWidget::GetText is called. ">
+					<params text="A: true if serializing the text property, else false "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SkinChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 20 ) ">
+				<comments desc="Called when the skin is changed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextMenuChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 21 ) ">
+				<comments desc="The context menu has changed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_HoverTextChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 22 ) ">
+				<comments desc="Hover text changed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LoadConfig" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 23 ) ">
+				<comments desc="Configuration files should be loaded. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SaveConfig" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 24 ) ">
+				<comments desc="Configuration files should be saved. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextResized" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 25 ) ">
+				<comments desc="The context (root widget) has been resized. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LocaleChanged" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;G&apos; , 26 ) ">
+				<comments desc="Locale has changed. ">
+					<remark text="This is sent when the active locale&apos;s translations has changed or when the current locale is changed. "/>
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCSize" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 0 ) ">
+				<comments desc="Non-client area resized. ">
+					<params text="A: new widget size "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Size" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 1 ) ">
+				<comments desc="Client area resized. ">
+					<params text="A: new client size "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Padding" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 2 ) ">
+				<comments desc="The widget&apos;s padding has been modified. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Border" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 3 ) ">
+				<comments desc="The widget&apos;s border has been modified. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_BorderStyle" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 4 ) ">
+				<comments desc="The widget&apos;s border style has been modified. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Margin" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 5 ) ">
+				<comments desc="The widget&apos;s margin has been modified. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MarginMerge" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 6 ) ">
+				<comments desc="The widget&apos;s margin merge has been modified. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Folded" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 7 ) ">
+				<comments desc="The widget has been folded. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Unfolded" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 8 ) ">
+				<comments desc="The widget has been unfolded. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_BeforeDocked" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 9 ) ">
+				<comments desc="The widget has been docked or undocked. ">
+					<params text="A: the widget the form is going to be docked in. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_AfterDocked" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 10 ) ">
+				<comments desc="The widget has been docked or undocked. ">
+					<params text="A: the tab widget inside which the widget has just been docked. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Undocked" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;L&apos; , 11 ) ">
+				<comments desc="The widget has been docked or undocked. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCPaint" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;P&apos; , 1 ) ">
+				<comments desc="Draw the non-client area. ">
+					<params text="A: cursor position, non-client relative. "/>
+					<params text="B: the iCanvas to draw into "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Paint" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;P&apos; , 2 ) ">
+				<comments desc="Draw the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: the iCanvas to draw into "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCLeftClickDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 0 ) ">
+				<comments desc="Left click down in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LeftClickDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 1 ) ">
+				<comments desc="Left click down in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCLeftClickUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 2 ) ">
+				<comments desc="Left click up in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LeftClickUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 3 ) ">
+				<comments desc="Left click up in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCRightClickDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 4 ) ">
+				<comments desc="Right click down in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_RightClickDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 5 ) ">
+				<comments desc="Right click down in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCRightClickUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 6 ) ">
+				<comments desc="Right click up in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_RightClickUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 7 ) ">
+				<comments desc="Right click up in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCMouseMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 8 ) ">
+				<comments desc="The cursor moved inside the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MouseMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 9 ) ">
+				<comments desc="The cursor moved inside the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCWheel" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 10 ) ">
+				<comments desc="The wheel button has been pressed in the non client area. ">
+					<params text="A: wheel movement value "/>
+					<params text="B: absolute cursor position. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Wheel" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 11 ) ">
+				<comments desc="The wheel button has been pressed in the client area. ">
+					<params text="A: wheel movement value "/>
+					<params text="B: absolute cursor position. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_KeyChar" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 12 ) ">
+				<comments desc="A character has been entered. ">
+					<params text="A: &apos;achar&apos; code "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Submit" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 13 ) ">
+				<comments desc="Submit message. ">
+					<remark text="The submit message is sent to the parent widget if it is not handled. "/>
+					<remark text="The standard Form widget always handle this message. "/>
+					<params text="A: iWidget, sender widget "/>
+					<params text="B: iMessage, input message that triggered the submit "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCMouseEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 15 ) ">
+				<comments desc="Sent when the mouse enter the widget non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MouseEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 16 ) ">
+				<comments desc="Sent when the mouse enter the widget client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCMouseLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 17 ) ">
+				<comments desc="Sent when the mouse leaves the widget non-client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MouseLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 18 ) ">
+				<comments desc="Sent when the mouse leaves the widget client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCMouseHover" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 19 ) ">
+				<comments desc="Sent when the mouse stand over the client area without moving for the time specified in the widget&apos;s hover delay. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MouseHover" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 20 ) ">
+				<comments desc="Sent when the mouse stand over the non-client area without moving for the time specified in the widget&apos;s hover delay. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragMouseMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 21 ) ">
+				<comments desc="The cursor moved inside the non-client area when dragging an item. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragMouseMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 22 ) ">
+				<comments desc="The cursor moved inside the client area when dragging an item. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragMouseEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 23 ) ">
+				<comments desc="Sent when the mouse enter the widget non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragMouseEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 24 ) ">
+				<comments desc="Sent when the mouse enter the widget client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragMouseLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 25 ) ">
+				<comments desc="Sent when the mouse leaves the widget non-client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragMouseLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 26 ) ">
+				<comments desc="Sent when the mouse leaves the widget client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragBegin" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 27 ) ">
+				<comments desc="Sent when the mouse movement is considered to begin dragging in the non-client area. That is the left mouse button has been pressed and a movement of at least &apos;drag threshold&apos; pixel has been made. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: Drag start position in screen space. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragBegin" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 28 ) ">
+				<comments desc="Sent when the mouse movement is considered to begin dragging in the client area. That is the left mouse button has been pressed and a movement of at least &apos;drag threshold&apos; pixel has been made. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: Drag start position in screen space. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragEnd" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 29 ) ">
+				<comments desc="Sent when the drag button has been released, aka when the dragging ended in the non-client area. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: Drag end position in screen space. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragEnd" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 30 ) ">
+				<comments desc="Sent when the drag button has been released, aka when the dragging ended. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: Drag end position in screen space. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_KeyDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 32 ) ">
+				<comments desc="A key has been pressed. ">
+					<params text="A: eKey code "/>
+					<params text="B: eKeyMod "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_KeyUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 33 ) ">
+				<comments desc="A key has been release. ">
+					<params text="A: &apos;achar&apos; code "/>
+					<params text="B: eKeyMod "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_GameCtrl" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 34 ) ">
+				<comments desc="A game controller&apos;s state changed. ">
+					<params text="A: the game controller "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_GameCtrlButtonDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 35 ) ">
+				<comments desc="A game controller&apos;s button is down. ">
+					<params text="A: the game controller "/>
+					<params text="B: the game controller button pressed "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_GameCtrlButtonUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;I&apos; , 36 ) ">
+				<comments desc="A game controller&apos;s button is up. ">
+					<params text="A: the game controller "/>
+					<params text="B: the game controller button released "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 0 ) ">
+				<comments desc="Finger down in the non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerDown" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 1 ) ">
+				<comments desc="Finger click down in the client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 2 ) ">
+				<comments desc="Finger up in the non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerUp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 3 ) ">
+				<comments desc="Finger click up in the client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 8 ) ">
+				<comments desc="The finger moved inside the non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 9 ) ">
+				<comments desc="The finger moved inside the client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 15 ) ">
+				<comments desc="Sent when a finger enter the widget non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 16 ) ">
+				<comments desc="Sent when a finger enter the widget client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 17 ) ">
+				<comments desc="Sent when a finger leaves the widget non-client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 18 ) ">
+				<comments desc="Sent when a finger leaves the widget client area. ">
+					<params text="A: unused. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragFingerMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 21 ) ">
+				<comments desc="The cursor moved inside the non-client area when dragging an item. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragFingerMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 22 ) ">
+				<comments desc="The cursor moved inside the client area when dragging an item. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, client relative, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragFingerEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 23 ) ">
+				<comments desc="Sent when a finger enter the widget non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, absolute, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragFingerEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 24 ) ">
+				<comments desc="Sent when a finger enter the widget client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger position, absolute, and pressure. Vec3(client x, client y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragFingerLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 25 ) ">
+				<comments desc="Sent when a finger leaves the widget non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragFingerLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 26 ) ">
+				<comments desc="Sent when a finger leaves the widget client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragFingerBegin" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 27 ) ">
+				<comments desc="Sent when a finger movement is considered to begin dragging in the non-client area. That is the left finger button has been pressed and a movement of at least &apos;drag threshold&apos; pixel has been made. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: finger index. "/>
+					<params text="B: Drag start position in screen space. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragFingerBegin" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 28 ) ">
+				<comments desc="Sent when a finger movement is considered to begin dragging in the client area. That is the left finger button has been pressed and a movement of at least &apos;drag threshold&apos; pixel has been made. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: finger index. "/>
+					<params text="B: Drag start position in screen space. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCDragFingerEnd" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 29 ) ">
+				<comments desc="Sent when the drag button has been released, aka when the dragging ended in the non-client area. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. \param A: unused. "/>
+					<params text="A: finger index. "/>
+					<params text="B: Drag end position in screen space. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_DragFingerEnd" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 30 ) ">
+				<comments desc="Sent when the drag button has been released, aka when the dragging ended. ">
+					<remark text="The message is sent to all widgets, including the ones that aren&apos;t drag sources or targets. "/>
+					<params text="A: finger index. "/>
+					<params text="B: Drag end position in screen space. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCFingerRelativeMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 31 ) ">
+				<comments desc="The finger moved inside the non-client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger relative position and pressure. Vec3(rel x, rel y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_FingerRelativeMove" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 32 ) ">
+				<comments desc="The finger moved inside the client area. ">
+					<params text="A: finger index. "/>
+					<params text="B: finger relative position and pressure. Vec3(rel x, rel y, pressure). "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Pinch" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;F&apos; , 33 ) ">
+				<comments desc="Pinch gesture. ">
+					<params text="A: scale. "/>
+					<params text="B: eGestureState. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextMenu" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 0 ) ">
+				<comments desc="Sent when the context menu should be opened. ">
+					<remark text="This message is sent from the default RightClickUp message handler. "/>
+					<params text="A: true if a mouse click generated the message, else false, meaning that the widget should generate the context menu position from the current selection or it&apos;s top left position. "/>
+					<params text="B: cursor position, client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextHelp" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 1 ) ">
+				<comments desc="Context help. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Copy" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 2 ) ">
+				<comments desc="Copy. ">
+					<params text="A: clipboard datatable. \see ni::iDataTable "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Cut" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 3 ) ">
+				<comments desc="Cut. ">
+					<params text="A: clipboard datatable. \see ni::iDataTable "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Paste" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 4 ) ">
+				<comments desc="Paste. ">
+					<params text="A: clipboard datatable. \see ni::iDataTable "/>
+					<params text="A: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Undo" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 5 ) ">
+				<comments desc="Undo. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Redo" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 6 ) ">
+				<comments desc="Redo. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_MoveFocus" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 7 ) ">
+				<comments desc="Move focus. ">
+					<params text="A: true if the focus should be moved to the previous widget, false if it should be moved to the next widget "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_Cancel" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;A&apos; , 8 ) ">
+				<comments desc="Cancel message. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCLeftClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 0 ) ">
+				<comments desc="Left click in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LeftClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 1 ) ">
+				<comments desc="Left click in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCLeftDoubleClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 2 ) ">
+				<comments desc="Left double-click in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_LeftDoubleClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 3 ) ">
+				<comments desc="Left double-click in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCRightClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 4 ) ">
+				<comments desc="Right click in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_RightClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 5 ) ">
+				<comments desc="Right click in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_NCRightDoubleClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 6 ) ">
+				<comments desc="Right double-click in the non-client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_RightDoubleClick" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;C&apos; , 7 ) ">
+				<comments desc="Right double-click in the client area. ">
+					<params text="A: cursor position, client relative. "/>
+					<params text="B: cursor position, non-client relative. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SerializeLayout" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;S&apos; , 0 ) ">
+				<comments desc="SerializeLayout message. ">
+					<remark text="Not called if the NoRoot serialize flag is set. "/>
+					<params text="A: iDataTable interface where the widget should be serialized. "/>
+					<params text="B: the widget serialize flags \see eWidgetSerializeFlags. \see ni::iUIContext::SerializeWidget \see ni::iWidget::SerializeLayout "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SerializeWidget" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;S&apos; , 1 ) ">
+				<comments desc="SerializeWidget message. ">
+					<remark text="This is always called, no matter what the serialize flags are. "/>
+					<params text="A: iDataTable interface where the widget should be serialized. "/>
+					<params text="B: the widget serialize flags \see eWidgetSerializeFlags. \see ni::iUIContext::SerializeWidget "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SerializeChildren" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;S&apos; , 2 ) ">
+				<comments desc="SerializeChildren message. ">
+					<remark text="Not called if the Children serialize flag is not set. "/>
+					<params text="A: iDataTable interface where the widget should be serialized. "/>
+					<params text="B: the widget serialize flags \see eWidgetSerializeFlags. \see ni::iUIContext::SerializeWidget \see ni::iWidget::SerializeChildren "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_SerializeFinalize" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;S&apos; , 3 ) ">
+				<comments desc="SerializeFinalize message. ">
+					<remark text="Called at the end of the serialization. "/>
+					<params text="A: iDataTable interface where the widget should be serialized. "/>
+					<params text="B: the widget serialize flags \see eWidgetSerializeFlags. \see ni::iUIContext::SerializeWidget \see ni::iWidget::SerializeFinalize "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_UserMessage" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;Z&apos; , 0 ) ">
+				<comments desc="First user message id "/>
+			</value>
+			<value name="eUIMessage_ContextUpdate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;X&apos; , &apos;u&apos; ) ">
+				<comments desc="Sent after the context is updated. ">
+					<params text="A: tF32 FrameTime. "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextBeforeDraw" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;X&apos; , &apos;d&apos; ) ">
+				<comments desc="Sent before the context is drawn. ">
+					<params text="A: the Canvas of the root widget (rootCanvas) "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_ContextAfterDraw" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;X&apos; , &apos;D&apos; ) ">
+				<comments desc="Sent after the context is drawn. ">
+					<params text="A: the Canvas of the root widget (rootCanvas) "/>
+					<params text="B: unused. "/>
+				</comments>
+			</value>
+		</enum>
+	</namespace>
+</niIDL>

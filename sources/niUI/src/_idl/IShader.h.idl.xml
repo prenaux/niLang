@@ -1,0 +1,577 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eShaderUnit">
+			<comments desc="Shader Units. "/>
+			<value name="eShaderUnit_Vertex" value="0 ">
+				<comments desc="Vertex shader. "/>
+			</value>
+			<value name="eShaderUnit_Pixel" value="1 ">
+				<comments desc="Pixel shader. "/>
+			</value>
+			<value name="eShaderUnit_Native" value="2 ">
+				<comments desc="Native driver dependent shader. "/>
+			</value>
+			<value name="eShaderUnit_Last" value="3 ">
+				<comments desc="\internal. "/>
+			</value>
+		</enum>
+		<enum name="eShaderRegisterType">
+			<comments desc="Shader input register type. "/>
+			<value name="eShaderRegisterType_Input" value="0 ">
+				<comments desc="Input register. "/>
+			</value>
+			<value name="eShaderRegisterType_Output" value="1 ">
+				<comments desc="Output position register. "/>
+			</value>
+			<value name="eShaderRegisterType_Temporary" value="2 ">
+				<comments desc="Temporary register. "/>
+			</value>
+			<value name="eShaderRegisterType_ConstFloat" value="3 ">
+				<comments desc="Constant float register. "/>
+			</value>
+			<value name="eShaderRegisterType_ConstInt" value="4 ">
+				<comments desc="Constant int register. "/>
+			</value>
+			<value name="eShaderRegisterType_ConstBool" value="5 ">
+				<comments desc="Constant bool register. "/>
+			</value>
+			<value name="eShaderRegisterType_Sampler" value="6 ">
+				<comments desc="Sampler register. "/>
+			</value>
+			<value name="eShaderRegisterType_Address" value="7 ">
+				<comments desc="Address register. "/>
+			</value>
+			<value name="eShaderRegisterType_Loop" value="8 ">
+				<comments desc="Loop register. "/>
+			</value>
+			<value name="eShaderRegisterType_Texture" value="9 ">
+				<comments desc="Texture register. "/>
+			</value>
+			<value name="eShaderRegisterType_Predicate" value="10 ">
+				<comments desc="Predicate register. "/>
+			</value>
+			<value name="eShaderRegisterType_Last" value="11 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iShaderConstants" uuid1="4450DC53-E4B1-4BC3-8CD3-EC396B36C2D7" uuid2="0x4450dc53,0xe4b1,0x4bc3,0x8c,0xd3,0xec,0x39,0x6b,0x36,0xc2,0xd7">
+			<comments desc="Shader constants buffer. ">
+				<remark text="All sizes and offsets are expressed in register (sVec4f/l) unit. "/>
+			</comments>
+			<parents>
+				<parent name="iSerializable"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this constant buffer. "/>
+				<return type="iShaderConstants *" typec="iShaderConstants*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxNumRegisters"
+				name="GetMaxNumRegisters"
+				num_parameters="0"
+				property="get"
+				property_name2="maxNumRegisters"
+				property_name="max_num_registers">
+				<comments desc="Get the constants buffer maximum number of registers. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addConstant" name="AddConstant" num_parameters="3">
+				<comments desc="Add a new constant. " return="The index of the added constant, eInvalidHandle if error. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eShaderRegisterType"
+					typec="eShaderRegisterType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumConstants"
+				name="GetNumConstants"
+				num_parameters="0"
+				property="get"
+				property_name2="numConstants"
+				property_name="num_constants">
+				<comments desc="Get the number of constants in the buffer. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstantIndex"
+				name="GetConstantIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="constantIndex"
+				property_name="constant_index">
+				<comments desc="Get the index of the specified constant. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstantName"
+				name="GetConstantName"
+				num_parameters="1"
+				property="get"
+				property_name2="constantName"
+				property_name="constant_name">
+				<comments desc="Get the name of the specified constant. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstantSize"
+				name="GetConstantSize"
+				num_parameters="1"
+				property="get"
+				property_name2="constantSize"
+				property_name="constant_size">
+				<comments desc="Get the size of the constant at the specified index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstantType"
+				name="GetConstantType"
+				num_parameters="1"
+				property="get"
+				property_name2="constantType"
+				property_name="constant_type">
+				<comments desc="Get the type of the specified constant. "/>
+				<return type="eShaderRegisterType" typec="eShaderRegisterType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setHwIndex"
+				name="SetHwIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="hwIndex"
+				property_name="hw_index">
+				<comments desc="Set the hardware register index of the specified constant. ">
+					<remark text="a eInvalidHandle value means that the register index is not specified and has to be determined from the context. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anRegisterIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHwIndex"
+				name="GetHwIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="hwIndex"
+				property_name="hw_index">
+				<comments desc="Get the hardware register index of the specified constant. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setFloatArray" name="SetFloatArray" num_parameters="3">
+				<comments desc="Set a float constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apV"
+					type="const tVec4fCVec *"
+					typec="const tVec4fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setFloatPointer"
+				name="SetFloatPointer"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Set a float constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="anConstIndex" type="tU32" typec="tU32"/>
+				<parameter name="apV" type="const sVec4f *" typec="const sVec4f*"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method java_name="setFloat" name="SetFloat" num_parameters="2">
+				<comments desc="Set a float constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setFloatMatrixArray" name="SetFloatMatrixArray" num_parameters="3">
+				<comments desc="Set four float constants from matrices. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apV"
+					type="const tMatrixfCVec *"
+					typec="const tMatrixfCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setFloatMatrix" name="SetFloatMatrix" num_parameters="2">
+				<comments desc="Set four float constants from matrices. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setIntArray" name="SetIntArray" num_parameters="3">
+				<comments desc="Set an integer constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apV"
+					type="const tVec4iCVec *"
+					typec="const tVec4iCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setIntPointer"
+				name="SetIntPointer"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Set an integer constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="anConstIndex" type="tU32" typec="tU32"/>
+				<parameter name="apV" type="const sVec4i *" typec="const sVec4i*"/>
+				<parameter
+					default="1 "
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method java_name="setInt" name="SetInt" num_parameters="2">
+				<comments desc="Set an integer constant from 4D vectors. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				name="GetFloat"
+				num_parameters="2">
+				<comments desc="Get the float constant at the specified index. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloatMatrix"
+				name="GetFloatMatrix"
+				num_parameters="1">
+				<comments desc="Get the float constant matrix at the specified index. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloatPointer"
+				name="GetFloatPointer"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Get the float constant pointer at the specified index. "/>
+				<return type="sVec4f *" typec="sVec4f*"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInt"
+				name="GetInt"
+				num_parameters="2">
+				<comments desc="Get the float constant at the specified index. "/>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIntPointer"
+				name="GetIntPointer"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Get the float constant pointer at the specified index. "/>
+				<return type="sVec4i *" typec="sVec4i*"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the shader constants buffer description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				java_name="setConstantMetadata"
+				name="SetConstantMetadata"
+				num_parameters="2"
+				property="set"
+				property_name2="constantMetadata"
+				property_name="constant_metadata">
+				<comments desc="Set the metadata of the specified constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspMetadata"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstantMetadata"
+				name="GetConstantMetadata"
+				num_parameters="1"
+				property="get"
+				property_name2="constantMetadata"
+				property_name="constant_metadata">
+				<comments desc="Get the metadata of the specified constant. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anConstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iShader" uuid1="D33A0C21-AD8F-4A61-A132-C0CD95F9864D" uuid2="0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d">
+			<comments desc="Shader interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getUnit"
+				name="GetUnit"
+				num_parameters="0"
+				property="get"
+				property_name2="unit"
+				property_name="unit">
+				<comments desc="Return the Shader unit on which it runs. "/>
+				<return type="eShaderUnit" typec="eShaderUnit" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProfile"
+				name="GetProfile"
+				num_parameters="0"
+				property="get"
+				property_name2="profile"
+				property_name="profile">
+				<comments desc="Return the profile of the Shader. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstants"
+				name="GetConstants"
+				num_parameters="0"
+				property="get"
+				property_name2="constants"
+				property_name="constants">
+				<comments desc="Get the program&apos;s constants. "/>
+				<return type="const iShaderConstants *" typec="const iShaderConstants*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCode"
+				name="GetCode"
+				num_parameters="0"
+				property="get"
+				property_name2="code"
+				property_name="code">
+				<comments desc="Get the code of the shader. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the shader description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+		</interface>
+		<interface name="iGLShader" uuid1="DD4046FA-5076-1641-AD1D-70DEC5054EDF" uuid2="0xdd4046fa,0x5076,0x1641,0xad,0x1d,0x70,0xde,0xc5,0x05,0x4e,0xdf">
+			<comments desc=" The OpenGL shader that is linked and can give use the bindings and pushes the uniforms. That&apos;s the interface the native shader&apos;s Bind() function must return.   The calling order is: - iGLShader::Bind(iDrawOperation) -&gt; iGLShader - iGLShader::GetVertexAttributeLocationArray() before binding the VA. - glBindBuffer(VA), glDrawElements/glDrawArrays - iGLShader::BeforeDraw(), its expected to push shader uniforms. - glBindBuffer(IA), glDrawElements/glDrawArrays - iGLShader::AfterDraw()  "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getVertexAttributeLocationArray"
+				name="GetVertexAttributeLocationArray"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=" The OpenGL shader that is linked and can give use the bindings and pushes the uniforms. That&apos;s the interface the native shader&apos;s Bind() function must return.   The calling order is: - iGLShader::Bind(iDrawOperation) -&gt; iGLShader - iGLShader::GetVertexAttributeLocationArray() before binding the VA. - glBindBuffer(VA), glDrawElements/glDrawArrays - iGLShader::BeforeDraw(), its expected to push shader uniforms. - glBindBuffer(IA), glDrawElements/glDrawArrays - iGLShader::AfterDraw()  "/>
+				<return type="const tI32 *" typec="const tI32*"/>
+			</method>
+			<method java_name="beforeDraw" name="BeforeDraw" num_parameters="0">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="afterDraw" name="AfterDraw" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,94 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			dispatchwrapper="yes"
+			name="iScriptingHost"
+			uuid1="6F7E1CFC-118B-452C-8CB2-0A04DED648F2"
+			uuid2="0x6f7e1cfc,0x118b,0x452c,0x8c,0xb2,0x0a,0x04,0xde,0xd6,0x48,0xf2">
+			<comments desc="Scripting host interface. ">
+				<remark text="The context is an indicator of a &apos;group/class&apos; of object/implementation. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="evalString"
+				min_features="15"
+				name="EvalString"
+				num_parameters="2">
+				<comments desc="Evaluate the specified string. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszCode"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="canEvalImpl"
+				min_features="15"
+				name="CanEvalImpl"
+				num_parameters="2">
+				<comments desc="Check whether the scripting host can evaluate the specified code resource. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspCodeResource"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="evalImpl"
+				min_features="15"
+				name="EvalImpl"
+				num_parameters="3">
+				<comments desc="Evaluate the specified implementation from the specified &apos;code resource&apos;. ">
+					<remark text="The code resource can be a file name, class name, or whathever is relevant as an implementation identifier depending on the type of the scripting host. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspContext"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspCodeResource"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="service"
+				min_features="15"
+				name="Service"
+				num_parameters="1">
+				<comments desc="Service the scripting host. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abForceGC"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

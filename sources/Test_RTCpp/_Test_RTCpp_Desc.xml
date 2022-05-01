@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<module name='Test_RTCpp'
+        version='1,0,0' 
+        moduleinclude=''
+        desc='Test RTCpp module'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+</module>

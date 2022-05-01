@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <title>niApp</title>
+
+    <script>
+     // See https://css-tricks.com/the-trick-to-viewport-units-on-mobile/ for
+     // an explanation of why this insanity is needed.
+     function browserOnResizeFillHeight() {
+       // First we get the viewport height and we multiple it by 1% to get a value for a vh unit
+       var vh = window.innerHeight * 0.01;
+       // Then we set the value in the --vh custom property to the root of the document
+       document.documentElement.style.setProperty('--vh', `${vh}px`);
+     }
+     browserOnResizeFillHeight();
+     window.addEventListener('resize', browserOnResizeFillHeight);
+    </script>
+
+    <style>
+     html,
+     body {
+       background-color: #38a; /* Use a color that works to test transparencies */
+       font-family: arial;
+       padding: 0;
+       margin: 0;
+       border: 0;
+       width: 100%;
+       height: 100%;
+       overflow: hidden;
+     }
+
+     *:focus {
+       outline: none;
+     }
+
+     progress {
+       /* Reset the default appearance */
+       -webkit-appearance: none;
+       appearance: none;
+     }
+     progress[value]::-webkit-progress-bar {
+       background-color: #eee;
+       border-radius: 1px;
+       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+     }
+     progress[value]::-webkit-progress-value {
+       background-color: #0ae;
+       border-radius: 2px;
+       background-size: 35px 20px, 100% 100%, 100% 100%;
+     }
+
+     .ni-player-container {
+       position: relative;
+       height: 100%;
+       width: 100%;
+       height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
+       height: calc(var(--vh, 1vh) * 100);
+       margin: 0 auto;
+     }
+     #ni-player-status {
+       font-weight: bold;
+       color: rgb(255,255,255);
+     }
+     #ni-player-overlay {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 100;
+     }
+     .ni-player-canvas {
+       height: 100%;
+       width: 100%;
+       /* the player's canvas must not have a border or padding, otherwise the
+        * cursor/touch events will get the wrong coordinates */
+       border: 0 !important;
+       padding: 0 !important;
+     }
+     .ni-player-terminal {
+       width: 100%;
+       height: 100%;
+       margin: 0;
+       border: 0px;
+       padding: 5px 5px;
+       display: block;
+       background-color: black;
+       color: white;
+       font-family: 'Lucida Console', Monaco, monospace;
+       outline: none;
+     }
+     .ni-player-ar-canvas {
+       position: absolute;
+       left: 0px;
+       top: 0px;
+     }
+     .ni-player-ar-video {
+       position: absolute;
+       left: 0px;
+       top: 0px;
+     }
+    </style>
+  </head>
+  <body>
+
+    <div id="ni-player-container" class="ni-player-container">
+      <div id="ni-player-overlay" oncontextmenu="event.preventDefault()"
+           style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="position: relative; background-color: rgba(0,0,0,0.5); padding: 1em 3em;">
+          <img src="./ni-player-logo.png" style="margin-left: calc(50% - 150px); width: 300px; height: 300px;" />
+          <div id="ni-player-status">Status</div>
+          <progress value="100" max="100" id="ni-player-progress" style="width: 100%;"></progress>
+        </div>
+      </div>
+
+      <canvas
+        id="canvas"
+        class="ni-player-canvas"
+        oncontextmenu="event.preventDefault()"
+        tabindex="-1"
+        style="display: none;"
+      ></canvas>
+
+      <textarea
+        id="ni-player-terminal"
+        class="ni-player-terminal"
+        rows="10"
+        style="display: none;"
+        spellcheck="false"
+      ></textarea>
+    </div>
+
+    <script type='text/javascript'>
+     var elPlayerContainer = document.getElementById('ni-player-container');
+     var elPlayerStatusText = document.getElementById('ni-player-status');
+     var elPlayerProgress = document.getElementById('ni-player-progress');
+     var elPlayerOverlay = document.getElementById('ni-player-overlay');
+     var elPlayerTerminal = document.getElementById('ni-player-terminal');
+     var didShowwindow = false;
+
+     var Module = {
+       preRun: [],
+       postRun: [],
+       notifyHostHandlers: {
+         ShowWindow: function() {
+           var canvas = Module['canvas'];
+           if (canvas) {
+             canvas.style.display = 'block';
+           }
+           if (elPlayerContainer) {
+             elPlayerContainer.style.display = 'block';
+             niApp.SetCanvasSize(canvas,canvas.clientWidth,canvas.clientHeight);
+           }
+           if (elPlayerTerminal) {
+             elPlayerTerminal.style.display = 'none';
+             elPlayerTerminal = null;
+           }
+         },
+         HideWindow: function() {
+           var canvas = Module['canvas'];
+           if (canvas) {
+             canvas.style.display = 'none';
+           }
+           if (elPlayerContainer) {
+             elPlayerContainer.style.display = 'none';
+           }
+           elPlayerTerminal = document.getElementById('ni-player-terminal');
+           if (elPlayerTerminal) {
+             elPlayerTerminal.style.display = 'block';
+           }
+         },
+         OpenUrl: function(params) {
+           var url = decodeURIComponent(params);
+           console.log("... OpenUrl: " + url);
+           if (NIAPP_BROWSER.isMobile) {
+             window.location.href = url;
+           }
+           else {
+             window.open(url);
+           }
+         },
+       },
+       print: function(text) {
+         if (arguments.length > 1) {
+           text = Array.prototype.slice.call(arguments).join(' ');
+         }
+         console.log(text);
+         if (elPlayerTerminal) {
+           elPlayerTerminal.value += text + "\n";
+           elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
+         }
+       },
+       printErr: function(text) {
+         if (arguments.length > 1) {
+           text = Array.prototype.slice.call(arguments).join(' ');
+         }
+         console.error(text);
+       },
+       canvas: (function() {
+         var canvas = document.getElementById('canvas');
+         // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+         // application robust, you may want to override this behavior before shipping!
+         // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+         canvas.addEventListener(
+           "webglcontextlost",
+           function(e) {
+             alert('WebGL context lost. You will need to reload the page.');
+             e.preventDefault();
+           }, false);
+         return canvas;
+       })(),
+       setStatus: function(text) {
+         if (!Module.setStatus.last) {
+           Module.setStatus.last = { time: Date.now(), text: '' };
+         }
+         if (text === Module.setStatus.last.text) {
+           return;
+         }
+         var isDone = !text.length;
+         if (isDone) {
+           text = "Done";
+         }
+         var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+         var now = Date.now();
+         if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+         Module.setStatus.last.time = now;
+         Module.setStatus.last.text = text;
+         if (m) {
+           /* text = m[1]; */
+           if (elPlayerProgress) {
+             elPlayerProgress.value = parseInt(m[2])*100;
+             elPlayerProgress.max = parseInt(m[4])*100;
+           }
+           if (elPlayerOverlay) {
+             elPlayerOverlay.style.display = 'flex';
+           }
+         } else if (isDone) {
+           console.log("STATUS: " + text);
+           if (elPlayerProgress) {
+             elPlayerProgress.value = 100;
+             elPlayerProgress.max = 100;
+           }
+           if (elPlayerOverlay) {
+             if (isDone) {
+               elPlayerOverlay.style.display = 'none';
+             }
+           }
+           if (elPlayerTerminal) {
+             // if the terminal element is still there make it visible, if we
+             // dont want it ShowWindow should set elPlayerTerminal to null
+             elPlayerTerminal.style.display = 'block';
+           }
+         }
+         if (elPlayerStatusText) {
+           elPlayerStatusText.innerHTML = text;
+         }
+       },
+       totalDependencies: 0,
+       monitorRunDependencies: function(left) {
+         this.totalDependencies = Math.max(this.totalDependencies, left);
+         Module.setStatus(
+           left ?
+           'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' :
+           'All downloads complete.');
+       }
+     };
+     Module.setStatus('Downloading...');
+     window.onerror = function(event) {
+       // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+       Module.setStatus('Exception thrown, see JavaScript console');
+       Module.setStatus = function(text) {
+         if (text)
+           Module.printErr('[post-exception status] ' + text);
+       };
+     };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

@@ -1,0 +1,1819 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eKey">
+			<comments desc="Key codes "/>
+			<value name="eKey_Unknown" value="0x00 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Escape" value="0x01 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n1" value="0x02 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n2" value="0x03 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n3" value="0x04 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n4" value="0x05 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n5" value="0x06 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n6" value="0x07 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n7" value="0x08 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n8" value="0x09 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n9" value="0x0A ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_n0" value="0x0B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Minus" value="0x0C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Equals" value="0x0D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_BackSpace" value="0x0E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Tab" value="0x0F ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Q" value="0x10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_W" value="0x11 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_E" value="0x12 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_R" value="0x13 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_T" value="0x14 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Y" value="0x15 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_U" value="0x16 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_I" value="0x17 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_O" value="0x18 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_P" value="0x19 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_LBracket" value="0x1A ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_RBracket" value="0x1B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Enter" value="0x1C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_LControl" value="0x1D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_A" value="0x1E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_S" value="0x1F ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_D" value="0x20 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F" value="0x21 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_G" value="0x22 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_H" value="0x23 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_J" value="0x24 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_K" value="0x25 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_L" value="0x26 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Semicolon" value="0x27 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Apostrophe" value="0x28 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Grave" value="0x29 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Tilde" value="0x29 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_LShift" value="0x2A ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_BackSlash" value="0x2B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Z" value="0x2C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_X" value="0x2D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_C" value="0x2E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_V" value="0x2F ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_B" value="0x30 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_N" value="0x31 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_M" value="0x32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Comma" value="0x33 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Period" value="0x34 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Slash" value="0x35 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_RShift" value="0x36 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadStar" value="0x37 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_LAlt" value="0x38 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Space" value="0x39 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_CapsLock" value="0x3A ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F1" value="0x3B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F2" value="0x3C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F3" value="0x3D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F4" value="0x3E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F5" value="0x3F ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F6" value="0x40 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F7" value="0x41 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F8" value="0x42 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F9" value="0x43 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F10" value="0x44 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumLock" value="0x45 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Scroll" value="0x46 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad7" value="0x47 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad8" value="0x48 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad9" value="0x49 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadMinus" value="0x4A ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad4" value="0x4B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad5" value="0x4C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad6" value="0x4D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadPlus" value="0x4E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad1" value="0x4F ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad2" value="0x50 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad3" value="0x51 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPad0" value="0x52 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadPeriod" value="0x53 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_OEM_102" value="0x56 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F11" value="0x57 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F12" value="0x58 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F13" value="0x64 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F14" value="0x65 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_F15" value="0x66 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Kana" value="0x70 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_ABNT_C1" value="0x73 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Convert" value="0x79 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NoConvert" value="0x7B ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Yen" value="0x7D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_ABNT_C2" value="0x7E ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadEquals" value="0x8D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Circumflex" value="0x90 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_PrevTrack" value="0x90 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_AT" value="0x91 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Colon" value="0x92 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Underline" value="0x93 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Kanji" value="0x94 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Stop" value="0x95 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_AX" value="0x96 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Unlabeled" value="0x97 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NextTrack" value="0x99 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadEnter" value="0x9C ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_RControl" value="0x9D ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Mute" value="0xA0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Calculator" value="0xA1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_PlayPause" value="0xA2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_MediaStop" value="0xA4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_VolumeDown" value="0xAE ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_VolumeUp" value="0xB0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebHome" value="0xB2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadComma" value="0xB3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_NumPadSlash" value="0xB5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_SysRQ" value="0xB7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_PrintScreen" value="0xB7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_RAlt" value="0xB8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_AltGr" value="0xB8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Pause" value="0xC5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Home" value="0xC7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Up" value="0xC8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_PgUp" value="0xC9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Left" value="0xCB ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Right" value="0xCD ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_End" value="0xCF ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Down" value="0xD0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_PgDn" value="0xD1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Insert" value="0xD2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Delete" value="0xD3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_LWin" value="0xDB ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_RWin" value="0xDC ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Apps" value="0xDD ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Power" value="0xDE ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Sleep" value="0xDF ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Wake" value="0xE3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebSearch" value="0xE5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebFavorites" value="0xE6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebRefresh" value="0xE7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebStop" value="0xE8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebForward" value="0xE9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_WebBack" value="0xEA ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_MyComputer" value="0xEB ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Mail" value="0xEC ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_MediaSelect" value="0xED ">
+				<comments desc=""/>
+			</value>
+			<value name="eKey_Last" value="0xFF ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eKeyMod">
+			<comments desc="Key modifier ">
+				<remark text="Starts at bit 16 so that it can be or&apos;ed with a eKey value "/>
+			</comments>
+			<value name="eKeyMod_Control" value="niBit ( 16 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_Shift" value="niBit ( 17 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_Alt" value="niBit ( 18 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_AltGr" value="niBit ( 19 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_NumLock" value="niBit ( 20 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_CapsLock" value="niBit ( 21 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eKeyMod_ScrollLock" value="niBit ( 22 ) ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="ePointerButton">
+			<comments desc="Pointer buttons "/>
+			<value name="ePointerButton_Bt0" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt1" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt2" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt3" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt4" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt5" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt6" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Bt7" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Last" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Left" value="ePointerButton_Bt0 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Right" value="ePointerButton_Bt1 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePointerButton_Middle" value="ePointerButton_Bt2 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="ePointerAxis">
+			<comments desc="Pointer axis "/>
+			<value name="ePointerAxis_X" value="0 ">
+				<comments desc="Pointer relative X axis. "/>
+			</value>
+			<value name="ePointerAxis_Y" value="1 ">
+				<comments desc="Pointer relative Y axis. "/>
+			</value>
+			<value name="ePointerAxis_Z" value="2 ">
+				<comments desc="Pointer relative Z axis. "/>
+			</value>
+			<value name="ePointerAxis_Absolute" value="3 ">
+				<comments desc="Pointer absolute X/Y cursor position. "/>
+			</value>
+			<value name="ePointerAxis_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGestureState">
+			<comments desc="Gesture states "/>
+			<value name="eGestureState_Unknown" value="0 ">
+				<comments desc="Unknown gesture state. "/>
+			</value>
+			<value name="eGestureState_Began" value="1 ">
+				<comments desc="The gesture began. "/>
+			</value>
+			<value name="eGestureState_Updated" value="2 ">
+				<comments desc="The gesture updated. "/>
+			</value>
+			<value name="eGestureState_Ended" value="3 ">
+				<comments desc="The gesture ended. "/>
+			</value>
+			<value name="eGestureState_Cancelled" value="4 ">
+				<comments desc="The gesture was cancelled. "/>
+			</value>
+		</enum>
+		<enum name="eOSWindowMessage">
+			<comments desc="OS Window messages. "/>
+			<value name="eOSWindowMessage_Close" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;S&apos; , &apos;O&apos; ) ">
+				<comments desc="The close button of the window has been pressed. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_SwitchIn" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;S&apos; , &apos;s&apos; ) ">
+				<comments desc="The window becomes active. ">
+					<params text="A: eOSWindowSwitchReason "/>
+					<params text="B: eKeyMod modifier detected by the OS when the app is reactivated "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_SwitchOut" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;S&apos; , &apos;S&apos; ) ">
+				<comments desc="The window becomes inactive. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_Drop" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;S&apos; , &apos;r&apos; ) ">
+				<comments desc="Something has been dropped on the window. ">
+					<params text="A: cString collection (tStringCVec) containing the list of file paths dropped. "/>
+					<params text="B: the client position of the drop. "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_Paint" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;P&apos; , &apos;p&apos; ) ">
+				<comments desc="The client should be painted. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_Size" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;Z&apos; , &apos;z&apos; ) ">
+				<comments desc="The window has been resized. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_Move" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;Z&apos; , &apos;m&apos; ) ">
+				<comments desc="The widnow has been moved. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_KeyDown" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;K&apos; , &apos;d&apos; ) ">
+				<comments desc="A key has been pressed. ">
+					<params text="A: eKey code "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_KeyUp" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;K&apos; , &apos;D&apos; ) ">
+				<comments desc="A key has been release. ">
+					<params text="A: eKey code "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_KeyChar" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;K&apos; , &apos;c&apos; ) ">
+				<comments desc="A character has been entered. ">
+					<params text="A: &apos;achar&apos; code "/>
+					<params text="B: eKey code that led to the KeyChar, 0 if none (for example when coming from IME or programmatic emulation) "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_MouseMove" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;m&apos; ) ">
+				<comments desc="The mouse has moved in the client area. ">
+					<params text="A: client relative mouse position in device units "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_RelativeMouseMove" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;R&apos; ) ">
+				<comments desc="The mouse pointer has been moved. ">
+					<params text="A: vec2 movement delta in device units. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_MouseButtonDown" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;d&apos; ) ">
+				<comments desc="A mouse button has been pressed in the client area. ">
+					<params text="A: ePointerButton button ID. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_MouseButtonUp" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;u&apos; ) ">
+				<comments desc="A mouse button has been release in the client area. ">
+					<params text="A: ePointerButton button ID. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_MouseButtonDoubleClick" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;k&apos; ) ">
+				<comments desc="A mouse button has been double-clicked in the client area. ">
+					<params text="A: ePointerButton button ID. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_MouseWheel" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;w&apos; ) ">
+				<comments desc="The mouse wheel has move in the client area. ">
+					<params text="A: -1.0f if moving down, 1.0f if moving up. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_LostFocus" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;f&apos; ) ">
+				<comments desc="The window lost input focus. ">
+					<params text="A: Window Handle of the window that received the focus, can be 0 "/>
+					<params text="B: Process ID of the process that received the focus, can be 0 "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_SetFocus" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;I&apos; , &apos;F&apos; ) ">
+				<comments desc="The window gained input focus. ">
+					<params text="A: unused "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_FingerDown" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;F&apos; , &apos;d&apos; ) ">
+				<comments desc="Finger down ">
+					<params text="A: finger index "/>
+					<params text="B: Vec3f(clientX,clientY,pressure) in device units "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_FingerUp" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;F&apos; , &apos;u&apos; ) ">
+				<comments desc="Finger up ">
+					<params text="A: finger index "/>
+					<params text="B: Vec3f(clientX,clientY,pressure) in device units "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_FingerMove" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;F&apos; , &apos;m&apos; ) ">
+				<comments desc="Finger moved ">
+					<params text="A: finger index "/>
+					<params text="B: Vec3f(clientX,clientY,pressure) in device units "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_FingerRelativeMove" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;F&apos; , &apos;r&apos; ) ">
+				<comments desc="Finger relative move ">
+					<params text="A: touchId "/>
+					<params text="B: Vec3f(rel x,rel y,pressure) in device units "/>
+				</comments>
+			</value>
+			<value name="eOSWindowMessage_Pinch" value="niMessageID ( &apos;_&apos; , &apos;O&apos; , &apos;W&apos; , &apos;G&apos; , &apos;p&apos; ) ">
+				<comments desc="Pinch gesture. ">
+					<params text="A: scale "/>
+					<params text="B: eGestureState "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eOSWindowStyleFlags">
+			<comments desc="OS Window style. "/>
+			<value name="eOSWindowStyleFlags_Regular" value="niBit ( 0 ) ">
+				<comments desc="Regular window, with a title and the regular minimize, maximized, close buttons. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_Overlay" value="niBit ( 1 ) ">
+				<comments desc="Overlay window, window without borders, buttons nor title. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_Toolbox" value="niBit ( 2 ) ">
+				<comments desc="Toolbox window, smaller title bar, only with a close button, doesn&apos;t show in the taskbar. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_FixedSize" value="niBit ( 3 ) ">
+				<comments desc="Ask the window to not be resizable, no resizing borders. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_ClientArea" value="niBit ( 4 ) ">
+				<comments desc="Client area covering window. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_NoTitle" value="niBit ( 5 ) ">
+				<comments desc="Never display a title bar. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_FullBright" value="niBit ( 6 ) ">
+				<comments desc="Full bright. ">
+					<remark text="For mobile keep the screen on and fully bright when the window is visible. "/>
+				</comments>
+			</value>
+			<value name="eOSWindowStyleFlags_FullScreen" value="eOSWindowStyleFlags_Overlay|eOSWindowStyleFlags_FixedSize ">
+				<comments desc="Fullscreen window, non-resizable overlay. "/>
+			</value>
+			<value name="eOSWindowStyleFlags_FullScreenNoTaskBar" value="eOSWindowStyleFlags_Toolbox|eOSWindowStyleFlags_FixedSize|eOSWindowStyleFlags_NoTitle ">
+				<comments desc="Fullscreen window, non-resizable overlay, doesn&apos;t appear in the taskbar. "/>
+			</value>
+		</enum>
+		<enum name="eOSWindowCreateFlags">
+			<comments desc="OS Window create. "/>
+			<value name="eOSWindowCreateFlags_NoThread" value="niBit ( 0 ) ">
+				<comments desc="The window&apos;s message pooling is done synchronously in iOSWindow::UpdateWindow(). "/>
+			</value>
+			<value name="eOSWindowCreateFlags_OwnHandle" value="niBit ( 1 ) ">
+				<comments desc="For CreateWindowEx, the handle passed is owned by the window object, meaning that the OS window will be destroyed when the window object is released. "/>
+			</value>
+			<value name="eOSWindowCreateFlags_SetWindowProc" value="niBit ( 2 ) ">
+				<comments desc="For CreateWindowEx, set our window proc as the window&apos;s message handler. "/>
+			</value>
+		</enum>
+		<enum name="eOSWindowShowFlags">
+			<comments desc="OS Window show flags. "/>
+			<value name="eOSWindowShowFlags_Hide" value="niBit ( 0 ) ">
+				<comments desc="Hide the window. "/>
+			</value>
+			<value name="eOSWindowShowFlags_Show" value="niBit ( 1 ) ">
+				<comments desc="Show the window and activate it. "/>
+			</value>
+			<value name="eOSWindowShowFlags_ShowNoActivate" value="niBit ( 2 ) ">
+				<comments desc="Show the window but dont active it. "/>
+			</value>
+			<value name="eOSWindowShowFlags_Maximize" value="niBit ( 3 ) ">
+				<comments desc="Maximize the window. "/>
+			</value>
+			<value name="eOSWindowShowFlags_Minimize" value="niBit ( 4 ) ">
+				<comments desc="Minimize the window. "/>
+			</value>
+			<value name="eOSWindowShowFlags_Restore" value="niBit ( 5 ) ">
+				<comments desc="Restore the window to it&apos;s original size (after being minimized). "/>
+			</value>
+		</enum>
+		<enum name="eOSWindowZOrder">
+			<comments desc="OS Window ZOrder. "/>
+			<value name="eOSWindowZOrder_Bottom" value="0 ">
+				<comments desc="Put the window below all others. "/>
+			</value>
+			<value name="eOSWindowZOrder_Normal" value="1 ">
+				<comments desc="Normal ZOrder. "/>
+			</value>
+			<value name="eOSWindowZOrder_TopMost" value="2 ">
+				<comments desc="Put the window on top of all others. "/>
+			</value>
+		</enum>
+		<enum name="eOSCursor">
+			<comments desc="OS Cursor "/>
+			<value name="eOSCursor_None" value="0 ">
+				<comments desc="No cursor. "/>
+			</value>
+			<value name="eOSCursor_Arrow" value="1 ">
+				<comments desc="Arrow cursor. "/>
+			</value>
+			<value name="eOSCursor_Wait" value="2 ">
+				<comments desc="Wait cursor. "/>
+			</value>
+			<value name="eOSCursor_ResizeVt" value="3 ">
+				<comments desc="Vertical (North-South) resize cursor. "/>
+			</value>
+			<value name="eOSCursor_ResizeHz" value="4 ">
+				<comments desc="Horizontal (East-West) resize cursor. "/>
+			</value>
+			<value name="eOSCursor_ResizeDiag" value="5 ">
+				<comments desc="Diagnoal resize cursor. "/>
+			</value>
+			<value name="eOSCursor_Hand" value="6 ">
+				<comments desc="Hand cursor. "/>
+			</value>
+			<value name="eOSCursor_Text" value="7 ">
+				<comments desc="Text input cursor. "/>
+			</value>
+			<value name="eOSCursor_Help" value="8 ">
+				<comments desc="Help cursor. "/>
+			</value>
+			<value name="eOSCursor_Custom" value="100 ">
+				<comments desc="Use the custom cursor \see ni::iOSWindow::InitCustomCursor. "/>
+			</value>
+		</enum>
+		<enum name="eOSMonitorFlags">
+			<comments desc="OS Monitor flags. "/>
+			<value name="eOSMonitorFlags_Primary" value="niBit ( 0 ) ">
+				<comments desc="Primary monitor. "/>
+			</value>
+		</enum>
+		<enum name="eOSMessageBoxFlags">
+			<comments desc="OS Message box flags. "/>
+			<value name="eOSMessageBoxFlags_Ok" value="niBit ( 0 ) ">
+				<comments desc="Message box with one [OK] button. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_OkCancel" value="niBit ( 1 ) ">
+				<comments desc="Message box with a [OK] and a [CANCEL] button. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_YesNo" value="niBit ( 2 ) ">
+				<comments desc="Message box with a [YES] and a [NO] button. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconInfo" value="niBit ( 3 ) ">
+				<comments desc="Message box with an information mark icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconQuestion" value="niBit ( 4 ) ">
+				<comments desc="Message box with a question mark icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconWarning" value="niBit ( 5 ) ">
+				<comments desc="Message box with a warning icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconError" value="niBit ( 6 ) ">
+				<comments desc="Message box with an error icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconHand" value="niBit ( 7 ) ">
+				<comments desc="Message box with a hand icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_IconStop" value="niBit ( 8 ) ">
+				<comments desc="Message box with a stop icon. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_NotTopMost" value="niBit ( 9 ) ">
+				<comments desc="Message box which doesn&apos;t stay over all other windows. "/>
+			</value>
+			<value name="eOSMessageBoxFlags_FatalError" value="niBit ( 10 ) ">
+				<comments desc="Message box will display a fatal error. ">
+					<remark text="Force display of a top most UI message box. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eOSMessageBoxReturn">
+			<comments desc="eOSMessageBoxReturn "/>
+			<value name="eOSMessageBoxReturn_Error" value="0 ">
+				<comments desc="Message box couldn&apos;t be displayed. "/>
+			</value>
+			<value name="eOSMessageBoxReturn_Yes" value="1 ">
+				<comments desc="Yes/Ok button pressed. "/>
+			</value>
+			<value name="eOSMessageBoxReturn_OK" value="1 ">
+				<comments desc="Yes/Ok button pressed. "/>
+			</value>
+			<value name="eOSMessageBoxReturn_No" value="2 ">
+				<comments desc="No/Cancel button pressed. "/>
+			</value>
+			<value name="eOSMessageBoxReturn_Cancel" value="2 ">
+				<comments desc="No/Cancel button pressed. "/>
+			</value>
+		</enum>
+		<enum name="eOSWindowSwitchReason">
+			<comments desc="OS Window switch reason. "/>
+			<value name="eOSWindowSwitchReason_Activated" value="&apos;a&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_Deactivated" value="&apos;A&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_LostFocus" value="&apos;f&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_SetFocus" value="&apos;F&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_EnterMenu" value="&apos;m&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_LeaveMenu" value="&apos;M&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_Minimized" value="&apos;z&apos; ">
+				<comments desc=""/>
+			</value>
+			<value name="eOSWindowSwitchReason_User" value="256 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iOSGraphicsAPI" uuid1="0EC34553-C997-914C-8121-7EB316D9F04A" uuid2="0x0ec34553,0xc997,0x914c,0x81,0x21,0x7e,0xb3,0x16,0xd9,0xf0,0x4a">
+			<comments desc="A graphics API. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iOSWindow" uuid1="5F7DFADD-64B7-43F6-A427-4156CC9B2B1A" uuid2="0x5f7dfadd,0x64b7,0x43f6,0xa4,0x27,0x41,0x56,0xcc,0x9b,0x2b,0x1a">
+			<comments desc="OS Window interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getParent"
+				name="GetParent"
+				num_parameters="0"
+				property="get"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Get the parent window if any. ">
+					<remark text="This is valid only if the window has been created explicitly with a parent window. To retrieve the &apos;OS&apos; parent window use GetParentHandle instead. "/>
+				</comments>
+				<return type="iOSWindow *" typec="iOSWindow*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setClientAreaWindow"
+				name="SetClientAreaWindow"
+				num_parameters="1"
+				property="set"
+				property_name2="clientAreaWindow"
+				property_name="client_area_window">
+				<comments desc="Set a child window that should always be set to cover the window&apos;s client area. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClientAreaWindow"
+				name="GetClientAreaWindow"
+				num_parameters="0"
+				property="get"
+				property_name2="clientAreaWindow"
+				property_name="client_area_window">
+				<comments desc="Get the client area window of this window. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPID"
+				name="GetPID"
+				num_parameters="0"
+				property="get"
+				property_name2="pid"
+				property_name="pid">
+				<comments desc="Get the process that created this window. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHandle"
+				name="GetHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="handle"
+				property_name="handle">
+				<comments desc="Get the os handle of the window. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsHandleOwned"
+				name="GetIsHandleOwned"
+				num_parameters="0"
+				property="get"
+				property_name2="isHandleOwned"
+				property_name="is_handle_owned">
+				<comments desc="Get whether the handle of the window is owned (aka will be destroyed) by the window object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="activateWindow" name="ActivateWindow" num_parameters="0">
+				<comments desc="Activate the window if the application is in the foreground. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsActive"
+				name="GetIsActive"
+				num_parameters="0"
+				property="get"
+				property_name2="isActive"
+				property_name="is_active">
+				<comments desc="Get whether the window is active or not. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="1">
+				<comments desc="Send a switch in message and set the window in active state. ">
+					<remark text="Return eTrue if the active state changed and the SwitchIn message has been sent, else eFalse. "/>
+					<params text="anReason is an id that can be used to identify why the switch occurred, \see ni::eOSWindowSwitchReason "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anReason"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="1">
+				<comments desc="Send a switch out message and set the window in inactive state. ">
+					<remark text="Return eTrue if the active state changed and the SwitchOut message has been sent, else eFalse. "/>
+					<params text="anReason is an id that can be used to identify why the switch occurred, \see ni::eOSWindowSwitchReason "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anReason"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setTitle"
+				name="SetTitle"
+				num_parameters="1"
+				property="set"
+				property_name2="title"
+				property_name="title">
+				<comments desc="Set the window&apos;s title. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszTitle"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTitle"
+				name="GetTitle"
+				num_parameters="0"
+				property="get"
+				property_name2="title"
+				property_name="title">
+				<comments desc="Get the window&apos;s title. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setStyle"
+				name="SetStyle"
+				num_parameters="1"
+				property="set"
+				property_name2="style"
+				property_name="style">
+				<comments desc="Set the window&apos;s style. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStyle"
+					type="tOSWindowStyleFlags"
+					typec="tOSWindowStyleFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStyle"
+				name="GetStyle"
+				num_parameters="0"
+				property="get"
+				property_name2="style"
+				property_name="style">
+				<comments desc="Get the window&apos;s style. "/>
+				<return type="tOSWindowStyleFlags" typec="tOSWindowStyleFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setShow"
+				name="SetShow"
+				num_parameters="1"
+				property="set"
+				property_name2="show"
+				property_name="show">
+				<comments desc="Set the window shown status. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aStyle"
+					type="tOSWindowShowFlags"
+					typec="tOSWindowShowFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShow"
+				name="GetShow"
+				num_parameters="0"
+				property="get"
+				property_name2="show"
+				property_name="show">
+				<comments desc="Get the window shown status. "/>
+				<return type="tOSWindowShowFlags" typec="tOSWindowShowFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setZOrder"
+				name="SetZOrder"
+				num_parameters="1"
+				property="set"
+				property_name2="zorder"
+				property_name="zorder">
+				<comments desc="Set the window&apos;s ZOrder. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aZOrder"
+					type="eOSWindowZOrder"
+					typec="eOSWindowZOrder"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getZOrder"
+				name="GetZOrder"
+				num_parameters="0"
+				property="get"
+				property_name2="zorder"
+				property_name="zorder">
+				<comments desc="Get the window&apos;s ZOrder. "/>
+				<return type="eOSWindowZOrder" typec="eOSWindowZOrder" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setSize"
+				name="SetSize"
+				num_parameters="1"
+				property="set"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Set the window&apos;s size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the window&apos;s size. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				java_name="setPosition"
+				name="SetPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Set the window&apos;s position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the window&apos;s position. "/>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				java_name="setRect"
+				name="SetRect"
+				num_parameters="1"
+				property="set"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Set the window&apos;s rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRect"
+				name="GetRect"
+				num_parameters="0"
+				property="get"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Get the window&apos;s rectangle. "/>
+				<return type="sRecti" typec="sRecti" typei="ni::eType_Vec4i"/>
+			</method>
+			<method
+				java_name="setClientSize"
+				name="SetClientSize"
+				num_parameters="1"
+				property="set"
+				property_name2="clientSize"
+				property_name="client_size">
+				<comments desc="Set the window&apos;s client size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClientSize"
+				name="GetClientSize"
+				num_parameters="0"
+				property="get"
+				property_name2="clientSize"
+				property_name="client_size">
+				<comments desc="Get the window&apos;s client size. ">
+					<remark text="The client size can be different of the window&apos;s size. For example on retina displays with some window manager, such as on macOS, the client size is larger because it is always specified in pixels. GetContentsScale can be use to retrieve the &quot;virtual units&quot; to &quot;pixel size&quot; ratio. "/>
+				</comments>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getContentsScale"
+				name="GetContentsScale"
+				num_parameters="0"
+				property="get"
+				property_name2="contentsScale"
+				property_name="contents_scale">
+				<comments desc="Get the contents&apos; scale factor. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMessageHandlers"
+				name="GetMessageHandlers"
+				num_parameters="0"
+				property="get"
+				property_name2="messageHandlers"
+				property_name="message_handlers">
+				<comments desc="Get the window&apos;s message handlers. "/>
+				<return type="tMessageHandlerSinkLst *" typec="tMessageHandlerSinkLst*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateWindow" name="UpdateWindow" num_parameters="1">
+				<comments desc="Update the window&apos;s message pump and others. " return="eTrue if any window message has been processed, else eFalse if the UpdateWindow didnt do anything. In general the application&apos;s update should be called only when UpdateWindow return eFalse. ">
+					<remark text="abBlockingMessage specifies whether UpdateWindow should wait for at least one os window message/event before returning. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abBlockingMessages"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="centerWindow" name="CenterWindow" num_parameters="0">
+				<comments desc="Center the window in the middle of the current screen/parent window. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRequestedClose"
+				name="GetRequestedClose"
+				num_parameters="0"
+				property="get"
+				property_name2="requestedClose"
+				property_name="requested_close">
+				<comments desc="Get whether window closing has been requested. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setRequestedClose"
+				name="SetRequestedClose"
+				num_parameters="1"
+				property="set"
+				property_name2="requestedClose"
+				property_name="requested_close">
+				<comments desc="Set the close requested flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abRequested"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setCursor"
+				name="SetCursor"
+				num_parameters="1"
+				property="set"
+				property_name2="cursor"
+				property_name="cursor">
+				<comments desc="Set the current OS cursor. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aCursor"
+					type="eOSCursor"
+					typec="eOSCursor"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursor"
+				name="GetCursor"
+				num_parameters="0"
+				property="get"
+				property_name2="cursor"
+				property_name="cursor">
+				<comments desc="Get the current OS cursor. "/>
+				<return type="eOSCursor" typec="eOSCursor" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="initCustomCursor" name="InitCustomCursor" num_parameters="6">
+				<comments desc="Initialize the custom cursor. " return="eTrue if the specified cursor size is supported, eFalse otherwise. ">
+					<remark text="If eOSCursor_Custom is used as cursor type and no custom cursor as been successfully initialized the Arrow cursor is used as fallback. "/>
+					<params text="aID is an id provided by the user that should be used to identify the current custom cursor type. "/>
+					<params text="anWidth is the width of the cursor data "/>
+					<params text="anHeight is the heigh of the cursor data "/>
+					<params text="anHotSpotX "/>
+					<params text="anHotSpotY "/>
+					<params text="apData is the data of the cursor, should be a U32[w*h] array. If NULL InitCustomCursor returns eTrue if the specified custom cursor size is supported, else eFalse. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aID"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHotSpotX"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHotSpotY"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apData"
+					type="const tU32 *"
+					typec="const tU32*"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCustomCursorID"
+				name="GetCustomCursorID"
+				num_parameters="0"
+				property="get"
+				property_name2="customCursorID"
+				property_name="custom_cursor_id">
+				<comments desc="Get the custom cursor user id. ">
+					<remark text="The id is always 0 when custom cursor initialization with valid apData failed. "/>
+				</comments>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setCursorPosition"
+				name="SetCursorPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="cursorPosition"
+				property_name="cursor_position">
+				<comments desc="Set the cursor position. ">
+					<remark text="The cursor position is in client coordinate. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avCursorPos"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorPosition"
+				name="GetCursorPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorPosition"
+				property_name="cursor_position">
+				<comments desc="Get the last recorded cursor position. ">
+					<remark text="The cursor position is in client coordinate. "/>
+				</comments>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				java_name="setCursorCapture"
+				name="SetCursorCapture"
+				num_parameters="1"
+				property="set"
+				property_name2="cursorCapture"
+				property_name="cursor_capture">
+				<comments desc="Set the cursor capture. ">
+					<remark text="When enabled only the RelativeMouseMove message will be sent, the absolute MouseMove message isn&apos;t sent while the cursor is captured. "/>
+					<remark text="The actual absolute position of the cursor isn&apos;t defined when disabling cursor capture. While captured, on Windows the cursor is constrained to the window&apos;s boundaries; on macOS the cursor is fixed to the middle of the active window. It is recommended that you set the cursor position to a known consistent position when disabling cursor capture. "/>
+					<remark text="Since the absolute cursor position is not relevant while captured, it is recommended to also hide the cursor with SetCursor(eOSCursor_None) when capture is enabled. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abCapture"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorCapture"
+				name="GetCursorCapture"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorCapture"
+				property_name="cursor_capture">
+				<comments desc="Get the cursor capture state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCursorOverClient"
+				name="GetIsCursorOverClient"
+				num_parameters="0"
+				property="get"
+				property_name2="isCursorOverClient"
+				property_name="is_cursor_over_client">
+				<comments desc="Get whether the mouse cursor is in the client area of the window. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="tryClose" name="TryClose" num_parameters="0">
+				<comments desc="Try to close the window (this is equivalent to pressing the close button on the window). "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setDropTarget"
+				name="SetDropTarget"
+				num_parameters="1"
+				property="set"
+				property_name2="dropTarget"
+				property_name="drop_target">
+				<comments desc="Set whether the window is a drop target. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abDropTarget"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDropTarget"
+				name="GetDropTarget"
+				num_parameters="0"
+				property="get"
+				property_name2="dropTarget"
+				property_name="drop_target">
+				<comments desc="Get whether the window is a drop target. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Explicitly clear the window&apos;s content. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="redrawWindow" name="RedrawWindow" num_parameters="0">
+				<comments desc="Force redraw of the full window "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonitor"
+				name="GetMonitor"
+				num_parameters="0"
+				property="get"
+				property_name2="monitor"
+				property_name="monitor">
+				<comments desc="Get the monitor index the window is on. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setFullScreen"
+				name="SetFullScreen"
+				num_parameters="1"
+				property="set"
+				property_name2="fullScreen"
+				property_name="full_screen">
+				<comments desc="Set the window to fullsreen, set to eInvalidHandle to return to windowed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anMonitor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFullScreen"
+				name="GetFullScreen"
+				num_parameters="0"
+				property="get"
+				property_name2="fullScreen"
+				property_name="full_screen">
+				<comments desc="Get the monitor on which the window is fullscreend, eInvalidHandle if it&apos;s not fullscreen. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsMinimized"
+				name="GetIsMinimized"
+				num_parameters="0"
+				property="get"
+				property_name2="isMinimized"
+				property_name="is_minimized">
+				<comments desc="Get whether the window is currently minimized. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsMaximized"
+				name="GetIsMaximized"
+				num_parameters="0"
+				property="get"
+				property_name2="isMaximized"
+				property_name="is_maximized">
+				<comments desc="Get whether the window is currently maximzed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="setFocus" name="SetFocus" num_parameters="0">
+				<comments desc="Set focus on this window. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasFocus"
+				name="GetHasFocus"
+				num_parameters="0"
+				property="get"
+				property_name2="hasFocus"
+				property_name="has_focus">
+				<comments desc="Get whether the window has focus. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setRefreshTimer"
+				name="SetRefreshTimer"
+				num_parameters="1"
+				property="set"
+				property_name2="refreshTimer"
+				property_name="refresh_timer">
+				<comments desc="Set the rate of the refresh timer in seconds. ">
+					<remark text="By default windows are purely event driven so they won&apos;t be refershed/painted unless a message is sent to it for that purpose. UpdateWindow() waits for messages to arrive before continuing. The refersh timer allows UpdateWindow to continue at the specified time interval if no message is received. "/>
+					<remark text="Pass a value &lt;= 0 to disable the refresh timer. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRefreshTimer"
+				name="GetRefreshTimer"
+				num_parameters="0"
+				property="get"
+				property_name2="refreshTimer"
+				property_name="refresh_timer">
+				<comments desc="Get the rate of the refresh timer. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParentHandle"
+				name="GetParentHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="parentHandle"
+				property_name="parent_handle">
+				<comments desc="Get the parent window handle if any. ">
+					<remark text="This returns the &apos;OS&apos; parent window regardless of whether the window has been created explicitly with a parent window. "/>
+				</comments>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isParentWindow"
+				name="IsParentWindow"
+				num_parameters="1">
+				<comments desc="Check whether the specified window is a parent window of this window. " return="s 0 if not, 1 if its the direct parent, 2 if its the parent of the parent, etc... "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="attachGraphicsAPI" name="AttachGraphicsAPI" num_parameters="1">
+				<comments desc="Attach a graphics API to the window. ">
+					<remark text="This is OS and graphics driver dependant. "/>
+					<remark text="Only one graphics API can be attached to a window during its lifetime. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apAPI"
+					type="iOSGraphicsAPI *"
+					typec="iOSGraphicsAPI*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGraphicsAPI"
+				name="GetGraphicsAPI"
+				num_parameters="0"
+				property="get"
+				property_name2="graphicsAPI"
+				property_name="graphics_api">
+				<comments desc="Get the graphics API attached to the window. "/>
+				<return type="iOSGraphicsAPI *" typec="iOSGraphicsAPI*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iOSWindowGeneric" uuid1="18265B02-E973-45F3-BC74-0DF8D0608EA2" uuid2="0x18265b02,0xe973,0x45f3,0xbc,0x74,0x0d,0xf8,0xd0,0x60,0x8e,0xa2">
+			<comments desc="Generic window. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="genericInputString" name="GenericInputString" num_parameters="1">
+				<comments desc="Send an input string to the window. ">
+					<remark text="Send a series of eOSWindowMessage_KeyChar messages. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="genericSendMessage" name="GenericSendMessage" num_parameters="3">
+				<comments desc="Send a message to the window. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setContentsScale"
+				name="SetContentsScale"
+				num_parameters="1"
+				property="set"
+				property_name2="contentsScale"
+				property_name="contents_scale">
+				<comments desc="Set the window&apos;s content scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+		</interface>
+		<interface
+			name="iOSWindowWindowsSink"
+			noautomation="yes"
+			uuid1="F667E760-BDD5-4B43-BDD0-86771C868BAF"
+			uuid2="0xf667e760,0xbdd5,0x4b43,0xbd,0xd0,0x86,0x77,0x1c,0x86,0x8b,0xaf">
+			<comments desc="Windows window&apos;s sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onOSWindowWindowsSink_WndProc" name="OnOSWindowWindowsSink_WndProc" num_parameters="4">
+				<comments desc="Called when a message is received by the window, return TRUE to override the default implementation. "/>
+				<return type="tIntPtr" typec="tIntPtr"/>
+				<parameter name="hWnd" type="tIntPtr" typec="tIntPtr"/>
+				<parameter name="message" type="tU32" typec="tU32"/>
+				<parameter name="wParam" type="tIntPtr" typec="tIntPtr"/>
+				<parameter
+					last="1"
+					name="lParam"
+					type="tIntPtr"
+					typec="tIntPtr"/>
+			</method>
+		</interface>
+		<interface
+			name="iOSWindowWindows"
+			noautomation="yes"
+			uuid1="02A97E41-8797-4679-938A-850B135AA848"
+			uuid2="0x02a97e41,0x8797,0x4679,0x93,0x8a,0x85,0x0b,0x13,0x5a,0xa8,0x48">
+			<comments desc="Windows window. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getWindowsWindowSinkList"
+				name="GetWindowsWindowSinkList"
+				num_parameters="0">
+				<comments desc="Get the window&apos;s sink list. "/>
+				<return type="tOSWindowWindowsSinkList *" typec="tOSWindowWindowsSinkList*"/>
+			</method>
+			<method java_name="windowsTranslateKey" name="WindowsTranslateKey" num_parameters="3">
+				<comments desc="Translate a windows KEYDOWN/KEYUP message to a eKey code. "/>
+				<return type="ni::tU32" typec="ni::tU32"/>
+				<parameter name="wParam" type="ni::tU32" typec="ni::tU32"/>
+				<parameter name="lParam" type="ni::tU32" typec="ni::tU32"/>
+				<parameter
+					last="1"
+					name="abDown"
+					type="ni::tBool"
+					typec="ni::tBool"/>
+			</method>
+			<method java_name="wndProc" name="WndProc" num_parameters="4">
+				<comments desc="Default window proc "/>
+				<return type="tIntPtr" typec="tIntPtr"/>
+				<parameter name="hWnd" type="tIntPtr" typec="tIntPtr"/>
+				<parameter name="message" type="tU32" typec="tU32"/>
+				<parameter name="wParam" type="tIntPtr" typec="tIntPtr"/>
+				<parameter
+					last="1"
+					name="lParam"
+					type="tIntPtr"
+					typec="tIntPtr"/>
+			</method>
+		</interface>
+		<interface
+			name="iOSWindowOSX"
+			noautomation="yes"
+			uuid1="460E12E2-86D4-E849-87FE-8A35A9B4BA80"
+			uuid2="0x460e12e2,0x86d4,0xe849,0x87,0xfe,0x8a,0x35,0xa9,0xb4,0xba,0x80">
+			<comments desc="OSX window. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getNSWindow"
+				name="GetNSWindow"
+				num_parameters="0">
+				<comments desc="Get the window&apos;s NS window. "/>
+				<return type="void *" typec="void*"/>
+			</method>
+		</interface>
+		<interface
+			name="iOSWindowQNX"
+			noautomation="yes"
+			uuid1="73B61729-589D-F04C-9F7E-FD3D19492386"
+			uuid2="0x73b61729,0x589d,0xf04c,0x9f,0x7e,0xfd,0x3d,0x19,0x49,0x23,0x86">
+			<comments desc="QNX window. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getScreenHandle"
+				name="GetScreenHandle"
+				num_parameters="0">
+				<comments desc="Get the native screen handle "/>
+				<return type="void *" typec="void*"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,258 @@
+#include "../API/niLang/IOSProcess.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iOSProcess **/
+/** iOSProcess -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+IDLC_BEGIN_INTF(ni,iOSProcess)
+/** ni -> iOSProcess::GetExePath/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetExePath/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetExePath,0)
+	IDLC_DECL_RETVAR(const ni::achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetExePath,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetExePath,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetCommandLine/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetCommandLine/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetCommandLine,0)
+	IDLC_DECL_RETVAR(const ni::achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetCommandLine,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetCommandLine,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetPID/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetPID/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetPID,0)
+	IDLC_DECL_RETVAR(tInt,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetPID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Int,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetPID,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetParentPID/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetParentPID/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetParentPID,0)
+	IDLC_DECL_RETVAR(tInt,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetParentPID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Int,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetParentPID,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::IsParentProcess/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::IsParentProcess/1 **/
+IDLC_METH_BEGIN(ni,iOSProcess,IsParentProcess,1)
+	IDLC_DECL_VAR(tInt,aParentPID)
+	IDLC_BUF_TO_BASE(ni::eType_Int,aParentPID)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,IsParentProcess,1,(aParentPID))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iOSProcess,IsParentProcess,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetIsCurrent/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetIsCurrent/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetIsCurrent,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetIsCurrent,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetIsCurrent,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetDidCrash/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetDidCrash/0 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetDidCrash,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetDidCrash,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetDidCrash,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::Kill/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::Kill/2 **/
+IDLC_METH_BEGIN(ni,iOSProcess,Kill,2)
+	IDLC_DECL_VAR(tInt,anExitCode)
+	IDLC_BUF_TO_BASE(ni::eType_Int,anExitCode)
+	IDLC_DECL_VAR(tBool,abWait)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abWait)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,Kill,2,(anExitCode,abWait))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSProcess,Kill,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::Wait/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::Wait/1 **/
+IDLC_METH_BEGIN(ni,iOSProcess,Wait,1)
+	IDLC_DECL_VAR(tU32,anTimeoutMs)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeoutMs)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,Wait,1,(anTimeoutMs))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSProcess,Wait,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::WaitForExitCode/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::WaitForExitCode/1 **/
+IDLC_METH_BEGIN(ni,iOSProcess,WaitForExitCode,1)
+	IDLC_DECL_VAR(tU32,anTimeoutMs)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTimeoutMs)
+	IDLC_DECL_RETVAR(sVec2i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,WaitForExitCode,1,(anTimeoutMs))
+	IDLC_RET_FROM_BASE(ni::eType_Vec2i,_Ret)
+IDLC_METH_END(ni,iOSProcess,WaitForExitCode,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::Terminate/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::Terminate/1 **/
+IDLC_METH_BEGIN(ni,iOSProcess,Terminate,1)
+	IDLC_DECL_VAR(tInt,aResultCode)
+	IDLC_BUF_TO_BASE(ni::eType_Int,aResultCode)
+	IDLC_METH_CALL_VOID(ni,iOSProcess,Terminate,1,(aResultCode))
+IDLC_METH_END(ni,iOSProcess,Terminate,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcess::GetFile/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcess::GetFile/1 **/
+IDLC_METH_BEGIN(ni,iOSProcess,GetFile,1)
+	IDLC_DECL_VAR(eOSProcessFile,aFile)
+	IDLC_BUF_TO_ENUM(eOSProcessFile,aFile)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcess,GetFile,1,(aFile))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iOSProcess,GetFile,1)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iOSProcess)
+
+#endif // if niMinFeatures(15)
+/** interface : iOSProcessEnumSink **/
+/** iOSProcessEnumSink -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+IDLC_BEGIN_INTF(ni,iOSProcessEnumSink)
+/** ni -> iOSProcessEnumSink::OnOSProcessEnumSink/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessEnumSink::OnOSProcessEnumSink/3 **/
+IDLC_METH_BEGIN(ni,iOSProcessEnumSink,OnOSProcessEnumSink,3)
+	IDLC_DECL_VAR(tIntPtr,aPID)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aPID)
+	IDLC_DECL_VAR(tIntPtr,aParentPID)
+	IDLC_BUF_TO_BASE(ni::eType_IntPtr,aParentPID)
+	IDLC_DECL_VAR(ni::achar*,aaszExeName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszExeName)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessEnumSink,OnOSProcessEnumSink,3,(aPID,aParentPID,aaszExeName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSProcessEnumSink,OnOSProcessEnumSink,3)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iOSProcessEnumSink)
+
+#endif // if niMinFeatures(15)
+/** interface : iOSProcessManager **/
+/** iOSProcessManager -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+IDLC_BEGIN_INTF(ni,iOSProcessManager)
+/** ni -> iOSProcessManager::GetCurrentProcessID/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::GetCurrentProcessID/0 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,GetCurrentProcessID,0)
+	IDLC_DECL_RETVAR(tInt,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,GetCurrentProcessID,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Int,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,GetCurrentProcessID,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcessManager::GetCurrentProcess/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::GetCurrentProcess/0 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,GetCurrentProcess,0)
+	IDLC_DECL_RETVAR(iOSProcess*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,GetCurrentProcess,0,())
+	IDLC_RET_FROM_INTF(iOSProcess,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,GetCurrentProcess,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcessManager::CreateProcess/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::CreateProcess/1 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,CreateProcess,1)
+	IDLC_DECL_VAR(tInt,aPID)
+	IDLC_BUF_TO_BASE(ni::eType_Int,aPID)
+	IDLC_DECL_RETVAR(iOSProcess*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,CreateProcess,1,(aPID))
+	IDLC_RET_FROM_INTF(iOSProcess,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,CreateProcess,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcessManager::SpawnProcess/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::SpawnProcess/2 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,SpawnProcess,2)
+	IDLC_DECL_VAR(ni::achar*,aaszCmdLine)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmdLine)
+	IDLC_DECL_VAR(tOSProcessSpawnFlags,aSpawn)
+	IDLC_BUF_TO_ENUM(tOSProcessSpawnFlags,aSpawn)
+	IDLC_DECL_RETVAR(iOSProcess*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,SpawnProcess,2,(aaszCmdLine,aSpawn))
+	IDLC_RET_FROM_INTF(iOSProcess,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,SpawnProcess,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcessManager::SpawnProcessEx/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::SpawnProcessEx/4 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,SpawnProcessEx,4)
+	IDLC_DECL_VAR(ni::achar*,aaszCmdLine)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCmdLine)
+	IDLC_DECL_VAR(achar*,aaszWorkDir)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszWorkDir)
+	IDLC_DECL_VAR(tStringCMap*,apEnvs)
+	IDLC_BUF_TO_INTF(tStringCMap,apEnvs)
+	IDLC_DECL_VAR(tOSProcessSpawnFlags,aSpawn)
+	IDLC_BUF_TO_ENUM(tOSProcessSpawnFlags,aSpawn)
+	IDLC_DECL_RETVAR(iOSProcess*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,SpawnProcessEx,4,(aaszCmdLine,aaszWorkDir,apEnvs,aSpawn))
+	IDLC_RET_FROM_INTF(iOSProcess,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,SpawnProcessEx,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iOSProcessManager::EnumProcesses/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iOSProcessManager::EnumProcesses/2 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,EnumProcesses,2)
+	IDLC_DECL_VAR(ni::iRegex*,apFilter)
+	IDLC_BUF_TO_INTF(ni::iRegex,apFilter)
+	IDLC_DECL_VAR(iOSProcessEnumSink*,apSink)
+	IDLC_BUF_TO_INTF(iOSProcessEnumSink,apSink)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,EnumProcesses,2,(apFilter,apSink))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iOSProcessManager,EnumProcesses,2)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iOSProcessManager)
+
+#endif // if niMinFeatures(15)
+IDLC_END_NAMESPACE()
+// EOF //

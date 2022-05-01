@@ -1,0 +1,4 @@
+SubDir TOP niScript ;
+
+SubInclude TOP niScript src ;
+SubInclude TOP niScript tsrc_ni ;

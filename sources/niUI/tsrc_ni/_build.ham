@@ -1,0 +1,34 @@
+if [ SubDirOnce TOP niUI tsrc_ni ] = 1 { return ; }
+if ! $(TARGET_FEATURE_CONSOLE) { return ; }
+
+tkDefTest Test_niUI_ni ;
+
+SRC = [ tkPkgSrc gml ] ;
+local formsDir = [ FDirName $(TOP) .. scripts forms ] ;
+local formsFiles = [ GlobSrc $(formsDir) : gml ] ;
+local libForms = $(formsDir)/$(formsFiles) ;
+# ECHO "libForms:" $(libForms) ;
+
+for _i in $(SRC) {
+  local t = Test_niUI_$(_i:B) ;
+  niTest $(t) : $(_i) ;
+  DEPENDS $(t) : niLang ;
+  DEPENDS $(t) : niUI ;
+  DEPENDS $(t) : ni ;
+  DEPENDS Test_niUI_ni : $(t) ;
+  DEPENDS Run_Test_niUI_ni : Run_$(t) ;
+}
+
+for _i in $(libForms) {
+  local t = Test_niUI_forms_$(_i:B) ;
+  niTest $(t) : $(_i) ;
+  DEPENDS $(t) : niLang ;
+  DEPENDS $(t) : niUI ;
+  DEPENDS $(t) : ni ;
+  DEPENDS Test_niUI_ni : $(t) ;
+  DEPENDS Run_Test_niUI_ni : Run_$(t) ;
+}
+
+tkIncludeDep TOP niLang ;
+tkIncludeDep TOP niUI ;
+tkIncludeDep TOP ni ;

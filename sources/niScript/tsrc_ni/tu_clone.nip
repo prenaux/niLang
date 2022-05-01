@@ -1,0 +1,59 @@
+::Import("unittest.ni")
+
+TEST("shallow", #() {
+  {
+    local b = [1,2,3]
+    local a = [b,4,5,6]
+    local c = a.ShallowClone()
+    ::CHECK_EQUAL(a[0].ToIntPtr(),b.ToIntPtr());
+    c[0][0] = 123
+    ::CHECK(b[0] == 123);
+  }
+  {
+    local b = {a=1,b=2,c=3}
+    local a = {x=b,y=4,z=5,w=6}
+    local c = a.ShallowClone()
+    ::CHECK_EQUAL(c.x.ToIntPtr(),b.ToIntPtr());
+    c.x.a = 123
+    ::CHECK(b.a == 123);
+  }
+})
+
+TEST("deep", #() {
+  {
+    local b = [1,2,3]
+    local a = [b,4,5,6]
+    local c = a.DeepClone()
+    ::CHECK(c[0].ToIntPtr() != b.ToIntPtr());
+    c[0][0] = 123
+    ::CHECK(b[0] != 123);
+  }
+  {
+    local b = {a=1,b=2,c=3}
+    local a = {x=b,y=4,z=5,w=6}
+    local c = a.DeepClone()
+    ::CHECK(c.x.ToIntPtr() != b.ToIntPtr());
+    c.x.a = 123
+    ::CHECK(b.a != 123);
+  }
+})
+
+// default is deep clone...
+TEST("default", #() {
+  {
+    local b = [1,2,3]
+    local a = [b,4,5,6]
+    local c = a.Clone()
+    ::CHECK(c[0].ToIntPtr() != b.ToIntPtr());
+    c[0][0] = 123
+    ::CHECK(b[0] != 123);
+  }
+  {
+    local b = {a=1,b=2,c=3}
+    local a = {x=b,y=4,z=5,w=6}
+    local c = a.Clone()
+    ::CHECK(c.x.ToIntPtr() != b.ToIntPtr());
+    c.x.a = 123
+    ::CHECK(b.a != 123);
+  }
+})

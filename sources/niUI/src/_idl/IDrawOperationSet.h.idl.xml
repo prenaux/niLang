@@ -1,0 +1,131 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iDrawOperationSet" uuid1="C5CE498A-186A-49ED-992C-C00B3B65FB58" uuid2="0xc5ce498a,0x186a,0x49ed,0x99,0x2c,0xc0,0x0b,0x3b,0x65,0xfb,0x58">
+			<comments desc="Draw operation set. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the operation set. ">
+					<remark text="Invalidates the iterator "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="insert" name="Insert" num_parameters="1">
+				<comments desc="Insert a draw operation in the set. " return="The draw operation inserted ">
+					<remark text="Invalidates the iterator "/>
+				</comments>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDO"
+					type="iDrawOperation *"
+					typec="iDrawOperation*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="insertSet" name="InsertSet" num_parameters="1">
+				<comments desc="Insert another set in the set. ">
+					<remark text="Invalidates the iterator "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSet"
+					type="const iDrawOperationSet *"
+					typec="const iDrawOperationSet*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumDrawOperations"
+				name="GetNumDrawOperations"
+				num_parameters="0"
+				property="get"
+				property_name2="numDrawOperations"
+				property_name="num_draw_operations">
+				<comments desc="Get the number of elements in the set. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="begin" name="Begin" num_parameters="0">
+				<comments desc="Go to the first iterator and returns it. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="next" name="Next" num_parameters="0">
+				<comments desc="Move to the next draw op and returns it. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isEnd"
+				name="IsEnd"
+				num_parameters="0">
+				<comments desc="Return eTrue if the iterator is the end of the set. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrent"
+				name="GetCurrent"
+				num_parameters="0"
+				property="get"
+				property_name2="current"
+				property_name="current">
+				<comments desc="Get the current iterator. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEmpty"
+				name="GetIsEmpty"
+				num_parameters="0"
+				property="get"
+				property_name2="isEmpty"
+				property_name="is_empty">
+				<comments desc="Check whether the draw operation set is empty. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="draw" name="Draw" num_parameters="2">
+				<comments desc="Draw all draw operation of the set with specified graphics context. ">
+					<params text="apContext the context to draw to "/>
+					<params text="apFrustum if specified frustum culling is applied to the draw operation that have a valid bounding volume "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="apContext"
+					type="iGraphicsContext *"
+					typec="iGraphicsContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFrustum"
+					type="iFrustum *"
+					typec="iFrustum*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="xdraw" name="XDraw" num_parameters="3">
+				<comments desc="Draw all draw operation of the set with specified graphics context and matrix set on each draw op. ">
+					<params text="aMatrix the matrix to set on the draw ops "/>
+					<params text="apContext the context to draw to "/>
+					<params text="apFrustum if specified frustum culling is applied to the draw operation that have a valid bounding volume "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apContext"
+					type="iGraphicsContext *"
+					typec="iGraphicsContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFrustum"
+					type="iFrustum *"
+					typec="iFrustum*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

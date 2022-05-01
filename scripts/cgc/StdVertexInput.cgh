@@ -1,0 +1,319 @@
+#pragma once
+#ifndef __STDVERTEXINPUT_CGH_46A0B294_2048_4337_97FB_C4CAE438F940__
+#define __STDVERTEXINPUT_CGH_46A0B294_2048_4337_97FB_C4CAE438F940__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+#include "StdUtils.cgh"
+
+#if !eStd_IsVertexShader
+#error "Can only be included in a vertex shader."
+#endif
+
+//! Standard vertex input.
+struct StdVertexInput {
+#if eFVF_PositionB4
+  float4 Position : TEXCOORD0;
+  float4 Weights : TEXCOORD11;
+#elif eFVF_PositionB3
+  float4 Position : TEXCOORD0;
+  float3 Weights : TEXCOORD11;
+#elif eFVF_PositionB2
+  float4 Position : TEXCOORD0;
+  float2 Weights : TEXCOORD11;
+#elif eFVF_PositionB1
+  float4 Position : TEXCOORD0;
+  float1 Weights : TEXCOORD11;
+#elif eFVF_Position
+  float4 Position : TEXCOORD0;
+#endif
+#if eFVF_Indices
+  float4 Indices : TEXCOORD12;
+#endif
+#if eFVF_Normal
+  float3 Normal : TEXCOORD9;
+#endif
+#if eFVF_ColorA
+  float4 ColorA : TEXCOORD10;
+#endif
+#if eFVF_Tex1
+#if eFVF_Tex1 == 1
+  float1
+#elif eFVF_Tex1 == 2
+  float2
+#elif eFVF_Tex1 == 3
+  float3
+#elif eFVF_Tex1 == 4
+  float4
+#endif
+  Tex1 : TEXCOORD1;
+#endif
+#if eFVF_Tex2
+#if eFVF_Tex2 == 1
+  float1
+#elif eFVF_Tex2 == 2
+  float2
+#elif eFVF_Tex2 == 3
+  float3
+#elif eFVF_Tex2 == 4
+  float4
+#endif
+  Tex2 : TEXCOORD2;
+#endif
+#if eFVF_Tex3
+#if eFVF_Tex3 == 1
+  float1
+#elif eFVF_Tex3 == 2
+  float2
+#elif eFVF_Tex3 == 3
+  float3
+#elif eFVF_Tex3 == 4
+  float4
+#endif
+  Tex3 : TEXCOORD3;
+#endif
+#if eFVF_Tex4
+#if eFVF_Tex4 == 1
+  float1
+#elif eFVF_Tex4 == 2
+  float2
+#elif eFVF_Tex4 == 3
+  float3
+#elif eFVF_Tex4 == 4
+  float4
+#endif
+  Tex4 : TEXCOORD4;
+#endif
+#if eFVF_Tex5
+#if eFVF_Tex5 == 1
+  float1
+#elif eFVF_Tex5 == 2
+  float2
+#elif eFVF_Tex5 == 3
+  float3
+#elif eFVF_Tex5 == 4
+  float4
+#endif
+  Tex5 : TEXCOORD5;
+#endif
+#if eFVF_Tex6
+#if eFVF_Tex6 == 1
+  float1
+#elif eFVF_Tex6 == 2
+  float2
+#elif eFVF_Tex6 == 3
+  float3
+#elif eFVF_Tex6 == 4
+  float4
+#endif
+  Tex6 : TEXCOORD6;
+#endif
+#if eFVF_Tex7
+#if eFVF_Tex7 == 1
+  float1
+#elif eFVF_Tex7 == 2
+  float2
+#elif eFVF_Tex7 == 3
+  float3
+#elif eFVF_Tex7 == 4
+  float4
+#endif
+  Tex7 : TEXCOORD7;
+#endif
+#if eFVF_Tex8
+#if eFVF_Tex8 == 1
+  float1
+#elif eFVF_Tex8 == 2
+  float2
+#elif eFVF_Tex8 == 3
+  float3
+#elif eFVF_Tex8 == 4
+  float4
+#endif
+  Tex8 : TEXCOORD8;
+#endif
+};
+
+///////////////////////////////////////////////
+float4 stdVertexInput_Position(StdVertexInput aIn) {
+#if eFVF_PositionB4 || eFVF_PositionB3 || eFVF_PositionB2 || eFVF_PositionB1 || eFVF_Position
+  return aIn.Position;
+#else
+  return eStd_Error4;
+#endif
+}
+
+///////////////////////////////////////////////
+float4 stdVertexInput_Weights(StdVertexInput aIn) {
+#if eFVF_PositionB4
+  return aIn.Weights.xyzw;
+#elif eFVF_PositionB3
+  return aIn.Weights.xyzz;
+#elif eFVF_PositionB2
+  return aIn.Weights.xyyy;
+#elif eFVF_PositionB1
+  return aIn.Weights.xxxx;
+#else
+  return eStd_Error4;
+#endif
+}
+
+///////////////////////////////////////////////
+float4 stdVertexInput_Indices(StdVertexInput aIn) {
+#if eFVF_Indices
+  return aIn.Indices;
+#else
+  return eStd_Error4;
+#endif
+}
+
+///////////////////////////////////////////////
+float3 stdVertexInput_Normal(StdVertexInput aIn) {
+#if eFVF_Normal
+  return aIn.Normal;
+#else
+  return float3(0,1,0);
+#endif
+}
+
+///////////////////////////////////////////////
+float4 stdVertexInput_ColorA(StdVertexInput aIn) {
+#if eFVF_ColorA
+  return aIn.ColorA;
+#else
+  return float4(1,1,1,1);
+#endif
+}
+
+///////////////////////////////////////////////
+float4 stdVertexInput_GetTexCoo4(StdVertexInput aIn, int index) {
+#if eFVF_Tex1
+  if (index == 0) {
+#if eFVF_Tex1 == 1
+    return float4(aIn.Tex1.,0,0,0);
+#elif eFVF_Tex1 == 2
+    return float4(aIn.Tex1.x,aIn.Tex1.y,0,1);
+#elif eFVF_Tex1 == 3
+    return float4(aIn.Tex1.x,aIn.Tex1.y,aIn.Tex1.z,1);
+#elif eFVF_Tex1 == 4
+    return aIn.Tex1.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex2
+  if (index == 1) {
+#if eFVF_Tex2 == 1
+    return float4(aIn.Tex2.x,0,0,1);
+#elif eFVF_Tex2 == 2
+    return float4(aIn.Tex2.x,aIn.Tex2.y,0,1);
+#elif eFVF_Tex2 == 3
+    return float4(aIn.Tex2.x,aIn.Tex2.y,aIn.Tex2.z,1);
+#elif eFVF_Tex2 == 4
+    return aIn.Tex2.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex3
+  if (index == 2) {
+#if eFVF_Tex3 == 1
+    return float4(aIn.Tex3.x,0,0,1);
+#elif eFVF_Tex3 == 2
+    return float4(aIn.Tex3.x,aIn.Tex3.y,0,1);
+#elif eFVF_Tex3 == 3
+    return float4(aIn.Tex3.x,aIn.Tex3.y,aIn.Tex3.z,1);
+#elif eFVF_Tex3 == 4
+    return aIn.Tex3.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex4
+  if (index == 3) {
+#if eFVF_Tex4 == 1
+    return float4(aIn.Tex4.x,0,0,1);
+#elif eFVF_Tex4 == 2
+    return float4(aIn.Tex4.x,aIn.Tex4.y,0,1);
+#elif eFVF_Tex4 == 3
+    return float4(aIn.Tex4.x,aIn.Tex4.y,aIn.Tex4.z,1);
+#elif eFVF_Tex4 == 4
+    return aIn.Tex4.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex5
+  if (index == 4) {
+#if eFVF_Tex5 == 1
+    return float4(aIn.Tex5.x,0,0,1);
+#elif eFVF_Tex5 == 2
+    return float4(aIn.Tex5.x,aIn.Tex5.y,0,1);
+#elif eFVF_Tex5 == 3
+    return float4(aIn.Tex5.x,aIn.Tex5.y,aIn.Tex5.z,1);
+#elif eFVF_Tex5 == 4
+    return aIn.Tex5.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex6
+  if (index == 5) {
+#if eFVF_Tex6 == 1
+    return float4(aIn.Tex6.x,0,0,1);
+#elif eFVF_Tex6 == 2
+    return float4(aIn.Tex6.x,aIn.Tex6.y,0,1);
+#elif eFVF_Tex6 == 3
+    return float4(aIn.Tex6.x,aIn.Tex6.y,aIn.Tex6.z,1);
+#elif eFVF_Tex6 == 4
+    return aIn.Tex6.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex7
+  if (index == 6) {
+#if eFVF_Tex7 == 1
+    return float4(aIn.Tex7.x,0,0,1);
+#elif eFVF_Tex7 == 2
+    return float4(aIn.Tex7.x,aIn.Tex7.y,0,1);
+#elif eFVF_Tex7 == 3
+    return float4(aIn.Tex7.x,aIn.Tex7.y,aIn.Tex7.z,1);
+#elif eFVF_Tex7 == 4
+    return aIn.Tex7.xyzw;
+#endif
+  }
+#endif
+#if eFVF_Tex8
+  if (index == 6) {
+#if eFVF_Tex8 == 1
+    return float4(aIn.Tex8.x,0,0,1);
+#elif eFVF_Tex8 == 2
+    return float4(aIn.Tex8.x,aIn.Tex8.y,0,1);
+#elif eFVF_Tex8 == 3
+    return float4(aIn.Tex8.x,aIn.Tex8.y,aIn.Tex8.z,1);
+#elif eFVF_Tex8 == 4
+    return aIn.Tex8.xyzw;
+#endif
+  }
+#endif
+  return float4(0,0,0,1);
+}
+
+///////////////////////////////////////////////
+float4 stdVertexInput_GetTexCoo4Transformed(StdVertexInput aIn, int index, float4x4 aMatrix) {
+  return mul(stdVertexInput_GetTexCoo4(aIn,index),aMatrix);
+}
+
+///////////////////////////////////////////////
+float3 stdVertexInput_GetTexCoo3(StdVertexInput aIn, int index) {
+  return stdVertexInput_GetTexCoo4(aIn,index).xyz;
+}
+
+///////////////////////////////////////////////
+float2 stdVertexInput_GetTexCoo2(StdVertexInput aIn, int index) {
+  return stdVertexInput_GetTexCoo4(aIn,index).xy;
+}
+
+///////////////////////////////////////////////
+float1 stdVertexInput_GetTexCoo1(StdVertexInput aIn, int index) {
+  return stdVertexInput_GetTexCoo4(aIn,index).x;
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDVERTEXINPUT_CGH_46A0B294_2048_4337_97FB_C4CAE438F940__

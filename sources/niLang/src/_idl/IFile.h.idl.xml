@@ -1,0 +1,1873 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eTextEncodingFormat">
+			<comments desc="Text encoding formats. "/>
+			<value name="eTextEncodingFormat_Unknown" value="eInvalidHandle ">
+				<comments desc="Text encoding format header is unknown/invalid. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF8" value="0 ">
+				<comments desc="UTF8 encoding. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF8BOM" value="1 ">
+				<comments desc="UTF8 encoding, with explicit BOM. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF16LE" value="2 ">
+				<comments desc="UTF16 Little Endian. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF16BE" value="3 ">
+				<comments desc="UTF16 Big Endian. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF32LE" value="4 ">
+				<comments desc="UTF32 Little Endian. "/>
+			</value>
+			<value name="eTextEncodingFormat_UTF32BE" value="5 ">
+				<comments desc="UTF32 Big Endian. "/>
+			</value>
+			<value name="eTextEncodingFormat_BitStream" value="6 ">
+				<comments desc="Bit stream encoding. ">
+					<remark text="Read/WriteChar(Ex) is not supported for this format. "/>
+				</comments>
+			</value>
+			<value name="eTextEncodingFormat_Unicode" value="eTextEncodingFormat_UTF32LE ">
+				<comments desc=""/>
+			</value>
+			<value name="eTextEncodingFormat_Native" value="eTextEncodingFormat_UTF8 ">
+				<comments desc="Native encoding. "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iFileEnumSink"
+			uuid1="0298D5B5-B4E5-4975-91BF-5014834AC95C"
+			uuid2="0x0298d5b5,0xb4e5,0x4975,0x91,0xbf,0x50,0x14,0x83,0x4a,0xc9,0x5c">
+			<comments desc="Callback interface used by the FileEnum() method of the iLang interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onFound" name="OnFound" num_parameters="3">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFileAttrs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anFileSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+		</interface>
+		<variable
+			name="kfccSerializedObject"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="niFourCC(&apos;S&apos;,&apos;E&apos;,&apos;Z&apos;,&apos;O&apos;)"/>
+		<enum name="eFileFlags">
+			<comments desc="File flags. "/>
+			<value name="eFileFlags_Read" value="niBit ( 0 ) ">
+				<comments desc="File can be read. "/>
+			</value>
+			<value name="eFileFlags_Write" value="niBit ( 1 ) ">
+				<comments desc="File can be written. "/>
+			</value>
+			<value name="eFileFlags_Append" value="niBit ( 2 ) ">
+				<comments desc="File opened in append mode. "/>
+			</value>
+			<value name="eFileFlags_PartialRead" value="niBit ( 16 ) ">
+				<comments desc="The previous read operation read past the end of the file (could not read all bytes). "/>
+			</value>
+			<value name="eFileFlags_PartialWrite" value="niBit ( 17 ) ">
+				<comments desc="The previous write operation could not write all bytes to the file. "/>
+			</value>
+			<value name="eFileFlags_Encoder" value="niBit ( 18 ) ">
+				<comments desc="The file is an encoder/decoder (compressor/decompressor/encryptor/decryptor). ">
+					<remark text="Encoders might not move the file cursor by as many bytes as passed to the read/write methods since they usually compress or uncompress data. That is to say that Tell() might not match the the straight number of byte read or written to the file. "/>
+				</comments>
+			</value>
+			<value name="eFileFlags_NoSeek" value="niBit ( 19 ) ">
+				<comments desc="Seek, SeekSet and SeekEnd are not supported and will always fail. "/>
+			</value>
+			<value name="eFileFlags_Dummy" value="niBit ( 20 ) ">
+				<comments desc="The file is a dummy, it wont really read or write anything. ">
+					<remark text="Used mainly to compute size of future serialization. "/>
+				</comments>
+			</value>
+			<value name="eFileFlags_Stream" value="niBit ( 21 ) ">
+				<comments desc="The file is based on a stream. ">
+					<remark text="A stream is a &apos;connection&apos; that can be interrupted/paused/restarted at any time, mainly it means that Read/Write could block for an undefined amount of time waiting for more data to come or a write queue to be consumed. In general seeking is not supported for streams. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iFileBase" uuid1="49C35546-8A90-4650-98AA-2E7C6845ABC0" uuid2="0x49c35546,0x8a90,0x4650,0x98,0xaa,0x2e,0x7c,0x68,0x45,0xab,0xc0">
+			<comments desc="Base file interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFileFlags"
+				name="GetFileFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="fileFlags"
+				property_name="file_flags">
+				<comments desc="Get the file flags. "/>
+				<return type="tFileFlags" typec="tFileFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSourcePath"
+				name="GetSourcePath"
+				num_parameters="0"
+				property="get"
+				property_name2="sourcePath"
+				property_name="source_path">
+				<comments desc="Get the path from where this file has been opened. " return="the path from where this file has been opened. If it has not been opened from a file, by example it&apos;s a system memory file, return NULL. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="seek" name="Seek" num_parameters="1">
+				<comments desc="Moves the file pointer from the current position. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the number of bytes to add to the current position. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="seekSet" name="SeekSet" num_parameters="1">
+				<comments desc="Set the file pointer position from the begining of the file. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the position, in bytes, from the begining of the file. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="2">
+				<comments desc="Read data from the file. " return="the number of bytes really read. ">
+					<params text="apOut is the buffer where the data will be copied. "/>
+					<params text="anSize is the number of bytes to read from the file. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apOut"
+					type="void *"
+					typec="void*"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="writeRaw" name="WriteRaw" num_parameters="2">
+				<comments desc="Write data in the file. " return="the number of bytes really written. ">
+					<params text="apIn is the source buffer which contain the data to write. "/>
+					<params text="anSize is the number of bytes to write in the file. Usually the size of the pIn buffer. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apIn"
+					type="const void *"
+					typec="const void*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="tell" name="Tell" num_parameters="0">
+				<comments desc="Tell the current cursor position in the file in bytes. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size of the file. " return="the size of the file. ">
+					<remark text="If the file is write only, this method can return (0). "/>
+				</comments>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method java_name="seekEnd" name="SeekEnd" num_parameters="1">
+				<comments desc="Moves the file pointer from the end of the file. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the number of bytes to move from the end of the file. By example if you pass 4, the cursor will be passed four bytes before the end of the file. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="flush" name="Flush" num_parameters="0">
+				<comments desc="Flush the file content. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTime"
+				name="GetTime"
+				num_parameters="2">
+				<comments desc="Get the file time. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFileTime"
+					type="eFileTime"
+					typec="eFileTime"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="iTime *"
+					typec="iTime*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setTime" name="SetTime" num_parameters="2">
+				<comments desc="Set the file time. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFileTime"
+					type="eFileTime"
+					typec="eFileTime"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="const iTime *"
+					typec="const iTime*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resize" name="Resize" num_parameters="1">
+				<comments desc="Resize the file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="newSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+		</interface>
+		<interface name="iFile" uuid1="AC326EAE-8870-4F15-B893-30E832600F3C" uuid2="0xac326eae,0x8870,0x4f15,0xb8,0x93,0x30,0xe8,0x32,0x60,0x0f,0x3c">
+			<comments desc="File interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFileBase"
+				name="GetFileBase"
+				num_parameters="0"
+				property="get"
+				property_name2="fileBase"
+				property_name="file_base">
+				<comments desc="Get the file base. ">
+					<remark text="This shouldnt be used directly unless you really know what you are doing. "/>
+				</comments>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSourcePath"
+				name="GetSourcePath"
+				num_parameters="0"
+				property="get"
+				property_name2="sourcePath"
+				property_name="source_path">
+				<comments desc="Get the path from where this file has been opened. " return="the path from where this file has been opened. If it has not been opened from a file, by example it&apos;s a system memory file, return NULL. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="seek" name="Seek" num_parameters="1">
+				<comments desc="Moves the file pointer from the current position. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the number of bytes to add to the current position. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="seekSet" name="SeekSet" num_parameters="1">
+				<comments desc="Set the file pointer position from the begining of the file. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the position, in bytes, from the begining of the file. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="2">
+				<comments desc="Read data from the file. " return="the number of bytes really read. ">
+					<params text="pOut is the buffer where the data will be copied. "/>
+					<params text="nSize is the number of bytes to read from the file. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="pOut"
+					type="void *"
+					typec="void*"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="nSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="writeRaw" name="WriteRaw" num_parameters="2">
+				<comments desc="Write data in the file. " return="the number of bytes really written. ">
+					<params text="pIn is the source buffer which contain the data to write. "/>
+					<params text="nSize is the number of bytes to write in the file. Usually the size of the pIn buffer. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="pIn"
+					type="const void *"
+					typec="const void*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="nSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="tell" name="Tell" num_parameters="0">
+				<comments desc="Tell the current cursor position in the file in bytes. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size of the file. " return="the size of the file. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method java_name="seekEnd" name="SeekEnd" num_parameters="1">
+				<comments desc="Moves the file pointer from the end of the file. " return="eTrue if successful, else eFalse. ">
+					<params text="offset is the number of bytes to move from the end of the file. By example if you pass 4, the cursor will be passed four bytes before the end of the file. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="offset"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="flush" name="Flush" num_parameters="0">
+				<comments desc="Flush the file content. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTime"
+				name="GetTime"
+				num_parameters="2">
+				<comments desc="Get the file time. " return="eFalse if the file time can&apos;t be retrieved "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFileTime"
+					type="eFileTime"
+					typec="eFileTime"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="iTime *"
+					typec="iTime*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setTime" name="SetTime" num_parameters="2">
+				<comments desc="Set the file time. " return="eFalse if the file time can&apos;t be changed "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFileTime"
+					type="eFileTime"
+					typec="eFileTime"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="const iTime *"
+					typec="const iTime*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resize" name="Resize" num_parameters="1">
+				<comments desc="Resize the file. " return="eFalse if the file can&apos;t be resized "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="newSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBase"
+				name="GetBase"
+				num_parameters="0">
+				<comments desc="Get the base pointer. ">
+					<remark text="Only for base file that implement iFileMemory. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHere"
+				name="GetHere"
+				num_parameters="0">
+				<comments desc="Get the here/current position pointer. ">
+					<remark text="Only for base file that implement iFileMemory. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStop"
+				name="GetStop"
+				num_parameters="0">
+				<comments desc="Get the stop/end pointer. ">
+					<remark text="Only for base file that implement iFileMemory. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="setMemPtr" name="SetMemPtr" num_parameters="4">
+				<comments desc="Set the memory buffer to use with this file. " return="eFalse if the file doesnt support this operation, else eTrue. ">
+					<remark text="Only for base file that implement iFileMemory. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apMem"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="abFree"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abKeepHere"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="reset" name="Reset" num_parameters="0">
+				<comments desc="Reset the file. Put it at the begining, and set the memory size to 0 if it&apos;s a dynamic memory file. ">
+					<remark text="Only for base file that implement iFileMemory. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="writeFile" name="WriteFile" num_parameters="2">
+				<comments desc="Write another file in this file "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					name="apFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="anSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFileFlags"
+				name="GetFileFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="fileFlags"
+				property_name="file_flags">
+				<comments desc="Get the file flags. "/>
+				<return type="tFileFlags" typec="tFileFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCanRead"
+				name="GetCanRead"
+				num_parameters="0"
+				property="get"
+				property_name2="canRead"
+				property_name="can_read">
+				<comments desc="Check whether file can be read. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCanWrite"
+				name="GetCanWrite"
+				num_parameters="0"
+				property="get"
+				property_name2="canWrite"
+				property_name="can_write">
+				<comments desc="Check whether File can be written. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCanSeek"
+				name="GetCanSeek"
+				num_parameters="0"
+				property="get"
+				property_name2="canSeek"
+				property_name="can_seek">
+				<comments desc="Check whether the file supports seeking. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPartialRead"
+				name="GetPartialRead"
+				num_parameters="0"
+				property="get"
+				property_name2="partialRead"
+				property_name="partial_read">
+				<comments desc="Check whether the previous read operation could not read all bytes. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPartialWrite"
+				name="GetPartialWrite"
+				num_parameters="0">
+				<comments desc="Check whether the previous write operation could not write all bytes to the file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEncoder"
+				name="GetIsEncoder"
+				num_parameters="0"
+				property="get"
+				property_name2="isEncoder"
+				property_name="is_encoder">
+				<comments desc="Check whether the file is an encoder/decoder. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsDummy"
+				name="GetIsDummy"
+				num_parameters="0"
+				property="get"
+				property_name2="isDummy"
+				property_name="is_dummy">
+				<comments desc="Check whether the file is a dummy. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsMemory"
+				name="GetIsMemory"
+				num_parameters="0"
+				property="get"
+				property_name2="isMemory"
+				property_name="is_memory">
+				<comments desc="Check if the file is a memory file (implements iFileMemory). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsStream"
+				name="GetIsStream"
+				num_parameters="0"
+				property="get"
+				property_name2="isStream"
+				property_name="is_stream">
+				<comments desc="Check whether the file is a stream. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readF32" name="ReadF32" num_parameters="0">
+				<comments desc="Read a 32 bits float and move the file pointer forward of 4 bytes. " return="a 32 bits float. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="readF64" name="ReadF64" num_parameters="0">
+				<comments desc="Read a 64 bits float and move the file pointer forward of 8 bytes. " return="a 64 bits float. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method java_name="read8" name="Read8" num_parameters="0">
+				<comments desc="Read a single byte (8 bits integer) and move the file pointer forward of 1 byte. " return="a 8 bits integer. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method java_name="readLE16" name="ReadLE16" num_parameters="0">
+				<comments desc="Read a 16 bits little endian interger and move the file pointer forward of 2 bytes. " return="a 16 bits little endian interger. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method java_name="readBE16" name="ReadBE16" num_parameters="0">
+				<comments desc="Read a 16 bits big endian interger and move the file pointer forward of 2 bytes. " return="a big endian 16 bits integer. "/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method java_name="readLE32" name="ReadLE32" num_parameters="0">
+				<comments desc="Read a 32 bits little endian interger and move the file pointer forward of 4 bytes. " return="a 32 bits little endian interger. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBE32" name="ReadBE32" num_parameters="0">
+				<comments desc="Read a 32 bits big endian interger and move the file pointer forward of 4 bytes. " return="a big endian 32 bits integer. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readLE64" name="ReadLE64" num_parameters="0">
+				<comments desc="Read a 64 bits little endian interger and move the file pointer forward of 8 bytes. " return="a 64 bits little endian interger. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method java_name="readBE64" name="ReadBE64" num_parameters="0">
+				<comments desc="Read a 64 bits big endian interger and move the file pointer forward of 8 bytes. " return="a big endian 64 bits integer. "/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				java_name="readF32Array"
+				name="ReadF32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 32 bits float array and move the file pointer forward of 4 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tF32 *" typec="tF32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readF64Array"
+				name="ReadF64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 64 bits float array and move the file pointer forward of 8 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tF64 *" typec="tF64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readLE16Array"
+				name="ReadLE16Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 16 bits little endian interger array and move the file pointer forward of 2 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU16 *" typec="tU16*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readBE16Array"
+				name="ReadBE16Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 16 bits big endian interger array and move the file pointer forward of 2 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU16 *" typec="tU16*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readLE32Array"
+				name="ReadLE32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 32 bits little endian interger array and move the file pointer forward of 4 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU32 *" typec="tU32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readBE32Array"
+				name="ReadBE32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 32 bits big endian interger array and move the file pointer forward of 4 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU32 *" typec="tU32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readLE64Array"
+				name="ReadLE64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 64 bits little endian interger array and move the file pointer forward of 8 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU64 *" typec="tU64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="readBE64Array"
+				name="ReadBE64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Read a 64 bits big endian interger array and move the file pointer forward of 8 bytes * anNumElements. " return="the size read in bytes. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apOut" type="tU64 *" typec="tU64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method java_name="writeF32" name="WriteF32" num_parameters="1">
+				<comments desc="Write a 32 bits float and move the file pointer forward of 4 bytes. " return="the number of bytes effectivly written in the file. ">
+					<params text="v is the 32 bits float to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="writeF64" name="WriteF64" num_parameters="1">
+				<comments desc="Write a 64 bits float and move the file pointer forward of 8 bytes. " return="the number of bytes effectivly written in the file. ">
+					<params text="v is the 64 bits float to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method java_name="write8" name="Write8" num_parameters="1">
+				<comments desc="Write a single byte (8 bits integer) and move the file pointer forward of one byte. " return="the number of bytes effectibly written in the file. ">
+					<params text="v is the byte to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method java_name="writeLE16" name="WriteLE16" num_parameters="1">
+				<comments desc="Write a little endian 16 bits integer and move the file pointer forward of 2 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the little endian 16 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method java_name="writeBE16" name="WriteBE16" num_parameters="1">
+				<comments desc="Write a big endian 16 bits integer and move the file pointer forward of 2 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the big endian 16 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method java_name="writeLE32" name="WriteLE32" num_parameters="1">
+				<comments desc="Write a little endian 32 bits integer and move the file pointer forward of 4 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the little endian 32 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBE32" name="WriteBE32" num_parameters="1">
+				<comments desc="Write a big endian 32 bits integer and move the file pointer forward of 4 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the big endian 32 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeLE64" name="WriteLE64" num_parameters="1">
+				<comments desc="Write a little endian 64 bits integer and move the file pointer forward of 8 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the little endian 64 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method java_name="writeBE64" name="WriteBE64" num_parameters="1">
+				<comments desc="Write a big endian 64 bits integer and move the file pointer forward of 8 bytes. " return="the number of bytes effectivly written. ">
+					<params text="v is the big endian 64 bits integer to write. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method
+				java_name="writeF32Array"
+				name="WriteF32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a 32 bits float array and move the file pointer forward of 4 bytes * anNumElements. " return="the number of bytes effectivly written in the file. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tF32 *" typec="const tF32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeF64Array"
+				name="WriteF64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a 64 bits float and move the file pointer forward of 8 bytes * anNumElements. " return="the number of bytes effectivly written in the file. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tF64 *" typec="const tF64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeLE16Array"
+				name="WriteLE16Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a little endian 16 bits integer and move the file pointer forward of 2 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU16 *" typec="const tU16*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeBE16Array"
+				name="WriteBE16Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a big endian 16 bits integer and move the file pointer forward of 2 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU16 *" typec="const tU16*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeLE32Array"
+				name="WriteLE32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a little endian 32 bits integer and move the file pointer forward of 4 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU32 *" typec="const tU32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeBE32Array"
+				name="WriteBE32Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a big endian 32 bits integer and move the file pointer forward of 4 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU32 *" typec="const tU32*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeLE64Array"
+				name="WriteLE64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a little endian 64 bits integer and move the file pointer forward of 8 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU64 *" typec="const tU64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="writeBE64Array"
+				name="WriteBE64Array"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Write a big endian 64 bits integer and move the file pointer forward of 8 bytes * anNumElements. " return="the number of bytes effectivly written. "/>
+				<return type="tSize" typec="tSize"/>
+				<parameter name="apIn" type="const tU64 *" typec="const tU64*"/>
+				<parameter
+					last="1"
+					name="anNumElements"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method java_name="getTextEncodingFormat" name="GetTextEncodingFormat" num_parameters="0">
+				<comments desc="Get the text encoding format. "/>
+				<return type="eTextEncodingFormat" typec="eTextEncodingFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="setTextEncodingFormat" name="SetTextEncodingFormat" num_parameters="1">
+				<comments desc="Set the text encoding format. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFormat"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="beginTextFileRead" name="BeginTextFileRead" num_parameters="1">
+				<comments desc="Read text file header. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					default="eTrue "
+					last="1"
+					name="abSeekSetZero"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="beginTextFileWrite" name="BeginTextFileWrite" num_parameters="2">
+				<comments desc="Write text file header. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					default="eTextEncodingFormat_UTF8 "
+					name="aFormat"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="eTrue "
+					last="1"
+					name="abSeekSetZero"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readString" name="ReadString" num_parameters="0">
+				<comments desc="Read a string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method java_name="readStringLine" name="ReadStringLine" num_parameters="0">
+				<comments desc="Read a string line. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method java_name="writeString" name="WriteString" num_parameters="1">
+				<comments desc="Write a string. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="writeStringZ" name="WriteStringZ" num_parameters="1">
+				<comments desc="Write a string with a end zero. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readChar" name="ReadChar" num_parameters="0">
+				<comments desc="Read a character with the current encoding. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeChar" name="WriteChar" num_parameters="1">
+				<comments desc="Write a character with the current encoding. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readStringEx" name="ReadStringEx" num_parameters="1">
+				<comments desc="Read a string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="readStringLineEx" name="ReadStringLineEx" num_parameters="1">
+				<comments desc="Read a string line. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="writeStringEx" name="WriteStringEx" num_parameters="2">
+				<comments desc="Write a string. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="writeStringZEx" name="WriteStringZEx" num_parameters="2">
+				<comments desc="Write a string with a end zero. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readCharEx" name="ReadCharEx" num_parameters="1">
+				<comments desc="Read a character with the current encoding. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="writeCharEx" name="WriteCharEx" num_parameters="2">
+				<comments desc="Write a character with the current encoding. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="aFmt"
+					type="eTextEncodingFormat"
+					typec="eTextEncodingFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="beginWriteBits" name="BeginWriteBits" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="endWriteBits" name="EndWriteBits" num_parameters="0">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method java_name="isWriteBitsBegan" name="IsWriteBitsBegan" num_parameters="0">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="writeBit" name="WriteBit" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abBit"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="writeBits" name="WriteBits" num_parameters="3">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apData"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abInvertBytesOrder"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="writeBits8" name="WriteBits8" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anData"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBits16" name="WriteBits16" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anData"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBits32" name="WriteBits32" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anData"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBits64" name="WriteBits64" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anData"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="beginReadBits" name="BeginReadBits" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="endReadBits" name="EndReadBits" num_parameters="0">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method java_name="isReadBitsBegan" name="IsReadBitsBegan" num_parameters="0">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readBit" name="ReadBit" num_parameters="0">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readBits" name="ReadBits" num_parameters="3">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apData"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abInvertBytesOrder"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readBitsU8" name="ReadBitsU8" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsU16" name="ReadBitsU16" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsU32" name="ReadBitsU32" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsU64" name="ReadBitsU64" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsI8" name="ReadBitsI8" num_parameters="1">
+				<comments desc=""/>
+				<return type="tI8" typec="tI8" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsI16" name="ReadBitsI16" num_parameters="1">
+				<comments desc=""/>
+				<return type="tI16" typec="tI16" typei="ni::eType_I16"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsI32" name="ReadBitsI32" num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsI64" name="ReadBitsI64" num_parameters="1">
+				<comments desc=""/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="anBits"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="getMinNumBitsU32" name="GetMinNumBitsU32" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="getMinNumBitsI32" name="GetMinNumBitsI32" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="getMinNumBitsU64" name="GetMinNumBitsU64" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method java_name="getMinNumBitsI64" name="GetMinNumBitsI64" num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="writeBitsPackedU64" name="WriteBitsPackedU64" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method java_name="writeBitsPackedU48" name="WriteBitsPackedU48" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+			</method>
+			<method java_name="writeBitsPackedU32" name="WriteBitsPackedU32" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBitsPackedU24" name="WriteBitsPackedU24" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="writeBitsPackedU16" name="WriteBitsPackedU16" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU16"
+					typec="tU16"
+					typei="ni::eType_U16"/>
+			</method>
+			<method java_name="writeBitsPackedU8" name="WriteBitsPackedU8" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method java_name="readBitsPackedU64" name="ReadBitsPackedU64" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method java_name="readBitsPackedU48" name="ReadBitsPackedU48" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method java_name="readBitsPackedU32" name="ReadBitsPackedU32" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsPackedU24" name="ReadBitsPackedU24" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readBitsPackedU16" name="ReadBitsPackedU16" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU16" typec="tU16" typei="ni::eType_U16"/>
+			</method>
+			<method java_name="readBitsPackedU8" name="ReadBitsPackedU8" num_parameters="0">
+				<comments desc=""/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method java_name="writeBitsPackedI64" name="WriteBitsPackedI64" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="writeBitsPackedI48" name="WriteBitsPackedI48" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method java_name="writeBitsPackedI32" name="WriteBitsPackedI32" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="writeBitsPackedI24" name="WriteBitsPackedI24" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="writeBitsPackedI16" name="WriteBitsPackedI16" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI16"
+					typec="tI16"
+					typei="ni::eType_I16"/>
+			</method>
+			<method java_name="writeBitsPackedI8" name="WriteBitsPackedI8" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumber"
+					type="tI8"
+					typec="tI8"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readBitsPackedI64" name="ReadBitsPackedI64" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method java_name="readBitsPackedI48" name="ReadBitsPackedI48" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method java_name="readBitsPackedI32" name="ReadBitsPackedI32" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method java_name="readBitsPackedI24" name="ReadBitsPackedI24" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method java_name="readBitsPackedI16" name="ReadBitsPackedI16" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI16" typec="tI16" typei="ni::eType_I16"/>
+			</method>
+			<method java_name="readBitsPackedI8" name="ReadBitsPackedI8" num_parameters="0">
+				<comments desc=""/>
+				<return type="tI8" typec="tI8" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="readBitsString" name="ReadBitsString" num_parameters="0">
+				<comments desc=""/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method java_name="writeBitsString" name="WriteBitsString" num_parameters="1">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="aaszIn"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="writeVar" name="WriteVar" num_parameters="1">
+				<comments desc="Write a variant. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readVar" name="ReadVar" num_parameters="0">
+				<comments desc="Read a variant. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+			<method
+				java_name="readVarEx"
+				name="ReadVarEx"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Read a variant. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="Var &amp;"
+					typec="Var&amp;"/>
+			</method>
+			<method java_name="writeBitsPackedVar" name="WriteBitsPackedVar" num_parameters="1">
+				<comments desc="Write a variant. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readBitsPackedVar" name="ReadBitsPackedVar" num_parameters="0">
+				<comments desc="Read a variant. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+			<method
+				java_name="readBitsPackedVarEx"
+				name="ReadBitsPackedVarEx"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Read a variant. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="Var &amp;"
+					typec="Var&amp;"/>
+			</method>
+			<method java_name="readRawToString" name="ReadRawToString" num_parameters="2">
+				<comments desc="Reads the specified number of bytes and return them encoded as a string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aFormat"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anNumBytes"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+			</method>
+			<method java_name="writeRawFromString" name="WriteRawFromString" num_parameters="2">
+				<comments desc="Write bytes encoded in a string. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+				<parameter
+					name="aFormat"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readQuotedLine" name="ReadQuotedLine" num_parameters="0">
+				<comments desc="Reads a line of text that potentially use quotes &quot; and escaped quotes &quot;&quot; &amp; \&quot; to join a single &apos;line&apos; with embedded newlines inside. ">
+					<remark text="This is how CSV files handle multi-line fields. "/>
+				</comments>
+				<return type="ni::cString" typec="ni::cString" typei="ni::eType_String"/>
+			</method>
+		</interface>
+		<interface name="iFileMemory" uuid1="8D0AF9A2-1C6F-4F50-B062-33F4974028F2" uuid2="0x8d0af9a2,0x1c6f,0x4f50,0xb0,0x62,0x33,0xf4,0x97,0x40,0x28,0xf2">
+			<comments desc="Memory file. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getBase"
+				name="GetBase"
+				num_parameters="0">
+				<comments desc="Get the base pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHere"
+				name="GetHere"
+				num_parameters="0">
+				<comments desc="Get the here/current position pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStop"
+				name="GetStop"
+				num_parameters="0">
+				<comments desc="Get the stop/end pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method java_name="setMemPtr" name="SetMemPtr" num_parameters="4">
+				<comments desc="Set the memory buffer to use with this file. " return="eFalse if the file doesnt support this operation, else eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apMem"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="abFree"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abKeepHere"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="reset" name="Reset" num_parameters="0">
+				<comments desc="Reset the file. Put it at the begining, and set the memory size to 0 if it&apos;s a dynamic memory file. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrapper="yes"
+			name="iURLFileHandler"
+			uuid1="443A9E8F-8DB6-4CAA-8092-239201152101"
+			uuid2="0x443a9e8f,0x8db6,0x4caa,0x80,0x92,0x23,0x92,0x01,0x15,0x21,0x01">
+			<comments desc="URL File handler interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="urlopen" name="URLOpen" num_parameters="1">
+				<comments desc="Open a synchronous stream to the specified URL. ">
+					<remark text="The operation is blocking, if necessary the whole file is downloaded before the function returns. "/>
+				</comments>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="urlexists" name="URLExists" num_parameters="1">
+				<comments desc="Validates the specified URL and if possible checks whether the resource the URL points to actually exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iBufferEncoder" uuid1="5E522B3F-32D1-4968-8162-A1042FA47786" uuid2="0x5e522b3f,0x32d1,0x4968,0x81,0x62,0xa1,0x04,0x2f,0xa4,0x77,0x86">
+			<comments desc="Buffer encoder "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="encodeMarker"
+				name="EncodeMarker"
+				num_parameters="0">
+				<comments desc="Get the encoder&apos;s buffer marker. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="encodeMaxDestSize" name="EncodeMaxDestSize" num_parameters="1">
+				<comments desc="Get the maximum size that could be required by the specified buffer size. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="encodeBuffer" name="EncodeBuffer" num_parameters="4">
+				<comments desc="Encodes the specified data buffer in the specified output buffer. " return="0 on encoding error. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anDestSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+		</interface>
+		<interface name="iBufferDecoder" uuid1="FE58C80F-8878-4537-9F70-6DB77F641A58" uuid2="0xfe58c80f,0x8878,0x4537,0x9f,0x70,0x6d,0xb7,0x7f,0x64,0x1a,0x58">
+			<comments desc="Buffer decoder "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="decodeMarker"
+				name="DecodeMarker"
+				num_parameters="0">
+				<comments desc="Get the decoder&apos;s buffer marker. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="decodeMaxDestSize" name="DecodeMaxDestSize" num_parameters="1">
+				<comments desc="Get the maximum size that could be required by the specified buffer size. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="decodeBuffer" name="DecodeBuffer" num_parameters="4">
+				<comments desc="Decodes the specified data buffer in the specified output buffer. " return="0 on decoding error. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anDestSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

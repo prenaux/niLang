@@ -1,0 +1,223 @@
+::Import("unittest.ni")
+::Import("algo.ni")
+::Import("lang.ni")
+::Import("tu_algo_data.ni")
+
+//==========================================================================
+// ::algo.METHOD(this) version
+//==========================================================================
+::FIXTURE(["algo"])
+
+::TEST("algo" "all/every" #{
+  ::CHECK(::algo.all(::nums,#(x) => (x < 10)))
+  ::CHECK(::algo.every(::nums,#(x) => (x < 10)))
+  ::CHECK(!::algo.all(::nums,#(x) => (x > 10)))
+  ::CHECK(!::algo.every(::nums,#(x) => (x > 10)))
+})
+
+::TEST("algo" "any/some" #{
+  ::CHECK(::algo.any(::nums,#(x) => (x == 5)))
+  ::CHECK(::algo.some(::nums,#(x) => (x == 5)))
+  ::CHECK(!::algo.any(::nums,#(x) => (x == 10)))
+  ::CHECK(!::algo.some(::nums,#(x) => (x == 10)))
+})
+
+::TEST("algo" "fold/reduce" #{
+  local r = ::algo.fold(::nums,0,#(a,b) => a+b)
+  ::println("==> Sum: " + ::lang.toString(r))
+  ::CHECK_EQUAL(28 r)
+  ::CHECK_EQUAL(28 ::algo.reduce(::nums,0,#(a,b) => a+b))
+})
+
+::TEST("algo" "scan" #{
+  local r = ::algo.scan(::nums,0,#(a,b) => a+b)
+  ::println("==> Sum with intermediates: " + ::lang.toString(r))
+  ::CHECK_EQUAL(([1,3,6,10,15,21,28]) r)
+})
+
+::TEST("algo" "forEach" #{
+  local d = []
+  local r = ::algo.forEach(::nums,#(x) : (d) => d.Add(x*2));
+  ::CHECK_EQUAL(28 ::algo.sum(r))
+  ::CHECK_EQUAL(7 d.GetSize())
+  ::CHECK_EQUAL(56 ::algo.sum(d))
+})
+
+::TEST("algo" "map" #{
+  local r = ::algo.map(::nums,#(x) => x*2)
+  ::println("==> " + ::lang.toString(r))
+  ::CHECK_EQUAL(4 r[1])
+  ::CHECK_EQUAL(10 r[4])
+})
+
+::TEST("algo" "none" #{
+  ::CHECK(::algo.none(::nums,#(x) => (x > 10)))
+  ::CHECK(!::algo.none(::nums,#(x) => (x < 10)))
+})
+
+::TEST("algo" "drop" #{
+  // drop odd numbers
+  local r = ::algo.drop(::nums,#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(3 r.GetSize())
+  ::CHECK_EQUAL(12 ::algo.sum(r))
+  // drop even numbers
+  local r = ::algo.drop(::nums,#(x) => (x%2) == 0)
+  ::CHECK_EQUAL(4 r.GetSize())
+  ::CHECK_EQUAL(16 ::algo.sum(r))
+})
+
+::TEST("algo" "max" #{
+  local rMax = ::algo.max(::nums)
+  ::println("==> Max: " + ::lang.toString(rMax))
+  ::CHECK_EQUAL(7 rMax)
+})
+
+::TEST("algo" "min" #{
+  local rMin = ::algo.min(::nums)
+  ::println("==> Min: " + ::lang.toString(rMin))
+  ::CHECK_EQUAL(1 rMin)
+})
+
+::TEST("algo" "partition" #{
+  // partition between odd and even numbers, [odd,even]
+  local r = ::algo.partition(::nums,#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(4 r[0].GetSize())
+  ::CHECK_EQUAL(16 ::algo.sum(r[0]))
+  ::CHECK_EQUAL(3 r[1].GetSize())
+  ::CHECK_EQUAL(12 ::algo.sum(r[1]))
+})
+
+
+::TEST("algo" "take/filter" #{
+  // take odd numbers
+  local r = ::algo.take(::nums,#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(4 r.GetSize())
+  ::CHECK_EQUAL(16 ::algo.sum(r))
+  // take even numbers (filter is a synonym of take)
+  local r = ::algo.filter(::nums,#(x) => (x%2) == 0)
+  ::CHECK_EQUAL(3 r.GetSize())
+  ::CHECK_EQUAL(12 ::algo.sum(r))
+})
+
+::TEST("algo" "sum" #{
+  // sum of all numbers
+  ::CHECK_EQUAL(28 ::algo.sum(::nums,))
+  // sum of double of all numbers
+  ::CHECK_EQUAL(56 ::algo.sum(::algo.map(::nums,#(x)=>x*2)))
+  // sum of odd numbers
+  ::CHECK_EQUAL(16 ::algo.sum(::algo.take(::nums,#(x)=>x%2==1)))
+  // sum of even numbers
+  ::CHECK_EQUAL(12 ::algo.sum(::algo.take(::nums,#(x)=>x%2==0)))
+})
+
+::TEST("algo" "findKey" #{
+  ::CHECK_EQUAL(3 ::algo.findKey(::nums,4))
+  ::CHECK_EQUAL(3 ::algo.findKey(::nums,#(v) => (v > 3)))
+  ::CHECK_EQUAL(1 ::algo.findKey(::nums,#(v) => (v%2==0)))
+})
+
+//==========================================================================
+// this.METHOD() version
+//==========================================================================
+::FIXTURE(["algo-del"])
+
+foreach (sd in ["array","table","iunknown:iCollection"]) {
+  local d = ::GetLangDelegate(sd)
+  if (!d) throw "Can't get SystemDelegate '" + sd + "'"
+  d % ::algo._getAsDelegate()
+}
+
+::TEST("algo-del" "all/every" #{
+  ::CHECK(::nums.all(#(x) => (x < 10)))
+  ::CHECK(::nums.every(#(x) => (x < 10)))
+  ::CHECK(!::nums.all(#(x) => (x > 10)))
+  ::CHECK(!::nums.every(#(x) => (x > 10)))
+})
+
+::TEST("algo-del" "any/some" #{
+  ::CHECK(::nums.any(#(x) => (x == 5)))
+  ::CHECK(::nums.some(#(x) => (x == 5)))
+  ::CHECK(!::nums.any(#(x) => (x == 10)))
+  ::CHECK(!::nums.some(#(x) => (x == 10)))
+})
+
+::TEST("algo-del" "fold/reduce" #{
+  local r = ::nums.fold(0,#(a,b) => a+b)
+  ::println("==> Sum: " + ::lang.toString(r))
+  ::CHECK_EQUAL(28 r)
+  ::CHECK_EQUAL(28 ::nums.fold(0,#(a,b) => a+b))
+})
+
+::TEST("algo-del" "forEach" #{
+  local d = []
+  local r = ::nums.forEach(#(x) : (d) => d.Add(x*2))
+  ::CHECK_EQUAL(28 r.sum())
+  ::CHECK_EQUAL(7 d.GetSize())
+  ::CHECK_EQUAL(56 d.sum())
+})
+
+::TEST("algo-del" "map" #{
+  local r = ::nums.map(#(x) => x*2)
+  ::println("==> " + ::lang.toString(r))
+  ::CHECK_EQUAL(4 r[1])
+  ::CHECK_EQUAL(10 r[4])
+})
+
+::TEST("algo-del" "none" #{
+  ::CHECK(::nums.none(#(x) => (x > 10)))
+  ::CHECK(!::nums.none(#(x) => (x < 10)))
+})
+
+::TEST("algo-del" "drop" #{
+  // drop odd numbers
+  local r = ::nums.drop(#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(3 r.GetSize())
+  ::CHECK_EQUAL(12 r.sum())
+  // drop even numbers
+  local r = ::nums.drop(#(x) => (x%2) == 0)
+  ::CHECK_EQUAL(4 r.GetSize())
+  ::CHECK_EQUAL(16 r.sum())
+})
+
+::TEST("algo-del" "max" #{
+  local rMax = ::nums.max()
+  ::println("==> Max: " + ::lang.toString(rMax))
+  ::CHECK_EQUAL(7 rMax)
+})
+
+::TEST("algo-del" "min" #{
+  local rMin = ::nums.min()
+  ::println("==> Min: " + ::lang.toString(rMin))
+  ::CHECK_EQUAL(1 rMin)
+})
+
+::TEST("algo-del" "partition" #{
+  // partition between odd and even numbers, [odd,even]
+  local r = ::nums.partition(#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(4 r[0].GetSize())
+  ::CHECK_EQUAL(16 r[0].sum())
+  ::CHECK_EQUAL(3 r[1].GetSize())
+  ::CHECK_EQUAL(12 r[1].sum())
+})
+
+::TEST("algo-del" "take/filter" #{
+  // take odd numbers
+  local r = ::nums.take(#(x) => (x%2) == 1)
+  ::CHECK_EQUAL(4 r.GetSize())
+  ::CHECK_EQUAL(16 r.sum())
+  // take even numbers (filter is a synonym of take)
+  local r = ::nums.filter(#(x) => (x%2) == 0)
+  ::CHECK_EQUAL(3 r.GetSize())
+  ::CHECK_EQUAL(12 r.sum())
+})
+
+::TEST("algo-del" "sum" #{
+  // sum of all numbers
+  ::CHECK_EQUAL(28 ::nums.sum())
+  // sum of double of all numbers
+  ::CHECK_EQUAL(56 ::nums.map(#(x)=>x*2).sum())
+  // sum of odd numbers
+  ::CHECK_EQUAL(16 ::nums.take(#(x)=>x%2==1).sum())
+  // sum of even numbers
+  ::CHECK_EQUAL(12 ::nums.take(#(x)=>x%2==0).sum())
+})

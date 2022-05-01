@@ -1,0 +1,12 @@
+if [ SubDirOnce TOP niCURL src libCURL ] = 1 { return ; }
+
+tkDefLib libCURL : 1,0,0 ;
+niImportModuleHdrs niLang ;
+SubDirHdrs $(SUBDIR) include ;
+
+# ### SOURCES #############################################################
+local SRC =
+  [ tkPkgSrcSubDir src ]
+;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) ] ;

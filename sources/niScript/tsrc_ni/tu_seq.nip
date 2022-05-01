@@ -1,0 +1,48 @@
+::Import("unittest.ni")
+::Import("seq.ni")
+::Import("algo.ni")
+
+TEST("range", #() {
+  local a = ["alpha","beta","gamma","delta","eta"]
+  local numIt = 0
+  foreach (i in ::seq.range(2,a.len())) {
+    ::println("... a["+i+"]: " + a[i])
+    ++numIt
+  }
+  ::CHECK_EQUAL(3,numIt)
+  ::CHECK_EQUAL(5,a.len())
+})
+
+TEST("randomSequence", #() {
+  local numIt = 0
+  foreach (i,v in ::seq.range(5,#() => ::gMath.RandInt())) {
+    ::println("... rand["+i+"]: " + v)
+    ++numIt
+  }
+  ::CHECK_EQUAL(5,numIt)
+})
+
+TEST("keys", #() {
+  local rands = ::algo.keys(::seq.range(5,#() => ::gMath.RandInt()))
+  foreach (i,r in rands) {
+    ::println("... key["+i+"]: " + r)
+    ::CHECK_EQUAL(i,r)
+  }
+  ::CHECK_EQUAL(5,rands.len())
+})
+
+TEST("values", #() {
+  local rands = ::algo.values(::seq.range(5,#() => ::gMath.RandInt()))
+  foreach (i,r in rands) {
+    ::println("... rand["+i+"]: " + r)
+  }
+  ::CHECK_EQUAL(5,rands.len())
+})
+
+TEST("keysValues", #() {
+  local rands = ::algo.keysValues(::seq.range(5,#() => ::gMath.RandInt()))
+  foreach (i,r in rands) {
+    ::println("... n["+i+"]: " + r)
+  }
+  ::CHECK_EQUAL(10,rands.len())
+})

@@ -1,0 +1,20 @@
+<Canvas
+  title="ListBox"
+  id="ID_ListBoxForm"
+  client_size="Vec2(400,300)"
+  padding="Vec4(50,50,50,50)"
+  code="ListBox_form.ni">
+  <ListBox
+    id="ID_ListBox1"
+    relative_height="0.2"
+    dock_style="DockTop"
+    text="Foo"
+    />
+
+  <ListBox
+    id="ID_ListBox"
+    margin_top="50"
+    dock_style="DockFill"
+    text="Foo"
+    />
+</Canvas>

@@ -1,0 +1,142 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iDeviceResource" uuid1="BD49FEA5-D9E4-4798-A3FE-1EF390980CE7" uuid2="0xbd49fea5,0xd9e4,0x4798,0xa3,0xfe,0x1e,0xf3,0x90,0x98,0x0c,0xe7">
+			<comments desc="Device resource interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getDeviceResourceName"
+				name="GetDeviceResourceName"
+				num_parameters="0"
+				property="get"
+				property_name2="deviceResourceName"
+				property_name="device_resource_name">
+				<comments desc="Get the resource&apos;s name. " return="NULL if the resource is not named. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="hasDeviceResourceBeenReset" name="HasDeviceResourceBeenReset" num_parameters="1">
+				<comments desc="Check whether the device resource has just been reset. ">
+					<params text="abClearFlag: if true the next call to HasDeviceResourceBeenReset will return false. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abClearFlag"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="resetDeviceResource" name="ResetDeviceResource" num_parameters="0">
+				<comments desc="Reset the device resource. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="bind" name="Bind" num_parameters="1">
+				<comments desc="Called when the resource is going to be used by the device. ">
+					<remark text="Should return a device-compatible resource to be used. "/>
+					<remark text="This allows resources to be virtual, proxy &apos;resources&apos; can be created to mimic the device resource and return a valid device-compatible resource only when Bind is called. "/>
+					<remark text="Object that make use of this method documents it in the interface declaration with the remark &quot;Bindable&quot; "/>
+					<params text="apDevice is an implementation/device specific object passed to bind to support things such as virtual device resources. "/>
+				</comments>
+				<return type="iDeviceResource *" typec="iDeviceResource*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDevice"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDeviceResourceManager" uuid1="96AA6BB9-898D-4D68-AD3F-5A390BDC6205" uuid2="0x96aa6bb9,0x898d,0x4d68,0xad,0x3f,0x5a,0x39,0x0b,0xdc,0x62,0x05">
+			<comments desc="Device resource manager interface. ">
+				<remark text="When the inteface is released it invalidates all the device resources contained. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Resource type. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the resource manager and invalidate all resources. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the number of resources in the manager. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFromName"
+				name="GetFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="fromName"
+				property_name="from_name">
+				<comments desc="Get a resource in the manager. "/>
+				<return type="iDeviceResource *" typec="iDeviceResource*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFromIndex"
+				name="GetFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="fromIndex"
+				property_name="from_index">
+				<comments desc="Get the resource at the specified index. "/>
+				<return type="iDeviceResource *" typec="iDeviceResource*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="register" name="Register" num_parameters="1">
+				<comments desc="Register a resource in the manager. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apRes"
+					type="iDeviceResource *"
+					typec="iDeviceResource*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="unregister" name="Unregister" num_parameters="1">
+				<comments desc="Unregister a resource in the manager. ">
+					<remark text="When you unregister a resource in an Invalidate method or destructor you need to prevent against double unregistrations which would lead to problems in unexpected places down the line. Two ways to do so are to set the device resource&apos;s name to null once unregistered, or better yet, to make sure that Unregister is never called twice even if the Invalidate method or destructor are called more than once. Note that just setting the device resource&apos;s name to null will still require the device resource manager to lookup the resource by pointer which is inefficient. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apRes"
+					type="iDeviceResource *"
+					typec="iDeviceResource*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

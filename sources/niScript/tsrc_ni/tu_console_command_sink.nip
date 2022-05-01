@@ -1,0 +1,25 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+::Import("console.ni")
+
+/*
+
+This is a good test case for the scripting API as it tests that the Sink
+implementation in script works properly.
+
+*/
+
+::FIXTURE("ConsoleCommand")
+
+::TEST("ConsoleCommand" "base" #{
+  ::gEvilGlobalForTest <- ""
+  ::console.registerNS("Test");
+  ::console.registerCommand("Test","Foo",null,function() {
+    ::gEvilGlobalForTest <- "foo"
+    ::println("... FOO COMMAND ...");
+  });
+
+  ::CHECK_EQUAL("" ::gEvilGlobalForTest)
+  ::console.runCommand("Test.Foo");
+  ::CHECK_EQUAL("foo" ::gEvilGlobalForTest)
+})

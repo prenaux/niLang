@@ -1,0 +1,20 @@
+#########################################################################
+#
+# -- HelloUI_java --
+#
+#########################################################################
+if [ SubDirOnce TOP HelloUI java ] = 1 { return ; }
+
+niDefJar HelloUI_java : 1,0,0 : sample ;
+
+### SOURCES #############################################################
+SRC = [ niPkgAllJvmSrc ] ;
+JAR = [ niBuildJar $(SRC)
+: niLang_jvm niUI_jvm ni-app ni-app-native
+:
+: pkgsrc
+: ni.samples.HelloUI.HelloApp ] ;
+DEPENDS samples : $(PACKAGE) ;
+
+tkDepends HelloUI_java : ni-app ni-app-native : TOP ;
+tkDepends HelloUI_java : niUI : TOP niUI src ;

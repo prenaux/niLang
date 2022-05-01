@@ -1,0 +1,47 @@
+if [ SubDirOnce TOP ni src ] = 1 { return ; }
+if ! $(TARGET_FEATURE_CONSOLE) { return ; }
+
+if $(WINDOWS) = 1 || $(OSX) = 1 || $(LINUX) = 1 {
+  HAS_NIW = 1 ;
+}
+
+niImportModuleHdrs niLang ;
+niImportModuleHdrs niScript ;
+
+### NI CONSOLE #####################################################
+tkDefTool ni : 1.0.0 ;
+tkPkgLinkDll niLang ;
+tkPkgLinkDll niScript ;
+
+SRC = ni_console.cpp ni_repl.cpp ;
+if $(WINDOWS) = 1 {
+  SRC += resource.rc ;
+}
+
+runInDir ni ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : minsz : $(CHK_SOURCES) ] ;
+
+### NI WINDOWED #####################################################
+if $(HAS_NIW) = 1 {
+  tkDefTool niw : 1.0.0 ;
+  tkPkgLinkDll niLang ;
+  tkPkgLinkDll niScript ;
+  niImportModuleDll_niUI ;
+  niImportModuleLibs niAppLib ;
+
+  SRC = ni_windowed.cpp ;
+  if $(WINDOWS) = 1 {
+    SRC += resource.rc ;
+  }
+
+  runInDir niw ;
+  BUILD_SRC = [ tkBuildPackage $(SRC) : minsz : $(CHK_SOURCES) ] ;
+}
+
+### DEPENDENCIES #####################################################
+tkDepends ni : niLang : TOP niLang ;
+tkDepends ni : niScript : TOP niScript ;
+if $(HAS_NIW) = 1 {
+  tkDepends niw : niLang : TOP niLang ;
+  tkDepends niw : niScript : TOP niScript ;
+}

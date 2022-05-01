@@ -1,0 +1,30 @@
+::Import("unittest.ni")
+
+::myTable <- {
+  a <- 65
+  b <- 66
+  c <- 67
+  ,["d"] <- 68
+  ,["e"] <- 69
+  f <- 70
+}
+
+::TEST("base",#() {
+  local y, z
+  local x <- 123
+  ::dbg("x: " + x)
+  ::CHECK_EQUAL(123,x)
+  ::dbg("myTable.a: " + ::myTable.a)
+  ::CHECK_EQUAL(65,::myTable.a)
+  ::CHECK_EQUAL(66,::myTable.b)
+  ::CHECK_EQUAL(67,::myTable.c)
+  ::CHECK_EQUAL(68,::myTable.d)
+  ::CHECK_EQUAL(69,::myTable.e)
+  ::CHECK_EQUAL(70,::myTable.f)
+
+  local function abc(a,b,c) {
+    return a + b + c
+  }
+
+  ::CHECK_EQUAL(6,abc(1,2,3))
+})

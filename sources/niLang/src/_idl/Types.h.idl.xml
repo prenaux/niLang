@@ -1,0 +1,1026 @@
+<niIDL>
+	<namespace name="ni"/>
+	<namespace name="ni"/>
+	<namespace name="ni"/>
+	<namespace name="ni">
+		<enum name="">
+			<comments desc=""/>
+			<value name="eTrue" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eFalse" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTrueInDebug" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eFalseInDebug" value="1 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<variable
+			name="kFeatures"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="niFeatures"/>
+		<variable
+			name="kTrue"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
+			typei="ni::eType_I8"
+			value="niTrue"/>
+		<variable
+			name="kFalse"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
+			typei="ni::eType_I8"
+			value="niFalse"/>
+		<variable
+			name="eInvalidHandle"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="niInvalidHandle"/>
+		<variable
+			name="kInvalidHandle"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="0xDEADBEEF"/>
+		<variable
+			name="kMaxI8"
+			type="niConstValue tI8"
+			typec="niConstValue tI8"
+			typei="ni::eType_I8"
+			value="niMaxI8"/>
+		<variable
+			name="kMinI8"
+			type="niConstValue tI8"
+			typec="niConstValue tI8"
+			typei="ni::eType_I8"
+			value="niMinI8"/>
+		<variable
+			name="kMaxU8"
+			type="niConstValue tU8"
+			typec="niConstValue tU8"
+			typei="ni::eType_U8"
+			value="niMaxU8"/>
+		<variable
+			name="kMinU8"
+			type="niConstValue tU8"
+			typec="niConstValue tU8"
+			typei="ni::eType_U8"
+			value="niMinU8"/>
+		<variable
+			name="kMaxI16"
+			type="niConstValue tI16"
+			typec="niConstValue tI16"
+			typei="ni::eType_I16"
+			value="niMaxI16"/>
+		<variable
+			name="kMinI16"
+			type="niConstValue tI16"
+			typec="niConstValue tI16"
+			typei="ni::eType_I16"
+			value="niMinI16"/>
+		<variable
+			name="kMaxU16"
+			type="niConstValue tU16"
+			typec="niConstValue tU16"
+			typei="ni::eType_U16"
+			value="niMaxU16"/>
+		<variable
+			name="kMinU16"
+			type="niConstValue tU16"
+			typec="niConstValue tU16"
+			typei="ni::eType_U16"
+			value="niMinU16"/>
+		<variable
+			name="kMaxI32"
+			type="niConstValue tI32"
+			typec="niConstValue tI32"
+			typei="ni::eType_I32"
+			value="niMaxI32"/>
+		<variable
+			name="kMinI32"
+			type="niConstValue tI32"
+			typec="niConstValue tI32"
+			typei="ni::eType_I32"
+			value="niMinI32"/>
+		<variable
+			name="kMaxU32"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="niMaxU32"/>
+		<variable
+			name="kMinU32"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="niMinU32"/>
+		<variable
+			name="kMaxI64"
+			type="niConstValue tI64"
+			typec="niConstValue tI64"
+			typei="ni::eType_I64"
+			value="niMaxI64"/>
+		<variable
+			name="kMinI64"
+			type="niConstValue tI64"
+			typec="niConstValue tI64"
+			typei="ni::eType_I64"
+			value="niMinI64"/>
+		<variable
+			name="kMaxU64"
+			type="niConstValue tU64"
+			typec="niConstValue tU64"
+			typei="ni::eType_U64"
+			value="niMaxU64"/>
+		<variable
+			name="kMinU64"
+			type="niConstValue tU64"
+			typec="niConstValue tU64"
+			typei="ni::eType_U64"
+			value="niMinU64"/>
+		<variable
+			name="kMaxF32"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niMaxF32"/>
+		<variable
+			name="kMinF32"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niMinF32"/>
+		<variable
+			name="kEpsilonF32"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niEpsilonF32"/>
+		<variable
+			name="kMaxExpF32"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niMaxExpF32"/>
+		<variable
+			name="kMinExpF32"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niMinExpF32"/>
+		<variable
+			name="kMaxF64"
+			type="niConstValue tF64"
+			typec="niConstValue tF64"
+			typei="ni::eType_F64"
+			value="niMaxF64"/>
+		<variable
+			name="kMinF64"
+			type="niConstValue tF64"
+			typec="niConstValue tF64"
+			typei="ni::eType_F64"
+			value="niMinF64"/>
+		<variable
+			name="kEpsilonF64"
+			type="niConstValue tF64"
+			typec="niConstValue tF64"
+			typei="ni::eType_F64"
+			value="niEpsilonF64"/>
+		<variable
+			name="kMaxExpF64"
+			type="niConstValue tF64"
+			typec="niConstValue tF64"
+			typei="ni::eType_F64"
+			value="niMaxExpF64"/>
+		<variable
+			name="kMinExpF64"
+			type="niConstValue tF64"
+			typec="niConstValue tF64"
+			typei="ni::eType_F64"
+			value="niMinExpF64"/>
+		<variable
+			name="knTypeStringMaxSizeInChar"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="32"/>
+		<variable
+			name="knUUIDSize"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="sizeof(tUUID)"/>
+		<variable
+			name="kuuidZero"
+			type="niConstValue tUUID"
+			typec="niConstValue tUUID"
+			typei="ni::eType_UUID"
+			value="{0x00000000,0x0000,0x0000,{0,0,0,0,0,0,0,0}}"/>
+		<enum name="eTypeFlags">
+			<comments desc="Type flags. "/>
+			<value name="eTypeFlags_Constant" value="0x00000100 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_Pointer" value="0x00000200 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_Collectable" value="0x00000400 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_Numeric" value="0x00000800 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_FUNCPROTO" value="0x00001000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_STRING" value="0x00002000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_TABLE" value="0x00004000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_ARRAY" value="0x00008000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_USERDATA" value="0x00010000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_CLOSURE" value="0x00020000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_NATIVECLOSURE" value="0x00040000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_MethodOptional" value="0x00080000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_MethodSetter" value="0x00100000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_MethodGetter" value="0x00200000 ">
+				<comments desc=""/>
+			</value>
+			<value name="eTypeFlags_MethodStatic" value="0x00400000 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eType">
+			<comments desc="Base types enumeration. "/>
+			<value name="eType_Null" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_IUnknown" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_FirstGroup4" value="0x10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_I8" value="eType_FirstGroup4+0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_U8" value="eType_FirstGroup4+1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_I16" value="eType_FirstGroup4+2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_U16" value="eType_FirstGroup4+3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_I32" value="eType_FirstGroup4+4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_U32" value="eType_FirstGroup4+5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_F32" value="eType_FirstGroup4+6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_AChar" value="eType_FirstGroup4+7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_LastGroup4" value="0x1F ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_FirstGroup8" value="0x20 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_I64" value="eType_FirstGroup8+0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_U64" value="eType_FirstGroup8+1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_F64" value="eType_FirstGroup8+2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec2f" value="eType_FirstGroup8+3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec2i" value="eType_FirstGroup8+4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_LastGroup8" value="0x2F ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_FirstGroup12" value="0x30 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec3f" value="eType_FirstGroup12+0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec3i" value="eType_FirstGroup12+1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_String" value="eType_FirstGroup12+2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_LastGroup12" value="0x3F ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_FirstGroup16" value="0x40 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec4f" value="eType_FirstGroup16+0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Vec4i" value="eType_FirstGroup16+1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_UUID" value="eType_FirstGroup16+2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_LastGroup16" value="0x4F ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_FirstExtended" value="0x50 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Matrixf" value="eType_FirstExtended+0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Variant" value="eType_FirstExtended+1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_LastExtended" value="0x7F ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Enum" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Ptr" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Size" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Offset" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_IntPtr" value="eType_I32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_UIntPtr" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_Int" value="eType_I32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_UInt" value="eType_U32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_ASZ" value="eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer ">
+				<comments desc=""/>
+			</value>
+			<value name="eType_IUnknownPtr" value="eType_IUnknown|eTypeFlags_Pointer ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<variable
+			name="knMaxSizeOfTypeRetByValue"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="64"/>
+		<variable
+			name="knTypeRawNumBits"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="7"/>
+		<variable
+			name="knTypeMask"
+			type="niConstValue tU32"
+			typec="niConstValue tU32"
+			typei="ni::eType_U32"
+			value="0xFF"/>
+	</namespace>
+	<namespace name="ni"/>
+	<namespace name="ni">
+		<enum name="eLogFlags">
+			<comments desc="Log flags. "/>
+			<value name="eLogFlags_Raw" value="niBit ( 0 ) ">
+				<comments desc="Raw type, log the message as-is without any formatting. "/>
+			</value>
+			<value name="eLogFlags_Debug" value="niBit ( 1 ) ">
+				<comments desc="Debug log. "/>
+			</value>
+			<value name="eLogFlags_Info" value="niBit ( 2 ) ">
+				<comments desc="Info log. "/>
+			</value>
+			<value name="eLogFlags_Warning" value="niBit ( 3 ) ">
+				<comments desc="Warning log. "/>
+			</value>
+			<value name="eLogFlags_Error" value="niBit ( 4 ) ">
+				<comments desc="Error log. "/>
+			</value>
+			<value name="eLogFlags_All" value="0xFFFF ">
+				<comments desc="All types. (max 16 bits) "/>
+			</value>
+			<value name="eLogFlags_FormatMSVC" value="niBit ( 16 ) ">
+				<comments desc="Format as a MSVC error message. "/>
+			</value>
+			<value name="eLogFlags_NoCallbackOutput" value="niBit ( 17 ) ">
+				<comments desc="Do not call the log callback. "/>
+			</value>
+			<value name="eLogFlags_NoRegularOutput" value="niBit ( 18 ) ">
+				<comments desc="Do not output to the regular loggers, only the log callback can be called. "/>
+			</value>
+			<value name="eLogFlags_NoNewLine" value="niBit ( 19 ) ">
+				<comments desc="If possible, do not append a new line. "/>
+			</value>
+			<value name="eLogFlags_Stdout" value="niBit ( 20 ) ">
+				<comments desc="Outputs to stdout. Stderr is the default when not specified. "/>
+			</value>
+		</enum>
+	</namespace>
+	<namespace name="ni">
+		<variable
+			name="kfE"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niEf"/>
+		<variable
+			name="kPi"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niPif"/>
+		<variable
+			name="kPi2"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niPi2f"/>
+		<variable
+			name="kPi4"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niPi4f"/>
+		<variable
+			name="k2Pi"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="ni2Pif"/>
+		<variable
+			name="k1ByPi"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="ni1ByPif"/>
+		<variable
+			name="kInfinity"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niMaxF32"/>
+		<variable
+			name="kEpsilon"
+			type="niConstValue tF32"
+			typec="niConstValue tF32"
+			typei="ni::eType_F32"
+			value="niEpsilon5"/>
+		<variable
+			name="kvec2fZero"
+			type="niConstValue sVec2f"
+			typec="niConstValue sVec2f"
+			typei="ni::eType_Vec2f"
+			value="{0,0}"/>
+		<variable
+			name="kvec2lZero"
+			type="niConstValue sVec2i"
+			typec="niConstValue sVec2i"
+			typei="ni::eType_Vec2i"
+			value="{0,0}"/>
+		<variable
+			name="kvec3fZero"
+			type="niConstValue sVec3f"
+			typec="niConstValue sVec3f"
+			typei="ni::eType_Vec3f"
+			value="{0,0,0}"/>
+		<variable
+			name="kvec3lZero"
+			type="niConstValue sVec3i"
+			typec="niConstValue sVec3i"
+			typei="ni::eType_Vec3i"
+			value="{0,0,0}"/>
+		<variable
+			name="kvec4fZero"
+			type="niConstValue sVec4f"
+			typec="niConstValue sVec4f"
+			typei="ni::eType_Vec4f"
+			value="{0,0,0,0}"/>
+		<variable
+			name="kvec4lZero"
+			type="niConstValue sVec4i"
+			typec="niConstValue sVec4i"
+			typei="ni::eType_Vec4i"
+			value="{0,0,0,0}"/>
+		<variable
+			name="kmtxfZero"
+			type="niConstValue sMatrixf"
+			typec="niConstValue sMatrixf"
+			typei="ni::eType_Matrixf"
+			value="{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}"/>
+		<variable
+			name="kmtxfIdentity"
+			type="niConstValue sMatrixf"
+			typec="niConstValue sMatrixf"
+			typei="ni::eType_Matrixf"
+			value="{1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}"/>
+		<enum name="ePlaneType">
+			<comments desc="Plane type. "/>
+			<value name="ePlaneType_X" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_YZ" value="ePlaneType_X ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_Y" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_XZ" value="ePlaneType_Y ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_Z" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_XY" value="ePlaneType_Z ">
+				<comments desc=""/>
+			</value>
+			<value name="ePlaneType_NonAxial" value="3 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eQuatSlerp">
+			<comments desc="Quat slerp mode "/>
+			<value name="eQuatSlerp_Short" value="0 ">
+				<comments desc="The rotation will be less than 180 degrees, default. "/>
+			</value>
+			<value name="eQuatSlerp_Long" value="1 ">
+				<comments desc="Rotation will be greater than 180 degrees. "/>
+			</value>
+			<value name="eQuatSlerp_NoCorrection" value="2 ">
+				<comments desc="No correction is applied to garantee either a short or long path when doing the slerp. "/>
+			</value>
+		</enum>
+		<enum name="eRectCorners">
+			<comments desc="Rect corners. "/>
+			<value name="eRectCorners_TopLeft" value="niBit ( 0 ) ">
+				<comments desc="Top left rectangle corner. "/>
+			</value>
+			<value name="eRectCorners_TopRight" value="niBit ( 1 ) ">
+				<comments desc="Top right rectangle corner. "/>
+			</value>
+			<value name="eRectCorners_BottomRight" value="niBit ( 2 ) ">
+				<comments desc="Bottom right rectangle corner. "/>
+			</value>
+			<value name="eRectCorners_BottomLeft" value="niBit ( 3 ) ">
+				<comments desc="Bottom left rectangle corner. "/>
+			</value>
+			<value name="eRectCorners_Top" value="eRectCorners_TopLeft|eRectCorners_TopRight ">
+				<comments desc="Top rectangle corners. "/>
+			</value>
+			<value name="eRectCorners_Right" value="eRectCorners_TopRight|eRectCorners_BottomRight ">
+				<comments desc="Right rectangle corners. "/>
+			</value>
+			<value name="eRectCorners_Bottom" value="eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+				<comments desc="Bottom rectangle corners. "/>
+			</value>
+			<value name="eRectCorners_Left" value="eRectCorners_TopLeft|eRectCorners_BottomLeft ">
+				<comments desc="Left rectangle corners, "/>
+			</value>
+			<value name="eRectCorners_All" value="eRectCorners_TopLeft|eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+				<comments desc="All rectangle corners. "/>
+			</value>
+		</enum>
+		<enum name="eRectEdges">
+			<comments desc="Rect edges. "/>
+			<value name="eRectEdges_Top" value="niBit ( 0 ) ">
+				<comments desc="Top rectangle edge. "/>
+			</value>
+			<value name="eRectEdges_Right" value="niBit ( 1 ) ">
+				<comments desc="Right rectangle edge. "/>
+			</value>
+			<value name="eRectEdges_Bottom" value="niBit ( 2 ) ">
+				<comments desc="Bottom rectangle edge. "/>
+			</value>
+			<value name="eRectEdges_Left" value="niBit ( 3 ) ">
+				<comments desc="Left rectangle edge. "/>
+			</value>
+			<value name="eRectEdges_Vertical" value="eRectEdges_Left|eRectEdges_Right ">
+				<comments desc="Vertical rectangle edges. "/>
+			</value>
+			<value name="eRectEdges_Horizontal" value="eRectEdges_Top|eRectEdges_Bottom ">
+				<comments desc="Horizontal rectangle edges, "/>
+			</value>
+			<value name="eRectEdges_All" value="eRectEdges_Vertical|eRectEdges_Horizontal ">
+				<comments desc="All rectangle edges. "/>
+			</value>
+		</enum>
+		<enum name="eRectFrameFlags">
+			<comments desc="Rect frame flags "/>
+			<value name="eRectFrameFlags_TopEdge" value="niBit ( 0 ) ">
+				<comments desc="Top rectangle edge. "/>
+			</value>
+			<value name="eRectFrameFlags_RightEdge" value="niBit ( 1 ) ">
+				<comments desc="Right rectangle edge. "/>
+			</value>
+			<value name="eRectFrameFlags_BottomEdge" value="niBit ( 2 ) ">
+				<comments desc="Bottom rectangle edge. "/>
+			</value>
+			<value name="eRectFrameFlags_LeftEdge" value="niBit ( 3 ) ">
+				<comments desc="Left rectangle edge. "/>
+			</value>
+			<value name="eRectFrameFlags_TopLeftCorner" value="niBit ( 4 ) ">
+				<comments desc="Top left corner. "/>
+			</value>
+			<value name="eRectFrameFlags_TopRightCorner" value="niBit ( 5 ) ">
+				<comments desc="Top right corner. "/>
+			</value>
+			<value name="eRectFrameFlags_BottomLeftCorner" value="niBit ( 6 ) ">
+				<comments desc="Top left corner. "/>
+			</value>
+			<value name="eRectFrameFlags_BottomRightCorner" value="niBit ( 7 ) ">
+				<comments desc="Top left corner. "/>
+			</value>
+			<value name="eRectFrameFlags_Center" value="niBit ( 8 ) ">
+				<comments desc="Center of the rectangle "/>
+			</value>
+			<value name="eRectFrameFlags_TopSide" value="eRectFrameFlags_TopEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_TopRightCorner ">
+				<comments desc="Top side "/>
+			</value>
+			<value name="eRectFrameFlags_BottomSide" value="eRectFrameFlags_BottomEdge|eRectFrameFlags_BottomLeftCorner|eRectFrameFlags_BottomRightCorner ">
+				<comments desc="Bottom side "/>
+			</value>
+			<value name="eRectFrameFlags_LeftSide" value="eRectFrameFlags_LeftEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_BottomLeftCorner ">
+				<comments desc="Left side "/>
+			</value>
+			<value name="eRectFrameFlags_RightSide" value="eRectFrameFlags_RightEdge|eRectFrameFlags_TopRightCorner|eRectFrameFlags_BottomRightCorner ">
+				<comments desc="Right side "/>
+			</value>
+			<value name="eRectFrameFlags_VerticalSides" value="eRectFrameFlags_LeftSide|eRectFrameFlags_RightSide ">
+				<comments desc="Vertidcal sides "/>
+			</value>
+			<value name="eRectFrameFlags_HorizontalSides" value="eRectFrameFlags_TopSide|eRectFrameFlags_BottomSide ">
+				<comments desc="Horizontal sides "/>
+			</value>
+			<value name="eRectFrameFlags_Edges" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides ">
+				<comments desc="All edges "/>
+			</value>
+			<value name="eRectFrameFlags_All" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides|eRectFrameFlags_Center ">
+				<comments desc="The all frame ">
+					<remark text="Zero mean the all frame aswell "/>
+				</comments>
+			</value>
+		</enum>
+	</namespace>
+	<namespace name="ni">
+		<variable
+			name="kNiCopyright"
+			type="niConstValue achar * const"
+			typec="niConstValue achar * const"
+			typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"
+			value="niCopyright"/>
+	</namespace>
+	<namespace name="ni"/>
+	<namespace name="ni"/>
+	<namespace name="ni"/>
+	<namespace name="ni">
+		<variable
+			name="kbIsBigEndian"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
+			typei="ni::eType_I8"
+			value="niTrue"/>
+		<variable
+			name="kbIsLittleEndian"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
+			typei="ni::eType_I8"
+			value="niFalse"/>
+	</namespace>
+	<namespace name="ni">
+		<variable
+			name="kiidIUnknown"
+			type="niConstValue achar * const"
+			typec="niConstValue achar * const"
+			typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"
+			value="_A(&quot;iUnknown&quot;)"/>
+		<enum name="eListInterfacesFlags">
+			<comments desc=""/>
+			<value name="eListInterfacesFlags_All" value="0 ">
+				<comments desc="List all interfaces "/>
+			</value>
+			<value name="eListInterfacesFlags_NoDynamic" value="niBit ( 1 ) ">
+				<comments desc="Don&apos;t list &apos;dynamic&apos; interfaces (interfaces in sink that extend the object). "/>
+			</value>
+			<value name="eListInterfacesFlags_DynamicOnly" value="niBit ( 2 ) ">
+				<comments desc="Only list &apos;dynamic&apos; interfaces (interfaces in sink that extend the object). ">
+					<remark text="This needs to be implemented only for objects that do have dynamic interfaces. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface
+			name="iUnknown"
+			noautomation="yes"
+			uuid1="EC052841-18A0-46C1-AD8B-CBFE0657EC0E"
+			uuid2="0xec052841,0x18a0,0x46c1,0xad,0x8b,0xcb,0xfe,0x06,0x57,0xec,0x0e">
+			<comments desc="iUnknown interface ">
+				<remark text="iUnknown is the base of all ni interfaces. It support reference counting and sanity check throught the IsOK() method. "/>
+			</comments>
+			<method
+				const="yes"
+				java_name="isOK"
+				name="IsOK"
+				num_parameters="0">
+				<comments desc="Check if the object is valid. " return="niTrue if the object can be used. "/>
+				<return type="tBool" typec="tBool"/>
+			</method>
+			<method java_name="addRef" name="AddRef" num_parameters="0">
+				<comments desc="Signal that one more reference of the object has been created. " return="the new number of reference, or eInvalidHandle if the object is not reference counted. "/>
+				<return type="tI32" typec="tI32"/>
+			</method>
+			<method java_name="release" name="Release" num_parameters="0">
+				<comments desc="Release a reference of the object. " return="the new number of reference, or eInvalidHandle if the object is not reference counted. "/>
+				<return type="tI32" typec="tI32"/>
+			</method>
+			<method java_name="deleteThis" name="DeleteThis" num_parameters="0">
+				<comments desc="Bypass any reference counting and delete this object. "/>
+				<return type="void" typec="void"/>
+			</method>
+			<method java_name="invalidate" name="Invalidate" num_parameters="0">
+				<comments desc="Invalidate the object. ">
+					<remark text="This method is called when the object is not valid anymore and can&apos;t be used anymore. "/>
+					<remark text="This method has been added to make the objects garbage collector compatible. "/>
+				</comments>
+				<return type="void" typec="void"/>
+			</method>
+			<method java_name="queryInterface" name="QueryInterface" num_parameters="1">
+				<comments desc="Query an interface. " return="NULL if the required interface cant be queried. "/>
+				<return type="iUnknown *" typec="iUnknown*"/>
+				<parameter
+					last="1"
+					name="aIID"
+					type="const tUUID &amp;"
+					typec="const tUUID&amp;"/>
+			</method>
+			<method
+				const="yes"
+				java_name="listInterfaces"
+				name="ListInterfaces"
+				num_parameters="2">
+				<comments desc="Fill a UUID list containing the UUIDs of the implemented interfaces. "/>
+				<return type="void" typec="void"/>
+				<parameter name="apLst" type="iMutableCollection *" typec="iMutableCollection*"/>
+				<parameter
+					last="1"
+					name="anFlags"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method java_name="setNumRefs" name="SetNumRefs" num_parameters="1">
+				<comments desc="Set the reference counter directly. ">
+					<remark text="This is, needless to say, dangerous and should be used only as a mean to bypass the hard reference counting when it&apos;s required. "/>
+				</comments>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="anNumRefs"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumRefs"
+				name="GetNumRefs"
+				num_parameters="0">
+				<comments desc="Get the number of references to this object. "/>
+				<return type="tI32" typec="tI32"/>
+			</method>
+		</interface>
+		<interface
+			name="iDispatch"
+			noautomation="yes"
+			uuid1="19E1E977-4249-4104-8087-A7D14B5A2621"
+			uuid2="0x19e1e977,0x4249,0x4104,0x80,0x87,0xa7,0xd1,0x4b,0x5a,0x26,0x21">
+			<comments desc="IDispatch interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="initializeMethods" name="InitializeMethods" num_parameters="2">
+				<comments desc="Initialize the methods. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="apMethods" type="const sMethodDef * const *" typec="const sMethodDef* const*"/>
+				<parameter
+					last="1"
+					name="anNumMethods"
+					type="ni::tU32"
+					typec="ni::tU32"/>
+			</method>
+			<method java_name="callMethod" name="CallMethod" num_parameters="5">
+				<comments desc="Call the specified method. " return="niFalse if the method call failed, else niTrue. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="apMethodDef" type="const sMethodDef * const" typec="const sMethodDef* const"/>
+				<parameter name="anMethodIndex" type="ni::tU32" typec="ni::tU32"/>
+				<parameter name="apParameters" type="const Var *" typec="const Var*"/>
+				<parameter name="anNumParameters" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="apRet"
+					type="Var *"
+					typec="Var*"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni">
+		<variable
+			name="eVMRet_OK"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="0"/>
+		<variable
+			name="eVMRet_InvalidArgCount"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-1"/>
+		<variable
+			name="eVMRet_InvalidMethod"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-2"/>
+		<variable
+			name="eVMRet_InvalidArg"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-3"/>
+		<variable
+			name="eVMRet_InvalidRet"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-4"/>
+		<variable
+			name="eVMRet_InvalidNullArg"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-5"/>
+		<variable
+			name="eVMRet_OutOfMemory"
+			type="niConstValue tInt"
+			typec="niConstValue tInt"
+			typei="ni::eType_Int"
+			value="-6"/>
+	</namespace>
+	<namespace name="ni">
+		<enum name="eFileAttrFlags">
+			<comments desc="File attributes "/>
+			<value name="eFileAttrFlags_File" value="niBit ( 0 ) ">
+				<comments desc="File. "/>
+			</value>
+			<value name="eFileAttrFlags_Directory" value="niBit ( 1 ) ">
+				<comments desc="Directory. "/>
+			</value>
+			<value name="eFileAttrFlags_Archive" value="niBit ( 3 ) ">
+				<comments desc="Archive. "/>
+			</value>
+			<value name="eFileAttrFlags_ReadOnly" value="niBit ( 4 ) ">
+				<comments desc="Read only. "/>
+			</value>
+			<value name="eFileAttrFlags_Hidden" value="niBit ( 5 ) ">
+				<comments desc="Hidden attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_System" value="niBit ( 6 ) ">
+				<comments desc="System attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_Virtual" value="niBit ( 7 ) ">
+				<comments desc="The file is &apos;virtual&apos;, aka it is not stored in the standard OS&apos;s file system, most likely it is stored within an archive or a-like. "/>
+			</value>
+			<value name="eFileAttrFlags_Device" value="niBit ( 8 ) ">
+				<comments desc="Device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceFixed" value="eFileAttrFlags_Device|niBit ( 15 ) ">
+				<comments desc="Fixed device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceRemovable" value="eFileAttrFlags_Device|niBit ( 16 ) ">
+				<comments desc="Removable device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceRAM" value="eFileAttrFlags_Device|niBit ( 17 ) ">
+				<comments desc="RAM drive device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceRemote" value="eFileAttrFlags_Device|niBit ( 18 ) ">
+				<comments desc="Remote device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceFloppy" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 19 ) ">
+				<comments desc="Floppy device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceCDRom" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 20 ) ">
+				<comments desc="CDRom device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved0" value="eFileAttrFlags_Device|niBit ( 21 ) ">
+				<comments desc="Reserved0 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved1" value="eFileAttrFlags_Device|niBit ( 22 ) ">
+				<comments desc="Reserved1 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved2" value="eFileAttrFlags_Device|niBit ( 23 ) ">
+				<comments desc="Reserved2 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved3" value="eFileAttrFlags_Device|niBit ( 24 ) ">
+				<comments desc="Reserved3 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved4" value="eFileAttrFlags_Device|niBit ( 25 ) ">
+				<comments desc="Reserved4 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved5" value="eFileAttrFlags_Device|niBit ( 26 ) ">
+				<comments desc="Reserved5 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved6" value="eFileAttrFlags_Device|niBit ( 27 ) ">
+				<comments desc="Reserved6 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved7" value="eFileAttrFlags_Device|niBit ( 28 ) ">
+				<comments desc="Reserved7 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved8" value="eFileAttrFlags_Device|niBit ( 29 ) ">
+				<comments desc="Reserved8 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved9" value="eFileAttrFlags_Device|niBit ( 30 ) ">
+				<comments desc="Reserved9 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_DeviceReserved10" value="eFileAttrFlags_Device|niBit ( 31 ) ">
+				<comments desc="Reserved10 device attribute. "/>
+			</value>
+			<value name="eFileAttrFlags_All" value="eFileAttrFlags_File|eFileAttrFlags_Directory ">
+				<comments desc="All. "/>
+			</value>
+			<value name="eFileAttrFlags_AllFiles" value="eFileAttrFlags_File ">
+				<comments desc="All files. "/>
+			</value>
+			<value name="eFileAttrFlags_AllDirectories" value="eFileAttrFlags_Directory ">
+				<comments desc="All directories. "/>
+			</value>
+		</enum>
+		<enum name="eFileTime">
+			<comments desc="File time. "/>
+			<value name="eFileTime_Creation" value="0 ">
+				<comments desc="Creation file time. "/>
+			</value>
+			<value name="eFileTime_LastAccess" value="1 ">
+				<comments desc="Last access file time. "/>
+			</value>
+			<value name="eFileTime_LastWrite" value="2 ">
+				<comments desc="Last write file time. "/>
+			</value>
+		</enum>
+		<enum name="eFileOpenMode">
+			<comments desc="File open mode. "/>
+			<value name="eFileOpenMode_Read" value="niBit ( 0 ) ">
+				<comments desc="Read open mode. "/>
+			</value>
+			<value name="eFileOpenMode_Write" value="niBit ( 1 ) ">
+				<comments desc="Write open mode. "/>
+			</value>
+			<value name="eFileOpenMode_Append" value="niBit ( 2 ) |eFileOpenMode_Write ">
+				<comments desc="Append open mode. "/>
+			</value>
+			<value name="eFileOpenMode_Random" value="niBit ( 3 ) ">
+				<comments desc="Optimized form random access. "/>
+			</value>
+		</enum>
+	</namespace>
+	<namespace name="ni"/>
+</niIDL>

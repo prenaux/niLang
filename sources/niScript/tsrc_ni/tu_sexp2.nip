@@ -1,0 +1,15 @@
+::Import("lang.ni")
+::Import("assert.ni")
+
+local s = $(foo bar 123 +123e10 -456e30 "fooStr" "barStr")
+::println("s:" s)
+
+foreach (i,a in s) {
+  local type, val
+  switch (a[0]) {
+    case '`': type = "string"; val = a.slice(1); break;
+    case '#': type = "number"; val = a.tofloat(); break;
+    case '$': type = "identifier"; val = a.parsesymbol(); break;
+  }
+  ::println("s["+i+"]: sym:" a.parsesymbol() + ", type:" type + ", val:" val "(" + ::lang.toString(a.parsemetadata()) + ")")
+}

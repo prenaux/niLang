@@ -1,0 +1,569 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eTextTruncation">
+			<comments desc="Text truncation "/>
+			<value name="eTextTruncation_Left" value="0 ">
+				<comments desc="The words will be truncated on the left if bigger than the text block. "/>
+			</value>
+			<value name="eTextTruncation_Right" value="1 ">
+				<comments desc="The words will be truncated on the right if bigger than the text block. "/>
+			</value>
+			<value name="eTextTruncation_None" value="2 ">
+				<comments desc="The words won&apos;t be truncated. "/>
+			</value>
+		</enum>
+		<interface name="iTextOccluder" uuid1="0A985A32-1472-41E9-85C9-AFEED972E14C" uuid2="0x0a985a32,0x1472,0x41e9,0x85,0xc9,0xaf,0xee,0xd9,0x72,0xe1,0x4c">
+			<comments desc="Text occluder interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getTextObject"
+				name="GetTextObject"
+				num_parameters="0"
+				property="get"
+				property_name2="textObject"
+				property_name="text_object">
+				<comments desc="Get the parent text object. "/>
+				<return type="Ptr&lt;iTextObject&gt;" typec="Ptr&lt;iTextObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setRect"
+				name="SetRect"
+				num_parameters="1"
+				property="set"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Set the occluder&apos;s rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRect"
+				name="GetRect"
+				num_parameters="0"
+				property="get"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Get the occluder&apos;s rectangle. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setUserData"
+				name="SetUserData"
+				num_parameters="1"
+				property="set"
+				property_name2="userData"
+				property_name="user_data">
+				<comments desc="Set user data. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aUserData"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserData"
+				name="GetUserData"
+				num_parameters="0"
+				property="get"
+				property_name2="userData"
+				property_name="user_data">
+				<comments desc="Get the user data. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+		</interface>
+		<interface name="iTextObject" uuid1="81B98E50-26EA-4A69-B13D-CB0AA5ABEA11" uuid2="0x81b98e50,0x26ea,0x4a69,0xb1,0x3d,0xcb,0x0a,0xa5,0xab,0xea,0x11">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the graphics object that created the text object. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setContentsScale"
+				name="SetContentsScale"
+				num_parameters="1"
+				property="set"
+				property_name2="contentsScale"
+				property_name="contents_scale">
+				<comments desc="Set the contents&apos; scale factor. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getContentsScale"
+				name="GetContentsScale"
+				num_parameters="0"
+				property="get"
+				property_name2="contentsScale"
+				property_name="contents_scale">
+				<comments desc="Get the contents&apos; scale factor. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDefaultFont"
+				name="SetDefaultFont"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultFont"
+				property_name="default_font">
+				<comments desc="Set the default font used by the text object. ">
+					<remark text="If an invalid font is passed the default font of the graphics&apos;s instance is used. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultFont"
+				name="GetDefaultFont"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultFont"
+				property_name="default_font">
+				<comments desc="Get the default font used by the text object. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setLoadFontCallback"
+				name="SetLoadFontCallback"
+				num_parameters="1"
+				property="set"
+				property_name2="loadFontCallback"
+				property_name="load_font_callback">
+				<comments desc="Set the load font callback used by the text object. ">
+					<remark text="The callback&apos;s signature: iFont* LoadFont(iHString* ahspFontName) "/>
+					<remark text="If none are provided the default font will be used everywhere. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apLoadFontCallback"
+					type="iCallback *"
+					typec="iCallback*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLoadFontCallback"
+				name="GetLoadFontCallback"
+				num_parameters="0"
+				property="get"
+				property_name2="loadFontCallback"
+				property_name="load_font_callback">
+				<comments desc="Get the load font callback used by the text object. "/>
+				<return type="iCallback *" typec="iCallback*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSize"
+				name="SetSize"
+				num_parameters="1"
+				property="set"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Set the size of the text object. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size of the text object. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setTruncation"
+				name="SetTruncation"
+				num_parameters="1"
+				property="set"
+				property_name2="truncation"
+				property_name="truncation">
+				<comments desc="Set the word truncation mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eTextTruncation"
+					typec="eTextTruncation"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTruncation"
+				name="GetTruncation"
+				num_parameters="0"
+				property="get"
+				property_name2="truncation"
+				property_name="truncation">
+				<comments desc="Get the word truncation mode. "/>
+				<return type="eTextTruncation" typec="eTextTruncation" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setTruncationText"
+				name="SetTruncationText"
+				num_parameters="1"
+				property="set"
+				property_name2="truncationText"
+				property_name="truncation_text">
+				<comments desc="Set the truncation text. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTruncationText"
+				name="GetTruncationText"
+				num_parameters="0"
+				property="get"
+				property_name2="truncationText"
+				property_name="truncation_text">
+				<comments desc="Get the truncation text. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setTrimLeadingSpaces"
+				name="SetTrimLeadingSpaces"
+				num_parameters="1"
+				property="set"
+				property_name2="trimLeadingSpaces"
+				property_name="trim_leading_spaces">
+				<comments desc="Set whether to trim the leading spaces. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abTrimLeadingSpaces"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTrimLeadingSpaces"
+				name="GetTrimLeadingSpaces"
+				num_parameters="0"
+				property="get"
+				property_name2="trimLeadingSpaces"
+				property_name="trim_leading_spaces">
+				<comments desc="Get whether to trim the leading spaces. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setKerning"
+				name="SetKerning"
+				num_parameters="1"
+				property="set"
+				property_name2="kerning"
+				property_name="kerning">
+				<comments desc="Set whether to use kerning. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abKerning"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKerning"
+				name="GetKerning"
+				num_parameters="0"
+				property="get"
+				property_name2="kerning"
+				property_name="kerning">
+				<comments desc="Get whether to use kerning. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextSize"
+				name="GetTextSize"
+				num_parameters="0"
+				property="get"
+				property_name2="textSize"
+				property_name="text_size">
+				<comments desc="Get the computed size of the text after layout. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setExpressionContext"
+				name="SetExpressionContext"
+				num_parameters="1"
+				property="set"
+				property_name2="expressionContext"
+				property_name="expression_context">
+				<comments desc="Set the expression context used for the &lt;expr&gt; tags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apContext"
+					type="iExpressionContext *"
+					typec="iExpressionContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpressionContext"
+				name="GetExpressionContext"
+				num_parameters="0"
+				property="get"
+				property_name2="expressionContext"
+				property_name="expression_context">
+				<comments desc="Get the expression context used for the &lt;expr&gt; tags. "/>
+				<return type="iExpressionContext *" typec="iExpressionContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="drawAt" name="DrawAt" num_parameters="3">
+				<comments desc="Draw the text object in the specified canvas. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aClippingRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="draw" name="Draw" num_parameters="2">
+				<comments desc="Draw the text object in the specified canvas. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aClippingRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addOccluder" name="AddOccluder" num_parameters="2">
+				<comments desc="Add a text occluder. "/>
+				<return type="iTextOccluder *" typec="iTextOccluder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aUserData"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeOccluder" name="RemoveOccluder" num_parameters="1">
+				<comments desc="Remove the text occluder at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearOccluders" name="ClearOccluders" num_parameters="0">
+				<comments desc="Removes all text occluders. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumOccluders"
+				name="GetNumOccluders"
+				num_parameters="0"
+				property="get"
+				property_name2="numOccluders"
+				property_name="num_occluders">
+				<comments desc="Get number of occluders. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getOccluder"
+				name="GetOccluder"
+				num_parameters="1"
+				property="get"
+				property_name2="occluder"
+				property_name="occluder">
+				<comments desc="Get occluder from index. "/>
+				<return type="iTextOccluder *" typec="iTextOccluder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setText"
+				name="SetText"
+				num_parameters="1"
+				property="set"
+				property_name2="text"
+				property_name="text">
+				<comments desc="Set the text of the text object. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getText"
+				name="GetText"
+				num_parameters="0"
+				property="get"
+				property_name2="text"
+				property_name="text">
+				<comments desc="Get the text of the text object. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addText" name="AddText" num_parameters="1">
+				<comments desc="Add Text the the widget. ">
+					<remark text="Will push back and layout the desired string without processing the already-processed parts uselessly. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSelectionColor"
+				name="SetSelectionColor"
+				num_parameters="1"
+				property="set"
+				property_name2="selectionColor"
+				property_name="selection_color">
+				<comments desc="Set the selection background color. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="sVec4f"
+					typec="sVec4f"
+					typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectionColor"
+				name="GetSelectionColor"
+				num_parameters="0"
+				property="get"
+				property_name2="selectionColor"
+				property_name="selection_color">
+				<comments desc="Get the selection background color. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectedString"
+				name="GetSelectedString"
+				num_parameters="0"
+				property="get"
+				property_name2="selectedString"
+				property_name="selected_string">
+				<comments desc="Get the selected string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method java_name="clearSelection" name="ClearSelection" num_parameters="0">
+				<comments desc="Clear the current selection. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="selectRange" name="SelectRange" num_parameters="2">
+				<comments desc="Select the specified word range. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anBegin"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anEnd"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findWordIndexFromPosition"
+				name="FindWordIndexFromPosition"
+				num_parameters="1">
+				<comments desc="Find the index of the word nearest of the specified position. " return="eInvalidHandle if no words can be found. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avPosition"
+					type="sVec2f"
+					typec="sVec2f"
+					typei="ni::eType_Vec2f"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

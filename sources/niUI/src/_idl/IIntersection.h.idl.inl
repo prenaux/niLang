@@ -1,0 +1,71 @@
+#include "../API/niUI/IIntersection.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iIntersection **/
+IDLC_BEGIN_INTF(ni,iIntersection)
+/** ni -> iIntersection::SetResult/1 **/
+IDLC_METH_BEGIN(ni,iIntersection,SetResult,1)
+	IDLC_DECL_VAR(eIntersectionResult,aResult)
+	IDLC_BUF_TO_ENUM(eIntersectionResult,aResult)
+	IDLC_METH_CALL_VOID(ni,iIntersection,SetResult,1,(aResult))
+IDLC_METH_END(ni,iIntersection,SetResult,1)
+
+/** ni -> iIntersection::GetResult/0 **/
+IDLC_METH_BEGIN(ni,iIntersection,GetResult,0)
+	IDLC_DECL_RETVAR(eIntersectionResult,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iIntersection,GetResult,0,())
+	IDLC_RET_FROM_ENUM(eIntersectionResult,_Ret)
+IDLC_METH_END(ni,iIntersection,GetResult,0)
+
+/** ni -> iIntersection::SetPosition/1 **/
+IDLC_METH_BEGIN(ni,iIntersection,SetPosition,1)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_METH_CALL_VOID(ni,iIntersection,SetPosition,1,(avPos))
+IDLC_METH_END(ni,iIntersection,SetPosition,1)
+
+/** ni -> iIntersection::GetPosition/0 **/
+IDLC_METH_BEGIN(ni,iIntersection,GetPosition,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iIntersection,GetPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iIntersection,GetPosition,0)
+
+/** ni -> iIntersection::SetBaryCentric/1 **/
+IDLC_METH_BEGIN(ni,iIntersection,SetBaryCentric,1)
+	IDLC_DECL_VAR(sVec2f,avBC)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avBC)
+	IDLC_METH_CALL_VOID(ni,iIntersection,SetBaryCentric,1,(avBC))
+IDLC_METH_END(ni,iIntersection,SetBaryCentric,1)
+
+/** ni -> iIntersection::GetBaryCentric/0 **/
+IDLC_METH_BEGIN(ni,iIntersection,GetBaryCentric,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iIntersection,GetBaryCentric,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iIntersection,GetBaryCentric,0)
+
+/** ni -> iIntersection::SetPolygonIndex/1 **/
+IDLC_METH_BEGIN(ni,iIntersection,SetPolygonIndex,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_METH_CALL_VOID(ni,iIntersection,SetPolygonIndex,1,(anIndex))
+IDLC_METH_END(ni,iIntersection,SetPolygonIndex,1)
+
+/** ni -> iIntersection::GetPolygonIndex/0 **/
+IDLC_METH_BEGIN(ni,iIntersection,GetPolygonIndex,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iIntersection,GetPolygonIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iIntersection,GetPolygonIndex,0)
+
+IDLC_END_INTF(ni,iIntersection)
+
+IDLC_END_NAMESPACE()
+// EOF //

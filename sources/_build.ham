@@ -1,0 +1,31 @@
+SubDir TOP ;
+
+### Lang ###
+SubInclude TOP niLang ;
+if ! $(NO_NI_CURL) = 1 {
+  SubInclude TOP niCURL ;
+}
+if ! ( $(EMBEDDED) = 1 ) {
+  SubInclude TOP niScript ;
+  SubInclude TOP niUnitTest ;
+  SubInclude TOP niTestInterop ;
+  SubInclude TOP ni ;
+  SubInclude TOP nicgc ;
+  SubInclude TOP genuuid ;
+  SubInclude TOP thirdparty ;
+  SubInclude TOP Test_RTCpp ;
+  DEPENDS build_tools : niLang genuuid ni nicgc ;
+}
+
+### UI / Media ###
+SubInclude TOP niUI ;
+SubInclude TOP niAppLib ;
+SubInclude TOP niSound ;
+
+if $(BUILD_JNI) = 1 {
+  SubInclude TOP jvm ;
+  DEPENDS build_tools : ni-common ni-gen-cpp ;
+}
+
+### Samples ###
+SubInclude TOP HelloUI ;

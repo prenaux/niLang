@@ -1,0 +1,14 @@
+if [ SubDirOnce TOP niUnitTest src ] = 1 { return ; }
+
+tkDefLib niUnitTest : 1,0,0 : niUnitTest ;
+niImportModuleHdrs niLang ;
+niImportModuleHdrs niAppLib ;
+niImportModuleHdrs niUI ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+
+tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ;
+
+# Dependencies
+tkDepends niUnitTest : niAppLib : TOP niAppLib src ;

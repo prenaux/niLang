@@ -1,0 +1,350 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eFrustumPlane">
+			<comments desc="Frustum planes. "/>
+			<value name="eFrustumPlane_Left" value="0 ">
+				<comments desc="Left frustum plane. "/>
+			</value>
+			<value name="eFrustumPlane_Right" value="1 ">
+				<comments desc="Right frustum plane. "/>
+			</value>
+			<value name="eFrustumPlane_Top" value="2 ">
+				<comments desc="Top frustum plane. "/>
+			</value>
+			<value name="eFrustumPlane_Bottom" value="3 ">
+				<comments desc="Bottom frustum plane. "/>
+			</value>
+			<value name="eFrustumPlane_Near" value="4 ">
+				<comments desc="Near frustum plane. "/>
+			</value>
+			<value name="eFrustumPlane_Far" value="5 ">
+				<comments desc="Far frustum plane. "/>
+			</value>
+		</enum>
+		<enum name="eCullCode">
+			<comments desc="Value return by the culling functions. "/>
+			<value name="eCullCode_Out" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCullCode_In" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCullCode_Intersect" value="2">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iFrustum" uuid1="6CFE2B98-B883-4344-AA1C-A7BC56817D64" uuid2="0x6cfe2b98,0xb883,0x4344,0xaa,0x1c,0xa7,0xbc,0x56,0x81,0x7d,0x64">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Create a copy of this object. "/>
+				<return type="iFrustum *" typec="iFrustum*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the given frustum. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="const iFrustum *"
+					typec="const iFrustum*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getForward"
+				name="GetForward"
+				num_parameters="0"
+				property="get"
+				property_name2="forward"
+				property_name="forward">
+				<comments desc="Get the forward vector of the frustum. ">
+					<remark text="The forward vector of the frustum is the normal of the near plane. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUp"
+				name="GetUp"
+				num_parameters="0"
+				property="get"
+				property_name2="up"
+				property_name="up">
+				<comments desc="Get the up vector of the frustum. ">
+					<remark text="The up vector of the frustum is the cross product between the left and right frustum planes. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRight"
+				name="GetRight"
+				num_parameters="0"
+				property="get"
+				property_name2="right"
+				property_name="right">
+				<comments desc="Get the right vector of the frustum. ">
+					<remark text="The right vector of the frustum is the cross product between the top and bottom frustum planes. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="extractPlanes" name="ExtractPlanes" num_parameters="1">
+				<comments desc="Extract the planes from a view projection matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="mtxVP"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setNumPlanes"
+				name="SetNumPlanes"
+				num_parameters="1"
+				property="set"
+				property_name2="numPlanes"
+				property_name="num_planes">
+				<comments desc="Set the number of plane in the frustum. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ulNumPlane"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumPlanes"
+				name="GetNumPlanes"
+				num_parameters="0"
+				property="get"
+				property_name2="numPlanes"
+				property_name="num_planes">
+				<comments desc="Get the number of planes in the frustum. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="addPlanes"
+				name="AddPlanes"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Add the given number of planes to the frustum. "/>
+				<return type="void" typec="void"/>
+				<parameter name="aulNumPlane" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="apPlanes"
+					type="const sPlanef *"
+					typec="const sPlanef*"/>
+			</method>
+			<method java_name="addPlane" name="AddPlane" num_parameters="1">
+				<comments desc="Add one plane to the frustum. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aPlane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPlanes"
+				name="SetPlanes"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Set all planes of the frustum. "/>
+				<return type="void" typec="void"/>
+				<parameter name="aulNumPlane" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="apPlanes"
+					type="const sPlanef *"
+					typec="const sPlanef*"/>
+			</method>
+			<method
+				java_name="setPlane"
+				name="SetPlane"
+				num_parameters="2"
+				property="set"
+				property_name2="plane"
+				property_name="plane">
+				<comments desc="Set the plane of the given index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="ulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPlane"
+				name="GetPlane"
+				num_parameters="1"
+				property="get"
+				property_name2="plane"
+				property_name="plane">
+				<comments desc="Get the plane of the given index. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="ulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPlanes"
+				name="GetPlanes"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc="Get all planes. "/>
+				<return type="sPlanef *" typec="sPlanef*"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cullAABB"
+				name="CullAABB"
+				num_parameters="2">
+				<comments desc="Cull an AABB. "/>
+				<return type="eCullCode" typec="eCullCode" typei="ni::eType_Enum"/>
+				<parameter
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectAABB"
+				name="IntersectAABB"
+				num_parameters="2">
+				<comments desc="Check if the given AABB is in the frustum. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cullSphere"
+				name="CullSphere"
+				num_parameters="2">
+				<comments desc="Cull a sphere. "/>
+				<return type="eCullCode" typec="eCullCode" typei="ni::eType_Enum"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="intersectSphere"
+				name="IntersectSphere"
+				num_parameters="2">
+				<comments desc="Check if the given sphere is in the frustum. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="transform" name="Transform" num_parameters="1">
+				<comments desc="Transform the frustum by the given matrix. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="computeScreenBoundingBox" name="ComputeScreenBoundingBox" num_parameters="2">
+				<comments desc="Compute the screen bounding box. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="amtxWVP"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aViewport"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setBoundingVolume"
+				name="SetBoundingVolume"
+				num_parameters="1"
+				property="set"
+				property_name2="boundingVolume"
+				property_name="bounding_volume">
+				<comments desc="Set the world bounding volume. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBV"
+					type="iBoundingVolume *"
+					typec="iBoundingVolume*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoundingVolume"
+				name="GetBoundingVolume"
+				num_parameters="0"
+				property="get"
+				property_name2="boundingVolume"
+				property_name="bounding_volume">
+				<comments desc="Get the world bounding volume. "/>
+				<return type="iBoundingVolume *" typec="iBoundingVolume*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

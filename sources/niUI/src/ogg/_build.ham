@@ -1,0 +1,40 @@
+#########################################################################
+#
+# -- ogg -- library
+#
+#########################################################################
+if [ SubDirOnce TOP niUI src ogg ] = 1 { return ; }
+
+tkDefLib niUI_ogg : 1,0,0 ;
+SubDirHdrs $(SUBDIR) libogg include ;
+SubDirHdrs $(SUBDIR) libtheora lib ;
+SubDirHdrs $(SUBDIR) libtheora include ;
+SubDirHdrs $(SUBDIR) libvorbis lib ;
+SubDirHdrs $(SUBDIR) libvorbis include ;
+
+SRC = ;
+
+## OGG Stream
+SRC_LIBOGG = [ tkPkgSrcSubDirNoHdrs libogg src ] ;
+SRC += $(SRC_LIBOGG) ;
+
+## OGG libVorbis
+SRC_LIBVORBIS = [ tkPkgSrcSubDirNoHdrs libvorbis lib ] ;
+SRC += $(SRC_LIBVORBIS) ;
+
+## OGG libTheora
+SRC_LIBTHEORA = [ tkPkgSrcSubDirNoHdrs libtheora lib ] ;
+if $(WINDOWS) = 1 {
+  SRC_LIBTHEORA += [ tkPkgSrcSubDirNoHdrs libtheora lib x86_vc ] ;
+}
+SRC += $(SRC_LIBTHEORA) ;
+
+## Build
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) ] ;
+
+if $(LOA_LINKER) = clang || $(LOA_LINKER) = gcc || $(LOA_LINKER) = em {
+  ObjectCcFlags $(BUILD_SRC) :
+  -Wno-parentheses
+  -Wno-shift-op-parentheses
+  ;
+}

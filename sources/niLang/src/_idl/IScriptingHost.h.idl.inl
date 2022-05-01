@@ -1,0 +1,69 @@
+#include "../API/niLang/IScriptingHost.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iScriptingHost **/
+IDLC_BEGIN_INTF(ni,iScriptingHost)
+/** ni -> iScriptingHost::EvalString/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptingHost::EvalString/2 **/
+IDLC_METH_BEGIN(ni,iScriptingHost,EvalString,2)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(ni::achar*,aaszCode)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCode)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptingHost,EvalString,2,(ahspContext,aaszCode))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptingHost,EvalString,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptingHost::CanEvalImpl/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptingHost::CanEvalImpl/2 **/
+IDLC_METH_BEGIN(ni,iScriptingHost,CanEvalImpl,2)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(iHString*,ahspCodeResource)
+	IDLC_BUF_TO_INTF(iHString,ahspCodeResource)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptingHost,CanEvalImpl,2,(ahspContext,ahspCodeResource))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptingHost,CanEvalImpl,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptingHost::EvalImpl/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptingHost::EvalImpl/3 **/
+IDLC_METH_BEGIN(ni,iScriptingHost,EvalImpl,3)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(iHString*,ahspCodeResource)
+	IDLC_BUF_TO_INTF(iHString,ahspCodeResource)
+	IDLC_DECL_VAR(tUUID,aIID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,aIID)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptingHost,EvalImpl,3,(ahspContext,ahspCodeResource,aIID))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iScriptingHost,EvalImpl,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptingHost::Service/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptingHost::Service/1 **/
+IDLC_METH_BEGIN(ni,iScriptingHost,Service,1)
+	IDLC_DECL_VAR(tBool,abForceGC)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abForceGC)
+	IDLC_METH_CALL_VOID(ni,iScriptingHost,Service,1,(abForceGC))
+IDLC_METH_END(ni,iScriptingHost,Service,1)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iScriptingHost)
+
+IDLC_END_NAMESPACE()
+// EOF //

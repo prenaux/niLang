@@ -1,0 +1,249 @@
+#pragma once
+#ifndef __STDFRESNEL_CGH_2380B52F_99EA_47AE_B737_14C6249C0436__
+#define __STDFRESNEL_CGH_2380B52F_99EA_47AE_B737_14C6249C0436__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#define DEFAULT_REFLECTANCE 0.04
+#define DEFAULT_F90 vec3(1,1,1)
+
+// Original Fresnel equation
+// u: cosine of surface normal and incident direction
+// n: index of refraction (real part)
+// k: absorption coefficient
+float3 stdFresnel_Fresnel( float u, float3 n, float3 k )
+{
+  float u2 = u*u;
+  float3 n2 = n*n;
+  float3 k2 = k*k;
+  float3 d = (n2-k2+u2-1);
+  d *= d;
+  float3 s = sqrt( d + 4*n2*k2 );
+  float3 t = n2-k2+u2-1;
+  float3 a2 = ( 0.5*(s+t) );
+  float3 b2 = ( 0.5*(s-t) );
+  float3 a = sqrt( a2 );
+  float3 b = sqrt( b2 );
+
+  float3 term1 = ((a-u)*(a-u)+b2) / ((a+u)*(a+u)+b2);
+  float3 term2 = ( (a+u-1/u)*(a+u-1/u)+b2 ) / ( (a-u+1/u)*(a-u+1/u)+b2 ) + 1;
+
+  return 0.5 * term1 * term2;
+}
+
+// Gloss based Fresnel term used for EnvironmentBRDF
+// u: cosine of surface normal and incident direction (n.v)
+float3 stdFresnel_SchlickGlossy(float u, float3 F_0, float g) {
+  // float num = pow(1 - u, 5); // 4 or 5 are fine... 5 gives a thinner edge...
+  float num = exp2(-8.65617024533378044416*u); // equivalent to pow(1.0 – u, 5.0)
+  float den = 4 - (3*g);
+  return F_0 + ((1 - F_0) * (num/den));
+}
+
+// Slightly tweaked glossy reflection which uses the gloss differently. The
+// brightest of the gloss or specular color is selected.
+float3 stdFresnel_SchlickGlossy2(float u, float3 aSpecColor, float aGloss) {
+  float num = exp2(-8.65617024533378044416*u); // equivalent to pow(1.0 – u, 5.0)
+  return aSpecColor + (max(aGloss, aSpecColor) - aSpecColor) * num;
+}
+
+// Fresnel term for dielectrics (no absorption coefficient)
+// u: cosine of surface normal and incident direction
+// n: index of refraction
+float3 stdFresnel_Dielectric( float u, float3 n )
+{
+  float c = u;
+  float3 g = sqrt( n*n + c*c - 1 );
+
+  float3 A = (g-c) / (g+c);
+  float3 B = (c*(g+c)-1) / (c*(g-c)+1);
+
+  return 0.5 * A*A * ( 1 + B*B );
+}
+
+// Fresnel term approximation for metals
+// u: cosine of surface normal and incident direction
+// n: index of refraction (real part)
+// k: absorption coefficient
+float3 stdFresnel_Lazanyi( float u, float3 n, float3 k )
+{
+  float3 num = (n-1)*(n-1) + 4*n*pow(1-u,5) + k*k;
+  float3 den = (n+1)*(n+1) + k*k;
+
+  return num/den;
+}
+
+
+// Fresnel term approximation if n is available after Schlick
+// u: cosine of surface normal and incident direction
+// n: index of refraction
+float3 stdFresnel_Schlick( float u, float3 n )
+{
+  float3 num = (n-1)*(n-1) + 4*n*pow(1-u,5);
+  float3 den = (n+1)*(n+1);
+
+  return num/den;
+
+  //    float3 F_0 = (n-1)/(n+1);
+  //    F_0 = F_0 * F_0;
+  //    return F_0 + (1 - F_0) * pow( 1-u, 5 );
+}
+
+// Fresnel term approximation if F_0 is available
+// u: cosine of surface normal and incident direction
+// F_0: spectral distribution of reflected light at normal incidence
+float3 stdFresnel_SchlickRaw( float u, float3 F_0 )
+{
+  return F_0 + (1 - F_0) * pow( 1-u, 5 );
+}
+
+// Schlick's approximation with exponent 4 and no pow-call
+// u: cosine of surface normal and incident direction
+// F_0: spectral distribution of reflected light at normal incidence
+float3 stdFresnel_SchlickEvenMoreRaw( float u, float3 F_0 )
+{
+  float t = 1-u;
+  t *= t;
+  t *= t;
+  return F_0 + (1 - F_0) * t;
+}
+
+// Strauss' Fresnel term
+float stdFresnel_Strauss( float x )
+{
+  float k_f = 1.12;
+
+  x *= 0.6366;
+
+  float c1 = (x-k_f);
+  float c2 = (1-k_f);
+
+  float nom = 1/(c1*c1) - 1/(k_f*k_f);
+  float den = 1/(c2*c2) - 1/(k_f*k_f);
+
+  return nom / den;
+}
+
+float SchlickGGX_D(float NoH, float m) {
+	float m2 = m * m;
+	float NoH2 = NoH * NoH;
+	float f = (m2 - 1) * NoH2 + 1;
+	return m2 / (f * f);
+}
+
+float SchlickGGX_D(vec3 norm, vec3 h, float roughness, float cosBias){
+	float NoH = stdUtil_CosineBiasSat(dot(norm, h), cosBias);
+
+	float alpha = roughness * roughness;
+
+	float alpha2 = alpha * alpha;
+	float cos2Theta = NoH * NoH;
+
+	float t = (alpha2 - 1) * cos2Theta + 1;
+
+	return alpha2 / (niPi * t * t);
+}
+
+float SchlickGGX_G1(vec3 norm, vec3 w, float roughness, float cosBias) {
+	float alpha = roughness * roughness;
+	float k = alpha / 2; // fix smith model ggx
+
+	float NoW = stdUtil_CosineBiasSat(dot(norm, w), cosBias);
+	return NoW / (NoW * (1 - k) + k);
+}
+
+float SchlickGGX_SmithG(vec3 norm, vec3 wo, vec3 wi, float roughness, float cosBias){
+	return SchlickGGX_G1(norm, wo, roughness, cosBias) * SchlickGGX_G1(norm, wi, roughness, cosBias);
+}
+
+float SchlickGGX_SmithG_Analytic(vec3 norm, vec3 wo, vec3 wi, float roughness, float cosBias) {
+	float remappedRoughness = (roughness + 1) * 0.5;
+	return SchlickGGX_SmithG(norm, wo, wi, remappedRoughness, cosBias);
+}
+
+float SchlickGGX_SmithG_Vis_HC(float NoV, float NoL, float alphaG) {
+	// Original formulation of G_SmithGGX Correlated
+	// lambda_v = (-1 + sqrt ( alphaG2 * (1 - NoL2 ) / NoL2 + 1)) * 0.5 f;
+	// lambda_l = (-1 + sqrt ( alphaG2 * (1 - NoV2 ) / NoV2 + 1)) * 0.5 f;
+	// G_SmithGGXCorrelated = 1 / (1 + lambda_v + lambda_l );
+	// V_SmithGGXCorrelated = G_SmithGGXCorrelated / (4.0 f * NoL * NoV );
+
+	// This is the optimize version
+	float alphaG2 = alphaG * alphaG;
+	// Caution : the " NoL *" and " NoV *" are explicitely inversed , this is not a mistake .
+	float Lambda_GGXV = NoL * sqrt((-NoV * alphaG2 + NoV) * NoV + alphaG2);
+	float Lambda_GGXL = NoV * sqrt((-NoL * alphaG2 + NoL) * NoL + alphaG2);
+
+	return 0.5 / (Lambda_GGXV + Lambda_GGXL);
+}
+
+vec3 MetalWorkflowF0(vec3 reflectance, vec3 albedo, float metallic) {
+	return mix(reflectance, albedo, metallic);
+}
+
+vec3 MetalWorkflowF0(vec3 albedo, float metallic){
+	return MetalWorkflowF0(vec3(DEFAULT_REFLECTANCE,DEFAULT_REFLECTANCE,DEFAULT_REFLECTANCE),
+                         albedo, metallic);
+}
+
+float SchlickFr(float F0, float F90, float u) {
+	float x = 1 - u;
+	float x2 = x * x;
+	float x4 = x2 * x2;
+	float x5 = x4 * x;
+	return F0 + (F90 - F0) * x5;
+}
+
+vec3 SchlickFr(vec3 F0, vec3 F90, float u) {
+	float x = 1 - u;
+	float x2 = x * x;
+	float x4 = x2 * x2;
+	float x5 = x4 * x;
+	return F0 + (F90 - F0) * x5;
+}
+
+vec3 SchlickFr(vec3 F0, float u) {
+	return SchlickFr(F0, DEFAULT_F90, u);
+}
+
+vec3 SchlickFr(float u, vec3 albedo, float metallic) {
+	vec3 F0 = MetalWorkflowF0(albedo, metallic);
+	return SchlickFr(F0, u);
+}
+
+vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic) {
+	vec3 F0 = MetalWorkflowF0(albedo, metallic);
+	float HoW = dot(h, w);
+	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (DEFAULT_F90 - F0);
+}
+
+vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
+	float cosTheta = max(dot(wo, norm), 0);
+  float gloss = 1.0 - roughness;
+  return F0 + (max(gloss.xxx, F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+float DisneyDiffuseFr(float NoV, float NoL, float LoH, float linearRoughness) {
+	float energyBias = mix(0.f, 0.5f, linearRoughness);
+	float energyFactor = mix(1.f, 1.f / 1.51f, linearRoughness);
+	float f90 = energyBias + 2.f * LoH * LoH * linearRoughness;
+	const float f0 = 1.f;
+	float lightScatter = SchlickFr(f0, f90, NoL);
+	float viewScatter = SchlickFr(f0, f90, NoV);
+
+	return lightScatter * viewScatter * energyFactor;
+}
+
+float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness) {
+	vec3 h = normalize(wo + wi);
+	float HoWi = dot(h, wi);
+	float HoWi2 = HoWi * HoWi;
+
+	float NoWo = dot(norm, wo);
+	float NoWi = dot(norm, wi);
+
+	return DisneyDiffuseFr(NoWo, NoWi, HoWi, linearRoughness);
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDFRESNEL_CGH_2380B52F_99EA_47AE_B737_14C6249C0436__

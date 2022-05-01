@@ -1,0 +1,18 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "84F43BDD5749A5B32ABAF242CAC0741844A02ABF",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "84F43BDD5749A5B32ABAF242CAC0741844A02ABF" : 0,
+    "8C5BF5D6DEF93F45BB2823242F998B7A78CFFEB2" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "60A432B2-E13E-4C90-B0E2-8B224426D78D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "HelloUI_ios",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "sources\/HelloUI\/ios\/HelloUI_ios.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+  ]
+}

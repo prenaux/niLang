@@ -1,0 +1,14 @@
+SubDir TOP jvm ;
+
+if $(BUILD_JNI) {
+  SubInclude TOP jvm ni-common ;
+  SubInclude TOP jvm ni-gen-cpp ;
+
+  SubInclude TOP jvm ni-app ;
+  SubInclude TOP jvm ni-app-native ;
+  if $(ANDROID) = 1 {
+    SubInclude TOP jvm ni-app-android ;
+  }
+
+  SubInclude TOP jvm ni-data-scripts ;
+}

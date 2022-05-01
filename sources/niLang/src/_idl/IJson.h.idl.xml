@@ -1,0 +1,321 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eJsonType">
+			<comments desc="Json value types "/>
+			<value min_features="20" name="eJsonType_Syntax" value="0 ">
+				<comments desc="Syntax parsing. "/>
+			</value>
+			<value min_features="20" name="eJsonType_Name" value="1 ">
+				<comments desc="Pair Name (string) "/>
+			</value>
+			<value min_features="20" name="eJsonType_String" value="2 ">
+				<comments desc="String "/>
+			</value>
+			<value min_features="20" name="eJsonType_Number" value="3 ">
+				<comments desc="Number "/>
+			</value>
+			<value min_features="20" name="eJsonType_True" value="4 ">
+				<comments desc="true "/>
+			</value>
+			<value min_features="20" name="eJsonType_False" value="5 ">
+				<comments desc="false "/>
+			</value>
+			<value min_features="20" name="eJsonType_Null" value="6 ">
+				<comments desc="null "/>
+			</value>
+			<value min_features="20" name="eJsonType_ObjectBegin" value="7 ">
+				<comments desc="Object begining "/>
+			</value>
+			<value min_features="20" name="eJsonType_ObjectEnd" value="8 ">
+				<comments desc="Object end "/>
+			</value>
+			<value min_features="20" name="eJsonType_ArrayBegin" value="9 ">
+				<comments desc="Array begining "/>
+			</value>
+			<value min_features="20" name="eJsonType_ArrayEnd" value="10 ">
+				<comments desc="Array end "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iJsonParserSink"
+			uuid1="A565ABA5-71AF-4045-A999-F8EF4C055CFA"
+			uuid2="0xa565aba5,0x71af,0x4045,0xa9,0x99,0xf8,0xef,0x4c,0x05,0x5c,0xfa">
+			<comments desc="Json parser sink interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onJsonParserSink_Error"
+				min_features="20"
+				name="OnJsonParserSink_Error"
+				num_parameters="3">
+				<comments desc="Json parser sink interface. Called when a parsing error occured. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszReason"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anLine"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="onJsonParserSink_Value"
+				min_features="20"
+				name="OnJsonParserSink_Value"
+				num_parameters="2">
+				<comments desc="Called when a value is parsed "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aType"
+					type="eJsonType"
+					typec="eJsonType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iJsonWriterSink"
+			uuid1="8FB94E8C-6267-4F9A-AD55-1D0601BB2989"
+			uuid2="0x8fb94e8c,0x6267,0x4f9a,0xad,0x55,0x1d,0x06,0x01,0xbb,0x29,0x89">
+			<comments desc="Json writer sink interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onJsonWriterSink_Error"
+				min_features="20"
+				name="OnJsonWriterSink_Error"
+				num_parameters="1">
+				<comments desc="Json writer sink interface. Called when there&apos;s a writting error. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszReason"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onJsonWriterSink_Write"
+				min_features="20"
+				name="OnJsonWriterSink_Write"
+				num_parameters="2">
+				<comments desc="Called when to write a value. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aValue"
+					type="eJsonType"
+					typec="eJsonType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iJsonWriter"
+			uuid1="265DC4DB-8A0F-4283-BC83-56241780C217"
+			uuid2="0x265dc4db,0x8a0f,0x4283,0xbc,0x83,0x56,0x24,0x17,0x80,0xc2,0x17">
+			<comments desc="Json writer interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="reset"
+				min_features="20"
+				name="Reset"
+				num_parameters="0">
+				<comments desc="Reset the writer&apos;s content. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="arrayBegin"
+				min_features="20"
+				name="ArrayBegin"
+				num_parameters="0">
+				<comments desc="Begin an array. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="arrayEnd"
+				min_features="20"
+				name="ArrayEnd"
+				num_parameters="0">
+				<comments desc="Ends an array. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="objectBegin"
+				min_features="20"
+				name="ObjectBegin"
+				num_parameters="0">
+				<comments desc="Begin an object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="objectEnd"
+				min_features="20"
+				name="ObjectEnd"
+				num_parameters="0">
+				<comments desc="Ends an object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="name"
+				min_features="20"
+				name="Name"
+				num_parameters="1">
+				<comments desc="Append a key name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="valueString"
+				min_features="20"
+				name="ValueString"
+				num_parameters="1">
+				<comments desc="Append a string in the current array/object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="valueNumber"
+				min_features="20"
+				name="ValueNumber"
+				num_parameters="1">
+				<comments desc="Append an integer in the current array/object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="valueBool"
+				min_features="20"
+				name="ValueBool"
+				num_parameters="1">
+				<comments desc="Append a boolean in the current array/object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abItem"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="valueNull"
+				min_features="20"
+				name="ValueNull"
+				num_parameters="0">
+				<comments desc="Append a null value in the current array/object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="objectString"
+				min_features="20"
+				name="ObjectString"
+				num_parameters="2">
+				<comments desc="Write a string property in the current object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="objectNumber"
+				min_features="20"
+				name="ObjectNumber"
+				num_parameters="2">
+				<comments desc="Write a number property in the current object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aStr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="objectBool"
+				min_features="20"
+				name="ObjectBool"
+				num_parameters="2">
+				<comments desc="Write a boolean property in the current object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abValue"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="objectNull"
+				min_features="20"
+				name="ObjectNull"
+				num_parameters="1">
+				<comments desc="Write a null property in the current object. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

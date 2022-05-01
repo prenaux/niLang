@@ -1,0 +1,129 @@
+#include "../API/niUI/IWidgetEditBox.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetEditBox **/
+IDLC_BEGIN_INTF(ni,iWidgetEditBox)
+/** ni -> iWidgetEditBox::AddText/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,AddText,1)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,AddText,1,(aaszText))
+IDLC_METH_END(ni,iWidgetEditBox,AddText,1)
+
+/** ni -> iWidgetEditBox::SetReplaceChar/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,SetReplaceChar,1)
+	IDLC_DECL_VAR(tU32,anChar)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anChar)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,SetReplaceChar,1,(anChar))
+IDLC_METH_END(ni,iWidgetEditBox,SetReplaceChar,1)
+
+/** ni -> iWidgetEditBox::GetReplaceChar/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetReplaceChar,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetReplaceChar,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetReplaceChar,0)
+
+/** ni -> iWidgetEditBox::MoveCursorHome/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,MoveCursorHome,1)
+	IDLC_DECL_VAR(tBool,abLine)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLine)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,MoveCursorHome,1,(abLine))
+IDLC_METH_END(ni,iWidgetEditBox,MoveCursorHome,1)
+
+/** ni -> iWidgetEditBox::MoveCursorEnd/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,MoveCursorEnd,1)
+	IDLC_DECL_VAR(tBool,abLine)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abLine)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,MoveCursorEnd,1,(abLine))
+IDLC_METH_END(ni,iWidgetEditBox,MoveCursorEnd,1)
+
+/** ni -> iWidgetEditBox::MoveCursor/2 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,MoveCursor,2)
+	IDLC_DECL_VAR(sVec2i,pos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer,pos)
+	IDLC_DECL_VAR(tBool,abForceLogicalCol)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abForceLogicalCol)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,MoveCursor,2,(pos,abForceLogicalCol))
+IDLC_METH_END(ni,iWidgetEditBox,MoveCursor,2)
+
+/** ni -> iWidgetEditBox::MoveCursorLineDelta/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,MoveCursorLineDelta,1)
+	IDLC_DECL_VAR(tI32,line)
+	IDLC_BUF_TO_BASE(ni::eType_I32,line)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,MoveCursorLineDelta,1,(line))
+IDLC_METH_END(ni,iWidgetEditBox,MoveCursorLineDelta,1)
+
+/** ni -> iWidgetEditBox::MoveCursorColumnDelta/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,MoveCursorColumnDelta,1)
+	IDLC_DECL_VAR(tI32,line)
+	IDLC_BUF_TO_BASE(ni::eType_I32,line)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,MoveCursorColumnDelta,1,(line))
+IDLC_METH_END(ni,iWidgetEditBox,MoveCursorColumnDelta,1)
+
+/** ni -> iWidgetEditBox::GetCursorPosition/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetCursorPosition,0)
+	IDLC_DECL_RETVAR(sVec2i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetCursorPosition,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2i,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetCursorPosition,0)
+
+/** ni -> iWidgetEditBox::GetCursorLine/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetCursorLine,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetCursorLine,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetCursorLine,0)
+
+/** ni -> iWidgetEditBox::GetCursorColumn/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetCursorColumn,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetCursorColumn,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetCursorColumn,0)
+
+/** ni -> iWidgetEditBox::AutoScroll/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,AutoScroll,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,AutoScroll,0,())
+IDLC_METH_END(ni,iWidgetEditBox,AutoScroll,0)
+
+/** ni -> iWidgetEditBox::GetTextInRange/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetTextInRange,1)
+	IDLC_DECL_VAR(sVec4i,aRange)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer,aRange)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetTextInRange,1,(aRange))
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetTextInRange,1)
+
+/** ni -> iWidgetEditBox::GetAllTextRange/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetAllTextRange,0)
+	IDLC_DECL_RETVAR(sVec4i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetAllTextRange,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4i,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetAllTextRange,0)
+
+/** ni -> iWidgetEditBox::SetSelection/1 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,SetSelection,1)
+	IDLC_DECL_VAR(sVec4i,aSelection)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer,aSelection)
+	IDLC_METH_CALL_VOID(ni,iWidgetEditBox,SetSelection,1,(aSelection))
+IDLC_METH_END(ni,iWidgetEditBox,SetSelection,1)
+
+/** ni -> iWidgetEditBox::GetSelection/0 **/
+IDLC_METH_BEGIN(ni,iWidgetEditBox,GetSelection,0)
+	IDLC_DECL_RETVAR(sVec4i,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetEditBox,GetSelection,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4i,_Ret)
+IDLC_METH_END(ni,iWidgetEditBox,GetSelection,0)
+
+IDLC_END_INTF(ni,iWidgetEditBox)
+
+IDLC_END_NAMESPACE()
+// EOF //

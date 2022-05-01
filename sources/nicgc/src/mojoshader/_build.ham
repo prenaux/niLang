@@ -1,0 +1,8 @@
+if [ SubDirOnce TOP nicgc src mojoshader ] = 1 { return ; }
+
+tkDefLib libMojoshader : 1,0,0 ;
+niImportModuleHdrs niLang ;
+
+# ### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) ] ;

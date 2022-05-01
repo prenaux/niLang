@@ -1,0 +1,6338 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eClassify">
+			<comments desc="Values returned by the classification functions ">
+				<remark text="Classification values can be combined as flags. "/>
+			</comments>
+			<value name="eClassify_Front" value="niBit ( 0 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eClassify_Back" value="niBit ( 1 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eClassify_Coplanar" value="niBit ( 2 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eClassify_Spanned" value="niBit ( 3 )">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iMath" uuid1="4B3C51E1-7B6D-4875-9961-1D43D2CB5B88" uuid2="0x4b3c51e1,0x7b6d,0x4875,0x99,0x61,0x1d,0x43,0xd2,0xcb,0x5b,0x88">
+			<comments desc="Math interface. ">
+				<remark text="The simple operations, +, -, *, /, ==, etc. are not implemented in this interface, they are expected to be implemented natively into the target language. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="sqrt"
+				min_features="15"
+				name="Sqrt"
+				num_parameters="1">
+				<comments desc="Square root. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="sin"
+				min_features="15"
+				name="Sin"
+				num_parameters="1">
+				<comments desc="Sinus. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cos"
+				min_features="15"
+				name="Cos"
+				num_parameters="1">
+				<comments desc="Cosinus. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="asin"
+				min_features="15"
+				name="ASin"
+				num_parameters="1">
+				<comments desc="Arc Sinus. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="acos"
+				min_features="15"
+				name="ACos"
+				num_parameters="1">
+				<comments desc="Arc Cosinus. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="tan"
+				min_features="15"
+				name="Tan"
+				num_parameters="1">
+				<comments desc="Tan. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="atan"
+				min_features="15"
+				name="ATan"
+				num_parameters="1">
+				<comments desc="Arc Tangent. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="atan2"
+				min_features="15"
+				name="ATan2"
+				num_parameters="2">
+				<comments desc="Arc Tangent 2. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="x"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="logX"
+				min_features="15"
+				name="LogX"
+				num_parameters="2">
+				<comments desc="Log base N. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="n"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="logE"
+				min_features="15"
+				name="LogE"
+				num_parameters="1">
+				<comments desc="Log base E. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="log2"
+				min_features="15"
+				name="Log2"
+				num_parameters="1">
+				<comments desc="Log base 2. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="log10"
+				min_features="15"
+				name="Log10"
+				num_parameters="1">
+				<comments desc="Log base 10. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="pow"
+				min_features="15"
+				name="Pow"
+				num_parameters="2">
+				<comments desc="Power. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="e"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="floor"
+				min_features="15"
+				name="Floor"
+				num_parameters="1">
+				<comments desc="Floor. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="ceil"
+				min_features="15"
+				name="Ceil"
+				num_parameters="1">
+				<comments desc="Ceil. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="exp"
+				min_features="15"
+				name="Exp"
+				num_parameters="1">
+				<comments desc="Exponential. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="abs"
+				min_features="15"
+				name="Abs"
+				num_parameters="1">
+				<comments desc="Absolute value. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="toRad"
+				min_features="15"
+				name="ToRad"
+				num_parameters="1">
+				<comments desc="Convert degree to radian. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="afDeg"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="toDeg"
+				min_features="15"
+				name="ToDeg"
+				num_parameters="1">
+				<comments desc="Convert radian to degree. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="afRad"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="min"
+				min_features="15"
+				name="Min"
+				num_parameters="2">
+				<comments desc="Minimum between a and b. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="min3"
+				min_features="15"
+				name="Min3"
+				num_parameters="3">
+				<comments desc="Minimum between a, b and c. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="max"
+				min_features="15"
+				name="Max"
+				num_parameters="2">
+				<comments desc="Maximum between a and b. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="max3"
+				min_features="15"
+				name="Max3"
+				num_parameters="3">
+				<comments desc="Maximum between a, b and c. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clamp"
+				min_features="15"
+				name="Clamp"
+				num_parameters="3">
+				<comments desc="Clamp the specified number between min and max. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="afMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="afMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clampZeroOne"
+				min_features="15"
+				name="ClampZeroOne"
+				num_parameters="1">
+				<comments desc="Clamp the specified number between zero and one. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="lerp"
+				min_features="15"
+				name="Lerp"
+				num_parameters="3">
+				<comments desc="Linear interpolation between a and b. ">
+					<remark text="The formula used is a + ((b-a)*f). "/>
+				</comments>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="f"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="blendIntoAccumulator"
+				min_features="15"
+				name="BlendIntoAccumulator"
+				num_parameters="3">
+				<comments desc="Blends new values into an accumulator to produce a smoothed time series.  " return="the new smoothed value of the accumulator ">
+					<params text="accumulator is the current value of the accumulator "/>
+					<params text="newValue is the new value to accumulate "/>
+					<params text="smoothRate typically made proportional to &quot;frameTime&quot;. If smoothRate is 0 the accumulator will not change, if smoothRate is 1 the accumulator is set to the new value (no smoothing), useful values are &quot;near zero&quot;. "/>
+				</comments>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="accumulator"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="newValue"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="smoothRate"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randSeed"
+				min_features="15"
+				name="RandSeed"
+				num_parameters="1">
+				<comments desc="Randomize. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ulSeed"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randInt"
+				min_features="15"
+				name="RandInt"
+				num_parameters="0">
+				<comments desc="Compute a random integer number. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randIntRange"
+				min_features="15"
+				name="RandIntRange"
+				num_parameters="2">
+				<comments desc="Compute a random integer number between a specified range. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aMin"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randFloat"
+				min_features="15"
+				name="RandFloat"
+				num_parameters="0">
+				<comments desc="Compute a random float number. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randFloatRange"
+				min_features="15"
+				name="RandFloatRange"
+				num_parameters="2">
+				<comments desc="Compute a random float number between a specified range. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afMin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afMax"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randNormal"
+				min_features="15"
+				name="RandNormal"
+				num_parameters="1">
+				<comments desc="Compute a random number with a normal distribution. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="sigma"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randomDirection"
+				min_features="15"
+				name="RandomDirection"
+				num_parameters="1">
+				<comments desc="Generates a random direction in the upper hemisphere. ">
+					<remark text="Where is the upper hemisphere is defined by the specified normal. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="vN"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randomDirectionEx"
+				min_features="15"
+				name="RandomDirectionEx"
+				num_parameters="2">
+				<comments desc="Generates a random direction in the upper hemisphere. ">
+					<remark text="Where is the upper hemisphere is defined by the specified normal. "/>
+					<params text="avN indicates the basis/direction of the hemisphere. "/>
+					<params text="afDeviAngle represents the spreading range of the ray, 180deg (pi rad) will allow the ray to be spread away from -90, to 90 degrees, 90deg (pi/2 rad) will allow the ray to be spread away from -45 to 45 degrees, and so on... "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avN"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afDeviAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="rotateRay"
+				min_features="15"
+				name="RotateRay"
+				num_parameters="2">
+				<comments desc="Rotates a ray to have avN as basis. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avIn"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avN"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randColorA"
+				min_features="15"
+				name="RandColorA"
+				num_parameters="1">
+				<comments desc="Return a random color with a specified alpha. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aA"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randColorAf"
+				min_features="15"
+				name="RandColorAf"
+				num_parameters="1">
+				<comments desc="Return a random 32 bit color with specified alpha. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aA"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="randColor"
+				min_features="15"
+				name="RandColor"
+				num_parameters="0">
+				<comments desc="Return a random 32 bit color. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Add"
+				min_features="15"
+				name="Vec2Add"
+				num_parameters="2">
+				<comments desc="Add. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Sub"
+				min_features="15"
+				name="Vec2Sub"
+				num_parameters="2">
+				<comments desc="Subtract. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Mul"
+				min_features="15"
+				name="Vec2Mul"
+				num_parameters="2">
+				<comments desc="Multiply. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Div"
+				min_features="15"
+				name="Vec2Div"
+				num_parameters="2">
+				<comments desc="Divide. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Scale"
+				min_features="15"
+				name="Vec2Scale"
+				num_parameters="2">
+				<comments desc="Scale. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Compare"
+				min_features="15"
+				name="Vec2Compare"
+				num_parameters="2">
+				<comments desc="Compare. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Length"
+				min_features="15"
+				name="Vec2Length"
+				num_parameters="1">
+				<comments desc="Length. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2LengthSq"
+				min_features="15"
+				name="Vec2LengthSq"
+				num_parameters="1">
+				<comments desc="Length squared. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Normalize"
+				min_features="15"
+				name="Vec2Normalize"
+				num_parameters="1">
+				<comments desc="Normalize. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2IsNormal"
+				min_features="15"
+				name="Vec2IsNormal"
+				num_parameters="1">
+				<comments desc="Return eTrue if it&apos;s a normal vector. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Dot"
+				min_features="15"
+				name="Vec2Dot"
+				num_parameters="2">
+				<comments desc="Dot product. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Lerp"
+				min_features="15"
+				name="Vec2Lerp"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afF"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Lerp2"
+				min_features="15"
+				name="Vec2Lerp2"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aF"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2BlendIntoAccumulator"
+				min_features="15"
+				name="Vec2BlendIntoAccumulator"
+				num_parameters="3">
+				<comments desc="Blends new values into an accumulator to produce a smoothed time series.  " return="the new smoothed value of the accumulator ">
+					<params text="accumulator is the current value of the accumulator "/>
+					<params text="newValue is the new value to accumulate "/>
+					<params text="smoothRate typically made proportional to &quot;frameTime&quot;. If smoothRate is 0 the accumulator will not change, if smoothRate is 1 the accumulator is set to the new value (no smoothing), useful values are &quot;near zero&quot;. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="accumulator"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="newValue"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="smoothRate"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Abs"
+				min_features="15"
+				name="Vec2Abs"
+				num_parameters="1">
+				<comments desc="Abs. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Min"
+				min_features="15"
+				name="Vec2Min"
+				num_parameters="2">
+				<comments desc="Min. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Max"
+				min_features="15"
+				name="Vec2Max"
+				num_parameters="2">
+				<comments desc="Max. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2CatmullRom"
+				min_features="15"
+				name="Vec2CatmullRom"
+				num_parameters="5">
+				<comments desc="CatmullRom spline. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="V1"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Hermite"
+				min_features="15"
+				name="Vec2Hermite"
+				num_parameters="5">
+				<comments desc="Hermite spline. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="V1"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2BaryCentric"
+				min_features="15"
+				name="Vec2BaryCentric"
+				num_parameters="5">
+				<comments desc="BaryCentric. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="V1"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="u"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2Transform"
+				min_features="15"
+				name="Vec2Transform"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aVec"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2TransformCoord"
+				min_features="15"
+				name="Vec2TransformCoord"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aVec"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2TransformNormal"
+				min_features="15"
+				name="Vec2TransformNormal"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aVec"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2TransformCoordArray"
+				min_features="15"
+				name="Vec2TransformCoordArray"
+				num_parameters="2">
+				<comments desc="Transform an array by the specified matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apVecs"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec2TransformNormalArray"
+				min_features="15"
+				name="Vec2TransformNormalArray"
+				num_parameters="2">
+				<comments desc="Transform an array by the specified matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apVecs"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Add"
+				min_features="15"
+				name="Vec3Add"
+				num_parameters="2">
+				<comments desc="Add. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Sub"
+				min_features="15"
+				name="Vec3Sub"
+				num_parameters="2">
+				<comments desc="Subtract. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Mul"
+				min_features="15"
+				name="Vec3Mul"
+				num_parameters="2">
+				<comments desc="Multiply. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Div"
+				min_features="15"
+				name="Vec3Div"
+				num_parameters="2">
+				<comments desc="Divide. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Scale"
+				min_features="15"
+				name="Vec3Scale"
+				num_parameters="2">
+				<comments desc="Scale. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Compare"
+				min_features="15"
+				name="Vec3Compare"
+				num_parameters="2">
+				<comments desc="Compare. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Length"
+				min_features="15"
+				name="Vec3Length"
+				num_parameters="1">
+				<comments desc="Length. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3LengthSq"
+				min_features="15"
+				name="Vec3LengthSq"
+				num_parameters="1">
+				<comments desc="Length squared. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Normalize"
+				min_features="15"
+				name="Vec3Normalize"
+				num_parameters="1">
+				<comments desc="Normalize. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3IsNormal"
+				min_features="15"
+				name="Vec3IsNormal"
+				num_parameters="1">
+				<comments desc="Return eTrue if it&apos;s a normal vector. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Dot"
+				min_features="15"
+				name="Vec3Dot"
+				num_parameters="2">
+				<comments desc="Dot product. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Cross"
+				min_features="15"
+				name="Vec3Cross"
+				num_parameters="2">
+				<comments desc="Cross product. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Lerp"
+				min_features="15"
+				name="Vec3Lerp"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afF"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Lerp2"
+				min_features="15"
+				name="Vec3Lerp2"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aF"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3BlendIntoAccumulator"
+				min_features="15"
+				name="Vec3BlendIntoAccumulator"
+				num_parameters="3">
+				<comments desc="Blends new values into an accumulator to produce a smoothed time series.  " return="the new smoothed value of the accumulator ">
+					<params text="accumulator is the current value of the accumulator "/>
+					<params text="newValue is the new value to accumulate "/>
+					<params text="smoothRate typically made proportional to &quot;frameTime&quot;. If smoothRate is 0 the accumulator will not change, if smoothRate is 1 the accumulator is set to the new value (no smoothing), useful values are &quot;near zero&quot;. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="accumulator"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="newValue"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="smoothRate"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Abs"
+				min_features="15"
+				name="Vec3Abs"
+				num_parameters="1">
+				<comments desc="Abs. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Min"
+				min_features="15"
+				name="Vec3Min"
+				num_parameters="2">
+				<comments desc="Min. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Max"
+				min_features="15"
+				name="Vec3Max"
+				num_parameters="2">
+				<comments desc="Max. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3CatmullRom"
+				min_features="15"
+				name="Vec3CatmullRom"
+				num_parameters="5">
+				<comments desc="CatmullRom spline. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Hermite"
+				min_features="15"
+				name="Vec3Hermite"
+				num_parameters="5">
+				<comments desc="Hermite spline. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3BaryCentric"
+				min_features="15"
+				name="Vec3BaryCentric"
+				num_parameters="5">
+				<comments desc="BaryCentric. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="u"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Transform"
+				min_features="15"
+				name="Vec3Transform"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aVec"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3TransformCoord"
+				min_features="15"
+				name="Vec3TransformCoord"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aVec"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3TransformNormal"
+				min_features="15"
+				name="Vec3TransformNormal"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aVec"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3TransformCoordArray"
+				min_features="15"
+				name="Vec3TransformCoordArray"
+				num_parameters="2">
+				<comments desc="Transform an array by the specified matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apVecs"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3TransformNormalArray"
+				min_features="15"
+				name="Vec3TransformNormalArray"
+				num_parameters="2">
+				<comments desc="Transform an array by the specified matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apVecs"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Unproject"
+				min_features="15"
+				name="Vec3Unproject"
+				num_parameters="3">
+				<comments desc="Unproject a vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avIn"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="amtxViewProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Project"
+				min_features="15"
+				name="Vec3Project"
+				num_parameters="3">
+				<comments desc="Project a vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxWVP"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3ProjectRHW"
+				min_features="15"
+				name="Vec3ProjectRHW"
+				num_parameters="3">
+				<comments desc="Project a vector. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxWVP"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3Reflect"
+				min_features="15"
+				name="Vec3Reflect"
+				num_parameters="2">
+				<comments desc="Returns a vector reflected about the plane indicated by the specified normal. ">
+					<remark text="The formula is : R = (Dir - (Normal*Normal.dot(Dir)*2.0) "/>
+					<remark text="The input is assumed to have been normalized "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="Dir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Normal"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Add"
+				min_features="15"
+				name="Vec4Add"
+				num_parameters="2">
+				<comments desc="Add. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Sub"
+				min_features="15"
+				name="Vec4Sub"
+				num_parameters="2">
+				<comments desc="Subtract. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Mul"
+				min_features="15"
+				name="Vec4Mul"
+				num_parameters="2">
+				<comments desc="Multiply. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Div"
+				min_features="15"
+				name="Vec4Div"
+				num_parameters="2">
+				<comments desc="Divide. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Scale"
+				min_features="15"
+				name="Vec4Scale"
+				num_parameters="2">
+				<comments desc="Scale. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Compare"
+				min_features="15"
+				name="Vec4Compare"
+				num_parameters="2">
+				<comments desc="Compare. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Length"
+				min_features="15"
+				name="Vec4Length"
+				num_parameters="1">
+				<comments desc="Length. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4LengthSq"
+				min_features="15"
+				name="Vec4LengthSq"
+				num_parameters="1">
+				<comments desc="Length squared. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Normalize"
+				min_features="15"
+				name="Vec4Normalize"
+				num_parameters="1">
+				<comments desc="Normalize. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4IsNormal"
+				min_features="15"
+				name="Vec4IsNormal"
+				num_parameters="1">
+				<comments desc="Return eTrue if it&apos;s a normal vector. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Dot"
+				min_features="15"
+				name="Vec4Dot"
+				num_parameters="2">
+				<comments desc="Dot product. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Cross"
+				min_features="15"
+				name="Vec4Cross"
+				num_parameters="3">
+				<comments desc="Cross product. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aA"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aB"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aC"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Lerp"
+				min_features="15"
+				name="Vec4Lerp"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afF"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Lerp2"
+				min_features="15"
+				name="Vec4Lerp2"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aF"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4BlendIntoAccumulator"
+				min_features="15"
+				name="Vec4BlendIntoAccumulator"
+				num_parameters="3">
+				<comments desc="Blends new values into an accumulator to produce a smoothed time series.  " return="the new smoothed value of the accumulator ">
+					<params text="accumulator is the current value of the accumulator "/>
+					<params text="newValue is the new value to accumulate "/>
+					<params text="smoothRate typically made proportional to &quot;frameTime&quot;. If smoothRate is 0 the accumulator will not change, if smoothRate is 1 the accumulator is set to the new value (no smoothing), useful values are &quot;near zero&quot;. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="accumulator"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="newValue"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="smoothRate"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Abs"
+				min_features="15"
+				name="Vec4Abs"
+				num_parameters="1">
+				<comments desc="Abs. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Min"
+				min_features="15"
+				name="Vec4Min"
+				num_parameters="2">
+				<comments desc="Min. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Max"
+				min_features="15"
+				name="Vec4Max"
+				num_parameters="2">
+				<comments desc="Max. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4CatmullRom"
+				min_features="15"
+				name="Vec4CatmullRom"
+				num_parameters="5">
+				<comments desc="CatmullRom spline. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V1"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Hermite"
+				min_features="15"
+				name="Vec4Hermite"
+				num_parameters="5">
+				<comments desc="Hermite spline. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V1"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V4"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4BaryCentric"
+				min_features="15"
+				name="Vec4BaryCentric"
+				num_parameters="5">
+				<comments desc="BaryCentric. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V1"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V3"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="u"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4Transform"
+				min_features="15"
+				name="Vec4Transform"
+				num_parameters="2">
+				<comments desc="Transform by the specified matrix. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aVec"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec4TransformArray"
+				min_features="15"
+				name="Vec4TransformArray"
+				num_parameters="2">
+				<comments desc="Transform an array by the specified matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apVecs"
+					type="tVec4fCVec *"
+					typec="tVec4fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixIdentity"
+				min_features="15"
+				name="MatrixIdentity"
+				num_parameters="0">
+				<comments desc="Get the identity matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixIsIdentity"
+				min_features="15"
+				name="MatrixIsIdentity"
+				num_parameters="1">
+				<comments desc="Check if a matrix is identity. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixAdd"
+				min_features="15"
+				name="MatrixAdd"
+				num_parameters="2">
+				<comments desc="Add. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aLeft"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSub"
+				min_features="15"
+				name="MatrixSub"
+				num_parameters="2">
+				<comments desc="Subtract. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aLeft"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixScale"
+				min_features="15"
+				name="MatrixScale"
+				num_parameters="2">
+				<comments desc="Scale. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aLeft"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixLerp"
+				min_features="15"
+				name="MatrixLerp"
+				num_parameters="3">
+				<comments desc="Lerp. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="A"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="B"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="fFac"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixCompare"
+				min_features="15"
+				name="MatrixCompare"
+				num_parameters="2">
+				<comments desc="Compare. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aLeft"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixMultiply"
+				min_features="15"
+				name="MatrixMultiply"
+				num_parameters="2">
+				<comments desc="Multiply two matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M1"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="M2"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixDeterminant2"
+				min_features="15"
+				name="MatrixDeterminant2"
+				num_parameters="1">
+				<comments desc="Compute the top left 2x2 matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixDeterminant3"
+				min_features="15"
+				name="MatrixDeterminant3"
+				num_parameters="1">
+				<comments desc="Compute the top left 3x3 matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixDeterminant"
+				min_features="15"
+				name="MatrixDeterminant"
+				num_parameters="1">
+				<comments desc="Compute matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetHandeness"
+				min_features="15"
+				name="MatrixGetHandeness"
+				num_parameters="1">
+				<comments desc="Compute matrix handeness. " return="a number &gt; +1 if left handed and -1 if right handed "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixInverse"
+				min_features="15"
+				name="MatrixInverse"
+				num_parameters="1">
+				<comments desc="Inverse the given matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixTransformInverse"
+				min_features="15"
+				name="MatrixTransformInverse"
+				num_parameters="1">
+				<comments desc="Inverse the transformation part. Means transpose the rotation and negate the translation. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixLookAtRH"
+				min_features="15"
+				name="MatrixLookAtRH"
+				num_parameters="3">
+				<comments desc="Make a right handed look at matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="Eye"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="At"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Up"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixLookAtLH"
+				min_features="15"
+				name="MatrixLookAtLH"
+				num_parameters="3">
+				<comments desc="Make a left handed look at matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="Eye"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="At"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Up"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixOrthoRH"
+				min_features="15"
+				name="MatrixOrthoRH"
+				num_parameters="4">
+				<comments desc="Make a right handed orthogonal projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="w"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="h"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixOrthoLH"
+				min_features="15"
+				name="MatrixOrthoLH"
+				num_parameters="4">
+				<comments desc="Make a left handed orthogonal projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="w"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="h"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixOrthoOffCenterRH"
+				min_features="15"
+				name="MatrixOrthoOffCenterRH"
+				num_parameters="6">
+				<comments desc="Make a right handed orthogonal projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="l"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixOrthoOffCenterLH"
+				min_features="15"
+				name="MatrixOrthoOffCenterLH"
+				num_parameters="6">
+				<comments desc="Make a left handed orthogonal projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="l"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveRH"
+				min_features="15"
+				name="MatrixPerspectiveRH"
+				num_parameters="4">
+				<comments desc="Make a right handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="w"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="h"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveLH"
+				min_features="15"
+				name="MatrixPerspectiveLH"
+				num_parameters="4">
+				<comments desc="Make a left handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="w"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="h"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveFovRH"
+				min_features="15"
+				name="MatrixPerspectiveFovRH"
+				num_parameters="4">
+				<comments desc="Make a right handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="fovy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aspect"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveFovLH"
+				min_features="15"
+				name="MatrixPerspectiveFovLH"
+				num_parameters="4">
+				<comments desc="Make a left handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="fovy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aspect"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveOffCenterRH"
+				min_features="15"
+				name="MatrixPerspectiveOffCenterRH"
+				num_parameters="6">
+				<comments desc="Make a right handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="l"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixPerspectiveOffCenterLH"
+				min_features="15"
+				name="MatrixPerspectiveOffCenterLH"
+				num_parameters="6">
+				<comments desc="Make a left handed perspective projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="l"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="r"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="zn"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="zf"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixReflect"
+				min_features="15"
+				name="MatrixReflect"
+				num_parameters="1">
+				<comments desc="Make a reflection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationAxis"
+				min_features="15"
+				name="MatrixRotationAxis"
+				num_parameters="2">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationQuat"
+				min_features="15"
+				name="MatrixRotationQuat"
+				num_parameters="1">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationX"
+				min_features="15"
+				name="MatrixRotationX"
+				num_parameters="1">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationY"
+				min_features="15"
+				name="MatrixRotationY"
+				num_parameters="1">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationZ"
+				min_features="15"
+				name="MatrixRotationZ"
+				num_parameters="1">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotationYawPitchRoll"
+				min_features="15"
+				name="MatrixRotationYawPitchRoll"
+				num_parameters="3">
+				<comments desc="Make a rotation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="yaw"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="pitch"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="roll"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixDecomposeYawPitchRoll"
+				min_features="15"
+				name="MatrixDecomposeYawPitchRoll"
+				num_parameters="1">
+				<comments desc="Extract the rotation contained in the provided matrix as yaw/heading/Y, pitch/X and roll/bank/Z in radians. \see MatrixRotationYawPitchRoll "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixScaling"
+				min_features="15"
+				name="MatrixScaling"
+				num_parameters="1">
+				<comments desc="Make a scaling matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixVecScale"
+				min_features="15"
+				name="MatrixVecScale"
+				num_parameters="2">
+				<comments desc="Scale a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixShadow"
+				min_features="15"
+				name="MatrixShadow"
+				num_parameters="2">
+				<comments desc="Make a shadow projection matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="vLight"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixTranslation"
+				min_features="15"
+				name="MatrixTranslation"
+				num_parameters="1">
+				<comments desc="Make a translation matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixTranspose"
+				min_features="15"
+				name="MatrixTranspose"
+				num_parameters="1">
+				<comments desc="Transpose a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixTranspose3x3"
+				min_features="15"
+				name="MatrixTranspose3x3"
+				num_parameters="1">
+				<comments desc="Transpose a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixTextureOffset"
+				min_features="15"
+				name="MatrixTextureOffset"
+				num_parameters="3">
+				<comments desc="Texture offset matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="fBias"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="nTexW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nTexH"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="matrixTextureOffset2"
+				min_features="15"
+				name="MatrixTextureOffset2"
+				num_parameters="4">
+				<comments desc="Texture offset matrix that takes in account a bit depth. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="fBias"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="nTexW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="nTexH"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nDepthBits"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetForward"
+				min_features="15"
+				name="MatrixGetForward"
+				num_parameters="1">
+				<comments desc="Get the forward vector of a matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetUp"
+				min_features="15"
+				name="MatrixGetUp"
+				num_parameters="1">
+				<comments desc="Get the up vector of a matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetRight"
+				min_features="15"
+				name="MatrixGetRight"
+				num_parameters="1">
+				<comments desc="Get the right vector of a matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetTranslation"
+				min_features="15"
+				name="MatrixGetTranslation"
+				num_parameters="1">
+				<comments desc="Get the translation vector of a matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetForward"
+				min_features="15"
+				name="MatrixSetForward"
+				num_parameters="2">
+				<comments desc="Set the forward vector of a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetUp"
+				min_features="15"
+				name="MatrixSetUp"
+				num_parameters="2">
+				<comments desc="Set the up vector of a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetRight"
+				min_features="15"
+				name="MatrixSetRight"
+				num_parameters="2">
+				<comments desc="Set the right vector of a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetTranslation"
+				min_features="15"
+				name="MatrixSetTranslation"
+				num_parameters="2">
+				<comments desc="Set the translation vector of a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixIsNormal"
+				min_features="15"
+				name="MatrixIsNormal"
+				num_parameters="1">
+				<comments desc="Check if a matrix is normalized. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixIsOrthogonal"
+				min_features="15"
+				name="MatrixIsOrthogonal"
+				num_parameters="1">
+				<comments desc="Check if a matrix is orthogonal. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixIsOrthoNormal"
+				min_features="15"
+				name="MatrixIsOrthoNormal"
+				num_parameters="1">
+				<comments desc="Check if a matrix is orthonormal. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetRotation"
+				min_features="15"
+				name="MatrixSetRotation"
+				num_parameters="2">
+				<comments desc="Set the rotation part of a matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="In"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="RotM"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixToEuler"
+				min_features="15"
+				name="MatrixToEuler"
+				num_parameters="1">
+				<comments desc="Get euler angles from a rotation matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixToCoordinateSystem"
+				min_features="15"
+				name="MatrixToCoordinateSystem"
+				num_parameters="4">
+				<comments desc="Make a coordinate system conversion matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="avRight"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avUp"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avFwd"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avOrg"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixGetProjectedTranslation"
+				min_features="15"
+				name="MatrixGetProjectedTranslation"
+				num_parameters="1">
+				<comments desc="Get the translation by &apos;unprojecting&apos; the translation from the matrix&apos;s axis (translation of inverse matrix). ">
+					<remark text="This can be used to get the world position from a view matrix. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="In"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetProjectedTranslation"
+				min_features="15"
+				name="MatrixSetProjectedTranslation"
+				num_parameters="2">
+				<comments desc="Set the translation by projecting it onto the matrix&apos;s axis. ">
+					<remark text="This can be used to set a world position into a view matrix. "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="In"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avT"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixSetNotRotation"
+				min_features="15"
+				name="MatrixSetNotRotation"
+				num_parameters="2">
+				<comments desc="Set the non-rotation part of the matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="In"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="matrixRotate"
+				min_features="15"
+				name="MatrixRotate"
+				num_parameters="2">
+				<comments desc="Rotate the matrix, this affects only the 3x3 top-left rotation part of the matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="M1"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="M2"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixViewport"
+				min_features="15"
+				name="MatrixViewport"
+				num_parameters="3">
+				<comments desc="Compute a viewport matrix. ">
+					<remark text="a Viewport matrix converts from project coordinates to viewport/window/screen coordinates. "/>
+					<remark text="This is used to scale the projection to fit into a viewport which is different of the current hardware viewport. FinalProj = MatrixProjection * inverse(MatrixContextVP) * MatrixVirtualVP "/>
+					<remark text="MinZ/MaxZ is usually 0/1 "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aVP"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afMinZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afMaxZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="matrixAdjustViewport"
+				min_features="15"
+				name="MatrixAdjustViewport"
+				num_parameters="4">
+				<comments desc="Compute a matrix that will compensate the projection matrix to fit into a viewport which is different of the context/physical viewport. ">
+					<remark text="FinalProj = Proj * MatrixAdjustViewport(...) "/>
+					<remark text="MinZ/MaxZ is usually 0/1 "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aContextVP"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aVirtualVP"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afMinZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afMaxZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="matrixDecomposeGetTranslation"
+				min_features="15"
+				name="MatrixDecomposeGetTranslation"
+				num_parameters="1">
+				<comments desc="Get the translation part of a matrix. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixDecomposeGetZYX"
+				min_features="15"
+				name="MatrixDecomposeGetZYX"
+				num_parameters="1">
+				<comments desc="Get the rotation part of a matrix as euler angle in the Z*Y*X rotation order. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixDecomposeGetQuat"
+				min_features="15"
+				name="MatrixDecomposeGetQuat"
+				num_parameters="1">
+				<comments desc="Get the rotation part of a matrix as a quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixDecomposeGetScale"
+				min_features="15"
+				name="MatrixDecomposeGetScale"
+				num_parameters="1">
+				<comments desc="Get the local scaling part of a matrix (x,y,z,handness) "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixCompose"
+				min_features="15"
+				name="MatrixCompose"
+				num_parameters="3">
+				<comments desc="Build a matrix from a translation, zyx euler rotation and scale. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aT"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aZYX"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aS"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="matrixComposeQ"
+				min_features="15"
+				name="MatrixComposeQ"
+				num_parameters="3">
+				<comments desc="Build a matrix from a translation, rotation quaternion and scale. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aT"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aQ"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aS"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatIdentity"
+				min_features="15"
+				name="QuatIdentity"
+				num_parameters="0">
+				<comments desc="Get the identity quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatIsIdentity"
+				min_features="15"
+				name="QuatIsIdentity"
+				num_parameters="1">
+				<comments desc="Check if the quaternion is identity. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatAdd"
+				min_features="15"
+				name="QuatAdd"
+				num_parameters="2">
+				<comments desc="Add. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatSub"
+				min_features="15"
+				name="QuatSub"
+				num_parameters="2">
+				<comments desc="Subtract. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatScale"
+				min_features="15"
+				name="QuatScale"
+				num_parameters="2">
+				<comments desc="Scale. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aLeft"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatCompare"
+				min_features="15"
+				name="QuatCompare"
+				num_parameters="2">
+				<comments desc="Compare. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aLeft"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRight"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatBaryCentric"
+				min_features="15"
+				name="QuatBaryCentric"
+				num_parameters="5">
+				<comments desc="BaryCenter. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="Q1"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q2"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q3"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="f"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="g"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatConjugate"
+				min_features="15"
+				name="QuatConjugate"
+				num_parameters="1">
+				<comments desc="Quat conjugate. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatDot"
+				min_features="15"
+				name="QuatDot"
+				num_parameters="2">
+				<comments desc="Quat dot. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="Q1"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Q2"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatExp"
+				min_features="15"
+				name="QuatExp"
+				num_parameters="1">
+				<comments desc="Quat exponentials. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatInverse"
+				min_features="15"
+				name="QuatInverse"
+				num_parameters="1">
+				<comments desc="Quat inverse. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatLength"
+				min_features="15"
+				name="QuatLength"
+				num_parameters="1">
+				<comments desc="Quat length. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatLengthSq"
+				min_features="15"
+				name="QuatLengthSq"
+				num_parameters="1">
+				<comments desc="Quat length squared. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatLn"
+				min_features="15"
+				name="QuatLn"
+				num_parameters="1">
+				<comments desc="Calculates the natural logarithm. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatMultiply"
+				min_features="15"
+				name="QuatMultiply"
+				num_parameters="2">
+				<comments desc="Quat multiply. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="Q1"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="Q2"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatNormalize"
+				min_features="15"
+				name="QuatNormalize"
+				num_parameters="1">
+				<comments desc="Quat normalize. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationAxis"
+				min_features="15"
+				name="QuatRotationAxis"
+				num_parameters="2">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationX"
+				min_features="15"
+				name="QuatRotationX"
+				num_parameters="1">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationY"
+				min_features="15"
+				name="QuatRotationY"
+				num_parameters="1">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationZ"
+				min_features="15"
+				name="QuatRotationZ"
+				num_parameters="1">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="angle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationXYZ"
+				min_features="15"
+				name="QuatRotationXYZ"
+				num_parameters="1">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationMatrix"
+				min_features="15"
+				name="QuatRotationMatrix"
+				num_parameters="1">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationYawPitchRoll"
+				min_features="15"
+				name="QuatRotationYawPitchRoll"
+				num_parameters="3">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="yaw"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="pitch"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="roll"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatRotationVector"
+				min_features="15"
+				name="QuatRotationVector"
+				num_parameters="2">
+				<comments desc="Rotation quaternion. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="vFrom"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="vTo"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatSlerp"
+				min_features="15"
+				name="QuatSlerp"
+				num_parameters="4">
+				<comments desc="Quat slerp. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="Q1"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q2"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="mode"
+					type="eQuatSlerp"
+					typec="eQuatSlerp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatSquad"
+				min_features="15"
+				name="QuatSquad"
+				num_parameters="5">
+				<comments desc="Quat squad. "/>
+				<return type="sQuatf" typec="sQuatf" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="Q1"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q2"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q3"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Q4"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="t"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatToAxisAngle"
+				min_features="15"
+				name="QuatToAxisAngle"
+				num_parameters="1">
+				<comments desc="Quat to axis angle. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="quatToEuler"
+				min_features="15"
+				name="QuatToEuler"
+				num_parameters="1">
+				<comments desc="Quat to euler. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="Q"
+					type="const sQuatf &amp;"
+					typec="const sQuatf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeDot"
+				min_features="15"
+				name="PlaneDot"
+				num_parameters="2">
+				<comments desc="4D dot product between a plane and a 4d vector. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeDotCoord"
+				min_features="15"
+				name="PlaneDotCoord"
+				num_parameters="2">
+				<comments desc="4D dot product between a plane and a 3d vector (w is assumed 1). "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeDotNormal"
+				min_features="15"
+				name="PlaneDotNormal"
+				num_parameters="2">
+				<comments desc="3D dot product between a plane and a 3d vector. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeDistance"
+				min_features="15"
+				name="PlaneDistance"
+				num_parameters="2">
+				<comments desc="Distance between a plane and the specified point. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeFromPointNormal"
+				min_features="15"
+				name="PlaneFromPointNormal"
+				num_parameters="2">
+				<comments desc="Construct a plane from a point and a normal. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="vPoint"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="vNormal"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeFromPoints"
+				min_features="15"
+				name="PlaneFromPoints"
+				num_parameters="3">
+				<comments desc="Construct a plane from three points. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V3"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeIntersectLine"
+				min_features="15"
+				name="PlaneIntersectLine"
+				num_parameters="3">
+				<comments desc="Compute the intersection between a plane and a line. " return="the intersection point (x,y,z), t is stored in the w component ">
+					<remark text="returns a null vector if the line is parralel to the plane. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeIntersectRay"
+				min_features="15"
+				name="PlaneIntersectRay"
+				num_parameters="3">
+				<comments desc="Compute the intersection between a plane and a ray. " return="the intersection point (x,y,z), t is stored in the w component ">
+					<remark text="returns a null vector if the line is parralel to the plane. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avRayPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avRayDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeNormalize"
+				min_features="15"
+				name="PlaneNormalize"
+				num_parameters="1">
+				<comments desc="Normalize the specified plane. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeTransform"
+				min_features="15"
+				name="PlaneTransform"
+				num_parameters="2">
+				<comments desc="Transform the plane by the specified matrix. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeTransformInversedMatrix"
+				min_features="15"
+				name="PlaneTransformInversedMatrix"
+				num_parameters="2">
+				<comments desc="Transform the plane by the inverse of the specified matrix. "/>
+				<return type="sPlanef" typec="sPlanef" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="M"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeIntersection"
+				min_features="15"
+				name="PlaneIntersection"
+				num_parameters="3">
+				<comments desc="Get the intersection point between 3d planes. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="PA"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="PB"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="PC"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeClosest"
+				min_features="15"
+				name="PlaneClosest"
+				num_parameters="2">
+				<comments desc="Get the closest point on the plane to the specified vector. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="P"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="A"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeType"
+				min_features="15"
+				name="PlaneType"
+				num_parameters="1">
+				<comments desc="Get the type of plane. "/>
+				<return type="ePlaneType" typec="ePlaneType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeMaxType"
+				min_features="15"
+				name="PlaneMaxType"
+				num_parameters="1">
+				<comments desc="Get the type of plane&apos;s maximum component. "/>
+				<return type="ePlaneType" typec="ePlaneType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeExtractCoordinateSystem"
+				min_features="15"
+				name="PlaneExtractCoordinateSystem"
+				num_parameters="2">
+				<comments desc="Extract a coordinate system from the plane. ">
+					<remark text="Up vector (Y) is the plane normal. "/>
+					<remark text="Right (X) and Fwd (Z) lies on the plane. "/>
+					<params text="Plane "/>
+					<params text="avFwdDir: if not zero is the direction toward which the forward vector should be the closest. For example if you want the forward vector to be the one that points down you&apos;d pass sVec3f::OpYAxis() here. "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="Plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avFwdDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="planeIntersectSphere"
+				min_features="15"
+				name="PlaneIntersectSphere"
+				num_parameters="3">
+				<comments desc="Check if the specified sphere intersect the specified plane. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleAreaNormal"
+				min_features="15"
+				name="TriangleAreaNormal"
+				num_parameters="3">
+				<comments desc="Compute the normal and area of a triangle. " return="The normal is in xyz and the area in w. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleIsDegenerate"
+				min_features="15"
+				name="TriangleIsDegenerate"
+				num_parameters="3">
+				<comments desc="Check whether the triangle is degenerated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleIntersectTriangle"
+				min_features="15"
+				name="TriangleIntersectTriangle"
+				num_parameters="6">
+				<comments desc="Check triangle-triangle intersection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="U0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="U1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="U2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleIntersectRay"
+				min_features="15"
+				name="TriangleIntersectRay"
+				num_parameters="5">
+				<comments desc="Check triangle-ray intersection. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avOrigin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleIntersectRayCull"
+				min_features="15"
+				name="TriangleIntersectRayCull"
+				num_parameters="5">
+				<comments desc="Check triangle-ray intersection with culling. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avOrigin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avDir"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleIntersectAABB"
+				min_features="15"
+				name="TriangleIntersectAABB"
+				num_parameters="5">
+				<comments desc="Check triangle-aabb intersection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="V0"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V1"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V2"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="triangleBaryCentric"
+				min_features="15"
+				name="TriangleBaryCentric"
+				num_parameters="4">
+				<comments desc="Compute the barycentric coordinates of the specified point. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="A"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="B"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="P"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="wrapFloat"
+				min_features="15"
+				name="WrapFloat"
+				num_parameters="3">
+				<comments desc="Wrap a floating value between the specified min and max values. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aX"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aMin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="wrapInt"
+				min_features="15"
+				name="WrapInt"
+				num_parameters="3">
+				<comments desc="Wrap an integer value between the specified min and max values. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="aX"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="aMin"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="wrapRad"
+				min_features="15"
+				name="WrapRad"
+				num_parameters="1">
+				<comments desc="Wrap a radian between 0 and 2pi. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aX"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="wrapRad2"
+				min_features="15"
+				name="WrapRad2"
+				num_parameters="1">
+				<comments desc="Wrap a radian between -pi and pi. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aX"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAngleFromPoints2D"
+				min_features="15"
+				name="GetAngleFromPoints2D"
+				num_parameters="2">
+				<comments desc="Get the angle between two 2d vectors, returns an angle in [0;2pi] "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aStartPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aGoalPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAngleFromPoints3D"
+				min_features="15"
+				name="GetAngleFromPoints3D"
+				num_parameters="2">
+				<comments desc="Get the angles between two 3d vectors. ">
+					<remark text="The angles returned are on the sphere that can be visualized with StartPos as center and Radius as Len(aGoalPos-aStartPos). &lt;ul&gt; &lt;li&gt;Y is the yaw/left-right/latitude angle in radians, its domain is [0;2pi]&lt;/li&gt; &lt;li&gt;X is the pitch/up-down/longitude angle in radians, its domain is [0;pi], 0 is the bottom of the sphere, and pi the top of the sphere.&lt;/li&gt; &lt;/ul&gt; "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aStartPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aGoalPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="classifyPoint"
+				min_features="15"
+				name="ClassifyPoint"
+				num_parameters="2">
+				<comments desc="Check whether a point is in-front, behind or on a plane. "/>
+				<return type="eClassify" typec="eClassify" typei="ni::eType_Enum"/>
+				<parameter
+					name="plane"
+					type="const sPlanef &amp;"
+					typec="const sPlanef&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="point"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isPointInsideEdge"
+				min_features="15"
+				name="IsPointInsideEdge"
+				num_parameters="3">
+				<comments desc="Check whether a point is on the specified edge. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="A"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="B"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="P"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="closestPointOnLine"
+				min_features="15"
+				name="ClosestPointOnLine"
+				num_parameters="3">
+				<comments desc="Return the closest point to the specified vector P on the specified AB line. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="A"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="B"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="P"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="closestPointOnTriangle"
+				min_features="15"
+				name="ClosestPointOnTriangle"
+				num_parameters="4">
+				<comments desc="Return the closest point to the specified vector P on the specified ABC triangle. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="A"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="B"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="P"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAngularDifference"
+				min_features="15"
+				name="GetAngularDifference"
+				num_parameters="2">
+				<comments desc="Get the shortest &apos;distance&apos; (angular difference) between two angles, no matter if the angles are in the [0;pi][-0;-pi] range or the [0;2pi] range. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afA"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afB"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScreenPosition"
+				min_features="15"
+				name="GetScreenPosition"
+				num_parameters="3">
+				<comments desc="Get the screen position of the specified 3d world position. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxVP"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3SphericalToCartesian"
+				min_features="15"
+				name="Vec3SphericalToCartesian"
+				num_parameters="1">
+				<comments desc="Convert a 3d spherical coordinate to a 3d cartesian coordinate. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="avS"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3CartesianToSpherical"
+				min_features="15"
+				name="Vec3CartesianToSpherical"
+				num_parameters="1">
+				<comments desc="Convert a 3d cartesian coordinate to a 3d spherical coordinate. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="avC"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3OrbitPitch"
+				min_features="15"
+				name="Vec3OrbitPitch"
+				num_parameters="3">
+				<comments desc="Orbit/rotate a 3d position of the specified yaw (Y-axis) angle around the specified target. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aTarget"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afPitch"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3OrbitYaw"
+				min_features="15"
+				name="Vec3OrbitYaw"
+				num_parameters="3">
+				<comments desc="Orbit/rotate a 3d position of the specified pitch (X-axis) angle around the specified target. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aTarget"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afYaw"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="vec3OrbitYawPitch"
+				min_features="15"
+				name="Vec3OrbitYawPitch"
+				num_parameters="4">
+				<comments desc="Orbit/rotate a 3d position of the specified yaw (Y-axis) and then pitch (X-axis) angle around the specified target. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aTarget"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afYaw"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afPitch"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelScaleX"
+				min_features="15"
+				name="ComputePixelScaleX"
+				num_parameters="4">
+				<comments desc="Compute a pixel to world unit scale value, based on the X-axis delta. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelScaleY"
+				min_features="15"
+				name="ComputePixelScaleY"
+				num_parameters="4">
+				<comments desc="Compute a pixel to world unit scale value, based on the Y-axis delta. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelWorldSizeX"
+				min_features="15"
+				name="ComputePixelWorldSizeX"
+				num_parameters="5">
+				<comments desc="Compute the world size of the given pixel size, scale based on the X-axis delta. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afPixelSize"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelWorldSizeY"
+				min_features="15"
+				name="ComputePixelWorldSizeY"
+				num_parameters="5">
+				<comments desc="Compute the world size of the given pixel size, scale based on the Y-axis delta. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afPixelSize"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelWorldSizeVec2"
+				min_features="15"
+				name="ComputePixelWorldSizeVec2"
+				num_parameters="5">
+				<comments desc="Compute the world size of the given pixel size, scale based on the X and Y axis delta. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="afPixelSize"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="mtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computePixelWorldSize"
+				min_features="15"
+				name="ComputePixelWorldSize"
+				num_parameters="5">
+				<comments desc="Compute the world size of the give pixel size, scale based on the axis with the highest resolution. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afPixelSize"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxWorldView"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="amtxProj"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVP"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det2x2f"
+				min_features="15"
+				name="Det2x2f"
+				num_parameters="4">
+				<comments desc="Computes a 2x2 matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="a"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="b"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="c"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="d"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det3x3f"
+				min_features="15"
+				name="Det3x3f"
+				num_parameters="9">
+				<comments desc="Computes a 3x3 matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="a0"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a1"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a2"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a3"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a4"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a5"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a6"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a7"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="a8"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det4x4f"
+				min_features="15"
+				name="Det4x4f"
+				num_parameters="16">
+				<comments desc="Computes a 4x4 matrix determinant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="a0"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a1"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a2"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a3"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a4"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a5"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a6"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a7"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a8"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a9"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a10"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a11"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a12"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a13"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					name="a14"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="a15"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det2x2d"
+				min_features="15"
+				name="Det2x2d"
+				num_parameters="4">
+				<comments desc="Computes a 2x2 matrix determinant. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="c"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="d"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det3x3d"
+				min_features="15"
+				name="Det3x3d"
+				num_parameters="9">
+				<comments desc="Computes a 3x3 matrix determinant. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a0"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a1"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a2"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a3"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a4"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a5"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a6"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a7"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a8"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="det4x4d"
+				min_features="15"
+				name="Det4x4d"
+				num_parameters="16">
+				<comments desc="Computes a 4x4 matrix determinant. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a0"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a1"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a2"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a3"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a4"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a5"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a6"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a7"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a8"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a9"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a10"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a11"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a12"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a13"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					name="a14"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a15"
+					type="const tF64"
+					typec="const tF64"
+					typei="ni::eTypeFlags_Constant|ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fovHzToVt"
+				min_features="15"
+				name="FovHzToVt"
+				num_parameters="2">
+				<comments desc="Convert an horizontal fov to a vertical fov. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afHFov"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afWbyHAspect"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fovVtToHz"
+				min_features="15"
+				name="FovVtToHz"
+				num_parameters="2">
+				<comments desc="Convert a vertical fov to an horizontal fov. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="afVFov"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afWbyHAspect"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clampT"
+				min_features="15"
+				name="ClampT"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="repeatT"
+				min_features="15"
+				name="RepeatT"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="mirrorT"
+				min_features="15"
+				name="MirrorT"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cycleT"
+				min_features="15"
+				name="CycleT"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveStep"
+				min_features="15"
+				name="CurveStep"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="t"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveLinear"
+				min_features="15"
+				name="CurveLinear"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="V1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveCos"
+				min_features="15"
+				name="CurveCos"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="b"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="t"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveHermite"
+				min_features="15"
+				name="CurveHermite"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="V1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="T1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="T2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveCatmullRom"
+				min_features="15"
+				name="CurveCatmullRom"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="V1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V3"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V4"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveCardinal"
+				min_features="15"
+				name="CurveCardinal"
+				num_parameters="4">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="V1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="s"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="curveCardinal4"
+				min_features="15"
+				name="CurveCardinal4"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="V1"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V2"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V3"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="V4"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="s"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cycleLinear"
+				min_features="15"
+				name="CycleLinear"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cycleCos"
+				min_features="15"
+				name="CycleCos"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cycleCardinal"
+				min_features="15"
+				name="CycleCardinal"
+				num_parameters="4">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aX"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMin"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					name="aMax"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="a"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method java_name="probSum" name="ProbSum" num_parameters="1">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="apProbs"
+					type="tF64CVec *"
+					typec="tF64CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="probNormalize" name="ProbNormalize" num_parameters="1">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apProbs"
+					type="tF64CVec *"
+					typec="tF64CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="probSampleBuildAliasMethodArrays" name="ProbSampleBuildAliasMethodArrays" num_parameters="3">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apProbs"
+					type="const tF64CVec *"
+					typec="const tF64CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apAMQ"
+					type="tF64CVec *"
+					typec="tF64CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apAMA"
+					type="tU32CVec *"
+					typec="tU32CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="probSampleAliasMethod" name="ProbSampleAliasMethod" num_parameters="3">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apResults"
+					type="tU32CVec *"
+					typec="tU32CVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apAMQ"
+					type="const tF64CVec *"
+					typec="const tF64CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apAMA"
+					type="const tU32CVec *"
+					typec="const tU32CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

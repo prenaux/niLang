@@ -1,0 +1,91 @@
+#include "../API/niUI/ITexture.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iTexture **/
+IDLC_BEGIN_INTF(ni,iTexture)
+/** ni -> iTexture::GetType/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetType,0)
+	IDLC_DECL_RETVAR(eBitmapType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetType,0,())
+	IDLC_RET_FROM_ENUM(eBitmapType,_Ret)
+IDLC_METH_END(ni,iTexture,GetType,0)
+
+/** ni -> iTexture::GetWidth/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetWidth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetWidth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTexture,GetWidth,0)
+
+/** ni -> iTexture::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetHeight,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTexture,GetHeight,0)
+
+/** ni -> iTexture::GetDepth/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetDepth,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetDepth,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTexture,GetDepth,0)
+
+/** ni -> iTexture::GetPixelFormat/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetPixelFormat,0)
+	IDLC_DECL_RETVAR(iPixelFormat*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetPixelFormat,0,())
+	IDLC_RET_FROM_INTF(iPixelFormat,_Ret)
+IDLC_METH_END(ni,iTexture,GetPixelFormat,0)
+
+/** ni -> iTexture::GetNumMipMaps/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetNumMipMaps,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetNumMipMaps,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTexture,GetNumMipMaps,0)
+
+/** ni -> iTexture::GetFlags/0 **/
+IDLC_METH_BEGIN(ni,iTexture,GetFlags,0)
+	IDLC_DECL_RETVAR(tTextureFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetFlags,0,())
+	IDLC_RET_FROM_ENUM(tTextureFlags,_Ret)
+IDLC_METH_END(ni,iTexture,GetFlags,0)
+
+/** ni -> iTexture::GetSubTexture/1 **/
+IDLC_METH_BEGIN(ni,iTexture,GetSubTexture,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iTexture*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTexture,GetSubTexture,1,(anIndex))
+	IDLC_RET_FROM_INTF(iTexture,_Ret)
+IDLC_METH_END(ni,iTexture,GetSubTexture,1)
+
+IDLC_END_INTF(ni,iTexture)
+
+/** interface : iGLTexture **/
+IDLC_BEGIN_INTF(ni,iGLTexture)
+/** ni -> iGLTexture::GetGLHandle/0 **/
+IDLC_METH_BEGIN(ni,iGLTexture,GetGLHandle,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGLTexture,GetGLHandle,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iGLTexture,GetGLHandle,0)
+
+/** ni -> iGLTexture::GetGLFBOHandle/0 **/
+IDLC_METH_BEGIN(ni,iGLTexture,GetGLFBOHandle,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGLTexture,GetGLFBOHandle,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iGLTexture,GetGLFBOHandle,0)
+
+IDLC_END_INTF(ni,iGLTexture)
+
+IDLC_END_NAMESPACE()
+// EOF //

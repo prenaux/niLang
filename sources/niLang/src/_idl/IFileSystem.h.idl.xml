@@ -1,0 +1,305 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eFileSystemRightsFlags">
+			<comments desc="File system rights. "/>
+			<value name="eFileSystemRightsFlags_Enum" value="niBit ( 0 ) ">
+				<comments desc="Right to enumerate files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_Read" value="niBit ( 1 ) ">
+				<comments desc="Right to read from files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_Write" value="niBit ( 2 ) ">
+				<comments desc="Right to write in files, but not to create files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_Create" value="niBit ( 3 ) ">
+				<comments desc="Right to create files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_Delete" value="niBit ( 4 ) ">
+				<comments desc="Right to delete files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_Execute" value="niBit ( 5 ) ">
+				<comments desc="Right to execute files. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_ReadOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read ">
+				<comments desc="Read-only system "/>
+			</value>
+			<value name="eFileSystemRightsFlags_WriteOnly" value="eFileSystemRightsFlags_Write ">
+				<comments desc="Write-only system "/>
+			</value>
+			<value name="eFileSystemRightsFlags_ReadWriteOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Write ">
+				<comments desc="Read-Write-only system "/>
+			</value>
+			<value name="eFileSystemRightsFlags_IOOnly" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete ">
+				<comments desc="IO rights only. All excepted execution. "/>
+			</value>
+			<value name="eFileSystemRightsFlags_All" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete|eFileSystemRightsFlags_Execute ">
+				<comments desc="All rights "/>
+			</value>
+		</enum>
+		<interface name="iFileSystemEnumerator" uuid1="85FB1784-1A48-4581-A3AF-A7D9653F5F77" uuid2="0x85fb1784,0x1a48,0x4581,0xa3,0xaf,0xa7,0xd9,0x65,0x3f,0x5f,0x77">
+			<comments desc="File system enumerator interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFileSystem"
+				name="GetFileSystem"
+				num_parameters="0"
+				property="get"
+				property_name2="fileSystem"
+				property_name="file_system">
+				<comments desc="Get the owner file system. "/>
+				<return type="iFileSystem *" typec="iFileSystem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="findFirst" name="FindFirst" num_parameters="1">
+				<comments desc="Find the first file matching the specified pattern. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszFilePattern"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="findNext" name="FindNext" num_parameters="0">
+				<comments desc="Find the next file matching the specified pattern. " return="eFalse if there&apos;s no more file matching the specified pattern. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFileName"
+				name="GetFileName"
+				num_parameters="0"
+				property="get"
+				property_name2="fileName"
+				property_name="file_name">
+				<comments desc="Get the current file name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFileSize"
+				name="GetFileSize"
+				num_parameters="0"
+				property="get"
+				property_name2="fileSize"
+				property_name="file_size">
+				<comments desc="Get the current file size. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFileAttributes"
+				name="GetFileAttributes"
+				num_parameters="0"
+				property="get"
+				property_name2="fileAttributes"
+				property_name="file_attributes">
+				<comments desc="Get the current file attributes. "/>
+				<return type="tFileAttrFlags" typec="tFileAttrFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFileTime"
+				name="GetFileTime"
+				num_parameters="0"
+				property="get"
+				property_name2="fileTime"
+				property_name="file_time">
+				<comments desc="Get the current file last write time. "/>
+				<return type="iTime *" typec="iTime*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iFileSystem" uuid1="0A9C86EB-E95E-43A1-A724-58B579697176" uuid2="0x0a9c86eb,0xe95e,0x43a1,0xa7,0x24,0x58,0xb5,0x79,0x69,0x71,0x76">
+			<comments desc="File system interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getRightsFlags"
+				name="GetRightsFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="rightsFlags"
+				property_name="rights_flags">
+				<comments desc="Get the file system&apos;s rights. "/>
+				<return type="tFileSystemRightsFlags" typec="tFileSystemRightsFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBaseContainer"
+				name="GetBaseContainer"
+				num_parameters="0"
+				property="get"
+				property_name2="baseContainer"
+				property_name="base_container">
+				<comments desc="Get the file system&apos;s base container. ">
+					<remark text="This depend on the type of file system, it can be a file, a folder, a remote location, and so on... "/>
+				</comments>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileMakeDir" name="FileMakeDir" num_parameters="1">
+				<comments desc="Create a directory. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileDeleteDir" name="FileDeleteDir" num_parameters="1">
+				<comments desc="Delete a directory. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszDir"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileCopy" name="FileCopy" num_parameters="2">
+				<comments desc="Copy a file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszDest"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszSrc"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileMove" name="FileMove" num_parameters="2">
+				<comments desc="Move a file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszDest"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszSrc"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileDelete" name="FileDelete" num_parameters="1">
+				<comments desc="Delete a file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileEnum" name="FileEnum" num_parameters="3">
+				<comments desc="Enumerate files in the specified directory. \see ni::FileEnum " return="The number of files found. eInvalidHandle indicates an error. ">
+					<params text="aszFile is the path with filter of what to enumerate. "/>
+					<params text="aAttribs is a filter that defines the attributes that will be enumerated. "/>
+					<params text="pSink is the callback interface that will be called when a file is found. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aAttribs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pSink"
+					type="iFileEnumSink *"
+					typec="iFileEnumSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileExists" name="FileExists" num_parameters="2">
+				<comments desc="Checks if a file exists. " return="0 if the file doesnt exist else its attributes. ">
+					<params text="aszFile is the path to check. "/>
+					<params text="aAttribs is a filter that defines the attributes that will be enumerated. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aAttribs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="fileSize" name="FileSize" num_parameters="1">
+				<comments desc="Get the size of a file. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fileOpen" name="FileOpen" num_parameters="2">
+				<comments desc="Open a file for a read and/or write operation. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eFileOpenMode"
+					typec="eFileOpenMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="fileBaseOpen" name="FileBaseOpen" num_parameters="2">
+				<comments desc="Open a file for a read and/or write operation. "/>
+				<return type="iFileBase *" typec="iFileBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eFileOpenMode"
+					typec="eFileOpenMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsolutePath"
+				name="GetAbsolutePath"
+				num_parameters="1">
+				<comments desc="Get the absolute path of the given file or directory. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createEnumerator" name="CreateEnumerator" num_parameters="0">
+				<comments desc="Create a file system enumerator. "/>
+				<return type="iFileSystemEnumerator *" typec="iFileSystemEnumerator*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

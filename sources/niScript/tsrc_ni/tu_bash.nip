@@ -1,0 +1,18 @@
+#!/usr/bin/env ni -e -FDI
+::Import("lang.ni")
+::Import("".setdir(::gLang.env["HAM_HOME"]).adddirback("scripts").setfile("ham.ni"))
+::Import("unittest.ni")
+
+::FIXTURE(["bash"])
+
+::TEST("bash" "ls" #{
+  local r = ::bash({[
+    pwd
+    ls -a -l
+  ]})
+  // check that ls succeded
+  ::CHECK_EQUAL(0, r.?exitCode)
+  // check some common output of ls to make sure it actually ran
+  ::CHECK(r.stdout.contains("-rw-r--r--"))
+  ::CHECK(r.stdout.contains("tu_bash.nip"))
+})

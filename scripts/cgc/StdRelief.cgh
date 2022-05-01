@@ -1,0 +1,114 @@
+#pragma once
+#ifndef __STDRELIEF_CGH_C132640D_64A6_4F3C_BEC3_DB1B71084720__
+#define __STDRELIEF_CGH_C132640D_64A6_4F3C_BEC3_DB1B71084720__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+static const float reliefDefaultRange = 60.0;
+// Good default quality for the default range (60.0)
+static const int2 reliefDefaultSearchSteps = { 3, 5 };
+// High quality values (60 more instructions)
+/* static const int2 reliefDefaultSearchSteps = { 18, 6 }; */
+
+void ReliefMappingRayIntersectLinear(
+    in StdSampler reliefmap,
+    inout float4 p,
+    inout float3 v,
+    const int linear_search_steps,
+    const bool abUseLod)
+{
+  v /= linear_search_steps;
+
+  eStd_ForUnroll for (int i = 0; i < linear_search_steps-1; ++i)
+  {
+    float4 t = abUseLod ? stdSampler_Tex2DLod(reliefmap,p) : stdSampler_Tex2D(reliefmap,p.xy);
+    if (p.z < t.w)
+      p.xyz += v;
+  }
+}
+
+void ReliefMappingRayIntersectBinary(
+    in StdSampler reliefmap,
+    inout float4 p,
+    inout float3 v,
+    const int binary_search_steps,
+    const bool abUseLod)
+{
+  eStd_ForUnroll for (int i = 0; i < binary_search_steps; ++i)
+  {
+    v*=0.5;
+    float4 t = abUseLod ? stdSampler_Tex2DLod(reliefmap,p) : stdSampler_Tex2D(reliefmap,p.xy);
+    if (p.z < t.w)
+      p.xyz += 2*v;
+    p.xyz -= v;
+  }
+}
+
+void ReliefMapping(
+    inout float4 inPosition,
+    StdSampler bumpSampler,
+    const float3x3 tanFrame,
+    const float3 view,
+    inout float4 texCoo,
+    const bool bDepthBias,
+    const bool bBorderClamp,
+    const float range,
+    const int linear_search_steps,
+    const int binary_search_steps,
+    const bool abUseLod)
+{
+  static const float tile = 1.0f;
+
+  float3 inT = stdPixelInput_GetTanFrame()[0];
+  float3 inB = stdPixelInput_GetTanFrame()[1];
+  float3 inN = stdPixelInput_GetTanFrame()[2];
+  float vz = dot(-view,inN);
+  float3 v = normalize(float3(dot(view,inT), dot(view,inB),vz));
+
+  // scale depth
+  float depth = bumpSampler.Color.r * range - (range/2);
+  // don't allow a depth of zero, otherwise it'll generate black pixels...
+  if (depth == 0.0f) {
+    depth = 0.001f;
+  }
+
+  {
+    float3 scale = float3(1.0f/bumpSampler.Res.x,1.0f/bumpSampler.Res.y,depth) / tile;
+    if (bDepthBias) {
+      float s=1.0-v.z;
+      s=1.0-s*s;
+      scale.z*=s;
+    }
+    v *= scale.z/(scale*v.z);
+
+    float b = 0.0f;
+    if (bBorderClamp) {
+      float2 border = frac(texCoo.xy)*tile;
+      if (v.x > 0)
+        border.x = tile-border.x;
+      if (v.y > 0)
+        border.y = tile-border.y;
+      border /= abs(v.xy);
+      b = min(border.x,border.y);
+      if (b < tile)
+        v *= b;
+    }
+
+    float4 p = float4(texCoo.xy*tile,texCoo.z,texCoo.w);
+    ReliefMappingRayIntersectLinear(bumpSampler,p,v,linear_search_steps,abUseLod);
+    ReliefMappingRayIntersectBinary(bumpSampler,p,v,binary_search_steps,abUseLod);
+
+    texCoo = p;
+
+    if (bBorderClamp) {
+      if (p.z > b-0.02)
+        clip(-1.0f);
+    }
+
+    // Correct the position
+    inPosition.xyz += -view * p.z * vz;
+  }
+}
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDRELIEF_CGH_C132640D_64A6_4F3C_BEC3_DB1B71084720__

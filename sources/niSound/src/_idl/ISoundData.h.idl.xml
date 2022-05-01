@@ -1,0 +1,109 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eSoundFormat">
+			<comments desc="Common sound formats. "/>
+			<value name="eSoundFormat_Unknown" value="0 ">
+				<comments desc="Unknown format "/>
+			</value>
+			<value name="eSoundFormat_Mono8" value="( 8 ) | ( ( 1 ) &lt;&lt;8 ) ">
+				<comments desc="Mono 8 bits. "/>
+			</value>
+			<value name="eSoundFormat_Stereo8" value="( 8 ) | ( ( 2 ) &lt;&lt;8 ) ">
+				<comments desc="Stereo 8 bits. "/>
+			</value>
+			<value name="eSoundFormat_Mono16" value="( 16 ) | ( ( 1 ) &lt;&lt;8 ) ">
+				<comments desc="Mono 16 bits. "/>
+			</value>
+			<value name="eSoundFormat_Stereo16" value="( 16 ) | ( ( 2 ) &lt;&lt;8 ) ">
+				<comments desc="Stereo 16 bits. "/>
+			</value>
+		</enum>
+		<interface name="iSoundData" uuid1="2FE75840-416E-4D36-82FF-B43D17F40B05" uuid2="0x2fe75840,0x416e,0x4d36,0x82,0xff,0xb4,0x3d,0x17,0xf4,0x0b,0x05">
+			<comments desc="Sound data interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the sound data. ">
+					<remark text="This is necessary for streaming as streamed data need separate read pointers. "/>
+				</comments>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the sound&apos;s format bits. "/>
+				<return type="eSoundFormat" typec="eSoundFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrequency"
+				name="GetFrequency"
+				num_parameters="0"
+				property="get"
+				property_name2="frequency"
+				property_name="frequency">
+				<comments desc="Get the sound frequency in hertz. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="2">
+				<comments desc="Read a chunk of the specified size. " return="The number of bytes read and a negative value on error. ">
+					<params text="aptrOut is the buffer where to output the data. "/>
+					<params text="anSize is the number of bytes to read. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="apOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="reset" name="Reset" num_parameters="0">
+				<comments desc="Reset data stream to the begining. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLength"
+				name="GetLength"
+				num_parameters="0"
+				property="get"
+				property_name2="length"
+				property_name="length">
+				<comments desc="Get the sound length in frames. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iSoundDataLoader" uuid1="6CE55475-A8CA-4D0C-8BAE-3EE1217C4E14" uuid2="0x6ce55475,0xa8ca,0x4d0c,0x8b,0xae,0x3e,0xe1,0x21,0x7c,0x4e,0x14">
+			<comments desc="Sound data loader plugin interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="loadSoundData" name="LoadSoundData" num_parameters="1">
+				<comments desc=""/>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

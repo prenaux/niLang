@@ -1,0 +1,329 @@
+#include "../API/niUI/ITextObject.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iTextOccluder **/
+IDLC_BEGIN_INTF(ni,iTextOccluder)
+/** ni -> iTextOccluder::GetTextObject/0 **/
+IDLC_METH_BEGIN(ni,iTextOccluder,GetTextObject,0)
+	IDLC_DECL_RETVAR(Ptr<iTextObject>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextOccluder,GetTextObject,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iTextOccluder,GetTextObject,0)
+
+/** ni -> iTextOccluder::SetRect/1 **/
+IDLC_METH_BEGIN(ni,iTextOccluder,SetRect,1)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_METH_CALL_VOID(ni,iTextOccluder,SetRect,1,(aRect))
+IDLC_METH_END(ni,iTextOccluder,SetRect,1)
+
+/** ni -> iTextOccluder::GetRect/0 **/
+IDLC_METH_BEGIN(ni,iTextOccluder,GetRect,0)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextOccluder,GetRect,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iTextOccluder,GetRect,0)
+
+/** ni -> iTextOccluder::SetUserData/1 **/
+IDLC_METH_BEGIN(ni,iTextOccluder,SetUserData,1)
+	IDLC_DECL_VAR(Var,aUserData)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aUserData)
+	IDLC_METH_CALL_VOID(ni,iTextOccluder,SetUserData,1,(aUserData))
+IDLC_METH_END(ni,iTextOccluder,SetUserData,1)
+
+/** ni -> iTextOccluder::GetUserData/0 **/
+IDLC_METH_BEGIN(ni,iTextOccluder,GetUserData,0)
+	IDLC_DECL_RETVAR(Var,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextOccluder,GetUserData,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Variant,_Ret)
+IDLC_METH_END(ni,iTextOccluder,GetUserData,0)
+
+IDLC_END_INTF(ni,iTextOccluder)
+
+/** interface : iTextObject **/
+IDLC_BEGIN_INTF(ni,iTextObject)
+/** ni -> iTextObject::GetGraphics/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetGraphics,0)
+	IDLC_DECL_RETVAR(iGraphics*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetGraphics,0,())
+	IDLC_RET_FROM_INTF(iGraphics,_Ret)
+IDLC_METH_END(ni,iTextObject,GetGraphics,0)
+
+/** ni -> iTextObject::SetContentsScale/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetContentsScale,1)
+	IDLC_DECL_VAR(tF32,afContentsScale)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_F32,afContentsScale)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetContentsScale,1,(afContentsScale))
+IDLC_METH_END(ni,iTextObject,SetContentsScale,1)
+
+/** ni -> iTextObject::GetContentsScale/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetContentsScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetContentsScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iTextObject,GetContentsScale,0)
+
+/** ni -> iTextObject::SetDefaultFont/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetDefaultFont,1)
+	IDLC_DECL_VAR(iFont*,apFont)
+	IDLC_BUF_TO_INTF(iFont,apFont)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetDefaultFont,1,(apFont))
+IDLC_METH_END(ni,iTextObject,SetDefaultFont,1)
+
+/** ni -> iTextObject::GetDefaultFont/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetDefaultFont,0)
+	IDLC_DECL_RETVAR(iFont*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetDefaultFont,0,())
+	IDLC_RET_FROM_INTF(iFont,_Ret)
+IDLC_METH_END(ni,iTextObject,GetDefaultFont,0)
+
+/** ni -> iTextObject::SetLoadFontCallback/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetLoadFontCallback,1)
+	IDLC_DECL_VAR(iCallback*,apLoadFontCallback)
+	IDLC_BUF_TO_INTF(iCallback,apLoadFontCallback)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetLoadFontCallback,1,(apLoadFontCallback))
+IDLC_METH_END(ni,iTextObject,SetLoadFontCallback,1)
+
+/** ni -> iTextObject::GetLoadFontCallback/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetLoadFontCallback,0)
+	IDLC_DECL_RETVAR(iCallback*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetLoadFontCallback,0,())
+	IDLC_RET_FROM_INTF(iCallback,_Ret)
+IDLC_METH_END(ni,iTextObject,GetLoadFontCallback,0)
+
+/** ni -> iTextObject::SetSize/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetSize,1)
+	IDLC_DECL_VAR(sVec2f,avSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avSize)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetSize,1,(avSize))
+IDLC_METH_END(ni,iTextObject,SetSize,1)
+
+/** ni -> iTextObject::GetSize/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetSize,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iTextObject,GetSize,0)
+
+/** ni -> iTextObject::SetTruncation/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetTruncation,1)
+	IDLC_DECL_VAR(eTextTruncation,aType)
+	IDLC_BUF_TO_ENUM(eTextTruncation,aType)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetTruncation,1,(aType))
+IDLC_METH_END(ni,iTextObject,SetTruncation,1)
+
+/** ni -> iTextObject::GetTruncation/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetTruncation,0)
+	IDLC_DECL_RETVAR(eTextTruncation,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetTruncation,0,())
+	IDLC_RET_FROM_ENUM(eTextTruncation,_Ret)
+IDLC_METH_END(ni,iTextObject,GetTruncation,0)
+
+/** ni -> iTextObject::SetTruncationText/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetTruncationText,1)
+	IDLC_DECL_VAR(achar*,aaszString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszString)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetTruncationText,1,(aaszString))
+IDLC_METH_END(ni,iTextObject,SetTruncationText,1)
+
+/** ni -> iTextObject::GetTruncationText/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetTruncationText,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetTruncationText,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iTextObject,GetTruncationText,0)
+
+/** ni -> iTextObject::SetTrimLeadingSpaces/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetTrimLeadingSpaces,1)
+	IDLC_DECL_VAR(tBool,abTrimLeadingSpaces)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abTrimLeadingSpaces)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetTrimLeadingSpaces,1,(abTrimLeadingSpaces))
+IDLC_METH_END(ni,iTextObject,SetTrimLeadingSpaces,1)
+
+/** ni -> iTextObject::GetTrimLeadingSpaces/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetTrimLeadingSpaces,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetTrimLeadingSpaces,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTextObject,GetTrimLeadingSpaces,0)
+
+/** ni -> iTextObject::SetKerning/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetKerning,1)
+	IDLC_DECL_VAR(tBool,abKerning)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abKerning)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetKerning,1,(abKerning))
+IDLC_METH_END(ni,iTextObject,SetKerning,1)
+
+/** ni -> iTextObject::GetKerning/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetKerning,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetKerning,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTextObject,GetKerning,0)
+
+/** ni -> iTextObject::GetTextSize/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetTextSize,0)
+	IDLC_DECL_RETVAR(sVec2f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetTextSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
+IDLC_METH_END(ni,iTextObject,GetTextSize,0)
+
+/** ni -> iTextObject::SetExpressionContext/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetExpressionContext,1)
+	IDLC_DECL_VAR(iExpressionContext*,apContext)
+	IDLC_BUF_TO_INTF(iExpressionContext,apContext)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetExpressionContext,1,(apContext))
+IDLC_METH_END(ni,iTextObject,SetExpressionContext,1)
+
+/** ni -> iTextObject::GetExpressionContext/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetExpressionContext,0)
+	IDLC_DECL_RETVAR(iExpressionContext*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetExpressionContext,0,())
+	IDLC_RET_FROM_INTF(iExpressionContext,_Ret)
+IDLC_METH_END(ni,iTextObject,GetExpressionContext,0)
+
+/** ni -> iTextObject::Update/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,Update,0)
+	IDLC_METH_CALL_VOID(ni,iTextObject,Update,0,())
+IDLC_METH_END(ni,iTextObject,Update,0)
+
+/** ni -> iTextObject::DrawAt/3 **/
+IDLC_METH_BEGIN(ni,iTextObject,DrawAt,3)
+	IDLC_DECL_VAR(iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
+	IDLC_DECL_VAR(sRectf,aClippingRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aClippingRect)
+	IDLC_DECL_VAR(sVec3f,avPos)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avPos)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,DrawAt,3,(apCanvas,aClippingRect,avPos))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTextObject,DrawAt,3)
+
+/** ni -> iTextObject::Draw/2 **/
+IDLC_METH_BEGIN(ni,iTextObject,Draw,2)
+	IDLC_DECL_VAR(iCanvas*,apCanvas)
+	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
+	IDLC_DECL_VAR(sRectf,aClippingRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aClippingRect)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,Draw,2,(apCanvas,aClippingRect))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTextObject,Draw,2)
+
+/** ni -> iTextObject::AddOccluder/2 **/
+IDLC_METH_BEGIN(ni,iTextObject,AddOccluder,2)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_VAR(Var,aUserData)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aUserData)
+	IDLC_DECL_RETVAR(iTextOccluder*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,AddOccluder,2,(aRect,aUserData))
+	IDLC_RET_FROM_INTF(iTextOccluder,_Ret)
+IDLC_METH_END(ni,iTextObject,AddOccluder,2)
+
+/** ni -> iTextObject::RemoveOccluder/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,RemoveOccluder,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,RemoveOccluder,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iTextObject,RemoveOccluder,1)
+
+/** ni -> iTextObject::ClearOccluders/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,ClearOccluders,0)
+	IDLC_METH_CALL_VOID(ni,iTextObject,ClearOccluders,0,())
+IDLC_METH_END(ni,iTextObject,ClearOccluders,0)
+
+/** ni -> iTextObject::GetNumOccluders/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetNumOccluders,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetNumOccluders,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTextObject,GetNumOccluders,0)
+
+/** ni -> iTextObject::GetOccluder/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetOccluder,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iTextOccluder*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetOccluder,1,(anIndex))
+	IDLC_RET_FROM_INTF(iTextOccluder,_Ret)
+IDLC_METH_END(ni,iTextObject,GetOccluder,1)
+
+/** ni -> iTextObject::SetText/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetText,1)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetText,1,(aaszText))
+IDLC_METH_END(ni,iTextObject,SetText,1)
+
+/** ni -> iTextObject::GetText/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetText,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetText,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iTextObject,GetText,0)
+
+/** ni -> iTextObject::AddText/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,AddText,1)
+	IDLC_DECL_VAR(achar*,aaszString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszString)
+	IDLC_METH_CALL_VOID(ni,iTextObject,AddText,1,(aaszString))
+IDLC_METH_END(ni,iTextObject,AddText,1)
+
+/** ni -> iTextObject::SetSelectionColor/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,SetSelectionColor,1)
+	IDLC_DECL_VAR(sVec4f,avColor)
+	IDLC_BUF_TO_BASE(ni::eType_Vec4f,avColor)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SetSelectionColor,1,(avColor))
+IDLC_METH_END(ni,iTextObject,SetSelectionColor,1)
+
+/** ni -> iTextObject::GetSelectionColor/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetSelectionColor,0)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetSelectionColor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iTextObject,GetSelectionColor,0)
+
+/** ni -> iTextObject::GetSelectedString/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,GetSelectedString,0)
+	IDLC_DECL_RETVAR(cString,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,GetSelectedString,0,())
+	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
+IDLC_METH_END(ni,iTextObject,GetSelectedString,0)
+
+/** ni -> iTextObject::ClearSelection/0 **/
+IDLC_METH_BEGIN(ni,iTextObject,ClearSelection,0)
+	IDLC_METH_CALL_VOID(ni,iTextObject,ClearSelection,0,())
+IDLC_METH_END(ni,iTextObject,ClearSelection,0)
+
+/** ni -> iTextObject::SelectRange/2 **/
+IDLC_METH_BEGIN(ni,iTextObject,SelectRange,2)
+	IDLC_DECL_VAR(tU32,anBegin)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anBegin)
+	IDLC_DECL_VAR(tU32,anEnd)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anEnd)
+	IDLC_METH_CALL_VOID(ni,iTextObject,SelectRange,2,(anBegin,anEnd))
+IDLC_METH_END(ni,iTextObject,SelectRange,2)
+
+/** ni -> iTextObject::FindWordIndexFromPosition/1 **/
+IDLC_METH_BEGIN(ni,iTextObject,FindWordIndexFromPosition,1)
+	IDLC_DECL_VAR(sVec2f,avPosition)
+	IDLC_BUF_TO_BASE(ni::eType_Vec2f,avPosition)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iTextObject,FindWordIndexFromPosition,1,(avPosition))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iTextObject,FindWordIndexFromPosition,1)
+
+IDLC_END_INTF(ni,iTextObject)
+
+IDLC_END_NAMESPACE()
+// EOF //

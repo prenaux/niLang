@@ -1,0 +1,95 @@
+<?xml version='1.0'?>
+<module name='niUI'
+        version='1,0,0' 
+        desc='UI module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='no'
+        interfacesheaderpath='niUI_ModuleDef.h'
+>
+  <dependency name='niLang' />
+  <objecttype  name='Graphics' desc='Graphics Object' type='ni::iGraphics'  />
+  <objecttype  name='JpegWriter' desc='Jpeg Writer Object' type='ni::iJpegWriter'  />
+  <objecttype  name='JpegReader' desc='Jpeg Reader Object' type='ni::iJpegReader'  />
+  <objecttype  name='Intersection' desc='Intersection result' type='ni::iIntersection'  />
+  <objecttype  name='Camera' desc='Camera' type='ni::iCamera'  />
+  <objecttype  name='NUSpline' desc='Non-uniform spline' type='ni::iNUSpline'  />
+  <objecttype  name='UIContext'  />
+  <objecttype  category='BitmapLoader' name='bmp' type='ni::iBitmapLoader'  />
+  <objecttype  category='BitmapSaver' name='bmp' type='ni::iBitmapSaver'  />
+  <objecttype  category='BitmapLoader' name='jpeg' type='ni::iBitmapLoader'  />
+  <objecttype  category='BitmapSaver' name='jpeg' type='ni::iBitmapSaver'  />
+  <objecttype  category='BitmapLoader' name='png' type='ni::iBitmapLoader'  />
+  <objecttype  category='BitmapSaver' name='png' type='ni::iBitmapSaver'  />
+  <objecttype  category='BitmapLoader' name='tga' type='ni::iBitmapLoader'  />
+  <objecttype  category='BitmapSaver' name='tga' type='ni::iBitmapSaver'  />
+  <objecttype  category='BitmapLoader' name='dds' type='ni::iBitmapLoader'  />
+  <include>niUI/src/_idl/Colors.h.idl.xml</include>
+  <include>niUI/src/_idl/FVF.h.idl.xml</include>
+  <include>niUI/src/_idl/GraphicsEnum.h.idl.xml</include>
+  <include>niUI/src/_idl/IBitmap2D.h.idl.xml</include>
+  <include>niUI/src/_idl/IBitmap3D.h.idl.xml</include>
+  <include>niUI/src/_idl/IBitmapBase.h.idl.xml</include>
+  <include>niUI/src/_idl/IBitmapCube.h.idl.xml</include>
+  <include>niUI/src/_idl/IBoundingVolume.h.idl.xml</include>
+  <include>niUI/src/_idl/ICamera.h.idl.xml</include>
+  <include>niUI/src/_idl/ICanvas.h.idl.xml</include>
+  <include>niUI/src/_idl/IDampedSpring.h.idl.xml</include>
+  <include>niUI/src/_idl/IDrawOperation.h.idl.xml</include>
+  <include>niUI/src/_idl/IDrawOperationSet.h.idl.xml</include>
+  <include>niUI/src/_idl/IFont.h.idl.xml</include>
+  <include>niUI/src/_idl/IFrustum.h.idl.xml</include>
+  <include>niUI/src/_idl/IGeometry.h.idl.xml</include>
+  <include>niUI/src/_idl/IGraphics.h.idl.xml</include>
+  <include>niUI/src/_idl/IGraphicsContext.h.idl.xml</include>
+  <include>niUI/src/_idl/IGraphicsDriver.h.idl.xml</include>
+  <include>niUI/src/_idl/IGraphicsStates.h.idl.xml</include>
+  <include>niUI/src/_idl/IImage.h.idl.xml</include>
+  <include>niUI/src/_idl/IImageMap.h.idl.xml</include>
+  <include>niUI/src/_idl/IIndexArray.h.idl.xml</include>
+  <include>niUI/src/_idl/IIntersection.h.idl.xml</include>
+  <include>niUI/src/_idl/IJpegReader.h.idl.xml</include>
+  <include>niUI/src/_idl/IJpegWriter.h.idl.xml</include>
+  <include>niUI/src/_idl/IMaterial.h.idl.xml</include>
+  <include>niUI/src/_idl/IMaterialLibrary.h.idl.xml</include>
+  <include>niUI/src/_idl/INUSpline.h.idl.xml</include>
+  <include>niUI/src/_idl/IOcclusionQuery.h.idl.xml</include>
+  <include>niUI/src/_idl/IOverlay.h.idl.xml</include>
+  <include>niUI/src/_idl/IPixelFormat.h.idl.xml</include>
+  <include>niUI/src/_idl/IShader.h.idl.xml</include>
+  <include>niUI/src/_idl/ITextObject.h.idl.xml</include>
+  <include>niUI/src/_idl/ITexture.h.idl.xml</include>
+  <include>niUI/src/_idl/ITransform.h.idl.xml</include>
+  <include>niUI/src/_idl/IUIContext.h.idl.xml</include>
+  <include>niUI/src/_idl/IVertexArray.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGGradientTable.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGImage.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGPaint.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGPath.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGPolygonTesselator.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGStyle.h.idl.xml</include>
+  <include>niUI/src/_idl/IVGTransform.h.idl.xml</include>
+  <include>niUI/src/_idl/IVideoDecoder.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidget.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetButton.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetCanvas.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetColorPicker.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetComboBox.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetDock.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetEditBox.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetForm.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetGroup.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetLabel.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetListBox.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetMenu.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetProgressBar.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetPropertyBox.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetScrollBar.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetSearchBar.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetSplitter.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetTab.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetText.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetToolbar.h.idl.xml</include>
+  <include>niUI/src/_idl/IWidgetTree.h.idl.xml</include>
+  <include>niUI/src/_idl/UIMessages.h.idl.xml</include>
+</module>

@@ -1,0 +1,560 @@
+#include "../API/niScript/IScriptVM.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iScriptObjectEnumSink **/
+/** iScriptObjectEnumSink -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+IDLC_BEGIN_INTF(ni,iScriptObjectEnumSink)
+/** ni -> iScriptObjectEnumSink::OnScriptObjectEnumSinkFound/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptObjectEnumSink::OnScriptObjectEnumSinkFound/3 **/
+IDLC_METH_BEGIN(ni,iScriptObjectEnumSink,OnScriptObjectEnumSinkFound,3)
+	IDLC_DECL_VAR(iScriptVM*,apVM)
+	IDLC_BUF_TO_INTF(iScriptVM,apVM)
+	IDLC_DECL_VAR(iScriptObject*,apKey)
+	IDLC_BUF_TO_INTF(iScriptObject,apKey)
+	IDLC_DECL_VAR(iScriptObject*,apValue)
+	IDLC_BUF_TO_INTF(iScriptObject,apValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptObjectEnumSink,OnScriptObjectEnumSinkFound,3,(apVM,apKey,apValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptObjectEnumSink,OnScriptObjectEnumSinkFound,3)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iScriptObjectEnumSink)
+
+#endif // if niMinFeatures(15)
+/** interface : iScriptVM **/
+/** iScriptVM -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+IDLC_BEGIN_INTF(ni,iScriptVM)
+/** ni -> iScriptVM::GetHandle/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetHandle/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetHandle,0)
+	IDLC_DECL_RETVAR(tIntPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetHandle,0,())
+	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetHandle,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetParentVM/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetParentVM/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetParentVM,0)
+	IDLC_DECL_RETVAR(iScriptVM*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetParentVM,0,())
+	IDLC_RET_FROM_INTF(iScriptVM,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetParentVM,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Compile/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Compile/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Compile,2)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Compile,2,(apFile,aaszName))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,Compile,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CompileString/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CompileString/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CompileString,2)
+	IDLC_DECL_VAR(achar*,aaszCode)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCode)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CompileString,2,(aaszCode,aaszName))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,CompileString,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CompileGetIUnknownObject/4 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CompileGetIUnknownObject/4 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CompileGetIUnknownObject,4)
+	IDLC_DECL_VAR(iScriptObject*,apThisTable)
+	IDLC_BUF_TO_INTF(iScriptObject,apThisTable)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(achar*,aaszObjectName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszObjectName)
+	IDLC_DECL_VAR(tUUID,aIID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,aIID)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CompileGetIUnknownObject,4,(apThisTable,apFile,aaszObjectName,aIID))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iScriptVM,CompileGetIUnknownObject,4)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Run/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Run/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Run,2)
+	IDLC_DECL_VAR(iScriptObject*,apThis)
+	IDLC_BUF_TO_INTF(iScriptObject,apThis)
+	IDLC_DECL_VAR(achar*,aaszCommand)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCommand)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Run,2,(apThis,aaszCommand))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,Run,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CollectGarbage/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CollectGarbage/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CollectGarbage,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CollectGarbage,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iScriptVM,CollectGarbage,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::EnableDebugInfos/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::EnableDebugInfos/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,EnableDebugInfos,1)
+	IDLC_DECL_VAR(tBool,abEnabled)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abEnabled)
+	IDLC_METH_CALL_VOID(ni,iScriptVM,EnableDebugInfos,1,(abEnabled))
+IDLC_METH_END(ni,iScriptVM,EnableDebugInfos,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::AreDebugInfosEnabled/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::AreDebugInfosEnabled/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,AreDebugInfosEnabled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,AreDebugInfosEnabled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,AreDebugInfosEnabled,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::SetErrorLineOffset/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::SetErrorLineOffset/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,SetErrorLineOffset,1)
+	IDLC_DECL_VAR(tI32,anOffset)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anOffset)
+	IDLC_METH_CALL_VOID(ni,iScriptVM,SetErrorLineOffset,1,(anOffset))
+IDLC_METH_END(ni,iScriptVM,SetErrorLineOffset,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetErrorLineOffset/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetErrorLineOffset/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetErrorLineOffset,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetErrorLineOffset,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetErrorLineOffset,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::SetRaiseErrorMode/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::SetRaiseErrorMode/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,SetRaiseErrorMode,1)
+	IDLC_DECL_VAR(eScriptRaiseErrorMode,aMode)
+	IDLC_BUF_TO_ENUM(eScriptRaiseErrorMode,aMode)
+	IDLC_DECL_RETVAR(eScriptRaiseErrorMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,SetRaiseErrorMode,1,(aMode))
+	IDLC_RET_FROM_ENUM(eScriptRaiseErrorMode,_Ret)
+IDLC_METH_END(ni,iScriptVM,SetRaiseErrorMode,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetRaiseErrorMode/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetRaiseErrorMode/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetRaiseErrorMode,0)
+	IDLC_DECL_RETVAR(eScriptRaiseErrorMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetRaiseErrorMode,0,())
+	IDLC_RET_FROM_ENUM(eScriptRaiseErrorMode,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetRaiseErrorMode,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::SetLogRaiseError/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::SetLogRaiseError/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,SetLogRaiseError,1)
+	IDLC_DECL_VAR(tLogFlags,aLog)
+	IDLC_BUF_TO_ENUM(tLogFlags,aLog)
+	IDLC_METH_CALL_VOID(ni,iScriptVM,SetLogRaiseError,1,(aLog))
+IDLC_METH_END(ni,iScriptVM,SetLogRaiseError,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetLogRaiseError/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetLogRaiseError/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetLogRaiseError,0)
+	IDLC_DECL_RETVAR(tLogFlags,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetLogRaiseError,0,())
+	IDLC_RET_FROM_ENUM(tLogFlags,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetLogRaiseError,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::RegisterFunction/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::RegisterFunction/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,RegisterFunction,2)
+	IDLC_DECL_VAR(sMethodDef*,apFunction)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer,apFunction)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,RegisterFunction,2,(apFunction,aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,RegisterFunction,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushRootTable/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushRootTable/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushRootTable,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushRootTable,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushRootTable,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushString/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushString/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushString,2)
+	IDLC_DECL_VAR(achar*,aaszString)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszString)
+	IDLC_DECL_VAR(tSize,anLen)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anLen)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushString,2,(aaszString,anLen))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushString,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushInteger/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushInteger/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushInteger,1)
+	IDLC_DECL_VAR(tI32,anValue)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushInteger,1,(anValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushInteger,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushFloat/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushFloat/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushFloat,1)
+	IDLC_DECL_VAR(tF64,afValue)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushFloat,1,(afValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushFloat,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushInterface/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushInterface/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushInterface,1)
+	IDLC_DECL_VAR(iUnknown*,apInterface)
+	IDLC_BUF_TO_INTF(iUnknown,apInterface)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushInterface,1,(apInterface))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushInterface,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushVariant/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushVariant/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushVariant,1)
+	IDLC_DECL_VAR(Var,aVar)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer,aVar)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushVariant,1,(aVar))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushVariant,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::PushObject/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::PushObject/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushObject,1)
+	IDLC_DECL_VAR(iScriptObject*,apObject)
+	IDLC_BUF_TO_INTF(iScriptObject,apObject)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushObject,1,(apObject))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,PushObject,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Pop/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Pop/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Pop,1)
+	IDLC_DECL_VAR(tU32,anNumPop)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anNumPop)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Pop,1,(anNumPop))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,Pop,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetStackSize/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetStackSize/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetStackSize,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetStackSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetStackSize,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::SetStackSize/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::SetStackSize/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,SetStackSize,1)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,SetStackSize,1,(anSize))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,SetStackSize,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CreateSlot/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CreateSlot/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CreateSlot,1)
+	IDLC_DECL_VAR(tI32,idx)
+	IDLC_BUF_TO_BASE(ni::eType_I32,idx)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateSlot,1,(idx))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,CreateSlot,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::GetImportFileSystems/0 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::GetImportFileSystems/0 **/
+IDLC_METH_BEGIN(ni,iScriptVM,GetImportFileSystems,0)
+	IDLC_DECL_RETVAR(tInterfaceCVec<iFileSystem>*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,GetImportFileSystems,0,())
+	IDLC_RET_FROM_INTF(tInterfaceCVec<iFileSystem>,_Ret)
+IDLC_METH_END(ni,iScriptVM,GetImportFileSystems,0)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::ImportFileOpen/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::ImportFileOpen/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,ImportFileOpen,1)
+	IDLC_DECL_VAR(achar*,aaszFile)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszFile)
+	IDLC_DECL_RETVAR(iFile*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,ImportFileOpen,1,(aaszFile))
+	IDLC_RET_FROM_INTF(iFile,_Ret)
+IDLC_METH_END(ni,iScriptVM,ImportFileOpen,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Import/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Import/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Import,2)
+	IDLC_DECL_VAR(iUnknown*,apPathOrFile)
+	IDLC_BUF_TO_INTF(iUnknown,apPathOrFile)
+	IDLC_DECL_VAR(iScriptObject*,apDestTable)
+	IDLC_BUF_TO_INTF(iScriptObject,apDestTable)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Import,2,(apPathOrFile,apDestTable))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,Import,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::NewImport/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::NewImport/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,NewImport,2)
+	IDLC_DECL_VAR(iUnknown*,apPathOrFile)
+	IDLC_BUF_TO_INTF(iUnknown,apPathOrFile)
+	IDLC_DECL_VAR(iScriptObject*,apDestTable)
+	IDLC_BUF_TO_INTF(iScriptObject,apDestTable)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,NewImport,2,(apPathOrFile,apDestTable))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,NewImport,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CreateTable/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CreateTable/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CreateTable,2)
+	IDLC_DECL_VAR(iScriptObject*,apDelegate)
+	IDLC_BUF_TO_INTF(iScriptObject,apDelegate)
+	IDLC_DECL_VAR(tI32,anNumPop)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anNumPop)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateTable,2,(apDelegate,anNumPop))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,CreateTable,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CreateObject/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CreateObject/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CreateObject,2)
+	IDLC_DECL_VAR(tI32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anIndex)
+	IDLC_DECL_VAR(tI32,anNumPop)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anNumPop)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateObject,2,(anIndex,anNumPop))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,CreateObject,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CreateObjectGet/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CreateObjectGet/3 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CreateObjectGet,3)
+	IDLC_DECL_VAR(achar*,aaszKey)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszKey)
+	IDLC_DECL_VAR(eScriptObjectType,aRequiredType)
+	IDLC_BUF_TO_ENUM(eScriptObjectType,aRequiredType)
+	IDLC_DECL_VAR(tI32,anNumPop)
+	IDLC_BUF_TO_BASE(ni::eType_I32,anNumPop)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateObjectGet,3,(aaszKey,aRequiredType,anNumPop))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,CreateObjectGet,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Call/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Call/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Call,2)
+	IDLC_DECL_VAR(tU32,anNumParams)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anNumParams)
+	IDLC_DECL_VAR(tBool,abPushRet)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abPushRet)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Call,2,(anNumParams,abPushRet))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,Call,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::WriteClosure/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::WriteClosure/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,WriteClosure,2)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_VAR(iScriptObject*,apObject)
+	IDLC_BUF_TO_INTF(iScriptObject,apObject)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,WriteClosure,2,(apFile,apObject))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,WriteClosure,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::ReadClosure/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::ReadClosure/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,ReadClosure,1)
+	IDLC_DECL_VAR(iFile*,apFile)
+	IDLC_BUF_TO_INTF(iFile,apFile)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,ReadClosure,1,(apFile))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,ReadClosure,1)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::ScriptCall/5 -> NO AUTOMATION **/
+/** ni -> iScriptVM::ScriptVar/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::ScriptVar/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,ScriptVar,2)
+	IDLC_DECL_VAR(achar*,aaszModule)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszModule)
+	IDLC_DECL_VAR(achar*,aaszVar)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszVar)
+	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,ScriptVar,2,(aaszModule,aaszVar))
+	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
+IDLC_METH_END(ni,iScriptVM,ScriptVar,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::EvalString/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::EvalString/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,EvalString,2)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(ni::achar*,aaszCode)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszCode)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,EvalString,2,(ahspContext,aaszCode))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,EvalString,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::CanEvalImpl/2 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::CanEvalImpl/2 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CanEvalImpl,2)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(iHString*,ahspCodeResource)
+	IDLC_BUF_TO_INTF(iHString,ahspCodeResource)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CanEvalImpl,2,(ahspContext,ahspCodeResource))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iScriptVM,CanEvalImpl,2)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::EvalImpl/3 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::EvalImpl/3 **/
+IDLC_METH_BEGIN(ni,iScriptVM,EvalImpl,3)
+	IDLC_DECL_VAR(iHString*,ahspContext)
+	IDLC_BUF_TO_INTF(iHString,ahspContext)
+	IDLC_DECL_VAR(iHString*,ahspCodeResource)
+	IDLC_BUF_TO_INTF(iHString,ahspCodeResource)
+	IDLC_DECL_VAR(tUUID,aIID)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer,aIID)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,EvalImpl,3,(ahspContext,ahspCodeResource,aIID))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iScriptVM,EvalImpl,3)
+#endif // niMinFeatures(15)
+
+/** ni -> iScriptVM::Service/1 -> MIN FEATURES '15' **/
+#if niMinFeatures(15)
+/** ni -> iScriptVM::Service/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Service,1)
+	IDLC_DECL_VAR(tBool,abForceGC)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abForceGC)
+	IDLC_METH_CALL_VOID(ni,iScriptVM,Service,1,(abForceGC))
+IDLC_METH_END(ni,iScriptVM,Service,1)
+#endif // niMinFeatures(15)
+
+IDLC_END_INTF(ni,iScriptVM)
+
+#endif // if niMinFeatures(15)
+IDLC_END_NAMESPACE()
+// EOF //

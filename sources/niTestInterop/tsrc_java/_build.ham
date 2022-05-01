@@ -1,0 +1,24 @@
+#########################################################################
+#
+# -- Test_niTestInterop_java -- Module
+#
+#########################################################################
+if [ SubDirOnce TOP niTestInterop tsrc_java ] = 1 { return ; }
+if ! $(BUILD_JNI) { return ; }
+
+niDefJar Test_niTestInterop_java : 1,0,0 : test ;
+
+### SOURCES #############################################################
+SRC =
+ [ niPkgSrcJVM ]
+ [ niPkgSrcJVM ni niTestInterop ]
+;
+
+JAR = [ niBuildJar $(SRC)
+: niLang_jvm niTestInterop_jvm
+: $(JAR_JUNIT3)
+:
+: junit.textui.TestRunner ] ;
+
+tkDepends Test_niTestInterop_java : niLang_jvm : TOP niLang java ;
+tkDepends Test_niTestInterop_java : niLang : TOP niLang src ;

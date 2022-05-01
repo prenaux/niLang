@@ -1,0 +1,123 @@
+#pragma once
+#ifndef __STDDEFS_CGH_25DA4277_F58E_4D58_932E_0E0B3BB584AC__
+#define __STDDEFS_CGH_25DA4277_F58E_4D58_932E_0E0B3BB584AC__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+// Maximum emissive scale.
+static const float kMaxEmissiveScale = 2.0f;
+
+#define niPi     3.1415926535897932384626433832795028841971693993751 // 180 deg
+#define niPif    3.1415926535897932384626433832795028841971693993751f // 180 deg
+#define niPi2    1.5707963267948966192313216916395 // 90 deg
+#define niPi2f   1.5707963267948966192313216916395f // 90 deg
+#define niPi4    0.78539816339744830961566084581975 // 45 deg
+#define niPi4f   0.78539816339744830961566084581975f // 45 deg
+#define ni2Pi    6.283185307179586476925286766558 // 360 deg
+#define ni2Pif   6.283185307179586476925286766558f // 360 deg
+#define ni1ByPi  0.31830988618379067153776752674503 // (1.0f/niPi)
+#define ni1ByPif 0.31830988618379067153776752674503f // (1.0f/niPi)
+#define niE      2.71828182845904523536
+#define niEf     2.71828182845904523536f
+
+static const float kPi = niPi;
+static const float k2Pi = ni2Pi;
+
+// GLSL-like typedefs
+#define vec2 float2
+#define vec3 float3
+#define vec4 float4
+#define mat2 float2x2
+#define mat3 float3x3
+#define mat4 float4x4
+
+/*
+  The GLSL mod will always have the same sign as y rather than x. Otherwise
+  its the same -- a value f such that x = i*y + f where i is an integer and
+  |f| < |y|. If you're trying to make a repeating pattern of some kind, the
+  GLSL mod is generally what you want.
+
+  For comparison, the HLSL fmod is equivalent to x - y * trunc(x/y). They're
+  the same when x/y is positive, different when x/y is negative.
+ */
+float mod(float x, float y) {
+  return x - y * floor(x/y);
+}
+float2 mod(float2 x, float2 y) {
+  return x - y * floor(x/y);
+}
+float3 mod(float3 x, float3 y) {
+  return x - y * floor(x/y);
+}
+float4 mod(float4 x, float4 y) {
+  return x - y * floor(x/y);
+}
+
+float sqr(float x) { return x*x;  }
+
+#define mix lerp
+#define inversesqrt rsqrt
+#define fract frac
+
+#define eStd_ForUnroll // [unroll]
+
+// Standard index error
+#define eStd_ErrorIndex   -1
+// Standard bool error
+#define eStd_ErrorBool    false
+// Standard error color 1d
+#define eStd_Error1 float1(0)
+// Standard error color 2d
+#define eStd_Error2 float2(0,0)
+// Standard error color 3d
+#define eStd_Error3 float3(0,0,0)
+// Standard error color 4d
+#define eStd_Error4 float4(0,0,0,0)
+
+#define eStdShaderType_Vertex 0
+#define eStdShaderType_Pixel  1
+
+#if hlsl_vs_1_1 || hlsl_vs_2_0 || hlsl_vs_2_a || hlsl_vs_2_b || hlsl_vs_3_0
+#define eStdShaderType_Current  eStdShaderType_Vertex
+#else
+#define eStdShaderType_Current  eStdShaderType_Pixel
+#endif
+
+#define eStd_IsVertexShader   (eStdShaderType_Current == eStdShaderType_Vertex)
+#define eStd_IsPixelShader    (eStdShaderType_Current == eStdShaderType_Pixel)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Standard shader flags
+
+// Linear color space computation
+#ifndef eShaderFlags_LinearColorSpace
+#define eShaderFlags_LinearColorSpace  1
+#endif
+static const bool kShaderFlags_LinearColorSpace = eShaderFlags_LinearColorSpace;
+
+// "Fast" rendering shader
+#ifndef eShaderFlags_Fast
+#define eShaderFlags_Fast  0
+#endif
+static const bool kShaderFlags_Fast = eShaderFlags_Fast;
+
+// Computation in world space, by default in view space
+#ifndef eShaderFlags_WorldSpace
+#define eShaderFlags_WorldSpace 0
+#endif
+static const bool kShaderFlags_WorldSpace = eShaderFlags_WorldSpace;
+
+// Depth only rendering
+#ifndef eShaderFlags_DepthOnly
+#define eShaderFlags_DepthOnly  0
+#endif
+static const bool kShaderFlags_DepthOnly = eShaderFlags_DepthOnly;
+
+// Rendering a screen aligned quad
+#ifndef eShaderFlags_Quad
+#define eShaderFlags_Quad 0
+#endif
+static const bool kShaderFlags_Quad = eShaderFlags_Quad;
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDDEFS_CGH_25DA4277_F58E_4D58_932E_0E0B3BB584AC__

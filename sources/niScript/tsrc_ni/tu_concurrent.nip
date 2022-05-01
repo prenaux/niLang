@@ -1,0 +1,148 @@
+::Import("unittest.ni")
+::Import("concurrent.ni")
+
+//==========================================================================
+// Basic
+//==========================================================================
+::TEST("basic", #() {
+  ::CHECK_EQUAL(true,::concurrent.isConcurrent())
+})
+
+//==========================================================================
+// Runnable
+//==========================================================================
+::FIXTURE("Runnable")
+
+::TEST("Runnable","function",#() {
+  local runnable = ::concurrent.newRunnable(function() {
+    return 123
+  })
+  ::CHECK_EQUAL(123,runnable.Run())
+})
+
+::TEST("Runnable","table",#() {
+  local runnable = ::concurrent.newRunnable({
+    _value = 123
+    function Run() {
+      return _value
+    }
+  })
+  ::CHECK_EQUAL(123,runnable.Run())
+})
+
+//==========================================================================
+// Callback
+//==========================================================================
+::FIXTURE("Callback")
+
+::TEST("Callback","function",#() {
+  local callback = ::concurrent.newCallback(function() {
+    return 123
+  })
+  ::CHECK_EQUAL(123,callback.Run())
+})
+
+::TEST("Callback","table",#() {
+  local callback = ::concurrent.newCallback({
+    _value = 123
+    function Run() {
+      return _value
+    }
+  })
+  ::CHECK_EQUAL(123,callback.Run())
+})
+
+
+::TEST("Callback","function2",#() {
+  local callback = ::concurrent.newCallback(function(aA,aB) {
+    return (aA || 1000) + (aB || 2000)
+  })
+  ::CHECK_EQUAL(3000,callback.Run())
+  ::CHECK_EQUAL(2100,callback.RunCallback(100))
+  ::CHECK_EQUAL(300,callback.RunCallback(100,200))
+})
+
+::TEST("Callback","table2",#() {
+  local callback = ::concurrent.newCallback({
+    _value = 123
+    function Run(aA,aB) {
+      return (aA || 1000) + (aB || 2000) + _value
+    }
+  })
+  ::CHECK_EQUAL(123+3000,callback.Run())
+  ::CHECK_EQUAL(123+2100,callback.RunCallback(100))
+  ::CHECK_EQUAL(123+300,callback.RunCallback(100,200))
+})
+
+//==========================================================================
+// CpuRun
+//==========================================================================
+::FIXTURE("CpuRun")
+
+::TEST("CpuRun","single",#() {
+  local future = ::concurrent.cpuRun(#() {
+    for (local i = 0; i < 10; ++i) {
+      ::println("PRINT: " + (i+1))
+    }
+    return 789
+  })
+  future.Wait(invalid)
+  ::CHECK_EQUAL(789,future.value)
+  ::CollectGarbage()
+})
+
+::TEST("CpuRun","two",#() {
+  local concurrent = ::lang.getProperty("test.concurrent.concurrent",true).toint()
+  local count = ::lang.getProperty("test.concurrent.count",100).toint()
+  local one = ::concurrent.cpuRun(#():(count) {
+    local c = 0
+    for (local i = 0; i < count; ++i) {
+      // ::println("[1] PRINT: " + (i+1))
+      c += 1
+    }
+    return c
+  })
+  if (!concurrent) {
+    one.Wait(invalid)
+    ::CHECK_EQUAL(count,one.value)
+  }
+  local two = ::concurrent.cpuRun(#():(count) {
+    local c = 0
+    for (local i = 0; i < count; ++i) {
+      // ::println("[2] PRINT: " + ((i+1)*2))
+      c += 2
+    }
+    return c
+  })
+  if (concurrent) {
+    one.Wait(invalid)
+    ::CHECK_EQUAL(count,one.value)
+  }
+  two.Wait(invalid)
+  ::CHECK_EQUAL(count*2,two.value)
+  ::CollectGarbage()
+})
+
+::TEST("CpuRun","ten",#() {
+  local concurrent = ::lang.getProperty("test.concurrent.concurrent",true).toint()
+  local count = ::lang.getProperty("test.concurrent.count",10).toint()
+  local waitOn = []
+  for (local i = 0; i < count; ++i) {
+    local cpuIndex = i
+    local future = ::concurrent.cpuRun(#():(cpuIndex,count) {
+      local c = 0
+      for (local i = 0; i < count; ++i) {
+        // ::println("["+cpuIndex+"] PRINT: " + (i+1))
+        c += 1
+      }
+      return c
+    })
+    waitOn.Add(future)
+  }
+  foreach (w in waitOn) {
+    w.Wait(invalid)
+    ::CHECK_EQUAL(count,w.value)
+  }
+  ::CHECK_EQUAL(count,waitOn.GetSize())
+  ::CollectGarbage()
+})

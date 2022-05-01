@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<module name='niScript'
+        version='1,0,0' 
+        desc='niScript module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='yes'
+        genentrypoint='no'
+        unknowntype='Ptr'
+>
+  <objecttype  name='ScriptVM'  />
+  <objecttype  name='URLFileHandlerScript'  />
+  <include>niScript/src/_idl/IScriptObject.h.idl.xml</include>
+  <include>niScript/src/_idl/IScriptVM.h.idl.xml</include>
+  <include>niScript/src/_idl/VMAPI.h.idl.xml</include>
+</module>

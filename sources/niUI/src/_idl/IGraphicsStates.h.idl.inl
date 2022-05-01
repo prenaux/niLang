@@ -1,0 +1,744 @@
+#include "../API/niUI/IGraphicsStates.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSamplerStates **/
+IDLC_BEGIN_INTF(ni,iSamplerStates)
+/** ni -> iSamplerStates::Copy/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,Copy,1)
+	IDLC_DECL_VAR(iSamplerStates*,apStates)
+	IDLC_BUF_TO_INTF(iSamplerStates,apStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,Copy,1,(apStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,Copy,1)
+
+/** ni -> iSamplerStates::Clone/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,Clone,0)
+	IDLC_DECL_RETVAR(iSamplerStates*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,Clone,0,())
+	IDLC_RET_FROM_INTF(iSamplerStates,_Ret)
+IDLC_METH_END(ni,iSamplerStates,Clone,0)
+
+/** ni -> iSamplerStates::GetIsCompiled/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetIsCompiled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetIsCompiled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetIsCompiled,0)
+
+/** ni -> iSamplerStates::SetFilter/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SetFilter,1)
+	IDLC_DECL_VAR(eSamplerFilter,aFilter)
+	IDLC_BUF_TO_ENUM(eSamplerFilter,aFilter)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SetFilter,1,(aFilter))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SetFilter,1)
+
+/** ni -> iSamplerStates::GetFilter/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetFilter,0)
+	IDLC_DECL_RETVAR(eSamplerFilter,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetFilter,0,())
+	IDLC_RET_FROM_ENUM(eSamplerFilter,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetFilter,0)
+
+/** ni -> iSamplerStates::SetWrapS/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SetWrapS,1)
+	IDLC_DECL_VAR(eSamplerWrap,aWrap)
+	IDLC_BUF_TO_ENUM(eSamplerWrap,aWrap)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SetWrapS,1,(aWrap))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SetWrapS,1)
+
+/** ni -> iSamplerStates::GetWrapS/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetWrapS,0)
+	IDLC_DECL_RETVAR(eSamplerWrap,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetWrapS,0,())
+	IDLC_RET_FROM_ENUM(eSamplerWrap,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetWrapS,0)
+
+/** ni -> iSamplerStates::SetWrapT/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SetWrapT,1)
+	IDLC_DECL_VAR(eSamplerWrap,aWrap)
+	IDLC_BUF_TO_ENUM(eSamplerWrap,aWrap)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SetWrapT,1,(aWrap))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SetWrapT,1)
+
+/** ni -> iSamplerStates::GetWrapT/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetWrapT,0)
+	IDLC_DECL_RETVAR(eSamplerWrap,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetWrapT,0,())
+	IDLC_RET_FROM_ENUM(eSamplerWrap,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetWrapT,0)
+
+/** ni -> iSamplerStates::SetWrapR/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SetWrapR,1)
+	IDLC_DECL_VAR(eSamplerWrap,aWrap)
+	IDLC_BUF_TO_ENUM(eSamplerWrap,aWrap)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SetWrapR,1,(aWrap))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SetWrapR,1)
+
+/** ni -> iSamplerStates::GetWrapR/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetWrapR,0)
+	IDLC_DECL_RETVAR(eSamplerWrap,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetWrapR,0,())
+	IDLC_RET_FROM_ENUM(eSamplerWrap,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetWrapR,0)
+
+/** ni -> iSamplerStates::SetBorderColor/1 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SetBorderColor,1)
+	IDLC_DECL_VAR(sColor4f,avColor)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avColor)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SetBorderColor,1,(avColor))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SetBorderColor,1)
+
+/** ni -> iSamplerStates::GetBorderColor/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetBorderColor,0)
+	IDLC_DECL_RETREFVAR(sColor4f&,_Ret,sColor4f)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetBorderColor,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetBorderColor,0)
+
+/** ni -> iSamplerStates::GetDescStructPtr/0 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,GetDescStructPtr,0)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,GetDescStructPtr,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iSamplerStates,GetDescStructPtr,0)
+
+/** ni -> iSamplerStates::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iSamplerStates,SerializeDataTable,2)
+	IDLC_DECL_VAR(ni::iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(ni::iDataTable,apDT)
+	IDLC_DECL_VAR(tSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSamplerStates,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iSamplerStates,SerializeDataTable,2)
+
+IDLC_END_INTF(ni,iSamplerStates)
+
+/** interface : iDepthStencilStates **/
+IDLC_BEGIN_INTF(ni,iDepthStencilStates)
+/** ni -> iDepthStencilStates::Copy/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,Copy,1)
+	IDLC_DECL_VAR(iDepthStencilStates*,apStates)
+	IDLC_BUF_TO_INTF(iDepthStencilStates,apStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,Copy,1,(apStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,Copy,1)
+
+/** ni -> iDepthStencilStates::Clone/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,Clone,0)
+	IDLC_DECL_RETVAR(iDepthStencilStates*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,Clone,0,())
+	IDLC_RET_FROM_INTF(iDepthStencilStates,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,Clone,0)
+
+/** ni -> iDepthStencilStates::GetIsCompiled/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetIsCompiled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetIsCompiled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetIsCompiled,0)
+
+/** ni -> iDepthStencilStates::SetDepthTest/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetDepthTest,1)
+	IDLC_DECL_VAR(tBool,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_I8,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetDepthTest,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetDepthTest,1)
+
+/** ni -> iDepthStencilStates::GetDepthTest/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetDepthTest,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetDepthTest,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetDepthTest,0)
+
+/** ni -> iDepthStencilStates::SetDepthTestWrite/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetDepthTestWrite,1)
+	IDLC_DECL_VAR(tBool,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_I8,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetDepthTestWrite,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetDepthTestWrite,1)
+
+/** ni -> iDepthStencilStates::GetDepthTestWrite/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetDepthTestWrite,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetDepthTestWrite,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetDepthTestWrite,0)
+
+/** ni -> iDepthStencilStates::SetDepthTestCompare/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetDepthTestCompare,1)
+	IDLC_DECL_VAR(eGraphicsCompare,aVal)
+	IDLC_BUF_TO_ENUM(eGraphicsCompare,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetDepthTestCompare,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetDepthTestCompare,1)
+
+/** ni -> iDepthStencilStates::GetDepthTestCompare/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetDepthTestCompare,0)
+	IDLC_DECL_RETVAR(eGraphicsCompare,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetDepthTestCompare,0,())
+	IDLC_RET_FROM_ENUM(eGraphicsCompare,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetDepthTestCompare,0)
+
+/** ni -> iDepthStencilStates::SetStencilMode/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilMode,1)
+	IDLC_DECL_VAR(eStencilMode,aVal)
+	IDLC_BUF_TO_ENUM(eStencilMode,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilMode,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilMode,1)
+
+/** ni -> iDepthStencilStates::GetStencilMode/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilMode,0)
+	IDLC_DECL_RETVAR(eStencilMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilMode,0,())
+	IDLC_RET_FROM_ENUM(eStencilMode,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilMode,0)
+
+/** ni -> iDepthStencilStates::SetStencilRef/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilRef,1)
+	IDLC_DECL_VAR(tI32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_I32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilRef,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilRef,1)
+
+/** ni -> iDepthStencilStates::GetStencilRef/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilRef,0)
+	IDLC_DECL_RETVAR(tI32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilRef,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I32,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilRef,0)
+
+/** ni -> iDepthStencilStates::SetStencilMask/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilMask,1)
+	IDLC_DECL_VAR(tU32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilMask,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilMask,1)
+
+/** ni -> iDepthStencilStates::GetStencilMask/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilMask,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilMask,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilMask,0)
+
+/** ni -> iDepthStencilStates::SetStencilFrontCompare/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilFrontCompare,1)
+	IDLC_DECL_VAR(eGraphicsCompare,aVal)
+	IDLC_BUF_TO_ENUM(eGraphicsCompare,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilFrontCompare,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilFrontCompare,1)
+
+/** ni -> iDepthStencilStates::GetStencilFrontCompare/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilFrontCompare,0)
+	IDLC_DECL_RETVAR(eGraphicsCompare,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilFrontCompare,0,())
+	IDLC_RET_FROM_ENUM(eGraphicsCompare,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilFrontCompare,0)
+
+/** ni -> iDepthStencilStates::SetStencilFrontFail/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilFrontFail,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilFrontFail,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilFrontFail,1)
+
+/** ni -> iDepthStencilStates::GetStencilFrontFail/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilFrontFail,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilFrontFail,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilFrontFail,0)
+
+/** ni -> iDepthStencilStates::SetStencilFrontPassDepthFail/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilFrontPassDepthFail,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilFrontPassDepthFail,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilFrontPassDepthFail,1)
+
+/** ni -> iDepthStencilStates::GetStencilFrontPassDepthFail/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilFrontPassDepthFail,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilFrontPassDepthFail,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilFrontPassDepthFail,0)
+
+/** ni -> iDepthStencilStates::SetStencilFrontPassDepthPass/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilFrontPassDepthPass,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilFrontPassDepthPass,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilFrontPassDepthPass,1)
+
+/** ni -> iDepthStencilStates::GetStencilFrontPassDepthPass/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilFrontPassDepthPass,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilFrontPassDepthPass,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilFrontPassDepthPass,0)
+
+/** ni -> iDepthStencilStates::SetStencilBackCompare/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilBackCompare,1)
+	IDLC_DECL_VAR(eGraphicsCompare,aVal)
+	IDLC_BUF_TO_ENUM(eGraphicsCompare,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilBackCompare,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilBackCompare,1)
+
+/** ni -> iDepthStencilStates::GetStencilBackCompare/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilBackCompare,0)
+	IDLC_DECL_RETVAR(eGraphicsCompare,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilBackCompare,0,())
+	IDLC_RET_FROM_ENUM(eGraphicsCompare,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilBackCompare,0)
+
+/** ni -> iDepthStencilStates::SetStencilBackFail/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilBackFail,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilBackFail,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilBackFail,1)
+
+/** ni -> iDepthStencilStates::GetStencilBackFail/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilBackFail,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilBackFail,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilBackFail,0)
+
+/** ni -> iDepthStencilStates::SetStencilBackPassDepthFail/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilBackPassDepthFail,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilBackPassDepthFail,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilBackPassDepthFail,1)
+
+/** ni -> iDepthStencilStates::GetStencilBackPassDepthFail/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilBackPassDepthFail,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilBackPassDepthFail,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilBackPassDepthFail,0)
+
+/** ni -> iDepthStencilStates::SetStencilBackPassDepthPass/1 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SetStencilBackPassDepthPass,1)
+	IDLC_DECL_VAR(eStencilOp,aVal)
+	IDLC_BUF_TO_ENUM(eStencilOp,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SetStencilBackPassDepthPass,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SetStencilBackPassDepthPass,1)
+
+/** ni -> iDepthStencilStates::GetStencilBackPassDepthPass/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetStencilBackPassDepthPass,0)
+	IDLC_DECL_RETVAR(eStencilOp,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetStencilBackPassDepthPass,0,())
+	IDLC_RET_FROM_ENUM(eStencilOp,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetStencilBackPassDepthPass,0)
+
+/** ni -> iDepthStencilStates::GetDescStructPtr/0 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,GetDescStructPtr,0)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,GetDescStructPtr,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,GetDescStructPtr,0)
+
+/** ni -> iDepthStencilStates::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iDepthStencilStates,SerializeDataTable,2)
+	IDLC_DECL_VAR(ni::iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(ni::iDataTable,apDT)
+	IDLC_DECL_VAR(tSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDepthStencilStates,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iDepthStencilStates,SerializeDataTable,2)
+
+IDLC_END_INTF(ni,iDepthStencilStates)
+
+/** interface : iRasterizerStates **/
+IDLC_BEGIN_INTF(ni,iRasterizerStates)
+/** ni -> iRasterizerStates::Copy/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,Copy,1)
+	IDLC_DECL_VAR(iRasterizerStates*,apStates)
+	IDLC_BUF_TO_INTF(iRasterizerStates,apStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,Copy,1,(apStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,Copy,1)
+
+/** ni -> iRasterizerStates::Clone/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,Clone,0)
+	IDLC_DECL_RETVAR(iRasterizerStates*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,Clone,0,())
+	IDLC_RET_FROM_INTF(iRasterizerStates,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,Clone,0)
+
+/** ni -> iRasterizerStates::GetIsCompiled/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetIsCompiled,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetIsCompiled,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetIsCompiled,0)
+
+/** ni -> iRasterizerStates::SetWireframe/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetWireframe,1)
+	IDLC_DECL_VAR(tBool,abWireframe)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abWireframe)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetWireframe,1,(abWireframe))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetWireframe,1)
+
+/** ni -> iRasterizerStates::GetWireframe/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetWireframe,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetWireframe,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetWireframe,0)
+
+/** ni -> iRasterizerStates::SetCullingMode/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetCullingMode,1)
+	IDLC_DECL_VAR(eCullingMode,aMode)
+	IDLC_BUF_TO_ENUM(eCullingMode,aMode)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetCullingMode,1,(aMode))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetCullingMode,1)
+
+/** ni -> iRasterizerStates::GetCullingMode/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetCullingMode,0)
+	IDLC_DECL_RETVAR(eCullingMode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetCullingMode,0,())
+	IDLC_RET_FROM_ENUM(eCullingMode,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetCullingMode,0)
+
+/** ni -> iRasterizerStates::SetColorWriteMask/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetColorWriteMask,1)
+	IDLC_DECL_VAR(eColorWriteMask,aMask)
+	IDLC_BUF_TO_ENUM(eColorWriteMask,aMask)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetColorWriteMask,1,(aMask))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetColorWriteMask,1)
+
+/** ni -> iRasterizerStates::GetColorWriteMask/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetColorWriteMask,0)
+	IDLC_DECL_RETVAR(eColorWriteMask,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetColorWriteMask,0,())
+	IDLC_RET_FROM_ENUM(eColorWriteMask,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetColorWriteMask,0)
+
+/** ni -> iRasterizerStates::SetScissorTest/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetScissorTest,1)
+	IDLC_DECL_VAR(tBool,abTest)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abTest)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetScissorTest,1,(abTest))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetScissorTest,1)
+
+/** ni -> iRasterizerStates::GetScissorTest/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetScissorTest,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetScissorTest,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetScissorTest,0)
+
+/** ni -> iRasterizerStates::SetDepthBiasFactor/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetDepthBiasFactor,1)
+	IDLC_DECL_VAR(tF32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetDepthBiasFactor,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetDepthBiasFactor,1)
+
+/** ni -> iRasterizerStates::GetDepthBiasFactor/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetDepthBiasFactor,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetDepthBiasFactor,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetDepthBiasFactor,0)
+
+/** ni -> iRasterizerStates::SetDepthBiasUnitScale/1 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SetDepthBiasUnitScale,1)
+	IDLC_DECL_VAR(tF32,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetDepthBiasUnitScale,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SetDepthBiasUnitScale,1)
+
+/** ni -> iRasterizerStates::GetDepthBiasUnitScale/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetDepthBiasUnitScale,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetDepthBiasUnitScale,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetDepthBiasUnitScale,0)
+
+/** ni -> iRasterizerStates::GetDescStructPtr/0 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,GetDescStructPtr,0)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetDescStructPtr,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,GetDescStructPtr,0)
+
+/** ni -> iRasterizerStates::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iRasterizerStates,SerializeDataTable,2)
+	IDLC_DECL_VAR(ni::iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(ni::iDataTable,apDT)
+	IDLC_DECL_VAR(tSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRasterizerStates,SerializeDataTable,2)
+
+IDLC_END_INTF(ni,iRasterizerStates)
+
+/** interface : iFixedStates **/
+IDLC_BEGIN_INTF(ni,iFixedStates)
+/** ni -> iFixedStates::Copy/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,Copy,1)
+	IDLC_DECL_VAR(iFixedStates*,apStates)
+	IDLC_BUF_TO_INTF(iFixedStates,apStates)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,Copy,1,(apStates))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFixedStates,Copy,1)
+
+/** ni -> iFixedStates::Clone/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,Clone,0)
+	IDLC_DECL_RETVAR(iFixedStates*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,Clone,0,())
+	IDLC_RET_FROM_INTF(iFixedStates,_Ret)
+IDLC_METH_END(ni,iFixedStates,Clone,0)
+
+/** ni -> iFixedStates::SetCameraViewMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetCameraViewMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetCameraViewMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetCameraViewMatrix,1)
+
+/** ni -> iFixedStates::SetOnlyCameraViewMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetOnlyCameraViewMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetOnlyCameraViewMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetOnlyCameraViewMatrix,1)
+
+/** ni -> iFixedStates::GetCameraViewMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraViewMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraViewMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraViewMatrix,0)
+
+/** ni -> iFixedStates::GetCameraInvViewMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraInvViewMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraInvViewMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraInvViewMatrix,0)
+
+/** ni -> iFixedStates::SetCameraProjectionMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetCameraProjectionMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetCameraProjectionMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetCameraProjectionMatrix,1)
+
+/** ni -> iFixedStates::SetOnlyCameraProjectionMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetOnlyCameraProjectionMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetOnlyCameraProjectionMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetOnlyCameraProjectionMatrix,1)
+
+/** ni -> iFixedStates::GetCameraProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetCameraInvProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraInvProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraInvProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraInvProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetCameraViewProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraViewProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraViewProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraViewProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetCameraInvViewProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetCameraInvViewProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetCameraInvViewProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetCameraInvViewProjectionMatrix,0)
+
+/** ni -> iFixedStates::SetViewMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetViewMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetViewMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetViewMatrix,1)
+
+/** ni -> iFixedStates::GetViewMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetViewMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetViewMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetViewMatrix,0)
+
+/** ni -> iFixedStates::SetProjectionMatrix/1 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetProjectionMatrix,1)
+	IDLC_DECL_VAR(sMatrixf,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aVal)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetProjectionMatrix,1,(aVal))
+IDLC_METH_END(ni,iFixedStates,SetProjectionMatrix,1)
+
+/** ni -> iFixedStates::GetProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetInvViewMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetInvViewMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetInvViewMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetInvViewMatrix,0)
+
+/** ni -> iFixedStates::GetViewProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetViewProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetViewProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetViewProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetInvViewProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetInvViewProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetInvViewProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetInvViewProjectionMatrix,0)
+
+/** ni -> iFixedStates::GetInvProjectionMatrix/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetInvProjectionMatrix,0)
+	IDLC_DECL_RETVAR(sMatrixf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetInvProjectionMatrix,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Matrixf,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetInvProjectionMatrix,0)
+
+/** ni -> iFixedStates::SetLookAtMatrices/8 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetLookAtMatrices,8)
+	IDLC_DECL_VAR(tBool,abSetCameraMatrices)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abSetCameraMatrices)
+	IDLC_DECL_VAR(sVec3f,avEye)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avEye)
+	IDLC_DECL_VAR(sVec3f,avAt)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avAt)
+	IDLC_DECL_VAR(sVec3f,avUp)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avUp)
+	IDLC_DECL_VAR(tF32,afFovY)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afFovY)
+	IDLC_DECL_VAR(tF32,afAspect)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afAspect)
+	IDLC_DECL_VAR(tF32,afNear)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afNear)
+	IDLC_DECL_VAR(tF32,afFar)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afFar)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetLookAtMatrices,8,(abSetCameraMatrices,avEye,avAt,avUp,afFovY,afAspect,afNear,afFar))
+IDLC_METH_END(ni,iFixedStates,SetLookAtMatrices,8)
+
+/** ni -> iFixedStates::SetOrthoMatrices/4 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SetOrthoMatrices,4)
+	IDLC_DECL_VAR(tBool,abSetCameraMatrices)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abSetCameraMatrices)
+	IDLC_DECL_VAR(sRectf,arectViewport)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,arectViewport)
+	IDLC_DECL_VAR(tF32,afNear)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afNear)
+	IDLC_DECL_VAR(tF32,afFar)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afFar)
+	IDLC_METH_CALL_VOID(ni,iFixedStates,SetOrthoMatrices,4,(abSetCameraMatrices,arectViewport,afNear,afFar))
+IDLC_METH_END(ni,iFixedStates,SetOrthoMatrices,4)
+
+/** ni -> iFixedStates::GetDescStructPtr/0 **/
+IDLC_METH_BEGIN(ni,iFixedStates,GetDescStructPtr,0)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,GetDescStructPtr,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iFixedStates,GetDescStructPtr,0)
+
+/** ni -> iFixedStates::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iFixedStates,SerializeDataTable,2)
+	IDLC_DECL_VAR(ni::iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(ni::iDataTable,apDT)
+	IDLC_DECL_VAR(tSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFixedStates,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFixedStates,SerializeDataTable,2)
+
+IDLC_END_INTF(ni,iFixedStates)
+
+IDLC_END_NAMESPACE()
+// EOF //

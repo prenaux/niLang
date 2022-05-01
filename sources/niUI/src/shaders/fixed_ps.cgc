@@ -1,0 +1,16 @@
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+#include "StdPixelInput.cgh"
+#include "StdUniforms.cgh"
+#include "StdSampler.cgh"
+#include "StdMaterial.cgh"
+#include "StdLight.cgh"
+#include "StdUtils.cgh"
+#include "StdLighting.cgh"
+
+float4 main(StdVertexOutput aIN) : COLOR0 {
+  stdPixelInput_InitFromVertexOutput(aIN);
+  StdSampledMaterial m = stdMat_GetSampledMaterial();
+  float4 r = stdLighting_NoLighting(m);
+  return stdMat_GetFinalColor(m,r,false);
+}

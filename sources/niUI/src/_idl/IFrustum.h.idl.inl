@@ -1,0 +1,179 @@
+#include "../API/niUI/IFrustum.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iFrustum **/
+IDLC_BEGIN_INTF(ni,iFrustum)
+/** ni -> iFrustum::Clone/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,Clone,0)
+	IDLC_DECL_RETVAR(iFrustum*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,Clone,0,())
+	IDLC_RET_FROM_INTF(iFrustum,_Ret)
+IDLC_METH_END(ni,iFrustum,Clone,0)
+
+/** ni -> iFrustum::Copy/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,Copy,1)
+	IDLC_DECL_VAR(iFrustum*,apSrc)
+	IDLC_BUF_TO_INTF(iFrustum,apSrc)
+	IDLC_METH_CALL_VOID(ni,iFrustum,Copy,1,(apSrc))
+IDLC_METH_END(ni,iFrustum,Copy,1)
+
+/** ni -> iFrustum::GetForward/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetForward,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetForward,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iFrustum,GetForward,0)
+
+/** ni -> iFrustum::GetUp/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetUp,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetUp,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iFrustum,GetUp,0)
+
+/** ni -> iFrustum::GetRight/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetRight,0)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetRight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iFrustum,GetRight,0)
+
+/** ni -> iFrustum::ExtractPlanes/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,ExtractPlanes,1)
+	IDLC_DECL_VAR(sMatrixf,mtxVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,mtxVP)
+	IDLC_METH_CALL_VOID(ni,iFrustum,ExtractPlanes,1,(mtxVP))
+IDLC_METH_END(ni,iFrustum,ExtractPlanes,1)
+
+/** ni -> iFrustum::SetNumPlanes/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,SetNumPlanes,1)
+	IDLC_DECL_VAR(tU32,ulNumPlane)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulNumPlane)
+	IDLC_METH_CALL_VOID(ni,iFrustum,SetNumPlanes,1,(ulNumPlane))
+IDLC_METH_END(ni,iFrustum,SetNumPlanes,1)
+
+/** ni -> iFrustum::GetNumPlanes/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetNumPlanes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetNumPlanes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iFrustum,GetNumPlanes,0)
+
+/** ni -> iFrustum::AddPlanes/2 -> NO AUTOMATION **/
+/** ni -> iFrustum::AddPlane/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,AddPlane,1)
+	IDLC_DECL_VAR(sPlanef,aPlane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aPlane)
+	IDLC_METH_CALL_VOID(ni,iFrustum,AddPlane,1,(aPlane))
+IDLC_METH_END(ni,iFrustum,AddPlane,1)
+
+/** ni -> iFrustum::SetPlanes/2 -> NO AUTOMATION **/
+/** ni -> iFrustum::SetPlane/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,SetPlane,2)
+	IDLC_DECL_VAR(tU32,ulIdx)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulIdx)
+	IDLC_DECL_VAR(sPlanef,Plane)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,Plane)
+	IDLC_METH_CALL_VOID(ni,iFrustum,SetPlane,2,(ulIdx,Plane))
+IDLC_METH_END(ni,iFrustum,SetPlane,2)
+
+/** ni -> iFrustum::GetPlane/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetPlane,1)
+	IDLC_DECL_VAR(tU32,ulIdx)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulIdx)
+	IDLC_DECL_RETVAR(sPlanef,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetPlane,1,(ulIdx))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFrustum,GetPlane,1)
+
+/** ni -> iFrustum::GetPlanes/0 -> NO AUTOMATION **/
+/** ni -> iFrustum::CullAABB/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,CullAABB,2)
+	IDLC_DECL_VAR(sVec3f,avMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMin)
+	IDLC_DECL_VAR(sVec3f,avMax)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMax)
+	IDLC_DECL_RETVAR(eCullCode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,CullAABB,2,(avMin,avMax))
+	IDLC_RET_FROM_ENUM(eCullCode,_Ret)
+IDLC_METH_END(ni,iFrustum,CullAABB,2)
+
+/** ni -> iFrustum::IntersectAABB/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,IntersectAABB,2)
+	IDLC_DECL_VAR(sVec3f,avMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMin)
+	IDLC_DECL_VAR(sVec3f,avMax)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMax)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,IntersectAABB,2,(avMin,avMax))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFrustum,IntersectAABB,2)
+
+/** ni -> iFrustum::CullSphere/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,CullSphere,2)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(tF32,afRadius)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadius)
+	IDLC_DECL_RETVAR(eCullCode,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,CullSphere,2,(avCenter,afRadius))
+	IDLC_RET_FROM_ENUM(eCullCode,_Ret)
+IDLC_METH_END(ni,iFrustum,CullSphere,2)
+
+/** ni -> iFrustum::IntersectSphere/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,IntersectSphere,2)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(tF32,afRadius)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadius)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,IntersectSphere,2,(avCenter,afRadius))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFrustum,IntersectSphere,2)
+
+/** ni -> iFrustum::Transform/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,Transform,1)
+	IDLC_DECL_VAR(sMatrixf,M)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,M)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,Transform,1,(M))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFrustum,Transform,1)
+
+/** ni -> iFrustum::ComputeScreenBoundingBox/2 **/
+IDLC_METH_BEGIN(ni,iFrustum,ComputeScreenBoundingBox,2)
+	IDLC_DECL_VAR(sMatrixf,amtxWVP)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,amtxWVP)
+	IDLC_DECL_VAR(sRectf,aViewport)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aViewport)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,ComputeScreenBoundingBox,2,(amtxWVP,aViewport))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFrustum,ComputeScreenBoundingBox,2)
+
+/** ni -> iFrustum::SetBoundingVolume/1 **/
+IDLC_METH_BEGIN(ni,iFrustum,SetBoundingVolume,1)
+	IDLC_DECL_VAR(iBoundingVolume*,apBV)
+	IDLC_BUF_TO_INTF(iBoundingVolume,apBV)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,SetBoundingVolume,1,(apBV))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iFrustum,SetBoundingVolume,1)
+
+/** ni -> iFrustum::GetBoundingVolume/0 **/
+IDLC_METH_BEGIN(ni,iFrustum,GetBoundingVolume,0)
+	IDLC_DECL_RETVAR(iBoundingVolume*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFrustum,GetBoundingVolume,0,())
+	IDLC_RET_FROM_INTF(iBoundingVolume,_Ret)
+IDLC_METH_END(ni,iFrustum,GetBoundingVolume,0)
+
+IDLC_END_INTF(ni,iFrustum)
+
+IDLC_END_NAMESPACE()
+// EOF //

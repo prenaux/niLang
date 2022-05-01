@@ -1,0 +1,85 @@
+#include "../API/niSound/ISoundFormat.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iSoundFormat **/
+IDLC_BEGIN_INTF(ni,iSoundFormat)
+/** ni -> iSoundFormat::GetFormat/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetFormat,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetFormat,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetFormat,0)
+
+/** ni -> iSoundFormat::GetBaseFormat/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetBaseFormat,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetBaseFormat,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetBaseFormat,0)
+
+/** ni -> iSoundFormat::SetBits/1 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,SetBits,1)
+	IDLC_DECL_VAR(tU8,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_U8,aVal)
+	IDLC_METH_CALL_VOID(ni,iSoundFormat,SetBits,1,(aVal))
+IDLC_METH_END(ni,iSoundFormat,SetBits,1)
+
+/** ni -> iSoundFormat::GetBits/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetBits,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetBits,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetBits,0)
+
+/** ni -> iSoundFormat::SetChannels/1 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,SetChannels,1)
+	IDLC_DECL_VAR(tU8,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_U8,aVal)
+	IDLC_METH_CALL_VOID(ni,iSoundFormat,SetChannels,1,(aVal))
+IDLC_METH_END(ni,iSoundFormat,SetChannels,1)
+
+/** ni -> iSoundFormat::GetChannels/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetChannels,0)
+	IDLC_DECL_RETVAR(tU8,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetChannels,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U8,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetChannels,0)
+
+/** ni -> iSoundFormat::SetExtra/1 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,SetExtra,1)
+	IDLC_DECL_VAR(tU16,aVal)
+	IDLC_BUF_TO_BASE(ni::eType_U16,aVal)
+	IDLC_METH_CALL_VOID(ni,iSoundFormat,SetExtra,1,(aVal))
+IDLC_METH_END(ni,iSoundFormat,SetExtra,1)
+
+/** ni -> iSoundFormat::GetExtra/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetExtra,0)
+	IDLC_DECL_RETVAR(tU16,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetExtra,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U16,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetExtra,0)
+
+/** ni -> iSoundFormat::GetSampleSize/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetSampleSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetSampleSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetSampleSize,0)
+
+/** ni -> iSoundFormat::GetFrameSize/0 **/
+IDLC_METH_BEGIN(ni,iSoundFormat,GetFrameSize,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iSoundFormat,GetFrameSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iSoundFormat,GetFrameSize,0)
+
+IDLC_END_INTF(ni,iSoundFormat)
+
+IDLC_END_NAMESPACE()
+// EOF //

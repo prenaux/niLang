@@ -1,0 +1,46 @@
+#include "../API/niLang/IXml.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iXmlParserSink **/
+/** iXmlParserSink -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iXmlParserSink)
+/** ni -> iXmlParserSink::OnXmlParserSink_Node/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iXmlParserSink::OnXmlParserSink_Node/2 **/
+IDLC_METH_BEGIN(ni,iXmlParserSink,OnXmlParserSink_Node,2)
+	IDLC_DECL_VAR(eXmlParserNodeType,aType)
+	IDLC_BUF_TO_ENUM(eXmlParserNodeType,aType)
+	IDLC_DECL_VAR(ni::achar*,aNameOrData)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aNameOrData)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iXmlParserSink,OnXmlParserSink_Node,2,(aType,aNameOrData))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iXmlParserSink,OnXmlParserSink_Node,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iXmlParserSink::OnXmlParserSink_Attribute/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iXmlParserSink::OnXmlParserSink_Attribute/2 **/
+IDLC_METH_BEGIN(ni,iXmlParserSink,OnXmlParserSink_Attribute,2)
+	IDLC_DECL_VAR(ni::achar*,aName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aName)
+	IDLC_DECL_VAR(ni::achar*,aValue)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aValue)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iXmlParserSink,OnXmlParserSink_Attribute,2,(aName,aValue))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iXmlParserSink,OnXmlParserSink_Attribute,2)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iXmlParserSink)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

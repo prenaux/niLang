@@ -1,0 +1,428 @@
+#include "../API/niUI/IWidgetListBox.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetListBox **/
+IDLC_BEGIN_INTF(ni,iWidgetListBox)
+/** ni -> iWidgetListBox::AddColumn/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,AddColumn,2)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,AddColumn,2,(aaszName,anSize))
+IDLC_METH_END(ni,iWidgetListBox,AddColumn,2)
+
+/** ni -> iWidgetListBox::RemoveColumn/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,RemoveColumn,1)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,RemoveColumn,1,(anColumn))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,RemoveColumn,1)
+
+/** ni -> iWidgetListBox::GetNumColumns/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetNumColumns,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetNumColumns,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetNumColumns,0)
+
+/** ni -> iWidgetListBox::SetColumnName/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetColumnName,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetColumnName,2,(anColumn,aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetColumnName,2)
+
+/** ni -> iWidgetListBox::GetColumnName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetColumnName,1)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetColumnName,1,(anColumn))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetColumnName,1)
+
+/** ni -> iWidgetListBox::SetColumnWidth/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetColumnWidth,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anWidth)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anWidth)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetColumnWidth,2,(anColumn,anWidth))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetColumnWidth,2)
+
+/** ni -> iWidgetListBox::GetColumnWidth/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetColumnWidth,1)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetColumnWidth,1,(anColumn))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetColumnWidth,1)
+
+/** ni -> iWidgetListBox::SetColumn/3 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetColumn,3)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetColumn,3,(anColumn,aaszName,anSize))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetColumn,3)
+
+/** ni -> iWidgetListBox::GetNumItems/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetNumItems,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetNumItems,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetNumItems,0)
+
+/** ni -> iWidgetListBox::ClearItems/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,ClearItems,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,ClearItems,0,())
+IDLC_METH_END(ni,iWidgetListBox,ClearItems,0)
+
+/** ni -> iWidgetListBox::AddItem/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,AddItem,1)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,AddItem,1,(aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,AddItem,1)
+
+/** ni -> iWidgetListBox::RemoveItem/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,RemoveItem,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,RemoveItem,1,(anItem))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,RemoveItem,1)
+
+/** ni -> iWidgetListBox::SetItemText/3 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemText,3)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemText,3,(anColumn,anItem,aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemText,3)
+
+/** ni -> iWidgetListBox::GetItemText/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemText,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemText,2,(anColumn,anItem))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemText,2)
+
+/** ni -> iWidgetListBox::SetItemWidget/3 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemWidget,3)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemWidget,3,(anColumn,anItem,apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemWidget,3)
+
+/** ni -> iWidgetListBox::GetItemWidget/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemWidget,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemWidget,2,(anColumn,anItem))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemWidget,2)
+
+/** ni -> iWidgetListBox::SetItemIcon/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemIcon,2)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_VAR(iOverlay*,apIcon)
+	IDLC_BUF_TO_INTF(iOverlay,apIcon)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemIcon,2,(anItem,apIcon))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemIcon,2)
+
+/** ni -> iWidgetListBox::GetItemIcon/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemIcon,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemIcon,1,(anItem))
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemIcon,1)
+
+/** ni -> iWidgetListBox::SetItemData/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemData,2)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_VAR(iUnknown*,apData)
+	IDLC_BUF_TO_INTF(iUnknown,apData)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemData,2,(anItem,apData))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemData,2)
+
+/** ni -> iWidgetListBox::GetItemData/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemData,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemData,1,(anItem))
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemData,1)
+
+/** ni -> iWidgetListBox::SetSortKey/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetSortKey,1)
+	IDLC_DECL_VAR(tU32,anKeyColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anKeyColumn)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetSortKey,1,(anKeyColumn))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetSortKey,1)
+
+/** ni -> iWidgetListBox::GetSortKey/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSortKey,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSortKey,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSortKey,0)
+
+/** ni -> iWidgetListBox::SetSortAscendant/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetSortAscendant,1)
+	IDLC_DECL_VAR(tBool,abAscendant)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abAscendant)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,SetSortAscendant,1,(abAscendant))
+IDLC_METH_END(ni,iWidgetListBox,SetSortAscendant,1)
+
+/** ni -> iWidgetListBox::GetSortAscendant/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSortAscendant,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSortAscendant,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSortAscendant,0)
+
+/** ni -> iWidgetListBox::GetItemFromText/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemFromText,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(achar*,aaszName)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemFromText,2,(anColumn,aaszName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemFromText,2)
+
+/** ni -> iWidgetListBox::ClearSelection/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,ClearSelection,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,ClearSelection,0,())
+IDLC_METH_END(ni,iWidgetListBox,ClearSelection,0)
+
+/** ni -> iWidgetListBox::AddSelection/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,AddSelection,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,AddSelection,1,(anItem))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,AddSelection,1)
+
+/** ni -> iWidgetListBox::RemoveSelection/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,RemoveSelection,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,RemoveSelection,1,(anItem))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,RemoveSelection,1)
+
+/** ni -> iWidgetListBox::GetNumSelections/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetNumSelections,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetNumSelections,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetNumSelections,0)
+
+/** ni -> iWidgetListBox::GetSelection/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSelection,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSelection,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSelection,1)
+
+/** ni -> iWidgetListBox::SetSelected/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetSelected,1)
+	IDLC_DECL_VAR(tU32,anSelection)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSelection)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetSelected,1,(anSelection))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetSelected,1)
+
+/** ni -> iWidgetListBox::GetSelected/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSelected,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSelected,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSelected,0)
+
+/** ni -> iWidgetListBox::GetIsItemSelected/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetIsItemSelected,1)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetIsItemSelected,1,(anItem))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetIsItemSelected,1)
+
+/** ni -> iWidgetListBox::AddSelectedItem/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,AddSelectedItem,2)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,AddSelectedItem,2,(anCol,aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,AddSelectedItem,2)
+
+/** ni -> iWidgetListBox::GetSelectedItemText/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSelectedItemText,2)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSelectedItemText,2,(anCol,anIndex))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSelectedItemText,2)
+
+/** ni -> iWidgetListBox::GetSelectedItemWidget/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSelectedItemWidget,2)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSelectedItemWidget,2,(anCol,anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSelectedItemWidget,2)
+
+/** ni -> iWidgetListBox::SetSelectedItem/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetSelectedItem,2)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_DECL_VAR(achar*,aaszText)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszText)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetSelectedItem,2,(anCol,aaszText))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetSelectedItem,2)
+
+/** ni -> iWidgetListBox::GetSelectedItem/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetSelectedItem,1)
+	IDLC_DECL_VAR(tU32,anCol)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anCol)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetSelectedItem,1,(anCol))
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetSelectedItem,1)
+
+/** ni -> iWidgetListBox::SetItemHeight/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemHeight,1)
+	IDLC_DECL_VAR(tF32,afHeight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afHeight)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemHeight,1,(afHeight))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemHeight,1)
+
+/** ni -> iWidgetListBox::GetItemHeight/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemHeight,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemHeight,0)
+
+/** ni -> iWidgetListBox::AutoScroll/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,AutoScroll,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,AutoScroll,0,())
+IDLC_METH_END(ni,iWidgetListBox,AutoScroll,0)
+
+/** ni -> iWidgetListBox::SetItemTextColor/3 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetItemTextColor,3)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_VAR(tU32,anTextColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anTextColor)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,SetItemTextColor,3,(anColumn,anItem,anTextColor))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,SetItemTextColor,3)
+
+/** ni -> iWidgetListBox::GetItemTextColor/2 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetItemTextColor,2)
+	IDLC_DECL_VAR(tU32,anColumn)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColumn)
+	IDLC_DECL_VAR(tU32,anItem)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anItem)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetItemTextColor,2,(anColumn,anItem))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetItemTextColor,2)
+
+/** ni -> iWidgetListBox::SetMaxNumItems/1 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,SetMaxNumItems,1)
+	IDLC_DECL_VAR(tU32,anMaxItems)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anMaxItems)
+	IDLC_METH_CALL_VOID(ni,iWidgetListBox,SetMaxNumItems,1,(anMaxItems))
+IDLC_METH_END(ni,iWidgetListBox,SetMaxNumItems,1)
+
+/** ni -> iWidgetListBox::GetMaxNumItems/0 **/
+IDLC_METH_BEGIN(ni,iWidgetListBox,GetMaxNumItems,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetListBox,GetMaxNumItems,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetListBox,GetMaxNumItems,0)
+
+IDLC_END_INTF(ni,iWidgetListBox)
+
+IDLC_END_NAMESPACE()
+// EOF //

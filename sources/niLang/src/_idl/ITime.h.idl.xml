@@ -1,0 +1,602 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eTimeZone">
+			<comments desc="Time zone enumeration "/>
+			<value name="eTimeZone_UTC" value="0 ">
+				<comments desc="Coordinated Universal Time Europe UTC "/>
+			</value>
+			<value name="eTimeZone_WET" value="0 ">
+				<comments desc="Western European Time Europe UTC "/>
+			</value>
+			<value name="eTimeZone_GMT" value="0 ">
+				<comments desc="Greenwich Mean Time Europe UTC "/>
+			</value>
+			<value name="eTimeZone_A" value="+ 1 * 3600 ">
+				<comments desc="Alpha Time Zone Military UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_ADT" value="- 3 * 3600 ">
+				<comments desc="Atlantic Daylight Time North America UTC - 3 hours "/>
+			</value>
+			<value name="eTimeZone_AKDT" value="- 8 * 3600 ">
+				<comments desc="Alaska Daylight Time North America UTC - 8 hours "/>
+			</value>
+			<value name="eTimeZone_AKST" value="- 9 * 3600 ">
+				<comments desc="Alaska Standard Time North America UTC - 9 hours "/>
+			</value>
+			<value name="eTimeZone_AST" value="- 4 * 3600 ">
+				<comments desc="Atlantic Standard Time North America UTC - 4 hours "/>
+			</value>
+			<value name="eTimeZone_B" value="+ 2 * 3600 ">
+				<comments desc="Bravo Time Zone Military UTC + 2 hours "/>
+			</value>
+			<value name="eTimeZone_BST" value="+ 1 * 3600 ">
+				<comments desc="British Summer Time Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_C" value="+ 3 * 3600 ">
+				<comments desc="Charlie Time Zone Military UTC + 3 hours "/>
+			</value>
+			<value name="eTimeZone_CDT" value="- 5 * 3600 ">
+				<comments desc="Central Daylight Time North America UTC - 5 hours "/>
+			</value>
+			<value name="eTimeZone_CEDT" value="+ 2 * 3600 ">
+				<comments desc="Central European Daylight Time Europe UTC + 2 hours "/>
+			</value>
+			<value name="eTimeZone_CEST" value="+ 2 * 3600 ">
+				<comments desc="Central European Summer Time Europe UTC + 2 hours "/>
+			</value>
+			<value name="eTimeZone_CET" value="+ 1 * 3600 ">
+				<comments desc="Central European Time Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_CST" value="- 6 * 3600 ">
+				<comments desc="Central Standard Time North America UTC - 6 hours "/>
+			</value>
+			<value name="eTimeZone_D" value="+ 4 * 3600 ">
+				<comments desc="Delta Time Zone Military UTC + 4 hours "/>
+			</value>
+			<value name="eTimeZone_E" value="+ 5 * 3600 ">
+				<comments desc="Echo Time Zone Military UTC + 5 hours "/>
+			</value>
+			<value name="eTimeZone_EDT" value="- 4 * 3600 ">
+				<comments desc="Eastern Daylight Time North America UTC - 4 hours "/>
+			</value>
+			<value name="eTimeZone_EEDT" value="+ 3 * 3600 ">
+				<comments desc="Eastern European Daylight Time Europe UTC + 3 hours "/>
+			</value>
+			<value name="eTimeZone_EEST" value="+ 3 * 3600 ">
+				<comments desc="Eastern European Summer Time Europe UTC + 3 hours "/>
+			</value>
+			<value name="eTimeZone_EET" value="+ 2 * 3600 ">
+				<comments desc="Eastern European Time Europe UTC + 2 hours "/>
+			</value>
+			<value name="eTimeZone_EST" value="- 5 * 3600 ">
+				<comments desc="Eastern Standard Time North America UTC - 5 hours "/>
+			</value>
+			<value name="eTimeZone_F" value="+ 6 * 3600 ">
+				<comments desc="Foxtrot Time Zone Military UTC + 6 hours "/>
+			</value>
+			<value name="eTimeZone_G" value="+ 7 * 3600 ">
+				<comments desc="Golf Time Zone Military UTC + 7 hours "/>
+			</value>
+			<value name="eTimeZone_H" value="+ 8 * 3600 ">
+				<comments desc="Hotel Time Zone Military UTC + 8 hours "/>
+			</value>
+			<value name="eTimeZone_HAA" value="- 3 * 3600 ">
+				<comments desc="Heure Avancee de l&apos;Atlantique North America UTC - 3 hours "/>
+			</value>
+			<value name="eTimeZone_HAC" value="- 5 * 3600 ">
+				<comments desc="Heure Avancee du Centre North America UTC - 5 hours "/>
+			</value>
+			<value name="eTimeZone_HADT" value="- 9 * 3600 ">
+				<comments desc="Hawaii-Aleutian Daylight Time North America UTC - 9 hours "/>
+			</value>
+			<value name="eTimeZone_HAE" value="- 4 * 3600 ">
+				<comments desc="Heure Avancee de l&apos;Est North America UTC - 4 hours "/>
+			</value>
+			<value name="eTimeZone_HAP" value="- 7 * 3600 ">
+				<comments desc="Heure Avancee du Pacifique North America UTC - 7 hours "/>
+			</value>
+			<value name="eTimeZone_HAR" value="- 6 * 3600 ">
+				<comments desc="Heure Avancee des Rocheuses North America UTC - 6 hours "/>
+			</value>
+			<value name="eTimeZone_HAST" value="- 10 * 3600 - 1800 ">
+				<comments desc="Hawaii-Aleutian Standard Time North America UTC - 10 hours "/>
+			</value>
+			<value name="eTimeZone_HAT" value="- 2 * 3600 - 1800 ">
+				<comments desc="Heure Avancee de Terre-Neuve North America UTC - 2:30 hours "/>
+			</value>
+			<value name="eTimeZone_HAY" value="- 8 * 3600 ">
+				<comments desc="Heure Avancee du Yukon North America UTC - 8 hours "/>
+			</value>
+			<value name="eTimeZone_HNA" value="- 4 * 3600 ">
+				<comments desc="Heure Normale de l&apos;Atlantique North America UTC - 4 hours "/>
+			</value>
+			<value name="eTimeZone_HNC" value="- 6 * 3600 ">
+				<comments desc="Heure Normale du Centre North America UTC - 6 hours "/>
+			</value>
+			<value name="eTimeZone_HNE" value="- 5 * 3600 ">
+				<comments desc="Heure Normale de l&apos;Est North America UTC - 5 hours "/>
+			</value>
+			<value name="eTimeZone_HNP" value="- 8 * 3600 ">
+				<comments desc="Heure Normale du Pacifique North America UTC - 8 hours "/>
+			</value>
+			<value name="eTimeZone_HNR" value="- 7 * 3600 ">
+				<comments desc="Heure Normale des Rocheuses North America UTC - 7 hours "/>
+			</value>
+			<value name="eTimeZone_HNT" value="- 3 * 3600 - 1800 ">
+				<comments desc="Heure Normale de Terre-Neuve North America UTC - 3:30 hours "/>
+			</value>
+			<value name="eTimeZone_HNY" value="- 9 * 3600 ">
+				<comments desc="Heure Normale du Yukon North America UTC - 9 hours "/>
+			</value>
+			<value name="eTimeZone_I" value="+ 9 * 3600 ">
+				<comments desc="India Time Zone Military UTC + 9 hours "/>
+			</value>
+			<value name="eTimeZone_IST" value="+ 1 * 3600 ">
+				<comments desc="Irish Summer Time Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_K" value="+ 10 * 3600 ">
+				<comments desc="Kilo Time Zone Military UTC + 10 hours "/>
+			</value>
+			<value name="eTimeZone_L" value="+ 11 * 3600 ">
+				<comments desc="Lima Time Zone Military UTC + 11 hours "/>
+			</value>
+			<value name="eTimeZone_M" value="+ 12 * 3600 ">
+				<comments desc="Mike Time Zone Military UTC + 12 hours "/>
+			</value>
+			<value name="eTimeZone_MDT" value="- 6 * 3600 ">
+				<comments desc="Mountain Daylight Time North America UTC - 6 hours "/>
+			</value>
+			<value name="eTimeZone_MESZ" value="+ 2 * 3600 ">
+				<comments desc="Mitteleuroaische Sommerzeit Europe UTC + 2 hours "/>
+			</value>
+			<value name="eTimeZone_MEZ" value="+ 1 * 3600 ">
+				<comments desc="Mitteleuropaische Zeit Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_MST" value="- 7 * 3600 ">
+				<comments desc="Mountain Standard Time North America UTC - 7 hours "/>
+			</value>
+			<value name="eTimeZone_N" value="- 1 * 3600 ">
+				<comments desc="November Time Zone Military UTC - 1 hour "/>
+			</value>
+			<value name="eTimeZone_NDT" value="- 2 * 3600 - 1800 ">
+				<comments desc="Newfoundland Daylight Time North America UTC - 2:30 hours "/>
+			</value>
+			<value name="eTimeZone_NST" value="- 3 * 3600 - 1800 ">
+				<comments desc="Newfoundland Standard Time North America UTC - 3:30 hours "/>
+			</value>
+			<value name="eTimeZone_O" value="- 2 * 3600 ">
+				<comments desc="Oscar Time Zone Military UTC - 2 hours "/>
+			</value>
+			<value name="eTimeZone_P" value="- 3 * 3600 ">
+				<comments desc="Papa Time Zone Military UTC - 3 hours "/>
+			</value>
+			<value name="eTimeZone_PDT" value="- 7 * 3600 ">
+				<comments desc="Pacific Daylight Time North America UTC - 7 hours "/>
+			</value>
+			<value name="eTimeZone_PST" value="- 8 * 3600 ">
+				<comments desc="Pacific Standard Time North America UTC - 8 hours "/>
+			</value>
+			<value name="eTimeZone_Q" value="- 4 * 3600 ">
+				<comments desc="Quebec Time Zone Military UTC - 4 hours "/>
+			</value>
+			<value name="eTimeZone_R" value="- 5 * 3600 ">
+				<comments desc="Romeo Time Zone Military UTC - 5 hours "/>
+			</value>
+			<value name="eTimeZone_S" value="- 6 * 3600 ">
+				<comments desc="Sierra Time Zone Military UTC - 6 hours "/>
+			</value>
+			<value name="eTimeZone_T" value="- 7 * 3600 ">
+				<comments desc="Tango Time Zone Military UTC - 7 hours "/>
+			</value>
+			<value name="eTimeZone_U" value="- 8 * 3600 ">
+				<comments desc="Uniform Time Zone Military UTC - 8 hours "/>
+			</value>
+			<value name="eTimeZone_V" value="- 9 * 3600 ">
+				<comments desc="Victor Time Zone Military UTC - 9 hours "/>
+			</value>
+			<value name="eTimeZone_W" value="- 10 * 3600 ">
+				<comments desc="Whiskey Time Zone Military UTC - 10 hours "/>
+			</value>
+			<value name="eTimeZone_WEDT" value="+ 1 * 3600 ">
+				<comments desc="Western European Daylight Time Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_WEST" value="+ 1 * 3600 ">
+				<comments desc="Western European Summer Time Europe UTC + 1 hour "/>
+			</value>
+			<value name="eTimeZone_X" value="- 11 * 3600 ">
+				<comments desc="X-ray Time Zone Military UTC - 11 hours "/>
+			</value>
+			<value name="eTimeZone_Y" value="- 12 * 3600 ">
+				<comments desc="Yankee Time Zone Military UTC - 12 hours "/>
+			</value>
+			<value name="eTimeZone_Z" value="0 ">
+				<comments desc="Zulu Time Zone Military UTC "/>
+			</value>
+		</enum>
+		<variable
+			name="knTimeYearRange"
+			type="const tI32"
+			typec="const tI32"
+			typei="ni::eTypeFlags_Constant|ni::eType_I32"
+			value="2147000000"/>
+		<variable
+			name="knTimeSecsPerMinute"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="60"/>
+		<variable
+			name="knTimeMinPerHour"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="60"/>
+		<variable
+			name="knTimeSecsPerHour"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="knTimeMinPerHour*knTimeSecsPerMinute"/>
+		<variable
+			name="knTimeHoursPerDay"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="24"/>
+		<variable
+			name="knTimeMinPerDay"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="knTimeMinPerHour*knTimeHoursPerDay"/>
+		<variable
+			name="knTimeSecsPerDay"
+			type="const tI64"
+			typec="const tI64"
+			typei="ni::eTypeFlags_Constant|ni::eType_I64"
+			value="knTimeMinPerDay*knTimeSecsPerMinute"/>
+		<interface name="iTime" uuid1="2B3E468B-96FC-4ABD-8694-4810B317D42D" uuid2="0x2b3e468b,0x96fc,0x4abd,0x86,0x94,0x48,0x10,0xb3,0x17,0xd4,0x2d">
+			<comments desc="Time interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="updateFromCurrentSystemTime" name="UpdateFromCurrentSystemTime" num_parameters="0">
+				<comments desc="Update the time class from the current system&apos;s time. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setYear"
+				name="SetYear"
+				num_parameters="1"
+				property="set"
+				property_name2="year"
+				property_name="year">
+				<comments desc="Set the year. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anYear"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getYear"
+				name="GetYear"
+				num_parameters="0"
+				property="get"
+				property_name2="year"
+				property_name="year">
+				<comments desc="Get the year. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setMonth"
+				name="SetMonth"
+				num_parameters="1"
+				property="set"
+				property_name2="month"
+				property_name="month">
+				<comments desc="Set the month. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMonth"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMonth"
+				name="GetMonth"
+				num_parameters="0"
+				property="get"
+				property_name2="month"
+				property_name="month">
+				<comments desc="Get the month. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setDay"
+				name="SetDay"
+				num_parameters="1"
+				property="set"
+				property_name2="day"
+				property_name="day">
+				<comments desc="Set the day. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anDay"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDay"
+				name="GetDay"
+				num_parameters="0"
+				property="get"
+				property_name2="day"
+				property_name="day">
+				<comments desc="Get the day. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWeekday"
+				name="GetWeekday"
+				num_parameters="0"
+				property="get"
+				property_name2="weekday"
+				property_name="weekday">
+				<comments desc="Get the weekday. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setHour"
+				name="SetHour"
+				num_parameters="1"
+				property="set"
+				property_name2="hour"
+				property_name="hour">
+				<comments desc="Set the hour. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anHour"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHour"
+				name="GetHour"
+				num_parameters="0"
+				property="get"
+				property_name2="hour"
+				property_name="hour">
+				<comments desc="Get the hour. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setMinute"
+				name="SetMinute"
+				num_parameters="1"
+				property="set"
+				property_name2="minute"
+				property_name="minute">
+				<comments desc="Set the minute. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMinute"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMinute"
+				name="GetMinute"
+				num_parameters="0"
+				property="get"
+				property_name2="minute"
+				property_name="minute">
+				<comments desc="Get the minute. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method
+				java_name="setSecond"
+				name="SetSecond"
+				num_parameters="1"
+				property="set"
+				property_name2="second"
+				property_name="second">
+				<comments desc="Set the second. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anSecond"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSecond"
+				name="GetSecond"
+				num_parameters="0"
+				property="get"
+				property_name2="second"
+				property_name="second">
+				<comments desc="Get the second. "/>
+				<return type="tU8" typec="tU8" typei="ni::eType_U8"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the specified time. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="const iTime *"
+					typec="const iTime*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Creates a clone of this time. "/>
+				<return type="iTime *" typec="iTime*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDayLightSaving"
+				name="SetDayLightSaving"
+				num_parameters="1"
+				property="set"
+				property_name2="dayLightSaving"
+				property_name="day_light_saving">
+				<comments desc="Set whether the time contains day light saving. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abDayLightSaving"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDayLightSaving"
+				name="GetDayLightSaving"
+				num_parameters="0"
+				property="get"
+				property_name2="dayLightSaving"
+				property_name="day_light_saving">
+				<comments desc="Get whether the time contains day light saving. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setTimeZone"
+				name="SetTimeZone"
+				num_parameters="1"
+				property="set"
+				property_name2="timeZone"
+				property_name="time_zone">
+				<comments desc="Set the time zone. ">
+					<remark text="Offset from UTC in seconds. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anTimeZone"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTimeZone"
+				name="GetTimeZone"
+				num_parameters="0"
+				property="get"
+				property_name2="timeZone"
+				property_name="time_zone">
+				<comments desc="Get the time zone. ">
+					<remark text="Offset from UTC in seconds. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setUnixTimeSecs"
+				name="SetUnixTimeSecs"
+				num_parameters="1"
+				property="set"
+				property_name2="unixTimeSecs"
+				property_name="unix_time_secs">
+				<comments desc="Set the time from the unix time. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFmt"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUnixTimeSecs"
+				name="GetUnixTimeSecs"
+				num_parameters="0"
+				property="get"
+				property_name2="unixTimeSecs"
+				property_name="unix_time_secs">
+				<comments desc="Get the unix time. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="compare"
+				name="Compare"
+				num_parameters="1">
+				<comments desc="Compare to another time object. " return="0 if equal, -1 if this is before apTime, +1 if this is after apTime, 2 if apTime is invalid. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="apTime"
+					type="const iTime *"
+					typec="const iTime*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="parseString" name="ParseString" num_parameters="2">
+				<comments desc="Parse a time string. " return="This time object. ">
+					<remark text="Parse format: %A Full weekday name. Ex: Thursday %b Abbreviated month name. Ex: Aug %B Full month name. Ex: August %d Day of the month, zero-padded (01-31). Ex: 23 %e Day of the month, space-padded ( 1-31). Ex: 23 %h Abbreviated month name (same as %b). Ex: Aug %H Hour in 24h format (00-23). Ex: 14 %I Hour in 12h format (01-12). Ex: 02 %j Day of the year (001-366). Ex: 235 %m Month as a decimal number (01-12). Ex: 08 %M Minute (00-59). Ex: 55 %n New-line character (&apos;\n&apos;). %t Horizontal-tab character (&apos;\t&apos;). %p AM or PM designation. Ex: PM %r 12-hour clock time. Ex: 02:55:02 pm %R 24-hour HH:MM time, equivalent to %H:%M. Ex: 14:55 %S Second (00-61). Ex: 02 %w Weekday as a decimal number with Sunday as 0 (0-6). Ex: 4 %y Year, last two digits (00-99). Ex: 01 %Y Year. Ex: 2001 %z An RFC-822/ISO 8601 standard timezone specification. Ex: Z (GMT), +08 (+8 hours), -0630 (-6hrs &amp; 30 minutes) %F ISO 8601 date format (YYYY-MM-DD), equivalent to %Y-%m-%d. Ex: 2016-08-03 %T ISO 8601 time format (HH:MM:SS), equivalent to %H:%M:%S. Ex: 05:55:10 %% A % sign ISO8601 or NULL or empty string, ISO8601 date time format, equivalent to: %FT%T%z &amp; %Y-%m-%dT%H:%M:%S%z "/>
+				</comments>
+				<return type="iTime *" typec="iTime*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="szString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="format"
+				name="Format"
+				num_parameters="1">
+				<comments desc="Format time. ">
+					<remark text="Format syntax: YYYY year 2011 YY year 99 M month 1 2 ... 30 31 MM month 01 02 ... 30 31 MMM month Mar MMMM month March D day of month 1 2 ... 30 31 Do day of month 1st 2nd ... 30th 31st DD day of month 01 02 ... 30 31 d day of week 0 1 ... 5 6 do day of week 0th 1st ... 5th 6th dd day of week Su ddd day of week Sun dddd day of week Sunday e day of week 0 1 ... 5 6 E day of week 1 2 ... 6 7 a am/pm marker am/pm A AM/PM marker AM/PM H hour(0-23) 16 HH hour(0-23) 06 h hour(1-12) 4 hh hour(1-12) 04 m minute 6 mm minute 06 s second 6 ss second 06 Z timezone -07:00 -06:00 ... +06:00 +07:00 ZZ timezone -0700 -0600 ... +0600 +0700 RFC1123 RFC1123 Wed, 16 Feb 2011 03:34:56 Z RFC850 RFC850 Wednesday, 16-Feb-11 03:34:56 Z ASCTIME ASCTIME Wed Feb 16 03:34:56 2011 ISO8601 or NULL or empty string, ISO8601, 2014-09-08T08:02:17-05:00 [text to include verbatim] "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addSeconds" name="AddSeconds" num_parameters="1">
+				<comments desc="Add seconds to this time. "/>
+				<return type="iTime *" typec="iTime*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSeconds"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

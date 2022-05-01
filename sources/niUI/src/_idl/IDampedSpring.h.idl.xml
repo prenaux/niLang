@@ -1,0 +1,1376 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iDampedSpring1" uuid1="8C5A71F0-3E1B-41B6-84A2-F6F8FE08567A" uuid2="0x8c5a71f0,0x3e1b,0x41b6,0x84,0xa2,0xf6,0xf8,0xfe,0x08,0x56,0x7a">
+			<comments desc="1D Damped spring interface. \see ni::DampedSpringAcceleration "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setKd"
+				name="SetKd"
+				num_parameters="1"
+				property="set"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Set the Kd constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKd"
+				name="GetKd"
+				num_parameters="0"
+				property="get"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Get the Kd constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setKs"
+				name="SetKs"
+				num_parameters="1"
+				property="set"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Set the Ks constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKs"
+				name="GetKs"
+				num_parameters="0"
+				property="get"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Get the Ks constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setStiffnessAndDampingRatio" name="SetStiffnessAndDampingRatio" num_parameters="2">
+				<comments desc="Set the value of Kd for the specified Ks that will result in a spring with the specified damping ratio. ">
+					<remark text="Sets Ks with parameter&apos;s value, sets Kd in function of Ks. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afKs"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDampingRatio"
+				name="SetDampingRatio"
+				num_parameters="1"
+				property="set"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Set the spring&apos;s damping ratio. ">
+					<remark text="Sets Kd in function of the current value of Ks to achieve the specified damping ratio. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDampingRatio"
+				name="GetDampingRatio"
+				num_parameters="0"
+				property="get"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Get the spring&apos;s damping ratio. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setVelocity"
+				name="SetVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Set the spring&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avVel"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVelocity"
+				name="GetVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Get the spring&apos;s velocity. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="computeAcceleration" name="ComputeAcceleration" num_parameters="1">
+				<comments desc="Compute the spring&apos;s acceleration for the specified displacement. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="updateVelocity" name="UpdateVelocity" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified displacement. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="updateVelocityWithAcceleration" name="UpdateVelocityWithAcceleration" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified acceleration. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avAcc"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpring2" uuid1="AB391D38-FF1B-4503-A057-8242A5110215" uuid2="0xab391d38,0xff1b,0x4503,0xa0,0x57,0x82,0x42,0xa5,0x11,0x02,0x15">
+			<comments desc="2D Damped spring interface. \see ni::DampedSpringAcceleration "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setKd"
+				name="SetKd"
+				num_parameters="1"
+				property="set"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Set the Kd constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKd"
+				name="GetKd"
+				num_parameters="0"
+				property="get"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Get the Kd constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setKs"
+				name="SetKs"
+				num_parameters="1"
+				property="set"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Set the Ks constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKs"
+				name="GetKs"
+				num_parameters="0"
+				property="get"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Get the Ks constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setStiffnessAndDampingRatio" name="SetStiffnessAndDampingRatio" num_parameters="2">
+				<comments desc="Set the value of Kd for the specified Ks that will result in a spring with the specified damping ratio. ">
+					<remark text="Sets Ks with parameter&apos;s value, sets Kd in function of Ks. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afKs"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDampingRatio"
+				name="SetDampingRatio"
+				num_parameters="1"
+				property="set"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Set the spring&apos;s damping ratio. ">
+					<remark text="Sets Kd in function of the current value of Ks to achieve the specified damping ratio. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDampingRatio"
+				name="GetDampingRatio"
+				num_parameters="0"
+				property="get"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Get the spring&apos;s damping ratio. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setVelocity"
+				name="SetVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Set the spring&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avVel"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVelocity"
+				name="GetVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Get the spring&apos;s velocity. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method java_name="computeAcceleration" name="ComputeAcceleration" num_parameters="1">
+				<comments desc="Compute the spring&apos;s acceleration for the specified displacement. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocity" name="UpdateVelocity" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified displacement. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocityWithAcceleration" name="UpdateVelocityWithAcceleration" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified acceleration. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avAcc"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpring3" uuid1="70FE36F4-59C8-4590-A5A5-7DC737DBF874" uuid2="0x70fe36f4,0x59c8,0x4590,0xa5,0xa5,0x7d,0xc7,0x37,0xdb,0xf8,0x74">
+			<comments desc="3D Damped spring interface. \see ni::DampedSpringAcceleration "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setKd"
+				name="SetKd"
+				num_parameters="1"
+				property="set"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Set the Kd constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKd"
+				name="GetKd"
+				num_parameters="0"
+				property="get"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Get the Kd constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setKs"
+				name="SetKs"
+				num_parameters="1"
+				property="set"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Set the Ks constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKs"
+				name="GetKs"
+				num_parameters="0"
+				property="get"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Get the Ks constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setStiffnessAndDampingRatio" name="SetStiffnessAndDampingRatio" num_parameters="2">
+				<comments desc="Set the value of Kd for the specified Ks that will result in a spring with the specified damping ratio. ">
+					<remark text="Sets Ks with parameter&apos;s value, sets Kd in function of Ks. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afKs"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDampingRatio"
+				name="SetDampingRatio"
+				num_parameters="1"
+				property="set"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Set the spring&apos;s damping ratio. ">
+					<remark text="Sets Kd in function of the current value of Ks to achieve the specified damping ratio. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDampingRatio"
+				name="GetDampingRatio"
+				num_parameters="0"
+				property="get"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Get the spring&apos;s damping ratio. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setVelocity"
+				name="SetVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Set the spring&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avVel"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVelocity"
+				name="GetVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Get the spring&apos;s velocity. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="computeAcceleration" name="ComputeAcceleration" num_parameters="1">
+				<comments desc="Compute the spring&apos;s acceleration for the specified displacement. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocity" name="UpdateVelocity" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified displacement. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocityWithAcceleration" name="UpdateVelocityWithAcceleration" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified acceleration. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avAcc"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpring4" uuid1="C37F3B6D-6BB6-4036-AE64-80F43C87C7B2" uuid2="0xc37f3b6d,0x6bb6,0x4036,0xae,0x64,0x80,0xf4,0x3c,0x87,0xc7,0xb2">
+			<comments desc="4D Damped spring interface. \see ni::DampedSpringAcceleration "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setKd"
+				name="SetKd"
+				num_parameters="1"
+				property="set"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Set the Kd constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKd"
+				name="GetKd"
+				num_parameters="0"
+				property="get"
+				property_name2="kd"
+				property_name="kd">
+				<comments desc="Get the Kd constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setKs"
+				name="SetKs"
+				num_parameters="1"
+				property="set"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Set the Ks constant. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKs"
+				name="GetKs"
+				num_parameters="0"
+				property="get"
+				property_name2="ks"
+				property_name="ks">
+				<comments desc="Get the Ks constant. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setStiffnessAndDampingRatio" name="SetStiffnessAndDampingRatio" num_parameters="2">
+				<comments desc="Set the value of Kd for the specified Ks that will result in a spring with the specified damping ratio. ">
+					<remark text="Sets Ks with parameter&apos;s value, sets Kd in function of Ks. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afKs"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setDampingRatio"
+				name="SetDampingRatio"
+				num_parameters="1"
+				property="set"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Set the spring&apos;s damping ratio. ">
+					<remark text="Sets Kd in function of the current value of Ks to achieve the specified damping ratio. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afE"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDampingRatio"
+				name="GetDampingRatio"
+				num_parameters="0"
+				property="get"
+				property_name2="dampingRatio"
+				property_name="damping_ratio">
+				<comments desc="Get the spring&apos;s damping ratio. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setVelocity"
+				name="SetVelocity"
+				num_parameters="1"
+				property="set"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Set the spring&apos;s velocity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avVel"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVelocity"
+				name="GetVelocity"
+				num_parameters="0"
+				property="get"
+				property_name2="velocity"
+				property_name="velocity">
+				<comments desc="Get the spring&apos;s velocity. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method java_name="computeAcceleration" name="ComputeAcceleration" num_parameters="1">
+				<comments desc="Compute the spring&apos;s acceleration for the specified displacement. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocity" name="UpdateVelocity" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified displacement. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avD"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateVelocityWithAcceleration" name="UpdateVelocityWithAcceleration" num_parameters="2">
+				<comments desc="Update the spring&apos;s velocity from the specified acceleration. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="avAcc"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpringPosition1" uuid1="58B648FE-1CC2-4398-B911-3C109F12CCE0" uuid2="0x58b648fe,0x1cc2,0x4398,0xb9,0x11,0x3c,0x10,0x9f,0x12,0xcc,0xe0">
+			<comments desc="1D Damped spring position interface. "/>
+			<parents>
+				<parent name="iDampedSpring1"/>
+			</parents>
+			<method
+				java_name="setIdealPosition"
+				name="SetIdealPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Set the ideal (target) position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIdealPosition"
+				name="GetIdealPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Get the ideal (target) position of the spring. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setCurrentPosition"
+				name="SetCurrentPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Set the current position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentPosition"
+				name="GetCurrentPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Get the current position of the spring. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="updatePosition" name="UpdatePosition" num_parameters="1">
+				<comments desc="Update the current position of the spring. " return="The current position of the spring. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStep"
+				name="SetStep"
+				num_parameters="1"
+				property="set"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Set the maximum update step size. ">
+					<remark text="Default is 1.0/50.0 "/>
+					<remark text="If the step is zero the value is updated at once in UpdatePosition (effectivly disable step update) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStep"
+				name="GetStep"
+				num_parameters="0"
+				property="get"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Get the update step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the animation speed. ">
+					<remark text="This value just multiplies afDeltaTime to ariticially speed up the spring&apos;s animation. "/>
+					<remark text="Default is 1.0. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the animation speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setEndThreshold"
+				name="SetEndThreshold"
+				num_parameters="1"
+				property="set"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Set the end threshold. ">
+					<remark text="Default is 1e-3f "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEndThreshold"
+				name="GetEndThreshold"
+				num_parameters="0"
+				property="get"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Get the end threshold. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEnded"
+				name="GetIsEnded"
+				num_parameters="0"
+				property="get"
+				property_name2="isEnded"
+				property_name="is_ended">
+				<comments desc="Get the whether the distance between the ideal and the current positions are below the end threshold. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpringPosition2" uuid1="A842B5C6-3331-4A8A-81EB-F5F146F5AAC2" uuid2="0xa842b5c6,0x3331,0x4a8a,0x81,0xeb,0xf5,0xf1,0x46,0xf5,0xaa,0xc2">
+			<comments desc="2D Damped spring position interface. "/>
+			<parents>
+				<parent name="iDampedSpring2"/>
+			</parents>
+			<method
+				java_name="setIdealPosition"
+				name="SetIdealPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Set the ideal (target) position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIdealPosition"
+				name="GetIdealPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Get the ideal (target) position of the spring. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setCurrentPosition"
+				name="SetCurrentPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Set the current position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentPosition"
+				name="GetCurrentPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Get the current position of the spring. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method java_name="updatePosition" name="UpdatePosition" num_parameters="1">
+				<comments desc="Update the current position of the spring. " return="The current position of the spring. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStep"
+				name="SetStep"
+				num_parameters="1"
+				property="set"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Set the maximum update step size. ">
+					<remark text="Default is 1.0/50.0 "/>
+					<remark text="If the step is zero the value is updated at once in UpdatePosition (effectivly disable step update) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStep"
+				name="GetStep"
+				num_parameters="0"
+				property="get"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Get the update step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the animation speed. ">
+					<remark text="This value just multiplies afDeltaTime to ariticially speed up the spring&apos;s animation. "/>
+					<remark text="Default is 1.0. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the animation speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setEndThreshold"
+				name="SetEndThreshold"
+				num_parameters="1"
+				property="set"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Set the end threshold. ">
+					<remark text="Default is 1e-3f "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEndThreshold"
+				name="GetEndThreshold"
+				num_parameters="0"
+				property="get"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Get the end threshold. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEnded"
+				name="GetIsEnded"
+				num_parameters="0"
+				property="get"
+				property_name2="isEnded"
+				property_name="is_ended">
+				<comments desc="Get the whether the distance between the ideal and the current positions are below the end threshold. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpringPosition3" uuid1="1FB0297E-3D7D-4F26-A6D3-07831310461D" uuid2="0x1fb0297e,0x3d7d,0x4f26,0xa6,0xd3,0x07,0x83,0x13,0x10,0x46,0x1d">
+			<comments desc="3D Damped spring position interface. "/>
+			<parents>
+				<parent name="iDampedSpring3"/>
+			</parents>
+			<method
+				java_name="setIdealPosition"
+				name="SetIdealPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Set the ideal (target) position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIdealPosition"
+				name="GetIdealPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Get the ideal (target) position of the spring. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setCurrentPosition"
+				name="SetCurrentPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Set the current position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentPosition"
+				name="GetCurrentPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Get the current position of the spring. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="updatePosition" name="UpdatePosition" num_parameters="1">
+				<comments desc="Update the current position of the spring. " return="The current position of the spring. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStep"
+				name="SetStep"
+				num_parameters="1"
+				property="set"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Set the maximum update step size. ">
+					<remark text="Default is 1.0/50.0 "/>
+					<remark text="If the step is zero the value is updated at once in UpdatePosition (effectivly disable step update) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStep"
+				name="GetStep"
+				num_parameters="0"
+				property="get"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Get the update step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the animation speed. ">
+					<remark text="This value just multiplies afDeltaTime to ariticially speed up the spring&apos;s animation. "/>
+					<remark text="Default is 1.0. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the animation speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setEndThreshold"
+				name="SetEndThreshold"
+				num_parameters="1"
+				property="set"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Set the end threshold. ">
+					<remark text="Default is 1e-3f "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEndThreshold"
+				name="GetEndThreshold"
+				num_parameters="0"
+				property="get"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Get the end threshold. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEnded"
+				name="GetIsEnded"
+				num_parameters="0"
+				property="get"
+				property_name2="isEnded"
+				property_name="is_ended">
+				<comments desc="Get the whether the distance between the ideal and the current positions are below the end threshold. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<interface name="iDampedSpringPosition4" uuid1="466C694D-0E04-47EE-8A39-2ED31F0FC38C" uuid2="0x466c694d,0x0e04,0x47ee,0x8a,0x39,0x2e,0xd3,0x1f,0x0f,0xc3,0x8c">
+			<comments desc="4D Damped spring position interface. "/>
+			<parents>
+				<parent name="iDampedSpring4"/>
+			</parents>
+			<method
+				java_name="setIdealPosition"
+				name="SetIdealPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Set the ideal (target) position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIdealPosition"
+				name="GetIdealPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="idealPosition"
+				property_name="ideal_position">
+				<comments desc="Get the ideal (target) position of the spring. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setCurrentPosition"
+				name="SetCurrentPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Set the current position of the spring. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentPosition"
+				name="GetCurrentPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="currentPosition"
+				property_name="current_position">
+				<comments desc="Get the current position of the spring. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method java_name="updatePosition" name="UpdatePosition" num_parameters="1">
+				<comments desc="Update the current position of the spring. " return="The current position of the spring. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="afDeltaTime"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStep"
+				name="SetStep"
+				num_parameters="1"
+				property="set"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Set the maximum update step size. ">
+					<remark text="Default is 1.0/50.0 "/>
+					<remark text="If the step is zero the value is updated at once in UpdatePosition (effectivly disable step update) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStep"
+				name="GetStep"
+				num_parameters="0"
+				property="get"
+				property_name2="step"
+				property_name="step">
+				<comments desc="Get the maximum update step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSpeed"
+				name="SetSpeed"
+				num_parameters="1"
+				property="set"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Set the animation speed. ">
+					<remark text="This value just multiplies afDeltaTime to ariticially speed up the spring&apos;s animation. "/>
+					<remark text="Default is 1.0. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSpeed"
+				name="GetSpeed"
+				num_parameters="0"
+				property="get"
+				property_name2="speed"
+				property_name="speed">
+				<comments desc="Get the animation speed. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setEndThreshold"
+				name="SetEndThreshold"
+				num_parameters="1"
+				property="set"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Set the end threshold. ">
+					<remark text="Default is 1e-3f "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEndThreshold"
+				name="GetEndThreshold"
+				num_parameters="0"
+				property="get"
+				property_name2="endThreshold"
+				property_name="end_threshold">
+				<comments desc="Get the end threshold. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsEnded"
+				name="GetIsEnded"
+				num_parameters="0"
+				property="get"
+				property_name2="isEnded"
+				property_name="is_ended">
+				<comments desc="Get the whether the distance between the ideal and the current positions are below the end threshold. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

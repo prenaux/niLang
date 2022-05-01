@@ -1,0 +1,107 @@
+#pragma once
+#ifndef __STDTILEMAP_CGH_AF0B15BE_E0AD_43E9_98C2_1CB9C7C5BD7C__
+#define __STDTILEMAP_CGH_AF0B15BE_E0AD_43E9_98C2_1CB9C7C5BD7C__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#define eStdTileMap_UseTexLod
+
+static const float tileMapColumns = 4.0f;
+static const float tileMapInvColumns = 1.0f / tileMapColumns;
+
+// The next two values shift the mipmap lod selected, these values have been tested to work well with the terrain tile map (4x4 tiles on a 4096 texture).
+// Work well == texture actually look sharp.
+// Note: these are setup so they use a higher resolution texture than the default rendering would (so its a negative lod bias basically) cause we dont
+//           like shitty blurry texture. If you like blurry crap you can use LodOffset = 1 & GradScale = 0.5.
+#ifdef eStdTileMap_UseTexLod
+static const float tileMapTexLodOffset = 2;
+#else
+static const float tileMapTexGradScale = 0.25f;
+#endif
+
+#ifdef eStdTileMap_UseTexLod
+float mipmapLevel(float2 coords)
+{
+  coords = coords.xy * (1.0f/fpsMaterialBaseRes0.xy);
+  float2 dx = ddx(coords.xy);
+  float2 dy = ddy(coords.xy);
+  float Px = length(dx);
+  float Py = length(dy);
+  float Pmax = max(Px, Py);
+  return log(max(Pmax,1))-tileMapTexLodOffset;
+}
+#endif
+
+float4 computeTexCooFromIndex(const float texIndex) {
+  float rowIndex = floor(texIndex * tileMapInvColumns);
+  float colIndex = floor(texIndex - (rowIndex * tileMapColumns));
+  float2 r = { colIndex * tileMapInvColumns, rowIndex * tileMapInvColumns };
+  r += frac(gPI.TexCoos[0].xy) * tileMapInvColumns * 0.75f + (fpsMaterialBaseRes0.xy*128.0f);
+#ifdef eStdTileMap_UseTexLod
+  return float4(r,0,mipmapLevel(gPI.TexCoos[0].xy));
+#else
+  return float4(r,0,0);
+#endif
+}
+
+float3 blend(float3 texture1, float lumA, float a1, float3 texture2, float lumB, float a2)
+{
+  float depth = 0.2;
+  float ma = max(lumA + a1, lumB + a2) - depth;
+
+  float b1 = max(lumA + a1 - ma, 0);
+  float b2 = max(lumB + a2 - ma, 0);
+
+  return (texture1.rgb * b1 + texture2.rgb * b2) / (b1 + b2);
+}
+
+float4 blend2(float lumA, float alphaA, float lumB, float alphaB)
+{
+  float depth = 0.2;
+  float ma = max(lumA + alphaA, lumB + alphaB) - depth;
+
+  float b1 = max(lumA + alphaA - ma, 0);
+  float b2 = max(lumB + alphaB - ma, 0);
+
+  float totalWeight = b1 + b2;
+  float2 weights = float2(b1,b2) / totalWeight;
+
+  // Bias the weight in favor of the 'dominant' map
+  if (b1 > b2) {
+    float alpha = saturate(weights.y - 0.25f);
+    return float4(1 - alpha, alpha, lumA, alphaA);
+  }
+  else {
+    float alpha = saturate(weights.x - 0.25);
+    return float4(alpha, 1 - alpha, lumB, alphaB);
+  }
+}
+
+float3 blend3(float lumA, float alphaA, float4 uvA,
+              float lumB, float alphaB, float4 uvB,
+              float lumC, float alphaC, float4 uvC,
+              out float4 uvFinal)
+{
+  float depth = 0.2;
+  float ma = max(lumA + alphaA, max(lumB + alphaB, lumC + alphaC)) - depth;
+
+  float b1 = max(lumA + alphaA - ma, 0);
+  float b2 = max(lumB + alphaB - ma, 0);
+  float b3 = max(lumC + alphaC - ma, 0);
+
+  if (b3 > b2 && b3 > b1) {
+    uvFinal = uvC;
+  }
+  else if (b2 > b1) {
+    uvFinal = uvB;
+  }
+  else {
+    uvFinal = uvA;
+  }
+
+  float totalWeight = b1 + b2 + b3;
+  float3 weights = float3(b1,b2,b3) / totalWeight;
+  return weights;
+}
+
+#endif // __STDTILEMAP_CGH_AF0B15BE_E0AD_43E9_98C2_1CB9C7C5BD7C__

@@ -1,0 +1,63 @@
+#include "../API/niUI/IVertexArray.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iVertexArray **/
+IDLC_BEGIN_INTF(ni,iVertexArray)
+/** ni -> iVertexArray::GetFVF/0 **/
+IDLC_METH_BEGIN(ni,iVertexArray,GetFVF,0)
+	IDLC_DECL_RETVAR(tFVF,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,GetFVF,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iVertexArray,GetFVF,0)
+
+/** ni -> iVertexArray::GetNumVertices/0 **/
+IDLC_METH_BEGIN(ni,iVertexArray,GetNumVertices,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,GetNumVertices,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iVertexArray,GetNumVertices,0)
+
+/** ni -> iVertexArray::GetUsage/0 **/
+IDLC_METH_BEGIN(ni,iVertexArray,GetUsage,0)
+	IDLC_DECL_RETVAR(eArrayUsage,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,GetUsage,0,())
+	IDLC_RET_FROM_ENUM(eArrayUsage,_Ret)
+IDLC_METH_END(ni,iVertexArray,GetUsage,0)
+
+/** ni -> iVertexArray::Lock/3 **/
+IDLC_METH_BEGIN(ni,iVertexArray,Lock,3)
+	IDLC_DECL_VAR(tU32,ulFirstVertex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulFirstVertex)
+	IDLC_DECL_VAR(tU32,ulNumVertex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,ulNumVertex)
+	IDLC_DECL_VAR(eLock,aLock)
+	IDLC_BUF_TO_ENUM(eLock,aLock)
+	IDLC_DECL_RETVAR(tPtr,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,Lock,3,(ulFirstVertex,ulNumVertex,aLock))
+	IDLC_RET_FROM_PTR(ni::eType_Ptr,_Ret)
+IDLC_METH_END(ni,iVertexArray,Lock,3)
+
+/** ni -> iVertexArray::Unlock/0 **/
+IDLC_METH_BEGIN(ni,iVertexArray,Unlock,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,Unlock,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVertexArray,Unlock,0)
+
+/** ni -> iVertexArray::GetIsLocked/0 **/
+IDLC_METH_BEGIN(ni,iVertexArray,GetIsLocked,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVertexArray,GetIsLocked,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iVertexArray,GetIsLocked,0)
+
+IDLC_END_INTF(ni,iVertexArray)
+
+IDLC_END_NAMESPACE()
+// EOF //

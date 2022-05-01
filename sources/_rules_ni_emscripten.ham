@@ -1,0 +1,11 @@
+if ! ( $(EMSCRIPTEN) = 1 ) {
+  EXIT "F/_rules_ni_emscripten.ham: Emscripten rules can be used only with an Emscripten toolset." ;
+}
+
+LINKFLAGS +=
+  # --proxy-to-worker # Needed for FS.createLazyFile
+  -s MINIFY_HTML=0 --closure=0 --minify=0 # Make debugging much easier
+  -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
+  --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten pre_js_0.js ] ]
+  --shell-file [ FQuote [ FDirName $(TOP_DIR) emscripten shell.html ] ]
+;

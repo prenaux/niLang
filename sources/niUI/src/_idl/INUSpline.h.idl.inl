@@ -1,0 +1,124 @@
+#include "../API/niUI/INUSpline.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iNUSpline **/
+IDLC_BEGIN_INTF(ni,iNUSpline)
+/** ni -> iNUSpline::SetType/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,SetType,1)
+	IDLC_DECL_VAR(eNUSplineType,aType)
+	IDLC_BUF_TO_ENUM(eNUSplineType,aType)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,SetType,1,(aType))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iNUSpline,SetType,1)
+
+/** ni -> iNUSpline::GetType/0 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetType,0)
+	IDLC_DECL_RETVAR(eNUSplineType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetType,0,())
+	IDLC_RET_FROM_ENUM(eNUSplineType,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetType,0)
+
+/** ni -> iNUSpline::Clear/0 **/
+IDLC_METH_BEGIN(ni,iNUSpline,Clear,0)
+	IDLC_METH_CALL_VOID(ni,iNUSpline,Clear,0,())
+IDLC_METH_END(ni,iNUSpline,Clear,0)
+
+/** ni -> iNUSpline::AddNode/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,AddNode,1)
+	IDLC_DECL_VAR(sVec4f,avNode)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avNode)
+	IDLC_METH_CALL_VOID(ni,iNUSpline,AddNode,1,(avNode))
+IDLC_METH_END(ni,iNUSpline,AddNode,1)
+
+/** ni -> iNUSpline::RemoveNode/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,RemoveNode,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,RemoveNode,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iNUSpline,RemoveNode,1)
+
+/** ni -> iNUSpline::GetNumNodes/0 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetNumNodes,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetNumNodes,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetNumNodes,0)
+
+/** ni -> iNUSpline::SetNode/2 **/
+IDLC_METH_BEGIN(ni,iNUSpline,SetNode,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(sVec4f,avNode)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,avNode)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,SetNode,2,(anIndex,avNode))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iNUSpline,SetNode,2)
+
+/** ni -> iNUSpline::GetNode/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetNode,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(sVec4f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetNode,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetNode,1)
+
+/** ni -> iNUSpline::GetNodeDistance/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetNodeDistance,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetNodeDistance,1,(anIndex))
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetNodeDistance,1)
+
+/** ni -> iNUSpline::GetLength/0 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetLength,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetLength,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetLength,0)
+
+/** ni -> iNUSpline::GetPosition/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetPosition,1)
+	IDLC_DECL_VAR(tF32,afTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afTime)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetPosition,1,(afTime))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetPosition,1)
+
+/** ni -> iNUSpline::GetRelativePosition/1 **/
+IDLC_METH_BEGIN(ni,iNUSpline,GetRelativePosition,1)
+	IDLC_DECL_VAR(tF32,afTime)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afTime)
+	IDLC_DECL_RETVAR(sVec3f,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,GetRelativePosition,1,(afTime))
+	IDLC_RET_FROM_BASE(ni::eType_Vec3f,_Ret)
+IDLC_METH_END(ni,iNUSpline,GetRelativePosition,1)
+
+/** ni -> iNUSpline::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iNUSpline,SerializeDataTable,2)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_VAR(tSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iNUSpline,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iNUSpline,SerializeDataTable,2)
+
+IDLC_END_INTF(ni,iNUSpline)
+
+IDLC_END_NAMESPACE()
+// EOF //

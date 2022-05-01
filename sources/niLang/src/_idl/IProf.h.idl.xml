@@ -1,0 +1,387 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eProfilerReportMode">
+			<comments desc="Profiler report modes "/>
+			<value name="eProfilerReportMode_SelfTime" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eProfilerReportMode_HierTime" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eProfilerReportMode_CallGraph" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eProfilerReportMode_Last" value="3 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iProfDraw"
+			uuid1="831E4FEC-92B9-434A-9329-0F5F4AFA258F"
+			uuid2="0x831e4fec,0x92b9,0x434a,0x93,0x29,0x0f,0x5f,0x4a,0xfa,0x25,0x8f">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="beginDraw" name="BeginDraw" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abTranslucent"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="endDraw" name="EndDraw" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="drawRect" name="DrawRect" num_parameters="5">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="drawLine" name="DrawLine" num_parameters="5">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y0"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y1"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="getTextHeight" name="GetTextHeight" num_parameters="0">
+				<comments desc=""/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="getTextWidth" name="GetTextWidth" num_parameters="1">
+				<comments desc=""/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="beginText" name="BeginText" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="endText" name="EndText" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="text" name="Text" num_parameters="4">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iProf" uuid1="1E2D88EE-7007-4EB3-87D4-141E6982886B" uuid2="0x1e2d88ee,0x7007,0x4eb3,0x87,0xd4,0x14,0x1e,0x69,0x82,0x88,0x6b">
+			<comments desc="Profiler interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setRecord"
+				name="SetRecord"
+				num_parameters="1"
+				property="set"
+				property_name2="record"
+				property_name="record">
+				<comments desc="Set whether to record profiling infos or not during the next update. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abRecord"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRecord"
+				name="GetRecord"
+				num_parameters="0"
+				property="get"
+				property_name2="record"
+				property_name="record">
+				<comments desc="Get whether to record profiling infos or not during the next update. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update the profiler, once per frame. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getZoneStackDummy"
+				name="GetZoneStackDummy"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="sProfilerZoneStack *" typec="sProfilerZoneStack*"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getZoneStack"
+				name="GetZoneStack"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="sProfilerZoneStack * *" typec="sProfilerZoneStack**"/>
+			</method>
+			<method
+				java_name="setZoneStack"
+				name="SetZoneStack"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void"/>
+				<parameter
+					last="1"
+					name="apZoneStack"
+					type="sProfilerZoneStack *"
+					typec="sProfilerZoneStack*"/>
+			</method>
+			<method
+				java_name="stackAppend"
+				name="StackAppend"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="sProfilerZoneStack *" typec="sProfilerZoneStack*"/>
+				<parameter
+					last="1"
+					name="apZoneStack"
+					type="sProfilerZone *"
+					typec="sProfilerZone*"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTimeStamp"
+				name="GetTimeStamp"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void"/>
+				<parameter
+					last="1"
+					name="apTimeStamp"
+					type="tI64 *"
+					typec="tI64*"/>
+			</method>
+			<method java_name="setReportMode" name="SetReportMode" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eProfilerReportMode"
+					typec="eProfilerReportMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="getReportMode" name="GetReportMode" num_parameters="0">
+				<comments desc=""/>
+				<return type="eProfilerReportMode" typec="eProfilerReportMode" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="inputMoveCursor" name="InputMoveCursor" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anDelta"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="inputSelect" name="InputSelect" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="inputSelectParent" name="InputSelectParent" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="inputMoveFrame" name="InputMoveFrame" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anDelta"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="inputSetFrame" name="InputSetFrame" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFrame"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="inputSetCursor" name="InputSetCursor" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anLine"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="textReport" name="TextReport" num_parameters="2">
+				<comments desc=""/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="cols"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="rows"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="drawTable" name="DrawTable" num_parameters="6">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="drawer"
+					type="ni::iProfDraw *"
+					typec="ni::iProfDraw*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="sy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="full_width"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="precision"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="drawGraph" name="DrawGraph" num_parameters="5">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="drawer"
+					type="ni::iProfDraw *"
+					typec="ni::iProfDraw*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="sx"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="sy"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="x_spacing"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y_spacing"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

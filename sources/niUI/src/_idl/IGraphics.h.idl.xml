@@ -1,0 +1,3877 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iGraphics" uuid1="92E5EFCF-FCB3-4764-982B-D20C834E61ED" uuid2="0x92e5efcf,0xfcb3,0x4764,0x98,0x2b,0xd2,0x0c,0x83,0x4e,0x61,0xed">
+			<comments desc="Graphics interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="fvfgetTexCooDim"
+				name="FVFGetTexCooDim"
+				num_parameters="2">
+				<comments desc="Get the number of dimensions of the specified texture coordinates. anTexCooIndex is the index (0 to 7). "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="anFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anTexCooIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fvfgetNumTexCoos"
+				name="FVFGetNumTexCoos"
+				num_parameters="1">
+				<comments desc="Get the number of texture coordinates of the specified FVF. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fvftoString"
+				name="FVFToString"
+				num_parameters="1">
+				<comments desc="Convert the specified FVF to a string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fvffromString"
+				name="FVFFromString"
+				num_parameters="1">
+				<comments desc="Get a FVF from the specified string. "/>
+				<return type="tFVF" typec="tFVF" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszString"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fvfgetComponentOffset"
+				name="FVFGetComponentOffset"
+				num_parameters="2">
+				<comments desc="Get the offset of the specified component. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="C"
+					type="eFVF"
+					typec="eFVF"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="fvfgetStride"
+				name="FVFGetStride"
+				num_parameters="1">
+				<comments desc="Get the size of a FVF. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createPixelFormat" name="CreatePixelFormat" num_parameters="1">
+				<comments desc="Create a pixel format. " return="an interface to handle the created pixel format. ">
+					<remark text="Pixel format are created throught plugins, so the supported formats depend of the loaded plugins. "/>
+					<params text="aszFormat is a achar string which describe the pixel format to create. "/>
+				</comments>
+				<return type="iPixelFormat *" typec="iPixelFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmapFormat" name="CreateBitmapFormat" num_parameters="6">
+				<comments desc="Create a new bitmap format. "/>
+				<return type="iBitmapFormat *" typec="iBitmapFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createBitmapFormatEx" name="CreateBitmapFormatEx" num_parameters="6">
+				<comments desc="Create a new bitmap format. "/>
+				<return type="iBitmapFormat *" typec="iBitmapFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="pFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createBitmapFormatEmpty" name="CreateBitmapFormatEmpty" num_parameters="0">
+				<comments desc="Create a new empty bitmap format. "/>
+				<return type="iBitmapFormat *" typec="iBitmapFormat*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap" name="CreateBitmap" num_parameters="7">
+				<comments desc="Create a new bitmap. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createBitmapEx" name="CreateBitmapEx" num_parameters="7">
+				<comments desc="Create a new bitmap. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="pFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createBitmap2DEx" name="CreateBitmap2DEx" num_parameters="3">
+				<comments desc="Create a 2D bitmap. ">
+					<remark text="the given iPixelFormat instance will be release if the creation failed and when the bitmap is released. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="nH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap2D" name="CreateBitmap2D" num_parameters="3">
+				<comments desc="Create a 2D bitmap. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="nH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aszPixFmt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap2DMemoryEx" name="CreateBitmap2DMemoryEx" num_parameters="6">
+				<comments desc="Create a 2D bitmap from the specified memory. ">
+					<remark text="the given iPixelFormat instance will be release if the creation failed and when the bitmap is released. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="nH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="pFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ptrAddr"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="bFreeAddr"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createBitmap2DMemory" name="CreateBitmap2DMemory" num_parameters="6">
+				<comments desc="Create a 2D bitmap from the specified memory. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="nH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aszPixFmt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ptrAddr"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="bFreeAddr"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createBitmapCubeEx" name="CreateBitmapCubeEx" num_parameters="2">
+				<comments desc="Create a Cube bitmap. "/>
+				<return type="iBitmapCube *" typec="iBitmapCube*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ulSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmapCube" name="CreateBitmapCube" num_parameters="2">
+				<comments desc="Create a Cube bitmap. "/>
+				<return type="iBitmapCube *" typec="iBitmapCube*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ulSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aszPixFmt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap3DEx" name="CreateBitmap3DEx" num_parameters="4">
+				<comments desc="Create a 3D bitmap. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap3D" name="CreateBitmap3D" num_parameters="4">
+				<comments desc="Create a 3D bitmap. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszPixFmt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createBitmap3DMemoryEx" name="CreateBitmap3DMemoryEx" num_parameters="8">
+				<comments desc="Create a 3D bitmap from the specified memory. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apFmt"
+					type="iPixelFormat *"
+					typec="iPixelFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anRowPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anSlicePitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aptrAddr"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="abFreeAddr"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createBitmap3DMemory" name="CreateBitmap3DMemory" num_parameters="8">
+				<comments desc="Create a 3D bitmap from the specified memory. "/>
+				<return type="iBitmap3D *" typec="iBitmap3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anW"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anH"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anD"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aszPixFmt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anRowPitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anSlicePitch"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aptrAddr"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="abFreeAddr"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="loadBitmap" name="LoadBitmap" num_parameters="1">
+				<comments desc="Load a bitmap from a file. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="pFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadBitmapFromRes" name="LoadBitmapFromRes" num_parameters="2">
+				<comments desc="Load a bitmap from a resource. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspBasePath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadBitmapEx" name="LoadBitmapEx" num_parameters="2">
+				<comments desc="Load a bitmap from a file with the specified format. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="pFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="saveBitmap" name="SaveBitmap" num_parameters="3">
+				<comments desc="Save a bitmap in a file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aszFile"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="pBmp"
+					type="iBitmapBase *"
+					typec="iBitmapBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="ulCompression"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="saveBitmapEx" name="SaveBitmapEx" num_parameters="4">
+				<comments desc="Save a bitmap in the specified format in a file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBmp"
+					type="iBitmapBase *"
+					typec="iBitmapBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anCompression"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="urlfindBitmapFilePath" name="URLFindBitmapFilePath" num_parameters="2">
+				<comments desc="Find the path/url matching the specified resource and basepath. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aszRes"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aszBasePath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="openBitmapFile" name="OpenBitmapFile" num_parameters="2">
+				<comments desc="Open a bitmap file. ">
+					<remark text="Search all the known extensions if no extension is specified. "/>
+					<remark text="If no resource manager is registered in the system only the low level File opening methods are used. "/>
+					<params text="aszRes is the resource to open. "/>
+					<params text="aszBasePath is an optional path where the resources will be searched first. Only the directory of the path is used. "/>
+				</comments>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszRes"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="aszBasePath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="computeBitmapDiff" name="ComputeBitmapDiff" num_parameters="5">
+				<comments desc="Computes the diff between two bitmaps. ">
+					<params text="apImgA the first bitmap to compare "/>
+					<params text="apImgB the second bitmap to compare "/>
+					<params text="apOutput an optional bitmap where to output a visualisation of the difference "/>
+					<params text="afThreshold is the minimum color distance to be considered different. Between 0 and 1, default is 0.1. "/>
+					<params text="abIgnoreAA whether to ignore pixel that are part of antialiasing. Default is true. "/>
+				</comments>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					name="apImgA"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apImgB"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					name="apOutput"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="0.1 "
+					name="afThreshold"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					default="eTrue "
+					last="1"
+					name="abIgnoreAA"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createGeometryPolygonal" name="CreateGeometryPolygonal" num_parameters="4">
+				<comments desc="Create a polygonal geometry. ">
+					<remark text="to create a geometry that is not in system memory a renderer must be active. "/>
+					<remark text="if you switch renderer all geometries not created in system memory will be invalidated. "/>
+				</comments>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aulNumVertices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aulNumIndices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createGeometryPolygonalEx" name="CreateGeometryPolygonalEx" num_parameters="2">
+				<comments desc="Create a polygonal geometry from an exisiting vertex array and index array. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apVA"
+					type="iVertexArray *"
+					typec="iVertexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apIA"
+					type="iIndexArray *"
+					typec="iIndexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryModifier" name="CreateGeometryModifier" num_parameters="3">
+				<comments desc="Create a geometry modifier. " return="NULL if the modifier can&apos;t be created, else return a pointer to a valid geometry modifier. ">
+					<remark text="Just a wrapper around CreateInstance(&quot;GeometryModifier.NAME&quot;,apGeometry,apInitData). "/>
+					<params text="aszName is the name of the modifier. "/>
+					<params text="apGeometry is the geometry that is gonna be modified by the modifier. "/>
+					<params text="apInitData is a modifier specific initialization parameter. "/>
+				</comments>
+				<return type="iGeometryModifier *" typec="iGeometryModifier*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apGeometry"
+					type="iGeometry *"
+					typec="iGeometry*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apInitData"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalCube" name="CreateGeometryPolygonalCube" num_parameters="7">
+				<comments desc="Create a cube polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afWidth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalPlane" name="CreateGeometryPolygonalPlane" num_parameters="10">
+				<comments desc="Create a plane polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aPlaneType"
+					type="ePlaneType"
+					typec="ePlaneType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="afWidth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afHeight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="aulNumDiv"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalCylinder" name="CreateGeometryPolygonalCylinder" num_parameters="12">
+				<comments desc="Create a cylinder polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="baseRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="topRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="height"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="stacks"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="abCap"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abCentered"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createGeometryPolygonalSphere" name="CreateGeometryPolygonalSphere" num_parameters="8">
+				<comments desc="Create a sphere polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="radius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="stacks"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalGeosphere" name="CreateGeometryPolygonalGeosphere" num_parameters="7">
+				<comments desc="Create a geosphere polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="radius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalDiskSweep" name="CreateGeometryPolygonalDiskSweep" num_parameters="11">
+				<comments desc="Create a disk sweep polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="innerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="outerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="stacks"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="startAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="sweepAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateGeometryPolygonalDiskSweep" name="UpdateGeometryPolygonalDiskSweep" num_parameters="10">
+				<comments desc="Update a disk polygonal geometry. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apGeom"
+					type="iGeometry *"
+					typec="iGeometry*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="innerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="outerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="stacks"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="startAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="sweepAngle"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGeometryPolygonalDisk" name="CreateGeometryPolygonalDisk" num_parameters="9">
+				<comments desc="Create a disk polygonal geometry. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="innerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="outerRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="slices"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="stacks"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="abCW"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="aulColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="amtxUV"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="initializeDriver" name="InitializeDriver" num_parameters="1">
+				<comments desc="Initialize the specified hardware driver. ">
+					<remark text="Only one driver can be initialized for each graphics object instance. "/>
+					<remark text="&quot;NULL/renNULL&quot; driver will create a NULL driver. "/>
+					<remark text="&quot;SOFT/renSOFT&quot; driver will create a software renderer driver. "/>
+					<remark text="&quot;Auto&quot; driver will pick the most capable hardware driver first then fallback to software rendering if none can be found. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspDriverName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsDriverInitialized"
+				name="GetIsDriverInitialized"
+				num_parameters="0"
+				property="get"
+				property_name2="isDriverInitialized"
+				property_name="is_driver_initialized">
+				<comments desc="Get whether the driver has been initialized. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriver"
+				name="GetDriver"
+				num_parameters="0"
+				property="get"
+				property_name2="driver"
+				property_name="driver">
+				<comments desc="Get the driver that has been initialized. "/>
+				<return type="iGraphicsDriver *" typec="iGraphicsDriver*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDriverCaps"
+				name="GetDriverCaps"
+				num_parameters="1"
+				property="get"
+				property_name2="driverCaps"
+				property_name="driver_caps">
+				<comments desc="Get the driver&apos;s capabilities. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+				<parameter
+					last="1"
+					name="aCaps"
+					type="eGraphicsCaps"
+					typec="eGraphicsCaps"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createContextForWindow" name="CreateContextForWindow" num_parameters="5">
+				<comments desc="Create a new context for the specified OS window. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apWindow"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszBBFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszDSFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSwapInterval"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aBackBufferFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createContextForRenderTargets" name="CreateContextForRenderTargets" num_parameters="5">
+				<comments desc="Creates a new context for the specified render targets. "/>
+				<return type="iGraphicsContextRT *" typec="iGraphicsContextRT*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT0"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT1"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT2"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT3"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDS"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGenericDeviceResourceManager"
+				name="GetGenericDeviceResourceManager"
+				num_parameters="0"
+				property="get"
+				property_name2="genericDeviceResourceManager"
+				property_name="generic_device_resource_manager">
+				<comments desc="Get the generice device resource manager. "/>
+				<return type="iDeviceResourceManager *" typec="iDeviceResourceManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSamplerStates" name="CreateSamplerStates" num_parameters="0">
+				<comments desc="Create a new sampler states instance. "/>
+				<return type="iSamplerStates *" typec="iSamplerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDepthStencilStates" name="CreateDepthStencilStates" num_parameters="0">
+				<comments desc="Create a new depth stencil states instance. "/>
+				<return type="iDepthStencilStates *" typec="iDepthStencilStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createRasterizerStates" name="CreateRasterizerStates" num_parameters="0">
+				<comments desc="Create a new rasterizer states instance. "/>
+				<return type="iRasterizerStates *" typec="iRasterizerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFixedStates" name="CreateFixedStates" num_parameters="0">
+				<comments desc="Create a new fixed pipeline states instance. "/>
+				<return type="iFixedStates *" typec="iFixedStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="checkTextureFormat" name="CheckTextureFormat" num_parameters="2">
+				<comments desc="Check whether the specified texture format is supported and set the bitmap format object to the nearest matching native bitmap format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFormat"
+					type="iBitmapFormat *"
+					typec="iBitmapFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextureDeviceResourceManager"
+				name="GetTextureDeviceResourceManager"
+				num_parameters="0"
+				property="get"
+				property_name2="textureDeviceResourceManager"
+				property_name="texture_device_resource_manager">
+				<comments desc="Get the texture device resource manager. "/>
+				<return type="iDeviceResourceManager *" typec="iDeviceResourceManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumTextures"
+				name="GetNumTextures"
+				num_parameters="0"
+				property="get"
+				property_name2="numTextures"
+				property_name="num_textures">
+				<comments desc="Get the number of textures in the manager. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextureFromName"
+				name="GetTextureFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="textureFromName"
+				property_name="texture_from_name">
+				<comments desc="Get a texture from its name. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextureFromIndex"
+				name="GetTextureFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="textureFromIndex"
+				property_name="texture_from_index">
+				<comments desc="Get a texture from its index. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createTexture" name="CreateTexture" num_parameters="8">
+				<comments desc="Create a new texture. ">
+					<remark text="Setting anNumMipMaps to zero with eTextureFlags_MipMaps automatically computes the number of mipmaps down to 4x4. "/>
+				</comments>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createTextureFromBitmap" name="CreateTextureFromBitmap" num_parameters="3">
+				<comments desc="Create a new texture from the specified bitmap. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBitmap"
+					type="iBitmapBase *"
+					typec="iBitmapBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createTextureFromRes" name="CreateTextureFromRes" num_parameters="3">
+				<comments desc="Create a new texture from the specified resource. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspBasePath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setRecreateTextureWhenChanged"
+				name="SetRecreateTextureWhenChanged"
+				num_parameters="1"
+				property="set"
+				property_name2="recreateTextureWhenChanged"
+				property_name="recreate_texture_when_changed">
+				<comments desc="Set whether CreateTextureFromRes recreates the texture when the source resource has changed. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRecreateTextureWhenChanged"
+				name="GetRecreateTextureWhenChanged"
+				num_parameters="0"
+				property="get"
+				property_name2="recreateTextureWhenChanged"
+				property_name="recreate_texture_when_changed">
+				<comments desc="Get whether CreateTextureFromRes recreates the texture when the source resource has changed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="blitBitmapToTexture" name="BlitBitmapToTexture" num_parameters="6">
+				<comments desc="Blit a bitmap to a texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTextureBlitFlags_None "
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToBitmap" name="BlitTextureToBitmap" num_parameters="6">
+				<comments desc="Blit a texture to a bitmap. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTextureBlitFlags_None "
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToTexture" name="BlitTextureToTexture" num_parameters="7">
+				<comments desc="Blit a texture into another texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sRecti ( 0 , 0 ) "
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTextureBlitFlags_None "
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitBitmap3DToTexture" name="BlitBitmap3DToTexture" num_parameters="7">
+				<comments desc="Blit a 3d bitmap to a 3d texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iBitmap3D *"
+					typec="iBitmap3D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="aSrcMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="aDestMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="avSize"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTextureBlitFlags_None "
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToBitmap3D" name="BlitTextureToBitmap3D" num_parameters="7">
+				<comments desc="Blit a 3d texture to a 3d bitmap. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iBitmap3D *"
+					typec="iBitmap3D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="aSrcMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="aDestMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="sVec3i : : Zero ( ) "
+					name="avSize"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eTextureBlitFlags_None "
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createBitmapFromTexture" name="CreateBitmapFromTexture" num_parameters="1">
+				<comments desc="Create a bitmap from a texture. "/>
+				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumShaderProfile"
+				name="GetNumShaderProfile"
+				num_parameters="1">
+				<comments desc="Get the number of Shader profile supported in the specified unit. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderProfile"
+				name="GetShaderProfile"
+				num_parameters="2">
+				<comments desc="Get the profile at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createShaderConstants"
+				name="CreateShaderConstants"
+				num_parameters="1">
+				<comments desc="Creates an empty shader constants instance. "/>
+				<return type="iShaderConstants *" typec="iShaderConstants*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anMaxRegisters"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="serializeShaderConstants" name="SerializeShaderConstants" num_parameters="3">
+				<comments desc="Serialize shader constants in the specified datatable. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apConsts"
+					type="iShaderConstants *"
+					typec="iShaderConstants*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderDeviceResourceManager"
+				name="GetShaderDeviceResourceManager"
+				num_parameters="0"
+				property="get"
+				property_name2="shaderDeviceResourceManager"
+				property_name="shader_device_resource_manager">
+				<comments desc="Get the shader device resource manager. "/>
+				<return type="iDeviceResourceManager *" typec="iDeviceResourceManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumShaders"
+				name="GetNumShaders"
+				num_parameters="0"
+				property="get"
+				property_name2="numShaders"
+				property_name="num_shaders">
+				<comments desc="Get the number of shaders in the manager. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderFromName"
+				name="GetShaderFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="shaderFromName"
+				property_name="shader_from_name">
+				<comments desc="Get a shader from its name. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderFromIndex"
+				name="GetShaderFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="shaderFromIndex"
+				property_name="shader_from_index">
+				<comments desc="Get a shader from its index. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createShader" name="CreateShader" num_parameters="2">
+				<comments desc="Create a new shader. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apByteCode"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createShaderFromRes" name="CreateShaderFromRes" num_parameters="1">
+				<comments desc="Create a new shader from the specified resource. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setRecreateShaderWhenChanged"
+				name="SetRecreateShaderWhenChanged"
+				num_parameters="1"
+				property="set"
+				property_name2="recreateShaderWhenChanged"
+				property_name="recreate_shader_when_changed">
+				<comments desc="Set whether CreateShaderFromRes recreates the shader when the source resource has changed. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRecreateShaderWhenChanged"
+				name="GetRecreateShaderWhenChanged"
+				num_parameters="0"
+				property="get"
+				property_name2="recreateShaderWhenChanged"
+				property_name="recreate_shader_when_changed">
+				<comments desc="Get whether CreateShaderFromRes recreates the shader when the source resource has changed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="createVertexArray" name="CreateVertexArray" num_parameters="3">
+				<comments desc="Create a new driver vertex array instance. "/>
+				<return type="iVertexArray *" typec="iVertexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumVertices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="eArrayUsage"
+					typec="eArrayUsage"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createIndexArray" name="CreateIndexArray" num_parameters="4">
+				<comments desc="Create a new driver index array instance. "/>
+				<return type="iIndexArray *" typec="iIndexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPrimitiveType"
+					type="eGraphicsPrimitiveType"
+					typec="eGraphicsPrimitiveType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anNumIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anMaxVertexIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="eArrayUsage"
+					typec="eArrayUsage"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createDrawOperation" name="CreateDrawOperation" num_parameters="0">
+				<comments desc="Creates a new draw operation. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDrawOperationSet" name="CreateDrawOperationSet" num_parameters="0">
+				<comments desc="Create a draw operation set. ">
+					<remark text="if the passed sorter is NULL the default sorter will be used. "/>
+				</comments>
+				<return type="iDrawOperationSet *" typec="iDrawOperationSet*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOcclusionQuery" name="CreateOcclusionQuery" num_parameters="0">
+				<comments desc="Create a new occlusion query object. "/>
+				<return type="iOcclusionQuery *" typec="iOcclusionQuery*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="compileSamplerStates" name="CompileSamplerStates" num_parameters="1">
+				<comments desc="Compile a sampler states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iSamplerStates *"
+					typec="iSamplerStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCompiledSamplerStates"
+				name="GetCompiledSamplerStates"
+				num_parameters="1"
+				property="get"
+				property_name2="compiledSamplerStates"
+				property_name="compiled_sampler_states">
+				<comments desc="Get the specified compiled sampler states. "/>
+				<return type="iSamplerStates *" typec="iSamplerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="compileRasterizerStates" name="CompileRasterizerStates" num_parameters="1">
+				<comments desc="Compile a rasterizer states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iRasterizerStates *"
+					typec="iRasterizerStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCompiledRasterizerStates"
+				name="GetCompiledRasterizerStates"
+				num_parameters="1"
+				property="get"
+				property_name2="compiledRasterizerStates"
+				property_name="compiled_rasterizer_states">
+				<comments desc="Get the specified compiled rasterizer states. "/>
+				<return type="iRasterizerStates *" typec="iRasterizerStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="compileDepthStencilStates" name="CompileDepthStencilStates" num_parameters="1">
+				<comments desc="Compile a depth stencil states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iDepthStencilStates *"
+					typec="iDepthStencilStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCompiledDepthStencilStates"
+				name="GetCompiledDepthStencilStates"
+				num_parameters="1"
+				property="get"
+				property_name2="compiledDepthStencilStates"
+				property_name="compiled_depth_stencil_states">
+				<comments desc="Get the specified compiled depth stencil states. "/>
+				<return type="iDepthStencilStates *" typec="iDepthStencilStates*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="createMaterial" name="CreateMaterial" num_parameters="0">
+				<comments desc="Create an empty material. "/>
+				<return type="iMaterial *" typec="iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createMaterialLibrary" name="CreateMaterialLibrary" num_parameters="0">
+				<comments desc="Create a material library. "/>
+				<return type="iMaterialLibrary *" typec="iMaterialLibrary*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDrawOpCapture" name="CreateDrawOpCapture" num_parameters="0">
+				<comments desc="Create a new draw op capture object. "/>
+				<return type="iGraphicsDrawOpCapture *" typec="iGraphicsDrawOpCapture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDrawOpCapture"
+				name="SetDrawOpCapture"
+				num_parameters="1"
+				property="set"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Set the draw op capture object. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apCapture"
+					type="iGraphicsDrawOpCapture *"
+					typec="iGraphicsDrawOpCapture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDrawOpCapture"
+				name="GetDrawOpCapture"
+				num_parameters="0"
+				property="get"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Get the draw op capture object. "/>
+				<return type="iGraphicsDrawOpCapture *" typec="iGraphicsDrawOpCapture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorLuminance"
+				min_features="15"
+				name="ColorLuminance"
+				num_parameters="1">
+				<comments desc="Get the lumiance of a 3d color. ">
+					<remark text="Uses the lumiance distribution kvColorLuminanceR21G71B07. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorLuminanceEx"
+				min_features="15"
+				name="ColorLuminanceEx"
+				num_parameters="2">
+				<comments desc="Get the lumiance of a 3d color, allow to specify a luminance distribution. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="aColor"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avLuminanceDistribution"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorGammaCorrect"
+				min_features="15"
+				name="ColorGammaCorrect"
+				num_parameters="2">
+				<comments desc="Correct the gamma of a color. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aC"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afFactor"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="colorAdjustContrast"
+				min_features="15"
+				name="ColorAdjustContrast"
+				num_parameters="2">
+				<comments desc="Adjust the contrast of a color. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="colorAdjustSaturation"
+				min_features="15"
+				name="ColorAdjustSaturation"
+				num_parameters="2">
+				<comments desc="Adjust the saturation of a color. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="colorNegative"
+				min_features="15"
+				name="ColorNegative"
+				num_parameters="1">
+				<comments desc="Get the negative of a color. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorGrey"
+				min_features="15"
+				name="ColorGrey"
+				num_parameters="1">
+				<comments desc="Gray a color. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorBlackWhite"
+				min_features="15"
+				name="ColorBlackWhite"
+				num_parameters="2">
+				<comments desc="Set a color to be black or white in function of the specified reference. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="C"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="s"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="colorConvert"
+				min_features="15"
+				name="ColorConvert"
+				num_parameters="3">
+				<comments desc="Convert a color from one color space to another. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aSource"
+					type="eColorSpace"
+					typec="eColorSpace"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aDest"
+					type="eColorSpace"
+					typec="eColorSpace"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="colorConvertEx"
+				min_features="15"
+				name="ColorConvertEx"
+				num_parameters="4">
+				<comments desc="Convert a color from one color space to another, allows to specify the XYZ reference. ">
+					<remark text="kcolXYZRef2D65 is the standard XYZ reference value "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aSource"
+					type="eColorSpace"
+					typec="eColorSpace"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aDest"
+					type="eColorSpace"
+					typec="eColorSpace"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aColor"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aXYZRef"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumNamedColors"
+				name="GetNumNamedColors"
+				num_parameters="0"
+				property="get"
+				property_name2="numNamedColors"
+				property_name="num_named_colors">
+				<comments desc="Get the number of named colors. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorName"
+				name="GetColorName"
+				num_parameters="1"
+				property="get"
+				property_name2="colorName"
+				property_name="color_name">
+				<comments desc="Get the name of the color at the specified index. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorIndex"
+				name="GetColorIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="colorIndex"
+				property_name="color_index">
+				<comments desc="Get the index of the color with the specified name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorValue"
+				name="GetColorValue"
+				num_parameters="1"
+				property="get"
+				property_name2="colorValue"
+				property_name="color_value">
+				<comments desc="Get the value of the color at the specified index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findColorName"
+				name="FindColorName"
+				num_parameters="1">
+				<comments desc="Find the color with the closest match to the specified color. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor3FromName"
+				name="GetColor3FromName"
+				num_parameters="1"
+				property="get"
+				property_name2="color3FromName"
+				property_name="color3from_name">
+				<comments desc="Get a color from it&apos;s name. ">
+					<remark text="Supported syntaxes, case insensitive, in order of priority:&lt;br/&gt; - Vec3, Vec4, RGB, RGBA math expressions - color name&lt;br/&gt; - Hexadecimal code: &quot;#AARRGGBB&quot;, &quot;#RRGGBB&quot;, &quot;#RGB&quot;, &quot;#RGBA&quot;&lt;br/&gt; - (CSS) rgb(N,N,N), rgba(N,N,N,N), N = [0-255], [0-100]%, [0.0-1.0]f&lt;br/&gt; "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor4FromName"
+				name="GetColor4FromName"
+				num_parameters="1"
+				property="get"
+				property_name2="color4FromName"
+				property_name="color4from_name">
+				<comments desc="Get a color from it&apos;s name. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor4FromNameA"
+				name="GetColor4FromNameA"
+				num_parameters="2">
+				<comments desc="Get a color from it&apos;s name, specifying the alpha. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afAlpha"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCssColor3FromName"
+				name="GetCssColor3FromName"
+				num_parameters="1"
+				property="get"
+				property_name2="cssColor3FromName"
+				property_name="css_color3from_name">
+				<comments desc="Get a color from it&apos;s name. ">
+					<remark text="Supported syntaxes, case insensitive, in order of priority:&lt;br/&gt; - Vec3 &amp; Vec4 math expressions - color name&lt;br&gt; - Hexadecimal code : &quot;#AARRGGBB&quot;, &quot;#RRGGBB&quot;, &quot;#RGB&quot;, &quot;#RGBA&quot;&lt;br/&gt; - (CSS) rgb(N,N,N), rgba(N,N,N,N), N = [0-255], [0-100]%, [0.0-1.0]f&lt;br/&gt; "/>
+					<remark text="See the W3C CSS2 specifications. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCssColor4FromName"
+				name="GetCssColor4FromName"
+				num_parameters="1"
+				property="get"
+				property_name2="cssColor4FromName"
+				property_name="css_color4from_name">
+				<comments desc="Get a css color from it&apos;s name. ">
+					<remark text="See the W3C CSS2 specifications. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCssColor4FromNameA"
+				name="GetCssColor4FromNameA"
+				num_parameters="2">
+				<comments desc="Get a css color from it&apos;s name, specifying the alpha. ">
+					<remark text="See the W3C CSS2 specifications. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afAlpha"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsSphereRandom"
+				name="UDPointsSphereRandom"
+				num_parameters="1">
+				<comments desc="Generates random points on a unit sphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsSphereHammersley"
+				name="UDPointsSphereHammersley"
+				num_parameters="1">
+				<comments desc="Generates hammersley base2 points on a unit sphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsSphereHammersleyEx"
+				name="UDPointsSphereHammersleyEx"
+				num_parameters="2">
+				<comments desc="Generates hammersley base p1 points on a unit sphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsSphereHalton"
+				name="UDPointsSphereHalton"
+				num_parameters="2">
+				<comments desc="Generates halton p1=2,p2 points on a unit sphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="3 "
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsSphereHaltonEx"
+				name="UDPointsSphereHaltonEx"
+				num_parameters="3">
+				<comments desc="Generates halton p1,p2 points on a unit sphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsHemisphereRandom"
+				name="UDPointsHemisphereRandom"
+				num_parameters="1">
+				<comments desc="Generates random points on a unit hemisphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsHemisphereHammersley"
+				name="UDPointsHemisphereHammersley"
+				num_parameters="1">
+				<comments desc="Generates hammersley base2 points on a unit hemisphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsHemisphereHammersleyEx"
+				name="UDPointsHemisphereHammersleyEx"
+				num_parameters="2">
+				<comments desc="Generates hammersley base p1 points on a unit hemisphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsHemisphereHalton"
+				name="UDPointsHemisphereHalton"
+				num_parameters="2">
+				<comments desc="Generates halton p1=2,p2 points on a unit hemisphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="3 "
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsHemisphereHaltonEx"
+				name="UDPointsHemisphereHaltonEx"
+				num_parameters="3">
+				<comments desc="Generates halton p1,p2 points on a unit hemisphere. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec3fCVec *"
+					typec="tVec3fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsPlaneRandom"
+				name="UDPointsPlaneRandom"
+				num_parameters="1">
+				<comments desc="Generate random points on a unit plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsPlaneHammersley"
+				name="UDPointsPlaneHammersley"
+				num_parameters="1">
+				<comments desc="Generate hammersley base2 points on a unit plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apResults"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsPlaneHammersleyEx"
+				name="UDPointsPlaneHammersleyEx"
+				num_parameters="2">
+				<comments desc="Generate hammersley base p1 points on a unit plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsPlaneHalton"
+				name="UDPointsPlaneHalton"
+				num_parameters="2">
+				<comments desc="Generate halton p1=2,p2 points on a unit plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="3 "
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="udpointsPlaneHaltonEx"
+				name="UDPointsPlaneHaltonEx"
+				num_parameters="3">
+				<comments desc="Generate halton p1,p2 points on a unit plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apResults"
+					type="tVec2fCVec *"
+					typec="tVec2fCVec*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="p1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="p2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringGetDampingRatio"
+				min_features="15"
+				name="DampedSpringGetDampingRatio"
+				num_parameters="2">
+				<comments desc="Get the damping ratio of a spring set with the specified Ks/Kd constants. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringComputeKdFromDampingRatio"
+				min_features="15"
+				name="DampedSpringComputeKdFromDampingRatio"
+				num_parameters="2">
+				<comments desc="Compute the value of Kd for the specified Ks that will result in a spring with the specified damping ratio. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="E"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringAcceleration1"
+				min_features="15"
+				name="DampedSpringAcceleration1"
+				num_parameters="4">
+				<comments desc="Computes the acceleration of a 1D damped spring system. \see ni::iSystem::DampedSpringAcceleration4 "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					name="D"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="V"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringAcceleration2"
+				min_features="15"
+				name="DampedSpringAcceleration2"
+				num_parameters="4">
+				<comments desc="Computes the acceleration of a 1D damped spring system. \see ni::iSystem::DampedSpringAcceleration4 "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="D"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringAcceleration3"
+				min_features="15"
+				name="DampedSpringAcceleration3"
+				num_parameters="4">
+				<comments desc="Computes the acceleration of a 1D damped spring system. \see ni::iSystem::DampedSpringAcceleration4 "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="D"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="dampedSpringAcceleration4"
+				min_features="15"
+				name="DampedSpringAcceleration4"
+				num_parameters="4">
+				<comments desc="Computes the acceleration of a 4D damped spring system. The spring acceleration is applied in the direction opposite from its displacement from a rest position, and a damping acceleration is applied in the direction opposite from its velocity. The damping ratio is : E = Kd/(2*sqrt(Ks)). - When E=1, the spring system is critically damped, and the system will return to its rest position in the minimal possibile time for the given value of Ks. - When E &lt; 1, the spring system is underdamped, and it will oscillate before returning to rest. - When E &gt; 1, then the system is overdamped and it will take longer than it is necessary to reach equilibrum. ">
+					<params text="D: is the displacement of the spring/object "/>
+					<params text="V: is the current velocity "/>
+					<params text="Ks: spring acceleration constant, control the spring component of the acceleration - the stiffness of the spring (the higher the value the faster the spring will reach its target). "/>
+					<params text="Kd: damping acceleration constant, control the damping component of the acceleration. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="D"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="V"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpring1"
+				min_features="15"
+				name="CreateDampedSpring1"
+				num_parameters="2">
+				<comments desc="Creates a 1D damped spring. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpring1 *" typec="ni::iDampedSpring1*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpring2"
+				min_features="15"
+				name="CreateDampedSpring2"
+				num_parameters="2">
+				<comments desc="Creates a 2D damped spring. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpring2 *" typec="ni::iDampedSpring2*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpring3"
+				min_features="15"
+				name="CreateDampedSpring3"
+				num_parameters="2">
+				<comments desc="Creates a 3D damped spring. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpring3 *" typec="ni::iDampedSpring3*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpring4"
+				min_features="15"
+				name="CreateDampedSpring4"
+				num_parameters="2">
+				<comments desc="Creates a 4D damped spring. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpring4 *" typec="ni::iDampedSpring4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpringPosition1"
+				min_features="15"
+				name="CreateDampedSpringPosition1"
+				num_parameters="2">
+				<comments desc="Creates a 1D damped spring position. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpringPosition1 *" typec="ni::iDampedSpringPosition1*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpringPosition2"
+				min_features="15"
+				name="CreateDampedSpringPosition2"
+				num_parameters="2">
+				<comments desc="Creates a 2D damped spring position. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpringPosition2 *" typec="ni::iDampedSpringPosition2*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpringPosition3"
+				min_features="15"
+				name="CreateDampedSpringPosition3"
+				num_parameters="2">
+				<comments desc="Creates a 3D damped spring position. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpringPosition3 *" typec="ni::iDampedSpringPosition3*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createDampedSpringPosition4"
+				min_features="15"
+				name="CreateDampedSpringPosition4"
+				num_parameters="2">
+				<comments desc="Creates a 4D damped spring position. ">
+					<remark text="If Ks and Kd are zero a critically damped spring with Ks=10 is set. "/>
+				</comments>
+				<return type="ni::iDampedSpringPosition4 *" typec="ni::iDampedSpringPosition4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="Ks"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="Kd"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createTransform"
+				name="CreateTransform"
+				num_parameters="0">
+				<comments desc="Creates a new transform. "/>
+				<return type="iTransform *" typec="iTransform*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createFrustum"
+				name="CreateFrustum"
+				num_parameters="0">
+				<comments desc="Creates a new frustum. "/>
+				<return type="iFrustum *" typec="iFrustum*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createAABB"
+				name="CreateAABB"
+				num_parameters="0">
+				<comments desc="Creates a new AABB. "/>
+				<return type="iBoundingVolume *" typec="iBoundingVolume*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createIntersection"
+				name="CreateIntersection"
+				num_parameters="0">
+				<comments desc="Creates an intersection. "/>
+				<return type="iIntersection *" typec="iIntersection*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createCamera"
+				name="CreateCamera"
+				num_parameters="0">
+				<comments desc="Creates a new camera instance. "/>
+				<return type="iCamera *" typec="iCamera*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createNUSpline"
+				name="CreateNUSpline"
+				num_parameters="1">
+				<comments desc="Creates a new Non-uniform spline. "/>
+				<return type="iNUSpline *" typec="iNUSpline*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eNUSplineType"
+					typec="eNUSplineType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createOverlayColor" name="CreateOverlayColor" num_parameters="1">
+				<comments desc="Creates a color overlay. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOverlayResource" name="CreateOverlayResource" num_parameters="1">
+				<comments desc="Create an overlay from the specified resource. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOverlayTexture" name="CreateOverlayTexture" num_parameters="1">
+				<comments desc="Creates an overlay that will use the specified texture. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOverlayImage" name="CreateOverlayImage" num_parameters="1">
+				<comments desc="Creates an overlay that will use the specified image. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apImage"
+					type="iImage *"
+					typec="iImage*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOverlayMaterial" name="CreateOverlayMaterial" num_parameters="1">
+				<comments desc="Creates an overlay that will use the specified material. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadFont" name="LoadFont" num_parameters="1">
+				<comments desc="Load a font. \see ni::iGraphics::LoadFont ">
+					<remark text="This function uses the default get flags. "/>
+					<remark text="Returns a font instance that can be used directly. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadFontEx" name="LoadFontEx" num_parameters="2">
+				<comments desc="Load a font. ">
+					<remark text="A list of font names separated by commas can be specified, the first font that matches will be used. A font name can be a regular names such as &apos;Arial, Courier New&apos; and/or a file path. Ex: &apos;Arial, fonts/arial.ttf&apos; will look for the Arial font registered in the system, if it isnt found it will try to load from the fonts/arial.ttf resource file. Font name that contain a &apos;.&apos; will not have Bold/Italic appended to their name automatically when using the eFontLoadFlags_Bold/Italic flags. "/>
+					<remark text="If no font matches, &apos;Default&apos; is searched, if it fails the 8x8 font is returned. "/>
+					<remark text="For each name, system fonts are searched, then fonts which have already been loaded. "/>
+					<remark text="Font names can be a &quot;file pattern regex&quot;, aka contain wildcards etc... "/>
+					<remark text="Returns a font instance that can be used directly. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tFontLoadFlags"
+					typec="tFontLoadFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createFont" name="CreateFont" num_parameters="2">
+				<comments desc="Create a font from the given file. ">
+					<remark text="Font name is extract from the file name is available otherwise the file name of the source path is used. "/>
+					<remark text="This method will not search for previously loaded font and create a new base font object. The prefered method to load/create fonts is to use the LoadFont/Ex() functions. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="pFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFontFromBitmap" name="CreateFontFromBitmap" num_parameters="2">
+				<comments desc="Create a font from the given bitmap. ">
+					<remark text="This method will not search for previously loaded font and create a new base font object. The prefered method to load/create fonts is to use the LoadFont/Ex() functions. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="pBmp"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFont8x8" name="CreateFont8x8" num_parameters="1">
+				<comments desc="Create the default 8x8 system font. ">
+					<remark text="The default font name is &quot;8x8&quot;. "/>
+					<remark text="This method will not search for previously loaded font and create a new base font object. The prefered method to load/create fonts is to use the LoadFont/Ex() functions. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="enumOSFonts"
+				name="EnumOSFonts"
+				num_parameters="0">
+				<comments desc="Get the list of fonts find on the host OS. " return="A map&lt;display name, font file path&gt; with all the fonts found on the host OS. "/>
+				<return type="Ptr&lt;tStringCMap&gt;" typec="Ptr&lt;tStringCMap&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="registerSystemFonts" name="RegisterSystemFonts" num_parameters="0">
+				<comments desc="Register all the default system fonts. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="registerSystemFont" name="RegisterSystemFont" num_parameters="3">
+				<comments desc="Register a new font as a system font. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspFilePath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSystemFonts"
+				name="GetNumSystemFonts"
+				num_parameters="0"
+				property="get"
+				property_name2="numSystemFonts"
+				property_name="num_system_fonts">
+				<comments desc="Get the number of system fonts registered. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSystemFontName"
+				name="GetSystemFontName"
+				num_parameters="1"
+				property="get"
+				property_name2="systemFontName"
+				property_name="system_font_name">
+				<comments desc="Get the name of the specified system font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSystemFontFilePath"
+				name="GetSystemFontFilePath"
+				num_parameters="1"
+				property="get"
+				property_name2="systemFontFilePath"
+				property_name="system_font_file_path">
+				<comments desc="Get the file path of the specified system font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSystemFontFileName"
+				name="GetSystemFontFileName"
+				num_parameters="1"
+				property="get"
+				property_name2="systemFontFileName"
+				property_name="system_font_file_name">
+				<comments desc="Get the file name of the specified system font. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumFonts"
+				name="GetNumFonts"
+				num_parameters="0"
+				property="get"
+				property_name2="numFonts"
+				property_name="num_fonts">
+				<comments desc="Get the number of fonts registered. ">
+					<remark text="This doesn&apos;t include the font regular instances. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFontFromIndex"
+				name="GetFontFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="fontFromIndex"
+				property_name="font_from_index">
+				<comments desc="Get the font at the given index. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFontFromName"
+				name="GetFontFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="fontFromName"
+				property_name="font_from_name">
+				<comments desc="Get a font from its exact name. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findFont"
+				name="FindFont"
+				num_parameters="2">
+				<comments desc="Find a loaded font which matches the specified names. ">
+					<remark text="Uses the same rules as LoadFontEx. "/>
+				</comments>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="mode"
+					type="tFontLoadFlags"
+					typec="tFontLoadFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="clearAllFontCaches" name="ClearAllFontCaches" num_parameters="0">
+				<comments desc="Clear all font caches. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFontCacheID"
+				name="GetFontCacheID"
+				num_parameters="0"
+				property="get"
+				property_name2="fontCacheID"
+				property_name="font_cache_id">
+				<comments desc="Get the global font cache ID. ">
+					<remark text="The cache ID changes every time a font&apos;s cache is cleared. "/>
+					<remark text="The ID can be used to detect changes in the font cache. For example to relayout geometries that depend on the font&apos;s internal texture cache. "/>
+					<remark text="The global font cache ID should be used when the actual fonts being used is not trivial (such as in a HTML context). "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createImage" name="CreateImage" num_parameters="2">
+				<comments desc="Create a new blank empty image. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createImageFromFile" name="CreateImageFromFile" num_parameters="1">
+				<comments desc="Create a new image from the specified bitmap file. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageFromResource" name="CreateImageFromResource" num_parameters="1">
+				<comments desc="Create a new image from the specified resource. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageFromBitmap" name="CreateImageFromBitmap" num_parameters="1">
+				<comments desc="Create a new image from the specified bitmap. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBitmap"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageFromTexture" name="CreateImageFromTexture" num_parameters="1">
+				<comments desc="Create a new image from the specified texture. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageFromBitmapAndTexture" name="CreateImageFromBitmapAndTexture" num_parameters="2">
+				<comments desc="Create a new image from the specified bitmap and texture. ">
+					<remark text="The bitmap and texture must be of the same size. "/>
+				</comments>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBitmap"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageEx" name="CreateImageEx" num_parameters="5">
+				<comments desc="Create a new image. "/>
+				<return type="iImage *" typec="iImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apBmp"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apTex"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDepthStencil"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageMap" name="CreateImageMap" num_parameters="2">
+				<comments desc="Create an image map. "/>
+				<return type="iImageMap *" typec="iImageMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszBaseName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszPxf"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createImageGraphicsContext" name="CreateImageGraphicsContext" num_parameters="1">
+				<comments desc="Create a graphics context that uses the specified Image as main render target and depth buffer. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apImage"
+					type="iImage *"
+					typec="iImage*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createCanvas" name="CreateCanvas" num_parameters="2">
+				<comments desc="Creates a new canvas. ">
+					<params text="apContext is the graphics context where the canvas will draw "/>
+					<params text="apResetMaterial if not NULL is the material that will be used to reset the default material&apos;s value when ResetStates() is called "/>
+				</comments>
+				<return type="iCanvas *" typec="iCanvas*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apContext"
+					type="iGraphicsContext *"
+					typec="iGraphicsContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apResetMaterial"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createTextObject" name="CreateTextObject" num_parameters="3">
+				<comments desc="Create a new text object. "/>
+				<return type="Ptr&lt;iTextObject&gt;" typec="Ptr&lt;iTextObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="const tF32"
+					typec="const tF32"
+					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isVideoFile"
+				name="IsVideoFile"
+				num_parameters="1">
+				<comments desc="Check whether the given file is a supported video file. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVideoDecoder" name="CreateVideoDecoder" num_parameters="3">
+				<comments desc="Create a video decoder. "/>
+				<return type="iVideoDecoder *" typec="iVideoDecoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createVGPath" name="CreateVGPath" num_parameters="0">
+				<comments desc="Create iVGPath "/>
+				<return type="Ptr&lt;iVGPath&gt;" typec="Ptr&lt;iVGPath&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGStyle" name="CreateVGStyle" num_parameters="0">
+				<comments desc="Create iVGStyle "/>
+				<return type="Ptr&lt;iVGStyle&gt;" typec="Ptr&lt;iVGStyle&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGTransform" name="CreateVGTransform" num_parameters="0">
+				<comments desc="Create iVGTransform "/>
+				<return type="Ptr&lt;iVGTransform&gt;" typec="Ptr&lt;iVGTransform&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGPolygonTesselator" name="CreateVGPolygonTesselator" num_parameters="0">
+				<comments desc="Create iVGPolygonTesselator "/>
+				<return type="Ptr&lt;iVGPolygonTesselator&gt;" typec="Ptr&lt;iVGPolygonTesselator&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGImage" name="CreateVGImage" num_parameters="2">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createVGImageFromBitmap" name="CreateVGImageFromBitmap" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBitmap"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGImageFromTexture" name="CreateVGImageFromTexture" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGImageFromBitmapAndTexture" name="CreateVGImageFromBitmapAndTexture" num_parameters="2">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBitmap"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGImageFromFile" name="CreateVGImageFromFile" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGImageFromResource" name="CreateVGImageFromResource" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGImage&gt;" typec="Ptr&lt;iVGImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGGradientTable" name="CreateVGGradientTable" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGGradientTable&gt;" typec="Ptr&lt;iVGGradientTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createVGGradientTableTwoColors" name="CreateVGGradientTableTwoColors" num_parameters="2">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGGradientTable&gt;" typec="Ptr&lt;iVGGradientTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="acolStart"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="acolEnd"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGGradientTableStops" name="CreateVGGradientTableStops" num_parameters="2">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGGradientTable&gt;" typec="Ptr&lt;iVGGradientTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apOffsets"
+					type="const tF32CVec *"
+					typec="const tF32CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apColors"
+					type="const tVec4fCVec *"
+					typec="const tVec4fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGPaint" name="CreateVGPaint" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaint&gt;" typec="Ptr&lt;iVGPaint&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eVGPaintType"
+					typec="eVGPaintType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createVGPaintSolid" name="CreateVGPaintSolid" num_parameters="1">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaint&gt;" typec="Ptr&lt;iVGPaint&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGPaintImage" name="CreateVGPaintImage" num_parameters="3">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaintImage&gt;" typec="Ptr&lt;iVGPaintImage&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apImage"
+					type="iVGImage *"
+					typec="iVGImage*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFilter"
+					type="eVGImageFilter"
+					typec="eVGImageFilter"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aWrap"
+					type="eVGWrapType"
+					typec="eVGWrapType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createVGPaintGradient" name="CreateVGPaintGradient" num_parameters="2">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaintGradient&gt;" typec="Ptr&lt;iVGPaintGradient&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eVGGradientType"
+					typec="eVGGradientType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apGradientTable"
+					type="iVGGradientTable *"
+					typec="iVGGradientTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGPaintGradientTwoColors" name="CreateVGPaintGradientTwoColors" num_parameters="3">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaintGradient&gt;" typec="Ptr&lt;iVGPaintGradient&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eVGGradientType"
+					typec="eVGGradientType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="acolStart"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="acolEnd"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVGPaintGradientStops" name="CreateVGPaintGradientStops" num_parameters="3">
+				<comments desc=""/>
+				<return type="Ptr&lt;iVGPaintGradient&gt;" typec="Ptr&lt;iVGPaintGradient&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eVGGradientType"
+					typec="eVGGradientType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apOffsets"
+					type="const tF32CVec *"
+					typec="const tF32CVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apColors"
+					type="const tVec4fCVec *"
+					typec="const tVec4fCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

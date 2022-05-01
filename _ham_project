@@ -1,0 +1,11 @@
+#!/bin/bash
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+toolset_import_list "repos" "default"
+
+update_prompt
+update_project_work "$HAM_PROJECT_DIR/.."
+toolset_info

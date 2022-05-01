@@ -1,0 +1,123 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eWidgetSearchBarCmd">
+			<comments desc="Search bar widget notify messages. "/>
+			<value min_features="20" name="eWidgetSearchBarCmd_SelectionChanged" value="0 ">
+				<comments desc="Sent when the selection changed "/>
+			</value>
+			<value min_features="20" name="eWidgetSearchBarCmd_Begin" value="1 ">
+				<comments desc="Sent when the search bar becomes visible "/>
+			</value>
+			<value min_features="20" name="eWidgetSearchBarCmd_End" value="2 ">
+				<comments desc="This is a good time to destroy or hide the search bar "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iSearchContainer"
+			uuid1="80858780-8FE7-44C2-B3CD-FEB9F8B5DD86"
+			uuid2="0x80858780,0x8fe7,0x44c2,0xb3,0xcd,0xfe,0xb9,0xf8,0xb5,0xdd,0x86">
+			<comments desc="Search container "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="addResult"
+				min_features="20"
+				name="AddResult"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszValue"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			dispatchwrapper="yes"
+			min_features="20"
+			name="iSearchable"
+			uuid1="C55FFA63-D700-4D67-B913-9CC9E482287A"
+			uuid2="0xc55ffa63,0xd700,0x4d67,0xb9,0x13,0x9c,0xc9,0xe4,0x82,0x28,0x7a">
+			<comments desc="Searchable interface, to be searched impl it "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onSelect"
+				min_features="20"
+				name="OnSelect"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="nIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="getCorpus"
+				min_features="20"
+				name="GetCorpus"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apContainer"
+					type="iSearchContainer *"
+					typec="iSearchContainer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iWidgetSearchBar"
+			uuid1="E46216F9-1735-4482-8EAD-793591ED7DC2"
+			uuid2="0xe46216f9,0x1735,0x4482,0x8e,0xad,0x79,0x35,0x91,0xed,0x7d,0xc2">
+			<comments desc="Search bar widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setSearchable"
+				min_features="20"
+				name="SetSearchable"
+				num_parameters="1"
+				property="set"
+				property_name2="searchable"
+				property_name="searchable">
+				<comments desc="Set a searchable to be search "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aS"
+					type="iSearchable *"
+					typec="iSearchable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSearchable"
+				min_features="20"
+				name="GetSearchable"
+				num_parameters="0"
+				property="get"
+				property_name2="searchable"
+				property_name="searchable">
+				<comments desc="Get a searchable object. "/>
+				<return type="iSearchable *" typec="iSearchable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

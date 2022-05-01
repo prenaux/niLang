@@ -1,0 +1,195 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iObjectTypeDef" uuid1="C26D991E-E51F-4D84-866A-E77FAFD1B8E2" uuid2="0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2">
+			<comments desc="Object type definition interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0">
+				<comments desc="Get the object type&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createInstance"
+				name="CreateInstance"
+				num_parameters="2">
+				<comments desc="Create an instance of the object. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aVarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iModuleDef" uuid1="80463A66-FC9E-4490-AB81-00B9152C17F3" uuid2="0x80463a66,0xfc9e,0x4490,0xab,0x81,0x00,0xb9,0x15,0x2c,0x17,0xf3">
+			<comments desc="Module definition interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0">
+				<comments desc="Get the module&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVersion"
+				name="GetVersion"
+				num_parameters="0">
+				<comments desc="Get the module&apos;s version. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDesc"
+				name="GetDesc"
+				num_parameters="0">
+				<comments desc="Get the module&apos;s description. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAuthor"
+				name="GetAuthor"
+				num_parameters="0">
+				<comments desc="Get the module&apos;s author. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCopyright"
+				name="GetCopyright"
+				num_parameters="0">
+				<comments desc="Get the module&apos;s copyright. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumDependencies"
+				name="GetNumDependencies"
+				num_parameters="0">
+				<comments desc="Get the number of dependencies. "/>
+				<return type="const tU32" typec="const tU32" typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDependency"
+				name="GetDependency"
+				num_parameters="1">
+				<comments desc="Get the dependency at the given index. ">
+					<remark text="The dependency are usually another module, but could be something else like only one interface, that&apos;s why it is stored as a string and not as a ModuleID. "/>
+				</comments>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumInterfaces"
+				name="GetNumInterfaces"
+				num_parameters="0">
+				<comments desc="Get the number of interfaces. "/>
+				<return type="const tU32" typec="const tU32" typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInterface"
+				name="GetInterface"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Get the interface at the given index. "/>
+				<return type="const sInterfaceDef *" typec="const sInterfaceDef*"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumEnums"
+				name="GetNumEnums"
+				num_parameters="0">
+				<comments desc="Get the number of enumerations. "/>
+				<return type="const tU32" typec="const tU32" typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnum"
+				name="GetEnum"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Get the enumeration at the given index. "/>
+				<return type="const sEnumDef *" typec="const sEnumDef*"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumConstants"
+				name="GetNumConstants"
+				num_parameters="0">
+				<comments desc="Get the number of constants. "/>
+				<return type="const tU32" typec="const tU32" typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getConstant"
+				name="GetConstant"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Get the constant at the given index. "/>
+				<return type="const sConstantDef *" typec="const sConstantDef*"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumObjectTypes"
+				name="GetNumObjectTypes"
+				num_parameters="0">
+				<comments desc="Get the number of object types. "/>
+				<return type="const tU32" typec="const tU32" typei="ni::eTypeFlags_Constant|ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getObjectType"
+				name="GetObjectType"
+				num_parameters="1">
+				<comments desc="Get the object type at the given index, "/>
+				<return type="const iObjectTypeDef *" typec="const iObjectTypeDef*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,45 @@
+#ifndef __STDAFX_61021643_H__
+#define __STDAFX_61021643_H__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include <niLang/Types.h>
+
+// #define IMDRAW
+// #define niProfiler
+
+#include "API/niUI.h"
+#include "API/niUI/Utils/ColorUtils.h"
+#include <niLang/Utils/ThreadImpl.h>
+#include <niLang/Utils/ProfGather.h>
+
+using namespace ni;
+
+#define GDRV_DUMMY
+
+#if defined niWindows
+#  define GDRV_DX9
+#  define GDRV_GL2
+#elif defined niOSX
+#  define GDRV_GL2
+#  define GDRV_METAL
+#elif defined niIOSMac
+#  define GDRV_METAL
+#elif defined niIOS
+#  define GDRV_GL2
+#  define GDRV_METAL
+#elif defined niAndroid
+#  define GDRV_GL2
+#elif defined niJSCC
+#  define GDRV_GL2
+#elif defined niQNX
+#  define GDRV_GL2
+#elif defined niLinux
+// None atm, GDRV_GL2 should work almost as-is once we have the windowing
+// system wired.
+#else
+#  error "No Graphics driver set for this platform."
+#endif
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDAFX_61021643_H__

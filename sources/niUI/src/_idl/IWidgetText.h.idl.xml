@@ -1,0 +1,34 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eWidgetTextStyle">
+			<comments desc="Widget text style "/>
+			<value min_features="20" name="eWidgetTextStyle_MouseSelect" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Allow text selection with the mouse "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iWidgetText"
+			uuid1="4C922F2D-7732-4093-8D68-5C77006FA68E"
+			uuid2="0x4c922f2d,0x7732,0x4093,0x8d,0x68,0x5c,0x77,0x00,0x6f,0xa6,0x8e">
+			<comments desc="iWidgetText interface ">
+				<remark text="Implements the iWidgetText interface. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getTextObject"
+				min_features="20"
+				name="GetTextObject"
+				num_parameters="0"
+				property="get"
+				property_name2="textObject"
+				property_name="text_object">
+				<comments desc="Get the text object of the text widget "/>
+				<return type="iTextObject *" typec="iTextObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

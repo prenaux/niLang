@@ -1,0 +1,479 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eGeometryGenerate">
+			<comments desc="Geometry generation. "/>
+			<value name="eGeometryGenerate_Adjacency" value="niBit ( 0 ) ">
+				<comments desc="Generate adjacency informations. "/>
+			</value>
+			<value name="eGeometryGenerate_FlatNormals" value="niBit ( 1 ) ">
+				<comments desc="Generate flat normals. "/>
+			</value>
+			<value name="eGeometryGenerate_Normals" value="niBit ( 2 ) ">
+				<comments desc="Generate the normals (overrirde flat normals computation). "/>
+			</value>
+		</enum>
+		<enum name="eGeometryType">
+			<comments desc="Geometry types. "/>
+			<value name="eGeometryType_Polygonal" value="0 ">
+				<comments desc="Polygonal geometry. "/>
+			</value>
+			<value name="eGeometryType_Patch" value="1 ">
+				<comments desc="Patch geometry. "/>
+			</value>
+			<value name="eGeometryType_Progressive" value="2 ">
+				<comments desc="Progressive geometry. "/>
+			</value>
+		</enum>
+		<enum name="eGeometryCreateFlags">
+			<comments desc="Geometry creation flags. "/>
+			<value name="eGeometryCreateFlags_VADynamic" value="niBit ( 0 ) ">
+				<comments desc="The vertex array usage is dynamic. "/>
+			</value>
+			<value name="eGeometryCreateFlags_VADynamicReadWrite" value="niBit ( 1 ) ">
+				<comments desc="The vertex array usage is dynamic read write. "/>
+			</value>
+			<value name="eGeometryCreateFlags_VAStatic" value="niBit ( 2 ) ">
+				<comments desc="The vertex array usage is static. "/>
+			</value>
+			<value name="eGeometryCreateFlags_VASystemMemory" value="niBit ( 3 ) ">
+				<comments desc="The vertex array usage is system memory. "/>
+			</value>
+			<value name="eGeometryCreateFlags_IADynamic" value="niBit ( 4 ) ">
+				<comments desc="The index array usage is dynamic. "/>
+			</value>
+			<value name="eGeometryCreateFlags_IADynamicReadWrite" value="niBit ( 5 ) ">
+				<comments desc="The index array usage is dynamic read write. "/>
+			</value>
+			<value name="eGeometryCreateFlags_IAStatic" value="niBit ( 6 ) ">
+				<comments desc="The index array usage is static. "/>
+			</value>
+			<value name="eGeometryCreateFlags_IASystemMemory" value="niBit ( 7 ) ">
+				<comments desc="The index array usage is system memory. "/>
+			</value>
+			<value name="eGeometryCreateFlags_Dynamic" value="eGeometryCreateFlags_VADynamic|eGeometryCreateFlags_IADynamic ">
+				<comments desc="The vertex array and index array usage is dynamic. "/>
+			</value>
+			<value name="eGeometryCreateFlags_DynamicReadWrite" value="eGeometryCreateFlags_VADynamicReadWrite|eGeometryCreateFlags_IADynamicReadWrite ">
+				<comments desc="The vertex array and index array usage is dynamic read write. "/>
+			</value>
+			<value name="eGeometryCreateFlags_Static" value="eGeometryCreateFlags_VAStatic|eGeometryCreateFlags_IAStatic ">
+				<comments desc="The vertex array and index array usage is static. "/>
+			</value>
+			<value name="eGeometryCreateFlags_SystemMemory" value="eGeometryCreateFlags_VASystemMemory|eGeometryCreateFlags_IASystemMemory ">
+				<comments desc="The vertex array and index array usage is system memory. "/>
+			</value>
+		</enum>
+		<enum name="eGeometryOptimizeFlags">
+			<comments desc="Geometry optimization flags. "/>
+			<value name="eGeometryOptimizeFlags_RemoveDegenerates" value="niBit ( 0 ) ">
+				<comments desc="Remove degenerate triangles. "/>
+			</value>
+			<value name="eGeometryOptimizeFlags_RemoveUnusedVertices" value="niBit ( 1 ) ">
+				<comments desc="Remove unused vertices. "/>
+			</value>
+			<value name="eGeometryOptimizeFlags_RemoveDuplicateVertices" value="niBit ( 2 ) ">
+				<comments desc="Remove duplicate vertices. "/>
+			</value>
+			<value name="eGeometryOptimizeFlags_Default" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices ">
+				<comments desc="Default. "/>
+			</value>
+			<value name="eGeometryOptimizeFlags_All" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices|eGeometryOptimizeFlags_RemoveDuplicateVertices ">
+				<comments desc="Default. "/>
+			</value>
+		</enum>
+		<interface name="iGeometrySubset" uuid1="0F4EA1E3-4C09-44B8-A04D-954C72A86075" uuid2="0x0f4ea1e3,0x4c09,0x44b8,0xa0,0x4d,0x95,0x4c,0x72,0xa8,0x60,0x75">
+			<comments desc="Geometry subset interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setID"
+				name="SetID"
+				num_parameters="1"
+				property="set"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Set the ID of the subset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getID"
+				name="GetID"
+				num_parameters="0"
+				property="get"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Get the ID of the subset. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setFirstIndex"
+				name="SetFirstIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="firstIndex"
+				property_name="first_index">
+				<comments desc="Set the first index of the subset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFirstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFirstIndex"
+				name="GetFirstIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="firstIndex"
+				property_name="first_index">
+				<comments desc="Get the first index of the subset. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setNumIndices"
+				name="SetNumIndices"
+				num_parameters="1"
+				property="set"
+				property_name2="numIndices"
+				property_name="num_indices">
+				<comments desc="Set the number of indices of the subset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumIndices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumIndices"
+				name="GetNumIndices"
+				num_parameters="0"
+				property="get"
+				property_name2="numIndices"
+				property_name="num_indices">
+				<comments desc="Get the number of indices of the subset. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setMaterial"
+				name="SetMaterial"
+				num_parameters="1"
+				property="set"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Set the material ID of the subset. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMaterial"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterial"
+				name="GetMaterial"
+				num_parameters="0"
+				property="get"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Get the material ID of the subset. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iGeometry" uuid1="95CFA251-70ED-4F5D-9422-23FAB6C0C7CE" uuid2="0x95cfa251,0x70ed,0x4f5d,0x94,0x22,0x23,0xfa,0xb6,0xc0,0xc7,0xce">
+			<comments desc="Geometry base interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Geometry type. "/>
+				<return type="eGeometryType" typec="eGeometryType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVertexArray"
+				name="GetVertexArray"
+				num_parameters="0"
+				property="get"
+				property_name2="vertexArray"
+				property_name="vertex_array">
+				<comments desc="Get the constant vertex array of this geometry. "/>
+				<return type="iVertexArray *" typec="iVertexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndexArray"
+				name="GetIndexArray"
+				num_parameters="0"
+				property="get"
+				property_name2="indexArray"
+				property_name="index_array">
+				<comments desc="Get the constant index array of this geometry. "/>
+				<return type="iIndexArray *" typec="iIndexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="generate" name="Generate" num_parameters="2">
+				<comments desc="Generate the specified things. " return="eFalse if generation failed, else eTrue. ">
+					<params text="aGenerate indicate what to generate. "/>
+					<params text="fEpsilon: specifies that vertices that differ in position by less than epsilon should be treated as coincident. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aGenerate"
+					type="eGeometryGenerate"
+					typec="eGeometryGenerate"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="niEpsilon4 "
+					last="1"
+					name="fEpsilon"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumFaces"
+				name="GetNumFaces"
+				num_parameters="0"
+				property="get"
+				property_name2="numFaces"
+				property_name="num_faces">
+				<comments desc="Get the number of face contained in the mesh. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setFacesSubsetsIDs" name="SetFacesSubsetsIDs" num_parameters="1">
+				<comments desc="Set the faces subset&apos;s IDs. ">
+					<remark text="this is used by the rendering optimizer to generate subsets. "/>
+					<params text="apIDs is an array of subset id, it must have a size of GetNumFaces(). "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apIDs"
+					type="const tU32 *"
+					typec="const tU32*"
+					typei="ni::eTypeFlags_Constant|ni::eType_U32|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFacesSubsetsIDs"
+				name="GetFacesSubsetsIDs"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc="Get the faces subsets IDs. " return="NULL if the no faces subset&apos;s IDs have been set, else return an array of GetNumFaces() subset&apos;s IDs. "/>
+				<return type="const tU32 *" typec="const tU32*"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAdjacencyArray"
+				name="GetAdjacencyArray"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc="Get the adjacency array. " return="NULL if the adjacency array hasn&apos;t been generated. ">
+					<remark text="The size of the adjacency array is 3*GetNumFaces() "/>
+				</comments>
+				<return type="const tU32 *" typec="const tU32*"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSubsets"
+				name="GetNumSubsets"
+				num_parameters="0"
+				property="get"
+				property_name2="numSubsets"
+				property_name="num_subsets">
+				<comments desc="Get the number of subsets. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSubset"
+				name="GetSubset"
+				num_parameters="1"
+				property="get"
+				property_name2="subset"
+				property_name="subset">
+				<comments desc="Get the subset at the specified index. " return="NULL if the index is invalid, else return a pointer to the subset at the specified index. "/>
+				<return type="iGeometrySubset *" typec="iGeometrySubset*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSubsetIndex"
+				name="GetSubsetIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="subsetIndex"
+				property_name="subset_index">
+				<comments desc="Get the index of the subset with the specified ID. " return="eInvalidHandle if a subset with the specified ID doesn&apos;t exists, else return the index of the first subset found that has the given ID. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aulID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addSubset" name="AddSubset" num_parameters="4">
+				<comments desc="Add a subset. "/>
+				<return type="iGeometrySubset *" typec="iGeometrySubset*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anFirstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anNumIndices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anMaterial"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="removeSubset" name="RemoveSubset" num_parameters="1">
+				<comments desc="Remove the subset at the given index. " return="eFalse if the subset index is invalid, else remove the subset and return eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clone" name="Clone" num_parameters="2">
+				<comments desc="Create a copy of this geometry. " return="NULL if the new geometry can&apos;t be created, else return an instance of a new geometry. ">
+					<params text="aFlags are the creation flags of the new geometry. "/>
+					<params text="aFVF: if not NULL it&apos;s used as the new vertex format to use for the new geometry. "/>
+				</comments>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tGeometryCreateFlags"
+					typec="tGeometryCreateFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setDrawOp" name="SetDrawOp" num_parameters="2">
+				<comments desc="Set the specified draw operation to draw the specified subset. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDrawOp"
+					type="iDrawOperation *"
+					typec="iDrawOperation*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aulSubsetIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="optimize" name="Optimize" num_parameters="1">
+				<comments desc="Optimize the mesh. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tGeometryOptimizeFlags"
+					typec="tGeometryOptimizeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface name="iGeometryModifier" uuid1="26CE1E18-D0D7-46E6-BD9F-C2057629DCA6" uuid2="0x26ce1e18,0xd0d7,0x46e6,0xbd,0x9f,0xc2,0x05,0x76,0x29,0xdc,0xa6">
+			<comments desc="Geometry modifier interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setGeometry"
+				name="SetGeometry"
+				num_parameters="1"
+				property="set"
+				property_name2="geometry"
+				property_name="geometry">
+				<comments desc="Set the geometry to modify. " return="eFalse if the given geometry can&apos;t be modified, else return eTrue. ">
+					<remark text="This may initialize some internal data specific to the modifer and to the geometry that&apos;s gonna be modified. So this function is considered as slow. That&apos;s why a modifier should be created for each geometry. "/>
+					<remark text="If SetGeometry() is recalled with the same geometry as set, to indicate that some data of the geometry have been modified. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="pGeometry"
+					type="iGeometry *"
+					typec="iGeometry*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGeometry"
+				name="GetGeometry"
+				num_parameters="0"
+				property="get"
+				property_name2="geometry"
+				property_name="geometry">
+				<comments desc="Get the constant geometry that this modifier modifies. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getModifiedGeometry"
+				name="GetModifiedGeometry"
+				num_parameters="0"
+				property="get"
+				property_name2="modifiedGeometry"
+				property_name="modified_geometry">
+				<comments desc="Return the modified geometry. " return="NULL if the modified geometry has not been generated correctly, else a pointer to a valid geometry instance. "/>
+				<return type="iGeometry *" typec="iGeometry*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update the modified geometry. ">
+					<remark text="This function really do the modification. The modification is done only if it&apos;s necessary. "/>
+					<remark text="Should be called after a parameter is changed or the input geometry is changed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

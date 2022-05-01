@@ -1,0 +1,159 @@
+#include "../API/niUI/IMaterialLibrary.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iMaterialLibrarySink **/
+IDLC_BEGIN_INTF(ni,iMaterialLibrarySink)
+/** ni -> iMaterialLibrarySink::OnMaterialLibrarySink_MaterialAdded/2 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialAdded,2)
+	IDLC_DECL_VAR(iMaterialLibrary*,apLib)
+	IDLC_BUF_TO_INTF(iMaterialLibrary,apLib)
+	IDLC_DECL_VAR(iMaterial*,apMat)
+	IDLC_BUF_TO_INTF(iMaterial,apMat)
+	IDLC_METH_CALL_VOID(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialAdded,2,(apLib,apMat))
+IDLC_METH_END(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialAdded,2)
+
+/** ni -> iMaterialLibrarySink::OnMaterialLibrarySink_MaterialRemoved/2 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialRemoved,2)
+	IDLC_DECL_VAR(iMaterialLibrary*,apLib)
+	IDLC_BUF_TO_INTF(iMaterialLibrary,apLib)
+	IDLC_DECL_VAR(iMaterial*,apMat)
+	IDLC_BUF_TO_INTF(iMaterial,apMat)
+	IDLC_METH_CALL_VOID(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialRemoved,2,(apLib,apMat))
+IDLC_METH_END(ni,iMaterialLibrarySink,OnMaterialLibrarySink_MaterialRemoved,2)
+
+IDLC_END_INTF(ni,iMaterialLibrarySink)
+
+/** interface : iMaterialLibrary **/
+IDLC_BEGIN_INTF(ni,iMaterialLibrary)
+/** ni -> iMaterialLibrary::GetSinkList/0 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetSinkList,0)
+	IDLC_DECL_RETVAR(tMaterialLibrarySinkLst*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetSinkList,0,())
+	IDLC_RET_FROM_INTF(tMaterialLibrarySinkLst,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetSinkList,0)
+
+/** ni -> iMaterialLibrary::Copy/2 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,Copy,2)
+	IDLC_DECL_VAR(iMaterialLibrary*,apSrc)
+	IDLC_BUF_TO_INTF(iMaterialLibrary,apSrc)
+	IDLC_DECL_VAR(tBool,abCloneMats)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abCloneMats)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,Copy,2,(apSrc,abCloneMats))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,Copy,2)
+
+/** ni -> iMaterialLibrary::Clone/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,Clone,1)
+	IDLC_DECL_VAR(tBool,abCloneMats)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abCloneMats)
+	IDLC_DECL_RETVAR(iMaterialLibrary*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,Clone,1,(abCloneMats))
+	IDLC_RET_FROM_INTF(iMaterialLibrary,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,Clone,1)
+
+/** ni -> iMaterialLibrary::ClearMaterials/0 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,ClearMaterials,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,ClearMaterials,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,ClearMaterials,0)
+
+/** ni -> iMaterialLibrary::AddMaterial/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,AddMaterial,1)
+	IDLC_DECL_VAR(ni::iMaterial*,apMaterial)
+	IDLC_BUF_TO_INTF(ni::iMaterial,apMaterial)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,AddMaterial,1,(apMaterial))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,AddMaterial,1)
+
+/** ni -> iMaterialLibrary::RemoveMaterial/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,RemoveMaterial,1)
+	IDLC_DECL_VAR(ni::iMaterial*,apMaterial)
+	IDLC_BUF_TO_INTF(ni::iMaterial,apMaterial)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,RemoveMaterial,1,(apMaterial))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,RemoveMaterial,1)
+
+/** ni -> iMaterialLibrary::GetNumMaterials/0 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetNumMaterials,0)
+	IDLC_DECL_RETVAR(ni::tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetNumMaterials,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetNumMaterials,0)
+
+/** ni -> iMaterialLibrary::GetMaterial/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetMaterial,1)
+	IDLC_DECL_VAR(ni::tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(ni::iMaterial*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetMaterial,1,(anIndex))
+	IDLC_RET_FROM_INTF(ni::iMaterial,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetMaterial,1)
+
+/** ni -> iMaterialLibrary::GetMaterialFromName/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetMaterialFromName,1)
+	IDLC_DECL_VAR(ni::iHString*,ahspName)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspName)
+	IDLC_DECL_RETVAR(ni::iMaterial*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetMaterialFromName,1,(ahspName))
+	IDLC_RET_FROM_INTF(ni::iMaterial,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetMaterialFromName,1)
+
+/** ni -> iMaterialLibrary::GetMaterialIndex/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetMaterialIndex,1)
+	IDLC_DECL_VAR(ni::iMaterial*,apMaterial)
+	IDLC_BUF_TO_INTF(ni::iMaterial,apMaterial)
+	IDLC_DECL_RETVAR(ni::tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetMaterialIndex,1,(apMaterial))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetMaterialIndex,1)
+
+/** ni -> iMaterialLibrary::SerializeDataTable/2 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,SerializeDataTable,2)
+	IDLC_DECL_VAR(ni::iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(ni::iDataTable,apDT)
+	IDLC_DECL_VAR(tMaterialSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tMaterialSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,SerializeDataTable,2,(apDT,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,SerializeDataTable,2)
+
+/** ni -> iMaterialLibrary::SerializeFile/2 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,SerializeFile,2)
+	IDLC_DECL_VAR(ni::iFile*,apFile)
+	IDLC_BUF_TO_INTF(ni::iFile,apFile)
+	IDLC_DECL_VAR(tMaterialSerializeFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tMaterialSerializeFlags,aFlags)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,SerializeFile,2,(apFile,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,SerializeFile,2)
+
+/** ni -> iMaterialLibrary::SetBasePath/1 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,SetBasePath,1)
+	IDLC_DECL_VAR(iHString*,ahspBasePath)
+	IDLC_BUF_TO_INTF(iHString,ahspBasePath)
+	IDLC_METH_CALL_VOID(ni,iMaterialLibrary,SetBasePath,1,(ahspBasePath))
+IDLC_METH_END(ni,iMaterialLibrary,SetBasePath,1)
+
+/** ni -> iMaterialLibrary::GetBasePath/0 **/
+IDLC_METH_BEGIN(ni,iMaterialLibrary,GetBasePath,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iMaterialLibrary,GetBasePath,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iMaterialLibrary,GetBasePath,0)
+
+IDLC_END_INTF(ni,iMaterialLibrary)
+
+IDLC_END_NAMESPACE()
+// EOF //

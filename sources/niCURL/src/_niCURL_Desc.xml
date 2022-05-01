@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<module name='niCURL'
+        version='1,0,0' 
+        desc='CURL module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+  <objecttype  name='CURL' desc='CURL Object' type='ni::iCURL'  />
+  <include>niCURL/src/_idl/ICURL.h.idl.xml</include>
+</module>

@@ -1,0 +1,33 @@
+if [ SubDirOnce TOP jvm ni-data-scripts ] = 1 { return ; }
+
+if $(BUILD_JNI) {
+  ### niLang-data ###
+  {
+    tkDefJar niLang-data : 1,0,0 ;
+
+    local DIR = [ FDirName $(TOP) .. data ] ;
+    SRC += [ DataGlob $(DIR) : niUI : dds tga png jpg ] ;
+    SRC += [ DataGlob $(DIR) : niUI fonts : ttf ] ;
+    SRC += [ DataGlob $(DIR) : niUI skins : xml png ] ;
+    SRC += [ DataGlob $(DIR) : niUI shaders : cgo cgl ] ;
+    DEST += [ tkCopyDataToObjDir $(DIR) : $(SRC) ] ;
+
+    niBuildDataJar $(PACKAGE) : $(DEST) ;
+  }
+
+  ### niLang-scripts ###
+  {
+    tkDefJar niLang-scripts : 1,0,0 ;
+
+    local DEST ;
+    local DIR = [ FDirName $(TOP) .. .. niLang ] ;
+    SRC  = [ DataGlob $(DIR) : scripts : ni xml ] ;
+    DEST += [ tkCopyDataToObjDir $(DIR) : $(SRC) ] ;
+
+    local DIR = [ FDirName $(TOP) .. ] ;
+    SRC  = [ DataGlob $(DIR) : scripts : ni xml ] ;
+    DEST += [ tkCopyDataToObjDir $(DIR) : $(SRC) ] ;
+
+    niBuildDataJar $(PACKAGE) : $(DEST) ;
+  }
+}

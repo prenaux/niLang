@@ -1,0 +1,1818 @@
+<UISkin
+  name="Default"
+  author="David Schuyten"
+  bitmap="niUI://skins/UIDark.png"
+  icon_set="icons/editor">
+
+  <!--***** DEFAULT VALUES ******-->
+  <Default>
+    <Cursors>
+      <!--**** Standard cursors ****-->
+      <Invalid
+        mapping="Rect(82,113,27,27)"
+        pivot="Vec2(13,13)"
+        blendmode="Translucent"
+        />
+      <DraggingMove
+        mapping="Rect(82,140,28,28)"
+        pivot="Vec2(2,2)"
+        blendmode="Translucent"
+        />
+      <DraggingCopy
+        mapping="Rect(180,172,28,28)"
+        pivot="Vec2(2,2)"
+        blendmode="Translucent"
+        />
+      <DraggingInvalid
+        mapping="Rect(82,113,27,27)"
+        pivot="Vec2(13,13)"
+        blendmode="Translucent"
+        />
+      <Arrow
+        mapping="Rect(3,60,13,19)"
+        pivot="Vec2(0,0)"
+        blendmode="Translucent"
+        />
+      <ReverseArrow
+        mapping="Rect(38,84,13,19)"
+        pivot="Vec2(13,0)"
+        blendmode="Translucent"
+        />
+      <Text
+        mapping="Rect(105,60,9,20)"
+        pivot="Vec2(4,10)"
+        blendmode="Translucent"
+        />
+      <ResizeTopLeft
+        mapping="Rect(41,60,17,15)"
+        pivot = "Vec2(7,7)"
+        blendmode="Translucent"
+        />
+      <ResizeTopRight
+        mapping="Rect(20,60,17,15)"
+        pivot = "Vec2(7,7)"
+        blendmode="Translucent"
+        />
+      <ResizeHorizontal
+        mapping="Rect(62,60,23,9)"
+        pivot = "Vec2(10,5)"
+        blendmode="Translucent"
+        />
+      <ResizeVertical
+        mapping="Rect(89,60,11,20)"
+        pivot = "Vec2(5,10)"
+        blendmode="Translucent"
+        />
+      <Hand
+        mapping="Rect(56,84,20,20)"
+        pivot = "Vec2(10,5)"
+        blendmode="Translucent"
+        />
+      <Wait
+        mapping="Rect(82,85,24,24)"
+        pivot = "Vec2(12,12)"
+        blendmode="Translucent"
+        />
+      <Zoom
+        mapping="Rect(7,86,22,22)"
+        pivot = "Vec2(8,8)"
+        blendmode="Translucent"
+        />
+      <ZoomIn
+        mapping="Rect(6,112,22,22)"
+        pivot = "Vec2(8,8)"
+        blendmode="Translucent"
+        />
+      <ZoomOut
+        mapping="Rect(35,112,22,22)"
+        pivot = "Vec2(8,8)"
+        blendmode="Translucent"
+        />
+      <ArrowUp
+        mapping="Rect(63,112,13,19)"
+        pivot = "Vec2(7,2)"
+        blendmode="Translucent"
+        />
+      <ArrowDown
+        mapping="Rect(64,135,13,19)"
+        pivot = "Vec2(7,17)"
+        blendmode="Translucent"
+        />
+      <ArrowLeft
+        mapping="Rect(40,138,19,13)"
+        pivot = "Vec2(2,7)"
+        blendmode="Translucent"
+        />
+      <ArrowRight
+        mapping="Rect(12,138,19,13)"
+        pivot = "Vec2(17,7)"
+        blendmode="Translucent"
+        />
+      <ArrowBiVertical
+        mapping="Rect(14,155,15,25)"
+        pivot = "Vec2(7,14)"
+        blendmode="Translucent"
+        />
+      <ArrowBiHorizontal
+        mapping="Rect(37,159,25,15)"
+        pivot = "Vec2(14,7)"
+        blendmode="Translucent"
+        />
+      <Cross
+        mapping="Rect(116,62,17,17)"
+        pivot = "Vec2(9,9)"
+        blendmode="Translucent"
+        />
+      <Play
+        mapping="Rect(8,188,11,13)"
+        pivot="Vec2(5,7)"
+        blendmode="Translucent"
+        />
+      <Pause
+        mapping="Rect(30,188,12,13)"
+        pivot="Vec2(5,7)"
+        blendmode="Translucent"
+        />
+      <Stop
+        mapping="Rect(52,188,12,14)"
+        pivot="Vec2(6,7)"
+        blendmode="Translucent"
+        />
+      <Reload
+        mapping="Rect(73,188,14,14)"
+        pivot="Vec2(7,7)"
+        blendmode="Translucent"
+        />
+      <Delete
+        mapping="Rect(94,187,15,15)"
+        pivot="Vec2(7,7)"
+        blendmode="Translucent"
+        />
+      <Pick
+        mapping="Rect(102,85,24,24)"
+        pivot = "Vec2(5,19)"
+        blendmode="Translucent"
+        />
+
+    </Cursors>
+
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Selection
+        color="RGBA(70,76,82,255)/255" />
+      <SelectionNoFocus
+        color="RGBA(60,66,72,255)/255" />
+    </Normal>
+  </Default>
+
+  <!--***** HOVER *****-->
+  <HoverLabel>
+    <Normal>
+      <Background
+        color="RGBA(85,102,119,255)/255" />
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(255,255,255,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        filtering="true"
+        mapping="Rect(112,109,20,20)"
+        frame="Vec4(4,4,8,8)"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </HoverLabel>
+
+  <!--***** DropDownGroup *****-->
+  <DropDownGroup>
+    <Normal>
+      <Background
+        color="RGBA(85,102,119,255)/255" />
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(255,255,255,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        filtering="true"
+        mapping="Rect(112,109,20,20)"
+        frame="Vec4(4,4,8,8)"
+        color="RGBA(1,1,1,1)"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </DropDownGroup>
+
+  <!--***** LABEL *****-->
+  <Label>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(0,0,0,0)" />
+    </Normal>
+  </Label>
+
+  <!--***** TITLE *****-->
+  <Title>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(30,32,34,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(43,60,76,255)/255" />
+    </Normal>
+  </Title>
+
+  <!--***** HOVER *****-->
+  <InfoLabel>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(0,0,0,0)/255" />
+    </Normal>
+  </InfoLabel>
+
+  <!--***** FORM ******-->
+  <Form>
+    <Normal>
+      <Background
+        color="RGBA(37,37,37,255)/255" />
+      <Border
+        color="RGBA(175,175,175,255)/255" />
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(230,230,240,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(194,106,24,42)"
+        frame="Vec4(7,26,5,7)"
+        blendmode="NoBlending"
+        />
+      <TitleFrame
+        mapping="Vec4(0,0,0,0)"
+        frame="Vec4(0,4,4,2)"
+        />
+      <TitleTextFrame
+        mapping="Vec4(0,0,0,0)"
+        frame="Vec4(8,2,0,24)"
+        />
+    </Normal>
+    <Inactive>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(220,220,255,255)/255*0.65"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Vec4(4,4,28,46)"
+        frame="Vec4(7,26,5,7)"
+        blendmode="NoBlending"
+        />
+    </Inactive>
+  </Form>
+
+  <!--***** PROGRESS BAR ******-->
+  <ProgressBar>
+    <Normal>
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        />
+      <Fill
+        color="RGBA(96,112,128,255)/255" />
+    </Normal>
+  </ProgressBar>
+
+  <!--***** GROUP ******-->
+  <Group>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(0.8,0.8,0.8,1)"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(214,3,22,22)"
+        frame="Vec4(2,2,2,2)"
+        blendmode="Translucent"
+        />
+      <Collapsed
+        mapping="Rect(73,25,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        color="RGBA(0.8,0.8,0.8,1)"
+        />
+      <Expanded
+        mapping="Rect(73,2,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        color="RGBA(0.8,0.8,0.8,1)"
+        />
+      <EvenGroup  color="RGBA(37,37,37,255)/255" />
+      <OddGroup color="RGBA(30,30,30,255)/255" />
+    </Normal>
+  </Group>
+
+  <!--***** BUTTON ******-->
+  <Button>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        filtering="true"
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(107,25,20,20)"
+        filtering="true"
+        blendmode="Translucent"
+        frame="Vec4(3,3,3,3)"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(0,0,0,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Border
+        color="RGBA(135,155,175,255)/255" />
+      <Frame
+        filtering="true"
+        mapping="Rect(37,25,20,20)"
+        frame="Vec4(3,3,3,3)"
+        />
+    </Pressed>
+  </Button>
+
+  <ButtonSmall>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(1,1,1,1)"
+        color="RGBA(0.9,0.9,0.9,1)"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(1,1,1,1)"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(0,0,0,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Border
+        color="RGBA(135,155,175,255)/255" />
+      <Frame
+        mapping="Rect(37,25,20,20)"
+        frame="Vec4(1,1,1,1)"
+        />
+    </Pressed>
+  </ButtonSmall>
+
+  <ButtonClose>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        blendmode="Translucent"
+        filtering="true"
+        mapping="Rect(237,2,18,18)"
+        frame="Vec4(2,16,16,2)"
+        color="RGBA(1,1,1,1)"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        blendmode="Translucent"
+        mapping="Rect(237,20,18,18)"
+        filtering="true"
+        frame="Vec4(2,16,16,2)"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(0,0,0,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Border
+        color="RGBA(135,155,175,255)/255" />
+      <Frame
+        blendmode="Translucent"
+        mapping="Rect(237,38,18,18)"
+        filtering="true"
+        frame="Vec4(2,16,16,2)"
+        />
+    </Pressed>
+  </ButtonClose>
+
+  <!--***** CHECK BOX ******-->
+  <CheckBox>
+    <Normal>
+      <Mark
+        mapping="Rect(134,5,13,13)"
+        blendmode="Translucent" />
+      <Frame
+        mapping="Rect(134,40,13,13)"
+        />
+    </Normal>
+  </CheckBox>
+
+  <!--***** RADIO BUTTON ******-->
+  <RadioButton>
+    <Normal>
+      <Mark
+        mapping="Rect(151,5,13,13)"
+        blendmode="Translucent"
+        />
+      <Frame
+        mapping="Rect(151,40,14,14)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Checked>
+      <Frame
+        mapping="Rect(151,23,14,14)"
+        blendmode="Translucent"
+        />
+    </Checked>
+  </RadioButton>
+
+  <!--***** DockingManager Widget (default Desktop widget) *****-->
+  <DockingManager>
+    <Normal>
+      <Background
+        color="RGBA(62,62,62,255)/255"
+        />
+    </Normal>
+  </DockingManager>
+
+  <!--***** TAB PAGE ******-->
+  <TabPage>
+    <Normal>
+      <Frame
+        color="RGBA(50,50,50,255)/255"
+        frame="Vec4(2,2,2,2)" />
+    </Normal>
+  </TabPage>
+  <TabButton>
+    <Normal>
+      <Fonts>
+        <Default path="Default" color="RGBA(175,195,215,255)/255" pixel_size="12" />
+      </Fonts>
+      <Frame
+        color="RGBA(0,0,0,0)/255"
+        frame="Vec4(4,3,4,3)"
+        blendmode="Translucent" />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(60,60,60,255)/255"
+        frame="Vec4(4,3,4,3)" />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(50,50,50,255)/255"
+        frame="Vec4(4,3,4,3)" />
+    </Pressed>
+  </TabButton>
+
+  <FocusTabPage>
+    <Normal>
+      <Frame
+        color="RGBA(33,33,33,255)/255"
+        frame="Vec4(2,2,2,2)"
+        blendmode="Translucent" />
+    </Normal>
+  </FocusTabPage>
+  <FocusTabButton>
+    <Normal>
+      <Fonts>
+        <Default path="Default" color="RGBA(175,195,215,255)/255" pixel_size="12" />
+      </Fonts>
+      <Frame
+        color="RGBA(33,33,33,0)/255"
+        frame="Vec4(4,3,4,3)"
+        blendmode="Translucent" />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(55,55,55,255)/255"
+        frame="Vec4(4,3,4,3)" />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(33,33,33,255)/255"
+        frame="Vec4(4,3,4,3)" />
+    </Pressed>
+  </FocusTabButton>
+
+  <!--***** SCROLL BAR ******-->
+  <ScrollBar>
+    <Normal>
+      <BackgroundVert
+        color="RGBA(0,0,0,0)"
+        frame="Vec4(5,8,5,8)"
+        blendmode="Translucent"
+        />
+      <BackgroundHorz
+        color="RGBA(0,0,0,0)"
+        filtering="true"
+        blendmode="Translucent"
+        frame="Vec4(8,5,8,5)"
+        />
+      <Thumb
+        color="RGBA(0,0,0,0)"
+        blendmode="Translucent"
+        />
+
+      <ArrowLeft
+        color="RGBA(200,200,200,255)/255"
+        mapping="Rect(60,26,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowRight
+        color="RGBA(200,200,200,255)/255"
+        mapping="Rect(73,26,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowUp
+        color="RGBA(200,200,200,255)/255"
+        mapping="Rect(59,4,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowDown
+        color="RGBA(200,200,200,255)/255"
+        mapping="Rect(73,3,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </ScrollBar>
+
+  <ScrollThumb>
+    <Normal>
+      <Frame
+        color="RGBA(100,100,100,120)/255"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(100,100,100,200)/255"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(100,100,100,200)/255"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ScrollThumb>
+
+  <ScrollUp>
+    <Normal>
+      <Frame
+        color="RGBA(120,120,120,120)/255"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ScrollUp>
+
+  <ScrollDown>
+    <Normal>
+      <Frame
+        color="RGBA(120,120,120,120)/255"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ScrollDown>
+
+  <ScrollLeft>
+    <Normal>
+      <Frame
+        color="RGBA(120,120,120,120)/255"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ScrollLeft>
+
+  <ScrollRight>
+    <Normal>
+      <Frame
+        color="RGBA(120,120,120,120)/255"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        color="RGBA(120,120,120,200)/255"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ScrollRight>
+
+  <!--***** SPIN ******-->
+  <Spin>
+    <Normal>
+      <ArrowLeft
+        mapping="Rect(59,25,13,13)" />
+      <ArrowRight
+        mapping="Rect(72,25,13,13)" />
+      <ArrowUp
+        mapping="Rect(59,4,13,13)" />
+      <ArrowDown
+        mapping="Rect(72,4,13,13)" />
+    </Normal>
+  </Spin>
+
+  <!--***** SLIDER ******-->
+  <Slider>
+    <Normal>
+      <ThumbVert
+        mapping="Rect(173,28,12,9)"
+        blendmode="Translucent"
+        />
+      <ThumbHorz
+        mapping="Rect(173,37,9,12)"
+        blendmode="Translucent"
+        />
+      <ThumbRight
+        mapping="Rect(191,5,21,11)"
+        blendmode="Translucent"
+        />
+      <ThumbBottom
+        mapping="Rect(172,5,11,21)"
+        blendmode="Translucent"
+        />
+
+      <BackgroundVert
+        mapping="Rect(166,49,5,5)"
+        />
+      <BackgroundHorz
+        mapping="Rect(173,49,5,5)"
+        />
+    </Normal>
+  </Slider>
+
+  <ThumbHorz>
+    <Normal>
+      <Frame
+        mapping="Rect(166,32,12,15)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        mapping="Rect(178,32,12,15)"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        mapping="Rect(178,32,12,15)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ThumbHorz>
+
+  <ThumbVert>
+    <Normal>
+      <Frame
+        mapping="Rect(191,42,15,12)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        mapping="Rect(191,30,15,12)"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        mapping="Rect(191,30,15,12)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ThumbVert>
+
+  <ThumbRight>
+    <Normal>
+      <Frame
+        mapping="Rect(190,17,17,12)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        mapping="Rect(190,5,17,12)"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        mapping="Rect(190,5,17,12)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ThumbRight>
+
+  <ThumbBottom>
+    <Normal>
+      <Frame
+        mapping="Rect(166,4,12,17)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Frame
+        mapping="Rect(178,4,12,17)"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Frame
+        mapping="Rect(178,4,12,17)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ThumbBottom>
+
+  <!--***** LIST BOX ******-->
+  <ListBox>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="16"
+          />
+        <Header
+          path="Default"
+          color="RGBA(30,32,34,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Header
+        mapping="Rect(38,26,14,14)"
+        frame="Vec4(2,2,2,2)"
+		    />
+      <HeaderSeparator
+        mapping="Rect(232,34,2,16)"
+        frame="Vec4(1,2,1,2)"
+        blendmode="Translucent" />
+
+      <Background
+        color="RGBA(30,32,34,0)/255" />
+      <Frame
+        mapping="Rect(108,5,18,18)"
+        blendmode="Translucent"
+        frame="Vec4(1,1,1,1)" />
+      <ArrowUp
+        mapping="Rect(12,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowDown
+        mapping="Rect(32,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </ListBox>
+
+  <!--***** LIST BOX ******-->
+  <LogListBox>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Monospace"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="12"
+          />
+        <Header
+          path="Default"
+          color="RGBA(30,32,34,255)/255"
+          pixel_size="12"
+          />
+      </Fonts>
+      <Header
+        mapping="Rect(38,26,14,14)"
+        frame="Vec4(2,2,2,2)"
+		/>
+      <HeaderSeparator
+        mapping="Rect(232,34,2,16)"
+        frame="Vec4(1,2,1,2)"
+        blendmode="Translucent" />
+      <Background
+        color="RGBA(30,32,34,0)/255" />
+      <Frame
+        mapping="Rect(108,5,18,18)"
+        blendmode="Translucent"
+        frame="Vec4(1,1,1,1)" />
+      <ArrowUp
+        mapping="Rect(12,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowDown
+        mapping="Rect(32,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </LogListBox>
+
+  <!--***** MENU ******-->
+  <Menu>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(185,205,225,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Check
+        mapping="Rect(60,165,13,13)"
+        blendmode="Translucent"
+        />
+      <Radio
+        mapping="Rect(77,165,13,13)"
+        blendmode="Translucent"
+        />
+      <ArrowRight
+        mapping="Rect(73,26,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <Border
+        color="RGBA(120,120,120,255)/255" />
+      <BorderSelected
+        color="RGBA(238,226,184,255)/255" />
+      <Separator
+        color="RGBA(37,37,37,255)/255" />
+      <BackNormal
+        color="RGBA(62,62,62,255)/255" />
+      <BackSelected
+        color="RGBA(90,90,90,255)/255" />
+      <LeftMargin
+        color="RGBA(62,62,62,255)/255" />
+      <BackTitle
+        color="RGBA(62,62,62,255)/255" />
+      <BorderTitle
+        color="RGBA(155,175,195,255)/255" />
+    </Normal>
+  </Menu>
+
+  <!--***** COMBO BOX ******-->
+  <ComboBox>
+    <Normal>
+      <ArrowDown
+        mapping="Rect(32,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </ComboBox>
+
+  <!--***** EDITBOX *****-->
+  <EditBox>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          pixel_size="16"
+          color="RGBA(175,195,215,255)/255"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(3,107,30,255)/255" />
+
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.8,0.8,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.125,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,195.0f/255.0f,215.0f/255.0f,1.0)" />
+    </Normal>
+
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox>
+
+  <EditBox_Number>
+    <Normal>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.95,0.6,0.3,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.025,0.025,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(0.95,0.6,0.3,1)" />
+    </Normal>
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox_Number>
+
+  <EditBox_X>
+    <Normal>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.3,0.3,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.025,0.025,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,095.0f/255.0f,115.0f/255.0f,1.0)" />
+    </Normal>
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox_X>
+
+  <EditBox_Y>
+    <Normal>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.3,0.8,0.3,1)" />
+      <TextFrontSel
+        color="RGBA(0.025,0.125,0.025,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(95.0f/255.0f,175.0f/255.0f,115.0f/255.0f,1.0)" />
+    </Normal>
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox_Y>
+
+  <EditBox_Z>
+    <Normal>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.3,0.6,0.9,1)" />
+      <TextFrontSel
+        color="RGBA(0.025,0.075,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(035.0f/255.0f,175.0f/255.0f,175.0f/255.0f,1.0)" />
+    </Normal>
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox_Z>
+
+  <EditBox_W>
+    <Normal>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.8,0.8,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.125,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,175.0f/255.0f,175.0f/255.0f,1.0)" />
+    </Normal>
+    <Focused>
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+    </Focused>
+    <Hover>
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+    </Hover>
+  </EditBox_W>
+
+  <!--***** COLORPICKER ******-->
+  <ColorPicker>
+    <Normal>
+      <Frame
+        mapping="Rect(107,4,20,20)"
+        frame="Vec4(2,2,2,2)" />
+    </Normal>
+  </ColorPicker>
+
+  <!--***** EXPLORER ******-->
+  <Explorer>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="15"
+          />
+      </Fonts>
+      <Frame
+        color="RGBA(255,255,255,255)/255"
+        mapping="Rect(108,6,18,17)"
+        blendmode="Translucent"
+        frame="Vec4(1,0,1,1)" />
+    </Normal>
+  </Explorer>
+
+  <!--***** SPLITTER ******-->
+  <Splitter>
+    <Normal>
+      <Fill
+        color="RGBA(62,62,62,255)/255" />
+      <Border
+        color="RGBA(255,30,45,255)/255" />
+      <FoldLeftTop
+        color="RGBA(205,165,145,120)/255" />
+      <FoldRightBottom
+        color="RGBA(125,185,145,120)/255" />
+      <FoldUnfold
+        color="RGBA(155,175,195,120)/255" />
+    </Normal>
+  </Splitter>
+
+  <!--***** TREE ******-->
+  <Tree>
+    <Normal>
+      <NodeFrame
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(0,0,0,0)"
+        blendmode="Translucent"
+        />
+      <Collapsed
+        mapping="Rect(73,26,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <Expanded
+        mapping="Rect(73,5,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <FirstRow   color="RGBA(37,37,37,255)/255" />
+      <SecondRow    color="RGBA(41,42,43,255)/255" />
+      <RowHover     color="RGBA(50,50,50,255)/255" />
+      <TextFront    color="RGBA(175,195,215,255)/255" />
+      <TextBack   color="RGBA(0,0,0,0)" />
+      <DropBorder   color="RGBA(116,182,208,255)/255" />
+      <SelBack    color="RGBA(120,50,50,30)/255" />
+      <SelBorder    color="RGBA(180,50,50,255)/255" />
+      <LastSelBack  color="RGBA(150,50,50,100)/255" />
+    </Normal>
+  </Tree>
+
+  <!-- ***** Toolbar Background ******-->
+  <ToolbarBackground>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(30,32,34,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(13,107,30,0)/255" />
+      <Frame
+        mapping="Rect(219,32,6,20)"
+        frame="Vec4(1,2,1,2)"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </ToolbarBackground>
+
+  <!--***** TOOLBAR ******-->
+  <Toolbar>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(200,200,200,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(62,62,62,255)/255" />
+      <Frame
+        mapping="Rect(220,58,33,92)"
+        frame="Vec4(4,2,5,4)"
+        blendmode="Translucent"
+        />
+      <MenuFrame
+        mapping="Rect(212,199,11,28)"
+        frame="Vec4(11,10,11,4)"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </Toolbar>
+
+  <!--***** TOOLBAR MENU BUTTON ******-->
+  <ToolbarMenuButtonNormal>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(215,235,255,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(180,203,32,24)"
+		frame="Vec4(4,6,4,6)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(215,235,255,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(180,231,32,24)"
+		frame="Vec4(4,6,4,6)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ToolbarMenuButtonNormal>
+  <ToolbarMenuButtonSelected>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(215,235,255,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(223,203,32,24)"
+		frame="Vec4(4,6,4,6)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(215,235,255,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(223,231,32,24)"
+		frame="Vec4(4,6,4,6)"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ToolbarMenuButtonSelected>
+  <!--***** TOOLBAR GROUP ******-->
+  <ToolbarGroup>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(175,195,215,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(232,160,22,40)"
+        frame="Vec4(4,4,4,22)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(200,200,200,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(208,160,22,40)"
+        frame="Vec4(4,4,4,22)"
+        blendmode="Translucent"
+        color="RGBA(1,1,1,1)"
+        />
+    </Hover>
+  </ToolbarGroup>
+
+  <!--***** Toolbar Separator ******-->
+  <ToolbarSeparatorVert>
+    <Normal>
+      <Frame
+        mapping="Rect(231,34,3,13)"
+        frame="Vec4(0,4,0,4)"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </ToolbarSeparatorVert>
+
+  <!--***** TOOLBAR BUTTON ******-->
+  <ToolbarButton>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(66,69,20,20)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(22,235,20,20)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(42,235,20,20)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ToolbarButton>
+
+  <!--***** Small Toolbar in the Library for example ******-->
+  <ToolbarSmallTab>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="12"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(2,236,20,20)"
+        frame="Vec4(4,3,4,4)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="12"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(2,194,20,20)"
+        frame="Vec4(4,3,4,4)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="12"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(2,214,20,20)"
+        frame="Vec4(4,3,4,4)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </ToolbarSmallTab>
+
+  <!--***** Custom BUTTON ******-->
+  <CustomButton>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(250,250,207,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(66,69,20,20)"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(152,84,20,20)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(33,50,66,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(172,84,20,20)"
+        frame="Vec4(4,4,4,4)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Pressed>
+  </CustomButton>
+
+  <!--***** PropertyBox ******-->
+  <PropertyBoxTree>
+    <Normal>
+      <NodeFrame
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(0,0,0,0)"
+        blendmode="Translucent"
+        />
+      <Collapsed
+        mapping="Rect(73,26,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <Expanded
+        mapping="Rect(73,5,10,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <FirstRow   color="RGBA(37,37,37,255)/255" />
+      <SecondRow    color="RGBA(41,42,43,255)/255" />
+      <RowHover     color="RGBA(70,70,70,255)/255" />
+      <TextFront    color="RGBA(175,195,215,255)/255" />
+      <TextBack   color="RGBA(0,0,0,0)" />
+      <SelTextFront color="RGBA(37,37,37,255)/255" />
+      <SelTextBack  color="RGBA(135,155,175,255)/255" />
+      <TextBackFocus  color="RGBA(155,175,195,255)/255" />
+      <SelTextBackFocus color="RGBA(175,195,215,255)/255" />
+      <DropBack     color="RGBA(96,112,128,255)/255" />
+      <DropBorder   color="RGBA(0,1,1,1)" />
+      <SecSelTextBack color="RGBA(96,112,128,255)/255" />
+    </Normal>
+  </PropertyBoxTree>
+  <PropertyBoxButton>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        filtering="true"
+        mapping="Rect(37,4,20,20)"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent"
+        />
+    </Normal>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(37,37,37,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Frame
+        mapping="Rect(85,24,20,20)"
+        filtering="true"
+        blendmode="Translucent"
+        frame="Vec4(3,3,3,3)"
+        color="RGBA(0.9,0.9,0.9,1)"
+        />
+    </Hover>
+    <Pressed>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(0,0,0,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+      <Border
+        color="RGBA(135,155,175,255)/255" />
+      <Frame
+        filtering="true"
+        mapping="Rect(37,25,20,20)"
+        frame="Vec4(3,3,3,3)"
+        />
+    </Pressed>
+  </PropertyBoxButton>
+  <PropertyBoxScrollBar>
+    <Normal>
+      <BackgroundVert
+        mapping="Rect(135,68,14,17)"
+        frame="Vec4(7,9,7,9)"
+        blendmode="Translucent"
+        />
+      <BackgroundHorz
+        mapping="Rect(165,68,17,14)"
+        filtering="true"
+        blendmode="Translucent"
+        frame="Vec4(9,7,9,7)"
+        />
+      <Thumb
+        blendmode="Translucent"
+        color="RGBA(0,0,0,0)/255"
+        />
+
+      <ArrowLeft
+        mapping="Rect(60,26,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowRight
+        mapping="Rect(73,26,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowUp
+        mapping="Rect(59,4,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+      <ArrowDown
+        mapping="Rect(73,3,11,11)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </PropertyBoxScrollBar>
+  <PropertyBoxComboBox>
+    <Normal>
+      <ArrowDown
+        mapping="Rect(32,48,10,10)"
+        filtering="true"
+        blendmode="Translucent"
+        />
+    </Normal>
+  </PropertyBoxComboBox>
+  <PropertyBoxEditBox>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          pixel_size="16"
+          color="RGBA(175,195,215,255)/255"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+
+      <Frame
+        mapping="Rect(199,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.8,0.8,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.125,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,195.0f/255.0f,215.0f/255.0f,1.0)" />
+    </Normal>
+
+    <Focused>
+      <Fonts>
+        <Default
+          path="Default"
+          pixel_size="16"
+          color="RGBA(175,195,215,255)/255"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(151,55,18,11)"
+        frame="Vec4(3,3,3,3)"
+        filtering="true"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.8,0.8,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.125,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,195.0f/255.0f,215.0f/255.0f,1.0)" />
+    </Focused>
+    <Hover>
+      <Fonts>
+        <Default
+          path="Default"
+          pixel_size="16"
+          color="RGBA(175,195,215,255)/255"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(3,107,30,0)/255" />
+      <Frame
+        mapping="Rect(175,55,18,11)"
+        filtering="true"
+        color="RGBA(1,1,1,0.5)"
+        frame="Vec4(3,3,3,3)"
+        blendmode="Translucent" />
+      <TextFrontNormal
+        color="RGBA(0.8,0.8,0.8,1)" />
+      <TextFrontSel
+        color="RGBA(0.125,0.125,0.125,1)" />
+      <TextBackNormal
+        color="RGBA(0,0,0,0)" />
+      <TextBackSel
+        color="RGBA(175.0f/255.0f,195.0f/255.0f,215.0f/255.0f,1.0)" />
+    </Hover>
+  </PropertyBoxEditBox>
+
+  <!--***** Text ******-->
+  <Text>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(255,255,255,255)/255"
+          pixel_size="16"
+          />
+      </Fonts>
+    </Normal>
+  </Text>
+
+</UISkin>

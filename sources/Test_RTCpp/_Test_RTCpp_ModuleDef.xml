@@ -1,0 +1,12 @@
+<niIDL
+	desc="Test RTCpp module"
+	initfunctions="no"
+	moduleinclude=""
+	name="Test_RTCpp"
+	version="1,0,0">
+	<dependencies>
+		<dependency name="niLang"/>
+	</dependencies>
+	<objecttypes/>
+	<includes/>
+</niIDL>

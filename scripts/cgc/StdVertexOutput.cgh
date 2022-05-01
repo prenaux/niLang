@@ -1,0 +1,151 @@
+#pragma once
+#ifndef __STDVERTEXOUTPUT_CGH_BA1A1220_0687_463B_BF2B_F7B0C97FBB1E__
+#define __STDVERTEXOUTPUT_CGH_BA1A1220_0687_463B_BF2B_F7B0C97FBB1E__
+// SPDX-FileCopyrightText: (c) 2022 The niLang Authors
+// SPDX-License-Identifier: MIT
+
+#include "StdDefs.cgh"
+
+// Standard vertex output
+struct StdVertexOutput
+{
+  // Clip space position
+  float4 ClipPosition : POSITION;
+  float4 Position : TEXCOORD0;
+
+  // Quad mode
+#if eShaderFlags_Quad
+  float4  ColorA  : COLOR0;
+  float4  Tex1 : TEXCOORD1;
+  // Normal mode
+#elif !eShaderFlags_DepthOnly
+  float4  Tex1 : TEXCOORD1;
+  float4  Tex2 : TEXCOORD2;
+  float4  PositionH : TEXCOORD3;
+  float3  Normal : TEXCOORD4;
+  float4  ColorA : COLOR0;
+#endif
+};
+
+#if eStd_IsVertexShader
+#include "StdUniforms.cgh"
+#include "StdVertexInput.cgh"
+#include "StdMaterialFlags.cgh"
+#include "StdUtils.cgh"
+#include "StdNoise.cgh"
+
+#define eStd_BB_ZCoo      0
+
+///////////////////////////////////////////////
+float4 stdVertexOutput_InPosition(float4 aInPosition, bool abInst, float4x4 aInstMatrix) {
+  float4 InPosition = aInPosition;
+  if (abInst) {
+    InPosition = mul(InPosition,aInstMatrix);
+  }
+  else {
+    InPosition = mul(InPosition,fpsWorldMatrix);
+  }
+  return InPosition;
+}
+
+//--------------------------------------------------------------------------------------------
+//
+//  Standard Vertex Output
+//
+//--------------------------------------------------------------------------------------------
+StdVertexOutput stdVertexOutput_FromVertexInput(StdVertexInput aIn) {
+  StdVertexOutput o;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  //// Quad mode ////
+#if eShaderFlags_Quad
+
+  // Clip position
+  o.ClipPosition = mul(aIn.Position,fpsWorldViewProjectionMatrix);
+  o.Position = o.ClipPosition;
+  o.ColorA = stdVertexInput_ColorA(aIn);
+
+  // Texture zero
+  float2 tex1 = stdVertexInput_GetTexCoo2(aIn,0);
+  o.Tex1 = tex1.xyyy;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  //// Normal mode ////
+#else
+
+  o.ClipPosition = mul(aIn.Position,fpsWorldViewProjectionMatrix); // World transform applied in stdVertexOutput_InPosition
+
+  o.Tex1 = stdVertexInput_GetTexCoo4Transformed(aIn,0,fpsTextureMatrix0);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Depth only
+#if eShaderFlags_DepthOnly
+  // regular shadow maps uses the projected clip space position
+  o.Position = o.ClipPosition;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Standard
+#else
+  o.PositionH = o.ClipPosition;
+
+  if (kShaderFlags_WorldSpace) {
+    o.Position = mul(aIn.Position,fpsWorldMatrix);
+  }
+  else {
+    o.Position = mul(aIn.Position,fpsWorldViewMatrix);
+  }
+
+  // Texture coordinates
+#if eFVF_Tex2
+  o.Tex2 = stdVertexInput_GetTexCoo4(aIn,1);
+#else
+  o.Tex2 = stdVertexInput_GetTexCoo4(aIn,0); // mirror texcoo0 if there's no explicit tex1
+#endif
+
+  // Colors output
+  o.ColorA = stdVertexInput_ColorA(aIn);
+
+  // Normals rotation matrix
+  float3x3 mtxNormalRot;
+  if (kShaderFlags_WorldSpace) {
+    mtxNormalRot = (float3x3)fpsWorldMatrix;
+  }
+  else {
+    mtxNormalRot = (float3x3)fpsWorldViewMatrix;
+  }
+
+  // Get normal
+  float3 vNormal = stdVertexInput_Normal(aIn);
+  o.Normal = mul(vNormal,mtxNormalRot);
+
+  //
+  // We pass a constant to flip normals so that we can do double sided
+  // rendering sanely. Read the following paragraph for why we don't use
+  // VFACE, SV_IsFrontFacing, etc...
+  //
+  // ----
+  //
+  // IsFacing should be set from a VFACE semantic parameter in the pixel
+  // shader.
+  //
+  // Its OpenGL equivalent is gl_FrontFacing, note that there's quite a few
+  // complains of a issues with gl_FrontFacing on older hardware so its
+  // possible that we should compute that differently on different
+  // targets. For now (June 2021) I'm hoping that those issues have been taken
+  // care of and this problem is relevant anymore.  If it is they
+  //
+  // Actually VFACE is broken with various DX9 shader compilers - it'll
+  // actually confuse the compiler and make it generate wierd errors, so we
+  // just cant use it.
+  //
+  o.Normal = normalize(o.Normal * fpsWorldScale.w);
+
+#endif  // !depth only
+
+#endif  // normal mode
+  return o;
+}
+#endif // eStd_IsVertexShader
+
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+#endif // __STDVERTEXOUTPUT_CGH_BA1A1220_0687_463B_BF2B_F7B0C97FBB1E__

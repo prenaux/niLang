@@ -1,0 +1,2472 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetStyle">
+			<comments desc="Widget style. "/>
+			<value name="eWidgetStyle_NCRelative" value="niBit ( 0 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetStyle_Free" value="niBit ( 1 ) ">
+				<comments desc="Free widget. ">
+					<remark text="Free widgets are not affected by the ZOrder nor the clipping of their parent. "/>
+					<remark text="Free widgets are organized by the desktop widget. "/>
+				</comments>
+			</value>
+			<value name="eWidgetStyle_HoldFocus" value="niBit ( 2 ) ">
+				<comments desc="The widget will receive input focus. "/>
+			</value>
+			<value name="eWidgetStyle_OverFocus" value="niBit ( 3 ) ">
+				<comments desc="The widget will receive input focus when the cursor is above it. "/>
+			</value>
+			<value name="eWidgetStyle_NoClip" value="niBit ( 4 ) ">
+				<comments desc="The widget wont be clipped by it&apos;s parent. "/>
+			</value>
+			<value name="eWidgetStyle_NoClick" value="niBit ( 5 ) ">
+				<comments desc="No click and double click messages will be generated. ">
+					<remark text="If the click messages are not used it&apos;s a bit cheaper to not generate them at all. "/>
+				</comments>
+			</value>
+			<value name="eWidgetStyle_NotifyParent" value="niBit ( 6 ) ">
+				<comments desc="The parent widget is notified through the ParentNotify message when a message is sent to this widget. ">
+					<remark text="The ParentNotify message is never notified to the parent widget. "/>
+				</comments>
+			</value>
+			<value name="eWidgetStyle_FocusActivate" value="niBit ( 7 ) ">
+				<comments desc="Activate the widget just before receiving focus. "/>
+			</value>
+			<value name="eWidgetStyle_DontSerialize" value="niBit ( 8 ) ">
+				<comments desc="Don&apos;t serialize. "/>
+			</value>
+			<value name="eWidgetStyle_ItemOwned" value="niBit ( 9 ) ">
+				<comments desc="The item the widget is attached to owns it. This is to instruct items (such as tree nodes or list entry) to destroy/invalidate the widget when it isnt used anymore. "/>
+			</value>
+			<value name="eWidgetStyle_DragSource" value="niBit ( 10 ) ">
+				<comments desc="The the widget is a dragging source. "/>
+			</value>
+			<value name="eWidgetStyle_DragDestination" value="niBit ( 11 ) ">
+				<comments desc="The widget is a dragging destination. "/>
+			</value>
+			<value name="eWidgetStyle_Temp" value="niBit ( 12 ) ">
+				<comments desc="The widget is temporary, as for example the hover labels. "/>
+			</value>
+			<value name="eWidgetStyle_NoMoveFocus" value="niBit ( 13 ) ">
+				<comments desc="Focus won&apos;t be set on the widget as a response to the MoveFocus message. "/>
+			</value>
+			<value name="eWidgetStyle_NoAutoRedraw" value="niBit ( 14 ) ">
+				<comments desc="Dont redraw the widget automatically on input events. "/>
+			</value>
+			<value name="eWidgetStyle_MoveFocusGroup" value="niBit ( 15 ) ">
+				<comments desc="Widget is a &quot;move focus group&quot;. ">
+					<remark text="A move focus group indicates a logical organization of widgets which should be all cycled through before going to the next group. "/>
+				</comments>
+			</value>
+			<value name="eWidgetStyle_MaxBit" value="16 ">
+				<comments desc="Max bit, user styles should use the bits above this. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetDockStyle">
+			<comments desc="Widget dock style. ">
+				<remark text="Docking flags allows to snap/dock the widget on the edges of it&apos;s parent control client area. "/>
+				<remark text="Snap only moves the widget to the specified edges, left and right are mutually exclusive, and top and bottom are mutually exclusive as well. "/>
+				<remark text="Dock stretch the widget to reach the specified edge and update the docking area, so that a fill dock will fill only the empty space left. "/>
+				<remark text="The widgets are docked in the ZOrder. "/>
+			</comments>
+			<value name="eWidgetDockStyle_None" value="0 ">
+				<comments desc="No docking. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapLeft" value="1 ">
+				<comments desc="Snap the widget on the left. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapRight" value="2 ">
+				<comments desc="Snap the widget on the right. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapTop" value="3 ">
+				<comments desc="Snap the widget on the top. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapBottom" value="4 ">
+				<comments desc="Snap the widget on the bottom. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterLeft" value="5 ">
+				<comments desc="Snap the widget on the center left. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapLeftCenter" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterRight" value="6 ">
+				<comments desc="Snap the widget on the center right. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapRightCenter" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterTop" value="7 ">
+				<comments desc="Snap the widget on the center top. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapTopCenter" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterBottom" value="8 ">
+				<comments desc="Snap the widget on the center bottom. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapBottomCenter" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapTopLeft" value="9 ">
+				<comments desc="Snap the widget on the top left. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapLeftTop" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapTopRight" value="10 ">
+				<comments desc="Snap the widget on the top right. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapRightTop" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapBottomLeft" value="11 ">
+				<comments desc="Snap the widget on the bottom left. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapLeftBottom" value="11 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapBottomRight" value="12 ">
+				<comments desc="Snap the widget on the bottom right. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapRightBottom" value="12 ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenter" value="13 ">
+				<comments desc="Snap the widget in the center. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterH" value="14 ">
+				<comments desc="Snap the widget in the center horizontally. "/>
+			</value>
+			<value name="eWidgetDockStyle_SnapCenterV" value="15 ">
+				<comments desc="Snap the widget in the center vertically. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockLeft" value="16 ">
+				<comments desc="Dock the widget on the left. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockRight" value="17 ">
+				<comments desc="Dock the widget on the right. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockTop" value="18 ">
+				<comments desc="Dock the widget on the top. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockBottom" value="19 ">
+				<comments desc="Dock the widget on the bottom. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockFill" value="20 ">
+				<comments desc="Dock the widget to fill the widget. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockFillWidth" value="21 ">
+				<comments desc="Dock the widget to fill the widget width. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockFillHeight" value="22 ">
+				<comments desc="Dock the widget to fill the widget height. "/>
+			</value>
+			<value name="eWidgetDockStyle_DockFillOverlay" value="23 ">
+				<comments desc="Dock the widget to fill the all widget, this is meant to be used by overlays. "/>
+			</value>
+			<value name="eWidgetDockStyle_Grid" value="24 ">
+				<comments desc="Place the widget in a grid. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetZOrder">
+			<comments desc="Widget ZOrder. ">
+				<remark text="These are the reserved ZOrder, to define a ZOrder explicitly pass a value less that eWidgetZOrder_Max. Zero is the overlay widget, higher values are below it. "/>
+			</comments>
+			<value name="eWidgetZOrder_BackgroundBottom" value="0 ">
+				<comments desc="Places the widget in the background behind all background widgets. "/>
+			</value>
+			<value name="eWidgetZOrder_Background" value="1 ">
+				<comments desc="Places the widget in the background. "/>
+			</value>
+			<value name="eWidgetZOrder_Bottom" value="2 ">
+				<comments desc="Places the widget at the bottom of the Z order. "/>
+			</value>
+			<value name="eWidgetZOrder_Top" value="3 ">
+				<comments desc="Places the widget at the top of the Z order. "/>
+			</value>
+			<value name="eWidgetZOrder_TopMostBottom" value="4 ">
+				<comments desc="Places the widget above all non-topmost widgets but below all top-most widgets. "/>
+			</value>
+			<value name="eWidgetZOrder_TopMost" value="5 ">
+				<comments desc="Places the widget above all non-topmost widgets. "/>
+			</value>
+			<value name="eWidgetZOrder_OverlayBottom" value="6 ">
+				<comments desc="Places the widget above all other widgets, but below all overlay widgets. "/>
+			</value>
+			<value name="eWidgetZOrder_Overlay" value="7 ">
+				<comments desc="Overlay widget. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetSerializeFlags">
+			<comments desc="Widget serialize flags. "/>
+			<value name="eWidgetSerializeFlags_Write" value="niBit ( 0 ) ">
+				<comments desc="Serialize write. ">
+					<remark text="Read or Write must be specified, both can&apos;t be specified simultaneously. "/>
+					<remark text="This is intentionally the same as ni::eSerializeFlags_Write "/>
+				</comments>
+			</value>
+			<value name="eWidgetSerializeFlags_Read" value="niBit ( 1 ) ">
+				<comments desc="Serialize read. ">
+					<remark text="Read or Write must be specified, both can&apos;t be specified simultaneously. "/>
+					<remark text="This is intentionally the same as ni::eSerializeFlags_Read "/>
+				</comments>
+			</value>
+			<value name="eWidgetSerializeFlags_Children" value="niBit ( 2 ) ">
+				<comments desc="Serialize (read/write) the children of the widget. "/>
+			</value>
+			<value name="eWidgetSerializeFlags_NoRoot" value="niBit ( 3 ) ">
+				<comments desc="Don&apos;t serialize the root widget&apos;s information. ">
+					<remark text="What is considered the root widget is the widget passed to SerializeLayout. "/>
+				</comments>
+			</value>
+			<value name="eWidgetSerializeFlags_PropertyBox" value="niBit ( 10 ) ">
+				<comments desc="Edition property box serialization. ">
+					<remark text="Additional or different informations that are more suited for edition should be serialized when writting in a property box. "/>
+					<remark text="This is intentionally the same as ni::eSerializeFlags_TypeInfoMetadata. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eWidgetAutoLayoutFlags">
+			<comments desc="Widget auto layout flags. "/>
+			<value name="eWidgetAutoLayoutFlags_Relative" value="niBit ( 0 ) ">
+				<comments desc="Compute the children&apos;s relative sizes. "/>
+			</value>
+			<value name="eWidgetAutoLayoutFlags_Dock" value="niBit ( 1 ) ">
+				<comments desc="Compute the children&apos;s docking positions. "/>
+			</value>
+			<value name="eWidgetAutoLayoutFlags_Size" value="niBit ( 2 ) ">
+				<comments desc="Compute the size to fit the children. "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iWidgetSink"
+			uuid1="6905DFA1-FA65-4444-A390-BA809580DBF6"
+			uuid2="0x6905dfa1,0xfa65,0x4444,0xa3,0x90,0xba,0x80,0x95,0x80,0xdb,0xf6">
+			<comments desc="Widget sink interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onWidgetSink" name="OnWidgetSink" num_parameters="4">
+				<comments desc="Widget sink message handler. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="varParam0"
+					type="const ni::Var &amp;"
+					typec="const ni::Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="varParam1"
+					type="const ni::Var &amp;"
+					typec="const ni::Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iWidgetCommand" uuid1="6D19A44F-87AD-4517-B5AE-FE57C7A2F25E" uuid2="0x6d19a44f,0x87ad,0x4517,0xb5,0xae,0xfe,0x57,0xc7,0xa2,0xf2,0x5e">
+			<comments desc="Widget command interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the specified command in this command. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="const iWidgetCommand *"
+					typec="const iWidgetCommand*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this command. "/>
+				<return type="iWidgetCommand *" typec="iWidgetCommand*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSender"
+				name="SetSender"
+				num_parameters="1"
+				property="set"
+				property_name2="sender"
+				property_name="sender">
+				<comments desc="Set the command sender. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSender"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSender"
+				name="GetSender"
+				num_parameters="0"
+				property="get"
+				property_name2="sender"
+				property_name="sender">
+				<comments desc="Get the command sender. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setID"
+				name="SetID"
+				num_parameters="1"
+				property="set"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Set the command id. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getID"
+				name="GetID"
+				num_parameters="0"
+				property="get"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Get the command id. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setExtra1"
+				name="SetExtra1"
+				num_parameters="1"
+				property="set"
+				property_name2="extra1"
+				property_name="extra1">
+				<comments desc="Set the extra parameter 1. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExtra1"
+				name="GetExtra1"
+				num_parameters="0"
+				property="get"
+				property_name2="extra1"
+				property_name="extra1">
+				<comments desc="Get the extra parameter 1. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setExtra2"
+				name="SetExtra2"
+				num_parameters="1"
+				property="set"
+				property_name2="extra2"
+				property_name="extra2">
+				<comments desc="Set the extra parameter 2. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExtra2"
+				name="GetExtra2"
+				num_parameters="0"
+				property="get"
+				property_name2="extra2"
+				property_name="extra2">
+				<comments desc="Get the extra parameter 2. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<enum name="eWidgetSystemTimer">
+			<comments desc="Widget system timers. "/>
+			<value name="eWidgetSystemTimer_First" value="eInvalidHandle+1 ">
+				<comments desc="First system timer id. "/>
+			</value>
+			<value name="eWidgetSystemTimer_Hover" value="eWidgetSystemTimer_First+0 ">
+				<comments desc="Hover system timer. "/>
+			</value>
+			<value name="eWidgetSystemTimer_NCHover" value="eWidgetSystemTimer_First+1 ">
+				<comments desc="Non-client area hover system timer. "/>
+			</value>
+			<value name="eWidgetSystemTimer_LeftDoubleClick" value="eWidgetSystemTimer_First+2 ">
+				<comments desc="Left doubleclick timer. "/>
+			</value>
+			<value name="eWidgetSystemTimer_RightDoubleClick" value="eWidgetSystemTimer_First+3 ">
+				<comments desc="Right doubleclick timer. "/>
+			</value>
+		</enum>
+		<interface name="iWidget" uuid1="84722D61-18B8-4081-ABCE-5AFE186F3FDA" uuid2="0x84722d61,0x18b8,0x4081,0xab,0xce,0x5a,0xfe,0x18,0x6f,0x3f,0xda">
+			<comments desc="Widget interface. "/>
+			<parents>
+				<parent name="iMessageHandler"/>
+			</parents>
+			<method java_name="destroy" name="Destroy" num_parameters="0">
+				<comments desc="Destroy the widget and it&apos;s children. ">
+					<remark text="Will send the eUIMessage_Destroy message and invalidate the widget. "/>
+					<remark text="This is not done automatically when releasing the widget, it&apos;s meant to be used to force the closing of application widgets at run-time manually. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the widget&apos;s Graphics object. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGraphicsContext"
+				name="GetGraphicsContext"
+				num_parameters="0"
+				property="get"
+				property_name2="graphicsContext"
+				property_name="graphics_context">
+				<comments desc="Get the widget&apos;s Graphics Context. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUIContext"
+				name="GetUIContext"
+				num_parameters="0"
+				property="get"
+				property_name2="uicontext"
+				property_name="uicontext">
+				<comments desc="Get the widget&apos;s UI context. "/>
+				<return type="iUIContext *" typec="iUIContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClassName"
+				name="GetClassName"
+				num_parameters="0"
+				property="get"
+				property_name2="className"
+				property_name="class_name">
+				<comments desc="Get the widget&apos;s class. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setID"
+				name="SetID"
+				num_parameters="1"
+				property="set"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Set the widget&apos;s ID. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getID"
+				name="GetID"
+				num_parameters="0"
+				property="get"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Get the widget&apos;s ID. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setStyle"
+				name="SetStyle"
+				num_parameters="1"
+				property="set"
+				property_name2="style"
+				property_name="style">
+				<comments desc="Set the widget&apos;s style. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anStyle"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStyle"
+				name="GetStyle"
+				num_parameters="0"
+				property="get"
+				property_name2="style"
+				property_name="style">
+				<comments desc="Get the widget&apos;s style. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setParent"
+				name="SetParent"
+				num_parameters="1"
+				property="set"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Set the parent widget. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apParent"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParent"
+				name="GetParent"
+				num_parameters="0"
+				property="get"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Get the parent widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setZOrder"
+				name="SetZOrder"
+				num_parameters="1"
+				property="set"
+				property_name2="zorder"
+				property_name="zorder">
+				<comments desc="Set the widget&apos;s ZOrder. \see eWidgetZOrder "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aZOrder"
+					type="eWidgetZOrder"
+					typec="eWidgetZOrder"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getZOrder"
+				name="GetZOrder"
+				num_parameters="0"
+				property="get"
+				property_name2="zorder"
+				property_name="zorder">
+				<comments desc="Get the widget&apos;s ZOrder. "/>
+				<return type="eWidgetZOrder" typec="eWidgetZOrder" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="setZOrderAbove" name="SetZOrderAbove" num_parameters="1">
+				<comments desc="Place the widget above (on top of) the specified sibling widget in the ZOrder. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDrawOrder"
+				name="GetDrawOrder"
+				num_parameters="0"
+				property="get"
+				property_name2="drawOrder"
+				property_name="draw_order">
+				<comments desc="Get the drawing order. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setAutoLayout"
+				name="SetAutoLayout"
+				num_parameters="1"
+				property="set"
+				property_name2="autoLayout"
+				property_name="auto_layout">
+				<comments desc="Set if the widget&apos;s auto layout flags. ">
+					<remark text="If a child&apos;s relative position or size is set, the relative auto layout will be set. "/>
+					<remark text="If a child&apos;s dock style is different of none the dock auto layout will be set. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tWidgetAutoLayoutFlags"
+					typec="tWidgetAutoLayoutFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAutoLayout"
+				name="GetAutoLayout"
+				num_parameters="0"
+				property="get"
+				property_name2="autoLayout"
+				property_name="auto_layout">
+				<comments desc="Get if the widget&apos;s auto layout flags. "/>
+				<return type="tWidgetAutoLayoutFlags" typec="tWidgetAutoLayoutFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="computeAutoLayout" name="ComputeAutoLayout" num_parameters="1">
+				<comments desc="Computer the widget children&apos;s auto layout. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tWidgetAutoLayoutFlags"
+					typec="tWidgetAutoLayoutFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setPosition"
+				name="SetPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Set the widget&apos;s position. ">
+					<remark text="For a child window the position is relative to it&apos;s parent client top-left cornet, else the position is relative to the top-left corner of the screen. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the widget&apos;s position. ">
+					<remark text="For a child window the position is relative to it&apos;s parent client top-left cornet, else the position is relative to the top-left corner of the screen. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setSize"
+				name="SetSize"
+				num_parameters="1"
+				property="set"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Set the widget&apos;s size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the widget&apos;s size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setMinimumSize"
+				name="SetMinimumSize"
+				num_parameters="1"
+				property="set"
+				property_name2="minimumSize"
+				property_name="minimum_size">
+				<comments desc="Set the widget&apos;s minimum size. ">
+					<remark text="If a component is &lt;= 0 the limit is not enforced. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMinSize"
+					type="sVec2f"
+					typec="sVec2f"
+					typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMinimumSize"
+				name="GetMinimumSize"
+				num_parameters="0"
+				property="get"
+				property_name2="minimumSize"
+				property_name="minimum_size">
+				<comments desc="Get the widget&apos;s minimum size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setMaximumSize"
+				name="SetMaximumSize"
+				num_parameters="1"
+				property="set"
+				property_name2="maximumSize"
+				property_name="maximum_size">
+				<comments desc="Set the widget&apos;s maximum size. ">
+					<remark text="If a component is &lt;= 0 the limit is not enforced. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMaxSize"
+					type="sVec2f"
+					typec="sVec2f"
+					typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaximumSize"
+				name="GetMaximumSize"
+				num_parameters="0"
+				property="get"
+				property_name2="maximumSize"
+				property_name="maximum_size">
+				<comments desc="Get the widget&apos;s maximum size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setRect"
+				name="SetRect"
+				num_parameters="1"
+				property="set"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Set the widget&apos;s rectangle. ">
+					<remark text="For a child window the position is relative to it&apos;s parent client top-left cornet, else the position is relative to the top-left corner of the screen. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRect"
+				name="GetRect"
+				num_parameters="0"
+				property="get"
+				property_name2="rect"
+				property_name="rect">
+				<comments desc="Get the widget&apos;s rectangle. ">
+					<remark text="For a child window the position is relative to it&apos;s parent client top-left cornet, else the position is relative to the top-left corner of the screen. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidgetRect"
+				name="GetWidgetRect"
+				num_parameters="0"
+				property="get"
+				property_name2="widgetRect"
+				property_name="widget_rect">
+				<comments desc="Get the widget rectangle. Relative to it&apos;s own top-left corner. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockFillRect"
+				name="GetDockFillRect"
+				num_parameters="0"
+				property="get"
+				property_name2="dockFillRect"
+				property_name="dock_fill_rect">
+				<comments desc="Get the widget&apos;s dock fill rectangle. ">
+					<remark text="The DockFill rectangle is where DockFill widget at the end of the draw order will be placed. "/>
+					<remark text="The DockFill rectangle is relative to the client area. "/>
+					<remark text="The DockFill rectangle is reliable only after ComputeLayout has been called. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setClientPosition"
+				name="SetClientPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="clientPosition"
+				property_name="client_position">
+				<comments desc="Set the widget&apos;s client position. ">
+					<remark text="The position is relative to the widget&apos;s rectangle top-left corner. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClientPosition"
+				name="GetClientPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="clientPosition"
+				property_name="client_position">
+				<comments desc="Get the widget&apos;s client position. ">
+					<remark text="The position is relative to the widget&apos;s rectangle top-left corner. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setClientSize"
+				name="SetClientSize"
+				num_parameters="1"
+				property="set"
+				property_name2="clientSize"
+				property_name="client_size">
+				<comments desc="Set the widget&apos;s client size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClientSize"
+				name="GetClientSize"
+				num_parameters="0"
+				property="get"
+				property_name2="clientSize"
+				property_name="client_size">
+				<comments desc="Get the widget&apos;s client size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setClientRect"
+				name="SetClientRect"
+				num_parameters="1"
+				property="set"
+				property_name2="clientRect"
+				property_name="client_rect">
+				<comments desc="Set the widget&apos;s client rectangle. ">
+					<remark text="The position is relative to the widget&apos;s rectangle top-left corner. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClientRect"
+				name="GetClientRect"
+				num_parameters="0"
+				property="get"
+				property_name2="clientRect"
+				property_name="client_rect">
+				<comments desc="Get the widget&apos;s client rectangle. ">
+					<remark text="The position is relative to the widget&apos;s rectangle top-left corner. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="computeFitRect"
+				name="ComputeFitRect"
+				num_parameters="1">
+				<comments desc="Compute a rectangle that fits around the specified client rectangle. " return="The rectangle, is absolute coordinates, that fits are the specified client rectangle. ">
+					<remark text="Return a rectangle that can be used with SetAbsoluteRect. "/>
+					<params text="aRect is the client rectangle in absolute coordinates. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFitRect"
+				name="SetFitRect"
+				num_parameters="1"
+				property="set"
+				property_name2="fitRect"
+				property_name="fit_rect">
+				<comments desc="Set a rectangle that fits around the specified client rectangle. ">
+					<params text="aRect is the client rectangle in absolute coordinates. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFitSize"
+				name="SetFitSize"
+				num_parameters="1"
+				property="set"
+				property_name2="fitSize"
+				property_name="fit_size">
+				<comments desc="Set a rectangle that fits around the specified client size. ">
+					<params text="avSize is the client size. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f"
+					typec="const sVec2f"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setAbsolutePosition"
+				name="SetAbsolutePosition"
+				num_parameters="1"
+				property="set"
+				property_name2="absolutePosition"
+				property_name="absolute_position">
+				<comments desc="Set the widget&apos;s absolute position. ">
+					<remark text="The position is relative to the screen&apos;s top-left corner. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsolutePosition"
+				name="GetAbsolutePosition"
+				num_parameters="0"
+				property="get"
+				property_name2="absolutePosition"
+				property_name="absolute_position">
+				<comments desc="Get the widget&apos;s absolute position. ">
+					<remark text="The position is relative to the screen&apos;s top-left corner. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setAbsoluteRect"
+				name="SetAbsoluteRect"
+				num_parameters="1"
+				property="set"
+				property_name2="absoluteRect"
+				property_name="absolute_rect">
+				<comments desc="Set the widget&apos;s absolute rectangle. ">
+					<remark text="The absolute rectangle size is the same as the widget&apos;s size. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteRect"
+				name="GetAbsoluteRect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteRect"
+				property_name="absolute_rect">
+				<comments desc="Get the widget&apos;s absolute rectangle. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClippedRect"
+				name="GetClippedRect"
+				num_parameters="0"
+				property="get"
+				property_name2="clippedRect"
+				property_name="clipped_rect">
+				<comments desc="Get the widget&apos;s rect clipped to the parent client rectangle. ">
+					<remark text="The rectangle will not be clipped only if the NoClip style is specified. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteClippedRect"
+				name="GetAbsoluteClippedRect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteClippedRect"
+				property_name="absolute_clipped_rect">
+				<comments desc="Get the widget&apos;s absolute rect clipped to the parent client rectangle. ">
+					<remark text="The rectangle will not be clipped only if the NoClip style is specified. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getClippedClientRect"
+				name="GetClippedClientRect"
+				num_parameters="0"
+				property="get"
+				property_name2="clippedClientRect"
+				property_name="clipped_client_rect">
+				<comments desc="Get the widget&apos;s client rect clipped to the parent client rectangle. ">
+					<remark text="The rectangle will not be clipped only if the NoClip style is specified. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteClippedClientRect"
+				name="GetAbsoluteClippedClientRect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteClippedClientRect"
+				property_name="absolute_clipped_client_rect">
+				<comments desc="Get the widget&apos;s absolute client rect clipped to the parent client rectangle. ">
+					<remark text="The rectangle will not be clipped only if the NoClip style is specified. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setRelativePosition"
+				name="SetRelativePosition"
+				num_parameters="1"
+				property="set"
+				property_name2="relativePosition"
+				property_name="relative_position">
+				<comments desc="Set the widget&apos;s relative position. ">
+					<remark text="Will enabled the relative auto layout. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRelativePosition"
+				name="GetRelativePosition"
+				num_parameters="0"
+				property="get"
+				property_name2="relativePosition"
+				property_name="relative_position">
+				<comments desc="Get the widget&apos;s relative position. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setRelativeSize"
+				name="SetRelativeSize"
+				num_parameters="1"
+				property="set"
+				property_name2="relativeSize"
+				property_name="relative_size">
+				<comments desc="Set the widget&apos;s relative size. ">
+					<remark text="Will enabled the relative auto layout. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRelativeSize"
+				name="GetRelativeSize"
+				num_parameters="0"
+				property="get"
+				property_name2="relativeSize"
+				property_name="relative_size">
+				<comments desc="Get the widget&apos;s relative size. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setRelativeRect"
+				name="SetRelativeRect"
+				num_parameters="1"
+				property="set"
+				property_name2="relativeRect"
+				property_name="relative_rect">
+				<comments desc="Set the widget&apos;s relative rectangle. ">
+					<remark text="Will enabled the relative auto layout. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRelativeRect"
+				name="GetRelativeRect"
+				num_parameters="0"
+				property="get"
+				property_name2="relativeRect"
+				property_name="relative_rect">
+				<comments desc="Get the widget&apos;s relative rectangle. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setPadding"
+				name="SetPadding"
+				num_parameters="1"
+				property="set"
+				property_name2="padding"
+				property_name="padding">
+				<comments desc="Set the padding size. ">
+					<remark text="The padding rectangle specifies the internal padding of the client area for each side of the widget. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPadding"
+				name="GetPadding"
+				num_parameters="0"
+				property="get"
+				property_name2="padding"
+				property_name="padding">
+				<comments desc="Get the padding size. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasPadding"
+				name="GetHasPadding"
+				num_parameters="0"
+				property="get"
+				property_name2="hasPadding"
+				property_name="has_padding">
+				<comments desc="Get whether a padding is specified (non-zero). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setMargin"
+				name="SetMargin"
+				num_parameters="1"
+				property="set"
+				property_name2="margin"
+				property_name="margin">
+				<comments desc="Set the margin rectangle. ">
+					<remark text="The margin rectangle specifies the margin for each side of the widget. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMargin"
+				name="GetMargin"
+				num_parameters="0"
+				property="get"
+				property_name2="margin"
+				property_name="margin">
+				<comments desc="Get the margin rectangle. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasMargin"
+				name="GetHasMargin"
+				num_parameters="0"
+				property="get"
+				property_name2="hasMargin"
+				property_name="has_margin">
+				<comments desc="Get whether a margin is specified (non-zero). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="setFocus" name="SetFocus" num_parameters="0">
+				<comments desc="Ask to get the input focus. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="moveFocus" name="MoveFocus" num_parameters="1">
+				<comments desc="Move the focus to the previous or next widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abToPrevious"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setCapture"
+				name="SetCapture"
+				num_parameters="1"
+				property="set"
+				property_name2="capture"
+				property_name="capture">
+				<comments desc="Set the capture of the input. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnable"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCapture"
+				name="GetCapture"
+				num_parameters="0"
+				property="get"
+				property_name2="capture"
+				property_name="capture">
+				<comments desc="Get the capture of the input state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setExclusive"
+				name="SetExclusive"
+				num_parameters="1"
+				property="set"
+				property_name2="exclusive"
+				property_name="exclusive">
+				<comments desc="Set exclusive. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnable"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExclusive"
+				name="GetExclusive"
+				num_parameters="0"
+				property="get"
+				property_name2="exclusive"
+				property_name="exclusive">
+				<comments desc="Get the exclusive state. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setInputSubmitFlags"
+				name="SetInputSubmitFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="inputSubmitFlags"
+				property_name="input_submit_flags">
+				<comments desc="Set the input submit flags. \see ni::eUIInputSubmitFlags "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aSubmitFlags"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInputSubmitFlags"
+				name="GetInputSubmitFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="inputSubmitFlags"
+				property_name="input_submit_flags">
+				<comments desc="Get the input submit flags. \see ni::eUIInputSubmitFlags "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setVisible"
+				name="SetVisible"
+				num_parameters="1"
+				property="set"
+				property_name2="visible"
+				property_name="visible">
+				<comments desc="Set the widget visibility status. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abVisible"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVisible"
+				name="GetVisible"
+				num_parameters="0"
+				property="get"
+				property_name2="visible"
+				property_name="visible">
+				<comments desc="Get the widget visibility status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setEnabled"
+				name="SetEnabled"
+				num_parameters="1"
+				property="set"
+				property_name2="enabled"
+				property_name="enabled">
+				<comments desc="Set the widget enabled status. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnabled"
+				name="GetEnabled"
+				num_parameters="0"
+				property="get"
+				property_name2="enabled"
+				property_name="enabled">
+				<comments desc="Get the widget enabled status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setIgnoreInput"
+				name="SetIgnoreInput"
+				num_parameters="1"
+				property="set"
+				property_name2="ignoreInput"
+				property_name="ignore_input">
+				<comments desc="Set the ignore input status. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abIgnoreInput"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIgnoreInput"
+				name="GetIgnoreInput"
+				num_parameters="0"
+				property="get"
+				property_name2="ignoreInput"
+				property_name="ignore_input">
+				<comments desc="Get the ignore input status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="setStatus" name="SetStatus" num_parameters="3">
+				<comments desc="Set all the status. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="abVisible"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abIgnoreInput"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setHideChildren"
+				name="SetHideChildren"
+				num_parameters="1"
+				property="set"
+				property_name2="hideChildren"
+				property_name="hide_children">
+				<comments desc="Set whether all client children of the widget are hidden. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abHideChildren"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHideChildren"
+				name="GetHideChildren"
+				num_parameters="0"
+				property="get"
+				property_name2="hideChildren"
+				property_name="hide_children">
+				<comments desc="Get whether all client children of the widget are hidden. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsMouseOver"
+				name="GetIsMouseOver"
+				num_parameters="0"
+				property="get"
+				property_name2="isMouseOver"
+				property_name="is_mouse_over">
+				<comments desc="Get whether the mouse is over this widget&apos;s client area. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsPressed"
+				name="GetIsPressed"
+				num_parameters="0"
+				property="get"
+				property_name2="isPressed"
+				property_name="is_pressed">
+				<comments desc="Get whether the main mouse button is pressed while the mouse is over the widget&apos;s client area. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsNcMouseOver"
+				name="GetIsNcMouseOver"
+				num_parameters="0"
+				property="get"
+				property_name2="isNcMouseOver"
+				property_name="is_nc_mouse_over">
+				<comments desc="Get whether the mouse is over this widget&apos;s non-client area. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsNcPressed"
+				name="GetIsNcPressed"
+				num_parameters="0"
+				property="get"
+				property_name2="isNcPressed"
+				property_name="is_nc_pressed">
+				<comments desc="Get whether the main mouse button is pressed while the mouse is over the widget&apos;s non-client area. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasFocus"
+				name="GetHasFocus"
+				num_parameters="0"
+				property="get"
+				property_name2="hasFocus"
+				property_name="has_focus">
+				<comments desc="Get whether the widget has input (keyboard) focus. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDraggingSource"
+				name="GetDraggingSource"
+				num_parameters="0"
+				property="get"
+				property_name2="draggingSource"
+				property_name="dragging_source">
+				<comments desc="Get whether the widget is the current draggin source. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDragging"
+				name="GetDragging"
+				num_parameters="0"
+				property="get"
+				property_name2="dragging"
+				property_name="dragging">
+				<comments desc="Get whether something is currently being dragged from this widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="redraw" name="Redraw" num_parameters="0">
+				<comments desc="Force redrawing of the widget&apos;s content. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setTimer"
+				name="SetTimer"
+				num_parameters="2"
+				property="set"
+				property_name2="timer"
+				property_name="timer">
+				<comments desc="Set a timer. ">
+					<remark text="When the timer expires a eUIMessage_Timer will be sent to the widget with the timer ID as parameter. "/>
+					<params text="anID is the ID of the timer to set. "/>
+					<params text="afTime is the time in seconds after which the timer will expire. If &lt; 0 the timer will be removed. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTimer"
+				name="GetTimer"
+				num_parameters="1"
+				property="get"
+				property_name2="timer"
+				property_name="timer">
+				<comments desc="Get a timer. ">
+					<remark text="If the ID specified is not set -1 is returned. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addSink" name="AddSink" num_parameters="1">
+				<comments desc="Add a widget sink as first sink called. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iWidgetSink *"
+					typec="iWidgetSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addPostSink" name="AddPostSink" num_parameters="1">
+				<comments desc="Add a widget sink as last sink called. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iWidgetSink *"
+					typec="iWidgetSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addClassSink" name="AddClassSink" num_parameters="1">
+				<comments desc="Add a new instance of a widget sink as first sink called. "/>
+				<return type="iWidgetSink *" typec="iWidgetSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addClassPostSink" name="AddClassPostSink" num_parameters="1">
+				<comments desc="Add a new instance of a widget sink as last sink called. "/>
+				<return type="iWidgetSink *" typec="iWidgetSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszClassName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeSink" name="RemoveSink" num_parameters="1">
+				<comments desc="Remove a widget sink. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iWidgetSink *"
+					typec="iWidgetSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="invalidateChildren" name="InvalidateChildren" num_parameters="0">
+				<comments desc="Invalidate all children. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChildren"
+				name="GetNumChildren"
+				num_parameters="0"
+				property="get"
+				property_name2="numChildren"
+				property_name="num_children">
+				<comments desc="Get the number of child widgets. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildIndex"
+				name="GetChildIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="childIndex"
+				property_name="child_index">
+				<comments desc="Get the index of the specified widget, if not a child widget return eInvalidHandle. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildFromIndex"
+				name="GetChildFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="childFromIndex"
+				property_name="child_from_index">
+				<comments desc="Get the child widget at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildFromID"
+				name="GetChildFromID"
+				num_parameters="1"
+				property="get"
+				property_name2="childFromID"
+				property_name="child_from_id">
+				<comments desc="Get the child widget with the specified ID. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildFromDrawOrder"
+				name="GetChildFromDrawOrder"
+				num_parameters="1"
+				property="get"
+				property_name2="childFromDrawOrder"
+				property_name="child_from_draw_order">
+				<comments desc="Get the child widget with the specified draw order. ">
+					<remark text="0 is the widget that is drawn first (in the background). "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anDrawOrder"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findWidget"
+				name="FindWidget"
+				num_parameters="1">
+				<comments desc="Find the first widget with the specified ID. ">
+					<remark text="This include this widget. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findWidgetByPos"
+				name="FindWidgetByPos"
+				num_parameters="1">
+				<comments desc="Find the top widget that intersects the specified absolute position. ">
+					<remark text="This include this widget. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasChild"
+				name="HasChild"
+				num_parameters="2">
+				<comments desc="Check whether the specified widget is a child of this widget. ">
+					<params text="abRecursive if true the check will recursively check in all the children of the children. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apW"
+					type="const iWidget *"
+					typec="const iWidget*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abRecursive"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasParent"
+				name="HasParent"
+				num_parameters="1">
+				<comments desc="Walks up the parent to check if the specified widget is one of the parent of this widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apW"
+					type="const iWidget *"
+					typec="const iWidget*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setText"
+				name="SetText"
+				num_parameters="1"
+				property="set"
+				property_name2="text"
+				property_name="text">
+				<comments desc="Set the widget&apos;s text. ">
+					<remark text="The widget&apos;s text is meant to store limited amount of text in a standard way. "/>
+					<remark text="Controls like the edit box, which edits text should use the standard text only to store the default text value - aka value when the widget is created from a datatable. Those control&apos;s edited text should provide a text_buffer property to store the edited text. SetText on those control should also reset the content of the text buffer, but GetText still returns only the text set with SetText, while GetTextBuffer returns the edited text. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspText"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getText"
+				name="GetText"
+				num_parameters="0"
+				property="get"
+				property_name2="text"
+				property_name="text">
+				<comments desc="Get the widget&apos;s title. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalizedText"
+				name="GetLocalizedText"
+				num_parameters="0"
+				property="get"
+				property_name2="localizedText"
+				property_name="localized_text">
+				<comments desc="Get the localized text. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHoverText"
+				name="SetHoverText"
+				num_parameters="1"
+				property="set"
+				property_name2="hoverText"
+				property_name="hover_text">
+				<comments desc="Set the widget&apos;s hovering text. ">
+					<remark text="Text drawn in a label when hovering message is sent on the client area. That is the default behavior that can be overriden by intersepting the hover message. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspText"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverText"
+				name="GetHoverText"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverText"
+				property_name="hover_text">
+				<comments desc="Get the widget&apos;s hovering text. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createDefaultHoverWidget" name="CreateDefaultHoverWidget" num_parameters="1">
+				<comments desc="Create a default hover widget (Text only). "/>
+				<return type="ni::iWidget *" typec="ni::iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspHoverText"
+					type="ni::iHString *"
+					typec="ni::iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="showHoverWidget" name="ShowHoverWidget" num_parameters="2">
+				<comments desc="Show a hover widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="ni::iWidget *"
+					typec="ni::iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avAbsPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resetHoverWidget" name="ResetHoverWidget" num_parameters="1">
+				<comments desc="Reset the hover widget. ">
+					<params text="abRestart: if true and hover delay &gt;=0 restarts the hover timer, else stops the timer. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abRestart"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverWidget"
+				name="GetHoverWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverWidget"
+				property_name="hover_widget">
+				<comments desc="Get the currently displayed hover widget. "/>
+				<return type="ni::iWidget *" typec="ni::iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFont"
+				name="SetFont"
+				num_parameters="1"
+				property="set"
+				property_name2="font"
+				property_name="font">
+				<comments desc="Set the widget&apos;s font. " return="eTrue if the font is valid, else eFalse. ">
+					<remark text="By default if not set the skin&apos;s font will be used. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apFont"
+					type="iFont *"
+					typec="iFont*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFont"
+				name="GetFont"
+				num_parameters="0"
+				property="get"
+				property_name2="font"
+				property_name="font">
+				<comments desc="Get the widget&apos;s font. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDockStyle"
+				name="SetDockStyle"
+				num_parameters="1"
+				property="set"
+				property_name2="dockStyle"
+				property_name="dock_style">
+				<comments desc="Set the widget&apos;s dock style. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aStyle"
+					type="eWidgetDockStyle"
+					typec="eWidgetDockStyle"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockStyle"
+				name="GetDockStyle"
+				num_parameters="0"
+				property="get"
+				property_name2="dockStyle"
+				property_name="dock_style">
+				<comments desc="Get the widget&apos;s dock style. "/>
+				<return type="eWidgetDockStyle" typec="eWidgetDockStyle" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setSkin"
+				name="SetSkin"
+				num_parameters="1"
+				property="set"
+				property_name2="skin"
+				property_name="skin">
+				<comments desc="Set the widget&apos;s skin. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkin"
+				name="GetSkin"
+				num_parameters="0"
+				property="get"
+				property_name2="skin"
+				property_name="skin">
+				<comments desc="Get the widget&apos;s skin. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSkinClass"
+				name="SetSkinClass"
+				num_parameters="1"
+				property="set"
+				property_name2="skinClass"
+				property_name="skin_class">
+				<comments desc="Set the widget&apos;s skin classs. ">
+					<remark text="If not specified it&apos;s the widget&apos;s class name. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspSkinClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinClass"
+				name="GetSkinClass"
+				num_parameters="0"
+				property="get"
+				property_name2="skinClass"
+				property_name="skin_class">
+				<comments desc="Get the widget&apos;s skin class. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setLocale"
+				name="SetLocale"
+				num_parameters="1"
+				property="set"
+				property_name2="locale"
+				property_name="locale">
+				<comments desc="Set the widget&apos;s locale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspLocale"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocale"
+				name="GetLocale"
+				num_parameters="0"
+				property="get"
+				property_name2="locale"
+				property_name="locale">
+				<comments desc="Get the widget&apos;s locale. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getActiveLocale"
+				name="GetActiveLocale"
+				num_parameters="0"
+				property="get"
+				property_name2="activeLocale"
+				property_name="active_locale">
+				<comments desc="Get the locale actually used by the widget. ">
+					<remark text="This will get the parent&apos;s locale if no locale is specified on this widget. "/>
+				</comments>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinFont"
+				name="FindSkinFont"
+				num_parameters="3">
+				<comments desc="Find the font of the specified item in the widget&apos;s skin. "/>
+				<return type="iFont *" typec="iFont*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkinClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinCursor"
+				name="FindSkinCursor"
+				num_parameters="3">
+				<comments desc="Find the cursor of the specified item in the widget&apos;s skin. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkinClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinElement"
+				name="FindSkinElement"
+				num_parameters="3">
+				<comments desc="Find the element of the specified item in the widget&apos;s skin. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkinClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findSkinColor"
+				name="FindSkinColor"
+				num_parameters="4">
+				<comments desc="Find the color of the specified item in the widget&apos;s skin. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aDefault"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspSkinClass"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspState"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findLocalized"
+				name="FindLocalized"
+				num_parameters="1">
+				<comments desc="Find a localized text. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspText"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setContextMenu"
+				name="SetContextMenu"
+				num_parameters="1"
+				property="set"
+				property_name2="contextMenu"
+				property_name="context_menu">
+				<comments desc="Set the widget&apos;s context menu. \see ni::eUIMessage::eUIMessage_ContextMenu ">
+					<remark text="The parent of the menu wont be changed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMenu"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getContextMenu"
+				name="GetContextMenu"
+				num_parameters="0"
+				property="get"
+				property_name2="contextMenu"
+				property_name="context_menu">
+				<comments desc="Get the widget&apos;s context menu. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="sendMessage" name="SendMessage" num_parameters="3">
+				<comments desc="Send a message to this widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="niVarNull "
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="niVarNull "
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="sendCommand" name="SendCommand" num_parameters="4">
+				<comments desc="Send a command to the specified widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anCommand"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="niVarNull "
+					name="avarExtra1"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="niVarNull "
+					last="1"
+					name="avarExtra2"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="broadcastMessage" name="BroadcastMessage" num_parameters="3">
+				<comments desc="Send a message to this widget and its children recursivly. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anMsg"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="niVarNull "
+					name="avarA"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="niVarNull "
+					last="1"
+					name="avarB"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setCanvas"
+				name="SetCanvas"
+				num_parameters="1"
+				property="set"
+				property_name2="canvas"
+				property_name="canvas">
+				<comments desc="Set the VG canvas of the widget. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apCanvas"
+					type="iCanvas *"
+					typec="iCanvas*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCanvas"
+				name="GetCanvas"
+				num_parameters="0"
+				property="get"
+				property_name2="canvas"
+				property_name="canvas">
+				<comments desc="Get the VG canvas of the widget. "/>
+				<return type="iCanvas *" typec="iCanvas*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="serializeLayout" name="SerializeLayout" num_parameters="2">
+				<comments desc="Serialize the layout of this widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anFlags"
+					type="tWidgetSerializeFlags"
+					typec="tWidgetSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="serializeChildren" name="SerializeChildren" num_parameters="2">
+				<comments desc="Serialize the children widget. ">
+					<remark text="The Children data table passed can contain a _regex_filter regular expression (iRegex) property. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anFlags"
+					type="tWidgetSerializeFlags"
+					typec="tWidgetSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="applyDockStyle" name="ApplyDockStyle" num_parameters="1">
+				<comments desc="Set a dock style, and then restore the previous dock style. ">
+					<remark text="This is useful to set position of widgets relative to their parent. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aStyle"
+					type="eWidgetDockStyle"
+					typec="eWidgetDockStyle"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="place" name="Place" num_parameters="3">
+				<comments desc="Place the widget using the specified dock style, margin and rectangle. ">
+					<params text="aRect is the parent-relative rectangle which specify the &apos;starting&apos; position of the widget, if the size/pos is &lt;= 1.0 the coordinates are assumed to be relative to the widget&apos;s parent. "/>
+					<params text="aStyle dock style to use the place the widget. "/>
+					<params text="avMargin is the size of the margin to use to place the widget. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aStyle"
+					type="eWidgetDockStyle"
+					typec="eWidgetDockStyle"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="avMargin"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="snapInside" name="SnapInside" num_parameters="2">
+				<comments desc="Makes sure the widget is within the bounds of the specified &apos;container&apos; widget. ">
+					<params text="apContainer: the container widget, if null the root widget. "/>
+					<params text="afSnapMargin: the distance margin below which the widget will be snapped to the container&apos;s inner border "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apContainer"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afSnapMargin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="popAt" name="PopAt" num_parameters="3">
+				<comments desc="Move the widget at the specified position making sure it is within the bounds of the specified &apos;container&apos; widget. ">
+					<params text="apContainer: the container widget, if null the root widget. "/>
+					<params text="avAbsPos: the position where the widget should be placed "/>
+					<params text="afSnapMargin: the distance margin below which the widget will be snapped to the container&apos;s inner border "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apContainer"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avAbsPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afSnapMargin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="layout" name="Layout" num_parameters="1">
+				<comments desc="Compute the Widget&apos;s layout. ">
+					<remark text="This method shouldn&apos;t be called manually in general ; it recomputes the layout only if a request has been set, which happens when the widget size changes and other various events. "/>
+					<params text="abChildren if true compute all the children&apos;s layout recursively. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abChildren"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFingerCapture"
+				name="SetFingerCapture"
+				num_parameters="2"
+				property="set"
+				property_name2="fingerCapture"
+				property_name="finger_capture">
+				<comments desc="Set the capture of a finger&apos;s input. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abEnable"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFingerCapture"
+				name="GetFingerCapture"
+				num_parameters="1"
+				property="get"
+				property_name2="fingerCapture"
+				property_name="finger_capture">
+				<comments desc="Get the capture of a finger&apos;s input. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anFinger"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

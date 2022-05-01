@@ -1,0 +1,465 @@
+#include "../API/niUI/IWidgetToolbar.h"
+#ifndef IDLC_BEGIN_NAMESPACE
+#error "IDLC_BEGIN_NAMESPACE not defined !"
+#endif
+#ifndef IDLC_END_NAMESPACE
+#error "IDLC_END_NAMESPACE not defined !"
+#endif
+IDLC_BEGIN_NAMESPACE()
+/** NAMESPACE : ni **/
+/** interface : iWidgetToolbarGroup **/
+/** iWidgetToolbarGroup -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iWidgetToolbarGroup)
+/** ni -> iWidgetToolbarGroup::SetWidthFromChildren/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbarGroup::SetWidthFromChildren/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbarGroup,SetWidthFromChildren,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbarGroup,SetWidthFromChildren,0,())
+IDLC_METH_END(ni,iWidgetToolbarGroup,SetWidthFromChildren,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbarGroup::SetCommandDestination/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbarGroup::SetCommandDestination/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbarGroup,SetCommandDestination,1)
+	IDLC_DECL_VAR(iMessageHandler*,apMT)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMT)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbarGroup,SetCommandDestination,1,(apMT))
+IDLC_METH_END(ni,iWidgetToolbarGroup,SetCommandDestination,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbarGroup::GetCommandDestination/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbarGroup::GetCommandDestination/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbarGroup,GetCommandDestination,0)
+	IDLC_DECL_RETVAR(iMessageHandler*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbarGroup,GetCommandDestination,0,())
+	IDLC_RET_FROM_INTF(iMessageHandler,_Ret)
+IDLC_METH_END(ni,iWidgetToolbarGroup,GetCommandDestination,0)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iWidgetToolbarGroup)
+
+#endif // if niMinFeatures(20)
+/** interface : iWidgetToolbar **/
+/** iWidgetToolbar -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+IDLC_BEGIN_INTF(ni,iWidgetToolbar)
+/** ni -> iWidgetToolbar::SetHeight/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetHeight/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetHeight,1)
+	IDLC_DECL_VAR(ni::tF32,afHeight)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afHeight)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,SetHeight,1,(afHeight))
+IDLC_METH_END(ni,iWidgetToolbar,SetHeight,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetHeight/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetHeight/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetHeight,0)
+	IDLC_DECL_RETVAR(ni::tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetHeight,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetHeight,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetAutoHide/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetAutoHide/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetAutoHide,1)
+	IDLC_DECL_VAR(ni::tBool,abAutoHide)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abAutoHide)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,SetAutoHide,1,(abAutoHide))
+IDLC_METH_END(ni,iWidgetToolbar,SetAutoHide,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetAutoHide/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetAutoHide/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetAutoHide,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetAutoHide,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetAutoHide,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetAutoHideBackground/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetAutoHideBackground/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetAutoHideBackground,1)
+	IDLC_DECL_VAR(ni::tBool,abAutoHide)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abAutoHide)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,SetAutoHideBackground,1,(abAutoHide))
+IDLC_METH_END(ni,iWidgetToolbar,SetAutoHideBackground,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetAutoHideBackground/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetAutoHideBackground/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetAutoHideBackground,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetAutoHideBackground,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetAutoHideBackground,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetShowPage/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetShowPage/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetShowPage,1)
+	IDLC_DECL_VAR(ni::tBool,abShowPage)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abShowPage)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,SetShowPage,1,(abShowPage))
+IDLC_METH_END(ni,iWidgetToolbar,SetShowPage,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetShowPage/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetShowPage/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetShowPage,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetShowPage,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetShowPage,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetTopBar/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetTopBar/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetTopBar,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetTopBar,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetTopBar,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetBottomBar/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetBottomBar/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetBottomBar,0)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetBottomBar,0,())
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetBottomBar,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetCommandDestination/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetCommandDestination/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetCommandDestination,1)
+	IDLC_DECL_VAR(iMessageHandler*,apMH)
+	IDLC_BUF_TO_INTF(iMessageHandler,apMH)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,SetCommandDestination,1,(apMH))
+IDLC_METH_END(ni,iWidgetToolbar,SetCommandDestination,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetCommandDestination/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetCommandDestination/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetCommandDestination,0)
+	IDLC_DECL_RETVAR(iMessageHandler*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetCommandDestination,0,())
+	IDLC_RET_FROM_INTF(iMessageHandler,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetCommandDestination,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::UpdateToolbar/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::UpdateToolbar/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,UpdateToolbar,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,UpdateToolbar,0,())
+IDLC_METH_END(ni,iWidgetToolbar,UpdateToolbar,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::HidePopup/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::HidePopup/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,HidePopup,0)
+	IDLC_METH_CALL_VOID(ni,iWidgetToolbar,HidePopup,0,())
+IDLC_METH_END(ni,iWidgetToolbar,HidePopup,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetNumPages/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetNumPages/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetNumPages,0)
+	IDLC_DECL_RETVAR(ni::tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetNumPages,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetNumPages,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetPageWidget/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetPageWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetPageWidget,1)
+	IDLC_DECL_VAR(ni::tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(ni::iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetPageWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(ni::iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetPageWidget,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetPageIndex/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetPageIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetPageIndex,1)
+	IDLC_DECL_VAR(ni::iHString*,ahspID)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspID)
+	IDLC_DECL_RETVAR(ni::tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetPageIndex,1,(ahspID))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetPageIndex,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::InitPage/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::InitPage/2 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,InitPage,2)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,InitPage,2,(ahspID,ahspName))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,InitPage,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetPageName/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetPageName/2 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetPageName,2)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,SetPageName,2,(ahspID,ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,SetPageName,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetPageName/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetPageName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetPageName,1)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetPageName,1,(ahspID))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetPageName,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetPageEnabled/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetPageEnabled/2 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetPageEnabled,2)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_VAR(tBool,abEnabled)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abEnabled)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,SetPageEnabled,2,(ahspID,abEnabled))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,SetPageEnabled,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetPageEnabled/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetPageEnabled/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetPageEnabled,1)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetPageEnabled,1,(ahspID))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetPageEnabled,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetActivePageIndex/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetActivePageIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetActivePageIndex,1)
+	IDLC_DECL_VAR(ni::tU32,anActivePage)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anActivePage)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,SetActivePageIndex,1,(anActivePage))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,SetActivePageIndex,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetActivePageIndex/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetActivePageIndex/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetActivePageIndex,0)
+	IDLC_DECL_RETVAR(ni::tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetActivePageIndex,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetActivePageIndex,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetActivePageID/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetActivePageID/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetActivePageID,1)
+	IDLC_DECL_VAR(ni::iHString*,ahspID)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspID)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,SetActivePageID,1,(ahspID))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,SetActivePageID,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetActivePageID/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetActivePageID/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetActivePageID,0)
+	IDLC_DECL_RETVAR(ni::iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetActivePageID,0,())
+	IDLC_RET_FROM_INTF(ni::iHString,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetActivePageID,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetNumTopWidgets/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetNumTopWidgets/0 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetNumTopWidgets,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetNumTopWidgets,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetNumTopWidgets,0)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetTopWidget/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetTopWidget/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetTopWidget,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetTopWidget,1,(anIndex))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetTopWidget,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetTopWidgetIndex/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetTopWidgetIndex/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetTopWidgetIndex,1)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetTopWidgetIndex,1,(apWidget))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetTopWidgetIndex,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetTopWidgetFromID/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetTopWidgetFromID/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetTopWidgetFromID,1)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetTopWidgetFromID,1,(ahspID))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetTopWidgetFromID,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::SetTopWidgetCommandDestination/2 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::SetTopWidgetCommandDestination/2 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,SetTopWidgetCommandDestination,2)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_VAR(iMessageHandler*,apCmdDest)
+	IDLC_BUF_TO_INTF(iMessageHandler,apCmdDest)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,SetTopWidgetCommandDestination,2,(anIndex,apCmdDest))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,SetTopWidgetCommandDestination,2)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetTopWidgetCommandDestination/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetTopWidgetCommandDestination/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetTopWidgetCommandDestination,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iMessageHandler*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetTopWidgetCommandDestination,1,(anIndex))
+	IDLC_RET_FROM_INTF(iMessageHandler,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetTopWidgetCommandDestination,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::AddTopWidget/3 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::AddTopWidget/3 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,AddTopWidget,3)
+	IDLC_DECL_VAR(iWidget*,apWidget)
+	IDLC_BUF_TO_INTF(iWidget,apWidget)
+	IDLC_DECL_VAR(tF32,afWidth)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afWidth)
+	IDLC_DECL_VAR(iMessageHandler*,apCmdDest)
+	IDLC_BUF_TO_INTF(iMessageHandler,apCmdDest)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,AddTopWidget,3,(apWidget,afWidth,apCmdDest))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,AddTopWidget,3)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::AddGroup/5 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::AddGroup/5 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,AddGroup,5)
+	IDLC_DECL_VAR(iHString*,ahspPageID)
+	IDLC_BUF_TO_INTF(iHString,ahspPageID)
+	IDLC_DECL_VAR(iHString*,ahspPageName)
+	IDLC_BUF_TO_INTF(iHString,ahspPageName)
+	IDLC_DECL_VAR(iHString*,ahspGroupID)
+	IDLC_BUF_TO_INTF(iHString,ahspGroupID)
+	IDLC_DECL_VAR(iHString*,ahspGroupName)
+	IDLC_BUF_TO_INTF(iHString,ahspGroupName)
+	IDLC_DECL_VAR(iMessageHandler*,apCmdDest)
+	IDLC_BUF_TO_INTF(iMessageHandler,apCmdDest)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,AddGroup,5,(ahspPageID,ahspPageName,ahspGroupID,ahspGroupName,apCmdDest))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,AddGroup,5)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::GetGroup/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::GetGroup/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,GetGroup,1)
+	IDLC_DECL_VAR(ni::iHString*,ahspID)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspID)
+	IDLC_DECL_RETVAR(iWidget*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,GetGroup,1,(ahspID))
+	IDLC_RET_FROM_INTF(iWidget,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,GetGroup,1)
+#endif // niMinFeatures(20)
+
+/** ni -> iWidgetToolbar::RemoveGroup/1 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iWidgetToolbar::RemoveGroup/1 **/
+IDLC_METH_BEGIN(ni,iWidgetToolbar,RemoveGroup,1)
+	IDLC_DECL_VAR(ni::iHString*,ahspID)
+	IDLC_BUF_TO_INTF(ni::iHString,ahspID)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetToolbar,RemoveGroup,1,(ahspID))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetToolbar,RemoveGroup,1)
+#endif // niMinFeatures(20)
+
+IDLC_END_INTF(ni,iWidgetToolbar)
+
+#endif // if niMinFeatures(20)
+IDLC_END_NAMESPACE()
+// EOF //

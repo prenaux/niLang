@@ -1,0 +1,86 @@
+<style>
+/*=== Normalize ========================================================*/
+* { margin: 0; padding: 0; border: none; outline: none; }
+* {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-smoothing: antialiased;
+}
+html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+body, button, input, select, textarea {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #111;
+}
+html, body { height: 100%; width: 100%; margin: 0; }
+
+/*=== Flex box everywhere ==============================================*/
+div, span {
+  background-color: #fff;
+
+  box-sizing: border-box;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: stretch;
+
+  border: 0 solid black;
+  margin: 0;
+  padding: 0;
+}
+
+/*=== Our Styles =======================================================*/
+.container {
+  background-color: #333333;
+  width: 300px;
+  height: 380px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: stretch;
+  padding: 3px;
+}
+.box {
+  width: 50px;
+  height: 50px;
+  margin: 10px;
+}
+.box2 {
+  width: 50px;
+  height: 100px;
+  margin: 10px;
+}
+
+.lighter_grey {
+  background-color: #666;
+}
+.red {
+  background-color: #ff0000;
+}
+.green {
+  background-color: #00ff00;
+}
+.cyan {
+  background-color: #00ffff;
+}
+</style>
+
+<div>
+  <div class="container">
+    <div class="box red">0</div>
+    <div class="box red">1</div>
+    <div class="box red">2</div>
+    <div class="box red">3</div>
+    <div class="box2 red">4</div>
+    <div class="box green" style="align-self: flex-start;">5</div>
+    <div class="box green">6</div>
+    <div class="box2 green">7</div>
+    <div class="box green">8</div>
+    <div class="box green">9</div>
+    <div class="box cyan" style="align-self: flex-start;">10</div>
+    <div class="box cyan">11</div>
+    <div class="box cyan">12</div>
+    <div class="box cyan" style="align-self: flex-start;">13</div>
+    <div class="box cyan" style="height: auto; align-self: stretch;">14</div>
+  </div>
+</div>

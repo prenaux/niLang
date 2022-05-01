@@ -1,0 +1,165 @@
+if ! ( $(ANDROID) = 1 ) {
+  EXIT "F/_rules_ni_android.ham: Android rules can be used only with an Android toolset." ;
+}
+if ! $(JVM_MODULE_EXT) {
+  EXIT "F/_rules_ni_android.ham: Java rules need to be imported before the Android rules." ;
+}
+
+ECHO "# niLang Android rules imported." ;
+
+rule niAndroidListFiles {
+  local ANDROID_FILES = ;
+  ANDROID_FILES += [ ListFiles $(1) : *.cfg *.xml *.properties ] ;
+  ANDROID_FILES += [ ListFilesR [ FDirName $(1) res ] : * ] ;
+  ANDROID_FILES += [ ListFilesR [ FDirName $(1) src ] : * ] ;
+  # ECHO "ANDROID_FILES:" $(ANDROID_FILES) ;
+  return $(ANDROID_FILES) ;
+}
+
+# niAndroidGradle $(DEST) : build.xml : ant target : dependencies
+rule niAndroidGradle {
+  local BUILD_XML = $(>) ;
+  local DEST = $(<) ;
+  ANDROID_PROJECT_PATH on $(DEST) = [ FGetAbsolutePath $(SUBDIR) ] ;
+  if $(4) {
+    DEPENDS $(DEST) : [ FGristFiles $(4) ] ;
+  }
+  return $(DEST) ;
+}
+
+actions niAndroidGradle {
+  pushd "$(ANDROID_PROJECT_PATH)"
+  ./gradlew build
+}
+
+# niAndroidCopySo TARGET : ANDROID_SO_DIR : TK_DIR_BIN
+rule niAndroidCopySo {
+  local binDir = $(3) ;
+  local binDest = [ FDirName $(SUBDIR) libs $(2) ] ;
+  MkDir $(binDest) ;
+  SO_FILES = [ ListFiles $(binDir) : *.so ] ;
+  if $(7) {
+    SO_FILES += $(7) ;
+  }
+  for _i in $(SO_FILES) {
+    local destSoPath = [ FGristFiles [ FDirName $(binDest) $(_i:BS) ] ] ;
+    File $(destSoPath) : $(_i) ;
+    DEPENDS $(destSoPath) : $(binDest) ;
+    DEPENDS $(1) : $(destSoPath) ;
+  }
+}
+
+# niAndroidBuildApp SRC : LIBRARIES : JAR LIBS : javadoc pkgsrc : PACKAGE_CLASS : ACTIVITY : EXTRA_SO_FILES
+# NOTE: The apk is also built as a regular .jar, this is so that the regular
+#       Java tools work as expected, notably this enables Flymake to work
+#       seamlessly
+rule niAndroidBuildApp {
+  local s = $(<) ;
+  local t = $(PKGBUILD) ;
+  local pkgClass = $(5) ;
+  local activity = $(6) ;
+  local _javadoc = 0 ;
+  local _pkgsrc = ;
+  for _i in $(4) {
+    switch $(_i) {
+      case javadoc :
+        _javadoc = 1 ;
+      case pkgsrc :
+        _pkgsrc = 1 ;
+    }
+  }
+
+  local libs = ni-common ni-app ni-app-android niLang_jvm niUI_jvm niLang-data $(2) ;
+  local extraLibs = $(JAR_ANDROID_PLATFORM) $(3) ;
+
+  # After niLibFromJavaC so that class path is set properly
+  Objects $(s) ;
+
+  # Build the jar
+  local jlib = [ niJarFromJavaC $(t)
+  : $(s:S=$(SUFJAVAC))
+  : $(libs)
+  : $(extraLibs)
+  : $(5) ] ;
+  local jlibDest = [ niCopyToRedist $(jlib) ] ;
+  tkDepends+Package jarApk : $(jlibDest) ;
+  if $(_pkgsrc) = 1 {
+    local jsrc = [ niJarSrc $(t) : $(s) ] ;
+    local jsrcDest = [ niCopyToRedist $(jsrc) ] ;
+    tkDepends+Package jarApkSrc : $(jsrcDest) ;
+  }
+
+  FlyMakeSetup check-syntax : $(CHK_SOURCES) : noremovetemp ;
+
+  # Build JavaDoc
+  if $(PKGGROUP) = jar || $(4) = javadoc {
+    niJavaDoc $(<) : $(libs) : $(extraLibs) ;
+  }
+
+  # Setup the android target (classes.jar for libraries)
+  local DEST_TARGET_DIR = [ FGristFiles [ FDirName $(SUBDIR) bin ] ] ;
+
+  local ANDROID_TARGET = [ FDirName [ FGetAbsolutePath $(SUBDIR) ] build outputs apk debug android-debug.apk ] ;
+  niAndroidGradle $(ANDROID_TARGET)
+  : [ FGristFiles [ FDirName $(SUBDIR) build.xml ] ]
+  : debug
+  : [ niAndroidListFiles $(SUBDIR) ]
+  ;
+
+  # Create the local.properties
+  local localProperties = [ FGristFiles [ FDirName $(SUBDIR) local.properties ] ] ;
+  FileEcho $(localProperties) : "sdk.dir="$(ADR_SDK_BASE_DIR) ;
+  DEPENDS $(ANDROID_TARGET) : $(localProperties) ;
+
+  # Copy the .jar to libs
+  local DEST_JAR_DIR = [ FGristFiles [ FDirName $(SUBDIR) libs ] ] ;
+  MkDir $(DEST_JAR_DIR) ;
+  for _i in $(libs) {
+    local jarPath = [ niJavaLibPath $(_i) ] ;
+    local destJarPath = [ FGristFiles [ FDirName $(DEST_JAR_DIR) $(_i:S=.jar) ] ] ;
+    File $(destJarPath) : $(jarPath) ;
+    DEPENDS $(destJarPath) : $(DEST_JAR_DIR) ;
+    DEPENDS $(ANDROID_TARGET) : $(destJarPath) ;
+  }
+  for _i in $(extraLibs) {
+    local jarPath = $(_i) ;
+    if $(jarPath) != $(JAR_ANDROID_PLATFORM) {
+      local destJarPath = [ FGristFiles [ FDirName $(DEST_JAR_DIR) $(_i:B:S=.jar) ] ] ;
+      File $(destJarPath) : $(jarPath) ;
+      DEPENDS $(destJarPath) : $(DEST_JAR_DIR) ;
+      DEPENDS $(ANDROID_TARGET) : $(destJarPath) ;
+    }
+  }
+
+  # Copy the .so to libs/armeabi
+  niAndroidCopySo $(ANDROID_TARGET) : armeabi-v7a : [ FDirName $(TK_DIR) bin adr50-armv7aj ] ;
+  niAndroidCopySo $(ANDROID_TARGET) : x86 : [ FDirName $(TK_DIR) bin adr50-x86j ] ;
+  niAndroidCopySo $(ANDROID_TARGET) : arm64-v8a : [ FDirName $(TK_DIR) bin adr50-arm64v8aj ] ;
+
+  # Set the android target to be a dependency of the JAR
+  local ANDROID_TARGET_FINAL = [ FDirName $(TK_DIR_BIN) $(PACKAGE)-debug.apk ] ;
+  File $(ANDROID_TARGET_FINAL) : $(ANDROID_TARGET) ;
+
+  DEPENDS $(PKGBUILD)_apk : $(ANDROID_TARGET_FINAL) ;
+  DEPENDS apk : $(PKGBUILD)_apk ;
+
+  niRunApk Run_$(PACKAGE) : $(ANDROID_TARGET_FINAL) : $(pkgClass) : $(activity) ;
+  DEPENDS Run_$(PACKAGE) : $(PACKAGE) ;
+
+  DEPENDS $(ANDROID_TARGET) : $(jlib) ;
+
+  DEPENDS $(PKGGROUP) : $(PACKAGE) ;  # Group's deps
+  return $(ANDROID_TARGET_FINAL) ;
+}
+
+# niRunApk TARGET APK_PATH PACKAGE_CLASS ACTIVITY
+rule niRunApk {
+  DEPENDS $(<) : $(2) ;
+  APK_PATH on $(<) = $(2) ;
+  PACKAGE_CLASS on $(<) = $(3) ;
+  ACTIVITY on $(<) = $(4) ;
+}
+actions niRunApk
+{
+  adr-run-apk "$(APK_PATH)" $(PACKAGE_CLASS) $(ACTIVITY)
+}

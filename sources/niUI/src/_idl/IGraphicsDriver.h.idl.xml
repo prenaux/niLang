@@ -1,0 +1,803 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eGraphicsCaptureFlags">
+			<comments desc="Graphics capture flag. "/>
+			<value name="eGraphicsCaptureFlags_All" value="niBit ( 0 ) ">
+				<comments desc="Clone all draw ops up until stop at. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_CloneStopAtGeometry" value="niBit ( 1 ) ">
+				<comments desc="Cloning of the geometry of the stop at draw op. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_CloneStopAtTextures" value="niBit ( 2 ) ">
+				<comments desc="Clone the textures at the specified index. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_CloneStopAtStates" value="niBit ( 3 ) ">
+				<comments desc="Clone the states at the specified index. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_KeepStopAt" value="niBit ( 4 ) ">
+				<comments desc="Replace the states of the stop at draw op by the states cloned during the first capture of that draw op. This allows the states to be modified dynamically. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_NoTime" value="niBit ( 5 ) ">
+				<comments desc="Do not count time perf when capturing the draw ops. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_BreakOnStopAtBegin" value="niBit ( 6 ) ">
+				<comments desc="Breakpoint on StopAt begin drawop. "/>
+			</value>
+			<value name="eGraphicsCaptureFlags_BreakOnStopAtEnd" value="niBit ( 7 ) ">
+				<comments desc="Breakpoint on StopAt end drawop. "/>
+			</value>
+		</enum>
+		<interface name="iGraphicsDrawOpCapture" uuid1="B9DF0BBE-865D-464A-9EFE-EBE0887797E3" uuid2="0xb9df0bbe,0x865d,0x464a,0x9e,0xfe,0xeb,0xe0,0x88,0x77,0x97,0xe3">
+			<comments desc="Draw operation capture object. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="beginCapture" name="BeginCapture" num_parameters="0">
+				<comments desc="Begin capturing. ">
+					<remark text="DOES NOT clear the previous capture data. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="endCapture" name="EndCapture" num_parameters="0">
+				<comments desc="End capturing. " return="The number of draw operations captured. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCapturing"
+				name="GetIsCapturing"
+				num_parameters="0"
+				property="get"
+				property_name2="isCapturing"
+				property_name="is_capturing">
+				<comments desc="Return whether we the object is currently capturing. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="clearCapture" name="ClearCapture" num_parameters="0">
+				<comments desc="Clear all captured data. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setCaptureFlags"
+				name="SetCaptureFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="captureFlags"
+				property_name="capture_flags">
+				<comments desc="Set the capture flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tGraphicsCaptureFlags"
+					typec="tGraphicsCaptureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaptureFlags"
+				name="GetCaptureFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="captureFlags"
+				property_name="capture_flags">
+				<comments desc="Get the capture flags. "/>
+				<return type="tGraphicsCaptureFlags" typec="tGraphicsCaptureFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setCaptureStopAt"
+				name="SetCaptureStopAt"
+				num_parameters="1"
+				property="set"
+				property_name2="captureStopAt"
+				property_name="capture_stop_at">
+				<comments desc="Set the current stop at index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anStopAt"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaptureStopAt"
+				name="GetCaptureStopAt"
+				num_parameters="0"
+				property="get"
+				property_name2="captureStopAt"
+				property_name="capture_stop_at">
+				<comments desc="Get the current stop at index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumCaptured"
+				name="GetNumCaptured"
+				num_parameters="0"
+				property="get"
+				property_name2="numCaptured"
+				property_name="num_captured">
+				<comments desc="Get the number of draw ops captured. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCapturedClear"
+				name="GetCapturedClear"
+				num_parameters="1"
+				property="get"
+				property_name2="capturedClear"
+				property_name="captured_clear">
+				<comments desc="Get the captured clear operation parameters. ">
+					<remark text="The format is (ClearFlags,Color,ftoul(Depth),Stencil) "/>
+				</comments>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCapturedDrawOp"
+				name="GetCapturedDrawOp"
+				num_parameters="1"
+				property="get"
+				property_name2="capturedDrawOp"
+				property_name="captured_draw_op">
+				<comments desc="Get the draw operation at the specified index. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCapturedDrawOpTime"
+				name="GetCapturedDrawOpTime"
+				num_parameters="1"
+				property="get"
+				property_name2="capturedDrawOpTime"
+				property_name="captured_draw_op_time">
+				<comments desc="Get the time taken to submit the specified draw operation "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCapturedDrawOpContext"
+				name="GetCapturedDrawOpContext"
+				num_parameters="1"
+				property="get"
+				property_name2="capturedDrawOpContext"
+				property_name="captured_draw_op_context">
+				<comments desc="Get the context that submited the draw operation. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="beginCaptureDrawOp" name="BeginCaptureDrawOp" num_parameters="3">
+				<comments desc="Called to capture a draw operation. " return="eFalse if the draw operation should not be submitted. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apContext"
+					type="iGraphicsContext *"
+					typec="iGraphicsContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDrawOp"
+					type="iDrawOperation *"
+					typec="iDrawOperation*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aClearParams"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="endCaptureDrawOp" name="EndCaptureDrawOp" num_parameters="3">
+				<comments desc="Called to finish the draw operation capture. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apContext"
+					type="iGraphicsContext *"
+					typec="iGraphicsContext*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDrawOp"
+					type="iDrawOperation *"
+					typec="iDrawOperation*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aClearParams"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iGraphicsDriver" uuid1="18477542-75B2-4C16-9EE0-B23161CB3EB2" uuid2="0x18477542,0x75b2,0x4c16,0x9e,0xe0,0xb2,0x31,0x61,0xcb,0x3e,0xb2">
+			<comments desc="Graphics driver. ">
+				<remark text="This interface should never be used directly, iGraphics is the interface that should be used. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getGraphics"
+				name="GetGraphics"
+				num_parameters="0"
+				property="get"
+				property_name2="graphics"
+				property_name="graphics">
+				<comments desc="Get the parent iGraphics interface. "/>
+				<return type="iGraphics *" typec="iGraphics*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the driver&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDesc"
+				name="GetDesc"
+				num_parameters="0"
+				property="get"
+				property_name2="desc"
+				property_name="desc">
+				<comments desc="Get the driver&apos;s description. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDeviceName"
+				name="GetDeviceName"
+				num_parameters="0"
+				property="get"
+				property_name2="deviceName"
+				property_name="device_name">
+				<comments desc="Get the driver device&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaps"
+				name="GetCaps"
+				num_parameters="1"
+				property="get"
+				property_name2="caps"
+				property_name="caps">
+				<comments desc="Get the driver&apos;s capabilities. "/>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+				<parameter
+					last="1"
+					name="aCaps"
+					type="eGraphicsCaps"
+					typec="eGraphicsCaps"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGraphicsDriverImplFlags"
+				name="GetGraphicsDriverImplFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="graphicsDriverImplFlags"
+				property_name="graphics_driver_impl_flags">
+				<comments desc="Get the driver implementation details. "/>
+				<return type="tGraphicsDriverImplFlags" typec="tGraphicsDriverImplFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setDrawOpCapture"
+				name="SetDrawOpCapture"
+				num_parameters="1"
+				property="set"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Set the draw op capture object. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apCapture"
+					type="iGraphicsDrawOpCapture *"
+					typec="iGraphicsDrawOpCapture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDrawOpCapture"
+				name="GetDrawOpCapture"
+				num_parameters="0"
+				property="get"
+				property_name2="drawOpCapture"
+				property_name="draw_op_capture">
+				<comments desc="Get the draw op capture object. "/>
+				<return type="iGraphicsDrawOpCapture *" typec="iGraphicsDrawOpCapture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createContextForWindow" name="CreateContextForWindow" num_parameters="5">
+				<comments desc="Create a new context for the specified OS window. "/>
+				<return type="iGraphicsContext *" typec="iGraphicsContext*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apWindow"
+					type="iOSWindow *"
+					typec="iOSWindow*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszBBFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszDSFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSwapInterval"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aBackBufferFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createContextForRenderTargets" name="CreateContextForRenderTargets" num_parameters="5">
+				<comments desc="Creates a new context for the specified render targets. "/>
+				<return type="iGraphicsContextRT *" typec="iGraphicsContextRT*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT0"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT1"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT2"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apRT3"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDS"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resetAllCaches" name="ResetAllCaches" num_parameters="0">
+				<comments desc="Reset all graphics driver caches. ">
+					<remark text="This is to be called after using any Native API used by the renderer. If not called the cached states, textures, shaders, etc... wont be properly syncronised, resulting in unpredicatable behaviours. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="checkTextureFormat" name="CheckTextureFormat" num_parameters="2">
+				<comments desc="Check whether the specified texture format is supported and set the bitmap format object to the nearest matching native bitmap format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFormat"
+					type="iBitmapFormat *"
+					typec="iBitmapFormat*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createTexture" name="CreateTexture" num_parameters="8">
+				<comments desc="Create a new texture. ">
+					<remark text="Setting anNumMipMaps to zero with eTextureFlags_MipMaps automatically computes the number of mipmaps down to 4x4. "/>
+				</comments>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eBitmapType"
+					typec="eBitmapType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aaszFormat"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumMipMaps"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tTextureFlags"
+					typec="tTextureFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitBitmapToTexture" name="BlitBitmapToTexture" num_parameters="6">
+				<comments desc="Blit a bitmap to a texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToBitmap" name="BlitTextureToBitmap" num_parameters="6">
+				<comments desc="Blit a texture to a bitmap. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iBitmap2D *"
+					typec="iBitmap2D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToTexture" name="BlitTextureToTexture" num_parameters="7">
+				<comments desc="Blit a texture into another texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aSrcRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitBitmap3DToTexture" name="BlitBitmap3DToTexture" num_parameters="7">
+				<comments desc="Blit a 3d bitmap to a 3d texture. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iBitmap3D *"
+					typec="iBitmap3D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDest"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aSrcMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avSize"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitTextureToBitmap3D" name="BlitTextureToBitmap3D" num_parameters="7">
+				<comments desc="Blit a 3d texture to a 3d bitmap. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSrc"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iBitmap3D *"
+					typec="iBitmap3D*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aSrcMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aDestMin"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="avSize"
+					type="const sVec3i &amp;"
+					typec="const sVec3i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="eTextureBlitFlags"
+					typec="eTextureBlitFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumShaderProfile"
+				name="GetNumShaderProfile"
+				num_parameters="1">
+				<comments desc="Get the number of Shader profile supported in the specified unit. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShaderProfile"
+				name="GetShaderProfile"
+				num_parameters="2">
+				<comments desc="Get the profile at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aUnit"
+					type="eShaderUnit"
+					typec="eShaderUnit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createShader" name="CreateShader" num_parameters="2">
+				<comments desc="Load a compiled shader from the specified bytecode. "/>
+				<return type="iShader *" typec="iShader*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apByteCode"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createOcclusionQuery" name="CreateOcclusionQuery" num_parameters="0">
+				<comments desc="Create a new occlusion query object. "/>
+				<return type="iOcclusionQuery *" typec="iOcclusionQuery*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createVertexArray" name="CreateVertexArray" num_parameters="3">
+				<comments desc="Create a new driver vertex array instance. "/>
+				<return type="iVertexArray *" typec="iVertexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anNumVertices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="eArrayUsage"
+					typec="eArrayUsage"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createIndexArray" name="CreateIndexArray" num_parameters="4">
+				<comments desc="Create a new driver index array instance. "/>
+				<return type="iIndexArray *" typec="iIndexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPrimitiveType"
+					type="eGraphicsPrimitiveType"
+					typec="eGraphicsPrimitiveType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anNumIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anMaxVertexIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="eArrayUsage"
+					typec="eArrayUsage"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createShaderConstants"
+				name="CreateShaderConstants"
+				num_parameters="1">
+				<comments desc="Creates a new empty driver shader constants instance. "/>
+				<return type="iShaderConstants *" typec="iShaderConstants*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anMaxRegisters"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="compileSamplerStates" name="CompileSamplerStates" num_parameters="1">
+				<comments desc="Compile a sampler states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iSamplerStates *"
+					typec="iSamplerStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="compileRasterizerStates" name="CompileRasterizerStates" num_parameters="1">
+				<comments desc="Compile a rasterizer states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iRasterizerStates *"
+					typec="iRasterizerStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="compileDepthStencilStates" name="CompileDepthStencilStates" num_parameters="1">
+				<comments desc="Compile a depth stencil states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iDepthStencilStates *"
+					typec="iDepthStencilStates*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

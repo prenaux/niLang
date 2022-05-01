@@ -1,0 +1,4 @@
+_*_ModuleDef.xml
+_*_ModuleDef.cpp
+_*_JNI.cpp
+*.h.idl.*

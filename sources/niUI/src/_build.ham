@@ -9,7 +9,7 @@ tkDefModuleLib niUI : 1,0,0 : niUI ;
 SubDirHdrs $(SUBDIR) API ;
 
 niImportModuleDll niLang ;
-niImportModuleLibs libMojoshader ;
+tkPkgLinkLibs libMojoshader ;
 if $(NI_VIDEO_USE_IPCAM) = 1 {
   niImportModuleDll niCURL ;
 }

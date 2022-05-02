@@ -7,7 +7,7 @@ MBEDTLS_Hdrs $(BUILD_SRC) ;
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
 if ! ( $(EMBEDDED) = 1 ) {
-  niImportModuleDll Test_RTCpp ;
+  tkPkgLinkDll Test_RTCpp ;
 }
 
 SRC = [ tkPkgSrc ] ;

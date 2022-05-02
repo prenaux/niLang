@@ -264,9 +264,17 @@ rule niBuildModuleDef {
 rule niImportModuleHdrs {
   local moduleName = $(1) ;
   if $(2) {
+    local d = [ FDirName $(WORK) $(2) sources $(moduleName) src API ] ;
+    if ! [ FExists $(d) ] {
+      EXIT "F/In $(PACKAGE), niImportModuleHdrs $(moduleName), can't find external tk directory:" $(d) ;
+    }
     SubDirHdrs $(WORK) $(2) sources $(moduleName) src API ;
   }
   else {
+    local d = [ FDirName $(TOP) $(moduleName) src API ] ;
+    if ! [ FExists $(d) ] {
+      EXIT "F/In $(PACKAGE), niImportModuleHdrs $(moduleName), can't find this tk directory:" $(d) ;
+    }
     SubDirHdrs $(TOP) $(moduleName) src API ;
   }
 }

@@ -4,7 +4,14 @@ if [[ -z $HAM_PROJECT_DIR ]]; then
     return 1
 fi
 
-toolset_import_list "repos" "default"
+case $HAM_OS in
+    NT*)
+        toolset_import_list "repos" "dx9sdk2004" "default" || return 1
+        ;;
+    *)
+        toolset_import_list "repos" "default" || return 1
+        ;;
+esac
 
 update_prompt
 update_project_work "$HAM_PROJECT_DIR/.."

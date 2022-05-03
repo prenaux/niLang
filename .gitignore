@@ -28,6 +28,12 @@ xcuserdata/
 !*.xcodeproj/project.pbxproj
 *.xccheckout
 
+## Android ##
+*/*/android/build
+*/*/android/libs
+*/*/android/.gradle
+*/*/android/local.properties
+
 ## Java/JNI interop ##
 */*/java/src/ni/*/_*.list
 */*/java/src/ni/*/I*.java

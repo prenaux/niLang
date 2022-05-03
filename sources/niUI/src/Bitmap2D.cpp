@@ -673,10 +673,10 @@ tBool __stdcall cBitmap2D::BlitAlpha(const iBitmap2D* src, tI32 sx, tI32 sy, tI3
   switch (aBlendMode) {
     case eBlendMode_Translucent: {
       if ((acolSource == sColor4f::One() && acolDest == sColor4f::One()) &&
-          (ni::StrEq(src->GetPixelFormat()->GetFormat(),_A("R8G8B8A8")) &&
-           ni::StrEq(this->GetPixelFormat()->GetFormat(),_A("R8G8B8A8"))) ||
-          (ni::StrEq(src->GetPixelFormat()->GetFormat(),_A("B8G8R8A8")) &&
-           ni::StrEq(this->GetPixelFormat()->GetFormat(),_A("B8G8R8A8"))))
+          ((ni::StrEq(src->GetPixelFormat()->GetFormat(),_A("R8G8B8A8")) &&
+            ni::StrEq(this->GetPixelFormat()->GetFormat(),_A("R8G8B8A8"))) ||
+           (ni::StrEq(src->GetPixelFormat()->GetFormat(),_A("B8G8R8A8")) &&
+            ni::StrEq(this->GetPixelFormat()->GetFormat(),_A("B8G8R8A8")))))
       {
         const tU32 sbpp = 4;
         const tU32 dbpp = 4;

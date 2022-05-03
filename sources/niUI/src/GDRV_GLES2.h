@@ -103,7 +103,8 @@
 #  endif
 
 #elif defined niAndroid
-#  include "GLES2/gl2.h"
+#  include <GLES2/gl2.h>
+#  include <GLES2/gl2ext.h>
 // Use separated alpha blending to composite the alpha channel additively so
 // that translucent backgrounds work correctly.
 #  define GLDRV_CORRECT_ALPHA_COMPOSITING

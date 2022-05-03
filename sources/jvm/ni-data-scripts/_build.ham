@@ -7,7 +7,7 @@ if $(BUILD_JNI) {
 
     local DIR = [ FDirName $(TOP) .. data ] ;
     SRC += [ DataGlob $(DIR) : niUI : dds tga png jpg ] ;
-    SRC += [ DataGlob $(DIR) : niUI fonts : ttf ] ;
+    SRC += [ DataGlob $(DIR) : niUI fonts : ttf otf ] ;
     SRC += [ DataGlob $(DIR) : niUI skins : xml png ] ;
     SRC += [ DataGlob $(DIR) : niUI shaders : cgo cgl ] ;
     DEST += [ tkCopyDataToObjDir $(DIR) : $(SRC) ] ;

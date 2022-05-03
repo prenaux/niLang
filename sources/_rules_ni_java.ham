@@ -39,7 +39,7 @@ JAVA_BUILD_SCRIPTS ?= $(NILANG_BUILD_SCRIPTS) ;
 JDK_INCLUDE = [ FDirName $(JAVA_HOME) include ] ;
 if $(HAM_CPP_TOOLSET) = VISUALC {
   JDK_INCLUDE += [ FDirName $(JAVA_HOME) include win32 ] ;
-} else if $(OSX) = 1 {
+} else if $(OS) = MACOSX {
   JDK_INCLUDE += [ FDirName $(JAVA_HOME) include darwin ] ;
 }
 HDRS +=  $(JDK_INCLUDE) ;

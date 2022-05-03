@@ -89,6 +89,12 @@ else {
       EXIT "E/macOS using FFMpeg SDK but it can't be found at:" $(FFMPEG_SDK_DIR) ;
     }
   }
+  else if $(ANDROID) = 1 {
+    NI_VIDEO_USE_FFMPEG = 0 ;
+    NI_VIDEO_USE_OGG = 0 ;
+    NI_VIDEO_USE_THEORAPLAYER = 0 ;
+    NI_VIDEO_USE_IPCAM = 1 ;
+  }
   else if $(LINUX) = 1 || $(LOA_OS) = qnx {
     NI_VIDEO_USE_FFMPEG = 0 ;
     NI_VIDEO_USE_OGG = 0 ;

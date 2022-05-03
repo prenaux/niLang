@@ -4,7 +4,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
+        // we have to use this older version of android.tools for SDK 21
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 

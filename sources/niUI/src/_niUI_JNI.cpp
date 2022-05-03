@@ -3097,6 +3097,28 @@ JNIEXPORT jboolean JNICALL Java_ni_niUI_ICanvas_lineEx(JNIEnv *e, jobject o, job
     return r;
 }
 
+JNIEXPORT void JNICALL Java_ni_niUI_ICanvas_lineGridXY(JNIEnv *e, jobject o, jfloat p0, jfloat p1, jint p2, jint p3) {
+    ni::iCanvas* pointer = niJVM_GetIUnknown(e,o,ni::iCanvas);
+    if (niJVM_CheckNull(e, (uintptr_t)pointer)) {
+        return;
+    }
+    niAssume(pointer != NULL);
+    NI_JVM_CPP_TRY {
+        pointer->LineGridXY(p0, p1, p2, p3);
+    } NI_JVM_CPP_CATCH_AND_HANDLE_EXCEPTION(e);
+}
+
+JNIEXPORT void JNICALL Java_ni_niUI_ICanvas_lineGridXZ(JNIEnv *e, jobject o, jfloat p0, jfloat p1, jint p2, jint p3) {
+    ni::iCanvas* pointer = niJVM_GetIUnknown(e,o,ni::iCanvas);
+    if (niJVM_CheckNull(e, (uintptr_t)pointer)) {
+        return;
+    }
+    niAssume(pointer != NULL);
+    NI_JVM_CPP_TRY {
+        pointer->LineGridXZ(p0, p1, p2, p3);
+    } NI_JVM_CPP_CATCH_AND_HANDLE_EXCEPTION(e);
+}
+
 JNIEXPORT jboolean JNICALL Java_ni_niUI_ICanvas_quad(JNIEnv *e, jobject o, jobject p0, jobject p1, jobject p2, jobject p3) {
     ni::iCanvas* pointer = niJVM_GetIUnknown(e,o,ni::iCanvas);
     if (niJVM_CheckNull(e, (uintptr_t)pointer)) {
@@ -19289,14 +19311,14 @@ JNIEXPORT void JNICALL Java_ni_niUI_IUIContext_inputMouseWheel(JNIEnv *e, jobjec
     } NI_JVM_CPP_CATCH_AND_HANDLE_EXCEPTION(e);
 }
 
-JNIEXPORT void JNICALL Java_ni_niUI_IUIContext_inputPinch(JNIEnv *e, jobject o, jfloat p0) {
+JNIEXPORT void JNICALL Java_ni_niUI_IUIContext_inputPinch(JNIEnv *e, jobject o, jfloat p0, jint p1) {
     ni::iUIContext* pointer = niJVM_GetIUnknown(e,o,ni::iUIContext);
     if (niJVM_CheckNull(e, (uintptr_t)pointer)) {
         return;
     }
     niAssume(pointer != NULL);
     NI_JVM_CPP_TRY {
-        pointer->InputPinch(p0);
+        pointer->InputPinch(p0, (const eGestureState)p1);
     } NI_JVM_CPP_CATCH_AND_HANDLE_EXCEPTION(e);
 }
 

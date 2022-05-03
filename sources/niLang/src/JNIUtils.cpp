@@ -963,7 +963,7 @@ niExportFunc(tBool)   niJVM_HasVM() {
 niExportFunc(JNIEnv*) niJVM_GetCurrentEnv() {
   niAssert(niJVM_vm != NULL);
   JNIEnv *e;
-#if defined(niMSVC) || defined(niOSX)
+#if defined(niMSVC) || defined(niOSX) || defined(niAndroid)
 #define CAST_ENV(e) (void**)&e
 #else
 #define CAST_ENV(e) &e

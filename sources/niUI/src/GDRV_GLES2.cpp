@@ -356,11 +356,11 @@ static GLint kGL2_MaxPixelUniforms = 0;
 #define GL_FBOAPI
 #endif
 
-#if defined niOSX || defined niIOS || defined niJSCC || (defined niAndroid && (defined niX86 || defined ni64))
+#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid
 #define GL_FBO_DECLAPI(RET,NAME,PARAMS)         \
   typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS; \
   tpfn_##NAME _##NAME = NAME;
-#elif ((defined niAndroid && defined niARM) || defined niQNX)
+#elif defined niQNX
 #define GL_FBO_DECLAPI(RET,NAME,PARAMS)                                 \
   typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS __attribute__((pcs("aapcs"))); \
   tpfn_##NAME _##NAME = NAME;

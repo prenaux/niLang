@@ -25,17 +25,6 @@
 
 #endif
 
-#ifdef ANDROID
-// From Android's doc:
-// If your project is linked with "-nostdlib -Wl,--no-undefined", you need to
-// provide your own __dso_handle because crtbegin_so.o isn't linked.  The
-// content of __dso_handle doesn't matter.
-//
-// ... why not ^^ ...
-extern void *__dso_handle __attribute__((__visibility__ ("hidden")));
-void* __dso_handle;
-#endif
-
 /**@}*/
 /**@}*/
 

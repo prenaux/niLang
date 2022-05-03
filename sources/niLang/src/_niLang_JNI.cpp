@@ -11642,20 +11642,6 @@ JNIEXPORT jboolean JNICALL Java_ni_niLang_ILang_hasProperty(JNIEnv *e, jobject o
     return r;
 }
 
-JNIEXPORT jboolean JNICALL Java_ni_niLang_ILang_installCrashHandler(JNIEnv *e, jobject o) {
-    ni::iLang* pointer = niJVM_GetIUnknown(e,o,ni::iLang);
-    if (niJVM_CheckNull(e, (uintptr_t)pointer)) {
-        return 0;
-    }
-    niAssume(pointer != NULL);
-    jboolean r = 0;
-    NI_JVM_CPP_TRY {
-        unsigned char rvalue = pointer->InstallCrashHandler();
-        r = (jboolean)rvalue;
-    } NI_JVM_CPP_CATCH_AND_HANDLE_EXCEPTION(e);
-    return r;
-}
-
 JNIEXPORT jboolean JNICALL Java_ni_niLang_ILang_isSerializedObject(JNIEnv *e, jobject o, jobject p0, jstring p1, jobject p2) {
     ni::iLang* pointer = niJVM_GetIUnknown(e,o,ni::iLang);
     if (niJVM_CheckNull(e, (uintptr_t)pointer)) {

@@ -55,6 +55,8 @@
 
 ::TEST("Callback","function2",#() {
   local callback = ::concurrent.newCallback(function(aA,aB) {
+    // ::println("... A:" aA)
+    // ::println("... B:" aB)
     return (aA || 1000) + (aB || 2000)
   })
   ::CHECK_EQUAL(3000,callback.Run())

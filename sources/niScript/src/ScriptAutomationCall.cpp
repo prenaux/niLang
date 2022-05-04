@@ -20,12 +20,6 @@
 
 // #define USE_XCALL_SET_PUSH_RET
 
-#ifdef niVMCallUseVar
-#pragma message("niScript: VM Using Var for Interop")
-#else
-#pragma message("niScript: VM Using VMAPI for Interop")
-#endif
-
 //======================================================================
 //=
 //= Push/Pop Variants
@@ -378,14 +372,17 @@ struct sVMCallWrapper
     return eTrue;
   }
 
-  inline tBool DoCall(iUnknown* apInst, tInt aStackBase) {
-#ifdef niVMCallUseVar
+  inline tU32 GetNumExpectedParams() const {
+    return _meth->mnNumParameters;
+  }
+
+  inline tBool DoCall(iUnknown* apInst, tInt aStackBase, tU32 numPassed) {
     ni::Var params[16];
     ni::Var ret;
-    const ni::tU32 numParams = _meth->mnNumParameters;
-    if (numParams > 16) {
+    if (_meth->mnNumParameters >= 16) {
       return eVMRet_OutOfMemory;
     }
+    const ni::tU32 numParams = ni::Min(numPassed,_meth->mnNumParameters);
     if (_meth->mpParameters) {
       niLoop(i,numParams) {
         if (!SQ_SUCCEEDED(sqa_getvar_astype(_vm,i+aStackBase,&params[i],_meth->mpParameters[i].mType))) {
@@ -402,10 +399,7 @@ struct sVMCallWrapper
         }
       }
     }
-    tInt callRet = _vmcall(apInst,params,numParams,&ret);
-#else
-    tInt callRet = _vmcall(apInst,(tIntPtr)_vm,aStackBase);
-#endif
+    const tInt callRet = _vmcall(apInst,params,_meth->mnNumParameters,&ret);
     if (callRet != eVMRet_OK) {
       const achar* aszReason = _A("Unknown");
       switch (callRet) {
@@ -417,9 +411,7 @@ struct sVMCallWrapper
       }
       return WriteError(aszReason);
     }
-#ifdef niVMCallUseVar
     sqa_pushvar(_vm,ret);
-#endif
     return eTrue;
   }
 
@@ -473,7 +465,7 @@ int indexedproperty_set(HSQUIRRELVM v)
   if (!xcall.Init(v,__FUNCTION__,pMethodDef,pInterfaceDef))
     return xcall.ThrowError();
 
-  if (!xcall.DoCall(ptrV->pObject,2))
+  if (!xcall.DoCall(ptrV->pObject,2,xcall.GetNumExpectedParams()))
     return xcall.ThrowError();
 
 #ifdef USE_XCALL_SET_PUSH_RET
@@ -500,7 +492,7 @@ int indexedproperty_get(HSQUIRRELVM v)
   if (!xcall.Init(v,__FUNCTION__,pMethodDef,pInterfaceDef))
     return xcall.ThrowError();
 
-  if (!xcall.DoCall(ptrV->pObject,2))
+  if (!xcall.DoCall(ptrV->pObject,2,xcall.GetNumExpectedParams()))
     return xcall.ThrowError();
 
   return 1;
@@ -528,25 +520,15 @@ bool SQVM::CallMethodDef(sScriptTypeMethodDef* meth, int nargs, int stackbase, S
                     pMethodDef->mnNumParameters));
   }
 
-  int numPushedNulls = 0;
+  const tU32 numPassed = (tU32)(nargs-1);
   {
-    const tU32 passed = (tU32)(nargs-1);
     const tU32 needed = pMethodDef->mnNumParameters;
-    if (passed != needed) {
-      if (passed > needed) {
-        VM_ERRORB(niFmt(_A("Call to %s::%s/%d failed. Too many parameters %d."),
-                        pInterfaceDef?pInterfaceDef->maszName:_A(""),
-                        pMethodDef->maszName,
-                        pMethodDef->mnNumParameters,
-                        (nargs-1)));
-      }
-      else {
-        // Push null for the unspecified parameters
-        for (tU32 i = passed; i < needed; ++i) {
-          this->Push(_null_);
-          ++numPushedNulls;
-        }
-      }
+    if (numPassed > needed) {
+      VM_ERRORB(niFmt(_A("Call to %s::%s/%d failed. Too many parameters %d."),
+                      pInterfaceDef?pInterfaceDef->maszName:_A(""),
+                      pMethodDef->maszName,
+                      pMethodDef->mnNumParameters,
+                      (nargs-1)));
     }
   }
 
@@ -556,7 +538,7 @@ bool SQVM::CallMethodDef(sScriptTypeMethodDef* meth, int nargs, int stackbase, S
   }
   int oldtop = _top;
   int oldstackbase = _stackbase;
-  _top = stackbase + nargs + numPushedNulls;
+  _top = stackbase + nargs;
   push_callinfo(this, SQCallInfo());
   _ci->_etraps = 0;
   _ci->_closurePtr = meth;
@@ -607,9 +589,9 @@ bool SQVM::CallMethodDef(sScriptTypeMethodDef* meth, int nargs, int stackbase, S
 
   tBool ret =
 #ifdef UNSAFE_DIRECT_THIS
-      xcall.DoCall(_sqtype(objThis)==OT_IUNKNOWN?_iunknown(objThis):NULL,2)
+      xcall.DoCall(_sqtype(objThis)==OT_IUNKNOWN?_iunknown(objThis):NULL,2,numPassed)
 #else
-      xcall.DoCall(ptrInst,2)
+      xcall.DoCall(ptrInst,2,numPassed)
 #endif
       ;
   _nnativecalls--;
@@ -623,11 +605,6 @@ bool SQVM::CallMethodDef(sScriptTypeMethodDef* meth, int nargs, int stackbase, S
   _stackbase = oldstackbase;
   _top = oldtop;
   pop_callinfo(this);
-
-  // pop the nulls we've pushed
-  if (numPushedNulls) {
-    this->Pop(numPushedNulls);
-  }
 
   // call failed, raise an error.
   if (!ret) {
@@ -743,7 +720,7 @@ bool cScriptAutomation::Get(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &k
               return false;
             }
 
-            if (!xcall.DoCall(ptrInst,0)) {
+            if (!xcall.DoCall(ptrInst,0,xcall.GetNumExpectedParams())) {
               if (!(opExt & _OPEXT_GET_SAFE)) {
                 niWarning(niFmt("Call to %s::%s failed: %s",
                                 pInterfaceDef?pInterfaceDef->maszName:_A(""),
@@ -839,7 +816,7 @@ bool cScriptAutomation::Set(HSQUIRRELVM v, iUnknown* apObj,const SQObjectPtr &ke
       }
 
       v->Push(val);
-      if (!xcall.DoCall(ptrInst,v->GetCallStackBase(1))) {
+      if (!xcall.DoCall(ptrInst,v->GetCallStackBase(1),xcall.GetNumExpectedParams())) {
         if (!(opExt & _OPEXT_GET_SAFE)) {
           niWarning(niFmt("Call to %s::%s failed: %s",
                           pInterfaceDef?pInterfaceDef->maszName:_A(""),

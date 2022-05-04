@@ -4553,8 +4553,6 @@ struct ConstructorGuard {
 
 #  if !defined niConfig_NoXCALL
 
-#define niVMCallUseVar
-
 niConstValue tInt eVMRet_OK = 0;
 niConstValue tInt eVMRet_InvalidArgCount = -1;
 niConstValue tInt eVMRet_InvalidMethod = -2;
@@ -4563,7 +4561,6 @@ niConstValue tInt eVMRet_InvalidRet = -4;
 niConstValue tInt eVMRet_InvalidNullArg = -5;
 niConstValue tInt eVMRet_OutOfMemory = -6;
 
-#  ifdef niVMCallUseVar
 #    ifdef __cplusplus
 typedef tInt (__ni_export_call_decl *tpfnVMCall)(iUnknown* apThis, const Var* apParameters, tU32 anNumParameters, Var* apRet);
 #    else
@@ -4575,7 +4572,6 @@ typedef tInt (__ni_export_call_decl *tpfnVMCall)(iUnknown* apThis, tIntPtr aVMHa
 #    else
 typedef tInt (__ni_export_call_decl *tpfnVMCall)(struct iUnknown* apThis, tIntPtr aVMHandle, tInt aStackBase);
 #    endif
-#  endif
 
 #  endif
 

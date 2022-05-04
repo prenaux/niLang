@@ -1,0 +1,47 @@
+name: Run CI tests
+
+on:
+  # Run on all push in main
+  push:
+    branches: [ main ]
+  # Run on all pull requests
+  pull_request:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Cache Ham & Cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.rustup
+            ~/.avm
+            ~/work/niLang/ham
+          key: ${{ runner.os }}-cargo-ham-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Ubuntu packages
+        run: |
+          sudo apt update
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc
+
+      - name: Build bootstrap
+        run: |
+          ./_build_bootstrap.sh
+
+      - name: Run_ci
+        run: |
+          ./_run_ci.sh

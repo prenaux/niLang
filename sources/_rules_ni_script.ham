@@ -72,9 +72,9 @@ rule niScript {
 }
 
 # niRunInDir TARGET : MAIN : SRC : SCRIPT_INCS ;
-rule niTest {
+rule niScriptTest {
   local TARGET = $(1) ;
   niScript $(TARGET) : $(2) : $(3) : $(4) ;
   DEPENDS tests : $(TARGET) ;
-  DEPENDS Run_tests : Run_$(TARGET) ;
+  return $(TARGET) ;
 }

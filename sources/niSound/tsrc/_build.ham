@@ -12,7 +12,7 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
 
-runInDir Test_niSound ;
+DEPENDS Run_ci : [ runInDir Test_niSound ] ;
 
 # Dependencies
 tkDepends Test_niSound : niSound : TOP niSound src ;

@@ -11,4 +11,4 @@ SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
 niCURL_LinkLibs_Deps $(PKGTARGET) ;
 
-runInDir Test_niCURL ;
+DEPENDS Run_ci : [ runInDir Test_niCURL ] ;

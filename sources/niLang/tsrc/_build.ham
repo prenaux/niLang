@@ -14,4 +14,4 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
-runInDir Test_niLang ;
+DEPENDS Run_ci : [ runInDir Test_niLang ] ;

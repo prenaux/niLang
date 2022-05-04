@@ -11,20 +11,16 @@ local libForms = $(formsDir)/$(formsFiles) ;
 
 for _i in $(SRC) {
   local t = Test_niUI_$(_i:B) ;
-  niTest $(t) : $(_i) ;
-  DEPENDS $(t) : niLang ;
-  DEPENDS $(t) : niUI ;
-  DEPENDS $(t) : ni ;
+  niScriptTest $(t) : $(_i) ;
+  DEPENDS $(t) : niLang niUI ni ;
   DEPENDS Test_niUI_ni : $(t) ;
   DEPENDS Run_Test_niUI_ni : Run_$(t) ;
 }
 
 for _i in $(libForms) {
   local t = Test_niUI_forms_$(_i:B) ;
-  niTest $(t) : $(_i) ;
-  DEPENDS $(t) : niLang ;
-  DEPENDS $(t) : niUI ;
-  DEPENDS $(t) : ni ;
+  niScriptTest $(t) : $(_i) ;
+  DEPENDS $(t) : niLang niUI ni ;
   DEPENDS Test_niUI_ni : $(t) ;
   DEPENDS Run_Test_niUI_ni : Run_$(t) ;
 }

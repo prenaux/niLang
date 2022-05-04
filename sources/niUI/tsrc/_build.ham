@@ -11,7 +11,7 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
-runInDir Test_niUI ;
+DEPENDS Run_ci : [ runInDir Test_niUI ] ;
 
 # Dependencies
 tkDepends Test_niUI : niLang : TOP niLang src ;

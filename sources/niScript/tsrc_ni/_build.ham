@@ -7,10 +7,11 @@ SRC = [ tkPkgSrc nip ] ;
 
 for _i in $(SRC) {
   local t = Test_niScript_$(_i:B) ;
-  niTest $(t) : $(_i) ;
+  niScriptTest $(t) : $(_i) ;
   DEPENDS $(t) : niLang niScript niTestInterop ni ;
   DEPENDS Test_niScript_ni : $(t) ;
   DEPENDS Run_Test_niScript_ni : Run_$(t) ;
+  DEPENDS Run_ci : Run_$(t) ;
 }
 
 tkIncludeDep TOP niLang ;

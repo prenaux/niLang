@@ -13,6 +13,7 @@
   // check that ls succeded
   ::CHECK_EQUAL(0, r.?exitCode)
   // check some common output of ls to make sure it actually ran
-  ::CHECK(r.stdout.contains("-rw-r--r--"))
+  ::CHECK(r.stdout.contains("-rw-r--r--") ||
+          r.stdout.contains("-rw-rw-r--"))
   ::CHECK(r.stdout.contains("tu_bash.nip"))
 })

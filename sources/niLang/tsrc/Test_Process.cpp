@@ -200,7 +200,7 @@ TEST_FIXTURE(FProcess,EnumTestExe) {
 
   niDebugFmt((_A("- Processes: EnumTestExe - ")));
   Ptr<iRegex> filter = ni::CreateFilePatternRegex(_A("Test_niLang_*"),NULL);
-  const tBool atLeastOne_Test_niLang = (_pman->EnumProcesses(filter,&myEnum) > 1);
+  const tBool atLeastOne_Test_niLang = (_pman->EnumProcesses(filter,&myEnum) >= 1);
   CHECK_EQUAL(eTrue,atLeastOne_Test_niLang);
 }
 

@@ -2,6 +2,9 @@
 #include "../src/API/niLang_ModuleDef.h"
 #include "Test_String.h"
 
+// TODO: iOSWindow implementation for Linux
+#if !defined niLinux
+
 using namespace ni;
 
 struct FOSWindow {
@@ -328,3 +331,5 @@ TEST_FIXTURE(FOSWindow,PickDirectoryDialog) {
     CHECK(r.IsNotEmpty() && !r.icontains("implemented"));
   }
 }
+
+#endif

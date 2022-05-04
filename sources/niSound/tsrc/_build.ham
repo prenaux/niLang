@@ -12,7 +12,10 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
 
-DEPENDS Run_ci : [ runInDir Test_niSound ] ;
+# TODO: Linux support, needs iOSWindow & Audio driver
+if ! ( $(LINUX) = 1 ) {
+  DEPENDS Run_ci : [ runInDir Test_niSound ] ;
+}
 
 # Dependencies
 tkDepends Test_niSound : niSound : TOP niSound src ;

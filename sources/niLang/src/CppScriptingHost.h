@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT
 #include "API/niLang/Types.h"
 
-#if defined niNoDLL
+#if !defined niWindows && !defined niOSX
 
 #define niNoRTCpp
 

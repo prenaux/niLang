@@ -40,7 +40,9 @@ int ChildProcessMain_Process__(int argc, const ni::achar** argv) {
   if (mode == _A("regular")) {
   }
   else if (mode == _A("hang")) {
+    fpErr->WriteString("... hang ...\n");
     while (1) {}
+    fpErr->WriteString("... hang done ...\n");
   }
   else if (mode == _A("stdfiles")) {
     Ptr<iFile> fpIn = cur->GetFile(eOSProcessFile_StdIn);
@@ -198,8 +200,8 @@ TEST_FIXTURE(FProcess,EnumTestExe) {
 
   niDebugFmt((_A("- Processes: EnumTestExe - ")));
   Ptr<iRegex> filter = ni::CreateFilePatternRegex(_A("Test_niLang_*"),NULL);
-  tU32 numProcesses = _pman->EnumProcesses(filter,&myEnum);
-  CHECK_EQUAL(1,numProcesses); // we should have only one Test_niCore_* running...
+  const tBool atLeastOne_Test_niLang = (_pman->EnumProcesses(filter,&myEnum) > 1);
+  CHECK_EQUAL(eTrue,atLeastOne_Test_niLang);
 }
 
 TEST_FIXTURE(FProcess,Spawn) {

@@ -374,7 +374,7 @@ TEST_FIXTURE(FExpression,VecFloatMul) {
     sVec3f r = Vec3f(1 * time, 2 * time, 3 * time);
     sVec3f v = expr->GetEvalResult()->GetVec3();
     niDebugFmt((_A("V: %s, r: %s"),v,r));
-    CHECK(VecEqual(r,v,niEpsilon2));
+    CHECK(VecEqual(r,v,0.1f));
   }
 }
 

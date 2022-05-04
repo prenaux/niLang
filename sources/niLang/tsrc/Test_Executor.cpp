@@ -87,7 +87,8 @@ TEST_FIXTURE(FExecutor,Lambda) {
     // (and so does a proper AddRef/Release)
     auto runMe = [=]() -> int {
       counter->Inc();
-      niDebugFmt(("ThreadPool, Runned Lambda [%d] (%d) on thread '%d'.",
+      ni::SleepMs(10);
+      niDebugFmt(("ThreadPool, Runned Lambda [%d] (%d) on thread '0x%x'.",
                   counter->Get(),
                   counter->GetNumRefs(),
                   ni::ThreadGetCurrentThreadID()));
@@ -96,10 +97,11 @@ TEST_FIXTURE(FExecutor,Lambda) {
     // runMe should have one ref to the counter, so now should
     // have 2 refs
     CHECK_EQUAL(2,counter->GetNumRefs());
-    Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(0);
+    Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(4);
     niLoop(i,kNumRun) {
       exec->Execute(Runnable(runMe));
     }
+    CHECK_EQUAL(2+kNumRun,counter->GetNumRefs());
 
     CHECK_EQUAL(eFalse,exec->Shutdown(0));
     CHECK_EQUAL(eTrue,exec->GetIsShutdown());
@@ -120,6 +122,8 @@ TEST_FIXTURE(FExecutor,Lambda) {
 }
 
 TEST_FIXTURE(FExecutor,TaskStealing) {
+  AUTO_WARNING_MODE();
+
   astl::vector<Ptr<iFuture> > done;
   Ptr<iExecutor> executor = GetConcurrent()->CreateExecutorThreadPool(2);
   tU32 taskSeqCounter = 0;

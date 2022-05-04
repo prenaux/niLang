@@ -16,6 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+/*
+
+  !!! niLang: If you update mbedtls make sure to preserve the niLang patches
+  !!! which skip over any <= 32 characters rather than just \r\n' '. That's
+  !!! done because Base64 is often sent in files or through IM apps which will
+  !!! easily introduce other forms of blank characters, such as tabs for
+  !!! example.
+
+*/
 
 #include "common.h"
 
@@ -250,28 +259,9 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
     /* First pass: check for validity and get output length */
     for( i = n = j = 0; i < slen; i++ )
     {
-        /* Skip spaces before checking for EOL */
-        x = 0;
-        while( i < slen && src[i] == ' ' )
-        {
-            ++i;
-            ++x;
-        }
-
-        /* Spaces at end of buffer are OK */
-        if( i == slen )
-            break;
-
-        if( ( slen - i ) >= 2 &&
-            src[i] == '\r' && src[i + 1] == '\n' )
-            continue;
-
-        if( src[i] == '\n' )
-            continue;
-
-        /* Space inside a line is an error */
-        if( x != 0 )
-            return( MBEDTLS_ERR_BASE64_INVALID_CHARACTER );
+        /* PIERRE: Skip all non-printable characters, those are usually the result of string formatting. */
+        if( src[i] <= 32 )
+          continue;
 
         if( src[i] == '=' && ++j > 2 )
             return( MBEDTLS_ERR_BASE64_INVALID_CHARACTER );
@@ -308,7 +298,7 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
 
    for( j = 3, n = x = 0, p = dst; i > 0; i--, src++ )
    {
-        if( *src == '\r' || *src == '\n' || *src == ' ' )
+        if( *src <= 32 )
             continue;
 
         dec_map_lookup = mbedtls_base64_table_lookup( base64_dec_map, sizeof( base64_dec_map ), *src );

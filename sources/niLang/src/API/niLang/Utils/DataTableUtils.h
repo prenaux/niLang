@@ -91,6 +91,8 @@ inline cString DataTableToCompressedString(iDataTable* apDT) {
 inline Ptr<iDataTable> CreateDataTableFromCompressedString(const achar* aaszText) {
   Ptr<iFile> fpDecodedBytes = ni::GetLang()->CreateFileDynamicMemory();
   fpDecodedBytes->WriteRawFromString(eRawToStringEncoding_Base64, aaszText);
+  if (!fpDecodedBytes->GetSize())
+    return NULL;
 
   Ptr<iFile> fp = ni::GetLang()->CreateFileDynamicMemory();
   {

@@ -22,9 +22,7 @@ TEST_FIXTURE(FBuffer,MallocZero) {
 }
 
 TEST_FIXTURE(FBuffer,Realloc) {
-#ifdef CLANG_SANITIZE
   AUTO_WARNING_MODE();
-#endif
 
   // Use a non aligned size which should lead to reallocating in place
   const tSize startSize = 500;

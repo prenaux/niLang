@@ -97,9 +97,9 @@ tBool __stdcall cGraphics::RegisterSystemFonts()
   REGISTER_FONT("Code", "Monospace");
 
   // Icon Fonts
-  REGISTER_FONT("fab", "niUI://fonts/fab-400.ttf");
-  REGISTER_FONT("far", "niUI://fonts/far-400.ttf");
-  REGISTER_FONT("fas", "niUI://fonts/fas-900.ttf");
+  REGISTER_FONT("fab", "niUI://fonts/fab-400.otf");
+  REGISTER_FONT("far", "niUI://fonts/far-400.otf");
+  REGISTER_FONT("fas", "niUI://fonts/fas-900.otf");
 
 #undef REGISTER_FONT
   return eTrue;

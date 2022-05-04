@@ -218,7 +218,7 @@ struct Icons : public VGBase {
   tBool __stdcall OnSinkAttached() niImpl {
     VGBase::OnSinkAttached();
     mpWidget->GetGraphics()->RegisterSystemFonts();
-    Ptr<iFont> fontIcons = mpWidget->GetGraphics()->LoadFont(_H("far"));
+    Ptr<iFont> fontIcons = mpWidget->GetGraphics()->LoadFont(_H("fas"));
     CHECK(fontIcons.IsOK());
     Ptr<tU32CMap> glyphs = fontIcons->EnumGlyphs();
     CHECK(glyphs->size() > 1000);
@@ -260,7 +260,7 @@ struct Icons : public VGBase {
       " Q 10,60 10,30 z");
 #endif
 
-    Ptr<iFont> fontIcons = mpWidget->GetGraphics()->LoadFont(_H("far"));
+    Ptr<iFont> fontIcons = mpWidget->GetGraphics()->LoadFont(_H("fas"));
     fontIcons->SetColor(ULColorBuild(0,0,0,255));
     fontIcons->SetSizeAndResolution(Vec2f(32,32),32,mpWidget->GetUIContext()->GetContentsScale());
 
@@ -268,7 +268,7 @@ struct Icons : public VGBase {
     const tF32 descent = fontIcons->GetDescent();
     const tF32 height = fontIcons->GetHeight();
     sVec2f pos = Vec2f(50,50);
-    tU32 gi = fontIcons->GetGlyphIndexFromName("search");
+    tU32 gi = fontIcons->GetGlyphIndexFromName("magnifying-glass");
     sVec2f glyphAdvance = fontIcons->GetGlyphPath(mptrPath, gi, pos+Vec2f(0,ascent), 1.0f);
 
     // Draw the glyph's box
@@ -284,7 +284,7 @@ struct Icons : public VGBase {
                        "Hi \uF002\uF004\uF040!");
 
     Ptr<iTextObject> textObject = mpWidget->GetGraphics()->CreateTextObject(
-      "<font size='32' res='32' color='black'>Hi <font name='far' color='darkgreen'><g name='search'/>Foo<g name='heart'/></font> Bar!", Vec2f(500,500), mpWidget->GetUIContext()->GetContentsScale());
+      "<font size='32' res='32' color='black'>Hi <font name='fas' color='darkgreen'><g name='magnifying-glass'/>Foo<g name='heart'/></font> Bar!", Vec2f(500,500), mpWidget->GetUIContext()->GetContentsScale());
     textObject->DrawAt(apCanvas, sRectf::Null(), Vec3f(pos.x,pos.y+120,0));
 
     static tBool _once = eTrue;

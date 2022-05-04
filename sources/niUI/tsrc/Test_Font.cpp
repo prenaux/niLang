@@ -19,30 +19,41 @@ struct FFont {
 };
 
 TEST_FIXTURE(FFont,IconFontBase) {
-  Ptr<iFont> font = graphics->LoadFont(_H("far"));
+  Ptr<iFont> font = graphics->LoadFont(_H("fas"));
   CHECK_EQUAL(font.IsOK(), eTrue);
 
-  niDebugFmt(("... font %s loaded", font->GetName()));
+  niDebugFmt(("... font %s loaded, %s", font->GetName(), font->GetFamilyName()));
+  const tBool isFontAwesomeFontFamily = _ASTR(niHStr(font->GetFamilyName())).icontains("Font Awesome");
+  CHECK(isFontAwesomeFontFamily);
 
   auto glyphs = font->EnumGlyphs();
   CHECK(glyphs.IsOK());
 
-  // This needs to be updated when we update the regular font awesome icons font.
-  CHECK_EQUAL(1850, glyphs->size());
-
   niDebugFmt(("... font %s has %d glyphs", font->GetName(), glyphs->size()));
-  for (auto& glyph : *glyphs) {
-    niDebugFmt(("... glyph: index: %d, codepoint: 0x%x, name: %s",
-                glyph.first, glyph.second,
-                font->GetGlyphName(glyph.first)));
+  {
+    int c = 0;
+    for (auto& glyph : *glyphs) {
+      niDebugFmt(("... glyph: index: %d, codepoint: 0x%x, name: %s",
+                  glyph.first, glyph.second,
+                  font->GetGlyphName(glyph.first)));
+#if !defined _DEBUG
+      if (c++ > 10)
+        break;
+#endif
+    }
+    if (c < glyphs->size()) {
+      niDebugFmt(("... more glyphs skipped ..."));
+    }
   }
 
-  tU32 glyphIndexSearchIcon = font->GetGlyphIndexFromName("search");
-  CHECK_EQUAL(5, glyphIndexSearchIcon);
-  CHECK_EQUAL(5, font->GetGlyphIndexFromCodepoint(0xf002));
+  // This needs to be updated when we update the regular font awesome icons font.
+  CHECK_EQUAL(1388, glyphs->size());
+  tU32 glyphIndexSearchIcon = font->GetGlyphIndexFromName("magnifying-glass");
+  CHECK_EQUAL(391, glyphIndexSearchIcon);
+  CHECK_EQUAL(391, font->GetGlyphIndexFromCodepoint(0xf002));
 
   cString nameSearchIcon = font->GetGlyphName(glyphIndexSearchIcon);
-  CHECK_EQUAL(_ASTR("search"), nameSearchIcon);
+  CHECK_EQUAL(_ASTR("magnifying-glass"), nameSearchIcon);
 }
 
 TEST_FIXTURE(FFont,OSFonts) {

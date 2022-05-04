@@ -5,8 +5,8 @@
 // SPDX-License-Identifier: MIT
 
 #ifndef __METAL_VERSION__
-#include <stdlib.h>
-#include <math.h>
+#  include <stdlib.h>
+#  include <math.h>
 #endif
 
 //--------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@
 //--------------------------------------------------------------------------------------------
 #if defined __APPLE__ && !defined __METAL_VERSION__
 // For the TARGET_* macros
-#include "TargetConditionals.h"
+#  include "TargetConditionals.h"
 #endif
 
 #define niFeatures_Light    10
@@ -210,7 +210,7 @@ static inline SYNC_INT_TYPE _InterlockedDecrement32(SYNC_INT_TYPE* apValue) {
 // Atomic, X64, linux
 #  elif defined __linux__
 
-#define NI_LINUX_ATOMIC_INLINE static __inline__ __attribute__((always_inline))
+#    define NI_LINUX_ATOMIC_INLINE static __inline__ __attribute__((always_inline))
 NI_LINUX_ATOMIC_INLINE int ni_linux_atomic_swap(int new_value, volatile int *ptr)
 {
   int old_value;
@@ -437,7 +437,7 @@ typedef SYNC_INT_TYPE tSyncInt;
 //#define _REDIST
 
 #ifndef _REDIST
-#define niConfig_LogSourceCodeInfo
+#  define niConfig_LogSourceCodeInfo
 #endif
 
 // Build the SDK without support for any graphics rendering to a window or output device
@@ -489,13 +489,13 @@ typedef SYNC_INT_TYPE tSyncInt;
 #endif
 
 #if !defined __ni_export_call_decl
-#define __ni_export_call_decl __cdecl
+#  define __ni_export_call_decl __cdecl
 #endif
 
 #ifdef __cplusplus
-#define niExternC extern "C"
+#  define niExternC extern "C"
 #else
-#define niExternC extern
+#  define niExternC extern
 #endif
 
 #if !defined __ni_module_export
@@ -569,7 +569,7 @@ typedef SYNC_INT_TYPE tSyncInt;
 
 #ifndef niPP_Comma
 // not a joke... needed in for example: REGISTER_EVENTCLASS_EX(CCStatusMovement, cEventClass_CCStatus<CC_COLLIDE_STATUS_MSG niPP_Comma eCollideCharacterStatus_Collide>);
-#define niPP_Comma ,
+#  define niPP_Comma ,
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -735,6 +735,37 @@ inline const T AlignOffset(const T align, const T offset) {
 #  endif
 #endif
 
+// Detect C++11 thread_local support
+#ifdef __cplusplus
+#  if defined(__MINGW32__)
+// mingw clang does not support non-trivial destructible types. mingw gcc is
+// still broken ( https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83562), new gcc
+// defines __has_feature but no cxx_thread_local
+#  elif (__clang__ + 0)
+// clang defines _MSC_VER as the cl builds it, or masquerades as gcc4.2, so
+// check clang first
+#    if __has_feature(cxx_thread_local)
+#      define niCPP_ThreadLocal (!(_LIBCPP_VERSION + 0)/*gnu stl, vcrt*/ || _LIBCPP_VERSION >= 4000)
+#    endif
+#  elif (_MSC_VER+0) >= 1900
+#    define niCPP_ThreadLocal 1
+#  elif (__GNUC__*100+__GNUC_MINOR__) >= 408 // can't be clang
+// libstdc++(g++4.8+) and libc++4.0+(not apple). implemented in
+// __cxa_thread_atexit in libc++abi, 4.0+ abi has a fallback if no
+// __cxa_thread_atexit_impl (e.g. android<23)
+#    define niCPP_ThreadLocal 1
+#  endif
+#endif
+
+#if !defined niThreadLocal11 && defined __cplusplus
+// define niThreadLocal11
+#  if (niCPP_ThreadLocal+0)
+#    define niThreadLocal11 thread_local
+#  elif defined _WIN32 && _MSC_VER >= 1400
+#    define niThreadLocal11 __declspec(thread)
+#  endif
+#endif
+
 #ifdef __cplusplus
 #  ifndef niTAssert
 template <bool B> struct sTAssert {};
@@ -823,27 +854,27 @@ template <typename T>
 __forceinline bool IsOK(const T* p) {
   return (p != NULL) && (p->IsOK());
 }
-#define niIsOK(x)  ni::IsOK(x)
+#  define niIsOK(x)  ni::IsOK(x)
 
 template <typename T>
 __forceinline bool IsNullPtr(const T* p) {
   return (p == NULL);
 }
 
-#define niIsNullPtr(x) ni::IsNullPtr(x)
-#define niGetIfOK(x) (niIsOK(x) ? (x) : (NULL))
+#  define niIsNullPtr(x) ni::IsNullPtr(x)
+#  define niGetIfOK(x) (niIsOK(x) ? (x) : (NULL))
 #endif
 
 #ifndef niDeprecated
-#if defined(__cplusplus) && (__cplusplus >= 201402L)
-#  define niDeprecated(since, replacement) [[deprecated("Since " #since "; use " #replacement)]]
-#elif defined(__GNUC__) || defined(__clang__)
-#  define niDeprecated(since, replacement) __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#  define niDeprecated(since, replacement) __declspec(deprecated)
-#else
-#  define niDeprecated(since, replacement)
-#endif
+#  if defined(__cplusplus) && (__cplusplus >= 201402L)
+#    define niDeprecated(since, replacement) [[deprecated("Since " #since "; use " #replacement)]]
+#  elif defined(__GNUC__) || defined(__clang__)
+#    define niDeprecated(since, replacement) __attribute__((deprecated))
+#  elif defined(_MSC_VER)
+#    define niDeprecated(since, replacement) __declspec(deprecated)
+#  else
+#    define niDeprecated(since, replacement)
+#  endif
 #endif // niDeprecated
 
 #ifdef __cplusplus
@@ -859,42 +890,42 @@ niExportFunc(int)  ni_debug_assert(int expression, const char* exp, int line, co
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ni_debug_break
 #if defined niShaderLanguage
-#define ni_debug_break()
+#  define ni_debug_break()
 
 #elif defined niMSVC
-#define ni_debug_break __debugbreak
+#  define ni_debug_break __debugbreak
 
 #else
-#include <signal.h>
+#  include <signal.h>
 
 /* Use __builtin_trap() on AArch64 iOS only */
-#if defined(__aarch64__) && defined(__APPLE__)
-#define NI_DEBUG_BREAK_PREFER_BUILTIN_TRAP_TO_SIGTRAP 1
-#else
+#  if defined(__aarch64__) && defined(__APPLE__)
+#    define NI_DEBUG_BREAK_PREFER_BUILTIN_TRAP_TO_SIGTRAP 1
+#  else
 /* gcc optimizers consider code after __builtin_trap() dead,
  * making __builtin_trap() unsuitable for breaking into the debugger */
-#endif
+#  endif
 
-#if defined(__i386__) || defined(__x86_64__)
-#define NI_HAVE_TRAP_INSTRUCTION 1
+#  if defined(__i386__) || defined(__x86_64__)
+#    define NI_HAVE_TRAP_INSTRUCTION 1
 __attribute__((always_inline))
 __inline__ static void ni_trap_instruction(void) {
   __asm__ volatile("int $0x03");
 }
-#elif defined(__thumb__)
-#define NI_HAVE_TRAP_INSTRUCTION 1
+#  elif defined(__thumb__)
+#    define NI_HAVE_TRAP_INSTRUCTION 1
 /* FIXME: handle __THUMB_INTERWORK__ */
 __attribute__((always_inline))
 __inline__ static void ni_trap_instruction(void) {
   /* See 'arm-linux-tdep.c' in GDB source.
    * Both instruction sequences below work. */
-#if 1
+#    if 1
   /* 'eabi_linux_thumb_le_breakpoint' */
   __asm__ volatile(".inst 0xde01");
-#else
+#    else
   /* 'eabi_linux_thumb2_le_breakpoint' */
   __asm__ volatile(".inst.w 0xf7f0a000");
-#endif
+#    endif
   /* Known problem:
    * After a breakpoint hit, can't stepi, step, or continue in GDB.
    * 'step' stuck on the same instruction.
@@ -907,8 +938,8 @@ __inline__ static void ni_trap_instruction(void) {
    * (gdb) jump   *($pc + $instruction_len)
    */
 }
-#elif defined(__arm__) && !defined(__thumb__)
-#define NI_HAVE_TRAP_INSTRUCTION 1
+#  elif defined(__arm__) && !defined(__thumb__)
+#    define NI_HAVE_TRAP_INSTRUCTION 1
 __attribute__((always_inline))
 __inline__ static void ni_trap_instruction(void) {
   /* See 'arm-linux-tdep.c' in GDB source,
@@ -917,38 +948,38 @@ __inline__ static void ni_trap_instruction(void) {
   /* Has same known problem and workaround
    * as Thumb mode */
 }
-#elif defined(__aarch64__) && defined(__APPLE__)
+#  elif defined(__aarch64__) && defined(__APPLE__)
 /* use __builtin_trap() on AArch64 iOS */
-#elif defined(__aarch64__)
-#define NI_HAVE_TRAP_INSTRUCTION 1
+#  elif defined(__aarch64__)
+#    define NI_HAVE_TRAP_INSTRUCTION 1
 __attribute__((always_inline))
 __inline__ static void ni_trap_instruction(void) {
   /* See 'aarch64-tdep.c' in GDB source,
    * 'aarch64_default_breakpoint' */
   __asm__ volatile(".inst 0xd4200000");
 }
-#else
+#  else
 /* unknown platform, use raise(SIGTRAP) */
-#endif
+#  endif
 
 __attribute__((always_inline))
 __inline__ static void ni_debug_break(void) {
-#if defined NI_HAVE_TRAP_INSTRUCTION
+#  if defined NI_HAVE_TRAP_INSTRUCTION
   ni_trap_instruction();
-#elif defined NI_DEBUG_BREAK_PREFER_BUILTIN_TRAP_TO_SIGTRAP
+#  elif defined NI_DEBUG_BREAK_PREFER_BUILTIN_TRAP_TO_SIGTRAP
   /* raises SIGILL on Linux x86{,-64}, to continue in gdb:
    * (gdb) handle SIGILL stop nopass
    * */
   __builtin_trap();
-#else
-#ifdef _WIN32
+#  else
+#    ifdef _WIN32
   /* SIGTRAP available only on POSIX-compliant operating systems
    * use builtin trap instead */
   __builtin_trap();
-#else
+#    else
   raise(SIGTRAP);
-#endif
-#endif
+#    endif
+#  endif
 }
 #endif
 
@@ -1213,23 +1244,23 @@ niCAssert(sizeof(tF64) == 8);
 niCAssert(sizeof(void*) == sizeof(tPtr));
 #endif
 #if defined ni64
-#ifndef niTypeIntSize
-#define niTypeIntSize 8
-#endif
-#ifndef niNoPointer
+#  ifndef niTypeIntSize
+#    define niTypeIntSize 8
+#  endif
+#  ifndef niNoPointer
 niCAssert(sizeof(void*) == 8);
-#endif
+#  endif
 niCAssert(sizeof(tSize) == 8);
 niCAssert(sizeof(tOffset) == 8);
 niCAssert(sizeof(tIntPtr) == 8);
 niCAssert(sizeof(tUIntPtr) == 8);
 #elif defined ni32
-#ifndef niTypeIntSize
-#define niTypeIntSize 4
-#endif
-#ifndef niNoPointer
+#  ifndef niTypeIntSize
+#    define niTypeIntSize 4
+#  endif
+#  ifndef niNoPointer
 niCAssert(sizeof(void*) == 4);
-#endif
+#  endif
 niCAssert(sizeof(tSize) == 4);
 niCAssert(sizeof(tOffset) == 4);
 niCAssert(sizeof(tIntPtr) == 4);
@@ -1372,15 +1403,15 @@ niConstValue tF32 kEpsilonF32 = niEpsilonF32;
 niConstValue tF32 kMaxExpF32 = niMaxExpF32;
 niConstValue tF32 kMinExpF32 = niMinExpF32;
 
-#ifdef niTypeF64
+#  ifdef niTypeF64
 niConstValue tF64 kMaxF64 = niMaxF64;
 niConstValue tF64 kMinF64 = niMinF64;
 niConstValue tF64 kEpsilonF64 = niEpsilonF64;
 niConstValue tF64 kMaxExpF64 = niMaxExpF64;
 niConstValue tF64 kMinExpF64 = niMinExpF64;
-#endif
+#  endif
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 template<typename T> T TypeMin() { ; /*error*/ }
 template<typename T> T TypeMax() { ; /*error*/ }
 template<typename T> T TypeEpsilon() { ; /*error*/ }
@@ -1418,17 +1449,17 @@ template<> inline tF32 TypeZeroTolerance<tF32>() { return 1e-06f; }
 template<> inline tF32 TypeEpsilon<tF32>() { return ni::kEpsilonF32; }
 template<> inline tF32 TypeMinExp<tF32>() { return ni::kMinExpF32; }
 template<> inline tF32 TypeMaxExp<tF32>() { return ni::kMaxExpF32; }
-#ifdef niTypeF64
+#    ifdef niTypeF64
 template<> inline tF64 TypeMin<tF64>() { return ni::kMinF64; }
 template<> inline tF64 TypeMax<tF64>() { return ni::kMaxF64; }
 template<> inline tF64 TypeZeroTolerance<tF64>() { return 1e-08; }
 template<> inline tF64 TypeEpsilon<tF64>() { return ni::kEpsilonF64; }
 template<> inline tF64 TypeMinExp<tF64>() { return ni::kMinExpF64; }
 template<> inline tF64 TypeMaxExp<tF64>() { return ni::kMaxExpF64; }
-#endif
-#endif // __cplusplus
+#    endif
+#  endif // __cplusplus
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 
 // Use implicit_cast as a safe version of static_cast or const_cast
 // for upcasting in the type hierarchy (i.e. casting a pointer to Foo
@@ -1471,25 +1502,25 @@ inline To implicit_cast(From const &f) {
 // You should design the code some other way not to need this.
 template<typename To, typename From>     // use like this: down_cast<T*>(foo);
 inline To down_cast(From* f) {           // so we only accept pointers
-#  if defined _DEBUG && defined _CPPRTTI
-#    ifdef niMSVC
+#    if defined _DEBUG && defined _CPPRTTI
+#      ifdef niMSVC
   // The try/catch allows to mix RTTI/non-RTTI build on MSVC...
-#      pragma warning(push)
-#      pragma warning(disable:4530)
+#        pragma warning(push)
+#        pragma warning(disable:4530)
   try
-#    endif
+#      endif
   {
     To _to = static_cast<To>(f);
     To _dynTo = dynamic_cast<To>(f);
     niAssert(f == NULL || dynamic_cast<To>(f) != NULL);  // RTTI: debug mode only!
     niAssert(_to == _dynTo);
   }
-#    ifdef niMSVC
+#      ifdef niMSVC
   catch (...) {
   }
-#      pragma warning(pop)
+#        pragma warning(pop)
+#      endif
 #    endif
-#  endif
   return static_cast<To>(f);
 }
 
@@ -1556,47 +1587,47 @@ inline TDest bit_castz(const TSrc& source) {
   return dest;
 }
 
-#  define niCCast(TYPE,VAL)     ((TYPE)(VAL))
-#  define niUnsafeCast(TYPE,VAL)    reinterpret_cast<TYPE>(VAL)
-#  define niIUnknownCast2(IT,VAL)   ni::down_cast<ni::iUnknown*>(ni::down_cast<IT*>(VAL))
-#  define niIUnknownCCast2(IT,VAL)    ni::down_cast<const ni::iUnknown*>(ni::down_cast<const IT*>(VAL))
-#  define niIUnknownCast(VAL)     ni::down_cast<ni::iUnknown*>(VAL)
-#  define niIUnknownCCast(VAL)      ni::down_cast<const ni::iUnknown*>(VAL)
-#  define niStaticCast(TYPE,VAL)    ni::down_cast<TYPE>(VAL)
-#  define niConstCast(TYPE,VAL)   const_cast<TYPE>(VAL)
-#  define niConstStaticCast(CTYPE,STYPE,VAL)    ni::down_cast<STYPE>(const_cast<CTYPE>(VAL))
-#  define niThis(CLASS)   niConstCast(CLASS*,this)
-#  define niConstThis(CLASS)  niConstCast(const CLASS*,this)
-#  define niValCast(TYPE,VAR)  ((TYPE&)(VAR))
-#  define niRefCast(TYPE,VAR)  ((TYPE*)&(VAR))
-#  define niRef(TYPE)     TYPE&
+#    define niCCast(TYPE,VAL)     ((TYPE)(VAL))
+#    define niUnsafeCast(TYPE,VAL)    reinterpret_cast<TYPE>(VAL)
+#    define niIUnknownCast2(IT,VAL)   ni::down_cast<ni::iUnknown*>(ni::down_cast<IT*>(VAL))
+#    define niIUnknownCCast2(IT,VAL)    ni::down_cast<const ni::iUnknown*>(ni::down_cast<const IT*>(VAL))
+#    define niIUnknownCast(VAL)     ni::down_cast<ni::iUnknown*>(VAL)
+#    define niIUnknownCCast(VAL)      ni::down_cast<const ni::iUnknown*>(VAL)
+#    define niStaticCast(TYPE,VAL)    ni::down_cast<TYPE>(VAL)
+#    define niConstCast(TYPE,VAL)   const_cast<TYPE>(VAL)
+#    define niConstStaticCast(CTYPE,STYPE,VAL)    ni::down_cast<STYPE>(const_cast<CTYPE>(VAL))
+#    define niThis(CLASS)   niConstCast(CLASS*,this)
+#    define niConstThis(CLASS)  niConstCast(const CLASS*,this)
+#    define niValCast(TYPE,VAR)  ((TYPE&)(VAR))
+#    define niRefCast(TYPE,VAR)  ((TYPE*)&(VAR))
+#    define niRef(TYPE)     TYPE&
 
-#else // __cplusplus
+#  else // __cplusplus
 
-#  define niCCast(TYPE,VAL)           ((TYPE)(VAL))
-#  define niUnsafeCast(TYPE,VAL)          ((TYPE)(VAL))
-#  define niIUnknownCast(VAL)           ((ni::iUnknown*)(VAL))
-#  define niIUnknownCCast(VAL)            ((ni::iUnknown*)(VAL))
-#  define niStaticCast(TYPE,VAL)          ((TYPE)(VAL))
-#  define niConstCast(TYPE,VAL)         ((TYPE)(VAL))
-#  define niConstStaticCast(CTYPE,STYPE,VAL)    ((TYPE)(VAL))
-#  define niValCast(TYPE,VAR)           (*(((TYPE)*)(&(VAR))))
-#  define niRefCast(TYPE,VAR)           ((TYPE*)(VAR))
-#  define niRef(TYPE)     TYPE*
+#    define niCCast(TYPE,VAL)           ((TYPE)(VAL))
+#    define niUnsafeCast(TYPE,VAL)          ((TYPE)(VAL))
+#    define niIUnknownCast(VAL)           ((ni::iUnknown*)(VAL))
+#    define niIUnknownCCast(VAL)            ((ni::iUnknown*)(VAL))
+#    define niStaticCast(TYPE,VAL)          ((TYPE)(VAL))
+#    define niConstCast(TYPE,VAL)         ((TYPE)(VAL))
+#    define niConstStaticCast(CTYPE,STYPE,VAL)    ((TYPE)(VAL))
+#    define niValCast(TYPE,VAR)           (*(((TYPE)*)(&(VAR))))
+#    define niRefCast(TYPE,VAR)           ((TYPE*)(VAR))
+#    define niRef(TYPE)     TYPE*
 
-#  define niDefaultTemplate
-#endif // __cplusplus
+#    define niDefaultTemplate
+#  endif // __cplusplus
 
 static inline tU32 ftoul(tF32 f)  { return *(tU32*)((void*)(&f)); }
 static inline tF32 ultof(tU32 u)  { return *(tF32*)((void*)(&u)); }
 static inline tI32 ftol(tF32 f) { return *(tI32*)((void*)(&f)); }
 static inline tF32 ltof(tI32 u) { return *(tF32*)((void*)(&u)); }
-#ifdef niTypeF64
+#  ifdef niTypeF64
 static inline tU64 dtouq(tF64 f)  { return *(tU64*)((void*)(&f)); }
 static inline tF64 uqtod(tU64 u)  { return *(tF64*)((void*)(&u)); }
 static inline tI64 dtoq(tF64 f) { return *(tI64*)((void*)(&f)); }
 static inline tF64 qtod(tI64 u) { return *(tF64*)((void*)(&u)); }
-#endif
+#  endif
 
 //! UTF8/ascii character.
 typedef niTypeCChar    cchar;
@@ -1606,71 +1637,71 @@ typedef niTypeCChar    tCChar;
 typedef niTypeUChar    uchar;
 typedef niTypeUChar    tUChar;
 
-#if niUCharSize == 2
+#  if niUCharSize == 2
 //! UTF16 character.
 typedef uchar  gchar;
 typedef tUChar tGChar;
 //! UTF32 character.
 typedef tU32 xchar;
 typedef tU32 tXChar;
-#elif niUCharSize == 4
+#  elif niUCharSize == 4
 //! UTF16 character.
 typedef tU16 gchar;
 typedef tU16 tGChar;
 //! UTF32 character.
 typedef uchar  xchar;
 typedef tUChar tXChar;
-#elif niUCharSize == 1
+#  elif niUCharSize == 1
 //! UTF16 character.
 typedef tU16 gchar;
 typedef tU16 tGChar;
 //! UTF32 character.
 typedef tU32 xchar;
 typedef tU32 tXChar;
-#else
-#  pragma message("E/C++ Preprocessor: Invalid niUCharSize definition.")
-#endif
+#  else
+#    pragma message("E/C++ Preprocessor: Invalid niUCharSize definition.")
+#  endif
 
 niCAssert(sizeof(cchar) == 1);
 niCAssert(sizeof(gchar) == 2);
 niCAssert(sizeof(xchar) == 4);
-#if niUCharSize == 4
+#  if niUCharSize == 4
 niCAssert(sizeof(uchar) == 4);
-#elif niUCharSize == 2
+#  elif niUCharSize == 2
 niCAssert(sizeof(uchar) == 2);
-#else
+#  else
 niCAssert(sizeof(uchar) == 1);
-#endif
+#  endif
 
 niCAssert(sizeof("X"[0]) == 1);
-#if niUCharSize != 1
+#  if niUCharSize != 1
 niCAssert(sizeof(L"X"[0]) == sizeof(uchar));
-#endif
+#  endif
 
 typedef cchar achar;
 typedef cchar tAChar;
-#define _A(x) x
-#define niACharIsCChar
+#  define _A(x) x
+#  define niACharIsCChar
 niCAssert(sizeof(cchar) == sizeof(achar));
 
 niConstValue tU32 knTypeStringMaxSizeInChar = 32;
 
-#define niIsStringOK(str)      ((str) && *(str))
-#define niStringIsOK(str)      ((str) && *(str))
+#  define niIsStringOK(str)      ((str) && *(str))
+#  define niStringIsOK(str)      ((str) && *(str))
 
-#define AZEROSTR  _A("\0\0\0")
-#define AEOL    _A("\n")
-#define ASPACE    ((achar)(32))
+#  define AZEROSTR  _A("\0\0\0")
+#  define AEOL    _A("\n")
+#  define ASPACE    ((achar)(32))
 
 // MAX Size defs
-#define AMAX_DIR  _MAX_DIR  // Maximum length of directory component
-#define AMAX_DRIVE  _MAX_DRIVE  // Maximum length of drive component
-#define AMAX_EXT  _MAX_EXT  // Maximum length of extension component
-#define AMAX_FNAME  _MAX_FNAME  // Maximum length of filename component
-#define AMAX_PATH _MAX_PATH // Maximum length of full path
-#define AMAX_SIZE (AMAX_PATH*2)   // Maximum size of a static const achar string
+#  define AMAX_DIR  _MAX_DIR  // Maximum length of directory component
+#  define AMAX_DRIVE  _MAX_DRIVE  // Maximum length of drive component
+#  define AMAX_EXT  _MAX_EXT  // Maximum length of extension component
+#  define AMAX_FNAME  _MAX_FNAME  // Maximum length of filename component
+#  define AMAX_PATH _MAX_PATH // Maximum length of full path
+#  define AMAX_SIZE (AMAX_PATH*2)   // Maximum size of a static const achar string
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 // Empty string
 template<class T> T* StringEmpty() {
   return (T*)"\0\0\0\0";
@@ -1678,7 +1709,7 @@ template<class T> T* StringEmpty() {
 
 //! Empty class.
 class cEmpty {};
-#endif // __cplusplus
+#  endif // __cplusplus
 
 //! UUID type, default/standard variant.
 typedef struct tUUID_tag {
@@ -1720,9 +1751,9 @@ niConstValue tU32 knUUIDSize = sizeof(tUUID);
 niConstValue tUUID kuuidZero = { 0x00000000,0x0000,0x0000, { 0,0,0,0,0,0,0,0 } };
 
 //! Macro to init a UUID from the uuid generation tool's output (genuuid 2)
-#define niInitUUID(A,B,C,D,E,F,G,H,I,J,K) { A,B,C, { D,E,F,G,H,I,J,K } }
+#  define niInitUUID(A,B,C,D,E,F,G,H,I,J,K) { A,B,C, { D,E,F,G,H,I,J,K } }
 //! Define a UUID from the uuid the uuid generation tool's output (genuuid 2)
-#define niDefineUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)  const ni::tUUID NAME = niInitUUID(A,B,C,D,E,F,G,H,I,J,K);
+#  define niDefineUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)  const ni::tUUID NAME = niInitUUID(A,B,C,D,E,F,G,H,I,J,K);
 
 //! UUID compare
 static __forceinline tInt UUIDCmp(const niRef(tUUID) A, const niRef(tUUID) B) {
@@ -1730,19 +1761,19 @@ static __forceinline tInt UUIDCmp(const niRef(tUUID) A, const niRef(tUUID) B) {
 }
 //! UUID equal
 static __forceinline tBool UUIDEq(const niRef(tUUID) A, const niRef(tUUID) B) {
-#if niCPUWordSize == 32
+#  if niCPUWordSize == 32
   return
       niRefCast(tUUID32,A)->nA == niRefCast(tUUID32,B)->nA &&
       niRefCast(tUUID32,A)->nB == niRefCast(tUUID32,B)->nB &&
       niRefCast(tUUID32,A)->nC == niRefCast(tUUID32,B)->nC &&
       niRefCast(tUUID32,A)->nD == niRefCast(tUUID32,B)->nD;
-#elif niCPUWordSize == 64
+#  elif niCPUWordSize == 64
   return
       niRefCast(tUUID64,A)->nDataHi == niRefCast(tUUID64,B)->nDataHi &&
       niRefCast(tUUID64,A)->nDataLo == niRefCast(tUUID64,B)->nDataLo;
-#else
-#  error "E/C++ Preprocessor: CPU Word size not supported."
-#endif
+#  else
+#    error "E/C++ Preprocessor: CPU Word size not supported."
+#  endif
 }
 
 //! Create a local UUID.
@@ -1751,14 +1782,14 @@ niExportFunc(tUUID) UUIDGenLocal();
 //! Create a global UUID.
 niExportFunc(tUUID) UUIDGenGlobal();
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 inline bool __stdcall operator == (const tUUID& A,const tUUID& B) { return UUIDEq(A,B); }
 inline bool __stdcall operator != (const tUUID& A,const tUUID& B) { return !UUIDEq(A,B); }
 inline bool __stdcall operator >  (const tUUID& A,const tUUID& B) { return UUIDCmp(A,B) > 0; }
 inline bool __stdcall operator <  (const tUUID& A,const tUUID& B) { return UUIDCmp(A,B) < 0; }
 inline bool __stdcall operator >= (const tUUID& A,const tUUID& B) { return UUIDCmp(A,B) >= 0; }
 inline bool __stdcall operator <= (const tUUID& A,const tUUID& B) { return UUIDCmp(A,B) <= 0; }
-#endif
+#  endif
 
 //! Type flags.
 typedef enum eTypeFlags {
@@ -1825,31 +1856,31 @@ typedef enum eType
   eType_Enum = eType_U32,
 
   // CPU word size dependant
-#ifdef ni32
+#  ifdef ni32
   eType_Ptr = eType_U32,
   eType_Size = eType_U32,
   eType_Offset = eType_U32,
   eType_IntPtr = eType_I32,
   eType_UIntPtr = eType_U32,
-#elif defined ni64
+#  elif defined ni64
   eType_Ptr = eType_U64,
   eType_Size = eType_U64,
   eType_Offset = eType_U64,
   eType_IntPtr = eType_I64,
   eType_UIntPtr = eType_U64,
-#else
-#error "Unknown CPU word size."
-#endif
+#  else
+#    error "Unknown CPU word size."
+#  endif
 
-#if niTypeIntSize == 4
+#  if niTypeIntSize == 4
   eType_Int = eType_I32,
   eType_UInt = eType_U32,
-#elif niTypeIntSize == 8
+#  elif niTypeIntSize == 8
   eType_Int = eType_I64,
   eType_UInt = eType_U64,
-#else
-#  error "No valid tInt size defined"
-#endif
+#  else
+#    error "No valid tInt size defined"
+#  endif
 
   eType_ASZ = eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer,
   eType_IUnknownPtr = eType_IUnknown|eTypeFlags_Pointer,
@@ -1862,14 +1893,14 @@ typedef tU32  tType;
 niConstValue tU32 knMaxSizeOfTypeRetByValue = 64;
 niConstValue tU32 knTypeRawNumBits = 7; // number of bits without flags
 niConstValue tU32 knTypeMask = 0xFF;
-#define niType(TYPE)      ((eType)(((tType)(TYPE))&knTypeMask))
-#define niTypeIsPointer(TYPE)  ((TYPE) == eType_Ptr || ((TYPE)&eTypeFlags_Pointer))
+#  define niType(TYPE)      ((eType)(((tType)(TYPE))&knTypeMask))
+#  define niTypeIsPointer(TYPE)  ((TYPE) == eType_Ptr || ((TYPE)&eTypeFlags_Pointer))
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 struct Var;
-#else
+#  else
 typedef struct Var Var;
-#endif
+#  endif
 
 //! Compare the raw data of the variant.
 //! \remark This just compares the bits contained in the variant, not distinction
@@ -1880,11 +1911,11 @@ niExportFunc(const Var*) VarGetNull();
 //! Var destructor.
 niExportFunc(void) VarDestruct(Var* a);
 
-#ifdef __cplusplus
-#define niVarNull (*ni::VarGetNull())
-#else
-#define niVarNull VarGetNull()
-#endif
+#  ifdef __cplusplus
+#    define niVarNull (*ni::VarGetNull())
+#  else
+#    define niVarNull VarGetNull()
+#  endif
 
 #endif // niShaderLanguage
 
@@ -1899,9 +1930,9 @@ niExportFunc(void) VarDestruct(Var* a);
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
-#endif // __cplusplus
+#  endif // __cplusplus
 
 /** \addtogroup niLang
  * @{
@@ -1914,11 +1945,11 @@ niExportFunc(void*) ni_realloc(void* ptr, size_t size, const char* file, int lin
 niExportFunc(void*) ni_object_alloc(size_t size, const char* file, int line, const char* fun);
 niExportFunc(void) ni_object_free(void* ptr, const char* file, int line, const char* fun);
 
-#if defined niMalloc || defined niAlignedMalloc || defined niFree || defined niRealloc
-#  error("niMalloc, niAlignedMalloc, niFree and niRealloc should not be defined by the platform header.")
-#endif
+#  if defined niMalloc || defined niAlignedMalloc || defined niFree || defined niRealloc
+#    error("niMalloc, niAlignedMalloc, niFree and niRealloc should not be defined by the platform header.")
+#  endif
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 template <typename T>
 static void ni_delete(T* ptr, const char *f, int l, const char *sf)
 {
@@ -1927,53 +1958,53 @@ static void ni_delete(T* ptr, const char *f, int l, const char *sf)
 		ni_object_free(ptr, f, l, sf);
 	}
 }
-#endif
+#  endif
 
-#if !defined niEmbedded && !defined _REDIST
-#  define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,__FILE__,__LINE__,__FUNCTION__)
-#  define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,__FILE__,__LINE__,__FUNCTION__)
-#  define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),__FILE__,__LINE__,__FUNCTION__)
-#  define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,__FILE__,__LINE__,__FUNCTION__)
-#  define niNew     new(__FILE__,__LINE__,__FUNCTION__)
-#  define niNewM    new(__FILE__,__LINE__,"member_init")
-#  define niDelete  delete
-#else
-#  define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,NULL,-1,NULL)
-#  define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,NULL,-1,NULL)
-#  define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),NULL,-1,NULL)
-#  define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,NULL,-1,NULL)
-#  define niNew    new
-#  define niNewM   new
-#  define niDelete delete
-#endif
+#  if !defined niEmbedded && !defined _REDIST
+#    define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,__FILE__,__LINE__,__FUNCTION__)
+#    define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,__FILE__,__LINE__,__FUNCTION__)
+#    define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),__FILE__,__LINE__,__FUNCTION__)
+#    define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,__FILE__,__LINE__,__FUNCTION__)
+#    define niNew     new(__FILE__,__LINE__,__FUNCTION__)
+#    define niNewM    new(__FILE__,__LINE__,"member_init")
+#    define niDelete  delete
+#  else
+#    define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,NULL,-1,NULL)
+#    define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,NULL,-1,NULL)
+#    define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),NULL,-1,NULL)
+#    define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,NULL,-1,NULL)
+#    define niNew    new
+#    define niNewM   new
+#    define niDelete delete
+#  endif
 
 // Safe memory freeing
-#ifndef niSafeDelete
-#  define niSafeDelete(p)   { if(p) { niDelete p; (p)=NULL; } }
-#endif
+#  ifndef niSafeDelete
+#    define niSafeDelete(p)   { if(p) { niDelete p; (p)=NULL; } }
+#  endif
 
-#ifndef niSafeDeleteArray
-#  define niSafeDeleteArray(p)  { if(p) { niDelete[] p; (p)=NULL; } }
-#endif
+#  ifndef niSafeDeleteArray
+#    define niSafeDeleteArray(p)  { if(p) { niDelete[] p; (p)=NULL; } }
+#  endif
 
-#ifndef niSafeRelease
-#  define niSafeRelease(p)    { if(p) { (p)->Release(); (p)=NULL; } }
-#endif
+#  ifndef niSafeRelease
+#    define niSafeRelease(p)    { if(p) { (p)->Release(); (p)=NULL; } }
+#  endif
 
-#ifndef niSafeInvalidateRelease
-#  define niSafeInvalidateRelease(p)  { if(p) { (p)->Invalidate(); (p)->Release();  (p)=NULL; } }
-#endif
+#  ifndef niSafeInvalidateRelease
+#    define niSafeInvalidateRelease(p)  { if(p) { (p)->Invalidate(); (p)->Release();  (p)=NULL; } }
+#  endif
 
-#ifndef niSafeFree
-#  define niSafeFree(p)     { if(p) { niFree(p);  (p)=NULL; } }
-#endif
+#  ifndef niSafeFree
+#    define niSafeFree(p)     { if(p) { niFree(p);  (p)=NULL; } }
+#  endif
 
-#define niTMalloc(TYPE,COUNT) (TYPE*)niMalloc(sizeof(TYPE)*(COUNT))
+#  define niTMalloc(TYPE,COUNT) (TYPE*)niMalloc(sizeof(TYPE)*(COUNT))
 
 /**@}*/
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -1982,9 +2013,9 @@ static void ni_delete(T* ptr, const char *f, int l, const char *sf)
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
-#endif // __cplusplus
+#  endif // __cplusplus
 
 /** \addtogroup niLang
  * @{
@@ -2034,7 +2065,7 @@ niExportFunc(void) ni_log_system_info_once();
 
 niExportFunc(void) ni_log(tLogFlags type, const char* file, const char* func, int line, const char* msg);
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 niExportFunc(void) ni_log_format_message(cString& strOut,
                                          tU32 aType,
                                          const char* aaszFile,
@@ -2043,37 +2074,37 @@ niExportFunc(void) ni_log_format_message(cString& strOut,
                                          const char* aaszMsg,
                                          const tF64 afTime,
                                          const tF64 afPrevTime);
-#endif
+#  endif
 
-#define niLog_(FLAGS,MSG) ni::ni_log(FLAGS, __FILE__, __FUNCTION__, __LINE__, MSG)
-#define niLog(TYPE,MSG) niLog_(ni::eLogFlags_##TYPE, MSG)
+#  define niLog_(FLAGS,MSG) ni::ni_log(FLAGS, __FILE__, __FUNCTION__, __LINE__, MSG)
+#  define niLog(TYPE,MSG) niLog_(ni::eLogFlags_##TYPE, MSG)
 
-#define niInfo(desc) niLog(Info,desc)
-#define niTrace(desc) niLog(Debug,desc)
-#if defined _REDIST
-#  define niError(desc)
-#  define niWarning(desc)
-#else
-#  define niError(desc)   niLog(Error,desc)
-#  define niWarning(desc) niLog(Warning,desc)
-#endif // #ifdef _REDIST
+#  define niInfo(desc) niLog(Info,desc)
+#  define niTrace(desc) niLog(Debug,desc)
+#  if defined _REDIST
+#    define niError(desc)
+#    define niWarning(desc)
+#  else
+#    define niError(desc)   niLog(Error,desc)
+#    define niWarning(desc) niLog(Warning,desc)
+#  endif // #ifdef _REDIST
 
-#define niCheck_(COND,MSG,RET)        if (!(COND)) { niError(MSG _A("Check '") _A(#COND) _A("' failed.")); return RET; }
-#define niCheck(COND,RET)             niCheck_(COND,_A(""),RET)
-#define niCheckIsOK_(PARAM,MSG,RET)   niCheck_(niIsOK(PARAM),MSG,RET)
-#define niCheckIsOK(COND,RET)         niCheckIsOK_(COND,_A(""),RET)
-#define niCheckSilent(COND,RET)       if (!(COND)) { return RET; }
+#  define niCheck_(COND,MSG,RET)        if (!(COND)) { niError(MSG _A("Check '") _A(#COND) _A("' failed.")); return RET; }
+#  define niCheck(COND,RET)             niCheck_(COND,_A(""),RET)
+#  define niCheckIsOK_(PARAM,MSG,RET)   niCheck_(niIsOK(PARAM),MSG,RET)
+#  define niCheckIsOK(COND,RET)         niCheckIsOK_(COND,_A(""),RET)
+#  define niCheckSilent(COND,RET)       if (!(COND)) { return RET; }
 
-#ifdef niDebug
-#  define niCheckAssert(COND,MSG,RET)     if (!(COND)) { niAssertMsg(COND,MSG); return RET; }
-#else
-#  define niCheckAssert(COND,MSG,RET)     if (!(COND)) { return RET; }
-#endif
+#  ifdef niDebug
+#    define niCheckAssert(COND,MSG,RET)     if (!(COND)) { niAssertMsg(COND,MSG); return RET; }
+#  else
+#    define niCheckAssert(COND,MSG,RET)     if (!(COND)) { return RET; }
+#  endif
 
 /**@}*/
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -2203,11 +2234,11 @@ template<> inline tI64 FMod(const tI64 a, const tI64 b) {
 template<> inline tU64 FMod(const tU64 a, const tU64 b) {
   return a % b;
 }
-#ifdef niTypeIntIsOtherType
+#  ifdef niTypeIntIsOtherType
 template<> inline int FMod(const tInt a, const tInt b) {
   return a % b;
 }
-#endif
+#  endif
 #endif
 niDefaultTemplate static inline T Pow(const T a, const T b) { return (T)pow(a,b); }
 niDefaultTemplate static inline T Exp(const T a) {  return (T)exp(a); }
@@ -2306,22 +2337,22 @@ static inline tU32 ULColorLerp(tU32 ca, tU32 cb, tF32 fac) {
 
 typedef metal::packed_float2 float2;
 typedef metal::packed_float2 sVec2f;
-#define _v2f metal::float2
+#  define _v2f metal::float2
 niCAssert(sizeof(sVec2f) == 8);
 
 typedef metal::packed_float3 float3;
 typedef metal::packed_float3 sVec3f;
-#define _v3f metal::float3
+#  define _v3f metal::float3
 niCAssert(sizeof(sVec3f) == 12);
 
 typedef metal::packed_float4 float4;
 typedef metal::packed_float4 sVec4f;
-#define _v4f metal::float4
+#  define _v4f metal::float4
 niCAssert(sizeof(sVec4f) == 16);
 
 typedef metal::float4x4 float4x4;
 typedef metal::float4x4 sMatrixf;
-#define _mtx metal::float4x4
+#  define _mtx metal::float4x4
 niCAssert(sizeof(sMatrixf) == 64);
 
 #elif defined __cplusplus
@@ -2907,14 +2938,14 @@ struct sVec4
   static inline const sVec4& QuatIdentity() { static sVec4 _v = { Num<T>(0),Num<T>(0),Num<T>(0),Num<T>(1 )}; return _v; }
 };
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 inline tU32 ULColorBuild(const sVec4<tF32>& aCol) {  return ULColorBuildf(aCol.x, aCol.y, aCol.z, aCol.w); }
 inline tU32 ULColorBuild(const sVec3<tF32>& aCol, tF32 a = 0.0f) {  return ULColorBuildf(aCol.x, aCol.y, aCol.z, a); }
 inline tU32 ULColorBuild(const sVec4<tI32>& aCol) {  return ULColorBuild(aCol.x, aCol.y, aCol.z, aCol.w); }
 inline tU32 ULColorBuild(const sVec3<tI32>& aCol, tI32 a = 0) {  return ULColorBuild(aCol.x, aCol.y, aCol.z, a); }
 inline tU32 ULColorBuild(const sVec4<tU8>& aCol) {  return ULColorBuild(aCol.x, aCol.y, aCol.z, aCol.w); }
 inline tU32 ULColorBuild(const sVec3<tU8>& aCol, tU8 a = 0) {  return ULColorBuild(aCol.x, aCol.y, aCol.z, a); }
-#endif // __cplusplus
+#  endif // __cplusplus
 
 ///////////////////////////////////////////////
 template <typename T>
@@ -3702,31 +3733,31 @@ typedef tU32 tRectFrameFlags;
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
-#endif // __cplusplus
+#  endif // __cplusplus
 /** \addtogroup niLang
  * @{
  */
 
-#define niCopyright  "(c) 2022 The niLang Authors"
+#  define niCopyright  "(c) 2022 The niLang Authors"
 niConstValue achar* const kNiCopyright = niCopyright;
 
-#define niMakeVersion(a,b,c)      (((a)<<16)|((b)<<8)|(c))
-#define niGetMainVersion(ver)     (((ver)>>16)&0xFFFF)
-#define niGetSubVersion(ver)      (((ver)>>8)&0xFF)
-#define niGetPatchVersion(ver)      ((ver)&0xFF)
+#  define niMakeVersion(a,b,c)      (((a)<<16)|((b)<<8)|(c))
+#  define niGetMainVersion(ver)     (((ver)>>16)&0xFFFF)
+#  define niGetSubVersion(ver)      (((ver)>>8)&0xFF)
+#  define niGetPatchVersion(ver)      ((ver)&0xFF)
 //lint -e{773}
-#define niVerStringConcat(ver)      _A("v")<<niGetMainVersion(ver)<<_A(".")<<niGetSubVersion(ver)<<_A(".")<<niGetPatchVersion(ver)
-#define niVerStringf(ver)       "v%d.%d.%d",niGetMainVersion(ver),niGetSubVersion(ver),niGetPatchVersion(ver)
-#define niVerAStringf(ver)        _A("v%d.%d.%d"),niGetMainVersion(ver),niGetSubVersion(ver),niGetPatchVersion(ver)
-#define niMakeVersionString(str,ver)  (str).Format(niVerAStringf(ver))
-#define niFmtVersion(ver)       niFmt(niVerAStringf(ver))
+#  define niVerStringConcat(ver)      _A("v")<<niGetMainVersion(ver)<<_A(".")<<niGetSubVersion(ver)<<_A(".")<<niGetPatchVersion(ver)
+#  define niVerStringf(ver)       "v%d.%d.%d",niGetMainVersion(ver),niGetSubVersion(ver),niGetPatchVersion(ver)
+#  define niVerAStringf(ver)        _A("v%d.%d.%d"),niGetMainVersion(ver),niGetSubVersion(ver),niGetPatchVersion(ver)
+#  define niMakeVersionString(str,ver)  (str).Format(niVerAStringf(ver))
+#  define niFmtVersion(ver)       niFmt(niVerAStringf(ver))
 
 /**@}*/
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -3735,14 +3766,14 @@ niConstValue achar* const kNiCopyright = niCopyright;
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
-#endif // __cplusplus
+#  endif // __cplusplus
 /** \addtogroup niLang
  * @{
  */
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 
 //! Synchronized counter, safe across multiple threads.
 struct SyncCounter {
@@ -3771,12 +3802,12 @@ struct SyncCounter {
 
 niCAssert(sizeof(SyncCounter) == sizeof(tSyncInt));
 
-#endif // __cplusplus
+#  endif // __cplusplus
 
 /**@}*/
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -3854,22 +3885,22 @@ inline tBool FlagsTestMask(const T flags, const T excluded, const T required) {
   if (!(flags&required)) return niFalse;
   return niTrue;
 }
-#define niFlagsTestMask(FLAGS,EXCL,REQ) ni::FlagsTestMask(FLAGS,EXCL,REQ)
+#  define niFlagsTestMask(FLAGS,EXCL,REQ) ni::FlagsTestMask(FLAGS,EXCL,REQ)
 
-#define niPropFlagOn(obj,var,x)   obj->Set##var(obj->Get##var()|(x))
-#define niPropFlagOff(obj,var,x)  obj->Set##var(obj->Get##var()&(~(x)))
-#define niPropFlagTest(obj,var,x) ((obj->Get##var()&((ni::tU32)x))==((ni::tU32)x))
-#define niPropFlagIs(obj,var,x)     niPropFlagTest(obj,var,x)
-#define niPropFlagIsNot(obj,var,x)      (!niPropFlagTest(obj,var,x))
-#define niPropFlagOnIf(obj,var,x,cond)    ((cond)?(niPropFlagOn(obj,var,x)):(niPropFlagOff(obj,var,x)))
-#define niPropFlagSetOnIf(obj,var,x,cond) ((cond)?(niPropFlagOn(obj,var,x)):(0))
-#define niPropFlagSetOffIf(obj,var,x,cond)  ((cond)?(niPropFlagOff(obj,var,x)):(0))
+#  define niPropFlagOn(obj,var,x)   obj->Set##var(obj->Get##var()|(x))
+#  define niPropFlagOff(obj,var,x)  obj->Set##var(obj->Get##var()&(~(x)))
+#  define niPropFlagTest(obj,var,x) ((obj->Get##var()&((ni::tU32)x))==((ni::tU32)x))
+#  define niPropFlagIs(obj,var,x)     niPropFlagTest(obj,var,x)
+#  define niPropFlagIsNot(obj,var,x)      (!niPropFlagTest(obj,var,x))
+#  define niPropFlagOnIf(obj,var,x,cond)    ((cond)?(niPropFlagOn(obj,var,x)):(niPropFlagOff(obj,var,x)))
+#  define niPropFlagSetOnIf(obj,var,x,cond) ((cond)?(niPropFlagOn(obj,var,x)):(0))
+#  define niPropFlagSetOffIf(obj,var,x,cond)  ((cond)?(niPropFlagOff(obj,var,x)):(0))
 
 #endif // __cplusplus
 
 #if !defined niShaderLanguage
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 ///////////////////////////////////////////////
 template <class T>
 inline void MoveArray(T* dst, T* src, tSize count)
@@ -3913,7 +3944,7 @@ inline void ZeroArray(T* dst, tSize count)
 {
   FillArray(dst,T(0),count);
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 
 ///////////////////////////////////////////////
 static inline tInt MemCmp(tPtr apA, tPtr apB, tSize anSize) {
@@ -3944,7 +3975,7 @@ static inline void MemZero(tPtr apDest, tSize anSize) {
 
 #ifdef __cplusplus
 
-#define niZeroMember(NAME) ni::MemZero((ni::tPtr)&NAME,sizeof(NAME))
+#  define niZeroMember(NAME) ni::MemZero((ni::tPtr)&NAME,sizeof(NAME))
 
 ///////////////////////////////////////////////
 template <typename T>
@@ -4279,10 +4310,10 @@ static inline tU64 niPrivateSwap64(tU64 val) {
 }
 
 #ifdef niLittleEndian
-#if !defined niShaderLanguage
+#  if !defined niShaderLanguage
 niConstValue tBool kbIsBigEndian = niFalse;
 niConstValue tBool kbIsLittleEndian = niTrue;
-#endif
+#  endif
 #  define niSwapLE16(x) (x)
 #  define niSwapLE24(x) (x)
 #  define niSwapLE32(x) (x)
@@ -4294,10 +4325,10 @@ niConstValue tBool kbIsLittleEndian = niTrue;
 #  define niSwapBE48(x) niSwap48(x)
 #  define niSwapBE64(x) niSwap64(x)
 #elif defined niBigEndian
-#if !defined niShaderLanguage
+#  if !defined niShaderLanguage
 niConstValue tBool kbIsBigEndian = niTrue;
 niConstValue tBool kbIsLittleEndian = niFalse;
-#endif
+#  endif
 #  define niSwapBE16(x) (x)
 #  define niSwapBE24(x) (x)
 #  define niSwapBE32(x) (x)
@@ -4323,7 +4354,7 @@ niConstValue tBool kbIsLittleEndian = niFalse;
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
 /** \addtogroup niLang
  * @{
@@ -4351,15 +4382,15 @@ class cUnknown4 {
 struct iHString;
 struct iMutableCollection;
 
-#  define niDeclareInterfaceID_(NAME)                                   \
+#    define niDeclareInterfaceID_(NAME)                                   \
   inline static const ni::achar* __stdcall _GetInterfaceID() {return _A(#NAME); }
 
-#  define niDeclareInterfaceUUID_(NAME,A,B,C,D,E,F,G,H,I,J,K)         \
+#    define niDeclareInterfaceUUID_(NAME,A,B,C,D,E,F,G,H,I,J,K)         \
   inline static const ni::tUUID& __stdcall _GetInterfaceUUID() {      \
     static const ni::tUUID uuid = niInitUUID(A,B,C,D,E,F,G,H,I,J,K);  \
     return uuid; }
 
-#  define niDeclareBaseInterface(NAME,A,B,C,D,E,F,G,H,I,J,K)  \
+#    define niDeclareBaseInterface(NAME,A,B,C,D,E,F,G,H,I,J,K)  \
  protected:                                                   \
   virtual ~NAME() {}                                          \
  public:                                                      \
@@ -4368,24 +4399,24 @@ struct iMutableCollection;
   niDeclareInterfaceID_(NAME);                                \
   niDeclareInterfaceUUID_(NAME,A,B,C,D,E,F,G,H,I,J,K);        \
 
-#  ifdef _lint // to suppress warning 1516 : Data member hides inherited member 'ni::ni::iUnknown::IUnknownBaseType'
-#    define niDeclareInterfaceUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)
-#  else
-#    define niDeclareInterfaceUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)  \
+#    ifdef _lint // to suppress warning 1516 : Data member hides inherited member 'ni::ni::iUnknown::IUnknownBaseType'
+#      define niDeclareInterfaceUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)
+#    else
+#      define niDeclareInterfaceUUID(NAME,A,B,C,D,E,F,G,H,I,J,K)  \
  protected:                                                     \
   ~NAME() {}                                                    \
  public:                                                        \
   typedef NAME IUnknownBaseType;                                \
   niDeclareInterfaceID_(NAME);                                  \
   niDeclareInterfaceUUID_(NAME,A,B,C,D,E,F,G,H,I,J,K);
-#  endif
+#    endif
 
-#  define niGetInterfaceID(INTERFACE) INTERFACE::IUnknownBaseType::_GetInterfaceID()
-#  define niGetInterfaceUUID(INTERFACE) INTERFACE::IUnknownBaseType::_GetInterfaceUUID()
+#    define niGetInterfaceID(INTERFACE) INTERFACE::IUnknownBaseType::_GetInterfaceID()
+#    define niGetInterfaceUUID(INTERFACE) INTERFACE::IUnknownBaseType::_GetInterfaceUUID()
 
-#ifndef niBaseInterfacePadding
-#  pragma message("E/C++ Preprocessor: Platform's base interface padding not defined")
-#endif
+#    ifndef niBaseInterfacePadding
+#      pragma message("E/C++ Preprocessor: Platform's base interface padding not defined")
+#    endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! IUnknown
@@ -4457,7 +4488,7 @@ struct iDispatch : public iUnknown {
 
 /**@}*/
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -4466,7 +4497,7 @@ struct iDispatch : public iUnknown {
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
 /** \addtogroup niLang
  * @{
@@ -4526,9 +4557,9 @@ struct ObjectGuard
 };
 
 //! Scope bound object guard macro.
-#  define niGuardObject(obj)  ni::ObjectGuard __ni_guard(obj)
+#    define niGuardObject(obj)  ni::ObjectGuard __ni_guard(obj)
 //! Named scope bound object guard macro.
-#  define niGuardObject_(obj,GUARDNAME) ni::ObjectGuard __ni_guard__##GUARDNAME(obj)
+#    define niGuardObject_(obj,GUARDNAME) ni::ObjectGuard __ni_guard__##GUARDNAME(obj)
 
 template <typename T>
 struct ConstructorGuard {
@@ -4548,10 +4579,10 @@ struct ConstructorGuard {
 //! constructor stores 'this' in a smart pointer or Var (for example when
 //! sending a message) ; it prevents the object from being released in the
 //! constructor...
-#  define niGuardConstructor(T)                     \
+#    define niGuardConstructor(T)                     \
   ni::ConstructorGuard<T> __constructorGuard(this);
 
-#  if !defined niConfig_NoXCALL
+#    if !defined niConfig_NoXCALL
 
 niConstValue tInt eVMRet_OK = 0;
 niConstValue tInt eVMRet_InvalidArgCount = -1;
@@ -4561,23 +4592,23 @@ niConstValue tInt eVMRet_InvalidRet = -4;
 niConstValue tInt eVMRet_InvalidNullArg = -5;
 niConstValue tInt eVMRet_OutOfMemory = -6;
 
-#    ifdef __cplusplus
+#      ifdef __cplusplus
 typedef tInt (__ni_export_call_decl *tpfnVMCall)(iUnknown* apThis, const Var* apParameters, tU32 anNumParameters, Var* apRet);
-#    else
+#      else
 typedef tInt (__ni_export_call_decl *tpfnVMCall)(struct iUnknown* apThis, const Var* apParameters, tU32 anNumParameters, Var* apRet);
-#    endif
-#  else
-#    ifdef __cplusplus
-typedef tInt (__ni_export_call_decl *tpfnVMCall)(iUnknown* apThis, tIntPtr aVMHandle, tInt aStackBase);
+#      endif
 #    else
+#      ifdef __cplusplus
+typedef tInt (__ni_export_call_decl *tpfnVMCall)(iUnknown* apThis, tIntPtr aVMHandle, tInt aStackBase);
+#      else
 typedef tInt (__ni_export_call_decl *tpfnVMCall)(struct iUnknown* apThis, tIntPtr aVMHandle, tInt aStackBase);
-#    endif
+#      endif
 
-#  endif
+#    endif
 
 /**@}*/
 }
-#endif
+#  endif
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -4586,7 +4617,7 @@ typedef tInt (__ni_export_call_decl *tpfnVMCall)(struct iUnknown* apThis, tIntPt
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
 /** \addtogroup niLang
  * @{
@@ -4689,7 +4720,7 @@ typedef tU32 tFileAttrFlags;
 
 /**@}*/
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 #endif // niShaderLanguage
 
 //--------------------------------------------------------------------------------------------
@@ -4703,7 +4734,7 @@ niExportFunc(niNamespace(ni,sVec4i)*) ni_mem_get_stats(niNamespace(ni,sVec4i)* a
 niExportFunc(void) ni_mem_dump_report();
 niExportFunc(void) ni_mem_dump_leaks();
 
-#ifndef niNoDLL
+#  ifndef niNoDLL
 niExportFunc(niNamespace(ni,tIntPtr)) ni_dll_load(
     const niNamespace(ni,achar)* aName);
 
@@ -4713,21 +4744,21 @@ niExportFunc(void) ni_dll_free(
 niExportFunc(niNamespace(ni,tPtr)) ni_dll_get_proc(
     niNamespace(ni,tIntPtr) aModule,
     const niNamespace(ni,cchar)* aProcName);
-#endif
+#  endif
 
 niExportFunc(niNamespace(ni,achar)*) ni_get_exe_path(
     niNamespace(ni,achar)* buffer);
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 namespace ni {
-#endif // __cplusplus
+#  endif // __cplusplus
 
 //! The current time since the begining of the app.
 niExportFunc(niNamespace(ni,tF64)) TimerInSeconds();
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif // __cplusplus
+#  endif // __cplusplus
 
 #endif // niShaderLanguage
 

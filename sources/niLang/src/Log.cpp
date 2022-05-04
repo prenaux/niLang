@@ -8,6 +8,7 @@
 #include "API/niLang/Utils/ThreadImpl.h"
 #include "API/niLang/Utils/Trace.h"
 #include "API/niLang.h"
+#include "API/niLang/Utils/CrashReport.h"
 
 #define LOG_LAST_LOGS
 
@@ -358,7 +359,6 @@ niExportFunc(tU32) ni_log_get_filter() {
 
 static tpfnLogMessage _logCallback = NULL;
 niExportFunc(void) ni_log_set_callback(tpfnLogMessage apfnCallback) {
-  __sync_log();
   _logCallback = apfnCallback;
 }
 
@@ -414,26 +414,34 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logFile, const char* lo
   if (logType & _logFilter)
     return;
 
-  static ni::tF64 kLogTimeStart = ni::TimerInSeconds();
-  static tF64 _fPrevTime = 0.0f;
-
-  const tF64 logTime = ni::TimerInSeconds() - kLogTimeStart;
+  static niThreadLocal11 ni::tF64 kLogTimeStart = ni::TimerInSeconds();
+  static niThreadLocal11 ni::tF64 _fPrevTime = 0.0f;
+  const ni::tF64 logTime = ni::TimerInSeconds() - kLogTimeStart;
 
   if (!niFlagIs(logType,eLogFlags_NoCallbackOutput) && _logCallback) {
-    static volatile int _inCallback = 0;
-    if (_inCallback < 10) {
-      // __sync_log(); // Commented because we can't lock in the callback since the callback might log in another thread...
-      ++_inCallback;
-      if (!_logCallback(logType,logTime,logFile,logFunc,logLine,logMsg)) {
-        --_inCallback;
-        return;
-      }
-      --_inCallback;
+    static niThreadLocal11 SyncCounter _inCallback(0);
+    tBool callbackRet = eTrue;
+    _inCallback.Inc();
+    if (_inCallback.Get() < 10) {
+      // _logCallback must be thread safe
+      callbackRet = _logCallback(logType,logTime,logFile,logFunc,logLine,logMsg);
     }
     else {
+#if 0
+      cString stack;
+      ni_stack_get_current(stack);
       ni_log(logType|eLogFlags_NoCallbackOutput,
              logFile, logFunc, logLine,
-             "Too many re-entrant log callback");
+             niFmt("Too many re-entrant log callback '%d':\n%s",_inCallback.Get(),stack));
+#else
+      ni_log(logType|eLogFlags_NoCallbackOutput,
+             logFile, logFunc, logLine,
+             niFmt("Too many re-entrant log callback '%d'.",_inCallback.Get()));
+#endif
+    }
+    _inCallback.Dec();
+    if (!callbackRet) {
+      return;
     }
   }
 

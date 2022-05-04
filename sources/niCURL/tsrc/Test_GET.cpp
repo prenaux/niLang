@@ -10,7 +10,7 @@ struct FCURLGet {
   }
 };
 
-static const achar* const _kTestPHPBaseUrl = "https://bitscollider.com/test_cases/";
+static const achar* const _kTestPHPBaseUrl = "https://www.bitscollider.com/test_cases/";
 
 TEST_FIXTURE(FCURLGet,HttpAuthBasic) {
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");

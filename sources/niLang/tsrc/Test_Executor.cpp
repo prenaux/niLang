@@ -8,6 +8,9 @@ using namespace ni;
 
 struct FExecutor {};
 
+static const ni::tU32 _knFExecutorNumRun = 20;
+static const tU32 _knFExecutorThreadCount =  4;
+
 TEST_FIXTURE(FExecutor,FuncPtr) {
   struct _Local {
     static ni::SyncCounter& counter() {
@@ -16,15 +19,16 @@ TEST_FIXTURE(FExecutor,FuncPtr) {
     }
     static Var run() {
       counter().Inc();
-      niDebugFmt(("ThreadPool, Runned FuncPtr [%d] on thread '%d'.",
+      ni::SleepMs(10);
+      niDebugFmt(("ThreadPool, Runned FuncPtr [%d] on thread '0x%x'.",
                   counter().Get(),
                   ni::ThreadGetCurrentThreadID()));
       return 0;
     };
   };
 
-  const ni::tU32 kNumRun = 50;
-  Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(0);
+  const ni::tU32 kNumRun = _knFExecutorNumRun;
+  Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(_knFExecutorThreadCount);
   niLoop(i,kNumRun) {
     exec->Execute(Runnable(&_Local::run));
   }
@@ -46,14 +50,15 @@ TEST_FIXTURE(FExecutor,Main) {
     }
     static Var run() {
       counter().Inc();
-      niDebugFmt(("Main, Runned FuncPtr [%d] on thread '%d'.",
+      ni::SleepMs(10);
+      niDebugFmt(("Main, Runned FuncPtr [%d] on thread '0x%x'.",
                   counter().Get(),
                   ni::ThreadGetCurrentThreadID()));
       return 0;
     };
   };
 
-  const ni::tU32 kNumRun = 50;
+  const ni::tU32 kNumRun = _knFExecutorNumRun;
   Ptr<iExecutor> exec = ni::GetConcurrent()->GetExecutorMain();
   niLoop(i,kNumRun) {
     niExec_(exec) {
@@ -79,7 +84,7 @@ struct MyCounter : public ni::cIUnknownImpl<ni::iUnknown> {
 };
 
 TEST_FIXTURE(FExecutor,Lambda) {
-  const ni::tU32 kNumRun = 50;
+  const ni::tU32 kNumRun = _knFExecutorNumRun;
   Ptr<MyCounter> counter = niNew MyCounter();
   CHECK_EQUAL(1,counter->GetNumRefs());
   {
@@ -97,7 +102,7 @@ TEST_FIXTURE(FExecutor,Lambda) {
     // runMe should have one ref to the counter, so now should
     // have 2 refs
     CHECK_EQUAL(2,counter->GetNumRefs());
-    Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(4);
+    Ptr<iExecutor> exec = ni::GetConcurrent()->CreateExecutorThreadPool(_knFExecutorThreadCount);
     niLoop(i,kNumRun) {
       exec->Execute(Runnable(runMe));
     }
@@ -194,7 +199,8 @@ TEST_FIXTURE(FExecutor,TaskStealing) {
   CHECK_NOT_EQUAL(taskThread1,taskThread2);
   // task 1 & 5 should run on the same thread
   CHECK_EQUAL(taskThread1,taskThread5);
-  // task 2, 4 & 3 should run on the same thread - in that order, task3 is stolen from the first queue
+  // task 2, 4 & 3 should run on the same thread - in that order, task3 is
+  // stolen from the first queue
   CHECK_EQUAL(taskThread2,taskThread3);
   CHECK_EQUAL(taskThread2,taskThread4);
   // Run order should be task 1 (q0), 2 (q1), 4 (q1), 3 (q1 stolen from q0), 5

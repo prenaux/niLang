@@ -1,11 +1,8 @@
 #!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR"
 
 export WORK="$( cd "$SCRIPT_DIR/.." && pwd )"
-export GRADLE_USER_HOME="$WORK/_gradle"
-export TEMPDIR="$WORK/_ham"
-mkdir -p "$TEMPDIR"
-
 if [ -z "$HAM_HOME" ]; then
     export HAM_HOME="$WORK/ham"
 fi

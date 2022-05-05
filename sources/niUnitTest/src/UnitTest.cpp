@@ -4,22 +4,29 @@
 #include "API/niUnitTest.h"
 #include "../../niLang/src/API/niLang/Utils/URLFileHandlerManifest.h"
 
+#include "../../niLang/src/API/niLang/Utils/CrashReport.h"
+niCrashReport_DeclareHandler();
+
 #ifdef niWindows
 #  ifdef niMSVC
 //#define USE_SEH
 #    include <windows.h>
 #    include <winbase.h>
-#  elif !defined __JSCC__
+#  elif defined TEST_NICATCHALL && !defined __JSCC__
 #    define USE_SIGNALS
 #    include <signal.h>
 #  endif
 #elif defined niUnix
-#  if !defined __JSCC__
+#  if defined TEST_NICATCHALL && !defined __JSCC__
 #    define USE_SIGNALS
 #    include <signal.h>
 #    include <setjmp.h>
 #  endif
 #  include <stdio.h>
+#endif
+
+#if defined USE_SIGNALS && !defined TEST_NICATCHALL
+#error "USE_SIGNALS should only be used with TEST_NICATCHALL"
 #endif
 
 //--------------------------------------------------------------------------------------------
@@ -570,18 +577,18 @@ bool Test::BeforeRun(TestResults& testResults) const
     return false;
   }
 #endif
-#ifndef niNoExceptions
+#if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
     MemoryOutStream stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
     return false;
   }
-#endif
   niCatchAll() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
+#endif
   return true;
 }
 
@@ -608,18 +615,18 @@ bool Test::Run(TestResults& testResults) const
     return false;
   }
 #endif
-#ifndef niNoExceptions
+#if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
     MemoryOutStream stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
     return false;
   }
-#endif
   niCatchAll() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
+#endif
   return true;
 }
 
@@ -649,18 +656,18 @@ bool Test::AfterRun(TestResults& testResults) const
     return false;
   }
 #endif
-#ifndef niNoExceptions
+#if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
     MemoryOutStream stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
     return false;
   }
-#endif
   niCatchAll() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
+#endif
   return true;
 }
 

@@ -23,6 +23,13 @@
 
 #if defined niBuildType && !defined niNoExceptions
 #define TEST_NITHROWASSERT
+//
+// niUnitTest catches all exceptions. This has the disavantage of producing
+// stack traces that originate in a signal/exception handlers instead of the
+// actual origin of the crash so it disabled by default since it makes
+// debugging more difficult.
+//
+// #define TEST_NICATCHALL
 #endif
 
 namespace UnitTest {
@@ -58,10 +65,10 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 //--------------------------------------------------------------------------------------------
 
 #ifdef TEST
-#error "TEST macros already defined."
+#error "TEST macro already defined."
 #endif
 #ifdef TEST_FIXTURE
-#error "TEST_FIXTURE macros already defined."
+#error "TEST_FIXTURE macro already defined."
 #endif
 
 //
@@ -140,69 +147,69 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 #define TEST_CATCH_ASSERT_EXCEPTION(MSG)
 #endif
 
-#define TEST_FIXTURE_EX(Fixture, Name, List)    \
-struct Fixture##Name##Helper : public Fixture { \
-  Fixture##Name##Helper(char const* testName) : m_testName(testName) {} \
-  void RunTest(UnitTest::TestResults& testResults_, \
-               char const* const& m_testName, \
-               char const* const& m_filename, \
-               int const& m_lineNumber, \
-               bool& m_timeConstraintExempt, \
-               ni::tF64& m_timeStart, \
-               bool& m_timeReport, \
-               int& m_numSteps);                  \
-  char const* const m_testName; \
- private: \
-  Fixture##Name##Helper(Fixture##Name##Helper const&); \
-  Fixture##Name##Helper& operator =(Fixture##Name##Helper const&); \
-}; \
-class Test##Fixture##Name : public UnitTest::Test \
-{ \
- public: \
-  Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
- private: \
-  mutable Fixture##Name##Helper* _mt; \
-  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-    niTry() { \
-      _mt = new Fixture##Name##Helper(m_testName); \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture constructor " #Fixture); \
-    } \
-  } \
-  virtual void RunImpl(UnitTest::TestResults& testResults_) const  { \
-    niTry() { \
-      _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture " #Fixture); \
-    } \
-  } \
-  virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-    niTry() { \
-      delete _mt; \
-      _mt = NULL; \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture destructor " #Fixture) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture destructor " #Fixture); \
-    } \
-  } \
-} test##Fixture##Name##Instance; \
-UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance); \
-void Fixture##Name##Helper::RunTest(UnitTest::TestResults& testResults_, \
-                                    char const* const& m_testName, \
-                                    char const* const& m_filename, \
-                                    int const& m_lineNumber, \
-                                    bool& m_timeConstraintExempt, \
-                                    ni::tF64& m_timeStart, \
-                                    bool& m_timeReport, \
-                                    int& m_numSteps)
+#ifdef TEST_NICATCHALL
+#define TEST_CATCH_ALL_EXCEPTIONS(MSG)                                \
+  niCatchAll() {                                                      \
+    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, MSG);  \
+  }
+#else
+#define TEST_CATCH_ALL_EXCEPTIONS(MSG)
+#endif
+
+#define TEST_FIXTURE_EX(Fixture, Name, List)                            \
+  struct Fixture##Name##Helper : public Fixture {                       \
+    Fixture##Name##Helper(char const* testName) : m_testName(testName) {} \
+    void RunTest(UnitTest::TestResults& testResults_,                   \
+                 char const* const& m_testName,                         \
+                 char const* const& m_filename,                         \
+                 int const& m_lineNumber,                               \
+                 bool& m_timeConstraintExempt,                          \
+                 ni::tF64& m_timeStart,                                 \
+                 bool& m_timeReport,                                    \
+                 int& m_numSteps);                                      \
+    char const* const m_testName;                                       \
+   private:                                                             \
+   Fixture##Name##Helper(Fixture##Name##Helper const&);                 \
+   Fixture##Name##Helper& operator =(Fixture##Name##Helper const&);     \
+  };                                                                    \
+  class Test##Fixture##Name : public UnitTest::Test                     \
+  {                                                                     \
+   public:                                                              \
+   Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
+   private:                                                             \
+   mutable Fixture##Name##Helper* _mt;                                  \
+   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
+     niTry() {                                                          \
+       _mt = new Fixture##Name##Helper(m_testName);                     \
+     }                                                                  \
+     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
+     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture)\
+   }                                                                    \
+   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
+     niTry() {                                                          \
+       _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
+     }                                                                  \
+     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
+     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
+   }                                                                    \
+   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
+     niTry() {                                                          \
+       delete _mt;                                                      \
+       _mt = NULL;                                                      \
+     }                                                                  \
+     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture destructor " #Fixture) \
+     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture) \
+   }                                                                    \
+  } test##Fixture##Name##Instance;                                      \
+  UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance); \
+  void Fixture##Name##Helper::RunTest(UnitTest::TestResults& testResults_, \
+                                      char const* const& m_testName,    \
+                                      char const* const& m_filename,    \
+                                      int const& m_lineNumber,          \
+                                      bool& m_timeConstraintExempt,     \
+                                      ni::tF64& m_timeStart,            \
+                                      bool& m_timeReport,               \
+                                      int& m_numSteps)
 
 #define TEST_FIXTURE(Fixture,Name) TEST_FIXTURE_EX(Fixture,Name,UnitTest::Test::GetTestList())
 
@@ -231,29 +238,20 @@ class Test##Name : public UnitTest::Test \
       UnitTest::TestAppSetCurrentTestWidgetSink(niNew Name(TEST_PARAMS_CALL)); \
     }                                                                   \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Name) \
-        niCatchAll() {                                                  \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,        \
-                                 "Unhandled exception in widget constructor " #Name); \
-    }                                                                   \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Name) \
   } \
   virtual void RunImpl(UnitTest::TestResults& testResults_) const  { \
     niTry() { \
     } \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Name) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture " #Name); \
-    } \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name) \
   } \
   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
     niTry() {                                                           \
       UnitTest::TestAppSetCurrentTestWidgetSink(NULL);                  \
     }                                                                   \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Name) \
-        niCatchAll() {                                                  \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,        \
-                                 "Unhandled exception in widget destructor " #Name); \
-    }                                                                   \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Name) \
   } \
 } test##Name##Instance; \
 UnitTest::ListAdder adder##Name (List, &test##Name##Instance);
@@ -290,47 +288,32 @@ class Test##Fixture##Name : public UnitTest::Test \
       _mt = new Fixture##Name##Helper(m_testName); \
     } \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
-    niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture constructor " #Fixture); \
-    } \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture) \
     niTry() {                                                           \
       TEST_STEPS(5);                                                    \
       UnitTest::TestAppSetCurrentTestWidgetSink(niNew Name(TEST_PARAMS_CALL)); \
     }                                                                   \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Fixture) \
-        niCatchAll() {                                                  \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,        \
-                                 "Unhandled exception in widget constructor " #Fixture); \
-    }                                                                   \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Fixture) \
   } \
   virtual void RunImpl(UnitTest::TestResults& testResults_) const  { \
     niTry() { \
     } \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture " #Fixture); \
-    } \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
   } \
   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
     niTry() {                                                           \
       UnitTest::TestAppSetCurrentTestWidgetSink(NULL);                  \
     }                                                                   \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Fixture) \
-        niCatchAll() {                                                  \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,        \
-                                 "Unhandled exception in widget destructor " #Fixture); \
-    }                                                                   \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Fixture) \
     niTry() { \
       delete _mt; \
       _mt = NULL; \
     } \
     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture destructor " #Fixture) \
-        niCatchAll() { \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, \
-                                 "Unhandled exception in fixture destructor " #Fixture); \
-    } \
+    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture) \
   } \
 } test##Fixture##Name##Instance; \
 UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
@@ -467,10 +450,7 @@ struct UnitTestMemDelta {
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #value); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK(" #value ")")  \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK(" #value ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")")
 
 #define CHECK_RETURN_IF_FAILED(value)                                   \
   niTry() {                                                             \
@@ -480,50 +460,35 @@ struct UnitTestMemDelta {
     }                                                                   \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK(" #value ")")  \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK(" #value ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")") \
 
 #define CHECK_EQUAL(expected, actual)                                   \
   niTry() {                                                             \
     UnitTest::CheckEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_EQUAL(" #expected ", " #actual ")") \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_NOT_EQUAL(expected, actual)                               \
   niTry() {                                                             \
     UnitTest::CheckNotEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")") \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_CLOSE(expected, actual, tolerance)                        \
   niTry() {                                                             \
     UnitTest::CheckClose(testResults_, expected, actual, tolerance, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_CLOSE(" #expected ", " #actual ")") \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK_CLOSE(" #expected ", " #actual ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_CLOSE(" #expected ", " #actual ")")
 
 #define CHECK_ARRAY_CLOSE(expected, actual, count, tolerance)           \
   niTry() {                                                             \
     UnitTest::CheckArrayClose(testResults_, expected, actual, count, tolerance, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")") \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")")
 
 #define CHECK_THROW(expression, ExpectedExceptionType)                  \
   {                                                                     \
@@ -541,7 +506,7 @@ struct UnitTestMemDelta {
     niTry() { expression; }                                             \
     niCatchAll() { caught_ = true; }                                    \
     if (!caught_)                                                       \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, "Expected any exception, not thrown"); \
+      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, "Expected any exception, none thrown"); \
   }
 
 #ifdef TEST_NITHROWASSERT

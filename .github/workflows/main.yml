@@ -36,7 +36,7 @@ jobs:
       - name: Install Ubuntu packages
         run: |
           sudo apt update
-          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc libdw-dev
 
       - name: Build bootstrap
         run: |

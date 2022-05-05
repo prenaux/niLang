@@ -7,11 +7,11 @@ using namespace ni;
 extern int legacy_main(const achar* aCmdLine);
 extern void ErrorHelp(const achar* aszMsg);
 
+niCrashReport_DeclareHandler();
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 niConsoleMain()
 {
-  niCrashReportModuleInstall();
-
   int r = ParseToolsCommandLine(
     GetCurrentOSProcessCmdLine(), '@',
     [&](const achar* aTool, const achar* aCmdLine, int argc, const achar** argv) -> int {

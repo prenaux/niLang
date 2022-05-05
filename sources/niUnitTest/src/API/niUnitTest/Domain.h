@@ -80,10 +80,7 @@ bool Check2(ni::tI32 aStart, ni::tI32 aEnd,
         testResults_, m_testName, __FILE__, __LINE__);                  \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_DOMAIN(" #GENERATOR ", " #PREDICATE ")") \
-  niCatchAll() {                                                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               "Unhandled exception in CHECK_DOMAIN(" #GENERATOR ", " #PREDICATE ")"); \
-  }
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_DOMAIN(" #GENERATOR ", " #PREDICATE ")")
 
 #define CHECK_DOMAIN(START,END,TYPE,GENERATOR,PREDICATE)  \
   CHECK_DOMAIN_(Check,START,END,TYPE,GENERATOR,PREDICATE)

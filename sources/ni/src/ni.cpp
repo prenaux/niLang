@@ -1254,6 +1254,8 @@ niw_main
 
 #if !defined NI_NO_MAIN
 
+niCrashReport_DeclareHandler();
+
 #ifdef NI_CONSOLE
 niConsoleMain()
 #else
@@ -1265,8 +1267,6 @@ niWindowedMain()
 #else
   ni::GetLang()->SetProperty("ni.app.name","niw");
 #endif
-
-  niCrashReportModuleInstall();
 
 #ifdef NI_CONSOLE
   return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());

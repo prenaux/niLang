@@ -3,7 +3,6 @@
 
 #include "API/niLang/Types.h"
 #include "API/niLang/Utils/UnknownImpl.h"
-#include "API/niLang/Utils/CrashReport.h" // for ni_stack_get_current
 #include "API/niLang/Utils/Sync.h"
 #include "API/niLang/StringDef.h"
 #include "API/niLang/STL/EASTL/EABase/eabase.h"

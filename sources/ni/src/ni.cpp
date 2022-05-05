@@ -1253,7 +1253,6 @@ niw_main
 }
 
 #if !defined NI_NO_MAIN
-
 niCrashReport_DeclareHandler();
 
 #ifdef NI_CONSOLE

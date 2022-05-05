@@ -9137,12 +9137,6 @@
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="installCrashHandler" name="InstallCrashHandler" num_parameters="0">
-				<comments desc="Install a crash handler. ">
-					<remark text="A crash handler shows a dialog box and offer the user the opportunity to save a core dump of the application when crashing, and ideally the opportunity to upload it to a server or send it to a specific email address. "/>
-				</comments>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-			</method>
 			<method
 				const="yes"
 				java_name="getProperties"

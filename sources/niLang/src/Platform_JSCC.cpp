@@ -58,11 +58,6 @@ cString cLang::GetEnv(const achar* aaszEnv) const {
 }
 
 ///////////////////////////////////////////////
-tBool cLang::InstallCrashHandler() {
-  return eTrue;
-}
-
-///////////////////////////////////////////////
 niExportFunc(int) ni_debug_assert(
     int expression,     // The assert occur if this is eFalse
     const char* exp,  // Expression

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <niLang/Utils/CmdLine.h>
+#include <niLang/Utils/CrashReport.h>
 
 #if defined niEmbedded
 // #define EMBEDDED_FIXTURE_NAME "FJSCC-OpenGL"
@@ -20,6 +21,7 @@ int main(int argc, const char** argv) {
   else
 #endif
   {
+    niCrashReport_DeclareHandler();
     ni::cString fixtureName;
     ni::ni_log_system_info_once();
 #ifdef EMBEDDED_FIXTURE_NAME

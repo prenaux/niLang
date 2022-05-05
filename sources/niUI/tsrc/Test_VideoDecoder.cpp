@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include <niLang/Utils/TimerSleep.h>
-#include <niLang/Utils/CrashReport.h>
 
 using namespace ni;
 
 struct FVideoDecoder {
   FVideoDecoder() {
-    ni::GetLang()->InstallCrashHandler();
   }
   ~FVideoDecoder() {
   }

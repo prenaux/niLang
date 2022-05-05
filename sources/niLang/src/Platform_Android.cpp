@@ -49,11 +49,6 @@ cString cLang::GetEnv(const achar* aaszEnv) const {
 }
 
 ///////////////////////////////////////////////
-tBool cLang::InstallCrashHandler() {
-  return eTrue;
-}
-
-///////////////////////////////////////////////
 cString _GetCommandLine() {
 
   //

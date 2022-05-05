@@ -5,7 +5,8 @@
 #include <niLang/Utils/TimerSleep.h>
 #include "../CppScriptingHost.h"
 
-#if !defined niNoRTCpp
+// Disabled RTCpp test by default
+#if 0 && !defined niNoRTCpp
 
 /*
 
@@ -139,4 +140,4 @@ TEST_FIXTURE(FScriptingHostRTCpp,touched) {
   }
 }
 
-#endif
+#endif // niNoRTCpp

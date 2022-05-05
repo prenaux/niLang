@@ -427,17 +427,9 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logFile, const char* lo
       callbackRet = _logCallback(logType,logTime,logFile,logFunc,logLine,logMsg);
     }
     else {
-#if 0
-      cString stack;
-      ni_stack_get_current(stack);
-      ni_log(logType|eLogFlags_NoCallbackOutput,
-             logFile, logFunc, logLine,
-             niFmt("Too many re-entrant log callback '%d':\n%s",_inCallback.Get(),stack));
-#else
       ni_log(logType|eLogFlags_NoCallbackOutput,
              logFile, logFunc, logLine,
              niFmt("Too many re-entrant log callback '%d'.",_inCallback.Get()));
-#endif
     }
     _inCallback.Dec();
     if (!callbackRet) {

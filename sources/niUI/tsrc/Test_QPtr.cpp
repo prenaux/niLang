@@ -1,12 +1,9 @@
 #include "stdafx.h"
-#include <niLang/Utils/CrashReport.h>
 
 using namespace ni;
 
 struct FQPtr {
   FQPtr() {
-    niCrashReportModuleInstall();
-    ni::GetLang()->InstallCrashHandler();
   }
   ~FQPtr() {
   }

@@ -380,11 +380,6 @@ cString cLang::GetEnv(const achar* aaszEnv) const {
 }
 
 ///////////////////////////////////////////////
-tBool cLang::InstallCrashHandler() {
-  return CrashLog::Install();
-}
-
-///////////////////////////////////////////////
 niExportFunc(int) ni_debug_assert(
   int expression,     // The assert occur if this is eFalse
   const char* exp,  // Expression
@@ -406,10 +401,6 @@ niExportFunc(int) ni_debug_assert(
                  desc?_A(": "):_A(""),
                  desc?desc:_A(""),
                  desc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A(""));
-
-      {
-        ni_stack_get_current(fmt, NULL);
-      }
 
       niPrintln(fmt.Chars());
 
@@ -442,10 +433,6 @@ niExportFunc(int) ni_debug_assert(
                    " Ignore: Always ignore this assert\n"
                    "--------------------------\n",
                    exp, file, line);
-      }
-
-      {
-        ni_stack_get_current(fmt, NULL);
       }
 
       niLog(Debug,fmt.Chars());

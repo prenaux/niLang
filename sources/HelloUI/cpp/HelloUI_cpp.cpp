@@ -1,5 +1,7 @@
 #include <niAppLib.h>
 #include <niUI/Utils/DrawOpHud.h>
+#include <niLang/Utils/CrashReport.h>
+niCrashReport_DeclareHandler();
 
 #define HELLOUI_INCLUDE_DATA
 #include "HelloUI_data.h"

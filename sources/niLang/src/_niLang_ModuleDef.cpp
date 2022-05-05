@@ -11718,18 +11718,6 @@ static const ni::sMethodDef iLang_GetEnv = {
 #endif
 };
 
-// Method: InstallCrashHandler
-static const ni::sMethodDef iLang_InstallCrashHandler = {
-  "InstallCrashHandler",
-  0|ni::eType_I8, NULL, "tBool",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iLang_InstallCrashHandler)
-#else
-  NULL
-#endif
-};
-
 // Method: GetProperties
 static const ni::sMethodDef iLang_GetProperties = {
   "GetProperties",
@@ -13596,7 +13584,6 @@ static const ni::sMethodDef* Methods_iLang[] = {
 	&iLang_FatalError,
 	&iLang_SetEnv,
 	&iLang_GetEnv,
-	&iLang_InstallCrashHandler,
 	&iLang_GetProperties,
 	&iLang_HasProperty,
 	&iLang_SetProperty,

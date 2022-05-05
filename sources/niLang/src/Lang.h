@@ -40,7 +40,6 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
   void __stdcall Exit(tU32 aulErrorCode);
   void __stdcall _PlatformExit(tU32 aulErrorCode);
   void __stdcall FatalError(const achar* aszMsg);
-  tBool __stdcall InstallCrashHandler();
   void __stdcall SetEnv(const achar* aaszEnv, const achar* aaszValue) const;
   cString __stdcall GetEnv(const achar* aaszEnv) const;
 

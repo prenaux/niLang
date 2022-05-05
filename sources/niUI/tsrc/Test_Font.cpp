@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <niLang/Utils/CrashReport.h>
 
 using namespace ni;
 
@@ -8,8 +7,6 @@ struct FFont {
 
   FFont() {
     niDebugFmt(("FFont::FFont"));
-    niCrashReportModuleInstall();
-    ni::GetLang()->InstallCrashHandler();
     graphics = niCreateInstance(niUI,Graphics,niVarNull,niVarNull);
     graphics->RegisterSystemFonts();
   }

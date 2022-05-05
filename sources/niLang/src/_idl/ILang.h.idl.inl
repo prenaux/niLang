@@ -60,13 +60,6 @@ IDLC_METH_BEGIN(ni,iLang,GetEnv,1)
 	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
 IDLC_METH_END(ni,iLang,GetEnv,1)
 
-/** ni -> iLang::InstallCrashHandler/0 **/
-IDLC_METH_BEGIN(ni,iLang,InstallCrashHandler,0)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iLang,InstallCrashHandler,0,())
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iLang,InstallCrashHandler,0)
-
 /** ni -> iLang::GetProperties/0 **/
 IDLC_METH_BEGIN(ni,iLang,GetProperties,0)
 	IDLC_DECL_RETVAR(const tStringCMap*,_Ret)

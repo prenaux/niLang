@@ -171,9 +171,6 @@ if (!::gUIContext) {
     mStarted = true;
 
     ::gLang.property["ni.app.name"] = mName
-    if (!::lang.getProperty("app.NoCrashHandler",null)) {
-      ::gLang.InstallCrashHandler()
-    }
 
     ::printdebugln("--- APP STARTUP BEGIN: "+::lang.getHostOS()+
                    ", isEmbedded: "+::lang.isEmbedded()+" ---")

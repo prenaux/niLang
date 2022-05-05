@@ -1,13 +1,12 @@
 #include "stdafx.h"
-#include <niLang/Utils/CrashReport.h>
 #include <niLang/Utils/CmdLine.h>
+#include <niLang/Utils/CrashReport.h>
+niCrashReport_DeclareHandler();
 
 using namespace ni;
 
 extern int legacy_main(const achar* aCmdLine);
 extern void ErrorHelp(const achar* aszMsg);
-
-niCrashReport_DeclareHandler();
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 niConsoleMain()

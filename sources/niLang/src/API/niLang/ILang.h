@@ -139,12 +139,6 @@ struct iLang : public iUnknown
   //! Get an OS environment variable.
   //! {Property}
   virtual cString __stdcall GetEnv(const achar* aaszEnv) const = 0;
-
-  //! Install a crash handler.
-  //! \remark A crash handler shows a dialog box and offer the user the opportunity to save
-  //!         a core dump of the application when crashing, and ideally the opportunity to
-  //!         upload it to a server or send it to a specific email address.
-  virtual tBool __stdcall InstallCrashHandler() = 0;
   //! @}
 
   //########################################################################################

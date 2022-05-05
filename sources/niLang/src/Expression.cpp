@@ -529,7 +529,7 @@ enum eMathExprTokenType
 struct sMathExprToken
 {
   eMathExprTokenType Type = eMathExprTokenType_Last;
-  cString            strToken;
+  cString            strToken = AZEROSTR;
   tF64               fFloat = 0; // Real number data.
   tI32               nGroupDepth = 0;  // Group depth
 };
@@ -1448,6 +1448,7 @@ Op::Op(eMathOperationType aType, const achar* aszName, tU32 aulNumOperands)
   mbEvaluated = eFalse;
   mbConstant = eTrue;
   mbVarArgs = (aulNumOperands == eInvalidHandle);
+  mbLazy = eFalse;
   if (aulNumOperands != eInvalidHandle) {
     mvOperands.resize(aulNumOperands);
   }
@@ -5796,7 +5797,7 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
 
 ///////////////////////////////////////////////
 //! Parse the given string and return the result.
-Ptr<Op> Evaluator:: ParseExpr(const achar* aaszExpr)
+Ptr<Op> Evaluator::ParseExpr(const achar* aaszExpr)
 {
   if (!niStringIsOK(aaszExpr)) {
     aaszExpr = _A("0");
@@ -5843,7 +5844,7 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
   Ptr<Op> ptrOp;
   //while (1)
   {
-    sMathExprToken& token = *aitTok;
+    const sMathExprToken& token = *aitTok;
     switch (token.Type) {
       case eMathExprTokenType_Unknown: {
         // Unkown token, probably a variable.
@@ -5926,8 +5927,8 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
                 niError(niFmt(_A("Can't process tokens of parameter %d of function '%s'."), i, token.strToken.Chars()));
                 return NULL;
               }
-              ++aitTok;
 
+              ++aitTok;
               if (aitTok == avToks.end()) {
                 niError(niFmt(_A("Unexpected end of tokens after processing parameter %d of function '%s'."), i, token.strToken.Chars()));
                 return NULL;
@@ -5941,8 +5942,8 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
                 niError(niFmt(_A("Separator expected after parameter %d of function '%s'."), i, token.strToken.Chars()));
                 return NULL;
               }
-              ++aitTok;
 
+              ++aitTok;
               if (aitTok == avToks.end()) {
                 niError(niFmt(_A("Unexpected end of tokens after processing separator of parameter %d of function '%s'."), i, token.strToken.Chars()));
                 return NULL;

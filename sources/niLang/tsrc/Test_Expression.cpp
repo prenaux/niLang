@@ -371,10 +371,10 @@ TEST_FIXTURE(FExpression,VecFloatMul) {
     Ptr<iExpression> expr = ptrCtx->CreateExpression("Vec3(1,2,3) * time");
     CHECK_RETURN_IF_FAILED(expr.IsOK());
 
-    sVec3f r = Vec3f(1 * time, 2 * time, 3 * time);
-    sVec3f v = expr->GetEvalResult()->GetVec3();
+    const sVec3f r = Vec3f(1, 2, 3) * time;
+    const sVec3f v = expr->GetEvalResult()->GetVec3();
     niDebugFmt((_A("V: %s, r: %s"),v,r));
-    CHECK(VecEqual(r,v,0.1f));
+    CHECK_CLOSE(r, v, sVec3f::Epsilon());
   }
 }
 
@@ -1099,6 +1099,9 @@ TEST_FIXTURE(FExpression,CrashInvalidExpr_TruncIf) {
   Ptr<iExpressionContext> ptrCtx = ni::GetLang()->CreateExpressionContext();
   CHECK(ptrCtx.IsOK());
 
+  // *(int*)0x1234 = 123;
+
   Ptr<iExpression> expr = ptrCtx->CreateExpression("If(");
+  CHECK(!expr.IsOK());
   CHECK_EQUAL(0,(tIntPtr)expr.ptr());
 }

@@ -19,6 +19,11 @@
 #ifdef niLinux
 #define BACKWARD_HAS_DW 1
 #endif
+
+#ifdef niWindows
+#include <niLang/Platforms/Win32/Win32_Redef.h>
+#endif
+
 #include "backward.hpp"
 
 #define niCrashReport_DeclareHandler() backward::SignalHandling _niCrashReport_sh;

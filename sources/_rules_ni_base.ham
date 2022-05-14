@@ -107,6 +107,8 @@ rule niGenIDLs {
   }
 
   local IDLDIR = [ FDirName $(SUBDIR) _idl ] ;
+  MkDir $(IDLDIR) ;
+
   local VMCALLS = ;
   for _i in $(>) {
     local s = $(_i) ;
@@ -116,7 +118,6 @@ rule niGenIDLs {
     local d = $(f)".idl.xml" ;
     local x = $(f)".idl.inl" ;
     # 	local v = $(f)".idl.inl.prev" ;
-    MakeLocate $(<) : $(IDLDIR) ;
     IDLS += $(d) ;
     #     IDLS += [ FDirName API $(3) $(_i)".idl.xml" ] ;
     DEPENDS $(<) : $(d) ;

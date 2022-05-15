@@ -1143,9 +1143,14 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
   switch (anMsg)
   {
     case eUIMessage_Destroy:
+      // Make sure all nodes are destoried before we release the mpWidget
+      ClearSelection();
+      if (mptrRootNode.IsOK()) {
+        mptrRootNode->Invalidate();
+        mptrRootNode = NULL;
+      }
+
       mpWidget = NULL;
-      // Clear won't create a new root since mpWidget is NULL
-      Clear();
       break;
     case eUIMessage_NCSize:
       _NotifyUpdateLayout(TREENOTIFY_ALL);

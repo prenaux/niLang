@@ -689,7 +689,7 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
             mTextRect.Move(Vec2<tF32>(mptrWidget->GetSize().x+margin.x+margin.z,0));
           }
           else {
-            newPos.x = treePos.x+nodeRect.Left()+mTextRect.GetWidth();
+            newPos.x = ptrParentWidget->mpWidget->GetAbsoluteRect().GetRight() - mptrWidget->GetSize().x - margin.z;
           }
         }
         mptrWidget->SetAbsolutePosition(newPos);

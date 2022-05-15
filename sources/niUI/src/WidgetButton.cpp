@@ -358,9 +358,11 @@ tBool cButtonWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varPa
           if (nIndex != eInvalidHandle) {
             tHStringPtr path = _H(ptrDT->GetStringFromIndex(nIndex));
             Ptr<iOverlay> o = mpWidget->GetUIContext()->GetGraphics()->CreateOverlayResource(path);
-            o->SetBlendMode(eBlendMode_Translucent);
-            o->SetFiltering(eTrue);
-            this->SetIcon(o);
+            if (o.IsOK()) {
+              o->SetBlendMode(eBlendMode_Translucent);
+              o->SetFiltering(eTrue);
+              this->SetIcon(o);
+            }
           }
           nIndex = ptrDT->GetPropertyIndex(_A("icon_size"));
           if (nIndex != eInvalidHandle && mptrIconNormal.IsOK()) {

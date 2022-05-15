@@ -109,6 +109,10 @@ tBool cWidgetListBox::RemoveColumn(tU32 anColumn)
     item.InvalidateColumn(anColumn);
     item.vData.erase(item.vData.begin()+anColumn);
   }
+
+  // it may sort an invalid column after the column is removed, so we reset it
+  mnSortKey = eInvalidHandle;
+
   UpdateLayout();
   return eTrue;
 }
@@ -449,7 +453,8 @@ tU32 cWidgetListBox::GetSelection(tU32 anIndex) const
 ///////////////////////////////////////////////
 tBool cWidgetListBox::SetSelected(tU32 anSelection)
 {
-  ClearSelection();
+  // here we don't need to call the NotifySelChange() method, cause the AddSelection will do it.
+  mvSelection.clear();
   return AddSelection(anSelection);
 }
 
@@ -964,6 +969,10 @@ tBool cWidgetListBox::SelectItemByPos(const sVec2f& avAbsPos)
 
   tU32 nNewSelection = (tU32)floor(((scrollpos * fh) + pos.y) / fh);
   if (nNewSelection >= GetNumItems())
+    return eFalse;
+
+  // ignore selection change when it triggered by the MouseMove event;
+  if (mnInputSelected == eUIMessage_MouseMove && nNewSelection == GetSelected())
     return eFalse;
 
   const tU32 selMode = GetModSelMode();

@@ -502,8 +502,8 @@ class cFilePatternRegex : public cIUnknownImpl<ni::iRegex> {
       const achar* p = _vPatterns[i].Chars();
       if (*p == '!') {
         ++p;
-        if (afilepattern_match(p,aaszString)) {
-          return eFalse;
+        if (!afilepattern_match(p,aaszString)) {
+          return eTrue;
         }
       }
       else {

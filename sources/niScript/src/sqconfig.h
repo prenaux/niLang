@@ -14,7 +14,7 @@
 // thouroughly evaluated)
 //
 // #define NO_GARBAGE_COLLECTOR
-
+//
 #include <niLang/STL/set.h>
 #include <niLang/Utils/UnknownImpl.h>
 #include <niLang/StringDef.h>
@@ -23,10 +23,5 @@
 #include "API/niScript/IScriptObject.h"
 #include "API/niScript/IScriptVM.h"
 using namespace ni;
-
-extern tBool _bDoDebugDump;
-#if defined niDebug && !defined niEmbedded
-#define _DEBUG_DUMP
-#endif
 
 #endif // __SQCONFIG_H_D9768A43_C462_48A5_901A_44C03ABDBC90__

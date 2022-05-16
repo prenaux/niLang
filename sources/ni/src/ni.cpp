@@ -59,8 +59,6 @@ struct sOptions {
   astl::vector<cString> _vLibraries;
   // Script VM.
   QPtr<iScriptVM> _ptrScriptVM;
-  // Script object
-  Ptr<iScriptObject> _ptrCompiled;
   // Args
   Ptr<tStringCVec> _vArgs;
   // Run.
@@ -89,7 +87,6 @@ struct sOptions {
     _vIncludes.clear();
     _vLibraries.clear();
     _ptrScriptVM = NULL;
-    _ptrCompiled = NULL;
     _vArgs = NULL;
   }
 };
@@ -925,7 +922,6 @@ static Var OnExit() {
   ::fflush(stdout);
   ::fflush(stderr);
   _GetOptions()->_vArgs = NULL;
-  _GetOptions()->_ptrCompiled = NULL;
 #pragma niNote("The script VM HAS to be invalidated before being released, otherwise resources will leak, this is because an instance of an object created in a table may contain a reference to this VM and so create a cycle.")
   if (_GetOptions()->_ptrScriptVM.IsOK()) {
     _GetOptions()->_ptrScriptVM->Invalidate();
@@ -1131,40 +1127,33 @@ niw_main
           ni::GetLang()->SetGlobalInstance("URLFileHandler.file", dirURLHandler);
           ni::GetLang()->SetGlobalInstance("URLFileHandler.default", dirURLHandler);
         }
-
-        // compile
-        if (ptrInputFile.IsOK()) {
-          _GetOptions()->_ptrCompiled = _GetOptions()->_ptrScriptVM->Compile(ptrInputFile);
-          if (!niIsOK(_GetOptions()->_ptrCompiled)) {
-            ErrorExit(niFmt(_A("Script compilation error in '%s' !\n"),strInput.Chars()));
-          }
-        }
       }
     }
   }
 
   // output
-  if (_GetOptions()->_strOutput.IsNotEmpty()) {
-    if (!niIsOK(_GetOptions()->_ptrCompiled)) {
-      ErrorExit(_A("No compiled script to output !\n"));
+  if (!_GetOptions()->_bRun || _GetOptions()->_strOutput.IsNotEmpty()) {
+      Ptr<iScriptObject> ptrCompiled = _GetOptions()->_ptrScriptVM->Compile(ptrInputFile);
+    if (!niIsOK(ptrCompiled)) {
+      ErrorExit(niFmt(_A("Script compilation error in '%s' !\n"),strInput.Chars()));
     }
 
-    ni::Ptr<ni::iFile> ptrOutFile = ni::GetRootFS()->FileOpen(
+    if (_GetOptions()->_strOutput.IsNotEmpty()) {
+      ni::Ptr<ni::iFile> ptrOutFile = ni::GetRootFS()->FileOpen(
         _GetOptions()->_strOutput.Chars(),eFileOpenMode_Write);
-    if (!niIsOK(ptrOutFile)) {
-      ErrorHelp(niFmt(_A("Can't open the output file '%s'."),
-                      _GetOptions()->_strOutput.Chars()));
-    }
-    if (!_GetOptions()->_ptrScriptVM->WriteClosure(ptrOutFile,_GetOptions()->_ptrCompiled)) {
-      ErrorHelp(niFmt(_A("Can't write the closure to the output file '%s'."),
-                      _GetOptions()->_strOutput.Chars()));
+      if (!niIsOK(ptrOutFile)) {
+        ErrorHelp(niFmt(_A("Can't open the output file '%s'."),
+                        _GetOptions()->_strOutput.Chars()));
+      }
+      if (!_GetOptions()->_ptrScriptVM->WriteClosure(ptrOutFile,ptrCompiled)) {
+        ErrorHelp(niFmt(_A("Can't write the closure to the output file '%s'."),
+                        _GetOptions()->_strOutput.Chars()));
+      }
     }
   }
 
   tU32 nRet = 0;
-  const tBool hasMainScript = (_GetOptions()->_bRun &&
-                               _GetOptions()->_ptrCompiled.IsOK() &&
-                               !strInput.empty());
+  const tBool hasMainScript = (_GetOptions()->_bRun && !strInput.empty());
 
 #ifdef NI_CONSOLE
   Ptr<iFuture> replFuture;
@@ -1175,7 +1164,7 @@ niw_main
     }
 
     auto runREPL = [&]() -> tU32 {
-      if (!_GetOptions()->_bRun || !_GetOptions()->_ptrCompiled.IsOK()) {
+      if (!_GetOptions()->_bRun) {
         // nothing ran before, so we'll import lang.ni & algo.ni
         if (!_GetOptions()->_ptrScriptVM->Import(_H("lang.ni"),NULL)) {
           ErrorExit("REPL startup: Can't open lang.ni");

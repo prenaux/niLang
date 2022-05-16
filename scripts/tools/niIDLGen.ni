@@ -6,7 +6,7 @@
 function Generate(aSource,aDest,aDestInl)
 {
   try {
-    idlGen.generate(aSource,aDest,aDestInl)
+    ::idlGen.generate(aSource,aDest,aDestInl)
   }
   catch (e) {
     throw ("Error generating IDL for '"+aSource+"':\n"+e)
@@ -27,7 +27,7 @@ function GenerateModule(aSource) {
         if (i) {
           local s = aSource.getdir() + d.slice(0,i)
           local d = aSource.getdir() + "_idl/" + d.slice(0,i).getfile() + ".idl.xml";
-          idlGen.generate(s,d,d.setext("inl"))
+          ::idlGen.generate(s,d,d.setext("inl"))
         }
       }
     }

@@ -34,7 +34,7 @@ niExportFunc(bool) sq_aux_gettypedarg(HSQUIRRELVM v,int idx,SQObjectType type,SQ
 
 niExportFunc(int) sq_aux_invalidtype(HSQUIRRELVM v,SQObjectType type)
 {
-  return sq_throwerror(v, niFmt(_A("unexpected type %s"), _ss()->GetTypeNameStr(type)));
+  return sq_throwerror(v, niFmt(_A("unexpected type %s"), v->_ss->GetTypeNameStr(type)));
 }
 
 niExportFunc(void) sq_seterrorhandler(HSQUIRRELVM v)
@@ -58,7 +58,7 @@ niExportFunc(void) sq_setdebughook(HSQUIRRELVM v)
 niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename,int raiseerror)
 {
   SQObjectPtr o;
-  if (CompileScript(v, read, p, sourcename, o, raiseerror>0?true:false, _ss()->_debuginfo)) {
+  if (CompileScript(v, read, p, sourcename, o, raiseerror>0?true:false, v->_ss->_debuginfo)) {
     o = SQClosure::Create(_funcproto(o),_table(v->_roottable));
     v->Push(o);
     return SQ_OK;
@@ -68,47 +68,47 @@ niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,co
 
 niExportFunc(void) sq_enabledebuginfos(HSQUIRRELVM v, int debuginfo)
 {
-  _ss()->_debuginfo = debuginfo!=0?true:false;
+  v->_ss->_debuginfo = debuginfo!=0?true:false;
 }
 
 niExportFunc(bool) sq_aredebuginfosenabled(HSQUIRRELVM v)
 {
-  return _ss()->_debuginfo;
+  return v->_ss->_debuginfo;
 }
 
-niExportFunc(int) sq_addref(HSQOBJECT *po)
+niExportFunc(int) sq_addref(SQSharedState& aSS,HSQOBJECT *po)
 {
-  if (_ss()->_refs_table == _null_)
+  if (aSS._refs_table == _null_)
     return -1;
   SQObjectPtr refs;
   if (!ISREFCOUNTED(_sqtype(*po)) && _sqtype(*po) != OT_IUNKNOWN)
     return -1;
-  if (_table(_ss()->_refs_table)->Get(*po, refs)) {
+  if (_table(aSS._refs_table)->Get(*po, refs)) {
     refs = (SQInt)(_int(refs) + 1);
   }
   else{
     refs = 1;
   }
-  _table(_ss()->_refs_table)->NewSlot(*po, refs);
+  _table(aSS._refs_table)->NewSlot(*po, refs);
   return _int(refs);
 }
 
-niExportFunc(int) sq_release(HSQOBJECT *po)
+niExportFunc(int) sq_release(SQSharedState& aSS,HSQOBJECT *po)
 {
-  if (_ss()->_refs_table == _null_)
+  if (aSS._refs_table == _null_)
     return -1;
   SQObjectPtr refs;
   if(!ISREFCOUNTED(_sqtype(*po)) && _sqtype(*po) != OT_IUNKNOWN)
     return -1;
-  if (_table(_ss()->_refs_table)->Get(*po, refs)) {
+  if (_table(aSS._refs_table)->Get(*po, refs)) {
     int n = _int(refs) - 1;
     if (n <= 0) {
-      _table(_ss()->_refs_table)->Remove(*po);
+      _table(aSS._refs_table)->Remove(*po);
       sq_resetobject(po);
     }
     else {
       refs = n;
-      _table(_ss()->_refs_table)->Set(*po, refs);
+      _table(aSS._refs_table)->Set(*po, refs);
     }
   }
   return _int(refs);
@@ -624,13 +624,14 @@ niExportFunc(SQRESULT) sq_getparent(HSQUIRRELVM v,int idx)
   return SQ_ERROR;
 }
 
-static cString GetObjectString(const SQObjectPtr &obj) {
+static cString GetObjectString(const SQSharedState& aSS,
+                               const SQObjectPtr &obj) {
   cString val;
   switch (_sqtype(obj)) {
     case OT_STRING: val = _stringval(obj); break;
     case OT_TABLE:  val = _table(obj)->GetDebugName(); break;
   }
-  return niFmt(_A("type:%s:%s"),_ss()->GetTypeNameStr(obj),val.Chars());
+  return niFmt(_A("type:%s:%s"),aSS.GetTypeNameStr(obj),val.Chars());
 }
 
 niExportFunc(SQRESULT) sq_get(HSQUIRRELVM v,int idx)
@@ -661,7 +662,7 @@ niExportFunc(SQRESULT) sq_rawget(HSQUIRRELVM v,int idx)
       return sq_throwerror(v,_A("rawget works only on tables & arrays."));
   }
   v->Pop(1);
-  return sq_throwerror(v,niFmt(_A("sq_rawget (%d), the index '%s' doesn't exist"),counter++,GetObjectString(self).Chars()));
+  return sq_throwerror(v,niFmt(_A("sq_rawget (%d), the index '%s' doesn't exist"),counter++,GetObjectString(*v->_ss,self).Chars()));
 }
 
 niExportFunc(SQRESULT) sq_getstackobj(HSQUIRRELVM v,int idx,HSQOBJECT *po)
@@ -737,7 +738,7 @@ niExportFunc(SQRESULT) sq_call(HSQUIRRELVM v,int params,int retval)
 
 niExportFunc(void) sq_setcompilererrorhandler(HSQUIRRELVM v,SQCOMPILERERROR f)
 {
-  _ss()->_compilererrorhandler=f;
+  v->_ss->_compilererrorhandler=f;
 }
 
 niExportFunc(SQRESULT) sq_writeclosure(HSQUIRRELVM v,SQWRITEFUNC w,ni::tPtr up)

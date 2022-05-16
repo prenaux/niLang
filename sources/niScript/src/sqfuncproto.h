@@ -4,6 +4,8 @@
 #include "sqobject.h"
 #include "sqopcodes.h"
 
+struct sLinter;
+
 struct SQOuterVar
 {
   SQOuterVar(){}
@@ -66,7 +68,34 @@ public:
     return niNew SQFunctionProto();
   }
   const SQChar* GetLocal(SQVM *v,tU32 stackbase,tU32 nseq,tU32 nop);
+  static tI32 _GetLine(const SQInstructionVec& instructions,
+                       const SQInstruction *curr,
+                       const SQLineInfoVec& lineinfos);
   tI32 GetLine(const SQInstruction *curr);
+
+  void __stdcall SetName(iHString* ahspName) {
+    this->_name = ni::HStringIsEmpty(ahspName) ? _null_ : ahspName;
+  }
+  iHString* __stdcall GetName() const {
+    if (!sq_isstring(this->_name))
+      return NULL;
+    return _stringhval(this->_name);
+  }
+
+  iHString* __stdcall GetSourceName() const {
+    if (!sq_isstring(this->_sourcename))
+      return NULL;
+    return _stringhval(this->_sourcename);
+  }
+  int __stdcall GetSourceLine() const {
+    return this->_sourceline;
+  }
+
+  void LintTrace(
+    sLinter& aLinter,
+    const struct LintClosure& aClosure) const;
+  void LintTraceRoot();
+
   SQObjectPtrVec _literals;
   SQObjectPtrVec _functions;
   astl::vector<SQFunctionParameter> _parameters;
@@ -74,6 +103,7 @@ public:
   SQOuterVarVec _outervalues;
   SQInstructionVec _instructions;
   SQObjectPtr _sourcename;
+  int _sourceline;
   SQObjectPtr _name;
   SQLocalVarInfoVec _localvarinfos;
   SQLineInfoVec _lineinfos;

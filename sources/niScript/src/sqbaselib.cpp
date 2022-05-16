@@ -97,13 +97,13 @@ static int base_GetLangDelegate(HSQUIRRELVM v)
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
   const SQChar *str=NULL;
   sq_getstring(v,-1,&str);
-  pVM->mptrVM->Push(_ss()->GetLangDelegate(v,str));
+  pVM->mptrVM->Push(v->_ss->GetLangDelegate(v,str));
   return 1;
 }
 
 static int base_LockLangDelegates(HSQUIRRELVM v)
 {
-  _ss()->LockLangDelegates();
+  v->_ss->LockLangDelegates();
   return 0;
 }
 
@@ -2437,7 +2437,7 @@ SQRegFunction SQSharedState::_closure_default_delegate_funcz[]={
   {0,0}
 };
 
-static SQRegFunction base_funcs[] = {
+SQRegFunction SQSharedState::_base_funcs[] = {
   // constructors
   {_A("Array"),base_Array,-1, _A(".n")},
   {_A("Table"),base_Table,-1, _A(".n")},
@@ -2517,10 +2517,4 @@ niExportFunc(int) sq_registerfuncs(HSQUIRRELVM v, const SQRegFunction* regs) {
     ++i;
   }
   return i;
-}
-
-void sq_base_register(HSQUIRRELVM v) {
-  sq_pushroottable(v);
-  sq_registerfuncs(v,base_funcs);
-  sq_pop(v,1);
 }

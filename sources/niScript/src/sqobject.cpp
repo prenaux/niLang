@@ -48,16 +48,23 @@ const SQChar* SQFunctionProto::GetLocal(SQVM *vm,tU32 stackbase,tU32 nseq,tU32 n
   return res;
 }
 
-tI32 SQFunctionProto::GetLine(const SQInstruction *curr)
+tI32 SQFunctionProto::_GetLine(const SQInstructionVec& instructions,
+                               const SQInstruction *curr,
+                               const SQLineInfoVec& lineinfos)
 {
-  tI32 op=(curr-(&_instructions[0]));
-  tI32 line=_lineinfos[0]._line;
-  for(tU32 i=1;i<_lineinfos.size();i++){
-    if(_lineinfos[i]._op>=op)
+  tI32 op=(curr-(&instructions[0]));
+  tI32 line=lineinfos[0]._line;
+  for (tU32 i=1; i<lineinfos.size();i++) {
+    if (lineinfos[i]._op > op)
       return line;
-    line=_lineinfos[i]._line;
+    line=lineinfos[i]._line;
   }
   return line;
+}
+
+tI32 SQFunctionProto::GetLine(const SQInstruction *curr)
+{
+  return _GetLine(_instructions, curr, _lineinfos);
 }
 
 #define _CHECK_IO(exp)  { if(!exp) { v->Raise_MsgError("io error"); return false; } }
@@ -152,7 +159,7 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
     default: {
       v->Raise_MsgError(niFmt(
           "cannot serialize write a '%s'",
-          _ss()->GetTypeNameStr(o), _sqtype(o)));
+          v->_ss->GetTypeNameStr(o), _sqtype(o)));
       return false;
     }
   }
@@ -219,7 +226,7 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
     default: {
       v->Raise_MsgError(niFmt(
           "cannot serialize read a '%s' (%d)",
-          _ss()->GetTypeNameStr(t), (tInt)t));
+          v->_ss->GetTypeNameStr(t), (tInt)t));
       return false;
     }
   }
@@ -358,33 +365,64 @@ bool ReadSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQREADFUNC 
 }
 
 #ifndef NO_GARBAGE_COLLECTOR
+void SQSharedState::Mark(SQCollectable **chain) {
+  SQGarbageCollector::MarkObject(_refs_table,chain);
+  SQGarbageCollector::MarkObject(_table_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_array_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_string_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_number_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_closure_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_idxprop_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_vec2f_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_vec3f_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_vec4f_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_matrixf_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_uuid_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_enum_default_delegate,chain);
+  SQGarbageCollector::MarkObject(_method_default_delegate,chain);
+  for (SQSharedState::tDelegateMap::iterator it = mmapDelegates.begin();
+       it != mmapDelegates.end(); ++it)
+  {
+    SQGarbageCollector::MarkObject(it->second,chain);
+  }
+  for (SQSharedState::tEnumDefMap::iterator it = mmapEnumDefs.begin();
+       it != mmapEnumDefs.end(); ++it)
+  {
+    SQGarbageCollector::MarkObject(it->second,chain);
+  }
+}
+
 void SQVM::Mark(SQCollectable **chain)
 {
   START_MARK();
-  SQSharedState::MarkObject(_lasterror,chain);
-  SQSharedState::MarkObject(_errorhandler,chain);
-  SQSharedState::MarkObject(_debughook,chain);
-  SQSharedState::MarkObject(_roottable, chain);
-  for(tU32 i = 0; i < _stack.size(); i++)
-    SQSharedState::MarkObject(_stack[i], chain);
-  for(tU32 i = 0; i < _callsstack.size(); i++)
-    SQSharedState::MarkObject(_callsstack[i]._closurePtr, chain);
+  SQGarbageCollector::MarkObject(_lasterror,chain);
+  SQGarbageCollector::MarkObject(_errorhandler,chain);
+  SQGarbageCollector::MarkObject(_debughook,chain);
+  SQGarbageCollector::MarkObject(_roottable, chain);
+  for(tU32 i = 0; i < _stack.size(); i++) {
+    SQGarbageCollector::MarkObject(_stack[i], chain);
+  }
+  for(tU32 i = 0; i < _callsstack.size(); i++) {
+    SQGarbageCollector::MarkObject(_callsstack[i]._closurePtr, chain);
+  }
   END_MARK(chain);
 }
 
 void SQClosure::Mark(SQCollectable **chain)
 {
   START_MARK();
-  for(tU32 i = 0; i < _outervalues.size(); i++)
-    SQSharedState::MarkObject(_outervalues[i], chain);
+  for(tU32 i = 0; i < _outervalues.size(); i++) {
+    SQGarbageCollector::MarkObject(_outervalues[i], chain);
+  }
   END_MARK(chain);
 }
 
 void SQNativeClosure::Mark(SQCollectable **chain)
 {
   START_MARK();
-  for(tU32 i = 0; i < _outervalues.size(); i++)
-    SQSharedState::MarkObject(_outervalues[i], chain);
+  for(tU32 i = 0; i < _outervalues.size(); i++) {
+    SQGarbageCollector::MarkObject(_outervalues[i], chain);
+  }
   END_MARK(chain);
 }
 

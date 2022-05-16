@@ -40,18 +40,19 @@ inline void my_sq_throw() {
     const SQObjectPtr &o1=_a1_,&o2=_a2_;                                \
     if(sq_isnumeric(o1) && sq_isnumeric(o2)) {                          \
       if((_sqtype(o1)==OT_INTEGER) && (_sqtype(o2)==OT_INTEGER)) {      \
-        trg=(SQInt)(_int(o1) op _int(o2));                  \
+        trg=(SQInt)(_int(o1) op _int(o2));                              \
       }else{                                                            \
         trg=(SQFloat)(tofloat(o1) op tofloat(o2));                      \
       }                                                                 \
     } else {                                                            \
       const SQObjectPtr ro1=_a1_,ro2=_a2_;                              \
       if(#op[0] == '+' && (_sqtype(ro1) == OT_STRING || _sqtype(ro2) == OT_STRING))   { \
-        _GUARD(StringCat(ro1, ro2, trg));                                 \
+        _GUARD(StringCat(ro1, ro2, trg));                               \
       }                                                                 \
-      else if(!ArithMetaMethod(#op[0],ro1,ro2,trg))  {                    \
-        VM_ERRORT(niFmt(_A("arith op '%c' on between '%s' and '%s'"),#op[0], \
-                        _ss()->GetTypeNameStr(ro1),_ss()->GetTypeNameStr(ro2))); \
+      else if(!ArithMetaMethod(#op[0],ro1,ro2,trg))  {                  \
+        VM_ERRORT(niFmt(                                                \
+          "arith op '%c' on between '%s' and '%s'",#op[0],              \
+          _ss->GetTypeNameStr(ro1),_ss->GetTypeNameStr(ro2)));          \
       }                                                                 \
     }                                                                   \
   }
@@ -60,18 +61,18 @@ inline void my_sq_throw() {
     const SQObjectPtr &o1=_a1_,&o2=_a2_;                                \
     if(sq_isnumeric(o1) && sq_isnumeric(o2)) {                          \
       if((_sqtype(o1)==OT_INTEGER) && (_sqtype(o2)==OT_INTEGER)) {      \
-        trg=(SQInt)(_int(o1) op _int(o2));                  \
+        trg=(SQInt)(_int(o1) op _int(o2));                              \
       }else{                                                            \
         trg=(SQFloat)(tofloat(o1) op tofloat(o2));                      \
       }                                                                 \
     } else {                                                            \
       const SQObjectPtr ro1=_a1_,ro2=_a2_;                              \
       if(#op[0] == '+' && (_sqtype(ro1) == OT_STRING || _sqtype(ro2) == OT_STRING))   { \
-        if (!v->StringCat(ro1, ro2, trg)) return false;                   \
+        if (!v->StringCat(ro1, ro2, trg)) return false;                 \
       }                                                                 \
-      else if(!v->ArithMetaMethod(#op[0],ro1,ro2,trg))  {                 \
+      else if(!v->ArithMetaMethod(#op[0],ro1,ro2,trg))  {               \
         VM_ERRORB_(v,niFmt(_A("arith op '%c' on between '%s' and '%s'"),#op[0], \
-                           _ss()->GetTypeNameStr(ro1),_ss()->GetTypeNameStr(ro2))); \
+                           _ss->GetTypeNameStr(ro1),_ss->GetTypeNameStr(ro2))); \
       }                                                                 \
     }                                                                   \
   }
@@ -80,27 +81,27 @@ inline void my_sq_throw() {
     const SQObjectPtr &o1=_a1_,&o2=_a2_;                                \
     if((_sqtype(o1)==OT_INTEGER || _sqtype(o1)==OT_NULL) &&             \
        (_sqtype(o2)==OT_INTEGER || _sqtype(o2)==OT_NULL)) {             \
-      trg=(SQInt)(_int(o1) op _int(o2));                    \
+      trg=(SQInt)(_int(o1) op _int(o2));                                \
     } else { VM_ERRORT(niFmt(_A("bitwise op between '%s' and '%s'"),    \
-                             _ss()->GetTypeNameStr(o1),_ss()->GetTypeNameStr(o2)));  } \
+                             _ss->GetTypeNameStr(o1),_ss->GetTypeNameStr(o2)));  } \
   }
 
 #define BW_UOP_EX(op,trg,_a1_,_a2_) {                                   \
     const SQObjectPtr &o1=_a1_,&o2=_a2_;                                \
     if((_sqtype(o1)==OT_INTEGER || _sqtype(o1)==OT_NULL) &&             \
        (_sqtype(o2)==OT_INTEGER || _sqtype(o2)==OT_NULL)) {             \
-      trg=(SQInt)(*((unsigned int*)&_int(o1)) op _int(o2)); \
+      trg=(SQInt)(*((unsigned int*)&_int(o1)) op _int(o2));             \
     } else { VM_ERRORT(niFmt(_A("bitwise op between '%s' and '%s'"),    \
-                             _ss()->GetTypeNameStr(o1),_ss()->GetTypeNameStr(o2)));   } \
+                             _ss->GetTypeNameStr(o1),_ss->GetTypeNameStr(o2)));   } \
   }
 
 #define BW_OP(op) {                                                     \
     const SQObjectPtr &o1=STK(arg2),&o2=STK(arg1);                      \
     if((_sqtype(o1)==OT_INTEGER || _sqtype(o1)==OT_NULL) &&             \
        (_sqtype(o2)==OT_INTEGER || _sqtype(o2)==OT_NULL)) {             \
-      TARGET=(SQInt)(_int(o1) op _int(o2));                 \
+      TARGET=(SQInt)(_int(o1) op _int(o2));                             \
     } else { VM_ERRORT(niFmt(_A("bitwise op between '%s' and '%s'"),    \
-                             _ss()->GetTypeNameStr(o1),_ss()->GetTypeNameStr(o2)));   } \
+                             _ss->GetTypeNameStr(o1),_ss->GetTypeNameStr(o2)));   } \
   }
 
 #define LOCAL_INC_(v, target, a, incr)          \
@@ -129,44 +130,6 @@ inline void my_sq_throw() {
     a = trg;                                    \
   }
 
-#ifdef niGCC
-//
-// This will use computed goto instead of a big switch/case,
-// when writting a new OPCODE you have to make sure that any variable
-// with a destructor gets destructed properly. The 'goto' statement will not
-// automatically call the destructor in current scope, however you can work
-// around the problem by adding an explicit scope around the variables that
-// need to be destructed. The EX_BEGIN/EX_END macros basically enforce that.
-// In general make sure new OPCODE are written with the form :
-//    EX_BEGIN(NAME) { CODE; } EX_END_*();
-// And DOT NOT put any explicit 'goto' inside the 'CODE' section.
-//
-/*
-
-  Timing of niScript_Units Test Fixture (30 tests) :
-  on a TeleChips TC89xx 599Mhz ARMv6 (with VFP) 256MB RAM based 7" MID by HSG :
-
-  --- BigSwitch:
-  (FAILURE: 1 out of 30 tests failed.)
-  Test time: 4.376 seconds.
-  Test time: 4.38 seconds.
-  Test time: 4.505 seconds.
-  Test time: 4.489 seconds.
-  Test time: 4.362 seconds.
-
-  --- GCC addressed labels:
-  (FAILURE: 1 out of 30 tests failed.)
-  Test time: 4.532 seconds.
-  Test time: 4.566 seconds.
-  Test time: 4.649 seconds.
-  Test time: 4.49 seconds.
-  Test time: 4.56 seconds.
-
-*/
-// Not enabled, timing above shows that the BigSwitch is still faster...
-// #define USE_ADDRLABEL
-#endif
-
 #define EQ_OP(v,TEST) {                                         \
     int r = 0; _GUARDV(v,v->ObjEq(STK(arg2), COND_LITERAL, r)); \
     TARGET = ((TEST)?_notnull_:_null_);                         \
@@ -181,8 +144,6 @@ inline void my_sq_throw() {
 #define sarg1 (*((short *)&arg1))
 #define arg2 (_i_->_arg2)
 #define arg3 (_i_->_arg3)
-
-#if !defined USE_ADDRLABEL
 
 #ifdef NO_GARBAGE_COLLECTOR
 #pragma message("VMExec: Using BigSwitch (No GC)")
@@ -201,105 +162,10 @@ inline void my_sq_throw() {
 #define EX_BEGIN(NAME) case NAME:
 #define EX_END_CONTINUE()  continue;
 #define EX_END_FALLTHROUGH(NEXT)  // this replace a fallthrough case statement (a case statement without break or continue at the end)
-#else
-
-#ifdef NO_GARBAGE_COLLECTOR
-#pragma message("VMExec: Using GCC addressed labels (No GC)")
-#else
-#pragma message("VMExec: Using GCC addressed labels (GC Enabled)")
-#endif
-
-#define EX_LOOP()                               \
-  const SQInstruction* _i_;
-#define EX_LOOP_INIT()                          \
-  EX_END_CONTINUE()
-
-#define EX_SWITCH()
-#define EX_BEGIN(NAME) EXOP_LABEL(NAME):
-#define EX_END_CONTINUE()  _i_ = _ci->_ip++; goto *__op_labels[_i_->op];
-#define EX_END_FALLTHROUGH(NEXT) goto EXOP_LABEL(NEXT); // this replace a fallthrough case statement (a case statement without break or continue
-
-#define EXOP_LABEL(NAME) _label_##NAME
-#define EXOP_LABELADDR(NAME)  &&EXOP_LABEL(NAME)
-
-#endif
 
 ///////////////////////////////////////////////
 bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stackbase,SQObjectPtr &outres)
 {
-#ifdef USE_ADDRLABEL
-  static void* __op_labels[] = {
-    EXOP_LABELADDR(_OP_LINE),
-    EXOP_LABELADDR(_OP_LOAD),
-    EXOP_LABELADDR(_OP_LOADNULL),
-    EXOP_LABELADDR(_OP_NEWSLOT),
-    EXOP_LABELADDR(_OP_SET),
-    EXOP_LABELADDR(_OP_GET),
-    EXOP_LABELADDR(_OP_LOADROOTTABLE),
-    EXOP_LABELADDR(_OP_PREPCALL),
-    EXOP_LABELADDR(_OP_CALL),
-    EXOP_LABELADDR(_OP_MOVE),
-    EXOP_LABELADDR(_OP_ADD),
-    EXOP_LABELADDR(_OP_SUB),
-    EXOP_LABELADDR(_OP_MUL),
-    EXOP_LABELADDR(_OP_DIV),
-    EXOP_LABELADDR(_OP_MODULO),
-    EXOP_LABELADDR(_OP_EQ),
-    EXOP_LABELADDR(_OP_NE),
-    EXOP_LABELADDR(_OP_G),
-    EXOP_LABELADDR(_OP_GE),
-    EXOP_LABELADDR(_OP_L),
-    EXOP_LABELADDR(_OP_LE),
-    EXOP_LABELADDR(_OP_EXISTS),
-    EXOP_LABELADDR(_OP_NEWTABLE),
-    EXOP_LABELADDR(_OP_JMP),
-    EXOP_LABELADDR(_OP_JNZ),
-    EXOP_LABELADDR(_OP_JZ),
-    EXOP_LABELADDR(_OP_RETURN),
-    EXOP_LABELADDR(_OP_CLOSURE),
-    EXOP_LABELADDR(_OP_FOREACH),
-    EXOP_LABELADDR(_OP_TYPEOF),
-    EXOP_LABELADDR(_OP_PUSHTRAP),
-    EXOP_LABELADDR(_OP_POPTRAP),
-    EXOP_LABELADDR(_OP_THROW),
-    EXOP_LABELADDR(_OP_NEWARRAY),
-    EXOP_LABELADDR(_OP_APPENDARRAY),
-    EXOP_LABELADDR(_OP_AND),
-    EXOP_LABELADDR(_OP_OR),
-    EXOP_LABELADDR(_OP_NEG),
-    EXOP_LABELADDR(_OP_NOT),
-    EXOP_LABELADDR(_OP_DELETE),
-    EXOP_LABELADDR(_OP_BWNOT),
-    EXOP_LABELADDR(_OP_BWAND),
-    EXOP_LABELADDR(_OP_BWOR),
-    EXOP_LABELADDR(_OP_BWXOR),
-    EXOP_LABELADDR(_OP_MINUSEQ),
-    EXOP_LABELADDR(_OP_PLUSEQ),
-    EXOP_LABELADDR(_OP_MULEQ),
-    EXOP_LABELADDR(_OP_DIVEQ),
-    EXOP_LABELADDR(_OP_TAILCALL),
-    EXOP_LABELADDR(_OP_SHIFTL),
-    EXOP_LABELADDR(_OP_SHIFTR),
-    EXOP_LABELADDR(_OP_INC),
-    EXOP_LABELADDR(_OP_DEC),
-    EXOP_LABELADDR(_OP_PINC),
-    EXOP_LABELADDR(_OP_PDEC),
-    EXOP_LABELADDR(_OP_GETK),
-    EXOP_LABELADDR(_OP_PREPCALLK),
-    EXOP_LABELADDR(_OP_DMOVE),
-    EXOP_LABELADDR(_OP_LOADNULLS),
-    EXOP_LABELADDR(_OP_USHIFTR),
-    EXOP_LABELADDR(_OP_SHIFTLEQ),
-    EXOP_LABELADDR(_OP_SHIFTREQ),
-    EXOP_LABELADDR(_OP_USHIFTREQ),
-    EXOP_LABELADDR(_OP_BWANDEQ),
-    EXOP_LABELADDR(_OP_BWOREQ),
-    EXOP_LABELADDR(_OP_BWXOREQ),
-    EXOP_LABELADDR(_OP_MODULOEQ),
-    EXOP_LABELADDR(_OP_SPACESHIP),
-    EXOP_LABELADDR(_OP_THROW_SILENT),
-  };
-#endif
 #ifdef EXCEPTION_DEBUG
   try {
 #endif
@@ -335,14 +201,11 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
       EX_LOOP()
       {
         EX_LOOP_INIT();
-
-#ifdef _DEBUG_DUMP
         if (_execDumpStack) {
           dumpstack(_stackbase);
           niDebugFmt(("\n[%d] %s %d %d %d %d\n",_ci->_ip-_ci->_iv->size(),
                       _GetOpDesc(_i_->op),arg0,arg1,arg2,arg3));
         }
-#endif
 
         EX_SWITCH() {
           //----------------------------------- _OP_LOAD
@@ -826,7 +689,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                       break;
                     }
                   }
-                  VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss()->GetTypeNameStr(temp_reg)));
+                  VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss->GetTypeNameStr(temp_reg)));
                 }
               case OT_USERDATA:
                 {
@@ -849,7 +712,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                       break;
                     }
 
-                    VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss()->GetTypeNameStr(temp_reg)));
+                    VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss->GetTypeNameStr(temp_reg)));
                   }
                 }
               case OT_IUNKNOWN:
@@ -868,10 +731,10 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                     STK(ct_target) = temp_reg;
                     break;
                   }
-                  VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss()->GetTypeNameStr(temp_reg)));
+                  VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss->GetTypeNameStr(temp_reg)));
                 }
               default:
-                VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss()->GetTypeNameStr(temp_reg)));
+                VM_ERRORT(niFmt(_A("attempt to call '%s'"), _ss->GetTypeNameStr(temp_reg)));
             }
           } EX_END_CONTINUE();
 
@@ -1060,7 +923,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                 }
                 break;
               default:
-                VM_ERRORT(niFmt(_A("attempt to negate a %s"), _ss()->GetTypeNameStr(STK(arg1))));
+                VM_ERRORT(niFmt(_A("attempt to negate a %s"), _ss->GetTypeNameStr(STK(arg1))));
             }
           } EX_END_CONTINUE();
 
@@ -1074,7 +937,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
             }
             else {
               VM_ERRORT(niFmt("attempt to perform a bitwise op on a %s",
-                              _ss()->GetTypeNameStr(STK(arg1))));
+                              _ss->GetTypeNameStr(STK(arg1))));
             }
           } EX_END_CONTINUE();
 
@@ -1228,7 +1091,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                   }
                 }
               default:
-                VM_ERRORT(niFmt(_A("cannot iterate %s"), _ss()->GetTypeNameStr(STK(arg0))));
+                VM_ERRORT(niFmt(_A("cannot iterate %s"), _ss->GetTypeNameStr(STK(arg0))));
             }
             _ci->_ip += sarg1;
           } EX_END_CONTINUE();
@@ -1277,11 +1140,10 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
  exception_trap:
     {
       SQObjectPtr currerror = _lasterror;
-#ifdef _DEBUG_DUMP
       if (_execDumpStack) {
         dumpstack(_stackbase);
       }
-#endif
+
       int n = 0;
       int last_top = _top;
       if (_ci) {

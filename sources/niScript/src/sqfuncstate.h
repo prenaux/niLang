@@ -8,7 +8,7 @@
 
 struct SQFuncState
 {
-  SQFuncState(SQFunctionProto *func,SQFuncState *parent);
+  SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahspSourceName,int sourceline);
   void AddInstruction(SQOpcode _op,int arg0=0,int arg1=0,int arg2=0,int arg3=0,int ext=0){SQInstruction i(_op,arg0,arg1,arg2,arg3,ext);AddInstruction(i);}
   void AddInstruction(SQInstruction &i);
   void SetIntructionParams(int pos,int arg0,int arg1,int arg2=0,int arg3=0);
@@ -29,16 +29,16 @@ struct SQFuncState
   int GetStackSize();
   int CalcStackFrameSize();
   void AddLineInfos(int line,bool lineop,bool force=false);
-  void __stdcall Invalidate();
   int AllocStackPos();
   int PushTarget(int n=-1);
   int PopTarget();
   int TopTarget();
   bool IsLocal(unsigned int stkpos);
   void SetTopInstructionOpExt(int opExt);
-#ifdef _DEBUG_DUMP
-  void Dump();
-#endif
+  void LintDump();
+  void LintCompileTime();
+
+  void FinalizeFuncProto();
 
   int GetConstant(SQObjectPtr cons);
 
@@ -60,13 +60,9 @@ struct SQFuncState
   int GetNumFunctions() const;
   void AddFunction(SQFuncState* apFuncState);
 
-  void __stdcall SetName(iHString* ahspName);
-  iHString* __stdcall GetName() const;
-
-  void __stdcall SetSourceName(iHString* ahspSourceName);
-  iHString* __stdcall GetSourceName() const;
-
-  const SQObjectPtr& GetFunctionObject() const;
+  SQFunctionProto& proto() const {
+    return *_funcproto(_func);
+  }
 
  public:
   SQObjectPtr _func;

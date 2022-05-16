@@ -30,7 +30,7 @@ enum SQOpcode
   _OP_JNZ           = 24, //<<src>> <<pos>>
   _OP_JZ            = 25, //<<src>> <<pos>>
   _OP_RETURN        = 26, //1(return) or -1(pushnull) <<retval>>
-  _OP_CLOSURE       = 27, // <<target>> <<index>> <<if 1 is a generator>>
+  _OP_CLOSURE       = 27, //<<target>> <<index>> <<if 1 is a generator>>
   _OP_FOREACH       = 28, //<<container>> <<first arg>> <<jmppos>>
   _OP_TYPEOF        = 29, //<<target>> <<obj>>
   _OP_PUSHTRAP      = 30, //<<pos>>
@@ -38,8 +38,8 @@ enum SQOpcode
   _OP_THROW         = 32, //<<target>>
   _OP_NEWARRAY      = 33, //<<target>> <<size>>
   _OP_APPENDARRAY   = 34, //<<array>><<val>>
-  _OP_AND           = 35, // <<target>> <<op1>> <<jmp>>
-  _OP_OR            = 36, // <<target>> <<op1>> <<jmp>>
+  _OP_AND           = 35, //<<target>> <<op1>> <<jmp>>
+  _OP_OR            = 36, //<<target>> <<op1>> <<jmp>>
   _OP_NEG           = 37, //<<target>> <<src>>
   _OP_NOT           = 38, //<<target>> <<src>>
   _OP_DELETE        = 39, //<<target>> <<table>> <<key>>
@@ -61,7 +61,7 @@ enum SQOpcode
   _OP_GETK          = 55, //<<target>> <<key-literal>> <<src>>
   _OP_PREPCALLK     = 56, //<<target>> <<key-literal>> <<src>> <<target where src is copied>>
   _OP_DMOVE         = 57,
-  _OP_LOADNULLS     = 58,
+  _OP_LOADNULLS     = 58, //<<target>> <<count>>
   _OP_USHIFTR       = 59,
   _OP_SHIFTLEQ      = 60,
   _OP_SHIFTREQ      = 61,
@@ -77,6 +77,8 @@ enum SQOpcode
 
 #define _OPEXT_GET_RAW         niBit(0)
 #define _OPEXT_GET_SAFE        niBit(1)
+// explicit this access, shouldn't produce any lint warning
+#define _OPEXT_EXPLICIT_THIS   niBit(2)
 
 struct SQInstruction
 {
@@ -103,9 +105,7 @@ struct SQInstruction
 };
 niCAssert(sizeof(SQInstruction) == 8);
 
-#ifdef _DEBUG_DUMP
 extern "C" const achar* _GetOpDesc(int op);
-#endif
 
 #include "sqvector.h"
 SQ_VECTOR_TYPEDEF(SQInstruction,SQInstructionVec);

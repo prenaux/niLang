@@ -9,6 +9,10 @@
 ::Import("regex.ni")
 ::Import("ham.ni")
 
+local __lint = {
+  // _pedantic = 0
+}
+
 ///////////////////////////////////////////////
 ::buildNotify <- {
   NOTIFY_SLACK_URL = "https://hooks.slack.com/services/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"

@@ -52,7 +52,7 @@
   function loadOverlayAdditive(aName,aForceReload) {
     return ::gui.loadOverlayEx(aName,::eBlendMode.Additive,false,aForceReload)
   }
-  function loadOverlayAdditiveF(aName) {
+  function loadOverlayAdditiveF(aName,aForceReload) {
     return ::gui.loadOverlayEx(aName,aForceReload,::eBlendMode.Additive,true,aForceReload)
   }
 
@@ -149,10 +149,10 @@
       (!bmpBase.pixel_format.format.contains("X"));
 
     switch (bmpBase.type) {
-      case eBitmapType["2D"]: {
+      case ::eBitmapType["2D"]: {
         return bmpBase
       }
-      case eBitmapType.Cube: {
+      case ::eBitmapType.Cube: {
         local bmpCube = bmpBase.QueryInterface("iBitmapCube");
         local pxfCaps = bmpBase.pixel_format.caps;
         local pxf = bmpBase.pixel_format;
@@ -1048,6 +1048,9 @@ else {
 //
 //--------------------------------------------------------------------------------------------
 ::tLoadingOverlay <- {
+  _speed = 10.0
+  _overlay = null
+
   function new(path) {
     local t = this.Clone()
     path = path || "niUI://loading.tga"

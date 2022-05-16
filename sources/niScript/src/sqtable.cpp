@@ -10,6 +10,7 @@
 #include "ScriptVM.h"
 #include "ScriptVM_Concurrent.h"
 #include <niLang/Utils/ThreadImpl.h>
+#include "sq_hstring.h"
 
 // Once SQObjectPtr is a Var we can use iIterator
 struct SQTableIterator : public cIUnknownImpl<iUnknown> {
@@ -325,24 +326,28 @@ SQTable* SQTable::GetParent() const {
 
 void SQTable::SetDebugName(const achar* aaszName)
 {
-  SQObjectPtr key = _H("__debug_name");
+  SQObjectPtr key = _HC(__debug_name);
   SQObjectPtr val = _H(aaszName);
   NewSlot(key,val);
-#ifdef _DEBUG
-  mstrDebugName = aaszName;
-#endif
+}
+
+const iHString* __stdcall SQTable::GetDebugHName() const
+{
+  SQObjectPtr obj = _HC(__debug_name);
+  tHMapCIt it = mhmap.find(obj);
+  if (it == mhmap.end())
+    return NULL;
+  if (_sqtype(it->second) == OT_STRING)
+    return _stringhval(it->second);
+  else
+    return NULL;
 }
 
 const achar* __stdcall SQTable::GetDebugName() const
 {
-  SQObjectPtr obj = _H("__debug_name");
-  tHMapCIt it = mhmap.find(obj);
-  if (it == mhmap.end()) return _A("no_debug_name");
-  if (_sqtype(it->second) == OT_STRING)
-    return _stringval(it->second);
-  else
-    return _A("debug_name_not_string");
-  //return _A("-NODEBUGNAME-");
+  const iHString* hspName = GetDebugHName();
+  if (!hspName) hspName = _HC(no_debug_name);
+  return niHStr(hspName);
 }
 
 #ifndef NO_GARBAGE_COLLECTOR
@@ -355,8 +360,8 @@ void SQTable::Mark(SQCollectable **chain)
   }
   CHECK_HASH_MAP();
   for (tHMapIt it = mhmap.begin(); it != mhmap.end(); ++it) {
-    SQSharedState::MarkObject((SQObjectPtr&)it->first,chain);
-    SQSharedState::MarkObject((SQObjectPtr&)it->second,chain);
+    SQGarbageCollector::MarkObject((SQObjectPtr&)it->first,chain);
+    SQGarbageCollector::MarkObject((SQObjectPtr&)it->second,chain);
   }
   END_MARK(chain);
 }

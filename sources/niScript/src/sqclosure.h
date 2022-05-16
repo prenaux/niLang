@@ -11,7 +11,7 @@ struct SQClosure : public SQCollectable, public SQ_ALLOCATOR(SQClosure)
     return this->_DoQueryInterface(this,aIID);
   }
 
-private:
+protected:
   SQClosure(SQFunctionProto *func) {
     _function=func;
     INIT_CHAIN();

@@ -28,8 +28,10 @@ cString sq_getcallinfo_string(HSQUIRRELVM v, int level);
 
 #pragma niTodo("DeepClone can get in infinite loop because of some internal cycles, fix this.")
 
-SQVM::SQVM()
+SQVM::SQVM(SQSharedState* aSS)
 {
+  niAssert(aSS != NULL);
+  _ss = aSS;
   _foreignptr = NULL;
   _nnativecalls = 0;
   _lasterror = _null_;
@@ -44,10 +46,7 @@ SQVM::SQVM()
   INIT_CHAIN();
   ADD_TO_CHAIN(this);
   _emptystring = _H("");
-#ifdef _DEBUG_DUMP
-#pragma niNote("VM Debug Dump enabled")
-  _execDumpStack = !!ni::GetLang()->GetProperty("niLang.vm.execDumpStack").Bool();
-#endif
+  _execDumpStack = !!ni::GetLang()->GetProperty("niScript.ExecDumpStack").Bool();
 }
 
 void SQVM::Invalidate()
@@ -82,7 +81,7 @@ SQObjectPtr SQVM::PrintObjVal(const SQObject &o)
       return _H(out);
     }
     default:
-      return _ss()->GetTypeNameObj(o);
+      return _ss->GetTypeNameObj(o);
   }
 }
 
@@ -130,7 +129,7 @@ void SQVM::Raise_ParamTypeError(int nparam,int typemask,int type)
 }
 
 #define CALL_SYSTEM_DELEGATE_MM(TYPE,MM,NUM_ARGS,DEST)                  \
-  CallMetaMethod(_table(_ss()->_##TYPE##_default_delegate),MM,NUM_ARGS,DEST)
+  CallMetaMethod(_table(_ss->_##TYPE##_default_delegate),MM,NUM_ARGS,DEST)
 
 bool SQVM::ArithMetaMethod(int op, const SQObjectPtr & o1, const SQObjectPtr & o2, SQObjectPtr& dest)
 {
@@ -246,8 +245,8 @@ bool SQVM::Modulo(const SQObjectPtr & o1, const SQObjectPtr & o2, SQObjectPtr& d
       }
     }
     VM_ERRORB(niFmt(_A("modulo between '%s' and '%s'"),
-                    _ss()->GetTypeNameStr(o1),
-                    _ss()->GetTypeNameStr(o2)));
+                    _ss->GetTypeNameStr(o1),
+                    _ss->GetTypeNameStr(o2)));
   }
   return true;
 }
@@ -318,8 +317,8 @@ bool SQVM::Div(const SQObjectPtr & o1, const SQObjectPtr & o2, SQObjectPtr& dest
       }
     }
     VM_ERRORB(niFmt(_A("division between '%s' and '%s'"),
-                    _ss()->GetTypeNameStr(o1),
-                    _ss()->GetTypeNameStr(o2)));
+                    _ss->GetTypeNameStr(o1),
+                    _ss->GetTypeNameStr(o2)));
   }
   return true;
 }
@@ -471,8 +470,8 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
             break;
           default:
             VM_ERRORB(niFmt(_A("string concatenation between '%s' and '%s'"),
-                            _ss()->GetTypeNameStr(str),
-                            _ss()->GetTypeNameStr(obj)));
+                            _ss->GetTypeNameStr(str),
+                            _ss->GetTypeNameStr(obj)));
         }
         dest = _H(newStr);
         break;
@@ -530,7 +529,7 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
         {
           if (_sqtype(res) != OT_STRING)
           {
-            VM_ERRORB(niFmt(_A("string concatenation between '%s' and userdata, _tostring returned a '%s' not a string."), _ss()->GetTypeNameStr(str), _ss()->GetTypeNameStr(obj), _ss()->GetTypeNameStr(res)));
+            VM_ERRORB(niFmt(_A("string concatenation between '%s' and userdata, _tostring returned a '%s' not a string."), _ss->GetTypeNameStr(str), _ss->GetTypeNameStr(obj), _ss->GetTypeNameStr(res)));
           }
           else
           {
@@ -542,7 +541,7 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
           }
         }
       }
-      VM_ERRORB(niFmt(_A("string concatenation between '%s' and userdata without _tostring "), _ss()->GetTypeNameStr(str), _ss()->GetTypeNameStr(obj)));
+      VM_ERRORB(niFmt(_A("string concatenation between '%s' and userdata without _tostring "), _ss->GetTypeNameStr(str), _ss->GetTypeNameStr(obj)));
       break;
     case OT_TABLE: {
       if (_table(obj)->CanCallMetaMethod()) {
@@ -550,7 +549,7 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
         Push(obj);
         if (CallMetaMethod(_table(obj), MT_STD_TOSTRING, 1, res)) {
           if (_sqtype(res) != OT_STRING) {
-            VM_ERRORB(niFmt(_A("string concatenation between '%s' and table, _tostring returned a '%s' not a string."), _ss()->GetTypeNameStr(str), _ss()->GetTypeNameStr(obj), _ss()->GetTypeNameStr(res)));
+            VM_ERRORB(niFmt(_A("string concatenation between '%s' and table, _tostring returned a '%s' not a string."), _ss->GetTypeNameStr(str), _ss->GetTypeNameStr(obj), _ss->GetTypeNameStr(res)));
           }
           else
           {
@@ -563,12 +562,12 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
         }
       }
       VM_ERRORB(niFmt(_A("string concatenation between '%s' and table"),
-                      _ss()->GetTypeNameStr(str)));
+                      _ss->GetTypeNameStr(str)));
       break;
     }
     default:
       VM_ERRORB(niFmt(_A("string concatenation between '%s' and '%s'"),
-                      _ss()->GetTypeNameStr(str), _ss()->GetTypeNameStr(obj)));
+                      _ss->GetTypeNameStr(str), _ss->GetTypeNameStr(obj)));
   }
   return true;
 }
@@ -592,7 +591,7 @@ void SQVM::TypeOf(const SQObjectPtr & obj1, SQObjectPtr& dest)
           return;
       }
   }
-  dest = _ss()->GetTypeNameObj(obj1);
+  dest = _ss->GetTypeNameObj(obj1);
 }
 
 bool SQVM::Init(bool abInitRootTable)
@@ -603,7 +602,9 @@ bool SQVM::Init(bool abInitRootTable)
   _top = 0;
   if (abInitRootTable) {
     _roottable = SQTable::Create();
-    sq_base_register(this);
+    _ss->RegisterRoot(
+      this,
+      SQSharedState::_base_funcs);
   }
   else {
     _roottable = _null_;
@@ -732,7 +733,7 @@ bool SQVM::NewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObject
       if (opExt & _OPEXT_GET_SAFE) {
         return true;
       }
-      VM_ERRORB(niFmt(_A("newslot indexing %s with %s"),_ss()->GetTypeNameStr(self),_ss()->GetTypeNameStr(key)));
+      VM_ERRORB(niFmt(_A("newslot indexing %s with %s"),_ss->GetTypeNameStr(self),_ss->GetTypeNameStr(key)));
       break;
   }
   return true;
@@ -772,7 +773,7 @@ bool SQVM::DeleteSlot(const SQObjectPtr &self,const SQObjectPtr &key,SQObjectPtr
       if (opExt & _OPEXT_GET_SAFE) {
         return true;
       }
-      VM_ERRORB(niFmt(_A("attempt to delete a slot from a %s"),_ss()->GetTypeNameStr(self)));
+      VM_ERRORB(niFmt(_A("attempt to delete a slot from a %s"),_ss->GetTypeNameStr(self)));
   }
   return true;
 }
@@ -872,7 +873,7 @@ bool SQVM::CallNative(SQNativeClosure *nclosure, int nargs, int stackbase, SQObj
 bool SQVM::GetIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm, SQObjectPtr &closure)
 {
   if (((cScriptVM*)_foreignptr)->GetAutomation()->Get(
-          this,o,_ss()->_metamethods[mm],closure,_OPEXT_GET_SAFE)) {
+          this,o,_sq_metamethods[mm],closure,_OPEXT_GET_SAFE)) {
     return true;
   }
   return false;
@@ -882,7 +883,7 @@ bool SQVM::CallIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm, int nparams, SQO
 {
   SQObjectPtr closure;
   if (((cScriptVM*)_foreignptr)->GetAutomation()->Get(
-          this,o,_ss()->_metamethods[mm],closure,_OPEXT_GET_SAFE))
+          this,o,_sq_metamethods[mm],closure,_OPEXT_GET_SAFE))
   {
 #ifdef LAST_CALLSTACK
     _strLastCallStack.clear();
@@ -956,7 +957,7 @@ bool SQVM::DoGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &d
         if (opExt & _OPEXT_GET_RAW) {
           return false;
         }
-        return _table_ddel->Get(key,dest);
+        return _ddel(*_ss,table)->Get(key,dest);
       }
     case OT_IUNKNOWN:
       return ((cScriptVM*)_foreignptr)->GetAutomation()->Get(this,_iunknown(self),key,dest,opExt);
@@ -965,7 +966,7 @@ bool SQVM::DoGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &d
         return _array(self)->Get(toint(key),dest);
       }
       else {
-        return _array_ddel->Get(key,dest);
+        return _ddel(*_ss,array)->Get(key,dest);
       }
     case OT_STRING:
       if(sq_isnumeric(key)){
@@ -977,7 +978,7 @@ bool SQVM::DoGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &d
         }
         return false;
       }
-      else return _string_ddel->Get(key,dest);
+      else return _ddel(*_ss,string)->Get(key,dest);
       break;
     case OT_USERDATA:
       {
@@ -1000,15 +1001,15 @@ bool SQVM::DoGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &d
       }
       break;
     case OT_INTEGER:case OT_FLOAT:
-      return _number_ddel->Get(key,dest);
+      return _ddel(*_ss,number)->Get(key,dest);
     case OT_CLOSURE: case OT_NATIVECLOSURE:
-      return _closure_ddel->Get(key,dest);
+      return _ddel(*_ss,closure)->Get(key,dest);
     default:
       if (!(opExt & _OPEXT_GET_SAFE)) {
         VM_ERRORB(niFmt(_A("indexing a %s, with key '%s' (%s)"),
-                        _ss()->GetTypeNameStr(self),
+                        _ss->GetTypeNameStr(self),
                         (_sqtype(key)==OT_STRING)?_stringval(key):"",
-                        _ss()->GetTypeNameStr(key)));
+                        _ss->GetTypeNameStr(key)));
       }
       return false;
   }
@@ -1035,7 +1036,7 @@ bool SQVM::DoSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPt
     case OT_ARRAY:
       if (!sq_isnumeric(key)) {
         VM_ERRORB(niFmt(_A("indexing '%s' with '%s'"),
-                        _ss()->GetTypeNameStr(self),_ss()->GetTypeNameStr(key)));
+                        _ss->GetTypeNameStr(self),_ss->GetTypeNameStr(key)));
       }
       return _array(self)->Set(toint(key),val);
     case OT_USERDATA:
@@ -1133,7 +1134,6 @@ bool SQVM::StartCall(SQClosure* closure, int target, int nargs, int stackbase, b
   return true;
 }
 
-#ifdef _DEBUG_DUMP
 void SQVM::dumpstack(int stackbase,bool dumpall)
 {
   int size=dumpall?_stack.size():_top;
@@ -1176,4 +1176,3 @@ void SQVM::dumpstack(int stackbase,bool dumpall)
   }
   niDebugFmt((o.Chars()));
 }
-#endif

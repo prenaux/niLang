@@ -1,0 +1,138 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+::REGEX <- ::ImportModule("regex.ni")
+
+testLinter <- {
+  mTestFilter = null
+  mLogs = []
+  mLogsError = 0
+  mLogsWarning = 0
+  mFailedChecks = []
+  mSucceededChecks = []
+  mInLogSink = 0
+
+  function GetThreadID() {
+    return ::GetMainThreadID();
+  }
+  function HandleMessage(aMsg,aA,aB) {
+    if (aMsg != ::eSystemMessage.Log)
+      return;
+    if (mInLogSink)
+      return;
+    mInLogSink = true
+    try {
+      local logType = aA
+      local msg = aB
+      if (msg.startswith("Lint:")) {
+        if (msg.startswith("Lint: Error:")) {
+          mLogsError++;
+        }
+        else if (msg.startswith("Lint: Warning:")) {
+          mLogsWarning++;
+        }
+        mLogs.push(msg)
+      }
+    }
+    catch (e) {
+    }
+    mInLogSink = false
+  }
+
+  function register() {
+    mLogs = []
+    ::gLang.system_message_handlers.AddSink(this)
+  }
+
+  function unregister() {
+    ::gLang.system_message_handlers.RemoveSink(this)
+  }
+
+  function check(aName,afnTest) {
+    if (mTestFilter && !mTestFilter.DoesMatch(aName)) {
+      ::log("FILTER SKIPPED TEST:" aName)
+      return
+    }
+    else {
+      ::log("TEST:" aName)
+    }
+
+    register()
+    local exc
+    try {
+      // This has for side effect to lint the file for now.
+      // TODO: Move that in a cleaner more explicit API.
+      ::Import(aName)
+      afnTest.call(::getroottable(),mLogs,this)
+    }
+    catch (e) {
+      mFailedChecks.push(aName)
+      exc = e
+      ::logError(::format("FAILED: %s, %d log(s)", aName, mLogs.size()));
+    }
+    if (!exc) {
+      mSucceededChecks.push(aName)
+      ::log(::format("SUCCEEDED: %s, %d log(s)", aName, mLogs.size()));
+    }
+    unregister()
+  }
+}
+
+// Takes `aLogs` explicitly so that it shows in a more readable manner in the
+// failure stack.
+function ::EXPECTED_LINT(aLogs,aExpectedCount,aMsg) {
+  local pattern = ::REGEX.pcre(aMsg)
+  local found = 0;
+  foreach (l in aLogs) {
+    if (pattern.DoesMatch(l))
+      ++found
+  }
+  ::CHECK_EQUAL(aExpectedCount,found,"Expected lint: '" + aMsg + "'")
+}
+
+function main() {
+  local testProperty = ::lang.getProperty("test")
+  if (testProperty) {
+    testLinter.mTestFilter = ::REGEX.pcre(testProperty)
+  }
+
+  testLinter.check(
+    "linter_1.ni",
+    function(aLogs,aLintResults) {
+      ::CHECK_EQUAL(13,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(8,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_this_set_key_notfound.ni",
+    function(aLogs) {
+      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: this_set_key_notfound: "_unknownkey"]})
+    })
+
+  testLinter.check(
+    "linter_2_this_and_roottable.ni",
+    function(aLogs) {
+      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
+    })
+
+  // Output failed tests
+  if (!testLinter.mFailedChecks.empty()) {
+    ::logError(::format("Linter test failed: %d",
+                        testLinter.mFailedChecks.size()));
+    foreach (n in testLinter.mFailedChecks) {
+      ::println("- " + n);
+    }
+    ::gLang.Exit(1)
+  }
+  else {
+    ::log(::format("All linter tests succeed: %d",
+                   testLinter.mSucceededChecks.size()));
+  }
+}

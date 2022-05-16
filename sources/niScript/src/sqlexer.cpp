@@ -6,6 +6,7 @@
 #include "sqtable.h"
 #include "sqcompiler.h"
 #include "sqlexer.h"
+#include "sq_hstring.h"
 
 #define STATE_REGULAR          'r'
 #define STATE_SEXP             's'
@@ -223,12 +224,6 @@ void SQLexer::Next()
   }
   _currdata = SQUIRREL_EOB;
 }
-
-_HDecl(IDENTIFIER);
-_HDecl(STRING_LITERAL);
-_HDecl(INTEGER);
-_HDecl(FLOAT);
-_HDecl(NEWSLOT);
 
 SQObjectPtr SQLexer::Tok2Str(int tok)
 {

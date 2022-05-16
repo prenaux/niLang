@@ -272,7 +272,8 @@ niExportFunc(int) sqa_pushMethodDef(HSQUIRRELVM v, const sInterfaceDef* apInterf
   niAssert(apMethDef != NULL);
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   //  niAssert(niIsOK(pVM));
-  sq_pushud(*pVM,niNew sScriptTypeMethodDef(apInterfaceDef,apMethDef));
+  sq_pushud(*pVM,niNew sScriptTypeMethodDef(
+    *v->_ss,apInterfaceDef,apMethDef));
   return SQ_OK;
 }
 
@@ -317,7 +318,8 @@ int sqa_getPropertyDef(HSQUIRRELVM v, int idx, const sInterfaceDef** appInterfac
 int sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp)
 {
   niAssert(niIsOK(apObject));
-  sScriptTypeIndexedProperty* ud = niNew sScriptTypeIndexedProperty(apObject,apProp);
+  sScriptTypeIndexedProperty* ud = niNew sScriptTypeIndexedProperty(
+    *v->_ss,apObject,apProp);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -375,7 +377,7 @@ static int enum_get(HSQUIRRELVM v)
 
   HSQOBJECT obj = stack_get(v,2);
   if (sq_type(obj) == OT_STRING) {
-    SQTable* valTable = pV->_GetTable();
+    SQTable* valTable = pV->_GetTable(*v->_ss);
     SQObjectPtr val;
     if (!valTable->Get(obj,val)) {
       return sq_throwerror(v, niFmt(_A("Can't find key '%s' in enum '%s'."), _stringhval(obj), pV->pEnumDef->maszName));
@@ -383,7 +385,7 @@ static int enum_get(HSQUIRRELVM v)
     v->Push(val);
   }
   else if (sq_type(obj) == OT_INTEGER || sq_type(obj) == OT_FLOAT) {
-    SQTable* valTable = pV->_GetTable();
+    SQTable* valTable = pV->_GetTable(*v->_ss);
     int val = 0;
     if (sq_type(obj) == OT_INTEGER) {
       val = _int(obj);
@@ -469,7 +471,7 @@ static int enum_gettable(HSQUIRRELVM v)
 {
   sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v,1);
   if (!pV)  return SQ_ERROR;
-  v->Push(pV->_GetTable());
+  v->Push(pV->_GetTable(*v->_ss));
   return 1;
 }
 
@@ -477,7 +479,8 @@ static int enum_gettable(HSQUIRRELVM v)
 int sqa_pushEnumDef(HSQUIRRELVM v, const sEnumDef* apEnumDef)
 {
   niAssert(apEnumDef != NULL);
-  sScriptTypeEnumDef* ud = niNew sScriptTypeEnumDef(apEnumDef);
+  sScriptTypeEnumDef* ud = niNew sScriptTypeEnumDef(
+    *v->_ss,apEnumDef);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -546,8 +549,8 @@ int __cdecl mathop_binary(HSQUIRRELVM v)
   if (typeOp != eScriptType_Int && typeOp != eScriptType_Float && (typeThis != typeOp)) {
     return sq_throwerror(
         v,niFmt(_A("mathop_binary: This '%s' and Op '%s' are not compatible types."),
-                _ss()->GetTypeNameStr(typeThis),
-                _ss()->GetTypeNameStr(typeOp)));
+                v->_ss->GetTypeNameStr(typeThis),
+                v->_ss->GetTypeNameStr(typeOp)));
   }
 
   tU32 dimThis;
@@ -558,7 +561,7 @@ int __cdecl mathop_binary(HSQUIRRELVM v)
     case eScriptType_Matrix:  dimThis = 16; break;
     default:
       return sq_throwerror(v,niFmt(_A("mathop_binary: Invalid type '%s'."),
-                                   _ss()->GetTypeNameStr(typeThis)));
+                                   v->_ss->GetTypeNameStr(typeThis)));
   }
 
   float ret[16];
@@ -602,7 +605,7 @@ int __cdecl mathop_unary(HSQUIRRELVM v)
     case eScriptType_Matrix:  dimThis = 16; break;
     default:
       return sq_throwerror(v,niFmt(_A("mathop_unary: Invalid this type '%s'."),
-                                   _ss()->GetTypeNameStr(typeThis)));
+                                   v->_ss->GetTypeNameStr(typeThis)));
   }
 
   float ret[16];
@@ -635,8 +638,8 @@ int __cdecl mathop_cmp(HSQUIRRELVM v)
   {
     return sq_throwerror(
         v,niFmt(_A("mathop_cmp: This '%s' and Op '%s' are not of the same type."),
-                _ss()->GetTypeNameStr(typeThis),
-                _ss()->GetTypeNameStr(typeOp)));
+                v->_ss->GetTypeNameStr(typeThis),
+                v->_ss->GetTypeNameStr(typeOp)));
   }
 
   tU32 dimThis;
@@ -648,7 +651,7 @@ int __cdecl mathop_cmp(HSQUIRRELVM v)
     case eScriptType_Matrix:  dimThis = 16; break;
     default:
       return sq_throwerror(v,niFmt(_A("mathop_cmp: Invalid type '%s'."),
-                                   _ss()->GetTypeNameStr(typeThis)));
+                                   v->_ss->GetTypeNameStr(typeThis)));
   }
 
   sq_getuserdata(v,2,(ni::tPtr*)&pOp, &typeOp);
@@ -689,8 +692,8 @@ int __cdecl mathop_cmp(HSQUIRRELVM v)
   if (typeThis != typeOp)  {                                            \
     return sq_throwerror(                                               \
         v,niFmt(_A(#FUNCNAME) _A(": This '%s' and Op '%s' are not compatible types."), \
-                _ss()->GetTypeNameStr(typeThis),                        \
-                _ss()->GetTypeNameStr(typeOp)));                        \
+                v->_ss->GetTypeNameStr(typeThis),                        \
+                v->_ss->GetTypeNameStr(typeOp)));                        \
   }                                                                     \
 
 #define VECOP_DO(CALL)                                                  \
@@ -1118,7 +1121,7 @@ static int vec2f_get(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 niExportFunc(int) sqa_pushvec2f(HSQUIRRELVM v, const sVec2f& aV)
 {
-  sScriptTypeVec2f* ud = niNew sScriptTypeVec2f(aV);
+  sScriptTypeVec2f* ud = niNew sScriptTypeVec2f(*v->_ss,aV);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -1351,7 +1354,7 @@ static int vec3f_get(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 niExportFunc(int) sqa_pushvec3f(HSQUIRRELVM v, const sVec3f& aV)
 {
-  sScriptTypeVec3f* ud = niNew sScriptTypeVec3f(aV);
+  sScriptTypeVec3f* ud = niNew sScriptTypeVec3f(*v->_ss,aV);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -1719,7 +1722,7 @@ static int vec4f_get(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 niExportFunc(int) sqa_pushvec4f(HSQUIRRELVM v, const sVec4f& aV)
 {
-  sScriptTypeVec4f* ud = niNew sScriptTypeVec4f(aV);
+  sScriptTypeVec4f* ud = niNew sScriptTypeVec4f(*v->_ss,aV);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -2123,7 +2126,7 @@ static int matrixf_multiply(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 niExportFunc(int) sqa_pushmatrixf(HSQUIRRELVM v, const sMatrixf& aV)
 {
-  sScriptTypeMatrixf* ud = niNew sScriptTypeMatrixf(aV);
+  sScriptTypeMatrixf* ud = niNew sScriptTypeMatrixf(*v->_ss,aV);
   sq_pushud(v,ud);
   return SQ_OK;
 }
@@ -2236,7 +2239,7 @@ static int uuid_constructor(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 niExportFunc(int) sqa_pushUUID(HSQUIRRELVM v, const tUUID& aV)
 {
-  sScriptTypeUUID* ud = niNew sScriptTypeUUID(aV);
+  sScriptTypeUUID* ud = niNew sScriptTypeUUID(*v->_ss,aV);
   sq_pushud(v,ud);
   return SQ_OK;
 }

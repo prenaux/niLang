@@ -18,7 +18,7 @@
 ::Import("lang.ni")
 ::Import("xml.ni")
 
-idlGen <- {
+::idlGen <- {
 
   mSrc = null
   mDest = null
@@ -934,7 +934,7 @@ idlGen <- {
               if (mLine.find("{") != null)
                 break;
               if (mSrc.partial_read)
-                parserError(commentStart,"Unexpected end of file while looking for block start.");
+                parserError(mLineCount,"Unexpected end of file while looking for block start.");
               mLine = readLine();
             }
             skipBlock();

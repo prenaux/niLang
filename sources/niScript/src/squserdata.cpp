@@ -19,7 +19,7 @@ SQTable* SQUserData::GetDelegate() const {
   return _table(mptrDelegate);
 }
 SQUserData* SQUserData::Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) {
-  SQUserData* ud = this->CloneData(apVM,apDeepClone);
+  SQUserData* ud = this->CloneData(*apVM->_ss,apDeepClone);
   if (!mptrDelegate.IsNull()) {
     ud->SetDelegate(_table(mptrDelegate));
   }

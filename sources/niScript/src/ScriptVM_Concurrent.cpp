@@ -205,13 +205,20 @@ static int mt_GetConcurrent(HSQUIRRELVM v) {
 #endif
 
 struct RunnableScript : public cIUnknownImpl<iRunnable> {
+  WeakPtr<SQSharedState> mSS;
   HSQOBJECT mClosure;
 
-  RunnableScript(HSQOBJECT closure) : mClosure(closure) {
-    sq_addref(&mClosure);
+  RunnableScript(SQSharedState* apSS,HSQOBJECT closure)
+      : mSS(apSS)
+      , mClosure(closure)
+  {
+    sq_addref(*apSS,&mClosure);
   }
   ~RunnableScript() {
-    sq_release(&mClosure);
+    QPtr<SQSharedState> ss = mSS;
+    if (ss.IsOK()) {
+      sq_release(*ss,&mClosure);
+    }
   }
 
   Var __stdcall Run() {
@@ -251,19 +258,25 @@ static int mt_RunnableFromFunction(HSQUIRRELVM v) {
   HSQOBJECT oClosure;
   sq_resetobject(&oClosure);
   sq_getstackobj(v,2,&oClosure);
-  Ptr<iRunnable> runnable = niNew RunnableScript(oClosure);
+  Ptr<iRunnable> runnable = niNew RunnableScript(v->_ss,oClosure);
   sqa_pushIUnknown(v,runnable);
   return 1;
 }
 
 struct CallbackScript : public cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+  WeakPtr<SQSharedState> mSS;
   HSQOBJECT mClosure;
 
-  CallbackScript(HSQOBJECT closure) : mClosure(closure) {
-    sq_addref(&mClosure);
+  CallbackScript(SQSharedState* aSS, HSQOBJECT closure)
+      : mSS(aSS)
+      , mClosure(closure) {
+    sq_addref(*aSS,&mClosure);
   }
   ~CallbackScript() {
-    sq_release(&mClosure);
+    QPtr<SQSharedState> ss = mSS;
+    if (ss.IsOK()) {
+      sq_release(*ss,&mClosure);
+    }
   }
 
   Var __stdcall RunCallback(const Var& avarA, const Var& avarB) {
@@ -309,12 +322,12 @@ static int mt_CallbackFromFunction(HSQUIRRELVM v) {
   HSQOBJECT oClosure;
   sq_resetobject(&oClosure);
   sq_getstackobj(v,2,&oClosure);
-  Ptr<iCallback> callback = niNew CallbackScript(oClosure);
+  Ptr<iCallback> callback = niNew CallbackScript(v->_ss,oClosure);
   sqa_pushIUnknown(v,callback);
   return 1;
 }
 
-static SQRegFunction _concurrent_vm_funcs[] = {
+SQRegFunction SQSharedState::_concurrent_funcs[] = {
 #if !defined niNoThreads
   { "Concurrent_Get", mt_GetConcurrent, 1, "t" },
 #endif
@@ -324,9 +337,3 @@ static SQRegFunction _concurrent_vm_funcs[] = {
   { "Concurrent_CallbackFromFunction", mt_CallbackFromFunction, 2, "tc" },
   { 0 }
 };
-
-void concurrent_vm_register(HSQUIRRELVM v) {
-  sq_pushroottable(v);
-  sq_registerfuncs(v,_concurrent_vm_funcs);
-  sq_pop(v,1);
-}

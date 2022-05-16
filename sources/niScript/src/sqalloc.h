@@ -3,7 +3,6 @@
 
 #include "sqconfig.h"
 
-struct tagSQObject;
 struct sSQDeepCloneGuardSet {
   ni::tU32               _depth;
   sSQDeepCloneGuardSet() : _depth(0) {}

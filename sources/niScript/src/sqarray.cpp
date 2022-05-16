@@ -132,12 +132,13 @@ void SQArray::Extend(const SQArray *a)
 #ifndef NO_GARBAGE_COLLECTOR
 void SQArray::Mark(SQCollectable** chain)
 {
-  START_MARK()
-      int len = _values.size();
-  for (int i = 0;i < len; i++)
-    SQSharedState::MarkObject(_values[i], chain);
-  END_MARK(chain)
-      }
+  START_MARK();
+  int len = _values.size();
+  for (int i = 0;i < len; i++) {
+    SQGarbageCollector::MarkObject(_values[i], chain);
+  }
+  END_MARK(chain);
+}
 #endif
 
 ///////////////////////////////////////////////

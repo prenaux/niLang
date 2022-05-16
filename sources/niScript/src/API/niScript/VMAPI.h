@@ -185,8 +185,8 @@ niExportFunc(void) sq_getlasterror(HSQUIRRELVM v);
 /*raw object handling*/
 niExportFunc(SQRESULT) sq_getstackobj(HSQUIRRELVM v,int idx,HSQOBJECT *po);
 niExportFunc(void) sq_pushobject(HSQUIRRELVM v,HSQOBJECT obj);
-niExportFunc(int) sq_addref(HSQOBJECT *po);
-niExportFunc(int) sq_release(HSQOBJECT *po);
+niExportFunc(int) sq_addref(SQSharedState& aSS,HSQOBJECT *po);
+niExportFunc(int) sq_release(SQSharedState& aSS,HSQOBJECT *po);
 niExportFunc(void) sq_resetobject(HSQOBJECT *po);
 
 /*serialization*/

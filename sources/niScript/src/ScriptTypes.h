@@ -24,12 +24,14 @@ struct sScriptTypeMethodDef : SQ_USERDATA_BASE(sScriptTypeMethodDef)
   const sInterfaceDef*  pInterfaceDef;
   const sMethodDef*   pMethodDef;
 
-  sScriptTypeMethodDef(const sInterfaceDef* apInterfaceDef,
-                       const sMethodDef* apMethodDef)
+  sScriptTypeMethodDef(
+    const SQSharedState& aSS,
+    const sInterfaceDef* apInterfaceDef,
+    const sMethodDef* apMethodDef)
       : pInterfaceDef(apInterfaceDef)
       , pMethodDef(apMethodDef)
   {
-    SetDelegate(_method_ddel);
+    SetDelegate(_ddel(aSS,method));
   }
   ~sScriptTypeMethodDef() {}
 
@@ -54,8 +56,8 @@ struct sScriptTypeMethodDef : SQ_USERDATA_BASE(sScriptTypeMethodDef)
     if (res != 0) return res;
     return ni::CmpByVal(pMethodDef,b->pMethodDef);
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeMethodDef(pInterfaceDef,pMethodDef);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeMethodDef(aSS,pInterfaceDef,pMethodDef);
   }
 };
 
@@ -124,7 +126,7 @@ struct sScriptTypePropertyDef : SQ_USERDATA_BASE(sScriptTypePropertyDef)
     if (res != 0) return res;
     return ni::CmpByVal(pGetMethodDef,b->pGetMethodDef);
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypePropertyDef(pInterfaceDef,pSetMethodDef,pGetMethodDef);
   }
 
@@ -142,11 +144,13 @@ struct sScriptTypeIndexedProperty : SQ_USERDATA_BASE(sScriptTypeIndexedProperty)
   Ptr<iUnknown>       pObject;
   Ptr<sScriptTypePropertyDef> pProp;
 
-  sScriptTypeIndexedProperty(iUnknown* apObject, const sScriptTypePropertyDef* apProp)
+  sScriptTypeIndexedProperty(
+    const SQSharedState& aSS,
+    iUnknown* apObject, const sScriptTypePropertyDef* apProp)
       : pObject(apObject)
       , pProp(apProp)
   {
-    SetDelegate(_idxprop_ddel);
+    SetDelegate(_ddel(aSS,idxprop));
   }
 
   ~sScriptTypeIndexedProperty() {
@@ -173,8 +177,8 @@ struct sScriptTypeIndexedProperty : SQ_USERDATA_BASE(sScriptTypeIndexedProperty)
     if (res != 0) return res;
     return ni::CmpByVal(pProp.ptr(),b->pProp.ptr());
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeIndexedProperty(pObject,pProp);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeIndexedProperty(aSS,pObject,pProp);
   }
 
 };
@@ -194,19 +198,19 @@ private:
 public:
   const sEnumDef*   pEnumDef;
 
-  sScriptTypeEnumDef(const sEnumDef* apEnumDef)
+  sScriptTypeEnumDef(SQSharedState& aSS, const sEnumDef* apEnumDef)
       : pEnumDef(apEnumDef)
   {
-    SetDelegate(_enum_ddel);
+    SetDelegate(_ddel(aSS,enum));
   }
 
   ~sScriptTypeEnumDef() {}
 
   static int _GetType() { return eScriptType_EnumDef; }
 
-  SQTable* _GetTable() {
+  SQTable* _GetTable(SQSharedState& aSS) {
     if (objTable.IsNull()) {
-      objTable = _ss()->GetEnumDefTable(pEnumDef);
+      objTable = aSS.GetEnumDefTable(pEnumDef);
     }
     return _table(objTable);
   }
@@ -227,8 +231,8 @@ public:
     sScriptTypeEnumDef* b = (sScriptTypeEnumDef*)r;
     return ni::CmpByVal(pEnumDef,b->pEnumDef);
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    sScriptTypeEnumDef* ed = niNew sScriptTypeEnumDef(pEnumDef);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    sScriptTypeEnumDef* ed = niNew sScriptTypeEnumDef(aSS,pEnumDef);
     ed->objTable = this->objTable;
     return ed;
   }
@@ -284,14 +288,14 @@ struct sScriptTypeVec2f :
     return this->_DoQueryInterface(this,aIID);
   }
 
-  sScriptTypeVec2f(const sVec2f& v)
+  sScriptTypeVec2f(const SQSharedState& aSS, const sVec2f& v)
       : sScriptTypeMathBase<eScriptType_Vec2,ni::sVec2f,sScriptTypeMathFloats>(v)
-  { SetDelegate(_vec2f_ddel); }
+  { SetDelegate(_ddel(aSS,vec2f)); }
   virtual size_t __stdcall Hash() const {
     return ni::HashVec2(_val.ptr());
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeVec2f(_val);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeVec2f(aSS,_val);
   }
 };
 
@@ -303,14 +307,14 @@ struct sScriptTypeVec3f :
     return this->_DoQueryInterface(this,aIID);
   }
 
-  sScriptTypeVec3f(const sVec3f& v)
+  sScriptTypeVec3f(const SQSharedState& aSS, const sVec3f& v)
       : sScriptTypeMathBase<eScriptType_Vec3,ni::sVec3f,sScriptTypeMathFloats>(v)
-  { SetDelegate(_vec3f_ddel); }
+  { SetDelegate(_ddel(aSS,vec3f)); }
   virtual size_t __stdcall Hash() const {
     return ni::HashVec3(_val.ptr());
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeVec3f(_val);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeVec3f(aSS,_val);
   }
 };
 
@@ -322,14 +326,14 @@ struct sScriptTypeVec4f :
     return this->_DoQueryInterface(this,aIID);
   }
 
-  sScriptTypeVec4f(const sVec4f& v)
+  sScriptTypeVec4f(const SQSharedState& aSS, const sVec4f& v)
       : sScriptTypeMathBase<eScriptType_Vec4,ni::sVec4f,sScriptTypeMathFloats>(v)
-  { SetDelegate(_vec4f_ddel); }
+  { SetDelegate(_ddel(aSS,vec4f)); }
   virtual size_t __stdcall Hash() const {
     return ni::HashVec4(_val.ptr());
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeVec4f(_val);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeVec4f(aSS,_val);
   }
 };
 
@@ -341,14 +345,14 @@ struct sScriptTypeMatrixf :
     return this->_DoQueryInterface(this,aIID);
   }
 
-  sScriptTypeMatrixf(const sMatrixf& v)
+  sScriptTypeMatrixf(const SQSharedState& aSS, const sMatrixf& v)
       : sScriptTypeMathBase<eScriptType_Matrix,ni::sMatrixf,sScriptTypeMathFloats>(v)
-  { SetDelegate(_matrixf_ddel); }
+  { SetDelegate(_ddel(aSS,matrixf)); }
   virtual size_t __stdcall Hash() const {
     return ni::HashVec4(_val.ptr());
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeMatrixf(_val);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeMatrixf(aSS,_val);
   }
 };
 
@@ -363,9 +367,9 @@ struct sScriptTypeUUID : SQ_USERDATA_BASE(sScriptTypeUUID)
 
   sUUID mUUID;
 
-  sScriptTypeUUID(const tUUID& aUUID)
+  sScriptTypeUUID(const SQSharedState& aSS, const tUUID& aUUID)
       : mUUID(aUUID)
-  { SetDelegate(_uuid_ddel); }
+  { SetDelegate(_ddel(aSS,uuid)); }
 
   ~sScriptTypeUUID()  {}
 
@@ -386,8 +390,8 @@ struct sScriptTypeUUID : SQ_USERDATA_BASE(sScriptTypeUUID)
     sScriptTypeUUID* b = (sScriptTypeUUID*)r;
     return mUUID.Compare(b->mUUID);
   }
-  virtual SQUserData* __stdcall CloneData(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeUUID(mUUID);
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeUUID(aSS,mUUID);
   }
 };
 
@@ -411,35 +415,6 @@ int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const s
 eScriptType sqa_getscripttype(const SQObjectPtr& obj);
 
 bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval, SQObjectPtr &outitr);
-
-__forceinline bool vec2f_toObject(SQObjectPtr& r, const sVec2f& v) {
-  r = niNew sScriptTypeVec2f(v);
-  return true;
-}
-__forceinline bool vec2i_toObject(SQObjectPtr& r, const sVec2i& v) {
-  sVec2f c = { (tF32)v.x, (tF32)v.y };
-  return vec2f_toObject(r,c);
-}
-__forceinline bool vec3f_toObject(SQObjectPtr& r, const sVec3f& v) {
-  r = niNew sScriptTypeVec3f(v);
-  return true;
-}
-__forceinline bool vec3i_toObject(SQObjectPtr& r, const sVec3i& v) {
-  sVec3f c = { (tF32)v.x, (tF32)v.y, (tF32)v.z };
-  return vec3f_toObject(r,c);
-}
-__forceinline bool vec4f_toObject(SQObjectPtr& r, const sVec4f& v) {
-  r = niNew sScriptTypeVec4f(v);
-  return true;
-}
-__forceinline bool vec4i_toObject(SQObjectPtr& r, const sVec4i& v) {
-  sVec4f c = { (tF32)v.x, (tF32)v.y, (tF32)v.z, (tF32)v.w };
-  return vec4f_toObject(r,c);
-}
-__forceinline bool matrixf_toObject(SQObjectPtr& r, const sMatrixf& v) {
-  r = niNew sScriptTypeMatrixf(v);
-  return true;
-}
 
 struct sGetIUnknown {
   iUnknown* pObject;

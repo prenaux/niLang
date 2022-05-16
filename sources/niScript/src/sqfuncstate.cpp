@@ -3,6 +3,7 @@
 */
 #include "stdafx.h"
 
+#include <niLang/Utils/Trace.h>
 #include "sqconfig.h"
 #include "sqcompiler.h"
 #include "sqfuncproto.h"
@@ -10,89 +11,13 @@
 #include "sqtable.h"
 #include "sqopcodes.h"
 #include "sqfuncstate.h"
+#include "sq_hstring.h"
+#include "sqstate.h"
 
 #define MAX_FUNC_STACKSIZE (1024)
 #define MAX_LITERALS       (1024*1024)
 
-#ifdef _DEBUG_DUMP
-static const achar* const _InstrDesc[]={
-  "_OP_LINE",
-  "_OP_LOAD",
-  "_OP_LOADNULL",
-  "_OP_NEWSLOT",
-  "_OP_SET",
-  "_OP_GET",
-  "_OP_LOADROOTTABLE",
-  "_OP_PREPCALL",
-  "_OP_CALL",
-  "_OP_MOVE",
-  "_OP_ADD",
-  "_OP_SUB",
-  "_OP_MUL",
-  "_OP_DIV",
-  "_OP_MODULO",
-  "_OP_EQ",
-  "_OP_NE",
-  "_OP_G",
-  "_OP_GE",
-  "_OP_L",
-  "_OP_LE",
-  "_OP_EXISTS",
-  "_OP_NEWTABLE",
-  "_OP_JMP",
-  "_OP_JNZ",
-  "_OP_JZ",
-  "_OP_RETURN",
-  "_OP_CLOSURE",
-  "_OP_FOREACH",
-  "_OP_TYPEOF",
-  "_OP_PUSHTRAP",
-  "_OP_POPTRAP",
-  "_OP_THROW",
-  "_OP_NEWARRAY",
-  "_OP_APPENDARRAY",
-  "_OP_AND",
-  "_OP_OR",
-  "_OP_NEG",
-  "_OP_NOT",
-  "_OP_DELETE",
-  "_OP_BWNOT",
-  "_OP_BWAND",
-  "_OP_BWOR",
-  "_OP_BWXOR",
-  "_OP_MINUSEQ",
-  "_OP_PLUSEQ",
-  "_OP_MULEQ",
-  "_OP_DIVEQ",
-  "_OP_TAILCALL",
-  "_OP_SHIFTL",
-  "_OP_SHIFTR",
-  "_OP_INC",
-  "_OP_DEC",
-  "_OP_PINC",
-  "_OP_PDEC",
-  "_OP_GETK",
-  "_OP_PREPCALLK",
-  "_OP_DMOVE",
-  "_OP_LOADNULLS",
-  "_OP_USHIFTR",
-  "_OP_SHIFTLEQ",
-  "_OP_SHIFTREQ",
-  "_OP_USHIFTREQ",
-  "_OP_BWANDEQ",
-  "_OP_BWOREQ",
-  "_OP_BWXOREQ",
-  "_OP_MODULOEQ",
-  "_OP_SPACESHIP",
-  "_OP_THROW_SILENT",
-};
-niCAssert(niCountOf(_InstrDesc) == __OP_LAST);
-extern "C" const achar* _GetOpDesc(int op) {
-  return op < niCountOf(_InstrDesc) ? _InstrDesc[op] : "_OP_???";
-}
-#endif
-
-SQFuncState::SQFuncState(SQFunctionProto *func,SQFuncState *parent)
+SQFuncState::SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahspSourceName,int sourceline)
     : _breaktargets(tI32CVec::Create())
     , _unresolvedbreaks(tI32CVec::Create())
     , _continuetargets(tI32CVec::Create())
@@ -106,103 +31,10 @@ SQFuncState::SQFuncState(SQFunctionProto *func,SQFuncState *parent)
   _parent = parent;
   _traps = 0;
   _returnexp = 0;
+  _funcproto(_func)->_sourcename =
+      ni::HStringIsEmpty(ahspSourceName) ? _null_ : ahspSourceName;
+  _funcproto(_func)->_sourceline = sourceline;
 }
-
-#ifdef _DEBUG_DUMP
-static cString _LiteralToString(const SQObjectPtr& obj) {
-  switch (_sqtype(obj)) {
-    case OT_STRING:
-      return niFmt("\"%s\"",_stringval(obj));
-    case OT_IUNKNOWN:
-      return niFmt("{IUnknown:%p}",(tIntPtr)_iunknown(obj));
-    default:
-      return niFmt("{%s:%s}",sqa_gettypestring(obj._var.mType),(Var&)obj._var);
-  }
-}
-
-void SQFuncState::Dump()
-{
-  unsigned int n=0,i;
-  SQFunctionProto *func=_funcproto(_func);
-  cString o;
-  o << niFmt(_A("SQInstruction sizeof %d\n"),sizeof(SQInstruction));
-  o << niFmt(_A("SQObject sizeof %d\n"),sizeof(SQObject));
-  o << niFmt(_A("--------------------------------------------------------------------\n"));
-  o << niFmt(_A("*****FUNCTION [%s]\n"),_sqtype(func->_name)==OT_STRING?_stringval(func->_name):_A("unknown"));
-  o << niFmt(_A("-----LITERALS\n"));
-  {
-    SQObjectPtr refidx,key,val,itr;
-    SQObjectPtrVec templiterals;
-    templiterals.resize(_nliterals);
-    while (_table(_literals)->Next(refidx,key,val,itr)) {
-      templiterals[_int(val)] = key;
-      refidx = itr;
-    }
-    for(i=0;i<templiterals.size();i++){
-      o << niFmt(_A("[%d] "),n);
-      o << _LiteralToString(templiterals[i]);
-      o << niFmt(_A("\n"));
-      n++;
-    }
-  }
-  o << niFmt(_A("-----PARAMS\n"));
-  n=0;
-  for(i=0;i<_parameters.size();i++){
-    o << niFmt(_A("[%d] "),n);
-    o << _LiteralToString(_parameters[i]._type);
-    o << _LiteralToString(_parameters[i]._name);
-    o << niFmt(_A("\n"));
-    n++;
-  }
-  o << "returntype: ";
-  o << _LiteralToString(_returntype);
-  o << niFmt(_A("\n"));
-  o << niFmt(_A("-----LOCALS\n"));
-  for(i=0;i<func->_localvarinfos.size();i++){
-    SQLocalVarInfo lvi=func->_localvarinfos[i];
-    o << niFmt(_A("[%d] %s \t%d %d\n"),lvi._pos,_stringval(lvi._name),lvi._start_op,lvi._end_op);
-    n++;
-  }
-  o << niFmt(_A("-----LINE INFO\n"));
-  for(i=0;i<_lineinfos.size();i++){
-    SQLineInfo li=_lineinfos[i];
-    o << niFmt(_A("op [%d] line [%d] \n"),li._op,li._line);
-    n++;
-  }
-  o << niFmt(_A("-----dump\n"));
-  n=0;
-  for(i=0;i<_instructions.size();i++){
-    SQInstruction &inst=_instructions[i];
-    if (inst.op==_OP_LOAD || inst.op==_OP_PREPCALLK || inst.op==_OP_GETK
-        || ((inst.op==_OP_ADD || inst.op==_OP_SUB || inst.op==_OP_MUL || inst.op==_OP_DIV)
-            && inst._arg3==0xFF))
-    {
-      o << niFmt(_A("[%03d] %20s %d "),n,_GetOpDesc(inst.op),inst._arg0);
-      if (inst._arg1==0xFFFF) {
-        o << niFmt(_A("null"));
-      }
-      else {
-        SQObjectPtr val,key,refo,ito;
-        while (_table(_literals)->Next(refo,key,val,ito)
-               && (_int(val) != inst._arg1))
-        {
-          refo = ito;
-        }
-        o << _LiteralToString(key);
-      }
-      o << niFmt(_A(" %d %d \n"),inst._arg2,inst._arg3);
-    }
-    else {
-      o << niFmt(_A("[%03d] %20s %d %d %d %d\n"),n,_GetOpDesc(inst.op),inst._arg0,inst._arg1,inst._arg2,inst._arg3);
-    }
-    n++;
-  }
-  o << niFmt(_A("-----\n"));
-  o << niFmt(_A("stack size[%d]\n"),func->_stacksize);
-  o << niFmt("--------------------------------------------------------------------\n\n");
-  niDebugFmt((o.Chars()));
-}
-#endif
 
 int SQFuncState::GetStringConstant(const SQObjectPtr& cons) {
   return GetConstant(cons);
@@ -398,7 +230,9 @@ void SQFuncState::AddInstruction(SQInstruction &i)
         }
         break;
       case _OP_GET:
-        if( pi.op == _OP_LOAD && pi._arg0 == i._arg2 && (!IsLocal(pi._arg0))){
+        if (pi.op == _OP_LOAD && pi._arg0 == i._arg2 &&
+            (!IsLocal(pi._arg0)))
+        {
           pi._arg2 = (unsigned char)i._arg1;
           pi.op = _OP_GETK;
           pi._arg0 = i._arg0;
@@ -408,7 +242,9 @@ void SQFuncState::AddInstruction(SQInstruction &i)
         }
         break;
       case _OP_PREPCALL:
-        if( pi.op == _OP_LOAD && pi._arg0 == i._arg1 && (!IsLocal(pi._arg0))){
+        if(pi.op == _OP_LOAD && pi._arg0 == i._arg1 &&
+           (!IsLocal(pi._arg0)))
+        {
           pi.op = _OP_PREPCALLK;
           pi._arg0 = i._arg0;
           pi._arg2 = i._arg2;
@@ -487,7 +323,7 @@ void SQFuncState::AddInstruction(SQInstruction &i)
   _instructions.push_back(i);
 }
 
-void SQFuncState::Invalidate()
+void SQFuncState::FinalizeFuncProto()
 {
   SQFunctionProto *f=_funcproto(_func);
   f->_literals.resize(_nliterals);
@@ -538,7 +374,8 @@ void SQFuncState::SetTopInstructionOpExt(int opExt) {
       i.op == _OP_GET ||
       i.op == _OP_GETK ||
       i.op == _OP_PREPCALL ||
-      i.op == _OP_PREPCALLK);
+      i.op == _OP_PREPCALLK ||
+      i.op == _OP_LOAD);
   i._ext = opExt;
 }
 
@@ -589,26 +426,4 @@ int SQFuncState::GetNumFunctions() const {
 }
 void SQFuncState::AddFunction(SQFuncState* apFuncState) {
   _functions.push_back(apFuncState->_func);
-}
-
-void __stdcall SQFuncState::SetName(iHString* ahspName) {
-  _funcproto(_func)->_name = ni::HStringIsEmpty(ahspName) ? _null_ : ahspName;
-}
-iHString* __stdcall SQFuncState::GetName() const {
-  if (!sq_isstring(_funcproto(_func)->_name))
-    return NULL;
-  return _stringhval(_funcproto(_func)->_name);
-}
-
-void __stdcall SQFuncState::SetSourceName(iHString* ahspSourceName) {
-  _funcproto(_func)->_sourcename = ni::HStringIsEmpty(ahspSourceName) ? _null_ : ahspSourceName;
-}
-iHString* __stdcall SQFuncState::GetSourceName() const {
-  if (!sq_isstring(_funcproto(_func)->_sourcename))
-    return NULL;
-  return _stringhval(_funcproto(_func)->_sourcename);
-}
-
-const SQObjectPtr& SQFuncState::GetFunctionObject() const {
-  return _func;
 }

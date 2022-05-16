@@ -4,8 +4,8 @@
 namespace ni {
 struct iConcurrent;
 }
+
 tBool concurrent_vm_startup(HSQUIRRELVM rootVM, iConcurrent* apConcurrent);
-void concurrent_vm_register(HSQUIRRELVM v);
 void concurrent_vm_shutdown();
 tBool concurrent_vm_is_started();
 HSQUIRRELVM concurrent_vm_mainvm();

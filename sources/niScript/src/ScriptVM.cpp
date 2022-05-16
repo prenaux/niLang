@@ -357,14 +357,13 @@ struct VMList : public cIUnknownImpl<iUnknown>
   int GC() {
     __sync_lock();
 #ifndef NO_GARBAGE_COLLECTOR
-    AutoThreadLock chainLock(_ss()->_gc_chain_mutex);
+    AutoThreadLock chainLock(_gc()->_gc_chain_mutex);
     if (_vmTimeGC) {
       _vmTimeStart = ni::TimerInSeconds();
-      if (_ss()->_gc_chain_lastgc_sync == _ss()->_gc_chain_sync) {
+      if (_gc()->_gc_chain_lastgc_sync == _gc()->_gc_chain_sync) {
 #ifdef _DEBUG
-        niDebugFmt(("D/GC, %d VM(s), %d Root(s), skipped, no change since last gc.",
-                    _vmList.size(),
-                    _ss()->GetNumRoots()));
+        niDebugFmt(("D/GC, %d VM(s), skipped, no change since last gc.",
+                    _vmList.size()));
 #endif
         return 0;
       }
@@ -373,10 +372,12 @@ struct VMList : public cIUnknownImpl<iUnknown>
 #endif
     }
     else {
-      if (_ss()->_gc_chain_lastgc_sync == _ss()->_gc_chain_sync) {
+      if (_gc()->_gc_chain_lastgc_sync == _gc()->_gc_chain_sync) {
         return 0;
       }
     }
+
+    astl::set<Ptr<SQSharedState>> sss;
     SQCollectable* tchain = NULL;
     for (tVMList::iterator it = _vmList.begin(); it != _vmList.end(); ) {
       QPtr<cScriptVM> vm = *it;
@@ -387,19 +388,25 @@ struct VMList : public cIUnknownImpl<iUnknown>
         SQVM* sqvm = vm->mptrVM;
         if (sqvm) {
           sqvm->Mark(&tchain);
+          niAssert(sqvm->_ss.IsOK());
+          sss.insert(sqvm->_ss);
         }
         ++it;
       }
     }
-    int n = _ss()->CollectGarbage(&tchain);
+    // mark the shared states
+    for (astl::set<Ptr<SQSharedState>>::iterator it = sss.begin();
+         it != sss.end(); ++it) {
+      (*it)->Mark(&tchain);
+    }
+    int n = _gc()->CollectGarbage(&tchain);
 
-    _ss()->_gc_chain_lastgc_sync = _ss()->_gc_chain_sync;
+    _gc()->_gc_chain_lastgc_sync = _gc()->_gc_chain_sync;
     if (_vmTimeGC) {
 #ifdef _DEBUG
       double time = ni::TimerInSeconds() - _vmTimeStart;
-      niDebugFmt(("D/GC, %d VM(s), %d Root(s), collected %d garbage(s) in %gs.",
+      niDebugFmt(("D/GC, %d VM(s), collected %d garbage(s) in %gs.",
                   _vmList.size(),
-                  _ss()->GetNumRoots(),
                   n,time));
 #endif
     }
@@ -510,18 +517,15 @@ static void __stdcall _ImportInitialize() {
 ///////////////////////////////////////////////
 cScriptVM::cScriptVM(cScriptVM* apParentVM)
 {
+  _InitializeSQGCAndGlobals();
   ZeroMembers();
-
   mbDebug = eFalse;
-
-  SQSharedState::_Initialize();
-  niAssert(_ss() != NULL);
 
   if (apParentVM) {
     mptrParentVM = apParentVM;
     mptrScriptAutomation = apParentVM->mptrScriptAutomation;
 
-    mptrVM = niNew SQVM();
+    mptrVM = niNew SQVM(apParentVM->mptrVM->_ss);
     if (!mptrVM->Init(false)) {
       niError(_A("Can't initialize VM."));
       return;
@@ -565,7 +569,8 @@ cScriptVM::cScriptVM(cScriptVM* apParentVM)
 #endif
   }
   else {
-    mptrVM = niNew SQVM();
+    Ptr<SQSharedState> ptrSharedStates = niNew SQSharedState();
+    mptrVM = niNew SQVM(ptrSharedStates);
     if (!mptrVM->Init(true)) {
       niError(_A("Can't initialize VM."));
       return;
@@ -622,9 +627,6 @@ cScriptVM::~cScriptVM()
 //! Invalidate.
 void __stdcall cScriptVM::Invalidate()
 {
-#ifndef NO_GARBAGE_COLLECTOR
-  niAssert(!_ss()->_isCollecting);
-#endif
   if (!mptrVM.IsOK())
     return;
 
@@ -1532,12 +1534,16 @@ niExportFunc(ni::iUnknown*) New_niScript_ScriptVM(const ni::Var& avarA, const ni
         return NULL;
       }
 
-      Ptr<iScriptVM> ptrNewVM = niNew cScriptVM(NULL);
+      Ptr<cScriptVM> ptrNewVM = niNew cScriptVM(NULL);
       if (!concurrent_vm_startup((HSQUIRRELVM)ptrNewVM->GetHandle(),ptrConcurrent)) {
         niError("Can't startup ConcurrentVM.");
         return NULL;
       }
-      concurrent_vm_register((HSQUIRRELVM)ptrNewVM->GetHandle());
+      HSQUIRRELVM newvm = (HSQUIRRELVM)ptrNewVM->GetHandle();
+      newvm->_ss->RegisterRoot(
+        newvm,
+        SQSharedState::_concurrent_funcs);
+
 #ifdef niDebug
       niDebugFmt(("D/ScriptVM[%p], concurrent VM initialized.",(tIntPtr)ptrNewVM.ptr()));
 #endif

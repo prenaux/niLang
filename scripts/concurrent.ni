@@ -195,7 +195,7 @@
   RGBA = ::RGBA
   Rect = ::Rect
   Matrix = ::Matrix
-  function print(msg) {
+  function print(_args_) {
     _vmprint(toPrintString(_args_))
   }
   function println(_args_) {

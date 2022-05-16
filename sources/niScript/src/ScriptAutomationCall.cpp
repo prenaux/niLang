@@ -692,7 +692,7 @@ bool cScriptAutomation::Get(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &k
               niSqUnGuard(v);
               return false;
             }
-            dest = niNew sScriptTypeIndexedProperty(pObject,propDef);
+            dest = niNew sScriptTypeIndexedProperty(*v->_ss,pObject,propDef);
             niSqUnGuard(v);
             return true;
           }

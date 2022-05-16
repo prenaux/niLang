@@ -79,9 +79,6 @@ struct SQTable : public SQCollectable, public SQ_ALLOCATOR(SQTable)
   SQTable*    mpParent;
   iUnknown*   mpDispatch;
   tU32        mnFlags;
-#ifdef _DEBUG
-  cString     mstrDebugName;
-#endif
   SQTableIterator* mpIterators;
 
 private:
@@ -113,6 +110,7 @@ public:
   SQTable* GetParent() const;
   void __stdcall SetDebugName(const achar* aaszName);
   void __stdcall SetDebugName(iHString* hspName) { SetDebugName(niHStr(hspName)); }
+  const iHString* __stdcall GetDebugHName() const;
   const achar* __stdcall GetDebugName() const;
   __forceinline tHMap& __stdcall GetHMap() { return mhmap; }
   __forceinline const tHMap& __stdcall GetHMap() const { return mhmap; }

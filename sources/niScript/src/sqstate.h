@@ -10,33 +10,20 @@
 struct SQTable;
 struct SQObjectPtr;
 
-struct SQSharedState
+struct SQSharedState : public ni::cIUnknownImpl<ni::iUnknown>
 {
- private:
+ public:
   SQSharedState();
   ~SQSharedState();
-  tBool Init();
+#ifndef NO_GARBAGE_COLLECTOR
+  virtual void __stdcall Mark(SQCollectable **chain);
+#endif
 
- public:
-  static tBool _Initialize();
-
-  SQObjectPtrVec _metamethods;
   SQObjectPtrVec _systemstrings;
   SQObjectPtr _refs_table;
 
-#ifndef NO_GARBAGE_COLLECTOR
-  int CollectGarbage(SQCollectable** tchain);
-  static void MarkObject(SQObjectPtr &o,SQCollectable **chain);
-  bool _isCollecting;
-  SQCollectable* _gc_chain_ptr;
-  ThreadMutex _gc_chain_mutex;
-  int _gc_chain_sync;
-  int _gc_chain_lastgc_sync;
-  astl::set<SQObjectPtr,SQObjectPtrSortByPtr> _gc_roots;
-  int GetNumRoots();
-  int AddRoot(const SQObjectPtr& o);
-  int RemoveRoot(const SQObjectPtr& o);
-#endif
+  static SQRegFunction _base_funcs[];
+  static SQRegFunction _concurrent_funcs[];
 
   SQObjectPtr _table_default_delegate;
   static SQRegFunction _table_default_delegate_funcz[];
@@ -99,26 +86,11 @@ struct SQSharedState
   tBool mbLangDelegatesLocked;
   const SQObjectPtr& GetLangDelegate(HSQUIRRELVM v, const achar* delID);
   void LockLangDelegates();
+
+  void RegisterRoot(HSQUIRRELVM v, const SQRegFunction* apFuncs);
 };
 
-extern SQSharedState* _gSS;
-tBool SQSharedState_Initialize();
-
-#define _ss() _gSS
-
-#define _table_ddel   _table(_ss()->_table_default_delegate)
-#define _array_ddel   _table(_ss()->_array_default_delegate)
-#define _string_ddel  _table(_ss()->_string_default_delegate)
-#define _number_ddel  _table(_ss()->_number_default_delegate)
-#define _closure_ddel _table(_ss()->_closure_default_delegate)
-#define _idxprop_ddel _table(_ss()->_idxprop_default_delegate)
-#define _vec2f_ddel   _table(_ss()->_vec2f_default_delegate)
-#define _vec3f_ddel   _table(_ss()->_vec3f_default_delegate)
-#define _vec4f_ddel   _table(_ss()->_vec4f_default_delegate)
-#define _matrixf_ddel _table(_ss()->_matrixf_default_delegate)
-#define _uuid_ddel    _table(_ss()->_uuid_default_delegate)
-#define _enum_ddel    _table(_ss()->_enum_default_delegate)
-#define _method_ddel  _table(_ss()->_method_default_delegate)
+#define _ddel(ss,basename) _table((ss)._##basename##_default_delegate)
 
 #ifdef SQUNICODE //rsl REAL STRING LEN
 #define rsl(l) ((l)<<1)
@@ -131,4 +103,29 @@ bool CompileTypemask(SQIntVec &res,const SQChar *typemask);
 void *sq_vm_malloc(unsigned int size);
 void *sq_vm_realloc(void *p,unsigned int oldsize,unsigned int size);
 void sq_vm_free(void *p,unsigned int size);
+
+#ifndef NO_GARBAGE_COLLECTOR
+struct SQGarbageCollector {
+  SQGarbageCollector();
+  int CollectGarbage(SQCollectable** tchain);
+  static void MarkObject(SQObjectPtr &o,SQCollectable **chain);
+  bool _isCollecting;
+  SQCollectable* _gc_chain_ptr;
+  ThreadMutex _gc_chain_mutex;
+  int _gc_chain_sync;
+  int _gc_chain_lastgc_sync;
+  astl::set<SQObjectPtr,SQObjectPtrSortByPtr> _gc_roots;
+  int GetNumRoots();
+  int AddRoot(const SQObjectPtr& o);
+  int RemoveRoot(const SQObjectPtr& o);
+};
+
+extern SQGarbageCollector* _gGC;
+#define _gc() _gGC
+#endif
+
+extern SQObjectPtr _sq_metamethods[MT__LAST];
+
+tBool _InitializeSQGCAndGlobals();
+
 #endif //_SQSTATE_H_

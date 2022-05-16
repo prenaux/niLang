@@ -17,9 +17,6 @@
 
 #define DEBUG_VM_ROOT //niDebugFmt
 
-#define newsysstring(s)  _systemstrings.push_back(_H(s));
-#define newmetamethod(s) _metamethods.push_back(_H(s));
-
 static __noinline SQTable* _CreateDefaultDelegate(SQSharedState *ss,SQRegFunction *funcz)
 {
   int i=0;
@@ -44,16 +41,9 @@ SQObjectPtr _minusone_(-1);
 SQSharedState::SQSharedState() {
   _compilererrorhandler = NULL;
   _debuginfo = false;
-#ifndef NO_GARBAGE_COLLECTOR
-  _gc_chain_ptr = NULL;
-  _gc_chain_sync = 0;
-  _gc_chain_lastgc_sync = -1;
-  _isCollecting = false;
-#endif
   mbLangDelegatesLocked = eFalse;
-}
 
-tBool SQSharedState::Init() {
+#define newsysstring(s)  _systemstrings.push_back(_H(s));
   newsysstring(_A("null"));
   newsysstring(_A("table"));
   newsysstring(_A("array"));
@@ -63,25 +53,7 @@ tBool SQSharedState::Init() {
   newsysstring(_A("int"));
   newsysstring(_A("float"));
   newsysstring(_A("function"));
-
-  // meta methods, have to be declared in the same order as SQMetaMethod
-  newmetamethod(MM_STD_TYPEOF);
-  newmetamethod(MM_STD_TOSTRING);
-  newmetamethod(MM_STD_CMP);
-  newmetamethod(MM_STD_CALL);
-  newmetamethod(MM_STD_NEXTI);
-  newmetamethod(MM_ARITH_ADD);
-  newmetamethod(MM_ARITH_SUB);
-  newmetamethod(MM_ARITH_MUL);
-  newmetamethod(MM_ARITH_DIV);
-  newmetamethod(MM_ARITH_UNM);
-  newmetamethod(MM_ARITH_MODULO);
-  newmetamethod(MM_TABLE_INVALIDATE);
-  newmetamethod(MM_USERDATA_SET);
-  newmetamethod(MM_USERDATA_GET);
-  newmetamethod(MM_USERDATA_NEWSLOT);
-  newmetamethod(MM_USERDATA_DELSLOT);
-  newmetamethod(MM_IUNKNOWN_CLONE);
+#undef newsysstring
 
   _refs_table = SQTable::Create();
   _table_default_delegate=_CreateDefaultDelegate(this,_table_default_delegate_funcz);
@@ -108,7 +80,6 @@ tBool SQSharedState::Init() {
   _typeStr_userdata = _H("userdata");
   _typeStr_vm = _H("vm");
   _typeStr_iunknown = _H("iunknown");
-  return eTrue;
 }
 
 const SQObjectPtr& SQSharedState::GetTypeNameObj(SQObjectType type) const {
@@ -195,12 +166,11 @@ SQSharedState::~SQSharedState()
   _string_default_delegate=_null_;
   _number_default_delegate=_null_;
   _closure_default_delegate=_null_;
-  _metamethods.clear();
   _systemstrings.clear();
 }
 
 #ifndef NO_GARBAGE_COLLECTOR
-void SQSharedState::MarkObject(SQObjectPtr &o,SQCollectable **chain)
+void SQGarbageCollector::MarkObject(SQObjectPtr &o,SQCollectable **chain)
 {
   switch(_sqtype(o)){
     case OT_TABLE:
@@ -221,34 +191,16 @@ void SQSharedState::MarkObject(SQObjectPtr &o,SQCollectable **chain)
   }
 }
 
-int SQSharedState::CollectGarbage(SQCollectable** _tchain)
+int SQGarbageCollector::CollectGarbage(SQCollectable** _tchain)
 {
   AutoThreadLock chainLock(_gc_chain_mutex);
   _isCollecting = true;
 
   SQCollectable*& tchain = *_tchain;
   int n = 0;
-  MarkObject(_refs_table,&tchain);
-  MarkObject(_table_default_delegate,&tchain);
-  MarkObject(_array_default_delegate,&tchain);
-  MarkObject(_string_default_delegate,&tchain);
-  MarkObject(_number_default_delegate,&tchain);
-  MarkObject(_closure_default_delegate,&tchain);
-  MarkObject(_idxprop_default_delegate,&tchain);
-  MarkObject(_vec2f_default_delegate,&tchain);
-  MarkObject(_vec3f_default_delegate,&tchain);
-  MarkObject(_vec4f_default_delegate,&tchain);
-  MarkObject(_matrixf_default_delegate,&tchain);
-  MarkObject(_uuid_default_delegate,&tchain);
-  MarkObject(_enum_default_delegate,&tchain);
-  MarkObject(_method_default_delegate,&tchain);
-  for (tDelegateMap::iterator it = mmapDelegates.begin(); it != mmapDelegates.end(); ++it) {
-    MarkObject(it->second,&tchain);
-  }
-  for (tEnumDefMap::iterator it = mmapEnumDefs.begin(); it != mmapEnumDefs.end(); ++it) {
-    MarkObject(it->second,&tchain);
-  }
-  for (astl::set<SQObjectPtr>::iterator it = _gc_roots.begin(); it != _gc_roots.end(); ++it) {
+  for (astl::set<SQObjectPtr>::iterator it = _gc_roots.begin();
+       it != _gc_roots.end(); ++it)
+  {
     MarkObject(const_cast<SQObjectPtr&>(*it),&tchain);
   }
 
@@ -283,7 +235,7 @@ int SQSharedState::CollectGarbage(SQCollectable** _tchain)
   return n;
 }
 
-int SQSharedState::GetNumRoots() {
+int SQGarbageCollector::GetNumRoots() {
   return _gc_roots.size();
 }
 
@@ -305,10 +257,9 @@ void SQCollectable::RemoveFromChain(SQCollectable **chain,SQCollectable *c)
   c->_prev=NULL;
 }
 
-int SQSharedState::AddRoot(const SQObjectPtr& o)
+int SQGarbageCollector::AddRoot(const SQObjectPtr& o)
 {
   AutoThreadLock lock(_gc_chain_mutex);
-  niAssert(_refs_table != _null_);
 
   ++_collectable(o)->mnRootRefs;
   if (_collectable(o)->mnRootRefs == 1) {
@@ -318,10 +269,9 @@ int SQSharedState::AddRoot(const SQObjectPtr& o)
   return _collectable(o)->mnRootRefs;
 }
 
-int SQSharedState::RemoveRoot(const SQObjectPtr& o)
+int SQGarbageCollector::RemoveRoot(const SQObjectPtr& o)
 {
   AutoThreadLock lock(_gc_chain_mutex);
-  niAssert(_refs_table != _null_);
 
   --_collectable(o)->mnRootRefs;
   if (_collectable(o)->mnRootRefs == 0) {
@@ -334,12 +284,12 @@ int SQSharedState::RemoveRoot(const SQObjectPtr& o)
 
 tI32 Collectable_AddRootRef(SQCollectable* o) {
   SQObjectPtr optr(o,eTrue);
-  return _ss()->AddRoot(optr);
+  return _gc()->AddRoot(optr);
 }
 
 tI32 Collectable_ReleaseRootRef(SQCollectable* o) {
   SQObjectPtr optr(o,eTrue);
-  return _ss()->RemoveRoot(optr);
+  return _gc()->RemoveRoot(optr);
 }
 
 #else
@@ -354,6 +304,12 @@ tI32 Collectable_ReleaseRootRef(SQCollectable* o) {
 }
 
 #endif
+
+void SQSharedState::RegisterRoot(HSQUIRRELVM v, const SQRegFunction* apFuncs) {
+  sq_pushroottable(v);
+  sq_registerfuncs(v,apFuncs);
+  sq_pop(v,1);
+}
 
 const SQObjectPtr& SQSharedState::GetLangDelegate(HSQUIRRELVM v, const achar* delID) {
   if (mbLangDelegatesLocked)
@@ -415,12 +371,44 @@ void SQSharedState::LockLangDelegates() {
   mbLangDelegatesLocked = eTrue;
 }
 
-SQSharedState* _gSS = NULL;
-tBool SQSharedState::_Initialize() {
-  if (_gSS != NULL) {
-    return eTrue;
+#ifndef NO_GARBAGE_COLLECTOR
+SQGarbageCollector::SQGarbageCollector() {
+  _gc_chain_ptr = NULL;
+  _gc_chain_sync = 0;
+  _gc_chain_lastgc_sync = -1;
+  _isCollecting = false;
+}
+#endif
+
+SQObjectPtr _sq_metamethods[MT__LAST];
+SQGarbageCollector* _gGC = NULL;
+
+tBool _InitializeSQGCAndGlobals() {
+  if (_sq_metamethods[0].IsNull()) {
+    // meta methods, have to be declared in the same order as SQMetaMethod
+    _sq_metamethods[MT_STD_TYPEOF] = _H(MM_STD_TYPEOF);
+    _sq_metamethods[MT_STD_TOSTRING] = _H(MM_STD_TOSTRING);
+    _sq_metamethods[MT_STD_CMP] = _H(MM_STD_CMP);
+    _sq_metamethods[MT_STD_CALL] = _H(MM_STD_CALL);
+    _sq_metamethods[MT_STD_NEXTI] = _H(MM_STD_NEXTI);
+    _sq_metamethods[MT_ARITH_ADD] = _H(MM_ARITH_ADD);
+    _sq_metamethods[MT_ARITH_SUB] = _H(MM_ARITH_SUB);
+    _sq_metamethods[MT_ARITH_MUL] = _H(MM_ARITH_MUL);
+    _sq_metamethods[MT_ARITH_DIV] = _H(MM_ARITH_DIV);
+    _sq_metamethods[MT_ARITH_UNM] = _H(MM_ARITH_UNM);
+    _sq_metamethods[MT_ARITH_MODULO] = _H(MM_ARITH_MODULO);
+    _sq_metamethods[MT_TABLE_INVALIDATE] = _H(MM_TABLE_INVALIDATE);
+    _sq_metamethods[MT_USERDATA_SET] = _H(MM_USERDATA_SET);
+    _sq_metamethods[MT_USERDATA_GET] = _H(MM_USERDATA_GET);
+    _sq_metamethods[MT_USERDATA_NEWSLOT] = _H(MM_USERDATA_NEWSLOT);
+    _sq_metamethods[MT_USERDATA_DELSLOT] = _H(MM_USERDATA_DELSLOT);
+    _sq_metamethods[MT_IUNKNOWN_CLONE] = _H(MM_IUNKNOWN_CLONE);
   }
-  _gSS = new SQSharedState();
-  _gSS->Init();
+
+#ifndef NO_GARBAGE_COLLECTOR
+  if (_gGC == NULL) {
+    _gGC = new SQGarbageCollector();
+  }
+#endif
   return eTrue;
 }

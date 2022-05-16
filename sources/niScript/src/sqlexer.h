@@ -19,6 +19,7 @@ struct SQLexer
   void Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up);
   SQObjectPtr Tok2Str(int tok);
   eCompileResult Lex(sCompileErrors& errors, int* apTok);
+  int GetLastTokenLine() const;
 
  private:
   eCompileResult LexScript(sCompileErrors& errors, int* apTok, tU32 backToSExpChar);
@@ -33,7 +34,6 @@ struct SQLexer
   int ReadScriptID();
   void ReadCompilerCommand();
   void Next();
-  int GetLastTokenLine() const;
 
  public:
   int _curtoken;

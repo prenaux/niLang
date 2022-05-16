@@ -102,22 +102,22 @@ struct SQCollectable : public ni::iCollectable {
   SQREF_WRITE(&mprotected_nNumRefs, SQREF_READ(&mprotected_nNumRefs)|MARK_FLAG);
 
 #define END_MARK(chain)                         \
-  RemoveFromChain(&_ss()->_gc_chain_ptr, this); \
+  RemoveFromChain(&_gc()->_gc_chain_ptr, this); \
   AddToChain(chain, this);                      \
   }
 
 #define UNMARK()  SQREF_WRITE(&mprotected_nNumRefs, SQREF_READ(&mprotected_nNumRefs) & (~MARK_FLAG));
 
 #define ADD_TO_CHAIN(obj) {                           \
-    AutoThreadLock chainLock(_ss()->_gc_chain_mutex); \
-    ++_ss()->_gc_chain_sync;                          \
-    AddToChain(&_ss()->_gc_chain_ptr,obj);            \
+    AutoThreadLock chainLock(_gc()->_gc_chain_mutex); \
+    ++_gc()->_gc_chain_sync;                          \
+    AddToChain(&_gc()->_gc_chain_ptr,obj);            \
   }
 
 #define REMOVE_FROM_CHAIN(obj) {                          \
     if (!(SQREF_READ(&mprotected_nNumRefs)&MARK_FLAG)) {  \
-      AutoThreadLock chainLock(_ss()->_gc_chain_mutex);   \
-      RemoveFromChain(&_ss()->_gc_chain_ptr,obj);         \
+      AutoThreadLock chainLock(_gc()->_gc_chain_mutex);   \
+      RemoveFromChain(&_gc()->_gc_chain_ptr,obj);         \
     }                                                     \
   }
 

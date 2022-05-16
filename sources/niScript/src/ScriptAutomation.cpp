@@ -1037,7 +1037,7 @@ void cScriptAutomation::InitIntfDelegateLst(
     const tUUID& iid = uuidLst->at(i);
     if (iid == niGetInterfaceUUID(iUnknown))  continue;
     if (iid == niGetInterfaceUUID(iDispatch)) continue;
-    SQObjectPtr objTable = _ss()->GetInterfaceDelegate(vm,iid);
+    SQObjectPtr objTable = vm->_ss->GetInterfaceDelegate(vm,iid);
     if (objTable == _null_) {
       niWarning(niFmt(_A("Can't get delegate of interface '%s' {%s}."),
                       niHStr(ni::GetLang()->GetInterfaceName(iid)),
@@ -1068,7 +1068,7 @@ void cScriptAutomation::InitIntfDelegateLst(
   }
 #endif
 
-  SQObjectPtr objBase = _ss()->GetInterfaceDelegate(vm,iidBaseInterface);
+  SQObjectPtr objBase = vm->_ss->GetInterfaceDelegate(vm,iidBaseInterface);
   if (objBase == _null_) {
     niWarning(niFmt(_A("sqa_pushIUnknown, Can't get delegate of base interface '%s' {%s}."),
                     niHStr(ni::GetLang()->GetInterfaceName(iidBaseInterface)),

@@ -23,12 +23,9 @@ struct sScriptTypeMethodDef;
 
 #define VM_STACK_TOP() (_stack[_top-1])
 
-//base lib
-void sq_base_register(HSQUIRRELVM v);
-
 static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable *mt,SQMetaMethod mm,tBool abOneLevel=eFalse) {
   if (abOneLevel) {
-    if (mt->Get(_ss()->_metamethods[mm], closure)) {
+    if (mt->Get(_sq_metamethods[mm], closure)) {
       return true;
     }
   }
@@ -36,7 +33,7 @@ static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable *mt,
     SQTable* ct = mt;
     while (ct)
     {
-      if (ct->Get(_ss()->_metamethods[mm], closure)) {
+      if (ct->Get(_sq_metamethods[mm], closure)) {
         return true;
       }
       ct = ct->GetDelegate();
@@ -79,7 +76,7 @@ struct SQVM : public SQCollectable, public cMemImpl
   }
 
  public:
-  SQVM();
+  SQVM(SQSharedState* aSS);
   ~SQVM();
   bool Init(bool abInitRootTable);
   bool Execute(const SQObjectPtr &func, int target, int nargs, int stackbase, SQObjectPtr &outres);
@@ -160,12 +157,11 @@ struct SQVM : public SQCollectable, public cMemImpl
   bool Return(int _arg0, int _arg1, SQObjectPtr &retval);
 
   bool DerefInc(SQObjectPtr &target, SQObjectPtr &self, SQObjectPtr &key, SQObjectPtr &incr, bool postfix, int opExt);
-#ifdef _DEBUG_DUMP
   void dumpstack(int stackbase=-1, bool dumpall = false);
   bool _execDumpStack;
-#endif
 
 #ifndef NO_GARBAGE_COLLECTOR
+  // DOES NOT Mark the SQSharedState since those shouldn't be marked more than once.
   virtual void __stdcall Mark(SQCollectable **chain);
 #endif
   virtual void __stdcall Invalidate();
@@ -197,6 +193,8 @@ struct SQVM : public SQCollectable, public cMemImpl
   __forceinline SQObjectPtr &GetAt(int n) { niAssert(n < (int)_stack.size()); return _stack[n]; }
   __forceinline int GetCallStackBase(int numParams) { return _top-_stackbase-numParams+1; }
   SQObjectPtr &GetEmptyString();
+
+  Ptr<SQSharedState> _ss;
 
   SQObjectPtrVec _stack;
   int _top;

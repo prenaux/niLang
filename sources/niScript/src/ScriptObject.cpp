@@ -130,9 +130,11 @@ tBool __stdcall cScriptObject::Get(int idx, int numpop)
   if (!IsOK())
     return eFalse;
 
+  HSQUIRRELVM vm = *mpVM;
+
   if (mType != eScriptObjectType_Last) {
     if (mbHoldRef)
-      sq_release(&mObject);
+      sq_release(*vm->_ss,&mObject);
   }
 
   if (idx == eInvalidHandle)
@@ -225,7 +227,7 @@ tBool __stdcall cScriptObject::Get(int idx, int numpop)
   }
 
   if (mbHoldRef) {
-    sq_addref(&mObject);
+    sq_addref(*vm->_ss,&mObject);
   }
 
   if (numpop > 0) {

@@ -957,7 +957,19 @@
     aContext = aContext || ::gUIContext
     ::printdebugln("REMOVE SKIN :" + aContext.default_skin)
     local skin = aContext.default_skin
+    local skinDT = aContext.GetSkinDataTable(skin)
+    // ::println("... RELOAD skinDT:" ::lang.toString(skinDT))
+    local skinResPath = skinDT.?string.?res_path
+    if (!skinResPath) {
+      throw "Skin '"+skin+"' can't be reloaded as it doesnt have a res_path."
+    }
+    if (!::gLang.URLExists(skinResPath)) {
+      throw "Skin '"+skin+"' can't find res_path '"+skinResPath+"'."
+    }
     aContext.RemoveSkin(aContext.default_skin)
+    if (!::gUIContext.AddSkinFromRes(skinResPath)) {
+      throw "Skin '"+skin+"' can't be loaded from res_path '"+skinResPath+"'."
+    }
     aContext.default_skin = skin
     aContext.root_widget.?BroadcastMessage(::eUIMessage.SkinChanged,null,null)
     ::printdebugln("SKIN LOADED : " + aContext.default_skin)

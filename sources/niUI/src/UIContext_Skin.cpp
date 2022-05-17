@@ -71,6 +71,7 @@ tBool __stdcall cUIContext::AddSkinFromRes(iHString* ahspRes)
     niError(niFmt(_A("Can't read skin datatable from resource '%s'."),niHStr(ahspRes)));
     return eFalse;
   }
+  ptrDT->SetHString("res_path", ahspRes);
 
   if (!AddSkin(ptrDT)) {
     niError(niFmt(_A("Can't add skin from resource '%s'."),niHStr(ahspRes)));
@@ -94,11 +95,8 @@ tBool __stdcall cUIContext::SetDefaultSkin(iHString* ahspName)
 {
   tU32 nSkinIndex = GetSkinIndex(ahspName);
   if (nSkinIndex == eInvalidHandle) {
-    if (!AddSkinFromRes(_H(niFmt(_A("niUI://skins/%s.uiskin.xml"),niHStr(ahspName))))) {
-      niError(niFmt(_A("Can't find skin '%s' to set as default."),niHStr(ahspName)));
-      return eFalse;
-    }
-    nSkinIndex = GetSkinIndex(ahspName);
+    niError(niFmt(_A("Can't find skin '%s' to set as default."),niHStr(ahspName)));
+    return eFalse;
   }
   mhspDefaultSkin = ahspName;
   return eTrue;

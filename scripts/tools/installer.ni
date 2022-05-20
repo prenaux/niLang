@@ -831,7 +831,10 @@ local __lint = {
   //////////////////////////////////////////////////////////////////////////////////////////////
   // High level
   //////////////////////////////////////////////////////////////////////////////////////////////
-  function build(aDTPath,aBasePath,aOutputDir,aOutputTypes,aOnInitInstaller) {
+  function build(aDTPath,aPrjDir,aOutputDir,aOutputTypes,aOnInitInstaller) {
+    aPrjDir = "".setdir(aPrjDir)
+    aOutputDir = "".setdir(aOutputDir)
+
     local startTime = ::clock()
 
     aOutputTypes = ::algo.array(aOutputTypes);
@@ -853,15 +856,15 @@ local __lint = {
     if (!::fs.dirExists(aOutputDir))
       throw "Can't create output director: " + aOutputDir
 
-    local myInstaller = ::installer.new(dt,aBasePath,aOutputDir)
+    local myInstaller = ::installer.new(dt,aPrjDir,aOutputDir)
     if (aOnInitInstaller) {
       aOnInitInstaller(myInstaller)
     }
 
     ::println("# Scanning folders...")
-    ::println("BasePath: " + aBasePath)
-    if (!::fs.dirExists(aBasePath)) {
-      throw "E/Base path directory doesn't exists: " + aBasePath
+    ::println("PrjDir: " + aPrjDir)
+    if (!::fs.dirExists(aPrjDir)) {
+      throw "E/PrjDir directory doesn't exists: " + aPrjDir
     }
 
     ::println("OutputDir: " + aOutputDir)

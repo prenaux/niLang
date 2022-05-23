@@ -23,7 +23,7 @@ static sPropertyBool _dumpGlyphs("niUI.FontTTF.DumpGlyphs",eFalse);
 
 #define TTF_KERNING
 // #define TTF_PREMULALPHA
-#define TTF_PAGE_SIZE 512
+#define TTF_PAGE_SIZE 1024
 #define TTF_GLYPH_PADDING 1
 #define TTF_USE_MIPMAPS
 #define TTF_COMPUTE_MIPMAPS_PER_PAGE

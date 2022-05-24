@@ -11,6 +11,7 @@
 #include "API/niLang/Math/MathMatrix.h"
 #include "API/niLang/Math/MathCurves.h"
 #include "API/niLang/Math/MathPlane.h"
+#include "API/niLang/Math/MathProb.h"
 #include "API/niLang/Math/MathRect.h"
 #include "API/niLang/Math/MathUtils.h"
 #include "API/niLang/Math/MathTriangle.h"
@@ -2161,27 +2162,13 @@ sMatrixf __stdcall cMath::MatrixComposeQ(const sVec3f& aT, const sQuatf& aQ, con
 tF64 cMath::ProbSum(tF64CVec* apProbs) {
   if (!apProbs || apProbs->size() < 1)
     return 0.0;
-  const tF64* p = apProbs->data();
-  tF64 sum = 0.0;
-  niLoop(i,apProbs->size()) {
-    sum += *p;
-    ++p;
-  }
-  return sum;
+  return ni::ProbSum(apProbs->data(),apProbs->size());
 }
 
 tBool cMath::ProbNormalize(tF64CVec* apProbs) {
-  const tF64 sum = ProbSum(apProbs);
-  if (sum <= 0.0)
+  if (!apProbs || apProbs->size() < 1)
     return eFalse;
-
-  tF64* p = apProbs->data();
-  niLoop(i,apProbs->size()) {
-    *p /= sum;
-    ++p;
-  }
-
-  return eTrue;
+  return ni::ProbNormalize(apProbs->data(),apProbs->size());
 }
 
 tBool cMath::ProbSampleBuildAliasMethodArrays(const tF64CVec* apProbs, tF64CVec* apAMQ, tU32CVec* apAMA)
@@ -2189,85 +2176,28 @@ tBool cMath::ProbSampleBuildAliasMethodArrays(const tF64CVec* apProbs, tF64CVec*
   niCheck(apProbs && apProbs->size() >= 1, eFalse);
   niCheck(apAMQ, eFalse);
   niCheck(apAMA, eFalse);
-
   const tU32 n = apProbs->size();
-  const tF64* p = apProbs->data();
   apAMQ->resize(n);
   apAMA->resize(n*2);
-
-  /* allocate memory for a, p, H and L is the second half of a  */
-  tF64* q = apAMQ->data();
-  tU32* a = apAMA->data();
-  tU32* LL = a+n, *HH = a+2*n-1;  /* start of H and L vector */
-  tU32* L = LL, *H = HH;          /* end of H and L vector */
-
-  /* set up alias table */
-  /* initialize q with n*p0,...n*p_n-1 */
-  niLoop(i,n) {
-    q[i] = p[i]*n;
-  }
-
-  /* initialize a with indices */
-  niLoop(i,n) {
-    a[i] = i;
-  }
-
-  /* set up H and L */
-  niLoop(i,n) {
-    if( q[i] >= 1.)
-      *H-- = i;
-    else
-      *L++ = i;
-  }
-
-  while (L != LL && H != HH) {
-    tI32 j = *(L-1);
-    tI32 k = *(H+1);
-    a[j] = k;
-    q[k] += q[j] - 1;
-    L--;                                  /* remove j from L */
-    if( q[k] < 1. ) {
-      *L++ = k;                         /* add k to L */
-      ++H;                              /* remove k */
-    }
-  }
-
+  ni::ProbSampleBuildAliasMethodArrays(
+    apProbs->data(), n, apAMQ->data(), apAMA->data());
   return eTrue;
 }
 
 tBool cMath::ProbSampleAliasMethod(tU32CVec* apResults, const tF64CVec* apAMQ, const tU32CVec* apAMA)
 {
   niCheck(apResults, eFalse);
-
   const tU32 nres = apResults->size();
   niCheck(nres >= 1, eFalse);
-
   niCheck(apAMQ, eFalse);
   const tU32 n = apAMQ->size();
   niCheck(n >= 1, eFalse);
-
   niCheck(apAMA, eFalse);
   niCheck(apAMA->size() == (n*2), eFalse);
-
-  const tF64* q = apAMQ->data();
-  const tU32* a = apAMA->data();
-  tU32* r = apResults->data();
-
-  const tF64 ndbl = (tF64)n;
-  /* generate sample */
-  niLoop(i,nres) {
-    tF64 rU = ni::RandFloat() * ndbl;
-
-    tU32 k = (tU32)(rU);
-    rU -= k;  /* rU becomes rU-[rU] */
-
-    if (rU < q[k])
-      r[i] = k;
-    else
-      r[i] = a[k];
-  }
-
-  return eTrue;
+  return ni::ProbSampleAliasMethod(
+    apResults->data(), nres,
+    apAMQ->data(), apAMA->data(), n,
+    []() { return ni::RandFloat(); });
 }
 
 #endif

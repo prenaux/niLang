@@ -295,9 +295,8 @@ niExportFuncCPP(sRectf) TextLayout_Compute(
     }
     else {
       tF32 adv = gm.Compute(f,fontSizeByRes,x,y,bKerning ? prevch : 0, ch);
-      if (bWrapText && x + adv > aRect.z) {
+      if (bWrapText && gm.displayPos.z > aRect.z) {
         addLine();
-
         // recompute the glyph location when new line started
         adv = gm.Compute(f,fontSizeByRes,x,y,bKerning ? prevch : 0, ch);
       }

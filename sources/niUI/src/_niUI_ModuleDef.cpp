@@ -36433,6 +36433,7 @@ static const ni::sEnumValueDef Enum_eFontFormatFlags_Values[] = {
 	{ "Border", ni::eFontFormatFlags_Border },
 	{ "Kerning", ni::eFontFormatFlags_Kerning },
 	{ "NoUnitSnap", ni::eFontFormatFlags_NoUnitSnap },
+	{ "WrapText", ni::eFontFormatFlags_WrapText },
 };
 static const ni::sEnumDef Enum_eFontFormatFlags = {
 	"eFontFormatFlags",

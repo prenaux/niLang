@@ -2,6 +2,7 @@
 #include "../src/API/niLang/IFile.h"
 #include "../src/API/niLang/ILang.h"
 #include "../src/FileFd.h"
+#include "../src/API/niLang/Utils/TimerSleep.h"
 #include <niLang/Utils/Trace.h>
 #include <niLang/Utils/FileEnum.h>
 #include <niLang/Utils/URLFileHandler.h>
@@ -305,4 +306,70 @@ TEST_FIXTURE(FFileSystem,ModuleDataDir) {
   CHECK_RETURN_IF_FAILED(fp.IsOK());
   CHECK_EQUAL(18, fp->GetSize());
   CHECK_EQUAL(_ASTR("Hello File System"), fp->ReadStringLine());
+}
+
+TEST_FIXTURE(FFileSystem,GetTime) {
+  const cString filePathA = UnitTest::GetTestOutputFilePath("fs_get_time_a.txt");
+  const cString filePathB = UnitTest::GetTestOutputFilePath("fs_get_time_b.txt");
+  const tI64 currentTimeSecs = ni::GetCurrentTime()->GetUnixTimeSecs();
+  CHECK_NOT_EQUAL(0,currentTimeSecs);
+
+  // Test time that are the within the same second
+  {
+    ni::GetRootFS()->FileDelete(filePathA.Chars());
+    Ptr<iFile> fp = ni::GetRootFS()->FileOpen(filePathA.Chars(), eFileOpenMode_Write);
+    fp->WriteString("Hello test A!");
+  }
+  {
+    ni::GetRootFS()->FileDelete(filePathB.Chars());
+    Ptr<iFile> fp = ni::GetRootFS()->FileOpen(filePathB.Chars(), eFileOpenMode_Write);
+    fp->WriteString("Hello test B!");
+  }
+
+  Ptr<iFile> fpA = ni::GetRootFS()->FileOpen(filePathA.Chars(), eFileOpenMode_Read);
+  Ptr<iTime> ta = ni::CreateTimeZero();
+  CHECK(fpA->GetTime(eFileTime_LastWrite,ta));
+  Ptr<iFile> fpB = ni::GetRootFS()->FileOpen(filePathB.Chars(), eFileOpenMode_Read);
+  Ptr<iTime> tb = ni::CreateTimeZero();
+  CHECK(fpB->GetTime(eFileTime_LastWrite,tb));
+  niDebugFmt(("... ta: %d - %s", ta->GetUnixTimeSecs(), ta->Format(NULL)));
+  niDebugFmt(("... tb: %d - %s", tb->GetUnixTimeSecs(), tb->Format(NULL)));
+  CHECK_NOT_EQUAL(0,ta->GetUnixTimeSecs());
+  CHECK_EQUAL(0,ta->Compare(tb));
+  CHECK_CLOSE(0,tb->GetUnixTimeSecs()-ta->GetUnixTimeSecs(),1);
+  CHECK_CLOSE(0,currentTimeSecs-ta->GetUnixTimeSecs(),1);
+}
+
+TEST_FIXTURE(FFileSystem,GetTime1) {
+  const cString filePathA = UnitTest::GetTestOutputFilePath("fs_get_time_a.txt");
+  const cString filePathB = UnitTest::GetTestOutputFilePath("fs_get_time_b.txt");
+  const tI64 currentTimeSecs = ni::GetCurrentTime()->GetUnixTimeSecs();
+  CHECK_NOT_EQUAL(0,currentTimeSecs);
+
+  // Test time that are the within 1 seconds
+  {
+    ni::GetRootFS()->FileDelete(filePathA.Chars());
+    Ptr<iFile> fp = ni::GetRootFS()->FileOpen(filePathA.Chars(), eFileOpenMode_Write);
+    fp->WriteString("Hello test A!");
+  }
+  ni::SleepMs(1100);
+  {
+    ni::GetRootFS()->FileDelete(filePathB.Chars());
+    Ptr<iFile> fp = ni::GetRootFS()->FileOpen(filePathB.Chars(), eFileOpenMode_Write);
+    fp->WriteString("Hello test B!");
+  }
+
+  Ptr<iFile> fpA = ni::GetRootFS()->FileOpen(filePathA.Chars(), eFileOpenMode_Read);
+  Ptr<iTime> ta = ni::CreateTimeZero();
+  CHECK(fpA->GetTime(eFileTime_LastWrite,ta));
+  Ptr<iFile> fpB = ni::GetRootFS()->FileOpen(filePathB.Chars(), eFileOpenMode_Read);
+  Ptr<iTime> tb = ni::CreateTimeZero();
+  CHECK(fpB->GetTime(eFileTime_LastWrite,tb));
+  niDebugFmt(("... ta: %d - %s", ta->GetUnixTimeSecs(), ta->Format(NULL)));
+  niDebugFmt(("... tb: %d - %s", tb->GetUnixTimeSecs(), tb->Format(NULL)));
+  CHECK_NOT_EQUAL(0,ta->GetUnixTimeSecs());
+  CHECK_EQUAL(-1,ta->Compare(tb));
+  CHECK_NOT_EQUAL(tb->GetUnixTimeSecs(),ta->GetUnixTimeSecs());
+  CHECK_CLOSE(1,tb->GetUnixTimeSecs()-ta->GetUnixTimeSecs(),1);
+  CHECK_CLOSE(0,currentTimeSecs-ta->GetUnixTimeSecs(),1);
 }

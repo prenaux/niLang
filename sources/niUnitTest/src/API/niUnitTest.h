@@ -916,7 +916,7 @@ void CheckClose(TestResults& results, Expected const expected, Actual const actu
   if (!AreClose(expected, actual, tolerance))
   {
     UnitTest::MemoryOutStream stream;
-    stream << "Expected [" << expected << "] but was [" << actual << "] {+/- " << tolerance << "}";
+    stream << "Expected [" << expected << "] {+/- " << tolerance << "} but was [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.GetText());
   }
 }

@@ -1018,7 +1018,7 @@ float cFont::GetCharWidth(tU32 c) const {
   if (c == 0) {
     return 0;
   }
-  return GetCharRectWidth(GetCharTexCoo(' '));
+  return GetCharRectWidth(GetCharTexCoo(c));
 }
 float cFont::GetCharHeight(tU32 c) const
 {

@@ -202,56 +202,111 @@ niExportFuncCPP(sRectf) TextLayout_Compute(
   const tBool bKerning = apFont->GetHasKerning() && niFlagIs(flags,eFontFormatFlags_Kerning);
 
   tU32 ch = 0;
-  tF32 y = bUnitSnap ? ni::UnitSnapf(aRect.y) : aRect.y;
-  const tF32 x = bUnitSnap ? ni::UnitSnapf(aRect.x) : aRect.x;
+  const tF32 start_y = bUnitSnap ? ni::UnitSnapf(aRect.y) : aRect.y;
+  const tF32 start_x = bUnitSnap ? ni::UnitSnapf(aRect.x) : aRect.x;
+  tF32 x = start_x;
+  tF32 y = start_y;
+
   const tF32 lineHeight = TextLineMetric_ComputeLineHeight(apFont);
 
   StrCharIt it(aaszText, (achar*)NULL, (tSize)anTextLen);
-  const achar* start = it.start();
-
-  // Add a single line
-  tBool nextAddLineNeedNewLine = eTrue;
-  auto addLine = [&](const tU32 textLen) {
-    if (textLen <= 0)
-      return;
-    if (nextAddLineNeedNewLine) {
-      astl::push_back(aMetrics);
-    }
-    sTextLineMetric& tm = aMetrics.back();
-    if (TextLineMetric_AddText(&tm, apFont, x, y, start, textLen, bKerning) > 0) {
-      // Horizontal alignment
-      if (niFlagIs(flags,eFontFormatFlags_CenterH)) {
-        tF32 offX = (aRect.GetWidth() - tm.rect.GetWidth()) / 2;
-        if (bUnitSnap) {
-          offX = ni::UnitSnapf(offX);
-        }
-        TextLineMetric_Move(&tm, offX, 0);
-      }
-      else if (niFlagIs(flags,eFontFormatFlags_Right)) {
-        tF32 offX = (aRect.GetWidth() - tm.rect.GetWidth());
-        if (bUnitSnap) {
-          offX = ni::UnitSnapf(offX);
-        }
-        TextLineMetric_Move(&tm, offX, 0);
-      }
-      bbRect.Add(tm.rect);
-      nextAddLineNeedNewLine = eTrue;
-    }
-    else {
-      nextAddLineNeedNewLine = eFalse;
-    }
-    start = it.current();
-  };
+  cFont* f = (cFont*)apFont;
 
   // Process all the lines
+  const tBool bWrapText = niFlagIs(flags,eFontFormatFlags_WrapText);
+
+  sDisplayGlyph gm;
+  const tF32 fontSizeByRes = ni::FDiv(f->mStates.GetWidth(),(tF32)f->mStates.mnResolution);
+
+  sDisplayGlyph gmSpace;
+  const tF32 spaceAdv = gmSpace.Compute(f,fontSizeByRes,0,0,0,' ');
+  const tF32 tabSize = apFont->GetTabSize()*spaceAdv;
+
+  tU32 prevch = 0;
+
+  astl::push_back(aMetrics);
+
+  auto addLine = [&] (tBool lastLine = eFalse) {
+    // update Y position
+    auto h = lastLine ? apFont->GetHeight() : lineHeight;
+    y = bUnitSnap ? ni::UnitSnapf(y + h) : (y + h);
+
+    if ((tU32)aMetrics.back().glyphs.size() > 0) {
+      // aMetrics.back().glyphs.back().displayPos.z
+      aMetrics.back().rect.Add(
+        Vec2f(start_x, start_y),
+        Vec2f(aMetrics.back().glyphs.back().displayPos.z, y));
+    }
+    bbRect.Add(aMetrics.back().rect);
+
+    if (niFlagIs(flags,eFontFormatFlags_CenterH)) {
+      tF32 offX = (aRect.GetWidth() - aMetrics.back().rect.GetWidth()) / 2;
+      if (bUnitSnap) {
+        offX = ni::UnitSnapf(offX);
+      }
+      TextLineMetric_Move(&aMetrics.back(), offX, 0);
+    }
+    else if (niFlagIs(flags,eFontFormatFlags_Right)) {
+      tF32 offX = (aRect.GetWidth() - aMetrics.back().rect.GetWidth());
+      if (bUnitSnap) {
+        offX = ni::UnitSnapf(offX);
+      }
+      TextLineMetric_Move(&aMetrics.back(), offX, 0);
+    }
+
+    astl::push_back(aMetrics);
+
+    // reset X position
+    x = aRect.x;
+  };
+
   while (!it.is_end()) {
+    prevch = ch;
     ch = it.next();
-    if (ch == '\n') {
-      addLine(it.current()-start);
-      y = bUnitSnap ? ni::UnitSnapf(y + lineHeight) : (y + lineHeight);
+
+    if (ch == ' ') {
+      if (bWrapText && x + spaceAdv > aRect.z) {
+        addLine();
+      }
+
+      gm = gmSpace;
+      gm.displayPos.Move(Vec2f(x,y));
+      gm.displayPos.SetWidth(spaceAdv);
+      aMetrics.back().glyphs.push_back(gm);
+      x += spaceAdv;
+    }
+    else if (ch == '\t') {
+      const tF32 tabAdv = tabSize-::fmodf(x-aRect.x,tabSize);
+      if (bWrapText && x + tabAdv > aRect.z) {
+        addLine();
+      }
+
+      gm = gmSpace;
+      gm.displayPos.Move(Vec2f(x,y));
+      gm.displayPos.SetWidth(tabAdv);
+      aMetrics.back().glyphs.push_back(gm);
+      x += tabAdv;
+    }
+    else if (ch == '\n') {
+      addLine();
+    }
+    else if (ch < 32) {
+      // skip invisible characters
+    }
+    else {
+      tF32 adv = gm.Compute(f,fontSizeByRes,x,y,bKerning ? prevch : 0, ch);
+      if (bWrapText && x + adv > aRect.z) {
+        addLine();
+
+        // recompute the glyph location when new line started
+        adv = gm.Compute(f,fontSizeByRes,x,y,bKerning ? prevch : 0, ch);
+      }
+
+      aMetrics.back().glyphs.push_back(gm);
+      x += adv;
     }
   }
-  addLine(it.current()-start);
+  addLine(true);
 
   // Vertical alignment
   if (niFlagIs(flags,eFontFormatFlags_CenterV)) {

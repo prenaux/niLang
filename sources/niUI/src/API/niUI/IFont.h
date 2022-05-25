@@ -40,6 +40,8 @@ enum eFontFormatFlags
   //!         you're drawing animated text, text in a 3D space or you take
   //!         care of the snapping yourself.
   eFontFormatFlags_NoUnitSnap = niBit(8),
+  //! Wrap text if the text is too long
+  eFontFormatFlags_WrapText = niBit(9),
   //! \internal
   eFontFormatFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

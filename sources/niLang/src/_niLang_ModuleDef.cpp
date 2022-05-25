@@ -20342,6 +20342,34 @@ static const ni::sMethodDef iOSProcessManager_EnumProcesses = {
 };
 #endif // niMinFeatures(15)
 
+#if niMinFeatures(15)
+// Method: GetCwd
+static const ni::sMethodDef iOSProcessManager_GetCwd = {
+  "GetCwd",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_String, NULL, "cString",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iOSProcessManager_GetCwd)
+#else
+  NULL
+#endif
+};
+#endif // niMinFeatures(15)
+
+#if niMinFeatures(15)
+// Method: GetEnviron
+static const ni::sMethodDef iOSProcessManager_GetEnviron = {
+  "GetEnviron",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "Ptr<tStringCMap>",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iOSProcessManager_GetEnviron)
+#else
+  NULL
+#endif
+};
+#endif // niMinFeatures(15)
+
 static const ni::sMethodDef* Methods_iOSProcessManager[] = {
 #if niMinFeatures(15)
 	&iOSProcessManager_GetCurrentProcessID,
@@ -20360,6 +20388,12 @@ static const ni::sMethodDef* Methods_iOSProcessManager[] = {
 #endif // niMinFeatures(15)
 #if niMinFeatures(15)
 	&iOSProcessManager_EnumProcesses,
+#endif // niMinFeatures(15)
+#if niMinFeatures(15)
+	&iOSProcessManager_GetCwd,
+#endif // niMinFeatures(15)
+#if niMinFeatures(15)
+	&iOSProcessManager_GetEnviron,
 #endif // niMinFeatures(15)
 
 };

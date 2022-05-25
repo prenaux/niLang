@@ -1006,6 +1006,9 @@ class cMutableCollectionImpl : public IMMIMPL {
   iterator find(const tValType& aVal) {
     return TRAITS::Find(this->_Base(),aVal);
   }
+  const_iterator find(const tValType& aVal) const {
+    return TRAITS::Find(this->_Base(),aVal);
+  }
 
   //! \remark Assumes that the underlying container will be modified, so
   //!         invalidates the iterators accordingly.

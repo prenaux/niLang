@@ -491,4 +491,24 @@ TEST_FIXTURE(FProcess,SpawnPrintLoop) {
     spawned->Terminate(-1);
   }
 }
+
+TEST_FIXTURE(FProcess,Environ) {
+  // astl::map<cString,cString>* environ;
+  Ptr<tStringCMap> environ = _pman->GetEnviron();
+  // for (auto it : *environ) {
+    // niDebugFmt(("... %s = %s", it.first, it.second));
+  // }
+  cString path = astl::get_default(*environ,"PATH","");
+  CHECK(path.IsNotEmpty());
+}
+
+TEST_FIXTURE(FProcess,Cwd) {
+  cString cwd = _pman->GetCwd();
+  // niDebugFmt(("... cwd: %s", cwd));
+  CHECK(cwd.IsNotEmpty());
+  cString oa = niFmt("%s-%s",
+                     ni::GetProperty("ni.loa.osx"),
+                     ni::GetProperty("ni.loa.arch"));
+  CHECK(cwd.EndsWith(oa.Chars()));
+}
 #endif

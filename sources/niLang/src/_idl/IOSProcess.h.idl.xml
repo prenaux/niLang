@@ -380,6 +380,30 @@
 					typec="iOSProcessEnumSink*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method
+				const="yes"
+				java_name="getCwd"
+				min_features="15"
+				name="GetCwd"
+				num_parameters="0"
+				property="get"
+				property_name2="cwd"
+				property_name="cwd">
+				<comments desc="Get the current working directory. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnviron"
+				min_features="15"
+				name="GetEnviron"
+				num_parameters="0"
+				property="get"
+				property_name2="environ"
+				property_name="environ">
+				<comments desc="Get the current environment variables. "/>
+				<return type="Ptr&lt;tStringCMap&gt;" typec="Ptr&lt;tStringCMap&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
 		</interface>
 	</namespace>
 </niIDL>

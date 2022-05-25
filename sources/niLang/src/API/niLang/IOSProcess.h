@@ -156,6 +156,14 @@ struct iOSProcessManager : public iUnknown {
   //! \return The number of processes enumerated.
   //! \remark If apSink is NULL returns the number of processes that passed the filter.
   virtual tU32 __stdcall EnumProcesses(ni::iRegex* apFilter, iOSProcessEnumSink* apSink) = 0;
+
+  //! Get the current working directory.
+  //! {Property}
+  virtual cString __stdcall GetCwd() const = 0;
+
+  //! Get the current environment variables.
+  //! {Property}
+  virtual Ptr<tStringCMap> __stdcall GetEnviron() const = 0;
 };
 
 #ifndef niNoProcess

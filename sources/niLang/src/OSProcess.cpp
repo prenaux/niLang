@@ -17,10 +17,16 @@
 #include "API/niLang/ILang.h"
 #include "Platform.h"
 #include "API/niLang/Utils/StringTokenizerImpl.h"
+#include "API/niLang/STL/utils.h"
 
 using namespace ni;
 
 cString _GetCommandLine(void);
+
+niExternC char** environ;
+static char** _GetEnviron() {
+  return environ;
+}
 
 //--------------------------------------------------------------------------------------------
 //
@@ -564,6 +570,12 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
       return NULL;
     }
 
+    Ptr<tStringCMap> defaultEnvs;
+    if (!apEnvs) {
+      defaultEnvs = this->GetEnviron();
+      apEnvs = defaultEnvs.ptr();
+    }
+
 #ifdef niWindows
     //
     // Windows Spawn
@@ -574,69 +586,10 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
     bool r = false;
 
     ni::Buffer env;
-
-#define ENV_COPY(NAME) {                                  \
-      cString v = GetLang()->GetEnv(NAME);                \
-      if (v.IsNotEmpty()) {                               \
-        env.AppendUTF8ToUTF16(NAME,0,eFalse);             \
-        env.AppendUTF8ToUTF16("=",1,eFalse);              \
-        env.AppendUTF8ToUTF16(v.Chars(),v.size(),eTrue);  \
-      }                                                   \
-    }
-    // Get the safe set of environment variables... This has been implemented
-    // because without it spawning subprocesses under Emacs's subshell fails
-    // in some cases (with ham for example...)
-    ENV_COPY("ALLUSERSPROFILE");
-    ENV_COPY("APPDATA");
-    ENV_COPY("COMPUTERNAME");
-    ENV_COPY("ComSpec");
-    ENV_COPY("CommonProgramFiles");
-    ENV_COPY("CommonProgramFiles(x86)");
-    ENV_COPY("CommonProgramW6432");
-    ENV_COPY("FP_NO_HOST_CHECK");
-    ENV_COPY("HAM_BIN_LOA");
-    ENV_COPY("HAM_HOME");
-    ENV_COPY("HAM_OS");
-    ENV_COPY("HOME");
-    ENV_COPY("HOMEDRIVE");
-    ENV_COPY("HOMEPATH");
-    ENV_COPY("HOSTNAME");
-    ENV_COPY("HOSTTYPE");
-    ENV_COPY("LOCALAPPDATA");
-    ENV_COPY("LOGONSERVER");
-    ENV_COPY("NUMBER_OF_PROCESSORS");
-    ENV_COPY("OS");
-    ENV_COPY("PATH");
-    ENV_COPY("PATHEXT");
-    ENV_COPY("PROCESSOR_ARCHITECTURE");
-    ENV_COPY("PROCESSOR_ARCHITEW6432");
-    ENV_COPY("PROCESSOR_IDENTIFIER");
-    ENV_COPY("PROCESSOR_LEVEL");
-    ENV_COPY("PROCESSOR_REVISION");
-    ENV_COPY("PSModulePath");
-    ENV_COPY("PUBLIC");
-    ENV_COPY("ProgramData");
-    ENV_COPY("ProgramFiles");
-    ENV_COPY("ProgramFiles(x86)");
-    ENV_COPY("ProgramW6432");
-    ENV_COPY("SystemDrive");
-    ENV_COPY("SystemRoot");
-    ENV_COPY("TEMP");
-    ENV_COPY("TERM");
-    ENV_COPY("TMP");
-    ENV_COPY("USER");
-    ENV_COPY("USERDOMAIN");
-    ENV_COPY("USERNAME");
-    ENV_COPY("USERPROFILE");
-    ENV_COPY("windir");
-#undef ENV_COPY
-
-    if (apEnvs) {
-      for (tStringCMap::const_iterator it = apEnvs->begin(); it != apEnvs->end(); ++it) {
-        env.AppendUTF8ToUTF16(it->first.Chars(),it->first.size(),eFalse);
-        env.AppendUTF8ToUTF16("=",1,eFalse);
-        env.AppendUTF8ToUTF16(it->second.Chars(),it->second.size(),eTrue);
-      }
+    for (tStringCMap::const_iterator it = apEnvs->begin(); it != apEnvs->end(); ++it) {
+      env.AppendUTF8ToUTF16(it->first.Chars(),it->first.size(),eFalse);
+      env.AppendUTF8ToUTF16("=",1,eFalse);
+      env.AppendUTF8ToUTF16(it->second.Chars(),it->second.size(),eTrue);
     }
     env.AppendUTF8ToUTF16("\0",0,eTrue);
 
@@ -813,37 +766,13 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
       fds_to_remap.push_back(eastl::make_pair(STDERR_FILENO,STDERR_FILENO));
     }
 
-#define ENV_COPY(NAME) {                                  \
-      cString v = GetLang()->GetEnv(NAME);                \
-      if (v.IsNotEmpty()) {                               \
-        vEnvs.push_back(_ASTR(NAME) + "=" + v);           \
-      }                                                   \
-    }
-    // Get the safe set of environment variables... This has been implemeted
-    // because without it spawning subprocesses under Emacs's subshell fails
-    // in some cases (with ham for example...)
-    ENV_COPY("HAM_BIN_LOA");
-    ENV_COPY("HAM_HOME");
-    ENV_COPY("HAM_OS");
-    ENV_COPY("HOME");
-    ENV_COPY("HOSTNAME");
-    ENV_COPY("HOSTTYPE");
-    ENV_COPY("OS");
-    ENV_COPY("PATH");
-    ENV_COPY("TEMP");
-    ENV_COPY("TERM");
-    ENV_COPY("TMP");
-    ENV_COPY("USER");
-    ENV_COPY("USERNAME");
-    if (apEnvs) {
-      for (ni::tStringCMap::const_iterator itEnv = apEnvs->begin();
-           itEnv != apEnvs->end(); ++itEnv)
-      {
-        ni::cString& envStr = astl::push_back(vEnvs);
-        envStr += itEnv->first;
-        envStr += "=";
-        envStr += itEnv->second;
-      }
+    for (ni::tStringCMap::const_iterator itEnv = apEnvs->begin();
+         itEnv != apEnvs->end(); ++itEnv)
+    {
+      ni::cString& envStr = astl::push_back(vEnvs);
+      envStr += itEnv->first;
+      envStr += "=";
+      envStr += itEnv->second;
     }
 
     if (!base::LaunchApp(args,fds_to_remap,&handle,vEnvs)) {
@@ -943,6 +872,19 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
     }
 
     return c;
+  }
+
+  cString __stdcall GetCwd() const {
+    return agetcwd();
+  }
+
+  Ptr<tStringCMap> __stdcall GetEnviron() const {
+    Ptr<tStringCMap> e = tStringCMap::Create();
+    for (char **current = _GetEnviron(); *current; current++) {
+      cString c = *current;
+      astl::upsert(*e, c.Before("="), c.After("="));
+    }
+    return e;
   }
 
  private:

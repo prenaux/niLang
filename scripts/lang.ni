@@ -3,6 +3,11 @@
 ::Import("niLang");
 ::Import("niScript");
 
+local __lint = {
+  this_key_notfound_callk = 0
+  this_key_notfound_getk = 0
+};
+
 // Get the Lang instance.
 ::gLang <- ::CreateInstance("niLang.Lang")
 

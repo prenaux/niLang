@@ -401,6 +401,7 @@ struct sLinter {
     _E(this_key_notfound_outer)
     _E(key_notfound_callk)
     _E(key_notfound_getk)
+    _E(this_set_key_notfound)
     _E(set_key_notfound)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));

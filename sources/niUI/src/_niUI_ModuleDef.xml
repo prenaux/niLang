@@ -7681,6 +7681,9 @@
 					<remark text="Snapping is needed for pixel perfect text rendering, since if the text starts on a pixel fraction it will look blurry. Snapping is the default but you will want to turn it off if you&apos;re drawing animated text, text in a 3D space or you take care of the snapping yourself. "/>
 				</comments>
 			</value>
+			<value name="eFontFormatFlags_WrapText" value="niBit ( 9 ) ">
+				<comments desc="Wrap text if the text is too long "/>
+			</value>
 		</enum>
 		<enum name="eFontLoadFlags">
 			<comments desc="Get font flags. "/>

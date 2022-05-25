@@ -47,8 +47,8 @@ bool Line::AddNewLine(unsigned int col,Line &newline)
 {
   if (col > (tU32)StrLen(_data.Chars()))
     return false;
-  newline._data = _data.substr(col); // copy end of this line to new line
-  _data.resize(col); // cut current line
+  newline._data = _data.charIt(col).current();
+  _data = _data.charIt(0,col);
   return true;
 }
 

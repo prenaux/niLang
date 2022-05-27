@@ -261,16 +261,28 @@ TEST_FIXTURE(ASTL_utils, swap) {
 TEST_FIXTURE(ASTL_utils, unique) {
   astl::vector<int> v{1,2,1,1,3,3,3,4,5,4};
 
-  auto last = astl::unique(v.begin(), v.end());
-  // v now holds {1 2 1 3 4 5 4 x x x}, where 'x' is indeterminate
-  v.erase(last, v.end());
+  {
+    const astl::vector<int> r1{1,2,1,3,4,5,4};
+    auto last = astl::unique(v.begin(), v.end());
+    // v now holds {1 2 1 3 4 5 4 x x x}, where 'x' is indeterminate
+    CHECK(astl::equal(v.begin(),last,r1.begin()));
+    CHECK(!astl::identical(v.begin(),v.end(),r1.begin(),r1.end()));
+    v.erase(last, v.end());
+    CHECK(astl::equal(v.begin(),v.end(),r1.begin()));
+  }
 
   // sort followed by unique, to remove all duplicates
   astl::sort(v.begin(), v.end()); // {1 1 2 3 4 4 5}
 
-  last = astl::unique(v.begin(), v.end());
-  // v now holds {1 2 3 4 5 x x}, where 'x' is indeterminate
-  v.erase(last, v.end());
+  {
+    const astl::vector<int> r2 {1,2,3,4,5};
+    auto last = astl::unique(v.begin(), v.end());
+    // v now holds {1 2 3 4 5 x x}, where 'x' is indeterminate
+    CHECK(astl::equal(v.begin(),last,r2.begin()));
+    CHECK(!astl::identical(v.begin(),v.end(),r2.begin(),r2.end()));
+    v.erase(last, v.end());
+    CHECK(astl::equal(v.begin(),v.end(),r2.begin()));
+  }
 
   niLoop(i,5) {
     CHECK_EQUAL(i+1, v[i]);

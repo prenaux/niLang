@@ -28,6 +28,8 @@ static char** _GetEnviron() {
   return environ;
 }
 
+niExportFuncCPP(ni::cString) agetcwd();
+
 //--------------------------------------------------------------------------------------------
 //
 //  Windows Utils

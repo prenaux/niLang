@@ -53,3 +53,11 @@ Or
 - Add a UI script in `scripts/forms/TESTNAME.niui`
 - Run the UI test with `ham Run_Test_niUI_forms_TESTNAME`
 - Press F9 while the test is running to reload the code
+
+# License
+
+niLang is available under the MIT License, see the full license text in
+`LICENSE.md`. This project redistributes code from other projects, some of
+which have other licenses besides MIT. Such licenses are generally similar to
+the MIT license for practical purposes. See the `docs/thirdparty/` folder for
+more details.

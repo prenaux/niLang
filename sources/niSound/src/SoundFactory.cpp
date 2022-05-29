@@ -635,6 +635,7 @@ tBool __stdcall cSoundFactory::SwitchOut() {
 ///////////////////////////////////////////////
 iSoundSource* __stdcall cSoundFactory::CreateSoundSource(iSoundBuffer* apBuffer)
 {
+  niCheckIsOK(apBuffer,NULL);
   return niNew cSoundSource(this,apBuffer);
 }
 

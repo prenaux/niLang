@@ -1,5 +1,12 @@
 #!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+NIW_SCRIPT=niw
+if [ "$1" == "gdb" ]; then
+  shift
+  NIW_SCRIPT=niw-gdb
+fi
+
 if [ ! -e "$1" ]; then
     echo "E/Couldn't find niui script '$1'."
     echo ""
@@ -8,9 +15,8 @@ if [ ! -e "$1" ]; then
     echo ""
     exit 1
 fi
-. "$SCRIPT_DIR/ni-bash-setenv.sh" ra
 SCRIPTNAME=$1
 APPNAME=`basename $SCRIPTNAME`
 
 set -ex
-"${NIWVM}"  -I "$SCRIPT_DIR/../scripts" -A "$APPNAME" -e app.ni -startApp "$SCRIPTNAME" "$@"
+"$SCRIPT_DIR/$NIW_SCRIPT" -Dlog.system_info=1 -A "$APPNAME" -e app.ni -startApp "$SCRIPTNAME" "$@"

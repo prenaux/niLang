@@ -338,6 +338,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     if (kbTextures && apTex) {
       if (abAlpha && apTex->GetPixelFormat()->GetNumABits()) {
         mat->SetFlags(mat->GetFlags()|eMaterialFlags_Transparent);
+        mat->SetChannelColor(eMaterialChannel_Opacity,Vec4f(1,1,1,0.1f));
       }
     }
 
@@ -371,7 +372,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     }
 
     if (!CreateCube(Vec3( 30.0f, 10.0f,105.0f),_earthBase)) return eFalse;
-    if (!CreateCube(Vec3(  0.0f,-20.0f,75.0f),_tree,eTrue,eTrue)) return eFalse;
+    if (!CreateCube(Vec3(  0.0f,-15.0f,75.0f),_tree,eTrue,eTrue)) return eFalse;
 
     if (abBoxed) {
       if (!CreateCube(Vec3( 0.0f,-232.0f,0.0f),_rustSteel,eFalse,eFalse,500)) return eFalse;

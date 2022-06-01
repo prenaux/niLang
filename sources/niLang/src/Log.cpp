@@ -373,38 +373,40 @@ static Ptr<iFile> _logFile = NULL;
 #ifdef LOG_LAST_LOGS
 struct sLastLogs {
 private:
-  const tU32 _maxLogs = 20;
+  const tU32 _maxStoredLogs = 1000;
   astl::deque<cString> _logs;
 
 public:
   void Add(const cString& aLog) {
     __sync_log();
     _logs.push_back(aLog);
-    while (_logs.size() > _maxLogs) {
+    while (_logs.size() > _maxStoredLogs) {
       _logs.pop_front();
     }
   }
 
-  tU32 Get(astl::vector<cString>* logs) {
+  tU32 Get(astl::vector<cString>* logs, tSize numLogs) {
     __sync_log();
-    if (logs) {
-      logs->reserve(logs->size() + _logs.size());
-      for (astl::deque<cString>::const_iterator it = _logs.begin(); it != _logs.end(); ++it) {
+    numLogs = ni::Min(numLogs,_logs.size());
+    if (logs && (numLogs > 0)) {
+      logs->reserve(logs->size() + numLogs);
+      for (astl::deque<cString>::const_iterator it = _logs.end()-numLogs; it != _logs.end(); ++it) {
         logs->push_back(*it);
       }
     }
-    return (tU32)_logs.size();
+    return (tU32)numLogs;
   }
 };
 static sLastLogs& _GetLastLogs() {
   static sLastLogs _lastLogs;
   return _lastLogs;
 }
-niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs) {
-  return _GetLastLogs().Get(logs);
+niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs) {
+  tU32 r = _GetLastLogs().Get(logs,numLogs);
+  return r;
 }
 #else
-niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs) {
+niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs) {
   return 0;
 }
 #endif

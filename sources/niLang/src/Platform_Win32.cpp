@@ -142,7 +142,7 @@ static void _FatalError(const achar* aszMsg) {
     dialogMessage = logMessage;
 
     astl::vector<cString> logs;
-    ni_get_last_logs(&logs);
+    ni_get_last_logs(&logs,20);
     if (!logs.empty()) {
       dialogMessage += "--- Last logs ---\n";
       niLoop(i,logs.size()) {

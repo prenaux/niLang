@@ -2653,7 +2653,7 @@ void cLang::FatalError(const achar* aszMsg) {
     cString dialogMessage = logMessage;
 
     astl::vector<cString> logs;
-    ni_get_last_logs(&logs);
+    ni_get_last_logs(&logs,20);
     if (!logs.empty()) {
       dialogMessage += "--- Last logs ---\n";
       niLoop(i,logs.size()) {

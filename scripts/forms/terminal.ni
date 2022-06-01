@@ -18,6 +18,17 @@ function OnSinkAttached(w,a,b) {
   mListBox = w.FindWidget("ID_Log");
   mListBox.max_num_items = 0xFFFF
 
+  local lastLogs = ::GatherLastLogs(200);
+  addMessage(::eLogFlags.Info, "... added last logs: " + lastLogs.GetSize())
+  foreach (msg in lastLogs) {
+    local logType = ::eLogFlags.Raw
+    if (msg.startswith("I/")) logType = ::eLogFlags.Info
+    else if (msg.startswith("D/")) logType = ::eLogFlags.Debug
+    else if (msg.startswith("E/")) logType = ::eLogFlags.Error
+    else if (msg.startswith("W/")) logType = ::eLogFlags.Warning
+    addMessage(logType,msg)
+  }
+
   mCmdLine = w.FindWidget("ID_CmdLine")
   mCmdLine.style |= ::eWidgetStyle.NotifyParent
 

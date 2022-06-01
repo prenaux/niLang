@@ -579,6 +579,16 @@ static int base_CreateCollectionMap(HSQUIRRELVM v)
   return 1;
 }
 
+static int base_GatherLastLogs(HSQUIRRELVM v) {
+  SQInt count;
+  if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
+    return sq_throwerror(v,_A("Invalid integer parameter for count."));
+  Ptr<tStringCVec> lastLogs = ni::tStringCVec::Create();
+  ni_get_last_logs(lastLogs,count);
+  sqa_pushIUnknown(v,lastLogs);
+  return 1;
+}
+
 static int base_GetModuleFileName(HSQUIRRELVM v)
 {
   const SQChar *src=NULL;
@@ -2501,6 +2511,7 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("CreateCollectionVector"), base_CreateCollectionVector, 2, _A("tn")},
   {_A("CreateCollectionMap"), base_CreateCollectionMap, 3, _A("tnn")},
   {_A("GetModuleFileName"), base_GetModuleFileName, 2, _A("ts")},
+  {_A("GatherLastLogs"), base_GatherLastLogs, 2, _A("tn")},
   {_A("SerializeReadObject"), base_SerializeReadObject, 2, _A("t.")},
   {_A("SerializeWriteObject"), base_SerializeWriteObject, 3, _A("t..")},
   {0,0}

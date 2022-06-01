@@ -1,0 +1,20 @@
+<Form
+	title="Terminal"
+	id="__ID_Terminal__"
+	rect="Rect(5,5,600,400)"
+	padding="Vec4(0,0,0,0)"
+	code="forms/terminal.ni" >
+  <EditBox
+    text=""
+    id="ID_CmdLine"
+    height="24"
+    style="eWidgetStyle.HoldFocus"
+    dock_style="DockBottom"
+    />
+  <ListBox
+    id="ID_Log"
+    style="eWidgetStyle.HoldFocus"
+    skin_class="LogListBox"
+    dock_style="DockFill"
+    />
+</Form>

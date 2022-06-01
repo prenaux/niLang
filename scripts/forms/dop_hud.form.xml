@@ -2,7 +2,7 @@
 	title="DrawOp HUD"
 	id="__ID_DrawOpCaptureHUD__"
 	rect="Rect(5,5,500,400)"
-	code="dop_hud.ni"
+	code="forms/dop_hud.ni"
 	paint_cache_enabled="true">
     <Widget class="Dummy" dock_style="eWidgetDockStyle.DockFill">
         <Widget class="Dummy" height="22" dock_style="eWidgetDockStyle.DockBottom">

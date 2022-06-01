@@ -169,7 +169,7 @@ function OnSinkAttached(w,a,b) {
   local tv = w.FindWidget("Texs")
   if (tv) {
     mTVWidget = tv
-    ::gui.setIconSmall(w,"ID_RefreshList","reload")
+    // ::gui.setIconSmall(w,"ID_RefreshList","reload")
     w.FindWidget("ID_TextureView").AddSink(TexViewSink)
     updateCurrentTexture()
     updateZoomLabel()

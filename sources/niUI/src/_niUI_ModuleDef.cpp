@@ -21222,6 +21222,33 @@ static const ni::sMethodDef iUIContext_CreateProfDraw = {
 #endif
 };
 
+// Method: SetShowTerminal
+static const ni::sParameterDef iUIContext_SetShowTerminal_Parameters[1] = { 
+  { "abEnabled", ni::eType_I8, NULL, "tBool" }
+}; 
+static const ni::sMethodDef iUIContext_SetShowTerminal = {
+  "SetShowTerminal",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
+  1, iUIContext_SetShowTerminal_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_SetShowTerminal)
+#else
+  NULL
+#endif
+};
+
+// Method: GetShowTerminal
+static const ni::sMethodDef iUIContext_GetShowTerminal = {
+  "GetShowTerminal",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "ni::tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_GetShowTerminal)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iUIContext[] = {
 	&iUIContext_GetGraphics,
 	&iUIContext_GetGraphicsContext,
@@ -21316,6 +21343,8 @@ static const ni::sMethodDef* Methods_iUIContext[] = {
 	&iUIContext_InputPinch,
 	&iUIContext_GetFocusedWidget,
 	&iUIContext_CreateProfDraw,
+	&iUIContext_SetShowTerminal,
+	&iUIContext_GetShowTerminal,
 
 };
 

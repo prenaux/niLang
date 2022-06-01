@@ -26,6 +26,7 @@
 _HDecl(ID_Desktop);
 
 _HDecl(__ID_DrawOpCaptureHUD__);
+_HDecl(__ID_Terminal__);
 // _HDecl(SubmitA);
 // _HDecl(SubmitB);
 // _HDecl(SubmitC);

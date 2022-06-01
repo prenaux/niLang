@@ -2,6 +2,8 @@
 #define __ISCRIPTVM_826431_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+#include <niLang/Types.h>
+
 #if niMinFeatures(15)
 
 #include <niLang/IFileSystem.h>
@@ -255,17 +257,23 @@ struct iScriptVM : public iScriptingHost
 
 niExportFunc(ni::iUnknown*) New_niScript_ScriptVM(const ni::Var&,const ni::Var&);
 
+///////////////////////////////////////////////
 inline iScriptVM* CreateScriptVM() {
   return (iScriptVM*)niCreateInstance(niScript,ScriptVM,0,0);
 }
+
+///////////////////////////////////////////////
 inline iScriptVM* CreateChildScriptVM(iScriptVM* apParentVM) {
   return (iScriptVM*)niCreateInstance(niScript,ScriptVM,apParentVM,0);
 }
+
+///////////////////////////////////////////////
 inline iScriptVM* CreateConcurrentScriptVM(iConcurrent* apConcurrent) {
   return (iScriptVM*)niCreateInstance(niScript,ScriptVM,apConcurrent,0);
 }
 
-inline tBool __stdcall ScriptCall(iScriptVM* apVM, const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) {
+///////////////////////////////////////////////
+inline tBool ScriptCall(iScriptVM* apVM, const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) {
   if (!apVM) {
     apVM = ni::QueryInterface<iScriptVM>(ni::GetLang()->GetGlobalInstance("niLang.ScriptVM"));
     if (!apVM) {
@@ -276,7 +284,8 @@ inline tBool __stdcall ScriptCall(iScriptVM* apVM, const achar* aaszModule, cons
   return apVM->ScriptCall(aaszModule,aaszFunc,apParams,anNumParams,apRet);
 }
 
-inline iScriptObject* __stdcall ScriptVar(iScriptVM* apVM, const achar* aaszModule, const achar* aaszVar) {
+///////////////////////////////////////////////
+inline iScriptObject* ScriptVar(iScriptVM* apVM, const achar* aaszModule, const achar* aaszVar) {
   if (!apVM) {
     apVM = ni::QueryInterface<iScriptVM>(ni::GetLang()->GetGlobalInstance("niLang.ScriptVM"));
     if (!apVM) {
@@ -285,6 +294,70 @@ inline iScriptObject* __stdcall ScriptVar(iScriptVM* apVM, const achar* aaszModu
     }
   }
   return apVM->ScriptVar(aaszModule,aaszVar);
+}
+
+///////////////////////////////////////////////
+inline ni::tBool ScriptAddImportDir(
+  ni::iScriptVM* apVM,
+  const achar* aDirectory,
+  ni::iFileSystem* apFS = ni::GetRootFS())
+{
+  niCheckIsOK(apVM,eFalse);
+  niCheckIsOK(apFS,eFalse);
+  cString absPath = apFS->GetAbsolutePath(aDirectory);
+  if (apFS->FileExists(absPath.Chars(),eFileAttrFlags_AllDirectories)) {
+    tInterfaceCVec<iFileSystem>& importFileSystems = *apVM->GetImportFileSystems();
+    Ptr<iFileSystem> importDirFS = ni::GetLang()->CreateFileSystemDir(
+      absPath.Chars(),ni::eFileSystemRightsFlags_ReadOnly);
+    niLoopr(ri,importFileSystems.size()) {
+      Ptr<iFileSystem> fs = importFileSystems.at(ri);
+      if (fs.IsOK()) {
+        if (ni::StrIEq(importDirFS->GetBaseContainer(),fs->GetBaseContainer())) {
+          niWarning(niFmt("Include directory '%s' already added.",absPath.Chars()));
+          return ni::eTrue;
+        }
+      }
+    }
+    importFileSystems.Add(importDirFS.ptr());
+    niLog(Info,niFmt("Added script import directory '%s'.",absPath.Chars()));
+    return ni::eTrue;
+  }
+  else {
+    niWarning(niFmt("Can't add script import directory '%s', it doesn't exist.",absPath.Chars()));
+    return ni::eFalse;
+  }
+}
+
+///////////////////////////////////////////////
+inline ni::tBool ScriptAddToolkitImportDir(
+  ni::iScriptVM* apVM,
+  const char* aTKName,
+  const char* aDirInTK,
+  ni::iFileSystem* apFS = ni::GetRootFS())
+{
+  cString path = GetToolkitDir(aTKName,aDirInTK);
+  return ScriptAddImportDir(apVM,path.Chars(),apFS);
+}
+
+///////////////////////////////////////////////
+inline ni::QPtr<iScriptVM> ScriptGetDefaultVM() {
+  return ni::GetLang()->GetGlobalInstance("niLang.ScriptVM");
+}
+
+///////////////////////////////////////////////
+inline ni::Ptr<iScriptVM> ScriptCreateOrGetDefaultVM(ni::iFileSystem* apFS = ni::GetRootFS()) {
+  ni::QPtr<ni::iScriptVM> vm = ScriptGetDefaultVM();
+  if (!vm.IsOK()) {
+    vm = ni::CreateConcurrentScriptVM(ni::GetConcurrent());
+    niCheckIsOK(vm,NULL);
+    ni::GetLang()->SetGlobalInstance("niLang.ScriptVM", vm);
+  }
+  if (vm.IsOK() && !ni::GetLang()->GetScriptingHostFromName(_H("ni"))) {
+    ScriptAddToolkitImportDir(vm,"niLang","scripts",apFS);
+    niCheck(vm->Import(_H("lang.ni"),NULL),NULL);
+    ni::GetLang()->AddScriptingHost(_H("ni"),vm);
+  }
+  return vm.ptr();
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

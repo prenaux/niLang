@@ -1406,6 +1406,33 @@
 					typec="iFont*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method
+				java_name="setShowTerminal"
+				name="SetShowTerminal"
+				num_parameters="1"
+				property="set"
+				property_name2="showTerminal"
+				property_name="show_terminal">
+				<comments desc="Set whether the builtin terminal is enabled. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abEnabled"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getShowTerminal"
+				name="GetShowTerminal"
+				num_parameters="0"
+				property="get"
+				property_name2="showTerminal"
+				property_name="show_terminal">
+				<comments desc="Get whether the builtin terminal is enabled. "/>
+				<return type="ni::tBool" typec="ni::tBool" typei="ni::eType_I8"/>
+			</method>
 		</interface>
 	</namespace>
 </niIDL>

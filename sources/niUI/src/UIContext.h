@@ -87,6 +87,7 @@ const sVec2f _kvMinSize = {2,2};
 const sVec2f _kvMaxSize = {100000,100000};
 
 const tU32 knDrawOpCaptureToggleKey = eKeyMod_Alt|eKey_Tilde;
+const tU32 knTerminalToggleKey = eKeyMod_Control|eKey_Tilde;
 
 class cUIContext : public cIUnknownImpl<iUIContext,eIUnknownImplFlags_Default>, public TimerManager
 {
@@ -181,6 +182,9 @@ class cUIContext : public cIUnknownImpl<iUIContext,eIUnknownImplFlags_Default>, 
 
   void __stdcall SetDrawOpCapture(tBool abEnabled);
   ni::tBool __stdcall GetDrawOpCapture() const;
+
+  void __stdcall SetShowTerminal(tBool abEnabled);
+  ni::tBool __stdcall GetShowTerminal() const;
 
   void __stdcall SetDragStartDistance(tU32 anPixelDistance);
   tU32 __stdcall GetDragStartDistance() const;
@@ -328,6 +332,9 @@ class cUIContext : public cIUnknownImpl<iUIContext,eIUnknownImplFlags_Default>, 
   tBool mbDrawOpCapture;
   tBool mbDrawOpCaptureDrawn;
   Ptr<iGraphicsDrawOpCapture> mptrDrawOpCapture;
+
+  // Show terminal
+  tBool mbShowTerminal = eFalse;
 
   // Drawing
   tBool __stdcall _DrawWidget(cWidget* apWidget, iCanvas* apCanvas, const sRectf& aParentRect,

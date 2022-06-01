@@ -432,6 +432,19 @@ struct iUIContext : public iUnknown
   //! Create an iProfDraw instance which uses the specifed canvas and font.
   virtual iProfDraw* __stdcall CreateProfDraw(iCanvas* apCanvas, iFont* apFont) const = 0;
   //! @}
+
+  //########################################################################################
+  //! \name ShowTerminal
+  //########################################################################################
+  //! @{
+
+  //! Set whether the builtin terminal is enabled.
+  //! {Property}
+  virtual void __stdcall SetShowTerminal(tBool abEnabled) = 0;
+  //! Get whether the builtin terminal is enabled.
+  //! {Property}
+  virtual ni::tBool __stdcall GetShowTerminal() const = 0;
+  //! @}
 };
 
 niExportFunc(iUnknown*) New_niUI_UIContext(const Var& aGraphicsContext, const Var&);

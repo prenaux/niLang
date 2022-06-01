@@ -1,5 +1,5 @@
 #include <niAppLib.h>
-#include <niUI/Utils/DrawOpHud.h>
+#include <niUI/Utils/DebugUI.h>
 #include <niLang/Utils/CrashReport.h>
 niCrashReport_DeclareHandler();
 
@@ -15,7 +15,8 @@ niExportFunc(iWidgetSink*) New_HelloUI_AR();
 app::AppContext gAppContext;
 
 ni::Var OnAppStarted() {
-  niInitializeVMForDrawOpHud();
+  niInitScriptVMForDebugUI();
+
   Ptr<iWidgetSink> sink;
   // if (!sink.IsOK()) { sink = New_HelloUI_AR(); }
   // if (!sink.IsOK()) { sink = New_HelloUI_Shader(); }

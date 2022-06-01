@@ -82,7 +82,8 @@ struct iFileSystem : public iUnknown
   //! {Property}
   virtual tFileSystemRightsFlags __stdcall GetRightsFlags() const = 0;
   //! Get the file system's base container.
-  //! \remark This depend on the type of file system, it can be a file, a folder, a remote location, and so on...
+  //! \remark This depend on the type of file system, it can be a file, a
+  //!         folder, a remote location, and so on...
   //! {Property}
   virtual const achar* __stdcall GetBaseContainer() const = 0;
 

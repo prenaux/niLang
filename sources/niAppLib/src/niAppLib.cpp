@@ -88,8 +88,10 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
     niCheck(mpContext->_uiContext.IsOK(),eFalse);
     ni::GetLang()->SetGlobalInstance(niGetInterfaceID(iUIContext),mpContext->_uiContext);
 
+    // Add this sink to the root widget
     mpContext->_uiContext->GetRootWidget()->AddSink(this);
 
+    // Call the OnAppStarted
     if (apOnStarted) {
       if (!apOnStarted->Run().mU32) {
         niError("OnStartup failed.");
@@ -310,6 +312,16 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
               // toggle fps mode: C+S+M+Period
               case eKey_Period|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
                 mpContext->_config.drawFPS = (mpContext->_config.drawFPS + 1) % 4;
+                return ni::eTrue;
+              }
+              case eKey_Comma|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
+                mpContext->_uiContext->SetShowTerminal(
+                  !mpContext->_uiContext->GetShowTerminal());
+                return ni::eTrue;
+              }
+              case eKey_Slash|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
+                mpContext->_uiContext->SetDrawOpCapture(
+                  !mpContext->_uiContext->GetDrawOpCapture());
                 return ni::eTrue;
               }
             }

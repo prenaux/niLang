@@ -51,7 +51,7 @@ __forceinline void ni_log(tLogFlags type, const char* file, const char* func, in
   return ni_log(type, file, func, line, msg.c_str());
 }
 
-niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs);
+niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs);
 
 niExportFuncCPP(cString&) StringToPropertyName(ni::cString& d, const achar* aszName);
 niExportFuncCPP(cString&) StringToPropertyMethodName(ni::cString& d, const achar* aszName);

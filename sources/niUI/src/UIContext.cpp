@@ -1536,7 +1536,7 @@ void __stdcall cUIContext::SetDrawOpCapture(tBool abEnabled) {
   Ptr<cWidget> drawOpCaptureHUD = (cWidget*)mpwRootWidget->GetChildFromID(_HC(__ID_DrawOpCaptureHUD__));
   if (!drawOpCaptureHUD.IsOK()) {
     drawOpCaptureHUD = (cWidget*)CreateWidgetFromResource(
-        _H("script://dop_hud.form.xml"),
+        _H("script://forms/dop_hud.form.xml"),
         NULL,
         _HC(__ID_DrawOpCaptureHUD__),
         NULL);
@@ -1561,6 +1561,39 @@ void __stdcall cUIContext::SetDrawOpCapture(tBool abEnabled) {
 }
 ni::tBool __stdcall cUIContext::GetDrawOpCapture() const {
   return mbDrawOpCapture;
+}
+
+///////////////////////////////////////////////
+void __stdcall cUIContext::SetShowTerminal(tBool abEnabled) {
+  if (mbShowTerminal == abEnabled) return;
+  mbShowTerminal = abEnabled;
+
+  Ptr<iWidget> ptrTerminal = mpwRootWidget->GetChildFromID(_HC(__ID_Terminal__));
+  if (!ptrTerminal.IsOK()) {
+    ptrTerminal = (cWidget*)CreateWidgetFromResource(
+        _H("script://forms/terminal.form.xml"),
+        NULL,
+        _HC(__ID_Terminal__),
+        NULL);
+  }
+  if (ptrTerminal.IsOK()) {
+    if (mbShowTerminal) {
+      ptrTerminal->SetStyle(
+          ptrTerminal->GetStyle()|eWidgetStyle_Free);
+      ptrTerminal->SetZOrder(eWidgetZOrder_TopMost);
+      this->SetActiveWidget(ptrTerminal);
+      ptrTerminal->SetFocus();
+      ptrTerminal->SetEnabled(eTrue);
+      ptrTerminal->SetVisible(eTrue);
+    }
+    else {
+      ptrTerminal->SetVisible(eFalse);
+      ptrTerminal->SetEnabled(eFalse);
+    }
+  }
+}
+ni::tBool __stdcall cUIContext::GetShowTerminal() const {
+  return mbShowTerminal;
 }
 
 ///////////////////////////////////////////////

@@ -132,6 +132,11 @@ void __stdcall cUIContext::_KeyDown(tU32 aKey)
         mKeyEatChar = (eKey)aKey;
         return;
       }
+      else if (knTerminalToggleKey == (aKey|mnInputModifiers)) {
+        SetShowTerminal(!GetShowTerminal());
+        mKeyEatChar = (eKey)aKey;
+        return;
+      }
     }
   }
 

@@ -778,6 +778,20 @@ IDLC_METH_BEGIN(ni,iUIContext,CreateProfDraw,2)
 	IDLC_RET_FROM_INTF(iProfDraw,_Ret)
 IDLC_METH_END(ni,iUIContext,CreateProfDraw,2)
 
+/** ni -> iUIContext::SetShowTerminal/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetShowTerminal,1)
+	IDLC_DECL_VAR(tBool,abEnabled)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abEnabled)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetShowTerminal,1,(abEnabled))
+IDLC_METH_END(ni,iUIContext,SetShowTerminal,1)
+
+/** ni -> iUIContext::GetShowTerminal/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetShowTerminal,0)
+	IDLC_DECL_RETVAR(ni::tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetShowTerminal,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUIContext,GetShowTerminal,0)
+
 IDLC_END_INTF(ni,iUIContext)
 
 IDLC_END_NAMESPACE()

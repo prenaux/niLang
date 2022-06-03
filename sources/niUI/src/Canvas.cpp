@@ -1388,8 +1388,8 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
 
   ///////////////////////////////////////////////
   void __stdcall LineGridXY(ni::tF32 aX, ni::tF32 aY, ni::tU32 anNumColumns, ni::tU32 anNumRows) niImpl {
-    const ni::tF32 tx2 = (tF32)(aX * anNumColumns)*0.5f;
-    const ni::tF32 ty2 = (tF32)(aY * anNumRows)*0.5f;
+    const ni::tF32 tx2 = (tF32)(aX * (anNumColumns/2));
+    const ni::tF32 ty2 = (tF32)(aY * (anNumRows/2));
     for (ni::tF32 x = -tx2; x <= tx2; x += aX) {
       this->Line(Vec3f(x, -ty2, 0.0f), Vec3f(x, ty2, 0.0f));
     }
@@ -1399,8 +1399,8 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
   }
 
   void __stdcall LineGridXZ(ni::tF32 aX, ni::tF32 aZ, ni::tU32 anNumColumns, ni::tU32 anNumRows) niImpl {
-    const ni::tF32 tx2 = (tF32)(aX * anNumColumns)*0.5f;
-    const ni::tF32 tz2 = (tF32)(aZ * anNumRows)*0.5f;
+    const ni::tF32 tx2 = (tF32)(aX * (anNumColumns/2));
+    const ni::tF32 tz2 = (tF32)(aZ * (anNumRows/2));
     for (ni::tF32 x = -tx2; x <= tx2; x += aX) {
       this->Line(Vec3f(x, 0.0f, -tz2), Vec3f(x, 0.0f, tz2));
     }
@@ -1539,11 +1539,11 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
   tBool __stdcall _WireframeEllipsoid(const sVec3f& aCenter, const sVec3f& avRadius, tU32 aulNumDiv, tU32 aulColorX, tU32 aulColorY, tU32 aulColorZ) {
     const tU32 wasColorA = this->GetColorA();
     this->SetColorA(aulColorX);
-    _WireframeEllipse(aCenter,Vec2(avRadius.x,avRadius.x),aulNumDiv,ePlaneType_X);
+    _WireframeEllipse(aCenter,Vec2(avRadius.z,avRadius.y),aulNumDiv,ePlaneType_X);
     this->SetColorA(aulColorY);
-    _WireframeEllipse(aCenter,Vec2(avRadius.y,avRadius.y),aulNumDiv,ePlaneType_Y);
+    _WireframeEllipse(aCenter,Vec2(avRadius.x,avRadius.z),aulNumDiv,ePlaneType_Y);
     this->SetColorA(aulColorZ);
-    _WireframeEllipse(aCenter,Vec2(avRadius.z,avRadius.z),aulNumDiv,ePlaneType_Z);
+    _WireframeEllipse(aCenter,Vec2(avRadius.x,avRadius.y),aulNumDiv,ePlaneType_Z);
     this->SetColorA(wasColorA);
     return eTrue;
   }

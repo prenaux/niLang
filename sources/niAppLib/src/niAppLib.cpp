@@ -701,6 +701,8 @@ int AppNativeMainLoop(AppContext* apContext) {
     return -1;
   }
 
+  ni_log_system_info_once();
+
 #ifdef niJSCC
   static std::function<void()> _fnJSCCLoop;
   struct _JSCCLoop {

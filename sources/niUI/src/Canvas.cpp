@@ -1361,7 +1361,8 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
       mptrContext->GetViewport().ToFloat(),
       mStates.mMatrix,
       avStart, avEnd, afStartSize, afEndSize,
-      v, eTrue,
+      v,
+      (mStates.mnFlags&CANVAS_FLAGS_LineConstantScreenSize),
       eFalse, NULL);
     if (bVisible) {
       // Top-Left

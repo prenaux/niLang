@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<module name='Test_niScriptCpp_Module'
+        version='1,0,0' 
+        moduleinclude=''
+        desc='niScriptCpp test module'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+</module>

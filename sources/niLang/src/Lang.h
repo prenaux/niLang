@@ -112,7 +112,6 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
 #endif
 
 #if niMinFeatures(15)
-  void __stdcall _InitializeScriptingHosts();
   tBool __stdcall AddScriptingHost(iHString* ahspName, iScriptingHost* apHost);
   tBool __stdcall RemoveScriptingHost(iHString* ahspName);
   tU32 __stdcall GetNumScriptingHosts() const;

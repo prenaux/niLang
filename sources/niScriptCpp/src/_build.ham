@@ -1,6 +1,6 @@
-if [ SubDirOnce TOP Test_RTCpp ] = 1 { return ; }
+if [ SubDirOnce TOP niScriptCpp src ] = 1 { return ; }
 
-tkDefModuleLib Test_RTCpp : 1,0,0 : Test_RTCpp ;
+tkDefModule niScriptCpp : 1,0,0 ;
 niImportModuleDll niLang ;
 
 ### API #################################################################
@@ -8,14 +8,15 @@ IDLS = [ niBuildModuleDef ] ;
 
 ### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;
-BUILD_SRC = [ tkBuildPackage $(SRC) : stamp : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
 ### DEFINITION ##########################################################
 niModule_Begin
   moduleinclude=''
-  desc='"Test RTCpp module"'
+  desc='"niScriptCpp module"'
   initfunctions='"no"'
 ;
 niModule_Dep "niLang" ;
+niModule_OT category='"ScriptingHost"' name='"Cpp"' ;
 niModule_Includes $(IDLS) ;
 niModule_End ;

@@ -1,9 +1,10 @@
 <?xml version='1.0'?>
-<module name='Test_RTCpp'
+<module name='niScriptCpp'
         version='1,0,0' 
         moduleinclude=''
-        desc='Test RTCpp module'
+        desc='niScriptCpp module'
         initfunctions='no'
 >
   <dependency name='niLang' />
+  <objecttype  category='ScriptingHost' name='Cpp'  />
 </module>

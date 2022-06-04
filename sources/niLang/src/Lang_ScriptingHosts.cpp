@@ -5,20 +5,10 @@
 #ifdef niJNI
 #include "API/niLang/Utils/JNIUtils.h"
 #endif
-#include "CppScriptingHost.h"
 
 using namespace ni;
 
 #if niMinFeatures(15)
-
-///////////////////////////////////////////////
-void __stdcall cLang::_InitializeScriptingHosts() {
-#if !defined niNoRTCpp
-  Ptr<iScriptingHost> ptrScriptingHost = RTCpp_CreateScriptingHost();
-  AddScriptingHost(_H("cpp"),ptrScriptingHost.ptr());
-  AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
-#endif
-}
 
 ///////////////////////////////////////////////
 tBool __stdcall cLang::AddScriptingHost(iHString* ahspName, iScriptingHost* apHost) {

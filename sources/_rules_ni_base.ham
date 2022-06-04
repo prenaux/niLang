@@ -107,7 +107,6 @@ rule niGenIDLs {
   }
 
   local IDLDIR = [ FDirName $(SUBDIR) _idl ] ;
-  MkDir $(IDLDIR) ;
 
   local VMCALLS = ;
   for _i in $(>) {
@@ -124,6 +123,7 @@ rule niGenIDLs {
     VMCALLS += $(x) ;
     if ! ( $(NO_BASETOOLS) = 1 ) {
       niIDL $(d) $(x) : $(s) ;
+      MakeDirForTarget $(d) $(x) : $(IDLDIR) ;
     }
   }
   DEPENDS $(<) : $(VMCALLS) ;

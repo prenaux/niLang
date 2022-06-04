@@ -1,0 +1,14 @@
+<niIDL
+	desc="niScriptCpp module"
+	initfunctions="no"
+	moduleinclude=""
+	name="niScriptCpp"
+	version="1,0,0">
+	<dependencies>
+		<dependency name="niLang"/>
+	</dependencies>
+	<objecttypes>
+		<objecttype category="ScriptingHost" name="Cpp"/>
+	</objecttypes>
+	<includes/>
+</niIDL>

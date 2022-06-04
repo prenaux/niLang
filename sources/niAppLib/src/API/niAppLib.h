@@ -4,7 +4,6 @@
 
 #include <niLang/Utils/CmdLine.h>
 #include <niLang/Utils/ConcurrentImpl.h>
-#include <niLang/Utils/RTCppImpl.h>
 #include <niLang/STL/vector.h>
 #include <niLang/STL/utils.h>
 

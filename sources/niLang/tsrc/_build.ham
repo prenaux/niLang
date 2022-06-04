@@ -6,9 +6,6 @@ MBEDTLS_Hdrs $(BUILD_SRC) ;
 
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
-if ! ( $(EMBEDDED) = 1 ) {
-  tkPkgLinkDll Test_RTCpp ;
-}
 
 SRC = [ tkPkgSrc ] ;
 

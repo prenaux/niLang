@@ -1,17 +1,14 @@
-#ifndef __RTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__
-#define __RTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__
+#ifndef __SCRIPTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__
+#define __SCRIPTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#include "../Types.h"
-#include "../ILang.h"
-#include "../Utils/SmartPtr.h"
-#include "../Utils/QPtr.h"
+#include <niLang/Types.h>
+#include <niLang/ILang.h>
+#include <niLang/Utils/SmartPtr.h>
+#include <niLang/Utils/QPtr.h>
 
-/** \addtogroup niLang
- * @{
- */
-/** \addtogroup niLang_RTCpp
+/** \addtogroup niScriptCpp
  * @{
  */
 
@@ -20,14 +17,14 @@
 // Windows implementation
 //
 //--------------------------------------------------------------------------------------------
-#if defined niWindows && !defined niRTCppNoGuard
+#if defined niWindows && !defined niScriptCppNoGuard
 
-#include "../StringDef.h"
-#include "../Platforms/Win32/Win32_Redef.h"
+#include <niLang/StringDef.h>
+#include <niLang/Platforms/Win32/Win32_Redef.h>
 
 namespace ni {
 
-struct RTCppGuard
+struct sScriptCppGuard
 {
   const char* mGuardName;
   int     mExceptionCode;
@@ -41,7 +38,7 @@ struct RTCppGuard
   };
   eExceptionState mExceptionState;
 
-  RTCppGuard()
+  sScriptCppGuard()
       : mGuardName("Unknown")
       , mExceptionState(eExceptionState_PASS)
       , mbHintAllowDebug(true)
@@ -93,31 +90,31 @@ struct RTCppGuard
     }
   }
 
-  int ExceptionFilter(void * nativeExceptionInfo, RTCppGuard* pRTCppGuard)
+  int ExceptionFilter(void * nativeExceptionInfo, sScriptCppGuard* apGuard)
   {
     EXCEPTION_RECORD *pRecord = ((LPEXCEPTION_POINTERS) nativeExceptionInfo)->ExceptionRecord;
     int nCode = pRecord->ExceptionCode;
-    pRTCppGuard->mExceptionCode = nCode;
-    pRTCppGuard->mExceptionAddr = 0;
+    apGuard->mExceptionCode = nCode;
+    apGuard->mExceptionAddr = 0;
 
     if (nCode == EXCEPTION_ACCESS_VIOLATION) {
       int flavour = pRecord->ExceptionInformation[0];
       switch (flavour) {
         case 0:
-          pRTCppGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionInformation[1];
+          apGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionInformation[1];
           break;
         case 1:
-          pRTCppGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionInformation[1];
+          apGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionInformation[1];
           break;
         default:
           break;
       }
     }
     else if (nCode == EXCEPTION_ILLEGAL_INSTRUCTION) {
-      pRTCppGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionAddress;
+      apGuard->mExceptionAddr = (tIntPtr)pRecord->ExceptionAddress;
     }
 
-    if (!pRTCppGuard->mbHintAllowDebug) {
+    if (!apGuard->mbHintAllowDebug) {
       // We don't want debugging to catch this
       return EXCEPTION_EXECUTE_HANDLER;
     }
@@ -161,17 +158,17 @@ struct RTCppGuard
 
 }
 
-#define RTCPP_DECLARE_GUARD(NAME) ni::RTCppGuard mProtector##NAME
+#define SCRIPTCPP_DECLARE_GUARD(NAME) ni::sScriptCppGuard mProtector##NAME
 
-#define RTCPP_ENTER_GUARD(RETTYPE,NAME)         \
+#define SCRIPTCPP_ENTER_GUARD(RETTYPE,NAME)         \
   RETTYPE __rtRet = (RETTYPE)0;                 \
-  ni::RTCppGuard& __rtguard = mProtector##NAME; \
+  ni::sScriptCppGuard& __rtguard = mProtector##NAME; \
   if (!__rtguard.mAlwaysIgnore) {               \
   __rtguard.mGuardName = #NAME;                 \
   __try {                                       \
   auto __rtimpl = [&] () -> RETTYPE
 
-#define RTCPP_LEAVE_GUARD()                                             \
+#define SCRIPTCPP_LEAVE_GUARD()                                             \
   ; __rtRet = __rtimpl();                                               \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
     if (ni_debug_assert(0, "RTCpp Exception", __LINE__, __FILE__,       \
@@ -182,14 +179,14 @@ struct RTCppGuard
                                                                         return __rtRet;
 
 
-#define RTCPP_ENTER_VOID_GUARD(NAME)            \
-  ni::RTCppGuard& __rtguard = mProtector##NAME; \
+#define SCRIPTCPP_ENTER_VOID_GUARD(NAME)            \
+  ni::sScriptCppGuard& __rtguard = mProtector##NAME; \
   if (!__rtguard.mAlwaysIgnore) {               \
   __rtguard.mGuardName = #NAME;                 \
   __try {                                       \
   auto __rtimpl = [&] () -> void
 
-#define RTCPP_LEAVE_VOID_GUARD()                                        \
+#define SCRIPTCPP_LEAVE_VOID_GUARD()                                        \
   ; __rtimpl();                                                         \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
     if (ni_debug_assert(0, "RTCpp Exception", __LINE__, __FILE__,       \
@@ -206,51 +203,61 @@ struct RTCppGuard
 //
 //--------------------------------------------------------------------------------------------
 
-#ifndef RTCPP_DECLARE_GUARD
-#define RTCPP_DECLARE_GUARD(NAME)
+#ifndef SCRIPTCPP_DECLARE_GUARD
+#define SCRIPTCPP_DECLARE_GUARD(NAME)
 #endif
 
-#ifndef RTCPP_ENTER_GUARD
-#define RTCPP_ENTER_GUARD(RETTYPE,NAME) {
+#ifndef SCRIPTCPP_ENTER_GUARD
+#define SCRIPTCPP_ENTER_GUARD(RETTYPE,NAME) {
 #endif
 
-#ifndef RTCPP_LEAVE_GUARD
-#define RTCPP_LEAVE_GUARD() }
+#ifndef SCRIPTCPP_LEAVE_GUARD
+#define SCRIPTCPP_LEAVE_GUARD() }
 #endif
 
-#ifndef RTCPP_ENTER_VOID_GUARD
-#define RTCPP_ENTER_VOID_GUARD(NAME) {
+#ifndef SCRIPTCPP_ENTER_VOID_GUARD
+#define SCRIPTCPP_ENTER_VOID_GUARD(NAME) {
 #endif
 
-#ifndef RTCPP_LEAVE_VOID_GUARD
-#define RTCPP_LEAVE_VOID_GUARD() }
+#ifndef SCRIPTCPP_LEAVE_VOID_GUARD
+#define SCRIPTCPP_LEAVE_VOID_GUARD() }
 #endif
 
-#define RTCPP_METHOD_IMPL(RETTYPE,NAME,PARAMS)  \
-  RTCPP_DECLARE_GUARD(NAME);                    \
+#define SCRIPTCPP_METHOD_IMPL(RETTYPE,NAME,PARAMS)  \
+  SCRIPTCPP_DECLARE_GUARD(NAME);                    \
   RETTYPE __stdcall NAME PARAMS niImpl {        \
-  RTCPP_ENTER_GUARD(RETTYPE,NAME)
+  SCRIPTCPP_ENTER_GUARD(RETTYPE,NAME)
 
-#define RTCPP_METHOD_END() RTCPP_LEAVE_GUARD(); }
+#define SCRIPTCPP_METHOD_END() SCRIPTCPP_LEAVE_GUARD(); }
 
-#define RTCPP_VOID_METHOD_IMPL(NAME,PARAMS)     \
-  RTCPP_DECLARE_GUARD(NAME);                    \
+#define SCRIPTCPP_VOID_METHOD_IMPL(NAME,PARAMS)     \
+  SCRIPTCPP_DECLARE_GUARD(NAME);                    \
   void __stdcall NAME PARAMS niImpl {           \
-  RTCPP_ENTER_VOID_GUARD(NAME)
+  SCRIPTCPP_ENTER_VOID_GUARD(NAME)
 
-#define RTCPP_VOID_METHOD_END() RTCPP_LEAVE_VOID_GUARD(); }
+#define SCRIPTCPP_VOID_METHOD_END() SCRIPTCPP_LEAVE_VOID_GUARD(); }
 
-#define RTCPP_EXPORT(CATEGORY,CLASS)                        \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS() {  \
-    return niNew CLASS();                                   \
+#define SCRIPTCPP_EXPORT_CLASS(CATEGORY,CLASS)          \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS( \
+    const ni::Var&,const ni::Var&)                      \
+  {                                                     \
+    return niNew CLASS();                               \
   }
 
-#define RTCPP_IMPORT(CATEGORY,CLASS)                      \
+#define SCRIPTCPP_EXPORT_FUNC(CATEGORY,CLASS,CONSTRUCTOR)               \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS(                 \
+    const ni::Var&,const ni::Var&)                                      \
+  {                                                                     \
+    ni::Ptr<ni::iUnknown> scriptCppObjectInstance = CONSTRUCTOR().ptr(); \
+    niCheck(scriptCppObjectInstance.IsOK(),NULL);                       \
+    return scriptCppObjectInstance.GetRawAndSetNull();                  \
+  }
+
+#define SCRIPTCPP_IMPORT(CATEGORY,CLASS)                      \
   niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS();
 
-#define RTCPP_NEW(CATEGORY,CLASS) New_##CATEGORY##_##CLASS()
+#define SCRIPTCPP_NEW(CATEGORY,CLASS) New_##CATEGORY##_##CLASS()
 
 /**@}*/
-/**@}*/
 
-#endif // __RTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__
+#endif // __SCRIPTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__

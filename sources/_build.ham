@@ -7,13 +7,13 @@ if ! $(NO_NI_CURL) = 1 {
 }
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
+  SubInclude TOP niScriptCpp ;
   SubInclude TOP niUnitTest ;
   SubInclude TOP niTestInterop ;
   SubInclude TOP ni ;
   SubInclude TOP nicgc ;
   SubInclude TOP genuuid ;
   SubInclude TOP thirdparty ;
-  SubInclude TOP Test_RTCpp ;
   DEPENDS build_tools : niLang genuuid ni nicgc ;
 }
 

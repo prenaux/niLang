@@ -13,8 +13,6 @@
 #include <shellapi.h>
 #endif
 
-#include "API/niLang/Utils/RTCppImpl.h"
-
 using namespace ni;
 
 #if defined niIOS || defined niOSX
@@ -155,7 +153,6 @@ void cLang::_Construct()
   // initialize the frame time
   ResetFrameTime();
 
-  _InitializeScriptingHosts();
   _PlatformStartup();
   mptrSystemMessageHandlers = tMessageHandlerSinkLst::Create();
 

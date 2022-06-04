@@ -1,0 +1,22 @@
+if [ SubDirOnce TOP niScriptCpp tsrc_module ] = 1 { return ; }
+
+tkDefModuleLib Test_niScriptCpp_Module : 1,0,0 : Test_niScriptCpp_Module ;
+niImportModuleHdrs niScriptCpp ;
+niImportModuleDll  niLang ;
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : stamp : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  moduleinclude=''
+  desc='"niScriptCpp test module"'
+  initfunctions='"no"'
+;
+niModule_Dep "niLang" ;
+niModule_Includes $(IDLS) ;
+niModule_End ;

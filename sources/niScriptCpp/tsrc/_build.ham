@@ -1,0 +1,15 @@
+if [ SubDirOnce TOP niScriptCpp tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTest Test_niScriptCpp : 1.0.0 ;
+
+niImportModuleLibs niUnitTest ;
+niImportModuleDll niLang ;
+niImportModuleDll niScriptCpp ;
+tkPkgLinkDll Test_niScriptCpp_Module ;
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
+
+DEPENDS Run_ci : [ runInDir Test_niScriptCpp ] ;

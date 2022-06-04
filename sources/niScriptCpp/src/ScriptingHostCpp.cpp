@@ -1,31 +1,38 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#include "CppScriptingHost.h"
+#include "API/niScriptCpp/ScriptCpp.h"
 
-#if !defined niNoRTCpp
+#if defined niNoScriptCpp
 
-#include "API/niLang/Utils/RTCppImpl.h"
-#include "API/niLang/StringDef.h"
-#include "API/niLang/Utils/Path.h"
-#include "API/niLang/Utils/ModuleUtils.h"
-#include "API/niLang/Utils/FileEnum.h"
-#include "API/niLang/Utils/Trace.h"
-#include "API/niLang/ITime.h"
+namespace ni {
 
-using namespace ni;
+niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Var& /*avarB*/) {
+  niError("ScriptCpp not supported on this platform.");
+  return NULL;
+}
 
-niDeclareModuleTrace_(niLang,TraceRTCpp);
-#define RTCPP_TRACE(X) niModuleTrace_(niLang,TraceRTCpp,X)
+}
+#else
+
+#include <niLang/StringDef.h>
+#include <niLang/Utils/Path.h>
+#include <niLang/Utils/ModuleUtils.h>
+#include <niLang/Utils/FileEnum.h>
+#include <niLang/Utils/Trace.h>
+#include <niLang/ITime.h>
+
+namespace ni {
+
+niDeclareModuleTrace_(niScriptCpp,Trace);
+#define SCRIPTCPP_TRACE(X) niModuleTrace_(niScriptCpp,Trace,X)
 
 typedef ni::iUnknown* (__ni_export_call_decl *tpfnNewInstance)();
 
-#define RTCPP_HAMEXE "ham-rtcpp"
-
 #ifdef _DEBUG
-#define RTCPP_BUILD_DA
+#define SCRIPTCPP_BUILD_DA
 #endif
 
-static cString RTCpp_GetBinDir() {
+static cString _GetBinDir() {
   cString dir;
   dir << "bin/"
       << GetLang()->GetProperty("ni.loa.os")
@@ -34,22 +41,22 @@ static cString RTCpp_GetBinDir() {
   return dir;
 }
 
-niExportFunc(tBool) RTCpp_GetCompileEnabled() {
-  return ni::GetProperty(RTCPP_COMPILE_PROPERTY,"0").Bool();
+niExportFunc(tBool) ScriptCpp_GetCompileEnabled() {
+  return ni::GetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0").Bool();
 }
 
-niExportFuncCPP(cString) RTCpp_GetCompileModuleType() {
-  return ni::GetProperty("rtcpp.module_type",niModuleFileNameBuildType);
+niExportFuncCPP(cString) ScriptCpp_GetCompileModuleType() {
+  return ni::GetProperty(SCRIPTCPP_MODULE_TYPE_PROPERTY,niModuleFileNameBuildType);
 }
 
 static cString _GetModuleFileName(const cString& aModuleName) {
-  return ni::GetModuleFileName(aModuleName.Chars(), niDLLSuffix, RTCpp_GetCompileModuleType().Chars());
+  return ni::GetModuleFileName(aModuleName.Chars(), niDLLSuffix, ScriptCpp_GetCompileModuleType().Chars());
 }
 
-static sRTCppStats _rtcppStats;
+static sScriptCppStats _scriptCppStates;
 
-niExportFunc(sRTCppStats*) RTCpp_GetStats() {
-  return &_rtcppStats;
+niExportFunc(sScriptCppStats*) ScriptCpp_GetStats() {
+  return &_scriptCppStates;
 }
 
 inline cString ToString(iTime* apToString) {
@@ -92,26 +99,26 @@ static cString _FindHamPath(cString& hamHome) {
   if (hamHome.IsEmpty()) {
     hamHome = GetRootFS()->GetAbsolutePath(
         (ni::GetLang()->GetProperty("ni.dirs.bin") + "../../../ham").Chars());
-    RTCPP_TRACE(("hamHome from ni.dirs.bin: %s", hamHome));
+    SCRIPTCPP_TRACE(("hamHome from ni.dirs.bin: %s", hamHome));
   }
   else {
-    RTCPP_TRACE(("hamHome from envvar: %s", hamHome));
+    SCRIPTCPP_TRACE(("hamHome from envvar: %s", hamHome));
   }
 
   cPath hamPath;
   hamPath.SetDirectory(hamHome.Chars());
   hamPath.AddDirectoryBack("bin");
-  hamPath.SetFile(RTCPP_HAMEXE);
+  hamPath.SetFile(SCRIPTCPP_HAMEXE);
   if (!ni::GetRootFS()->FileExists(hamPath.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
-    niWarning(niFmt("Can't find " RTCPP_HAMEXE " script '%s'.",hamPath.GetPath()));
+    niWarning(niFmt("Can't find " SCRIPTCPP_HAMEXE " script '%s'.",hamPath.GetPath()));
     return AZEROSTR;
   }
 
   return hamPath.GetPath();
 }
 
-static tBool RTCpp_TryCompileSource(
-  sRTCppModuleCache& mc,
+static tBool ScriptCpp_TryCompileSource(
+  sScriptCppModuleCache& mc,
   const cString& strSourcePath,
   const cString& strSourceAppDir)
 {
@@ -127,7 +134,7 @@ static tBool RTCpp_TryCompileSource(
       return eFalse;
     }
   }
-  RTCPP_TRACE(("Module '%s', date: '%s', path: '%s'.",mc.name,ToString(mc.date.ptr()),mc.path));
+  SCRIPTCPP_TRACE(("Module '%s', date: '%s', path: '%s'.",mc.name,ToString(mc.date.ptr()),mc.path));
 
   Ptr<iTime> sourceTime = _GetFileTime(strSourcePath);
   if (!sourceTime.IsOK()) {
@@ -135,24 +142,24 @@ static tBool RTCpp_TryCompileSource(
                   mc.name, strSourcePath));
     return eFalse;
   }
-  RTCPP_TRACE(("Module '%s', source date: '%s', source: %s.",mc.name,ToString(sourceTime.ptr()),strSourcePath));
+  SCRIPTCPP_TRACE(("Module '%s', source date: '%s', source: %s.",mc.name,ToString(sourceTime.ptr()),strSourcePath));
 
   if (mc.date->Compare(sourceTime) >= 0) {
-    ++_rtcppStats._numUpToDate;
-    RTCPP_TRACE(("'%s' up-to-date.",mc.path));
+    ++_scriptCppStates._numUpToDate;
+    SCRIPTCPP_TRACE(("'%s' up-to-date.",mc.path));
     if (!mc.hDLL) {
       mc.hDLL = ni_dll_load(mc.path.Chars());
       if (!mc.hDLL) {
         niError(niFmt("Module '%s': Can't load up-to-date dll: %s", mc.name, mc.path));
         return eFalse;
       }
-      RTCPP_TRACE(("Loaded up-to-date DLL '%s'.",mc.path));
+      SCRIPTCPP_TRACE(("Loaded up-to-date DLL '%s'.",mc.path));
     }
     return eTrue;
   }
   else {
-    ++_rtcppStats._numOutOfDate;
-    RTCPP_TRACE(("'%s' outdated by '%s'.",mc.path,strSourcePath));
+    ++_scriptCppStates._numOutOfDate;
+    SCRIPTCPP_TRACE(("'%s' outdated by '%s'.",mc.path,strSourcePath));
   }
 
   cString hamHome;
@@ -161,7 +168,7 @@ static tBool RTCpp_TryCompileSource(
     niError(niFmt("Module '%s': Can't find ham.", mc.name));
     return eFalse;
   }
-  RTCPP_TRACE(("HAM_HOME: %s", hamHome));
+  SCRIPTCPP_TRACE(("HAM_HOME: %s", hamHome));
 
   cString hamCmd;
 
@@ -180,13 +187,13 @@ static tBool RTCpp_TryCompileSource(
     }
 #endif
 
-    RTCPP_TRACE(("pathBash: %s", pathBash.GetPath()));
+    SCRIPTCPP_TRACE(("pathBash: %s", pathBash.GetPath()));
     hamCmd << "\"" << pathBash.GetPath() << "\" ";
   }
 
   const cString stamp = _GetStampString(sourceTime);
 
-  Ptr<tStringCMap> envMap = tStringCMap::Create();
+  Ptr<tStringCMap> envMap = ni::GetOSProcessManager()->GetEnviron();
   astl::upsert(*envMap, "HAM_HOME", hamHome);
   EnvCopyIfExists(envMap, ni::GetLang(), "CLANG_SANITIZE");
 
@@ -197,20 +204,20 @@ static tBool RTCpp_TryCompileSource(
          << " -T default"
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"
-         << " BUILD=" << RTCpp_GetCompileModuleType()
+         << " BUILD=" << ScriptCpp_GetCompileModuleType()
          << " pass1"
          << " STAMP=" << stamp
          << " " << mc.name
       ;
 
-  RTCPP_TRACE(("hamPath: %s", hamPath));
-  RTCPP_TRACE(("hamCmd: %s", hamCmd));
+  SCRIPTCPP_TRACE(("hamPath: %s", hamPath));
+  SCRIPTCPP_TRACE(("hamCmd: %s", hamCmd));
 
   cPath pathOutputNotStamped;
   cPath pathOutput;
   {
     pathOutput.SetDirectory(strSourceAppDir.Chars());
-    pathOutput.AddDirectoryBack(RTCpp_GetBinDir().Chars());
+    pathOutput.AddDirectoryBack(_GetBinDir().Chars());
     pathOutput.SetFile(_GetModuleFileName(mc.name).Chars());
     pathOutputNotStamped = pathOutput;
     // add the stamp
@@ -220,8 +227,8 @@ static tBool RTCpp_TryCompileSource(
     pathOutput.SetExtension(ext.Chars());
   }
 
-  RTCPP_TRACE(("outputPathNotStamped: %s", pathOutputNotStamped.GetPath()));
-  RTCPP_TRACE(("outputPath: %s", pathOutput.GetPath()));
+  SCRIPTCPP_TRACE(("outputPathNotStamped: %s", pathOutputNotStamped.GetPath()));
+  SCRIPTCPP_TRACE(("outputPath: %s", pathOutput.GetPath()));
 
   Ptr<iOSProcessManager> pm = GetLang()->GetProcessManager();
   sVec2i procRet = {eFalse,0};
@@ -234,19 +241,19 @@ static tBool RTCpp_TryCompileSource(
     Ptr<iFile> procStdErr = proc->GetFile(eOSProcessFile_StdErr);
     while (1) {
       if (procStdOut.IsOK() && procStdOut->GetCanRead()) {
-        // RTCPP_TRACE(("Reading stdout."));
+        // SCRIPTCPP_TRACE(("Reading stdout."));
         cString line = procStdOut->ReadStringLine();
         niLog(Raw, line.Chars());
       }
       if (procStdErr.IsOK() && procStdErr->GetCanRead()) {
-        // RTCPP_TRACE(("Reading stderr."));
+        // SCRIPTCPP_TRACE(("Reading stderr."));
         cString line = procStdErr->ReadStringLine();
         niLog(Raw, line.Chars());
       }
 
       procRet = proc->WaitForExitCode(0);
       if (procRet.x) {
-        RTCPP_TRACE(("Ham exited: %s.", procRet));
+        SCRIPTCPP_TRACE(("Ham exited: %s.", procRet));
         break;
       }
     }
@@ -266,22 +273,22 @@ static tBool RTCpp_TryCompileSource(
     return eFalse;
   }
 
-  ++_rtcppStats._numCompiled;
+  ++_scriptCppStates._numCompiled;
   return eTrue;
 }
 
-static void _RTCpp_CleanupDLLs(const achar* aDir) {
+static void _ScriptCpp_CleanupDLLs(const achar* aDir) {
   if (!niStringIsOK(aDir))
     return;
 
   cPath path;
   path.SetDirectory(aDir);
   if (!ni::GetRootFS()->FileExists(path.GetPath().c_str(), eFileAttrFlags_AllDirectories)) {
-    RTCPP_TRACE(("RTCpp Cleanup: Can't find directory: %s", path.GetPath()));
+    SCRIPTCPP_TRACE(("ScriptCpp Cleanup: Can't find directory: %s", path.GetPath()));
     return;
   }
   path.SetFile("*_*-*_rtcpp.*");
-  RTCPP_TRACE(("RTCpp Cleanup: DLLs: %s", path.GetPath()));
+  SCRIPTCPP_TRACE(("ScriptCpp Cleanup: DLLs: %s", path.GetPath()));
 
   FindFile ff;
   if (ff.First(path.GetPath().Chars()))
@@ -289,15 +296,15 @@ static void _RTCpp_CleanupDLLs(const achar* aDir) {
       path.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
       path.SetFile(ff.FileName());
       tBool r = ni::GetRootFS()->FileDelete(path.GetPath().Chars());
-      niLog(Info, niFmt("RTCpp Cleanup: Removing artifact %s: %s",
+      niLog(Info, niFmt("ScriptCpp Cleanup: Removing artifact %s: %s",
                         r ? "succeeded" : "failed",
                         path.GetPath()));
     } while(ff.Next());
 }
 
-niExportFunc(void) RTCpp_CleanupDLLs() {
-  _RTCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.app").Chars());
-  _RTCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
+niExportFunc(void) ScriptCpp_CleanupDLLs() {
+  _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.app").Chars());
+  _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
 }
 
 static const char* _BinDirProps[] = {
@@ -328,7 +335,7 @@ static void _FindSourcePathAndAppDir(
     pathSourceFileName.AddDirectoryBack("sources");
     pathSourceFileName.AddDirectoryBack(strSourceFileName.RBefore("/").Chars());
     pathSourceFileName.SetFile(strSourceFileName.RAfter("/").Chars());
-    RTCPP_TRACE(("Trying '%s' source path '%s'",
+    SCRIPTCPP_TRACE(("Trying '%s' source path '%s'",
                  _BinDirProps[i],
                  pathSourceFileName.GetPath()));
     if (ni::GetRootFS()->FileExists(pathSourceFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
@@ -345,10 +352,10 @@ static cString _FindModulePath(const cString& strModuleFileName) {
       cPath pathAppModuleFileName;
       pathAppModuleFileName.SetDirectory(strAppDir.Chars());
       if (!_IsBinDir(strAppDir)) {
-        pathAppModuleFileName.AddDirectoryBack(RTCpp_GetBinDir().Chars());
+        pathAppModuleFileName.AddDirectoryBack(_GetBinDir().Chars());
       }
       pathAppModuleFileName.SetFile(strModuleFileName.Chars());
-      RTCPP_TRACE(("Trying '%s' module path '%s'",
+      SCRIPTCPP_TRACE(("Trying '%s' module path '%s'",
                   _BinDirProps[i],
                   pathAppModuleFileName.GetPath()));
       if (ni::GetRootFS()->FileExists(pathAppModuleFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
@@ -363,7 +370,7 @@ static cString _FindModulePath(const cString& strModuleFileName) {
 struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
   niBeginClass(CppScriptingHost);
 
-  tRTCppModuleMap _modules;
+  tScriptCppModuleMap _modules;
 
   CppScriptingHost() {
   }
@@ -372,8 +379,8 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
   }
 
   virtual tBool __stdcall Cleanup() {
-    if (RTCpp_GetCompileEnabled()) {
-      RTCpp_CleanupDLLs();
+    if (ScriptCpp_GetCompileEnabled()) {
+      ScriptCpp_CleanupDLLs();
     }
     return eTrue;
   }
@@ -387,51 +394,68 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
         StrEndsWith(niHStr(ahspCodeResource),".cni");
   }
 
+  // DIR/FILENAME.cpp -> MODULE=DIR, CLASS=FILENAME
+  // MODULE#DIR/FILENAME.cpp -> CLASS=FILENAME
+  // MODULE#CLASS#DIR/FILENAME.cpp
   virtual iUnknown* __stdcall EvalImpl(iHString* ahspContext, iHString* ahspCodeResource, const tUUID& aIID) {
     cString strClass;
     cString strResource = niHStr(ahspCodeResource);
+    cString strModule = strResource.Before("/");
     if (strResource.contains("#")) {
-      strClass = strResource.Before("#");
-      strResource = strResource.After("#");
+      astl::vector<cString> toks;
+      StringSplitSep(strResource,"#",&toks);
+      if (toks.size() == 2) {
+        strModule = toks[0];
+        strResource = toks[1];
+        strClass = strResource.RAfter("/").RBefore(".");
+      }
+      else if (toks.size() == 3) {
+        strModule = toks[0];
+        strClass = toks[1];
+        strResource = toks[2];
+      }
+      else {
+        niError(niFmt("Invalid ScriptCpp '#' resource definition '%s'. Expected 2 or 3 part, but got %d.", ahspCodeResource, toks.size()));
+        return NULL;
+      }
     }
     else {
       strClass = strResource.RAfter("/").RBefore(".");
     }
-    cString strModule = strResource.Before("/");
     cString strModuleFileName = _GetModuleFileName(strModule);
     cString strCreateFunctionName = _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
     cString strSourcePath, strSourceAppDir;
     _FindSourcePathAndAppDir(strResource.Chars(),strSourcePath,strSourceAppDir);
 
-    RTCPP_TRACE(("RTCpp: EvalImpl: Context: %s, Resource: %s, UUID: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s",
+    SCRIPTCPP_TRACE(("Context: %s, Resource: %s, UUID: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s",
                 ahspContext, ahspCodeResource, aIID,
                 strModule, strModuleFileName,
                 strClass, strCreateFunctionName,
                 strSourcePath, strSourceAppDir));
 
-    tRTCppModuleMap::iterator itModule = _modules.find(strModuleFileName);
+    tScriptCppModuleMap::iterator itModule = _modules.find(strModuleFileName);
     if (itModule != _modules.end()) {
-      RTCPP_TRACE(("Using already loaded module"));
+      SCRIPTCPP_TRACE(("Using already loaded module"));
     }
     else {
-      sRTCppModuleCache newModule;
+      sScriptCppModuleCache newModule;
       newModule.name = strModule;
       newModule.path = _FindModulePath(strModuleFileName);
       itModule = astl::upsert(_modules,strModuleFileName,newModule);
     }
 
-    if (RTCpp_GetCompileEnabled()) {
-      if (!RTCpp_TryCompileSource(itModule->second,strSourcePath,strSourceAppDir)) {
+    if (ScriptCpp_GetCompileEnabled()) {
+      if (!ScriptCpp_TryCompileSource(itModule->second,strSourcePath,strSourceAppDir)) {
         niWarning(niFmt("Can't compile module '%s' for code resource '%s'.",
                         strModule, ahspCodeResource));
       }
     }
     else {
-      RTCPP_TRACE(("RTCpp compile disabled. (use -D" RTCPP_COMPILE_PROPERTY "=1 to enable it)"));
+      SCRIPTCPP_TRACE(("ScriptCpp compile disabled. (use -D" SCRIPTCPP_COMPILE_PROPERTY "=1 to enable it)"));
     }
 
     {
-      sRTCppModuleCache& mc = itModule->second;
+      sScriptCppModuleCache& mc = itModule->second;
       if (!mc.hDLL && !mc.path.IsEmpty()) {
         mc.hDLL = ni_dll_load(mc.path.Chars());
         if (!mc.hDLL) {
@@ -483,8 +507,13 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
   niEndClass(CppScriptingHost);
 };
 
-niExportFunc(iScriptingHost*) RTCpp_CreateScriptingHost() {
+niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost() {
   return niNew CppScriptingHost();
 }
 
+niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Var& /*avarB*/) {
+  return ScriptCpp_CreateScriptingHost();
+}
+
+}
 #endif

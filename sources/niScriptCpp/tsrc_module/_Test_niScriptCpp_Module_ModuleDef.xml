@@ -1,8 +1,8 @@
 <niIDL
-	desc="Test RTCpp module"
+	desc="niScriptCpp test module"
 	initfunctions="no"
 	moduleinclude=""
-	name="Test_RTCpp"
+	name="Test_niScriptCpp_Module"
 	version="1,0,0">
 	<dependencies>
 		<dependency name="niLang"/>

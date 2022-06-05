@@ -3,6 +3,10 @@ SubDir TOP HelloUI ;
 if $(TARGET_FEATURE_EXE) {
   SubInclude TOP HelloUI cpp ;
 }
+if $(TARGET_FEATURE_RTCPP) = 1 {
+  SubInclude TOP HelloUI rtcpp_main ;
+  SubInclude TOP HelloUI rtcpp_module ;
+}
 if $(TARGET_FEATURE_CONSOLE) {
   SubInclude TOP HelloUI ni ;
 }

@@ -1,0 +1,27 @@
+if [ SubDirOnce TOP HelloUI rtcpp_module ] = 1 { return ; }
+if ! $(TARGET_FEATURE_RTCPP) { return ; }
+
+tkDefModuleLib HelloUI_rtcpp_module : 1.0.0 ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+niImportModuleHdrs niScriptCpp ;
+
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
+### SOURCES #############################################################
+SRC = [ tkPkgSrc ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch stamp : $(CHK_SOURCES) ] ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"HelloUI_rtcpp_module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"no"'
+;
+niModule_NS "ni" ;
+niModule_Dep "niUI" ;
+niModule_OT category='"UIWidget"' name='"HelloUI"' ;
+niModule_Includes $(IDLS) ;
+niModule_End ;

@@ -10,6 +10,7 @@
 namespace ni {
 
 struct iGraphicsContext;
+struct iGraphicsContextRT;
 struct iGraphicsDriver;
 struct iDrawOperation;
 struct iDrawOperationSet;

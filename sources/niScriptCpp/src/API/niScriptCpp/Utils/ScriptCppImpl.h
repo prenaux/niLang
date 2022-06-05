@@ -237,26 +237,21 @@ struct sScriptCppGuard
 
 #define SCRIPTCPP_VOID_METHOD_END() SCRIPTCPP_LEAVE_VOID_GUARD(); }
 
-#define SCRIPTCPP_EXPORT_CLASS(CATEGORY,CLASS)          \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS( \
+#define SCRIPTCPP_EXPORT_CLASS(CATEGORY,NAME,CLASS)     \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(  \
     const ni::Var&,const ni::Var&)                      \
   {                                                     \
     return niNew CLASS();                               \
   }
 
-#define SCRIPTCPP_EXPORT_FUNC(CATEGORY,CLASS,CONSTRUCTOR)               \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS(                 \
+#define SCRIPTCPP_EXPORT_FUNC(CATEGORY,NAME,CONSTRUCTOR)               \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(                 \
     const ni::Var&,const ni::Var&)                                      \
   {                                                                     \
     ni::Ptr<ni::iUnknown> scriptCppObjectInstance = CONSTRUCTOR().ptr(); \
     niCheck(scriptCppObjectInstance.IsOK(),NULL);                       \
     return scriptCppObjectInstance.GetRawAndSetNull();                  \
   }
-
-#define SCRIPTCPP_IMPORT(CATEGORY,CLASS)                      \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##CLASS();
-
-#define SCRIPTCPP_NEW(CATEGORY,CLASS) New_##CATEGORY##_##CLASS()
 
 /**@}*/
 

@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<module name='HelloUI_rtcpp_module'
+        version='1.0.0' 
+        desc='HelloUI_rtcpp_module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='no'
+>
+  <namespace name='ni' />
+  <dependency name='niUI' />
+  <objecttype  category='UIWidget' name='HelloUI'  />
+</module>

@@ -1,0 +1,16 @@
+<niIDL
+	author="niLang Authors"
+	copyright="(c) 2022 The niLang Authors"
+	desc="HelloUI_rtcpp_module"
+	initfunctions="no"
+	name="HelloUI_rtcpp_module"
+	version="1.0.0">
+	<namespace name="ni"/>
+	<dependencies>
+		<dependency name="niUI"/>
+	</dependencies>
+	<objecttypes>
+		<objecttype category="UIWidget" name="HelloUI"/>
+	</objecttypes>
+	<includes/>
+</niIDL>

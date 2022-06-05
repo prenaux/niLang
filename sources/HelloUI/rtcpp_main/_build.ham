@@ -1,0 +1,15 @@
+if [ SubDirOnce TOP HelloUI rtcpp_main ] = 1 { return ; }
+if ! $(TARGET_FEATURE_RTCPP) { return ; }
+
+tkDefTool HelloUI_rtcpp : 1.0.0 ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+niImportModuleDll niScript ;
+niImportModuleDll niScriptCpp ;
+tkPkgLinkDll HelloUI_rtcpp_module ;
+niImportModuleLibs niAppLib ;
+
+SRC = [ tkPkgSrc ] ;
+
+runInDir HelloUI_rtcpp ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) ] ;

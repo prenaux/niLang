@@ -13,11 +13,3 @@ SRC = [ tkPkgSrc ] ;
 
 runInDir HelloUI_cpp ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : data : $(CHK_SOURCES) ] ;
-
-### DEPENDENCIES #####################################################
-tkDepends HelloUI_cpp : niLang : TOP niLang src ;
-tkDepends HelloUI_cpp : niUI : TOP niUI src ;
-tkDepends HelloUI_cpp : niAppLib : TOP niAppLib src ;
-if ! $(EMBEDDED) =  1 {
-  tkDepends HelloUI_cpp : niScript : TOP niScript src ;
-}

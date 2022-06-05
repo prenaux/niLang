@@ -5,5 +5,3 @@ tkDefTest HelloUI_ni ;
 SRC = [ tkPkgSrc niw ] ;
 
 niScriptTest HelloUI_ni : $(SRC) ;
-
-tkDepends HelloUI_ni : niUI : TOP niUI src ;

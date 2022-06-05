@@ -15,6 +15,3 @@ JAR = [ niBuildJar $(SRC)
 : pkgsrc
 : ni.samples.HelloUI.HelloApp ] ;
 DEPENDS samples : $(PACKAGE) ;
-
-tkDepends HelloUI_java : ni-app ni-app-native : TOP ;
-tkDepends HelloUI_java : niUI : TOP niUI src ;

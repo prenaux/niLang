@@ -1,6 +1,6 @@
 SubDir TOP niScriptCpp ;
 
-if $(WINDOWS) = 1 || $(OSX) = 1 {
+if $(TARGET_FEATURE_RTCPP) = 1 {
   SubInclude TOP niScriptCpp src ;
   SubInclude TOP niScriptCpp tsrc ;
   SubInclude TOP niScriptCpp tsrc_module ;

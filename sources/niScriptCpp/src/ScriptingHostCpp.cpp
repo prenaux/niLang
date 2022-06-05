@@ -201,6 +201,7 @@ static tBool ScriptCpp_TryCompileSource(
   StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);
 
   hamCmd << "\"" << hamPath << + "\""
+         << " -q"
          << " -T default"
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"

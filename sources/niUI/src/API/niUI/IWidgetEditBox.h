@@ -2,6 +2,8 @@
 #define __IEDITBOXWIDGET_88521336_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+#include "IWidget.h"
+
 namespace ni {
 /** \addtogroup niUI
  * @{

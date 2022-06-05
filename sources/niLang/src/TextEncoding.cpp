@@ -218,55 +218,57 @@ eTextEncodingFormat __stdcall TextEncodingFormatGet(iFile* apFile, tBool abSkipH
     return eTextEncodingFormat_Unknown;
   tI64 nPos = apFile->Tell();
   tU8 header[4] = {0,0,0,0};
-  apFile->ReadRaw(header,2);
-  if (header[0] == 0x00) {
-    // can be UTF32BE only, or invalid... (not text)
-    apFile->ReadRaw(header+2,2);
-    if (::memcmp(header,_kBOM_UTF32BE,4) == 0) {
+  if (apFile->ReadRaw(header,2) == 2) {
+    if (header[0] == 0x00) {
+      // can be UTF32BE only, or invalid... (not text)
+      if ((apFile->ReadRaw(header+2,2) == 2) &&
+          (::memcmp(header,_kBOM_UTF32BE,4) == 0))
+      {
+        if (!abSkipHeader) apFile->SeekSet(nPos);
+        return eTextEncodingFormat_UTF32BE;
+      }
+      else {
+        apFile->SeekSet(nPos);
+        return eTextEncodingFormat_Unknown;
+      }
+    }
+    // BitStream ?
+    else if (::memcmp(header,_kBOM_BITSTREAM,2) == 0) {
       if (!abSkipHeader) apFile->SeekSet(nPos);
-      return eTextEncodingFormat_UTF32BE;
+      return eTextEncodingFormat_BitStream;
     }
-    else {
-      apFile->SeekSet(nPos);
-      return eTextEncodingFormat_Unknown;
-    }
-  }
-  // BitStream ?
-  else if (::memcmp(header,_kBOM_BITSTREAM,2) == 0) {
-    if (!abSkipHeader) apFile->SeekSet(nPos);
-    return eTextEncodingFormat_BitStream;
-  }
-  // UTF16BE
-  else if (::memcmp(header,_kBOM_UTF16BE,2) == 0) {
-    if (!abSkipHeader) apFile->SeekSet(nPos);
-    return eTextEncodingFormat_UTF16BE;
-  }
-
-  header[2] = apFile->Read8();
-  if (::memcmp(header,_kBOM_UTF32LE,3) == 0) {
-    // can be UTF32LE only, or invalid... (not text)
-    header[3] = apFile->Read8();
-    if (::memcmp(header,_kBOM_UTF32LE,4) == 0) {
+    // UTF16BE
+    else if (::memcmp(header,_kBOM_UTF16BE,2) == 0) {
       if (!abSkipHeader) apFile->SeekSet(nPos);
-      return eTextEncodingFormat_UTF32LE;
+      return eTextEncodingFormat_UTF16BE;
     }
-    else {
-      apFile->SeekSet(nPos);
-      return eTextEncodingFormat_Unknown;
-    }
-  }
 
-  // UTF8
-  if (::memcmp(header,_kBOM_UTF8,3) == 0) {
-    if (!abSkipHeader) apFile->SeekSet(nPos);
-    return eTextEncodingFormat_UTF8BOM;
-  }
-  // UTF16LE
-  else if (::memcmp(header,_kBOM_UTF16LE,2) == 0) {
-    if (!abSkipHeader) apFile->SeekSet(nPos);
-    else   apFile->SeekSet(nPos+2); // we have to 'move back' one byte because we read a third byte
-    // necessary to make sure its not UTF32LE
-    return eTextEncodingFormat_UTF16LE;
+    header[2] = apFile->Read8();
+    if (::memcmp(header,_kBOM_UTF32LE,3) == 0) {
+      // can be UTF32LE only, or invalid... (not text)
+      header[3] = apFile->Read8();
+      if (::memcmp(header,_kBOM_UTF32LE,4) == 0) {
+        if (!abSkipHeader) apFile->SeekSet(nPos);
+        return eTextEncodingFormat_UTF32LE;
+      }
+      else {
+        apFile->SeekSet(nPos);
+        return eTextEncodingFormat_Unknown;
+      }
+    }
+
+    // UTF8
+    if (::memcmp(header,_kBOM_UTF8,3) == 0) {
+      if (!abSkipHeader) apFile->SeekSet(nPos);
+      return eTextEncodingFormat_UTF8BOM;
+    }
+    // UTF16LE
+    else if (::memcmp(header,_kBOM_UTF16LE,2) == 0) {
+      if (!abSkipHeader) apFile->SeekSet(nPos);
+      else   apFile->SeekSet(nPos+2); // we have to 'move back' one byte because we read a third byte
+      // necessary to make sure its not UTF32LE
+      return eTextEncodingFormat_UTF16LE;
+    }
   }
 
   apFile->SeekSet(nPos);
@@ -451,6 +453,11 @@ inline tSize __stdcall _TextEncodingFormatReadString(iFile* apFile, eTextEncodin
 
   tSize nRet = 0;
   switch (aFormat) {
+    // We must have a default and at least try to read some data so that the
+    // file's state behave as expected if reading the header fails. For
+    // example when trying to read a string from an empty file we want to make
+    // sure that the PartialRead flag is set on the file.
+    default:
     case eTextEncodingFormat_UTF8:
     case eTextEncodingFormat_UTF8BOM: {
       READ_LOOP(_TextEncodingFormatReadCharUTF8);
@@ -481,8 +488,6 @@ inline tSize __stdcall _TextEncodingFormatReadString(iFile* apFile, eTextEncodin
       nRet = (tSize)(apFile->Tell()-pos);
       break;
     }
-    default:
-      return 0;
   }
 
 #undef READ_LOOP

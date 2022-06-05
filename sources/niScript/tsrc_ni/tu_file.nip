@@ -1,0 +1,17 @@
+::Import("unittest.ni")
+::Import("fs.ni")
+::Import("seq.ni")
+
+// Infinite loop caused by TextEncodingFormatReadString not trying to read any
+// data when reading an empty file. That leads to fp.partial_read never
+// returning true.
+::TEST("file","bug-seq-fileLine-infiniteLoop", #() {
+  local msg = ""
+  local fp = ::fs.createStringFile(msg)
+  if (msg.endswith("\n"))
+    fp.Resize(fp.size-1)
+  foreach (line in ::seq.fileLines(fp)) {
+    ::println("... line: '" + line + "'")
+    ::CHECK_EQUAL("",line);
+  }
+})

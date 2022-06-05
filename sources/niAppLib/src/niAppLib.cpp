@@ -59,7 +59,12 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
       mpContext->_window->CenterWindow();
     }
     if (mpContext->_config.windowShow) {
-      mpContext->_window->SetShow(eOSWindowShowFlags_Show);
+      if (ni::GetProperty("ni.app.windowMaximized","false").Bool()) {
+        mpContext->_window->SetShow(eOSWindowShowFlags_Show|eOSWindowShowFlags_Maximize);
+      }
+      else {
+        mpContext->_window->SetShow(eOSWindowShowFlags_Show);
+      }
       mpContext->_window->UpdateWindow(ni::eFalse);
       mpContext->_window->ActivateWindow();
     }

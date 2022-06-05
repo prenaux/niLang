@@ -46,6 +46,8 @@ function OnSinkAttached(w,a,b) {
       local wLog = wForm.FindWidget(logId)
       wLog.ClearItems()
     })
+
+  w.Place(w.rect, ::eWidgetDockStyle.SnapTopRight, ::Vec4(5,5,5,5));
 }
 
 function OnDestroy(w,a,b) {

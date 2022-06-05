@@ -358,33 +358,62 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
               mptrFontHUD = pRootWidget->GetFont()->CreateFontInstance(NULL);
               mptrFontHUD->SetSizeAndResolution(sVec2f::Zero(), 16, w->GetUIContext()->GetContentsScale());
             }
+
+            static const tU32 consoleTextColor = ULColorBuild(200,200,80,255);
+            static const tU32 textColor = ULColorBuild(240,240,240,255);
+            static const tU32 bgColor = ULColorBuild(15,15,15,100);
+
             Ptr<iFont> font = mptrFontHUD;
             Ptr<iCanvas> canvas = VarQueryInterface<iCanvas>(a);
+            const tF32 fontHeight = font->GetHeight();
 
             if (mpContext->_config.drawFPS >= 2) {
               Ptr<iProfDraw> drawer = mpContext->_uiContext->CreateProfDraw(canvas,font);
               ni::GetProf()->DrawGraph(
                 drawer,
-                5, widgetRect.GetHeight(),
+                5, widgetRect.GetHeight() - fontHeight,
                 2, 10);
+
+              const tF32 consoleW =
+                  (mpContext->_config.drawFPS >= 3) ?
+                  (widgetRect.GetWidth() / 2) - 5 :
+                  widgetRect.GetWidth();
+
+              {
+                font->SetColor(consoleTextColor);
+                const tU32 numConsoleLines = 5;
+                const tF32 h = fontHeight * (tF32)numConsoleLines;
+                const sRectf rect(widgetRect.GetLeft(),
+                                  widgetRect.GetTop(),
+                                  consoleW, h);
+                astl::vector<cString> lastLogs;
+                ni_get_last_logs(&lastLogs,numConsoleLines);
+                canvas->BlitFillAlpha(rect, bgColor);
+                sRectf r = rect;
+                niLoop(i,lastLogs.size()) {
+                  canvas->BlitText(
+                    font, r,
+                    eFontFormatFlags_ClipH|eFontFormatFlags_Border,
+                    lastLogs[i].Chars());
+                  r.Move(Vec2f(0,fontHeight));
+                }
+              }
+
               if (mpContext->_config.drawFPS >= 3) {
                 ni::GetProf()->DrawTable(
                   drawer,
-                  5, 5,
-                  widgetRect.GetWidth()/3, widgetRect.GetHeight(),
-                  3);
+                  consoleW + 5, 5,
+                  widgetRect.GetWidth()-consoleW-10,
+                  widgetRect.GetHeight(),3);
               }
             }
 
             if (canvas.IsOK()) {
-              static const tU32 textColor = ULColorBuild(240,240,240,255);
-              static const tU32 bgColor = ULColorBuild(15,15,15,180);
-
               font->SetColor(textColor);
-              const float fh = font->GetHeight();
               sVec4i memStats;
               ni_mem_get_stats(&memStats);
-              const cString fpsText = niFmt(
+
+              cString fpsText = niFmt(
                 "fps: %g (ms: %d) liveAlloc: %d (objs: %d) ren: %s",
                 ni::GetLang()->GetAverageFrameRate(),
                 (ni::GetLang()->GetFrameTime() * 1000.0),
@@ -393,13 +422,24 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
                 canvas->GetGraphicsContext()->GetDriver()->GetName()
               );
 
-              canvas->BlitFillAlpha(Vec4f(widgetRect.GetLeft(), widgetRect.GetBottom() - fh - 10,
-                                          widgetRect.GetRight(), widgetRect.GetBottom()),
-                                    bgColor);
+              if (mpContext->_config.drawFPS == 1) {
+                astl::vector<cString> lastLogs;
+                if (ni_get_last_logs(&lastLogs,1)) {
+                  fpsText << " log: " << lastLogs.back();
+                }
+              }
+
+              canvas->BlitFillAlpha(
+                Vec4f(widgetRect.GetLeft(),
+                      widgetRect.GetBottom() - fontHeight - 10,
+                      widgetRect.GetRight(),
+                      widgetRect.GetBottom()),
+                bgColor);
 
               const sRectf textSize = canvas->BlitText(
                 font,
-                Vec4f(5, widgetRect.GetHeight() - fh - 5, widgetRect.GetWidth()-5, widgetRect.GetHeight() - 5),
+                Vec4f(5, widgetRect.GetHeight() - fontHeight - 5,
+                      widgetRect.GetWidth()-5, widgetRect.GetHeight() - 5),
                 0,
                 fpsText.Chars());
 
@@ -409,7 +449,8 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
               {
                 canvas->BlitText(
                   font,
-                  Vec4f(5, widgetRect.GetHeight() - fh - 5, widgetRect.GetWidth()-5, widgetRect.GetHeight() - 5),
+                  Vec4f(5, widgetRect.GetHeight() - fontHeight - 5,
+                        widgetRect.GetWidth()-5, widgetRect.GetHeight() - 5),
                   eFontFormatFlags_Right,
                   buildText.Chars());
               }

@@ -2,7 +2,7 @@
 #define __WINRT_H_86CC04B9_A61C_4967_B623_7204B8E43D15__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#if defined _MSC_VER && defined WINAPI_FAMILY
+#if defined _MSC_VER && defined(__WINRT__) && __WINRT__
 
 #include <string.h>
 #ifdef __cplusplus

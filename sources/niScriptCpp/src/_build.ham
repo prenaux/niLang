@@ -1,6 +1,6 @@
 if [ SubDirOnce TOP niScriptCpp src ] = 1 { return ; }
 
-tkDefModule niScriptCpp : 1,0,0 ;
+tkDefModuleLib niScriptCpp : 1,0,0 ;
 niImportModuleDll niLang ;
 
 ### API #################################################################

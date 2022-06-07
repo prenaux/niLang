@@ -193,7 +193,7 @@ static tBool ScriptCpp_TryCompileSource(
 
   const cString stamp = _GetStampString(sourceTime);
 
-  Ptr<tStringCMap> envMap = ni::GetOSProcessManager()->GetEnviron();
+  Ptr<tStringCMap> envMap = ni::GetOSProcessManager()->GetEnvs();
   astl::upsert(*envMap, "HAM_HOME", hamHome);
   EnvCopyIfExists(envMap, ni::GetLang(), "CLANG_SANITIZE");
 

@@ -574,7 +574,7 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
 
     Ptr<tStringCMap> defaultEnvs;
     if (!apEnvs) {
-      defaultEnvs = this->GetEnviron();
+      defaultEnvs = this->GetEnvs();
       apEnvs = defaultEnvs.ptr();
     }
 
@@ -880,7 +880,7 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
     return agetcwd();
   }
 
-  Ptr<tStringCMap> __stdcall GetEnviron() const {
+  Ptr<tStringCMap> __stdcall GetEnvs() const {
     Ptr<tStringCMap> e = tStringCMap::Create();
     for (char **current = _GetEnviron(); *current; current++) {
       cString c = *current;

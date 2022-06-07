@@ -261,14 +261,14 @@ IDLC_METH_BEGIN(ni,iOSProcessManager,GetCwd,0)
 IDLC_METH_END(ni,iOSProcessManager,GetCwd,0)
 #endif // niMinFeatures(15)
 
-/** ni -> iOSProcessManager::GetEnviron/0 -> MIN FEATURES '15' **/
+/** ni -> iOSProcessManager::GetEnvs/0 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iOSProcessManager::GetEnviron/0 **/
-IDLC_METH_BEGIN(ni,iOSProcessManager,GetEnviron,0)
+/** ni -> iOSProcessManager::GetEnvs/0 **/
+IDLC_METH_BEGIN(ni,iOSProcessManager,GetEnvs,0)
 	IDLC_DECL_RETVAR(Ptr<tStringCMap>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,GetEnviron,0,())
+	IDLC_METH_CALL(_Ret,ni,iOSProcessManager,GetEnvs,0,())
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iOSProcessManager,GetEnviron,0)
+IDLC_METH_END(ni,iOSProcessManager,GetEnvs,0)
 #endif // niMinFeatures(15)
 
 IDLC_END_INTF(ni,iOSProcessManager)

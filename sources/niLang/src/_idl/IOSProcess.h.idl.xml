@@ -394,14 +394,16 @@
 			</method>
 			<method
 				const="yes"
-				java_name="getEnviron"
+				java_name="getEnvs"
 				min_features="15"
-				name="GetEnviron"
+				name="GetEnvs"
 				num_parameters="0"
 				property="get"
-				property_name2="environ"
-				property_name="environ">
-				<comments desc="Get the current environment variables. "/>
+				property_name2="envs"
+				property_name="envs">
+				<comments desc="Get the current environment variables. ">
+					<remark text="This is not named GetEnviron because MSVC has an variable called `environ`. "/>
+				</comments>
 				<return type="Ptr&lt;tStringCMap&gt;" typec="Ptr&lt;tStringCMap&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>

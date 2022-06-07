@@ -494,11 +494,11 @@ TEST_FIXTURE(FProcess,SpawnPrintLoop) {
 
 TEST_FIXTURE(FProcess,Environ) {
   // astl::map<cString,cString>* environ;
-  Ptr<tStringCMap> environ = _pman->GetEnviron();
-  // for (auto it : *environ) {
+  Ptr<tStringCMap> envs = _pman->GetEnvs();
+  // for (auto it : *envs) {
     // niDebugFmt(("... %s = %s", it.first, it.second));
   // }
-  cString path = astl::get_default(*environ,"PATH","");
+  cString path = astl::get_default(*envs,"PATH","");
   CHECK(path.IsNotEmpty());
 }
 

@@ -163,7 +163,8 @@ struct iOSProcessManager : public iUnknown {
 
   //! Get the current environment variables.
   //! {Property}
-  virtual Ptr<tStringCMap> __stdcall GetEnviron() const = 0;
+  //! \remark This is not named GetEnviron because MSVC has an variable called `environ`.
+  virtual Ptr<tStringCMap> __stdcall GetEnvs() const = 0;
 };
 
 #ifndef niNoProcess

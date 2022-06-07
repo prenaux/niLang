@@ -20357,13 +20357,13 @@ static const ni::sMethodDef iOSProcessManager_GetCwd = {
 #endif // niMinFeatures(15)
 
 #if niMinFeatures(15)
-// Method: GetEnviron
-static const ni::sMethodDef iOSProcessManager_GetEnviron = {
-  "GetEnviron",
+// Method: GetEnvs
+static const ni::sMethodDef iOSProcessManager_GetEnvs = {
+  "GetEnvs",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "Ptr<tStringCMap>",
   0, NULL,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iOSProcessManager_GetEnviron)
+  XCALL_CIMPL(iOSProcessManager_GetEnvs)
 #else
   NULL
 #endif
@@ -20393,7 +20393,7 @@ static const ni::sMethodDef* Methods_iOSProcessManager[] = {
 	&iOSProcessManager_GetCwd,
 #endif // niMinFeatures(15)
 #if niMinFeatures(15)
-	&iOSProcessManager_GetEnviron,
+	&iOSProcessManager_GetEnvs,
 #endif // niMinFeatures(15)
 
 };

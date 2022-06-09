@@ -371,11 +371,18 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
       while (pRet->GetNumChildNodes() && pRet->GetExpanded()) {
         pRet = pRet->GetChildNode(pRet->GetNumChildNodes()-1);
       }
-      return pRet;
+    }
+    else {
+      // if no previous sibling, the parent is above
+      pRet = ptrParentTreeNode.GetRawAndSetNull();
     }
 
-    // if no previous sibling, the parent is above
-    return ptrParentTreeNode.GetRawAndSetNull();
+    // check if the node above is visible
+    if (pRet && !((cWidgetTreeNode*)pRet)->GetIsVisible()) {
+      return pRet->GetAbove();
+    }
+
+    return pRet;
   }
 
   ///////////////////////////////////////////////

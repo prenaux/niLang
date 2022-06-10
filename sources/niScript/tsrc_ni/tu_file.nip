@@ -2,6 +2,8 @@
 ::Import("fs.ni")
 ::Import("seq.ni")
 
+::FIXTURE(["file"])
+
 // Infinite loop caused by TextEncodingFormatReadString not trying to read any
 // data when reading an empty file. That leads to fp.partial_read never
 // returning true.

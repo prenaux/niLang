@@ -48,7 +48,6 @@
 #undef CreateProcess
 #undef CreateSemaphore
 #undef CreateThread
-#undef CreateThread
 #undef CreateWindow
 #undef CreateWindowEx
 #undef DispatchMessage
@@ -58,23 +57,21 @@
 #undef GetClassName
 #undef GetCommandLine
 #undef GetCurrentTime
-#undef GetCurrentTime
-#undef GetFileAttributes
 #undef GetFileAttributes
 #undef GetMessage
 #undef GetModuleFileName
 #undef GetObject
+#undef GetUserName
 #undef LoadBitmap
+#undef max
 #undef Message
 #undef MessageBox
+#undef min
 #undef PeekMessage
 #undef PostMessage
 #undef SendMessage
 #undef SetFileAttributes
 #undef SetPort
-#undef max
-#undef min
-#undef GetUserName
 
 #undef niWin32API
 #define niWin32API(FUNC)  ::FUNC##W

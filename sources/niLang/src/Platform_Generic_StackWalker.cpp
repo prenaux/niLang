@@ -1,6 +1,8 @@
 #include "API/niLang/Types.h"
 
-#if defined niNoCrashReport || (!defined niWinDesktop && !defined niOSX)
+#if defined niNoCrashReport
+
+#include "API/niLang/StringDef.h"
 
 using namespace ni;
 

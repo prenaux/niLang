@@ -31,8 +31,11 @@
 // #define niConfig_OnlyObjectTypesIDL
 // #define niConfig_NoXCALL
 
+#include <niLang/Utils/CrashReport.h>
+
 // Meant to be called in a Modules's ModuleDef GetModule() implementation
-#define niModuleDefImpl_GetModule_Register()
+#define niModuleDefImpl_GetModule_Register()    \
+  niCrashReport_ModuleInstall();
 
 /**@}*/
 /**@}*/

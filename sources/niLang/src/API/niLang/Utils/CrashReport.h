@@ -22,8 +22,9 @@
 niExportFunc(const ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp);
 
 #ifdef niWindows
+#include <signal.h>
 #define niCrashReportHasMinidump
-niExportFuncCPP(cString) ni_generate_minidump(void* apExp);
+niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
 #endif
 
 typedef void (__ni_export_call_decl *tpfnHarakiriHandler)(const char* msg, void* apExp);

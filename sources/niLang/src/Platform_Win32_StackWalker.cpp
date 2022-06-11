@@ -4,6 +4,11 @@ using namespace ni;
 
 #if defined niWinDesktop && !defined niNoCrashReport
 
+#include "API/niLang/ILang.h"
+#include "API/niLang/Utils/CrashReport.h"
+#include "API/niLang/Platforms/Win32/Win32_UTF.h"
+#include "API/niLang/Platforms/Win32/Win32_Redef.h"
+
 /**********************************************************************
  *
  * StackWalker.cpp
@@ -87,7 +92,6 @@ using namespace ni;
  **********************************************************************/
 #include <windows.h>
 #undef _tprintf
-#include <tchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #pragma comment(lib, "version.lib")  // for "VerQueryValue"
@@ -417,8 +421,10 @@ DWORD64
 #define strncpy_s(dst, len, src, maxLen) strncpy(dst, len, src)
 #define strcat_s(dst, len, src) strcat(dst, src)
 #define _snprintf_s _snprintf
-#define _tcscat_s _tcscat
+#define wcscat_s wcscat
 #endif
+
+#define _WSTR(X) L##X
 
 static void MyStrCpy(char* szDest, size_t nMaxDestSize, const char* szSrc)
 {
@@ -479,71 +485,71 @@ class StackWalkerInternal
       return FALSE;
     // Dynamically load the Entry-Points for dbghelp.dll:
     // First try to load the newsest one from
-    TCHAR szTemp[4096];
+    WCHAR szTemp[4096];
     // But before wqe do this, we first check if the ".local" file exists
-    if (GetModuleFileName(NULL, szTemp, 4096) > 0)
+    if (niWin32API(GetModuleFileName)(NULL, szTemp, 4096) > 0)
     {
-      _tcscat_s(szTemp, _T(".local"));
-      if (GetFileAttributes(szTemp) == INVALID_FILE_ATTRIBUTES)
+      wcscat_s(szTemp, _WSTR(".local"));
+      if (GetFileAttributesW(szTemp) == INVALID_FILE_ATTRIBUTES)
       {
         // ".local" file does not exist, so we can try to load the dbghelp.dll from the "Debugging Tools for Windows"
         // Ok, first try the new path according to the archtitecture:
 #ifdef _M_IX86
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_T("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
-          _tcscat_s(szTemp, _T("\\Debugging Tools for Windows (x86)\\dbghelp.dll"));
+          wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows (x86)\\dbghelp.dll"));
           // now check if the file exists:
-          if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
+          if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
             m_hDbhHelp = LoadLibrary(szTemp);
           }
         }
 #elif _M_X64
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_T("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariableW(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
-          _tcscat_s(szTemp, _T("\\Debugging Tools for Windows (x64)\\dbghelp.dll"));
+          wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows (x64)\\dbghelp.dll"));
           // now check if the file exists:
-          if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
+          if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
-            m_hDbhHelp = LoadLibrary(szTemp);
+            m_hDbhHelp = LoadLibraryW(szTemp);
           }
         }
 #elif _M_IA64
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_T("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
-          _tcscat_s(szTemp, _T("\\Debugging Tools for Windows (ia64)\\dbghelp.dll"));
+          wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows (ia64)\\dbghelp.dll"));
           // now check if the file exists:
-          if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
+          if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
-            m_hDbhHelp = LoadLibrary(szTemp);
+            m_hDbhHelp = LoadLibraryW(szTemp);
           }
         }
 #endif
         // If still not found, try the old directories...
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_T("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariableW(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
-          _tcscat_s(szTemp, _T("\\Debugging Tools for Windows\\dbghelp.dll"));
+          wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows\\dbghelp.dll"));
           // now check if the file exists:
-          if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
+          if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
-            m_hDbhHelp = LoadLibrary(szTemp);
+            m_hDbhHelp = LoadLibraryW(szTemp);
           }
         }
 #if defined _M_X64 || defined _M_IA64
         // Still not found? Then try to load the (old) 64-Bit version:
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_T("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariableW(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
-          _tcscat_s(szTemp, _T("\\Debugging Tools for Windows 64-Bit\\dbghelp.dll"));
-          if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
+          wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows 64-Bit\\dbghelp.dll"));
+          if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
-            m_hDbhHelp = LoadLibrary(szTemp);
+            m_hDbhHelp = LoadLibraryW(szTemp);
           }
         }
 #endif
       }
     }
     if (m_hDbhHelp == NULL)  // if not already loaded, try to load a default-one
-      m_hDbhHelp = LoadLibrary( _T("dbghelp.dll") );
+      m_hDbhHelp = LoadLibraryW( _WSTR("dbghelp.dll") );
     if (m_hDbhHelp == NULL)
       return FALSE;
     pSI = (tSI) GetProcAddress(m_hDbhHelp, "SymInitialize" );
@@ -746,7 +752,7 @@ class StackWalkerInternal
     typedef BOOL (__stdcall *tM32N)(HANDLE hSnapshot, LPMODULEENTRY32 lpme);
 
     // try both dlls...
-    const TCHAR *dllname[] = { _T("kernel32.dll"), _T("tlhelp32.dll") };
+    const WCHAR *dllname[] = { _WSTR("kernel32.dll"), _WSTR("tlhelp32.dll") };
     HINSTANCE hToolhelp = NULL;
     tCT32S pCT32S = NULL;
     tM32F pM32F = NULL;
@@ -760,7 +766,7 @@ class StackWalkerInternal
 
     for (i = 0; i<(sizeof(dllname) / sizeof(dllname[0])); i++ )
     {
-      hToolhelp = LoadLibrary( dllname[i] );
+      hToolhelp = LoadLibraryW( dllname[i] );
       if (hToolhelp == NULL)
         continue;
       pCT32S = (tCT32S) GetProcAddress(hToolhelp, "CreateToolhelp32Snapshot");
@@ -831,7 +837,7 @@ class StackWalkerInternal
     const SIZE_T TTBUFLEN = 8096;
     int cnt = 0;
 
-    hPsapi = LoadLibrary( _T("psapi.dll") );
+    hPsapi = LoadLibraryW( _WSTR("psapi.dll") );
     if (hPsapi == NULL)
       return FALSE;
 
@@ -854,13 +860,13 @@ class StackWalkerInternal
 
     if ( ! pEPM( hProcess, hMods, TTBUFLEN, &cbNeeded ) )
     {
-      //_ftprintf(fLogFile, _T("%lu: EPM failed, GetLastError = %lu\n"), g_dwShowCount, gle );
+      //_ftprintf(fLogFile, _WSTR("%lu: EPM failed, GetLastError = %lu\n"), g_dwShowCount, gle );
       goto cleanup;
     }
 
     if ( cbNeeded > TTBUFLEN )
     {
-      //_ftprintf(fLogFile, _T("%lu: More than %lu module handles. Huh?\n"), g_dwShowCount, lenof( hMods ) );
+      //_ftprintf(fLogFile, _WSTR("%lu: More than %lu module handles. Huh?\n"), g_dwShowCount, lenof( hMods ) );
       goto cleanup;
     }
 
@@ -919,8 +925,8 @@ class StackWalkerInternal
             if (GetFileVersionInfoA(szImg, dwHandle, dwSize, vData) != 0)
             {
               UINT len;
-              TCHAR szSubBlock[] = _T("\\");
-              if (VerQueryValue(vData, szSubBlock, (LPVOID*) &fInfo, &len) == 0)
+              WCHAR szSubBlock[] = _WSTR("\\");
+              if (VerQueryValueW(vData, szSubBlock, (LPVOID*) &fInfo, &len) == 0)
                 fInfo = NULL;
               else
               {

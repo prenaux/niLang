@@ -70,7 +70,14 @@ function SomeCode(int x) {
 
 
 Text below is to make sure we have a scrollbar Text below is to make sure we have a scrollbar Text below is to make sure we have a scrollbar Text below is to make sure we have a scrollbar Text below is to make sure we have a scrollbar Text below is to make sure we have a scrollbar
-        ]]>
+
+--- Simplified Chinese (see PR#9)
+
+接上部子出技自人沒相
+
+真口許人用專似難利演將一得之很輪，爭會投市興詩生關部春幾腳他，原充另是的試當般那。少的何面不金不知德孩故舉格人的道大比高要顯明。
+
+可頭升。樣望覺麼散代我陸的成不。教性雖成而能輕破需熱在……養坡大了了良親手，夫生加心利如地的受過雨可樣導本小品內天海。]]>
     </EditBox>
   </Canvas>
 </Canvas>

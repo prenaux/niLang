@@ -38,14 +38,16 @@ function OnSinkAttached(w,a,b) {
 
   local formId = w.id
   local logId = mListBox.id
-  ::console.registerNS("Console")
-  ::console.registerCommand(
-    "Console","Clear","Clear the console",
-    function(args) : (formId, logId) {
-      local wForm = ::gUIContext.root_widget.FindWidget(formId)
-      local wLog = wForm.FindWidget(logId)
-      wLog.ClearItems()
-    })
+  ::console.registerNS("Terminal", {
+    Clear = {
+      _desc = "Clear the console",
+      _func = function(args) : (formId, logId) {
+        local wForm = ::gUIContext.root_widget.FindWidget(formId)
+        local wLog = wForm.FindWidget(logId)
+        wLog.ClearItems()
+      }
+    }
+  }, true)
 
   w.Place(w.rect, ::eWidgetDockStyle.SnapTopRight, ::Vec4(5,5,5,5));
 }

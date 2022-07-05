@@ -501,6 +501,33 @@ static int base_sleepMs(HSQUIRRELVM v)
   return 0;
 }
 
+static int base_sleepSecsCoarse(HSQUIRRELVM v)
+{
+  ni::tF64 secs;
+  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
+    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  ni::SleepSecsCoarse(secs);
+  return 0;
+}
+
+static int base_sleepSecsSpin(HSQUIRRELVM v)
+{
+  ni::tF64 secs;
+  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
+    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  ni::SleepSecsSpin(secs);
+  return 0;
+}
+
+static int base_sleepSecs(HSQUIRRELVM v)
+{
+  ni::tF64 secs;
+  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
+    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  ni::SleepSecs(secs);
+  return 0;
+}
+
 static int base_EnumToString(HSQUIRRELVM v)
 {
   const tU32 top = sq_gettop(v);
@@ -2492,6 +2519,12 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("Clock"), base_clockSecs, -1, _A("t")},
   {_A("sleepms"), base_sleepMs, 2, _A("tn")},
   {_A("SleepMs"), base_sleepMs, 2, _A("tn")},
+  {_A("sleepsecs"), base_sleepSecs, 2, _A("tn")},
+  {_A("SleepSecs"), base_sleepSecs, 2, _A("tn")},
+  {_A("sleepsecscoarse"), base_sleepSecsCoarse, 2, _A("tn")},
+  {_A("SleepSecsCoarse"), base_sleepSecsCoarse, 2, _A("tn")},
+  {_A("sleepsecsspin"), base_sleepSecsSpin, 2, _A("tn")},
+  {_A("SleepSecsSpin"), base_sleepSecsSpin, 2, _A("tn")},
   {_A("EnumToString"), base_EnumToString, -2, _A(".n")},
   {_A("StringToEnum"), base_StringToEnum, -2, _A(".s")},
   {_A("format"),string_format,-2,_A(".s")},

@@ -4,46 +4,6 @@
 
 struct FAccurateSleep {};
 
-//
-// Inspired by https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
-//
-
-void SleepOs(ni::tF64 aSeconds) {
-  ni::SleepMs(aSeconds * 1000.0);
-}
-
-__forceinline void SleepSpin(const ni::tF64 aSeconds) {
-  // spin lock
-  ni::tF64 spinStart = ni::TimerInSeconds();
-  while ((ni::TimerInSeconds() - spinStart) < aSeconds) {
-  }
-}
-
-void SleepPrecise(ni::tF64 aSeconds) {
-  static ni::tF64 estimate = 5e-3;
-  static ni::tF64 mean = 5e-3;
-  static ni::tF64 m2 = 0;
-  static ni::tU64 count = 1;
-
-  while (aSeconds > estimate) {
-    const ni::tF64 start = ni::TimerInSeconds();
-    ni::SleepMs(1);
-    const ni::tF64 end = ni::TimerInSeconds();
-
-    const ni::tF64 observed = (end - start);
-    aSeconds -= observed;
-
-    ++count;
-    const ni::tF64 delta = observed - mean;
-    mean += delta / count;
-    m2   += delta * (observed - mean);
-    const ni::tF64 stddev = sqrt(m2 / (count - 1));
-    estimate = mean + stddev;
-  }
-
-  SleepSpin(aSeconds);
-}
-
 struct sSleepData {
   ni::tU32 sampleSize = 0; // how many times we tried to sleep
   ni::tF64 target  = 0; // how much we aimed to sleep for
@@ -102,9 +62,9 @@ sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
   {
-    sSleepData data = _MeasureAccuracy(SleepOs, 1.0/60.0, 60);
+    sSleepData data = _MeasureAccuracy(ni::SleepSecsCoarse, 1.0/60.0, 60);
     ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-    dt->SetString("functionName","SleepOs");
+    dt->SetString("functionName","SleepSecsCoarse");
     niDebugFmt(("... SleepOs: %s",
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
@@ -114,9 +74,9 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
   }
 
   {
-    sSleepData data = _MeasureAccuracy(SleepSpin, 1.0/60.0, 60);
+    sSleepData data = _MeasureAccuracy(ni::SleepSecsSpin, 1.0/60.0, 60);
     ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-    dt->SetString("functionName","SleepSpin");
+    dt->SetString("functionName","SleepSecsSpin");
     niDebugFmt(("... SleepSpin: %s",
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
@@ -126,9 +86,9 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
   }
 
   {
-    sSleepData data = _MeasureAccuracy(SleepPrecise, 1.0/60.0, 60);
+    sSleepData data = _MeasureAccuracy(ni::SleepSecs, 1.0/60.0, 60);
     ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-    dt->SetString("functionName","SleepPrecise");
+    dt->SetString("functionName","SleepSecs (Precise)");
     niDebugFmt(("... SleepPrecise: %s",
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),

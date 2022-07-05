@@ -3,12 +3,27 @@
 
 #include "Lang.h"
 
+#if !defined __JSCC__
+#define niUseStdHighResolutionClock
+#endif
+
+#if defined niUseStdHighResolutionClock
+
+#include <chrono>
+
+namespace ni {
+niExportFunc(tF64) TimerInSeconds() {
+  static const auto _start = std::chrono::high_resolution_clock::now();
+	return (std::chrono::high_resolution_clock::now() - _start).count() / 1e9;
+}
+}
+
 //--------------------------------------------------------------------------------------------
 //
 //  JSCC
 //
 //--------------------------------------------------------------------------------------------
-#if defined __JSCC__
+#elif defined __JSCC__
 #include <emscripten/emscripten.h>
 
 namespace ni {

@@ -769,9 +769,9 @@ int AppNativeMainLoop(AppContext* apContext) {
       break;
     const tF64 frameTime = ni::TimerInSeconds() - frameStartTime;
     if (apContext->_config.maxFPS != 0) {
-      const tF64 minFrameTime = (1.0/(tF64)apContext->_config.maxFPS);
-      if (frameTime < minFrameTime) {
-        ni::SleepMs((tU32)((minFrameTime - frameTime) * 1000.0));
+      const tF64 sleepSecs = (1.0/(tF64)apContext->_config.maxFPS) - frameTime;
+      if (sleepSecs > 0.0) {
+        ni::SleepSecs(sleepSecs);
       }
     }
   }

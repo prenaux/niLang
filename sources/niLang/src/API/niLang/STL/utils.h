@@ -6,11 +6,10 @@
 
 #include "vector.h"
 #include "pair.h"
-#include "unique_ptr.h"
+#include "memory.h"
 #include "EASTL/utility.h"
 #include "EASTL/algorithm.h"
 #include "EASTL/functional.h"
-#include "EASTL/memory.h"
 #include "EASTL/numeric.h"
 
 namespace eastl {

@@ -55,7 +55,7 @@ namespace ni {
 
 //! Generally coarse and imprecise (up to 15ms variation) but uses the least
 //! cpu. Use ni::SleepSecsPrecise if you need a precise sleep.
-void SleepSecsCoarse(ni::tF64 aSeconds) {
+__forceinline void SleepSecsCoarse(ni::tF64 aSeconds) {
   ni::SleepMs(aSeconds * 1000.0);
 }
 

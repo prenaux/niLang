@@ -28,7 +28,7 @@ TEST_FIXTURE(ASTL_expected,base) {
   {
     auto r = doSucceed();
     CHECK_EQUAL(true,!!r);
-    CHECK_EQUAL(_ASTR("OK"), *r);
+    CHECK_EQUAL(_ASTR("OK"), r.value());
   }
   {
     auto r = doFail();

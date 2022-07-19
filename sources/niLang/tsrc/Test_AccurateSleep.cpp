@@ -69,8 +69,8 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
                   ni::eFalse)));
-    // expect ~5ms error max
-    CHECK_CLOSE(0.0, data.meanerr, 5.0 / 1000.0f);
+    // expect +/- 5ms error max
+    CHECK_CLOSE(0.0, data.meanerr, 5e-3);
   }
 
   {
@@ -81,8 +81,8 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
                   ni::eFalse)));
-    // expect ~1microsecond error max
-    CHECK_CLOSE(0.0, data.meanerr, 1.0 / 1000000.0f);
+    // expect +/- 2us error max
+    CHECK_CLOSE(0.0, data.meanerr, 2e-6);
   }
 
   {
@@ -93,7 +93,7 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
                   ni::eFalse)));
-    // expect ~10microsecond error max
-    CHECK_CLOSE(0.0, data.meanerr, 10.0 / 1000000.0f);
+    // expect +/- 20us error max
+    CHECK_CLOSE(0.0, data.meanerr, 2e-5);
   }
 }

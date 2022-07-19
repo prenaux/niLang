@@ -14,9 +14,9 @@
 -->
 
 This PR fixes:
-*
-*
-*
+* RN:
+* RN:
+* RN:
 
 ## Description, Motivation and Context
 <!---
@@ -25,8 +25,8 @@ This PR fixes:
 - Link to related issues/PRs: Fixes #0000 / WiP #0000 / Closes #0000
 -->
 
-Link to issue: Fixes ?
-Link to reference doc: ?
+* Link to issue: Fixes ?
+* Link to reference doc: ?
 
 ## How Has This Been Tested?
 <!---

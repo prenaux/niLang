@@ -20,18 +20,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Cache Ham & Cargo
+      - name: Cache Ham
         uses: actions/cache@v3
         with:
           path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            ~/.rustup
-            ~/.avm
+            ~/_ham/obj/
             ~/work/niLang/ham
-          key: cache-v2-cargo-ham-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-niLang-ham-b2ddd60
 
       - name: Install Ubuntu packages
         run: |

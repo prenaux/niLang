@@ -1,33 +1,44 @@
-<!--- Provide a general summary of your changes in the Title above -->
-<!--- Include your name with main subject of your change.
-<!--- Example: Pierre: niScript: Added linter. -->
+<!---
+- Provide a general summary of your changes in the Title above
+- Include your name with main subject of your change.
+- Example: "Pierre: module-name: Added amazing new feature."
+-->
 
 ## Formal Notes
-<!--- NOTE: Release notes are PUBLIC and go into the project's release notes. Other notes are internal. -->
-<!--- NOTE: Do NOT mention private/internal info in public RN. -->
-<!--- Release note format: RN: MODULE NAME: Adds support for FooFeature. #ISSUE NUMBER -->
-<!--- No-release note format: NoRN: Improves or fixes FooThing. -->
-<!--- Use RN or NoRN for all the entires. -->
-This PR fixes: <!--- (ex: "RN: niScript: Added a basic linter.") -->
+<!---
+- NOTE: Release notes are PUBLIC and go into the project's release notes. Other notes are internal.
+- NOTE: Do NOT mention private/internal info in public RN.
+- Release note format: "RN: module-name: Adds support for FooFeature."
+- No-release note format: "NoRN: module-name: Improves or fixes FooThing."
+- Use RN or NoRN for all the entires.
+-->
+
+This PR fixes:
 *
 *
 *
 
-<!-- A more detailed description of what's going on. -->
 ## Description, Motivation and Context
-<!--- Why is this change required? What problem does it solve? -->
-<!--- Link to related issues/PRs: Fixes #0000 / WiP #0000 / Closes #0000 -->
+<!---
+- A more detailed description of what's going on.
+- Why is this change required? What problem does it solve?
+- Link to related issues/PRs: Fixes #0000 / WiP #0000 / Closes #0000
+-->
+
 Link to issue: Fixes ?
 Link to reference doc: ?
 
 ## How Has This Been Tested?
-<!--- Please describe in detail how you tested your changes. -->
-<!--- Include *full* CLI commands -->
-<!--- Include details of your testing environment, and the tests you ran to -->
-<!--- see how your change affects other areas of the code, etc. -->
+<!---
+- Please describe in detail how you tested your changes.
+- Include *full* CLI commands
+- Include details of your testing environment, and the tests you ran to
+- see how your change affects other areas of the code, etc.
+-->
+
 Command line to run all the tests that I run locally:
 ```
-ham Run_Test_niScript_tu_linter
+ham Run_ci
 ```
 
 <!---
@@ -41,12 +52,17 @@ ham Run_Test_niScript_tu_linter
 -->
 
 ## Types of changes
-<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that cause existing functionality to change)
-- [ ] Documentation (code docs, comments, or changes to the doc systems)
-- [ ] Testing/Build (test coverage or the test/build subsystems themselves)
-- [ ] Packaging (adds examples or modifies a release package)
+<!---
+- What types of changes does your code introduce? Put an `x` in all the boxes that apply:
+-->
 
-<!--- This template is stored in .github/PULL_REQUEST_TEMPLATE.md -->
+* [ ] Bug fix (non-breaking change which fixes an issue)
+* [ ] New feature (non-breaking change which adds functionality)
+* [ ] Breaking change (fix or feature that cause existing functionality to change)
+* [ ] Documentation (code docs, comments, or changes to the doc systems)
+* [ ] Testing/Build (test coverage or the test/build subsystems themselves)
+* [ ] Packaging (adds examples or modifies a release package)
+
+<!---
+- This template is stored in .github/PULL_REQUEST_TEMPLATE.md
+-->

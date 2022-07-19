@@ -13,11 +13,11 @@ struct sError {
 
 typedef astl::expected<cString,sError> tExpectedString;
 
-astl::expected<cString,sError> doSucceed() {
+static astl::expected<cString,sError> doSucceed() {
   return "OK";
 }
 
-astl::expected<cString,sError> doFail() {
+static astl::expected<cString,sError> doFail() {
   return astl::make_unexpected(sError { "Failed" });
 }
 

@@ -81,8 +81,8 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy) {
                 ni::DataTableToXML(
                   ni::ToDataTable(dt,data),
                   ni::eFalse)));
-    // expect +/- 2us error max
-    CHECK_CLOSE(0.0, data.meanerr, 2e-6);
+    // expect +/- 10us error max
+    CHECK_CLOSE(0.0, data.meanerr, 1e-5);
   }
 
   {

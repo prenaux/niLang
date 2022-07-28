@@ -384,33 +384,41 @@ class cAABB
   //! Get triangles indices.
   //! \remark The array needs to have room for 36 elements.
   static void GetTrianglesIndices(tU32* pIndices, bool bCW) {
+    //
+    // Note: The MSVC 19 optimizer used to deadlockdeadlocks when compiling
+    // the previous version of GetTrianglesIndices that was using *pIndices++
+    // instead of the explicit array positions.
+    //
+    // See: https://godbolt.org/z/o8rWsWsbb &
+    // https://gist.github.com/prenaux/0fd3157abbf15e4cad6db733d0516bac
+    //
     if (bCW) {
-      *pIndices++ = 5; *pIndices++ = 6; *pIndices++ = 1;
-      *pIndices++ = 6; *pIndices++ = 2; *pIndices++ = 1;
-      *pIndices++ = 7; *pIndices++ = 4; *pIndices++ = 3;
-      *pIndices++ = 3; *pIndices++ = 4; *pIndices++ = 0;
-      *pIndices++ = 7; *pIndices++ = 6; *pIndices++ = 4;
-      *pIndices++ = 6; *pIndices++ = 5; *pIndices++ = 4;
-      *pIndices++ = 0; *pIndices++ = 1; *pIndices++ = 3;
-      *pIndices++ = 1; *pIndices++ = 2; *pIndices++ = 3;
-      *pIndices++ = 6; *pIndices++ = 7; *pIndices++ = 2;
-      *pIndices++ = 7; *pIndices++ = 3; *pIndices++ = 2;
-      *pIndices++ = 4; *pIndices++ = 5; *pIndices++ = 0;
-      *pIndices++ = 5; *pIndices++ = 1; *pIndices++ = 0;
+      pIndices[0] = 5; pIndices[1] = 6; pIndices[2] = 1;
+      pIndices[3] = 6; pIndices[4] = 2; pIndices[5] = 1;
+      pIndices[6] = 7; pIndices[7] = 4; pIndices[8] = 3;
+      pIndices[9] = 3; pIndices[10] = 4; pIndices[11] = 0;
+      pIndices[12] = 7; pIndices[13] = 6; pIndices[14] = 4;
+      pIndices[15] = 6; pIndices[16] = 5; pIndices[17] = 4;
+      pIndices[18] = 0; pIndices[19] = 1; pIndices[20] = 3;
+      pIndices[21] = 1; pIndices[22] = 2; pIndices[23] = 3;
+      pIndices[24] = 6; pIndices[25] = 7; pIndices[26] = 2;
+      pIndices[27] = 7; pIndices[28] = 3; pIndices[29] = 2;
+      pIndices[30] = 4; pIndices[31] = 5; pIndices[32] = 0;
+      pIndices[33] = 5; pIndices[34] = 1; pIndices[35] = 0;
     }
     else {
-      *pIndices++ = 5; *pIndices++ = 1; *pIndices++ = 6;
-      *pIndices++ = 6; *pIndices++ = 1; *pIndices++ = 2;
-      *pIndices++ = 7; *pIndices++ = 3; *pIndices++ = 4;
-      *pIndices++ = 3; *pIndices++ = 0; *pIndices++ = 4;
-      *pIndices++ = 7; *pIndices++ = 4; *pIndices++ = 6;
-      *pIndices++ = 6; *pIndices++ = 4; *pIndices++ = 5;
-      *pIndices++ = 0; *pIndices++ = 3; *pIndices++ = 1;
-      *pIndices++ = 1; *pIndices++ = 3; *pIndices++ = 2;
-      *pIndices++ = 6; *pIndices++ = 2; *pIndices++ = 7;
-      *pIndices++ = 7; *pIndices++ = 2; *pIndices++ = 3;
-      *pIndices++ = 4; *pIndices++ = 0; *pIndices++ = 5;
-      *pIndices++ = 5; *pIndices++ = 0; *pIndices++ = 1;
+      pIndices[0] = 5; pIndices[1] = 1; pIndices[2] = 6;
+      pIndices[3] = 6; pIndices[4] = 1; pIndices[5] = 2;
+      pIndices[6] = 7; pIndices[7] = 3; pIndices[8] = 4;
+      pIndices[9] = 3; pIndices[10] = 0; pIndices[11] = 4;
+      pIndices[12] = 7; pIndices[13] = 4; pIndices[14] = 6;
+      pIndices[15] = 6; pIndices[16] = 4; pIndices[17] = 5;
+      pIndices[18] = 0; pIndices[19] = 3; pIndices[20] = 1;
+      pIndices[21] = 1; pIndices[22] = 3; pIndices[23] = 2;
+      pIndices[24] = 6; pIndices[25] = 2; pIndices[26] = 7;
+      pIndices[27] = 7; pIndices[28] = 2; pIndices[29] = 3;
+      pIndices[30] = 4; pIndices[31] = 0; pIndices[32] = 5;
+      pIndices[33] = 5; pIndices[34] = 0; pIndices[35] = 1;
     }
   }
 

@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define STRICT
+#define DELAYIMP_INSECURE_WRITABLE_HOOKS
 #include <windows.h>
 #include <delayimp.h>
 #include "../../StringDef.h"

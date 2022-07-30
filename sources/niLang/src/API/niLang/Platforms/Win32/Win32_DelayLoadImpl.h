@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define STRICT
+#define DELAYIMP_INSECURE_WRITABLE_HOOKS
 #include <windows.h>
 #include <delayimp.h>
 #include "../../StringDef.h"
@@ -40,10 +41,12 @@ static FARPROC WINAPI delayLoadHook(unsigned dliNotify, PDelayLoadInfo  pdli) {
   return 0;
 }
 
-struct _InitializeDelayLoad {
-  _InitializeDelayLoad() {
-    __pfnDliNotifyHook2 = delayLoadHook;
-    __pfnDliFailureHook2 = delayLoadHook;
-  }
-};
-static _InitializeDelayLoad __initializeDelayLoad;
+// assign hook functions
+#if !defined(DELAYIMP_INSECURE_WRITABLE_HOOKS)
+const
+#endif
+PfnDliHook __pfnDliNotifyHook2 = delayLoadHook;
+#if !defined(DELAYIMP_INSECURE_WRITABLE_HOOKS)
+const
+#endif
+PfnDliHook __pfnDliFailureHook2 = delayLoadHook;

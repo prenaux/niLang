@@ -12,6 +12,10 @@
 #include <niLang/Utils/UnitSnap.h>
 #include "niUI_HString.h"
 
+#ifdef niWindows
+#include <niLang/Platforms/Win32/Win32_DelayLoadImpl.h>
+#endif
+
 static void _ApplyViewport(iGraphicsContext* apContext,
                            const sRectf& aViewport,
                            const sRecti& aScissor,

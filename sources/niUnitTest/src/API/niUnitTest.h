@@ -474,7 +474,7 @@ struct UnitTestMemDelta {
     UnitTest::CheckNotEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")") \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_CLOSE(expected, actual, tolerance)                        \
   niTry() {                                                             \
@@ -523,6 +523,53 @@ struct UnitTestMemDelta {
 #define CHECK_LOGWARNING_BEGIN()  testResults_.PushLogWarnings();
 #define CHECK_LOGWARNING_END(EXPECTED,DELTA)  CHECK_EQUAL(EXPECTED,testResults_.GetLogWarningsDelta());
 #define CHECK_LOGWARNING_END_CLOSE(EXPECTED,DELTA)  CHECK_CLOSE(EXPECTED,testResults_.GetLogWarningsDelta(),DELTA);
+
+#define CHECK_PRED(expected, actual, name, pred)                        \
+  niTry() {                                                             \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, #name, pred); \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_PRED(" #expected ", " #actual ", " #name ")") \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_PRED(" #expected ", " #actual ", " #name ")")
+
+#define CHECK_LE(expected, actual)                                      \
+  niTry() {                                                             \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
+                        "<=", [&](auto aLeft, auto aRight) {            \
+                          return aLeft <= aRight;                       \
+                        });                                             \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_LE(" #expected ", " #actual ")") \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LE(" #expected ", " #actual ")")
+
+#define CHECK_LT(expected, actual)                                      \
+  niTry() {                                                             \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
+                        "<", [&](auto aLeft, auto aRight) {             \
+                          return aLeft < aRight;                        \
+                        });                                             \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_LT(" #expected ", " #actual ")") \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LT(" #expected ", " #actual ")")
+
+#define CHECK_GE(expected, actual)                                      \
+  niTry() {                                                             \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FIGE__, __LINE__, \
+                        ">=", [&](auto aLeft, auto aRight) {            \
+                          return aLeft >= aRight;                       \
+                        });                                             \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_GE(" #expected ", " #actual ")") \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GE(" #expected ", " #actual ")")
+
+#define CHECK_GT(expected, actual)                                      \
+  niTry() {                                                             \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
+                        ">", [&](auto aLeft, auto aRight) {             \
+                          return aLeft > aRight;                        \
+                        });                                             \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_GT(" #expected ", " #actual ")") \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GT(" #expected ", " #actual ")")
 
 //--------------------------------------------------------------------------------------------
 //
@@ -858,7 +905,6 @@ bool Check(Value const value)
   return !!value; // doing double negative to avoid silly VS warnings
 }
 
-
 template< typename Expected, typename Actual >
 void CheckEqual(TestResults& results, Expected const expected, Actual const actual,
                 char const* const testName, char const* const filename, int const line)
@@ -945,12 +991,6 @@ void CheckArrayEqual(TestResults& results, Expected const expected, Actual const
 }
 
 template< typename Expected, typename Actual, typename Tolerance >
-bool CheckClose2(Expected const expected, Actual const actual, Tolerance const tolerance)
-{
-  return ((actual >= expected - tolerance) && (actual <= expected + tolerance));
-}
-
-template< typename Expected, typename Actual, typename Tolerance >
 void CheckArrayClose(TestResults& results, Expected const expected, Actual const actual,
                      int const count, Tolerance const tolerance, char const* const testName,
                      char const* const filename, int const line)
@@ -971,6 +1011,26 @@ void CheckArrayClose(TestResults& results, Expected const expected, Actual const
     stream << "]";
     results.OnTestFailure(filename, line, testName, stream.GetText());
   }
+}
+
+template< typename Expected, typename Actual, typename Pred >
+void CheckPred(TestResults& results, Expected const expected, Actual const actual,
+               char const* const testName, char const* const filename, int const line,
+               char const* const predName, Pred&& aPred)
+{
+#ifdef _MSC_VER
+  // warning C4389: '==' : signed/unsigned mismatch
+#pragma warning( disable : 4389 )
+#endif
+  if (!aPred(expected,actual))
+  {
+    UnitTest::MemoryOutStream stream;
+    stream << "Expected [" << expected << "] " << predName << " [" << actual << "]";
+    results.OnTestFailure(filename, line, testName, stream.GetText());
+  }
+#ifdef _MSC_VER
+#pragma warning( default : 4389 )
+#endif
 }
 
 }

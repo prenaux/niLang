@@ -70,10 +70,10 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
                 ni::eFalse)));
 #ifdef niWindows
   // expect 15ms error max
-  CHECK_CLOSE(0.0, data.meanerr, 15e-3);
+  CHECK_LE(data.meanerr, 15e-3);
 #else
   // expect 5ms error max
-  CHECK_CLOSE(0.0, data.meanerr, 5e-3);
+  CHECK_LE(data.meanerr, 5e-3);
 #endif
 }
 
@@ -86,7 +86,7 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
                 ni::ToDataTable(dt,data),
                 ni::eFalse)));
   // expect 10us error max
-  CHECK_CLOSE(0.0, data.meanerr, 1e-5);
+  CHECK_LE(data.meanerr, 1e-5);
 }
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {
@@ -98,5 +98,5 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {
                 ni::ToDataTable(dt,data),
                 ni::eFalse)));
   // expect 20us error max
-  CHECK_CLOSE(0.0, data.meanerr, 2e-5);
+  CHECK_LE(data.meanerr, 2e-5);
 }

@@ -10,10 +10,6 @@
  * @{
  */
 
-#ifdef niMSVC
-#include "../Platforms/Win32/Win32_DelayLoadImpl.h"
-#endif
-
 #ifndef _DEBUG
 
 #ifdef niConfig_MinModuleDefSize

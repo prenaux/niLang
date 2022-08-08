@@ -385,12 +385,13 @@ class cAABB
   //! \remark The array needs to have room for 36 elements.
   static void GetTrianglesIndices(tU32* pIndices, bool bCW) {
     //
-    // Note: The MSVC 19 optimizer used to deadlockdeadlocks when compiling
-    // the previous version of GetTrianglesIndices that was using *pIndices++
-    // instead of the explicit array positions.
+    // Note: The MSVC 19 optimizer deadlocked when compiling the previous
+    // version of GetTrianglesIndices that was using *pIndices++ instead of
+    // the explicit array positions.
     //
-    // See: https://godbolt.org/z/o8rWsWsbb &
-    // https://gist.github.com/prenaux/0fd3157abbf15e4cad6db733d0516bac
+    // See:
+    // - https://godbolt.org/z/o8rWsWsbb
+    // - https://gist.github.com/prenaux/0fd3157abbf15e4cad6db733d0516bac
     //
     if (bCW) {
       pIndices[0] = 5; pIndices[1] = 6; pIndices[2] = 1;

@@ -20,8 +20,8 @@ namespace ni {
  */
 
 #define SCRIPTCPP_HAMEXE "ham-rtcpp"
-#define SCRIPTCPP_COMPILE_PROPERTY "scriptcpp.compile"
-#define SCRIPTCPP_MODULE_TYPE_PROPERTY "scriptcpp.module_type"
+#define SCRIPTCPP_COMPILE_PROPERTY "niScriptCpp.Compile"
+#define SCRIPTCPP_MODULE_TYPE_PROPERTY "niScriptCpp.ModuleType"
 
 struct sScriptCppModuleCache {
   ni::tIntPtr hDLL = 0;

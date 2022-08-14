@@ -253,6 +253,9 @@ struct sScriptCppGuard
     return scriptCppObjectInstance.GetRawAndSetNull();                  \
   }
 
+#define SCRIPTCPP_EXPORT(CATEGORY,CLASS)  \
+  SCRIPTCPP_EXPORT_CLASS(CATEGORY,CLASS,CLASS)
+
 /**@}*/
 
 #endif // __SCRIPTCPPIMPL_H_4E213FAF_3F6C_4512_8C38_7699B7BF02A6__

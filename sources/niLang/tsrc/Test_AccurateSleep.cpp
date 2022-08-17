@@ -85,8 +85,8 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
               ni::DataTableToXML(
                 ni::ToDataTable(dt,data),
                 ni::eFalse)));
-  // expect 10us error max
-  CHECK_LE(data.meanerr, 1e-5);
+  // expect 15us error max
+  CHECK_LE(data.meanerr, 2e-5);
 }
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {

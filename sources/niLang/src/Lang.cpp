@@ -68,6 +68,7 @@ niExportFunc(void) ni_log_system_info_once() {
       }
     }
     str << "LOA: " << niLOA_Libs << AEOL;
+    str << "ASAN: " << EA_ASAN_ENABLED << AEOL;
 
 #if niMinFeatures(15)
     {

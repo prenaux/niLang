@@ -236,6 +236,8 @@ niExportFunc(int) ni_debug_assert(
       // always ignore after first print...
       if (alwaysignore) *alwaysignore = 1;
 
+      fmt.CatFormat("\nSTACK:\n");
+      ni_stack_get_current(fmt,NULL);
       niLog(Debug,fmt.Chars());
     }
     else {
@@ -264,6 +266,8 @@ niExportFunc(int) ni_debug_assert(
                    exp, file, line);
       }
 
+      fmt.CatFormat("\nSTACK:\n");
+      ni_stack_get_current(fmt,NULL);
       niLog(Debug,fmt.Chars());
 
       int ret = MessageBoxA(NULL, fmt.Chars(), "Assert.",

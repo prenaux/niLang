@@ -8,6 +8,7 @@ using namespace Platform;
 #include "Lang.h"
 #include "FileFd.h"
 #include "API/niLang/IOSProcess.h"
+#include "API/niLang/Utils/CrashReport.h"
 
 //--------------------------------------------------------------------------------------------
 //
@@ -58,6 +59,8 @@ niExportFunc(int) ni_debug_assert(
                  desc?_A(": "):_A(""),
                  desc?desc:_A(""),
                  desc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A(""));
+      fmt.CatFormat("\nSTACK:\n");
+      ni_stack_get_current(fmt,NULL);
       niPrintln(fmt.Chars());
       // always ignore after first print...
       if (alwaysignore) *alwaysignore = 1;

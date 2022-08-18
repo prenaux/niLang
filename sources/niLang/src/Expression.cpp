@@ -5899,24 +5899,27 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
       }
       case eMathExprTokenType_Function: {
         // Function token.
-        if ((aitTok+1) == avToks.end())
-        {
+        if (++aitTok == avToks.end()) {
           niError(niFmt(_A("Unexpected end of tokens when processing tokens of function '%s'."), token.strToken.Chars()));
           return NULL;
         }
 
-        if ((aitTok+1)->Type != eMathExprTokenType_OpenGroup)
-        {
+        // Expect OpenGroup
+        if (aitTok->Type != eMathExprTokenType_OpenGroup) {
           niError(niFmt(_A("OpenGroup expected after function '%s'."), token.strToken.Chars()));
           return NULL;
         }
-        aitTok += 2;
+
+        // skip 'OpenGroup'
+        if (++aitTok == avToks.end()) {
+          niError(niFmt(_A("Unexpected end of tokens when processing tokens of function '%s' after OpenGroup."), token.strToken.Chars()));
+          return NULL;
+        }
 
         ptrOp = _CreateOperation(token.strToken.Chars(),token.Type);
         niCheck(ptrOp.IsOK(),NULL);
 
         tU32 nCurrentOperand = 0;
-
         if (ptrOp->IsVarNumOperands()) {
 
           tU32 i = 0;

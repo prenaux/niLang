@@ -788,6 +788,15 @@ class cString
   const achar* Set(const iToString* aVal);
   const achar* Set(const tUUID& aUUID);
 
+#if defined niTypeIntIsOtherType
+  const achar* Set(signed int v) { return Set((tI64)v); }
+  const achar* Set(unsigned int v) { return Set((tU64)v); }
+#endif
+#if defined niTypeIntPtrIsOtherType
+  const achar* Set(tIntPtr v) { return Set((tI64)v); }
+  const achar* Set(tUIntPtr v) { return Set((tU64)v); }
+#endif
+
 #if niMinFeatures(20)
   const achar* SetDouble(
       tF64 dValue,
@@ -864,6 +873,27 @@ class cString
   cString& operator << (const iToString* obj);
   cString& operator << (const cString& str) { *this += str; return *this; }
   cString& operator << (const tUUID& uuidVal);
+
+#if defined niTypeIntIsOtherType
+  cString& operator << (signed int v) {
+    this->append(cString().Set((tI64)v));
+    return *this;
+  }
+  cString& operator << (unsigned int v) {
+    this->append(cString().Set((tU64)v));
+    return *this;
+  }
+#endif
+#if defined niTypeIntPtrIsOtherType
+  cString& operator << (tIntPtr v) {
+    this->append(cString().Set((tI64)v));
+    return *this;
+  }
+  cString& operator << (tUIntPtr v) {
+    this->append(cString().Set((tU64)v));
+    return *this;
+  }
+#endif
 
   template<typename TF>
   cString& operator << (const sVec2<TF>& obj) { *this += cString(obj); return *this; }

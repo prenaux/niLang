@@ -631,10 +631,6 @@ class MemoryOutStream
   char const* GetText() const;
 
   MemoryOutStream& operator << (char const* txt);
-#if defined niTypeIntIsOtherType
-  MemoryOutStream& operator << (signed int const n);
-  MemoryOutStream& operator << (unsigned int const n);
-#endif
   MemoryOutStream& operator << (void const* p);
   MemoryOutStream& operator << (ni::tI8 const n);
   MemoryOutStream& operator << (ni::tU8 const n);
@@ -657,6 +653,10 @@ class MemoryOutStream
   MemoryOutStream& operator << (const ni::sVec4i& v);
   MemoryOutStream& operator << (const ni::sMatrixf& v);
   MemoryOutStream& operator << (const ni::Var& var);
+#if defined niTypeIntIsOtherType
+  MemoryOutStream& operator << (signed int const n);
+  MemoryOutStream& operator << (unsigned int const n);
+#endif
 #if defined niTypeIntPtrIsOtherType
   MemoryOutStream& operator << (ni::tIntPtr const n);
   MemoryOutStream& operator << (ni::tUIntPtr const n);

@@ -1207,3 +1207,47 @@ TEST_FIXTURE(niCore_HString,Basics) {
   CHECK_EQUAL((tI64)hspB.ptr(),(tI64)hspB1.ptr());
   CHECK_EQUAL(_ASTR("B"),_ASTR(niHStr(hspB)));
 }
+
+///////////////////////////////////////////////
+// Test the compiler `#ifdef niTypeIntIsOtherType`
+TEST_FIXTURE(niCore_String,IntIsOtherType) {
+  ni::cString r;
+  r << (int)-123;
+  r << ",";
+  r << (unsigned)789;
+  r << ",";
+  r << (ni::tInt)-123;
+  r << ",";
+  r << (ni::tUInt)789;
+  r << ",";
+  r << -123;
+  r << ",";
+  r << 789;
+  CHECK_EQUAL(_ASTR("-123,789,-123,789,-123,789"), r);
+
+  CHECK_EQUAL(_ASTR("-123"), r.Set((int)-123));
+  CHECK_EQUAL(_ASTR("789"), r.Set((unsigned)789));
+  CHECK_EQUAL(_ASTR("-123"), r.Set((ni::tInt)-123));
+  CHECK_EQUAL(_ASTR("789"), r.Set((ni::tUInt)789));
+  CHECK_EQUAL(_ASTR("-123"), r.Set(-123));
+  CHECK_EQUAL(_ASTR("789"), r.Set(789));
+}
+
+///////////////////////////////////////////////
+// Test the compiler `#ifdef niTypeIntPtrIsOtherType`
+TEST_FIXTURE(niCore_String,IntPtrIsOtherType) {
+  ni::cString r;
+  r << (ni::tIntPtr)-321;
+  r << ",";
+  r << (ni::tUIntPtr)987;
+  r << ",";
+  r << (intptr_t)-321;
+  r << ",";
+  r << (uintptr_t)987;
+  CHECK_EQUAL(_ASTR("-321,987,-321,987"), r);
+
+  CHECK_EQUAL(_ASTR("-321"), r.Set((ni::tIntPtr)-321));
+  CHECK_EQUAL(_ASTR("987"), r.Set((ni::tUIntPtr)987));
+  CHECK_EQUAL(_ASTR("-321"), r.Set((intptr_t)-321));
+  CHECK_EQUAL(_ASTR("987"), r.Set((uintptr_t)987));
+}

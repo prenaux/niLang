@@ -46,7 +46,7 @@ bool Check(ni::tI32 aStart, ni::tI32 aEnd,
   for (ni::tI32 i = aStart; i <= aEnd; ++i) {
     T a = aGenerator(i);
     if (!aPredicate(a)) {
-      UnitTest::MemoryOutStream stream;
+      ni::cString stream;
       stream << "Domain::Check[" << aStart << "," << aEnd << "] at [" << i << "] predicate failed with [" << a << "]";
       results.OnTestFailure(filename, line, testName, stream.GetText());
       return false;
@@ -64,7 +64,7 @@ bool Check2(ni::tI32 aStart, ni::tI32 aEnd,
     T a = aGenerator(i);
     T b = aGenerator(i);
     if (!aPredicate(a,b)) {
-      UnitTest::MemoryOutStream stream;
+      ni::cString stream;
       stream << "Domain::Check2[" << aStart << "," << aEnd << "] at [" << i << "] predicate failed with [" << a << "] & [" << b << "]";
       results.OnTestFailure(filename, line, testName, stream.GetText());
       return false;

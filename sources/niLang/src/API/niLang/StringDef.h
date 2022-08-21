@@ -7,6 +7,7 @@
 #include "Var.h"
 #include "Utils/CollectionImpl.h"
 
+namespace ni {
 /** \addtogroup niLang
  * @{
  */
@@ -19,7 +20,6 @@
 //  String format
 //
 //--------------------------------------------------------------------------------------------
-namespace ni {
 
 #ifdef ni64
 niCAssert(sizeof(cString) == 16);
@@ -31,14 +31,11 @@ niCAssert(sizeof(cString) == 12);
 #define _ASTR(X)    ni::cString(X)
 #define _ASZ(X)     ni::cString(X).Chars()
 
-}
-
 //--------------------------------------------------------------------------------------------
 //
 //  String utilities
 //
 //--------------------------------------------------------------------------------------------
-namespace ni {
 
 static inline const achar* ToChars(const achar* v) {
   return v;
@@ -138,14 +135,11 @@ niExportFuncCPP(tU32) StringSplitCsvFields(const cString& aToSplit,
                                            const tU32 aQuote,
                                            astl::vector<cString>* apOut);
 
-}
-
 //--------------------------------------------------------------------------------------------
 //
 //  String vararg format
 //
 //--------------------------------------------------------------------------------------------
-namespace ni {
 
 niExportFuncCPP(cString&) StringCatFormatEx(cString& o, iExpressionContext* apExprCtx, const achar* aaszFormat, const Var** apArgs, tU32 anNumArgs);
 
@@ -231,14 +225,11 @@ static inline cString& StringCatFormat(cString& o,
   return StringCatFormatEx(o,apExprCtx,aaszFormat,args,niCountOf(args));
 }
 
-}
-
 //--------------------------------------------------------------------------------------------
 //
 //  String var dependant implementation
 //
 //--------------------------------------------------------------------------------------------
-namespace ni {
 
 ///////////////////////////////////////////////
 inline const achar* cString::Set(tF32 dValue) {
@@ -343,10 +334,124 @@ inline const achar* cString::CatFormat(
                          a17, a18, a19, a20, a21, a22, a23, a24).Chars();
 }
 
+//--------------------------------------------------------------------------------------------
+//
+//  String concat operations
+//
+//--------------------------------------------------------------------------------------------
+
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec2f& v) {
+  s << "Vec2f(";
+  s.CatFormat("%g", v.x);
+  s << ",";
+  s.CatFormat("%g", v.y);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec3f& v) {
+  s << "Vec3f(";
+  s.CatFormat("%g", v.x);
+  s << ",";
+  s.CatFormat("%g", v.y);
+  s << ",";
+  s.CatFormat("%g", v.z);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec4f& v) {
+  s << "Vec4f(";
+  s.CatFormat("%g", v.x);
+  s << ",";
+  s.CatFormat("%g", v.y);
+  s << ",";
+  s.CatFormat("%g", v.z);
+  s << ",";
+  s.CatFormat("%g", v.w);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec2i& v) {
+  s << "Vec2i(";
+  s.CatFormat("%d", v.x);
+  s << ",";
+  s.CatFormat("%d", v.y);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec3i& v) {
+  s << "Vec3i(";
+  s.CatFormat("%d", v.x);
+  s << ",";
+  s.CatFormat("%d", v.y);
+  s << ",";
+  s.CatFormat("%d", v.z);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sVec4i& v) {
+  s << "Vec4i(";
+  s.CatFormat("%d", v.x);
+  s << ",";
+  s.CatFormat("%d", v.y);
+  s << ",";
+  s.CatFormat("%d", v.z);
+  s << ",";
+  s.CatFormat("%d", v.w);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::sMatrixf& v) {
+  s << "Matrixf(";
+  s.CatFormat("%g", v._11);
+  s << ",";
+  s.CatFormat("%g", v._12);
+  s << ",";
+  s.CatFormat("%g", v._13);
+  s << ",";
+  s.CatFormat("%g", v._14);
+  s << ", ";
+  s.CatFormat("%g", v._21);
+  s << ",";
+  s.CatFormat("%g", v._22);
+  s << ",";
+  s.CatFormat("%g", v._23);
+  s << ",";
+  s.CatFormat("%g", v._24);
+  s << ", ";
+  s.CatFormat("%g", v._31);
+  s << ",";
+  s.CatFormat("%g", v._32);
+  s << ",";
+  s.CatFormat("%g", v._33);
+  s << ",";
+  s.CatFormat("%g", v._34);
+  s << ", ";
+  s.CatFormat("%g", v._41);
+  s << ",";
+  s.CatFormat("%g", v._42);
+  s << ",";
+  s.CatFormat("%g", v._43);
+  s << ",";
+  s.CatFormat("%g", v._44);
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const ni::Var& var) {
+  s << "Var(";
+  s << var.mType;
+  s << ":";
+  s << var.mInt;
+  s << ")";
+  return s;
+}
+__forceinline ni::cString& operator<<(ni::cString& s, const std::nullptr_t&) {
+  s << "nullptr";
+  return s;
 }
 
 /**@}*/
 /**@}*/
+}
 
 //--------------------------------------------------------------------------------------------
 //

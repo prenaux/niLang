@@ -37,9 +37,10 @@ namespace UnitTest {
 
 AssertException::AssertException(char const* description, char const* filename, int const lineNumber)
     : m_lineNumber(lineNumber)
+    , m_description(description)
+    , m_filename(filename)
+
 {
-  strcpy(m_description, description);
-  strcpy(m_filename, filename);
 }
 
 AssertException::~AssertException() niThrowSpec()
@@ -48,15 +49,53 @@ AssertException::~AssertException() niThrowSpec()
 
 char const* AssertException::what() const niThrowSpec()
 {
-  return m_description;
+  return m_description.c_str();
 }
 
 char const* AssertException::Filename() const
 {
-  return m_filename;
+  return m_filename.c_str();
 }
 
 int AssertException::LineNumber() const
+{
+  return m_lineNumber;
+}
+
+}
+#endif
+
+//--------------------------------------------------------------------------------------------
+//
+//  PanicException
+//
+//--------------------------------------------------------------------------------------------
+#ifdef TEST_NITHROWPANIC
+namespace UnitTest {
+
+PanicException::PanicException(char const* description, char const* filename, int const lineNumber)
+    : m_lineNumber(lineNumber)
+    , m_description(description)
+    , m_filename(filename)
+
+{
+}
+
+PanicException::~PanicException() niThrowSpec()
+{
+}
+
+char const* PanicException::what() const niThrowSpec()
+{
+  return m_description.c_str();
+}
+
+char const* PanicException::Filename() const
+{
+  return m_filename.c_str();
+}
+
+int PanicException::LineNumber() const
 {
   return m_lineNumber;
 }
@@ -144,206 +183,6 @@ class SEHException : public astl::exception
 };
 }
 #endif
-
-//--------------------------------------------------------------------------------------------
-//
-//  Report Assert
-//
-//--------------------------------------------------------------------------------------------
-namespace UnitTest {
-
-void ReportAssert(char const* description, char const* filename, int const lineNumber)
-{
-#ifdef TEST_NITHROWASSERT
-  niThrow(AssertException(description, filename, lineNumber));
-#endif
-}
-
-}
-
-//--------------------------------------------------------------------------------------------
-//
-//  MemoryOutStream
-//
-//--------------------------------------------------------------------------------------------
-namespace UnitTest {
-
-template<typename ValueType>
-inline void FormatToStream(MemoryOutStream& stream, char const* format, ValueType const& value) {
-  stream << niFmt(format, value);
-}
-
-inline int RoundUpToMultipleOfPow2Number(int n, int pow2Number) {
-  return (n + (pow2Number - 1)) & ~(pow2Number - 1);
-}
-
-MemoryOutStream::MemoryOutStream(int const size)
-    : m_capacity (0)
-    , m_buffer (0)
-
-{
-  GrowBuffer(size);
-}
-
-MemoryOutStream::~MemoryOutStream()
-{
-  delete [] m_buffer;
-}
-
-char const* MemoryOutStream::GetText() const
-{
-  return m_buffer;
-}
-
-MemoryOutStream& MemoryOutStream::operator << (char const* txt)
-{
-  if (!txt || !*txt) return *this;
-  int const bytesLeft = m_capacity - (int)strlen(m_buffer);
-  int const bytesRequired = (int)strlen(txt) + 1;
-  if (bytesRequired > bytesLeft) {
-    int const requiredCapacity = bytesRequired + m_capacity - bytesLeft;
-    GrowBuffer(requiredCapacity);
-  }
-  strcat(m_buffer, txt);
-  return *this;
-}
-
-#if defined niTypeIntIsOtherType
-MemoryOutStream& MemoryOutStream::operator << (signed int const n)
-{
-  FormatToStream(*this, "%i", n);
-  return *this;
-}
-MemoryOutStream& MemoryOutStream::operator << (unsigned int const n)
-{
-  FormatToStream(*this, "%u", n);
-  return *this;
-}
-#endif
-
-#if defined niTypeIntPtrIsOtherType
-MemoryOutStream& MemoryOutStream::operator << (ni::tIntPtr const n)
-{
-  FormatToStream(*this, "%i", n);
-  return *this;
-}
-MemoryOutStream& MemoryOutStream::operator << (ni::tUIntPtr const n)
-{
-  FormatToStream(*this, "%u", n);
-  return *this;
-}
-#endif
-
-MemoryOutStream& MemoryOutStream::operator << (void const* p)
-{
-  FormatToStream(*this, "0x%p", p);
-  return *this;
-}
-
-MemoryOutStream& MemoryOutStream::operator << (ni::tI8 const n) { FormatToStream(*this, "%i", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tU8 const n) { FormatToStream(*this, "%i", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tI16 const n)  { FormatToStream(*this, "%i", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tU16 const n)  { FormatToStream(*this, "%i", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tI32 const n)  { FormatToStream(*this, "%d", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tU32 const n)  { FormatToStream(*this, "%d", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tI64 const n)  { FormatToStream(*this, "%lld", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tU64 const n)  { FormatToStream(*this, "%llu", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tF32 const n)  { FormatToStream(*this, "%g", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (ni::tF64 const n)  { FormatToStream(*this, "%g", n); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::cString& n)  { *this << n.Chars(); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::tUUID& n)  { *this << ni::cString(n).Chars(); return *this;  }
-#ifdef __REALCAPI_H__
-MemoryOutStream& MemoryOutStream::operator << (const tRealNumber& n)  {
-  *this << ph::ToString(n);
-  return *this;
-}
-#endif
-MemoryOutStream& MemoryOutStream::operator << (ni::uchar const* txt)  { *this << ni::cString(txt).Chars(); return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec2f& v)
-{ *this << "["; FormatToStream(*this,"%g",v.x);
-  *this << ","; FormatToStream(*this,"%g",v.y);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec3f& v)
-{ *this << "["; FormatToStream(*this,"%g",v.x);
-  *this << ","; FormatToStream(*this,"%g",v.y);
-  *this << ","; FormatToStream(*this,"%g",v.z);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec4f& v)
-{ *this << "["; FormatToStream(*this,"%g",v.x);
-  *this << ","; FormatToStream(*this,"%g",v.y);
-  *this << ","; FormatToStream(*this,"%g",v.z);
-  *this << ","; FormatToStream(*this,"%g",v.w);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec2i& v)
-{ *this << "["; FormatToStream(*this,"%d",v.x);
-  *this << ","; FormatToStream(*this,"%d",v.y);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec3i& v)
-{ *this << "["; FormatToStream(*this,"%d",v.x);
-  *this << ","; FormatToStream(*this,"%d",v.y);
-  *this << ","; FormatToStream(*this,"%d",v.z);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sVec4i& v)
-{ *this << "["; FormatToStream(*this,"%d",v.x);
-  *this << ","; FormatToStream(*this,"%d",v.y);
-  *this << ","; FormatToStream(*this,"%d",v.z);
-  *this << ","; FormatToStream(*this,"%d",v.w);
-  *this << "]"; return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::sMatrixf& v)
-{ *this << "[";
-  *this << "("; FormatToStream(*this,"%g",v._11);
-  *this << ","; FormatToStream(*this,"%g",v._12);
-  *this << ","; FormatToStream(*this,"%g",v._13);
-  *this << ","; FormatToStream(*this,"%g",v._14);
-  *this << ")";
-  *this << "("; FormatToStream(*this,"%g",v._21);
-  *this << ","; FormatToStream(*this,"%g",v._22);
-  *this << ","; FormatToStream(*this,"%g",v._23);
-  *this << ","; FormatToStream(*this,"%g",v._24);
-  *this << ")";
-  *this << "("; FormatToStream(*this,"%g",v._31);
-  *this << ","; FormatToStream(*this,"%g",v._32);
-  *this << ","; FormatToStream(*this,"%g",v._33);
-  *this << ","; FormatToStream(*this,"%g",v._34);
-  *this << ")";
-  *this << "("; FormatToStream(*this,"%g",v._41);
-  *this << ","; FormatToStream(*this,"%g",v._42);
-  *this << ","; FormatToStream(*this,"%g",v._43);
-  *this << ","; FormatToStream(*this,"%g",v._44);
-  *this << ")]";
-  return *this; }
-MemoryOutStream& MemoryOutStream::operator << (const ni::Var& var)
-{
-  *this << "Var(";
-  *this << var.mType;
-  *this << ":";
-  *this << var.mInt;
-  *this << ")";
-  return *this;
-}
-
-int MemoryOutStream::GetCapacity() const
-{
-  return m_capacity;
-}
-
-
-void MemoryOutStream::GrowBuffer(int const desiredCapacity)
-{
-  int const newCapacity = RoundUpToMultipleOfPow2Number(desiredCapacity, GROW_CHUNK_SIZE);
-
-  char* buffer = new char[newCapacity];
-  if (m_buffer)
-    strcpy(buffer, m_buffer);
-  else
-    strcpy(buffer, "");
-
-  delete [] m_buffer;
-  m_buffer = buffer;
-  m_capacity = newCapacity;
-}
-
-}
 
 //--------------------------------------------------------------------------------------------
 //
@@ -480,14 +319,14 @@ class SignalException
  public:
   SignalException(int signal, int subcode) {
     switch (signal) {
-      case SIGABRT: strcpy(m_desc,"SIGABRT"); break;
-      case SIGFPE: strcpy(m_desc,"SIGFPE"); break;
-      case SIGILL: strcpy(m_desc,"SIGILL"); break;
-      case SIGINT: strcpy(m_desc,"SIGINT"); break;
-      case SIGSEGV: strcpy(m_desc,"SIGSEGV"); break;
-      case SIGTERM: strcpy(m_desc,"SIGTERM"); break;
+      case SIGABRT: m_desc = "SIGABRT"; break;
+      case SIGFPE: m_desc = "SIGFPE"; break;
+      case SIGILL: m_desc = "SIGILL"; break;
+      case SIGINT: m_desc = "SIGINT"; break;
+      case SIGSEGV: m_desc = "SIGSEGV"; break;
+      case SIGTERM: m_desc = "SIGTERM"; break;
       default:
-        sprintf(m_desc,"SIGUNK : %d",signal);
+        m_desc.Format("SIGUNK : %d",signal);
         break;
     }
   }
@@ -496,7 +335,8 @@ class SignalException
   const char* what() const niThrowSpec() {
     return m_desc;
   }
-  char m_desc[1024];
+
+  ni::cString m_desc;
 };
 
 class SignalTranslator
@@ -575,11 +415,17 @@ bool Test::BeforeRun(TestResults& testResults) const
     return false;
   }
 #endif
+#ifdef TEST_NITHROWPANIC
+  niCatch (PanicException const& e) {
+    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+    return false;
+  }
+#endif
 #if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
-    MemoryOutStream stream;
+    ni::cString stream;
     stream << "Unhandled exception: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
   niCatchAll() {
@@ -613,11 +459,17 @@ bool Test::Run(TestResults& testResults) const
     return false;
   }
 #endif
+#ifdef TEST_NITHROWPANIC
+  niCatch (PanicException const& e) {
+    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+    return false;
+  }
+#endif
 #if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
-    MemoryOutStream stream;
+    ni::cString stream;
     stream << "Unhandled exception: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
   niCatchAll() {
@@ -654,11 +506,17 @@ bool Test::AfterRun(TestResults& testResults) const
     return false;
   }
 #endif
+#ifdef TEST_NITHROWPANIC
+  niCatch (PanicException const& e) {
+    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+    return false;
+  }
+#endif
 #if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
-    MemoryOutStream stream;
+    ni::cString stream;
     stream << "Unhandled exception: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
   niCatchAll() {
@@ -908,10 +766,10 @@ TimeConstraint::~TimeConstraint()
 {
   int const totalTimeInMs = (int)((ni::TimerInSeconds() - m_timeStart)*1000.0);
   if (totalTimeInMs > m_maxMs) {
-    MemoryOutStream stream;
+    ni::cString stream;
     stream << "Time constraint failed. Expected to run test under " << m_maxMs <<
         "ms but took " << totalTimeInMs << "ms.";
-    m_result.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.GetText());
+    m_result.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
   }
 }
 
@@ -928,9 +786,9 @@ void CheckStringsEqual(TestResults& results, char const* const expected, char co
                        char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) != 0) {
-    UnitTest::MemoryOutStream stream;
+    ni::cString stream;
     stream << "Expected [" << expected << "] == [" << actual << "]";
-    results.OnTestFailure(filename, line, testName, stream.GetText());
+    results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
 
@@ -938,9 +796,9 @@ void CheckStringsNotEqual(TestResults& results, char const* const expected, char
                        char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) == 0) {
-    UnitTest::MemoryOutStream stream;
+    ni::cString stream;
     stream << "Expected [" << expected << "] != [" << actual << "]";
-    results.OnTestFailure(filename, line, testName, stream.GetText());
+    results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
 
@@ -1084,11 +942,11 @@ struct TestRunner {
     int const testTimeInMs = ni::TimerInSeconds() - testTimeStart;
     if (maxTestTimeInMs > 0 && testTimeInMs > maxTestTimeInMs && !curTest->m_timeConstraintExempt)
     {
-      MemoryOutStream stream;
+      ni::cString stream;
       stream << "Global time constraint failed. Expected under " << maxTestTimeInMs <<
           "ms but took " << testTimeInMs << "ms.";
       result->OnTestFailure(curTest->m_filename, curTest->m_lineNumber,
-                           curTest->m_testName, stream.GetText());
+                           curTest->m_testName, stream.c_str());
     }
     result->OnTestFinish(curTest->m_testName, testTimeInMs/1000.0f);
 

@@ -22920,10 +22920,7 @@
 	</namespace>
 	<namespace name="ni" source="niLang/src/_idl/StringBase.h.idl.xml"/>
 	<namespace name="ni" source="niLang/src/_idl/StringDef.h.idl.xml"/>
-	<namespace name="ni" source="niLang/src/_idl/StringDef.h.idl.xml">
-		<namespace name="ni"/>
-		<namespace name="eastl"/>
-	</namespace>
+	<namespace name="eastl" source="niLang/src/_idl/StringDef.h.idl.xml"/>
 	<namespace name="ni" source="niLang/src/_idl/StringLib.h.idl.xml">
 		<enum name="eStrFindFlags">
 			<comments desc="Str find flags "/>

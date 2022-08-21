@@ -1,4 +1,6 @@
-#include "stdafx.h"
+#define TEST_NO_EXCEPTIONS 1 // So that the niPanic* are not overriden
+#include <niLang.h>
+#include <niUnitTest.h>
 #include <niLang/Utils/CrashReport.h>
 #include <niLang/ILang.h>
 

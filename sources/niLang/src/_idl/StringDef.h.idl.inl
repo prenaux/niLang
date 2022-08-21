@@ -7,8 +7,6 @@
 #endif
 IDLC_BEGIN_NAMESPACE()
 /** NAMESPACE : ni **/
-/** NAMESPACE : ni **/
-/** NAMESPACE : ni **/
 /** NAMESPACE : eastl **/
 IDLC_END_NAMESPACE()
 // EOF //

@@ -330,8 +330,14 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     if (!ptrParentTreeNode.IsOK()) return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == 0) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex-1);
+    while (nIndex != 0) {
+      --nIndex;
+      cWidgetTreeNode* pRet = (cWidgetTreeNode*)ptrParentTreeNode->GetChildNode(nIndex);
+      if (pRet->GetIsVisible()) {
+        return pRet;
+      }
+    }
+    return NULL;
   }
 
   ///////////////////////////////////////////////
@@ -340,8 +346,14 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     if (!ptrParentTreeNode.IsOK()) return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == ptrParentTreeNode->GetNumChildNodes()-1) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex+1);
+    while (nIndex != ptrParentTreeNode->GetNumChildNodes() -1) {
+      ++nIndex;
+      cWidgetTreeNode* pRet = (cWidgetTreeNode*)ptrParentTreeNode->GetChildNode(nIndex);
+      if (pRet->GetIsVisible()) {
+        return pRet;
+      }
+    }
+    return NULL;
   }
 
   ///////////////////////////////////////////////

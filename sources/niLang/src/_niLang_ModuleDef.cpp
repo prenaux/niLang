@@ -6576,6 +6576,33 @@ static const ni::sMethodDef iExpressionVariable_GetString = {
 #endif
 };
 
+// Method: SetIUnknown
+static const ni::sParameterDef iExpressionVariable_SetIUnknown_Parameters[1] = { 
+  { "anV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "const iUnknown*" }
+}; 
+static const ni::sMethodDef iExpressionVariable_SetIUnknown = {
+  "SetIUnknown",
+  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "void",
+  1, iExpressionVariable_SetIUnknown_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iExpressionVariable_SetIUnknown)
+#else
+  NULL
+#endif
+};
+
+// Method: GetIUnknown
+static const ni::sMethodDef iExpressionVariable_GetIUnknown = {
+  "GetIUnknown",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iExpressionVariable_GetIUnknown)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iExpressionVariable[] = {
 	&iExpressionVariable_SetName,
 	&iExpressionVariable_GetName,
@@ -6595,6 +6622,8 @@ static const ni::sMethodDef* Methods_iExpressionVariable[] = {
 	&iExpressionVariable_GetMatrix,
 	&iExpressionVariable_SetString,
 	&iExpressionVariable_GetString,
+	&iExpressionVariable_SetIUnknown,
+	&iExpressionVariable_GetIUnknown,
 
 };
 
@@ -25840,6 +25869,7 @@ static const ni::sEnumValueDef Enum_eExpressionVariableType_Values[] = {
 	{ "Vec4", ni::eExpressionVariableType_Vec4 },
 	{ "Matrix", ni::eExpressionVariableType_Matrix },
 	{ "String", ni::eExpressionVariableType_String },
+	{ "IUnknown", ni::eExpressionVariableType_IUnknown },
 };
 static const ni::sEnumDef Enum_eExpressionVariableType = {
 	"eExpressionVariableType",

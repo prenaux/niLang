@@ -894,6 +894,9 @@ inline Var __stdcall ExpressionVariableToVar(iExpressionVariable* apVar) {
     case  eExpressionVariableType_String: {
       return apVar->GetString();
     }
+    case  eExpressionVariableType_IUnknown: {
+      return apVar->GetIUnknown();
+    }
     default: {
       return niVarNull;
     }

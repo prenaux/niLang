@@ -20,6 +20,9 @@
 			<value name="eExpressionVariableType_String" value="5 ">
 				<comments desc="String type. Constructors: &quot;string&quot;, &apos;string&apos; "/>
 			</value>
+			<value name="eExpressionVariableType_IUnknown" value="6 ">
+				<comments desc="Pointer type. Constructors: "/>
+			</value>
 		</enum>
 		<enum name="eExpressionVariableFlags">
 			<comments desc="Expression variables flags. "/>
@@ -165,7 +168,7 @@
 				property="set"
 				property_name2="vec3"
 				property_name="vec3">
-				<comments desc="Get the vector3 value of the variable. "/>
+				<comments desc="Set the vector3 value of the variable. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -192,7 +195,7 @@
 				property="set"
 				property_name2="vec4"
 				property_name="vec4">
-				<comments desc="Get the vector4 value of the variable. "/>
+				<comments desc="Set the vector4 value of the variable. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -219,7 +222,7 @@
 				property="set"
 				property_name2="matrix"
 				property_name="matrix">
-				<comments desc="Get the matrix value of the variable. "/>
+				<comments desc="Set the matrix value of the variable. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -246,7 +249,7 @@
 				property="set"
 				property_name2="string"
 				property_name="string">
-				<comments desc="Get the string value of the variable. "/>
+				<comments desc="Set the string value of the variable. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -265,6 +268,33 @@
 				property_name="string">
 				<comments desc="Get the string value of the variable. "/>
 				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				java_name="setIUnknown"
+				name="SetIUnknown"
+				num_parameters="1"
+				property="set"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Set the iunknown value of the variable. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anV"
+					type="const iUnknown *"
+					typec="const iUnknown*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknown"
+				name="GetIUnknown"
+				num_parameters="0"
+				property="get"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Get the iunknown value of the variable. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 		<interface name="iExpression" uuid1="0506909D-5223-4D8B-876B-01F5A40C92F9" uuid2="0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9">

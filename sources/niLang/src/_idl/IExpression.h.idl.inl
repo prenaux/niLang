@@ -144,6 +144,20 @@ IDLC_METH_BEGIN(ni,iExpressionVariable,GetString,0)
 	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
 IDLC_METH_END(ni,iExpressionVariable,GetString,0)
 
+/** ni -> iExpressionVariable::SetIUnknown/1 **/
+IDLC_METH_BEGIN(ni,iExpressionVariable,SetIUnknown,1)
+	IDLC_DECL_VAR(iUnknown*,anV)
+	IDLC_BUF_TO_INTF(iUnknown,anV)
+	IDLC_METH_CALL_VOID(ni,iExpressionVariable,SetIUnknown,1,(anV))
+IDLC_METH_END(ni,iExpressionVariable,SetIUnknown,1)
+
+/** ni -> iExpressionVariable::GetIUnknown/0 **/
+IDLC_METH_BEGIN(ni,iExpressionVariable,GetIUnknown,0)
+	IDLC_DECL_RETVAR(iUnknown*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iExpressionVariable,GetIUnknown,0,())
+	IDLC_RET_FROM_INTF(iUnknown,_Ret)
+IDLC_METH_END(ni,iExpressionVariable,GetIUnknown,0)
+
 IDLC_END_INTF(ni,iExpressionVariable)
 
 /** interface : iExpression **/

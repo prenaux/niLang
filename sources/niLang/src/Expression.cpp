@@ -5185,6 +5185,27 @@ tBool DoEvaluate(iExpressionContext* apContext)
 }
 EndOp()
 
+// DataTable function
+BeginOpF(DTGetNumChildren,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetFloat(dt->GetNumChildren());
+  return eTrue;
+}
+EndOp()
+
+
 #undef DoSwitch
 #undef DoSwitch1
 #undef DoSwitch2
@@ -5654,6 +5675,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTGet);
   AddOp(DTGetChild);
   AddOp(DTGetChildIndex);
+  AddOp(DTGetNumChildren);
 
   return eTrue;
 }

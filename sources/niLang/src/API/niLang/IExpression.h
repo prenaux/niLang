@@ -34,6 +34,9 @@ enum eExpressionVariableType
   //! String type.
   //! Constructors: "string", 'string'
   eExpressionVariableType_String = 5,
+  //! Pointer type.
+  //! Constructors:
+  eExpressionVariableType_IUnknown = 6,
   //! \internal
   eExpressionVariableType_ForceDWORD = 0xFFFFFFFF
 };
@@ -89,30 +92,36 @@ struct iExpressionVariable : public iUnknown
   //! Get the vector2 value of the variable.
   //! {Property}
   virtual sVec2f __stdcall GetVec2() const = 0;
-  //! Get the vector3 value of the variable.
+  //! Set the vector3 value of the variable.
   //! {Property}
   virtual void __stdcall  SetVec3(const sVec3f& aV) = 0;
   //! Get the vector3 value of the variable.
   //! {Property}
   virtual sVec3f __stdcall GetVec3() const = 0;
-  //! Get the vector4 value of the variable.
+  //! Set the vector4 value of the variable.
   //! {Property}
   virtual void __stdcall SetVec4(const sVec4f& aV) = 0;
   //! Get the vector4 value of the variable.
   //! {Property}
   virtual sVec4f __stdcall GetVec4() const = 0;
-  //! Get the matrix value of the variable.
+  //! Set the matrix value of the variable.
   //! {Property}
   virtual void __stdcall SetMatrix(const sMatrixf& aV) = 0;
   //! Get the matrix value of the variable.
   //! {Property}
   virtual sMatrixf __stdcall GetMatrix() const = 0;
-  //! Get the string value of the variable.
+  //! Set the string value of the variable.
   //! {Property}
   virtual void __stdcall SetString(const cString& aV) = 0;
   //! Get the string value of the variable.
   //! {Property}
   virtual cString __stdcall GetString() const = 0;
+  //! Set the iunknown value of the variable.
+  //! {Property}
+  virtual void __stdcall SetIUnknown(const iUnknown* anV) = 0;
+  //! Get the iunknown value of the variable.
+  //! {Property}
+  virtual iUnknown* __stdcall GetIUnknown() const = 0;
 };
 
 //! Expression interface.

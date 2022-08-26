@@ -1330,7 +1330,7 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
         Ptr<iDataTable> dt = ni::VarQueryInterface<ni::iDataTable>(avarA);
         if (dt.IsOK()) {
           cString selName;
-          iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected[0];
+          iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected.size() > 0 ? mvSelected[0] : NULL;
           if (node) {
             selName = node->GetName();
           }

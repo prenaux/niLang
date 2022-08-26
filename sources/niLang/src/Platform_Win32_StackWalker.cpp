@@ -495,13 +495,13 @@ class StackWalkerInternal
         // ".local" file does not exist, so we can try to load the dbghelp.dll from the "Debugging Tools for Windows"
         // Ok, first try the new path according to the archtitecture:
 #ifdef _M_IX86
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariableW(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
           wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows (x86)\\dbghelp.dll"));
           // now check if the file exists:
           if (GetFileAttributesW(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
-            m_hDbhHelp = LoadLibrary(szTemp);
+            m_hDbhHelp = LoadLibraryW(szTemp);
           }
         }
 #elif _M_X64
@@ -515,7 +515,7 @@ class StackWalkerInternal
           }
         }
 #elif _M_IA64
-        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariable(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
+        if ( (m_hDbhHelp == NULL) && (GetEnvironmentVariableW(_WSTR("ProgramFiles"), szTemp, 4096) > 0) )
         {
           wcscat_s(szTemp, _WSTR("\\Debugging Tools for Windows (ia64)\\dbghelp.dll"));
           // now check if the file exists:

@@ -61,6 +61,10 @@ sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
 }
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
+#ifdef _DEBUG
+  AUTO_WARNING_MODE();
+#endif
+
   sSleepData data = _MeasureAccuracy(ni::SleepSecsCoarse, 1.0/60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
   dt->SetString("functionName","SleepSecsCoarse");
@@ -78,6 +82,10 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
 }
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
+#ifdef _DEBUG
+  AUTO_WARNING_MODE();
+#endif
+
   sSleepData data = _MeasureAccuracy(ni::SleepSecsSpin, 1.0/60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
   dt->SetString("functionName","SleepSecsSpin");
@@ -90,6 +98,10 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
 }
 
 TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {
+#ifdef _DEBUG
+  AUTO_WARNING_MODE();
+#endif
+
   sSleepData data = _MeasureAccuracy(ni::SleepSecs, 1.0/60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
   dt->SetString("functionName","SleepSecs (Precise)");

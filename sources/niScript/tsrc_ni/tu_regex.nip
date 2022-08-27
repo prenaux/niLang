@@ -5,6 +5,6 @@
 
 ::TEST("regex","base",#() {
   local pcre = ::regex.pcre("http://.*.letv.*com/.*[Ll]etv[Pp]layer.*swf.*")
-  ::CHECK(pcre.Match("http://www.letv.com/stuff/LetvPlayer.swf"));
-  ::CHECK(!pcre.Match("http://www.sohu.com/stuff/LetvPlayer.swf"));
+  ::CHECK(pcre.Match("http://www.letv.com/stuff/LetvPlayer.swf",0));
+  ::CHECK(!pcre.Match("http://www.sohu.com/stuff/LetvPlayer.swf",0));
 })

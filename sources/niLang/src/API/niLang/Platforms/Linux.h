@@ -46,7 +46,8 @@
 // Compiler support #pragma comment(lib,"libfile.lib")
 #define niPragmaCommentLib
 
-#define niAssume(EXPR) __assume(EXPR)
+// Not supported by GCC
+#define niAssume(EXPR)
 
 #define niDLLSuffix ".so"
 

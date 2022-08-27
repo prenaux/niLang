@@ -17,13 +17,13 @@
  *     EA_COMPILER_GREEN_HILLS
  *     EA_COMPILER_CLANG
  *     EA_COMPILER_CLANG_CL
- *     
+ *
  *     EA_COMPILER_VERSION = <integer>
  *     EA_COMPILER_NAME = <string>
  *     EA_COMPILER_STRING = <string>
- *     
+ *
  *     EA_COMPILER_VA_COPY_REQUIRED
- * 
+ *
  *  C++98/03 functionality
  *     EA_COMPILER_NO_STATIC_CONSTANTS
  *     EA_COMPILER_NO_TEMPLATE_SPECIALIZATION
@@ -96,11 +96,11 @@
  *
  *  C++14 functionality
  *     EA_COMPILER_NO_VARIABLE_TEMPLATES
- * 
+ *
  *  C++17 functionality
  *     EA_COMPILER_NO_INLINE_VARIABLES
  *     EA_COMPILER_NO_ALIGNED_NEW
- *     
+ *
  *-----------------------------------------------------------------------------
  *
  * Supplemental documentation
@@ -124,7 +124,7 @@
  *
  *     EA_COMPILER_NO_MEMBER_TEMPLATE_SPECIALIZATION
  *         Some compilers fail to allow member template specialization, such as with this:
- *             struct A{ 
+ *             struct A{
  *                 template<class U> void DoSomething(U u);
  *                 void DoSomething(int x);
  *             };
@@ -146,9 +146,9 @@
  *
  *     EA_COMPILER_NO_COVARIANT_RETURN_TYPE
  *         See the C++ standard sec 10.3,p5.
- *     
+ *
  *     EA_COMPILER_NO_DEDUCED_TYPENAME
- *         Some compilers don't support the use of 'typename' for 
+ *         Some compilers don't support the use of 'typename' for
  *         dependent types in deduced contexts, as with this:
  *             template <class T> void Function(T, typename T::type);
  *
@@ -156,17 +156,17 @@
  *         Also known as Koenig lookup. Basically, if you have a function
  *         that is a namespace and you call that function without prefixing
  *         it with the namespace the compiler should look at any arguments
- *         you pass to that function call and search their namespace *first* 
+ *         you pass to that function call and search their namespace *first*
  *         to see if the given function exists there.
  *
  *     EA_COMPILER_NO_EXCEPTION_STD_NAMESPACE
- *         <exception> is in namespace std. Some std libraries fail to 
- *         put the contents of <exception> in namespace std. The following 
+ *         <exception> is in namespace std. Some std libraries fail to
+ *         put the contents of <exception> in namespace std. The following
  *         code should normally be legal:
  *             void Function(){ std::terminate(); }
  *
  *     EA_COMPILER_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
- *         Some compilers fail to execute DoSomething() properly, though they 
+ *         Some compilers fail to execute DoSomething() properly, though they
  *         succeed in compiling it, as with this:
  *             template <int i>
  *             bool DoSomething(int j){ return i == j; };
@@ -174,12 +174,12 @@
  *
  *     EA_COMPILER_NO_EXCEPTIONS
  *         The compiler is configured to disallow the use of try/throw/catch
- *         syntax (often to improve performance). Use of such syntax in this 
- *         case will cause a compilation error. 
- *         
+ *         syntax (often to improve performance). Use of such syntax in this
+ *         case will cause a compilation error.
+ *
  *     EA_COMPILER_NO_UNWIND
- *         The compiler is configured to allow the use of try/throw/catch 
- *         syntax and behaviour but disables the generation of stack unwinding 
+ *         The compiler is configured to allow the use of try/throw/catch
+ *         syntax and behaviour but disables the generation of stack unwinding
  *         code for responding to exceptions (often to improve performance).
  *
  *---------------------------------------------------------------------------*/
@@ -247,7 +247,7 @@
 	// by the compiler. It means that whatever C++11 support the compiler has is enabled.
 	// This also includes existing and older compilers that still identify C++11 as C++0x.
 	//
-	// We cannot use (__cplusplus >= 201103L) alone because some compiler vendors have 
+	// We cannot use (__cplusplus >= 201103L) alone because some compiler vendors have
 	// decided to not define __cplusplus like thus until they have fully completed their
 	// C++11 support.
 	//
@@ -274,13 +274,13 @@
 	// This does not mean that all of C++14 or any particular feature of C++14 is supported
 	// by the compiler. It means that whatever C++14 support the compiler has is enabled.
 	//
-	// We cannot use (__cplusplus >= 201402L) alone because some compiler vendors have 
+	// We cannot use (__cplusplus >= 201402L) alone because some compiler vendors have
 	// decided to not define __cplusplus like thus until they have fully completed their
 	// C++14 support.
 	#if !defined(EA_COMPILER_CPP14_ENABLED) && defined(__cplusplus)
 		#if (__cplusplus >= 201402L) 								// Clang and GCC defines this like so in C++14 mode.
 			#define EA_COMPILER_CPP14_ENABLED 1
-		#elif defined(_MSC_VER) && (_MSC_VER >= 1900)  	// VS2015+ 
+		#elif defined(_MSC_VER) && (_MSC_VER >= 1900)  	// VS2015+
 			#define EA_COMPILER_CPP14_ENABLED 1
 		#endif
 	#endif
@@ -291,12 +291,12 @@
 	// Defined as 1 if the compiler has its available C++17 support enabled, else undefined.
 	// This does not mean that all of C++17 or any particular feature of C++17 is supported
 	// by the compiler. It means that whatever C++17 support the compiler has is enabled.
- 	// 
-	// We cannot use (__cplusplus >= 201703L) alone because some compiler vendors have 
+ 	//
+	// We cannot use (__cplusplus >= 201703L) alone because some compiler vendors have
 	// decided to not define __cplusplus like thus until they have fully completed their
 	// C++17 support.
 	#if !defined(EA_COMPILER_CPP17_ENABLED) && defined(__cplusplus)
-		#if (__cplusplus >= 201703L) 
+		#if (__cplusplus >= 201703L)
 			#define EA_COMPILER_CPP17_ENABLED 1
 		#elif defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) // C++17+
 			#define EA_COMPILER_CPP17_ENABLED 1
@@ -330,7 +330,7 @@
 		#define EA_COMPILER_NAME    "GCC"
 		#define EA_COMPILER_STRING  EA_COMPILER_NAME " compiler, version " INTERNAL_STRINGIZE( __GNUC__ ) "." INTERNAL_STRINGIZE( __GNUC_MINOR__ )
 
-		#if (__GNUC__ == 2) && (__GNUC_MINOR__ < 95) // If GCC < 2.95... 
+		#if (__GNUC__ == 2) && (__GNUC_MINOR__ < 95) // If GCC < 2.95...
 			#define EA_COMPILER_NO_MEMBER_TEMPLATES 1
 		#endif
 		#if (__GNUC__ == 2) && (__GNUC_MINOR__ <= 97) // If GCC <= 2.97...
@@ -369,7 +369,7 @@
 			#define EA_COMPILER_MICROSOFT 1
 		#endif
 
-		// Should we enable the following? This isn't as clear because as of this writing we don't know if the Intel 
+		// Should we enable the following? This isn't as clear because as of this writing we don't know if the Intel
 		// compiler truly emulates GCC well enough that enabling this does more good than harm.
 		#if defined(__GNUC__)
 			#define EA_COMPILER_GNUC 1
@@ -440,7 +440,7 @@
 			//#define EA_COMPILER_NO_MEMBER_TEMPLATES 1                       // VC7.0 supports member templates properly 95% of the time. So do we flag the remaining 5%?
 
 		#elif (_MSC_VER < 1400) // VS2003       _MSC_VER of 1300 means VC7 (VS2003)
-			// The VC7.1 and later compiler is fairly close to the C++ standard 
+			// The VC7.1 and later compiler is fairly close to the C++ standard
 			// and thus has no compiler limitations that we are concerned about.
 			#define EA_COMPILER_MSVC7_2003 1
 			#define EA_COMPILER_MSVC7_1    1
@@ -519,8 +519,8 @@
 	// EA_COMPILER_VA_COPY_REQUIRED
 	//
 	// Defines whether va_copy must be used to copy or save va_list objects between uses.
-	// Some compilers on some platforms implement va_list whereby its contents  
-	// are destroyed upon usage, even if passed by value to another function. 
+	// Some compilers on some platforms implement va_list whereby its contents
+	// are destroyed upon usage, even if passed by value to another function.
 	// With these compilers you can use va_copy to save and restore a va_list.
 	// Known compiler/platforms that destroy va_list contents upon usage include:
 	//     CodeWarrior on PowerPC
@@ -561,23 +561,26 @@
 
 	// EA_COMPILER_NO_EXCEPTIONS / EA_COMPILER_NO_UNWIND
 	//
-	// If EA_COMPILER_NO_EXCEPTIONS is defined, then the compiler is 
-	// configured to not recognize C++ exception-handling statements 
-	// such as try/catch/throw. Thus, when EA_COMPILER_NO_EXCEPTIONS is 
+	// If EA_COMPILER_NO_EXCEPTIONS is defined, then the compiler is
+	// configured to not recognize C++ exception-handling statements
+	// such as try/catch/throw. Thus, when EA_COMPILER_NO_EXCEPTIONS is
 	// defined, code that attempts to use exception handling statements
 	// will usually cause a compilation error. If is often desirable
-	// for projects to disable exception handling because exception 
+	// for projects to disable exception handling because exception
 	// handling causes extra code and/or data generation which might
 	// not be needed, especially if it is known that exceptions won't
 	// be happening. When writing code that is to be portable between
 	// systems of which some enable exception handling while others
-	// don't, check for EA_COMPILER_NO_EXCEPTIONS being defined. 
+	// don't, check for EA_COMPILER_NO_EXCEPTIONS being defined.
 	//
 	#if !defined(EA_COMPILER_NO_EXCEPTIONS) && !defined(EA_COMPILER_NO_UNWIND)
 		#if defined(EA_COMPILER_GNUC) && defined(_NO_EX) // GCC on some platforms defines _NO_EX when exceptions are disabled.
 			#define EA_COMPILER_NO_EXCEPTIONS 1
 
-		#elif (defined(EA_COMPILER_CLANG) || defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_INTEL) || defined(EA_COMPILER_RVCT)) && !defined(__EXCEPTIONS) // GCC and most EDG-based compilers define __EXCEPTIONS when exception handling is enabled.
+		#elif defined(EA_COMPILER_CLANG) && !EA_COMPILER_HAS_FEATURE(cxx_exceptions) // Use __has_feature(cxx_exceptions) with Clang so that its correctly detected when used in Objective C++
+			#define EA_COMPILER_NO_EXCEPTIONS 1
+
+		#elif (defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_INTEL) || defined(EA_COMPILER_RVCT)) && !defined(__EXCEPTIONS) // GCC and most EDG-based compilers define __EXCEPTIONS when exception handling is enabled.
 			#define EA_COMPILER_NO_EXCEPTIONS 1
 
 		#elif (defined(EA_COMPILER_BORLAND) || defined(EA_COMPILER_MSVC)) && !defined(_CPPUNWIND)
@@ -589,7 +592,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_DISABLE_ALL_VC_WARNINGS / EA_RESTORE_ALL_VC_WARNINGS
-	// 
+	//
 	// Disable and re-enable all warning(s) within code.
 	//
 	// Example usage:
@@ -639,7 +642,7 @@
 	//
 	//
 	#if !defined(EA_COMPILER_NO_ALIGNED_NEW)
-		#if defined(_HAS_ALIGNED_NEW) && _HAS_ALIGNED_NEW // VS2017 15.5 Preview 
+		#if defined(_HAS_ALIGNED_NEW) && _HAS_ALIGNED_NEW // VS2017 15.5 Preview
 			// supported.
 		#elif defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
@@ -651,7 +654,7 @@
 	// EA_COMPILER_NO_NEW_THROW_SPEC / EA_THROW_SPEC_NEW / EA_THROW_SPEC_DELETE
 	//
 	// If defined then the compiler's version of operator new is not decorated
-	// with a throw specification. This is useful for us to know because we 
+	// with a throw specification. This is useful for us to know because we
 	// often want to write our own overloaded operator new implementations.
 	// We need such operator new overrides to be declared identically to the
 	// way the compiler is defining operator new itself.
@@ -667,15 +670,15 @@
 	//      void  operator delete[](void*, const std::nothrow_t&) EA_THROW_SPEC_DELETE_NONE();
 	//
 	#if defined(EA_HAVE_DINKUMWARE_CPP_LIBRARY)
-		#if defined(_MSC_VER) && (_MSC_VER >= 1912)  // VS2017 15.3+ 
+		#if defined(_MSC_VER) && (_MSC_VER >= 1912)  // VS2017 15.3+
 			#define EA_THROW_SPEC_NEW(x)        noexcept(false)
-			#define EA_THROW_SPEC_NEW_NONE()    noexcept 
-			#define EA_THROW_SPEC_DELETE_NONE() noexcept 
+			#define EA_THROW_SPEC_NEW_NONE()    noexcept
+			#define EA_THROW_SPEC_DELETE_NONE() noexcept
 
 		#elif defined(_MSC_VER) && (_MSC_VER >= 1910)  // VS2017+
 			#define EA_THROW_SPEC_NEW(x)        throw(x)
-			#define EA_THROW_SPEC_NEW_NONE()    throw() 
-			#define EA_THROW_SPEC_DELETE_NONE() throw() 
+			#define EA_THROW_SPEC_NEW_NONE()    throw()
+			#define EA_THROW_SPEC_DELETE_NONE() throw()
 
 		#else
 			#if defined(EA_PLATFORM_PS4)
@@ -709,7 +712,7 @@
 	// If defined, then the compiler doesn't provide a Standard C++ library.
 	//
 	#if defined(EA_PLATFORM_ANDROID)
-		// Disabled because EA's eaconfig/android_config/android_sdk packages currently 
+		// Disabled because EA's eaconfig/android_config/android_sdk packages currently
 		// don't support linking STL libraries. Perhaps we can figure out what linker arguments
 		// are needed for an app so we can manually specify them and then re-enable this code.
 		//#include <android/api-level.h>
@@ -722,10 +725,10 @@
 
 	// EA_COMPILER_NO_STATIC_VARIABLE_INIT
 	//
-	// If defined, it means that global or static C++ variables will be 
-	// constructed. Not all compiler/platorm combinations support this. 
+	// If defined, it means that global or static C++ variables will be
+	// constructed. Not all compiler/platorm combinations support this.
 	// User code that needs to be portable must avoid having C++ variables
-	// that construct before main. 
+	// that construct before main.
 	//
 	//#if defined(EA_PLATFORM_MOBILE)
 	//    #define EA_COMPILER_NO_STATIC_VARIABLE_INIT 1
@@ -743,7 +746,7 @@
 	//#endif
 
 	// EA_COMPILER_NO_VARIADIC_MACROS
-	// 
+	//
 	// If defined, the compiler doesn't support C99/C++11 variadic macros.
 	// With a variadic macro, you can do this:
 	//     #define MY_PRINTF(format, ...) printf(format, __VA_ARGS__)
@@ -760,7 +763,7 @@
 
 
 	// EA_COMPILER_NO_RVALUE_REFERENCES
-	// 
+	//
 	// If defined, the compiler doesn't fully support C++11 rvalue reference semantics.
 	// This applies to the compiler only and not the Standard Library in use with the compiler,
 	// which is required by the Standard to have some support itself.
@@ -768,7 +771,7 @@
 	#if !defined(EA_COMPILER_NO_RVALUE_REFERENCES)
 		#if defined(EA_COMPILER_CPP11_ENABLED) && defined(_MSC_VER) && (_MSC_VER >= 1600)                // VS2010+
 			// supported.
-		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 403) // EDG 4.3+. 
+		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 403) // EDG 4.3+.
 			// supported. Earlier EDG supported a subset of rvalue references. Implicit move constructors and assignment operators aren't supported until EDG 4.5.
 		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__clang__) && EA_COMPILER_HAS_FEATURE(cxx_rvalue_references)
 			// supported.
@@ -781,7 +784,7 @@
 
 
 	// EA_COMPILER_NO_EXTERN_TEMPLATE
-	// 
+	//
 	// If defined, the compiler doesn't support C++11 extern template.
 	// With extern templates, you can do this:
 	//     extern template void DoSomething(KnownType u);
@@ -804,7 +807,7 @@
 
 
 	// EA_COMPILER_NO_RANGE_BASED_FOR_LOOP
-	// 
+	//
 	// If defined, the compiler doesn't support C++11 range-based for loops.
 	// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2930.html
 	// You must #include <iterator> for range-based for loops to work.
@@ -866,10 +869,10 @@
 			#define EA_COMPILER_NO_CONSTEXPR_IF 1
 		#endif
 	#endif
-	
+
 
 	// EA_COMPILER_NO_OVERRIDE
-	// 
+	//
 	// Refers to the C++11 override specifier.
 	//
 	#ifndef EA_COMPILER_NO_OVERRIDE
@@ -880,13 +883,13 @@
 		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__GNUC__) && (EA_COMPILER_VERSION >= 4007)  // GCC 4.7+
 			// supported.
 		#else
-			#define EA_COMPILER_NO_OVERRIDE 1 
+			#define EA_COMPILER_NO_OVERRIDE 1
 		#endif
 	#endif
 
 
 	// EA_COMPILER_NO_INHERITANCE_FINAL
-	// 
+	//
 	// Refers to the C++11 final specifier.
 	//
 	#ifndef EA_COMPILER_NO_INHERITANCE_FINAL
@@ -1140,7 +1143,7 @@
 			// supported.
 		#elif defined(EA_COMPILER_CPP14_ENABLED) && defined(__GNUC__) && (EA_COMPILER_VERSION >= 5000)   // GCC 5+
 			// supported.
-		#elif !defined(EA_COMPILER_CPP14_ENABLED) 
+		#elif !defined(EA_COMPILER_CPP14_ENABLED)
 			#define EA_COMPILER_NO_VARIABLE_TEMPLATES 1
 		#endif
 	#endif
@@ -1151,7 +1154,7 @@
 	// Refers to C++17 inline variables that allows the definition of variables in header files
 	//
 	// Example usage:
-	//    struct Foo 
+	//    struct Foo
 	//    {
 	//        static inline constexpr int kConstant = 42;  // no out of class definition
 	//    };
@@ -1212,7 +1215,7 @@
 
 
 	// EA_COMPILER_NO_CARRIES_DEPENDENCY
-	// 
+	//
 	// Refers to C++11 declaration attribute: carries_dependency.
 	// http://en.cppreference.com/w/cpp/language/attributes
 	// http://blog.aaronballman.com/2011/09/understanding-attributes/
@@ -1234,12 +1237,12 @@
 
 
 	// EA_COMPILER_NO_FALLTHROUGH
-	// 
+	//
 	// Refers to C++17 declaration attribute: fallthrough.
 	// http://en.cppreference.com/w/cpp/language/attributes
 	//
 	#if !defined(EA_COMPILER_NO_FALLTHROUGH)
-		#if defined(EA_COMPILER_CPP17_ENABLED) 
+		#if defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
 		#else
 			#define EA_COMPILER_NO_FALLTHROUGH 1
@@ -1248,12 +1251,12 @@
 
 
 	// EA_COMPILER_NO_NODISCARD
-	// 
+	//
 	// Refers to C++17 declaration attribute: nodiscard.
 	// http://en.cppreference.com/w/cpp/language/attributes
 	//
 	#if !defined(EA_COMPILER_NO_NODISCARD)
-		#if defined(EA_COMPILER_CPP17_ENABLED) 
+		#if defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
 		#else
 			#define EA_COMPILER_NO_NODISCARD 1
@@ -1262,12 +1265,12 @@
 
 
 	// EA_COMPILER_NO_MAYBE_UNUSED
-	// 
+	//
 	// Refers to C++17 declaration attribute: maybe_unused.
 	// http://en.cppreference.com/w/cpp/language/attributes
 	//
 	#if !defined(EA_COMPILER_NO_MAYBE_UNUSED)
-		#if defined(EA_COMPILER_CPP17_ENABLED) 
+		#if defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
 		#elif defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1912) // VS2017 15.3+
 			// supported.
@@ -1284,7 +1287,7 @@
 	//
 	//
 	#if !defined(EA_COMPILER_NO_STRUCTURED_BINDING)
-		#if defined(EA_COMPILER_CPP17_ENABLED) 
+		#if defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
 		#elif defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1912) // VS2017 15.3+
 			// supported.
@@ -1316,7 +1319,7 @@
 
 	// EA_COMPILER_NO_RIGHT_ANGLE_BRACKETS
 	//
-	// Defines if the compiler supports >> (as opposed to > >) in template 
+	// Defines if the compiler supports >> (as opposed to > >) in template
 	// declarations such as typedef eastl::list<eastl::list<int>> ListList;
 	//
 	#if !defined(EA_COMPILER_NO_RIGHT_ANGLE_BRACKETS)
@@ -1336,8 +1339,8 @@
 
 	// EA_COMPILER_NO_ALIGNOF
 	//
-	// Refers specifically to C++11 alignof and not old compiler extensions such as __alignof__(). 
-	// However, EABase provides a portable EA_ALIGN_OF which works for all compilers. 
+	// Refers specifically to C++11 alignof and not old compiler extensions such as __alignof__().
+	// However, EABase provides a portable EA_ALIGN_OF which works for all compilers.
 	//
 	#if !defined(EA_COMPILER_NO_ALIGNOF)
 		// Not supported by VC++ as of VS2013, though EA_ALIGN_OF is supported on all coompilers as an alternative.
@@ -1532,8 +1535,8 @@
 
 
 	// EA_COMPILER_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
-	//  
-	// The compiler does not support default template arguments for function templates. 
+	//
+	// The compiler does not support default template arguments for function templates.
 	// http://stackoverflow.com/questions/2447458/default-template-arguments-for-function-templates
 	//
 	#if !defined(EA_COMPILER_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS)
@@ -1664,7 +1667,7 @@
 		#if defined(EA_COMPILER_CPP11_ENABLED) && defined(__clang__) && (EA_COMPILER_VERSION >= 401) && defined(__apple_build_version__)    // Apple clang 4.1+
 			// supported.
 		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__clang__) && (EA_COMPILER_VERSION >= 301) && !defined(__apple_build_version__) // Clang 3.1+, not including Apple's Clang.
-			// supported. 
+			// supported.
 		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__GNUC__) && (EA_COMPILER_VERSION >= 4005)   // GCC 4.5+
 			// supported.
 		#else
@@ -1715,8 +1718,8 @@
 	//
 	// Refers specifically to C++ thread_local, which is like compiler __thread implementations except
 	// that it also supports non-trivial classes (e.g. with ctors). EA_COMPILER_NO_THREAD_LOCAL refers
-	// specifically to full C++11 thread_local support. The EAThread package provides a wrapper for 
-	// __thread via EA_THREAD_LOCAL (which unfortunately sounds like C++ thread_local). 
+	// specifically to full C++11 thread_local support. The EAThread package provides a wrapper for
+	// __thread via EA_THREAD_LOCAL (which unfortunately sounds like C++ thread_local).
 	//
 	#if !defined(EA_COMPILER_NO_THREAD_LOCAL)
 		// Not supported by VC++ as of VS2013, though all VC++ versions have partial support via __thread.
@@ -1735,8 +1738,3 @@
 
 
 #endif // INCLUDED_eacompiler_H
-
-
-
-
-

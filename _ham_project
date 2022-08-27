@@ -12,7 +12,3 @@ case $HAM_OS in
         toolset_import_list "repos" "default" || return 1
         ;;
 esac
-
-update_prompt
-update_project_work "$HAM_PROJECT_DIR/.."
-toolset_info

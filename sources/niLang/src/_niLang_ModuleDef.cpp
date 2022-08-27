@@ -26687,6 +26687,7 @@ static const ni::sEnumValueDef Enum_eLogFlags_Values[] = {
 	{ "NoRegularOutput", ni::eLogFlags_NoRegularOutput },
 	{ "NoNewLine", ni::eLogFlags_NoNewLine },
 	{ "Stdout", ni::eLogFlags_Stdout },
+	{ "NoLogTypePrefix", ni::eLogFlags_NoLogTypePrefix },
 };
 static const ni::sEnumDef Enum_eLogFlags = {
 	"eLogFlags",

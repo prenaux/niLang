@@ -278,7 +278,7 @@ niExportFunc(void) ni_log_format_message(
     // TYPE/MSG [time] [file:line]
     // or (if Java)
     // TYPE/MSG [time] (file:line)
-    const char* typeMark = _LogType(aType);
+    const char* typeMark = niFlagIs(aType,eLogFlags_NoLogTypePrefix) ? NULL : _LogType(aType);
     const char* p = aaszMsg;
     const char* b = p;
     tU32 curSize = 0;
@@ -286,7 +286,9 @@ niExportFunc(void) ni_log_format_message(
     while (1) {
       if (!*p || *p == '\n' || *p == '\r') {
         if (curSize) {
-          final << typeMark;
+          if (typeMark) {
+            final << typeMark;
+          }
           final.appendEx(b,curSize);
           if (numLines++ == 0) {
             if (!niFlagIs(aType,eLogFlags_FormatMSVC) && niStringIsOK(aaszFile))

@@ -19,6 +19,7 @@ IDLC_BEGIN_NAMESPACE()
 /** NAMESPACE : ni **/
 /** NAMESPACE : ni **/
 /** NAMESPACE : ni **/
+/** NAMESPACE : ni **/
 /** interface : iUnknown **/
 /** iUnknown -> NO AUTOMATION **/
 /** ni -> iUnknown::IsOK/0 -> NO AUTOMATION **/

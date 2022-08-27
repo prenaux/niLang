@@ -999,14 +999,14 @@ namespace ni {
 #endif
 
 #ifndef niPrint
-#  define niPrint(x)  ni::ni_log(ni::eLogFlags_Raw|ni::eLogFlags_Stdout|ni::eLogFlags_NoNewLine,__FILE__,__FUNCTION__,__LINE__,x)
+#  define niPrint(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout)|niNamespace(ni,eLogFlags_NoNewLine),__FILE__,__FUNCTION__,__LINE__,x)
 #endif
 
 #ifndef niPrintln
-#  define niPrintln(x)  ni::ni_log(ni::eLogFlags_Raw|ni::eLogFlags_Stdout,__FILE__,__FUNCTION__,__LINE__,x)
+#  define niPrintln(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout),__FILE__,__FUNCTION__,__LINE__,x)
 #endif
 
-#ifndef niPrintFmt
+#if !defined niPrintFmt && defined __cplusplus
 #  define niPrintFmt(FMT) {                       \
     ni::cString formatted; formatted.Format FMT;  \
     niPrintln(formatted.Chars());                 \
@@ -1071,6 +1071,10 @@ namespace ni {
 #    define niAssertUnreachable(msg)
 #  endif
 #endif
+
+#define niDebugAssert niAssert
+#define niDebugAssertMsg niAssertMsg
+#define niDebugAssertUnreachable niAssertUnreachable
 
 #ifndef niUnused
 #  ifdef __cplusplus
@@ -1147,6 +1151,52 @@ namespace ni {
 #endif
 
 #define niSafeFloatDiv
+
+/**@}*/
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+//--------------------------------------------------------------------------------------------
+//
+//  PanicAssert
+//
+//--------------------------------------------------------------------------------------------
+#ifdef __cplusplus
+namespace ni {
+#endif // __cplusplus
+/** \addtogroup niLang
+ * @{
+ */
+
+niExportFunc(void) ni_panic_assert(
+    int expression,
+    const char* exp,
+    const char* file,
+    int line,
+    const char* func,
+    const char* desc);
+
+#ifndef niPanicAssert
+#define niPanicAssert(exp)                                              \
+  niAssume(exp);                                                        \
+  if (!(exp)) {                                                         \
+    niNamespace(ni,ni_panic_assert)((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, NULL); \
+  }
+#endif
+
+#ifndef niPanicAssertMsg
+#define niPanicAssertMsg(exp,msg)                                       \
+  niAssume(exp);                                                        \
+  if (!(exp)) {                                                         \
+    niNamespace(ni,ni_panic_assert)((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, msg); \
+  }
+#endif
+
+#ifndef niPanicUnreachable
+#define niPanicUnreachable(...)                                         \
+  niNamespace(ni,ni_panic_assert)(0, "UNREACHABLE", __FILE__, __LINE__, __FUNCTION__, "" __VA_ARGS__);
+#endif
 
 /**@}*/
 #ifdef __cplusplus
@@ -2046,6 +2096,8 @@ enum eLogFlags
   eLogFlags_NoNewLine = niBit(19),
   //! Outputs to stdout. Stderr is the default when not specified.
   eLogFlags_Stdout = niBit(20),
+  //! Do not prefix with the log type.
+  eLogFlags_NoLogTypePrefix = niBit(21),
   //! \internal
   eLogFlags_ForceDWORD = 0xFFFFFFFF
 };

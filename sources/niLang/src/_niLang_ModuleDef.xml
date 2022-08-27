@@ -23266,6 +23266,7 @@
 	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml"/>
 	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml"/>
 	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml"/>
+	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml"/>
 	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml">
 		<enum name="">
 			<comments desc=""/>
@@ -23721,6 +23722,9 @@
 			</value>
 			<value name="eLogFlags_Stdout" value="niBit ( 20 ) ">
 				<comments desc="Outputs to stdout. Stderr is the default when not specified. "/>
+			</value>
+			<value name="eLogFlags_NoLogTypePrefix" value="niBit ( 21 ) ">
+				<comments desc="Do not prefix with the log type. "/>
 			</value>
 		</enum>
 	</namespace>

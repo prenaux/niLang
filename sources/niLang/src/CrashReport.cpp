@@ -3,9 +3,43 @@
 
 #include "API/niLang/Types.h"
 #include "API/niLang/Utils/CrashReport.h"
+#include "API/niLang/ILang.h"
+
+namespace ni {
+
+///////////////////////////////////////////////
+niExportFunc(void) ni_panic_assert(
+    int expression,
+    const char* exp,
+    const char* file,
+    int line,
+    const char* func,
+    const char* desc)
+{
+  if (!expression) {
+    const tBool hasDesc = niStringIsOK(desc);
+    cString fmt;
+    ni_log_format_message(
+      fmt,
+      eLogFlags_Error|eLogFlags_NoLogTypePrefix,
+      file,
+      line,
+      func,
+      niFmt("PANIC ASSERT: %s%s%s%s",
+            exp,
+            hasDesc?_A(": "):_A(""),
+            hasDesc?desc:_A(""),
+            hasDesc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A("")),
+      -1, -1);
+    fmt.CatFormat("PANIC STACK:\n");
+    ni_stack_get_current(fmt,NULL);
+    ni::GetLang()->FatalError(fmt.Chars());
+  }
+}
+
+}
 
 #if !defined niNoCrashReport
-#include "API/niLang/ILang.h"
 
 #ifdef niWindows
 #include "API/niLang/Platforms/Win32/Win32_Redef.h"
@@ -89,5 +123,4 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
   exit(0x12345678);
 #endif
 }
-
 #endif // #if !defined niNoCrashReport

@@ -169,7 +169,7 @@ typedef struct Context
   int texm3x3pad_dst1;
   int texm3x3pad_src1;
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   MOJOSHADER_preshader *preshader;
 #endif
 #if SUPPORT_PROFILE_ARB1_NV
@@ -10004,7 +10004,7 @@ static int is_comment_token(Context *ctx, const uint32 tok, uint32 *tokcount)
   return 0;
 } // is_comment_token
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
 typedef struct PreshaderBlockInfo
 {
   const uint32 *tokens;
@@ -10030,7 +10030,7 @@ static void parse_preshader(Context *ctx, uint32 tokcount)
   if ((tokcount < 2) || (SWAP32(tokens[1]) != PRES_ID))
     return;  // not a preshader.
 
-#if !SUPPORT_PRESHADERS
+#if !MOJOSHADER_SUPPORT_PRESHADERS
   fail(ctx, "Preshader found, but preshader support is disabled!");
 #else
 
@@ -10544,7 +10544,7 @@ static void free_symbols(MOJOSHADER_free f, void *d, MOJOSHADER_symbol *syms,
   f((void *) syms, d);
 } // free_symbols
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
 static void free_preshader(MOJOSHADER_free f, void *d,
                            MOJOSHADER_preshader *preshader)
 {
@@ -10585,7 +10585,7 @@ static void destroy_context(Context *ctx)
     free_variable_list(f, d, ctx->variables);
     errorlist_destroy(ctx->errors);
     free_symbols(f, d, ctx->ctab.symbols, ctx->ctab.symbol_count);
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
     free_preshader(f, d, ctx->preshader);
 #endif
     f(ctx, d);
@@ -11039,13 +11039,13 @@ static MOJOSHADER_parseData *build_parsedata(Context *ctx)
     retval->swizzles = swizzles;
     retval->symbol_count = ctx->ctab.symbol_count;
     retval->symbols = ctx->ctab.symbols;
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
     retval->preshader = ctx->preshader;
 #endif
 
     // we don't own these now, retval does.
     ctx->ctab.symbols = NULL;
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
     ctx->preshader = NULL;
 #endif
     ctx->ctab.symbol_count = 0;
@@ -11355,7 +11355,7 @@ void MOJOSHADER_freeParseData(const MOJOSHADER_parseData *_data)
   f((void *) data->samplers, d);
 
   free_symbols(f, d, data->symbols, data->symbol_count);
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   free_preshader(f, d, data->preshader);
 #endif
 

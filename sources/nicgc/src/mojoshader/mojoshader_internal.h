@@ -16,10 +16,6 @@
 
 #include "mojoshader.h"
 
-#define SUPPORT_PRESHADERS 0
-#define MOJOSHADER_FORCE_ALLOCATOR 0
-#define MOJOSHADER_FORCE_INCLUDE_CALLBACKS 1
-
 #define DEBUG_LEXER 0
 #define DEBUG_PREPROCESSOR 0
 #define DEBUG_ASSEMBLER_PARSER 0
@@ -76,16 +72,7 @@
 #error glsl120 profile requires glsl profile. Fix your build.
 #endif
 
-
-// Other stuff you can disable...
-
-// This removes the preshader parsing and execution code. You can save some
-//  bytes if you have normal shaders and not Effect files.
-#ifndef SUPPORT_PRESHADERS
-#define SUPPORT_PRESHADERS 0
-#endif
-
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
 void MOJOSHADER_runPreshader(const MOJOSHADER_preshader*, const float*, float*);
 #else
 #define MOJOSHADER_runPreshader(a, b)
@@ -574,7 +561,7 @@ void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
 #endif  // _INCLUDE_MOJOSHADER_INTERNAL_H_
 
 
-#if MOJOSHADER_DO_INSTRUCTION_TABLE
+#if defined MOJOSHADER_DO_INSTRUCTION_TABLE
 // These have to be in the right order! Arrays are indexed by the value
 //  of the instruction token.
 

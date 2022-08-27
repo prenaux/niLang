@@ -135,7 +135,7 @@ struct MOJOSHADER_glProgram
   size_t ps_uniforms_bool_count;
   GLint *ps_uniforms_bool;
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   size_t vs_preshader_reg_count;
   GLfloat *vs_preshader_regs;
   size_t ps_preshader_reg_count;
@@ -1578,7 +1578,7 @@ static void program_unref(MOJOSHADER_glProgram *program)
       ctx->profileDeleteProgram(program->handle);
       shader_unref(program->vertex);
       shader_unref(program->fragment);
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
       Free(program->vs_preshader_regs);
       Free(program->ps_preshader_regs);
 #endif
@@ -1698,7 +1698,7 @@ static int lookup_uniforms(MOJOSHADER_glProgram *program,
 
 #undef MAKE_ARRAY
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   if (pd->preshader)
   {
     unsigned int largest = 0;
@@ -2235,7 +2235,7 @@ const ni::tI32* MOJOSHADER_glGetVertexAttribLocationArray(MOJOSHADER_usage usage
     return ctx->bound_program->vertex_attrib_loc[usage];
 } // MOJOSHADER_glGetVertexAttribLocation
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
 void MOJOSHADER_glSetVertexPreshaderUniformF(unsigned int idx,
                                              const float *data,
                                              unsigned int vec4n)
@@ -2327,7 +2327,7 @@ void MOJOSHADER_glPushUniforms(void) {
     GLint *dstb = program->vs_uniforms_bool;
     uint32 i;
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
     const MOJOSHADER_preshader *preshader = NULL;
     int ran_preshader = 0;
     if (program->vertex)

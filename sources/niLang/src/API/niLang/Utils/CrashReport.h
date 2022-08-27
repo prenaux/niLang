@@ -55,6 +55,7 @@ static inline void __niCrashReportModuleInstall()
   _set_error_mode(_OUT_TO_STDERR);
 #endif
 
+#if defined _MSC_VER
 #if _MSC_VER>=1300
   // Pure Virtual call handler
   _set_purecall_handler(cpp_purecall_handler);
@@ -79,6 +80,8 @@ static inline void __niCrashReportModuleInstall()
 #if _MSC_VER>=1400
   _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
 #endif
+#endif
+
   // Catch an abnormal program termination
   signal(SIGABRT, cpp_sigabrt_handler);
 
@@ -107,6 +110,7 @@ static inline void __niCrashReportModuleUninstall()
   _set_error_mode(_OUT_TO_STDERR);
 #endif
 
+#if defined _MSC_VER
 #if _MSC_VER>=1300
   // Pure Virtual call handler
   _set_purecall_handler(NULL);
@@ -130,6 +134,7 @@ static inline void __niCrashReportModuleUninstall()
   // Set up C++ signal handlers
 #if _MSC_VER>=1400
   _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
+#endif
 #endif
 
   // Catch an abnormal program termination

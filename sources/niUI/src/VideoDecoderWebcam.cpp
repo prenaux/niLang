@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "VideoUtils.h"
 
-#if NI_VIDEO_USE_WEBCAM
+#if defined NI_VIDEO_USE_WEBCAM
 #include <niLang/Utils/ConcurrentImpl.h>
 #include "escapi/escapi.h"
 

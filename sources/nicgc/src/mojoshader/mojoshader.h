@@ -39,6 +39,15 @@ extern "C" {
 #define MOJOSHADER_CHANGESET "???"
 #endif
 
+// This removes the preshader parsing and execution code. You can save some
+// bytes if you have normal shaders and not Effect files.
+#ifndef MOJOSHADER_SUPPORT_PRESHADERS
+#define MOJOSHADER_SUPPORT_PRESHADERS 0
+#endif
+
+#define MOJOSHADER_FORCE_ALLOCATOR 0
+#define MOJOSHADER_FORCE_INCLUDE_CALLBACKS 1
+
   /*
    * For determining the version of MojoShader you are using:
    *    const int compiled_against = MOJOSHADER_VERSION;
@@ -365,7 +374,7 @@ extern "C" {
     int error_position;
   } MOJOSHADER_error;
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   /* !!! FIXME: document me. */
   typedef enum MOJOSHADER_preshaderOpcode
   {
@@ -599,7 +608,7 @@ extern "C" {
      */
     MOJOSHADER_symbol *symbols;
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
     /*
      * !!! FIXME: document me.
      * This can be NULL on error or if no preshader was available.
@@ -1685,7 +1694,7 @@ extern "C" {
    */
   const ni::tI32* MOJOSHADER_glGetVertexAttribLocationArray(MOJOSHADER_usage usage);
 
-#if SUPPORT_PRESHADERS
+#if MOJOSHADER_SUPPORT_PRESHADERS
   /* These below functions are temporary and will be removed from the API once
      the real Effects API is written. Do not use! */
   void MOJOSHADER_glSetVertexPreshaderUniformF(unsigned int idx, const float *data,

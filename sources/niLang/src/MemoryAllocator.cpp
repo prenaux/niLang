@@ -19,7 +19,7 @@
 
 namespace ni {
 
-#if USE_MTUNER
+#if defined USE_MTUNER
 // using rmem.h
 #define MTUNER_ALLOC(_handle, _ptr, _size, _overhead)                  rmemAlloc((_handle), (_ptr), (uint32_t)(_size), (uint32_t)(_overhead))
 #define MTUNER_ALIGNED_ALLOC(_handle, _ptr, _size, _overhead, _align)  rmemAllocAligned((_handle), (_ptr), (uint32_t)(_size), (uint32_t)(_overhead), (uint32_t)(_align))

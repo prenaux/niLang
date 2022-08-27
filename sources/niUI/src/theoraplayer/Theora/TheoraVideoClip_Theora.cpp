@@ -590,7 +590,7 @@ long TheoraVideoClip_Theora::seekPage(long targetFrame, bool return_keyframe)
 
 void TheoraVideoClip_Theora::doSeek()
 {
-#if _DEBUG
+#if defined _DEBUG
 	niWarning((mName + " [seek]: seeking to frame " + str(mSeekFrame)).c_str());
 #endif
 	int frame;

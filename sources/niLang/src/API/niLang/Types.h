@@ -4514,10 +4514,20 @@ inline T* QueryInterface(const iUnknown* p)
   return (T*)const_cast<iUnknown*>(p)->QueryInterface(T::_GetInterfaceUUID());
 }
 
+template <typename T>
+__forceinline tI32 AddRef(T* p) { return p->AddRef(); }
+template <typename T>
+__forceinline tI32 AddRef(const T* p) { return const_cast<T*>(p)->AddRef(); }
+
+template <typename T>
+__forceinline tI32 Release(T* p) { return p->Release(); }
+template <typename T>
+__forceinline tI32 Release(const T* p) { return const_cast<T*>(p)->Release(); }
+
 //! Return false if the given instance is invalid, else true.
 inline tBool IsOK(const iUnknown* pI) { return pI && pI->IsOK(); }
 
-//! Guard an object. Prevents it to be released.
+//! Guard an object. Prevents it from being released.
 inline void GuardObject(iUnknown* apObj) {
   niAssert(apObj);
   apObj->AddRef();

@@ -57,6 +57,7 @@ using eastl::unique;
 using eastl::remove_if;
 using eastl::equal;
 using eastl::identical;
+using eastl::search;
 
 template <typename T>
 struct hash_cast {

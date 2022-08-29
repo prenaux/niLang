@@ -5,6 +5,11 @@
 #include "API/niLang/Utils/CrashReport.h"
 #include "API/niLang/ILang.h"
 
+#ifdef niWindows
+#include "API/niLang/Platforms/Win32/Win32_Redef.h"
+#define niCrashReportHasMinidump
+#endif
+
 namespace ni {
 
 ///////////////////////////////////////////////
@@ -33,18 +38,20 @@ niExportFunc(void) ni_panic_assert(
       -1, -1);
     fmt.CatFormat("PANIC STACK:\n");
     ni_stack_get_current(fmt,NULL);
-    ni::GetLang()->FatalError(fmt.Chars());
+    niError(fmt.Chars());
+#ifdef niWindows
+    if (::IsDebuggerPresent())
+#endif
+    {
+      ni_debug_break();
+    }
+    ni::GetLang()->Exit(0xDEADBEEF);
   }
 }
 
 }
 
 #if !defined niNoCrashReport
-
-#ifdef niWindows
-#include "API/niLang/Platforms/Win32/Win32_Redef.h"
-#define niCrashReportHasMinidump
-#endif
 
 using namespace ni;
 

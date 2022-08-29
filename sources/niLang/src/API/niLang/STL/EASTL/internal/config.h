@@ -479,33 +479,6 @@ namespace eastl
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// SetAssertionFailureFunction
-//
-// Allows the user to set a custom assertion failure mechanism.
-//
-// Example usage:
-//     void Assert(const char* pExpression, void* pContext);
-//     SetAssertionFailureFunction(Assert, this);
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifndef EASTL_ASSERTION_FAILURE_DEFINED
-	#define EASTL_ASSERTION_FAILURE_DEFINED
-
-	namespace eastl
-	{
-		typedef void (*EASTL_AssertionFailureFunction)(const char* pExpression, void* pContext);
-		EASTL_API void SetAssertionFailureFunction(EASTL_AssertionFailureFunction pFunction, void* pContext);
-
-		// These are the internal default functions that implement asserts.
-		EASTL_API void AssertionFailure(const char* pExpression);
-		EASTL_API void AssertionFailureFunctionDefault(const char* pExpression, void* pContext);
-	}
-#endif
-
-
-
-///////////////////////////////////////////////////////////////////////////////
 // EASTL_ASSERT
 //
 // Assertion macro. Can be overridden by user with a different value.
@@ -521,10 +494,10 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(#expression), 0)); \
+				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, NULL))); \
 			} while (0) \
 			EA_RESTORE_VC_WARNING()
-	#else
+  #else
 		#define EASTL_ASSERT(expression)
 	#endif
 #endif
@@ -537,10 +510,10 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(#expression), 0)); \
+				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, NULL))); \
 			} while(0) \
 			EA_RESTORE_VC_WARNING()
-	#else
+  #else
 		#define EASTL_DEV_ASSERT(expression)
 	#endif
 #endif
@@ -560,7 +533,7 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(message), 0)); \
+				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, message))); \
 			} while (0) \
 			EA_RESTORE_VC_WARNING()
 	#else
@@ -582,7 +555,7 @@ namespace eastl
 
 #ifndef EASTL_FAIL_MSG
 	#if EASTL_ASSERT_ENABLED
-		#define EASTL_FAIL_MSG(message) (eastl::AssertionFailure(message))
+		#define EASTL_FAIL_MSG(message) (ni::ni_panic_assert(0, message, __FILE__, __LINE__, __FUNCTION__, NULL))
 	#else
 		#define EASTL_FAIL_MSG(message)
 	#endif

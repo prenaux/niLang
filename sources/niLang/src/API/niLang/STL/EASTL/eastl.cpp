@@ -1,6 +1,5 @@
 #include "EAStdC/EAMemory.cpp"
 #include "EAStdC/EASprintf.cpp"
-#include "assert.cpp"
 #include "fixed_pool.cpp"
 #include "hashtable.cpp"
 #include "intrusive_list.cpp"

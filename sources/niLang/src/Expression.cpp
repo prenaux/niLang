@@ -73,7 +73,6 @@ inline tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar)
       apExprVar->SetString(value.GetString());
       break;
     case eExpressionVariableType_IUnknown:
-      VarConvertType(value,eType_IUnknown);
       apExprVar->SetIUnknown(value.GetIUnknownPointer());
       break;
     default:
@@ -202,7 +201,10 @@ struct ExprVarFromRunnable : public ExprVar
         VarConvertType(aValue,eType_String);
         break;
       case eExpressionVariableType_IUnknown:
-        VarConvertType(aValue,eType_IUnknown);
+        // we can't convert other types to IUnknown, this will lead to undefined behavior
+        if (!aValue.IsIUnknownPointer()) {
+          aValue = niVarNull;
+        }
         break;
 
       default:
@@ -291,9 +293,7 @@ struct ExprVarFloat : public ExprVar
   virtual iUnknown* __stdcall GetIUnknown() const {
     return NULL;
   }
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value = reinterpret_cast<tUIntPtr>(aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -329,9 +329,7 @@ struct ExprVarVec2 :  public ExprVar
   virtual iUnknown* __stdcall GetIUnknown() const {
     return NULL;
   }
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value.x = reinterpret_cast<tUIntPtr>(aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -367,9 +365,7 @@ struct ExprVarVec3 :  public ExprVar
   virtual iUnknown* __stdcall GetIUnknown() const {
     return NULL;
   }
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value.x = reinterpret_cast<tUIntPtr>(aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -405,9 +401,7 @@ struct ExprVarVec4 :  public ExprVar
   virtual iUnknown* __stdcall GetIUnknown() const {
     return NULL;
   }
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value.x = reinterpret_cast<tUIntPtr>(aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -438,9 +432,7 @@ struct ExprVarMatrix :  public ExprVar
   virtual iUnknown* __stdcall GetIUnknown() const {
     return NULL;
   }
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value._11 = reinterpret_cast<tUIntPtr>(aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -474,9 +466,7 @@ struct ExprVarString :  public ExprVar
     return NULL;
   }
 
-  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
-    Value = niFmt("%s",aV);
-  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -5052,8 +5042,9 @@ tBool DoEvaluate(iExpressionContext* apContext)
 {
   auto v = mvOperands[0];
   v.Eval(apContext);
-  if (v.GetVariable()) {
-    mptrResult->Copy(apContext->Eval(v.GetVariable()->GetString().Chars()));
+  auto newV = v.GetVariable();
+  if (newV && newV->GetType() == ni::eExpressionVariableType_String) {
+    mptrResult = apContext->Eval(v.GetVariable()->GetString().Chars());
   }
   return eTrue;
 }

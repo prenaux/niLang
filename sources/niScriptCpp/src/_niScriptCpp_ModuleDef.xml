@@ -10,5 +10,8 @@
 	<objecttypes>
 		<objecttype category="ScriptingHost" name="Cpp"/>
 	</objecttypes>
-	<includes/>
+	<includes>
+		<include>niScriptCpp/src/_idl/ScriptCpp.h.idl.xml</include>
+	</includes>
+	<namespace name="ni" source="niScriptCpp/src/_idl/ScriptCpp.h.idl.xml"/>
 </niIDL>

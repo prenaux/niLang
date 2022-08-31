@@ -119,6 +119,7 @@ bool NamedProcessIterator::CheckForNextProcess() {
   dirent* slot = 0;
   const char* openparen;
   const char* closeparen;
+  char buf[NAME_MAX + 12] = {};
 
   // Arbitrarily guess that there will never be more than 200 non-process
   // files in /proc.  Hardy has 53.
@@ -145,11 +146,11 @@ bool NamedProcessIterator::CheckForNextProcess() {
     }
 
     // Read the process's status.
-    char buf[NAME_MAX + 12];
     sprintf(buf, "/proc/%s/stat", slot->d_name);
     FILE *fp = fopen(buf, "r");
     if (!fp)
       return false;
+
     const char* result = fgets(buf, sizeof(buf), fp);
     fclose(fp);
     if (!result)
@@ -164,6 +165,7 @@ bool NamedProcessIterator::CheckForNextProcess() {
     closeparen = strrchr(buf, ')');
     if (!openparen || !closeparen)
       return false;
+
     char runstate = closeparen[2];
 
     // Is the process in 'Zombie' state, i.e. dead but waiting to be reaped?

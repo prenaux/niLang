@@ -274,7 +274,7 @@
 			</parents>
 			<method java_name="eval" name="Eval" num_parameters="0">
 				<comments desc="Eval the expression and returns the result. "/>
-				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<return type="Ptr&lt;iExpressionVariable&gt;" typec="Ptr&lt;iExpressionVariable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				const="yes"
@@ -476,7 +476,7 @@
 			</method>
 			<method java_name="eval" name="Eval" num_parameters="1">
 				<comments desc="Evaluate an expression. "/>
-				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<return type="Ptr&lt;iExpressionVariable&gt;" typec="Ptr&lt;iExpressionVariable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
 					name="aaszExpr"

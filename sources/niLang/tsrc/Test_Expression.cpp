@@ -272,9 +272,8 @@ TEST_FIXTURE(FExpression,RGB) {
 }
 
 TEST_FIXTURE(FExpression,Eval) {
-
   TEST_TIMEREPORT();
-  iExpressionContext* ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   ctx->SetDefaultEnumDef(niEnumDef(eType));
   ctx->SetGlobalEnumSearch(false);
   for (int i = 0; i < 1000; ++i) {
@@ -288,7 +287,7 @@ TEST_FIXTURE(FExpression,Eval) {
 TEST_FIXTURE(FExpression,Eval2) {
   TEST_TIMEREPORT();
 
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   ctx->SetDefaultEnumDef(niEnumDef(eType));
   ctx->SetGlobalEnumSearch(false);
   Ptr<iExpression> expr = ctx->CreateExpression("eType.Vec3f");
@@ -303,7 +302,7 @@ TEST_FIXTURE(FExpression,Eval2) {
 TEST_FIXTURE(FExpression,Eval3) {
   TEST_TIMEREPORT();
 
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   for (int i = 0; i < 1000; ++i) {
     Ptr<iExpressionVariable> v = ctx->Eval("(1+3+5)/2");
     CHECK_EQUAL(4.5, v->GetFloat());
@@ -314,7 +313,7 @@ TEST_FIXTURE(FExpression,Eval3) {
 TEST_FIXTURE(FExpression,Eval4) {
   TEST_TIMEREPORT();
 
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   Ptr<iExpression> expr = ctx->CreateExpression("(1+3+5)/2");
   for (int i = 0; i < 1000; ++i) {
     Ptr<iExpressionVariable> v = expr->Eval();
@@ -913,7 +912,7 @@ TEST_FIXTURE(FExpression,IsType) {
 }
 
 TEST_FIXTURE(FExpression,Iota) {
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   {
     const tF64 v = ctx->Eval("iota")->GetFloat();
     niDebugFmt(("iota = %g", v));
@@ -967,7 +966,7 @@ TEST_FIXTURE(FExpression,Set) {
 }
 
 TEST_FIXTURE(FExpression,SetIota) {
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   Ptr<iExpression> expr = ctx->CreateExpression("Set('x',iota,Get('x')*2)");
   tF64 v;
 
@@ -991,7 +990,7 @@ TEST_FIXTURE(FExpression,Percent) {
 }
 
 TEST_FIXTURE(FExpression,If) {
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
 
   {
     const achar* exprStr = "If(Mod(iota,2),'odd','even'))";
@@ -1020,7 +1019,7 @@ TEST_FIXTURE(FExpression,If) {
 }
 
 TEST_FIXTURE(FExpression,IfSet) {
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
 
   {
     const achar* exprStr = "Set('i', iota, If(Get('i') > 4, '>4', Get('i') == 4, 'is4', Get('i') == 3, 'is3', '<=2'))";
@@ -1054,7 +1053,7 @@ TEST_FIXTURE(FExpression,IfSet) {
 }
 
 TEST_FIXTURE(FExpression,EvalExpr) {
-  Ptr<iExpressionContext> ctx = ni::GetLang()->CreateExpressionContext();
+  Ptr<iExpressionContext> ctx(ni::GetLang()->CreateExpressionContext());
   {
     {
       const achar* expr = "Eval('1+2')";

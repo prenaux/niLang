@@ -671,7 +671,7 @@ struct Expression : public cIUnknownImpl<ni::iExpression> {
     _root = apRootOp;
   }
 
-  virtual iExpressionVariable* __stdcall Eval() {
+  virtual Ptr<iExpressionVariable> __stdcall Eval() {
     return _root->Eval(_context);
   }
   virtual iExpressionVariable* __stdcall GetEvalResult() const {
@@ -853,7 +853,7 @@ class Evaluator : public cIUnknownImpl<ni::iExpressionContext>
   }
 
   ///////////////////////////////////////////////
-  iExpressionVariable* __stdcall Eval(const achar* aaszExpr)
+  Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr)
   {
     Ptr<iExpressionVariable> ptrResult;
     {
@@ -865,7 +865,7 @@ class Evaluator : public cIUnknownImpl<ni::iExpressionContext>
       }
       ptrResult = ptrExp->GetEvalResult();
     }
-    return ptrResult.GetRawAndSetNull();
+    return ptrResult;
   }
 
   ///////////////////////////////////////////////
@@ -6431,12 +6431,15 @@ iExpressionContext* cLang::GetExpressionContext() const {
   return _ctx;
 }
 
-iExpressionVariable* cLang::Eval(const achar* aaszExpr) {
+Ptr<iExpressionVariable> cLang::Eval(const achar* aaszExpr) {
   static Ptr<ExprVarString> _exprVarEvalError =
       niNew ExprVarString(_H("EVALERR"));
   Ptr<iExpressionContext> ptrCtx = GetExpressionContext();
-  iExpressionVariable* pVar = ptrCtx->Eval(aaszExpr);
-  return pVar ? pVar : _exprVarEvalError;
+  Ptr<iExpressionVariable> r = ptrCtx->Eval(aaszExpr);
+  if (r.IsOK())
+    return r;
+  else
+    return _exprVarEvalError.ptr();
 }
 
 tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {

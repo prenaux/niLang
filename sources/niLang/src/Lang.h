@@ -126,7 +126,7 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
 
   iExpressionContext* __stdcall CreateExpressionContext() niImpl;
   iExpressionContext* __stdcall GetExpressionContext() const niImpl;
-  iExpressionVariable* __stdcall Eval(const achar* aaszExpr) niImpl;
+  Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) niImpl;
   cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
   tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
 

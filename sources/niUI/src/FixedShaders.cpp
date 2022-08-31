@@ -175,7 +175,7 @@ enum eFPSMatrix
 
 #define EVALEXPR(MAT,WHICH,TYPE,DEFAULT)                                \
   ((MAT->mptrExpressions[eMaterialExpression_##WHICH].IsOK()) ?         \
-   (MAT->mptrExpressions[eMaterialExpression_##WHICH]->Eval() ?         \
+   (MAT->mptrExpressions[eMaterialExpression_##WHICH]->Eval().IsOK() ?         \
     MAT->mptrExpressions[eMaterialExpression_##WHICH]->GetEvalResult()->Get##TYPE() : (DEFAULT)) : \
    (DEFAULT))
 

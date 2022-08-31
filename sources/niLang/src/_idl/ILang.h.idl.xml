@@ -1308,7 +1308,7 @@
 				<comments desc="Evaluate the specified expression. ">
 					<remark text="If the evaluated expression fails it returns an empty string variable named &quot;EVALERR&quot;. This means that Eval() always returns a valid variable object and so their is no need to check for a NULL pointer. "/>
 				</comments>
-				<return type="iExpressionVariable *" typec="iExpressionVariable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<return type="Ptr&lt;iExpressionVariable&gt;" typec="Ptr&lt;iExpressionVariable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
 					name="aaszExpr"

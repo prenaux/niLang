@@ -348,7 +348,7 @@ class cDataTable : public ni::cIUnknownImpl<ni::iDataTable,ni::eIUnknownImplFlag
     niCallSinkVoid_(DataTableSink,pLst,RemoveProperty,(apDT,anProperty));
   }
 
-  __forceinline iExpressionVariable* __stdcall _EvaluateExpression(const achar* aaszExpr) const {
+  __forceinline Ptr<iExpressionVariable> __stdcall _EvaluateExpression(const achar* aaszExpr) const {
     return ni::GetLang()->GetExpressionContext()->Eval(aaszExpr);
   }
 

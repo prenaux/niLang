@@ -442,7 +442,7 @@ struct iLang : public iUnknown
   //!         variable named "EVALERR". This means that Eval() always
   //!         returns a valid variable object and so their is no need to
   //!         check for a NULL pointer.
-  virtual iExpressionVariable* __stdcall Eval(const achar* aaszExpr) = 0;
+  virtual Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) = 0;
   //! Convert an enum value to an expression string.
   virtual cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) = 0;
   //! Convert an expression string to an enum value.

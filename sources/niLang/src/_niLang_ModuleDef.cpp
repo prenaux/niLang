@@ -6609,7 +6609,7 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iExpression() {
 // Method: Eval
 static const ni::sMethodDef iExpression_Eval = {
   "Eval",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "iExpressionVariable*",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "Ptr<iExpressionVariable>",
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iExpression_Eval)
@@ -6919,7 +6919,7 @@ static const ni::sParameterDef iExpressionContext_Eval_Parameters[1] = {
 }; 
 static const ni::sMethodDef iExpressionContext_Eval = {
   "Eval",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "iExpressionVariable*",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "Ptr<iExpressionVariable>",
   1, iExpressionContext_Eval_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iExpressionContext_Eval)
@@ -12828,7 +12828,7 @@ static const ni::sParameterDef iLang_Eval_Parameters[1] = {
 }; 
 static const ni::sMethodDef iLang_Eval = {
   "Eval",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "iExpressionVariable*",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionVariable), "Ptr<iExpressionVariable>",
   1, iLang_Eval_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iLang_Eval)

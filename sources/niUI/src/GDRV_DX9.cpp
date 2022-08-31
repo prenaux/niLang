@@ -3186,8 +3186,8 @@ tBool D3D9_ApplyFixedStates(sD3D9StateCache& aCache,
           {                                                             \
             iExpression* expr = apMaterial->mptrExpressions[eMaterialExpression_Tex##I]; \
             if (expr) {                                                 \
-              iExpressionVariable* pVar = expr->Eval();                 \
-              if (pVar) {                                               \
+              Ptr<iExpressionVariable> pVar = expr->Eval();             \
+              if (pVar.IsOK()) {                                        \
                 texMatrix = pVar->GetMatrix();                          \
                 texMatrix._31 = texMatrix._41;                          \
                 texMatrix._32 = texMatrix._42;                          \

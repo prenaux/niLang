@@ -215,8 +215,8 @@ class cMaterial :
   virtual sMatrixf __stdcall GetExpressionValueMatrix(eMaterialExpression aExpr) const {
     niCheckSilent(aExpr < eMaterialExpression_Last,sMatrixf::Identity());
     if (mptrExpressions[aExpr].IsOK()) {
-      iExpressionVariable* pVar = mptrExpressions[aExpr]->Eval();
-      if (pVar) {
+      Ptr<iExpressionVariable> pVar = mptrExpressions[aExpr]->Eval();
+      if (pVar.IsOK()) {
         return pVar->GetMatrix();
       }
     }
@@ -226,8 +226,8 @@ class cMaterial :
   virtual sVec4f __stdcall GetExpressionValueVector(eMaterialExpression aExpr) const {
     niCheckSilent(aExpr < eMaterialExpression_Last,sVec4f::Zero());
     if (mptrExpressions[aExpr].IsOK()) {
-      iExpressionVariable* pVar = mptrExpressions[aExpr]->Eval();
-      if (pVar) {
+      Ptr<iExpressionVariable> pVar = mptrExpressions[aExpr]->Eval();
+      if (pVar.IsOK()) {
         return pVar->GetVec4();
       }
     }

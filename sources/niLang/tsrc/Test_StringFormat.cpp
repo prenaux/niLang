@@ -302,6 +302,7 @@ TEST_FIXTURE(niCore_CatFormat,Expr) {
   ni::cString strA, strB, strC ;
   strA.CatFormat("Narf: { %(1+3) }",1);
   niPrintln(niFmt("... Expr: strA: '%s'", strA));
+  CHECK_EQUAL(_ASTR("Narf: { 4 }"), strA);
   strB.CatFormat("Narf: { %(= 1+3+ ( 3 * 5 ) ) }",1);
   niPrintln(niFmt("... Expr: strB: '%s'", strB));
   strC.CatFormat("Narf: { %(Format('%.2f',1/3))%s }","->Fagiano");

@@ -120,7 +120,7 @@ struct iExpression : public iUnknown
 {
   niDeclareInterfaceUUID(iExpression,0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9)
   //! Eval the expression and returns the result.
-  virtual iExpressionVariable* __stdcall Eval() = 0;
+  virtual Ptr<iExpressionVariable> __stdcall Eval() = 0;
   //! Get the result returned by the last Eval.
   //! {Property}
   virtual iExpressionVariable* __stdcall GetEvalResult() const = 0;
@@ -185,7 +185,7 @@ struct iExpressionContext : public iUnknown
   //! Create a new expression.
   virtual iExpression* __stdcall CreateExpression(const achar* aaszExpr) = 0;
   //! Evaluate an expression.
-  virtual iExpressionVariable* __stdcall Eval(const achar* aaszExpr) = 0;
+  virtual Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) = 0;
   //! Get the unknown symbols into the specified expression.
   //! \param aaszExpr the expression to retrieve the symbols from.
   //! \param apList the string list where the symbols will be place \see ni::tStringCVec

@@ -143,9 +143,9 @@ IDLC_END_INTF(ni,iExpressionVariable)
 IDLC_BEGIN_INTF(ni,iExpression)
 /** ni -> iExpression::Eval/0 **/
 IDLC_METH_BEGIN(ni,iExpression,Eval,0)
-	IDLC_DECL_RETVAR(iExpressionVariable*,_Ret)
+	IDLC_DECL_RETVAR(Ptr<iExpressionVariable>,_Ret)
 	IDLC_METH_CALL(_Ret,ni,iExpression,Eval,0,())
-	IDLC_RET_FROM_INTF(iExpressionVariable,_Ret)
+	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iExpression,Eval,0)
 
 /** ni -> iExpression::GetEvalResult/0 **/
@@ -287,9 +287,9 @@ IDLC_METH_END(ni,iExpressionContext,CreateExpression,1)
 IDLC_METH_BEGIN(ni,iExpressionContext,Eval,1)
 	IDLC_DECL_VAR(achar*,aaszExpr)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszExpr)
-	IDLC_DECL_RETVAR(iExpressionVariable*,_Ret)
+	IDLC_DECL_RETVAR(Ptr<iExpressionVariable>,_Ret)
 	IDLC_METH_CALL(_Ret,ni,iExpressionContext,Eval,1,(aaszExpr))
-	IDLC_RET_FROM_INTF(iExpressionVariable,_Ret)
+	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iExpressionContext,Eval,1)
 
 /** ni -> iExpressionContext::GetUnknownSymbols/2 **/

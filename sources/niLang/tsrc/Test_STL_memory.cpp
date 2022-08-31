@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "../src/API/niLang/STL/memory.h"
+
+namespace {
+
 using namespace ni;
 
 struct ASTL_memory {
@@ -73,3 +76,5 @@ TEST_FIXTURE(ASTL_memory, unique_ptr) {
 
   CHECK_EQUAL(false, (!!a));
 }
+
+} // end of anonymous namespace

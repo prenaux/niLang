@@ -4,6 +4,7 @@
 #include "../src/API/niLang/STL/vector.h"
 #include "../src/API/niLang/STL/map.h"
 
+namespace {
 // template class astl::list<ni::tInt>;
 
 typedef astl::list<ni::tInt> tIntLst;
@@ -85,3 +86,5 @@ TEST_FIXTURE(ASTL_list,U32Lst_pushback) {
   CHECK_EQUAL(3,vec.back());
   CHECK_EQUAL(3,vec.size());
 }
+
+} // end of anonymous namespace

@@ -7,6 +7,8 @@
 
 using namespace ni;
 
+namespace {
+
 struct FOSWindow {
 };
 
@@ -332,4 +334,5 @@ TEST_FIXTURE(FOSWindow,PickDirectoryDialog) {
   }
 }
 
+} // end of anonymous namespace
 #endif

@@ -340,6 +340,7 @@ struct HashTable {
 //  Tests
 //
 //--------------------------------------------------------------------------------------------
+namespace {
 
 const ni::tU32 kNumTests = 100;
 
@@ -469,3 +470,5 @@ TEST_FIXTURE(ASTL_map,get_default) {
     CHECK_EQUAL(ni::eInvalidHandle,astl::get_default(hmap,"weee",ni::eInvalidHandle));
   }
 }
+
+} // end of anonymous namespace

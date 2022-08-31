@@ -2,6 +2,8 @@
 #include "../src/API/niLang/Utils/TimerSleep.h"
 #include "../src/API/niLang/Utils/DataTableUtils.h"
 
+namespace {
+
 struct FAccurateSleep {};
 
 struct sSleepData {
@@ -13,9 +15,7 @@ struct sSleepData {
   ni::tF64 maxerr  = -INFINITY; // maximum error we had
 };
 
-namespace ni {
-
-ni::iDataTable* ToDataTable(iDataTable* apDT, const sSleepData& aData) {
+ni::iDataTable* ToDataTable(ni::iDataTable* apDT, const sSleepData& aData) {
   niCheckIsOK(apDT,NULL);
   apDT->SetInt("sampleSize", aData.sampleSize);
   apDT->SetFloat("target", aData.target);
@@ -24,8 +24,6 @@ ni::iDataTable* ToDataTable(iDataTable* apDT, const sSleepData& aData) {
   apDT->SetFloat("minerr", aData.minerr);
   apDT->SetFloat("maxerr", aData.maxerr);
   return apDT;
-}
-
 }
 
 sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
@@ -70,7 +68,7 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
   dt->SetString("functionName","SleepSecsCoarse");
   niDebugFmt(("... SleepOs: %s",
               ni::DataTableToXML(
-                ni::ToDataTable(dt,data),
+                ToDataTable(dt,data),
                 ni::eFalse)));
 #ifdef niWindows
   // expect 15ms error max
@@ -91,7 +89,7 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
   dt->SetString("functionName","SleepSecsSpin");
   niDebugFmt(("... SleepSpin: %s",
               ni::DataTableToXML(
-                ni::ToDataTable(dt,data),
+                ToDataTable(dt,data),
                 ni::eFalse)));
   // expect 15us error max
   CHECK_LE(data.meanerr, 2e-5);
@@ -107,8 +105,10 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {
   dt->SetString("functionName","SleepSecs (Precise)");
   niDebugFmt(("... SleepPrecise: %s",
               ni::DataTableToXML(
-                ni::ToDataTable(dt,data),
+                ToDataTable(dt,data),
                 ni::eFalse)));
   // expect 20us error max
   CHECK_LE(data.meanerr, 2e-5);
 }
+
+} // end of anonymous namespace

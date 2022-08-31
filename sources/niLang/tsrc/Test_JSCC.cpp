@@ -6,7 +6,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-namespace ni {
+namespace {
 
 struct FJSCC {
 };
@@ -214,5 +214,5 @@ TEST_FIXTURE(FJSCC,OpenGL) {
   }
 }
 
-} // end of namespace ni
+} // end of anonymous namespace
 #endif

@@ -5,12 +5,46 @@
 
 using namespace ni;
 
+/*
+
+   Pierre: Why the anonymous namespace?
+
+   I just spent 2hrs debugging this:
+   ```
+   Test_Nonnull.cpp
+     struct sTestItem : public cIUnknownImpl<iUnknown> {
+
+   Test_STL_list.cpp
+     struct sTestItem {
+   ```
+
+   It leads to random crashes only in the Linux debug builds (da).
+
+   For some incomprensible reason the Linux linker picks one implementation
+   randomly if you have more than one with the same name in different object
+   files. As opposed to anonymize the symbols automatically or failing the
+   compilation. Also this only happens in the debug build, with any
+   optimisation flag this works as it does on every other platform.
+
+   For reference, I did encounter this before and remembered after reading: https://stackoverflow.com/questions/12323028/c-destructor-not-being-called-depending-on-the-linking-order
+
+   Adding an anonymous namespace in all the tests that declare a local struct
+   fixes the issue. That's probably the best solution.
+
+*/
+namespace {
+
 struct FNonnull {};
 
 struct sTestItem : public cIUnknownImpl<iUnknown> {
   sTestItem(const achar* aName)
       : _name(aName)
-  {}
+  {
+    // niDebugFmt(("... sTestItem"));
+  }
+  ~sTestItem() {
+    // niDebugFmt(("... ~sTestItem"));
+  }
   ni::cString _name;
 };
 
@@ -113,3 +147,5 @@ TEST_FIXTURE(FNonnull,hash_set) {
   CHECK(astl::contains(hashedSet, itemA));
   CHECK(astl::contains(hashedSet, itemB));
 }
+
+} // end of anonymous namespace

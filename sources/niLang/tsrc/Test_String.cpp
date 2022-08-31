@@ -8,6 +8,9 @@
 #include "../src/API/niLang/StringLibIt.h"
 #include "../src/API/niLang/Utils/StrBreakIt.h"
 #include "../src/API/niLang_ModuleDef.h"
+#ifndef niEmbedded // no STL in general on embedded devices
+#include <string>
+#endif
 
 #include "Test_String.h"
 
@@ -204,6 +207,8 @@ static ni::cString _GetUTFPropertyMethod(ni::tBool abSet) {
   utfSetWriteBuffer[3] = (ni::achar)ni::StrToUpper(utfSet[3]);
   return utfSet;
 }
+
+namespace {
 
 // 10 chars
 static const ni::achar  _kaszTestString[] = _A("abcddefghi");
@@ -761,7 +766,6 @@ TEST_FIXTURE(niCore_String,NI_Str_CatSpeed)
 ///////////////////////////////////////////////
 // Test the native implementation for reference
 #ifndef niEmbedded // no STL in general on embedded devices
-#include <string>
 TEST_FIXTURE(niCore_String,STD_Str_CatSpeed)
 {
   TEST_TIMEREPORT();
@@ -1251,3 +1255,5 @@ TEST_FIXTURE(niCore_String,IntPtrIsOtherType) {
   CHECK_EQUAL(_ASTR("-321"), r.Set((intptr_t)-321));
   CHECK_EQUAL(_ASTR("987"), r.Set((uintptr_t)987));
 }
+
+} // end of anonymous namespace

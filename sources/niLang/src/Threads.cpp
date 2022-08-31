@@ -228,20 +228,33 @@ struct ThreadImpl : public cIUnknownImpl<iThread>
   static void* _RunThread(void* data)
 #endif
   {
-    Ptr<ThreadImpl> base = (ThreadImpl*)data;
-    niAssert(base.IsOK());
-#ifdef niWindows
-    niAssert(base->mnID == ThreadGetCurrentThreadID());
-#else
-    base->mnID = ThreadGetCurrentThreadID();
-    base->mThreadProcCompletedEvent.Signal(); // signal for Start
+    tIntPtr r;
+#if !defined niWindows
+    { // WeakPtr scope BEGIN. The scope is important to not leak the WeakPtr
+      // since pthread_exit will exit this function without calling any
+      // destructor.
+      WeakPtr<ThreadImpl> wImpl = (ThreadImpl*)data;
 #endif
-    niAssert(base->mpfnBaseThreadProc != NULL);
-    tIntPtr r = base->mpfnBaseThreadProc(base->mpData);
+      {
+        ThreadImpl* pBase = (ThreadImpl*)data;
+        niAssert(pBase->IsOK());
 #ifdef niWindows
-    return (UINT)r;
+        niAssert(pBase->mnID == ThreadGetCurrentThreadID());
 #else
-    base->mThreadProcCompletedEvent.Signal(); // signal for Join
+        pBase->mnID = ThreadGetCurrentThreadID();
+        pBase->mThreadProcCompletedEvent.Signal(); // signal for Start
+#endif
+        niAssert(pBase->mpfnBaseThreadProc != NULL);
+        r = pBase->mpfnBaseThreadProc(pBase->mpData);
+      }
+#ifdef niWindows
+      return (UINT)r;
+#else
+      QPtr<ThreadImpl> impl = wImpl;
+      if (impl.IsOK()) {
+        impl->mThreadProcCompletedEvent.Signal(); // signal for Join
+      }
+    } // WeakPtr scope end
     pthread_exit((void*)r);
     return (void*)r;
 #endif

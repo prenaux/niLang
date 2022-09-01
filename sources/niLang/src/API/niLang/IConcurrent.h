@@ -338,7 +338,7 @@ inline tBool __stdcall SendMessage(iMessageHandler* apMT, tU32 anID, const Var& 
 inline tBool __stdcall SendMessages(tMessageHandlerSinkLst* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
   if (!apMT) return eFalse;
   niLoopSink(iMessageHandler,it,apMT) {
-    if (!GetConcurrent()->SendMessage(it->_Value(),anID,avarA,avarB))
+    if (!GetConcurrent()->SendMessage(it->_Value().non_null(),anID,avarA,avarB))
       return eFalse;
   }
   return eTrue;
@@ -353,7 +353,7 @@ inline tBool __stdcall QueueMessage(iMessageHandler* apMT, tU32 anID, const Var&
 inline tBool __stdcall QueueMessages(tMessageHandlerSinkLst* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
   if (!apMT) return eFalse;
   niLoopSink(iMessageHandler,it,apMT) {
-    if (!GetConcurrent()->QueueMessage(it->_Value(),anID,avarA,avarB))
+    if (!GetConcurrent()->QueueMessage(it->_Value().non_null(),anID,avarA,avarB))
       return eFalse;
   }
   return eTrue;

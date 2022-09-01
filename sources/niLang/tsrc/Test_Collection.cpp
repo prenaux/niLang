@@ -1,3 +1,4 @@
+#define niNoUnsafePtr
 #include "stdafx.h"
 #include "../src/API/niLang/Utils/CollectionImpl.h"
 
@@ -6,7 +7,7 @@ struct FCollection {
 
 TEST_FIXTURE(FCollection,MutableVector) {
 
-  ni::Ptr<ni::iMutableCollection> vec = CreateCollectionVector(ni::eType_U32);
+  ni::Nonnull<ni::iMutableCollection> vec{CreateCollectionVector(ni::eType_U32)};
   CHECK(vec->IsEmpty());
   CHECK(vec->GetSize() == 0);
 
@@ -17,14 +18,21 @@ TEST_FIXTURE(FCollection,MutableVector) {
   vec->Add(5);
   vec->Add(6);
   // test casting to vector implementation type
-  ni::tU32CVec* nativeVec = (ni::tU32CVec*)vec.ptr();
+  ni::tU32CVec* nativeVec = (ni::tU32CVec*)vec.raw_ptr();
   nativeVec->push_back(7);
   nativeVec->push_back(8);
 
   CHECK_EQUAL(8,vec->GetSize());
 
+  {
+    ni::Ptr<ni::iIterator> itNotFound = vec->Find(1234);
+    CHECK(!itNotFound.has_value());
+    CHECK(itNotFound.is_null());
+  }
+
   ni::Ptr<ni::iIterator> itFive = vec->Find(5);
-  CHECK_EQUAL(5,itFive->Value().GetIntValue());
+  CHECK(itFive.has_value());
+  CHECK_EQUAL(5,itFive.non_null()->Value().GetIntValue());
 
   const ni::tU32 seqResult[7] = {1,2,3,5,6,8,78};
   ni::tU32 seq[7] = {0};
@@ -46,7 +54,7 @@ TEST_FIXTURE(FCollection,MutableVector) {
       CHECK_EQUAL(6,vec->GetSize());
       // itFive has been invalidated because we modified the collection
       // while iterating
-      CHECK(itFive->Value().IsNull());
+      CHECK(itFive.non_null()->Value().IsNull());
       first = ni::eFalse;
     }
     niDebugFmt(("R-V: %d",v));
@@ -84,15 +92,18 @@ TEST_FIXTURE(FCollection,MutableVector) {
   CHECK(vec->Clear());
   CHECK(vec->IsEmpty());
   CHECK_EQUAL(0,vec->GetSize());
-  CHECK(!itFive->HasNext());
-  CHECK(!itFive->IsOK());
+  CHECK(!itFive.non_null()->HasNext());
+  CHECK(!itFive.IsOK());
 }
 
 TEST_FIXTURE(FCollection,MutableMap) {
-  ni::Ptr<ni::iMutableCollection> map = ni::cMutableCollectionImpl<
-      ni::CollectionTraitsMap<
-      ni::CollectionTraitsString,
-      ni::CollectionTraitsU32> >::Create();
+  ni::Nonnull<ni::iMutableCollection> map{
+    ni::cMutableCollectionImpl<
+    ni::CollectionTraitsMap<
+    ni::CollectionTraitsString,
+    ni::CollectionTraitsU32> >::Create()
+  };
+
   CHECK(map->IsEmpty());
   CHECK(map->GetSize() == 0);
 
@@ -118,8 +129,15 @@ TEST_FIXTURE(FCollection,MutableMap) {
   CHECK(map->GetDataPtr() == NULL);
   CHECK(map->GetDataSize() == 0);
 
+  {
+    ni::Ptr<ni::iIterator> itNotFound = map->Find("1234");
+    CHECK(!itNotFound.has_value());
+    CHECK(itNotFound.is_null());
+  }
+
   ni::Ptr<ni::iIterator> itFive = map->Find("5");
-  CHECK_EQUAL(5,itFive->Value().GetIntValue());
+  CHECK(itFive.has_value());
+  CHECK_EQUAL(5,itFive.non_null()->Value().GetIntValue());
 
   const ni::tU32 seqResult[7] = {1,2,3,5,6,8,78};
   ni::tU32 seq[7] = {0};
@@ -134,7 +152,7 @@ TEST_FIXTURE(FCollection,MutableMap) {
       CHECK(map->Put("99",78)); // use 99 as key, cause I want it to be the last one
       CHECK(map->Remove("1"));
       CHECK_EQUAL(6,map->GetSize());
-      CHECK_EQUAL(5,itFive->Value().GetIntValue());
+      CHECK_EQUAL(5,itFive.non_null()->Value().GetIntValue());
       first = ni::eFalse;
     }
     niDebugFmt(("V: %d",v));
@@ -163,6 +181,6 @@ TEST_FIXTURE(FCollection,MutableMap) {
   CHECK(map->Clear());
   CHECK(map->IsEmpty());
   CHECK(map->GetSize() == 0);
-  CHECK(!itFive->HasNext());
-  CHECK(!itFive->IsOK());
+  CHECK(!itFive.non_null()->HasNext());
+  CHECK(!itFive.IsOK());
 }

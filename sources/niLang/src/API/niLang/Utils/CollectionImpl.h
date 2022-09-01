@@ -2,6 +2,10 @@
 #define __COLLECTIONIMPL_H_604D0B86_1048_4125_A19E_CCAAE861924F__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+#ifdef _FLYMAKE
+#define niNoUnsafePtr
+#endif
+
 #include "../Types.h"
 #include "../Var.h"
 #include "../ICollection.h"
@@ -12,6 +16,7 @@
 #include "../STL/map.h"
 #include "../STL/utils.h"
 #include "../Utils/QPtr.h"
+#include "../Utils/Nonnull.h"
 
 namespace ni {
 /** \addtogroup niLang
@@ -325,11 +330,11 @@ struct CollectionTraitsVector : public astl::vector<typename BASE::tValueType>, 
     const tU32 index = CollectionTraitsU32::GetValue(aKey);
     if (index >= aContainer.size())
       return niVarNull;
-    return (typename BASE::tValueRetType)aContainer[index];
+    return Var(aContainer[index]);
   }
   static Var __stdcall GetFirst(const tContainer& aContainer) {
     if (aContainer.empty()) return niVarNull;
-    return (typename BASE::tValueRetType)aContainer.front();
+    return Var(aContainer.front());
   }
   static tBool __stdcall SetFirst(tContainer& aContainer, const Var& aValue) {
     if (aContainer.empty()) return eFalse;
@@ -338,7 +343,7 @@ struct CollectionTraitsVector : public astl::vector<typename BASE::tValueType>, 
   }
   static Var __stdcall GetLast(const tContainer& aContainer) {
     if (aContainer.empty()) return niVarNull;
-    return (typename BASE::tValueRetType)aContainer.back();
+    return Var(aContainer.back());
   }
   static tBool __stdcall SetLast(tContainer& aContainer, const Var& aValue) {
     if (aContainer.empty()) return eFalse;
@@ -421,11 +426,11 @@ struct CollectionTraitsMap : public astl::map<typename KEYT::tValueType,typename
   static Var __stdcall Get(const tContainer& aContainer, const Var& aKey) {
     typename tContainer::iterator it = Find(aContainer,KEYT::GetValue(aKey));
     if (it == aContainer.end()) return niVarNull;
-    return (typename VALT::tValueRetType)it->second;
+    return Var(it->second);
   }
   static Var __stdcall GetFirst(const tContainer& aContainer) {
     if (aContainer.empty()) return niVarNull;
-    return (typename VALT::tValueRetType)aContainer.begin()->second;
+    return Var(aContainer.begin()->second);
   }
   static tBool __stdcall SetFirst(tContainer& aContainer, const Var& aValue) {
     if (aContainer.empty()) return eFalse;
@@ -434,7 +439,7 @@ struct CollectionTraitsMap : public astl::map<typename KEYT::tValueType,typename
   }
   static Var __stdcall GetLast(const tContainer& aContainer) {
     if (aContainer.empty()) return niVarNull;
-    return (typename VALT::tValueRetType)aContainer.rbegin()->second;
+    return Var(aContainer.rbegin()->second);
   }
   static tBool __stdcall SetLast(tContainer& aContainer, const Var& aValue) {
     if (aContainer.empty()) return eFalse;
@@ -503,28 +508,34 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
     tBool            mbAtNext;
 
     sIterator(tThisImmutable* apContainer, const_iterator aIt) {
+      niAssert(niIsOK(apContainer));
       mptrContainer = apContainer;
       mIt = aIt;
       mKey = mVal = niVarNull;
       mbAtNext = eFalse;
-      if (mIt != mptrContainer->_Base().end()) {
-        TRAITS::GetIterator(mptrContainer->_Base(),mIt,mKey,mVal);
+      if (mIt != _GetUncheckedContainerBase().end()) {
+        TRAITS::GetIterator(_GetUncheckedContainerBase(),mIt,mKey,mVal);
       }
     }
     ~sIterator() {
       Invalidate();
     }
 
+    const tContainer& _GetUncheckedContainerBase() const {
+      niAssert(mptrContainer.IsOK());
+      return mptrContainer.raw_ptr()->_Base();
+    }
+
     virtual void __stdcall Invalidate() {
       if (mptrContainer.IsOK()) {
-        mIt = mptrContainer->_Base().end();
+        mIt = _GetUncheckedContainerBase().end();
         mKey = mVal = niVarNull;
         mptrContainer = NULL;
       }
     }
 
     void __stdcall _WeakInvalidate() {
-      if (mIt != mptrContainer->_Base().end()) {
+      if (mIt != _GetUncheckedContainerBase().end()) {
         ++mIt;
         mbAtNext = eTrue;
       }
@@ -535,11 +546,11 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
     }
 
     virtual iCollection* __stdcall GetCollection() const {
-      return mptrContainer;
+      return mptrContainer.raw_ptr();
     }
 
     virtual tBool __stdcall HasNext() const {
-      return (mptrContainer.IsOK() && mIt != mptrContainer->_Base().end());
+      return (mptrContainer.IsOK() && mIt != _GetUncheckedContainerBase().end());
     }
 
     virtual const Var& __stdcall Next() {
@@ -559,7 +570,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
           mKey = mVal = niVarNull;
         }
         else {
-          TRAITS::GetIterator(mptrContainer->_Base(),mIt,mKey,mVal);
+          TRAITS::GetIterator(_GetUncheckedContainerBase(),mIt,mKey,mVal);
         }
       }
       return mVal;
@@ -649,7 +660,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
 
   tBool __stdcall ContainsAll(const iCollection* apCollection) const {
     if (!niIsOK(apCollection)) return eFalse;
-    Ptr<iIterator> it = apCollection->Iterator();
+    Nonnull<iIterator> it = ni::MakeNonnull(apCollection->Iterator());
     while (it->HasNext()) {
       if (!this->Contains(it->Next()))
         return eFalse;
@@ -750,30 +761,40 @@ class cMutableCollectionImpl : public IMMIMPL {
     tBool mbAtNext;
 
     sIterator(tMutable* apContainer, iterator aIt) {
+      niAssert(niIsOK(apContainer));
       mptrContainer = apContainer;
-      mptrContainer->_RegisterIterator(this);
+      mptrContainer.raw_ptr()->_RegisterIterator(this);
       mIt = aIt;
       mKey = mVal = niVarNull;
       mbAtNext = eFalse;
-      if (mIt != mptrContainer->_Base().end()) {
-        TRAITS::GetIterator(mptrContainer->_Base(),mIt,mKey,mVal);
+      if (mIt != _GetUncheckedContainerBase().end()) {
+        TRAITS::GetIterator(_GetUncheckedContainerBase(),mIt,mKey,mVal);
       }
     }
     ~sIterator() {
       Invalidate();
     }
 
+    tContainer& _GetUncheckedContainerBase() {
+      niAssert(mptrContainer.IsOK());
+      return mptrContainer.raw_ptr()->_Base();
+    }
+    const tContainer& _GetUncheckedContainerBase() const {
+      niAssert(mptrContainer.IsOK());
+      return mptrContainer.raw_ptr()->_Base();
+    }
+
     virtual void __stdcall Invalidate() {
       if (mptrContainer.IsOK()) {
-        mIt = mptrContainer->_Base().end();
+        mIt = _GetUncheckedContainerBase().end();
         mKey = mVal = niVarNull;
-        mptrContainer->_UnregisterIterator(this);
+        mptrContainer.raw_ptr()->_UnregisterIterator(this);
         mptrContainer = NULL;
       }
     }
 
     void __stdcall _WeakInvalidate() {
-      if (mIt != mptrContainer->_Base().end()) {
+      if (mIt != _GetUncheckedContainerBase().end()) {
         ++mIt;
         mbAtNext = eTrue;
       }
@@ -784,11 +805,11 @@ class cMutableCollectionImpl : public IMMIMPL {
     }
 
     virtual iCollection* __stdcall GetCollection() const {
-      return mptrContainer;
+      return mptrContainer.raw_ptr();
     }
 
     virtual tBool __stdcall HasNext() const {
-      return (mptrContainer.IsOK() && mIt != mptrContainer->_Base().end());
+      return (mptrContainer.IsOK() && mIt != _GetUncheckedContainerBase().end());
     }
 
     virtual const Var& __stdcall Next() {
@@ -806,7 +827,7 @@ class cMutableCollectionImpl : public IMMIMPL {
           mKey = mVal = niVarNull;
         }
         else {
-          TRAITS::GetIterator(mptrContainer->_Base(),mIt,mKey,mVal);
+          TRAITS::GetIterator(_GetUncheckedContainerBase(),mIt,mKey,mVal);
         }
       }
       return mVal;
@@ -885,7 +906,7 @@ class cMutableCollectionImpl : public IMMIMPL {
 
   tBool __stdcall AddAll(const iCollection* apCollection) {
     if (!niIsOK(apCollection)) return eFalse;
-    Ptr<iIterator> it = apCollection->Iterator();
+    Nonnull<iIterator> it{apCollection->Iterator()};
     while (it->HasNext()) {
       if (!this->Add(it->Next()))
         return eFalse;
@@ -906,7 +927,7 @@ class cMutableCollectionImpl : public IMMIMPL {
 
   tBool __stdcall RemoveAll(const iCollection* apCollection) {
     if (!niIsOK(apCollection)) return eFalse;
-    Ptr<iIterator> it = apCollection->Iterator();
+    Nonnull<iIterator> it{apCollection->Iterator()};
     while (it->HasNext()) {
       this->Remove(it->Next());
     }
@@ -1257,17 +1278,17 @@ TTo ptr_cast(TFrom v) {
 
 #define niLoopIterator(NAME,C)                        \
   if (!niIsOK(C) || (C)->IsEmpty()) {} else           \
-    for (ni::Ptr<ni::iIterator> NAME = C->Iterator(); \
+    for (ni::Nonnull<ni::iIterator> NAME{C->Iterator()}; \
          NAME->HasNext(); NAME->Next())
 
 #define niLoopImmutableIterator(TYPE,NAME,C)                      \
   if (!niIsOK(C) || ni::ptr_cast<TYPE*>(C)->empty()) {} else      \
-    for (ni::Ptr<TYPE::sIterator> NAME = C->_ImmutableIterator(); \
+    for (ni::Nonnull<TYPE::sIterator> NAME{C->_ImmutableIterator()}; \
          NAME->HasNext(); NAME->Next())
 
 #define niLoopMutableIterator(TYPE,NAME,C)                      \
   if (!niIsOK(C) || ni::ptr_cast<TYPE*>(C)->empty()) {} else    \
-    for (ni::Ptr<TYPE::sIterator> NAME = C->_MutableIterator(); \
+    for (ni::Nonnull<TYPE::sIterator> NAME{C->_MutableIterator()}; \
          NAME->HasNext(); NAME->Next())
 
 template <typename T>

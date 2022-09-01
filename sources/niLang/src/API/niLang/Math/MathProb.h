@@ -77,8 +77,8 @@ inline tBool ProbSampleAliasMethod(
   const tF64* q, const tU32* a, const tSize n,
   TRNG&& rngGetNormalizedFloat)
 {
-  niAssert(r && nres >= 1);
-  niAssert(q && a && n >= 1);
+  niCheck(r && nres >= 1, eFalse);
+  niCheck(q && a && n >= 1, eFalse);
 
   const tF64 ndbl = (tF64)n;
   niLoop(i,nres) {
@@ -95,44 +95,43 @@ inline tBool ProbSampleAliasMethod(
 }
 
 template <typename TRNG>
-Ptr<tU32CVec> ProbSampleAliasMethod(
+tBool ProbSampleAliasMethod(
+  astl::non_null<tU32CVec*> r,
   const tSize nres,
-  const ni::tF64CVec* apProbs,
+  astl::non_null<const ni::tF64CVec*> apProbs,
   TRNG&& rngGetNormalizedFloat)
 {
-  niCheck(apProbs && !apProbs->empty(), NULL);
-
+  niCheck(!apProbs->empty(), eFalse);
   // Create the alias arrays used for the prng generation afterward.
-  ni::Ptr<ni::tF64CVec> amq = ni::tF64CVec::Create();
+  ni::Nonnull<ni::tF64CVec> amq(ni::tF64CVec::Create());
   amq->resize(apProbs->size());
-  ni::Ptr<ni::tU32CVec> ama = ni::tU32CVec::Create();
+  ni::Nonnull<ni::tU32CVec> ama(ni::tU32CVec::Create());
   ama->resize(apProbs->size()*2);
   ProbSampleBuildAliasMethodArrays(
     apProbs->data(), apProbs->size(), amq->data(), ama->data());
-
-  ni::Ptr<ni::tU32CVec> r = ni::tU32CVec::Create();
   r->resize(nres);
   ProbSampleAliasMethod(
     r->data(), nres,
     amq->data(), ama->data(), apProbs->size(),
     rngGetNormalizedFloat);
-  return r;
+  return eTrue;
 }
 
-Ptr<tU32CVec> ProbSampleAliasMethod(
+tBool ProbSampleAliasMethod(
+  astl::non_null<tU32CVec*> r,
   const tSize nres,
-  const ni::tF64CVec* apProbs,
+  astl::non_null<const ni::tF64CVec*> apProbs,
   int4* aPRNG = ni_prng_global())
 {
-  niCheck(apProbs && !apProbs->empty(), NULL);
   return ProbSampleAliasMethod(
+    r,
     nres, apProbs,
     [&]() -> ni::tF64 { return ni_prng_next_f64(aPRNG); });
 }
 
 template <typename... Ts>
-ni::Ptr<ni::tF64CVec> ProbArray(Ts... values) {
-  ni::Ptr<ni::tF64CVec> probs = ni::tF64CVec::Create();
+ni::Nonnull<ni::tF64CVec> ProbArray(Ts... values) {
+  ni::Nonnull<ni::tF64CVec> probs(ni::tF64CVec::Create());
   probs->insert(probs->end(), {values...});
   ProbNormalize(probs->data(), probs->size());
   return probs;

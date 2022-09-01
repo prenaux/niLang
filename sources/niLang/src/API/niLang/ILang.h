@@ -708,7 +708,11 @@ niExportFunc(ni::iLang*) GetLang();
 #define niDefConstHString(STR)  niDefConstHString_(STR,#STR)
 #define niGetConstHString(STR)  GetHString_##STR()
 
+#ifdef niNoUnsafePtr
+#define _H(STR)           ni::GetLang()->CreateHString(STR).non_null()
+#else
 #define _H(STR)           ni::GetLang()->CreateHString(STR)
+#endif
 #define _HC(STR)          niGetConstHString(STR)
 #define _HDecl_(NAME,STR) niDefConstHString_(NAME,STR)
 #define _HDecl(STR)       niDefConstHString(STR)
@@ -783,11 +787,11 @@ inline tBool RegisterCreateInstance(const achar* aaszName, iCallback* apCallback
 
 ///////////////////////////////////////////////
 inline tBool UnregisterCreateInstance(const achar* aaszName, iCallback* apCallback) {
-  Ptr<tCreateInstanceCMap> mapCI = ni::GetLang()->GetCreateInstanceMap();
+  Nonnull<tCreateInstanceCMap> mapCI(ni::GetLang()->GetCreateInstanceMap());
   tCreateInstanceCMap::iterator it = mapCI->find(aaszName);
   if (it == mapCI->end())
     return eFalse;
-  if (apCallback && it->second != apCallback)
+  if (apCallback && it->second.ptr() != apCallback)
     return eFalse;
   mapCI->erase(it);
   return eTrue;
@@ -920,7 +924,10 @@ inline Var __stdcall EvalVar(iExpressionContext* apContext, const achar* aExpr) 
   }
 
   Ptr<iExpressionVariable> ev = apContext->Eval(aExpr);
-  return ExpressionVariableToVar(ev);
+  if (ev.is_null())
+    return niVarNull;
+  else
+    return ExpressionVariableToVar(ev.non_null());
 }
 
 ///////////////////////////////////////////////

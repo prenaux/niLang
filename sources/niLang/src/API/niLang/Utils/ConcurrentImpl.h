@@ -36,8 +36,8 @@ struct sRunnable : public ni::cIUnknownImpl<iRunnable> {
   virtual Var __stdcall Run() { return _lambda(); }
 };
 template <typename T>
-Ptr<iRunnable> Runnable(const T& aLambda) {
-  return niNew sRunnable<T>(aLambda);
+Nonnull<iRunnable> Runnable(const T& aLambda) {
+  return ni::NewNonnull<sRunnable<T> >(aLambda);
 }
 
 
@@ -51,8 +51,8 @@ struct sCallback0 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
   }
 };
 template <typename T>
-Ptr<iCallback> Callback0(const T& aLambda) {
-  return niNew sCallback0<T>(aLambda);
+Nonnull<iCallback> Callback0(const T& aLambda) {
+  return ni::NewNonnull<sCallback0<T> >(aLambda);
 }
 
 template <typename T>
@@ -65,8 +65,8 @@ struct sCallback1 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
   }
 };
 template <typename T>
-Ptr<iCallback> Callback1(const T& aLambda) {
-  return niNew sCallback1<T>(aLambda);
+Nonnull<iCallback> Callback1(const T& aLambda) {
+  return ni::NewNonnull<sCallback1<T> >(aLambda);
 }
 
 template <typename T>
@@ -79,8 +79,8 @@ struct sCallback2 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
   }
 };
 template <typename T>
-Ptr<iCallback> Callback2(const T& aLambda) {
-  return niNew sCallback2<T>(aLambda);
+Nonnull<iCallback> Callback2(const T& aLambda) {
+  return ni::NewNonnull<sCallback2<T> >(aLambda);
 }
 
 //! To be used with the MessageHandler<> template to specify a function pointer instead of a lambda.
@@ -103,8 +103,8 @@ struct sMessageHandler : public ni::cIUnknownImpl<iMessageHandler> {
 };
 
 template <typename T>
-Ptr<iMessageHandler> MessageHandler(const T& aLambda, const tU64 anThreadID = ni::ThreadGetCurrentThreadID()) {
-  return niNew sMessageHandler<T>(aLambda, anThreadID);
+Nonnull<iMessageHandler> MessageHandler(const T& aLambda, const tU64 anThreadID = ni::ThreadGetCurrentThreadID()) {
+  return ni::NewNonnull<sMessageHandler<T> >(aLambda, anThreadID);
 }
 
 inline tBool IOExecute(iRunnable* apRunnable) {
@@ -154,9 +154,9 @@ struct sConcurrentSubmit {
   template <typename TReleaseFun>
   inline Ptr<iFuture> operator << (TReleaseFun&& afunRelease) {
     if (!_executor) {
-      Ptr<iFutureValue> val = ni::GetConcurrent()->CreateFutureValue();
+      Nonnull<iFutureValue> val { ni::GetConcurrent()->CreateFutureValue() };
       val->SetValue(afunRelease());
-      return (Ptr<iFuture>&)val;
+      return val;
     }
     return _executor->Submit(ni::Runnable(afunRelease));
   }

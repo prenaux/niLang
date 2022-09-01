@@ -37,7 +37,7 @@ inline Ptr<iCryptoHash> HashString(iCryptoHash* apHash, const achar* aString, co
 
 inline Ptr<iCryptoHash> HashDataTable(iCryptoHash* apHash, iDataTable* apDT) {
   niAssert(niIsOK(apHash));
-  Ptr<iFile> file = GetLang()->CreateFileDynamicMemory(1024, "");
+  Nonnull<iFile> file(GetLang()->CreateFileDynamicMemory(1024, ""));
   if (!GetLang()->SerializeDataTable("dtb",eSerializeMode_Write,apDT,file)) {
     niError("Can't write data table to temporary hash file.");
     return NULL;

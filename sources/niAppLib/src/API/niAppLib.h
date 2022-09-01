@@ -61,7 +61,7 @@ struct AppContext : public ni::cMemImpl {
   ni::Ptr<ni::iUIContext>       _uiContext;
 
   ni::tF32 __stdcall GetContentsScale() const {
-    return _config.GetContentsScale(_window);
+    return _config.GetContentsScale(_window.raw_ptr());
   }
 };
 

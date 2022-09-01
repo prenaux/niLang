@@ -110,11 +110,12 @@ TEST_FIXTURE(FMath,ProbRaw) {
 }
 
 TEST_FIXTURE(FMath,ProbHL) {
-  ni::Ptr<ni::tF64CVec> probs = ProbArray(0.1, 15.0, 50.0, 65.0, 85.0);
+  ni::Nonnull<ni::tF64CVec> probs = ProbArray(0.1, 15.0, 50.0, 65.0, 85.0);
 
   ni::int4 prng = ni_prng_init(123);
   const tU32 knPickCount = 7000;
-  Ptr<tU32CVec> r = ProbSampleAliasMethod(knPickCount, probs, &prng);
+  Nonnull<tU32CVec> r{tU32CVec::Create()};
+  ProbSampleAliasMethod(r, knPickCount, probs, &prng);
   CHECK_EQUAL(knPickCount, r->size());
 
   // Check the results

@@ -7,6 +7,7 @@
 #include "ITime.h"
 #include "IToString.h"
 #include "Utils/SmartPtr.h"
+#include "Utils/Nonnull.h"
 
 namespace ni {
 /** \addtogroup niLang
@@ -734,15 +735,16 @@ struct sWriteBufferToFile {
     if (!_file.IsOK()) {
       return 0;
     }
+    astl::non_null<iFile*> fp = _file.non_null();
     const tSize writeSize = (aCommitSize >= 0) ? aCommitSize : _size;
     tSize r = 0;
     if (writeSize > 0) {
       if (_ownedMemory) {
-        r = _file->WriteRaw(_ownedMemory, writeSize);
+        r = fp->WriteRaw(_ownedMemory, writeSize);
         niFree(_ownedMemory);
       }
       else {
-        _file->Seek(writeSize);
+        fp->Seek(writeSize);
         r = _size;
       }
     }

@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 #include "../ISinkList.h"
 #include "../Utils/CollectionImpl.h"
-#include "SmartPtr.h"
+#include "Nonnull.h"
 #include "Sync.h"
 
 namespace ni {
@@ -63,7 +63,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     if (mCollection->find(apSink) != mCollection->end())
       return eFalse;
     // add to the back of the list
-    mCollection = tImmutableCollection::Add(mCollection,apSink);
+    mCollection = ni::MakeNonnull(tImmutableCollection::Add(mCollection,apSink));
     return eTrue;
   }
   tBool __stdcall AddSink(iUnknown* apSink) niOverride {
@@ -81,7 +81,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     // add to the front of the list
     typename tImmutableCollection::tContainer newContainer = mCollection->GetUnderlyingContainer();
     newContainer.insert(newContainer.begin(),apSink);
-    mCollection = tImmutableCollection::Create(newContainer);
+    mCollection = ni::MakeNonnull(tImmutableCollection::Create(newContainer));
     return eTrue;
   }
   tBool __stdcall AddFrontSink(iUnknown* apSink) niImpl {
@@ -96,9 +96,8 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     if (bContains) {
       __sync_lock();
       Ptr<T> sink = apSink;
-      mCollection = tImmutableCollection::Remove(mCollection,apSink);
-      if (!mCollection.IsOK())
-        mCollection = EMPTY();
+      auto newColl = tImmutableCollection::Remove(mCollection,apSink);
+      mCollection = ni::IsOK(newColl) ? ni::MakeNonnull(newColl) : EMPTY();
     }
     return bContains;
   }
@@ -181,35 +180,31 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
  private:
   __sync_mutex();
 
-  static tImmutableCollection* EMPTY() {
-    static tImmutableCollection* _EMPTY = NULL;
-    if (_EMPTY == NULL) {
-      _EMPTY = tImmutableCollection::Create();
-      _EMPTY->AddRef();
-    }
+  static Nonnull<tImmutableCollection>& EMPTY() {
+    static Nonnull<tImmutableCollection> _EMPTY = ni::MakeNonnull(tImmutableCollection::Create());
     return _EMPTY;
   }
 
-  Ptr<tImmutableCollection> mCollection;
-  tBool                     mbMute;
+  Nonnull<tImmutableCollection> mCollection;
+  tBool                         mbMute;
 };
 
 #define niLoopSink(TYPE,NAME,C)                                         \
-  if ((!niIsOK(C)) || (C)->IsEmpty() || (C)->GetMute()) {} else           \
-    for (Ptr<ni::SinkList<TYPE>::sIterator> NAME = (C)->_ImmutableIterator(); \
+  if ((!niIsOK(C)) || (C)->IsEmpty() || (C)->GetMute()) {} else         \
+    for (ni::Nonnull<ni::SinkList<TYPE>::sIterator> NAME((C)->_ImmutableIterator()); \
          NAME->HasNext(); NAME->Next())
 
-#define niCallSinkVoid_(NAME,SINK,METH,PARAMS)                       \
-  niLoopSink(i##NAME,__sinkIt,SINK) {                                   \
-    i##NAME* pSink = __sinkIt->_Value();                                \
-    pSink->On##NAME##_##METH PARAMS;                                    \
+#define niCallSinkVoid_(NAME,SINK,METH,PARAMS)  \
+  niLoopSink(i##NAME,__sinkIt,SINK) {           \
+    i##NAME* pSink = __sinkIt->_Value();        \
+    pSink->On##NAME##_##METH PARAMS;            \
   }
 
-#define niCallSinkRetTest_(NAME,SINK,METH,PARAMS,RET,RETTEST)         \
-  niLoopSink(i##NAME,__sinkIt,SINK) {                                   \
-    i##NAME* pSink = __sinkIt->_Value();                                \
-    (RET) = pSink->On##NAME##_##METH PARAMS;                            \
-    if (!(RETTEST)) break;                                              \
+#define niCallSinkRetTest_(NAME,SINK,METH,PARAMS,RET,RETTEST) \
+  niLoopSink(i##NAME,__sinkIt,SINK) {                         \
+    i##NAME* pSink = __sinkIt->_Value();                      \
+    (RET) = pSink->On##NAME##_##METH PARAMS;                  \
+    if (!(RETTEST)) break;                                    \
   }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

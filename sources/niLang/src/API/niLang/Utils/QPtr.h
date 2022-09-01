@@ -14,6 +14,12 @@ namespace ni {
  * @{
  */
 
+#if !defined niNoUnsafePtr
+#define niQPtr_HasUnsafeAPI
+#else
+#define niQPtr_NoUnsafeAPI
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 class QPtr
@@ -28,35 +34,45 @@ class QPtr
   QPtr(const T* aP) {
     mPtr = (T*)aP;
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
   }
   QPtr(const Ptr<T>& aP) {
     mPtr = aP.ptr();
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
   }
   QPtr(const QPtr<T>& aP) {
     mPtr = aP.ptr();
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
   }
   QPtr(const Var& aV) {
     mPtr = VarQueryInterface<T>(aV);
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
+  }
+  QPtr(const Nonnull<T>& aP) {
+    mPtr = niConstCast(T*,aP.raw_ptr());
+    ni::AddRef(mPtr);
   }
 
   template <typename S>
   QPtr(const S* aP) {
     mPtr = ni::QueryInterface<tInterface>(aP);
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
   }
   template <typename S>
   QPtr(const Ptr<S>& aP) {
     mPtr = (T*)ni::QueryInterface<tInterface>(aP.ptr());
     if (mPtr)
-      mPtr->AddRef();
+      ni::AddRef(mPtr);
+  }
+  template <typename S>
+  QPtr(const Nonnull<S>& aP) {
+    mPtr = (T*)ni::QueryInterface<tInterface>(aP.raw_ptr());
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
   QPtr(const WeakPtr<T>& aP) {
@@ -71,13 +87,13 @@ class QPtr
       if (mPtr == NULL) {
         // If QueryInterface failed we have to release the object since we
         // just added a reference to it with DerefAndAddRef
-        sp->Release();
+        ni::Release(sp);
       }
       // If QueryInterface returns a different object we need add a reference
       // to it and release the original one
       else if ((tIntPtr)sp != (tIntPtr)mPtr) {
-        mPtr->AddRef();
-        sp->Release();
+        ni::AddRef(mPtr);
+        ni::Release(sp);
       }
     }
     else {
@@ -87,7 +103,7 @@ class QPtr
 
   ~QPtr() {
     if (mPtr)
-      mPtr->Release();
+      ni::Release(mPtr);
   }
 
   // Assignment operator
@@ -99,11 +115,21 @@ class QPtr
     this->Swap(newp);
     return *this;
   }
+  QPtr& operator = (const astl::non_null<T*> &newp) {
+    this->Swap(newp.raw_ptr());
+    return *this;
+  }
+  QPtr& operator = (const Nonnull<T> &newp) {
+    this->Swap(newp.raw_ptr());
+    return *this;
+  }
 
   // Check whether the pointer holds a valid object.
   bool IsOK() const {
     return mPtr != NULL && mPtr->IsOK();
   }
+
+#if defined niQPtr_HasUnsafeAPI
 
   // Casting to a normal pointer.
   operator T* () const {
@@ -121,19 +147,21 @@ class QPtr
     niAssert(IsOK());
     return mPtr;
   }
+#endif
 
   // Replace pointer.
   void Swap(const T* apPointer) {
     T* newp = (T*)apPointer;
     if (newp != mPtr) {
       if (newp)
-        newp->AddRef();
+        ni::AddRef(newp);
       if (mPtr)
-        mPtr->Release();
+        ni::Release(mPtr);
     }
     mPtr = newp;
   }
 
+#if defined niQPtr_HasUnsafeAPI
   //! Null the smart pointer and return it's contained pointer.
   //! \remark This method makes sure that the pointer returned is not released.
   //!     It can return zero reference objects.
@@ -145,11 +173,32 @@ class QPtr
     rawPtr->SetNumRefs(rawPtr->GetNumRefs()-1000);
     return rawPtr;
   }
+#endif
 
   // shared_ptr like accessors
   T* ptr() const { return mPtr;  }
   T** ptrptr() const { return &mPtr;  }
+
   void swap(T* newp) { this->Swap(newp); }
+
+  tBool is_null() const {
+    return mPtr == nullptr;
+  }
+  tBool has_value() const {
+    return mPtr != nullptr;
+  }
+  ni::Nonnull<T>& non_null() const {
+    niPanicAssert(mPtr != nullptr);
+    return niCCast(Nonnull<T>&,*this);
+  }
+  ni::Nonnull<const T>& c_non_null() const {
+    niPanicAssert(mPtr != nullptr);
+    return niCCast(Nonnull<const T>&,*this);
+  }
+
+  T* raw_ptr() const {
+    return const_cast<T*>(mPtr);
+  }
 
  private:
   // Prevent if (PTR), if (!PTR), if (PTR == 0/NULL), if (PTR != 0/NULL)
@@ -161,8 +210,27 @@ class QPtr
   // To confuse the compiler if someone tries to delete the smart pointer
   operator void* () const;
 
+  // unwanted operators...pointers only point to single objects!
+  QPtr& operator++() = delete;
+  QPtr& operator--() = delete;
+  QPtr operator++(int) = delete;
+  QPtr operator--(int) = delete;
+  QPtr& operator+=(std::ptrdiff_t) = delete;
+  QPtr& operator-=(std::ptrdiff_t) = delete;
+  void operator[](std::ptrdiff_t) const = delete;
+
   T* mPtr;
 };
+
+// more unwanted operators
+template <class T, class U>
+std::ptrdiff_t operator-(const QPtr<T>&, const QPtr<U>&) = delete;
+template <class T>
+QPtr<T> operator-(const QPtr<T>&, std::ptrdiff_t) = delete;
+template <class T>
+QPtr<T> operator+(const QPtr<T>&, std::ptrdiff_t) = delete;
+template <class T>
+QPtr<T> operator+(std::ptrdiff_t, const QPtr<T>&) = delete;
 
 ///
 template<class T, class U> inline bool operator==(QPtr<T> const& a, QPtr<U> const& b) {

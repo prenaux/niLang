@@ -4,9 +4,12 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include "../Types.h"
-#include "../STL/maybe.h"
 #include "../STL/non_null.h"
-#include "SmartPtr.h"
+#include "../STL/EASTL/utility.h"
+
+#ifndef TRACE_NI_NONNULL
+#define TRACE_NI_NONNULL(X)
+#endif
 
 namespace ni {
 /** \addtogroup niLang
@@ -21,6 +24,8 @@ template <typename T>
 struct Nonnull
 {
   niClassNoHeapAlloc(Nonnull);
+  template<typename U>
+  friend class Nonnull;
 
  public:
   typedef astl::non_null<T*> non_null_t;
@@ -29,19 +34,65 @@ struct Nonnull
   // Explicit so that its clear at callsites that it will enforce it to be
   // non-null.
   explicit Nonnull(const T* aPtr) {
+    TRACE_NI_NONNULL("COPY explicit constructor T*")
+    niPanicAssertMsg(aPtr != nullptr,
+                     "Nonnull explicit constructor, T* can't be null.");
     mRefPtr = niConstCast(T*,aPtr);
-    niPanicAssert(niIsOK(mRefPtr));
+    ni::AddRef(mRefPtr);
+  }
+
+  Nonnull(const astl::non_null<T*> aRight) {
+    TRACE_NI_NONNULL("COPY constructor astl::non_null<T>")
+    niAssertMsg(aRight.raw_ptr() != nullptr,
+                "Nonnull copy constructor, astl::non_null<T> can't be null.");
+    mRefPtr = aRight.raw_ptr();
+    ni::AddRef(mRefPtr);
+  }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Nonnull(const astl::non_null<U*>& aRight) {
+    TRACE_NI_NONNULL("COPY constructor astl::non_null<U>")
+    niAssertMsg(aRight.raw_ptr() != nullptr,
+                "Nonnull copy constructor, astl::non_null<U> can't be null.");
+    mRefPtr = (T*)aRight.raw_ptr();
     ni::AddRef(mRefPtr);
   }
 
   Nonnull(const Nonnull<T>& aRight) {
-    // Call the copy operator
-    *this = aRight;
+    TRACE_NI_NONNULL("COPY constructor<T>")
+    niAssertMsg(aRight.mRefPtr != nullptr,
+                "Nonnull copy constructor, Nonnull<T> can't be null.");
+    mRefPtr = aRight.mRefPtr;
+    ni::AddRef(mRefPtr);
+  }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Nonnull(const Nonnull<U>& aRight) {
+    TRACE_NI_NONNULL("COPY constructor<U>");
+    niAssertMsg(aRight.mRefPtr != nullptr,
+                "Nonnull copy constructor, Nonnull<U> can't be null.");
+    mRefPtr = aRight.mRefPtr;
+    ni::AddRef(mRefPtr);
   }
 
   Nonnull(Nonnull<T>&& aRight) {
-    // Call the move operator
-    *this = astl::move(aRight);
+    TRACE_NI_NONNULL("MOVE constructor<T>");
+    niAssertMsg(aRight.mRefPtr != nullptr,
+                "Nonnull move constructor, Nonnull<T> can't be null.");
+    mRefPtr = aRight.mRefPtr;
+    aRight.mRefPtr = NULL;
+  }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Nonnull(Nonnull<U>&& aRight) {
+    TRACE_NI_NONNULL("MOVE constructor<U>");
+    niAssertMsg(aRight.mRefPtr != nullptr,
+                "Nonnull copy constructor, Nonnull<U> can't be null.");
+    mRefPtr = aRight.mRefPtr;
+    aRight.mRefPtr = NULL;
   }
 
   ~Nonnull() {
@@ -53,23 +104,37 @@ struct Nonnull
 
   // Copy operator
   Nonnull& operator = (const Nonnull<T>& aRight) {
-    niPanicAssert(niIsOK(aRight.mRefPtr));
-    mRefPtr = aRight.mRefPtr;
-    ni::AddRef(mRefPtr);
+    TRACE_NI_NONNULL("COPY operator=");
+    if (mRefPtr != aRight.mRefPtr) {
+      if (mRefPtr) {
+        ni::Release(mRefPtr);
+      }
+      niAssertMsg(aRight.mRefPtr != nullptr,
+                  "Nonnull<T>& operator= copy, aRight can't be null.");
+      mRefPtr = aRight.mRefPtr;
+      ni::AddRef(mRefPtr);
+    }
     return *this;
   }
 
   // Move operator
   Nonnull& operator = (Nonnull<T>&& aRight) {
-    niPanicAssert(niIsOK(aRight.mRefPtr));
-    mRefPtr = aRight.mRefPtr;
-    aRight.mRefPtr = NULL;
+    TRACE_NI_NONNULL("MOVE operator=");
+    if (mRefPtr != aRight.mRefPtr) {
+      if (mRefPtr) {
+        ni::Release(mRefPtr);
+      }
+      niAssertMsg(aRight.mRefPtr != nullptr,
+                  "Nonnull<T>&& operator= move, aRight can't be null.");
+      mRefPtr = aRight.mRefPtr;
+      aRight.mRefPtr = NULL;
+    }
     return *this;
   }
 
   // Casting to a non_null pointer.
   operator non_null_t () const {
-    return ptr();
+    return non_null();
   }
 
   // Casting to a T* pointer.
@@ -82,7 +147,7 @@ struct Nonnull
     typename U = T,
     typename eastl::enable_if<!std::is_const<U>::value,int>::type* = nullptr>
   operator const_non_null_t () const {
-    return c_ptr();
+    return c_non_null();
   }
 
   // Casting to a const T* pointer.
@@ -95,24 +160,27 @@ struct Nonnull
 
   // Dereference operator
   T& operator * () const {
-    niDebugAssert(niIsOK(mRefPtr));
+    niDebugAssert(mRefPtr != nullptr);
     return *mRefPtr;
   }
 
   // Arrow operator, allow to use regular C syntax to access members of class.
   T* operator -> (void) const {
-    niDebugAssert(niIsOK(mRefPtr));
+    niDebugAssert(mRefPtr != nullptr);
     return mRefPtr;
   }
 
-  // shared_ptr like accessors
-  non_null_t ptr() const {
-    niDebugAssert(niIsOK(mRefPtr));
+  non_null_t non_null() const {
+    niDebugAssert(mRefPtr != nullptr);
     return niCCast(astl::non_null<T*>&,mRefPtr);
   }
-  const_non_null_t c_ptr() const {
-    niDebugAssert(niIsOK(mRefPtr));
+  const_non_null_t c_non_null() const {
+    niDebugAssert(mRefPtr != nullptr);
     return niCCast(astl::non_null<const T*>&,mRefPtr);
+  }
+
+  T* raw_ptr() const {
+    return const_cast<T*>(mRefPtr);
   }
 
  private:
@@ -126,29 +194,26 @@ struct Nonnull
   T* mRefPtr;
 };
 
-niCAssert(sizeof(Nonnull<iUnknown>) == sizeof(Ptr<iUnknown>));
+niCAssert(sizeof(Nonnull<iUnknown>) == sizeof(iUnknown*));
 
 template<class T, class U> inline bool operator==(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() == b.ptr();
+  return a.raw_ptr() == b.raw_ptr();
 }
 template<class T, class U> inline bool operator!=(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() != b.ptr();
+  return a.raw_ptr() != b.raw_ptr();
 }
 template<class T, class U> inline bool operator<(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() < b.ptr();
+  return a.raw_ptr() < b.raw_ptr();
 }
 template<class T, class U> inline bool operator>(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() > b.ptr();
+  return a.raw_ptr() > b.raw_ptr();
 }
 template<class T, class U> inline bool operator<=(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() <= b.ptr();
+  return a.raw_ptr() <= b.raw_ptr();
 }
 template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Nonnull<U> const& b) {
-  return a.ptr() >= b.ptr();
+  return a.raw_ptr() >= b.raw_ptr();
 }
-
-template <typename T>
-using MaybePtr = astl::maybe<ni::Nonnull<T> >;
 
 template <typename T, typename... Args>
 inline EA_CONSTEXPR ni::Nonnull<T> NewNonnull(Args&&... args) {
@@ -160,38 +225,6 @@ inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
   return Nonnull<T>(v);
 }
 
-template <typename T>
-inline EA_CONSTEXPR MaybePtr<T> JustNonnull(T* v) {
-  return astl::just(Nonnull<T>(v));
-}
-template <typename T>
-inline EA_CONSTEXPR MaybePtr<T> JustNonnull(const Ptr<T>& v) {
-  return JustNonnull(v.ptr());
-}
-
-template <typename T, typename... Args>
-inline EA_CONSTEXPR MaybePtr<T> NewMaybePtr(Args&&... args) {
-  return JustNonnull(niNew T(eastl::forward<Args>(args)...));
-}
-
-template <typename T>
-inline EA_CONSTEXPR MaybePtr<T> MakeMaybePtr(T* v) {
-  if (v == nullptr) {
-    return ASTL_NOTHING;
-  }
-  else {
-    return JustNonnull<T>(v);
-  }
-}
-template <typename T>
-inline EA_CONSTEXPR MaybePtr<T> MakeMaybePtr(const Ptr<T>& v) {
-  return MakeMaybePtr(v.ptr());
-}
-
-template <typename T>
-inline EA_CONSTEXPR astl::maybe<ni::Nonnull<const T> >& ConstMaybePtr(const MaybePtr<T>& v) {
-  return niCCast(astl::maybe<ni::Nonnull<const T> >&,v);
-}
 
 /**@}*/
 /**@}*/
@@ -202,7 +235,7 @@ namespace eastl {
 template <typename T>
 struct hash<ni::Nonnull<T> > {
   size_t operator()(const ni::Nonnull<T>& v) const {
-    return eastl::hash<typename ni::Nonnull<T>::non_null_t>{}(v.ptr());
+    return eastl::hash<T*>{}(v.raw_ptr());
   }
 };
 

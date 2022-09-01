@@ -70,6 +70,19 @@ struct WeakPtr {
     return (tIntPtr)mWeakPtrObject.ptr();
   }
 
+  tBool is_null() const {
+    return mWeakPtrObject.raw_ptr() == nullptr;
+  }
+  tBool has_value() const {
+    return mWeakPtrObject.raw_ptr() != nullptr;
+  }
+  ni::Nonnull<T> non_null() const {
+    return ni::MakeNonnull(mWeakPtrObject.raw_ptr());
+  }
+  ni::Nonnull<const T> c_non_null() const {
+    return ni::MakeNonnull(mWeakPtrObject.raw_ptr());
+  }
+
  private:
   Ptr<iUnknown> mWeakPtrObject;
 
@@ -87,7 +100,26 @@ struct WeakPtr {
 
   // To confuse the compiler if someone tries to delete the smart pointer
   operator void* () const;
+
+  // unwanted operators...pointers only point to single objects!
+  WeakPtr& operator++() = delete;
+  WeakPtr& operator--() = delete;
+  WeakPtr operator++(int) = delete;
+  WeakPtr operator--(int) = delete;
+  WeakPtr& operator+=(std::ptrdiff_t) = delete;
+  WeakPtr& operator-=(std::ptrdiff_t) = delete;
+  void operator[](std::ptrdiff_t) const = delete;
 };
+
+// more unwanted operators
+template <class T, class U>
+std::ptrdiff_t operator-(const WeakPtr<T>&, const WeakPtr<U>&) = delete;
+template <class T>
+WeakPtr<T> operator-(const WeakPtr<T>&, std::ptrdiff_t) = delete;
+template <class T>
+WeakPtr<T> operator+(const WeakPtr<T>&, std::ptrdiff_t) = delete;
+template <class T>
+WeakPtr<T> operator+(std::ptrdiff_t, const WeakPtr<T>&) = delete;
 
 template <typename T>
 __forceinline bool IsNullPtr(WeakPtr<T> const& a) {
@@ -112,12 +144,6 @@ template<class T, class U> inline bool operator<=(WeakPtr<T> const& a, WeakPtr<U
 template<class T, class U> inline bool operator>=(WeakPtr<T> const& a, WeakPtr<U> const& b) {
   return a.__GetWeakObjecIntPtr() >= b.__GetWeakObjecIntPtr();
 }
-
-//! MemberWeakPtr is a weak pointer that requires to be initialized when constructed.
-template <typename T>
-struct MemberWeakPtr : public WeakPtr<T> {
-  MemberWeakPtr(T* apM) : WeakPtr<T>(apM) {}
-};
 
 template<class T>
 inline Ptr<T>::Ptr(const WeakPtr<T>& aP) {

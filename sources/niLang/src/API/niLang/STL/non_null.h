@@ -61,21 +61,21 @@ struct non_null
   }
 
   template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
-  constexpr non_null(const non_null<U>& other) : non_null(other.get())
+  constexpr non_null(const non_null<U>& other) : non_null(other.raw_ptr())
   {}
 
   non_null(non_null&& other) = default;
   non_null(const non_null& other) = default;
   non_null& operator=(const non_null& other) = default;
-  constexpr eastl::conditional_t<eastl::is_copy_constructible<T>::value, T, const T&> get() const
+  constexpr eastl::conditional_t<eastl::is_copy_constructible<T>::value, T, const T&> raw_ptr() const
   {
     EASTL_ASSERT(ptr_ != nullptr);
     return ptr_;
   }
 
-  constexpr operator T() const { return get(); }
-  constexpr decltype(auto) operator->() const { return get(); }
-  constexpr decltype(auto) operator*() const { return *get(); }
+  constexpr operator T() const { return raw_ptr(); }
+  constexpr decltype(auto) operator->() const { return raw_ptr(); }
+  constexpr decltype(auto) operator*() const { return *raw_ptr(); }
 
   // prevents compilation when someone attempts to assign a null pointer constant
   non_null(std::nullptr_t) = delete;
@@ -94,60 +94,6 @@ struct non_null
   T ptr_;
 };
 
-template <class T>
-auto make_non_null(T&& t) noexcept
-{
-  return non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>>{eastl::forward<T>(t)};
-}
-
-template <class T, class U>
-auto operator==(const non_null<T>& lhs,
-                const non_null<U>& rhs) noexcept(noexcept(lhs.get() == rhs.get()))
-    -> decltype(lhs.get() == rhs.get())
-{
-  return lhs.get() == rhs.get();
-}
-
-template <class T, class U>
-auto operator!=(const non_null<T>& lhs,
-                const non_null<U>& rhs) noexcept(noexcept(lhs.get() != rhs.get()))
-    -> decltype(lhs.get() != rhs.get())
-{
-  return lhs.get() != rhs.get();
-}
-
-template <class T, class U>
-auto operator<(const non_null<T>& lhs,
-               const non_null<U>& rhs) noexcept(noexcept(lhs.get() < rhs.get()))
-    -> decltype(lhs.get() < rhs.get())
-{
-  return lhs.get() < rhs.get();
-}
-
-template <class T, class U>
-auto operator<=(const non_null<T>& lhs,
-                const non_null<U>& rhs) noexcept(noexcept(lhs.get() <= rhs.get()))
-    -> decltype(lhs.get() <= rhs.get())
-{
-  return lhs.get() <= rhs.get();
-}
-
-template <class T, class U>
-auto operator>(const non_null<T>& lhs,
-               const non_null<U>& rhs) noexcept(noexcept(lhs.get() > rhs.get()))
-    -> decltype(lhs.get() > rhs.get())
-{
-  return lhs.get() > rhs.get();
-}
-
-template <class T, class U>
-auto operator>=(const non_null<T>& lhs,
-                const non_null<U>& rhs) noexcept(noexcept(lhs.get() >= rhs.get()))
-    -> decltype(lhs.get() >= rhs.get())
-{
-  return lhs.get() >= rhs.get();
-}
-
 // more unwanted operators
 template <class T, class U>
 std::ptrdiff_t operator-(const non_null<T>&, const non_null<U>&) = delete;
@@ -158,7 +104,61 @@ non_null<T> operator+(const non_null<T>&, std::ptrdiff_t) = delete;
 template <class T>
 non_null<T> operator+(std::ptrdiff_t, const non_null<T>&) = delete;
 
+template <class T, class U>
+auto operator==(const non_null<T>& lhs,
+                const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() == rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() == rhs.raw_ptr())
+{
+  return lhs.raw_ptr() == rhs.raw_ptr();
+}
+
+template <class T, class U>
+auto operator!=(const non_null<T>& lhs,
+                const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() != rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() != rhs.raw_ptr())
+{
+  return lhs.raw_ptr() != rhs.raw_ptr();
+}
+
+template <class T, class U>
+auto operator<(const non_null<T>& lhs,
+               const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() < rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() < rhs.raw_ptr())
+{
+  return lhs.raw_ptr() < rhs.raw_ptr();
+}
+
+template <class T, class U>
+auto operator<=(const non_null<T>& lhs,
+                const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() <= rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() <= rhs.raw_ptr())
+{
+  return lhs.raw_ptr() <= rhs.raw_ptr();
+}
+
+template <class T, class U>
+auto operator>(const non_null<T>& lhs,
+               const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() > rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() > rhs.raw_ptr())
+{
+  return lhs.raw_ptr() > rhs.raw_ptr();
+}
+
+template <class T, class U>
+auto operator>=(const non_null<T>& lhs,
+                const non_null<U>& rhs) noexcept(noexcept(lhs.raw_ptr() >= rhs.raw_ptr()))
+    -> decltype(lhs.raw_ptr() >= rhs.raw_ptr())
+{
+  return lhs.raw_ptr() >= rhs.raw_ptr();
+}
+
 static_assert(sizeof(non_null<int*>) == sizeof(int*), "non_null<> must be the same size as a pointer.");
+
+template <class T>
+auto make_non_null(T&& t) noexcept
+{
+  return non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>>{eastl::forward<T>(t)};
+}
 
 #if (defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L))
 
@@ -175,7 +175,7 @@ namespace eastl {
 template <typename T>
 struct hash<astl::non_null<T> > {
   size_t operator()(const astl::non_null<T>& v) const {
-    return eastl::hash<T>{}(v.get());
+    return eastl::hash<T>{}(v.raw_ptr());
   }
 };
 

@@ -340,6 +340,28 @@ struct Var : public VarData
     return *this;
   }
 
+  template <typename S>
+  Var(const astl::non_null<S>& aP) {
+    mType = eType_Null;
+    SetIUnknownPointer(aP.raw_ptr());
+  }
+  template <typename S>
+  Var& operator = (const astl::non_null<S>& aP) {
+    SetIUnknownPointer(aP.raw_ptr());
+    return *this;
+  }
+
+  template <typename S>
+  Var(const Nonnull<S>& aP) {
+    mType = eType_Null;
+    SetIUnknownPointer(aP.raw_ptr());
+  }
+  template <typename S>
+  Var& operator = (const Nonnull<S>& aP) {
+    SetIUnknownPointer(aP.raw_ptr());
+    return *this;
+  }
+
   inline void SetIUnknownPointer(iUnknown* anV) {
     if (IsIUnknownPointer() && mpIUnknown == anV)
       return;

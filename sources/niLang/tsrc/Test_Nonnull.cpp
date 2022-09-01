@@ -1,4 +1,9 @@
+#define niNoUnsafePtr
+void Test_Nonnull_Trace(const char* msg);
+#define TRACE_NI_NONNULL(X) Test_Nonnull_Trace("ni::Nonnull " X);
+
 #include "stdafx.h"
+#include <niLang/StringBase.h>
 #include <niLang/Utils/Nonnull.h>
 #include <niLang/STL/set.h>
 #include <niLang/STL/hash_set.h>
@@ -26,26 +31,49 @@ using namespace ni;
    compilation. Also this only happens in the debug build, with any
    optimisation flag this works as it does on every other platform.
 
-   For reference, I did encounter this before and remembered after reading: https://stackoverflow.com/questions/12323028/c-destructor-not-being-called-depending-on-the-linking-order
-
    Adding an anonymous namespace in all the tests that declare a local struct
    fixes the issue. That's probably the best solution.
 
 */
+void Test_Nonnull_Trace(const char* msg) {
+  niLog(Debug,msg);
+}
+
 namespace {
 
 struct FNonnull {};
 
+struct sAddRefReleaseCounter {
+  ni::tU32 _numAddRef = 0;
+  ni::tU32 _numRelease = 0;
+};
+
 struct sTestItem : public cIUnknownImpl<iUnknown> {
-  sTestItem(const achar* aName)
+  sTestItem(const achar* aName, sAddRefReleaseCounter* apAddRefReleaseCounter = NULL)
       : _name(aName)
+      , _addRefReleaseCounter(apAddRefReleaseCounter)
   {
     // niDebugFmt(("... sTestItem"));
   }
   ~sTestItem() {
     // niDebugFmt(("... ~sTestItem"));
   }
+
+  virtual tI32 __stdcall AddRef() {
+    if (_addRefReleaseCounter) {
+      ++_addRefReleaseCounter->_numAddRef;
+    }
+    NI_UNKIMPL_ADDREF();
+  }
+  virtual tI32 __stdcall Release() {
+    if (_addRefReleaseCounter) {
+      ++_addRefReleaseCounter->_numRelease;
+    }
+    NI_UNKIMPL_RELEASE();
+  }
+
   ni::cString _name;
+  sAddRefReleaseCounter* _addRefReleaseCounter;
 };
 
 ni::cString TestNonnull(astl::non_null<sTestItem*> v) {
@@ -78,9 +106,58 @@ TEST_FIXTURE(FNonnull,base) {
   CHECK_EQUAL(1, itemA->GetNumRefs());
   CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
   CHECK_EQUAL(_ASTR("fooItem"), TestNonnull(itemA));
-  CHECK_EQUAL(_ASTR("fooItem"), TestNonnull(itemA.ptr()));
+  CHECK_EQUAL(_ASTR("fooItem"), TestNonnull(itemA.non_null()));
   CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA));
-  CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA.c_ptr()));
+  CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA.c_non_null()));
+}
+
+TEST_FIXTURE(FNonnull,RefCount) {
+  sAddRefReleaseCounter counterA;
+  sAddRefReleaseCounter counterB;
+  sAddRefReleaseCounter counterC;
+
+  {
+    Ptr<sTestItem> itemA = ni::NewPtr<sTestItem>("itemA", &counterA);
+    CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
+    Ptr<sTestItem> itemB = ni::NewPtr<sTestItem>("itemB", &counterB);
+    CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
+    Nonnull<sTestItem> nnC = ni::NewNonnull<sTestItem>("itemC", &counterC);
+    CHECK_EQUAL(1, nnC->GetNumRefs());
+    {
+      Nonnull<sTestItem> nnA = ni::MakeNonnull(itemA.raw_ptr());
+      CHECK_NOT_EQUAL(nullptr, (sTestItem*&)nnA);
+      CHECK_EQUAL(2, itemA.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(1, nnC->GetNumRefs());
+
+      nnA = itemB.non_null();
+      CHECK_NOT_EQUAL(nullptr, (sTestItem*&)nnA);
+      CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(2, itemB.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(1, nnC->GetNumRefs());
+
+      nnA = nnC;
+      CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
+      CHECK_EQUAL(2, nnC->GetNumRefs());
+    }
+    CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
+    CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
+    CHECK_EQUAL(1, nnC->GetNumRefs());
+  }
+
+  niDebugFmt(("... itemA numAddRef: %d, numRelease: %d",
+              counterA._numAddRef, counterA._numRelease));
+  niDebugFmt(("... itemB numAddRef: %d, numRelease: %d",
+              counterB._numAddRef, counterB._numRelease));
+  niDebugFmt(("... itemC numAddRef: %d, numRelease: %d",
+              counterC._numAddRef, counterC._numRelease));
+  CHECK_EQUAL(2, counterA._numAddRef);
+  CHECK_EQUAL(2, counterA._numRelease);
+  CHECK_EQUAL(2, counterB._numAddRef);
+  CHECK_EQUAL(2, counterB._numRelease);
+  CHECK_EQUAL(2, counterC._numAddRef);
+  CHECK_EQUAL(2, counterC._numRelease);
 }
 
 TEST_FIXTURE(FNonnull,move) {
@@ -97,44 +174,31 @@ TEST_FIXTURE(FNonnull,move) {
 }
 
 TEST_FIXTURE(FNonnull,maybe) {
-  MaybePtr<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
-  CHECK(itemA.has_value());
-  itemA.map([&](auto&& v) {
-    CHECK_EQUAL(1, v->GetNumRefs());
-    CHECK_EQUAL(_ASTR("fooItem"), v->_name);
-  });
-  CHECK_EQUAL(1, itemA.value()->GetNumRefs());
-}
-
-TEST_FIXTURE(FNonnull,maybe_ptr) {
   {
-    MaybePtr<sTestItem> itemA = ni::NewMaybePtr<sTestItem>("fooItem");
+    Ptr<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
     CHECK(itemA.has_value());
-    CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA.value());
-    itemA.map([&](auto&& v) {
+    if (itemA.has_value()) {
+      ni::Nonnull<sTestItem> v = itemA.non_null();
+      CHECK_EQUAL(2, v->GetNumRefs());
+      CHECK_EQUAL(_ASTR("fooItem"), v->_name);
+    }
+    if (itemA.has_value()) {
+      astl::non_null<sTestItem*> v = itemA.non_null().non_null();
       CHECK_EQUAL(1, v->GetNumRefs());
       CHECK_EQUAL(_ASTR("fooItem"), v->_name);
-    });
+    }
+    CHECK_EQUAL(1, itemA.non_null()->GetNumRefs());
   }
 
   {
-    MaybePtr<sTestItem> itemA = ni::MakeMaybePtr((sTestItem*)NULL);
+    Ptr<sTestItem> itemA = (sTestItem*)NULL;
     CHECK(!itemA.has_value());
   }
 
   {
-    MaybePtr<sTestItem> itemA;
+    Ptr<sTestItem> itemA;
     CHECK(!itemA.has_value());
   }
-}
-
-TEST_FIXTURE(FNonnull,value_or_fn) {
-  MaybePtr<sTestItem> itemA = ni::MakeMaybePtr((sTestItem*)NULL);
-  CHECK(!itemA.has_value());
-  Nonnull<sTestItem> r = itemA.value_or_fn([]() {
-    return ni::NewNonnull<sTestItem>("defaultItem");
-  });
-  CHECK_EQUAL(_ASTR("defaultItem"), r->_name);
 }
 
 TEST_FIXTURE(FNonnull,hash_set) {

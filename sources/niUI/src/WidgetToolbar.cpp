@@ -832,7 +832,7 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
   tTopWidgetVec     mvTopWidgets;
 
   // skin
-  MemberPointer<sToolbarSkin> skin;
+  Nonnull<sToolbarSkin> skin;
   void _UpdateSkinFlags() {
     niFlagOnIf(skin->flags,SKIN_AUTOHIDE,
                mbAutoHide);

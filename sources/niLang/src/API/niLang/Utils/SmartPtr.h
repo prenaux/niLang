@@ -149,12 +149,6 @@ ni::Ptr<T>& cast_ptr(ni::Ptr<I>& aPtr) {
   return (ni::Ptr<T>&)aPtr;
 }
 
-//! Member pointer is a smart pointer that requires to be initialized when constructed.
-template <typename T>
-struct MemberPointer : public Ptr<T> {
-  MemberPointer(T* apM) : Ptr<T>(apM) {}
-};
-
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/

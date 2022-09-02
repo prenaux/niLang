@@ -37,13 +37,13 @@ class cVGPolygonTesselator : public cIUnknownImpl<iVGPolygonTesselator>
   const tVec2fCVec* __stdcall GetTesselatedVertices() const;
 
  public:
-  tU32    mnNumContour;
-  tBool   mbBegan;
-  tBool   mbEvenOdd;
+  tU32 mnNumContour;
+  tBool mbBegan;
+  tBool mbEvenOdd;
   //! list of polygon vertices; only point 0 of triangle is valid
-  astl::vector<sVec2f>    mvPolyVerts;
+  astl::vector<sVec2f> mvPolyVerts;
   //! list with new triangles
-  MemberPointer<tVec2fCVec> mvFinalVerts;
+  Nonnull<tVec2fCVec> mvFinalVerts;
 
  private:
 #ifdef USE_GPC

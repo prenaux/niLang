@@ -405,7 +405,7 @@ const achar* iunknown_gettype(HSQUIRRELVM v, cString& astrOut, iUnknown* apI)
   else {
     astl::set<cString> setIIDs;
 
-    MemberPointer<tUUIDCVec> uuidLst = tUUIDCVec::Create();
+    Nonnull<tUUIDCVec> uuidLst{tUUIDCVec::Create()};
     apI->ListInterfaces(uuidLst,0);
     niLoop(i,uuidLst->size()) {
       const tUUID& IID = uuidLst->at(i);
@@ -1019,7 +1019,7 @@ void cScriptAutomation::InitIntfDelegateLst(
   niAssert(vm != NULL);
 
   tUUID iidBaseInterface = niGetInterfaceUUID(iUnknown);
-  MemberPointer<tUUIDCVec> uuidLst = tUUIDCVec::Create();
+  Nonnull<tUUIDCVec> uuidLst{tUUIDCVec::Create()};
   apObj->ListInterfaces(
       uuidLst,
 #ifdef GETIUNKNOWN_INDEX_VTABLE

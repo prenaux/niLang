@@ -2087,7 +2087,7 @@ class cOSWindowWindows : public ni::cIUnknownImpl<ni::iOSWindow,
   tBool                                   mbRequestedClose;
   tBool                                   mbDropTarget;
   tBool                                   mbBackgroundUpdate;
-  MemberPointer<tOSWindowWindowsSinkList> mlstSinks;
+  Nonnull<tOSWindowWindowsSinkList>      mlstSinks;
 #ifdef USE_IDROPTARGET
   cWin32DropTarget*                       mpDropTarget;
 #endif

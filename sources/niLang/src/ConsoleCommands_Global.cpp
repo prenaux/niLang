@@ -149,7 +149,7 @@ niGlobalCommand(ListScriptingHosts,_A("Show the list of the registered Scripting
     iScriptingHost* pHost = ni::GetLang()->GetScriptingHost(i);
     if (pHost) {
       niLog(Info,niFmt(_A("  %s = 0x%x"), niHStr(hspName), pHost));
-      MemberPointer<tUUIDCVec> uuidLst = tUUIDCVec::Create();
+      Nonnull<tUUIDCVec> uuidLst(tUUIDCVec::Create());
       pHost->ListInterfaces(uuidLst,0);
       tBool first = eTrue;
       cString itfs = _A("  - interfaces: ");

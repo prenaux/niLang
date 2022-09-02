@@ -191,9 +191,9 @@ class cMaterialLibrary : public cIUnknownImpl<ni::iMaterialLibrary,eIUnknownImpl
 
   typedef astl::hstring_hash_map<sTexture>  tTextureMap;
 
-  MemberPointer<tMaterialLibrarySinkLst>  _sinkList;
-  Ptr<iGraphics>          _graphics;
-  tHStringPtr               mhspBasePath;
+  Nonnull<tMaterialLibrarySinkLst> _sinkList;
+  Ptr<iGraphics>                   _graphics;
+  tHStringPtr                      mhspBasePath;
 
  public:
   ///////////////////////////////////////////////

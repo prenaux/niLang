@@ -254,7 +254,7 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
   tU32 __stdcall GetModuleDefIndex(const achar* aaszName) const niImpl;
   const iModuleDef* __stdcall LoadModuleDef(const achar* aMID, const achar* aaszFile = NULL) niImpl;
 
-  MemberPointer<tCreateInstanceCMap> mmapCreateInstance;
+  Nonnull<tCreateInstanceCMap> mmapCreateInstance;
   tCreateInstanceCMap* __stdcall GetCreateInstanceMap() const {
     return mmapCreateInstance;
   }
@@ -262,7 +262,7 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
       const achar* aOID,
       const Var& aVarA = niVarNull, const Var& aVarB = niVarNull) niImpl;
 
-  MemberPointer<tGlobalInstanceCMap> mmapGlobalInstance;
+  Nonnull<tGlobalInstanceCMap> mmapGlobalInstance;
   tGlobalInstanceCMap* __stdcall GetGlobalInstanceMap() const {
     return mmapGlobalInstance;
   }

@@ -84,10 +84,10 @@ struct SQFuncState
   bool _optimization;
 
   // contains number of nested exception traps
-  MemberPointer<tI32CVec> _breaktargets;
-  MemberPointer<tI32CVec> _unresolvedbreaks;
-  MemberPointer<tI32CVec> _continuetargets;
-  MemberPointer<tI32CVec> _unresolvedcontinues;
+  Nonnull<tI32CVec> _breaktargets;
+  Nonnull<tI32CVec> _unresolvedbreaks;
+  Nonnull<tI32CVec> _continuetargets;
+  Nonnull<tI32CVec> _unresolvedcontinues;
 };
 
 #endif //_SQFUNCSTATE_H_

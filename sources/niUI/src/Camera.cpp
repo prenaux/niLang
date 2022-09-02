@@ -95,7 +95,7 @@ class cCamera : public ni::cIUnknownImpl<ni::iCamera,ni::eIUnknownImplFlags_Defa
     this->mvMove = pSrc->mvMove;
     this->mnMoveMode = pSrc->mnMoveMode;
     this->mMoveType = pSrc->mMoveType;
-    this->mFrustum = pSrc->mFrustum->Clone();
+    this->mFrustum->Copy(pSrc->mFrustum);
     this->mmtxView = pSrc->mmtxView;
     this->mmtxProj = pSrc->mmtxProj;
     this->mnDirtyFlags = pSrc->mnDirtyFlags;
@@ -597,23 +597,23 @@ class cCamera : public ni::cIUnknownImpl<ni::iCamera,ni::eIUnknownImplFlags_Defa
   }
 
  private:
-  ni::eCameraProjectionType   mProjection;
-  ni::sRectf mViewport;
-  ni::tF32    mfAspect, mfFov;
-  ni::tF32    mfNearPlane;
-  ni::tF32    mfFarPlane;
-  ni::tF32    mfOrthoSize;
-  ni::sVec3f mvMove;
-  ni::tU8   mnMoveMode;
-  ni::eCameraMoveType mMoveType;
-  ni::tU32    mnDirtyFlags;
-  ni::MemberPointer<ni::iFrustum> mFrustum;
-  ni::sMatrixf  mmtxView;
-  ni::sMatrixf  mmtxProj;
-  ni::sVec3f mvPos;
-  ni::sVec3f mvTarget;
-  ni::sVec3f mvTargetUp;
-  ni::sVec3f mvRayStart;
+  ni::eCameraProjectionType mProjection;
+  ni::sRectf                mViewport;
+  ni::tF32                  mfAspect, mfFov;
+  ni::tF32                  mfNearPlane;
+  ni::tF32                  mfFarPlane;
+  ni::tF32                  mfOrthoSize;
+  ni::sVec3f                mvMove;
+  ni::tU8                   mnMoveMode;
+  ni::eCameraMoveType       mMoveType;
+  ni::tU32                  mnDirtyFlags;
+  ni::Nonnull<ni::iFrustum> mFrustum;
+  ni::sMatrixf              mmtxView;
+  ni::sMatrixf              mmtxProj;
+  ni::sVec3f                mvPos;
+  ni::sVec3f                mvTarget;
+  ni::sVec3f                mvTargetUp;
+  ni::sVec3f                mvRayStart;
 
   niEndClass(cCamera);
 };

@@ -281,7 +281,7 @@ class cWidget : public cIUnknownImpl<iWidget,ni::eIUnknownImplFlags_DontInherit1
   tHStringPtr mhspSkinClass;
 
   cUIContext* mpUICtx;
-  MemberPointer<tWidgetSinkLst> mlstSinks;
+  Nonnull<tWidgetSinkLst> mlstSinks;
   sRectf mClientRect;
   sRectf mRect;
   sRectf mrectRelative;
@@ -291,20 +291,20 @@ class cWidget : public cIUnknownImpl<iWidget,ni::eIUnknownImplFlags_DontInherit1
   cWidgetZMap mZMap;
   tU32 mnStyle;
   sColor4f mcolBackground;
-  tU32  mStatus;
-  tU16  mClick;
-  Ptr<iFont>  mptrFont;
-  eWidgetDockStyle  mDockStyle;
+  tU32 mStatus;
+  tU16 mClick;
+  Ptr<iFont> mptrFont;
+  eWidgetDockStyle mDockStyle;
   eWidgetZOrder mZOrder;
-  sVec2f   mvMinSize,mvMaxSize;
-  sRectf   mrectDockFillClient;
-  sRectf   mrectDockFillNonClient;
-  Ptr<iWidget>  mpwContextMenu;
-  sVec4f   mvMargin;
-  sVec4f   mvPadding;
-  tWidgetAutoLayoutFlags  mnAutoLayout;
-  tU32      mnInputSubmitFlags;
-  tHStringPtr   mhspHoverText;
+  sVec2f mvMinSize,mvMaxSize;
+  sRectf mrectDockFillClient;
+  sRectf mrectDockFillNonClient;
+  Ptr<iWidget> mpwContextMenu;
+  sVec4f mvMargin;
+  sVec4f mvPadding;
+  tWidgetAutoLayoutFlags mnAutoLayout;
+  tU32 mnInputSubmitFlags;
+  tHStringPtr mhspHoverText;
 
   struct sContextMenu {
     sRectf     mRect;

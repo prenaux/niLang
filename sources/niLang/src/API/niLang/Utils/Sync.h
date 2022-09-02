@@ -2,9 +2,10 @@
 #define __SYNC_31981078_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#include "../Utils/ThreadImpl.h"
+#include "ThreadImpl.h"
 #include "BoxedTypes.h"
 #include "SyncPtr.h"
+#include "Nonnull.h"
 
 /** \addtogroup niLang
  * @{

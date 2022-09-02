@@ -88,10 +88,10 @@ class cConsole : public cIUnknownImpl<iConsole>
   tNamespaceMap mmapNamespaces;
   sNamespace    mGlobalNamespace;
 
-  tU32  mulCompleteCmdLineCount;
+  tU32 mulCompleteCmdLineCount;
   cString mstrLastCompletedCommand;
 
-  MemberPointer<tConsoleSinkLst>  msinkList;
+  Nonnull<tConsoleSinkLst> msinkList;
 
   typedef astl::deque<cString> tCmdQueue;
   tCmdQueue mCmdQueue;

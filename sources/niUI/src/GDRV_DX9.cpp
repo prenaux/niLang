@@ -3853,7 +3853,7 @@ class cD3D9 : public cIUnknownImpl<iGraphicsDriver,eIUnknownImplFlags_Default,iD
   IDirect3DStateBlock9*       mpD3D9DefaultDeviceStates;
   IDirect3DStateBlock9*       mpD3D9DefaultPixelStates;
   IDirect3DStateBlock9*       mpD3D9DefaultVertexStates;
-  MemberPointer<tD3D9LostDeviceSinkLst> mlstLostDeviceSinks;
+  Nonnull<tD3D9LostDeviceSinkLst> mlstLostDeviceSinks;
   tBool                       mbBeganRendering;
   astl::vector<sD3D9Context*> mvContexts;
   Ptr<iGraphicsDrawOpCapture> mptrDOCapture;

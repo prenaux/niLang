@@ -222,7 +222,7 @@ TEST_FIXTURE(FOSWindow,MessageBoxLong) {
 TEST_FIXTURE(FOSWindow,FatalError) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   if (isInteractive) {
-    ni_debug_set_print_asserts(eFalse);
+    ni_debug_set_show_assert_message_box(eTrue);
 
     // create a dummy window so that the error doesnt go to the console
     Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
@@ -240,7 +240,7 @@ TEST_FIXTURE(FOSWindow,FatalError) {
 TEST_FIXTURE(FOSWindow,FatalErrorLong) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   if (isInteractive) {
-    ni_debug_set_print_asserts(eFalse);
+    ni_debug_set_show_assert_message_box(eTrue);
 
     // create a dummy window so that the error doesnt go to the console
     Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(

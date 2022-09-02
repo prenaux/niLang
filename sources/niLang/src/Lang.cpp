@@ -39,23 +39,6 @@ static tBool _LogMessageCallback(tLogFlags type, const tF64 afTime, const char* 
 }
 
 ///////////////////////////////////////////////
-static int _bPrintAsserts = -1;
-niExportFunc(void) ni_debug_set_print_asserts(int aPrintAsserts) {
-  _bPrintAsserts = aPrintAsserts;
-}
-niExportFunc(int) ni_debug_get_print_asserts() {
-  if (_bPrintAsserts == -1) {
-    if (!ni::GetLang()->HasProperty("niLang.PrintAsserts")) {
-      _bPrintAsserts = 0;
-    }
-    else {
-      _bPrintAsserts = ni::GetLang()->GetProperty("niLang.PrintAsserts").Long();
-    }
-  }
-  return _bPrintAsserts;
-}
-
-///////////////////////////////////////////////
 static sPropertyBool _logSystemInfo("log.system_info",eFalse);
 
 niExportFunc(void) ni_log_system_info_once() {

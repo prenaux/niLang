@@ -309,7 +309,10 @@ TEST_FIXTURE(FProcess,SpawnHangTerminate) {
   // wait a tiny bit for it to keep hanging..
   CHECK(!spawned->Wait(500));
 
-  CHECK(!spawned->GetDidCrash());
+  {
+    AUTO_WARNING_MODE();
+    CHECK(!spawned->GetDidCrash());
+  }
 
   spawned->Terminate(123);
 

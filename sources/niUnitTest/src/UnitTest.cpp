@@ -872,14 +872,6 @@ struct TestRunner {
       , numTestRun(0)
       , result(NULL)
   {
-#ifdef niWindows
-    if (!IsDebuggerPresent())
-#endif
-    {
-      // don't popup the assert dialogs, only print them to the console
-      ni_debug_set_print_asserts(ni::eTrue);
-    }
-
     normalizeFixtureName(fixtureName);
 
     shouldRun = 0;

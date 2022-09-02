@@ -54,3 +54,15 @@ TEST_FIXTURE(FCrashReport,PanicUnreachableMsg) {
     niLog(Info,"Skipped because not interactive.");
   }
 }
+
+TEST_FIXTURE(FCrashReport,AssertMessageBox) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  if (isInteractive) {
+    niDebugFmt(("... FCrashReport,AssertMessageBox"));
+    ni_debug_set_show_assert_message_box(1);
+    niDoAssert(false);
+  }
+  else {
+    niLog(Info,"Skipped because not interactive.");
+  }
+}

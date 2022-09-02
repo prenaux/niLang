@@ -2648,7 +2648,7 @@ void cLang::FatalError(const achar* aszMsg) {
   cString logMessage = niFmt(_A("[FATAL ERROR]\n%s\n"), aszMsg);
   niLog(Error,logMessage);
 
-  if (!osx->mvWindows.empty() && !ni_debug_get_print_asserts()) {
+  if (!osx->mvWindows.empty() && ni_debug_get_show_assert_message_box()) {
     // Dialog message
     cString dialogMessage = logMessage;
 

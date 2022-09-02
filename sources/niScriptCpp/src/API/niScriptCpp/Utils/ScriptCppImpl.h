@@ -160,36 +160,36 @@ struct sScriptCppGuard
 
 #define SCRIPTCPP_DECLARE_GUARD(NAME) ni::sScriptCppGuard mProtector##NAME
 
-#define SCRIPTCPP_ENTER_GUARD(RETTYPE,NAME)         \
-  RETTYPE __rtRet = (RETTYPE)0;                 \
-  ni::sScriptCppGuard& __rtguard = mProtector##NAME; \
-  if (!__rtguard.mAlwaysIgnore) {               \
-  __rtguard.mGuardName = #NAME;                 \
-  __try {                                       \
+#define SCRIPTCPP_ENTER_GUARD(RETTYPE,NAME)           \
+  RETTYPE __rtRet = (RETTYPE)0;                       \
+  ni::sScriptCppGuard& __rtguard = mProtector##NAME;  \
+  if (!__rtguard.mAlwaysIgnore) {                     \
+  __rtguard.mGuardName = #NAME;                       \
+  __try {                                             \
   auto __rtimpl = [&] () -> RETTYPE
 
-#define SCRIPTCPP_LEAVE_GUARD()                                             \
+#define SCRIPTCPP_LEAVE_GUARD()                                         \
   ; __rtRet = __rtimpl();                                               \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
-    if (ni_debug_assert(0, "RTCpp Exception", __LINE__, __FILE__,       \
+    if (ni_debug_assert(0, "RTCpp Exception", __FILE__, __LINE__, __FUNCTION__, \
                         &__rtguard.mAlwaysIgnore, __rtguard.ToExceptionString().Chars())) \
     { ni_debug_break(); }                                               \
     }                                                                   \
   }                                                                     \
-                                                                        return __rtRet;
+  return __rtRet;
 
 
-#define SCRIPTCPP_ENTER_VOID_GUARD(NAME)            \
-  ni::sScriptCppGuard& __rtguard = mProtector##NAME; \
-  if (!__rtguard.mAlwaysIgnore) {               \
-  __rtguard.mGuardName = #NAME;                 \
-  __try {                                       \
+#define SCRIPTCPP_ENTER_VOID_GUARD(NAME)              \
+  ni::sScriptCppGuard& __rtguard = mProtector##NAME;  \
+  if (!__rtguard.mAlwaysIgnore) {                     \
+  __rtguard.mGuardName = #NAME;                       \
+  __try {                                             \
   auto __rtimpl = [&] () -> void
 
-#define SCRIPTCPP_LEAVE_VOID_GUARD()                                        \
+#define SCRIPTCPP_LEAVE_VOID_GUARD()                                    \
   ; __rtimpl();                                                         \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
-    if (ni_debug_assert(0, "RTCpp Exception", __LINE__, __FILE__,       \
+    if (ni_debug_assert(0, "RTCpp Exception", __FILE__, __LINE__, __FUNCTION__, \
                         &__rtguard.mAlwaysIgnore, __rtguard.ToExceptionString().Chars())) \
     { ni_debug_break(); }                                               \
     }                                                                   \

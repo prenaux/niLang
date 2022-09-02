@@ -190,47 +190,6 @@ achar* _AppleGetDirTemp(achar* buffer) {
 //  iOS only
 //
 //--------------------------------------------------------------------------------------------
-///////////////////////////////////////////////
-niExportFunc(int) ni_debug_assert(
-    int expression,
-    const char* exp,
-    int line,
-    const char* file,
-    int *alwaysignore,
-    const char* desc)
-{
-  if(alwaysignore && *alwaysignore == 1)
-    return 0;
-
-  if (!expression) {
-    // Always print for now
-    // if (ni_debug_get_print_asserts())
-    {
-      cString fmt;
-      fmt.Format(_A("%s:%d: ASSERT: %s%s%s%s"),
-                 file, line,
-                 exp,
-                 desc?_A(": "):_A(""),
-                 desc?desc:_A(""),
-                 desc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A(""));
-      fmt.CatFormat("\nSTACK:\n");
-      ni_stack_get_current(fmt,NULL);
-      niPrintln(fmt.Chars());
-    }
-
-    // always ignore after first break or print...
-    if (alwaysignore) {
-      *alwaysignore = 1;
-    }
-
-#ifdef _DEBUG
-    // always break in debug build
-    return 1;
-#endif
-  }
-
-  return 0;
-}
 
 #ifdef niIOS
 ///////////////////////////////////////////////

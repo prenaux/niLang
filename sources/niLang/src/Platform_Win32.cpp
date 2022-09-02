@@ -153,7 +153,7 @@ static void _FatalError(const achar* aszMsg) {
 
   niLog(Error,logMessage);
 
-  if (!ni_debug_get_print_asserts()) {
+  if (ni_debug_get_show_assert_message_box()) {
     ni::Windows::UTF16Buffer wMsg;
     niWin32_UTF8ToUTF16(wMsg,dialogMessage.Chars());
     ::MessageBoxW(NULL,wMsg.begin(),L"Fatal Error",
@@ -206,81 +206,6 @@ void cLang::SetEnv(const achar* aaszEnv, const achar* aaszValue) const {
 }
 cString cLang::GetEnv(const achar* aaszEnv) const {
   return agetenv(aaszEnv);
-}
-
-///////////////////////////////////////////////
-niExportFunc(int) ni_debug_assert(
-  int expression,     // The assert occur if this is eFalse
-  const char* exp,  // Expression
-  int line,     // Line number where the assert occur
-  const char* file, // File where the assert occur
-  int *alwaysignore,  // Pointer to the alwaysignore flag
-  const char* desc) // Description of the assert
-{
-  if(alwaysignore && *alwaysignore == 1)
-    return 0;
-
-  if (!expression)
-  {
-    if (ni_debug_get_print_asserts()) {
-      cString fmt;
-      fmt.Format(_A("%s:%d: ASSERT: %s%s%s%s\n"),
-                 file, line,
-                 exp,
-                 desc?_A(": "):_A(""),
-                 desc?desc:_A(""),
-                 desc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A(""));
-
-      niPrintln(fmt.Chars());
-
-      // always ignore after first print...
-      if (alwaysignore) *alwaysignore = 1;
-
-      fmt.CatFormat("\nSTACK:\n");
-      ni_stack_get_current(fmt,NULL);
-      niLog(Debug,fmt.Chars());
-    }
-    else {
-      cString fmt;
-      if (desc) {
-        fmt.Format("expression [%s]\n\n"
-                   "file [%s]\nline [%d]\n\n"
-                   "--------------------------\n"
-                   "DESC: %s\n"
-                   "--------------------------\n\n"
-                   "--------------------------\n"
-                   " Abort: Break\n"
-                   " Retry: Continue\n"
-                   " Ignore: Always ignore this assert\n"
-                   "--------------------------\n",
-                   exp, file, line, desc);
-      }
-      else {
-        fmt.Format("expression [%s]\n\n"
-                   "file [%s]\nline [%d]\n\n"
-                   "--------------------------\n"
-                   " Abort: Break\n"
-                   " Retry: Continue\n"
-                   " Ignore: Always ignore this assert\n"
-                   "--------------------------\n",
-                   exp, file, line);
-      }
-
-      fmt.CatFormat("\nSTACK:\n");
-      ni_stack_get_current(fmt,NULL);
-      niLog(Debug,fmt.Chars());
-
-      int ret = MessageBoxA(NULL, fmt.Chars(), "Assert.",
-                            MB_ABORTRETRYIGNORE|MB_ICONWARNING|MB_TOPMOST|MB_SETFOREGROUND);
-      if(ret == IDABORT)
-        return 1;
-
-      if(ret == IDIGNORE && alwaysignore)
-        *alwaysignore = 1;
-    }
-  }
-
-  return 0;
 }
 
 ///////////////////////////////////////////////

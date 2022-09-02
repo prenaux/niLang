@@ -12,6 +12,90 @@
 
 namespace ni {
 
+static void _FormatAssertMessage(
+  cString& fmt,
+  const achar* kind,
+  const char* exp,
+  const char* file,
+  int line,
+  const char* func,
+  const char* desc)
+{
+  const tBool hasDesc = niStringIsOK(desc);
+  ni_log_format_message(
+    fmt,
+    eLogFlags_Error|eLogFlags_NoLogTypePrefix,
+    file,
+    line,
+    func,
+    niFmt("%s: %s%s%s%s",
+          kind,
+          exp,
+          hasDesc?_A(": "):_A(""),
+          hasDesc?desc:_A(""),
+          hasDesc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A("")),
+    -1, -1);
+  fmt.CatFormat("%s STACK:\n", kind);
+  ni_stack_get_current(fmt,NULL);
+}
+
+///////////////////////////////////////////////
+static int _bShowAssertMessageBox = -1;
+niExportFunc(void) ni_debug_set_show_assert_message_box(int aShowAssertMessageBox) {
+  _bShowAssertMessageBox = aShowAssertMessageBox;
+}
+niExportFunc(int) ni_debug_get_show_assert_message_box() {
+  if (_bShowAssertMessageBox == -1) {
+    if (!ni::GetLang()->HasProperty("niLang.ShowAssertMessageBox")) {
+      _bShowAssertMessageBox = 0;
+    }
+    else {
+      _bShowAssertMessageBox = ni::GetLang()->GetProperty("niLang.ShowAssertMessageBox").Long();
+    }
+  }
+  return _bShowAssertMessageBox;
+}
+
+///////////////////////////////////////////////
+niExportFunc(int) ni_debug_assert(
+    int expression,
+    const char* exp,
+    const char* file,
+    int line,
+    const char* func,
+    int *alwaysignore,
+    const char* desc)
+{
+  if (alwaysignore && *alwaysignore == 1)
+    return 0;
+
+  if (!expression) {
+    cString fmt;
+    _FormatAssertMessage(
+      fmt, "ASSERT", exp,
+      file, line, func, desc);
+    niError(fmt.Chars());
+
+    if (ni_debug_get_show_assert_message_box()) {
+      fmt.CatFormat("\nDo you want to ignore the assert?");
+      eOSMessageBoxReturn ret = GetLang()->MessageBox(
+        NULL, "Assert", fmt.Chars(),
+        eOSMessageBoxFlags_FatalError|eOSMessageBoxFlags_YesNo);
+      if (ret == eOSMessageBoxReturn_Yes) {
+        if (alwaysignore) {
+          *alwaysignore = 1;
+        }
+        return 0;
+      }
+    }
+
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
 ///////////////////////////////////////////////
 niExportFunc(void) ni_panic_assert(
     int expression,
@@ -22,30 +106,24 @@ niExportFunc(void) ni_panic_assert(
     const char* desc)
 {
   if (!expression) {
-    const tBool hasDesc = niStringIsOK(desc);
     cString fmt;
-    ni_log_format_message(
-      fmt,
-      eLogFlags_Error|eLogFlags_NoLogTypePrefix,
-      file,
-      line,
-      func,
-      niFmt("PANIC ASSERT: %s%s%s%s",
-            exp,
-            hasDesc?_A(": "):_A(""),
-            hasDesc?desc:_A(""),
-            hasDesc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A("")),
-      -1, -1);
-    fmt.CatFormat("PANIC STACK:\n");
-    ni_stack_get_current(fmt,NULL);
+    _FormatAssertMessage(
+      fmt, "ASSERT", exp,
+      file, line, func, desc);
     niError(fmt.Chars());
-#ifdef niWindows
-    if (::IsDebuggerPresent())
-#endif
-    {
-      ni_debug_break();
+
+    if (ni_debug_get_show_assert_message_box()) {
+      ni::GetLang()->FatalError(fmt.Chars());
     }
-    ni::GetLang()->Exit(0xDEADBEEF);
+    else {
+#ifdef niWindows
+      if (::IsDebuggerPresent())
+#endif
+      {
+        ni_debug_break();
+      }
+      ni::GetLang()->Exit(0xDEADBEEF);
+    }
   }
 }
 

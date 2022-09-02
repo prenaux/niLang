@@ -882,9 +882,13 @@ __forceinline bool IsNullPtr(const T* p) {
 #endif // __cplusplus
 
 #if !defined niShaderLanguage
-niExportFunc(void) ni_debug_set_print_asserts(int aPrintAsserts);
-niExportFunc(int)  ni_debug_get_print_asserts();
-niExportFunc(int)  ni_debug_assert(int expression, const char* exp, int line, const char* file, int* alwaysignore, const char* desc);
+// Sets whether we should show a message box for asserts & fatal errors before
+// exiting or breaking in the debugger. Defaults to 0 (disabled) and can be
+// overwritten with the 'niLang.ShowAssertMessageBox' property.
+niExportFunc(int)  ni_debug_get_show_assert_message_box();
+niExportFunc(void) ni_debug_set_show_assert_message_box(int aShowAssertMessageBox);
+// Return 1 if we should break in the debugger / crash.
+niExportFunc(int)  ni_debug_assert(int expression, const char* exp, const char* file, int line, const char* func, int* alwaysignore, const char* desc);
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1021,7 +1025,7 @@ namespace ni {
   do {                                                                  \
     static int __ignoreAssert = 0;                                      \
     if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert((exp)?1:0, #exp, __LINE__, __FILE__, &__ignoreAssert, NULL)) \
+      if(ni_debug_assert((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, NULL)) \
       { ni_debug_break(); }                                             \
     }                                                                   \
   } while(0)
@@ -1030,7 +1034,7 @@ namespace ni {
   do {                                                                  \
     static int __ignoreAssert = 0;                                      \
     if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert((exp)?1:0, #exp, __LINE__, __FILE__, &__ignoreAssert, desc)) \
+      if(ni_debug_assert((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, desc)) \
       { ni_debug_break(); }                                             \
     }                                                                   \
   } while(0)
@@ -1039,7 +1043,7 @@ namespace ni {
   do {                                                                  \
     static int __ignoreAssert = 0;                                      \
     if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert(0, msg, __LINE__, __FILE__, &__ignoreAssert, NULL)) \
+      if(ni_debug_assert(0, msg, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, NULL)) \
       { ni_debug_break(); }                                             \
     }                                                                   \
   } while(0)

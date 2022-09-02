@@ -393,7 +393,14 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
 
     // if has children and is expanded, return the first child
     if (!mvChildren.empty() && GetExpanded()) {
-      return mvChildren[0];
+      iWidgetTreeNode* pRet = mvChildren[0];
+      if (((cWidgetTreeNode*)pRet)->GetIsVisible()) {
+        return pRet;
+      }
+
+      pRet = pRet->GetNextSibling();
+      if (pRet)
+        return pRet;
     }
 
     // not expanded or no children, get the first sibling

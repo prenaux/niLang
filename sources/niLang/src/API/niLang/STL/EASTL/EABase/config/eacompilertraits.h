@@ -5,7 +5,7 @@
  *-----------------------------------------------------------------------------
  * Currently supported defines include:
  *    EA_PREPROCESSOR_JOIN
- *    
+ *
  *    EA_COMPILER_IS_ANSIC
  *    EA_COMPILER_IS_C99
  *    EA_COMPILER_IS_C11
@@ -53,7 +53,7 @@
  *    EA_SEALED
  *    EA_ABSTRACT
  *    EA_CONSTEXPR / EA_CONSTEXPR_OR_CONST
- *    EA_CONSTEXPR_IF 
+ *    EA_CONSTEXPR_IF
  *    EA_EXTERN_TEMPLATE
  *    EA_NOEXCEPT
  *    EA_NORETURN
@@ -77,11 +77,11 @@
  *    EA_DISABLE_MOVE_OPERATOR
  *
  *  Todo:
- *    Find a way to reliably detect wchar_t size at preprocessor time and 
+ *    Find a way to reliably detect wchar_t size at preprocessor time and
  *    implement it below for EA_WCHAR_SIZE.
  *
  *  Todo:
- *    Find out how to support EA_PASCAL and EA_PASCAL_FUNC for systems in 
+ *    Find out how to support EA_PASCAL and EA_PASCAL_FUNC for systems in
  *    which it hasn't yet been found out for.
  *---------------------------------------------------------------------------*/
 
@@ -93,7 +93,7 @@
 	#include "eacompiler.h"
 
 
-	// Metrowerks uses #defines in its core C header files to define 
+	// Metrowerks uses #defines in its core C header files to define
 	// the kind of information we need below (e.g. C99 compatibility)
 
 
@@ -107,9 +107,9 @@
 		//    6.10.8 Predefined macro names
 		//    __STDC_VERSION__ The integer constant 199901L. (150)
 		//
-		//    150) This macro was not specified in ISO/IEC 9899:1990 and was 
-		//    specified as 199409L in ISO/IEC 9899/AMD1:1995. The intention 
-		//    is that this will remain an integer constant of type long int 
+		//    150) This macro was not specified in ISO/IEC 9899:1990 and was
+		//    specified as 199409L in ISO/IEC 9899/AMD1:1995. The intention
+		//    is that this will remain an integer constant of type long int
 		//    that is increased with each revision of this International Standard.
 		//
 		#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
@@ -126,27 +126,27 @@
 		#endif
 	#endif
 
-	// Some compilers (e.g. GCC) define __USE_ISOC99 if they are not 
-	// strictly C99 compilers (or are simply C++ compilers) but are set 
-	// to use C99 functionality. Metrowerks defines _MSL_C99 as 1 in 
+	// Some compilers (e.g. GCC) define __USE_ISOC99 if they are not
+	// strictly C99 compilers (or are simply C++ compilers) but are set
+	// to use C99 functionality. Metrowerks defines _MSL_C99 as 1 in
 	// this case, but 0 otherwise.
 	#if (defined(__USE_ISOC99) || (defined(_MSL_C99) && (_MSL_C99 == 1))) && !defined(EA_COMPILER_IS_C99)
 		#define EA_COMPILER_IS_C99 1
 	#endif
- 
+
 	// Metrowerks defines C99 types (e.g. intptr_t) instrinsically when in C99 mode (-lang C99 on the command line).
 	#if (defined(_MSL_C99) && (_MSL_C99 == 1))
 		#define EA_COMPILER_HAS_C99_TYPES 1
 	#endif
 
-	#if defined(__GNUC__) 
+	#if defined(__GNUC__)
 		#if (((__GNUC__ * 100) + __GNUC_MINOR__) >= 302) // Also, GCC defines _HAS_C9X.
 			#define EA_COMPILER_HAS_C99_TYPES 1 // The compiler is not necessarily a C99 compiler, but it defines C99 types.
-			
+
 			#ifndef __STDC_LIMIT_MACROS
 				#define __STDC_LIMIT_MACROS 1
 			#endif
-			
+
 			#ifndef __STDC_CONSTANT_MACROS
 				#define __STDC_CONSTANT_MACROS 1    // This tells the GCC compiler that we want it to use its native C99 types.
 			#endif
@@ -165,8 +165,8 @@
 	// ------------------------------------------------------------------------
 	// EA_PREPROCESSOR_JOIN
 	//
-	// This macro joins the two arguments together, even when one of  
-	// the arguments is itself a macro (see 16.3.1 in C++98 standard). 
+	// This macro joins the two arguments together, even when one of
+	// the arguments is itself a macro (see 16.3.1 in C++98 standard).
 	// This is often used to create a unique name with __LINE__.
 	//
 	// For example, this declaration:
@@ -174,10 +174,10 @@
 	// expands to this:
 	//    char unique_73;
 	//
-	// Note that all versions of MSVC++ up to at least version 7.1 
+	// Note that all versions of MSVC++ up to at least version 7.1
 	// fail to properly compile macros that use __LINE__ in them
 	// when the "program database for edit and continue" option
-	// is enabled. The result is that __LINE__ gets converted to 
+	// is enabled. The result is that __LINE__ gets converted to
 	// something like __LINE__(Var+37).
 	//
 	#ifndef EA_PREPROCESSOR_JOIN
@@ -222,7 +222,7 @@
 	// ------------------------------------------------------------------------
 	// EA_COMPILER_INTMAX_SIZE
 	//
-	// This is related to the concept of intmax_t uintmax_t, but is available 
+	// This is related to the concept of intmax_t uintmax_t, but is available
 	// in preprocessor form as opposed to compile-time form. At compile-time
 	// you can use intmax_t and uintmax_t to use the actual types.
 	//
@@ -238,22 +238,22 @@
 	// EA_LPAREN / EA_RPAREN / EA_COMMA / EA_SEMI
 	//
 	// These are used for using special characters in macro-using expressions.
-	// Note that this macro intentionally uses (), as in some cases it can't 
+	// Note that this macro intentionally uses (), as in some cases it can't
 	// work unless it does.
 	//
 	// Example usage:
 	//     int x = SOME_MACRO(SomeTemplate<int EA_COMMA() int EACOMMA() char>);
 	//
-	#ifndef EA_LPAREN 
+	#ifndef EA_LPAREN
 		#define EA_LPAREN() (
 	#endif
-	#ifndef EA_RPAREN 
+	#ifndef EA_RPAREN
 		#define EA_RPAREN() )
 	#endif
-	#ifndef EA_COMMA 
+	#ifndef EA_COMMA
 		#define EA_COMMA()  ,
 	#endif
-	#ifndef EA_SEMI 
+	#ifndef EA_SEMI
 		#define EA_SEMI()   ;
 	#endif
 
@@ -265,7 +265,7 @@
 	// Implements a portable version of the non-standard offsetof macro.
 	//
 	// The offsetof macro is guaranteed to only work with POD types. However, we wish to use
-	// it for non-POD types but where we know that offsetof will still work for the cases 
+	// it for non-POD types but where we know that offsetof will still work for the cases
 	// in which we use it. GCC unilaterally gives a warning when using offsetof with a non-POD,
 	// even if the given usage happens to work. So we make a workaround version of offsetof
 	// here for GCC which has the same effect but tricks the compiler into not issuing the warning.
@@ -284,10 +284,10 @@
 
 	// ------------------------------------------------------------------------
 	// EA_SIZEOF_MEMBER
-	// Implements a portable way to determine the size of a member. 
+	// Implements a portable way to determine the size of a member.
 	//
 	// The EA_SIZEOF_MEMBER simply returns the size of a member within a class or struct; member
-	// access rules still apply. We offer two approaches depending on the compiler's support for non-static member 
+	// access rules still apply. We offer two approaches depending on the compiler's support for non-static member
 	// initializers although most C++11 compilers support this.
 	//
 	// Example usage:
@@ -348,8 +348,8 @@
 		#endif
 	#endif
 
-	// EDG intends to be compatible with GCC but has a bug whereby it 
-	// fails to support calling a constructor in an aligned declaration when 
+	// EDG intends to be compatible with GCC but has a bug whereby it
+	// fails to support calling a constructor in an aligned declaration when
 	// using postfix alignment attributes. Prefix works for alignment, but does not align
 	// the size like postfix does.  Prefix also fails on templates.  So gcc style post fix
 	// is still used, but the user will need to use EA_POSTFIX_ALIGN before the constructor parameters.
@@ -392,7 +392,7 @@
 	#else // Unusual compilers
 		// There is nothing we can do about some of these. This is not as bad a problem as it seems.
 		// If the given platform/compiler doesn't support alignment specifications, then it's somewhat
-		// likely that alignment doesn't matter for that platform. Otherwise they would have defined 
+		// likely that alignment doesn't matter for that platform. Otherwise they would have defined
 		// functionality to manipulate alignment.
 		#define EA_ALIGN(n)
 		#define EA_PREFIX_ALIGN(n)
@@ -412,7 +412,7 @@
 
 		#else
 			// C implementation of EA_ALIGN_OF
-			// This implementation works for most cases, but doesn't directly work 
+			// This implementation works for most cases, but doesn't directly work
 			// for types such as function pointer declarations. To work with those
 			// types you need to typedef the type and then use the typedef in EA_ALIGN_OF.
 			#define EA_ALIGN_OF(type) ((size_t)offsetof(struct { char c; type m; }, m))
@@ -422,7 +422,7 @@
 	// EA_PRAGMA_PACK_VC
 	//
 	// Wraps #pragma pack in a way that allows for cleaner code.
-	// 
+	//
 	// Example usage:
 	//    EA_PRAGMA_PACK_VC(push, 1)
 	//    struct X{ char c; int i; };
@@ -443,10 +443,10 @@
 	// EA_LIKELY / EA_UNLIKELY
 	//
 	// Defined as a macro which gives a hint to the compiler for branch
-	// prediction. GCC gives you the ability to manually give a hint to 
+	// prediction. GCC gives you the ability to manually give a hint to
 	// the compiler about the result of a comparison, though it's often
 	// best to compile shipping code with profiling feedback under both
-	// GCC (-fprofile-arcs) and VC++ (/LTCG:PGO, etc.). However, there 
+	// GCC (-fprofile-arcs) and VC++ (/LTCG:PGO, etc.). However, there
 	// are times when you feel very sure that a boolean expression will
 	// usually evaluate to either true or false and can help the compiler
 	// by using an explicity directive...
@@ -463,10 +463,10 @@
 		#if (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__clang__)
 			#if defined(__cplusplus)
 				#define EA_LIKELY(x)   __builtin_expect(!!(x), true)
-				#define EA_UNLIKELY(x) __builtin_expect(!!(x), false) 
+				#define EA_UNLIKELY(x) __builtin_expect(!!(x), false)
 			#else
 				#define EA_LIKELY(x)   __builtin_expect(!!(x), 1)
-				#define EA_UNLIKELY(x) __builtin_expect(!!(x), 0) 
+				#define EA_UNLIKELY(x) __builtin_expect(!!(x), 0)
 			#endif
 		#else
 			#define EA_LIKELY(x)   (x)
@@ -483,7 +483,7 @@
 	//
 	#if !defined(EA_INIT_PRIORITY_AVAILABLE)
 		#if defined(__GNUC__) && !defined(__EDG__) // EDG typically #defines __GNUC__ but doesn't implement init_priority.
-			#define EA_INIT_PRIORITY_AVAILABLE 1 
+			#define EA_INIT_PRIORITY_AVAILABLE 1
 		#elif defined(__clang__)
 			#define EA_INIT_PRIORITY_AVAILABLE 1  // Clang implements init_priority
 		#endif
@@ -493,7 +493,7 @@
 	// ------------------------------------------------------------------------
 	// EA_INIT_PRIORITY
 	//
-	// This is simply a wrapper for the GCC init_priority attribute that allows 
+	// This is simply a wrapper for the GCC init_priority attribute that allows
 	// multiplatform code to be easier to read. This attribute doesn't apply
 	// to VC++ because VC++ uses file-level pragmas to control init ordering.
 	//
@@ -514,17 +514,17 @@
 	//
 	// Defined as 0, 1, or 2.
 	// Defines if the GCC attribute may_alias is supported by the compiler.
-	// Consists of a value 0 (unsupported, shouldn't be used), 1 (some support), 
-	// or 2 (full proper support). 
+	// Consists of a value 0 (unsupported, shouldn't be used), 1 (some support),
+	// or 2 (full proper support).
 	//
 	#ifndef EA_MAY_ALIAS_AVAILABLE
 		#if defined(__GNUC__) && (((__GNUC__ * 100) + __GNUC_MINOR__) >= 303)
 			#if   !defined(__EDG__)                 // define it as 1 while defining GCC's support as 2.
 				#define EA_MAY_ALIAS_AVAILABLE 2
 			#else
-				#define EA_MAY_ALIAS_AVAILABLE 0    
-			#endif                                  
-		#else 
+				#define EA_MAY_ALIAS_AVAILABLE 0
+			#endif
+		#else
 			#define EA_MAY_ALIAS_AVAILABLE 0
 		#endif
 	#endif
@@ -533,8 +533,8 @@
 	// EA_MAY_ALIAS
 	//
 	// Defined as a macro that wraps the GCC may_alias attribute. This attribute
-	// has no significance for VC++ because VC++ doesn't support the concept of 
-	// strict aliasing. Users should avoid writing code that breaks strict 
+	// has no significance for VC++ because VC++ doesn't support the concept of
+	// strict aliasing. Users should avoid writing code that breaks strict
 	// aliasing rules; EA_MAY_ALIAS is for cases with no alternative.
 	//
 	// Example usage:
@@ -554,7 +554,7 @@
 	// ------------------------------------------------------------------------
 	// EA_ASSUME
 	//
-	// This acts the same as the VC++ __assume directive and is implemented 
+	// This acts the same as the VC++ __assume directive and is implemented
 	// simply as a wrapper around it to allow portable usage of it and to take
 	// advantage of it if and when it appears in other compilers.
 	//
@@ -585,7 +585,7 @@
 	// ------------------------------------------------------------------------
 	// EA_ANALYSIS_ASSUME
 	//
-	// This acts the same as the VC++ __analysis_assume directive and is implemented 
+	// This acts the same as the VC++ __analysis_assume directive and is implemented
 	// simply as a wrapper around it to allow portable usage of it and to take
 	// advantage of it if and when it appears in other compilers.
 	//
@@ -596,7 +596,7 @@
 	//    }
 	//
 	#ifndef EA_ANALYSIS_ASSUME
-		#if defined(_MSC_VER) && (_MSC_VER >= 1300) // If VC7.0 and later 
+		#if defined(_MSC_VER) && (_MSC_VER >= 1300) // If VC7.0 and later
 			#define EA_ANALYSIS_ASSUME(x) __analysis_assume(!!(x)) // !! because that allows for convertible-to-bool in addition to bool.
 		#else
 			#define EA_ANALYSIS_ASSUME(x)
@@ -607,7 +607,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_DISABLE_VC_WARNING / EA_RESTORE_VC_WARNING
-	// 
+	//
 	// Disable and re-enable warning(s) within code.
 	// This is simply a wrapper for VC++ #pragma warning(disable: nnnn) for the
 	// purpose of making code easier to read due to avoiding nested compiler ifdefs
@@ -744,10 +744,10 @@
 				_Pragma("GCC diagnostic push")  \
 				_Pragma(EAGCCWERRORHELP2(w))
 		#elif defined(EA_COMPILER_GNUC) && (EA_COMPILER_VERSION >= 4004)
-			#define EA_DISABLE_GCC_WARNING(w)   \
+			#define EA_ENABLE_GCC_WARNING_AS_ERROR(w)   \
 				_Pragma(EAGCCWERRORHELP2(w))
 		#else
-			#define EA_DISABLE_GCC_WARNING(w)
+			#define EA_ENABLE_GCC_WARNING_AS_ERROR(w)
 		#endif
 	#endif
 
@@ -824,7 +824,7 @@
 				_Pragma("clang diagnostic push")  \
 				_Pragma(EACLANGWERRORHELP2(w))
 		#else
-			#define EA_DISABLE_CLANG_WARNING(w)
+			#define EA_ENABLE_CLANG_WARNING_AS_ERROR(w)
 		#endif
 	#endif
 
@@ -907,13 +907,13 @@
 	//
 	// #ifndef EA_DISABLE_ALL_GHS_WARNINGS
 	//     #if defined(EA_COMPILER_GREEN_HILLS)
-	//         #define EA_DISABLE_ALL_GHS_WARNINGS(w)  \_ 
+	//         #define EA_DISABLE_ALL_GHS_WARNINGS(w)  \_
 	//             _Pragma("_________")
 	//     #else
 	//         #define EA_DISABLE_ALL_GHS_WARNINGS(w)
 	//     #endif
 	// #endif
-	// 
+	//
 	// #ifndef EA_RESTORE_ALL_GHS_WARNINGS
 	//     #if defined(EA_COMPILER_GREEN_HILLS)
 	//         #define EA_RESTORE_ALL_GHS_WARNINGS()   \_
@@ -965,7 +965,7 @@
 	//
 	//#ifndef EA_DISABLE_ALL_EDG_WARNINGS
 	//    #if defined(EA_COMPILER_EDG) && !defined(EA_COMPILER_SN)
-	//        #define EA_DISABLE_ALL_EDG_WARNINGS(w)  \_ 
+	//        #define EA_DISABLE_ALL_EDG_WARNINGS(w)  \_
 	//            _Pragma("_________")
 	//    #else
 	//        #define EA_DISABLE_ALL_EDG_WARNINGS(w)
@@ -986,10 +986,10 @@
 	// ------------------------------------------------------------------------
 	// EA_DISABLE_CW_WARNING / EA_RESTORE_CW_WARNING
 	//
-	// Note that this macro can only control warnings via numbers and not by 
-	// names. The reason for this is that the compiler's syntax for such 
+	// Note that this macro can only control warnings via numbers and not by
+	// names. The reason for this is that the compiler's syntax for such
 	// warnings is not the same as for numbers.
-	// 
+	//
 	// Example usage:
 	//     // Currently we are limited to one warning per line and must also specify the warning in the restore macro.
 	//     EA_DISABLE_CW_WARNING(10317)
@@ -1016,7 +1016,7 @@
 		#define EA_DISABLE_ALL_CW_WARNINGS()
 
 	#endif
-	
+
 	#ifndef EA_RESTORE_ALL_CW_WARNINGS
 		#define EA_RESTORE_ALL_CW_WARNINGS()
 	#endif
@@ -1025,17 +1025,17 @@
 
 	// ------------------------------------------------------------------------
 	// EA_PURE
-	// 
+	//
 	// This acts the same as the GCC __attribute__ ((pure)) directive and is
-	// implemented simply as a wrapper around it to allow portable usage of 
+	// implemented simply as a wrapper around it to allow portable usage of
 	// it and to take advantage of it if and when it appears in other compilers.
 	//
-	// A "pure" function is one that has no effects except its return value and 
-	// its return value is a function of only the function's parameters or 
-	// non-volatile global variables. Any parameter or global variable access 
-	// must be read-only. Loop optimization and subexpression elimination can be 
-	// applied to such functions. A common example is strlen(): Given identical 
-	// inputs, the function's return value (its only effect) is invariant across 
+	// A "pure" function is one that has no effects except its return value and
+	// its return value is a function of only the function's parameters or
+	// non-volatile global variables. Any parameter or global variable access
+	// must be read-only. Loop optimization and subexpression elimination can be
+	// applied to such functions. A common example is strlen(): Given identical
+	// inputs, the function's return value (its only effect) is invariant across
 	// multiple invocations and thus can be pulled out of a loop and called but once.
 	//
 	// Example usage:
@@ -1056,7 +1056,7 @@
 	// ------------------------------------------------------------------------
 	// EA_WEAK
 	// EA_WEAK_SUPPORTED -- defined as 0 or 1.
-	// 
+	//
 	// GCC
 	// The weak attribute causes the declaration to be emitted as a weak
 	// symbol rather than a global. This is primarily useful in defining
@@ -1064,16 +1064,16 @@
 	// can also be used with non-function declarations.
 	//
 	// VC++
-	// At link time, if multiple definitions of a COMDAT are seen, the linker 
-	// picks one and discards the rest. If the linker option /OPT:REF 
-	// is selected, then COMDAT elimination will occur to remove all the 
+	// At link time, if multiple definitions of a COMDAT are seen, the linker
+	// picks one and discards the rest. If the linker option /OPT:REF
+	// is selected, then COMDAT elimination will occur to remove all the
 	// unreferenced data items in the linker output.
 	//
 	// Example usage:
 	//    EA_WEAK void Function();
 	//
 	#ifndef EA_WEAK
-		#if defined(_MSC_VER) && (_MSC_VER >= 1300) // If VC7.0 and later 
+		#if defined(_MSC_VER) && (_MSC_VER >= 1300) // If VC7.0 and later
 			#define EA_WEAK __declspec(selectany)
 			#define EA_WEAK_SUPPORTED 1
 		#elif defined(_MSC_VER) || (defined(__GNUC__) && defined(__CYGWIN__))
@@ -1092,7 +1092,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_UNUSED
-	// 
+	//
 	// Makes compiler warnings about unused variables go away.
 	//
 	// Example usage:
@@ -1106,7 +1106,7 @@
 	#ifndef EA_UNUSED
 		// The EDG solution below is pretty weak and needs to be augmented or replaced.
 		// It can't handle the C language, is limited to places where template declarations
-		// can be used, and requires the type x to be usable as a functions reference argument. 
+		// can be used, and requires the type x to be usable as a functions reference argument.
 		#if defined(__cplusplus) && defined(__EDG__)
 			template <typename T>
 			inline void EABaseUnused(T const volatile & x) { (void)x; }
@@ -1120,7 +1120,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_EMPTY
-	// 
+	//
 	// Allows for a null statement, usually for the purpose of avoiding compiler warnings.
 	//
 	// Example usage:
@@ -1146,8 +1146,8 @@
 	// We also define EA_CURRENT_FUNCTION_SUPPORTED for when it is not possible
 	// to have EA_CURRENT_FUNCTION work as expected.
 	//
-	// Defined inside a function because otherwise the macro might not be 
-	// defined and code below might not compile. This happens with some 
+	// Defined inside a function because otherwise the macro might not be
+	// defined and code below might not compile. This happens with some
 	// compilers.
 	//
 	#ifndef EA_CURRENT_FUNCTION
@@ -1238,9 +1238,9 @@
 			#endif
 		#elif defined(EA_PLATFORM_UNIX)
 			// It is standard on Unix to have wchar_t be int32_t or uint32_t.
-			// All versions of GNUC default to a 32 bit wchar_t, but EA has used 
+			// All versions of GNUC default to a 32 bit wchar_t, but EA has used
 			// the -fshort-wchar GCC command line option to force it to 16 bit.
-			// If you know that the compiler is set to use a wchar_t of other than 
+			// If you know that the compiler is set to use a wchar_t of other than
 			// the default, you need to manually define EA_WCHAR_SIZE for the build.
 			#define EA_WCHAR_SIZE 4
 		#else
@@ -1261,11 +1261,11 @@
 
 	// ------------------------------------------------------------------------
 	// EA_RESTRICT
-	// 
-	// The C99 standard defines a new keyword, restrict, which allows for the 
+	//
+	// The C99 standard defines a new keyword, restrict, which allows for the
 	// improvement of code generation regarding memory usage. Compilers can
 	// generate significantly faster code when you are able to use restrict.
-	// 
+	//
 	// Example usage:
 	//    void DoSomething(char* EA_RESTRICT p1, char* EA_RESTRICT p2);
 	//
@@ -1281,9 +1281,9 @@
 		#elif defined(EA_COMPILER_IS_C99)
 			#define EA_RESTRICT restrict
 		#else
-			// If the compiler didn't support restricted pointers, defining EA_RESTRICT 
-			// away would result in compiling and running fine but you just wouldn't 
-			// the same level of optimization. On the other hand, all the major compilers 
+			// If the compiler didn't support restricted pointers, defining EA_RESTRICT
+			// away would result in compiling and running fine but you just wouldn't
+			// the same level of optimization. On the other hand, all the major compilers
 			// support restricted pointers.
 			#define EA_RESTRICT
 		#endif
@@ -1295,7 +1295,7 @@
 	// EA_PREFIX_DEPRECATED     // You should need this only for unusual compilers.
 	// EA_POSTFIX_DEPRECATED    // You should need this only for unusual compilers.
 	// EA_DEPRECATED_MESSAGE    // Used as a prefix and provides a deprecation message.
-	// 
+	//
 	// Example usage:
 	//    EA_DEPRECATED void Function();
 	//    EA_DEPRECATED_MESSAGE("Use 1.0v API instead") void Function();
@@ -1310,7 +1310,7 @@
 		#elif defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION > 1300) // If VC7 (VS2003) or later...
 			#define EA_DEPRECATED __declspec(deprecated)
 		#elif defined(EA_COMPILER_MSVC)
-			#define EA_DEPRECATED 
+			#define EA_DEPRECATED
 		#else
 			#define EA_DEPRECATED __attribute__((deprecated))
 		#endif
@@ -1352,7 +1352,7 @@
 	//     EA_PREFIX_FORCE_INLINE void Foo() EA_POSTFIX_FORCE_INLINE; // Implementation elsewhere.
 	//
 	// Note that when the prefix version of this function is used, it replaces
-	// the regular C++ 'inline' statement. Thus you should not use both the 
+	// the regular C++ 'inline' statement. Thus you should not use both the
 	// C++ inline statement and this macro with the same function declaration.
 	//
 	// To force inline usage under GCC 3.1+, you use this:
@@ -1361,7 +1361,7 @@
 	//    inline __attribute__((always_inline)) void Foo();
 	//
 	// The CodeWarrior compiler doesn't have the concept of forcing inlining per function.
-	// 
+	//
 	#ifndef EA_FORCE_INLINE
 		#if defined(EA_COMPILER_MSVC)
 			#define EA_FORCE_INLINE __forceinline
@@ -1385,12 +1385,12 @@
 		#define EA_POSTFIX_FORCE_INLINE __attribute__((always_inline))
 	#else
 		#define EA_PREFIX_FORCE_INLINE  inline
-		#define EA_POSTFIX_FORCE_INLINE 
+		#define EA_POSTFIX_FORCE_INLINE
 	#endif
 
 
 	// ------------------------------------------------------------------------
-	// EA_NO_INLINE             // Used as a prefix. 
+	// EA_NO_INLINE             // Used as a prefix.
 	// EA_PREFIX_NO_INLINE      // You should need this only for unusual compilers.
 	// EA_POSTFIX_NO_INLINE     // You should need this only for unusual compilers.
 	//
@@ -1407,10 +1407,10 @@
 	//    #pragma inline_depth()  // Restore to default.
 	//
 	// Since there is no easy way to disable inlining on a function-by-function
-	// basis in VC++ prior to VS2005, the best strategy is to write platform-specific 
-	// #ifdefs in the code or to disable inlining for a given module and enable 
-	// functions individually with EA_FORCE_INLINE. 
-	// 
+	// basis in VC++ prior to VS2005, the best strategy is to write platform-specific
+	// #ifdefs in the code or to disable inlining for a given module and enable
+	// functions individually with EA_FORCE_INLINE.
+	//
 	#ifndef EA_NO_INLINE
 		#if defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1400) // If VC8 (VS2005) or later...
 			#define EA_NO_INLINE __declspec(noinline)
@@ -1440,7 +1440,7 @@
 	//     class EA_NO_VTABLE X {
 	//        virtual void InterfaceFunction();
 	//     };
-	// 
+	//
 	//     EA_CLASS_NO_VTABLE(X) {
 	//        virtual void InterfaceFunction();
 	//     };
@@ -1460,9 +1460,9 @@
 	// EA_PASCAL
 	//
 	// Also known on PC platforms as stdcall.
-	// This convention causes the compiler to assume that the called function 
-	// will pop off the stack space used to pass arguments, unless it takes a 
-	// variable number of arguments. 
+	// This convention causes the compiler to assume that the called function
+	// will pop off the stack space used to pass arguments, unless it takes a
+	// variable number of arguments.
 	//
 	// Example usage:
 	//    this:
@@ -1471,7 +1471,7 @@
 	//    would be written as this:
 	//       void EA_PASCAL_FUNC(DoNothing(int x));
 	//       void EA_PASCAL_FUNC(DoNothing(int x)){}
-	// 
+	//
 	#ifndef EA_PASCAL
 		#if defined(EA_COMPILER_MSVC)
 			#define EA_PASCAL __stdcall
@@ -1479,7 +1479,7 @@
 			#define EA_PASCAL __attribute__((stdcall))
 		#else
 			// Some compilers simply don't support pascal calling convention.
-			// As a result, there isn't an issue here, since the specification of 
+			// As a result, there isn't an issue here, since the specification of
 			// pascal calling convention is for the purpose of disambiguating the
 			// calling convention that is applied.
 			#define EA_PASCAL
@@ -1529,7 +1529,7 @@
 		#elif defined(EA_SSE2) && EA_SSE2
 			#define EA_SSE 2
 		#elif defined(EA_PROCESSOR_X86) && defined(_MSC_FULL_VER) && !defined(__NOSSE__) && defined(_M_IX86_FP)
-			#define EA_SSE _M_IX86_FP 
+			#define EA_SSE _M_IX86_FP
 		#elif defined(EA_PROCESSOR_X86) && defined(EA_COMPILER_INTEL) && !defined(__NOSSE__)
 			#define EA_SSE 1
 		#elif defined(EA_PROCESSOR_X86_64)
@@ -1640,7 +1640,7 @@
 	// ------------------------------------------------------------------------
 	// EA_ABM
 	// EA_ABM may be used to determine if Advanced Bit Manipulation sets are available for the target architecture (POPCNT, LZCNT)
-	// 
+	//
 	#ifndef EA_ABM
 		#if defined(__ABM__) || defined(EA_PLATFORM_XBOXONE) || defined(EA_PLATFORM_PS4)
 			#define EA_ABM 1
@@ -1745,17 +1745,17 @@
 
 	// ------------------------------------------------------------------------
 	// EA_PRAGMA_ONCE_SUPPORTED
-	// 
+	//
 	// This is a wrapper for the #pragma once preprocessor directive.
 	// It allows for some compilers (in particular VC++) to implement signifcantly
-	// faster include file preprocessing. #pragma once can be used to replace 
-	// header include guards or to augment them. However, #pragma once isn't 
+	// faster include file preprocessing. #pragma once can be used to replace
+	// header include guards or to augment them. However, #pragma once isn't
 	// necessarily supported by all compilers and isn't guaranteed to be so in
-	// the future, so using #pragma once to replace traditional include guards 
+	// the future, so using #pragma once to replace traditional include guards
 	// is not strictly portable. Note that a direct #define for #pragma once is
-	// impossible with VC++, due to limitations, but can be done with other 
+	// impossible with VC++, due to limitations, but can be done with other
 	// compilers/preprocessors via _Pragma("once").
-	// 
+	//
 	// Example usage (which includes traditional header guards for portability):
 	//    #ifndef SOMEPACKAGE_SOMEHEADER_H
 	//    #define SOMEPACKAGE_SOMEHEADER_H
@@ -1764,7 +1764,7 @@
 	//        #pragma once
 	//    #endif
 	//
-	//    <user code> 
+	//    <user code>
 	//
 	//    #endif
 	//
@@ -1776,14 +1776,14 @@
 
 	// ------------------------------------------------------------------------
 	// EA_ONCE
-	// 
+	//
 	// Example usage (which includes traditional header guards for portability):
 	//    #ifndef SOMEPACKAGE_SOMEHEADER_H
 	//    #define SOMEPACKAGE_SOMEHEADER_H
 	//
 	//    EA_ONCE()
 	//
-	//    <user code> 
+	//    <user code>
 	//
 	//    #endif
 	//
@@ -1799,18 +1799,18 @@
 
 	// ------------------------------------------------------------------------
 	// EA_OVERRIDE
-	// 
+	//
 	// C++11 override
 	// See http://msdn.microsoft.com/en-us/library/jj678987.aspx for more information.
 	// You can use EA_FINAL_OVERRIDE to combine usage of EA_OVERRIDE and EA_INHERITANCE_FINAL in a single statement.
 	//
-	// Example usage: 
+	// Example usage:
 	//        struct B     { virtual void f(int); };
 	//        struct D : B { void f(int) EA_OVERRIDE; };
-	// 
+	//
 	#ifndef EA_OVERRIDE
 		#if defined(EA_COMPILER_NO_OVERRIDE)
-			#define EA_OVERRIDE 
+			#define EA_OVERRIDE
 		#else
 			#define EA_OVERRIDE override
 		#endif
@@ -1819,7 +1819,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_INHERITANCE_FINAL
-	// 
+	//
 	// Portably wraps the C++11 final specifier.
 	// See http://msdn.microsoft.com/en-us/library/jj678985.aspx for more information.
 	// You can use EA_FINAL_OVERRIDE to combine usage of EA_OVERRIDE and EA_INHERITANCE_FINAL in a single statement.
@@ -1827,7 +1827,7 @@
 	//
 	// Example usage:
 	//     struct B { virtual void f() EA_INHERITANCE_FINAL; };
-	// 
+	//
 	#ifndef EA_INHERITANCE_FINAL
 		#if defined(EA_COMPILER_NO_INHERITANCE_FINAL)
 			#define EA_INHERITANCE_FINAL
@@ -1841,13 +1841,13 @@
 
 	// ------------------------------------------------------------------------
 	// EA_FINAL_OVERRIDE
-	// 
+	//
 	// Portably wraps the C++11 override final specifiers combined.
 	//
 	// Example usage:
 	//     struct A            { virtual void f(); };
 	//     struct B : public A { virtual void f() EA_FINAL_OVERRIDE; };
-	// 
+	//
 	#ifndef EA_FINAL_OVERRIDE
 		#define EA_FINAL_OVERRIDE EA_OVERRIDE EA_INHERITANCE_FINAL
 	#endif
@@ -1855,34 +1855,34 @@
 
 	// ------------------------------------------------------------------------
 	// EA_SEALED
-	// 
+	//
 	// This is deprecated, as the C++11 Standard has final (EA_INHERITANCE_FINAL) instead.
 	// See http://msdn.microsoft.com/en-us/library/0w2w91tf.aspx for more information.
 	// Example usage:
 	//     struct B { virtual void f() EA_SEALED; };
-	// 
+	//
 	#ifndef EA_SEALED
 		#if defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1400) // VS2005 (VC8) and later
 			#define EA_SEALED sealed
 		#else
-			#define EA_SEALED 
+			#define EA_SEALED
 		#endif
 	#endif
 
 
 	// ------------------------------------------------------------------------
 	// EA_ABSTRACT
-	// 
+	//
 	// This is a Microsoft language extension.
 	// See http://msdn.microsoft.com/en-us/library/b0z6b513.aspx for more information.
 	// Example usage:
 	//     struct X EA_ABSTRACT { virtual void f(){} };
-	// 
+	//
 	#ifndef EA_ABSTRACT
 		#if defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1400) // VS2005 (VC8) and later
 			#define EA_ABSTRACT abstract
 		#else
-			#define EA_ABSTRACT 
+			#define EA_ABSTRACT
 		#endif
 	#endif
 
@@ -1890,14 +1890,14 @@
 	// ------------------------------------------------------------------------
 	// EA_CONSTEXPR
 	// EA_CONSTEXPR_OR_CONST
-	// 
+	//
 	// Portable wrapper for C++11's 'constexpr' support.
 	//
 	// See http://www.cprogramming.com/c++11/c++11-compile-time-processing-with-constexpr.html for more information.
 	// Example usage:
 	//     EA_CONSTEXPR int GetValue() { return 37; }
 	//     EA_CONSTEXPR_OR_CONST double gValue = std::sin(kTwoPi);
-	// 
+	//
 	#if !defined(EA_CONSTEXPR)
 		#if defined(EA_COMPILER_NO_CONSTEXPR)
 			#define EA_CONSTEXPR
@@ -1916,16 +1916,16 @@
 
 	// ------------------------------------------------------------------------
 	// EA_CONSTEXPR_IF
-	// 
+	//
 	// Portable wrapper for C++17's 'constexpr if' support.
 	//
 	// https://en.cppreference.com/w/cpp/language/if
-	// 
+	//
 	// Example usage:
-	// 
-	// EA_CONSTEXPR_IF(eastl::is_copy_constructible_v<T>) 
+	//
+	// EA_CONSTEXPR_IF(eastl::is_copy_constructible_v<T>)
 	// 	{ ... }
-	// 
+	//
 	#if !defined(EA_CONSTEXPR_IF)
 		#if defined(EA_COMPILER_NO_CONSTEXPR_IF)
 			#define EA_CONSTEXPR_IF(predicate) if ((predicate))
@@ -1938,7 +1938,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_EXTERN_TEMPLATE
-	// 
+	//
 	// Portable wrapper for C++11's 'extern template' support.
 	//
 	// Example usage:
@@ -1991,7 +1991,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_NORETURN
-	// 
+	//
 	// Wraps the C++11 noreturn attribute. See EA_COMPILER_NO_NORETURN
 	// http://en.cppreference.com/w/cpp/language/attributes
 	// http://msdn.microsoft.com/en-us/library/k6ktzx3s%28v=vs.80%29.aspx
@@ -2000,7 +2000,7 @@
 	// Example usage:
 	//     EA_NORETURN void SomeFunction()
 	//         { throw "error"; }
-	// 
+	//
 	#if !defined(EA_NORETURN)
 		#if defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1300) // VS2003 (VC7) and later
 			#define EA_NORETURN __declspec(noreturn)
@@ -2014,7 +2014,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_CARRIES_DEPENDENCY
-	// 
+	//
 	// Wraps the C++11 carries_dependency attribute
 	// http://en.cppreference.com/w/cpp/language/attributes
 	// http://blog.aaronballman.com/2011/09/understanding-attributes/
@@ -2022,7 +2022,7 @@
 	// Example usage:
 	//     EA_CARRIES_DEPENDENCY int* SomeFunction()
 	//         { return &mX; }
-	// 
+	//
 	//
 	#if !defined(EA_CARRIES_DEPENDENCY)
 		#if defined(EA_COMPILER_NO_CARRIES_DEPENDENCY)
@@ -2032,14 +2032,14 @@
 		#endif
 	#endif
 
-	
+
 	// ------------------------------------------------------------------------
 	// EA_FALLTHROUGH
-	// 
+	//
 	// [[fallthrough] is a C++17 standard attribute that appears in switch
 	// statements to indicate that the fallthrough from the previous case in the
 	// switch statement is intentially and not a bug.
-	// 
+	//
 	// http://en.cppreference.com/w/cpp/language/attributes
 	//
 	// Example usage:
@@ -2050,8 +2050,8 @@
 	// 				case 1:
 	// 				DoCase1();
 	// 				// Compiler may generate a warning for fallthrough behaviour
-	// 		 
-	// 				case 2: 
+	//
+	// 				case 2:
 	// 				DoCase2();
 	//
 	// 				EA_FALLTHROUGH;
@@ -2072,24 +2072,24 @@
 
 	// ------------------------------------------------------------------------
 	// EA_NODISCARD
-	// 
+	//
 	// [[nodiscard]] is a C++17 standard attribute that can be applied to a
 	// function declaration, enum, or class declaration.  If a any of the list
 	// previously are returned from a function (without the user explicitly
 	// casting to void) the addition of the [[nodiscard]] attribute encourages
 	// the compiler to generate a warning about the user discarding the return
 	// value. This is a useful practice to encourage client code to check API
-	// error codes. 
+	// error codes.
 	//
 	// http://en.cppreference.com/w/cpp/language/attributes
 	//
 	// Example usage:
-	// 
+	//
 	//     EA_NODISCARD int baz() { return 42; }
-	//     
+	//
 	//     void foo()
 	//     {
-	//         baz(); // warning: ignoring return value of function declared with 'nodiscard' attribute 
+	//         baz(); // warning: ignoring return value of function declared with 'nodiscard' attribute
 	//     }
 	//
 	#if !defined(EA_NODISCARD)
@@ -2103,7 +2103,7 @@
 
 	// ------------------------------------------------------------------------
 	// EA_MAYBE_UNUSED
-	// 
+	//
 	// [[maybe_unused]] is a C++17 standard attribute that suppresses warnings
 	// on unused entities that are declared as maybe_unused.
 	//
@@ -2123,10 +2123,10 @@
 		#endif
 	#endif
 
-	
+
 	// ------------------------------------------------------------------------
 	// EA_NO_UBSAN
-	// 
+	//
 	// The LLVM/Clang undefined behaviour sanitizer will not analyse a function tagged with the following attribute.
 	//
 	// https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html#disabling-instrumentation-with-attribute-no-sanitize-undefined
@@ -2141,11 +2141,11 @@
 			#define EA_NO_UBSAN
 		#endif
 	#endif
-	
+
 
 	// ------------------------------------------------------------------------
 	// EA_NO_ASAN
-	// 
+	//
 	// The LLVM/Clang address sanitizer will not analyse a function tagged with the following attribute.
 	//
 	// https://clang.llvm.org/docs/AddressSanitizer.html#disabling-instrumentation-with-attribute-no-sanitize-address
@@ -2183,20 +2183,20 @@
 	// EA_NON_COPYABLE
 	//
 	// This macro defines as a class as not being copy-constructable
-	// or assignable. This is useful for preventing class instances 
+	// or assignable. This is useful for preventing class instances
 	// from being passed to functions by value, is useful for preventing
-	// compiler warnings by some compilers about the inability to 
-	// auto-generate a copy constructor and assignment, and is useful 
+	// compiler warnings by some compilers about the inability to
+	// auto-generate a copy constructor and assignment, and is useful
 	// for simply declaring in the interface that copy semantics are
 	// not supported by the class. Your class needs to have at least a
 	// default constructor when using this macro.
 	//
-	// Beware that this class works by declaring a private: section of 
+	// Beware that this class works by declaring a private: section of
 	// the class in the case of compilers that don't support C++11 deleted
-	// functions. 
+	// functions.
 	//
-	// Note: With some pre-C++11 compilers (e.g. Green Hills), you may need 
-	//       to manually define an instances of the hidden functions, even 
+	// Note: With some pre-C++11 compilers (e.g. Green Hills), you may need
+	//       to manually define an instances of the hidden functions, even
 	//       though they are not used.
 	//
 	// Example usage:
@@ -2227,8 +2227,8 @@
 	// ------------------------------------------------------------------------
 	// EA_FUNCTION_DELETE
 	//
-	// Semi-portable way of specifying a deleted function which allows for 
-	// cleaner code in class declarations. 
+	// Semi-portable way of specifying a deleted function which allows for
+	// cleaner code in class declarations.
 	//
 	// Example usage:
 	//
@@ -2238,9 +2238,9 @@
 	//      void foo() EA_FUNCTION_DELETE;
 	//  };
 	//
-	// Note: EA_FUNCTION_DELETE'd functions should be private to prevent the 
-	// functions from being called even when the compiler does not support 
-	// deleted functions. Some compilers (e.g. Green Hills) that don't support 
+	// Note: EA_FUNCTION_DELETE'd functions should be private to prevent the
+	// functions from being called even when the compiler does not support
+	// deleted functions. Some compilers (e.g. Green Hills) that don't support
 	// C++11 deleted functions can require that you define the function,
 	// which you can do in the associated source file for the class.
 	//
@@ -2354,7 +2354,7 @@
 		struct EANonCopyable
 		{
 			#if defined(EA_COMPILER_NO_DEFAULTED_FUNCTIONS) || defined(__EDG__) // EDG doesn't appear to behave properly for the case of defaulted constructors; it generates a mistaken warning about missing default constructors.
-				EANonCopyable(){} // Putting {} here has the downside that it allows a class to create itself, 
+				EANonCopyable(){} // Putting {} here has the downside that it allows a class to create itself,
 			   ~EANonCopyable(){} // but avoids linker errors that can occur with some compilers (e.g. Green Hills).
 			#else
 				EANonCopyable() = default;
@@ -2369,19 +2369,19 @@
 	// EA_OPTIMIZE_OFF / EA_OPTIMIZE_ON
 	//
 	// Implements portable inline optimization enabling/disabling.
-	// Usage of these macros must be in order OFF then ON. This is 
+	// Usage of these macros must be in order OFF then ON. This is
 	// because the OFF macro pushes a set of settings and the ON
 	// macro pops them. The nesting of OFF/ON sets (e.g. OFF, OFF, ON, ON)
 	// is not guaranteed to work on all platforms.
 	//
-	// This is often used to allow debugging of some code that's 
+	// This is often used to allow debugging of some code that's
 	// otherwise compiled with undebuggable optimizations. It's also
 	// useful for working around compiler code generation problems
 	// that occur in optimized builds.
 	//
-	// Some compilers (e.g. VC++) don't allow doing this within a function and 
+	// Some compilers (e.g. VC++) don't allow doing this within a function and
 	// so the usage must be outside a function, as with the example below.
-	// GCC on x86 appears to have some problem with argument passing when 
+	// GCC on x86 appears to have some problem with argument passing when
 	// using EA_OPTIMIZE_OFF in optimized builds.
 	//
 	// Example usage:
@@ -2430,20 +2430,10 @@
 	// ------------------------------------------------------------------------
 	// EA_SIGNED_RIGHT_SHIFT_IS_UNSIGNED
 	//
-	// Defined if right shifts of signed integers (i.e. arithmetic shifts) fail 
-	// to propogate the high bit downward, and thus preserve sign. Most hardware 
+	// Defined if right shifts of signed integers (i.e. arithmetic shifts) fail
+	// to propogate the high bit downward, and thus preserve sign. Most hardware
 	// and their corresponding compilers do this.
 	//
 	// <No current platform fails to propogate sign bits on right signed shifts>
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-

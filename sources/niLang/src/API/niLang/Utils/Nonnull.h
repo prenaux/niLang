@@ -308,6 +308,11 @@ inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
 
 #define niCheckNonnull(V,EXPR,RET)                                      \
   ni::Nonnull<decltype(V)::tNonnullIType>::tUnsafeInitializerForMacro{EXPR}; \
+  EA_ENABLE_GCC_WARNING_AS_ERROR(-Wshadow);                             \
+  EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wshadow);                           \
+  int V##_DontDeclareSameNonnullCheckTwice; niUnused(V##_DontDeclareSameNonnullCheckTwice); \
+  EA_DISABLE_CLANG_WARNING_AS_ERROR();                                  \
+  EA_DISABLE_GCC_WARNING_AS_ERROR();                                    \
   if ((V).raw_ptr() == nullptr) {                                       \
     niError("CheckNonnull '" #EXPR "' failed.");                        \
     return RET;                                                         \

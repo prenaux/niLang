@@ -373,4 +373,25 @@ TEST_FIXTURE(FNonnull,niCheckNonnull_WeakPtr_IsNull) {
   }
 }
 
+#if 0
+TEST_FIXTURE(FNonnull,niCheckNonnull_IncorrectUse) {
+  Nonnull<sTestItem> r = niCheckNonnull(r,CreateTestItem("r",NULL),;);
+  {
+    // Should have a compiler error, using r by mistake
+    Nonnull<sTestItem> rInvalid = niCheckNonnull(r,CreateTestItem("rInvalid",NULL),;);
+  }
+  // Should have a compiler error, using r by mistake
+  Nonnull<sTestItem> rInvalid2 = niCheckNonnull(r,CreateTestItem("rInvalid",NULL),;);
+}
+#endif
+
+#if 0
+TEST_FIXTURE(FNonnull,CompilerFailure) {
+  // Should have a compiler error, Ptr<> is not Nonnull<>
+  Ptr<sTestItem> r = niCheckNonnull(r,(sTestItem*)nullptr,_ASTR("IsNull"));
+  // Should have a compiler error, WeakPtr<> is not Nonnull<>
+  WeakPtr<sTestItem> r = niCheckNonnull(r,(sTestItem*)nullptr,_ASTR("IsNull"));
+}
+#endif
+
 } // end of anonymous namespace

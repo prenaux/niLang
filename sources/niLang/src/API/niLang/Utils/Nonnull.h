@@ -19,17 +19,23 @@ namespace ni {
  * @{
  */
 
+template<typename T> struct Ptr;
+template<typename T> struct WeakPtr;
+
 //! A strong reference pointer to an iUnknown object that can never be null.
 template <typename T>
 struct Nonnull
 {
   niClassNoHeapAlloc(Nonnull);
   template<typename U>
-  friend class Nonnull;
+  friend struct Nonnull;
 
  public:
-  typedef astl::non_null<T*> non_null_t;
-  typedef astl::non_null<const T*> const_non_null_t;
+  typedef T tNonnullIType;
+  typedef T* tRawPtr;
+  typedef const T* tConstRawPtr;
+  typedef astl::non_null<tRawPtr> non_null_t;
+  typedef astl::non_null<tConstRawPtr> const_non_null_t;
 
   // Explicit so that its clear at callsites that it will enforce it to be
   // non-null.
@@ -183,9 +189,84 @@ struct Nonnull
     return const_cast<T*>(mRefPtr);
   }
 
+  struct tUnsafeInitializerForMacro {
+    explicit tUnsafeInitializerForMacro(T* aPointer)
+        : _maybe_null_ptr(aPointer) {
+      if (_maybe_null_ptr) {
+        ni::AddRef(_maybe_null_ptr);
+#ifdef _DEBUG
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+#endif
+      }
+    }
+    template <typename U>
+    explicit tUnsafeInitializerForMacro(Ptr<U>& aPtr)
+        : _maybe_null_ptr(aPtr.raw_ptr()) {
+      if (_maybe_null_ptr) {
+        ni::AddRef(_maybe_null_ptr);
+#ifdef _DEBUG
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+#endif
+      }
+    }
+    template <typename U>
+    explicit tUnsafeInitializerForMacro(Ptr<U>&& aPtr)
+        : _maybe_null_ptr(aPtr.raw_ptr()) {
+      aPtr.mPtr = NULL;
+#ifdef _DEBUG
+      if (_maybe_null_ptr) {
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+      }
+#endif
+    }
+    template <typename U>
+    explicit tUnsafeInitializerForMacro(const WeakPtr<U>& aPtr)
+        : _maybe_null_ptr(aPtr.DerefAndAddRef()) {
+#ifdef _DEBUG
+      if (_maybe_null_ptr) {
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+      }
+#endif
+    }
+
+    ~tUnsafeInitializerForMacro() {
+#ifdef _DEBUG
+      if (_maybe_null_ptr) {
+        niDebugAssertMsg(
+          _maybe_null_ptr->GetNumRefs() == _initialNumRef,
+          "Invalid NumRef");
+      }
+#endif
+    }
+
+    T* _maybe_null_ptr;
+#ifdef _DEBUG
+    tI32 _initialNumRef = -1;
+#endif
+
+   private:
+    tUnsafeInitializerForMacro() = delete;
+    tUnsafeInitializerForMacro(const tUnsafeInitializerForMacro&) = delete;
+    tUnsafeInitializerForMacro& operator = (const tUnsafeInitializerForMacro&) = delete;
+    tUnsafeInitializerForMacro(const tUnsafeInitializerForMacro&&) = delete;
+    tUnsafeInitializerForMacro& operator = (const tUnsafeInitializerForMacro&&) = delete;
+  };
+  Nonnull(tUnsafeInitializerForMacro&& aRight) {
+    TRACE_NI_NONNULL("explicit tUnsafeInitializerForMacro MOVE constructor")
+    mRefPtr = aRight._maybe_null_ptr;
+  }
+  Nonnull& operator = (tUnsafeInitializerForMacro&& aRight) {
+    TRACE_NI_NONNULL("tUnsafeInitializerForMacro MOVE operator=")
+    if (mRefPtr) {
+      ni::Release(mRefPtr);
+    }
+    mRefPtr = aRight._maybe_null_ptr;
+    return *this;
+  }
+
  private:
   Nonnull() = delete;
-  Nonnull& operator = (T* newp);
+  Nonnull& operator = (T* newp) = delete;
 
   // To confuse the compiler if someone tries to delete the object
   operator void* () const;
@@ -225,6 +306,12 @@ inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
   return Nonnull<T>(v);
 }
 
+#define niCheckNonnull(V,EXPR,RET)                                      \
+  ni::Nonnull<decltype(V)::tNonnullIType>::tUnsafeInitializerForMacro{EXPR}; \
+  if ((V).raw_ptr() == nullptr) {                                       \
+    niError("CheckNonnull '" #EXPR "' failed.");                        \
+    return RET;                                                         \
+  }
 
 /**@}*/
 /**@}*/

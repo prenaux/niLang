@@ -26,8 +26,9 @@ template <typename T>
 struct Ptr
 {
   niClassNoHeapAlloc(Ptr);
+  template<class U> friend struct Nonnull;
 
- public:
+public:
   Ptr() : mPtr(NULL) {}
 
   Ptr(const T* _p) {

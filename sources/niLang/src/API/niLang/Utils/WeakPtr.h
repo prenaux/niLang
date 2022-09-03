@@ -14,6 +14,7 @@ namespace ni {
 
 niExportFunc(tBool) ni_object_has_weak_ptr(iUnknown* apObject);
 niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObjectPtr);
+niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr);
 niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr);
 
 template <typename T>
@@ -55,8 +56,14 @@ struct WeakPtr {
     mWeakPtrObject = NULL;
   }
 
-  T* DerefAndAddRef() const {
-    return (T*)(niTypename T::IUnknownBaseType*)ni_object_deref_and_add_ref_weak_ptr(mWeakPtrObject.ptr());
+  __forceinline T* Deref() const {
+    return (T*)(niTypename T::IUnknownBaseType*)
+        ni_object_deref_weak_ptr(mWeakPtrObject.ptr());
+  }
+
+  __forceinline T* DerefAndAddRef() const {
+    return (T*)(niTypename T::IUnknownBaseType*)
+        ni_object_deref_and_add_ref_weak_ptr(mWeakPtrObject.ptr());
   }
 
   // needed so that WeakPtr<> can be used in a container
@@ -65,22 +72,21 @@ struct WeakPtr {
     return *this;
   }
 
-  // For comparison operators
-  tIntPtr __stdcall __GetWeakObjecIntPtr() const {
-    return (tIntPtr)mWeakPtrObject.ptr();
-  }
-
   tBool is_null() const {
-    return mWeakPtrObject.raw_ptr() == nullptr;
+    return !IsSet();
   }
   tBool has_value() const {
-    return mWeakPtrObject.raw_ptr() != nullptr;
+    return IsSet();
   }
   ni::Nonnull<T> non_null() const {
-    return ni::MakeNonnull(mWeakPtrObject.raw_ptr());
+    return ni::Nonnull<T>(this->Deref());
   }
   ni::Nonnull<const T> c_non_null() const {
-    return ni::MakeNonnull(mWeakPtrObject.raw_ptr());
+    return ni::Nonnull<const T>(this->Deref());
+  }
+
+  __forceinline iUnknown* weak_object_ptr() const {
+    return mWeakPtrObject.raw_ptr();
   }
 
  private:
@@ -127,22 +133,22 @@ __forceinline bool IsNullPtr(WeakPtr<T> const& a) {
 }
 
 template<class T, class U> inline bool operator==(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() == b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() == b.weak_object_ptr();
 }
 template<class T, class U> inline bool operator!=(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() != b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() != b.weak_object_ptr();
 }
 template<class T, class U> inline bool operator<(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() < b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() < b.weak_object_ptr();
 }
 template<class T, class U> inline bool operator>(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() > b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() > b.weak_object_ptr();
 }
 template<class T, class U> inline bool operator<=(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() <= b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() <= b.weak_object_ptr();
 }
 template<class T, class U> inline bool operator>=(WeakPtr<T> const& a, WeakPtr<U> const& b) {
-  return a.__GetWeakObjecIntPtr() >= b.__GetWeakObjecIntPtr();
+  return a.weak_object_ptr() >= b.weak_object_ptr();
 }
 
 template<class T>

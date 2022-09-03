@@ -62,7 +62,8 @@ TEST_FIXTURE(FWeakPtr,UtilClass) {
     CHECK(weakPtr2File.IsOK());
     CHECK_EQUAL(ptrFile.ptr(),QPtr<iFile>(weakPtr2File).ptr());
     // underlying weak pointer object is always the same
-    CHECK_EQUAL(weakPtrFile.__GetWeakObjecIntPtr(),weakPtr2File.__GetWeakObjecIntPtr());
+    CHECK_EQUAL(weakPtrFile.weak_object_ptr(),
+                weakPtr2File.weak_object_ptr());
   }
 
   ptrFile = NULL;
@@ -108,9 +109,38 @@ TEST_FIXTURE(FWeakPtr,Deref) {
   Ptr<iUnknown> weakPtrFileDeref = WeakPtr<iUnknown>(weakPtrFile);
   CHECK_EQUAL(ptrFile.ptr(), weakPtrFileDeref.ptr());
   CHECK_EQUAL(2, ptrFile->GetNumRefs());
+  CHECK_EQUAL(2, weakPtrFileDeref->GetNumRefs());
   CHECK_EQUAL(2, weakPtrFile->GetNumRefs());
 
   weakPtrFileDeref = NULL; ptrFile = NULL;
 
   CHECK_EQUAL(1, weakPtrFile->GetNumRefs());
+}
+
+TEST_FIXTURE(FWeakPtr,Nonnull) {
+  Ptr<iFile> ptrFile = ni::GetLang()->CreateFileWriteDummy();
+  CHECK(ptrFile.IsOK());
+  CHECK_EQUAL(1, ptrFile->GetNumRefs());
+
+  WeakPtr<iFile> wFile = ptrFile;
+  CHECK(wFile.has_value());
+  CHECK_EQUAL(1, ptrFile->GetNumRefs());
+
+  {
+    Nonnull<iFile> nnFile = wFile.non_null();
+    CHECK_EQUAL((tIntPtr)ptrFile.ptr(), (tIntPtr)nnFile.raw_ptr());
+    CHECK_EQUAL(2, ptrFile->GetNumRefs());
+    CHECK_EQUAL(2, nnFile->GetNumRefs());
+  }
+
+  {
+    Nonnull<const iFile> nnFile = wFile.non_null();
+    CHECK_EQUAL((tIntPtr)ptrFile.ptr(), (tIntPtr)nnFile.raw_ptr());
+    CHECK_EQUAL(2, ptrFile->GetNumRefs());
+    CHECK_EQUAL(2, nnFile->GetNumRefs());
+  }
+
+  ptrFile = NULL;
+
+  CHECK_EQUAL(1, wFile.weak_object_ptr()->GetNumRefs());
 }

@@ -311,13 +311,28 @@ public:
     __sync_set(mpObserved,(iUnknown*)NULL);
   }
 
+  iUnknown* Deref() {
+    __sync_local_ptr(iUnknown,pObserved);
+    iUnknown* o = pObserved.ptr();
+    if (o) {
+      if (o->GetNumRefs() <= 0) {
+#ifdef _DEBUG
+        niLog(Debug,niFmt("Deref: Trying to revive %p with weak pointer.", (tIntPtr)o));
+#endif
+        return NULL;
+      }
+      return o;
+    }
+    return NULL;
+  }
+
   iUnknown* DerefAndAddRef() {
     __sync_local_ptr(iUnknown,pObserved);
     iUnknown* o = pObserved.ptr();
     if (o) {
       if (o->GetNumRefs() <= 0) {
 #ifdef _DEBUG
-        niLog(Debug,niFmt("Trying to revive %p with weak pointer.", (tIntPtr)o));
+        niLog(Debug,niFmt("DerefAndAddRef: Trying to revive %p with weak pointer.", (tIntPtr)o));
 #endif
         return NULL;
       }
@@ -421,15 +436,24 @@ niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObject) {
   return basePtr->mpWeakPtr;
 }
 
-niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr) {
+niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr) {
   if (!apWeakPtr)
     return NULL;
-
 #ifdef _DEBUG
   // Check for improper usage of the API ; assert if apWeakPtr not a weak pointer.
   niAssert(apWeakPtr->QueryInterface(niGetInterfaceUUID(iWeakPtr)) != NULL);
 #endif
+  sWeakPtrImpl* weakPtr = (sWeakPtrImpl*)apWeakPtr;
+  return weakPtr->Deref();
+}
 
+niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr) {
+  if (!apWeakPtr)
+    return NULL;
+#ifdef _DEBUG
+  // Check for improper usage of the API ; assert if apWeakPtr not a weak pointer.
+  niAssert(apWeakPtr->QueryInterface(niGetInterfaceUUID(iWeakPtr)) != NULL);
+#endif
   sWeakPtrImpl* weakPtr = (sWeakPtrImpl*)apWeakPtr;
   return weakPtr->DerefAndAddRef();
 }

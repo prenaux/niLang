@@ -82,7 +82,7 @@ as_bytes(span<ElementType, Extent> s) noexcept {
 
 template <
   class ElementType, size_t Extent,
-  typename std::enable_if<!std::is_const<ElementType>::value, int>::type = 0>
+  typename eastl::enable_if<!eastl::is_const<ElementType>::value, int>::type = 0>
 span<ni::tU8,
      ((Extent == eastl::dynamic_extent) ?
      eastl::dynamic_extent : sizeof(ElementType) * Extent)>

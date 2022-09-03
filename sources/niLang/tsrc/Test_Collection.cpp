@@ -2,6 +2,14 @@
 #include "stdafx.h"
 #include "../src/API/niLang/Utils/CollectionImpl.h"
 
+#if !defined niPtr_NoUnsafeAPI
+#error "Expected niPtr_NoUnsafeAPI."
+#endif
+
+template struct ni::cMutableCollectionImpl<
+  ni::CollectionTraitsMap<ni::CollectionTraitsI32,ni::CollectionTraitsI32> >;
+template struct ni::tInterfaceCVec<ni::iUnknown>;
+
 struct FCollection {
 };
 

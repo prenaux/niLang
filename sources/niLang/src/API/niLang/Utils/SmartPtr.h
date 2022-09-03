@@ -161,7 +161,6 @@ public:
     mPtr = newp;
   }
 
-#if defined niPtr_HasUnsafeAPI
   //! Null the smart pointer and return it's contained pointer.
   //! \remark This method makes sure that the pointer returned is not released.
   //!     It can return zero reference objects.
@@ -173,7 +172,6 @@ public:
     rawPtr->SetNumRefs(rawPtr->GetNumRefs()-1000);
     return rawPtr;
   }
-#endif
 
   // shared_ptr like accessors
   T* ptr() const { return const_cast<T*>(mPtr);  }

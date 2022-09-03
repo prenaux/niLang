@@ -718,11 +718,13 @@ typedef enum MY_DPI_AWARENESS
   MY_DPI_AWARENESS_PER_MONITOR_AWARE
 } MY_DPI_AWARENESS;
 
+#ifndef DPI_AWARENESS_CONTEXT_UNAWARE
 #define DPI_AWARENESS_CONTEXT_UNAWARE              ((HANDLE)-1)
 #define DPI_AWARENESS_CONTEXT_SYSTEM_AWARE         ((HANDLE)-2)
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE    ((HANDLE)-3)
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((HANDLE)-4)
 #define DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED    ((HANDLE)-5)
+#endif
 
 static const char* _GetDpiAwarenessContextString(HANDLE h) {
   if (h == DPI_AWARENESS_CONTEXT_UNAWARE) { return "DPI_AWARENESS_CONTEXT_UNAWARE"; }
@@ -1174,7 +1176,7 @@ class cOSWindowWindows : public ni::cIUnknownImpl<ni::iOSWindow,
 
   ///////////////////////////////////////////////
   tOSWindowWindowsSinkList* __stdcall GetWindowsWindowSinkList() const {
-    return mlstSinks.ptr();
+    return mlstSinks.raw_ptr();
   }
 
   ///////////////////////////////////////////////
@@ -2193,13 +2195,11 @@ class cOSWindowWindows : public ni::cIUnknownImpl<ni::iOSWindow,
   tIntPtr __stdcall WndProc(tIntPtr hWnd, tU32 message, tIntPtr wParam, tIntPtr lParam)
   {
     tIntPtr sinkRet = 0;
-    if (mlstSinks.IsOK()) {
-      niCallSinkRetTest_(OSWindowWindowsSink,
-                         mlstSinks,
-                         WndProc,
-                         (hWnd,message,wParam,lParam),
-                         sinkRet,sinkRet == 0);
-    }
+    niCallSinkRetTest_(OSWindowWindowsSink,
+                        mlstSinks,
+                        WndProc,
+                        (hWnd,message,wParam,lParam),
+                        sinkRet,sinkRet == 0);
     if (sinkRet != 0)
       return sinkRet;
 

@@ -608,7 +608,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
     if (!TRAITS::IsValueType(avVar))
       return apColl;
     Ptr<tImmutable> newColl = (apColl == NULL) ? Create() : Create(*apColl);
-    TRAITS::Add(*newColl,avVar);
+    TRAITS::Add(*newColl.raw_ptr(),avVar);
     return newColl.GetRawAndSetNull();
   }
   static tImmutable* __stdcall Remove(tImmutable* apColl, const Var& avVar, tBool* apDidContain = NULL) {
@@ -623,11 +623,11 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
     // Create a copy of the collection and remove the object from it
     Ptr<tImmutable> newColl = Create(*apColl);
     tKeyType v = TRAITS::GetValue(avVar);
-    typename tContainer::iterator it = TRAITS::Find(newColl->_Base(),v);
-    niAssert(it != newColl->_Base().end());
-    newColl->erase(it);
+    typename tContainer::iterator it = TRAITS::Find(newColl.raw_ptr()->_Base(),v);
+    niAssert(it != newColl.raw_ptr()->_Base().end());
+    newColl.raw_ptr()->erase(it);
     // If the new collection is empty, return NULL
-    if (newColl->empty())
+    if (newColl.raw_ptr()->empty())
       return NULL;
     return newColl.GetRawAndSetNull();
   }
@@ -727,6 +727,9 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
   }
 
  protected:
+  template <typename S, typename T>
+  friend class cMutableCollectionImpl;
+
   __forceinline const tContainer& _Base() const { return *this; }
 };
 

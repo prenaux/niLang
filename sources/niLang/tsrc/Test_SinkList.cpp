@@ -11,6 +11,8 @@ struct iMySink : public iUnknown
 
 typedef SinkList<iMySink> tMySinkList;
 
+template struct ni::SinkList<iMySink>;
+
 struct MySinkImpl : public cIUnknownImpl<iMySink>
 {
   const achar* _name;

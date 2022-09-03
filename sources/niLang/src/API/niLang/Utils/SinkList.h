@@ -68,7 +68,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
   }
   tBool __stdcall AddSink(iUnknown* apSink) niOverride {
     Ptr<T> pISink = ni::QueryInterface<T>(apSink);
-    return AddSink(pISink);
+    return AddSink(pISink.raw_ptr());
   }
 
   tBool __stdcall AddFrontSink(T* apSink) {
@@ -86,7 +86,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
   }
   tBool __stdcall AddFrontSink(iUnknown* apSink) niImpl {
     Ptr<T> pISink = ni::QueryInterface<T>(apSink);
-    return AddFrontSink(pISink);
+    return AddFrontSink(pISink.raw_ptr());
   }
 
   tBool __stdcall RemoveSink(T* apSink) {
@@ -95,7 +95,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     tBool bContains = HasSink(apSink);
     if (bContains) {
       __sync_lock();
-      Ptr<T> sink = apSink;
+      Ptr<T> sinkRef = apSink;
       auto newColl = tImmutableCollection::Remove(mCollection,apSink);
       mCollection = ni::IsOK(newColl) ? ni::MakeNonnull(newColl) : EMPTY();
     }
@@ -103,7 +103,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
   }
   tBool __stdcall RemoveSink(iUnknown* apSink) niImpl {
     Ptr<T> pISink = ni::QueryInterface<T>(apSink);
-    return RemoveSink(pISink);
+    return RemoveSink(pISink.raw_ptr());
   }
 
   void __stdcall SetMute(tBool abMute) niImpl {
@@ -170,8 +170,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
 
   Ptr<tImmutableCollection> __stdcall _ImmutableCollection() const {
     __sync_lock();
-    Ptr<tImmutableCollection> c = mCollection;
-    return c;
+    return mCollection;
   }
 
   bool empty() const { return this->IsEmpty(); }

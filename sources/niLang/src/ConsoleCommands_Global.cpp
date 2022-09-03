@@ -33,7 +33,7 @@ niGlobalCommand(ListNamespaces, _A("Show the list of the namespaces."))
 {
   ni::AutoThreadLock syncLock(static_cast<cConsole*>(apConsole)->mmutexMutex);
 
-  tU32 ulNumNS = static_cast<cConsole*>(apConsole)->mmapNamespaces.size();
+  tSize ulNumNS = static_cast<cConsole*>(apConsole)->mmapNamespaces.size();
 
   niLog(Info,niFmt(_A("Number of namespace: %d"), ulNumNS));
   for(cConsole::tNamespaceMapIt it =  static_cast<cConsole*>(apConsole)->mmapNamespaces.begin();

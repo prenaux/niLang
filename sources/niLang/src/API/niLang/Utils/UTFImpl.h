@@ -12,6 +12,11 @@ namespace ni {
  * @{
  */
 
+// Define this if you want stricter UTF parsing.
+#ifndef niUTFAssertUnreachable
+#define niUTFAssertUnreachable(msg) //niAssertUnreachable(msg)
+#endif
+
 enum eUTFError {
   eUTFError_OK,
   eUTFError_NotEnoughtRoom,
@@ -333,7 +338,7 @@ struct utf8 {
         cp += (*it) & 0x3f;
         break;
       default:
-        niAssertUnreachable("Invalid utf sequence_length.");
+        niUTFAssertUnreachable("Invalid utf sequence_length.");
         break;
     }
     ++it;
@@ -350,19 +355,19 @@ struct utf8 {
       case eUTFError_OK :
         return cp;
       case eUTFError_NotEnoughtRoom :
-        niAssertUnreachable("not_enough_room");
+        niUTFAssertUnreachable("not_enough_room");
         break;
       case eUTFError_InvalidLead :
-        niAssertUnreachable("invalid_lead(*it)");
+        niUTFAssertUnreachable("invalid_lead(*it)");
         break;
       case eUTFError_InvalidSequence :
-        niAssertUnreachable("invalid_sequence(*it)");
+        niUTFAssertUnreachable("invalid_sequence(*it)");
         break;
       case eUTFError_OverlongSequence :
-        niAssertUnreachable("invalid_overlong_sequence(*it)");
+        niUTFAssertUnreachable("invalid_overlong_sequence(*it)");
         break;
       case eUTFError_InvalidCodePoint :
-        niAssertUnreachable("invalid_code_point(cp)");
+        niUTFAssertUnreachable("invalid_code_point(cp)");
         break;
     }
     return 0;

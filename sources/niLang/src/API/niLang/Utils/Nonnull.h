@@ -151,7 +151,7 @@ struct Nonnull
   // Casting to a non_null<const T*> pointer
   template <
     typename U = T,
-    typename eastl::enable_if<!std::is_const<U>::value,int>::type* = nullptr>
+    typename eastl::enable_if<!eastl::is_const<U>::value,int>::type* = nullptr>
   operator const_non_null_t () const {
     return c_non_null();
   }
@@ -159,7 +159,7 @@ struct Nonnull
   // Casting to a const T* pointer.
   template <
     typename U = T,
-    typename eastl::enable_if<!std::is_const<U>::value,int>::type* = nullptr>
+    typename eastl::enable_if<!eastl::is_const<U>::value,int>::type* = nullptr>
   operator const T* () const {
     return const_cast<const T*>(mRefPtr);
   }

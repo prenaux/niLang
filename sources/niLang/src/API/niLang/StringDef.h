@@ -437,10 +437,11 @@ __forceinline ni::cString& operator<<(ni::cString& s, const ni::sMatrixf& v) {
   return s;
 }
 __forceinline ni::cString& operator<<(ni::cString& s, const ni::Var& var) {
-  s << "Var(";
-  s << var.mType;
-  s << ":";
-  s << var.mInt;
+  Var value = var;
+  VarConvertType(value,eType_String);
+  char buf[64];
+  s << "Var<" << GetTypeString(buf,var.mType) << ">(";
+  s << value.GetString();
   s << ")";
   return s;
 }

@@ -496,6 +496,7 @@ class cFileStdIO : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
     apTime->SetHour((tU8)system_time.wHour);
     apTime->SetMinute((tU8)system_time.wMinute);
     apTime->SetSecond((tU8)system_time.wSecond);
+    apTime->SetTimeZone(_timezone);
     return eTrue;
 #else
     time_t atime,mtime,ctime;

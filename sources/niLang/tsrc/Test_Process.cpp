@@ -481,8 +481,10 @@ TEST_FIXTURE(FProcess,SpawnPrintLoop) {
     cString r = fpFrom->ReadStringLine();
     if (r.empty() && fpFrom->GetPartialRead())
       break;
-    niDebugFmt(("RECEIVED: %s", r));
-    ++count;
+    if (!r.StartsWith("D/")) {
+      niDebugFmt(("RECEIVED: %s", r));
+      ++count;
+    }
   }
 
   // +3 lines are printed in addition to the loop

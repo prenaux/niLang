@@ -26,7 +26,7 @@ jobs:
           path: |
             ~/_ham/obj/
             ~/work/niLang/ham
-          key: ${{ runner.os }}-niLang-966b290-ham-2ff7d00
+          key: ${{ runner.os }}-niLang-9099eb4-ham-2ff7d00
 
       - name: Install Ubuntu packages
         run: |

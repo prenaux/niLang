@@ -826,14 +826,17 @@ namespace UnitTest {
 
 inline bool shouldSkipFixture(char const* filter, char const* fixtureName, char const* testName) {
   if (filter && *filter) {
-    if (ni::StrICmp(filter,"*") == 0)
-      return false;
-    if (ni::StrICmp(filter,"all") == 0)
+    if (ni::StrICmp(filter,"*") == 0 ||
+        ni::StrICmp(filter,"all") == 0 ||
+        ni::StrICmp(fixtureName,filter) == 0 ||
+        ni::StrICmp(testName,filter) == 0)
       return false;
 
-    return
-        (!fixtureName || ni::StrICmp(fixtureName,filter) != 0) &&
-        ni::StrICmp(testName,filter) != 0;
+    if (ni::afilepattern_match(filter, testName)) {
+      return false;
+    }
+
+    return true;
   }
   return false;
 }

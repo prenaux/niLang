@@ -312,6 +312,16 @@ ni::cString Test_niCheckNonnull_FromWeakPtr(
 // Run with:
 // $ ham pass1 && ham Run_Test_niLang BUILD=da FIXTURE="FNonnull,niCheckNonnull*"
 //
+TEST_FIXTURE(FNonnull,niCheckNonnull_MacroVariants) {
+  // this test only test that the macros compile correctly
+  Nonnull<sTestItem> a = niCheckNonnull(a,ni::NewPtr<sTestItem>("a"),;);
+  niUnused(a);
+  Nonnull<sTestItem> b = niCheckNonnullMsg(b,ni::NewPtr<sTestItem>("b"),niFmt("Can't create b."),;);
+  niUnused(b);
+  Nonnull<sTestItem> c = niCheckNonnullSilent(c,ni::NewPtr<sTestItem>("c"),;);
+  niUnused(c);
+}
+
 TEST_FIXTURE(FNonnull,niCheckNonnull_HasValue) {
   // Should be HasValue
   {

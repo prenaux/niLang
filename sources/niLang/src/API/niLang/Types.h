@@ -1740,8 +1740,19 @@ niCAssert(sizeof(cchar) == sizeof(achar));
 
 niConstValue tU32 knTypeStringMaxSizeInChar = 32;
 
-#  define niIsStringOK(str)      ((str) && *(str))
-#  define niStringIsOK(str)      ((str) && *(str))
+#define niIsStringOK_(str) ((str) && *(str))
+
+#ifdef __cplusplus
+template <typename T>
+__forceinline bool IsStringOK(const T* aChars) {
+  return niIsStringOK_(aChars);
+}
+#  define niIsStringOK(str) ni::IsStringOK(str)
+#  define niStringIsOK(str) ni::IsStringOK(str)
+#else
+#  define niIsStringOK(str) niIsStringOK_(str)
+#  define niStringIsOK(str) niIsStringOK_(str)
+#endif
 
 #  define AZEROSTR  _A("\0\0\0")
 #  define AEOL    _A("\n")

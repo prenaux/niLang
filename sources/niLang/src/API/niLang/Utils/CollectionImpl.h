@@ -2,10 +2,6 @@
 #define __COLLECTIONIMPL_H_604D0B86_1048_4125_A19E_CCAAE861924F__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#ifdef _FLYMAKE
-#define niNoUnsafePtr
-#endif
-
 #include "../Types.h"
 #include "../Var.h"
 #include "../ICollection.h"

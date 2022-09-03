@@ -560,7 +560,7 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
     Ptr<sFutureCooperativeRunnable> futureRun = niNew sFutureCooperativeRunnable(this,aRunnable);
     if (!_queue->Add(futureRun))
       return NULL;
-    return cast_ptr<iFuture>(futureRun);
+    return Ptr<iFuture>(futureRun);
   }
 
   tBool __stdcall Shutdown(tU32 anTimeOut) {
@@ -823,7 +823,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     niAssert(_threads[mostAvailableQueue].queue.IsOK());
     if (!_threads[mostAvailableQueue].queue->Add(futureRun))
       return NULL;
-    return cast_ptr<iFuture>(futureRun);
+    return Ptr<iFuture>(futureRun);
   }
 
   tBool __stdcall Shutdown(tU32 anTimeOut) {

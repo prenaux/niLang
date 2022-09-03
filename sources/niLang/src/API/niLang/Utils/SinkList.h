@@ -181,7 +181,7 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
   __sync_mutex();
 
   static Nonnull<tImmutableCollection>& EMPTY() {
-    static Nonnull<tImmutableCollection> _EMPTY = ni::MakeNonnull(tImmutableCollection::Create());
+    static Nonnull<tImmutableCollection> _EMPTY{tImmutableCollection::Create()};
     return _EMPTY;
   }
 

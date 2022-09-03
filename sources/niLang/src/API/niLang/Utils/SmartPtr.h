@@ -26,6 +26,7 @@ template <typename T>
 struct Ptr
 {
   niClassNoHeapAlloc(Ptr);
+  template<class U> friend struct Ptr;
   template<class U> friend struct Nonnull;
 
 public:
@@ -36,10 +37,21 @@ public:
     if (mPtr)
       ni::AddRef(mPtr);
   }
+
   Ptr(const Ptr<T>& _p) : mPtr(_p.mPtr) {
     if (mPtr)
       ni::AddRef(mPtr);
   }
+
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Ptr(const Ptr<U>& _p) : mPtr(_p.mPtr) {
+    if (mPtr)
+      ni::AddRef(mPtr);
+  }
+
+  EA_DEPRECATED_MESSAGE("Use niCheckNonnull or has_value/non_null.")
   Ptr(const WeakPtr<T>& aP);
 
   Ptr(const astl::non_null<T*>& aRight) {
@@ -76,15 +88,39 @@ public:
     Swap(newp);
     return *this;
   }
+
   Ptr& operator = (const Ptr<T> &newp) {
     Swap(newp.mPtr);
     return *this;
   }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Ptr& operator = (const Ptr<U> &newp) {
+    Swap(newp.mPtr);
+    return *this;
+  }
+
   Ptr& operator = (const astl::non_null<T*> &newp) {
     Swap(newp.raw_ptr());
     return *this;
   }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Ptr& operator = (const astl::non_null<U*> &newp) {
+    Swap(newp.raw_ptr());
+    return *this;
+  }
+
   Ptr& operator = (const Nonnull<T> &newp) {
+    Swap(newp.raw_ptr());
+    return *this;
+  }
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Ptr& operator = (const Nonnull<U> &newp) {
     Swap(newp.raw_ptr());
     return *this;
   }
@@ -283,15 +319,7 @@ __forceinline bool IsOK(Ptr<T> const& a) {
 
 template <typename T>
 __forceinline bool IsNullPtr(Ptr<T> const& a) {
-  return (a.ptr() == NULL);
-}
-
-//! Cast a Ptr type to another Ptr type, makes sure that the base types are compatible
-template <typename T, typename I>
-ni::Ptr<T>& cast_ptr(ni::Ptr<I>& aPtr) {
-  T* r = aPtr.ptr();
-  (void)r;
-  return (ni::Ptr<T>&)aPtr;
+  return (a.raw_ptr() == nullptr);
 }
 
 template <typename T, typename... Args>

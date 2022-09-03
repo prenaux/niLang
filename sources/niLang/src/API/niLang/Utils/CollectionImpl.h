@@ -656,7 +656,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
 
   tBool __stdcall ContainsAll(const iCollection* apCollection) const {
     if (!niIsOK(apCollection)) return eFalse;
-    Nonnull<iIterator> it = ni::MakeNonnull(apCollection->Iterator());
+    Nonnull<iIterator> it{apCollection->Iterator()};
     while (it->HasNext()) {
       if (!this->Contains(it->Next()))
         return eFalse;

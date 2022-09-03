@@ -345,24 +345,6 @@ namespace eastl
 
 #define EASTDC_API EASTL_EASTDC_API
 
-///////////////////////////////////////////////////////////////////////////////
-// EASTL_EASTDC_VSNPRINTF
-//
-// Defined as 0 or 1. By default it is 1.
-//
-// When enabled EASTL uses EAStdC's Vsnprintf function directly instead of
-// having the user provide a global Vsnprintf8/16/32 function. The benefit
-// of this is that it will allow EASTL to just link to EAStdC's Vsnprintf
-// without the user doing anything. The downside is that any users who aren't
-// already using EAStdC will either need to now depend on EAStdC or globally
-// define this property to be 0 and simply provide functions that have the same
-// names. See the usage of EASTL_EASTDC_VSNPRINTF in string.h for more info.
-//
-#if !defined(EASTL_EASTDC_VSNPRINTF)
-	#define EASTL_EASTDC_VSNPRINTF 1
-#endif
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // EASTL_NAME_ENABLED / EASTL_NAME / EASTL_NAME_VAL

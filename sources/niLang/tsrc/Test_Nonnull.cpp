@@ -106,6 +106,16 @@ TEST_FIXTURE(FNonnull,non_null) {
   int value = 123;
   astl::non_null<int*> v { &value };
   CHECK_EQUAL(value, *v);
+  *v = 456;
+  CHECK_EQUAL(456, *v);
+}
+
+TEST_FIXTURE(FNonnull,const_cast_non_null) {
+  int value = 123;
+  astl::non_null<const int*> v { &value };
+  CHECK_EQUAL(value, *v);
+  *astl::const_cast_non_null<int*>(v) = 456;
+  CHECK_EQUAL(456, *v);
 }
 
 TEST_FIXTURE(FNonnull,non_null_hash_set) {
@@ -128,6 +138,14 @@ TEST_FIXTURE(FNonnull,base) {
   CHECK_EQUAL(_ASTR("fooItem"), TestNonnull(itemA.non_null()));
   CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA));
   CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA.c_non_null()));
+}
+
+TEST_FIXTURE(FNonnull,const_cast_Nonnull) {
+  Nonnull<const sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
+  CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
+  CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
+  astl::const_cast_non_null<sTestItem*>(itemA)->_name = "constChanged";
+  CHECK_EQUAL(_ASTR("constChanged"), itemA->_name);
 }
 
 TEST_FIXTURE(FNonnull,RefCount) {

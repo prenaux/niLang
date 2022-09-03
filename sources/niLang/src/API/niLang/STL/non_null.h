@@ -160,6 +160,11 @@ auto make_non_null(T&& t) noexcept
   return non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>>{eastl::forward<T>(t)};
 }
 
+template<typename DestT, typename SrcT>
+astl::non_null<DestT> const_cast_non_null(astl::non_null<SrcT> p) {
+  return astl::non_null<DestT>(const_cast<DestT>(p.raw_ptr()));
+}
+
 #if (defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L))
 
 // deduction guides to prevent the ctad-maybe-unsupported warning

@@ -326,6 +326,15 @@ inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
 /**@}*/
 }; // End of ni
 
+namespace astl {
+
+template<typename DestT, typename SrcT>
+astl::non_null<DestT> const_cast_non_null(const ni::Nonnull<SrcT>& p) {
+  return astl::non_null<DestT>(const_cast<DestT>(p.raw_ptr()));
+}
+
+}
+
 namespace eastl {
 
 template <typename T>

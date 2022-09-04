@@ -20,11 +20,23 @@ namespace ni {
 #define niQPtr_NoUnsafeAPI
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * A strong pointer to an iUnknown instance that may query the underlying
+ * object before assigning it. Can be null.
+ *
+ * - If the object assigned is of exactly the same type it behaves like a regular Ptr<>.
+ * - If the object is of a different type then QueryInterface is performed before assignement.
+ * - If a WeakPtr is passed it'll be dereferenced and a QueryInterface may be
+ *   performed if the underlying type is different.
+ *
+ */
 template <typename T>
 class QPtr
 {
-  niClassNoHeapAlloc(Ptr);
+  niClassNoHeapAlloc(QPtr);
+  template<class U> friend struct Ptr;
+  template<class U> friend struct QPtr;
+  template<class U> friend struct Nonnull;
 
   typedef typename T::IUnknownBaseType tInterface;
 
@@ -32,28 +44,34 @@ class QPtr
   QPtr() : mPtr(NULL) {
   }
   QPtr(const T* aP) {
-    mPtr = (T*)aP;
+    mPtr = niConstCast(T*,aP);
     if (mPtr)
       ni::AddRef(mPtr);
   }
   QPtr(const Ptr<T>& aP) {
-    mPtr = aP.ptr();
-    if (mPtr)
-      ni::AddRef(mPtr);
-  }
-  QPtr(const QPtr<T>& aP) {
-    mPtr = aP.ptr();
-    if (mPtr)
-      ni::AddRef(mPtr);
-  }
-  QPtr(const Var& aV) {
-    mPtr = VarQueryInterface<T>(aV);
+    mPtr = niConstCast(T*,aP.raw_ptr());
     if (mPtr)
       ni::AddRef(mPtr);
   }
   QPtr(const Nonnull<T>& aP) {
     mPtr = niConstCast(T*,aP.raw_ptr());
     ni::AddRef(mPtr);
+  }
+
+  QPtr(const QPtr<T>& aP) {
+    mPtr = aP.mPtr;
+    if (mPtr)
+      ni::AddRef(mPtr);
+  }
+  QPtr(QPtr<T>&& aP) {
+    mPtr = aP.mPtr;
+    aP.mPtr = NULL;
+  }
+
+  QPtr(const Var& aV) {
+    mPtr = VarQueryInterface<T>(aV);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
   template <typename S>
@@ -76,17 +94,17 @@ class QPtr
   }
 
   QPtr(const WeakPtr<T>& aP) {
-    mPtr = aP.DerefAndAddRef();
+    mPtr = aP._DerefAndAddRef();
   }
   template <typename S>
   QPtr(const WeakPtr<S>& aP) {
-    S* sp = aP.DerefAndAddRef();
+    S* sp = aP._DerefAndAddRef();
     if (sp) {
       mPtr = (T*)ni::QueryInterface<tInterface>(sp);
-      // No AddRef, its already added by DerefAndAddRef
+      // No AddRef, its already added by _DerefAndAddRef
       if (mPtr == NULL) {
         // If QueryInterface failed we have to release the object since we
-        // just added a reference to it with DerefAndAddRef
+        // just added a reference to it with _DerefAndAddRef
         ni::Release(sp);
       }
       // If QueryInterface returns a different object we need add a reference
@@ -130,7 +148,6 @@ class QPtr
   }
 
 #if defined niQPtr_HasUnsafeAPI
-
   // Casting to a normal pointer.
   operator T* () const {
     return mPtr;
@@ -234,22 +251,22 @@ QPtr<T> operator+(std::ptrdiff_t, const QPtr<T>&) = delete;
 
 ///
 template<class T, class U> inline bool operator==(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() == b.ptr();
+  return a.raw_ptr() == b.raw_ptr();
 }
 template<class T, class U> inline bool operator!=(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() != b.ptr();
+  return a.raw_ptr() != b.raw_ptr();
 }
 template<class T, class U> inline bool operator<(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() < b.ptr();
+  return a.raw_ptr() < b.raw_ptr();
 }
 template<class T, class U> inline bool operator>(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() > b.ptr();
+  return a.raw_ptr() > b.raw_ptr();
 }
 template<class T, class U> inline bool operator<=(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() <= b.ptr();
+  return a.raw_ptr() <= b.raw_ptr();
 }
 template<class T, class U> inline bool operator>=(QPtr<T> const& a, QPtr<U> const& b) {
-  return a.ptr() >= b.ptr();
+  return a.raw_ptr() >= b.raw_ptr();
 }
 
 template <typename T>
@@ -259,7 +276,7 @@ __forceinline bool IsOK(QPtr<T> const& a) {
 
 template <typename T>
 __forceinline bool IsNullPtr(QPtr<T> const& a) {
-  return (a.ptr() == NULL);
+  return (a.raw_ptr() == nullptr);
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

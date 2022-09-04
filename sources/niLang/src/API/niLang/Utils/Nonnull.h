@@ -20,9 +20,12 @@ namespace ni {
  */
 
 template<typename T> struct Ptr;
+template<typename T> struct QPtr;
 template<typename T> struct WeakPtr;
 
-//! A strong reference pointer to an iUnknown object that can never be null.
+/**
+ * A strong reference pointer for iUnknown instances that can never be null.
+ */
 template <typename T>
 struct Nonnull
 {
@@ -199,6 +202,7 @@ struct Nonnull
 #endif
       }
     }
+
     template <typename U>
     explicit tUnsafeCheckNonnullInitForMacro(Ptr<U>& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
@@ -219,9 +223,31 @@ struct Nonnull
       }
 #endif
     }
+
+    template <typename U>
+    explicit tUnsafeCheckNonnullInitForMacro(QPtr<U>& aPtr)
+        : _maybe_null_ptr(aPtr.raw_ptr()) {
+      if (_maybe_null_ptr) {
+        ni::AddRef(_maybe_null_ptr);
+#ifdef _DEBUG
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+#endif
+      }
+    }
+    template <typename U>
+    explicit tUnsafeCheckNonnullInitForMacro(QPtr<U>&& aPtr)
+        : _maybe_null_ptr(aPtr.raw_ptr()) {
+      aPtr.mPtr = NULL;
+#ifdef _DEBUG
+      if (_maybe_null_ptr) {
+        _initialNumRef = _maybe_null_ptr->GetNumRefs();
+      }
+#endif
+    }
+
     template <typename U>
     explicit tUnsafeCheckNonnullInitForMacro(const WeakPtr<U>& aPtr)
-        : _maybe_null_ptr(aPtr.DerefAndAddRef()) {
+        : _maybe_null_ptr(aPtr._DerefAndAddRef()) {
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
         _initialNumRef = _maybe_null_ptr->GetNumRefs();

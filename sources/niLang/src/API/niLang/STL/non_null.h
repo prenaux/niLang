@@ -71,6 +71,7 @@ struct non_null
   non_null(non_null&& other) = default;
   non_null(const non_null& other) = default;
   non_null& operator=(const non_null& other) = default;
+
   constexpr eastl::conditional_t<eastl::is_copy_constructible<T>::value, T, const T&> raw_ptr() const
   {
     // No null check here, can be nulled by tUnsafeCheckNonnullInitForMacro.

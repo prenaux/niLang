@@ -12,21 +12,21 @@ namespace ni {
  * @{
  */
 
-template <typename T>
-struct WeakPtr;
-
 #if !defined niNoUnsafePtr
 #define niPtr_HasUnsafeAPI
 #else
 #define niPtr_NoUnsafeAPI
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * A strong reference pointer for iUnknown instances. Can be null.
+ */
 template <typename T>
 struct Ptr
 {
   niClassNoHeapAlloc(Ptr);
   template<class U> friend struct Ptr;
+  template<class U> friend struct QPtr;
   template<class U> friend struct Nonnull;
 
 public:
@@ -50,9 +50,6 @@ public:
     if (mPtr)
       ni::AddRef(mPtr);
   }
-
-  EA_DEPRECATED_MESSAGE("Use niCheckNonnull or has_value/non_null.")
-  Ptr(const WeakPtr<T>& aP);
 
   Ptr(const astl::non_null<T*>& aRight) {
     mPtr = niConstCast(T*,aRight.raw_ptr());
@@ -85,43 +82,43 @@ public:
 
   // Assignment operator
   Ptr& operator = (T* newp) {
-    Swap(newp);
+    _Set(newp);
     return *this;
   }
 
   Ptr& operator = (const Ptr<T> &newp) {
-    Swap(newp.mPtr);
+    _Set(newp.mPtr);
     return *this;
   }
   template <typename U,
             typename = eastl::enable_if_t<
               eastl::is_convertible<U*, T*>::value>>
   Ptr& operator = (const Ptr<U> &newp) {
-    Swap(newp.mPtr);
+    _Set(newp.mPtr);
     return *this;
   }
 
   Ptr& operator = (const astl::non_null<T*> &newp) {
-    Swap(newp.raw_ptr());
+    _Set(newp.raw_ptr());
     return *this;
   }
   template <typename U,
             typename = eastl::enable_if_t<
               eastl::is_convertible<U*, T*>::value>>
   Ptr& operator = (const astl::non_null<U*> &newp) {
-    Swap(newp.raw_ptr());
+    _Set(newp.raw_ptr());
     return *this;
   }
 
   Ptr& operator = (const Nonnull<T> &newp) {
-    Swap(newp.raw_ptr());
+    _Set(newp.raw_ptr());
     return *this;
   }
   template <typename U,
             typename = eastl::enable_if_t<
               eastl::is_convertible<U*, T*>::value>>
   Ptr& operator = (const Nonnull<U> &newp) {
-    Swap(newp.raw_ptr());
+    _Set(newp.raw_ptr());
     return *this;
   }
 
@@ -149,21 +146,9 @@ public:
   }
 #endif
 
-  // Replace pointer.
-  void Swap(const T* apPointer) {
-    T* newp = (T*)apPointer;
-    if (newp != mPtr) {
-      if (newp)
-        ni::AddRef(newp);
-      if (mPtr)
-        ni::Release(mPtr);
-    }
-    mPtr = newp;
-  }
-
   //! Null the smart pointer and return it's contained pointer.
   //! \remark This method makes sure that the pointer returned is not released.
-  //!     It can return zero reference objects.
+  //!         It can return zero reference objects.
   T* GetRawAndSetNull() {
     if (!mPtr) return NULL;
     T* rawPtr = mPtr;
@@ -173,11 +158,8 @@ public:
     return rawPtr;
   }
 
-  // shared_ptr like accessors
   T* ptr() const { return const_cast<T*>(mPtr);  }
   T** ptrptr() const { return const_cast<T**>(&mPtr);  }
-
-  void swap(T* newp) { this->Swap(newp); }
 
   tBool is_null() const {
     return mPtr == nullptr;
@@ -204,6 +186,17 @@ public:
   }
 
  private:
+  __forceinline void _Set(const T* apPointer) {
+    T* newp = (T*)apPointer;
+    if (newp != mPtr) {
+      if (newp)
+        ni::AddRef(newp);
+      if (mPtr)
+        ni::Release(mPtr);
+    }
+    mPtr = newp;
+  }
+
   // Prevent if (PTR), if (!PTR), if (PTR == 0/NULL), if (PTR != 0/NULL)
   operator bool () const = delete;
   bool operator !() const = delete;
@@ -257,56 +250,6 @@ inline bool operator<=(Ptr<T> const& a, Ptr<U> const& b) {
 }
 template<class T, class U>
 inline bool operator>=(Ptr<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() >= b.raw_ptr();
-}
-
-template<class T, class U>
-inline bool operator==(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() == b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator!=(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() != b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator<(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() < b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator>(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() > b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator<=(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() <= b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator>=(Ptr<T> const& a, Nonnull<U> const& b) {
-  return a.raw_ptr() >= b.raw_ptr();
-}
-
-template<class T, class U>
-inline bool operator==(Nonnull<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() == b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator!=(Nonnull<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() != b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator<(Nonnull<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() < b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator>(Nonnull<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() > b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator<=(Nonnull<T> const& a, Ptr<U> const& b) {
-  return a.raw_ptr() <= b.raw_ptr();
-}
-template<class T, class U>
-inline bool operator>=(Nonnull<T> const& a, Ptr<U> const& b) {
   return a.raw_ptr() >= b.raw_ptr();
 }
 

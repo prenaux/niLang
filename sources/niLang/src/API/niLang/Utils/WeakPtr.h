@@ -17,39 +17,55 @@ niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObjectPtr);
 niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr);
 niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr);
 
+/**
+ * A weak reference to an iUnknown instance.
+ *
+ * The underlying object can be accessed dereferencing it with QPtr, Deref or niCheckNonnull.
+ */
 template <typename T>
 struct WeakPtr {
-  WeakPtr() {
+  niClassNoHeapAlloc(WeakPtr);
+  template<class U> friend struct QPtr;
+  template<class U> friend struct Nonnull;
+
+ public:
+  WeakPtr() {}
+  WeakPtr(nullptr_t) { *this = nullptr; }
+  WeakPtr(const T* other) { *this = other; }
+  WeakPtr(const Ptr<T>& other) { *this = other; }
+  WeakPtr(const QPtr<T>& other) { *this = other; }
+  WeakPtr(const Nonnull<T>& other) { *this = other; }
+
+  WeakPtr& operator=(nullptr_t) {
+    this->_Set(nullptr);
+    return *this;
   }
-  WeakPtr(const T* apObjectPtr) {
-    this->Swap(apObjectPtr);
+  WeakPtr& operator=(const T* other) {
+    this->_Set(other);
+    return *this;
   }
-  WeakPtr(const WeakPtr<T>& aWeakPtr) {
-    this->Swap(aWeakPtr);
+  WeakPtr& operator=(const Ptr<T>& other) {
+    this->_Set(other.raw_ptr());
+    return *this;
   }
-  WeakPtr(const Ptr<T>& aPtr) {
-    this->Swap(aPtr);
+  WeakPtr& operator=(const QPtr<T> other) {
+    this->_Set(other.raw_ptr());
+    return *this;
   }
+  WeakPtr& operator=(const Nonnull<T> other) {
+    this->_Set(other.raw_ptr());
+    return *this;
+  }
+
+  WeakPtr(WeakPtr&& other) = default;
+  WeakPtr(const WeakPtr& other) = default;
+  WeakPtr& operator=(const WeakPtr& other) = default;
 
   tBool IsOK() const {
     return mWeakPtrObject.IsOK();
   }
-
   tBool IsSet() const {
     return mWeakPtrObject.ptr() != NULL;
-  }
-
-  void Swap(const T* apObjectPtr) {
-    mWeakPtrObject = apObjectPtr ? ni_object_get_weak_ptr(
-        (niTypename T::IUnknownBaseType*)apObjectPtr) : NULL;
-  }
-
-  void Swap(const WeakPtr<T>& aWeakPtr) {
-    mWeakPtrObject = aWeakPtr.mWeakPtrObject;
-  }
-
-  void Swap(const Ptr<T>& aPtr) {
-    Swap(aPtr.ptr());
   }
 
   void SetNull() {
@@ -59,17 +75,6 @@ struct WeakPtr {
   __forceinline T* Deref() const {
     return (T*)(niTypename T::IUnknownBaseType*)
         ni_object_deref_weak_ptr(mWeakPtrObject.ptr());
-  }
-
-  __forceinline T* DerefAndAddRef() const {
-    return (T*)(niTypename T::IUnknownBaseType*)
-        ni_object_deref_and_add_ref_weak_ptr(mWeakPtrObject.ptr());
-  }
-
-  // needed so that WeakPtr<> can be used in a container
-  WeakPtr& operator = (const WeakPtr<T>& aWeakPtr) {
-    mWeakPtrObject = aWeakPtr.mWeakPtrObject;
-    return *this;
   }
 
   tBool is_null() const {
@@ -90,22 +95,30 @@ struct WeakPtr {
   }
 
  private:
+  __forceinline void _Set(const T* apObject) {
+    mWeakPtrObject = apObject ? ni_object_get_weak_ptr(
+      (niTypename T::IUnknownBaseType*)apObject) : NULL;
+  }
+
+  __forceinline T* _DerefAndAddRef() const {
+    return (T*)(niTypename T::IUnknownBaseType*)
+        ni_object_deref_and_add_ref_weak_ptr(mWeakPtrObject.ptr());
+  }
+
   Ptr<iUnknown> mWeakPtrObject;
 
   // should use Swap & Reset() to change the underlying pointer
-  WeakPtr(void*);
-  WeakPtr(int);
-  WeakPtr& operator = (const T* apObjectPtr);
-  WeakPtr& operator = (const Ptr<T>& apObjectPtr);
+  WeakPtr(void*) = delete;
+  WeakPtr(int) = delete;
 
   // Prevent if (PTR), if (!PTR), if (PTR == 0/NULL), if (PTR != 0/NULL)
-  operator bool () const;
-  bool operator !() const;
-  bool operator == (int) const;
-  bool operator != (int) const;
+  operator bool () const = delete;
+  bool operator !() const = delete;
+  bool operator == (int) const = delete;
+  bool operator != (int) const = delete;
 
   // To confuse the compiler if someone tries to delete the smart pointer
-  operator void* () const;
+  operator void* () const = delete;
 
   // unwanted operators...pointers only point to single objects!
   WeakPtr& operator++() = delete;
@@ -149,11 +162,6 @@ template<class T, class U> inline bool operator<=(WeakPtr<T> const& a, WeakPtr<U
 }
 template<class T, class U> inline bool operator>=(WeakPtr<T> const& a, WeakPtr<U> const& b) {
   return a.weak_object_ptr() >= b.weak_object_ptr();
-}
-
-template<class T>
-inline Ptr<T>::Ptr(const WeakPtr<T>& aP) {
-  mPtr = aP.DerefAndAddRef();
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

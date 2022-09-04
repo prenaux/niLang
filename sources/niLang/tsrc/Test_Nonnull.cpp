@@ -1,12 +1,17 @@
 #define niNoUnsafePtr
+
+#if _DEBUG
 void Test_Nonnull_Trace(const char* msg);
 #define TRACE_NI_NONNULL(X) Test_Nonnull_Trace("ni::Nonnull " X);
+#define TRACE_ASTL_NON_NULL(X) Test_Nonnull_Trace("astl::non_null " X);
+#endif
 
 #include "stdafx.h"
 #include <niLang/StringBase.h>
 #include <niLang/Utils/Nonnull.h>
 #include <niLang/STL/set.h>
 #include <niLang/STL/hash_set.h>
+#include <niLang/STL/memory.h>
 #include <niLang/Utils/CrashReport.h>
 
 using namespace ni;
@@ -127,6 +132,14 @@ TEST_FIXTURE(FNonnull,non_null_hash_set) {
   hashedSet.insert(astl::make_non_null(&b));
   CHECK(astl::contains(hashedSet, astl::make_non_null(&a)));
   CHECK(astl::contains(hashedSet, astl::make_non_null(&b)));
+}
+
+TEST_FIXTURE(FNonnull,shared_non_null) {
+  const int kValue = 123;
+  astl::shared_non_null<int> v = astl::make_shared_non_null<int>(kValue);
+  CHECK_EQUAL(kValue, *v);
+  *v = 456;
+  CHECK_EQUAL(456, *v);
 }
 
 TEST_FIXTURE(FNonnull,base) {
@@ -399,6 +412,34 @@ TEST_FIXTURE(FNonnull,niCheckNonnull_WeakPtr_IsNull) {
     CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_FromWeakPtr(NULL,&fromPtrCounter));
     CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter,0,0));
   }
+}
+
+astl::shared_ptr<cString> CreateSharedString(const achar* aName) {
+  if (!niStringIsOK(aName))
+    return nullptr;
+  return astl::make_shared<cString>(_ASTR(aName));
+}
+
+ni::cString Test_niCheckNonnull_shared_ptr(const achar* aName) {
+  astl::shared_non_null<cString> r = niCheckNonnull(r,CreateSharedString(aName),_ASTR("is_null"));
+  return _ASTR(niFmt("is_string:%s",*r));
+}
+
+ni::cString Test_niCheckNonnull_weak_ptr(const achar* aName) {
+  astl::shared_ptr<cString> mystr = CreateSharedString(aName);
+  astl::weak_ptr<cString> weakstr = mystr;
+  astl::shared_non_null<cString> r = niCheckNonnull(r,weakstr.lock(),_ASTR("is_null"));
+  return _ASTR(niFmt("is_string:%s",*r));
+}
+
+TEST_FIXTURE(FNonnull,niCheckNonnull_shared_ptr) {
+  CHECK_EQUAL(_ASTR("is_string:Foo"), Test_niCheckNonnull_shared_ptr("Foo"));
+  CHECK_EQUAL(_ASTR("is_null"), Test_niCheckNonnull_shared_ptr(NULL));
+}
+
+TEST_FIXTURE(FNonnull,niCheckNonnull_weak_ptr) {
+  CHECK_EQUAL(_ASTR("is_string:Foo"), Test_niCheckNonnull_weak_ptr("Foo"));
+  CHECK_EQUAL(_ASTR("is_null"), Test_niCheckNonnull_weak_ptr(NULL));
 }
 
 #if 0

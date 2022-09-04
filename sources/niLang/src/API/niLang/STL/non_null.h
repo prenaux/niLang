@@ -12,6 +12,10 @@
 #include "EASTL/functional.h"
 #include "EASTL/type_traits.h"
 
+#ifndef TRACE_ASTL_NON_NULL
+#define TRACE_ASTL_NON_NULL(X)
+#endif
+
 namespace astl {
 
 namespace details {
@@ -69,13 +73,22 @@ struct non_null
   non_null& operator=(const non_null& other) = default;
   constexpr eastl::conditional_t<eastl::is_copy_constructible<T>::value, T, const T&> raw_ptr() const
   {
-    EASTL_ASSERT(ptr_ != nullptr);
+    // No null check here, can be nulled by tUnsafeCheckNonnullInitForMacro.
     return ptr_;
   }
 
-  constexpr operator T() const { return raw_ptr(); }
-  constexpr decltype(auto) operator->() const { return raw_ptr(); }
-  constexpr decltype(auto) operator*() const { return *raw_ptr(); }
+  constexpr operator T() const {
+    EASTL_ASSERT(ptr_ != nullptr);
+    return raw_ptr();
+  }
+  constexpr decltype(auto) operator->() const {
+    EASTL_ASSERT(ptr_ != nullptr);
+    return raw_ptr();
+  }
+  constexpr decltype(auto) operator*() const {
+    EASTL_ASSERT(ptr_ != nullptr);
+    return *raw_ptr();
+  }
 
   // prevents compilation when someone attempts to assign a null pointer constant
   non_null(std::nullptr_t) = delete;
@@ -89,6 +102,32 @@ struct non_null
   non_null& operator+=(std::ptrdiff_t) = delete;
   non_null& operator-=(std::ptrdiff_t) = delete;
   void operator[](std::ptrdiff_t) const = delete;
+
+  struct tUnsafeCheckNonnullInitForMacro {
+    explicit tUnsafeCheckNonnullInitForMacro(T aPointer)
+        : _maybe_null_ptr(aPointer) {
+    }
+    ~tUnsafeCheckNonnullInitForMacro() {
+    }
+
+    T _maybe_null_ptr;
+
+   private:
+    tUnsafeCheckNonnullInitForMacro() = delete;
+    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&) = delete;
+    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&) = delete;
+    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&&) = delete;
+    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&&) = delete;
+  };
+  non_null(tUnsafeCheckNonnullInitForMacro&& aRight) {
+    TRACE_ASTL_NON_NULL("explicit tUnsafeCheckNonnullInitForMacro MOVE constructor")
+    ptr_ = aRight._maybe_null_ptr;
+  }
+  non_null& operator = (tUnsafeCheckNonnullInitForMacro&& aRight) {
+    TRACE_ASTL_NON_NULL("tUnsafeCheckNonnullInitForMacro MOVE operator=")
+    ptr_ = aRight._maybe_null_ptr;
+    return *this;
+  }
 
  private:
   T ptr_;
@@ -173,7 +212,23 @@ non_null(T) -> non_null<T>;
 
 #endif // ( defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L) )
 
-}
+#define niCheckNonnull_(V,EXPR,RET,ERRLOG)                              \
+  decltype(V)::tUnsafeCheckNonnullInitForMacro{EXPR};                   \
+  EA_ENABLE_GCC_WARNING_AS_ERROR(-Wshadow);                             \
+  EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wshadow);                           \
+  int V##_DontDeclareSameNonnullCheckTwice; niUnused(V##_DontDeclareSameNonnullCheckTwice); \
+  EA_DISABLE_CLANG_WARNING_AS_ERROR();                                  \
+  EA_DISABLE_GCC_WARNING_AS_ERROR();                                    \
+  if ((V).raw_ptr() == nullptr) {                                       \
+    ERRLOG;                                                             \
+    return RET;                                                         \
+  }
+
+#define niCheckNonnull(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,niError("CheckNonnull '" #EXPR "' failed."))
+#define niCheckNonnullMsg(V,EXPR,MSG,RET) niCheckNonnull_(V,EXPR,RET,niError(MSG))
+#define niCheckNonnullSilent(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,;)
+
+} // end of namespace astl
 
 namespace eastl {
 
@@ -184,5 +239,5 @@ struct hash<astl::non_null<T> > {
   }
 };
 
-}
+} // end of namespace eastl
 #endif // __NON_NULL_H_A46F1134_B458_8647_8976_5FCF07AB39DD__

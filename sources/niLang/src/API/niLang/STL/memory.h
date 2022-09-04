@@ -6,15 +6,24 @@
 #include "EASTL/shared_ptr.h"
 #include "EASTL/weak_ptr.h"
 #include "EASTL/unique_ptr.h"
+#include "non_null.h"
 
 namespace astl {
 
 template <typename T>
 using shared_ptr = eastl::shared_ptr<T>;
 
+template <typename T>
+using shared_non_null = astl::non_null<eastl::shared_ptr<T> >;
+
 template<typename T, typename... Args>
-astl::shared_ptr<T> make_shared(Args&&... args) {
-  return astl::shared_ptr<T>(new T(eastl::forward<Args>(args)...));
+shared_ptr<T> make_shared(Args&&... args) {
+  return shared_ptr<T>(new T(eastl::forward<Args>(args)...));
+}
+
+template<typename T, typename... Args>
+shared_non_null<T> make_shared_non_null(Args&&... args) {
+  return shared_non_null<T>(make_shared<T>(eastl::forward<Args>(args)...));
 }
 
 template <typename T>

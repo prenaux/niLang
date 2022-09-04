@@ -189,8 +189,8 @@ struct Nonnull
     return const_cast<T*>(mRefPtr);
   }
 
-  struct tUnsafeInitializerForMacro {
-    explicit tUnsafeInitializerForMacro(T* aPointer)
+  struct tUnsafeCheckNonnullInitForMacro {
+    explicit tUnsafeCheckNonnullInitForMacro(T* aPointer)
         : _maybe_null_ptr(aPointer) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -200,7 +200,7 @@ struct Nonnull
       }
     }
     template <typename U>
-    explicit tUnsafeInitializerForMacro(Ptr<U>& aPtr)
+    explicit tUnsafeCheckNonnullInitForMacro(Ptr<U>& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -210,7 +210,7 @@ struct Nonnull
       }
     }
     template <typename U>
-    explicit tUnsafeInitializerForMacro(Ptr<U>&& aPtr)
+    explicit tUnsafeCheckNonnullInitForMacro(Ptr<U>&& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       aPtr.mPtr = NULL;
 #ifdef _DEBUG
@@ -220,7 +220,7 @@ struct Nonnull
 #endif
     }
     template <typename U>
-    explicit tUnsafeInitializerForMacro(const WeakPtr<U>& aPtr)
+    explicit tUnsafeCheckNonnullInitForMacro(const WeakPtr<U>& aPtr)
         : _maybe_null_ptr(aPtr.DerefAndAddRef()) {
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
@@ -229,7 +229,7 @@ struct Nonnull
 #endif
     }
 
-    ~tUnsafeInitializerForMacro() {
+    ~tUnsafeCheckNonnullInitForMacro() {
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
         niDebugAssertMsg(
@@ -245,18 +245,18 @@ struct Nonnull
 #endif
 
    private:
-    tUnsafeInitializerForMacro() = delete;
-    tUnsafeInitializerForMacro(const tUnsafeInitializerForMacro&) = delete;
-    tUnsafeInitializerForMacro& operator = (const tUnsafeInitializerForMacro&) = delete;
-    tUnsafeInitializerForMacro(const tUnsafeInitializerForMacro&&) = delete;
-    tUnsafeInitializerForMacro& operator = (const tUnsafeInitializerForMacro&&) = delete;
+    tUnsafeCheckNonnullInitForMacro() = delete;
+    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&) = delete;
+    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&) = delete;
+    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&&) = delete;
+    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&&) = delete;
   };
-  Nonnull(tUnsafeInitializerForMacro&& aRight) {
-    TRACE_NI_NONNULL("explicit tUnsafeInitializerForMacro MOVE constructor")
+  Nonnull(tUnsafeCheckNonnullInitForMacro&& aRight) {
+    TRACE_NI_NONNULL("explicit tUnsafeCheckNonnullInitForMacro MOVE constructor")
     mRefPtr = aRight._maybe_null_ptr;
   }
-  Nonnull& operator = (tUnsafeInitializerForMacro&& aRight) {
-    TRACE_NI_NONNULL("tUnsafeInitializerForMacro MOVE operator=")
+  Nonnull& operator = (tUnsafeCheckNonnullInitForMacro&& aRight) {
+    TRACE_NI_NONNULL("tUnsafeCheckNonnullInitForMacro MOVE operator=")
     if (mRefPtr) {
       ni::Release(mRefPtr);
     }
@@ -305,22 +305,6 @@ template <typename T>
 inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
   return Nonnull<T>(v);
 }
-
-#define niCheckNonnull_(V,EXPR,RET,ERRLOG)                              \
-  ni::Nonnull<decltype(V)::tNonnullIType>::tUnsafeInitializerForMacro{EXPR}; \
-  EA_ENABLE_GCC_WARNING_AS_ERROR(-Wshadow);                             \
-  EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wshadow);                           \
-  int V##_DontDeclareSameNonnullCheckTwice; niUnused(V##_DontDeclareSameNonnullCheckTwice); \
-  EA_DISABLE_CLANG_WARNING_AS_ERROR();                                  \
-  EA_DISABLE_GCC_WARNING_AS_ERROR();                                    \
-  if ((V).raw_ptr() == nullptr) {                                       \
-    ERRLOG;                                                             \
-    return RET;                                                         \
-  }
-
-#define niCheckNonnull(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,niError("CheckNonnull '" #EXPR "' failed."))
-#define niCheckNonnullMsg(V,EXPR,MSG,RET) niCheckNonnull_(V,EXPR,RET,niError(MSG))
-#define niCheckNonnullSilent(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,;)
 
 /**@}*/
 /**@}*/

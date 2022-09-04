@@ -128,7 +128,7 @@ struct sMetalAPIForWindow : public cIUnknownImpl<iOSXMetalAPI> {
     }
 
     _device = (__bridge id<MTLDevice>)apMetalDevice;
-    _window.Swap(apWindow);
+    _window = apWindow;
     _commandQueue = [_device newCommandQueue];
 
     const sVec2i wndSize = apWindow->GetClientSize() / apWindow->GetContentsScale();

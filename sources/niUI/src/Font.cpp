@@ -719,7 +719,7 @@ static inline void _Draw8BitFontChar(const tU8* apFontData, iBitmap2D* apBmp, tU
 
 ///////////////////////////////////////////////
 cFont::cFont(cGraphics* apGraphics) {
-  mpwGraphics.Swap(apGraphics);
+  mpwGraphics = apGraphics;
   mStates.NewMaterial(apGraphics);
 }
 

@@ -1155,7 +1155,7 @@ cWidget *cUIContext::GetFingerMessageTarget(tU32 anFinger, tBool abUpdate)
   QPtr<cWidget> captureFinger(f.mpwCapture);
 
   if (abUpdate) {
-    f.mpwHover.Swap(GetMessageTargetByPos((sVec2f&)f.mvPosition));
+    f.mpwHover = GetMessageTargetByPos((sVec2f&)f.mvPosition);
     QPtr<cWidget> hoverWidget(f.mpwHover);
     if (IsPrimaryFinger(anFinger) &&
         !captureAll.IsOK() &&
@@ -1265,7 +1265,7 @@ tBool __stdcall cUIContext::SetActiveWidget(iWidget* apWidget)
     return eFalse;
   }
   else {
-    mpwActive.Swap(static_cast<cWidget*>(apWidget));
+    mpwActive = static_cast<cWidget*>(apWidget);
     apWidget->SendMessage(eUIMessage_Activate,niVarNull,niVarNull);
     //    niDebugFmt((_A("### UICONTEXT-ACTIVATE: %p (ID:%s)."),mpwActive,mpwActive?niHStr(mpwActive->GetID()):AZEROSTR));
     return eTrue;

@@ -60,8 +60,8 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
     mnIndex = anIndex;
     mFlags = aFlags;
 
-    mpwParentWidget.Swap(apParentWdg);
-    mpwParentTreeNode.Swap(apParentTreeNode);
+    mpwParentWidget = apParentWdg;
+    mpwParentTreeNode = apParentTreeNode;
     Ptr<iWidgetTreeNode> n = (QPtr<cWidgetTreeNode>(mpwParentTreeNode)).ptr();
     while (n.IsOK()) {
       ++mnDepth;

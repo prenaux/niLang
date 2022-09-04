@@ -45,7 +45,7 @@ class sTextOccluder : public cIUnknownImpl<iTextOccluder>
   ///////////////////////////////////////////////
   sTextOccluder(iTextObject* apParent) {
     mRect = sRectf::Zero();
-    mpwParent.Swap(apParent);
+    mpwParent = apParent;
   }
 
   ///////////////////////////////////////////////

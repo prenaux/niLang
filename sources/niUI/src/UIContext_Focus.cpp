@@ -34,7 +34,7 @@ void cUIContext::SetTopWidget(cWidget* apWidget)
       return;
     }
   }
-  mpwTopWidget.Swap(apWidget);
+  mpwTopWidget = apWidget;
   UpdateFreeWidgets();
   _UIFocusTrace(niFmt("TOP WIDGET: Widget %p (ID:%s) is the top widget.",
                       (tIntPtr)apWidget,apWidget?niHStr(apWidget->GetID()):""));
@@ -67,7 +67,7 @@ tBool cUIContext::SetFocusInput(cWidget* apNewTarget, tBool abMouseClick)
 
   Ptr<cWidget> ptrNewTarget = _GetFocusTarget(apNewTarget);
   if (ptrOldTarget.ptr() != ptrNewTarget.ptr()) {
-    mpwFocusInput.Swap(ptrNewTarget);
+    mpwFocusInput = ptrNewTarget;
 
     _UIFocusTrace(niFmt(_A("### UICONTEXT-INPUT: GIVE FOCUS TO: %p (ID:%s)."),
                         (tIntPtr)ptrNewTarget.ptr(),
@@ -298,7 +298,7 @@ void cUIContext::_AddCaptureAll(cWidget *widget) {
   niAssert(widget->GetVisible() && widget->GetEnabled());
   _RemoveCaptureAll(widget,eTrue);
   mlstCaptureAllStack.push_back(widget);
-  mpwCaptureAll.Swap(widget);
+  mpwCaptureAll = widget;
   widget->SetFocus();
   _UIFocusTrace(("## _AddCaptureAll: %s", niHStr(widget->GetID())));
   _WindowUpdateCursorStates();
@@ -339,7 +339,7 @@ void cUIContext::_AddFingerCapture(tU32 anFinger, cWidget *widget) {
   sFinger& f = GET_FINGER(anFinger);
   _RemoveFingerCapture(anFinger,widget,eTrue);
   f.mlstCaptureStack.push_back(widget);
-  f.mpwCapture.Swap(widget);
+  f.mpwCapture = widget;
   _FingerMove(anFinger,f.mvPosition,eFalse);
   //  niDebugFmt((_A("Widget %p (ID:%s, Class:%s) add finger capture.\n"),widget,niHStr(widget->GetID()),niHStr(widget->GetClassName())));
 }

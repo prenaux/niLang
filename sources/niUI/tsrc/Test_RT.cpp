@@ -21,7 +21,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
       return eTrue;
     }
     tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
-      _parent->_topLeftCanvas.Swap(apCanvas);
+      _parent->_topLeftCanvas = apCanvas;
       _parent->_DrawTopLeft(apCanvas);
       if (_parent->mbRedrawEveryFrame) {
         mpWidget->Redraw(); // we want to redraw every frame...
@@ -44,7 +44,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
       return eTrue;
     }
     tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
-      _parent->_botLeftCanvas.Swap(apCanvas);
+      _parent->_botLeftCanvas = apCanvas;
       _parent->_DrawBotLeft(apCanvas);
       if (_parent->mbRedrawEveryFrame) {
         mpWidget->Redraw(); // we want to redraw every frame...

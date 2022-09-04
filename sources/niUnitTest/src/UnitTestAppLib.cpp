@@ -47,7 +47,7 @@ void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink) {
   }
   currentSink = niGetIfOK(apSink);
   if (currentSink.IsOK()) {
-    _currentTestWidgetSink.Swap(currentSink);
+    _currentTestWidgetSink = currentSink;
     Ptr<iWidget> rootWidget = gAppContext._uiContext->GetRootWidget();
     rootWidget->AddSink(currentSink);
     rootWidget->SetStyle(eWidgetStyle_HoldFocus);
@@ -63,7 +63,7 @@ void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink) {
 static WeakPtr<UnitTestWidgetSink> _unitTestWidgetSink;
 static ni::Var OnAppStarted() {
   Ptr<UnitTestWidgetSink> sink = niNew UnitTestWidgetSink();
-  _unitTestWidgetSink.Swap(sink);
+  _unitTestWidgetSink = sink;
   gAppContext._uiContext->GetRootWidget()->AddSink(sink);
   return ni::eTrue;
 }

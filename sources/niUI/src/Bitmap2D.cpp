@@ -33,7 +33,7 @@ cBitmap2D::cBitmap2D(cGraphics* pGraphics, iHString* ahspName, tU32 nW, tU32 nH,
   mpOldData = NULL;
   mFlags = 0;
 
-  mpwGraphics.Swap(pGraphics);
+  mpwGraphics = pGraphics;
   mhspName = ahspName;
 
   if(!niIsOK(pPixFmt))

@@ -584,7 +584,7 @@ void cUIContext::_FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChang
         QPtr<cWidget> moveTarget(f.mpwMoveTarget);
         if (moveTarget.ptr() != target.ptr()) {
           niAssert(!f.mpwMoveTarget.IsOK());
-          f.mpwMoveTarget.Swap(target.ptr());
+          f.mpwMoveTarget = target.ptr();
           _UIInputSendMsg(target,eUIMessage_FingerEnter,FPARAMS(clientPos));
           if (isPrimaryFinger) {
             _UIInputSendMsg(target,eUIMessage_MouseEnter,clientPos,mpos);
@@ -617,7 +617,7 @@ void cUIContext::_FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChang
         QPtr<cWidget> ncMoveTarget(f.mpwNCMoveTarget);
         if (ncMoveTarget.ptr() != target.ptr()) {
           niAssert(!ncMoveTarget.IsOK());
-          f.mpwNCMoveTarget.Swap(target);
+          f.mpwNCMoveTarget = target;
           _UIInputSendMsg(target,eUIMessage_NCFingerEnter,FPARAMS(clientPos));
           if (isPrimaryFinger) {
             _UIInputSendMsg(target,eUIMessage_NCMouseEnter,clientPos,mpos);
@@ -698,7 +698,7 @@ void cUIContext::_FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChang
             // different target, send the finger enter message
             if (ptrDragMoveTarget.ptr() != target.ptr()) {
               niAssert(!f.mpwDragMoveTarget.IsOK());
-              f.mpwDragMoveTarget.Swap(target);
+              f.mpwDragMoveTarget = target;
               _UIInputSendMsg(target,eUIMessage_DragFingerEnter,FPARAMS(clientPos));
               if (isPrimaryFinger) {
                 _UIInputSendMsg(target,eUIMessage_DragMouseEnter,clientPos,mpos);
@@ -720,7 +720,7 @@ void cUIContext::_FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChang
             // different target, send the nc finger enter message
             if (ptrNCDragMoveTarget.ptr() != target.ptr()) {
               niAssert(!f.mpwNCDragMoveTarget.IsOK());
-              f.mpwNCDragMoveTarget.Swap(target);
+              f.mpwNCDragMoveTarget = target;
               _UIInputSendMsg(target,eUIMessage_NCDragFingerEnter,FPARAMS(clientPos));
               if (isPrimaryFinger) {
                 _UIInputSendMsg(target,eUIMessage_NCDragMouseEnter,clientPos,mpos);

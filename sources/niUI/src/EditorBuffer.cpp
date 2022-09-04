@@ -7,7 +7,7 @@
 
 EditorBuffer::EditorBuffer(iWidgetSink* apMsgHandler)
 {
-  _msgHandler.Swap(apMsgHandler);
+  _msgHandler = apMsgHandler;
   _defaultnewline=eNewLine_LF;
   _logicalcursorcol = 0;
 }

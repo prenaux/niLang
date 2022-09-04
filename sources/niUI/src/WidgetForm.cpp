@@ -170,7 +170,7 @@ tBool __stdcall cWidgetForm::OnWidgetSink(iWidget* apWidget, tU32 anMsg, const V
             mpWidget->SetZOrder(eWidgetZOrder_Bottom);
             {
               QPtr<iWidget> ptrDockedTo = aA.GetIUnknownPointer();
-              mpwDockedTo.Swap(ptrDockedTo.ptr());
+              mpwDockedTo = ptrDockedTo.ptr();
             }
             if (mptrButtonClose.IsOK()) {
               mptrButtonClose->SetStatus(eFalse,eFalse,eTrue);

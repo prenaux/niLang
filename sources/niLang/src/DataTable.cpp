@@ -425,7 +425,7 @@ void cDataTable::SetParent(ni::iDataTable* apParent)
     niAssertUnreachable("Can't set a child data table as parent.");
     return;
   }
-  mpwParent.Swap(apParent);
+  mpwParent = apParent;
 }
 
 ///////////////////////////////////////////////

@@ -2205,7 +2205,7 @@ static int closure_GetRoot(HSQUIRRELVM v) {
 static int closure_SetRoot(HSQUIRRELVM v) {
   SQClosure *c = _closure(stack_get(v,1));
   SQTable *t = _table(stack_get(v,2));
-  c->_root.Swap(t);
+  c->_root = t;
   sq_pushobject(v, t ? SQObjectPtr(t) : _null_);
   return 1;
 }

@@ -22,7 +22,7 @@ public:
   static SQClosure *Create(SQFunctionProto *func, SQTable* root) {
     SQClosure* c = niNew SQClosure(func);
     niAssert(root != NULL);
-    c->_root.Swap(root);
+    c->_root = root;
     return c;
   }
   ~SQClosure() {

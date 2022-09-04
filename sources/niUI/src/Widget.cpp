@@ -107,7 +107,7 @@ cWidget::cWidget(cUIContext* pUICtx, iHString* ahspClass, cWidget *pwParent, con
   mRect = arectPos;
   _RoundRect(mRect);
   mClientRect = arectPos;
-  mpwParent.Swap(pwParent);
+  mpwParent = pwParent;
   mrectDockFillClient = mRect;
   mrectDockFillNonClient = mRect;
   mptrCanvas = NULL;
@@ -375,7 +375,7 @@ tBool cWidget::DoSetParent(ni::iWidget *apParent)
   if (pOwnerZMap) {
     pOwnerZMap->RemoveOfZMap(this);
   }
-  mpwParent.Swap(static_cast<cWidget*>(apParent));
+  mpwParent = static_cast<cWidget*>(apParent);
   if (ptrOldParent.IsOK()) {
     ptrOldParent->RemoveChild(this);
   }

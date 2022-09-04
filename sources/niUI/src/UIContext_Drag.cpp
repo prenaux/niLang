@@ -43,7 +43,7 @@ tBool cUIContext::BeginFingerDrag(tU32 anFinger, cWidget* apWidget, const sVec3f
   else {
     return eFalse; // Cant start dragging if outside of widget's rect
   }
-  f.mpwDragWidgetMT.Swap(apWidget);
+  f.mpwDragWidgetMT = apWidget;
   _UIDragTrace(niFmt(_A("BEGIN DRAG FINGER[%d]: [%s], (%.2f,%.2f)\n"),anFinger,niHStr(apWidget->GetID()),avStartPos.x,avStartPos.y));
 
   // Skip if widget is not a DragSource
@@ -54,7 +54,7 @@ tBool cUIContext::BeginFingerDrag(tU32 anFinger, cWidget* apWidget, const sVec3f
   f.mptrDragDT = ni::CreateDataTable(_A("Clipboard"));
   f.mptrDragDT->SetVec2(_A("cursor_start"),(sVec2f&)avStartPos);
   f.mptrDragDT->SetVec3(_A("finger_start"),avStartPos);
-  f.mpDragWidget.Swap(apWidget);
+  f.mpDragWidget = apWidget;
   // dragging began, update the finger move
   _FingerMove(anFinger,f.mvPosition,eFalse);
   return ni::eTrue;

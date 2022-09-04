@@ -8,7 +8,7 @@ static const cString _dtXML = R"""(<Entity classname="Dummy" name="ExtCamOrbitTa
 
 static const cString _dtXML_Base64Compressed = "hwcAAHjavZVrT9swFIb/iuVPoJVgJ81NaisxLhISaAiqMfYlMulpa82NI9spMPHjd5wGemEXTRr70tqvj31eP/ZxBqeVk+6JlEpYW4kFDOlJs1g8UbLqnD66Y7H4ZO6lGwszA0dHg4/CApkZ3dSvwVMlZnZIKYFK3CuYDCmnh6PB2IjKTrVZEKVLoYqFcEY+Dull+793wIIk7bMo7B2EAYviJIUDxvIeC9IoS1nYYz0MYUmS8CxBNc/jPIxXGkuzpL8KSHFmHrZyzngWRb12YR5mMQawXuh/+D4lFj3gnj5DGe3xHm+1zvl5NQcj3ZW20kldfXneEe52ha8vwrV2wgt+v8dzqSYGqtHgLVbECEZscG2h7uAsu6DO1TUoXHsJf8mVBVmWRmmEyBBn1E+zzCPpJyyPE88iQKBR7mFnLdY8zfs+OGRhGnMPDYM5w6aHytM8554/rspzP3zAwzCIs7DXD9Isiv35RTEOh/8Jc0uJTPVySPsxJdq4uS6s/I5ZOWPIGIQpSiXrolai8io62JXgA2MJ6qaxrlkUZaOUrGZtrC5L1VjMtq36NDNdCTWkrD0GuQAchXXLrpvdQZ/AVDTKUYJpn/w8Yp2ui4c5VIUBC67VlNZ12zCwBGNXB01qzFzUGn9ex20N3aB1wrjCSZ8k9Rdk0nUySsrG4C18HQ2QEa6LQnsfsU7R/OGG58P1Tg5XNxcb68v8rvtk77zPHZ9nmAvMS2Fdal9cv7bMXyzzd7K8Y/hn7lbakI51U87Z86VuLFzA1D1faVk5MBe6/AYTSm5BzubuTCrU2ivLgpCSG6h8JS3xTIcU+0dlCQqrx9cSCmxb8W9RN3FTvhSPXo0oGRs5QzeniOJp3G4BV7hBbLdIDX2D6C7vaHBU+qkd9vOqbtyVdOWckgnYclv5HbCNl4+49hPkvzNr2EsJDwW+h7PVkxPu4fvGIh4F4b4//rcu7sTDloe2/48dsP2tEvtjtf0A80hu6Q==";
 
-static const cString _dtXML_Prop_with_space = R"""(<Properties Bitscollider="123" Bits Collider="456" BitsCollider = "789"/>)""";
+static const cString _dtXML_Prop_with_space = R"""(<Properties Bytecollider="123" Byte Collider="456" ByteCollider = "789"/>)""";
 
 struct FDTSerialize {
 };
@@ -89,7 +89,7 @@ TEST_FIXTURE(FDTSerialize,ReadXMLPropertyWithSpace) {
   Ptr<iDataTable> ptrDT = CreateDataTableFromXML(_dtXML_Prop_with_space.c_str(),_dtXML_Prop_with_space.size());
   CHECK(ptrDT.IsOK());
 
-  CHECK_EQUAL(123, ptrDT->GetInt("Bitscollider"));
-  CHECK_EQUAL(456, ptrDT->GetInt("Bits Collider"));
-  CHECK_EQUAL(789, ptrDT->GetInt("BitsCollider"));
+  CHECK_EQUAL(123, ptrDT->GetInt("Bytecollider"));
+  CHECK_EQUAL(456, ptrDT->GetInt("Byte Collider"));
+  CHECK_EQUAL(789, ptrDT->GetInt("ByteCollider"));
 }

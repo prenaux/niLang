@@ -8,16 +8,16 @@ struct FURLFile {
 using namespace ni;
 
 static achar const* _URL[] = {
-  /* 0 */ "http://bitscollider.com/img/ni-logo.png",
+  /* 0 */ "http://bytecollider.com/img/ni-logo.png",
   /* 1 */ "..\\..\\data\\niUI\\error.dds",
   /* 2 */ "../../data/niUI/error.dds",
   /* 3 */ "file://img/ni-logo.png",
   /* 4 */ "img/ni-logo.png",
-  /* 5 */ "HTTP://BITSCOLLIDER.COM/IMG/NI-LOGO.PNG",
+  /* 5 */ "HTTP://BYTECOLLIDER.COM/IMG/NI-LOGO.PNG",
   /* 6 */ "a://foo://bar",
   /* 7 */ "file://../../data/niUI/error.dds",
   /* 8 */ "/Work/niLang/data/niUI/error.dds",
-  /* 9 */ "\\My Work\\www\\bitscollider-2\\static\\img\\ni-logo.png",
+  /* 9 */ "\\My Work\\www\\bytecollider-2\\static\\img\\ni-logo.png",
 };
 
 const tI32 knMaxProtocolSearchLen = 16;
@@ -34,10 +34,10 @@ TEST_FIXTURE(FURLFile,StringURL) {
   CHECK_EQUAL(1, StrFindProtocol(_URL[6]));
 
   CHECK_EQUAL(_ASTR("http"), StringURLGetProtocol(_URL[0]));
-  CHECK_EQUAL(_ASTR("bitscollider.com/img/ni-logo.png"), StringURLGetPath(_URL[0]));
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/ni-logo.png"), StringURLGetPath(_URL[0]));
 
   CHECK_EQUAL(_ASTR("HTTP"), StringURLGetProtocol(_URL[5]));
-  CHECK_EQUAL(_ASTR("BITSCOLLIDER.COM/IMG/NI-LOGO.PNG"), StringURLGetPath(_URL[5]));
+  CHECK_EQUAL(_ASTR("BYTECOLLIDER.COM/IMG/NI-LOGO.PNG"), StringURLGetPath(_URL[5]));
 
   CHECK_EQUAL(_ASTR("file"), StringURLGetProtocol(_URL[3]));
   CHECK_EQUAL(_ASTR("img/ni-logo.png"), StringURLGetPath(_URL[3]));
@@ -95,11 +95,11 @@ TEST_FIXTURE(FURLFile,PathURL) {
   niDebugFmt(("... URL[0]: %s", _URL[0]));
   ni::cPath pathURL(_URL[0]);
 
-  CHECK_EQUAL(_ASTR("http://bitscollider.com/img/ni-logo.png"),
+  CHECK_EQUAL(_ASTR("http://bytecollider.com/img/ni-logo.png"),
               pathURL.GetPath());
 
   pathURL.SetFile("narf.foo");
-  CHECK_EQUAL(_ASTR("http://bitscollider.com/img/narf.foo"),
+  CHECK_EQUAL(_ASTR("http://bytecollider.com/img/narf.foo"),
               pathURL.GetPath());
 
   CHECK(pathURL.HasProtocol());
@@ -108,13 +108,13 @@ TEST_FIXTURE(FURLFile,PathURL) {
   pathURL.SetProtocol("dummy");
   CHECK(pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR("dummy"), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("dummy://bitscollider.com/img/narf.foo"),
+  CHECK_EQUAL(_ASTR("dummy://bytecollider.com/img/narf.foo"),
               pathURL.GetPath());
 
   pathURL.SetProtocol("");
   CHECK(!pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR(""), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("bitscollider.com/img/narf.foo"),
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"),
               pathURL.GetPath());
 
 
@@ -122,13 +122,13 @@ TEST_FIXTURE(FURLFile,PathURL) {
   pathURL.SetProtocol("");
   CHECK(!pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR(""), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("bitscollider.com/img/narf.foo"),
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"),
               pathURL.GetPath());
 
   // add back a protocol
   pathURL.SetProtocol("foo");
   CHECK(pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR("foo"), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("foo://bitscollider.com/img/narf.foo"),
+  CHECK_EQUAL(_ASTR("foo://bytecollider.com/img/narf.foo"),
               pathURL.GetPath());
 }

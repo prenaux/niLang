@@ -9,16 +9,16 @@ using namespace ni;
 static const achar* const _hashedDir = "hashDir/";
 
 static achar const* _URL[] = {
-  "http://bitscollider.com/img/ni-logo.png",
+  "http://bytecollider.com/img/ni-logo.png",
   "..\\..\\data\\niUI\\error.dds",
   "../../data/niUI/error.dds",
   "file://img/ni-logo.png",
   "img/ni-logo.png",
-  "HTTP://BITSCOLLIDER.COM/IMG/NI-LOGO.PNG",
+  "HTTP://BYTECOLLIDER.COM/IMG/NI-LOGO.PNG",
   "a://foo://bar",
   "file://../../data/niUI/error.dds",
   "/Work/niLang/data/niUI/error.dds",
-  "\\My Work\\www\\bitscollider-2\\static\\img\\ni-logo.png",
+  "\\My Work\\www\\bytecollider-2\\static\\img\\ni-logo.png",
 };
 
 struct FHashedDir {

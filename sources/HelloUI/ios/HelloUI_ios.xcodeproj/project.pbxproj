@@ -189,7 +189,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0900;
-				ORGANIZATIONNAME = Bitscollider;
+				ORGANIZATIONNAME = Bytecollider;
 				TargetAttributes = {
 					8F72FA1D17E6FB430073CD44 = {
 						DevelopmentTeam = W63PLW47W3;
@@ -392,7 +392,7 @@
 					"-llibMojoshader_ra",
 					"-lniUI_theoraplayer_ra",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bitscollider.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
@@ -429,7 +429,7 @@
 					"-llibMojoshader_ra",
 					"-lniUI_theoraplayer_ra",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bitscollider.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;

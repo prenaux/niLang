@@ -45,17 +45,19 @@ TEST_FIXTURE(FWeakPtr,UtilClass) {
   CHECK(weakPtrFile.IsOK());
   CHECK_EQUAL(ptrFile.ptr(),QPtr<iFile>(weakPtrFile).ptr());
 
-  // the next lines should fail to compile
-  // weakPtrFile = ptrFile;
-  // weakPtrFile = ptrFile.ptr();
+  // Should not compile
+  /*{
+    Ptr<iFile> lockedPtr = weakPtrFile;
+  }*/
 
   {
     QPtr<iFile> lockedPtr(weakPtrFile);
-    if (lockedPtr.IsOK()) {
-      // the next line should fail to compile
-      // lockedPtr = NULL;
-    }
   }
+
+  auto lockTest = [&]() {
+    Nonnull<iFile> lockedPtr = niCheckNonnullSilent(lockedPtr,weakPtrFile,eFalse);
+    return eTrue;
+  };
 
   {
     WeakPtr<iFile> weakPtr2File(ptrFile);
@@ -106,7 +108,7 @@ TEST_FIXTURE(FWeakPtr,Deref) {
   CHECK_EQUAL(2, weakPtrFile->GetNumRefs());
   CHECK_EQUAL(1, ptrFile->GetNumRefs());
 
-  Ptr<iUnknown> weakPtrFileDeref = WeakPtr<iUnknown>(weakPtrFile);
+  Ptr<iUnknown> weakPtrFileDeref = WeakPtr<iUnknown>(weakPtrFile).Deref();
   CHECK_EQUAL(ptrFile.ptr(), weakPtrFileDeref.ptr());
   CHECK_EQUAL(2, ptrFile->GetNumRefs());
   CHECK_EQUAL(2, weakPtrFileDeref->GetNumRefs());

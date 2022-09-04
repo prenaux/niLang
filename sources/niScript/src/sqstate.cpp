@@ -216,9 +216,6 @@ int SQGarbageCollector::CollectGarbage(SQCollectable** _tchain)
         if (SQCOLLECTABLE_DECREF(t) == 0) {
           t->DeleteThis();
         }
-        else {
-          niAssertUnreachable("Invalidated object still referenced, failed to break cycle.");
-        }
         t=nx;
         n++;
       }

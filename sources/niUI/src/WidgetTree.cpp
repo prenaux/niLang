@@ -1482,8 +1482,6 @@ tBool cWidgetTree::ClearSelection()
   niLoop(i,toUnselect.size()) {
     toUnselect[i]->SetSelected(eFalse);
   }
-  // should already be empty, clear for safety
-  niAssert(mvSelected.empty());
   mvSelected.clear();
   return eTrue;
 }

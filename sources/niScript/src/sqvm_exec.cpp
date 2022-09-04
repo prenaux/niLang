@@ -228,7 +228,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
           //----------------------------------- _OP_LOADROOTTABLE
           EX_BEGIN(_OP_LOADROOTTABLE) {
             SQClosure* closure = _closure(_ci->_closurePtr);
-            Ptr<SQTable> t = closure->_root;
+            QPtr<SQTable> t{closure->_root};
             if (!t.IsOK()) {
               this->Raise_MsgError("Null exec closure root table.");
               SQ_THROW();
@@ -944,8 +944,10 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
           //----------------------------------- _OP_CLOSURE
           EX_BEGIN(_OP_CLOSURE) {
             SQFunctionProto *func = _funcproto(_funcproto(_closure(_ci->_closurePtr)->_function)->_functions[arg1]);
-            Ptr<SQTable> rootTable = _closure(_ci->_closurePtr)->_root;
-            if (!rootTable.IsOK()) rootTable = _table(this->_roottable);
+            QPtr<SQTable> rootTable{_closure(_ci->_closurePtr)->_root};
+            if (!rootTable.IsOK()) {
+              rootTable = _table(this->_roottable);
+            }
             if (!rootTable.IsOK()) {
               this->Raise_MsgError("Null create closure root table.");
               SQ_THROW();

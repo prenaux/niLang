@@ -2197,7 +2197,7 @@ static int closure_SafeGetFreeVar(HSQUIRRELVM v)
 
 static int closure_GetRoot(HSQUIRRELVM v) {
   SQClosure *c = _closure(stack_get(v,1));
-  Ptr<SQTable> t = c->_root;
+  QPtr<SQTable> t = c->_root;
   sq_pushobject(v, t.IsOK() ? SQObjectPtr(t.ptr()) : _null_);
   return 1;
 }

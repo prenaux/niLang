@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(osx-x64) Test_niLang_da",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/osx-x64/Test_niLang_da",
+      "args": ["FNonnull"],
+      "cwd": "${workspaceFolder}/bin/osx-x64/",
+      "stopAtEntry": false,
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "Build Test_niLang_da"
+    },
+    {
+      "name": "(osx-x64) HelloUI_cpp_da",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/osx-x64/HelloUI_cpp_da",
+      "args": [],
+      "cwd": "${workspaceFolder}/bin/osx-x64/",
+      "stopAtEntry": false,
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "Build HelloUI_cpp_da"
+    }
+  ]
+}

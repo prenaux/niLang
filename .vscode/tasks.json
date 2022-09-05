@@ -1,0 +1,45 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "Build Test_niLang_da",
+			"command": "../ham/bin/ham",
+			"args": [
+				"-T",
+				"default",
+        "pass1",
+				"Test_niLang",
+				"BUILD=da"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: ham"
+		},
+		{
+			"type": "cppbuild",
+			"label": "Build HelloUI_cpp_da",
+			"command": "../ham/bin/ham",
+			"args": [
+				"-T",
+				"default",
+        "pass1",
+				"HelloUI_cpp",
+				"BUILD=da"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: ham"
+		},
+	]
+}

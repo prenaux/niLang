@@ -50,11 +50,11 @@ namespace eastl
 	// TODO(rparolin):  refactor with fold expressions when C++17 compilers are widely available.
 	///////////////////////////////////////////////////////////////////////
 
-	template <typename ...Args> 
+	template <typename ...Args>
 	struct has_void_arg;
 
-	template <> 
-	struct has_void_arg<> 
+	template <>
+	struct has_void_arg<>
 		: public eastl::false_type {};
 
 	template <typename A0, typename ...Args>
@@ -65,7 +65,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_null_pointer
 	//
-	// C++14 type trait. Refers only to nullptr_t and not NULL (0).
+	// C++14 type trait. Refers only to std::nullptr_t and not NULL (0).
 	// eastl::is_null_pointer<nullptr>::value == true
 	// eastl::is_null_pointer<std::nullptr_t>::value == true
 	// eastl::is_null_pointer<void*>::value == false
@@ -76,12 +76,12 @@ namespace eastl
 	#if defined(EA_COMPILER_CPP11_ENABLED) && !defined(EA_COMPILER_NO_DECLTYPE) && !defined(_MSC_VER) // VC++'s handling of decltype(nullptr) is broken.
 		#define EASTL_TYPE_TRAIT_is_null_pointer_CONFORMANCE 1
 
-		template <typename T> 
+		template <typename T>
 		struct is_null_pointer : public eastl::is_same<typename eastl::remove_cv<T>::type, decltype(nullptr)> {}; // A C++11 compiler defines nullptr, but you need a C++11 standard library to declare std::nullptr_t. So it's safer to compare against decltype(nullptr) than to use std::nullptr_t, because we may have a C++11 compiler but C++98 library (happens with Apple frequently).
 	#else
 		#define EASTL_TYPE_TRAIT_is_null_pointer_CONFORMANCE 1
 
-		template <typename T> 
+		template <typename T>
 		struct is_null_pointer : public eastl::is_same<typename eastl::remove_cv<T>::type, std::nullptr_t> {};
 	#endif
 
@@ -205,7 +205,7 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_is_arithmetic_CONFORMANCE 1    // is_arithmetic is conforming.
 
 	template <typename T>
-	struct is_arithmetic 
+	struct is_arithmetic
 		: public integral_constant<bool, is_integral<T>::value || is_floating_point<T>::value> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -248,7 +248,7 @@ namespace eastl
 
 	#if (EABASE_VERSION_N > 20607 && defined(EA_COMPILER_WINRTCX_ENABLED)) || defined(__cplusplus_winrt)
 		template <typename T> struct is_hat_type_helper<T^> : public true_type{};
-	#endif 
+	#endif
 
 	template <typename T>
 	struct is_hat_type : public eastl::is_hat_type_helper<T> {};
@@ -262,24 +262,3 @@ namespace eastl
 
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

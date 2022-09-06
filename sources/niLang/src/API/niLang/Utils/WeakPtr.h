@@ -30,13 +30,13 @@ struct WeakPtr {
 
  public:
   WeakPtr() {}
-  WeakPtr(nullptr_t) { *this = nullptr; }
+  WeakPtr(std::nullptr_t) { *this = nullptr; }
   WeakPtr(const T* other) { *this = other; }
   WeakPtr(const Ptr<T>& other) { *this = other; }
   WeakPtr(const QPtr<T>& other) { *this = other; }
   WeakPtr(const Nonnull<T>& other) { *this = other; }
 
-  WeakPtr& operator=(nullptr_t) {
+  WeakPtr& operator=(std::nullptr_t) {
     this->_Set(nullptr);
     return *this;
   }

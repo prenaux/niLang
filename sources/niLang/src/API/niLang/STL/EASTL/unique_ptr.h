@@ -25,22 +25,22 @@ namespace eastl
 {
 	/// class unique_ptr
 	///
-	/// This class implements a unique_ptr template. This is a class which is 
-	/// similar to the C++ auto_ptr template, except that it prohibits copying 
+	/// This class implements a unique_ptr template. This is a class which is
+	/// similar to the C++ auto_ptr template, except that it prohibits copying
 	/// of itself, for safety.
 	///
-	/// More specifically, the unique_ptr class template stores a pointer to a 
-	/// dynamically allocated object.  The object pointed to is automatically 
-	/// deleted on destructor of unique_ptr or can be manually deleted via the 
-	/// unique_ptr::reset function. 
+	/// More specifically, the unique_ptr class template stores a pointer to a
+	/// dynamically allocated object.  The object pointed to is automatically
+	/// deleted on destructor of unique_ptr or can be manually deleted via the
+	/// unique_ptr::reset function.
 	///
 	/// Memory allocation notes:
-	/// unique_ptr doesn't allocate memory; all allocated pointers are externally 
-	/// derived. unique_ptr does deallocate memory, though always through the 
-	/// user-provided deleter. You need to make sure you are consistent in providing 
+	/// unique_ptr doesn't allocate memory; all allocated pointers are externally
+	/// derived. unique_ptr does deallocate memory, though always through the
+	/// user-provided deleter. You need to make sure you are consistent in providing
 	/// a deleter which frees memory in a way that matches how it was originally allocated.
-	/// Deleters have instance information and are moved between containers the same way 
-	/// the allocated pointers are. Thus you can allocate memory via some heap and 
+	/// Deleters have instance information and are moved between containers the same way
+	/// the allocated pointers are. Thus you can allocate memory via some heap and
 	/// provide a deleter which contains a pointer to that same heap, and regardless
 	/// of what you do with the unique_ptr, including moving it to another unique_ptr,
 	/// the deletion will use the originally provided heap.
@@ -54,9 +54,9 @@ namespace eastl
 	///
 	/// Type completeness requirements
 	/// http://stackoverflow.com/questions/6012157/is-stdunique-ptrt-required-to-know-the-full-definition-of-t/6089065#6089065
-	/// Here is a table which documents several members of shared_ptr and unique_ptr with respect to completeness requirements. 
+	/// Here is a table which documents several members of shared_ptr and unique_ptr with respect to completeness requirements.
 	/// If the member requires a complete type, the entry has a "C", otherwise the table entry is filled with "I".
-	/// 
+	///
 	///                                 unique_ptr       shared_ptr
 	///     +------------------------+---------------+---------------+
 	///     |          P()           |      I        |      I        |
@@ -84,7 +84,7 @@ namespace eastl
 	///     |       reset(A*)        |      C        |      C        |
 	///     +------------------------+---------------+---------------+
 	///
-	template <typename T, typename Deleter = eastl::default_delete<T> > 
+	template <typename T, typename Deleter = eastl::default_delete<T> >
 	class unique_ptr
 	{
 	public:
@@ -183,7 +183,7 @@ namespace eastl
 			return *this;
 		}
 
-		/// operator=(nullptr_t)
+		/// operator=(std::nullptr_t)
 		this_type& operator=(std::nullptr_t) EA_NOEXCEPT
 		{
 			reset();
@@ -199,7 +199,7 @@ namespace eastl
 		}
 
 		/// reset
-		/// Deletes the owned pointer and takes ownership of the 
+		/// Deletes the owned pointer and takes ownership of the
 		/// passed in pointer. If the passed in pointer is the same
 		/// as the owned pointer, nothing is done.
 		/// Example usage:
@@ -218,7 +218,7 @@ namespace eastl
 		}
 
 		/// release
-		/// This simply forgets the owned pointer. It doesn't 
+		/// This simply forgets the owned pointer. It doesn't
 		/// free it but rather assumes that the user does.
 		/// Example usage:
 		///    unique_ptr<int> ptr(new int(3));
@@ -233,10 +233,10 @@ namespace eastl
 
 		/// detach
 		/// For backwards-compatibility with pre-C++11 code.
-		pointer detach() EA_NOEXCEPT { return release(); } 
+		pointer detach() EA_NOEXCEPT { return release(); }
 
 		/// swap
-		/// Exchanges the owned pointer beween two unique_ptr objects. 
+		/// Exchanges the owned pointer beween two unique_ptr objects.
 		void swap(this_type& x) EA_NOEXCEPT
 		{
 			mPair.swap(x.mPair);
@@ -255,7 +255,7 @@ namespace eastl
 		/// operator->
 		/// Allows access to the owned pointer via operator->()
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    unique_ptr<int> ptr(new X);
 		///    ptr->DoSomething();
 		pointer operator->() const EA_NOEXCEPT
@@ -264,11 +264,11 @@ namespace eastl
 		}
 
 		/// get
-		/// Returns the owned pointer. Note that this class does 
+		/// Returns the owned pointer. Note that this class does
 		/// not provide an operator T() function. This is because such
 		/// a thing (automatic conversion) is deemed unsafe.
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    unique_ptr<int> ptr(new X);
 		///    X* pX = ptr.get();
 		///    pX->DoSomething();
@@ -312,14 +312,14 @@ namespace eastl
 			}
 		#else
 			/// operator bool
-			/// Allows for using a unique_ptr as a boolean. 
+			/// Allows for using a unique_ptr as a boolean.
 			/// Example usage:
 			///    unique_ptr<int> ptr(new int(3));
 			///    if(ptr)
 			///        ++*ptr;
 			///
 			explicit operator bool() const EA_NOEXCEPT
-			{ 
+			{
 				return (mPair.first() != pointer());
 			}
 		#endif
@@ -338,13 +338,13 @@ namespace eastl
 	/// unique_ptr specialization for unbounded arrays.
 	///
 	/// Differences from unique_ptr<T>:
-	///     - Conversions between different types of unique_ptr<T[], D> or to or 
+	///     - Conversions between different types of unique_ptr<T[], D> or to or
 	///       from the non-array forms of unique_ptr produce an ill-formed program.
 	///     - Pointers to types derived from T are rejected by the constructors, and by reset.
 	///     - The observers operator* and operator-> are not provided.
 	///     - The indexing observer operator[] is provided.
 	///     - The default deleter will call delete[].
-	/// 
+	///
 	/// It's not possible to create a unique_ptr for arrays of a known bound (e.g. int[4] as opposed to int[]).
 	///
 	/// Example usage:
@@ -397,7 +397,7 @@ namespace eastl
 			: mPair(x.release(), eastl::forward<deleter_type>(x.get_deleter())) {}
 
 		template <typename U, typename E>
-		unique_ptr(unique_ptr<U, E>&& u, typename enable_if<Internal::is_safe_array_conversion<T, pointer, U, typename unique_ptr<U, E>::pointer>::value && 
+		unique_ptr(unique_ptr<U, E>&& u, typename enable_if<Internal::is_safe_array_conversion<T, pointer, U, typename unique_ptr<U, E>::pointer>::value &&
 															eastl::is_convertible<E, deleter_type>::value &&
 														   (!eastl::is_reference<deleter_type>::value || eastl::is_same<E, deleter_type>::value)>::type* = 0) EA_NOEXCEPT
 			: mPair(u.release(), eastl::forward<E>(u.get_deleter())) {}
@@ -456,7 +456,7 @@ namespace eastl
 
 		/// operator[]
 		/// Returns a reference to the specified item in the owned pointer
-		/// array. 
+		/// array.
 		/// Example usage:
 		///    unique_ptr<int> ptr(new int[6]);
 		///    int x = ptr[2];
@@ -496,7 +496,7 @@ namespace eastl
 			}
 		#else
 			explicit operator bool() const EA_NOEXCEPT
-			{ 
+			{
 				return (mPair.first() != pointer());
 			}
 		#endif
@@ -524,7 +524,7 @@ namespace eastl
 	///     - You need to construct the unique_ptr with a raw pointer.
 	///     - You need to specify a custom deleter.
 	///
-	/// Note: This function uses global new T by default to create the ptr instance, as per 
+	/// Note: This function uses global new T by default to create the ptr instance, as per
 	/// the C++11 Standard make_shared_ptr.
 	///
 	/// Example usage:
@@ -568,7 +568,7 @@ namespace eastl
 
 
 	/// hash specialization for unique_ptr.
-	/// It simply returns eastl::hash(x.get()). If your unique_ptr pointer type (the return value of unique_ptr<T>::get) is 
+	/// It simply returns eastl::hash(x.get()). If your unique_ptr pointer type (the return value of unique_ptr<T>::get) is
 	/// a custom type and not a built-in pointer type then you will need to independently define eastl::hash for that type.
 	template <typename T, typename D>
 	struct hash< unique_ptr<T, D> >
@@ -619,19 +619,19 @@ namespace eastl
 	}
 
 	template <typename T1, typename D1, typename T2, typename D2>
-	inline bool operator>(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b) 
+	inline bool operator>(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b)
 	{
 		return (b < a);
 	}
 
 	template <typename T1, typename D1, typename T2, typename D2>
-	inline bool operator<=(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b) 
+	inline bool operator<=(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b)
 	{
 		return !(b < a);
 	}
 
 	template <typename T1, typename D1, typename T2, typename D2>
-	inline bool operator>=(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b) 
+	inline bool operator>=(const unique_ptr<T1, D1>& a, const unique_ptr<T2, D2>& b)
 	{
 		return !(a < b);
 	}
@@ -717,14 +717,3 @@ namespace eastl
 
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-
-

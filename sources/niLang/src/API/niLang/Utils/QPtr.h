@@ -31,7 +31,7 @@ namespace ni {
  *
  */
 template <typename T>
-class QPtr
+struct QPtr
 {
   niClassNoHeapAlloc(QPtr);
   template<class U> friend struct Ptr;

@@ -6,7 +6,7 @@
 #error "Expected niPtr_NoUnsafeAPI."
 #endif
 
-template struct ni::cMutableCollectionImpl<
+template class ni::cMutableCollectionImpl<
   ni::CollectionTraitsMap<ni::CollectionTraitsI32,ni::CollectionTraitsI32> >;
 template struct ni::tInterfaceCVec<ni::iUnknown>;
 

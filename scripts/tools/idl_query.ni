@@ -451,6 +451,15 @@ function doc() {
   local printDoc = tPrintDoc.Clone()
   printDoc._parentName = parentName
   printDoc._nodeName = nodeName
+  ::println("Generated on" ::gLang.current_time.Format())
+  ::println("")
+
+  ::println("- name:" dt.GetStringDefault("name","NA"))
+  ::println("- desc:" dt.GetStringDefault("desc","NA"))
+  ::println("- version:" dt.GetStringDefault("version","NA"))
+  ::println("- author:" dt.GetStringDefault("author","NA"))
+  ::println("- copyright:" dt.GetStringDefault("copyright","NA"))
+
   processDT(printDoc, dt, 0)
   foreach (i in dt.num_children) {
     processDT(printDoc, dt.child_from_index[i], i)

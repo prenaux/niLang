@@ -32,10 +32,18 @@ using weak_ptr = eastl::weak_ptr<T>;
 template <typename T>
 using unique_ptr = eastl::unique_ptr<T>;
 
+template <typename T>
+using unique_non_null = astl::non_null<eastl::unique_ptr<T> >;
+
 // eastl::make_unique is only available in C++14 & C++20, we need it in C++11 aswell
 template<typename T, typename... Args>
 astl::unique_ptr<T> make_unique(Args&&... args) {
   return astl::unique_ptr<T>(new T(eastl::forward<Args>(args)...));
+}
+
+template<typename T, typename... Args>
+unique_non_null<T> make_unique_non_null(Args&&... args) {
+  return unique_non_null<T>(make_unique<T>(eastl::forward<Args>(args)...));
 }
 
 }

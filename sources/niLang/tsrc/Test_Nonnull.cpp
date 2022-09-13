@@ -142,6 +142,14 @@ TEST_FIXTURE(FNonnull,shared_non_null) {
   CHECK_EQUAL(456, *v);
 }
 
+TEST_FIXTURE(FNonnull,unique_non_null) {
+  const int kValue = 123;
+  astl::unique_non_null<int> v = astl::make_unique_non_null<int>(kValue);
+  CHECK_EQUAL(kValue, *v);
+  *v = 456;
+  CHECK_EQUAL(456, *v);
+}
+
 TEST_FIXTURE(FNonnull,base) {
   Nonnull<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);

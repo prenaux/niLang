@@ -304,6 +304,24 @@
 	#endif
 
 
+	// EA_COMPILER_CPP20_ENABLED
+	//
+	// Defined as 1 if the compiler has its available C++20 support enabled, else undefined.
+	// This does not mean that all of C++20 or any particular feature of C++20 is supported
+	// by the compiler. It means that whatever C++20 support the compiler has is enabled.
+ 	//
+	// We cannot use (__cplusplus >= 202002L) alone because some compiler vendors have
+	// decided to not define __cplusplus like thus until they have fully completed their
+	// C++20 support.
+	#if !defined(EA_COMPILER_CPP20_ENABLED) && defined(__cplusplus)
+		#if (__cplusplus >= 202002L)
+			#define EA_COMPILER_CPP20_ENABLED 1
+		#elif defined(_MSVC_LANG) && (_MSVC_LANG >= 202002L) // C++20+
+			#define EA_COMPILER_CPP20_ENABLED 1
+		#endif
+	#endif
+
+
 	#if   defined(__ARMCC_VERSION)
 		// Note that this refers to the ARM RVCT compiler (armcc or armcpp), but there
 		// are other compilers that target ARM processors, such as GCC and Microsoft VC++.

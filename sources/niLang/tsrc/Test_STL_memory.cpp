@@ -77,4 +77,16 @@ TEST_FIXTURE(ASTL_memory, unique_ptr) {
   CHECK_EQUAL(false, (!!a));
 }
 
+struct sFoo {
+  astl::required<ni::tI32> _bar;
+};
+
+TEST_FIXTURE(ASTL_memory, required) {
+#if 0
+  sFoo f1; // does not compile
+  sFoo f2 = {}; // does not compile
+#endif
+  sFoo f3 = { 0 }; // success!
+}
+
 } // end of anonymous namespace

@@ -6,6 +6,7 @@
 ::oo <- {
   base = {
     function new(_args_) {
+      local __lint = { this_key_notfound_callk = 0 }
       local t = this.Clone()
       t.__SetCanCallMetaMethod(true)
       if ("_initialize" in t) {

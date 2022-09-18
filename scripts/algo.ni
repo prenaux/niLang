@@ -346,8 +346,12 @@
 ::algo.contains <- ::algo.has
 
 function ::algo::_getAsDelegate() {
-  if ("_delegate" in this)
+  local __lint = {
+    this_key_notfound_getk = 0
+  }
+  if ("_delegate" in this) {
     return this._delegate
+  }
   local d = {}
   foreach (k,f in ::algo) {
     if (k[0] == '_') continue

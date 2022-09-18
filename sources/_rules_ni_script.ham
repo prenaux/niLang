@@ -34,7 +34,7 @@ rule niToolkitScriptDirs {
   return $(r) ;
 }
 
-# niRunInDir TARGET : MAIN : SRC : SCRIPT_INCS ;
+# niScript TARGET : MAIN : SRC : SCRIPT_INCS ;
 rule niScript {
   local TARGET = $(1) ;
   local SRC = [ niScriptSrc $(3) : $(2) ] ;
@@ -71,7 +71,7 @@ rule niScript {
   DEPENDS $(TARGET) : $(SRC) ;
 }
 
-# niRunInDir TARGET : MAIN : SRC : SCRIPT_INCS ;
+# niScriptTest TARGET : MAIN : SRC : SCRIPT_INCS ;
 rule niScriptTest {
   local TARGET = $(1) ;
   niScript $(TARGET) : $(2) : $(3) : $(4) ;

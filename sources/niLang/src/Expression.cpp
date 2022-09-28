@@ -5167,6 +5167,46 @@ tBool DoEvaluate(iExpressionContext* apContext)
 EndOp()
 
 // DataTable function
+BeginOpF(DTFindChild,3)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTSearch(): operation, input 0 is not a valid datatable.");
+    return eFalse;
+  }
+
+  auto var1 = mvOperands[1].GetVariable();
+  if (var1->GetType() != ni::eExpressionVariableType_String) {
+    EXPRESSION_TRACE("DTSearch(): operation, input 1 is not a string.");
+    return eFalse;
+  }
+
+  auto var2 = mvOperands[2].GetVariable();
+  if (var2->GetType() != ni::eExpressionVariableType_String) {
+    EXPRESSION_TRACE("DTSearch(): operation, input 2 is not a string.");
+    return eFalse;
+  }
+
+  niLoop(i, dt->GetNumChildren()) {
+    Ptr<iDataTable> c = dt->GetChildFromIndex(i);
+    cString val = c->GetString(var1->GetString().Chars());
+    if (val.Eq(var2->GetString())) {
+      mptrResult->SetIUnknown(c);
+      break;
+    }
+  }
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
 BeginOpF(DTGetChildIndex,2)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
@@ -5682,6 +5722,7 @@ tBool Evaluator::_RegisterReservedVariables() {
 
   AddOp(DTGet);
   AddOp(DTGetChild);
+  AddOp(DTFindChild);
   AddOp(DTGetChildIndex);
   AddOp(DTGetNumChildren);
 

@@ -180,11 +180,6 @@ public:
     return const_cast<T*>(mPtr);
   }
 
-  ni::Ptr<const T>& ToConst() const {
-    niPanicAssert(mPtr != nullptr);
-    return (ni::Ptr<const T>&)*this;
-  }
-
  private:
   __forceinline void _Set(const T* apPointer) {
     T* newp = (T*)apPointer;

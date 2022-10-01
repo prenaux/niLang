@@ -25,7 +25,7 @@ else if $(JSCC) = 1 {
   SRC_EXTRA = [ tkPkgSrcSubDir sdl ] ;
 }
 else {
-  ECHO "W/ niSound: Platform not supported - NoSound only." ;
+  logWarn "Platform not supported - NoSound only." ;
 }
 
 tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ;

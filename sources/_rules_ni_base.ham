@@ -284,12 +284,12 @@ rule niImportModuleHdrs {
 
 rule niImportModuleDll {
   niImportModuleHdrs $(1) : $(2) ;
-  tkPkgLinkDll $(1) ;
+  tkPkgLinkDll $(1) : $(2) ;
 }
 
 rule niImportModuleLibs {
   niImportModuleHdrs $(1) : $(2) ;
-  tkPkgLinkLibs $(1) ;
+  tkPkgLinkLibs $(1) : $(2) ;
 }
 
 #----------------------------------------------------------------------

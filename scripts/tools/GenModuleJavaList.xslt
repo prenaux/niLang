@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Ascii" ?>
 
 <!DOCTYPE stylesheet [
-	<!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.','_')">
+  <!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.-','__')">
 	<!ENTITY PARAMETERS "parameter[not(@deprecated='yes')]">
 	<!ENTITY METHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes') and not(@noautomation='yes')]">
 	<!ENTITY ALLMETHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes')]">

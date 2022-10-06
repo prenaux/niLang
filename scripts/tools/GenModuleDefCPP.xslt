@@ -2,68 +2,68 @@
 <!-- (c) 2022 The niLang Authors -->
 
 <!DOCTYPE stylesheet [
-	<!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.','_')">
-	<!ENTITY PARAMETERS "parameter[not(@deprecated='yes')]">
-	<!ENTITY METHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes') and not(@deprecated='yes')]">
-	<!ENTITY PARENTS "parents/parent[not(@deprecated='yes') and not(../@deprecated='yes')]">
-	<!ENTITY INTERFACES "/niIDL/namespace/interface[not(@noautomation='yes') and not(@deprecated='yes')]">
-	<!ENTITY INCS "/niIDL/includes/include">
-	<!ENTITY ALLINTERFACES "/niIDL/namespace/interface[not(@deprecated='yes')]">
-	<!ENTITY CONSTANTS "/niIDL/namespace/variable[not(@noautomation='yes') and not(@deprecated='yes') and starts-with(@name,'k')]">
-	<!ENTITY EMPTYENUMVALUES "/niIDL/namespace/enum[(@name='') and not(@noautomation='yes') and not(@deprecated='yes')]/value">
-	<!ENTITY NAMEDENUMS "/niIDL/namespace/enum[not(@name='') and not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
-	<!ENTITY ALLENUMS "/niIDL/namespace/enum[not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
-	<!ENTITY OBJECTTYPES "/niIDL/objecttypes/objecttype">
-	<!ENTITY DISPATCHWRAPPER "((@dispatchwrapper='yes') or (@dispatchwrappercreate) or (starts-with(@name,'i') and contains(@name,'Sink') and not(@name='iSinkList')))">
-	<!ENTITY DEPENDENCIES "/niIDL/dependencies/dependency">
-	<!ENTITY IDDEPENDENCIES "/niIDL/dependencies/dependency[not(@weak='yes') and not(@noid='yes')]">
-	<!ENTITY AISPTR "(contains($A,'*') or contains($A,'&amp;') or contains($A,'Ptr&lt;'))">
-	<!ENTITY AISINTERFACE "(starts-with($A,'i') or starts-with($A,'const i') or contains($A,'::i')) and not(starts-with($A,'int')) or contains($A,'Ptr&lt;')">
-	<!ENTITY AISENUM "(starts-with($A,'e') or starts-with($A,'const e') or contains($A,'::e'))">
-	<!ENTITY AISFLAGS "(((starts-with($A,'t') or starts-with($A,'const t')) and contains($A,'Flags')) or (contains($A,'::t') and contains($A,'Flags')))">
-	<!ENTITY MATCH_VAR "starts-with($A,'Var') or starts-with($A,'const Var') or starts-with($A,'ni::Var') or starts-with($A,'const ni::Var')">
-	<!ENTITY AISVEC "(contains($A,'CVec'))">
-	<!ENTITY AISSINKLIST "(contains($A,'iSinkLst') or contains($A,'SinkLst'))">
-	<!ENTITY AISLST "(contains($A,'CLst') or contains($A,'SinkLst'))">
-	<!ENTITY AISMAP "(contains($A,'CMap'))">
-	<!ENTITY AISCOLLECTION "(contains($A,'CVec')) or (contains($A,'CLst') or contains($A,'SinkLst')) or (contains($A,'CMap'))">
+  <!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.-','__')">
+  <!ENTITY PARAMETERS "parameter[not(@deprecated='yes')]">
+  <!ENTITY METHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes') and not(@deprecated='yes')]">
+  <!ENTITY PARENTS "parents/parent[not(@deprecated='yes') and not(../@deprecated='yes')]">
+  <!ENTITY INTERFACES "/niIDL/namespace/interface[not(@noautomation='yes') and not(@deprecated='yes')]">
+  <!ENTITY INCS "/niIDL/includes/include">
+  <!ENTITY ALLINTERFACES "/niIDL/namespace/interface[not(@deprecated='yes')]">
+  <!ENTITY CONSTANTS "/niIDL/namespace/variable[not(@noautomation='yes') and not(@deprecated='yes') and starts-with(@name,'k')]">
+  <!ENTITY EMPTYENUMVALUES "/niIDL/namespace/enum[(@name='') and not(@noautomation='yes') and not(@deprecated='yes')]/value">
+  <!ENTITY NAMEDENUMS "/niIDL/namespace/enum[not(@name='') and not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
+  <!ENTITY ALLENUMS "/niIDL/namespace/enum[not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
+  <!ENTITY OBJECTTYPES "/niIDL/objecttypes/objecttype">
+  <!ENTITY DISPATCHWRAPPER "((@dispatchwrapper='yes') or (@dispatchwrappercreate) or (starts-with(@name,'i') and contains(@name,'Sink') and not(@name='iSinkList')))">
+  <!ENTITY DEPENDENCIES "/niIDL/dependencies/dependency">
+  <!ENTITY IDDEPENDENCIES "/niIDL/dependencies/dependency[not(@weak='yes') and not(@noid='yes')]">
+  <!ENTITY AISPTR "(contains($A,'*') or contains($A,'&amp;') or contains($A,'Ptr&lt;'))">
+  <!ENTITY AISINTERFACE "(starts-with($A,'i') or starts-with($A,'const i') or contains($A,'::i')) and not(starts-with($A,'int')) or contains($A,'Ptr&lt;')">
+  <!ENTITY AISENUM "(starts-with($A,'e') or starts-with($A,'const e') or contains($A,'::e'))">
+  <!ENTITY AISFLAGS "(((starts-with($A,'t') or starts-with($A,'const t')) and contains($A,'Flags')) or (contains($A,'::t') and contains($A,'Flags')))">
+  <!ENTITY MATCH_VAR "starts-with($A,'Var') or starts-with($A,'const Var') or starts-with($A,'ni::Var') or starts-with($A,'const ni::Var')">
+  <!ENTITY AISVEC "(contains($A,'CVec'))">
+  <!ENTITY AISSINKLIST "(contains($A,'iSinkLst') or contains($A,'SinkLst'))">
+  <!ENTITY AISLST "(contains($A,'CLst') or contains($A,'SinkLst'))">
+  <!ENTITY AISMAP "(contains($A,'CMap'))">
+  <!ENTITY AISCOLLECTION "(contains($A,'CVec')) or (contains($A,'CLst') or contains($A,'SinkLst')) or (contains($A,'CMap'))">
 ]>
 
 <xsl:stylesheet version="1.0"
-				xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-				xmlns:math="http://exslt.org/math"
-				xmlns:date="http://exslt.org/dates-and-times">
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        xmlns:math="http://exslt.org/math"
+        xmlns:date="http://exslt.org/dates-and-times">
 
-	<xsl:include href="GenModuleBase.xslt"/>
-	<xsl:output method="text" />
+  <xsl:include href="GenModuleBase.xslt"/>
+  <xsl:output method="text" />
 
 <!-- ROOT ****************************************************** -->
-	<xsl:template match="/">
+  <xsl:template match="/">
 
-		<xsl:if test="not(/niIDL/@name)">
-			<xsl:message terminate="yes">E/ Unnamed IDL cannot be used to generate automation wrapper !</xsl:message>
-		</xsl:if>
+    <xsl:if test="not(/niIDL/@name)">
+      <xsl:message terminate="yes">E/ Unnamed IDL cannot be used to generate automation wrapper !</xsl:message>
+    </xsl:if>
 
-		<!-- <xsl:if test="not(/niIDL/namespace/@name)"> -->
-			<!-- <xsl:message terminate="yes">E/ No namespace defined !</xsl:message> -->
-		<!-- </xsl:if> -->
+    <!-- <xsl:if test="not(/niIDL/namespace/@name)"> -->
+      <!-- <xsl:message terminate="yes">E/ No namespace defined !</xsl:message> -->
+    <!-- </xsl:if> -->
 
-		<!-- xsl:if test="count(&OBJECTTYPES;)=0">
-			<xsl:message terminate="yes">No object types defined !</xsl:message>
-		</xsl:if -->
+    <!-- xsl:if test="count(&OBJECTTYPES;)=0">
+      <xsl:message terminate="yes">No object types defined !</xsl:message>
+    </xsl:if -->
 
-		<xsl:call-template name="write_header"/>
+    <xsl:call-template name="write_header"/>
 
-		<xsl:call-template name="newline"/>
-		<xsl:text>namespace </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/><xsl:text> {</xsl:text>
+    <xsl:call-template name="newline"/>
+    <xsl:text>namespace </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/><xsl:text> {</xsl:text>
 
-		<xsl:call-template name="get_interfaces_wrappers"/>
+    <xsl:call-template name="get_interfaces_wrappers"/>
 
-		<xsl:if test="not(count(&ALLENUMS;)=0)"><xsl:call-template name="get_enumerations"/></xsl:if>
+    <xsl:if test="not(count(&ALLENUMS;)=0)"><xsl:call-template name="get_enumerations"/></xsl:if>
 
-		<xsl:call-template name="newline"/>
-		<xsl:if test="not((count(&CONSTANTS;)+count(&INTERFACES;))=0)"><xsl:call-template name="get_constants"/></xsl:if>
-		<xsl:call-template name="newline"/>
+    <xsl:call-template name="newline"/>
+    <xsl:if test="not((count(&CONSTANTS;)+count(&INTERFACES;))=0)"><xsl:call-template name="get_constants"/></xsl:if>
+    <xsl:call-template name="newline"/>
 
 <xsl:text>
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 </xsl:text>
 
-		<xsl:text>niExportFunc(const ni::iModuleDef*) GetModuleDef_</xsl:text><xsl:value-of select="&SAFEIDLNAME;"/><xsl:text>()
+    <xsl:text>niExportFunc(const ni::iModuleDef*) GetModuleDef_</xsl:text><xsl:value-of select="&SAFEIDLNAME;"/><xsl:text>()
 {
   static bool _initialized = false;
   if (!_initialized) {
@@ -83,15 +83,15 @@
   <xsl:call-template name="get_module"/>
   <xsl:text>
   return &amp;ModuleDef;
-}	// End of GetModuleDef_</xsl:text><xsl:value-of select="&SAFEIDLNAME;"/><xsl:call-template name="newline"/>
+} // End of GetModuleDef_</xsl:text><xsl:value-of select="&SAFEIDLNAME;"/><xsl:call-template name="newline"/>
 <xsl:text>} // end of namespace </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/><xsl:call-template name="newline"/>
 
-		<xsl:call-template name="write_footer"/>
-	</xsl:template>
+    <xsl:call-template name="write_footer"/>
+  </xsl:template>
 
 <!-- ************************************************************ -->
-	<xsl:template name="write_header">
-	<xsl:text>//////////////////////////////////////////////////////////////////////////////////////////////
+  <xsl:template name="write_header">
+  <xsl:text>//////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Autogenerated module definition, for </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/>::<xsl:value-of select="/niIDL/@name"/><xsl:text>.
 //
@@ -115,36 +115,36 @@
 #include &lt;niLang/Utils/ModuleDefImpl_Begin.h&gt;
 </xsl:text>
 
-	<xsl:if test="/niIDL/@interfacesheaderpath">
-		<xsl:text>#include "</xsl:text><xsl:value-of select="/niIDL/@interfacesheaderpath"/><xsl:text>&quot;</xsl:text><xsl:call-template name="newline"/>
-	</xsl:if>
+  <xsl:if test="/niIDL/@interfacesheaderpath">
+    <xsl:text>#include "</xsl:text><xsl:value-of select="/niIDL/@interfacesheaderpath"/><xsl:text>&quot;</xsl:text><xsl:call-template name="newline"/>
+  </xsl:if>
 
-	<xsl:call-template name="newline"/>
-	<xsl:text>#ifndef niConfig_OnlyObjectTypesIDL</xsl:text>
-	<xsl:call-template name="newline"/>
-	<xsl:if test="not(count(&IDDEPENDENCIES;)=0)">
-	<xsl:for-each select="&IDDEPENDENCIES;">
-		<xsl:choose>
-			<xsl:when test="@includepath">
-				<xsl:text>#include &lt;</xsl:text><xsl:value-of select="@includepath"/><xsl:text>&gt;</xsl:text><xsl:call-template name="newline"/>
-			</xsl:when>
-		</xsl:choose>
-	</xsl:for-each>
-	</xsl:if>
-	<xsl:text>#endif // #ifndef niConfig_OnlyObjectTypesIDL</xsl:text>
-	<xsl:call-template name="newline"/>
+  <xsl:call-template name="newline"/>
+  <xsl:text>#ifndef niConfig_OnlyObjectTypesIDL</xsl:text>
+  <xsl:call-template name="newline"/>
+  <xsl:if test="not(count(&IDDEPENDENCIES;)=0)">
+  <xsl:for-each select="&IDDEPENDENCIES;">
+    <xsl:choose>
+      <xsl:when test="@includepath">
+        <xsl:text>#include &lt;</xsl:text><xsl:value-of select="@includepath"/><xsl:text>&gt;</xsl:text><xsl:call-template name="newline"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:for-each>
+  </xsl:if>
+  <xsl:text>#endif // #ifndef niConfig_OnlyObjectTypesIDL</xsl:text>
+  <xsl:call-template name="newline"/>
 
-	<xsl:choose>
-		<xsl:when test="/niIDL/@idheaderpath">
-			<xsl:text>#include &lt;</xsl:text><xsl:value-of select="/niIDL/@idheaderpath"/><xsl:text>.h&gt;</xsl:text><xsl:call-template name="newline"/>
-		</xsl:when>
-	</xsl:choose>
-	<xsl:call-template name="newline"/>
+  <xsl:choose>
+    <xsl:when test="/niIDL/@idheaderpath">
+      <xsl:text>#include &lt;</xsl:text><xsl:value-of select="/niIDL/@idheaderpath"/><xsl:text>.h&gt;</xsl:text><xsl:call-template name="newline"/>
+    </xsl:when>
+  </xsl:choose>
+  <xsl:call-template name="newline"/>
 
-	<xsl:text>
+  <xsl:text>
 
 #if !defined niConfig_OnlyObjectTypesIDL &amp;&amp; !defined niConfig_NoInterfaceDef
-#define _</xsl:text><xsl:value-of select="/niIDL/@name"/><xsl:text>_ModuleDef
+#define _</xsl:text><xsl:value-of select="&SAFEIDLNAME;"/><xsl:text>_ModuleDef
 #include &lt;niLang/Utils/VMCallCImpl.h&gt;
 #ifndef niConfig_NoXCALL
 #define IDLC_BEGIN_NAMESPACE() namespace </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/><xsl:text> { namespace xcall_cimpl {
@@ -153,8 +153,8 @@
 #define XCALL_CIMPL(NAME) </xsl:text><xsl:value-of select="/niIDL/namespace/@name"/><xsl:text>::xcall_cimpl::NAME
 #endif
 </xsl:text>
-	<xsl:for-each select="&INCS;">
-		<xsl:text>#include "</xsl:text>
+  <xsl:for-each select="&INCS;">
+    <xsl:text>#include "</xsl:text>
         <xsl:choose>
             <xsl:when test="contains(.,'/_idl/')">
                 <xsl:text>_idl/</xsl:text>
@@ -174,24 +174,24 @@
                 <xsl:value-of select="substring-before(.,'.xml')" />
             </xsl:otherwise>
         </xsl:choose>
-		<xsl:text>.inl"
+    <xsl:text>.inl"
 </xsl:text>
-	</xsl:for-each>
-		<xsl:text>#endif // niConfig_NoXCALL
+  </xsl:for-each>
+    <xsl:text>#endif // niConfig_NoXCALL
 #endif // #if !defined niConfig_OnlyObjectTypesIDL &amp;&amp; !defined niConfig_NoInterfaceDef
 </xsl:text>
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************ -->
-	<xsl:template name="write_footer">
+  <xsl:template name="write_footer">
 <xsl:text>
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #include &lt;niLang/Utils/ModuleDefImpl_End.h&gt;
 </xsl:text>
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************ -->
-	<xsl:template name="get_module">
+  <xsl:template name="get_module">
 <xsl:text>
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Module definition
@@ -202,7 +202,7 @@
 <xsl:if test="not(count(&DEPENDENCIES;)=0)">
 <xsl:text>static const ni::achar* Dependencies[] = {</xsl:text><xsl:call-template name="newline"/>
 <xsl:for-each select="&DEPENDENCIES;">
-	<xsl:call-template name="tab"/><xsl:text>&quot;</xsl:text><xsl:value-of select="@name"/><xsl:text>",</xsl:text><xsl:call-template name="newline"/>
+  <xsl:call-template name="tab"/><xsl:text>&quot;</xsl:text><xsl:value-of select="@name"/><xsl:text>",</xsl:text><xsl:call-template name="newline"/>
 </xsl:for-each>
 <xsl:text>};</xsl:text><xsl:call-template name="newline"/>
 </xsl:if>
@@ -212,7 +212,7 @@
 <xsl:text>static const ni::sObjectTypeDef* ObjectTypes[] = {</xsl:text><xsl:call-template name="newline"/>
 <xsl:for-each select="&OBJECTTYPES;">
     <xsl:call-template name="get_min_features_begin" />
-	<xsl:call-template name="tab"/><xsl:text>&amp;ObjectType_</xsl:text><xsl:value-of select="@category"/>_<xsl:value-of select="@name"/><xsl:text>,</xsl:text><xsl:call-template name="newline"/>
+  <xsl:call-template name="tab"/><xsl:text>&amp;ObjectType_</xsl:text><xsl:value-of select="@category"/>_<xsl:value-of select="@name"/><xsl:text>,</xsl:text><xsl:call-template name="newline"/>
     <xsl:call-template name="get_min_features_end" />
 </xsl:for-each>
 <xsl:text>};</xsl:text><xsl:call-template name="newline"/>
@@ -226,7 +226,7 @@
 <xsl:text>static const ni::sInterfaceDef* Interfaces[] = {</xsl:text><xsl:call-template name="newline"/>
 <xsl:for-each select="&INTERFACES;">
     <xsl:call-template name="get_min_features_begin" />
-	<xsl:call-template name="tab"/><xsl:text>GetInterfaceDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>(),</xsl:text><xsl:call-template name="newline"/>
+  <xsl:call-template name="tab"/><xsl:text>GetInterfaceDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>(),</xsl:text><xsl:call-template name="newline"/>
     <xsl:call-template name="get_min_features_end" />
 </xsl:for-each>
 <xsl:text>};
@@ -241,16 +241,16 @@
     <xsl:call-template name="newline"/>
     <xsl:text>#if !defined niConfig_OnlyObjectTypesIDL &amp;&amp; !defined niConfig_NoEnumDef</xsl:text>
     <xsl:call-template name="newline"/>
-	<xsl:text>static const ni::sEnumDef* Enumerations[] = {</xsl:text><xsl:call-template name="newline"/>
-	<xsl:if test="not(count(&EMPTYENUMVALUES;)=0)">
-		<xsl:call-template name="tab"/><xsl:text>GetEnumDef_Unnamed(),</xsl:text><xsl:call-template name="newline"/>
-	</xsl:if>
-	<xsl:for-each select="&NAMEDENUMS;">
+  <xsl:text>static const ni::sEnumDef* Enumerations[] = {</xsl:text><xsl:call-template name="newline"/>
+  <xsl:if test="not(count(&EMPTYENUMVALUES;)=0)">
+    <xsl:call-template name="tab"/><xsl:text>GetEnumDef_Unnamed(),</xsl:text><xsl:call-template name="newline"/>
+  </xsl:if>
+  <xsl:for-each select="&NAMEDENUMS;">
         <xsl:call-template name="get_min_features_begin" />
-		<xsl:call-template name="tab"/><xsl:text>GetEnumDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>(),</xsl:text><xsl:call-template name="newline"/>
+    <xsl:call-template name="tab"/><xsl:text>GetEnumDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>(),</xsl:text><xsl:call-template name="newline"/>
         <xsl:call-template name="get_min_features_end" />
-	</xsl:for-each>
-	<xsl:text>};</xsl:text><xsl:call-template name="newline"/>
+  </xsl:for-each>
+  <xsl:text>};</xsl:text><xsl:call-template name="newline"/>
     <xsl:call-template name="newline"/>
     <xsl:text>#endif // #if !defined niConfig_OnlyObjectTypesIDL &amp;&amp; !defined niConfig_NoEnumDef</xsl:text>
     <xsl:call-template name="newline"/>
@@ -264,7 +264,7 @@
 <xsl:text>static const ni::sConstantDef* Constants[] = {</xsl:text><xsl:call-template name="newline"/>
 <xsl:for-each select="&CONSTANTS;">
     <xsl:call-template name="get_min_features_begin" />
-	<xsl:call-template name="tab"/><xsl:text>&amp;ConstantDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>,</xsl:text><xsl:call-template name="newline"/>
+  <xsl:call-template name="tab"/><xsl:text>&amp;ConstantDef_</xsl:text><xsl:value-of select="@name"/><xsl:text>,</xsl:text><xsl:call-template name="newline"/>
     <xsl:call-template name="get_min_features_end" />
 </xsl:for-each>
 <xsl:text>};</xsl:text><xsl:call-template name="newline"/>
@@ -284,8 +284,8 @@ static const ni::sModuleDef ModuleDef(
 
 <xsl:call-template name="tab"/><xsl:value-of select="count(&DEPENDENCIES;)"/>
 <xsl:choose>
-	<xsl:when test="not(count(&DEPENDENCIES;)=0)"><xsl:text>, Dependencies,</xsl:text></xsl:when>
-	<xsl:otherwise><xsl:text>, NULL,</xsl:text></xsl:otherwise>
+  <xsl:when test="not(count(&DEPENDENCIES;)=0)"><xsl:text>, Dependencies,</xsl:text></xsl:when>
+  <xsl:otherwise><xsl:text>, NULL,</xsl:text></xsl:otherwise>
 </xsl:choose>
 
 <xsl:call-template name="newline"/>
@@ -293,30 +293,30 @@ static const ni::sModuleDef ModuleDef(
 <xsl:call-template name="newline"/>
 <xsl:call-template name="tab"/>
 <xsl:choose>
-	<xsl:when test="not((count(&INTERFACES;))=0)"><xsl:text>niCountOf(Interfaces), Interfaces,</xsl:text></xsl:when>
-	<xsl:otherwise><xsl:text>0, NULL,</xsl:text></xsl:otherwise>
+  <xsl:when test="not((count(&INTERFACES;))=0)"><xsl:text>niCountOf(Interfaces), Interfaces,</xsl:text></xsl:when>
+  <xsl:otherwise><xsl:text>0, NULL,</xsl:text></xsl:otherwise>
 </xsl:choose>
 <xsl:call-template name="newline"/>
 <xsl:text>#else
-	0, NULL,
+  0, NULL,
 #endif</xsl:text>
 
 <xsl:call-template name="newline"/>
 <xsl:text>#if !defined niConfig_OnlyObjectTypesIDL &amp;&amp; !defined niConfig_NoEnumDef</xsl:text>
 <xsl:call-template name="newline"/>
 <xsl:choose>
-	<xsl:when test="not(count(&ALLENUMS;)=0)">
-		<xsl:call-template name="tab"/>
+  <xsl:when test="not(count(&ALLENUMS;)=0)">
+    <xsl:call-template name="tab"/>
         <xsl:text>niCountOf(Enumerations)</xsl:text>
-		<xsl:text>, Enumerations,</xsl:text><xsl:call-template name="newline"/>
-	</xsl:when>
-	<xsl:otherwise>
-	<xsl:text>	0, NULL,
+    <xsl:text>, Enumerations,</xsl:text><xsl:call-template name="newline"/>
+  </xsl:when>
+  <xsl:otherwise>
+  <xsl:text>  0, NULL,
 </xsl:text>
-	</xsl:otherwise>
+  </xsl:otherwise>
 </xsl:choose>
 <xsl:text>#else
-	0, NULL,
+  0, NULL,
 #endif</xsl:text>
 
 <xsl:call-template name="newline"/>
@@ -324,31 +324,31 @@ static const ni::sModuleDef ModuleDef(
 <xsl:call-template name="newline"/>
 <xsl:call-template name="tab"/>
 <xsl:choose>
-	<xsl:when test="not((count(&CONSTANTS;))=0)"><xsl:text>niCountOf(Constants), Constants,</xsl:text></xsl:when>
-	<xsl:otherwise><xsl:text>0, NULL,</xsl:text></xsl:otherwise>
+  <xsl:when test="not((count(&CONSTANTS;))=0)"><xsl:text>niCountOf(Constants), Constants,</xsl:text></xsl:when>
+  <xsl:otherwise><xsl:text>0, NULL,</xsl:text></xsl:otherwise>
 </xsl:choose>
 <xsl:call-template name="newline"/>
 <xsl:text>#else
-	0, NULL,
+  0, NULL,
 #endif</xsl:text>
 
 <xsl:call-template name="newline"/>
 <xsl:call-template name="tab"/>
 <xsl:choose>
-	<xsl:when test="not(count(&OBJECTTYPES;)=0)">
+  <xsl:when test="not(count(&OBJECTTYPES;)=0)">
         <xsl:text>niCountOf(ObjectTypes), ObjectTypes</xsl:text>
     </xsl:when>
-	<xsl:otherwise>
+  <xsl:otherwise>
         <xsl:text>0, NULL</xsl:text>
     </xsl:otherwise>
 </xsl:choose>
 <xsl:text>
 );
 </xsl:text>
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************ -->
-	<xsl:template name="get_objecttypes">
+  <xsl:template name="get_objecttypes">
 <xsl:text>
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Object types definition
@@ -371,12 +371,12 @@ static const ni::sModuleDef ModuleDef(
           </xsl:choose>
           <xsl:text>.</xsl:text><xsl:value-of select="@name"/><xsl:text>&quot;,</xsl:text>
           <xsl:text>New_</xsl:text>
-          		<xsl:choose>
+              <xsl:choose>
                   <xsl:when test="@category">
                       <xsl:value-of select="@category"/>
                   </xsl:when>
                   <xsl:otherwise>
-                      <xsl:value-of select="/niIDL/@name"/>
+                      <xsl:value-of select="&SAFEIDLNAME;"/>
                   </xsl:otherwise>
               </xsl:choose>
           <xsl:text>_</xsl:text><xsl:value-of select="@name"/>

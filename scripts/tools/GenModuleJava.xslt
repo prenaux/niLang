@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="Ascii" ?>
 <!DOCTYPE stylesheet [
-	<!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.','_')">
-	<!ENTITY PARAMETERS "parameter[not(@deprecated='yes')]">
-	<!ENTITY METHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes') and not(@noautomation='yes')]">
-	<!ENTITY ALLMETHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes')]">
-	<!ENTITY PARENTS "parents/parent[not(@deprecated='yes')]">
-	<!ENTITY INTERFACES "/niIDL/namespace/interface[not(@noautomation='yes') and not(@deprecated='yes')]">
-	<!ENTITY EMPTYENUMVALUES "/niIDL/namespace/enum[(@name='') and not(@noautomation='yes') and not(@deprecated='yes')]/value">
-	<!ENTITY NAMEDENUMS "/niIDL/namespace/enum[not(@name='') and not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
-	<!ENTITY ALLENUMS "/niIDL/namespace/enum[not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
-	<!ENTITY OBJECTTYPES "/niIDL/objecttypes/objecttype">
-	<!ENTITY AISCONST "(contains($A,'const '))">
-	<!ENTITY AISREF "(contains($A,'&amp;'))">
-	<!ENTITY AISPTR "(contains($A,'*') and not(&AISPTRPTR;))">
-	<!ENTITY AISSMARTPTR "contains($A,'Ptr&lt;')">
-	<!ENTITY AISPTRPTR "(contains($A,'**') or contains($A,'* *'))">
-	<!ENTITY AISPTRORREF "(contains($A,'*') or contains($A,'Ptr&lt;') or contains($A,'&amp;'))">
-	<!ENTITY AISINTERFACE "(starts-with($A,'i') or starts-with($A,'const i') or contains($A,'::i') or contains($A,'Ptr&lt;')) and not(starts-with($A,'int'))">
-	<!ENTITY AISENUM "(starts-with($A,'e') or starts-with($A,'const e') or contains($A,'::e'))">
-	<!ENTITY AISSTRUCT "((starts-with($A,'s') or starts-with($A,'const s') or contains($A,'::s')) and not(contains($A,'sColor3ub') or contains($A,'sColor4ub')))">
-	<!ENTITY AISFLAGS "((starts-with($A,'t') or starts-with($A,'const t') or contains($A,'::t')) and contains($A,'Flags'))">
-	<!ENTITY MATCH_VAR "starts-with($A,'Var') or starts-with($A,'const Var') or starts-with($A,'ni::Var') or starts-with($A,'const ni::Var')">
-	<!ENTITY AISVEC "(contains($A,'CVec'))">
-	<!ENTITY AISSINKLIST "(contains($A,'iSinkLst') or contains($A,'SinkLst'))">
-	<!ENTITY AISLST "(contains($A,'CLst') or &AISSINKLIST;)">
-	<!ENTITY AISMAP "(contains($A,'CMap'))">
-	<!ENTITY AISCOLLECTION "(&AISVEC; or &AISLST; or &AISMAP;)">
+  <!ENTITY SAFEIDLNAME "translate(/niIDL/@name,'.-','__')">
+  <!ENTITY PARAMETERS "parameter[not(@deprecated='yes')]">
+  <!ENTITY METHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes') and not(@noautomation='yes')]">
+  <!ENTITY ALLMETHODS "method[not(contains(@name,'operator')) and not(@name=../@name) and not(@name='niDeclareInterface') and not(@deprecated='yes')]">
+  <!ENTITY PARENTS "parents/parent[not(@deprecated='yes')]">
+  <!ENTITY INTERFACES "/niIDL/namespace/interface[not(@noautomation='yes') and not(@deprecated='yes')]">
+  <!ENTITY EMPTYENUMVALUES "/niIDL/namespace/enum[(@name='') and not(@noautomation='yes') and not(@deprecated='yes')]/value">
+  <!ENTITY NAMEDENUMS "/niIDL/namespace/enum[not(@name='') and not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
+  <!ENTITY ALLENUMS "/niIDL/namespace/enum[not(@noautomation='yes') and not(@deprecated='yes') and not(count(value)=0)]">
+  <!ENTITY OBJECTTYPES "/niIDL/objecttypes/objecttype">
+  <!ENTITY AISCONST "(contains($A,'const '))">
+  <!ENTITY AISREF "(contains($A,'&amp;'))">
+  <!ENTITY AISPTR "(contains($A,'*') and not(&AISPTRPTR;))">
+  <!ENTITY AISSMARTPTR "contains($A,'Ptr&lt;')">
+  <!ENTITY AISPTRPTR "(contains($A,'**') or contains($A,'* *'))">
+  <!ENTITY AISPTRORREF "(contains($A,'*') or contains($A,'Ptr&lt;') or contains($A,'&amp;'))">
+  <!ENTITY AISINTERFACE "(starts-with($A,'i') or starts-with($A,'const i') or contains($A,'::i') or contains($A,'Ptr&lt;')) and not(starts-with($A,'int'))">
+  <!ENTITY AISENUM "(starts-with($A,'e') or starts-with($A,'const e') or contains($A,'::e'))">
+  <!ENTITY AISSTRUCT "((starts-with($A,'s') or starts-with($A,'const s') or contains($A,'::s')) and not(contains($A,'sColor3ub') or contains($A,'sColor4ub')))">
+  <!ENTITY AISFLAGS "((starts-with($A,'t') or starts-with($A,'const t') or contains($A,'::t')) and contains($A,'Flags'))">
+  <!ENTITY MATCH_VAR "starts-with($A,'Var') or starts-with($A,'const Var') or starts-with($A,'ni::Var') or starts-with($A,'const ni::Var')">
+  <!ENTITY AISVEC "(contains($A,'CVec'))">
+  <!ENTITY AISSINKLIST "(contains($A,'iSinkLst') or contains($A,'SinkLst'))">
+  <!ENTITY AISLST "(contains($A,'CLst') or &AISSINKLIST;)">
+  <!ENTITY AISMAP "(contains($A,'CMap'))">
+  <!ENTITY AISCOLLECTION "(&AISVEC; or &AISLST; or &AISMAP;)">
     <!ENTITY AISCHARTYPE "(contains($A,'achar') or contains($A,'cchar') or contains($A,' char') or contains($A,'uchar') or contains($A,'gchar') or contains($A,'xchar'))">
     <!ENTITY SMALLCASE "'abcdefghijklmnopqrstuvwxyz'">
     <!ENTITY UPPERCASE "'ABCDEFGHIJKLMNOPQRSTUVWXYZ'">
-	<!ENTITY DISPATCHWRAPPER "((@dispatchwrapper='yes') or (@dispatchwrappercreate) or (starts-with(@name,'i') and contains(@name,'Sink') and not(@name='iSinkList')))">
+  <!ENTITY DISPATCHWRAPPER "((@dispatchwrapper='yes') or (@dispatchwrappercreate) or (starts-with(@name,'i') and contains(@name,'Sink') and not(@name='iSinkList')))">
     <!ENTITY TEST_CANJNI "(not(@min_features) or (@min_features &lt;= 20))" >
-	<!ENTITY NAME_ISEXCLUDED_INTERFACE "contains(@name,'iUnknown')">
+  <!ENTITY NAME_ISEXCLUDED_INTERFACE "contains(@name,'iUnknown')">
 ]>
 
 <xsl:transform version="2.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<xsl:include href="GenModuleBase.xslt"/>
-	<xsl:output method="text" />
+  <xsl:include href="GenModuleBase.xslt"/>
+  <xsl:output method="text" />
 
 <!-- ROOT ****************************************************** -->
-	<xsl:template match="/">
-		<xsl:if test="not(/niIDL/namespace/@name)">
-			<xsl:message terminate="yes">No namespace defined !</xsl:message>
-		</xsl:if>
-		<xsl:call-template name="get_module"/>
-	</xsl:template>
+  <xsl:template match="/">
+    <xsl:if test="not(/niIDL/namespace/@name)">
+      <xsl:message terminate="yes">No namespace defined !</xsl:message>
+    </xsl:if>
+    <xsl:call-template name="get_module"/>
+  </xsl:template>
 
 <!-- ************************************************************ -->
-	<xsl:template name="get_module">
+  <xsl:template name="get_module">
         <!-- C O N S T A N T S -->
 
         <!-- E N U M S -->
@@ -301,8 +301,8 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
 <!-- ************************************************************
 * Get the Java Class name
 ************************************************************* -->
-	<xsl:template name="get_type_class">
-		<xsl:param name="A" />
+  <xsl:template name="get_type_class">
+    <xsl:param name="A" />
 
         <xsl:variable name="R">
             <xsl:choose>
@@ -423,13 +423,13 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
         <xsl:if test="not(contains($R1,' '))">
             <xsl:value-of select="$R1" />
         </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************
 * Get the Java annotation
 ************************************************************* -->
-	<xsl:template name="get_java_annotations">
-		<xsl:param name="A" />
+  <xsl:template name="get_java_annotations">
+    <xsl:param name="A" />
     <xsl:variable name="R">
       <xsl:if test="&AISCONST;">@Const </xsl:if>
       <xsl:if test="&AISPTRPTR;">@ByPtrPtr </xsl:if>
@@ -437,7 +437,7 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
       <xsl:if test="&AISREF;">@ByRef </xsl:if>
     </xsl:variable>
     <xsl:value-of select="$R" />
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************
 * Get the Java type
@@ -612,8 +612,8 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
 <!-- ************************************************************
 * Get the Java Doc type markers (whether constant, passed by ptr, etc...)
 ************************************************************* -->
-	<xsl:template name="get_doc_type_markers">
-		<xsl:param name="A" />
+  <xsl:template name="get_doc_type_markers">
+    <xsl:param name="A" />
         <xsl:variable name="R">
             <xsl:if test="&AISCONST;">Const </xsl:if>
             <xsl:if test="&AISPTRPTR;">PtrPtr </xsl:if>
@@ -621,7 +621,7 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
             <xsl:if test="&AISREF;">Ref </xsl:if>
         </xsl:variable>
         <xsl:value-of select="$R" />
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************
 * Get the Java Doc type
@@ -737,9 +737,9 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
 <!-- ************************************************************
 * Get an enum value in Java
 ************************************************************* -->
-	<xsl:template name="get_enum_value">
-		<xsl:param name="VALUE" />
-		<xsl:param name="ENUM" />
+  <xsl:template name="get_enum_value">
+    <xsl:param name="VALUE" />
+    <xsl:param name="ENUM" />
         <xsl:variable name="V0" select="replace(translate(replace($VALUE,&quot;&apos; &apos;&quot;,&quot;&apos;___&apos;&quot;),' ',''),&quot;&apos;___&apos;&quot;,&quot;&apos; &apos;&quot;)" />
         <xsl:variable name="V1" select="replace($V0,'niBit\(','ni.types.Flags.bit(')" />
         <xsl:variable name="V2" select="replace($V1,concat($ENUM,'_'),'')" />
@@ -755,12 +755,12 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
         <xsl:variable name="V11" select="replace($V10,'VLK_ENTITY_MSGID\(([A-Z][A-Za-z0-9]*)',&quot;MessageID.build('_','K','E',EVlkEntityMessageType.$1&quot;)" />
 
         <xsl:value-of select="$V11"/>
-	</xsl:template>
+  </xsl:template>
 
 <!-- ************************************************************
 * Get the jave header
 ************************************************************* -->
-	<xsl:template name="get_java_header">
+  <xsl:template name="get_java_header">
         <xsl:text>//</xsl:text><xsl:call-template name="newline"/>
         <xsl:text>// AUTO-GENERATED - DO NOT MODIFY</xsl:text><xsl:call-template name="newline"/>
         <xsl:text>//</xsl:text><xsl:call-template name="newline"/>
@@ -789,7 +789,7 @@ public final class </xsl:text><xsl:value-of select="$NAME"/><xsl:text> {
 <!-- ************************************************************
 * Get the jave header for Enum types
 ************************************************************* -->
-	<xsl:template name="get_java_enum_header">
+  <xsl:template name="get_java_enum_header">
         <xsl:text>//</xsl:text><xsl:call-template name="newline"/>
         <xsl:text>// AUTO-GENERATED - DO NOT MODIFY</xsl:text><xsl:call-template name="newline"/>
         <xsl:text>//</xsl:text><xsl:call-template name="newline"/>

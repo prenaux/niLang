@@ -5165,22 +5165,12 @@ tBool DoEvaluate(iExpressionContext* apContext)
     return eFalse;
   }
 
-  auto var1 = mvOperands[1].GetVariable();
-  if (var1->GetType() != ni::eExpressionVariableType_String) {
-    EXPRESSION_TRACE("DTSearch(): operation, input 1 is not a string.");
-    return eFalse;
-  }
-
-  auto var2 = mvOperands[2].GetVariable();
-  if (var2->GetType() != ni::eExpressionVariableType_String) {
-    EXPRESSION_TRACE("DTSearch(): operation, input 2 is not a string.");
-    return eFalse;
-  }
-
+  auto var1 = mvOperands[1].GetVariable()->GetString();
+  auto var2 = mvOperands[2].GetVariable()->GetString();
   niLoop(i, dt->GetNumChildren()) {
     Ptr<iDataTable> c = dt->GetChildFromIndex(i);
-    cString val = c->GetString(var1->GetString().Chars());
-    if (val.Eq(var2->GetString())) {
+    cString val = c->GetString(var1.Chars());
+    if (val.Eq(var2)) {
       mptrResult->SetIUnknown(c);
       break;
     }

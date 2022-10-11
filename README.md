@@ -40,6 +40,23 @@ ham MODULENAME
 ham BUILD=da MODULENAME
 ```
 
+# WebJS / Emscripten version
+
+Build Test\_niLang:
+```
+BUILD_TARGET=web-js . hat
+ham pass1 && ham Test_niLang
+```
+
+Run Test\_niLang:
+```
+# Serve the $WORK folder (niLang's parent folder)
+cd "$WORK"
+simple-http-server
+# Open the test case
+open http://localhost:8123/niLang/bin/web-js/Test_niLang_ra.html
+```
+
 # Tips
 
 ## Working on a UI testcase script

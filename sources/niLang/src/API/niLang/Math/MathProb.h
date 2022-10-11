@@ -95,7 +95,7 @@ inline tBool ProbSampleAliasMethod(
 }
 
 template <typename TRNG>
-tBool ProbSampleAliasMethod(
+inline tBool ProbSampleAliasMethod(
   astl::non_null<tU32CVec*> r,
   const tSize nres,
   astl::non_null<const ni::tF64CVec*> apProbs,
@@ -117,7 +117,7 @@ tBool ProbSampleAliasMethod(
   return eTrue;
 }
 
-tBool ProbSampleAliasMethod(
+inline tBool ProbSampleAliasMethod(
   astl::non_null<tU32CVec*> r,
   const tSize nres,
   astl::non_null<const ni::tF64CVec*> apProbs,

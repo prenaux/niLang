@@ -1064,6 +1064,7 @@ class cMutableCollectionImpl : public IMMIMPL {
         it = it->mpNext;
       }
       if (abAssert) {
+        niUnused(numInvalidate);
         niAssert(numInvalidate != 0);
       }
     }

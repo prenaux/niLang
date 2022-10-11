@@ -12,14 +12,14 @@
  * @{
  */
 
+niExportFunc(const ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp);
+
 #if defined niNoCrashReport || !defined __cplusplus
 
 #define niCrashReport_DeclareHandler()
 #define niCrashReport_ModuleInstall()
 
 #else
-
-niExportFunc(const ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp);
 
 #ifdef niWindows
 #include <signal.h>

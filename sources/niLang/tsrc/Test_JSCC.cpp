@@ -8,6 +8,8 @@
 
 namespace {
 
+using namespace ni;
+
 struct FJSCC {
 };
 

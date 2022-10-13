@@ -130,7 +130,7 @@ rule niUI_Link_CopyDeps {
 
 rule niUI_LinkLibs_Deps {
   niUI_Link_CopyDeps $(<) ;
-  tkLinkLibs $(<) : libMojoshader ;
+  tkLinkLibs $(<) : libMojoshader : niLang ;
   if $(NI_VIDEO_USE_FFMPEG) = 1 {
     if $(FFMPEG_USE_SDK) = 1 {
       if $(WINDOWS) = 1 {
@@ -167,14 +167,14 @@ rule niUI_LinkLibs_Deps {
       }
     }
     else {
-      tkLinkLibs $(<) : niUI_ffmpeg_base ;
-      tkLinkLibs $(<) : niUI_ffmpeg_codecs ;
+      tkLinkLibs $(<) : niUI_ffmpeg_base : niLang ;
+      tkLinkLibs $(<) : niUI_ffmpeg_codecs : niLang ;
     }
   }
   if $(NI_VIDEO_USE_OGG) = 1 || $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
-    tkLinkLibs $(<) : niUI_ogg ;
+    tkLinkLibs $(<) : niUI_ogg : niLang ;
     if ! $(NO_THREADS) = 1 {
-      tkLinkLibs $(<) : niUI_theoraplayer ;
+      tkLinkLibs $(<) : niUI_theoraplayer : niLang ;
     }
   }
   if $(WINDOWS) = 1 {
@@ -193,7 +193,7 @@ rule niUI_LinkLibs {
   if $(NI_VIDEO_USE_IPCAM) = 1 {
     niCURL_LinkLibs $(<) ;
   }
-  tkLinkLibs $(<) : niUI ;
+  tkLinkLibs $(<) : niUI : niLang ;
 }
 
 rule niUI_LinkDll {
@@ -232,13 +232,13 @@ if ! $(NO_NI_CURL) = 1 {
       LINKLIBS on $(<) += -lcurl ;
     }
     else {
-      tkLinkLibs $(<) : libCURL ;
+      tkLinkLibs $(<) : libCURL : niLang ;
     }
   }
 
   rule niCURL_LinkLibs {
     niCURL_LinkLibs_Deps $(<) ;
-    tkLinkLibs $(<) : niCURL ;
+    tkLinkLibs $(<) : niCURL : niLang ;
   }
 
   rule niCURL_LinkDll {

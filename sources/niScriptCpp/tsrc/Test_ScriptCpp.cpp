@@ -69,22 +69,6 @@ struct FScriptCpp {
   }
 };
 
-TEST_FIXTURE(FScriptCpp,uptodate_nocompile) {
-  ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0");
-  const sScriptCppStats& currStats = *ScriptCpp_GetStats();
-  const sScriptCppStats wasStats = currStats;
-  CHECK_EQUAL(eFalse, ScriptCpp_GetCompileEnabled());
-  QPtr<iRunnable> runGetTestTag = EvalImpl(
-    _HC(TestScriptCpp),
-    _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
-    niGetInterfaceUUID(iRunnable));
-  CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
-  CHECK_EQUAL(_ASTR("Test_ScriptCpp_module"), VarGetString(runGetTestTag->Run()));
-  CHECK_EQUAL(wasStats._numUpToDate, currStats._numUpToDate);
-  CHECK_EQUAL(wasStats._numOutOfDate, currStats._numOutOfDate);
-  CHECK_EQUAL(wasStats._numCompiled, currStats._numCompiled);
-}
-
 TEST_FIXTURE(FScriptCpp,uptodate_compile) {
   ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"1");
   const sScriptCppStats& currStats = *ScriptCpp_GetStats();
@@ -105,6 +89,25 @@ TEST_FIXTURE(FScriptCpp,uptodate_compile) {
   CHECK_EQUAL(wasStats._numOutOfDate, currStats._numOutOfDate);
   CHECK_EQUAL(wasStats._numCompiled, currStats._numCompiled);
   ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0");
+}
+
+// XXX: !!! Note that 'FScriptCpp,uptodate_compile' needs to run first since
+// this test DOES NOT compile the code it expects that the test module has
+// been compiled as a module first.
+TEST_FIXTURE(FScriptCpp,uptodate_nocompile) {
+  ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0");
+  const sScriptCppStats& currStats = *ScriptCpp_GetStats();
+  const sScriptCppStats wasStats = currStats;
+  CHECK_EQUAL(eFalse, ScriptCpp_GetCompileEnabled());
+  QPtr<iRunnable> runGetTestTag = EvalImpl(
+    _HC(TestScriptCpp),
+    _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+    niGetInterfaceUUID(iRunnable));
+  CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
+  CHECK_EQUAL(_ASTR("Test_ScriptCpp_module"), VarGetString(runGetTestTag->Run()));
+  CHECK_EQUAL(wasStats._numUpToDate, currStats._numUpToDate);
+  CHECK_EQUAL(wasStats._numOutOfDate, currStats._numOutOfDate);
+  CHECK_EQUAL(wasStats._numCompiled, currStats._numCompiled);
 }
 
 TEST_FIXTURE(FScriptCpp,uptodate_invalid_resource_def) {

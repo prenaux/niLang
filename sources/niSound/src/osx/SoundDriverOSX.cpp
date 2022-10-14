@@ -63,7 +63,7 @@ static const AudioObjectPropertyAddress devlist_address = {
   kAudioObjectPropertyElementMaster
 };
 
-static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, int iscapture)
+static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool iscapture)
 {
   OSStatus result = noErr;
   UInt32 size = 0;

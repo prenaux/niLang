@@ -2368,7 +2368,7 @@ static inline niDefaultTypeT FDiv(const niDefaultTypeT n, const niDefaultTypeT d
 #endif // __cplusplus
 
 #define niBuildColor(r,g,b,a)                                     \
-  ((((a)&0xFF)<<24)|(((r)&0xFF)<<16)|(((g)&0xFF)<<8)|((b)&0xFF))
+  (niNamespace(ni,tU32)((((a)&0xFF)<<24)|(((r)&0xFF)<<16)|(((g)&0xFF)<<8)|((b)&0xFF)))
 
 static inline tU32 ULColorBuild(tU32 r, tU32 g, tU32 b, tU32 a niDefaultParam(0)) { return ((a&0xFF)<<24) | ((r&0xFF)<<16) | ((g&0xFF)<<8) | (b&0xFF);  }
 static inline tU32 ULColorBuildf(tF32 r, tF32 g, tF32 b, tF32 a niDefaultParam(0.0f)) {  return (((tU32)(a*255.0f)&0xFF)<<24) | (((tU32)(r*255.0f)&0xFF)<<16) | (((tU32)(g*255.0f)&0xFF)<<8) | ((tU32)(b*255.0f)&0xFF); }

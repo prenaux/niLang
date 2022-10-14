@@ -27472,23 +27472,23 @@ static const ni::sModuleDef ModuleDef(
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
   niCountOf(Interfaces), Interfaces,
 #else
-	0, NULL,
+  0, NULL,
 #endif
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
   niCountOf(Enumerations), Enumerations,
 #else
-	0, NULL,
+  0, NULL,
 #endif
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoConstDef
   niCountOf(Constants), Constants,
 #else
-	0, NULL,
+  0, NULL,
 #endif
   niCountOf(ObjectTypes), ObjectTypes
 );
 
   return &ModuleDef;
-}	// End of GetModuleDef_niLang
+} // End of GetModuleDef_niLang
 } // end of namespace ni
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

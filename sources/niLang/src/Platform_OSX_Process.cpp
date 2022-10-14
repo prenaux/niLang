@@ -111,8 +111,7 @@ NamedProcessIterator::NamedProcessIterator(const astl::string& executable_name,
   // Get a snapshot of all of my processes (yes, as we loop it can go stale, but
   // but trying to find where we were in a constantly changing list is basically
   // impossible.
-
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID, geteuid() };
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_UID, (int)geteuid() };
 
   // Since more processes could start between when we get the size and when
   // we get the list, we do a loop to keep trying until we get it.

@@ -165,7 +165,7 @@ void cComboBoxWidget::_DropList()
   if (menu.IsOK()) {
     const sRectf deskRect = mpWidget->GetUIContext()->GetRootWidget()->GetAbsoluteRect();
     const sVec2f cbSize = mpWidget->GetSize();
-    const sVec2f menuSize = {menu->GetMenuWidth(),menu->GetMenuHeight()};
+    const sVec2f menuSize = Vec2f(menu->GetMenuWidth(),menu->GetMenuHeight());
     tF32 lbY = pos.y+rect.GetHeight()+1;
     if (lbY+menuSize.y > deskRect.w) {
       lbY = pos.y-menuSize.y;

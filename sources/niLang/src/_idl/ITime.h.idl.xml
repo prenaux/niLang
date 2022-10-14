@@ -2,214 +2,214 @@
 	<namespace name="ni">
 		<enum name="eTimeZone">
 			<comments desc="Time zone enumeration "/>
-			<value name="eTimeZone_UTC" value="0 ">
+			<value name="eTimeZone_UTC" value="( tU32 ) 0 ">
 				<comments desc="Coordinated Universal Time Europe UTC "/>
 			</value>
-			<value name="eTimeZone_WET" value="0 ">
+			<value name="eTimeZone_WET" value="( tU32 ) 0 ">
 				<comments desc="Western European Time Europe UTC "/>
 			</value>
-			<value name="eTimeZone_GMT" value="0 ">
+			<value name="eTimeZone_GMT" value="( tU32 ) 0 ">
 				<comments desc="Greenwich Mean Time Europe UTC "/>
 			</value>
-			<value name="eTimeZone_A" value="+ 1 * 3600 ">
+			<value name="eTimeZone_A" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Alpha Time Zone Military UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_ADT" value="- 3 * 3600 ">
+			<value name="eTimeZone_ADT" value="( tU32 ) - 3 * 3600 ">
 				<comments desc="Atlantic Daylight Time North America UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_AKDT" value="- 8 * 3600 ">
+			<value name="eTimeZone_AKDT" value="( tU32 ) - 8 * 3600 ">
 				<comments desc="Alaska Daylight Time North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_AKST" value="- 9 * 3600 ">
+			<value name="eTimeZone_AKST" value="( tU32 ) - 9 * 3600 ">
 				<comments desc="Alaska Standard Time North America UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_AST" value="- 4 * 3600 ">
+			<value name="eTimeZone_AST" value="( tU32 ) - 4 * 3600 ">
 				<comments desc="Atlantic Standard Time North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_B" value="+ 2 * 3600 ">
+			<value name="eTimeZone_B" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Bravo Time Zone Military UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_BST" value="+ 1 * 3600 ">
+			<value name="eTimeZone_BST" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="British Summer Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_C" value="+ 3 * 3600 ">
+			<value name="eTimeZone_C" value="( tU32 ) + 3 * 3600 ">
 				<comments desc="Charlie Time Zone Military UTC + 3 hours "/>
 			</value>
-			<value name="eTimeZone_CDT" value="- 5 * 3600 ">
+			<value name="eTimeZone_CDT" value="( tU32 ) - 5 * 3600 ">
 				<comments desc="Central Daylight Time North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_CEDT" value="+ 2 * 3600 ">
+			<value name="eTimeZone_CEDT" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Central European Daylight Time Europe UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_CEST" value="+ 2 * 3600 ">
+			<value name="eTimeZone_CEST" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Central European Summer Time Europe UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_CET" value="+ 1 * 3600 ">
+			<value name="eTimeZone_CET" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Central European Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_CST" value="- 6 * 3600 ">
+			<value name="eTimeZone_CST" value="( tU32 ) - 6 * 3600 ">
 				<comments desc="Central Standard Time North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_D" value="+ 4 * 3600 ">
+			<value name="eTimeZone_D" value="( tU32 ) + 4 * 3600 ">
 				<comments desc="Delta Time Zone Military UTC + 4 hours "/>
 			</value>
-			<value name="eTimeZone_E" value="+ 5 * 3600 ">
+			<value name="eTimeZone_E" value="( tU32 ) + 5 * 3600 ">
 				<comments desc="Echo Time Zone Military UTC + 5 hours "/>
 			</value>
-			<value name="eTimeZone_EDT" value="- 4 * 3600 ">
+			<value name="eTimeZone_EDT" value="( tU32 ) - 4 * 3600 ">
 				<comments desc="Eastern Daylight Time North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_EEDT" value="+ 3 * 3600 ">
+			<value name="eTimeZone_EEDT" value="( tU32 ) + 3 * 3600 ">
 				<comments desc="Eastern European Daylight Time Europe UTC + 3 hours "/>
 			</value>
-			<value name="eTimeZone_EEST" value="+ 3 * 3600 ">
+			<value name="eTimeZone_EEST" value="( tU32 ) + 3 * 3600 ">
 				<comments desc="Eastern European Summer Time Europe UTC + 3 hours "/>
 			</value>
-			<value name="eTimeZone_EET" value="+ 2 * 3600 ">
+			<value name="eTimeZone_EET" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Eastern European Time Europe UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_EST" value="- 5 * 3600 ">
+			<value name="eTimeZone_EST" value="( tU32 ) - 5 * 3600 ">
 				<comments desc="Eastern Standard Time North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_F" value="+ 6 * 3600 ">
+			<value name="eTimeZone_F" value="( tU32 ) + 6 * 3600 ">
 				<comments desc="Foxtrot Time Zone Military UTC + 6 hours "/>
 			</value>
-			<value name="eTimeZone_G" value="+ 7 * 3600 ">
+			<value name="eTimeZone_G" value="( tU32 ) + 7 * 3600 ">
 				<comments desc="Golf Time Zone Military UTC + 7 hours "/>
 			</value>
-			<value name="eTimeZone_H" value="+ 8 * 3600 ">
+			<value name="eTimeZone_H" value="( tU32 ) + 8 * 3600 ">
 				<comments desc="Hotel Time Zone Military UTC + 8 hours "/>
 			</value>
-			<value name="eTimeZone_HAA" value="- 3 * 3600 ">
+			<value name="eTimeZone_HAA" value="( tU32 ) - 3 * 3600 ">
 				<comments desc="Heure Avancee de l&apos;Atlantique North America UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_HAC" value="- 5 * 3600 ">
+			<value name="eTimeZone_HAC" value="( tU32 ) - 5 * 3600 ">
 				<comments desc="Heure Avancee du Centre North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_HADT" value="- 9 * 3600 ">
+			<value name="eTimeZone_HADT" value="( tU32 ) - 9 * 3600 ">
 				<comments desc="Hawaii-Aleutian Daylight Time North America UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_HAE" value="- 4 * 3600 ">
+			<value name="eTimeZone_HAE" value="( tU32 ) - 4 * 3600 ">
 				<comments desc="Heure Avancee de l&apos;Est North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_HAP" value="- 7 * 3600 ">
+			<value name="eTimeZone_HAP" value="( tU32 ) - 7 * 3600 ">
 				<comments desc="Heure Avancee du Pacifique North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_HAR" value="- 6 * 3600 ">
+			<value name="eTimeZone_HAR" value="( tU32 ) - 6 * 3600 ">
 				<comments desc="Heure Avancee des Rocheuses North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_HAST" value="- 10 * 3600 - 1800 ">
+			<value name="eTimeZone_HAST" value="( tU32 ) - 10 * 3600 - 1800 ">
 				<comments desc="Hawaii-Aleutian Standard Time North America UTC - 10 hours "/>
 			</value>
-			<value name="eTimeZone_HAT" value="- 2 * 3600 - 1800 ">
+			<value name="eTimeZone_HAT" value="( tU32 ) - 2 * 3600 - 1800 ">
 				<comments desc="Heure Avancee de Terre-Neuve North America UTC - 2:30 hours "/>
 			</value>
-			<value name="eTimeZone_HAY" value="- 8 * 3600 ">
+			<value name="eTimeZone_HAY" value="( tU32 ) - 8 * 3600 ">
 				<comments desc="Heure Avancee du Yukon North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_HNA" value="- 4 * 3600 ">
+			<value name="eTimeZone_HNA" value="( tU32 ) - 4 * 3600 ">
 				<comments desc="Heure Normale de l&apos;Atlantique North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_HNC" value="- 6 * 3600 ">
+			<value name="eTimeZone_HNC" value="( tU32 ) - 6 * 3600 ">
 				<comments desc="Heure Normale du Centre North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_HNE" value="- 5 * 3600 ">
+			<value name="eTimeZone_HNE" value="( tU32 ) - 5 * 3600 ">
 				<comments desc="Heure Normale de l&apos;Est North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_HNP" value="- 8 * 3600 ">
+			<value name="eTimeZone_HNP" value="( tU32 ) - 8 * 3600 ">
 				<comments desc="Heure Normale du Pacifique North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_HNR" value="- 7 * 3600 ">
+			<value name="eTimeZone_HNR" value="( tU32 ) - 7 * 3600 ">
 				<comments desc="Heure Normale des Rocheuses North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_HNT" value="- 3 * 3600 - 1800 ">
+			<value name="eTimeZone_HNT" value="( tU32 ) - 3 * 3600 - 1800 ">
 				<comments desc="Heure Normale de Terre-Neuve North America UTC - 3:30 hours "/>
 			</value>
-			<value name="eTimeZone_HNY" value="- 9 * 3600 ">
+			<value name="eTimeZone_HNY" value="( tU32 ) - 9 * 3600 ">
 				<comments desc="Heure Normale du Yukon North America UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_I" value="+ 9 * 3600 ">
+			<value name="eTimeZone_I" value="( tU32 ) + 9 * 3600 ">
 				<comments desc="India Time Zone Military UTC + 9 hours "/>
 			</value>
-			<value name="eTimeZone_IST" value="+ 1 * 3600 ">
+			<value name="eTimeZone_IST" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Irish Summer Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_K" value="+ 10 * 3600 ">
+			<value name="eTimeZone_K" value="( tU32 ) + 10 * 3600 ">
 				<comments desc="Kilo Time Zone Military UTC + 10 hours "/>
 			</value>
-			<value name="eTimeZone_L" value="+ 11 * 3600 ">
+			<value name="eTimeZone_L" value="( tU32 ) + 11 * 3600 ">
 				<comments desc="Lima Time Zone Military UTC + 11 hours "/>
 			</value>
-			<value name="eTimeZone_M" value="+ 12 * 3600 ">
+			<value name="eTimeZone_M" value="( tU32 ) + 12 * 3600 ">
 				<comments desc="Mike Time Zone Military UTC + 12 hours "/>
 			</value>
-			<value name="eTimeZone_MDT" value="- 6 * 3600 ">
+			<value name="eTimeZone_MDT" value="( tU32 ) - 6 * 3600 ">
 				<comments desc="Mountain Daylight Time North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_MESZ" value="+ 2 * 3600 ">
+			<value name="eTimeZone_MESZ" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Mitteleuroaische Sommerzeit Europe UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_MEZ" value="+ 1 * 3600 ">
+			<value name="eTimeZone_MEZ" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Mitteleuropaische Zeit Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_MST" value="- 7 * 3600 ">
+			<value name="eTimeZone_MST" value="( tU32 ) - 7 * 3600 ">
 				<comments desc="Mountain Standard Time North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_N" value="- 1 * 3600 ">
+			<value name="eTimeZone_N" value="( tU32 ) - 1 * 3600 ">
 				<comments desc="November Time Zone Military UTC - 1 hour "/>
 			</value>
-			<value name="eTimeZone_NDT" value="- 2 * 3600 - 1800 ">
+			<value name="eTimeZone_NDT" value="( tU32 ) - 2 * 3600 - 1800 ">
 				<comments desc="Newfoundland Daylight Time North America UTC - 2:30 hours "/>
 			</value>
-			<value name="eTimeZone_NST" value="- 3 * 3600 - 1800 ">
+			<value name="eTimeZone_NST" value="( tU32 ) - 3 * 3600 - 1800 ">
 				<comments desc="Newfoundland Standard Time North America UTC - 3:30 hours "/>
 			</value>
-			<value name="eTimeZone_O" value="- 2 * 3600 ">
+			<value name="eTimeZone_O" value="( tU32 ) - 2 * 3600 ">
 				<comments desc="Oscar Time Zone Military UTC - 2 hours "/>
 			</value>
-			<value name="eTimeZone_P" value="- 3 * 3600 ">
+			<value name="eTimeZone_P" value="( tU32 ) - 3 * 3600 ">
 				<comments desc="Papa Time Zone Military UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_PDT" value="- 7 * 3600 ">
+			<value name="eTimeZone_PDT" value="( tU32 ) - 7 * 3600 ">
 				<comments desc="Pacific Daylight Time North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_PST" value="- 8 * 3600 ">
+			<value name="eTimeZone_PST" value="( tU32 ) - 8 * 3600 ">
 				<comments desc="Pacific Standard Time North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_Q" value="- 4 * 3600 ">
+			<value name="eTimeZone_Q" value="( tU32 ) - 4 * 3600 ">
 				<comments desc="Quebec Time Zone Military UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_R" value="- 5 * 3600 ">
+			<value name="eTimeZone_R" value="( tU32 ) - 5 * 3600 ">
 				<comments desc="Romeo Time Zone Military UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_S" value="- 6 * 3600 ">
+			<value name="eTimeZone_S" value="( tU32 ) - 6 * 3600 ">
 				<comments desc="Sierra Time Zone Military UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_T" value="- 7 * 3600 ">
+			<value name="eTimeZone_T" value="( tU32 ) - 7 * 3600 ">
 				<comments desc="Tango Time Zone Military UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_U" value="- 8 * 3600 ">
+			<value name="eTimeZone_U" value="( tU32 ) - 8 * 3600 ">
 				<comments desc="Uniform Time Zone Military UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_V" value="- 9 * 3600 ">
+			<value name="eTimeZone_V" value="( tU32 ) - 9 * 3600 ">
 				<comments desc="Victor Time Zone Military UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_W" value="- 10 * 3600 ">
+			<value name="eTimeZone_W" value="( tU32 ) - 10 * 3600 ">
 				<comments desc="Whiskey Time Zone Military UTC - 10 hours "/>
 			</value>
-			<value name="eTimeZone_WEDT" value="+ 1 * 3600 ">
+			<value name="eTimeZone_WEDT" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Western European Daylight Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_WEST" value="+ 1 * 3600 ">
+			<value name="eTimeZone_WEST" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Western European Summer Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_X" value="- 11 * 3600 ">
+			<value name="eTimeZone_X" value="( tU32 ) - 11 * 3600 ">
 				<comments desc="X-ray Time Zone Military UTC - 11 hours "/>
 			</value>
-			<value name="eTimeZone_Y" value="- 12 * 3600 ">
+			<value name="eTimeZone_Y" value="( tU32 ) - 12 * 3600 ">
 				<comments desc="Yankee Time Zone Military UTC - 12 hours "/>
 			</value>
-			<value name="eTimeZone_Z" value="0 ">
+			<value name="eTimeZone_Z" value="( tU32 ) 0 ">
 				<comments desc="Zulu Time Zone Military UTC "/>
 			</value>
 		</enum>

@@ -1205,10 +1205,10 @@ class cOSXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags
   virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl {
     const sRecti rect = this->GetRect();
     const tF32 contentsScale = GetContentsScale();
-    const sVec2i pos = {
+    const sVec2i pos = Vec2i(
       rect.x + (avCursorPos.x/contentsScale),
       rect.y + (avCursorPos.y/contentsScale)
-    };
+    );
     _WrapCursorPosition(pos);
   }
   virtual sVec2i __stdcall GetCursorPosition() const niImpl {

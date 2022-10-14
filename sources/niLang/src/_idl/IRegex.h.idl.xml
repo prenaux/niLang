@@ -89,79 +89,79 @@
 			<value min_features="15" name="ePCREError_OK" value="0 ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_NoMatch" value="( -1 ) ">
+			<value min_features="15" name="ePCREError_NoMatch" value="( tU32 ) ( -1 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_Null" value="( -2 ) ">
+			<value min_features="15" name="ePCREError_Null" value="( tU32 ) ( -2 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadOption" value="( -3 ) ">
+			<value min_features="15" name="ePCREError_BadOption" value="( tU32 ) ( -3 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadMagic" value="( -4 ) ">
+			<value min_features="15" name="ePCREError_BadMagic" value="( tU32 ) ( -4 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_UnknownOpcode" value="( -5 ) ">
+			<value min_features="15" name="ePCREError_UnknownOpcode" value="( tU32 ) ( -5 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_NoMemory" value="( -6 ) ">
+			<value min_features="15" name="ePCREError_NoMemory" value="( tU32 ) ( -6 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_NoSubstring" value="( -7 ) ">
+			<value min_features="15" name="ePCREError_NoSubstring" value="( tU32 ) ( -7 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_MatchLimit" value="( -8 ) ">
+			<value min_features="15" name="ePCREError_MatchLimit" value="( tU32 ) ( -8 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_Callout" value="( -9 ) ">
+			<value min_features="15" name="ePCREError_Callout" value="( tU32 ) ( -9 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadUTF8" value="( -10 ) ">
+			<value min_features="15" name="ePCREError_BadUTF8" value="( tU32 ) ( -10 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadUTF8Offset" value="( -11 ) ">
+			<value min_features="15" name="ePCREError_BadUTF8Offset" value="( tU32 ) ( -11 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_Partial" value="( -12 ) ">
+			<value min_features="15" name="ePCREError_Partial" value="( tU32 ) ( -12 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadPartial" value="( -13 ) ">
+			<value min_features="15" name="ePCREError_BadPartial" value="( tU32 ) ( -13 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_Internal" value="( -14 ) ">
+			<value min_features="15" name="ePCREError_Internal" value="( tU32 ) ( -14 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadCount" value="( -15 ) ">
+			<value min_features="15" name="ePCREError_BadCount" value="( tU32 ) ( -15 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_DFA_UITEM" value="( -16 ) ">
+			<value min_features="15" name="ePCREError_DFA_UITEM" value="( tU32 ) ( -16 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_DFA_UCOND" value="( -17 ) ">
+			<value min_features="15" name="ePCREError_DFA_UCOND" value="( tU32 ) ( -17 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_DFA_UMLIMIT" value="( -18 ) ">
+			<value min_features="15" name="ePCREError_DFA_UMLIMIT" value="( tU32 ) ( -18 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_DFA_WSSIZE" value="( -19 ) ">
+			<value min_features="15" name="ePCREError_DFA_WSSIZE" value="( tU32 ) ( -19 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_DFA_RECURSE" value="( -20 ) ">
+			<value min_features="15" name="ePCREError_DFA_RECURSE" value="( tU32 ) ( -20 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_RecursionLimit" value="( -21 ) ">
+			<value min_features="15" name="ePCREError_RecursionLimit" value="( tU32 ) ( -21 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_NullWSLimit" value="( -22 ) ">
+			<value min_features="15" name="ePCREError_NullWSLimit" value="( tU32 ) ( -22 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadNewLine" value="( -23 ) ">
+			<value min_features="15" name="ePCREError_BadNewLine" value="( tU32 ) ( -23 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_LoopLimit" value="( -24 ) ">
+			<value min_features="15" name="ePCREError_LoopLimit" value="( tU32 ) ( -24 ) ">
 				<comments desc=""/>
 			</value>
-			<value min_features="15" name="ePCREError_BadRegexString" value="( -1000 ) ">
+			<value min_features="15" name="ePCREError_BadRegexString" value="( tU32 ) ( -1000 ) ">
 				<comments desc=""/>
 			</value>
 		</enum>

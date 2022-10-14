@@ -36,8 +36,8 @@ using namespace ni;
 
 #define A25ZMODE  niBit(31)
 
-static int gz_magic_std[2] = {0x1f, 0x8b}; /* gzip magic header */
-static int gz_magic_a25[4] = {'A', '2', '5', 'Z'}; /* gzip magic header */
+static constexpr unsigned char gz_magic_std[2] = {0x1f, 0x8b}; /* gzip magic header */
+static constexpr unsigned char gz_magic_a25[4] = {'A', '2', '5', 'Z'}; /* gzip magic header */
 
 /* gzip flag byte */
 // #define ASCII_FLAG   0x01 /* bit 0 set: file probably ascii text */
@@ -175,7 +175,7 @@ local gzFile gz_open (const char *mode, iFileBase*  apFile, bool abA25Z)
     else {
       /* Write a very simple .gz header:
        */
-      char header[10] = {
+      unsigned char header[10] = {
         gz_magic_std[0], gz_magic_std[1],
         Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE
       };
@@ -263,7 +263,7 @@ local void check_header(gz_stream *s)
   uInt len;
   int c;
 
-  int* gz_magic;
+  const unsigned char* gz_magic;
   int gz_magic_len;
   if (s->mode&A25ZMODE) {
     gz_magic = gz_magic_a25;

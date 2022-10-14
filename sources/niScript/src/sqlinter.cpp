@@ -253,7 +253,7 @@ enum eLintFlags {
 };
 
 struct sLint {
-  const int key;
+  const tU32 key;
   const tHStringPtr name;
 };
 

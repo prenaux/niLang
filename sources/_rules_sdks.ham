@@ -232,21 +232,21 @@ if ! $(NO_NI_CURL) = 1 {
       LINKLIBS on $(<) += -lcurl ;
     }
     else {
-      tkLinkLibs $(<) : libCURL ;
+      tkLinkLibs $(<) : libCURL : $(2) ;
     }
   }
 
   rule niCURL_LinkLibs {
-    niCURL_LinkLibs_Deps $(<) ;
-    tkLinkLibs $(<) : niCURL ;
+    niCURL_LinkLibs_Deps $(<) : $(2) ;
+    tkLinkLibs $(<) : niCURL : $(2) ;
   }
 
   rule niCURL_LinkDll {
     if $(NO_DLL) = 1 {
-      niCURL_LinkLibs $(<) ;
+      niCURL_LinkLibs $(<) : $(2) ;
     }
     else {
-      tkLinkDll $(<) : niCURL ;
+      tkLinkDll $(<) : niCURL : $(2) ;
     }
   }
 }
@@ -262,10 +262,10 @@ else {
 
 rule niImportModuleLibs_niCURL {
   niImportModuleHdrs niCURL : $(1) ;
-  niCURL_LinkLibs $(PKGTARGET) ;
+  niCURL_LinkLibs $(PKGTARGET) : $(1) ;
 }
 
 rule niImportModuleDll_niCURL {
   niImportModuleHdrs niCURL : $(1) ;
-  niCURL_LinkDll $(PKGTARGET) ;
+  niCURL_LinkDll $(PKGTARGET) : $(1) ;
 }

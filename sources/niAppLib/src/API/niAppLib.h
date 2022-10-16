@@ -2,10 +2,7 @@
 #ifndef __APPLIB_H_EC8785DC_A2B1_0A40_9E1A_DC4250925E56__
 #define __APPLIB_H_EC8785DC_A2B1_0A40_9E1A_DC4250925E56__
 
-#include <niLang/Utils/CmdLine.h>
-#include <niLang/Utils/ConcurrentImpl.h>
-#include <niLang/STL/vector.h>
-#include <niLang/STL/utils.h>
+#include "niAppLibConsole.h"
 
 #include <niUI.h>
 #include <niUI/Utils/WidgetSinkImpl.h>
@@ -64,9 +61,6 @@ struct AppContext : public ni::cMemImpl {
     return _config.GetContentsScale(_window.raw_ptr());
   }
 };
-
-//! Send a notification to application host.
-extern void AppNotifyHost(const char* aCmd);
 
 //! Initialize the application using the specified window and OnStarted runnable.
 extern ni::tBool AppStartup(AppContext* apContext, ni::iOSWindow* apWindow, ni::iRunnable* apOnStarted, ni::iRunnable* apOnShutdown);

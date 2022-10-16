@@ -1,10 +1,19 @@
 if [ SubDirOnce TOP niAppLib src ] = 1 { return ; }
 
-tkDefLib niAppLib : 1,0,0 : niAppLib ;
+### niAppLib #############################################################
+tkDefLib niAppLib : 1,0,0 ;
 niImportModuleHdrs niLang ;
 niImportModuleHdrs niUI ;
 
-### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;
+
+tkBuildPackage $(SRC) : : $(CHK_SOURCES) ;
+
+### niAppLibConsole #############################################################
+tkDefLib niAppLibConsole : 1,0,0 ;
+niImportModuleHdrs niLang ;
+
+SRC = [ tkPkgSrcSubDirLst $(SUBDIR) : niAppLibConsole.cpp ] ;
+AssertFExists niAppLibConsole : $(SRC) ;
 
 tkBuildPackage $(SRC) : : $(CHK_SOURCES) ;

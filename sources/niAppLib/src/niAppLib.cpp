@@ -520,12 +520,6 @@ static int _MainEnd(AppContext* apContext) {
   return 0;
 }
 
-void AppNotifyHost(const char* aCmd) {
-#ifdef niJSCC
-  emscripten_run_script(niFmt("try { niApp.NotifyHost('%s'); } catch(e) {}",aCmd));
-#endif
-}
-
 tBool AppUpdate(AppContext* apContext) {
   if (apContext->_appWnd.IsOK()) {
     return ((AppWindow*)apContext->_appWnd.ptr())->OnUpdate();

@@ -54,6 +54,8 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
 #ifdef niJSCC
   emscripten_fetch_t* _emfetch = NULL;
   astl::vector<tU8> _emfetchPostData;
+  astl::vector<cString> _emHeadersKV;
+  const char** _emHeaders = NULL;
 #endif
 
   sFetchRequest(
@@ -72,6 +74,9 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
 
   virtual ~sFetchRequest() {
 #ifdef niJSCC
+    if (_emHeaders) {
+      niFree(_emHeaders);
+    }
     if (_emfetch) {
       emscripten_fetch_close(_emfetch);
       _emfetch = NULL;
@@ -1430,6 +1435,29 @@ class cCURL : public cIUnknownImpl<iCURL>
       default:
         niPanicUnreachable("Unknown method.");
         return NULL;
+    }
+
+    if (apHeaders && !apHeaders->empty()) {
+      // XXX: This stuff is really not great, it doest *A LOT* of allocations
+      // for something so trivial, ideally we'd probably want to optimise this
+      // - although it might not matter. Eventually we might want to see what
+      // a profiler says about it.
+      //
+      // [K,V,...]
+      request->_emHeaders = niTMalloc(const char*, (apHeaders->size()*2)+1);
+      const astl::vector<ni::cString>& sh = *apHeaders;
+      const char** rh = request->_emHeaders;
+      request->_emHeadersKV.reserve(sh.size()*2);
+      niLoop(i,sh.size()) {
+        *rh++ = request->_emHeadersKV.emplace_back(
+          sh[i].Before(":")).c_str();
+        *rh++ = request->_emHeadersKV.emplace_back(
+          sh[i].After(":")).c_str();
+        // niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh-2), *(rh-1)));
+      }
+      *rh++ = NULL;
+      attrs.requestHeaders = request->_emHeaders;
+      // niDebugFmt(("... HEADERS: %d", apHeaders->size()));
     }
 
     request->_emfetch = emscripten_fetch(&attrs, request->_url.Chars());

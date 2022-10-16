@@ -70,9 +70,11 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
       , _fpData(apData)
       , _sink(apSink)
   {
+    // niDebugFmt(("... sFetchRequest::sFetchRequest"));
   }
 
   virtual ~sFetchRequest() {
+    // niDebugFmt(("... ~sFetchRequest::sFetchRequest"));
 #ifdef niJSCC
     if (_emHeaders) {
       niFree(_emHeaders);
@@ -1351,6 +1353,8 @@ class cCURL : public cIUnknownImpl<iCURL>
     if (r->_sink.IsOK()) {
       r->_sink->OnFetchSink_Success(r);
     }
+    // we're done, release the reference we added...
+    r->Release();
   }
 
   static void _EmscriptenFetch_OnError(emscripten_fetch_t *fetch) {
@@ -1362,6 +1366,8 @@ class cCURL : public cIUnknownImpl<iCURL>
     if (r->_sink.IsOK()) {
       r->_sink->OnFetchSink_Error(r);
     }
+    // we're done, release the reference we added...
+    r->Release();
   }
 
   static void _EmscriptenFetch_OnProgress(emscripten_fetch_t *fetch) {
@@ -1408,6 +1414,8 @@ class cCURL : public cIUnknownImpl<iCURL>
     emscripten_fetch_attr_t attrs = {};
     emscripten_fetch_attr_init(&attrs);
     attrs.userData = request.raw_ptr();
+    // make sure we keep a reference until the request is closed
+    request->AddRef();
     attrs.onsuccess = _EmscriptenFetch_OnSuccess;
     attrs.onerror = _EmscriptenFetch_OnError;
     attrs.onprogress = _EmscriptenFetch_OnProgress;

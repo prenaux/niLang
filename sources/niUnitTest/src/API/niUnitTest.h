@@ -114,6 +114,9 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 #define TEST_PARAMS_CALL                        \
   testResults_, m_testName, m_timeReport, m_numSteps
 
+#define TEST_PARAMS_LAMBDA \
+  &testResults_, m_testName = m_testName
+
 #define TEST_CONSTRUCTOR(NAME)                  \
   TEST_PARAMS_DECL;                             \
   NAME(TEST_PARAMS_FUNC) : TEST_PARAMS_CONS

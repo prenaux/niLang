@@ -111,7 +111,10 @@ TEST_FIXTURE(FCURLFetch,Post) {
 
 ni::Ptr<iRunnable> _loop;
 void callLoop() {
-  _loop->Run();
+  Var r = _loop->Run();
+  if (!r.GetBoolValue(eTrue)) {
+    ni::GetLang()->FatalError("Test Finished");
+  }
 }
 #endif
 
@@ -125,7 +128,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
     NULL).non_null();
 
 #if niJSCC
-  _loop = ni::Runnable([mq,request]() {
+  _loop = ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
     mq->PollAndDispatch();
     if (request->GetReadyState() == eFetchReadyState_Done) {
       cString headers = request->GetReceivedHeaders()->ReadString();
@@ -138,10 +141,10 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
                   request->GetReceivedData()->GetSize(),
                   data));
 
-      // CHECK(data.StartsWith("[{\"id\":\"90\""));
-      // CHECK(headers.contains("Content-Type: application/json"));
-      // CHECK_EQUAL(eFalse, request->GetHasFailed());
-      ni::GetLang()->FatalError("Test Finished");
+      CHECK(data.StartsWith("[{\"id\":\"90\""));
+      CHECK(headers.contains("Content-Type: application/json"));
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+      return eFalse;
     }
     return eTrue;
   });

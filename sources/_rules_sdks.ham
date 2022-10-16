@@ -219,44 +219,35 @@ rule niImportModuleDll_niUI {
   niUI_LinkDll $(PKGTARGET) ;
 }
 
-if $(JSCC) = 1 || $(WINRT) = 1 {
-  NO_NI_CURL = 1 ;
-}
-else if $(LINUX) = 1 || $(LOA_OS) = qnx {
+if $(JSCC) = 1 || $(LINUX) = 1 || $(LOA_OS) = qnx {
   USE_SYSTEM_LIBCURL = 1 ;
 }
 
-if ! $(NO_NI_CURL) = 1 {
-  rule niCURL_LinkLibs_Deps {
-    if $(USE_SYSTEM_LIBCURL) = 1 {
+rule niCURL_LinkLibs_Deps {
+  if $(USE_SYSTEM_LIBCURL) = 1 {
+    if $(JSCC) = 1 {
+      LINKLIBS on $(<) += -sFETCH ;
+    }
+    else {
       LINKLIBS on $(<) += -lcurl ;
     }
-    else {
-      tkLinkLibs $(<) : libCURL : $(2) ;
-    }
   }
-
-  rule niCURL_LinkLibs {
-    niCURL_LinkLibs_Deps $(<) : $(2) ;
-    tkLinkLibs $(<) : niCURL : $(2) ;
-  }
-
-  rule niCURL_LinkDll {
-    if $(NO_DLL) = 1 {
-      niCURL_LinkLibs $(<) : $(2) ;
-    }
-    else {
-      tkLinkDll $(<) : niCURL : $(2) ;
-    }
+  else {
+    tkLinkLibs $(<) : libCURL : $(2) ;
   }
 }
-else {
-  # No CURL, empty rules...
-  rule niCURL_LinkLibs_Deps {
+
+rule niCURL_LinkLibs {
+  niCURL_LinkLibs_Deps $(<) : $(2) ;
+  tkLinkLibs $(<) : niCURL : $(2) ;
+}
+
+rule niCURL_LinkDll {
+  if $(NO_DLL) = 1 {
+    niCURL_LinkLibs $(<) : $(2) ;
   }
-  rule niCURL_LinkLibs {
-  }
-  rule niCURL_LinkDll {
+  else {
+    tkLinkDll $(<) : niCURL : $(2) ;
   }
 }
 

@@ -39,7 +39,8 @@ iOSProcessManager* cLang::GetProcessManager() const {
 
 ///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
-  // exit(aulErrorCode);
+  niLog(Info,niFmt("_PlatformExit: 0x%X", aulErrorCode));
+  emscripten_cancel_main_loop();
 }
 void cLang::FatalError(const achar* aszMsg) {
   niPrintln(aszMsg);

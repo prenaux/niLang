@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 #include "stdafx.h"
 
-#include "curl/curl.h"
 #include <niLang/Utils/ConcurrentImpl.h>
 #include <niLang/Utils/Trace.h>
 
@@ -13,6 +12,14 @@
 #pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib,"wldap32.lib")
 #pragma comment(lib,"Advapi32.lib")
+#endif
+
+#ifdef HAS_CURL
+#include "curl/curl.h"
+#elif defined niJSCC
+#include <emscripten/fetch.h>
+#else
+#error "Unsupported platform for CURL implementation."
 #endif
 
 niDeclareModuleTrace_(niCURL,Verbose);
@@ -44,6 +51,10 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
   Nonnull<iFile> _fpData;
   Ptr<iFetchSink> _sink;
   tBool _hasFailed = eFalse;
+#ifdef niJSCC
+  emscripten_fetch_t* _emfetch = NULL;
+  astl::vector<tU8> _emfetchPostData;
+#endif
 
   sFetchRequest(
     eFetchMethod aMethod,
@@ -57,6 +68,15 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
       , _fpData(apData)
       , _sink(apSink)
   {
+  }
+
+  virtual ~sFetchRequest() {
+#ifdef niJSCC
+    if (_emfetch) {
+      emscripten_fetch_close(_emfetch);
+      _emfetch = NULL;
+    }
+#endif
   }
 
   virtual eFetchMethod __stdcall GetMethod() const {
@@ -81,6 +101,16 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
 
   virtual tBool __stdcall GetHasFailed() const {
     return _hasFailed;
+  }
+
+  tBool _UpdateReadyState(eFetchReadyState aNewReadyState) {
+    if (aNewReadyState == _readyState)
+      return eFalse;
+    _readyState = aNewReadyState;
+    if (this->_sink.IsOK()) {
+      this->_sink->OnFetchSink_ReadyStateChange(this);
+    }
+    return eTrue;
   }
 };
 
@@ -146,6 +176,7 @@ static ni::tBool __stdcall _JsonParseStringToDataTable(const cString& aString, n
   return JsonParseString(aString,&sinkParser);
 }
 
+#ifdef HAS_CURL
 static int _curlTrace(CURL *handle, curl_infotype type,
                       char *data, size_t size,
                       void *userp)
@@ -600,6 +631,7 @@ struct FileWritePart : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default
   tI64 _size;
   tU32 _numParts;
 };
+#endif // #ifdef HAS_CURL
 
 class cCURL : public cIUnknownImpl<iCURL>
 {
@@ -617,22 +649,6 @@ class cCURL : public cIUnknownImpl<iCURL>
     mnRequestTimeoutInSecs = 60;
     mhspUserAgent = _H("niCURL");
     mHttpAuth = eCURLHttpAuth_None;
-  }
-
-  virtual cString __stdcall GetVersion() const {
-    return _ASTR(curl_version());
-  }
-
-  virtual cString __stdcall GetProtocols() const {
-    cString o;
-    curl_version_info_data* curlInfo = curl_version_info(CURLVERSION_NOW);
-    for (int i = 0; curlInfo->protocols[i]; ++i) {
-      if (i != 0) {
-        o += ",";
-      }
-      o += curlInfo->protocols[i];
-    }
-    return o;
   }
 
 
@@ -679,6 +695,23 @@ class cCURL : public cIUnknownImpl<iCURL>
 
   virtual const eCURLHttpAuth __stdcall GetHttpAuth() const {
     return mHttpAuth;
+  }
+
+#ifdef HAS_CURL
+  virtual cString __stdcall GetVersion() const {
+    return _ASTR(curl_version());
+  }
+
+  virtual cString __stdcall GetProtocols() const {
+    cString o;
+    curl_version_info_data* curlInfo = curl_version_info(CURLVERSION_NOW);
+    for (int i = 0; curlInfo->protocols[i]; ++i) {
+      if (i != 0) {
+        o += ",";
+      }
+      o += curlInfo->protocols[i];
+    }
+    return o;
   }
 
   void _CURLSetBase(
@@ -1087,7 +1120,7 @@ class cCURL : public cIUnknownImpl<iCURL>
 
   Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
                                       const achar* aURL,
-                                      iFile* apSendData,
+                                      iFile* apPostData,
                                       iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
@@ -1104,10 +1137,7 @@ class cCURL : public cIUnknownImpl<iCURL>
       switch (anMsg) {
         case eCURLMessage_Started: {
           TRACE_FETCH(("... Fetch[%s]: Started", request->_url));
-          request->_readyState = eFetchReadyState_Opened;
-          if (request->_sink.IsOK()) {
-            request->_sink->OnFetchSink_ReadyStateChanged(request);
-          }
+          request->_UpdateReadyState(eFetchReadyState_Opened);
           break;
         }
         case eCURLMessage_ReceivingHeader: {
@@ -1116,22 +1146,13 @@ class cCURL : public cIUnknownImpl<iCURL>
         }
         case eCURLMessage_ReceivingData: {
           TRACE_FETCH(("... Fetch[%s]: Receiving Data", request->_url));
-          request->_readyState = eFetchReadyState_HeadersReceived;
           request->_fpHeaders->SeekSet(0);
-          if (request->_sink.IsOK()) {
-            request->_sink->OnFetchSink_ReadyStateChanged(request);
-          }
+          request->_UpdateReadyState(eFetchReadyState_HeadersReceived);
           break;
         }
         case eCURLMessage_Progress: {
           TRACE_FETCH(("... Fetch[%s]: Progress %s", request->_url, A));
-          const eFetchReadyState wasState = request->_readyState;
-          if (wasState != eFetchReadyState_Loading) {
-            request->_readyState = eFetchReadyState_Loading;
-            if (request->_sink.IsOK()) {
-              request->_sink->OnFetchSink_ReadyStateChanged(request);
-            }
-          }
+          request->_UpdateReadyState(eFetchReadyState_Loading);
           if (request->_sink.IsOK()) {
             request->_sink->OnFetchSink_Progress(request);
           }
@@ -1142,8 +1163,8 @@ class cCURL : public cIUnknownImpl<iCURL>
           request->_readyState = eFetchReadyState_Done;
           request->_status = (tU32)A.GetIntValue();
           request->_fpData->SeekSet(0);
+          request->_UpdateReadyState(eFetchReadyState_Done);
           if (request->_sink.IsOK()) {
-            request->_sink->OnFetchSink_ReadyStateChanged(request);
             request->_sink->OnFetchSink_Success(request);
           }
           break;
@@ -1155,9 +1176,8 @@ class cCURL : public cIUnknownImpl<iCURL>
         }
         case eCURLMessage_Failed: {
           request->_hasFailed = eTrue;
-          request->_readyState = eFetchReadyState_Done;
+          request->_UpdateReadyState(eFetchReadyState_Done);
           if (request->_sink.IsOK()) {
-            request->_sink->OnFetchSink_ReadyStateChanged(request);
             request->_sink->OnFetchSink_Error(request);
           }
           break;
@@ -1185,7 +1205,7 @@ class cCURL : public cIUnknownImpl<iCURL>
           aURL,
           request->_fpData,
           request->_fpHeaders,
-          apSendData,
+          apPostData,
           apHeaders,
           NULL);
         if (!niIsOK(runnable)) {
@@ -1205,6 +1225,216 @@ class cCURL : public cIUnknownImpl<iCURL>
 
     return request;
   }
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+    niCheck(niStringIsOK(aURL), NULL);
+    return _Fetch(eFetchMethod_Get, aURL, NULL, apSink, apHeaders);
+  }
+
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+    niCheck(niStringIsOK(aURL), NULL);
+    niCheckIsOK(apData, NULL);
+    return _Fetch(eFetchMethod_Post, aURL, apData, apSink, apHeaders);
+  }
+
+#elif defined niJSCC
+
+  virtual cString __stdcall GetVersion() const {
+    return "web-js";
+  }
+
+  virtual cString __stdcall GetProtocols() const {
+    return "http,https";
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLGet(
+      iMessageHandler* apMessageHandler,
+      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader, const tStringCVec* apHeaders)
+  {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLPostFile(
+      iMessageHandler* apMessageHandler,
+      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
+      iFile* apPostData,
+      const tStringCVec* apHeaders, const achar* aContentType)
+  {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLPostFields(
+      iMessageHandler* apMessageHandler,
+      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
+      const achar* aPostFields,
+      const tStringCVec* apHeaders, const achar* aContentType)
+  {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLPostRaw(
+      iMessageHandler* apMessageHandler,
+      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
+      tPtr aPostData, tSize anPostDataSize,
+      const tStringCVec* apHeaders, const achar* aContentType)
+  {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLPostMultiPart(
+      iMessageHandler* apMessageHandler,
+      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
+      tStringCMap* apPostFields)
+  {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLGetMultiPart(
+      iMessageHandler* apMessageHandler, const achar* aURL, const achar* aPartExt)   {
+    niError("Blocking requests not allowed on this platform.");
+    return NULL;
+  }
+
+  virtual cString __stdcall URLGetString(const achar* aURL)   {
+    niError("Blocking requests not allowed on this platform.");
+    return "";
+  }
+
+  virtual tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apResult)   {
+    niError("Blocking requests not allowed on this platform.");
+    return 0;
+  }
+
+  static tU32 _EmscriptenFetch_ReadData(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_ReadData"));
+    if (fetch->data && fetch->numBytes) {
+      r->_fpData->WriteRaw(fetch->data,fetch->numBytes);
+      r->_fpData->SeekSet(0);
+      return fetch->numBytes;
+    }
+    return 0;
+  }
+
+  static tU32 _EmscriptenFetch_ReadHeaders(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_ReadHeaders"));
+    size_t headerLen = emscripten_fetch_get_response_headers_length(fetch);
+    if (headerLen > 0) {
+      r->_fpHeaders->Resize(headerLen);
+      niPanicAssert(r->_fpHeaders->GetBase() != NULL);
+      emscripten_fetch_get_response_headers(
+        fetch,
+        (char*)r->_fpHeaders->GetBase(),
+        (size_t)r->_fpHeaders->GetSize());
+      r->_fpHeaders->SeekSet(0);
+      return headerLen;
+    }
+    return 0;
+  }
+
+  static void _EmscriptenFetch_OnSuccess(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_OnSuccess"));
+    _EmscriptenFetch_ReadData(fetch);
+    r->_status = fetch->status;
+    r->_UpdateReadyState(eFetchReadyState_Done);
+    if (r->_sink.IsOK()) {
+      r->_sink->OnFetchSink_Success(r);
+    }
+  }
+
+  static void _EmscriptenFetch_OnError(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_OnError"));
+    _EmscriptenFetch_ReadData(fetch);
+    r->_status = fetch->status;
+    r->_UpdateReadyState(eFetchReadyState_Done);
+    if (r->_sink.IsOK()) {
+      r->_sink->OnFetchSink_Error(r);
+    }
+  }
+
+  static void _EmscriptenFetch_OnProgress(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_OnProgress"));
+    r->_readyState = (eFetchReadyState)fetch->readyState;
+    r->_status = fetch->status;
+    if (r->_sink.IsOK()) {
+      r->_sink->OnFetchSink_Progress(r);
+    }
+  }
+
+  static void _EmscriptenFetch_OnReadyStateChange(emscripten_fetch_t *fetch) {
+    sFetchRequest* r = (sFetchRequest*)fetch->userData;
+    TRACE_FETCH(("... _EmscriptenFetch_OnReadyStateChange"));
+    r->_status = fetch->status;
+    if (r->_UpdateReadyState((eFetchReadyState)fetch->readyState) &&
+        r->_readyState == eFetchReadyState_HeadersReceived)
+    {
+      // XXX: Consider adding a flag to not retrieve the headers since we
+      // might not care about them and it could have a signficant impact when
+      // fetching a lot of messages.
+      _EmscriptenFetch_ReadHeaders(fetch);
+    }
+  }
+
+  // Some examples:
+  // https://github.com/emscripten-core/emscripten/blob/37909f7e618a8193a25efbc8b79a834fec4e93b8/test/fetch/to_memory.cpp
+  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
+                                      const achar* aURL,
+                                      iFile* apPostData,
+                                      iFetchSink* apSink,
+                                      const tStringCVec* apHeaders)
+  {
+    Nonnull<sFetchRequest> request = ni::NewNonnull<sFetchRequest>(
+      aMethod,
+      aURL,
+      ni::CreateFileDynamicMemory(128,""),
+      ni::CreateFileDynamicMemory(128,""),
+      apSink
+    );
+    TRACE_FETCH(("... Fetch[%s]: Created request object", request->_url));
+
+    emscripten_fetch_attr_t attrs = {};
+    emscripten_fetch_attr_init(&attrs);
+    attrs.userData = request.raw_ptr();
+    attrs.onsuccess = _EmscriptenFetch_OnSuccess;
+    attrs.onerror = _EmscriptenFetch_OnError;
+    attrs.onprogress = _EmscriptenFetch_OnProgress;
+    attrs.onreadystatechange = _EmscriptenFetch_OnReadyStateChange;
+    attrs.timeoutMSecs = 10000;
+    // XXX: Consider adding EMSCRIPTEN_FETCH_STREAM_DATA
+    attrs.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+    switch (aMethod) {
+      case eFetchMethod_Get:
+        ni::StrZCpy(attrs.requestMethod,niCountOf(attrs.requestMethod),"GET");
+        break;
+      case eFetchMethod_Post:
+        ni::StrZCpy(attrs.requestMethod,niCountOf(attrs.requestMethod),"POST");
+        if (apPostData) {
+          tSize toRead = apPostData->GetSize() - apPostData->Tell();
+          if (toRead > 0) {
+            request->_emfetchPostData.resize(toRead);
+            tSize read = apPostData->ReadRaw(request->_emfetchPostData.data(),toRead);
+            niCheck(read == toRead, NULL);
+            attrs.requestData = (const char*)request->_emfetchPostData.data();
+            attrs.requestDataSize = request->_emfetchPostData.size();
+          }
+        }
+        break;
+      default:
+        niPanicUnreachable("Unknown method.");
+        return NULL;
+    }
+
+    request->_emfetch = emscripten_fetch(&attrs, request->_url.Chars());
+    return request;
+  }
 
   virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
     niCheck(niStringIsOK(aURL), NULL);
@@ -1216,6 +1446,10 @@ class cCURL : public cIUnknownImpl<iCURL>
     niCheckIsOK(apData, NULL);
     return _Fetch(eFetchMethod_Post, aURL, apData, apSink, apHeaders);
   }
+
+#else
+#error "Unsupported platform for CURL implementation."
+#endif
 
   niEndClass(cCURL);
 };

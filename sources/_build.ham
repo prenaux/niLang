@@ -2,9 +2,7 @@ SubDir TOP ;
 
 ### Lang ###
 SubInclude TOP niLang ;
-if ! $(NO_NI_CURL) = 1 {
-  SubInclude TOP niCURL ;
-}
+SubInclude TOP niCURL ;
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
   SubInclude TOP niScriptCpp ;

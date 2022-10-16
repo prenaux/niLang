@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
+#if !defined niJSCC
 #define TEST_MJPEG
 #include <niLang/Utils/TimerSleep.h>
 #include <niUI.h>
+#endif
 
 #if defined niCPP_Lambda && defined TEST_MJPEG
 using namespace ni;

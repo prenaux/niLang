@@ -30,12 +30,12 @@ IDLC_METH_BEGIN(ni,iFetchSink,OnFetchSink_Progress,1)
 	IDLC_METH_CALL_VOID(ni,iFetchSink,OnFetchSink_Progress,1,(apFetch))
 IDLC_METH_END(ni,iFetchSink,OnFetchSink_Progress,1)
 
-/** ni -> iFetchSink::OnFetchSink_ReadyStateChanged/1 **/
-IDLC_METH_BEGIN(ni,iFetchSink,OnFetchSink_ReadyStateChanged,1)
+/** ni -> iFetchSink::OnFetchSink_ReadyStateChange/1 **/
+IDLC_METH_BEGIN(ni,iFetchSink,OnFetchSink_ReadyStateChange,1)
 	IDLC_DECL_VAR(iFetchRequest*,apFetch)
 	IDLC_BUF_TO_INTF(iFetchRequest,apFetch)
-	IDLC_METH_CALL_VOID(ni,iFetchSink,OnFetchSink_ReadyStateChanged,1,(apFetch))
-IDLC_METH_END(ni,iFetchSink,OnFetchSink_ReadyStateChanged,1)
+	IDLC_METH_CALL_VOID(ni,iFetchSink,OnFetchSink_ReadyStateChange,1,(apFetch))
+IDLC_METH_END(ni,iFetchSink,OnFetchSink_ReadyStateChange,1)
 
 IDLC_END_INTF(ni,iFetchSink)
 

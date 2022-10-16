@@ -6,12 +6,8 @@
 
 SubDir TOP niCURL ;
 
-if ! $(NO_NI_CURL) = 1 {
-  SubInclude TOP niCURL src ;
-  if ! $(EMBEDDED) = 1 {
-    SubInclude TOP niCURL tsrc ;
-  }
-  if $(BUILD_JNI) {
-    SubInclude TOP niCURL java ;
-  }
+SubInclude TOP niCURL src ;
+SubInclude TOP niCURL tsrc ;
+if $(BUILD_JNI) {
+  SubInclude TOP niCURL java ;
 }

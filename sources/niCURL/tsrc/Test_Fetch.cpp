@@ -28,8 +28,8 @@ struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
                 apFetch->GetStatus(),
                 apFetch->GetReceivedData()->GetSize()));
   }
-  virtual void __stdcall OnFetchSink_ReadyStateChanged(iFetchRequest* apFetch) {
-    niDebugFmt(("... OnFetchSink_ReadyStateChanged: %s",
+  virtual void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest* apFetch) {
+    niDebugFmt(("... OnFetchSink_ReadyStateChange: %s",
                 niEnumToChars(eFetchReadyState,apFetch->GetReadyState())));
   }
 };
@@ -105,6 +105,16 @@ TEST_FIXTURE(FCURLFetch,Post) {
   CHECK_EQUAL(eFalse, request->GetHasFailed());
 }
 
+#ifdef niJSCC
+#include <emscripten.h>
+#include <emscripten/html5.h>
+
+ni::Ptr<iRunnable> _loop;
+void callLoop() {
+  _loop->Run();
+}
+#endif
+
 TEST_FIXTURE(FCURLFetch,GetJson) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
@@ -114,11 +124,35 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
     sink,
     NULL).non_null();
 
+#if niJSCC
+  _loop = ni::Runnable([mq,request]() {
+    mq->PollAndDispatch();
+    if (request->GetReadyState() == eFetchReadyState_Done) {
+      cString headers = request->GetReceivedHeaders()->ReadString();
+      niDebugFmt(("... headers: %d bytes, %s",
+                  request->GetReceivedHeaders()->GetSize(),
+                  headers));
+
+      cString data = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... data: %d bytes, %s",
+                  request->GetReceivedData()->GetSize(),
+                  data));
+
+      // CHECK(data.StartsWith("[{\"id\":\"90\""));
+      // CHECK(headers.contains("Content-Type: application/json"));
+      // CHECK_EQUAL(eFalse, request->GetHasFailed());
+      ni::GetLang()->FatalError("Test Finished");
+    }
+    return eTrue;
+  });
+  emscripten_set_main_loop(callLoop,10,1);
+#else
   // Dispatch the messages...
   while (1) {
     mq->PollAndDispatch();
-    if (request->GetReadyState() == eFetchReadyState_Done)
+    if (request->GetReadyState() == eFetchReadyState_Done) {
       break;
+    }
   }
 
   cString headers = request->GetReceivedHeaders()->ReadString();
@@ -134,6 +168,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
   CHECK(data.StartsWith("[{\"id\":\"90\""));
   CHECK(headers.contains("Content-Type: application/json"));
   CHECK_EQUAL(eFalse, request->GetHasFailed());
+#endif
 }
 
 }

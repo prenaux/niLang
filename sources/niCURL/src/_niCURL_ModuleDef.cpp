@@ -503,16 +503,16 @@ static const ni::sMethodDef iFetchSink_OnFetchSink_Progress = {
 #endif
 };
 
-// Method: OnFetchSink_ReadyStateChanged
-static const ni::sParameterDef iFetchSink_OnFetchSink_ReadyStateChanged_Parameters[1] = { 
+// Method: OnFetchSink_ReadyStateChange
+static const ni::sParameterDef iFetchSink_OnFetchSink_ReadyStateChange_Parameters[1] = { 
   { "apFetch", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "iFetchRequest*" }
 }; 
-static const ni::sMethodDef iFetchSink_OnFetchSink_ReadyStateChanged = {
-  "OnFetchSink_ReadyStateChanged",
+static const ni::sMethodDef iFetchSink_OnFetchSink_ReadyStateChange = {
+  "OnFetchSink_ReadyStateChange",
   0|ni::eType_Null, NULL, "void",
-  1, iFetchSink_OnFetchSink_ReadyStateChanged_Parameters,
+  1, iFetchSink_OnFetchSink_ReadyStateChange_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iFetchSink_OnFetchSink_ReadyStateChanged)
+  XCALL_CIMPL(iFetchSink_OnFetchSink_ReadyStateChange)
 #else
   NULL
 #endif
@@ -522,7 +522,7 @@ static const ni::sMethodDef* Methods_iFetchSink[] = {
 	&iFetchSink_OnFetchSink_Success,
 	&iFetchSink_OnFetchSink_Error,
 	&iFetchSink_OnFetchSink_Progress,
-	&iFetchSink_OnFetchSink_ReadyStateChanged,
+	&iFetchSink_OnFetchSink_ReadyStateChange,
 
 };
 
@@ -567,11 +567,11 @@ struct niHidden DispatchWrapper_iFetchSink : public ni::cIUnknownImpl<ni::iFetch
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Progress,2,_params_,1,NULL);
 	}
 
-  // Method (3): iFetchSink::OnFetchSink_ReadyStateChanged
-  void __stdcall OnFetchSink_ReadyStateChanged(iFetchRequest * apFetch) {
+  // Method (3): iFetchSink::OnFetchSink_ReadyStateChange
+  void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest * apFetch) {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apFetch);
-    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_ReadyStateChanged,3,_params_,1,NULL);
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_ReadyStateChange,3,_params_,1,NULL);
 	}
 
 	static ni::iUnknown* Create(ni::iDispatch* apDispatch) {

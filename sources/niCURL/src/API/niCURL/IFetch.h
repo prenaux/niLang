@@ -37,7 +37,7 @@ struct iFetchSink : public iUnknown {
   virtual void __stdcall OnFetchSink_Success(iFetchRequest* apFetch) = 0;
   virtual void __stdcall OnFetchSink_Error(iFetchRequest* apFetch) = 0;
   virtual void __stdcall OnFetchSink_Progress(iFetchRequest* apFetch) = 0;
-  virtual void __stdcall OnFetchSink_ReadyStateChanged(iFetchRequest* apFetch) = 0;
+  virtual void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest* apFetch) = 0;
 };
 
 struct iFetchRequest : public iUnknown {

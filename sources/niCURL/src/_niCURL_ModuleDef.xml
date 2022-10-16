@@ -638,7 +638,7 @@
 					typec="iFetchRequest*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="onFetchSink_ReadyStateChanged" name="OnFetchSink_ReadyStateChanged" num_parameters="1">
+			<method java_name="onFetchSink_ReadyStateChange" name="OnFetchSink_ReadyStateChange" num_parameters="1">
 				<comments desc=""/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter

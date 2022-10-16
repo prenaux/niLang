@@ -4,7 +4,9 @@ tkDefTest Test_niCURL : 1.0.0 : niCURL ;
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
 niImportModuleDll niCURL ;
-niImportModuleDll niUI ;
+if $(JSCC) != 1 {
+  niImportModuleDll niUI ;
+}
 
 SRC = [ tkPkgSrc ] ;
 

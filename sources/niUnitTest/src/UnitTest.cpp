@@ -23,6 +23,10 @@
 #  include <stdio.h>
 #endif
 
+#ifdef niJSCC
+#include <emscripten.h>
+#endif
+
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
 #error "USE_SIGNALS should only be used with TEST_NICATCHALL"
 #endif
@@ -1104,5 +1108,58 @@ int RunAllTests(char const* fixtureName)
   TestReporterStdout reporter;
   return RunAllTests(reporter, Test::GetTestList(), 0, fixtureName);
 }
+
+#ifdef niJSCC
+
+static ni::cString _runUnitTestName;
+static ni::Ptr<ni::iRunnable> _runUnitTestEnd;
+static ni::Ptr<ni::iRunnable> _runUnitTestLoop;
+
+void UnitTest_Loop() {
+  if (!_runUnitTestLoop.IsOK()) {
+    return;
+  }
+
+  ni::Var r = _runUnitTestLoop->Run();
+  if (!r.GetBoolValue(ni::eTrue)) {
+    if (_runUnitTestEnd.IsOK()) {
+      _runUnitTestEnd->Run();
+    }
+    niLog(Info, niFmt("TestLoop '%s' finished.", _runUnitTestName));
+    _runUnitTestLoop = NULL;
+    _runUnitTestEnd = NULL;
+    _runUnitTestName = AZEROSTR;
+    // XXX: How can we resume to run the next test? Atm this interrupts the
+    // test runner :(
+    emscripten_cancel_main_loop();
+  }
+}
+
+void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TEST_PARAMS_FUNC) {
+  niPanicAssert(aLoop.IsOK());
+  _runUnitTestLoop = aLoop;
+  _runUnitTestEnd = aTestEnd;
+  _runUnitTestName = m_testName;
+  emscripten_set_main_loop(UnitTest_Loop,30,1);
+}
+
+#else
+
+void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TEST_PARAMS_FUNC) {
+  niPanicAssert(aLoop.IsOK());
+  while (1) {
+      ni::Var r = aLoop->Run();
+      if (!r.GetBoolValue(ni::eTrue)) {
+        break;
+      }
+  }
+  if (aTestEnd.IsOK()) {
+    aTestEnd->Run();
+  }
+  niLog(Info, niFmt("TestLoop '%s' finished.", m_testName));
+}
+
+#endif
+
 
 }

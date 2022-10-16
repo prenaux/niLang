@@ -1020,6 +1020,15 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName);
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
 void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink);
 
+void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TEST_PARAMS_FUNC);
+
+#define TEST_LOOP(LOOP,TEST_END) {                      \
+    EA_DISABLE_GCC_WARNING(-Wunused-lambda-capture);    \
+    EA_DISABLE_CLANG_WARNING(-Wunused-lambda-capture);  \
+    UnitTest::TestLoop(LOOP,TEST_END,TEST_PARAMS_CALL); \
+    EA_RESTORE_GCC_WARNING();                           \
+    EA_RESTORE_CLANG_WARNING(); }
+
 }
 
 /**@}*/

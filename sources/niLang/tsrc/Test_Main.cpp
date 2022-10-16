@@ -25,7 +25,7 @@ int main(int argc, const char** argv) {
     ni::cString fixtureName;
     ni::ni_log_system_info_once();
 #ifdef EMBEDDED_FIXTURE_NAME
-    fixtureName = EMBEDDED_FIXTURE_NAME;
+    fixtureName = ni::GetProperty("FIXTURE", EMBEDDED_FIXTURE_NAME);
 #else
     ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
 #endif

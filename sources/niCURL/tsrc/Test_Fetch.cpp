@@ -46,25 +46,32 @@ TEST_FIXTURE(FCURLFetch,Get) {
     sink,
     requestHeaders).non_null();
 
-  // Dispatch the messages...
-  while (1) {
-    mq->PollAndDispatch();
-    if (request->GetReadyState() == eFetchReadyState_Done)
-      break;
-  }
+  TEST_LOOP(
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      mq->PollAndDispatch();
+      if (request->GetReadyState() == eFetchReadyState_Done) {
+        return eFalse;
+      }
+      return eTrue;
+    }),
+    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+      cString headers = request->GetReceivedHeaders()->ReadString();
+      niDebugFmt(("... headers: %d bytes, %s",
+                  request->GetReceivedHeaders()->GetSize(),
+                  headers));
 
-  cString headers = request->GetReceivedHeaders()->ReadString();
-  niDebugFmt(("... headers: %d bytes, %s",
-              request->GetReceivedHeaders()->GetSize(),
-              headers));
+      cString data = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... data: %d bytes, %s",
+                  request->GetReceivedData()->GetSize(),
+                  data));
 
-  cString data = request->GetReceivedData()->ReadString();
-  niDebugFmt(("... data: %d bytes, %s",
-              request->GetReceivedData()->GetSize(),
-              data));
-
-  CHECK_EQUAL(_ASTR("Test_niCURL_FetchGet:HdrNarf:test_value"),data);
-  CHECK_EQUAL(eFalse, request->GetHasFailed());
+#if !defined niJSCC
+      CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
+#endif
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGet:HdrNarf:test_value"),data);
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+      return eTrue;
+    }));
 }
 
 TEST_FIXTURE(FCURLFetch,Post) {
@@ -84,39 +91,33 @@ TEST_FIXTURE(FCURLFetch,Post) {
     sink,
     requestHeaders).non_null();
 
-  // Dispatch the messages...
-  while (1) {
-    mq->PollAndDispatch();
-    if (request->GetReadyState() == eFetchReadyState_Done)
-      break;
-  }
+  TEST_LOOP(
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      mq->PollAndDispatch();
+      if (request->GetReadyState() == eFetchReadyState_Done) {
+        return eFalse;
+      }
+      return eTrue;
+    }),
+    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+      cString headers = request->GetReceivedHeaders()->ReadString();
+      niDebugFmt(("... headers: %d bytes, %s",
+                  request->GetReceivedHeaders()->GetSize(),
+                  headers));
 
-  cString headers = request->GetReceivedHeaders()->ReadString();
-  niDebugFmt(("... headers: %d bytes, %s",
-              request->GetReceivedHeaders()->GetSize(),
-              headers));
+      cString data = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... data: %d bytes, %s",
+                  request->GetReceivedData()->GetSize(),
+                  data));
 
-  cString data = request->GetReceivedData()->ReadString();
-  niDebugFmt(("... data: %d bytes, %s",
-              request->GetReceivedData()->GetSize(),
-              data));
-
-  CHECK_EQUAL(_ASTR("Test_niCURL_FetchPost:HdrNarf:posted_value"),data);
-  CHECK_EQUAL(eFalse, request->GetHasFailed());
-}
-
-#ifdef niJSCC
-#include <emscripten.h>
-#include <emscripten/html5.h>
-
-ni::Ptr<iRunnable> _loop;
-void callLoop() {
-  Var r = _loop->Run();
-  if (!r.GetBoolValue(eTrue)) {
-    ni::GetLang()->FatalError("Test Finished");
-  }
-}
+#if !defined niJSCC
+      CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
 #endif
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchPost:HdrNarf:posted_value"),data);
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+      return eTrue;
+    }));
+}
 
 TEST_FIXTURE(FCURLFetch,GetJson) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
@@ -127,10 +128,15 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
     sink,
     NULL).non_null();
 
-#if niJSCC
-  _loop = ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
-    mq->PollAndDispatch();
-    if (request->GetReadyState() == eFetchReadyState_Done) {
+  TEST_LOOP(
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      mq->PollAndDispatch();
+      if (request->GetReadyState() == eFetchReadyState_Done) {
+        return eFalse;
+      }
+      return eTrue;
+    }),
+    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
@@ -142,36 +148,13 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
                   data));
 
       CHECK(data.StartsWith("[{\"id\":\"90\""));
-      CHECK(headers.contains("Content-Type: application/json"));
+#if !defined niJSCC
+      CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
+#endif
+      CHECK(headers.icontains("Content-Type: application/json"));
       CHECK_EQUAL(eFalse, request->GetHasFailed());
       return eFalse;
-    }
-    return eTrue;
-  });
-  emscripten_set_main_loop(callLoop,10,1);
-#else
-  // Dispatch the messages...
-  while (1) {
-    mq->PollAndDispatch();
-    if (request->GetReadyState() == eFetchReadyState_Done) {
-      break;
-    }
-  }
-
-  cString headers = request->GetReceivedHeaders()->ReadString();
-  niDebugFmt(("... headers: %d bytes, %s",
-              request->GetReceivedHeaders()->GetSize(),
-              headers));
-
-  cString data = request->GetReceivedData()->ReadString();
-  niDebugFmt(("... data: %d bytes, %s",
-              request->GetReceivedData()->GetSize(),
-              data));
-
-  CHECK(data.StartsWith("[{\"id\":\"90\""));
-  CHECK(headers.contains("Content-Type: application/json"));
-  CHECK_EQUAL(eFalse, request->GetHasFailed());
-#endif
+    }));
 }
 
 }

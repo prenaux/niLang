@@ -13,6 +13,7 @@
 	</objecttypes>
 	<includes>
 		<include>niCURL/src/_idl/ICURL.h.idl.xml</include>
+		<include>niCURL/src/_idl/IFetch.h.idl.xml</include>
 	</includes>
 	<namespace name="ni" source="niCURL/src/_idl/ICURL.h.idl.xml">
 		<enum name="eCURLMessage">
@@ -36,7 +37,7 @@
 				</comments>
 			</value>
 			<value name="eCURLMessage_ReceivingData" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;r&apos; ) ">
-				<comments desc="Started receiving the data. ">
+				<comments desc="Started receiving the data. Header has been received. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
@@ -504,6 +505,7 @@
 			<method java_name="urlgetDataTable" name="URLGetDataTable" num_parameters="2">
 				<comments desc="Does a simple get on a URL and return the result as a datatable. ">
 					<remark text="For this to work the endpoint is assumed to return a json response. "/>
+					<remark text="The json reponse is flattened in the datatable, it doesnt handle nested objects or arrays. If the same key is present multiple time the last value seen is the one that&apos;ll be stored in the datatable. "/>
 				</comments>
 				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
 				<parameter
@@ -517,6 +519,206 @@
 					type="iDataTable *"
 					typec="iDataTable*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fetchGet" name="FetchGet" num_parameters="3">
+				<comments desc="Start a GET fetch request. ">
+					<remark text="The request is executed by iConcurrent::GetExecutorIO() or the platforms&apos; native system. It should be assumed that it runs in a separated thread and thus the sink needs to be thread safe. "/>
+				</comments>
+				<return type="Ptr&lt;iFetchRequest&gt;" typec="Ptr&lt;iFetchRequest&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iFetchSink *"
+					typec="iFetchSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fetchPost" name="FetchPost" num_parameters="4">
+				<comments desc="Start a POST fetch request. ">
+					<remark text="The request is executed by iConcurrent::GetExecutorIO() or the platforms&apos; native system. It should be assumed that it runs in a separated thread and thus the sink needs to be thread safe. "/>
+				</comments>
+				<return type="Ptr&lt;iFetchRequest&gt;" typec="Ptr&lt;iFetchRequest&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iFetchSink *"
+					typec="iFetchSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niCURL/src/_idl/IFetch.h.idl.xml">
+		<enum name="eFetchMethod">
+			<comments desc="HTTP method used to execute the fetch request. "/>
+			<value name="eFetchMethod_Get" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eFetchMethod_Post" value="1 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eFetchReadyState">
+			<comments desc="State of the fetch request. ">
+				<remark text="See https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState "/>
+			</comments>
+			<value name="eFetchReadyState_Unsent" value="0 ">
+				<comments desc="Request not sent yet "/>
+			</value>
+			<value name="eFetchReadyState_Opened" value="1 ">
+				<comments desc="Fetch has been sent. "/>
+			</value>
+			<value name="eFetchReadyState_HeadersReceived" value="2 ">
+				<comments desc="Headers and status are available. "/>
+			</value>
+			<value name="eFetchReadyState_Loading" value="3 ">
+				<comments desc="Download in progress. "/>
+			</value>
+			<value name="eFetchReadyState_Done" value="4 ">
+				<comments desc="Download finished. "/>
+			</value>
+		</enum>
+		<interface name="iFetchSink" uuid1="10833AB2-D5E7-3D49-86BB-576A9D6A7EDE" uuid2="0x10833ab2,0xd5e7,0x3d49,0x86,0xbb,0x57,0x6a,0x9d,0x6a,0x7e,0xde">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onFetchSink_Success" name="OnFetchSink_Success" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apFetch"
+					type="iFetchRequest *"
+					typec="iFetchRequest*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onFetchSink_Error" name="OnFetchSink_Error" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apFetch"
+					type="iFetchRequest *"
+					typec="iFetchRequest*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onFetchSink_Progress" name="OnFetchSink_Progress" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apFetch"
+					type="iFetchRequest *"
+					typec="iFetchRequest*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="onFetchSink_ReadyStateChanged" name="OnFetchSink_ReadyStateChanged" num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apFetch"
+					type="iFetchRequest *"
+					typec="iFetchRequest*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iFetchRequest" uuid1="EB50CB02-4181-2A46-A839-6C9B10CFC2D9" uuid2="0xeb50cb02,0x4181,0x2a46,0xa8,0x39,0x6c,0x9b,0x10,0xcf,0xc2,0xd9">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getMethod"
+				name="GetMethod"
+				num_parameters="0"
+				property="get"
+				property_name2="method"
+				property_name="method">
+				<comments desc="Get the fetch method. "/>
+				<return type="eFetchMethod" typec="eFetchMethod" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReadyState"
+				name="GetReadyState"
+				num_parameters="0"
+				property="get"
+				property_name2="readyState"
+				property_name="ready_state">
+				<comments desc="Get the ready state of the request. "/>
+				<return type="eFetchReadyState" typec="eFetchReadyState" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStatus"
+				name="GetStatus"
+				num_parameters="0"
+				property="get"
+				property_name2="status"
+				property_name="status">
+				<comments desc="Get the status code of the request. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReceivedHeaders"
+				name="GetReceivedHeaders"
+				num_parameters="0"
+				property="get"
+				property_name2="receivedHeaders"
+				property_name="received_headers">
+				<comments desc="The headers received. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReceivedData"
+				name="GetReceivedData"
+				num_parameters="0"
+				property="get"
+				property_name2="receivedData"
+				property_name="received_data">
+				<comments desc="The data received. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasFailed"
+				name="GetHasFailed"
+				num_parameters="0"
+				property="get"
+				property_name2="hasFailed"
+				property_name="has_failed">
+				<comments desc="Whether the request had failed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 			</method>
 		</interface>
 	</namespace>

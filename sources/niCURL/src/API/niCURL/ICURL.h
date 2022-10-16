@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include <niLang/Utils/MessageID.h>
+#include "IFetch.h"
 
 namespace ni {
 
@@ -28,7 +29,7 @@ enum eCURLMessage
   //! \param A: unused
   //! \param B: iFuture, which can be used to cancel the request
   eCURLMessage_ReceivingHeader = niMessageID('C','U','R','L','h'),
-  //! Started receiving the data.
+  //! Started receiving the data. Header has been received.
   //! \param A: unused
   //! \param B: iFuture, which can be used to cancel the request
   eCURLMessage_ReceivingData = niMessageID('C','U','R','L','r'),
@@ -155,7 +156,22 @@ struct iCURL : public iUnknown
   virtual cString __stdcall URLGetString(const achar* aURL) = 0;
   //! Does a simple get on a URL and return the result as a datatable.
   //! \remark For this to work the endpoint is assumed to return a json response.
+  //! \remark The json reponse is flattened in the datatable, it doesnt handle
+  //!         nested objects or arrays. If the same key is present multiple time
+  //!         the last value seen is the one that'll be stored in the datatable.
   virtual tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apResult) = 0;
+
+  //! Start a GET fetch request.
+  //! \remark The request is executed by iConcurrent::GetExecutorIO() or the
+  //!         platforms' native system. It should be assumed that it runs in a
+  //!         separated thread and thus the sink needs to be thread safe.
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) = 0;
+
+  //! Start a POST fetch request.
+  //! \remark The request is executed by iConcurrent::GetExecutorIO() or the
+  //!         platforms' native system. It should be assumed that it runs in a
+  //!         separated thread and thus the sink needs to be thread safe.
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) = 0;
 };
 
 niExportFunc(ni::iUnknown*) New_niCURL_CURL(const ni::Var&,const ni::Var&);

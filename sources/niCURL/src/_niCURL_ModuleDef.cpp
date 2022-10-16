@@ -25,6 +25,7 @@
 #define XCALL_CIMPL(NAME) ni::xcall_cimpl::NAME
 #endif
 #include "_idl/ICURL.h.idl.inl"
+#include "_idl/IFetch.h.idl.inl"
 #endif // niConfig_NoXCALL
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
 
@@ -369,6 +370,41 @@ static const ni::sMethodDef iCURL_URLGetDataTable = {
 #endif
 };
 
+// Method: FetchGet
+static const ni::sParameterDef iCURL_FetchGet_Parameters[3] = { 
+  { "aURL", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apSink", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchSink), "iFetchSink*" }, 
+  { "apHeaders", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tStringCVec*" }
+}; 
+static const ni::sMethodDef iCURL_FetchGet = {
+  "FetchGet",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "Ptr<iFetchRequest>",
+  3, iCURL_FetchGet_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iCURL_FetchGet)
+#else
+  NULL
+#endif
+};
+
+// Method: FetchPost
+static const ni::sParameterDef iCURL_FetchPost_Parameters[4] = { 
+  { "aURL", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apData", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "apSink", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchSink), "iFetchSink*" }, 
+  { "apHeaders", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tStringCVec*" }
+}; 
+static const ni::sMethodDef iCURL_FetchPost = {
+  "FetchPost",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "Ptr<iFetchRequest>",
+  4, iCURL_FetchPost_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iCURL_FetchPost)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iCURL[] = {
 	&iCURL_GetVersion,
 	&iCURL_GetProtocols,
@@ -392,6 +428,8 @@ static const ni::sMethodDef* Methods_iCURL[] = {
 	&iCURL_URLGetMultiPart,
 	&iCURL_URLGetString,
 	&iCURL_URLGetDataTable,
+	&iCURL_FetchGet,
+	&iCURL_FetchPost,
 
 };
 
@@ -413,6 +451,264 @@ static const ni::sInterfaceDef InterfaceDef_iCURL = {
 }
 
 // End of iCURL wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iFetchSink wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iFetchSink() {
+
+// Method: OnFetchSink_Success
+static const ni::sParameterDef iFetchSink_OnFetchSink_Success_Parameters[1] = { 
+  { "apFetch", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "iFetchRequest*" }
+}; 
+static const ni::sMethodDef iFetchSink_OnFetchSink_Success = {
+  "OnFetchSink_Success",
+  0|ni::eType_Null, NULL, "void",
+  1, iFetchSink_OnFetchSink_Success_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchSink_OnFetchSink_Success)
+#else
+  NULL
+#endif
+};
+
+// Method: OnFetchSink_Error
+static const ni::sParameterDef iFetchSink_OnFetchSink_Error_Parameters[1] = { 
+  { "apFetch", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "iFetchRequest*" }
+}; 
+static const ni::sMethodDef iFetchSink_OnFetchSink_Error = {
+  "OnFetchSink_Error",
+  0|ni::eType_Null, NULL, "void",
+  1, iFetchSink_OnFetchSink_Error_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchSink_OnFetchSink_Error)
+#else
+  NULL
+#endif
+};
+
+// Method: OnFetchSink_Progress
+static const ni::sParameterDef iFetchSink_OnFetchSink_Progress_Parameters[1] = { 
+  { "apFetch", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "iFetchRequest*" }
+}; 
+static const ni::sMethodDef iFetchSink_OnFetchSink_Progress = {
+  "OnFetchSink_Progress",
+  0|ni::eType_Null, NULL, "void",
+  1, iFetchSink_OnFetchSink_Progress_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchSink_OnFetchSink_Progress)
+#else
+  NULL
+#endif
+};
+
+// Method: OnFetchSink_ReadyStateChanged
+static const ni::sParameterDef iFetchSink_OnFetchSink_ReadyStateChanged_Parameters[1] = { 
+  { "apFetch", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFetchRequest), "iFetchRequest*" }
+}; 
+static const ni::sMethodDef iFetchSink_OnFetchSink_ReadyStateChanged = {
+  "OnFetchSink_ReadyStateChanged",
+  0|ni::eType_Null, NULL, "void",
+  1, iFetchSink_OnFetchSink_ReadyStateChanged_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchSink_OnFetchSink_ReadyStateChanged)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iFetchSink[] = {
+	&iFetchSink_OnFetchSink_Success,
+	&iFetchSink_OnFetchSink_Error,
+	&iFetchSink_OnFetchSink_Progress,
+	&iFetchSink_OnFetchSink_ReadyStateChanged,
+
+};
+
+//// Interface dispatch wrapper /////////////////////////////
+struct niHidden DispatchWrapper_iFetchSink : public ni::cIUnknownImpl<ni::iFetchSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+{
+	DispatchWrapper_iFetchSink(ni::iDispatch* apDispatch) {
+    mprotected_pAggregateParent = apDispatch;
+	}
+	~DispatchWrapper_iFetchSink() {
+    this->Invalidate();
+  }
+
+	ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) niImpl {
+    if (aIID == niGetInterfaceUUID(iFetchSink))
+      return this;
+		return mprotected_pAggregateParent->QueryInterface(aIID);
+	}
+	void __stdcall ListInterfaces(ni::iMutableCollection* apLst, ni::tU32 anFlags) const niImpl {
+    apLst->Add(niGetInterfaceUUID(iFetchSink));
+		mprotected_pAggregateParent->ListInterfaces(apLst,anFlags);
+	}
+
+  // Method (0): iFetchSink::OnFetchSink_Success
+  void __stdcall OnFetchSink_Success(iFetchRequest * apFetch) {
+    ni::Var _params_[1];
+    _params_[0] = niIUnknownCast(apFetch);
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Success,0,_params_,1,NULL);
+	}
+
+  // Method (1): iFetchSink::OnFetchSink_Error
+  void __stdcall OnFetchSink_Error(iFetchRequest * apFetch) {
+    ni::Var _params_[1];
+    _params_[0] = niIUnknownCast(apFetch);
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Error,1,_params_,1,NULL);
+	}
+
+  // Method (2): iFetchSink::OnFetchSink_Progress
+  void __stdcall OnFetchSink_Progress(iFetchRequest * apFetch) {
+    ni::Var _params_[1];
+    _params_[0] = niIUnknownCast(apFetch);
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Progress,2,_params_,1,NULL);
+	}
+
+  // Method (3): iFetchSink::OnFetchSink_ReadyStateChanged
+  void __stdcall OnFetchSink_ReadyStateChanged(iFetchRequest * apFetch) {
+    ni::Var _params_[1];
+    _params_[0] = niIUnknownCast(apFetch);
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_ReadyStateChanged,3,_params_,1,NULL);
+	}
+
+	static ni::iUnknown* Create(ni::iDispatch* apDispatch) {
+		niAssert(niIsOK(apDispatch));
+    if (!apDispatch->InitializeMethods(Methods_iFetchSink, niCountOf(Methods_iFetchSink))) {
+      niError(niFmt("Can't initialize dispatch methods for %s.",  "iFetchSink"));
+      return NULL;
+    }
+		return niNew DispatchWrapper_iFetchSink(apDispatch);
+	}
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iFetchSink[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iFetchSink = {
+  niGetInterfaceID(iFetchSink),
+  &niGetInterfaceUUID(iFetchSink),
+  1,
+  Parents_iFetchSink,
+  niCountOf(Methods_iFetchSink),Methods_iFetchSink,
+  DispatchWrapper_iFetchSink::Create
+};
+
+	return &InterfaceDef_iFetchSink;
+}
+
+// End of iFetchSink wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iFetchRequest wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iFetchRequest() {
+
+// Method: GetMethod
+static const ni::sMethodDef iFetchRequest_GetMethod = {
+  "GetMethod",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eFetchMethod",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetMethod)
+#else
+  NULL
+#endif
+};
+
+// Method: GetReadyState
+static const ni::sMethodDef iFetchRequest_GetReadyState = {
+  "GetReadyState",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eFetchReadyState",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetReadyState)
+#else
+  NULL
+#endif
+};
+
+// Method: GetStatus
+static const ni::sMethodDef iFetchRequest_GetStatus = {
+  "GetStatus",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetStatus)
+#else
+  NULL
+#endif
+};
+
+// Method: GetReceivedHeaders
+static const ni::sMethodDef iFetchRequest_GetReceivedHeaders = {
+  "GetReceivedHeaders",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetReceivedHeaders)
+#else
+  NULL
+#endif
+};
+
+// Method: GetReceivedData
+static const ni::sMethodDef iFetchRequest_GetReceivedData = {
+  "GetReceivedData",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetReceivedData)
+#else
+  NULL
+#endif
+};
+
+// Method: GetHasFailed
+static const ni::sMethodDef iFetchRequest_GetHasFailed = {
+  "GetHasFailed",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFetchRequest_GetHasFailed)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iFetchRequest[] = {
+	&iFetchRequest_GetMethod,
+	&iFetchRequest_GetReadyState,
+	&iFetchRequest_GetStatus,
+	&iFetchRequest_GetReceivedHeaders,
+	&iFetchRequest_GetReceivedData,
+	&iFetchRequest_GetHasFailed,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iFetchRequest[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iFetchRequest = {
+  niGetInterfaceID(iFetchRequest),
+  &niGetInterfaceUUID(iFetchRequest),
+  1,
+  Parents_iFetchRequest,
+  niCountOf(Methods_iFetchRequest),Methods_iFetchRequest,
+  NULL
+};
+
+	return &InterfaceDef_iFetchRequest;
+}
+
+// End of iFetchRequest wrapper
 
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
 
@@ -466,6 +762,39 @@ static const ni::sEnumDef Enum_eCURLHttpAuth = {
 
 	return &Enum_eCURLHttpAuth;
 }
+
+// --- eFetchMethod ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eFetchMethod() {
+
+static const ni::sEnumValueDef Enum_eFetchMethod_Values[] = {
+	{ "Get", ni::eFetchMethod_Get },
+	{ "Post", ni::eFetchMethod_Post },
+};
+static const ni::sEnumDef Enum_eFetchMethod = {
+	"eFetchMethod",
+  niCountOf(Enum_eFetchMethod_Values), Enum_eFetchMethod_Values
+};
+
+	return &Enum_eFetchMethod;
+}
+
+// --- eFetchReadyState ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eFetchReadyState() {
+
+static const ni::sEnumValueDef Enum_eFetchReadyState_Values[] = {
+	{ "Unsent", ni::eFetchReadyState_Unsent },
+	{ "Opened", ni::eFetchReadyState_Opened },
+	{ "HeadersReceived", ni::eFetchReadyState_HeadersReceived },
+	{ "Loading", ni::eFetchReadyState_Loading },
+	{ "Done", ni::eFetchReadyState_Done },
+};
+static const ni::sEnumDef Enum_eFetchReadyState = {
+	"eFetchReadyState",
+  niCountOf(Enum_eFetchReadyState_Values), Enum_eFetchReadyState_Values
+};
+
+	return &Enum_eFetchReadyState;
+}
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
 
 
@@ -506,6 +835,8 @@ static const ni::sObjectTypeDef* ObjectTypes[] = {
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
 static const ni::sInterfaceDef* Interfaces[] = {
   GetInterfaceDef_iCURL(),
+  GetInterfaceDef_iFetchSink(),
+  GetInterfaceDef_iFetchRequest(),
 };
 
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
@@ -514,6 +845,8 @@ static const ni::sInterfaceDef* Interfaces[] = {
 static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eCURLMessage(),
   GetEnumDef_eCURLHttpAuth(),
+  GetEnumDef_eFetchMethod(),
+  GetEnumDef_eFetchReadyState(),
 };
 
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
@@ -528,23 +861,23 @@ static const ni::sModuleDef ModuleDef(
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
   niCountOf(Interfaces), Interfaces,
 #else
-	0, NULL,
+  0, NULL,
 #endif
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
   niCountOf(Enumerations), Enumerations,
 #else
-	0, NULL,
+  0, NULL,
 #endif
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoConstDef
   0, NULL,
 #else
-	0, NULL,
+  0, NULL,
 #endif
   niCountOf(ObjectTypes), ObjectTypes
 );
 
   return &ModuleDef;
-}	// End of GetModuleDef_niCURL
+} // End of GetModuleDef_niCURL
 } // end of namespace ni
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

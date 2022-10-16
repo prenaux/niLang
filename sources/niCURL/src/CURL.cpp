@@ -24,6 +24,66 @@ niDeclareModuleTrace_(niCURL,TraceGetMultiPart);
 niDeclareModuleTrace_(niCURL,TraceGetString);
 #define TRACE_GET_STRING(FMT) niModuleTrace_(niCURL,TraceGetString,FMT)
 
+niDeclareModuleTrace_(niCURL,TraceFetch);
+#define TRACE_FETCH(FMT) niModuleTrace_(niCURL,TraceFetch,FMT)
+
+// XXX: This is not fully thread safe. Especially _fpHeaders & _fpData if the
+// caller starts to screw around with it while the data is being loaded,
+// they're going to have a bad time. We need to add a iFileBase implementation
+// that can wrap any other iFileBase in a mutex so that we can have a thread
+// safe dynamic memory buffer.
+//
+// That being said, this is used in a message handler that runs in the same
+// thread as the caller so it should be fairly well behaved.
+struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
+  const eFetchMethod _method;
+  const cString _url;
+  eFetchReadyState _readyState = eFetchReadyState_Unsent;
+  tU32 _status = 0;
+  Nonnull<iFile> _fpHeaders;
+  Nonnull<iFile> _fpData;
+  Ptr<iFetchSink> _sink;
+  tBool _hasFailed = eFalse;
+
+  sFetchRequest(
+    eFetchMethod aMethod,
+    const char* aURL,
+    iFile* apHeaders,
+    iFile* apData,
+    iFetchSink* apSink)
+      : _method(aMethod)
+      , _url(aURL)
+      , _fpHeaders(apHeaders)
+      , _fpData(apData)
+      , _sink(apSink)
+  {
+  }
+
+  virtual eFetchMethod __stdcall GetMethod() const {
+    return _method;
+  }
+
+  virtual eFetchReadyState __stdcall GetReadyState() const {
+    return _readyState;
+  }
+
+  virtual tU32 __stdcall GetStatus() const {
+    return _status;
+  }
+
+  virtual iFile* __stdcall GetReceivedHeaders() const {
+    return _fpHeaders;
+  }
+
+  virtual iFile* __stdcall GetReceivedData() const {
+    return _fpData;
+  }
+
+  virtual tBool __stdcall GetHasFailed() const {
+    return _hasFailed;
+  }
+};
+
 // This flattens all properties, it doesnt handle objects or arrays...
 struct _JsonParseToDataTableSink : cIUnknownImpl<iJsonParserSink,eIUnknownImplFlags_Local> {
   cString _keyName;
@@ -967,6 +1027,8 @@ class cCURL : public cIUnknownImpl<iCURL>
     Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
     Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
     tI32 responseCode = -1;
+
+    ni::cString url = aURL;
     Ptr<iRunnable> runnable = this->URLGet(
       ni::MessageHandler([&] (tU32 anMsg, const Var& A, const Var& B) {
         switch (anMsg) {
@@ -1009,10 +1071,6 @@ class cCURL : public cIUnknownImpl<iCURL>
             niError(niFmt("URLGetDataTable[%s]: Request Failed: '%s'.", aURL, A));
             break;
           }
-          default: {
-            niError(niFmt("URLGetDataTable[%s]: Unexpected message '%s'.", aURL, MessageID_ToString(anMsg)));
-            break;
-          }
         }
       }),
       aURL,
@@ -1025,6 +1083,138 @@ class cCURL : public cIUnknownImpl<iCURL>
 
     runnable->Run();
     return responseCode;
+  }
+
+  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
+                                      const achar* aURL,
+                                      iFile* apSendData,
+                                      iFetchSink* apSink,
+                                      const tStringCVec* apHeaders)
+  {
+    Nonnull<sFetchRequest> request = ni::NewNonnull<sFetchRequest>(
+      aMethod,
+      aURL,
+      ni::CreateFileDynamicMemory(128,""),
+      ni::CreateFileDynamicMemory(128,""),
+      apSink
+    );
+    TRACE_FETCH(("... Fetch[%s]: Created request object", request->_url));
+
+    Nonnull<iMessageHandler> msgHandler = ni::MessageHandler([request] (tU32 anMsg, const Var& A, const Var& B) {
+      switch (anMsg) {
+        case eCURLMessage_Started: {
+          TRACE_FETCH(("... Fetch[%s]: Started", request->_url));
+          request->_readyState = eFetchReadyState_Opened;
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_ReadyStateChanged(request);
+          }
+          break;
+        }
+        case eCURLMessage_ReceivingHeader: {
+          TRACE_FETCH(("... Fetch[%s]: Receiving Header", request->_url));
+          break;
+        }
+        case eCURLMessage_ReceivingData: {
+          TRACE_FETCH(("... Fetch[%s]: Receiving Data", request->_url));
+          request->_readyState = eFetchReadyState_HeadersReceived;
+          request->_fpHeaders->SeekSet(0);
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_ReadyStateChanged(request);
+          }
+          break;
+        }
+        case eCURLMessage_Progress: {
+          TRACE_FETCH(("... Fetch[%s]: Progress %s", request->_url, A));
+          const eFetchReadyState wasState = request->_readyState;
+          if (wasState != eFetchReadyState_Loading) {
+            request->_readyState = eFetchReadyState_Loading;
+            if (request->_sink.IsOK()) {
+              request->_sink->OnFetchSink_ReadyStateChanged(request);
+            }
+          }
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_Progress(request);
+          }
+          break;
+        }
+        case eCURLMessage_Completed: {
+          request->_hasFailed = eFalse;
+          request->_readyState = eFetchReadyState_Done;
+          request->_status = (tU32)A.GetIntValue();
+          request->_fpData->SeekSet(0);
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_ReadyStateChanged(request);
+            request->_sink->OnFetchSink_Success(request);
+          }
+          break;
+        }
+        case eCURLMessage_ResponseCode: {
+          TRACE_FETCH(("... Fetch[%s]: ResponseCode: %d", request->_url, A));
+          request->_status = (tU32)A.GetIntValue();
+          break;
+        }
+        case eCURLMessage_Failed: {
+          request->_hasFailed = eTrue;
+          request->_readyState = eFetchReadyState_Done;
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_ReadyStateChanged(request);
+            request->_sink->OnFetchSink_Error(request);
+          }
+          break;
+        }
+      }
+    });
+
+    Ptr<iRunnable> runnable;
+    switch (aMethod) {
+      case eFetchMethod_Get:
+        runnable = this->URLGet(
+          msgHandler,
+          aURL,
+          request->_fpData,
+          request->_fpHeaders,
+          apHeaders);
+        if (!niIsOK(runnable)) {
+          niError(niFmt("Can't create URLGet runnable"));
+          return NULL;
+        }
+        break;
+      case eFetchMethod_Post:
+        runnable = this->URLPostFile(
+          msgHandler,
+          aURL,
+          request->_fpData,
+          request->_fpHeaders,
+          apSendData,
+          apHeaders,
+          NULL);
+        if (!niIsOK(runnable)) {
+          niError(niFmt("Can't create URLPostFile runnable"));
+          return NULL;
+        }
+        break;
+      default:
+        niError(niFmt("Unknown method '%d'.", aMethod));
+        return NULL;
+    }
+
+    if (!ni::GetConcurrent()->GetExecutorIO()->Execute(runnable)) {
+      niError(niFmt("Can't execute runnable"));
+      return NULL;
+    }
+
+    return request;
+  }
+
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+    niCheck(niStringIsOK(aURL), NULL);
+    return _Fetch(eFetchMethod_Get, aURL, NULL, apSink, apHeaders);
+  }
+
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+    niCheck(niStringIsOK(aURL), NULL);
+    niCheckIsOK(apData, NULL);
+    return _Fetch(eFetchMethod_Post, aURL, apData, apSink, apHeaders);
   }
 
   niEndClass(cCURL);

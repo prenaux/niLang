@@ -16,9 +16,13 @@ niExportFunc(const ni::iModuleDef*) GetModuleDef_niCURL();
 niExportFunc(ni::iUnknown*) New_niCURL_CURL(const ni::Var&, const ni::Var&);
 
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iCURL();
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iFetchSink();
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iFetchRequest();
 
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eCURLMessage();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eCURLHttpAuth();
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eFetchMethod();
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eFetchReadyState();
 
 
 /**@}*/

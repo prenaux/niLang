@@ -9,4 +9,5 @@
   <dependency name='niLang' />
   <objecttype  name='CURL' desc='CURL Object' type='ni::iCURL'  />
   <include>niCURL/src/_idl/ICURL.h.idl.xml</include>
+  <include>niCURL/src/_idl/IFetch.h.idl.xml</include>
 </module>

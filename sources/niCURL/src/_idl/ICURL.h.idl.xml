@@ -21,7 +21,7 @@
 				</comments>
 			</value>
 			<value name="eCURLMessage_ReceivingData" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;r&apos; ) ">
-				<comments desc="Started receiving the data. ">
+				<comments desc="Started receiving the data. Header has been received. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
@@ -489,6 +489,7 @@
 			<method java_name="urlgetDataTable" name="URLGetDataTable" num_parameters="2">
 				<comments desc="Does a simple get on a URL and return the result as a datatable. ">
 					<remark text="For this to work the endpoint is assumed to return a json response. "/>
+					<remark text="The json reponse is flattened in the datatable, it doesnt handle nested objects or arrays. If the same key is present multiple time the last value seen is the one that&apos;ll be stored in the datatable. "/>
 				</comments>
 				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
 				<parameter
@@ -502,6 +503,57 @@
 					type="iDataTable *"
 					typec="iDataTable*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fetchGet" name="FetchGet" num_parameters="3">
+				<comments desc="Start a GET fetch request. ">
+					<remark text="The request is executed by iConcurrent::GetExecutorIO() or the platforms&apos; native system. It should be assumed that it runs in a separated thread and thus the sink needs to be thread safe. "/>
+				</comments>
+				<return type="Ptr&lt;iFetchRequest&gt;" typec="Ptr&lt;iFetchRequest&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iFetchSink *"
+					typec="iFetchSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="fetchPost" name="FetchPost" num_parameters="4">
+				<comments desc="Start a POST fetch request. ">
+					<remark text="The request is executed by iConcurrent::GetExecutorIO() or the platforms&apos; native system. It should be assumed that it runs in a separated thread and thus the sink needs to be thread safe. "/>
+				</comments>
+				<return type="Ptr&lt;iFetchRequest&gt;" typec="Ptr&lt;iFetchRequest&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aURL"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apData"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSink"
+					type="iFetchSink *"
+					typec="iFetchSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="apHeaders"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

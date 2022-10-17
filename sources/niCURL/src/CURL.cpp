@@ -783,19 +783,18 @@ class cCURL : public cIUnknownImpl<iCURL>
       const tStringCVec* apHeaders, const achar* aContentType)
   {
     niUnused(runnable);
-    struct curl_slist* curlHeaders = NULL;
     if (niStringIsOK(aContentType)) {
       cString contentFull = "Content-Type: ";
       contentFull += aContentType;
-      curlHeaders = curl_slist_append(curlHeaders, contentFull.Chars());
+      runnable->_headerList = curl_slist_append(runnable->_headerList, contentFull.Chars());
     }
     if (apHeaders != NULL && !apHeaders->empty()) {
       niLoop(i,apHeaders->size()) {
-        curlHeaders = curl_slist_append(curlHeaders, apHeaders->at(i).Chars());
+        runnable->_headerList = curl_slist_append(runnable->_headerList, apHeaders->at(i).Chars());
       }
     }
-    if (curlHeaders != NULL) {
-      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, curlHeaders);
+    if (runnable->_headerList != NULL) {
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, runnable->_headerList);
     }
   }
 
@@ -926,8 +925,8 @@ class cCURL : public cIUnknownImpl<iCURL>
       }
     }
 
-    /* initialize custom header list (stating that Expect: 100-continue is not
-       wanted) */
+    // initialize custom header list (stating that Expect: 100-continue is not
+    // wanted)
     static const char buf[] = "Expect:";
     runnable->_headerList = curl_slist_append(runnable->_headerList, buf);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, runnable->_headerList);

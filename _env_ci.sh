@@ -12,7 +12,7 @@ if [ ! -d "$HAM_HOME" ]; then
     echo "I/HAM_HOME ('$HAM_HOME') folder not found, cloning ham from git..."
     set -ex
     pushd $WORK
-    git clone https://github.com/prenaux/ham.git
+    git clone --depth 1 https://github.com/prenaux/ham.git
     popd
     set +ex
 fi

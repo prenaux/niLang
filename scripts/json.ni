@@ -102,6 +102,7 @@
 
   ///////////////////////////////////////////////
   function parseFile(fp) {
+    local fp = ::fs.fileOpenRead(fp)
     local sink = _parseSink.Clone()
     ::gLang.JsonParseFile(fp,sink)
     if (sink._error)

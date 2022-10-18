@@ -129,8 +129,8 @@ rule niUI_Link_CopyDeps {
 }
 
 rule niUI_LinkLibs_Deps {
-  niUI_Link_CopyDeps $(<) ;
-  tkLinkLibs $(<) : libMojoshader ;
+  niUI_Link_CopyDeps $(<) : $(2) ;
+  tkLinkLibs $(<) : libMojoshader : $(2) ;
   if $(NI_VIDEO_USE_FFMPEG) = 1 {
     if $(FFMPEG_USE_SDK) = 1 {
       if $(WINDOWS) = 1 {
@@ -167,14 +167,14 @@ rule niUI_LinkLibs_Deps {
       }
     }
     else {
-      tkLinkLibs $(<) : niUI_ffmpeg_base ;
-      tkLinkLibs $(<) : niUI_ffmpeg_codecs ;
+      tkLinkLibs $(<) : niUI_ffmpeg_base : $(2) ;
+      tkLinkLibs $(<) : niUI_ffmpeg_codecs : $(2) ;
     }
   }
   if $(NI_VIDEO_USE_OGG) = 1 || $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
-    tkLinkLibs $(<) : niUI_ogg ;
+    tkLinkLibs $(<) : niUI_ogg : $(2) ;
     if ! $(NO_THREADS) = 1 {
-      tkLinkLibs $(<) : niUI_theoraplayer ;
+      tkLinkLibs $(<) : niUI_theoraplayer : $(2) ;
     }
   }
   if $(WINDOWS) = 1 {
@@ -189,34 +189,34 @@ rule niUI_LinkLibs_Deps {
 }
 
 rule niUI_LinkLibs {
-  niUI_LinkLibs_Deps $(<) ;
+  niUI_LinkLibs_Deps $(<) : $(2) ;
   if $(NI_VIDEO_USE_IPCAM) = 1 {
-    niCURL_LinkLibs $(<) ;
+    niCURL_LinkLibs $(<) : $(2) ;
   }
-  tkLinkLibs $(<) : niUI ;
+  tkLinkLibs $(<) : niUI : $(2) ;
 }
 
 rule niUI_LinkDll {
   if $(NO_DLL) {
-    niUI_LinkLibs $(<) ;
+    niUI_LinkLibs $(<) : $(2) ;
   }
   else {
-    niUI_Link_CopyDeps $(<) ;
+    niUI_Link_CopyDeps $(<) : $(2) ;
     if $(NI_VIDEO_USE_IPCAM) = 1 {
-      niCURL_LinkDll $(<) ;
+      niCURL_LinkDll $(<) : $(2) ;
     }
-    tkLinkDll $(<) : niUI ;
+    tkLinkDll $(<) : niUI : : $(2) ;
   }
 }
 
 rule niImportModuleLibs_niUI {
   niImportModuleHdrs niUI : $(1) ;
-  niUI_LinkLibs $(PKGTARGET) ;
+  niUI_LinkLibs $(PKGTARGET) : $(1) ;
 }
 
 rule niImportModuleDll_niUI {
   niImportModuleHdrs niUI : $(1) ;
-  niUI_LinkDll $(PKGTARGET) ;
+  niUI_LinkDll $(PKGTARGET) : $(1) ;
 }
 
 if $(JSCC) = 1 || $(LINUX) = 1 || $(LOA_OS) = qnx {
@@ -247,7 +247,7 @@ rule niCURL_LinkDll {
     niCURL_LinkLibs $(<) : $(2) ;
   }
   else {
-    tkLinkDll $(<) : niCURL : $(2) ;
+    tkLinkDll $(<) : niCURL : : $(2) ;
   }
 }
 

@@ -5,6 +5,8 @@
 #include "../src/API/niLang/Utils/WeakPtr.h"
 #include "../src/API/niLang/Utils/QPtr.h"
 
+namespace {
+
 using namespace ni;
 
 struct FWeakPtr {
@@ -145,4 +147,48 @@ TEST_FIXTURE(FWeakPtr,Nonnull) {
   ptrFile = NULL;
 
   CHECK_EQUAL(1, wFile.weak_object_ptr()->GetNumRefs());
+}
+
+struct sMultiInherit : public cIUnknownImpl<iRunnable,eIUnknownImplFlags_Default,iMessageHandler> {
+  virtual Var __stdcall Run() niImpl { return 456; }
+  virtual tU64 __stdcall GetThreadID() const niImpl { return 123; }
+  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA, const Var& avarB) niImpl {}
+};
+
+TEST_FIXTURE(FWeakPtr,MultiInherit) {
+  Ptr<sMultiInherit> mi1 { niNew sMultiInherit() };
+  WeakPtr<sMultiInherit> w1 { mi1 };
+
+  // the base address and the address of the iMessageHandler vtable are not the same once we have multiple inheritance
+  CHECK_NOT_EQUAL((tIntPtr)mi1.raw_ptr(), (tIntPtr)static_cast<iMessageHandler*>(mi1.raw_ptr()));
+
+  // the base address and the address of the iRunnable are the same because iRunnable is first in the list
+  CHECK_EQUAL((tIntPtr)mi1.raw_ptr(), (tIntPtr)static_cast<iRunnable*>(mi1.raw_ptr()));
+
+  // get iMessageHandler* from the weak pointer naively by doing a straight unsafe cast
+  Ptr<iMessageHandler> r_cast_incorrect = (iMessageHandler*)ni_object_get_weak_ptr(w1.weak_object_ptr());
+  // get the iMessageHandler* from the weak pointer using QPtr which will correctly do QueryInterface<iMessageHandler>(weakptr.Deref())
+  QPtr<iMessageHandler> r_qi_correct = w1;
+
+  CHECK(r_cast_incorrect.raw_ptr() != nullptr);
+  CHECK(r_qi_correct.raw_ptr() != nullptr);
+  CHECK_EQUAL((tIntPtr)static_cast<iMessageHandler*>(mi1.raw_ptr()), (tIntPtr)r_qi_correct.raw_ptr());
+  CHECK_NOT_EQUAL((tIntPtr)static_cast<iMessageHandler*>(mi1.raw_ptr()), (tIntPtr)r_cast_incorrect.raw_ptr());
+
+  // They are not pointing to the same base address...
+  CHECK(r_qi_correct.raw_ptr() != r_cast_incorrect.raw_ptr());
+
+  // Check that we're calling what we expect
+  CHECK_EQUAL(123, r_qi_correct->GetThreadID());
+
+  // XXX: This would crash or call the wrong function and return a random value
+  // CHECK_EQUAL(123, r_cast_incorrect->GetThreadID());
+
+  // QueryInterface<> is needed to retrieve the correct address of the
+  // iMessageHandler implementation. Obviously you should not "patch after the
+  // fact" a pointer in production code and use it correctly in the first
+  // place, this is here only for illustration purpose.
+  CHECK_EQUAL(123, ni::QueryInterface<iMessageHandler>(r_cast_incorrect.raw_ptr())->GetThreadID());
+}
+
 }

@@ -325,22 +325,6 @@ public:
     }
     return NULL;
   }
-
-  iUnknown* DerefAndAddRef() {
-    __sync_local_ptr(iUnknown,pObserved);
-    iUnknown* o = pObserved.ptr();
-    if (o) {
-      if (o->GetNumRefs() <= 0) {
-#ifdef _DEBUG
-        niLog(Debug,niFmt("DerefAndAddRef: Trying to revive %p with weak pointer.", (tIntPtr)o));
-#endif
-        return NULL;
-      }
-      o->AddRef();
-      return o;
-    }
-    return NULL;
-  }
 };
 
 #define MEMORY_INIT_HEADER(P,SIZE)                  \
@@ -445,17 +429,6 @@ niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr) {
 #endif
   sWeakPtrImpl* weakPtr = (sWeakPtrImpl*)apWeakPtr;
   return weakPtr->Deref();
-}
-
-niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr) {
-  if (!apWeakPtr)
-    return NULL;
-#ifdef _DEBUG
-  // Check for improper usage of the API ; assert if apWeakPtr not a weak pointer.
-  niAssert(apWeakPtr->QueryInterface(niGetInterfaceUUID(iWeakPtr)) != NULL);
-#endif
-  sWeakPtrImpl* weakPtr = (sWeakPtrImpl*)apWeakPtr;
-  return weakPtr->DerefAndAddRef();
 }
 
 niExportFunc(sVec4i*) ni_mem_get_stats(sVec4i* apStats) {

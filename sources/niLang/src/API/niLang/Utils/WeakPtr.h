@@ -15,7 +15,6 @@ namespace ni {
 niExportFunc(tBool) ni_object_has_weak_ptr(iUnknown* apObject);
 niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObjectPtr);
 niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr);
-niExportFunc(iUnknown*) ni_object_deref_and_add_ref_weak_ptr(iUnknown* apWeakPtr);
 
 /**
  * A weak reference to an iUnknown instance.
@@ -72,9 +71,11 @@ struct WeakPtr {
     mWeakPtrObject = NULL;
   }
 
-  __forceinline T* Deref() const {
-    return (T*)(niTypename T::IUnknownBaseType*)
-        ni_object_deref_weak_ptr(mWeakPtrObject.ptr());
+  template <typename S = niTypename T::IUnknownBaseType>
+  __forceinline S* Deref() const {
+    iUnknown* pObject = ni_object_deref_weak_ptr(mWeakPtrObject.ptr());
+    // We must call QueryInterface for multiple inheritence to work correctly.
+    return ni::QueryInterface<S>(pObject);
   }
 
   tBool is_null() const {
@@ -98,11 +99,6 @@ struct WeakPtr {
   __forceinline void _Set(const T* apObject) {
     mWeakPtrObject = apObject ? ni_object_get_weak_ptr(
       (niTypename T::IUnknownBaseType*)apObject) : NULL;
-  }
-
-  __forceinline T* _DerefAndAddRef() const {
-    return (T*)(niTypename T::IUnknownBaseType*)
-        ni_object_deref_and_add_ref_weak_ptr(mWeakPtrObject.ptr());
   }
 
   Ptr<iUnknown> mWeakPtrObject;

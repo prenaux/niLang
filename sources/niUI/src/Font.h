@@ -4,6 +4,8 @@
 #ifndef __FONT_H__
 #define __FONT_H__
 
+#include "Graphics.h"
+
 namespace ni {
 
 class cGraphics;

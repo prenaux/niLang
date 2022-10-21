@@ -94,28 +94,16 @@ struct QPtr
   }
 
   QPtr(const WeakPtr<T>& aP) {
-    mPtr = aP._DerefAndAddRef();
+    mPtr = (T*)aP.Deref();
+    if (mPtr) {
+      ni::AddRef(mPtr);
+    }
   }
   template <typename S>
   QPtr(const WeakPtr<S>& aP) {
-    S* sp = aP._DerefAndAddRef();
-    if (sp) {
-      mPtr = (T*)ni::QueryInterface<tInterface>(sp);
-      // No AddRef, its already added by _DerefAndAddRef
-      if (mPtr == NULL) {
-        // If QueryInterface failed we have to release the object since we
-        // just added a reference to it with _DerefAndAddRef
-        ni::Release(sp);
-      }
-      // If QueryInterface returns a different object we need add a reference
-      // to it and release the original one
-      else if ((tIntPtr)sp != (tIntPtr)mPtr) {
-        ni::AddRef(mPtr);
-        ni::Release(sp);
-      }
-    }
-    else {
-      mPtr = NULL;
+    mPtr = (T*)aP.template Deref<tInterface>();
+    if (mPtr) {
+      ni::AddRef(mPtr);
     }
   }
 

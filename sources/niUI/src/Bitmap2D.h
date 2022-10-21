@@ -2,6 +2,7 @@
 #define __BITMAP2D_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+#include "Graphics.h"
 
 #define BMPFLAGS_FREEDATA niBit(0)
 #define BMPFLAGS_LOCKED   niBit(1)

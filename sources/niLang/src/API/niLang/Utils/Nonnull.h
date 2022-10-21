@@ -247,12 +247,13 @@ struct Nonnull
 
     template <typename U>
     explicit tUnsafeCheckNonnullInitForMacro(const WeakPtr<U>& aPtr)
-        : _maybe_null_ptr(aPtr._DerefAndAddRef()) {
-#ifdef _DEBUG
+        : _maybe_null_ptr((T*)aPtr.template Deref<typename T::IUnknownBaseType>()) {
       if (_maybe_null_ptr) {
+        ni::AddRef(_maybe_null_ptr);
+#ifdef _DEBUG
         _initialNumRef = _maybe_null_ptr->GetNumRefs();
-      }
 #endif
+      }
     }
 
     ~tUnsafeCheckNonnullInitForMacro() {

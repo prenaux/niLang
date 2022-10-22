@@ -46,8 +46,8 @@ TEST_FIXTURE(FCURLFetch,Get) {
     sink,
     requestHeaders).non_null();
 
-  TEST_LOOP(
-    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+  UnitTest::TestLoop(TEST_PARAMS_CALL,
+    ni::Runnable([mq,request]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
         return eFalse;
@@ -91,8 +91,8 @@ TEST_FIXTURE(FCURLFetch,Post) {
     sink,
     requestHeaders).non_null();
 
-  TEST_LOOP(
-    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+  UnitTest::TestLoop(TEST_PARAMS_CALL,
+    ni::Runnable([mq,request]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
         return eFalse;
@@ -128,8 +128,8 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
     sink,
     NULL).non_null();
 
-  TEST_LOOP(
-    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+  UnitTest::TestLoop(TEST_PARAMS_CALL,
+    ni::Runnable([mq,request]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
         return eFalse;

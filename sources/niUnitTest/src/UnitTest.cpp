@@ -1135,7 +1135,7 @@ void UnitTest_Loop() {
   }
 }
 
-void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TEST_PARAMS_FUNC) {
+void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd) {
   niPanicAssert(aLoop.IsOK());
   _runUnitTestLoop = aLoop;
   _runUnitTestEnd = aTestEnd;
@@ -1145,7 +1145,7 @@ void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TES
 
 #else
 
-void TestLoop(ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd, TEST_PARAMS_FUNC) {
+void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd) {
   niPanicAssert(aLoop.IsOK());
   while (1) {
       ni::Var r = aLoop->Run();

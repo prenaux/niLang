@@ -1,4 +1,5 @@
 if [ SubDirOnce TOP niCURL tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
 
 tkDefTest Test_niCURL : 1.0.0 : niCURL ;
 niImportModuleLibs niUnitTest ;

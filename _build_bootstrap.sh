@@ -5,6 +5,6 @@ source _env_ci.sh
 
 set -ex
 export BUILD=ra
-ham NO_MODULEDEF=1 pass1 build_tools
+NO_BASETOOLS=1 NO_MODULEDEF=1 ham pass1 build_tools
 ham pass1
 ham all

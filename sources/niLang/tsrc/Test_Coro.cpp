@@ -20,11 +20,20 @@ namespace std_coro = std;
 struct CoHelloR {
   struct promise_type;
 
+  std_coro::coroutine_handle<promise_type> mHandle;
+
+  CoHelloR(std_coro::coroutine_handle<promise_type> aHandle)
+      : mHandle(aHandle) {}
+
+  void resume() {
+    mHandle.resume();
+  }
+
   // Awaitable interface
   struct Awaitable {
     bool await_ready() noexcept;
     void await_suspend(std_coro::coroutine_handle<promise_type>) noexcept;
-    void await_resume() noexcept;
+    void await_resume()  noexcept;
   };
 
   // Equivalent to std_coro::suspend_always
@@ -34,10 +43,18 @@ struct CoHelloR {
     void await_resume() noexcept {}
   };
 
-  struct promise_type {
-    CoHelloR get_return_object() { return {}; }
-    // niCoroNS(suspend_always) initial_suspend() { return {}; }
-    std_coro::suspend_never initial_suspend() { return {}; }
+  // https://en.cppreference.com/w/cpp/coroutine/coroutine_traits
+  struct promise_type /* or std_coro::coroutine_traits<CoHelloR, ...> */ {
+    // promise_type(T...); // optional
+    // ---- Start
+    CoHelloR get_return_object() {
+      return CoHelloR {
+        std_coro::coroutine_handle<promise_type>::from_promise(*this)
+      };
+    }
+    std_coro::suspend_always initial_suspend() { return {}; } // start suspended
+    // std_coro::suspend_never initial_suspend() { return {}; } // run right away
+    // ---- Shutdown
     void return_void() {}
     void unhandled_exception() {}
     SuspendAlways final_suspend() noexcept { return {}; }
@@ -53,5 +70,6 @@ struct FCoro {
 };
 
 TEST_FIXTURE(FCoro,Hello) {
-  hello_coro();
+  CoHelloR c = hello_coro();
+  c.resume();
 }

@@ -53,7 +53,7 @@
 #  include "FileFd.h"
 #endif
 
-#if defined niWinDesktop || defined niOSX
+#if defined niWinDesktop || defined niOSX || defined niLinux
 #define HAS_CONSOLE_COLORS
 #endif
 

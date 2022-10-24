@@ -12,3 +12,6 @@ SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niLang ] ;
+
+# For coroutine support
+ObjectC++Flags $(BUILD_SRC) : -std=c++20 -stdlib=libc++ ;

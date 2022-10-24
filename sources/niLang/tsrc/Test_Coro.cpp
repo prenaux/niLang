@@ -22,13 +22,6 @@ struct CoHelloR {
 
   std_coro::coroutine_handle<promise_type> mHandle;
 
-  CoHelloR(std_coro::coroutine_handle<promise_type> aHandle)
-      : mHandle(aHandle) {}
-
-  void resume() {
-    mHandle.resume();
-  }
-
   // Awaitable interface
   struct Awaitable {
     bool await_ready() noexcept;
@@ -43,8 +36,22 @@ struct CoHelloR {
     void await_resume() noexcept {}
   };
 
-  // https://en.cppreference.com/w/cpp/coroutine/coroutine_traits
-  struct promise_type /* or std_coro::coroutine_traits<CoHelloR, ...> */ {
+  //
+  // the promise is the central point, its where the data should be stored
+  //
+  struct promise_type
+  // or std_coro::coroutine_traits<CoHelloR, ...>
+  // (cf https://en.cppreference.com/w/cpp/coroutine/coroutine_traits)
+  {
+    ni::Var mValue { niVarNull };
+
+    promise_type(ni::Var aValue)
+        : mValue(aValue)
+    {}
+
+    promise_type()
+    {}
+
     // promise_type(T...); // optional
     // ---- Start
     CoHelloR get_return_object() {
@@ -58,12 +65,38 @@ struct CoHelloR {
     void return_void() {}
     void unhandled_exception() {}
     SuspendAlways final_suspend() noexcept { return {}; }
+    // ---- Yield
+    std_coro::suspend_always yield_value(const ni::Var& aValue) {
+      mValue = aValue;
+      return {};
+    }
   };
+
+  CoHelloR(std_coro::coroutine_handle<promise_type> aHandle)
+      : mHandle(aHandle) {}
+
+  void resume() {
+    mHandle.resume();
+  }
+
+  void provide(const ni::Var& aValue) {
+    mHandle.promise().mValue = aValue;
+    mHandle.resume();
+  }
+
+  ni::Var GetValue() const {
+    return mHandle.promise().mValue;
+  }
 };
 
 CoHelloR hello_coro() {
-  niDebugFmt(("... hello_coro"));
-  co_return;
+  niDebugFmt(("... hello_coro 1"));
+  co_yield ni::Var(1);
+  niDebugFmt(("... hello_coro 2"));
+  co_yield ni::Var(2);
+  niDebugFmt(("... hello_coro 3"));
+  co_yield ni::Var(3);
+  co_yield niVarNull;
 }
 
 struct FCoro {
@@ -71,5 +104,8 @@ struct FCoro {
 
 TEST_FIXTURE(FCoro,Hello) {
   CoHelloR c = hello_coro();
-  c.resume();
+  do {
+    c.resume();
+    niDebugFmt((".. CoHelloR.GetValue(): %s", c.GetValue()));
+  } while (!c.GetValue().IsNull());
 }

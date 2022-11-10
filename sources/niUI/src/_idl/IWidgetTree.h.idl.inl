@@ -252,6 +252,22 @@ IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetName,0)
 	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
 IDLC_METH_END(ni,iWidgetTreeNode,GetName,0)
 
+/** ni -> iWidgetTreeNode::SetDisplayName/1 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetDisplayName,1)
+	IDLC_DECL_VAR(achar*,aVal)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aVal)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,SetDisplayName,1,(aVal))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,SetDisplayName,1)
+
+/** ni -> iWidgetTreeNode::GetDisplayName/0 **/
+IDLC_METH_BEGIN(ni,iWidgetTreeNode,GetDisplayName,0)
+	IDLC_DECL_RETVAR(const achar*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidgetTreeNode,GetDisplayName,0,())
+	IDLC_RET_FROM_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,_Ret)
+IDLC_METH_END(ni,iWidgetTreeNode,GetDisplayName,0)
+
 /** ni -> iWidgetTreeNode::SetIcon/1 **/
 IDLC_METH_BEGIN(ni,iWidgetTreeNode,SetIcon,1)
 	IDLC_DECL_VAR(iOverlay*,aVal)

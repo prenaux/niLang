@@ -35522,6 +35522,33 @@
 				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				java_name="setDisplayName"
+				name="SetDisplayName"
+				num_parameters="1"
+				property="set"
+				property_name2="displayName"
+				property_name="display_name">
+				<comments desc="Set the node&apos;s display name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDisplayName"
+				name="GetDisplayName"
+				num_parameters="0"
+				property="get"
+				property_name2="displayName"
+				property_name="display_name">
+				<comments desc="Get the node&apos;s display name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
 				java_name="setIcon"
 				name="SetIcon"
 				num_parameters="1"

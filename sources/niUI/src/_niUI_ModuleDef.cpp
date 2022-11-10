@@ -34891,6 +34891,33 @@ static const ni::sMethodDef iWidgetTreeNode_GetName = {
 #endif
 };
 
+// Method: SetDisplayName
+static const ni::sParameterDef iWidgetTreeNode_SetDisplayName_Parameters[1] = { 
+  { "aVal", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+}; 
+static const ni::sMethodDef iWidgetTreeNode_SetDisplayName = {
+  "SetDisplayName",
+  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "tBool",
+  1, iWidgetTreeNode_SetDisplayName_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iWidgetTreeNode_SetDisplayName)
+#else
+  NULL
+#endif
+};
+
+// Method: GetDisplayName
+static const ni::sMethodDef iWidgetTreeNode_GetDisplayName = {
+  "GetDisplayName",
+  ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iWidgetTreeNode_GetDisplayName)
+#else
+  NULL
+#endif
+};
+
 // Method: SetIcon
 static const ni::sParameterDef iWidgetTreeNode_SetIcon_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
@@ -35192,6 +35219,8 @@ static const ni::sMethodDef* Methods_iWidgetTreeNode[] = {
 	&iWidgetTreeNode_GetFlags,
 	&iWidgetTreeNode_SetName,
 	&iWidgetTreeNode_GetName,
+	&iWidgetTreeNode_SetDisplayName,
+	&iWidgetTreeNode_GetDisplayName,
 	&iWidgetTreeNode_SetIcon,
 	&iWidgetTreeNode_GetIcon,
 	&iWidgetTreeNode_SetSelected,

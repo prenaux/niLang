@@ -452,6 +452,17 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
+  tBool __stdcall SetDisplayName(const achar *aVal) {
+    mstrDisplayName = aVal;
+    return eTrue;
+  }
+
+  ///////////////////////////////////////////////
+  const achar * __stdcall GetDisplayName() const {
+    return mstrDisplayName.IsEmpty() ? mstrName.Chars() : mstrDisplayName.Chars();
+  }
+
+  ///////////////////////////////////////////////
   tBool __stdcall SetIcon(iOverlay *aVal) {
     mptrIcon = aVal;
     return mptrIcon.IsOK();
@@ -853,6 +864,7 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   tU32        mnDrawIndex;
   tTreeNodeVec    mvChildren;
   cString       mstrName;
+  cString       mstrDisplayName;
   tWidgetTreeNodeFlags  mFlags;
   Ptr<iOverlay> mptrIcon;
   Ptr<iUnknown> mptrUserdata;
@@ -932,7 +944,7 @@ static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont, cW
         apNode->_GetFont(),
         r,
         eFontFormatFlags_CenterV,
-        apNode->GetName());
+        apNode->GetDisplayName());
   }
 }
 

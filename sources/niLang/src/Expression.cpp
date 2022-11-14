@@ -2021,80 +2021,17 @@ class OpURL : public Op
 
   Op* Create() const { return niNew OpURL(mptrResolver,mstrURL); }
 
-  tBool SetupEvaluation(iExpressionContext*) {
-    if (!mptrResolver.IsOK() || mstrURL.empty())
+  tBool SetupEvaluation(iExpressionContext* ctx) {
+    if(!mptrResolver.IsOK() || mstrURL.empty())
       return eFalse;
-
-    Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-
-    eExpressionVariableType type;
-    switch (niType(v.GetType())) {
-      case eType_Vec2i:
-      case eType_Vec2f: {
-        type = eExpressionVariableType_Vec2;
-        break;
-      }
-      case eType_Vec3i:
-      case eType_Vec3f: {
-        type = eExpressionVariableType_Vec3;
-        break;
-      }
-      case eType_Vec4i:
-      case eType_Vec4f: {
-        type = eExpressionVariableType_Vec4;
-        break;
-      }
-      case eType_Matrixf: {
-        type = eExpressionVariableType_Matrix;
-        break;
-      }
-      case eType_IUnknown: {
-        type = eExpressionVariableType_IUnknown;
-        break;
-      }
-      default:
-        if (VarIsIntType(v.GetType()) ||
-            VarIsFloatType(v.GetType())) {
-          type = eExpressionVariableType_Float;
-        }
-        else if (VarIsString(v)) {
-          type = eExpressionVariableType_String;
-        }
-        else if (v.IsNull()) {
-          type = eExpressionVariableType_Float;
-          v.SetF64(0.0f);
-        }
-        else {
-          EXPRESSION_TRACE(niFmt("Invalid URL resolve return type: %s.", GetTypeString(v.GetType())));
-          type = eExpressionVariableType_Float;
-          v.SetF64(-1.0);
-        }
-        break;
-    }
-
-    mptrResult = _CreateVariable(NULL,type);
-    if (!_FromVar(mptrResult,v)) {
-      EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
-      return eFalse;
-    }
-
-    // Don't eval in the first DoEvaluate since we already have the initial value...
-    mbShouldEval = eFalse;
+    mptrResult = ctx->CreateVariable(NULL, ni::eExpressionVariableType_Float);
     return eTrue;
   }
 
-  tBool DoEvaluate(iExpressionContext*) {
-    if (mbShouldEval) {
-      Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-      if (!_FromVar(mptrResult,v)) {
-        EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
-        return eFalse;
-      }
-    }
-
-    // We always re-eval the value at the next DoEvaluate(iExpressionContext*)
-    mbShouldEval = eTrue;
-    return eTrue;
+  tBool DoEvaluate(iExpressionContext* ctx) {
+    Var v = mptrResolver->ResolveURL(mstrURL.Chars());
+    mptrResult = ctx->CreateVariableFromVar(NULL, v);
+    return mptrResult.IsOK();
   }
 };
 

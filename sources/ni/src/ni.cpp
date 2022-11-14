@@ -1041,18 +1041,6 @@ niw_main
   cString strInput = _GetOptions()->_strInput;
   ni::Ptr<ni::iFile> ptrInputFile;
   {
-#ifdef niWindows
-    if (strInput.empty()) {
-      achar exePath[niStackBufferSize] = {0};
-      ni_get_exe_path(exePath);
-      ni::Ptr<ni::iFile> fp = ni::GetRootFS()->FileOpen(exePath,eFileOpenMode_Read);
-      if (!fp.IsOK()) {
-        ErrorHelp(_A("No input file specified, and can't open exe file."));
-      }
-      strInput = exePath;
-    }
-#endif
-
 #ifdef NI_CONSOLE
     if (strInput.empty()) {
       if (!_GetOptions()->_bRunREPL) {

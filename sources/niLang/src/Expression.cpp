@@ -1997,6 +1997,7 @@ class OpGroup : public Op
   }
 
   tBool DoEvaluate(iExpressionContext*) {
+    mptrResult = mvOperands[0].GetVariable();
     return eTrue;
   }
 };
@@ -2024,13 +2025,18 @@ class OpURL : public Op
   tBool SetupEvaluation(iExpressionContext* ctx) {
     if(!mptrResolver.IsOK() || mstrURL.empty())
       return eFalse;
-    mptrResult = ctx->CreateVariable(NULL, ni::eExpressionVariableType_Float);
+    mptrResult = ctx->CreateVariableFromVar(NULL, mptrResolver->ResolveURL(mstrURL.Chars()));
+    // Don't eval in the first DoEvaluate since we already have the initial value...
+    mbShouldEval = eFalse;
     return eTrue;
   }
 
   tBool DoEvaluate(iExpressionContext* ctx) {
-    Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-    mptrResult = ctx->CreateVariableFromVar(NULL, v);
+    if (mbShouldEval) {
+      mptrResult = ctx->CreateVariableFromVar(NULL, mptrResolver->ResolveURL(mstrURL.Chars()));
+    }
+    // We always re-eval the value at the next DoEvaluate(iExpressionContext*)
+    mbShouldEval = eTrue;
     return mptrResult.IsOK();
   }
 };

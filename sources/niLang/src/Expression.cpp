@@ -5138,13 +5138,8 @@ tBool DoEvaluate(iExpressionContext* apContext)
     return eFalse;
   }
 
-  auto var = mvOperands[1].GetVariable();
-  if (var->GetType() == ni::eExpressionVariableType_String) {
-    mptrResult->SetFloat(dt->GetChildIndex(var->GetString().Chars()));
-  }
-  else {
-    return eFalse;
-  }
+  auto var = mvOperands[1].GetVariable()->GetString();
+  mptrResult->SetFloat(dt->GetChildIndex(var.Chars()));
   return eTrue;
 }
 EndOp()
@@ -5168,6 +5163,47 @@ tBool DoEvaluate(iExpressionContext* apContext)
   return eTrue;
 }
 EndOp()
+
+// DataTable function
+BeginOpF(DTGetName,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetString(dt->GetName());
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetIndex,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetFloat(dt->GetIndex());
+  return eTrue;
+}
+EndOp()
+
 
 
 #undef DoSwitch
@@ -5641,6 +5677,8 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTFindChild);
   AddOp(DTGetChildIndex);
   AddOp(DTGetNumChildren);
+  AddOp(DTGetName);
+  AddOp(DTGetIndex);
 
   return eTrue;
 }

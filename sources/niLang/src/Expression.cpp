@@ -1280,13 +1280,13 @@ static eNumberType ReadNumberEx(eNumberType type, const achar* aaszNum, Var& aOu
   switch (type) {
     case eNumberType_Scientific:
     case eNumberType_Float:
-      aOut = (tF32)ni::StrToD(&aaszNum[0],&sTemp);
+      aOut = ni::StrToD(&aaszNum[0],&sTemp);
       return eNumberType_Float;
     case eNumberType_Int:
-      aOut = (tI32)ni::StrToL(&aaszNum[0],&sTemp,10);
+      aOut = ni::StrToL(&aaszNum[0],&sTemp,10);
       return eNumberType_Int;
     case eNumberType_Hexadecimal:
-      aOut = (tU32)ni::StrToUL(&aaszNum[0],&sTemp,16);
+      aOut = ni::StrToUL(&aaszNum[0],&sTemp,16);
       return eNumberType_Int;
   }
   return type;
@@ -5914,14 +5914,14 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
       }
 
       token.Type = eMathExprTokenType_Float;
-      if (varNum.GetType() == eType_U32) {
-        token.fFloat = varNum.mU32;
+      if (varNum.GetType() == eType_U64) {
+        token.fFloat = varNum.mU64;
       }
-      else if (varNum.GetType() == eType_I32) {
-        token.fFloat = varNum.mI32;
+      else if (varNum.GetType() == eType_I64) {
+        token.fFloat = varNum.mI64;
       }
-      else if (varNum.GetType() == eType_F32) {
-        token.fFloat = varNum.mF32;
+      else if (varNum.GetType() == eType_F64) {
+        token.fFloat = varNum.mF64;
       }
 
 #ifndef USE_MODULO_OP

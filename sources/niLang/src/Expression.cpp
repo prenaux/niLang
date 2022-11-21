@@ -5790,8 +5790,8 @@ iExpressionVariable* Evaluator::CreateVariableFromVar(const achar* aaszName, con
         type = eExpressionVariableType_String;
       }
       else {
-        EXPRESSION_TRACE(niFmt("Invalid variant type: %s.", GetTypeString(varType)));
-        return NULL;
+        // Default to float
+        type = eExpressionVariableType_Float;
       }
       break;
   }

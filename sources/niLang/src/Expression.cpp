@@ -4498,7 +4498,7 @@ EndOp()
 BeginOpF(StrLen,1)
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4734,7 +4734,7 @@ EndOp()
 BeginOpF(StrFind,2)
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4750,7 +4750,7 @@ EndOp()
 BeginOpF(StrRFind,eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)

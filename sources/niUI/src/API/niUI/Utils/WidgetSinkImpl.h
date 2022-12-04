@@ -112,11 +112,11 @@ class cWidgetSinkImpl : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownIm
       case eUIMessage_SerializeWidget:
         {
           if (niFlagIs(avarB.mU32,eWidgetSerializeFlags_Read)) {
-            ni::Ptr<ni::iDataTableReadStack> dt = ni::CreateDataTableReadStack(ni::VarQueryInterface<ni::iDataTable>(avarA));
+            ni::Nonnull<ni::iDataTableReadStack> dt {ni::CreateDataTableReadStack(ni::VarQueryInterface<ni::iDataTable>(avarA))};
             return OnSerializeReadWidget(dt,avarB.mU32);
           }
           else if (niFlagIs(avarB.mU32,eWidgetSerializeFlags_Write)) {
-            ni::Ptr<ni::iDataTableWriteStack> dt = ni::CreateDataTableWriteStack(ni::VarQueryInterface<ni::iDataTable>(avarA));
+            ni::Nonnull<ni::iDataTableWriteStack> dt {ni::CreateDataTableWriteStack(ni::VarQueryInterface<ni::iDataTable>(avarA))};
             return OnSerializeWriteWidget(dt,avarB.mU32);
           }
           niAssertUnreachable("Neither read nor write flag set");

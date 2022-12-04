@@ -104,28 +104,28 @@ struct non_null
   non_null& operator-=(std::ptrdiff_t) = delete;
   void operator[](std::ptrdiff_t) const = delete;
 
-  struct tUnsafeCheckNonnullInitForMacro {
-    explicit tUnsafeCheckNonnullInitForMacro(T aPointer)
+  struct tUnsafeUncheckedInitializer {
+    explicit tUnsafeUncheckedInitializer(T aPointer)
         : _maybe_null_ptr(aPointer) {
     }
-    ~tUnsafeCheckNonnullInitForMacro() {
+    ~tUnsafeUncheckedInitializer() {
     }
 
     T _maybe_null_ptr;
 
    private:
-    tUnsafeCheckNonnullInitForMacro() = delete;
-    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&) = delete;
-    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&) = delete;
-    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&&) = delete;
-    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&&) = delete;
+    tUnsafeUncheckedInitializer() = delete;
+    tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&) = delete;
+    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&) = delete;
+    tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&&) = delete;
+    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&&) = delete;
   };
-  non_null(tUnsafeCheckNonnullInitForMacro&& aRight) {
-    TRACE_ASTL_NON_NULL("explicit tUnsafeCheckNonnullInitForMacro MOVE constructor")
+  non_null(tUnsafeUncheckedInitializer&& aRight) {
+    TRACE_ASTL_NON_NULL("explicit tUnsafeUncheckedInitializer MOVE constructor")
     ptr_ = aRight._maybe_null_ptr;
   }
-  non_null& operator = (tUnsafeCheckNonnullInitForMacro&& aRight) {
-    TRACE_ASTL_NON_NULL("tUnsafeCheckNonnullInitForMacro MOVE operator=")
+  non_null& operator = (tUnsafeUncheckedInitializer&& aRight) {
+    TRACE_ASTL_NON_NULL("tUnsafeUncheckedInitializer MOVE operator=")
     ptr_ = aRight._maybe_null_ptr;
     return *this;
   }
@@ -213,21 +213,44 @@ non_null(T) -> non_null<T>;
 
 #endif // ( defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L) )
 
-#define niCheckNonnull_(V,EXPR,RET,ERRLOG)                              \
-  decltype(V)::tUnsafeCheckNonnullInitForMacro{EXPR};                   \
-  EA_ENABLE_GCC_WARNING_AS_ERROR(-Wshadow);                             \
-  EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wshadow);                           \
-  int V##_DontDeclareSameNonnullCheckTwice; niUnused(V##_DontDeclareSameNonnullCheckTwice); \
-  EA_DISABLE_CLANG_WARNING_AS_ERROR();                                  \
-  EA_DISABLE_GCC_WARNING_AS_ERROR();                                    \
-  if ((V).raw_ptr() == nullptr) {                                       \
-    ERRLOG;                                                             \
-    return RET;                                                         \
+#define niNonnullIfNull(V,EXPR)                   \
+  decltype(V)::tUnsafeUncheckedInitializer{EXPR}; \
+  EA_ENABLE_GCC_WARNING_AS_ERROR(-Wshadow);       \
+  EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wshadow);     \
+  int V##_DontDeclareSameNonnullCheckTwice;       \
+  niUnused(V##_DontDeclareSameNonnullCheckTwice); \
+  EA_DISABLE_CLANG_WARNING_AS_ERROR();            \
+  EA_DISABLE_GCC_WARNING_AS_ERROR();              \
+  if ((V).raw_ptr() == nullptr)
+
+#define niPanicNonnull(V,EXPR)                                          \
+  niNonnullIfNull(V,EXPR) {                                             \
+    niNamespace(ni,ni_panic_assert)(                                    \
+      0, "Unexpected nullptr", __FILE__, __LINE__, __FUNCTION__, #EXPR); \
   }
 
-#define niCheckNonnull(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,niError("CheckNonnull '" #EXPR "' failed."))
-#define niCheckNonnullMsg(V,EXPR,MSG,RET) niCheckNonnull_(V,EXPR,RET,niError(MSG))
-#define niCheckNonnullSilent(V,EXPR,RET) niCheckNonnull_(V,EXPR,RET,;)
+#define niPanicNonnullMsg(V,EXPR,MSG)                                   \
+  niNonnullIfNull(V,EXPR) {                                             \
+    niNamespace(ni,ni_panic_assert)(                                    \
+      0, "Unexpected nullptr", __FILE__, __LINE__, __FUNCTION__, MSG);  \
+  }
+
+#define niCheckNonnull(V,EXPR,RET)                  \
+  niNonnullIfNull(V,EXPR) {                         \
+    niError("niCheckNonnull '" #EXPR "' failed.");  \
+    return RET;                                     \
+  }
+
+#define niCheckNonnullMsg(V,EXPR,MSG,RET)       \
+  niNonnullIfNull(V,EXPR) {                     \
+    niError(MSG);                               \
+    return RET;                                 \
+  }
+
+#define niCheckNonnullSilent(V,EXPR,RET)        \
+  niNonnullIfNull(V,EXPR) {                     \
+    return RET;                                 \
+  }
 
 } // end of namespace astl
 

@@ -192,8 +192,8 @@ struct Nonnull
     return const_cast<T*>(mRefPtr);
   }
 
-  struct tUnsafeCheckNonnullInitForMacro {
-    explicit tUnsafeCheckNonnullInitForMacro(T* aPointer)
+  struct tUnsafeUncheckedInitializer {
+    explicit tUnsafeUncheckedInitializer(T* aPointer)
         : _maybe_null_ptr(aPointer) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -204,7 +204,7 @@ struct Nonnull
     }
 
     template <typename U>
-    explicit tUnsafeCheckNonnullInitForMacro(Ptr<U>& aPtr)
+    explicit tUnsafeUncheckedInitializer(Ptr<U>& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -214,7 +214,7 @@ struct Nonnull
       }
     }
     template <typename U>
-    explicit tUnsafeCheckNonnullInitForMacro(Ptr<U>&& aPtr)
+    explicit tUnsafeUncheckedInitializer(Ptr<U>&& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       aPtr.mPtr = NULL;
 #ifdef _DEBUG
@@ -225,7 +225,7 @@ struct Nonnull
     }
 
     template <typename U>
-    explicit tUnsafeCheckNonnullInitForMacro(QPtr<U>& aPtr)
+    explicit tUnsafeUncheckedInitializer(QPtr<U>& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -235,7 +235,7 @@ struct Nonnull
       }
     }
     template <typename U>
-    explicit tUnsafeCheckNonnullInitForMacro(QPtr<U>&& aPtr)
+    explicit tUnsafeUncheckedInitializer(QPtr<U>&& aPtr)
         : _maybe_null_ptr(aPtr.raw_ptr()) {
       aPtr.mPtr = NULL;
 #ifdef _DEBUG
@@ -246,7 +246,7 @@ struct Nonnull
     }
 
     template <typename U>
-    explicit tUnsafeCheckNonnullInitForMacro(const WeakPtr<U>& aPtr)
+    explicit tUnsafeUncheckedInitializer(const WeakPtr<U>& aPtr)
         : _maybe_null_ptr((T*)aPtr.template Deref<typename T::IUnknownBaseType>()) {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
@@ -256,7 +256,7 @@ struct Nonnull
       }
     }
 
-    ~tUnsafeCheckNonnullInitForMacro() {
+    ~tUnsafeUncheckedInitializer() {
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
         niDebugAssertMsg(
@@ -272,18 +272,18 @@ struct Nonnull
 #endif
 
    private:
-    tUnsafeCheckNonnullInitForMacro() = delete;
-    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&) = delete;
-    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&) = delete;
-    tUnsafeCheckNonnullInitForMacro(const tUnsafeCheckNonnullInitForMacro&&) = delete;
-    tUnsafeCheckNonnullInitForMacro& operator = (const tUnsafeCheckNonnullInitForMacro&&) = delete;
+    tUnsafeUncheckedInitializer() = delete;
+    tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&) = delete;
+    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&) = delete;
+    tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&&) = delete;
+    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&&) = delete;
   };
-  Nonnull(tUnsafeCheckNonnullInitForMacro&& aRight) {
-    TRACE_NI_NONNULL("explicit tUnsafeCheckNonnullInitForMacro MOVE constructor")
+  Nonnull(tUnsafeUncheckedInitializer&& aRight) {
+    TRACE_NI_NONNULL("explicit tUnsafeUncheckedInitializer MOVE constructor")
     mRefPtr = aRight._maybe_null_ptr;
   }
-  Nonnull& operator = (tUnsafeCheckNonnullInitForMacro&& aRight) {
-    TRACE_NI_NONNULL("tUnsafeCheckNonnullInitForMacro MOVE operator=")
+  Nonnull& operator = (tUnsafeUncheckedInitializer&& aRight) {
+    TRACE_NI_NONNULL("tUnsafeUncheckedInitializer MOVE operator=")
     if (mRefPtr) {
       ni::Release(mRefPtr);
     }

@@ -37,7 +37,7 @@ struct sRunnable : public ni::cIUnknownImpl<iRunnable> {
 };
 template <typename T>
 Nonnull<iRunnable> Runnable(const T& aLambda) {
-  return ni::NewNonnull<sRunnable<T> >(aLambda);
+  return ni::MakePtrNonnull<sRunnable<T> >(aLambda);
 }
 
 
@@ -52,7 +52,7 @@ struct sCallback0 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
 };
 template <typename T>
 Nonnull<iCallback> Callback0(const T& aLambda) {
-  return ni::NewNonnull<sCallback0<T> >(aLambda);
+  return ni::MakePtrNonnull<sCallback0<T> >(aLambda);
 }
 
 template <typename T>
@@ -66,7 +66,7 @@ struct sCallback1 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
 };
 template <typename T>
 Nonnull<iCallback> Callback1(const T& aLambda) {
-  return ni::NewNonnull<sCallback1<T> >(aLambda);
+  return ni::MakePtrNonnull<sCallback1<T> >(aLambda);
 }
 
 template <typename T>
@@ -80,7 +80,7 @@ struct sCallback2 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontIn
 };
 template <typename T>
 Nonnull<iCallback> Callback2(const T& aLambda) {
-  return ni::NewNonnull<sCallback2<T> >(aLambda);
+  return ni::MakePtrNonnull<sCallback2<T> >(aLambda);
 }
 
 //! To be used with the MessageHandler<> template to specify a function pointer instead of a lambda.
@@ -104,7 +104,7 @@ struct sMessageHandler : public ni::cIUnknownImpl<iMessageHandler> {
 
 template <typename T>
 Nonnull<iMessageHandler> MessageHandler(const T& aLambda, const tU64 anThreadID = ni::ThreadGetCurrentThreadID()) {
-  return ni::NewNonnull<sMessageHandler<T> >(aLambda, anThreadID);
+  return ni::MakePtrNonnull<sMessageHandler<T> >(aLambda, anThreadID);
 }
 
 inline tBool IOExecute(iRunnable* apRunnable) {

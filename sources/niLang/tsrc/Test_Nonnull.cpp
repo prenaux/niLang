@@ -100,7 +100,7 @@ struct sTestItem : public cIUnknownImpl<iUnknown> {
 
 Ptr<sTestItem> CreateTestItem(const achar* aName, sAddRefReleaseCounter* aCounter) {
   niCheck(niStringIsOK(aName),NULL);
-  return ni::NewPtr<sTestItem>(aName,aCounter);
+  return ni::MakePtr<sTestItem>(aName,aCounter);
 }
 
 ni::cString TestNonnull(astl::non_null<sTestItem*> v) {
@@ -202,7 +202,7 @@ TEST_FIXTURE(FNonnull,unique_non_null) {
 }
 
 TEST_FIXTURE(FNonnull,base) {
-  Nonnull<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
+  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
   CHECK_EQUAL(1, itemA->GetNumRefs());
   CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
@@ -210,10 +210,14 @@ TEST_FIXTURE(FNonnull,base) {
   CHECK_EQUAL(_ASTR("fooItem"), TestNonnull(itemA.non_null()));
   CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA));
   CHECK_EQUAL(_ASTR("fooItem"), TestConstNonnull(itemA.c_non_null()));
+#if TEST_CTERR
+  Nonnull<sTestItem> itemB = ni::MakePtr<sTestItem>("fooItem");
+  itemA = ni::MakePtr<sTestItem>("fooItem");
+#endif
 }
 
 TEST_FIXTURE(FNonnull,const_cast_Nonnull) {
-  Nonnull<const sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
+  Nonnull<const sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
   CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
   astl::const_cast_non_null<sTestItem*>(itemA)->_name = "constChanged";
@@ -226,11 +230,11 @@ TEST_FIXTURE(FNonnull,RefCount) {
   sAddRefReleaseCounter counterC;
 
   {
-    Ptr<sTestItem> itemA = ni::NewPtr<sTestItem>("itemA", &counterA);
+    Ptr<sTestItem> itemA = ni::MakePtr<sTestItem>("itemA", &counterA);
     CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
-    Ptr<sTestItem> itemB = ni::NewPtr<sTestItem>("itemB", &counterB);
+    Ptr<sTestItem> itemB = ni::MakePtr<sTestItem>("itemB", &counterB);
     CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
-    Nonnull<sTestItem> nnC = ni::NewNonnull<sTestItem>("itemC", &counterC);
+    Nonnull<sTestItem> nnC = ni::MakePtrNonnull<sTestItem>("itemC", &counterC);
     CHECK_EQUAL(1, nnC->GetNumRefs());
     {
       Nonnull<sTestItem> nnA = ni::MakeNonnull(itemA.raw_ptr());
@@ -270,7 +274,7 @@ TEST_FIXTURE(FNonnull,RefCount) {
 }
 
 TEST_FIXTURE(FNonnull,move) {
-  Nonnull<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
+  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
 
   Nonnull<sTestItem> itemA2 = astl::move(itemA);
@@ -284,7 +288,7 @@ TEST_FIXTURE(FNonnull,move) {
 
 TEST_FIXTURE(FNonnull,maybe) {
   {
-    Ptr<sTestItem> itemA = ni::NewNonnull<sTestItem>("fooItem");
+    Ptr<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
     CHECK(itemA.has_value());
     if (itemA.has_value()) {
       ni::Nonnull<sTestItem> v = itemA.non_null();
@@ -311,8 +315,8 @@ TEST_FIXTURE(FNonnull,maybe) {
 }
 
 TEST_FIXTURE(FNonnull,hash_set) {
-  Nonnull<sTestItem> itemA = ni::NewNonnull<sTestItem>("itemA");
-  Nonnull<sTestItem> itemB = ni::NewNonnull<sTestItem>("itemB");
+  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("itemA");
+  Nonnull<sTestItem> itemB = ni::MakePtrNonnull<sTestItem>("itemB");
 
   astl::hash_set<ni::Nonnull<sTestItem> > hashedSet;
   hashedSet.insert(itemA);
@@ -404,11 +408,11 @@ ni::cString Test_niCheckNonnull_FromWeakPtr(
 //
 TEST_FIXTURE(FNonnull,niCheckNonnull_MacroVariants) {
   // this test only test that the macros compile correctly
-  Nonnull<sTestItem> a = niCheckNonnull(a,ni::NewPtr<sTestItem>("a"),;);
+  Nonnull<sTestItem> a = niCheckNonnull(a,ni::MakePtr<sTestItem>("a"),;);
   niUnused(a);
-  Nonnull<sTestItem> b = niCheckNonnullMsg(b,ni::NewPtr<sTestItem>("b"),niFmt("Can't create b."),;);
+  Nonnull<sTestItem> b = niCheckNonnullMsg(b,ni::MakePtr<sTestItem>("b"),niFmt("Can't create b."),;);
   niUnused(b);
-  Nonnull<sTestItem> c = niCheckNonnullSilent(c,ni::NewPtr<sTestItem>("c"),;);
+  Nonnull<sTestItem> c = niCheckNonnullSilent(c,ni::MakePtr<sTestItem>("c"),;);
   niUnused(c);
 }
 

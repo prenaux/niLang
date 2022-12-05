@@ -259,13 +259,8 @@ __forceinline bool IsNullPtr(Ptr<T> const& a) {
 }
 
 template <typename T, typename... Args>
-inline EA_CONSTEXPR ni::Ptr<T> NewPtr(Args&&... args) {
+inline EA_CONSTEXPR ni::Ptr<T> MakePtr(Args&&... args) {
   return ni::Ptr<T>(niNew T(eastl::forward<Args>(args)...));
-}
-
-template <typename T>
-inline EA_CONSTEXPR Ptr<T> MakePtr(T* v) {
-  return Ptr<T>(v);
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

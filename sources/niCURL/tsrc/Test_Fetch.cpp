@@ -40,7 +40,7 @@ TEST_FIXTURE(FCURLFetch,Get) {
   Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
   requestHeaders->push_back("X-Ni-Header: HdrNarf");
 
-  Nonnull<MyFetchSink> sink = ni::NewNonnull<MyFetchSink>();
+  Nonnull<MyFetchSink> sink = ni::MakePtrNonnull<MyFetchSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
     "https://www.bytecollider.com/test_cases/Test_niCURL_FetchGet.php?param=test_value",
     sink,
@@ -84,7 +84,7 @@ TEST_FIXTURE(FCURLFetch,Post) {
   postData->WriteString(R"""({"param":"posted_value", "key2":"value2"})""");
   postData->SeekSet(0);
 
-  Nonnull<MyFetchSink> sink = ni::NewNonnull<MyFetchSink>();
+  Nonnull<MyFetchSink> sink = ni::MakePtrNonnull<MyFetchSink>();
   Nonnull<iFetchRequest> request = _curl->FetchPost(
     "https://www.bytecollider.com/test_cases/Test_niCURL_FetchPost.php",
     postData,
@@ -122,7 +122,7 @@ TEST_FIXTURE(FCURLFetch,Post) {
 TEST_FIXTURE(FCURLFetch,GetJson) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
-  Nonnull<MyFetchSink> sink = ni::NewNonnull<MyFetchSink>();
+  Nonnull<MyFetchSink> sink = ni::MakePtrNonnull<MyFetchSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
     "https://api.coinlore.com/api/ticker/?id=90",
     sink,

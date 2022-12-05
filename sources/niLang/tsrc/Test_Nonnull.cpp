@@ -14,6 +14,9 @@ void Test_Nonnull_Trace(const char* msg);
 #include <niLang/STL/memory.h>
 #include <niLang/Utils/CrashReport.h>
 
+// test compile time errors
+#define TEST_CTERR 0
+
 using namespace ni;
 
 /*
@@ -135,19 +138,67 @@ TEST_FIXTURE(FNonnull,non_null_hash_set) {
 }
 
 TEST_FIXTURE(FNonnull,shared_non_null) {
-  const int kValue = 123;
-  astl::shared_non_null<int> v = astl::make_shared_non_null<int>(kValue);
-  CHECK_EQUAL(kValue, *v);
+  astl::shared_non_null<int> u = astl::make_shared_non_null<int>(123);
+  CHECK_EQUAL(123, *u);
+  astl::shared_non_null<int> v = astl::make_shared_non_null<int>(123);
+  CHECK_EQUAL(123, *v);
+
   *v = 456;
   CHECK_EQUAL(456, *v);
+
+  // new shared pointer
+#if TEST_CTERR
+  // strict non_null, so doesnt compile
+  v = astl::make_shared<int>(789);
+  CHECK_EQUAL(789, *v);
+#endif
+
+  // new nonnull pointer
+  v = astl::make_shared_non_null<int>(888);
+  CHECK_EQUAL(888, *v);
+
+  // copy pointer
+  v = u;
+  CHECK(!!u.raw_ptr());
+  CHECK_EQUAL(123, *v);
+
+  // move pointer
+  v = astl::move(u);
+  CHECK(!u.raw_ptr());
+  CHECK_EQUAL(123, *v);
 }
 
 TEST_FIXTURE(FNonnull,unique_non_null) {
-  const int kValue = 123;
-  astl::unique_non_null<int> v = astl::make_unique_non_null<int>(kValue);
-  CHECK_EQUAL(kValue, *v);
+  astl::unique_non_null<int> u = astl::make_unique_non_null<int>(123);
+  CHECK_EQUAL(123, *u);
+  astl::unique_non_null<int> v = astl::make_unique_non_null<int>(123);
+  CHECK_EQUAL(123, *v);
+
   *v = 456;
   CHECK_EQUAL(456, *v);
+
+  // new unique pointer
+#if TEST_CTERR
+  // strict non_null, so doesnt compile
+  v = astl::make_unique<int>(789);
+  CHECK_EQUAL(789, *v);
+#endif
+
+  v = astl::make_unique_non_null<int>(888);
+  CHECK_EQUAL(888, *v);
+
+  // copy pointer
+#if TEST_CTERR
+  // doesnt compile since we cant copy assign a unique_ptr
+  v = u;
+  CHECK(!!u.raw_ptr());
+  CHECK_EQUAL(123, *v);
+#endif
+
+  // move pointer
+  v = astl::move(u);
+  CHECK(!u.raw_ptr());
+  CHECK_EQUAL(123, *v);
 }
 
 TEST_FIXTURE(FNonnull,base) {

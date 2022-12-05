@@ -68,6 +68,12 @@ struct non_null
   constexpr non_null(const non_null<U>& other) : non_null(other.raw_ptr())
   {}
 
+  template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
+  non_null& operator = (non_null<U>&& u) {
+    ptr_ = eastl::move(u.ptr_);
+    return *this;
+  }
+
   non_null(non_null&& other) = default;
   non_null(const non_null& other) = default;
   non_null& operator=(const non_null& other) = default;
@@ -105,8 +111,8 @@ struct non_null
   void operator[](std::ptrdiff_t) const = delete;
 
   struct tUnsafeUncheckedInitializer {
-    explicit tUnsafeUncheckedInitializer(T aPointer)
-        : _maybe_null_ptr(aPointer) {
+    explicit tUnsafeUncheckedInitializer(T&& aPointer)
+        : _maybe_null_ptr(eastl::move(aPointer)) {
     }
     ~tUnsafeUncheckedInitializer() {
     }
@@ -122,11 +128,11 @@ struct non_null
   };
   non_null(tUnsafeUncheckedInitializer&& aRight) {
     TRACE_ASTL_NON_NULL("explicit tUnsafeUncheckedInitializer MOVE constructor")
-    ptr_ = aRight._maybe_null_ptr;
+    ptr_ = eastl::move(aRight._maybe_null_ptr);
   }
   non_null& operator = (tUnsafeUncheckedInitializer&& aRight) {
     TRACE_ASTL_NON_NULL("tUnsafeUncheckedInitializer MOVE operator=")
-    ptr_ = aRight._maybe_null_ptr;
+    ptr_ = eastl::move(aRight._maybe_null_ptr);
     return *this;
   }
 

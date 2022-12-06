@@ -220,6 +220,8 @@ iSoundMixer3D* __stdcall cSoundFactory::GetMixer3D() const
 ///////////////////////////////////////////////
 void __stdcall cSoundFactory::Invalidate()
 {
+  // stop all audio playback and audio threads first
+  ShutdownDriver();
   if (mptrDriver.IsOK()) {
     mptrDriver->Invalidate();
   }

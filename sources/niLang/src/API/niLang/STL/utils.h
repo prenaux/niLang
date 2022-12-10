@@ -54,7 +54,7 @@ using eastl::set_union;
 using eastl::swap;
 using eastl::transform;
 using eastl::unique;
-using eastl::remove_if;
+// using eastl::remove_if; // you most likely want astl::erase_if, not astl::remove_if
 using eastl::equal;
 using eastl::identical;
 using eastl::search;
@@ -286,6 +286,11 @@ ni::tSize erase_if(T& container, const FUN& pred) {
     container.erase(remit, container.end());
   }
   return wasSize - container.size();
+}
+
+template <typename T, typename FUN>
+void for_each(T& c, FUN&& f) {
+  astl::for_each(c.begin(), c.end(), f);
 }
 
 /**@}*/

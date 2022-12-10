@@ -344,6 +344,11 @@ astl::non_null<DestT> const_cast_non_null(const ni::Nonnull<SrcT>& p) {
   return astl::non_null<DestT>(const_cast<DestT>(p.raw_ptr()));
 }
 
+template<typename T>
+astl::non_null<T*> to_non_null(const ni::Nonnull<T>& v) {
+  return v.non_null();
+}
+
 }
 
 namespace eastl {

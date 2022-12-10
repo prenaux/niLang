@@ -39,6 +39,16 @@ unique_non_null<T> make_unique_non_null(Args&&... args) {
   return unique_non_null<T>(make_unique<T>(eastl::forward<Args>(args)...));
 }
 
+template<typename T>
+astl::non_null<T*> to_non_null(const astl::shared_non_null<T>& v) {
+  return astl::non_null<T*>(v.raw_ptr().get());
+}
+
+template<typename T>
+astl::non_null<T*> to_non_null(const astl::unique_non_null<T>& v) {
+  return astl::non_null<T*>(v.raw_ptr().get());
+}
+
 /**
  * Requires that a variable (usually a struct/class member) be explicitly
  * initialized.
@@ -76,7 +86,6 @@ struct required {
     return _value;
   }
 };
-
 
 }
 #endif // __STL_MEMORY_H_0E726DAE_AFEA_0147_943B_BEFCCB8E1077__

@@ -38,12 +38,12 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
   AppWindow(AppWindow&);
 
  public:
-  AppContext*                         mpContext;
-  tU64                                mnThreadID;
-  Ptr<iFont>                          mptrFontHUD;
-  tU32                                mnDebugKeyMod;
+  astl::non_null<AppContext*> mpContext;
+  tU64                        mnThreadID;
+  Ptr<iFont>                  mptrFontHUD;
+  tU32                        mnDebugKeyMod;
 
-  AppWindow(AppContext* apContext) : mpContext(apContext), mnThreadID(ni::ThreadGetCurrentThreadID()) {
+  AppWindow(astl::non_null<AppContext*> apContext) : mpContext(apContext), mnThreadID(ni::ThreadGetCurrentThreadID()) {
     mpContext->_mq = ni::GetOrCreateMessageQueue(mnThreadID);
   }
 
@@ -495,7 +495,7 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
 //
 //========================================================================
 
-static int _MainEnd(AppContext* apContext) {
+static int _MainEnd(astl::non_null<AppContext*> apContext) {
   ni::SafeInvalidate(apContext->_uiContext.ptr());
   apContext->_uiContext = NULL;
   ni::SafeInvalidate(apContext->_graphicsContext.ptr());
@@ -520,14 +520,14 @@ static int _MainEnd(AppContext* apContext) {
   return 0;
 }
 
-tBool AppUpdate(AppContext* apContext) {
+tBool AppUpdate(astl::non_null<AppContext*> apContext) {
   if (apContext->_appWnd.IsOK()) {
     return ((AppWindow*)apContext->_appWnd.ptr())->OnUpdate();
   }
   return eFalse;
 }
 
-void AppRender(AppContext* apContext) {
+void AppRender(astl::non_null<AppContext*> apContext) {
   if (apContext->_appWnd.IsOK()) {
     apContext->_window->RedrawWindow();
     ++apContext->_appRenderCount;
@@ -537,7 +537,7 @@ void AppRender(AppContext* apContext) {
   }
 }
 
-tBool AppStartup(AppContext* apContext, iOSWindow* apWindow, iRunnable* apOnStarted, iRunnable* apOnShutdown) {
+tBool AppStartup(astl::non_null<AppContext*> apContext, iOSWindow* apWindow, iRunnable* apOnStarted, iRunnable* apOnShutdown) {
   niCheckIsOK(apWindow,eFalse);
   AppNotifyHost("BeforeStartup");
 
@@ -584,7 +584,7 @@ tBool AppStartup(AppContext* apContext, iOSWindow* apWindow, iRunnable* apOnStar
   return eTrue;
 }
 
-void AppShutdown(AppContext* apContext) {
+void AppShutdown(astl::non_null<AppContext*> apContext) {
   AppNotifyHost("BeforeShutdown");
   if (apContext->_appOnShutdown.IsOK()) {
     apContext->_appOnShutdown->Run();
@@ -597,17 +597,17 @@ void AppShutdown(AppContext* apContext) {
   AppNotifyHost("Shutdowned");
 }
 
-tBool AppIsStarted(AppContext* apContext) {
+tBool AppIsStarted(astl::non_null<AppContext*> apContext) {
   return apContext->_appWnd.IsOK();
 }
 
-void AppGenericResize(AppContext* apContext, ni::tI32 w, ni::tI32 h) {
+void AppGenericResize(astl::non_null<AppContext*> apContext, ni::tI32 w, ni::tI32 h) {
   if (apContext->_window.IsOK()) {
     apContext->_window->SetRect(sRecti(0,0,w,h));
   }
 }
 
-void AppGenericKey(AppContext* apContext, eKey aKey, tBool abIsDown)
+void AppGenericKey(astl::non_null<AppContext*> apContext, eKey aKey, tBool abIsDown)
 {
   if (!apContext->_appWnd.IsOK())
     return;
@@ -620,7 +620,7 @@ void AppGenericKey(AppContext* apContext, eKey aKey, tBool abIsDown)
   }
 }
 
-void AppGenericInputString(AppContext* apContext, const ni::achar* aaszString)
+void AppGenericInputString(astl::non_null<AppContext*> apContext, const ni::achar* aaszString)
 {
   if (!apContext->_appWnd.IsOK())
     return;
@@ -631,7 +631,7 @@ void AppGenericInputString(AppContext* apContext, const ni::achar* aaszString)
   }
 }
 
-void AppGenericFingerMove(AppContext* apContext, tI32 fingerId, tF32 x, tF32 y, tF32 pressure) {
+void AppGenericFingerMove(astl::non_null<AppContext*> apContext, tI32 fingerId, tF32 x, tF32 y, tF32 pressure) {
   if (!apContext->_appWnd.IsOK())
     return;
 
@@ -641,7 +641,7 @@ void AppGenericFingerMove(AppContext* apContext, tI32 fingerId, tF32 x, tF32 y, 
   }
 }
 
-void AppGenericFingerRelativeMove(AppContext* apContext, tI32 fingerId, tF32 rx, tF32 ry, tF32 pressure) {
+void AppGenericFingerRelativeMove(astl::non_null<AppContext*> apContext, tI32 fingerId, tF32 rx, tF32 ry, tF32 pressure) {
   if (!apContext->_appWnd.IsOK())
     return;
 
@@ -651,7 +651,7 @@ void AppGenericFingerRelativeMove(AppContext* apContext, tI32 fingerId, tF32 rx,
   }
 }
 
-void AppGenericFingerPress(AppContext* apContext, tI32 fingerId, tBool isDown, tF32 x, tF32 y, tF32 pressure) {
+void AppGenericFingerPress(astl::non_null<AppContext*> apContext, tI32 fingerId, tBool isDown, tF32 x, tF32 y, tF32 pressure) {
   if (!apContext->_appWnd.IsOK())
     return;
 
@@ -664,7 +664,7 @@ void AppGenericFingerPress(AppContext* apContext, tI32 fingerId, tBool isDown, t
   }
 }
 
-void AppGenericMouseWheel(AppContext* apContext, tF32 delta) {
+void AppGenericMouseWheel(astl::non_null<AppContext*> apContext, tF32 delta) {
   if (!apContext->_appWnd.IsOK())
     return;
 
@@ -674,7 +674,7 @@ void AppGenericMouseWheel(AppContext* apContext, tF32 delta) {
   }
 }
 
-void AppGenericPinch(AppContext* apContext, tF32 scale, const eGestureState aState) {
+void AppGenericPinch(astl::non_null<AppContext*> apContext, tF32 scale, const eGestureState aState) {
   if (!apContext->_appWnd.IsOK())
     return;
 
@@ -684,7 +684,7 @@ void AppGenericPinch(AppContext* apContext, tF32 scale, const eGestureState aSta
   }
 }
 
-tBool AppGenericStartup(AppContext* apContext,
+tBool AppGenericStartup(astl::non_null<AppContext*> apContext,
                         const achar* aaszTitle, ni::tI32 anWidth, ni::tI32 anHeight,
                         iRunnable* apOnStarted, ni::iRunnable* apOnShutdown)
 {
@@ -704,7 +704,7 @@ tBool AppGenericStartup(AppContext* apContext,
 
 namespace app {
 
-tBool AppNativeStartup(AppContext* apContext,
+tBool AppNativeStartup(astl::non_null<AppContext*> apContext,
                        const achar* aaszTitle, ni::tI32 anWidth, ni::tI32 anHeight,
                        iRunnable* apOnStarted, ni::iRunnable* apOnShutdown) {
   //// Create the window ////
@@ -735,7 +735,7 @@ tBool AppNativeStartup(AppContext* apContext,
   return app::AppStartup(apContext, ptrWindow, apOnStarted, apOnShutdown);
 }
 
-int AppNativeMainLoop(AppContext* apContext) {
+int AppNativeMainLoop(astl::non_null<AppContext*> apContext) {
   if (!app::AppIsStarted(apContext)) {
     ni::GetLang()->FatalError("Application not started.");
     return -1;

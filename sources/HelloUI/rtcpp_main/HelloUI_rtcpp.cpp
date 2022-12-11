@@ -7,7 +7,7 @@ niCrashReport_DeclareHandler();
 
 using namespace ni;
 
-app::AppContext gAppContext;
+static Nonnull<app::AppContext> gAppContext = ni::MakePtrNonnull<app::AppContext>();
 static Ptr<iWidget> _appCanvas;
 static QPtr<iWidgetSink> _appSink;
 
@@ -33,9 +33,9 @@ Ptr<iUnknown> EvalImpl(iHString* ahspContext, iHString* ahspCodeFile, const tUUI
 
 void _ReloadApp() {
   if (!_appCanvas.IsOK()) {
-    _appCanvas = gAppContext._uiContext->CreateWidget(
+    _appCanvas = gAppContext->_uiContext->CreateWidget(
       "Canvas",
-      gAppContext._uiContext->GetRootWidget(),
+      gAppContext->_uiContext->GetRootWidget(),
       Rectf(0,0,50,50),
       0, _HC(ID_AppCanvas));
     _appCanvas->SetDockStyle(eWidgetDockStyle_DockFillOverlay);
@@ -53,15 +53,15 @@ ni::Var OnAppStarted() {
   niInitScriptVMForDebugUI();
   ScriptCpp_CleanupDLLs();
   _ReloadApp();
-  gAppContext._window->GetMessageHandlers()->AddSink(ni::MessageHandler(
+  gAppContext->_window->GetMessageHandlers()->AddSink(ni::MessageHandler(
     [](const tU32 anMsg, const Var& avarA, const Var& avarB) {
       if (anMsg == eOSWindowMessage_KeyDown)
       {
         switch (avarA.mU32) {
           case eKey_F1: {
             niDebugFmt(("... F1"));
-            gAppContext._uiContext->SetDebugDraw(
-              !gAppContext._uiContext->GetDebugDraw());
+            gAppContext->_uiContext->SetDebugDraw(
+              !gAppContext->_uiContext->GetDebugDraw());
             break;
           }
           case eKey_F9: {
@@ -81,9 +81,9 @@ ni::Var OnAppShutdown() {
 }
 
 niConsoleMain() {
-  gAppContext._config.drawFPS = ni::GetProperty("drawFPS","1").Long();
+  gAppContext->_config.drawFPS = ni::GetProperty("drawFPS","1").Long();
   // bg update, makes profiling/debugging a lot simpler
-  gAppContext._config.backgroundUpdate = eTrue;
+  gAppContext->_config.backgroundUpdate = eTrue;
 
   ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
@@ -92,7 +92,7 @@ niConsoleMain() {
   ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
   ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"1");
 
-  if (!app::AppNativeStartup(&gAppContext, "HelloUI_rtcpp", 0, 0,
+  if (!app::AppNativeStartup(gAppContext, "HelloUI_rtcpp", 0, 0,
                              ni::Runnable<ni::tpfnRunnable>(OnAppStarted),
                              ni::Runnable<ni::tpfnRunnable>(OnAppShutdown)))
   {
@@ -100,5 +100,5 @@ niConsoleMain() {
     return -1;
   }
 
-  return app::AppNativeMainLoop(&gAppContext);
+  return app::AppNativeMainLoop(gAppContext);
 }

@@ -46,7 +46,7 @@ struct AppConfig {
   }
 };
 
-struct AppContext : public ni::cMemImpl {
+struct AppContext : public ni::cIUnknownImpl<ni::iUnknown> {
   AppConfig                     _config;
   ni::tU32                      _appRenderCount;
   ni::Ptr<ni::iMessageHandler>  _appWnd;
@@ -63,14 +63,14 @@ struct AppContext : public ni::cMemImpl {
 };
 
 //! Initialize the application using the specified window and OnStarted runnable.
-extern ni::tBool AppStartup(AppContext* apContext, ni::iOSWindow* apWindow, ni::iRunnable* apOnStarted, ni::iRunnable* apOnShutdown);
+extern ni::tBool AppStartup(astl::non_null<AppContext*> apContext, ni::iOSWindow* apWindow, ni::iRunnable* apOnStarted, ni::iRunnable* apOnShutdown);
 //! Shutdowns the application.
-extern void AppShutdown(AppContext* apContext);
+extern void AppShutdown(astl::non_null<AppContext*> apContext);
 
 //! Update the application.
-extern ni::tBool AppUpdate(AppContext* apContext);
+extern ni::tBool AppUpdate(astl::non_null<AppContext*> apContext);
 //! Render the application.
-extern void AppRender(AppContext* apContext);
+extern void AppRender(astl::non_null<AppContext*> apContext);
 
 #define niAppLib_SetBuildText() \
   ni::GetLang()->SetProperty("ni.app.build_text", niFmt("BUILD: %s - %s - %s", ni::GetLang()->GetProperty("ni.loa.arch"), __DATE__, __TIME__))
@@ -79,45 +79,45 @@ extern void AppRender(AppContext* apContext);
 //! Creates a generic window and then calls AppStartup with the window and the
 //! specified OnStarted runnable.
 extern ni::tBool AppGenericStartup(
-    AppContext* apContext,
+    astl::non_null<AppContext*> apContext,
     const ni::achar* aaszTitle, ni::tI32 anWidth, ni::tI32 anHeight,
     ni::iRunnable* apOnStarted, ni::iRunnable* apOnShutdown);
 
 //! Should be called when the app's window is resized.
-extern void AppGenericResize(AppContext* apContext, ni::tI32 w, ni::tI32 h);
+extern void AppGenericResize(astl::non_null<AppContext*> apContext, ni::tI32 w, ni::tI32 h);
 //! Sends keyboard event to the generic window.
-extern void AppGenericKey(AppContext* apContext, ni::eKey aKey, ni::tBool abIsDown);
+extern void AppGenericKey(astl::non_null<AppContext*> apContext, ni::eKey aKey, ni::tBool abIsDown);
 //! Sends text input to the generic window.
-extern void AppGenericInputString(AppContext* apContext, const ni::achar* aaszString);
+extern void AppGenericInputString(astl::non_null<AppContext*> apContext, const ni::achar* aaszString);
 //! Sends a finger moved event to the generic window.
-extern void AppGenericFingerMove(AppContext* apContext,
+extern void AppGenericFingerMove(astl::non_null<AppContext*> apContext,
                                  ni::tI32 fingerId,
                                  ni::tF32 x, ni::tF32 y, ni::tF32 pressure);
 //! Sends a finger relative move event to the generic window.
-extern void AppGenericFingerRelativeMove(AppContext* apContext,
+extern void AppGenericFingerRelativeMove(astl::non_null<AppContext*> apContext,
                                          ni::tI32 fingerId,
                                          ni::tF32 rx, ni::tF32 ry, ni::tF32 pressure);
 //! Sends a finger press event to the generic window.
-extern void AppGenericFingerPress(AppContext* apContext,
+extern void AppGenericFingerPress(astl::non_null<AppContext*> apContext,
                                   ni::tI32 fingerId, ni::tBool isDown,
                                   ni::tF32 x, ni::tF32 y, ni::tF32 pressure);
 //! Sends a mouse wheel event to the generic window.
-extern void AppGenericMouseWheel(AppContext* apContext, ni::tF32 delta);
+extern void AppGenericMouseWheel(astl::non_null<AppContext*> apContext, ni::tF32 delta);
 //! Sends a pinch gesture to the generic window.
-extern void AppGenericPinch(AppContext* apContext, ni::tF32 scale, const ni::eGestureState aState);
+extern void AppGenericPinch(astl::non_null<AppContext*> apContext, ni::tF32 scale, const ni::eGestureState aState);
 #endif
 
 #if defined niAppLib_Native
 //! Creates a native window and then calls AppStartup with the window and the
 //! specified OnStarted runnable.
 ni::tBool AppNativeStartup(
-    AppContext* apContext,
+    astl::non_null<AppContext*> apContext,
     const ni::achar* aaszTitle, ni::tI32 anWidth, ni::tI32 anHeight,
     ni::iRunnable* apOnStarted, ni::iRunnable* apOnShutdown);
 //! A simple app main function.
 //! \remark Example usage: int main() { return app::AppNativeMain(MyOnStarted); }
 //! \remark This takes care of calling AppUpdate, AppRender and AppShutdown.
-int AppNativeMainLoop(AppContext* apContext);
+int AppNativeMainLoop(astl::non_null<AppContext*> apContext);
 #endif
 
 }

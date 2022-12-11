@@ -1202,15 +1202,17 @@ niw_main
       niLog(Info,niFmt("Starting hosted app '%s'.", _GetOptions()->_strHostedAppName));
       ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
-      app::AppContext appContext;
+      Nonnull<app::AppContext> appContext = ni::MakePtrNonnull<app::AppContext>();
       if (!app::AppNativeStartup(
-            &appContext, _GetOptions()->_strHostedAppName.Chars(), 0, 0,
+            appContext,
+            _GetOptions()->_strHostedAppName.Chars(),
+            0, 0,
             ni::Runnable([&]() { return runMain(); }),
             NULL))
       {
         ErrorExit("Can't start hosted application.");
       }
-      nRet = app::AppNativeMainLoop(&appContext);
+      nRet = app::AppNativeMainLoop(appContext);
     }
     else
 #endif

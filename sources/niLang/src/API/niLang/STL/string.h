@@ -8,6 +8,7 @@
 namespace astl {
 
 typedef ni::cString string;
+typedef ni::cString astr;
 
 template <typename T>
 inline ni::cString to_string(const T& v) {

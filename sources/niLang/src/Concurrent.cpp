@@ -604,7 +604,10 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
         break;
       }
 
-      r->Run();
+      Var runRet = r->Run();
+      if (!runRet.GetBoolValue()) {
+        break;
+      }
       ++numExecuted;
       if (_this->_shutdownMode.Get() != 0) {
         break;

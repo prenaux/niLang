@@ -202,7 +202,7 @@ TEST_FIXTURE(FNonnull,unique_non_null) {
 }
 
 TEST_FIXTURE(FNonnull,base) {
-  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
+  Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
   CHECK_EQUAL(1, itemA->GetNumRefs());
   CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
@@ -217,7 +217,7 @@ TEST_FIXTURE(FNonnull,base) {
 }
 
 TEST_FIXTURE(FNonnull,const_cast_Nonnull) {
-  Nonnull<const sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
+  Nonnull<const sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
   CHECK_EQUAL(_ASTR("fooItem"), itemA->_name);
   astl::const_cast_non_null<sTestItem*>(itemA)->_name = "constChanged";
@@ -234,10 +234,10 @@ TEST_FIXTURE(FNonnull,RefCount) {
     CHECK_EQUAL(1, itemA.raw_ptr()->GetNumRefs());
     Ptr<sTestItem> itemB = ni::MakePtr<sTestItem>("itemB", &counterB);
     CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
-    Nonnull<sTestItem> nnC = ni::MakePtrNonnull<sTestItem>("itemC", &counterC);
+    Nonnull<sTestItem> nnC = ni::MakeNonnull<sTestItem>("itemC", &counterC);
     CHECK_EQUAL(1, nnC->GetNumRefs());
     {
-      Nonnull<sTestItem> nnA = ni::MakeNonnull(itemA.raw_ptr());
+      Nonnull<sTestItem> nnA = ni::Nonnull{itemA.raw_ptr()};
       CHECK_NOT_EQUAL(nullptr, (sTestItem*&)nnA);
       CHECK_EQUAL(2, itemA.raw_ptr()->GetNumRefs());
       CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
@@ -274,7 +274,7 @@ TEST_FIXTURE(FNonnull,RefCount) {
 }
 
 TEST_FIXTURE(FNonnull,move) {
-  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
+  Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
 
   Nonnull<sTestItem> itemA2 = astl::move(itemA);
@@ -288,7 +288,7 @@ TEST_FIXTURE(FNonnull,move) {
 
 TEST_FIXTURE(FNonnull,maybe) {
   {
-    Ptr<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("fooItem");
+    Ptr<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
     CHECK(itemA.has_value());
     if (itemA.has_value()) {
       ni::Nonnull<sTestItem> v = itemA.non_null();
@@ -315,8 +315,8 @@ TEST_FIXTURE(FNonnull,maybe) {
 }
 
 TEST_FIXTURE(FNonnull,hash_set) {
-  Nonnull<sTestItem> itemA = ni::MakePtrNonnull<sTestItem>("itemA");
-  Nonnull<sTestItem> itemB = ni::MakePtrNonnull<sTestItem>("itemB");
+  Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("itemA");
+  Nonnull<sTestItem> itemB = ni::MakeNonnull<sTestItem>("itemB");
 
   astl::hash_set<ni::Nonnull<sTestItem> > hashedSet;
   hashedSet.insert(itemA);

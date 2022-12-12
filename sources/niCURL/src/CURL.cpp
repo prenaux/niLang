@@ -1130,7 +1130,7 @@ class cCURL : public cIUnknownImpl<iCURL>
                                       iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
-    Nonnull<sFetchRequest> request = ni::MakePtrNonnull<sFetchRequest>(
+    Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
       aMethod,
       aURL,
       ni::CreateFileDynamicMemory(128,""),
@@ -1401,7 +1401,7 @@ class cCURL : public cIUnknownImpl<iCURL>
                                       iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
-    Nonnull<sFetchRequest> request = ni::MakePtrNonnull<sFetchRequest>(
+    Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
       aMethod,
       aURL,
       ni::CreateFileDynamicMemory(128,""),

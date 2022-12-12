@@ -7,7 +7,7 @@ niCrashReport_DeclareHandler();
 
 using namespace ni;
 
-static Nonnull<app::AppContext> gAppContext = ni::MakePtrNonnull<app::AppContext>();
+static Nonnull<app::AppContext> gAppContext = ni::MakeNonnull<app::AppContext>();
 static Ptr<iWidget> _appCanvas;
 static QPtr<iWidgetSink> _appSink;
 

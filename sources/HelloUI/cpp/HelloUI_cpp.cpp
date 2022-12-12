@@ -12,7 +12,7 @@ niExportFunc(iWidgetSink*) New_HelloUI_Widget();
 niExportFunc(iWidgetSink*) New_HelloUI_Shader();
 niExportFunc(iWidgetSink*) New_HelloUI_AR();
 
-static Nonnull<app::AppContext> gAppContext = ni::MakePtrNonnull<app::AppContext>();
+static Nonnull<app::AppContext> gAppContext = ni::MakeNonnull<app::AppContext>();
 
 ni::Var OnAppStarted() {
   niInitScriptVMForDebugUI();

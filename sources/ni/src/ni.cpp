@@ -1202,7 +1202,7 @@ niw_main
       niLog(Info,niFmt("Starting hosted app '%s'.", _GetOptions()->_strHostedAppName));
       ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
-      Nonnull<app::AppContext> appContext = ni::MakePtrNonnull<app::AppContext>();
+      Nonnull<app::AppContext> appContext = ni::MakeNonnull<app::AppContext>();
       if (!app::AppNativeStartup(
             appContext,
             _GetOptions()->_strHostedAppName.Chars(),

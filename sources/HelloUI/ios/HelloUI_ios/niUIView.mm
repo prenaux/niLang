@@ -6,7 +6,7 @@
 #define TRACE_INPUT(FMT) //niDebugFmt(FMT)
 
 astl::non_null<app::AppContext*> GetMyAppContext() {
-  static ni::Nonnull<app::AppContext> _appContext = ni::MakePtrNonnull<app::AppContext>();
+  static ni::Nonnull<app::AppContext> _appContext = ni::MakeNonnull<app::AppContext>();
   return _appContext;
 }
 

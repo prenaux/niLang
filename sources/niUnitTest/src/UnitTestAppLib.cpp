@@ -6,7 +6,7 @@ namespace UnitTest {
 using namespace ni;
 
 astl::non_null<app::AppContext*> GetTestAppContext() {
-  static Nonnull<app::AppContext> _appContext = ni::MakePtrNonnull<app::AppContext>();
+  static Nonnull<app::AppContext> _appContext = ni::MakeNonnull<app::AppContext>();
   return _appContext;
 }
 

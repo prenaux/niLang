@@ -323,13 +323,8 @@ template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Nonnull<U
   return a.raw_ptr() >= b.raw_ptr();
 }
 
-template <typename T>
-inline EA_CONSTEXPR Nonnull<T> MakeNonnull(T* v) {
-  return Nonnull<T>(v);
-}
-
 template <typename T, typename... Args>
-inline EA_CONSTEXPR ni::Nonnull<T> MakePtrNonnull(Args&&... args) {
+inline EA_CONSTEXPR ni::Nonnull<T> MakeNonnull(Args&&... args) {
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
 }
 

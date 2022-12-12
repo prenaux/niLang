@@ -5,7 +5,11 @@
 
 #define TRACE_INPUT(FMT) //niDebugFmt(FMT)
 
-app::AppContext gAppContext;
+astl::non_null<app::AppContext*> GetMyAppContext() {
+  static ni::Nonnull<app::AppContext> _appContext = ni::MakePtrNonnull<app::AppContext>();
+  return _appContext;
+}
+
 ni::Var OnAppStarted();
 
 ni::tF32 kSettings_ScaleFactor = 1.0f;
@@ -88,13 +92,13 @@ static void _InitializeSettings() {
   // Load the configuration
   _InitializeSettings();
   if (_GetSettingsBool(@"SettingsDrawProfiler")) {
-    gAppContext._config.drawFPS = 2;
+    GetMyAppContext()->_config.drawFPS = 2;
   }
   else if (_GetSettingsBool(@"SettingsDrawFPS")) {
-    gAppContext._config.drawFPS = 1;
+    GetMyAppContext()->_config.drawFPS = 1;
   }
   else {
-    gAppContext._config.drawFPS = 0;
+    GetMyAppContext()->_config.drawFPS = 0;
   }
   const bool bSettingRetina = _GetSettingsBool(@"SettingsRetina");
   const bool bSettingMSAA4X = _GetSettingsBool(@"SettingsMSAA4X");
@@ -119,12 +123,12 @@ static void _InitializeSettings() {
 {
   [EAGLContext setCurrentContext:self.context];
   niAppLib_SetBuildText();
-  app::AppGenericStartup(&gAppContext, "HelloUI", 400, 300, ni::Runnable<ni::tpfnRunnable>(OnAppStarted), NULL);
+  app::AppGenericStartup(GetMyAppContext(), "HelloUI", 400, 300, ni::Runnable<ni::tpfnRunnable>(OnAppStarted), NULL);
 }
 
 - (void)tearDownGL
 {
-  app::AppShutdown(&gAppContext);
+  app::AppShutdown(GetMyAppContext());
   [EAGLContext setCurrentContext:self.context];
 }
 
@@ -141,9 +145,9 @@ static void _InitializeSettings() {
   rect.size.width *= kSettings_ScaleFactor;
   rect.size.height *= kSettings_ScaleFactor;
 
-  app::AppGenericResize(&gAppContext, rect.size.width, rect.size.height);
-  app::AppUpdate(&gAppContext);
-  app::AppRender(&gAppContext);
+  app::AppGenericResize(GetMyAppContext(), rect.size.width, rect.size.height);
+  app::AppUpdate(GetMyAppContext());
+  app::AppRender(GetMyAppContext());
 
   // We must disable the scissor test so that the default multisampling code
   // in GLKView works correctly.
@@ -211,7 +215,7 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
 
     const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
     _lastTouchPosition[fingerId] = vTouchLocation;
-    app::AppGenericFingerPress(&gAppContext, fingerId, ni::eTrue, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eTrue, vTouchLocation.x, vTouchLocation.y, 1.0f);
 
     TRACE_INPUT(("iOS FINGER DOWN[%d]: %s", fingerId, vTouchLocation));
   }
@@ -226,7 +230,7 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
     }
 
     const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
-    app::AppGenericFingerMove(&gAppContext, fingerId, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    app::AppGenericFingerMove(GetMyAppContext(), fingerId, vTouchLocation.x, vTouchLocation.y, 1.0f);
     {
       // Apply scaling to the relative move speed so that the movement speed is consistent with the
       // screen's DPI relative to the actual scale currently active. (So that a retina display's
@@ -234,7 +238,7 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
       const ni::tF32 relativeMoveSpeedScale = [UIScreen mainScreen].scale;
       const ni::sVec2f delta = (vTouchLocation - _lastTouchPosition[fingerId]) * relativeMoveSpeedScale;
       _lastTouchPosition[fingerId] = vTouchLocation;
-      app::AppGenericFingerRelativeMove(&gAppContext, fingerId, delta.x, delta.y, 1.0f);
+      app::AppGenericFingerRelativeMove(GetMyAppContext(), fingerId, delta.x, delta.y, 1.0f);
     }
 
     TRACE_INPUT(("iOS FINGER[%d]: MOVE: %s", fingerId, vTouchLocation));
@@ -250,7 +254,7 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
     }
 
     const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
-    app::AppGenericFingerPress(&gAppContext, fingerId, ni::eFalse, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eFalse, vTouchLocation.x, vTouchLocation.y, 1.0f);
 
     TRACE_INPUT(("iOS FINGER UP[%d]: %s", fingerId, vTouchLocation));
     _RemoveTouch(fingerId);

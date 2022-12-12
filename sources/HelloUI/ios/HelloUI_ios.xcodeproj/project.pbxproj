@@ -367,13 +367,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				DEVELOPMENT_TEAM = W63PLW47W3;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HelloUI_ios/HelloUI_ios-Prefix.pch";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "HelloUI_ios/HelloUI_ios-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				OTHER_CFLAGS = (
 					"-I\"../../../sources/niAppLib/src/API\"",
 					"-I\"../../../sources/niLang/src/API\"",
@@ -404,13 +405,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				DEVELOPMENT_TEAM = W63PLW47W3;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HelloUI_ios/HelloUI_ios-Prefix.pch";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "HelloUI_ios/HelloUI_ios-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				OTHER_CFLAGS = (
 					"-I\"../../../sources/niAppLib/src/API\"",
 					"-I\"../../../sources/niLang/src/API\"",

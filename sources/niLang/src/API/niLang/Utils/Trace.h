@@ -55,6 +55,7 @@ niExportFuncCPP(ni::cString) GetTraceFunc(const char* aPrettyFunction);
  \code
  niDeclareModuleTrace(myModule);
  #define MY_TRACE(FMT) niModuleTrace(myModule,FMT)
+ // Enabled it with: -DmyModule.Trace=1
  \endcode
 
 */

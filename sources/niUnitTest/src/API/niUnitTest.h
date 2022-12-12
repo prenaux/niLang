@@ -989,6 +989,9 @@ void CheckPred(TestResults& results, Expected const expected, Actual const actua
 namespace ni {
 struct iWidgetSink;
 };
+namespace app {
+struct AppContext;
+};
 
 namespace UnitTest {
 
@@ -1020,6 +1023,8 @@ int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
 void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink);
 
 void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd);
+
+astl::non_null<app::AppContext*> GetTestAppContext();
 
 }
 

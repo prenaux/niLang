@@ -237,7 +237,7 @@ TEST_FIXTURE(FNonnull,RefCount) {
     Nonnull<sTestItem> nnC = ni::MakeNonnull<sTestItem>("itemC", &counterC);
     CHECK_EQUAL(1, nnC->GetNumRefs());
     {
-      Nonnull<sTestItem> nnA = ni::Nonnull{itemA.raw_ptr()};
+      Nonnull<sTestItem> nnA = ni::Nonnull<sTestItem>{itemA.raw_ptr()};
       CHECK_NOT_EQUAL(nullptr, (sTestItem*&)nnA);
       CHECK_EQUAL(2, itemA.raw_ptr()->GetNumRefs());
       CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());

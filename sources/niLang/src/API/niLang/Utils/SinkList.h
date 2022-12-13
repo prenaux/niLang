@@ -63,7 +63,8 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     if (mCollection->find(apSink) != mCollection->end())
       return eFalse;
     // add to the back of the list
-    mCollection = ni::Nonnull{tImmutableCollection::Add(mCollection,apSink)};
+    mCollection = ni::Nonnull<tImmutableCollection>{
+        tImmutableCollection::Add(mCollection, apSink)};
     return eTrue;
   }
   tBool __stdcall AddSink(iUnknown* apSink) niOverride {
@@ -81,7 +82,8 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
     // add to the front of the list
     typename tImmutableCollection::tContainer newContainer = mCollection->GetUnderlyingContainer();
     newContainer.insert(newContainer.begin(),apSink);
-    mCollection = ni::Nonnull{tImmutableCollection::Create(newContainer)};
+    mCollection = ni::Nonnull<tImmutableCollection>{
+        tImmutableCollection::Create(newContainer)};
     return eTrue;
   }
   tBool __stdcall AddFrontSink(iUnknown* apSink) niImpl {
@@ -97,7 +99,9 @@ struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1
       __sync_lock();
       Ptr<T> sinkRef = apSink;
       auto newColl = tImmutableCollection::Remove(mCollection,apSink);
-      mCollection = ni::IsOK(newColl) ? ni::Nonnull{newColl} : EMPTY();
+      mCollection = ni::IsOK(newColl)
+                        ? ni::Nonnull<tImmutableCollection>{newColl}
+                        : EMPTY();
     }
     return bContains;
   }

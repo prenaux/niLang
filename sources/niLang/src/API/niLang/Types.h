@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
+#include "STL/EASTL/EABase/config/eacompilertraits.h"
+
 #ifndef __METAL_VERSION__
 #  include <stdlib.h>
 #  include <math.h>
@@ -1135,11 +1137,17 @@ namespace ni {
 // Usage: instead of writing 0x1234567890123456 write niU64Const2Parts(0x12345678,90123456);
 #define niU64Const2Parts(a, b) (((static_cast<ni::tU64>(a) << 32) + 0x##b##u))
 
+#define niConstExpr EA_CONSTEXPR
+
 #ifndef niConst
 #  define niConst const
 #endif
 #ifndef niConstValue
+#ifdef __cplusplus
+#  define niConstValue static niConstExpr const
+#else
 #  define niConstValue static const
+#endif
 #endif
 
 #ifdef __cplusplus
@@ -1466,50 +1474,50 @@ niConstValue tF64 kMinExpF64 = niMinExpF64;
 #  endif
 
 #  ifdef __cplusplus
-template<typename T> T TypeMin() { ; /*error*/ }
-template<typename T> T TypeMax() { ; /*error*/ }
-template<typename T> T TypeEpsilon() { ; /*error*/ }
-template<typename T> T TypeZeroTolerance() { ; /*error*/ }
-template<typename T> T TypeMinExp() { ; /*error*/ }
-template<typename T> T TypeMaxExp() { ; /*error*/ }
+template<typename T> niConstExpr T TypeMin() { ; /*error*/ }
+template<typename T> niConstExpr T TypeMax() { ; /*error*/ }
+template<typename T> niConstExpr T TypeEpsilon() { ; /*error*/ }
+template<typename T> niConstExpr T TypeZeroTolerance() { ; /*error*/ }
+template<typename T> niConstExpr T TypeMinExp() { ; /*error*/ }
+template<typename T> niConstExpr T TypeMaxExp() { ; /*error*/ }
 
-template<> inline tI8  TypeMin<tI8>() { return ni::kMinI8; }
-template<> inline tI8  TypeMax<tI8>() { return ni::kMaxI8; }
-template<> inline tI8  TypeZeroTolerance<tI8>() { return 0; }
-template<> inline tU8  TypeMin<tU8>() { return ni::kMinU8; }
-template<> inline tU8  TypeMax<tU8>() { return ni::kMaxU8; }
-template<> inline tU8  TypeZeroTolerance<tU8>() { return 0; }
-template<> inline tI16 TypeMin<tI16>() { return ni::kMinI16; }
-template<> inline tI16 TypeMax<tI16>() { return ni::kMaxI16; }
-template<> inline tI16 TypeZeroTolerance<tI16>() { return 0; }
-template<> inline tU16 TypeMin<tU16>() { return ni::kMinU16; }
-template<> inline tU16 TypeMax<tU16>() { return ni::kMaxU16; }
-template<> inline tU16 TypeZeroTolerance<tU16>() { return 0; }
-template<> inline tI32 TypeMin<tI32>() { return ni::kMinI32; }
-template<> inline tI32 TypeMax<tI32>() { return ni::kMaxI32; }
-template<> inline tI32 TypeZeroTolerance<tI32>() { return 0; }
-template<> inline tU32 TypeMin<tU32>() { return ni::kMinU32; }
-template<> inline tU32 TypeMax<tU32>() { return ni::kMaxU32; }
-template<> inline tU32 TypeZeroTolerance<tU32>() { return 0; }
-template<> inline tI64 TypeMin<tI64>() { return ni::kMinI64; }
-template<> inline tI64 TypeMax<tI64>() { return ni::kMaxI64; }
-template<> inline tI64 TypeZeroTolerance<tI64>() { return 0; }
-template<> inline tU64 TypeMin<tU64>() { return ni::kMinU64; }
-template<> inline tU64 TypeMax<tU64>() { return ni::kMaxU64; }
-template<> inline tU64 TypeZeroTolerance<tU64>() { return 0; }
-template<> inline tF32 TypeMin<tF32>() { return ni::kMinF32; }
-template<> inline tF32 TypeMax<tF32>() { return ni::kMaxF32; }
-template<> inline tF32 TypeZeroTolerance<tF32>() { return 1e-06f; }
-template<> inline tF32 TypeEpsilon<tF32>() { return ni::kEpsilonF32; }
-template<> inline tF32 TypeMinExp<tF32>() { return ni::kMinExpF32; }
-template<> inline tF32 TypeMaxExp<tF32>() { return ni::kMaxExpF32; }
+template<> inline niConstExpr tI8  TypeMin<tI8>() { return ni::kMinI8; }
+template<> inline niConstExpr tI8  TypeMax<tI8>() { return ni::kMaxI8; }
+template<> inline niConstExpr tI8  TypeZeroTolerance<tI8>() { return 0; }
+template<> inline niConstExpr tU8  TypeMin<tU8>() { return ni::kMinU8; }
+template<> inline niConstExpr tU8  TypeMax<tU8>() { return ni::kMaxU8; }
+template<> inline niConstExpr tU8  TypeZeroTolerance<tU8>() { return 0; }
+template<> inline niConstExpr tI16 TypeMin<tI16>() { return ni::kMinI16; }
+template<> inline niConstExpr tI16 TypeMax<tI16>() { return ni::kMaxI16; }
+template<> inline niConstExpr tI16 TypeZeroTolerance<tI16>() { return 0; }
+template<> inline niConstExpr tU16 TypeMin<tU16>() { return ni::kMinU16; }
+template<> inline niConstExpr tU16 TypeMax<tU16>() { return ni::kMaxU16; }
+template<> inline niConstExpr tU16 TypeZeroTolerance<tU16>() { return 0; }
+template<> inline niConstExpr tI32 TypeMin<tI32>() { return ni::kMinI32; }
+template<> inline niConstExpr tI32 TypeMax<tI32>() { return ni::kMaxI32; }
+template<> inline niConstExpr tI32 TypeZeroTolerance<tI32>() { return 0; }
+template<> inline niConstExpr tU32 TypeMin<tU32>() { return ni::kMinU32; }
+template<> inline niConstExpr tU32 TypeMax<tU32>() { return ni::kMaxU32; }
+template<> inline niConstExpr tU32 TypeZeroTolerance<tU32>() { return 0; }
+template<> inline niConstExpr tI64 TypeMin<tI64>() { return ni::kMinI64; }
+template<> inline niConstExpr tI64 TypeMax<tI64>() { return ni::kMaxI64; }
+template<> inline niConstExpr tI64 TypeZeroTolerance<tI64>() { return 0; }
+template<> inline niConstExpr tU64 TypeMin<tU64>() { return ni::kMinU64; }
+template<> inline niConstExpr tU64 TypeMax<tU64>() { return ni::kMaxU64; }
+template<> inline niConstExpr tU64 TypeZeroTolerance<tU64>() { return 0; }
+template<> inline niConstExpr tF32 TypeMin<tF32>() { return ni::kMinF32; }
+template<> inline niConstExpr tF32 TypeMax<tF32>() { return ni::kMaxF32; }
+template<> inline niConstExpr tF32 TypeZeroTolerance<tF32>() { return 1e-06f; }
+template<> inline niConstExpr tF32 TypeEpsilon<tF32>() { return ni::kEpsilonF32; }
+template<> inline niConstExpr tF32 TypeMinExp<tF32>() { return ni::kMinExpF32; }
+template<> inline niConstExpr tF32 TypeMaxExp<tF32>() { return ni::kMaxExpF32; }
 #    ifdef niTypeF64
-template<> inline tF64 TypeMin<tF64>() { return ni::kMinF64; }
-template<> inline tF64 TypeMax<tF64>() { return ni::kMaxF64; }
-template<> inline tF64 TypeZeroTolerance<tF64>() { return 1e-08; }
-template<> inline tF64 TypeEpsilon<tF64>() { return ni::kEpsilonF64; }
-template<> inline tF64 TypeMinExp<tF64>() { return ni::kMinExpF64; }
-template<> inline tF64 TypeMaxExp<tF64>() { return ni::kMaxExpF64; }
+template<> inline niConstExpr tF64 TypeMin<tF64>() { return ni::kMinF64; }
+template<> inline niConstExpr tF64 TypeMax<tF64>() { return ni::kMaxF64; }
+template<> inline niConstExpr tF64 TypeZeroTolerance<tF64>() { return 1e-08; }
+template<> inline niConstExpr tF64 TypeEpsilon<tF64>() { return ni::kEpsilonF64; }
+template<> inline niConstExpr tF64 TypeMinExp<tF64>() { return ni::kMinExpF64; }
+template<> inline niConstExpr tF64 TypeMaxExp<tF64>() { return ni::kMaxExpF64; }
 #    endif
 #  endif // __cplusplus
 

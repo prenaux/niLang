@@ -9,10 +9,12 @@
 #if defined niCPP_Lambda && defined TEST_MJPEG
 using namespace ni;
 
+// Found at https://vivre-motion.com/pages/ip-camera#public_stream
 static const char* _kDefaultMjpegURL =
-    "http://72.89.161.77:8000/mjpg/video.mjpg"
     // "http://admin:abc123@192.168.0.201:9001/video/mjpg.cgi"
     // "http://172.16.46.236:55000/image/01-CAM-139.mjpg"
+    "http://cam-mckeldin-eastview.umd.edu/axis-cgi/mjpg/video.cgi?resolution=160x120&fps=10"
+    // "http://195.196.36.242/mjpg/video.mjpg?resolution=160x120"
 ;
 static const tU32 _kMaxNumFrames = 3;
 static const tU32 _kMaxNumParts = _kMaxNumFrames*10;

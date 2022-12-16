@@ -33,6 +33,7 @@ TEST_FIXTURE(FRTTI,Basic) {
     B* b = new D; // Base class pointer
     D* d = dynamic_cast<D*>(b); // Derived class pointer
     CHECK_NOT_EQUAL(nullptr, d);
+    delete b;
 }
 
 }

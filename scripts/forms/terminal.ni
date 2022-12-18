@@ -30,7 +30,19 @@ function OnSinkAttached(w,a,b) {
   }
 
   mCmdLine = w.FindWidget("ID_CmdLine")
-  mCmdLine.style |= ::eWidgetStyle.NotifyParent
+  mCmdLine.AddSink(::delegate(::gui.baseWidgetSink, {
+    _thisOnCmdLineKeyDown = ::closure.new(this, OnCmdLineKeyDown)
+
+    function OnMoveFocus(w,a,b) {
+      // ::println("... OnMoveFocus");
+      // capture the focus so that we can use tab to complete commands
+      return true;
+    }
+    function OnKeyDown(w,a,b) : (OnCmdLineKeyDown) {
+      // ::println("... OnKeyDown:" a);
+      return _thisOnCmdLineKeyDown(w,a,b);
+    }
+  }));
 
   ::gLang.system_message_handlers.AddSink(w)
 
@@ -90,27 +102,30 @@ function OnVisible(w,a,b) {
 }
 
 ///////////////////////////////////////////////
-function OnNotify(w,a,msg) {
-  if (a == mCmdLine) {
-    if (msg.id == ::eUIMessage.KeyDown) {
-      switch (msg.a) {
-        case ::eKey.Up: {
-          setHistoryItem(-1)
-          break;
-        }
-        case ::eKey.Down: {
-          setHistoryItem(1)
-          break;
-        }
-        case ::eKey.NumPadEnter:
-        case ::eKey.Enter: {
-          cmdRun();
-          // fallthrough
-        }
-        default: {
-          mHistoryCurrent = mHistory.len()
-          break;
-        }
+function OnCmdLineKeyDown(w,a,b) {
+  if (a == ::eKey.Tab) {
+    // ::println("... Tab: cmdComplete");
+    cmdComplete();
+  }
+  else {
+    cmdClearComplete();
+    switch (a) {
+      case ::eKey.Up: {
+        setHistoryItem(-1)
+        break;
+      }
+      case ::eKey.Down: {
+        setHistoryItem(1)
+        break;
+      }
+      case ::eKey.NumPadEnter:
+      case ::eKey.Enter: {
+        cmdRun();
+        // fallthrough
+      }
+      default: {
+        mHistoryCurrent = mHistory.len()
+        break;
       }
     }
   }
@@ -120,6 +135,7 @@ function OnNotify(w,a,msg) {
 mMaxHistoryItems <- 50
 mHistoryCurrent <- 0
 mHistory <- []
+mToComplete <- null
 
 function cmdRun() {
   local cmd = mCmdLine.text
@@ -131,11 +147,21 @@ function cmdRun() {
   }
 }
 
-function cmdPrev() {
+function cmdClearComplete() {
+  mToComplete = null
 }
 
-function cmdNext() {
-  setHistoryItem(1)
+function cmdComplete() {
+  if (!mToComplete) {
+    mToComplete = mCmdLine.text
+  }
+  // ::println("... cmdComplete:" mToComplete)
+  local completedCommand = ::gConsole.CompleteCommandLine(
+    mToComplete, true);
+  if (!completedCommand.empty()) {
+    mCmdLine.text = completedCommand
+    mCmdLine.MoveCursorEnd(true)
+  }
 }
 
 function setHistoryItem(aDelta) {

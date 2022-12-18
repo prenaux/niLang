@@ -9,7 +9,7 @@
     dock_style="DockFill"
     >
     <EditBox
-      style="eWidgetStyle.HoldFocus|eWidgetEditBoxStyle.MultiLine"
+      style="eWidgetStyle.HoldFocus|eWidgetEditBoxStyle.MultiLine|eWidgetEditBoxStyle.CanInsertTabs"
       dock_style="DockFill"
       text="Hello Text !"
       alignment="Left"

@@ -8,6 +8,7 @@
 // ASTL Changes from the original expected implementation:
 // - Uninitialized/empty default constructor constructs an error.
 // - Removed the monadic function, lots of code and not very nice to use.
+// - Add value_or & value_or_fn which return default values.
 // - Use panic instead of exceptions.
 //
 // Original reference doc at:

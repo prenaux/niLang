@@ -613,7 +613,7 @@ class AssertException : public astl::exception
   int LineNumber() const;
 
  private:
-  const ni::cString m_description;
+  ni::cString m_description;
   const ni::cString m_filename;
   const int m_lineNumber;
 };

@@ -45,6 +45,8 @@ AssertException::AssertException(char const* description, char const* filename, 
     , m_filename(filename)
 
 {
+  m_description << "\nCallstack:\n";
+  ni_stack_get_current(m_description,NULL);
 }
 
 AssertException::~AssertException() niThrowSpec()
@@ -62,44 +64,6 @@ char const* AssertException::Filename() const
 }
 
 int AssertException::LineNumber() const
-{
-  return m_lineNumber;
-}
-
-}
-#endif
-
-//--------------------------------------------------------------------------------------------
-//
-//  PanicException
-//
-//--------------------------------------------------------------------------------------------
-#ifdef TEST_NITHROWPANIC
-namespace UnitTest {
-
-PanicException::PanicException(char const* description, char const* filename, int const lineNumber)
-    : m_lineNumber(lineNumber)
-    , m_description(description)
-    , m_filename(filename)
-
-{
-}
-
-PanicException::~PanicException() niThrowSpec()
-{
-}
-
-char const* PanicException::what() const niThrowSpec()
-{
-  return m_description.c_str();
-}
-
-char const* PanicException::Filename() const
-{
-  return m_filename.c_str();
-}
-
-int PanicException::LineNumber() const
 {
   return m_lineNumber;
 }
@@ -419,12 +383,6 @@ bool Test::BeforeRun(TestResults& testResults) const
     return false;
   }
 #endif
-#ifdef TEST_NITHROWPANIC
-  niCatch (PanicException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
-    return false;
-  }
-#endif
 #if defined TEST_NICATCHALL
   niCatch (astl::exception const& e) {
     ni::cString stream;
@@ -459,12 +417,6 @@ bool Test::Run(TestResults& testResults) const
   }
 #ifdef TEST_NITHROWASSERT
   niCatch (AssertException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
-    return false;
-  }
-#endif
-#ifdef TEST_NITHROWPANIC
-  niCatch (PanicException const& e) {
     testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
     return false;
   }
@@ -506,12 +458,6 @@ bool Test::AfterRun(TestResults& testResults) const
   }
 #ifdef TEST_NITHROWASSERT
   niCatch (AssertException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
-    return false;
-  }
-#endif
-#ifdef TEST_NITHROWPANIC
-  niCatch (PanicException const& e) {
     testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
     return false;
   }

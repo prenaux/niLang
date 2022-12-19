@@ -27,6 +27,7 @@ TEST_FIXTURE(ASTL_expected,DefaultConstructor) {
   CHECK_EQUAL(true,r.has_error());
   CHECK_EQUAL(false,r.has_value());
   CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
+  CHECK_EQUAL(_ASTR("FnDefaultValue"), r.value_or_fn([]() { return "FnDefaultValue"; }));
 }
 
 TEST_FIXTURE(ASTL_expected,Success) {
@@ -36,6 +37,7 @@ TEST_FIXTURE(ASTL_expected,Success) {
   CHECK_EQUAL(true,r.has_value());
   CHECK_EQUAL(_ASTR("OK"), r.value());
   CHECK_EQUAL(_ASTR("OK"), r.value_or("DefaultValue"));
+  CHECK_EQUAL(_ASTR("OK"), r.value_or_fn([]() { return "FnDefaultValue"; }));
 }
 
 TEST_FIXTURE(ASTL_expected,Failure) {
@@ -45,4 +47,5 @@ TEST_FIXTURE(ASTL_expected,Failure) {
   CHECK_EQUAL(false,r.has_value());
   CHECK_EQUAL(_ASTR("Failed"), r.error()._msg);
   CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
+  CHECK_EQUAL(_ASTR("FnDefaultValue"), r.value_or_fn([]() { return "FnDefaultValue"; }));
 }

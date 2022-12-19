@@ -8,7 +8,7 @@
 // ASTL Changes from the original expected implementation:
 // - Uninitialized/empty default constructor constructs an error.
 // - Removed the monadic function, lots of code and not very nice to use.
-// - Use panic instead of asserts which are always enabled.
+// - Use panic instead of exceptions.
 //
 // Original reference doc at:
 // https://tl.tartanllama.xyz/en/latest/api/expected.html
@@ -27,20 +27,12 @@
 // <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-#define ASTL_EXPECTED_VERSION_MAJOR 1
-#define ASTL_EXPECTED_VERSION_MINOR 0
-#define ASTL_EXPECTED_VERSION_PATCH 1
-
 #include "EASTL/functional.h"
 #include "EASTL/type_traits.h"
 #include "EASTL/utility.h"
 #include "function_ref.h"
 
 #define ASTL_EXPECTED_DEFAULT_CONSTRUCTOR_IS_ERROR
-
-#if EASTL_EXCEPTIONS_ENABLED
-#define ASTL_EXPECTED_EXCEPTIONS_ENABLED
-#endif
 
 #if (defined(_MSC_VER) && _MSC_VER == 1900)
 #define ASTL_EXPECTED_MSVC2015
@@ -198,18 +190,6 @@ struct unexpect_t {
 static constexpr unexpect_t unexpect{};
 
 namespace detail {
-template<typename E>
-[[noreturn]] ASTL_EXPECTED_11_CONSTEXPR void throw_exception(E &&e) {
-#ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-    throw eastl::forward<E>(e);
-#else
-  #ifdef _MSC_VER
-    __assume(0);
-  #else
-    __builtin_unreachable();
-  #endif
-#endif
-}
 
 #ifndef TL_TRAITS_MUTEX
 #define TL_TRAITS_MUTEX
@@ -725,109 +705,6 @@ struct expected_operations_base : expected_storage_base<T, E> {
     this->m_has_val = false;
   }
 
-  #ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-
-  // These assign overloads ensure that the most efficient assignment
-  // implementation is used while maintaining the strong exception guarantee.
-  // The problematic case is where rhs has a value, but *this does not.
-  //
-  // This overload handles the case where we can just copy-construct `T`
-  // directly into place without throwing.
-  template <class U = T,
-            detail::enable_if_t<eastl::is_nothrow_copy_constructible<U>::value>
-                * = nullptr>
-  void assign(const expected_operations_base &rhs) noexcept {
-    if (!this->m_has_val && rhs.m_has_val) {
-      geterr().~unexpected<E>();
-      construct(rhs.get());
-    } else {
-      assign_common(rhs);
-    }
-  }
-
-  // This overload handles the case where we can attempt to create a copy of
-  // `T`, then no-throw move it into place if the copy was successful.
-  template <class U = T,
-            detail::enable_if_t<!eastl::is_nothrow_copy_constructible<U>::value &&
-                                eastl::is_nothrow_move_constructible<U>::value>
-                * = nullptr>
-  void assign(const expected_operations_base &rhs) noexcept {
-    if (!this->m_has_val && rhs.m_has_val) {
-      T tmp = rhs.get();
-      geterr().~unexpected<E>();
-      construct(eastl::move(tmp));
-    } else {
-      assign_common(rhs);
-    }
-  }
-
-  // This overload is the worst-case, where we have to move-construct the
-  // unexpected value into temporary storage, then try to copy the T into place.
-  // If the construction succeeds, then everything is fine, but if it throws,
-  // then we move the old unexpected value back into place before rethrowing the
-  // exception.
-  template <class U = T,
-            detail::enable_if_t<!eastl::is_nothrow_copy_constructible<U>::value &&
-                                !eastl::is_nothrow_move_constructible<U>::value>
-                * = nullptr>
-  void assign(const expected_operations_base &rhs) {
-    if (!this->m_has_val && rhs.m_has_val) {
-      auto tmp = eastl::move(geterr());
-      geterr().~unexpected<E>();
-
-#ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-      try {
-        construct(rhs.get());
-      } catch (...) {
-        geterr() = eastl::move(tmp);
-        throw;
-      }
-#else
-      construct(rhs.get());
-#endif
-    } else {
-      assign_common(rhs);
-    }
-  }
-
-  // These overloads do the same as above, but for rvalues
-  template <class U = T,
-            detail::enable_if_t<eastl::is_nothrow_move_constructible<U>::value>
-                * = nullptr>
-  void assign(expected_operations_base &&rhs) noexcept {
-    if (!this->m_has_val && rhs.m_has_val) {
-      geterr().~unexpected<E>();
-      construct(eastl::move(rhs).get());
-    } else {
-      assign_common(eastl::move(rhs));
-    }
-  }
-
-  template <class U = T,
-            detail::enable_if_t<!eastl::is_nothrow_move_constructible<U>::value>
-                * = nullptr>
-  void assign(expected_operations_base &&rhs) {
-    if (!this->m_has_val && rhs.m_has_val) {
-      auto tmp = eastl::move(geterr());
-      geterr().~unexpected<E>();
-#ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-      try {
-        construct(eastl::move(rhs).get());
-      } catch (...) {
-        geterr() = eastl::move(tmp);
-        throw;
-      }
-#else
-      construct(eastl::move(rhs).get());
-#endif
-    } else {
-      assign_common(eastl::move(rhs));
-    }
-  }
-
-  #else
-
-  // If exceptions are disabled then we can just copy-construct
   void assign(const expected_operations_base &rhs) noexcept {
     if (!this->m_has_val && rhs.m_has_val) {
       geterr().~unexpected<E>();
@@ -845,8 +722,6 @@ struct expected_operations_base : expected_storage_base<T, E> {
       assign_common(rhs);
     }
   }
-
-  #endif
 
   // The common part of move/copy assigning
   template <class Rhs> void assign_common(Rhs &&rhs) {
@@ -1490,19 +1365,8 @@ public:
     } else {
       auto tmp = eastl::move(err());
       err().~unexpected<E>();
-
-      #ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-      try {
-        ::new (valptr()) T(eastl::forward<U>(v));
-        this->m_has_val = true;
-      } catch (...) {
-        err() = eastl::move(tmp);
-        throw;
-      }
-      #else
-        ::new (valptr()) T(eastl::forward<U>(v));
-        this->m_has_val = true;
-      #endif
+      ::new (valptr()) T(eastl::forward<U>(v));
+      this->m_has_val = true;
     }
 
     return *this;
@@ -1536,6 +1400,10 @@ public:
     }
 
     return *this;
+  }
+
+  inline bool has_error() const {
+    return !this->has_value();
   }
 
 private:
@@ -1584,22 +1452,10 @@ private:
       move_constructing_e_can_throw) {
     auto temp = eastl::move(val());
     val().~T();
-#ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-    try {
-      ::new (errptr()) unexpected_type(eastl::move(rhs.err()));
-      rhs.err().~unexpected_type();
-      ::new (rhs.valptr()) T(eastl::move(temp));
-      eastl::swap(this->m_has_val, rhs.m_has_val);
-    } catch (...) {
-      val() = eastl::move(temp);
-      throw;
-    }
-#else
     ::new (errptr()) unexpected_type(eastl::move(rhs.err()));
     rhs.err().~unexpected_type();
     ::new (rhs.valptr()) T(eastl::move(temp));
     eastl::swap(this->m_has_val, rhs.m_has_val);
-#endif
   }
 
   void swap_where_only_one_has_value_and_t_is_not_void(
@@ -1607,22 +1463,10 @@ private:
       t_is_nothrow_move_constructible) {
     auto temp = eastl::move(rhs.err());
     rhs.err().~unexpected_type();
-#ifdef ASTL_EXPECTED_EXCEPTIONS_ENABLED
-    try {
-      ::new (rhs.valptr()) T(val());
-      val().~T();
-      ::new (errptr()) unexpected_type(eastl::move(temp));
-      eastl::swap(this->m_has_val, rhs.m_has_val);
-    } catch (...) {
-      rhs.err() = eastl::move(temp);
-      throw;
-    }
-#else
     ::new (rhs.valptr()) T(val());
     val().~T();
     ::new (errptr()) unexpected_type(eastl::move(temp));
     eastl::swap(this->m_has_val, rhs.m_has_val);
-#endif
   }
 
 public:
@@ -1678,29 +1522,25 @@ public:
   template <class U = T,
             detail::enable_if_t<!eastl::is_void<U>::value> * = nullptr>
   ASTL_EXPECTED_11_CONSTEXPR const U &value() const & {
-    if (!has_value())
-      detail::throw_exception(bad_expected_access<E>(err().value()));
+    niPanicAssertMsg(has_value(), "no value to retrieve");
     return val();
   }
   template <class U = T,
             detail::enable_if_t<!eastl::is_void<U>::value> * = nullptr>
   ASTL_EXPECTED_11_CONSTEXPR U &value() & {
-    if (!has_value())
-      detail::throw_exception(bad_expected_access<E>(err().value()));
+    niPanicAssertMsg(has_value(), "no value to retrieve");
     return val();
   }
   template <class U = T,
             detail::enable_if_t<!eastl::is_void<U>::value> * = nullptr>
   ASTL_EXPECTED_11_CONSTEXPR const U &&value() const && {
-    if (!has_value())
-      detail::throw_exception(bad_expected_access<E>(eastl::move(err()).value()));
+    niPanicAssertMsg(has_value(), "no value to retrieve");
     return eastl::move(val());
   }
   template <class U = T,
             detail::enable_if_t<!eastl::is_void<U>::value> * = nullptr>
   ASTL_EXPECTED_11_CONSTEXPR U &&value() && {
-    if (!has_value())
-      detail::throw_exception(bad_expected_access<E>(eastl::move(err()).value()));
+    niPanicAssertMsg(has_value(), "no value to retrieve");
     return eastl::move(val());
   }
 

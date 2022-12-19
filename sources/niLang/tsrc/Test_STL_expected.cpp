@@ -21,32 +21,28 @@ static astl::expected<cString,sError> doFail() {
   return astl::make_unexpected(sError { "Failed" });
 }
 
-TEST_FIXTURE(ASTL_expected,base) {
-  sError err = {"an error 1"};
-  sError err2 = {"an error 2", astl::make_shared<sError>(err)};
+TEST_FIXTURE(ASTL_expected,DefaultConstructor) {
+  tExpectedString r;
+  CHECK_EQUAL(false,!!r);
+  CHECK_EQUAL(true,r.has_error());
+  CHECK_EQUAL(false,r.has_value());
+  CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
+}
 
-  // default constructor
-  {
-    tExpectedString r;
-    CHECK_EQUAL(false,!!r);
-    CHECK_EQUAL(true,r.has_error());
-    CHECK_EQUAL(false,r.has_value());
-    CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
-  }
+TEST_FIXTURE(ASTL_expected,Success) {
+  auto r = doSucceed();
+  CHECK_EQUAL(true,!!r);
+  CHECK_EQUAL(false,r.has_error());
+  CHECK_EQUAL(true,r.has_value());
+  CHECK_EQUAL(_ASTR("OK"), r.value());
+  CHECK_EQUAL(_ASTR("OK"), r.value_or("DefaultValue"));
+}
 
-  // a successful operation
-  {
-    auto r = doSucceed();
-    CHECK_EQUAL(true,!!r);
-    CHECK_EQUAL(_ASTR("OK"), r.value());
-    CHECK_EQUAL(_ASTR("OK"), r.value_or("DefaultValue"));
-  }
-
-  // a failure
-  {
-    auto r = doFail();
-    CHECK_EQUAL(true,!r);
-    CHECK_EQUAL(_ASTR("Failed"), r.error()._msg);
-    CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
-  }
+TEST_FIXTURE(ASTL_expected,Failure) {
+  auto r = doFail();
+  CHECK_EQUAL(true,!r);
+  CHECK_EQUAL(true,r.has_error());
+  CHECK_EQUAL(false,r.has_value());
+  CHECK_EQUAL(_ASTR("Failed"), r.error()._msg);
+  CHECK_EQUAL(_ASTR("DefaultValue"), r.value_or("DefaultValue"));
 }

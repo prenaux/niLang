@@ -3,18 +3,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements the class template optional that represents optional objects. 
+// This file implements the class template optional that represents optional objects.
 //
 // An optional object is an object that contains the storage for another object and
 // manages the lifetime of this contained object, if any. The contained object may be
 // initialized after the optional object has been initialized, and may be destroyed before
-// the optional object has been destroyed. 
+// the optional object has been destroyed.
 //
 // Any instance of optional<T> at any given time either contains a value or does not
 // contain a value. When an instance of optional<T> contains a value, it means that an
 // object of type T, referred to as the optional object's contained value, is allocated
 // within the storage of the optional object. Implementations are not permitted to use
-// additional storage, such as dynamic memory, to allocate its contained value. 
+// additional storage, such as dynamic memory, to allocate its contained value.
 //
 // The contained value is allocated in the optional<T> storage suitably
 // aligned for the type T. When an object of type optional<T> is contextually converted to
@@ -46,7 +46,7 @@ EA_DISABLE_VC_WARNING(4582 4583) // constructor/destructor is not implicitly cal
 namespace eastl
 {
 	#if EASTL_EXCEPTIONS_ENABLED
-		#define EASTL_OPTIONAL_NOEXCEPT 
+		#define EASTL_OPTIONAL_NOEXCEPT
 	#else
 		#define EASTL_OPTIONAL_NOEXCEPT EA_NOEXCEPT
 	#endif
@@ -66,7 +66,7 @@ namespace eastl
 	EA_CONSTEXPR nullopt_t nullopt{nullopt_tag_t{}};
 
 
-    ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
 	/// bad_optional_access
 	///
 	#if EASTL_EXCEPTIONS_ENABLED
@@ -90,7 +90,7 @@ namespace eastl
 			inline optional_storage() EA_NOEXCEPT : empty_val('\0') {}
 
 			template<typename TT = T, typename = eastl::enable_if_t<eastl::is_copy_constructible_v<TT>>>
-			inline optional_storage(const optional_storage& other) : engaged(other.engaged) 
+			inline optional_storage(const optional_storage& other) : engaged(other.engaged)
 			{
 				auto* pOtherValue = reinterpret_cast<const T*>(eastl::addressof(other.val));
 				::new (eastl::addressof(val)) value_type(*pOtherValue);
@@ -115,7 +115,7 @@ namespace eastl
 			}
 
 			template<typename TT = T, typename = eastl::enable_if_t<eastl::is_copy_constructible_v<TT>>>
-			inline optional_storage& operator=(const optional_storage& other) 
+			inline optional_storage& operator=(const optional_storage& other)
 			{
 				auto* pOtherValue = reinterpret_cast<const T*>(eastl::addressof(other.val));
 				::new (eastl::addressof(val)) value_type(*pOtherValue);
@@ -188,7 +188,7 @@ namespace eastl
 			//         destruct_value();
 			// }
 
-			inline optional_storage& operator=(const optional_storage& other) 
+			inline optional_storage& operator=(const optional_storage& other)
 			{
 				auto* pOtherValue = reinterpret_cast<const T*>(eastl::addressof(other.val));
 				::new (eastl::addressof(val)) value_type(*pOtherValue);
@@ -215,10 +215,10 @@ namespace eastl
 
 
 			// This union exists to support trivial types that do not require constructors/destructors to be called.
-			// The eastl::optional<T> type will set the empty_val in this case to "initialize" its member data. 
+			// The eastl::optional<T> type will set the empty_val in this case to "initialize" its member data.
 			union
 			{
-				eastl::aligned_storage_t<sizeof(value_type), eastl::alignment_of_v<value_type>> val; 
+				eastl::aligned_storage_t<sizeof(value_type), eastl::alignment_of_v<value_type>> val;
 				char empty_val;
 			};
 			bool engaged = false;
@@ -300,7 +300,7 @@ namespace eastl
 		    return *this;
 	    }
 
-	    inline optional& operator=(const optional& other) 
+	    inline optional& operator=(const optional& other)
 		{
 			auto* pOtherValue = reinterpret_cast<const T*>(eastl::addressof(other.val));
 			if (engaged == other.engaged)
@@ -448,63 +448,63 @@ namespace eastl
 
 	    inline T* get_value_address() EASTL_OPTIONAL_NOEXCEPT
 	    {
-            #if EASTL_EXCEPTIONS_ENABLED
-				if(!engaged) 
+#if EASTL_EXCEPTIONS_ENABLED
+				if(!engaged)
 					throw bad_optional_access();
-			#elif EASTL_ASSERT_ENABLED
-				EASTL_ASSERT_MSG(engaged, "no value to retrieve");
-			#endif
-			return reinterpret_cast<T*>(eastl::addressof(val));
+#elif EASTL_ASSERT_ENABLED
+				niPanicAssertMsg(engaged, "no value to retrieve");
+#endif
+        return reinterpret_cast<T*>(eastl::addressof(val));
 	    }
 
 	    inline const T* get_value_address() const EASTL_OPTIONAL_NOEXCEPT
 	    {
-            #if EASTL_EXCEPTIONS_ENABLED
-				if(!engaged) 
+#if EASTL_EXCEPTIONS_ENABLED
+				if(!engaged)
 					throw bad_optional_access();
-			#elif EASTL_ASSERT_ENABLED
-				EASTL_ASSERT_MSG(engaged, "no value to retrieve");
-			#endif
-			return reinterpret_cast<const T*>(eastl::addressof(val));
+#elif EASTL_ASSERT_ENABLED
+				niPanicAssertMsg(engaged, "no value to retrieve");
+#endif
+        return reinterpret_cast<const T*>(eastl::addressof(val));
 	    }
 
 	    inline value_type& get_value_ref() EASTL_OPTIONAL_NOEXCEPT
 	    {
-            #if EASTL_EXCEPTIONS_ENABLED
-				if(!engaged) 
+#if EASTL_EXCEPTIONS_ENABLED
+				if(!engaged)
 					throw bad_optional_access();
-			#elif EASTL_ASSERT_ENABLED
-				EASTL_ASSERT_MSG(engaged, "no value to retrieve");
-			#endif
+#elif EASTL_ASSERT_ENABLED
+				niPanicAssertMsg(engaged, "no value to retrieve");
+#endif
 		    return *(value_type*)eastl::addressof(val);
 	    }
 
 	    inline const value_type& get_value_ref() const EASTL_OPTIONAL_NOEXCEPT
 	    {
-            #if EASTL_EXCEPTIONS_ENABLED
-				if(!engaged) 
+#if EASTL_EXCEPTIONS_ENABLED
+				if(!engaged)
 					throw bad_optional_access();
-			#elif EASTL_ASSERT_ENABLED
-				EASTL_ASSERT_MSG(engaged, "no value to retrieve");
-			#endif
+#elif EASTL_ASSERT_ENABLED
+				niPanicAssertMsg(engaged, "no value to retrieve");
+#endif
 		    return *(value_type*)eastl::addressof(val);
 	    }
 
 	    inline value_type&& get_rvalue_ref() EASTL_OPTIONAL_NOEXCEPT
 	    {
-            #if EASTL_EXCEPTIONS_ENABLED
-				if(!engaged) 
+#if EASTL_EXCEPTIONS_ENABLED
+				if(!engaged)
 					throw bad_optional_access();
-			#elif EASTL_ASSERT_ENABLED
-				EASTL_ASSERT_MSG(engaged, "no value to retrieve");
-			#endif
+#elif EASTL_ASSERT_ENABLED
+				niPanicAssertMsg(engaged, "no value to retrieve");
+#endif
 		    return eastl::move(*((value_type*)eastl::addressof(val)));
 	    }
     }; // class optional
 
 
     ///////////////////////////////////////////////////////////////////////////////
-	/// global swap 
+	/// global swap
 	///
     template <class T>
     void swap(optional<T>& lhs, optional<T>& rhs) EA_NOEXCEPT_IF(EA_NOEXCEPT(lhs.swap(rhs)))
@@ -512,7 +512,7 @@ namespace eastl
 
 
     ///////////////////////////////////////////////////////////////////////////////
-	/// global comparisions 
+	/// global comparisions
 	///
 	/// http://en.cppreference.com/w/cpp/utility/optional/operator_cmp
 	///
@@ -523,7 +523,7 @@ namespace eastl
 	template <class T>
 	inline EA_CONSTEXPR bool operator==(const optional<T>& lhs, const optional<T>& rhs)
 	{
-		// NOTE: 
+		// NOTE:
 		//
 		// Code collapsed onto a single line to satisfy requirements for constexpr expressions
 		// being a single line return statement.
@@ -542,7 +542,7 @@ namespace eastl
 	template <class T>
 	inline EA_CONSTEXPR bool operator<(const optional<T>& lhs, const optional<T>& rhs)
 	{
-		// NOTE: 
+		// NOTE:
 		//
 		// Code collapsed onto a single line to satisify requirements for constexpr expressions
 		// being a single line return statement.
@@ -680,7 +680,7 @@ namespace eastl
 
 
     ///////////////////////////////////////////////////////////////////////////////
-	/// hash 
+	/// hash
 	///
 	template <typename T>
 	struct hash<eastl::optional<T>>
@@ -720,11 +720,11 @@ namespace eastl
 	}
 
 
-    #undef EASTL_OPTIONAL_NOEXCEPT 
+    #undef EASTL_OPTIONAL_NOEXCEPT
 
 }  // namespace eastl
 
 EA_RESTORE_VC_WARNING()
 
-#endif  // EASTL_OPTIONAL_ENABLED 
+#endif  // EASTL_OPTIONAL_ENABLED
 #endif  // EASTL_OPTIONAL_H

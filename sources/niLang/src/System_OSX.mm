@@ -263,6 +263,18 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
   CGWarpMouseCursorPosition(location);
 }
 
+cString _AppleGetInfoPlistPropertyValue(const achar* aProperty) {
+  @autoreleasepool {
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    niCheck(mainBundle, AZEROSTR);
+    NSString *propertyKey = _ToNSString(aProperty);
+    niCheck(propertyKey, AZEROSTR);
+    NSString *propertyValue = [mainBundle objectForInfoDictionaryKey:propertyKey];
+    niCheck(propertyValue, AZEROSTR);
+    return _ASTR([propertyValue UTF8String]);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 @interface NIWindowDelegate : NSResponder <NSWindowDelegate>
 {

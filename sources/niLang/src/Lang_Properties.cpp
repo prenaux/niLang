@@ -38,6 +38,7 @@ achar* _AppleGetDirHome(achar* buffer);
 achar* _AppleGetDirTemp(achar* buffer);
 achar* _AppleGetDirDocs(achar* buffer);
 achar* _AppleGetDirDownloads(achar* buffer);
+cString _AppleGetInfoPlistPropertyValue(const achar* aProperty);
 #endif
 
 ///////////////////////////////////////////////
@@ -319,13 +320,14 @@ static tBool _InitPkgProp(tStringCMap* props, const achar* binDir, const achar* 
 static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
   cString v; cPath path;
 
-  // In macOS bundle?
-  // TODO: This is a hack, we default to niApp for now, we need a better way of
-  // handling this.
+#if defined niOSX
   {
     if (StrEndsWithI(aaszBinDir,"macos/")) {
+      const cString resDirName = _AppleGetInfoPlistPropertyValue("niAppResourceDirName");
+      niPanicAssertMsg(!resDirName.IsEmpty(),
+                       "The property 'niAppResourceDirName' isnt set in the macOS app's Info.plist.");
       v.clear();
-      v << aaszBinDir << "../Resources/niApp/" << aaszName;
+      v << aaszBinDir << "../Resources/" << resDirName << "/" << aaszName;
       // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
       if (ni::DirExists(v.Chars())) {
         // GetLang()->MessageBox(NULL, "BLA U", "HAS DATA", eOSMessageBoxFlags_Ok);
@@ -334,6 +336,7 @@ static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
       }
     }
   }
+#endif
 
   // in BIN/../../ directory
   {
@@ -344,7 +347,6 @@ static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
       return path.GetDirectory();
     }
   }
-
 
   // in BIN/ directory
   {

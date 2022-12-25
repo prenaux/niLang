@@ -10,8 +10,10 @@
 #include "API/niLang/Var.h"
 #include "API/niLang/ILang.h"
 #include "API/niLang/IZip.h"
+#include "API/niLang/IJson.h"
 #include "Lang.h"
 #include "DataTable.h"
+#include "API/niLang_ModuleDef.h"
 
 using namespace ni;
 
@@ -451,6 +453,151 @@ static tSize DataTableSerialize_ReadXML(iFile* apFile, iDataTable* apTable)
 }
 #endif
 
+//--------------------------------------------------------------------------------------------
+//
+//  Read/Write Json
+//
+//--------------------------------------------------------------------------------------------
+
+struct sJsonParserSinkDT : public cIUnknownImpl<ni::iJsonParserSink> {
+
+  sJsonParserSinkDT(astl::non_null<iDataTable*> apRootDT)
+      : _rootDT(apRootDT)
+      , _dt(CreateDataTableWriteStack(_rootDT))
+  {
+    _isArray.push(eFalse);
+  }
+
+  void __stdcall OnJsonParserSink_Error(const achar* aaszReason, tU32 anLine, tU32 anCol) override {
+    niWarning(niFmt("JsonParseToDataTableSink error:%d:%d: %s",
+                    anLine, anCol, aaszReason));
+  }
+
+  __forceinline void _PushDT(tBool isArray) {
+    _isArray.push(isArray);
+    if (_currentName.empty()) {
+      if (StrIsEmpty(_dt->GetTop()->GetName())) {
+        // We're at the root we dont push a new object
+        _dt->SetName(isArray ? "jarr" : "jobj");
+        // json to datatable reader version
+        _dt->SetInt("__jsonVer", 1);
+      }
+      else {
+        _dt->PushNew(isArray ? "jarr" : "jobj");
+      }
+    }
+    else {
+      _dt->PushNew(_currentName.c_str());
+      if (isArray) {
+        _dt->SetInt("__isArray", 1);
+      }
+    }
+    _currentName.clear();
+  }
+
+  __forceinline void _PopDT() {
+    _dt->Pop();
+    _isArray.pop();
+    _currentName.clear();
+  }
+
+  __forceinline void _SetValue(eJsonType aType, const Var&& aValue) {
+    if (_isArray.top()) {
+      switch (aType) {
+        case eJsonType_Null:
+          _dt->PushNew("jnull");
+          break;
+        case eJsonType_True:
+        case eJsonType_False:
+          _dt->PushNew("jbool");
+          break;
+        case eJsonType_Number:
+          _dt->PushNew("jnum");
+          break;
+        case eJsonType_String:
+          _dt->PushNew("jstr");
+          break;
+        default:
+          _dt->PushNew("junk");
+          break;
+      }
+      _dt->GetTop()->SetVar("v", aValue);
+      _dt->Pop();
+    }
+    else {
+      _dt->GetTop()->SetVar(_currentName.c_str(), aValue);
+    }
+  }
+
+  // Called when a value is parsed
+  void __stdcall OnJsonParserSink_Value(eJsonType aType, const achar* aValue) override {
+    switch (aType) {
+      case eJsonType_Name: {
+        _currentName = aValue;
+        break;
+      }
+      case eJsonType_ObjectBegin: {
+        _PushDT(eFalse);
+        break;
+      }
+      case eJsonType_ObjectEnd: {
+        _PopDT();
+        break;
+      }
+      case eJsonType_ArrayBegin: {
+        _PushDT(eTrue);
+        break;
+      }
+      case eJsonType_ArrayEnd: {
+        _PopDT();
+        break;
+      }
+      case eJsonType_Null: {
+        _SetValue(aType,Var{niVarNull});
+        break;
+      }
+      case eJsonType_True: {
+        _SetValue(aType,eTrue);
+        break;
+      }
+      case eJsonType_False: {
+        _SetValue(aType,eFalse);
+        break;
+      }
+      case eJsonType_Number: {
+        _SetValue(aType,StrAToF(aValue));
+        break;
+      }
+      case eJsonType_String: {
+        _SetValue(aType,ni::cString(aValue));
+        break;
+      }
+      default: {
+        niWarning(niFmt(
+          "Unknown '%s' property '%s' = '%s'.",
+          niEnumToChars(eJsonType,aType), _currentName, aValue));
+        break;
+      }
+    }
+  }
+
+  Nonnull<iDataTable> _rootDT;
+  Nonnull<iDataTableWriteStack> _dt;
+  astl::stack<tBool> _isArray;
+  ni::cString _currentName;
+};
+
+static tSize DataTableSerialize_ReadJSON(iFile* apFile, astl::non_null<iDataTable*> apTable)
+{
+  Nonnull<sJsonParserSinkDT> jsonParser = ni::MakeNonnull<sJsonParserSinkDT>(apTable);
+  tI64 pos = apFile->Tell();
+  if (!ni::GetLang()->JsonParseFile(apFile,jsonParser)) {
+    niError("Invalid Json.");
+    return eInvalidHandle;
+  }
+  return (tSize)(pos-apFile->Tell());
+}
+
 ///////////////////////////////////////////////
 tBool __stdcall cLang::SerializeDataTable(const achar* aaszType, eSerializeMode aMode, iDataTable* apTable, iFile* apFile)
 {
@@ -488,37 +635,71 @@ tBool __stdcall cLang::SerializeDataTable(const achar* aaszType, eSerializeMode 
   }
   else
   {
-    // Try the default xml reader/writer
-    tBool isXML = eFalse;
-    if (strFileType.IEq(_A("xml")) ||
-        strFileType.IEq(_A("xml-raw")) ||
-        strFileType.IEq(_A("xml-stream")))
     {
-      isXML = eTrue;
-    }
-    else {
-      const tI64 pos = apFile->Tell();
-      isXML = apFile->Read8() == '<';
-      apFile->SeekSet(pos);
+      // Try the default xml reader/writer
+      tBool isXML = eFalse;
+      if (strFileType.IEq(_A("xml")) ||
+          strFileType.IEq(_A("xml-raw")) ||
+          strFileType.IEq(_A("xml-stream")))
+      {
+        isXML = eTrue;
+      }
+      else {
+        const tI64 pos = apFile->Tell();
+        isXML = apFile->Read8() == '<';
+        apFile->SeekSet(pos);
+      }
+
+      if (isXML)
+      {
+        if (niFlagIs(aMode,eSerializeFlags_Read)) {
+          if (DataTableSerialize_ReadXML(apFile,apTable) == eInvalidHandle) {
+            niError(_A("Can't read the XML data table."));
+            return eFalse;
+          }
+        }
+        else if (niFlagIs(aMode,eSerializeFlags_Write)) {
+          if (DataTableSerialize_WriteXML(apFile,apTable,strFileType.IEq(_A("xml-stream"))?-1:0)
+              == eInvalidHandle)
+          {
+            niError(_A("Can't write the XML data table."));
+            return eFalse;
+          }
+        }
+        return eTrue;
+      }
     }
 
-    if (isXML)
     {
-      if (niFlagIs(aMode,eSerializeFlags_Read)) {
-        if (DataTableSerialize_ReadXML(apFile,apTable) == eInvalidHandle) {
-          niError(_A("Can't read the XML data table."));
+      // Try the default json reader/writer
+      tBool isJSON = eFalse;
+      if (strFileType.IEq(_A("json")) ||
+          strFileType.IEq(_A("json-raw")) ||
+          strFileType.IEq(_A("json-stream")))
+      {
+        isJSON = eTrue;
+      }
+      else {
+        const tI64 pos = apFile->Tell();
+        const tU8 firstChar = apFile->Read8();
+        isJSON = (firstChar == '[') || (firstChar == '{');
+        apFile->SeekSet(pos);
+      }
+
+      if (isJSON)
+      {
+        if (niFlagIs(aMode,eSerializeFlags_Read)) {
+          if (DataTableSerialize_ReadJSON(apFile,astl::make_non_null(apTable)) == eInvalidHandle) {
+            niError(_A("Can't read the JSON data table."));
+            return eFalse;
+          }
+        }
+        else if (niFlagIs(aMode,eSerializeFlags_Write)) {
+          niError(_A("Can't write the JSON data table: JSON write serialization of datatable not implemented."));
           return eFalse;
         }
+        return eTrue;
       }
-      else if (niFlagIs(aMode,eSerializeFlags_Write)) {
-        if (DataTableSerialize_WriteXML(apFile,apTable,strFileType.IEq(_A("xml-stream"))?-1:0)
-            == eInvalidHandle)
-        {
-          niError(_A("Can't write the XML data table."));
-          return eFalse;
-        }
-      }
-      return eTrue;
     }
 
     niError(niFmt(_A("Unknown datatable file type '%s'."),strFileType.Chars()));

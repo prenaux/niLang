@@ -16,16 +16,21 @@ namespace ni {
  */
 
 ///////////////////////////////////////////////
-inline Ptr<iDataTable> LoadDataTable(const achar* aURL, const achar* aaszSerFormat = "xml") {
-  Ptr<iFile> fp = ni::GetLang()->URLOpen(aURL);
+inline Ptr<iDataTable> LoadDataTable(iFile* fp, const achar* aaszSerFormat = "xml") {
   niCheckIsOK(fp,NULL);
   Nonnull<iDataTable> dt(ni::GetLang()->CreateDataTable(""));
   if (!ni::GetLang()->SerializeDataTable(aaszSerFormat,eSerializeMode_Read,
-                                         dt,fp.raw_ptr())) {
-    niError(niFmt("Can't read datatable from '%s'.", aURL));
+                                         dt,fp)) {
+    niError(niFmt("Can't read datatable from '%s'.", fp->GetSourcePath()));
     return NULL;
   }
   return dt;
+}
+
+///////////////////////////////////////////////
+inline Ptr<iDataTable> LoadDataTable(const achar* aURL, const achar* aaszSerFormat = "xml") {
+  Ptr<iFile> fp = ni::GetLang()->URLOpen(aURL);
+  return LoadDataTable(fp,aaszSerFormat);
 }
 
 ///////////////////////////////////////////////

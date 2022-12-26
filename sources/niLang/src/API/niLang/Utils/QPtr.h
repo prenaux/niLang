@@ -38,9 +38,11 @@ struct QPtr
   template<class U> friend struct QPtr;
   template<class U> friend struct Nonnull;
 
-  typedef typename T::IUnknownBaseType tInterface;
-
  public:
+  typedef typename T::IUnknownBaseType tInterface;
+  // Can be used as input parameter to specify an optional iUnknown object.
+  typedef const QPtr<T>& in_type_t;
+
   QPtr() : mPtr(NULL) {
   }
   QPtr(const T* aP) {

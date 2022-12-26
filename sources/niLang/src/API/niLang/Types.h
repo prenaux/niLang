@@ -2488,6 +2488,8 @@ template <class T> struct sMatrix;
 
 template <class T> struct sVec2
 {
+  typedef T tElement;
+
   T x, y;
 
   inline void Set(T _x, T _y = 0) {
@@ -2635,6 +2637,8 @@ template <class T> struct sVec2
 
 template <class T> struct sVec3
 {
+  typedef T tElement;
+
   T x, y, z;
 
   inline void Set(T _x, T _y = 0, T _z = 0) {
@@ -2789,6 +2793,8 @@ template <class T> struct sVec3
 template <class T>
 struct sVec4
 {
+  typedef T tElement;
+
   T x, y, z, w;     // 4D-vector
 
   inline void Set(T aX, T aY = 0, T aZ = 0, T aW = 0) { x = aX; y = aY; z = aZ; w = aW; }
@@ -3353,6 +3359,8 @@ typedef sQuat<tF64> sQuatd;
 //! 4x4 Matrix template
 template <class T> struct sMatrix
 {
+  typedef T tElement;
+
   //! data
   T _11, _12, _13, _14;
   T _21, _22, _23, _24;

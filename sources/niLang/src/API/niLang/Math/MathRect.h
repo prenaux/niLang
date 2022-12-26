@@ -17,6 +17,8 @@ namespace ni {
 template <typename T>
 struct sRect : public sVec4<T>
 {
+  typedef T tElement;
+
   sRect();
   sRect(const sVec4<T>& avVec);
   explicit sRect(T aLeft, T aTop, T aWidth = 0, T aHeight = 0);
@@ -213,6 +215,27 @@ struct sRect : public sVec4<T>
 
   void Add(const sRect<T>& aRight) {
     this->Add(aRight.GetTopLeft(), aRight.GetBottomRight());
+  }
+
+  void Scale(const tF32 aScale) {
+    this->x *= aScale;
+    this->y *= aScale;
+    this->z *= aScale;
+    this->w *= aScale;
+  }
+
+  void Scale(const sVec2<T>& aScale) {
+    this->x *= aScale.x;
+    this->y *= aScale.y;
+    this->z *= aScale.x;
+    this->w *= aScale.y;
+  }
+
+  void Scale(const sVec4<T>& aScale) {
+    this->x *= aScale.x;
+    this->y *= aScale.y;
+    this->z *= aScale.z;
+    this->w *= aScale.w;
   }
 };
 

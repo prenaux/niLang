@@ -17,6 +17,8 @@ namespace ni {
 template <typename T>
 struct sRect : public sVec4<T>
 {
+  typedef T tElement;
+
   sRect();
   sRect(const sVec4<T>& avVec);
   explicit sRect(T aLeft, T aTop, T aWidth = 0, T aHeight = 0);

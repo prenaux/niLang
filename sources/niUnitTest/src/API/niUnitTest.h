@@ -277,14 +277,6 @@ UnitTest::ListAdder adder##Name (List, &test##Name##Instance);
 #define TEST_FIXTURE_WIDGET_EX(Fixture, Name, List) \
 struct Fixture##Name##Helper : public Fixture { \
   Fixture##Name##Helper(char const* testName) : m_testName(testName) {} \
-  void RunTest(UnitTest::TestResults& testResults_, \
-               char const* const& m_testName, \
-               char const* const& m_filename, \
-               int const& m_lineNumber, \
-               bool& m_timeConstraintExempt, \
-               ni::tF64& m_timeStart, \
-               bool& m_timeReport, \
-               int& m_numSteps);                  \
   char const* const m_testName; \
  private: \
   Fixture##Name##Helper(Fixture##Name##Helper const&); \

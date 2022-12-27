@@ -843,7 +843,7 @@ struct sPropertyBool {
         _value = _default;
       }
     }
-    return _value;
+    return (tBool)_value;
   }
 
 private:

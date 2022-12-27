@@ -530,7 +530,7 @@ inline sVec4<T> VecZeroToEpsilon(sVec4<T> aValue) {
 }
 
 ///////////////////////////////////////////////
-inline sVec3f RainbowColor(tF64 step, tF64 numOfSteps) {
+inline sVec3f RainbowColor(tF32 step, tF32 numOfSteps) {
   // This function generates vibrant, "evenly spaced" colours (i.e. no
   // clustering). This is ideal for creating easily distinguishable vibrant
   // markers in Google Maps and other apps.

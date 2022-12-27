@@ -67,8 +67,8 @@ class cWidgetSinkImpl : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownIm
       case eUIMessage_RightClickUp:   return OnRightClickUp(*(sVec2f*)avarA.mV2F,*(sVec2f*)avarB.mV2F);
       case eUIMessage_NCMouseMove:    return OnNCMouseMove(*(sVec2f*)avarA.mV2F,*(sVec2f*)avarB.mV2F);
       case eUIMessage_MouseMove:      return OnMouseMove(*(sVec2f*)avarA.mV2F,*(sVec2f*)avarB.mV2F);
-      case eUIMessage_NCWheel:      return OnNCWheel(avarA.GetFloatValue(),*(sVec2f*)avarB.mV2F);
-      case eUIMessage_Wheel:        return OnWheel(avarA.GetFloatValue(),*(sVec2f*)avarB.mV2F);
+      case eUIMessage_NCWheel:      return OnNCWheel((tF32)avarA.GetFloatValue(),*(sVec2f*)avarB.mV2F);
+      case eUIMessage_Wheel:        return OnWheel((tF32)avarA.GetFloatValue(),*(sVec2f*)avarB.mV2F);
       case eUIMessage_KeyChar:        return OnKeyChar(avarA.mU32);
       case eUIMessage_KeyDown:        return OnKeyDown((eKey)avarA.mU32,avarB.mU32);
       case eUIMessage_KeyUp:            return OnKeyUp((eKey)avarA.mU32,avarB.mU32);
@@ -186,7 +186,7 @@ class cWidgetSinkImpl : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownIm
   virtual tBool __stdcall OnActivate() { return eFalse; }
   virtual tBool __stdcall OnDeactivate() { return eFalse; }
   virtual tBool __stdcall OnCommand(iWidgetCommand* apCmd) { return eFalse; }
-  virtual tBool __stdcall OnTimer(tU32 anID, tF32 afDuration) { return eFalse; }
+  virtual tBool __stdcall OnTimer(tU32 anID, tF64 afDuration) { return eFalse; }
   virtual tBool __stdcall OnEnabled(tBool abEnabled) { return eFalse; }
   virtual tBool __stdcall OnVisible(tBool abVisible) { return eFalse; }
   virtual tBool __stdcall OnLayout() { return eFalse; }

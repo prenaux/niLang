@@ -49,13 +49,13 @@ constexpr span<T, N> make_span(T* arr, ni::tSize sz) noexcept {
 }
 
 template <typename T, ni::tSize N>
-EA_CONSTEXPR span<T, N> make_span(eastl::array<T, N>& arr) noexcept {
+EA_CONSTEXPR span<T, N> make_span(astl::array<T, N>& arr) noexcept {
   return {arr};
 }
 
 template <typename T, ni::tSize N>
 EA_CONSTEXPR span<const T, N>
-make_span(const eastl::array<T, N>& arr) noexcept {
+make_span(const astl::array<T, N>& arr) noexcept {
   return {arr};
 }
 

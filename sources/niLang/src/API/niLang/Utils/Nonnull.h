@@ -126,6 +126,23 @@ struct Nonnull
     return *this;
   }
 
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Nonnull& operator = (const Nonnull<U>& aRight) {
+    TRACE_NI_NONNULL("COPY(U) operator=");
+    if (mRefPtr != aRight.mRefPtr) {
+      if (mRefPtr) {
+        ni::Release(mRefPtr);
+      }
+      niAssertMsg(aRight.mRefPtr != nullptr,
+                  "Nonnull<T>& operator= copy(U), aRight can't be null.");
+      mRefPtr = aRight.mRefPtr;
+      ni::AddRef(mRefPtr);
+    }
+    return *this;
+  }
+
   // Move operator
   Nonnull& operator = (Nonnull<T>&& aRight) {
     TRACE_NI_NONNULL("MOVE operator=");
@@ -135,6 +152,23 @@ struct Nonnull
       }
       niAssertMsg(aRight.mRefPtr != nullptr,
                   "Nonnull<T>&& operator= move, aRight can't be null.");
+      mRefPtr = aRight.mRefPtr;
+      aRight.mRefPtr = NULL;
+    }
+    return *this;
+  }
+
+  template <typename U,
+            typename = eastl::enable_if_t<
+              eastl::is_convertible<U*, T*>::value>>
+  Nonnull& operator = (Nonnull<U>&& aRight) {
+    TRACE_NI_NONNULL("MOVE(U) operator=");
+    if (mRefPtr != aRight.mRefPtr) {
+      if (mRefPtr) {
+        ni::Release(mRefPtr);
+      }
+      niAssertMsg(aRight.mRefPtr != nullptr,
+                  "Nonnull<T>&& operator= move(U), aRight can't be null.");
       mRefPtr = aRight.mRefPtr;
       aRight.mRefPtr = NULL;
     }

@@ -26,10 +26,11 @@
 #include "internal/config.h"
 #include "type_traits.h"
 #include "iterator.h"
-#include "array.h"
+#include "../array.h"
 
 namespace eastl
 {
+
 	static EA_CONSTEXPR ni::tSize dynamic_extent = (ni::tSize)-1;
 
 	namespace Internal
@@ -85,21 +86,21 @@ namespace eastl
 		// copy-assignment operator
 		EA_CPP14_CONSTEXPR span& operator=(const span& other) EA_NOEXCEPT = default;
 
-		// conversion constructors for c-array and eastl::array
+		// conversion constructors for c-array and astl::array
 		template <size_t N, typename = enable_if_t<(Extent == eastl::dynamic_extent || N == Extent)>>
 		EA_CONSTEXPR span(element_type (&arr)[N]) EA_NOEXCEPT;
 
 		template <size_t N, typename = enable_if_t<(Extent == eastl::dynamic_extent || N == Extent)>>
-		EA_CONSTEXPR span(eastl::array<value_type, N>& arr) EA_NOEXCEPT;
+		EA_CONSTEXPR span(astl::array<value_type, N>& arr) EA_NOEXCEPT;
 
 		template <size_t N, typename = enable_if_t<(Extent == eastl::dynamic_extent || N == Extent)>>
-		EA_CONSTEXPR span(const eastl::array<value_type, N>& arr) EA_NOEXCEPT;
+		EA_CONSTEXPR span(const astl::array<value_type, N>& arr) EA_NOEXCEPT;
 
 		// SfinaeForGenericContainers
 		//
 		template <typename Container>
 		using SfinaeForGenericContainers =
-		    enable_if_t<!is_same_v<Container, span> && !is_same_v<Container, array<value_type>> &&
+		    enable_if_t<!is_same_v<Container, span> && !is_same_v<Container, astl::array<value_type>> &&
 		                !is_array_v<Container> &&
 		                Internal::HasSizeAndData<Container>::value &&
 		                is_convertible_v<remove_pointer_t<decltype(eastl::data(eastl::declval<Container&>()))> (*)[], element_type (*)[]>>;
@@ -162,11 +163,11 @@ namespace eastl
 	// template deduction guides
 	///////////////////////////////////////////////////////////////////////////
 	#ifdef __cpp_deduction_guides
-		template<class T, size_t N> span(T (&)[N]) ->           span <T, N>;
-		template<class T, size_t N> span(array<T, N>&) ->       span <T, N>;
-		template<class T, size_t N> span(const array<T, N>&) -> span <const T, N>;
-		template<class Container>   span(Container&) ->         span <typename Container::value_type>;
-		template<class Container>   span(const Container&) ->   span <const typename Container::value_type>;
+		template<class T, size_t N> span(T (&)[N]) ->                 span <T, N>;
+		template<class T, size_t N> span(astl::array<T, N>&) ->       span <T, N>;
+		template<class T, size_t N> span(const astl::array<T, N>&) -> span <const T, N>;
+		template<class Container>   span(Container&) ->               span <typename Container::value_type>;
+		template<class Container>   span(const Container&) ->         span <const typename Container::value_type>;
 	#endif
 
 
@@ -233,14 +234,14 @@ namespace eastl
 
 	template <typename T, ni::tSize Extent>
 	template <size_t N, typename>
-	EA_CONSTEXPR span<T, Extent>::span(eastl::array<value_type, N> &arr) EA_NOEXCEPT
+	EA_CONSTEXPR span<T, Extent>::span(astl::array<value_type, N> &arr) EA_NOEXCEPT
 		: span(arr.data(), arr.size())
 	{
 	}
 
 	template <typename T, ni::tSize Extent>
 	template <size_t N, typename>
-	EA_CONSTEXPR span<T, Extent>::span(const eastl::array<value_type, N>& arr) EA_NOEXCEPT
+	EA_CONSTEXPR span<T, Extent>::span(const astl::array<value_type, N>& arr) EA_NOEXCEPT
 		: span(arr.data(), arr.size())
 	{
 	}

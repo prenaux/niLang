@@ -30,6 +30,7 @@ struct AppConfig {
   ni::tBool               windowCentered;
   ni::tBool               windowShow;
   ni::sRecti              windowRect;
+  ni::tF32                windowRefreshTimer { -1 };
 
   ni::tBool backgroundUpdate;
 

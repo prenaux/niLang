@@ -46,17 +46,20 @@ static inline Ptr<iURLFileHandler> CreateURLFileHandlerPrefixed(iURLFileHandler*
   return fileHandler;
 }
 
-static inline tBool RegisterModuleDataDirDefaultURLFileHandler(const achar* aToolkitName, const achar* aModuleName) {
+static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aToolkitName, const achar* aModuleName) {
   const cString instanceName = niFmt("URLFileHandler.%s", aModuleName);
   if (ni::GetLang()->GetGlobalInstance(instanceName.Chars())) {
-    return eTrue;
+    return;
   }
   cString dir = GetModuleDataDir(aToolkitName, aModuleName);
   Ptr<iURLFileHandler> fileHandler = CreateURLFileHandlerDir(dir.Chars());
-  if (!fileHandler.IsOK())
-    return eFalse;
+  niPanicAssertMsg(
+    fileHandler.IsOK(),
+    niFmt("Can't create the file handler for the data directory of the module '%s::%s', check that the '$WORK/%s/data/%s' folder exists.",
+          aToolkitName, aModuleName,
+          aToolkitName, aModuleName));
   ni::GetLang()->SetGlobalInstance(instanceName.Chars(), fileHandler);
-  return eTrue;
+  return;
 }
 
 } // namespace ni

@@ -52,6 +52,7 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
     mpContext->_window = apWnd;
     niCheck(mpContext->_window.IsOK(),eFalse);
     mpContext->_window->GetMessageHandlers()->AddSink(this);
+    mpContext->_window->SetRefreshTimer(mpContext->_config.windowRefreshTimer);
     if (!mpContext->_config.windowRect.IsNull()) {
       mpContext->_window->SetRect(mpContext->_config.windowRect);
     }

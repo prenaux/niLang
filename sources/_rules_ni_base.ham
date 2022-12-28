@@ -262,23 +262,24 @@ rule niBuildModuleDef {
   return $(IDLS) ;
 }
 
-# niImportModuleHdrs MODULENAME
-# niImportModuleHdrs MODULENAME : TOOLKITNAME
+# niImportModuleHdrs MODULENAME : (TOOLKITNAME) : (APIDIRNAME)
 rule niImportModuleHdrs {
+  local apiDirName = $(3) ;
+  apiDirName ?= API ;
   local moduleName = $(1) ;
   if $(2) {
-    local d = [ FDirName $(WORK) $(2) sources $(moduleName) src API ] ;
+    local d = [ FDirName $(WORK) $(2) sources $(moduleName) src $(apiDirName) ] ;
     if ! [ FExists $(d) ] {
       EXIT "F/In $(PACKAGE), niImportModuleHdrs $(moduleName), can't find external tk directory:" $(d) ;
     }
-    SubDirHdrs $(WORK) $(2) sources $(moduleName) src API ;
+    SubDirHdrs $(WORK) $(2) sources $(moduleName) src $(apiDirName) ;
   }
   else {
-    local d = [ FDirName $(TOP) $(moduleName) src API ] ;
+    local d = [ FDirName $(TOP) $(moduleName) src $(apiDirName) ] ;
     if ! [ FExists $(d) ] {
       EXIT "F/In $(PACKAGE), niImportModuleHdrs $(moduleName), can't find this tk directory:" $(d) ;
     }
-    SubDirHdrs $(TOP) $(moduleName) src API ;
+    SubDirHdrs $(TOP) $(moduleName) src $(apiDirName) ;
   }
 }
 

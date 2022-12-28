@@ -2226,12 +2226,15 @@ niExportFunc(void) osxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait)
   if (!abDoNotWait) {
     if (window->mfRefreshTimer < 0) {
       if (window->mbIsActive) {
+        TRACE_OSX(("... OSX: osxglSwapBuffers wait Active"));
         window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Active);
       }
       else if (window->GetIsMinimized()) {
+        TRACE_OSX(("... OSX: osxglSwapBuffers wait Minimized"));
         window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Minimized);
       }
       else {
+        TRACE_OSX(("... OSX: osxglSwapBuffers wait backgroundUpdate"));
         window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Background);
       }
     }

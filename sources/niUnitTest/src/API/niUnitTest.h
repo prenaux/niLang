@@ -239,34 +239,36 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 
 #define TEST_FIXTURE_EX_DISABLED(FIXTURE,NAME,LIST) TEST_FIXTURE_DISABLED(FIXTURE,NAME)
 
-#define TEST_WIDGET_EX(Name, List) \
-class Test##Name : public UnitTest::Test \
-{ \
- public: \
-  Test##Name() : Test(#Name, __FILE__, __LINE__) {} \
- private: \
-  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-    TEST_TRY() {                                                           \
-      TEST_STEPS(5);                                                    \
-      UnitTest::TestAppSetCurrentTestWidgetSink(niNew Name(TEST_PARAMS_CALL)); \
-    }                                                                   \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Name) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Name) \
-  } \
-  virtual void RunImpl(UnitTest::TestResults& testResults_) const  { \
-    TEST_TRY() { \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Name) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name) \
-  } \
-  virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-    TEST_TRY() {                                                           \
-      UnitTest::TestAppSetCurrentTestWidgetSink(NULL);                  \
-    }                                                                   \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Name) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Name) \
-  } \
-} test##Name##Instance; \
+#define TEST_WIDGET_EX(Name, List)                                               \
+class Test##Name : public UnitTest::Test                                         \
+{                                                                                \
+ public:                                                                         \
+ Test##Name() : Test(#Name, __FILE__, __LINE__) {}                               \
+ private:                                                                        \
+ virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {         \
+   TEST_TRY() {                                                                  \
+     TEST_STEPS(5);                                                              \
+     UnitTest::TestAppSetCurrentTestWidgetSink(                                  \
+       niNew Name(TEST_PARAMS_CALL),                                             \
+       TEST_IS_INTERACTIVE());                                                   \
+   }                                                                             \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Name)  \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Name) \
+ }                                                                               \
+ virtual void RunImpl(UnitTest::TestResults& testResults_) const  {              \
+   TEST_TRY() {                                                                  \
+   }                                                                             \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Name)             \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name)            \
+ }                                                                               \
+ virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {          \
+   TEST_TRY() {                                                                  \
+     UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                     \
+   }                                                                             \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Name)   \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Name)  \
+ }                                                                               \
+} test##Name##Instance;                                                          \
 UnitTest::ListAdder adder##Name (List, &test##Name##Instance);
 
 #define TEST_WIDGET(Name) TEST_WIDGET_EX(Name,UnitTest::Test::GetTestList())
@@ -274,53 +276,55 @@ UnitTest::ListAdder adder##Name (List, &test##Name##Instance);
 #define TEST_WIDGET_DISABLED(NAME)
 #define TEST_WIDGET_EX_DISABLED(NAME,LIST)
 
-#define TEST_FIXTURE_WIDGET_EX(Fixture, Name, List) \
-struct Fixture##Name##Helper : public Fixture { \
-  Fixture##Name##Helper(char const* testName) : m_testName(testName) {} \
-  char const* const m_testName; \
- private: \
-  Fixture##Name##Helper(Fixture##Name##Helper const&); \
-  Fixture##Name##Helper& operator =(Fixture##Name##Helper const&); \
-}; \
-class Test##Fixture##Name : public UnitTest::Test \
-{ \
- public: \
-  Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
- private: \
-  mutable Fixture##Name##Helper* _mt; \
-  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-    TEST_TRY() { \
-      _mt = new Fixture##Name##Helper(m_testName); \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture) \
-    TEST_TRY() {                                                           \
-      TEST_STEPS(5);                                                    \
-      UnitTest::TestAppSetCurrentTestWidgetSink(niNew Name(TEST_PARAMS_CALL)); \
-    }                                                                   \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Fixture) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Fixture) \
-  } \
-  virtual void RunImpl(UnitTest::TestResults& testResults_) const  { \
-    TEST_TRY() { \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
-  } \
-  virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-    TEST_TRY() {                                                           \
-      UnitTest::TestAppSetCurrentTestWidgetSink(NULL);                  \
-    }                                                                   \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Fixture) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Fixture) \
-    TEST_TRY() { \
-      delete _mt; \
-      _mt = NULL; \
-    } \
-    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture destructor " #Fixture) \
-    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture) \
-  } \
-} test##Fixture##Name##Instance; \
+#define TEST_FIXTURE_WIDGET_EX(Fixture, Name, List)                                  \
+struct Fixture##Name##Helper : public Fixture {                                      \
+  Fixture##Name##Helper(char const* testName) : m_testName(testName) {}              \
+  char const* const m_testName;                                                      \
+ private:                                                                            \
+ Fixture##Name##Helper(Fixture##Name##Helper const&);                                \
+ Fixture##Name##Helper& operator =(Fixture##Name##Helper const&);                    \
+};                                                                                   \
+class Test##Fixture##Name : public UnitTest::Test                                    \
+{                                                                                    \
+ public:                                                                             \
+ Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {}   \
+ private:                                                                            \
+ mutable Fixture##Name##Helper* _mt;                                                 \
+ virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {             \
+   TEST_TRY() {                                                                      \
+     _mt = new Fixture##Name##Helper(m_testName);                                    \
+   }                                                                                 \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture)  \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture) \
+   TEST_TRY() {                                                                      \
+     TEST_STEPS(5);                                                                  \
+     UnitTest::TestAppSetCurrentTestWidgetSink(                                      \
+       niNew Name(TEST_PARAMS_CALL),                                                 \
+       TEST_IS_INTERACTIVE());                                                       \
+   }                                                                                 \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget constructor " #Fixture)   \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Fixture)  \
+ }                                                                                   \
+ virtual void RunImpl(UnitTest::TestResults& testResults_) const  {                  \
+   TEST_TRY() {                                                                      \
+   }                                                                                 \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture)              \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture)             \
+ }                                                                                   \
+ virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {              \
+   TEST_TRY() {                                                                      \
+     UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                         \
+   }                                                                                 \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Fixture)    \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Fixture)   \
+   TEST_TRY() {                                                                      \
+     delete _mt;                                                                     \
+     _mt = NULL;                                                                     \
+   }                                                                                 \
+   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture destructor " #Fixture)   \
+   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture)  \
+ }                                                                                   \
+} test##Fixture##Name##Instance;                                                     \
 UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
 
 #define TEST_FIXTURE_WIDGET(Fixture,Name) TEST_FIXTURE_WIDGET_EX(Fixture,Name,UnitTest::Test::GetTestList())
@@ -357,12 +361,16 @@ UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
 
 #define TEST_TIMEREPORT()   m_timeReport = true;
 
-#define TEST_STEPS(COUNT)                                               \
-  if (UnitTest::runFixtureName.IEq(m_testName)) {                       \
-    m_numSteps = 0xffffff;                                              \
-  }                                                                     \
-  else {                                                                \
-    m_numSteps = UnitTest::runFixtureName.IEq(m_testName) ? 0xffff : COUNT; \
+#define TEST_INTERACTIVE_STEPS_COUNT 0xffffff
+#define TEST_IS_INTERACTIVE() (m_numSteps == TEST_INTERACTIVE_STEPS_COUNT)
+
+// run interactively when the passed fixture name is the same as the test name
+#define TEST_STEPS(COUNT)                                             \
+  if (UnitTest::runFixtureName.IEq(m_testName)) {                     \
+    m_numSteps = TEST_INTERACTIVE_STEPS_COUNT;                        \
+  }                                                                   \
+  else {                                                              \
+    m_numSteps = COUNT;                                               \
   }
 
 #define TEST_PRINT(FMT)        {niPrintln(FMT);}
@@ -1012,7 +1020,7 @@ int RunAllTests(TestReporter& reporter,
 
 int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName);
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
-void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink);
+void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink, ni::tBool abInteractive);
 
 void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd);
 

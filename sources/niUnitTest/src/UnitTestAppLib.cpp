@@ -40,7 +40,7 @@ struct UnitTestWidgetSink : public cWidgetSinkImpl<>
 };
 
 static WeakPtr<ni::iWidgetSink> _currentTestWidgetSink;
-void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink) {
+void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink, ni::tBool abInteractive) {
   astl::non_null<app::AppContext*> appContext = GetTestAppContext();
   QPtr<ni::iWidgetSink> currentSink = _currentTestWidgetSink;
   if (currentSink.IsOK()) {
@@ -48,6 +48,16 @@ void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink) {
     Ptr<iWidget> rootWidget = appContext->_uiContext->GetRootWidget();
     rootWidget->InvalidateChildren(); // remove all children that might have been added by the test case
     rootWidget->RemoveSink(currentSink);
+  }
+  else if (abInteractive && !GetTestAppContext()->_config.windowShow) {
+    // No sink set so this is the first run, show the window
+    if (ni::GetProperty("ni.app.windowMaximized","false").Bool()) {
+      GetTestAppContext()->_window->SetShow(eOSWindowShowFlags_Show|eOSWindowShowFlags_Maximize);
+    }
+    else {
+      GetTestAppContext()->_window->SetShow(eOSWindowShowFlags_Show);
+    }
+    GetTestAppContext()->_window->ActivateWindow();
   }
   currentSink = niGetIfOK(apSink);
   if (currentSink.IsOK()) {
@@ -83,6 +93,14 @@ static ni::Var OnAppShutdown() {
 
 int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName) {
   GetTestAppContext()->_config.drawFPS = 2;
+  GetTestAppContext()->_config.backgroundUpdate = eTrue;
+  // Refresh as fast as possible. Without this we'll have a sleep on some
+  // platforms to save energy since the window is considered to be inactive.
+  GetTestAppContext()->_config.windowRefreshTimer = 0.0f;
+  // By we dont display the app window, use GetTestAppContext()->ShowWindow()
+  // to show it. Note that by default the TEST_WIDGET macros will show the
+  // window when a test is run interactively.
+  GetTestAppContext()->_config.windowShow = eFalse;
   UnitTest::TestRunner_Startup(aFixtureName);
 
   if (!app::AppNativeStartup(GetTestAppContext(),
@@ -99,8 +117,6 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName) {
 }
 
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv) {
-  GetTestAppContext()->_config.drawFPS = 2;
-
   cString fixtureName;
   ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
   return TestAppNativeMainLoop(aTitle, fixtureName.Chars());

@@ -15,12 +15,27 @@
 #endif
 
 #ifdef _DEBUG
-#define GL2_TRACE(aFmt) niDebugFmt(aFmt)
-#else
-#define GL2_TRACE(aFmt) //niDebugFmt(aFmt)
+#  ifndef DO_GL_DEBUG_LOG
+// #    define DO_GL_DEBUG_LOG
+#  endif
+#  ifndef CHECK_GLERR
+#    define CHECK_GLERR
+#  endif
 #endif
 
-#define GL2_TRACE_BUFFER(aFmt) //niDebugFmt(aFmt)
+#if !defined niEmbedded
+#  ifndef CHECK_GLERR
+#    define CHECK_GLERR
+#  endif
+#endif
+
+#ifdef DO_GL_DEBUG_LOG
+#define GL_DEBUG_LOG(X) niDebugFmt(X)
+#else
+#define GL_DEBUG_LOG(X)
+#endif
+
+#define GL2_TRACE_BUFFER(aFmt) GL_DEBUG_LOG(aFmt)
 
 // #ifdef niJSCC
 #define NO_STENCIL_BUFFER // not supported in IE11 WebGL
@@ -394,27 +409,6 @@
 #define GLES_TEXFMT_D24S8  12
 #endif
 
-#ifdef _DEBUG
-#  ifndef DO_GL_DEBUG_LOG
-#    define DO_GL_DEBUG_LOG
-#  endif
-#  ifndef CHECK_GLERR
-#    define CHECK_GLERR
-#  endif
-#endif
-
-#if !defined niEmbedded
-#  ifndef CHECK_GLERR
-#    define CHECK_GLERR
-#  endif
-#endif
-
-#ifdef DO_GL_DEBUG_LOG
-#define GL_DEBUG_LOG(X) niDebugFmt(X)
-#else
-#define GL_DEBUG_LOG(X)
-#endif
-
 #if !defined GL_TEXTURE_CUBE_MAP
 #define GL_TEXTURE_CUBE_MAP               0x8513
 #define GL_TEXTURE_BINDING_CUBE_MAP       0x8514
@@ -484,7 +478,7 @@ struct sGLPushGroupMarker {
 #endif
 
 #ifdef _DEBUG
-#define GLDRV_HANDLE_TRACE(PARAMS) niTraceFmt(PARAMS)
+#define GLDRV_HANDLE_TRACE(PARAMS) // niTraceFmt(PARAMS)
 #else
 #define GLDRV_HANDLE_TRACE(PARAMS)
 #endif

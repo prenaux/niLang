@@ -340,12 +340,6 @@ UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
 #  define niAssert(exp)            if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp)); }
 #  define niAssertMsg(exp,msg)     if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp) ": " msg); }
 #  define niAssertUnreachable(...) TEST_THROW_ASSERT("ASSERT UNREACHABLE: " __VA_ARGS__);
-#  undef niPanicAssert
-#  undef niPanicAssertMsg
-#  undef niPanicUnreachable
-#  define niPanicAssert(exp)        if (!(exp)) { TEST_THROW_ASSERT("PANIC: " _A(#exp)); }
-#  define niPanicAssertMsg(exp,msg) if (!(exp)) { TEST_THROW_ASSERT("PANIC: " _A(#exp) ": " msg); }
-#  define niPanicUnreachable(...)   TEST_THROW_ASSERT("PANIC UNREACHABLE: " __VA_ARGS__);
 #else
 #  define TEST_THROW_ASSERT(DESC)
 #endif

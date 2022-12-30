@@ -58,11 +58,11 @@ niCAssert(sizeof(sObjectMemoryHeader) == niStandardTypesAlignment);
 static struct {
   sObjectMemoryHeader _header;
   char _buffer[8];
-} _memZero = { { NULL }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+} _memZero = { { nullptr }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 niCAssert(sizeof(_memZero) == (sizeof(sObjectMemoryHeader) + 8));
 
 #define CHECK_ZERO_MEMORY() \
-  niAssert(((tU32*)_memZero._buffer)[0] == 0 && ((tU32*)_memZero._buffer)[1] == 0)
+  niDebugAssert(((tU32*)_memZero._buffer)[0] == 0 && ((tU32*)_memZero._buffer)[1] == 0)
 
 #if defined(USE_MEMORY_TRACKING)
 
@@ -120,7 +120,7 @@ static __forceinline void* _internal_aligned_malloc(
 	alignment = alignment > sizeof(void*) ? alignment : sizeof(void*);
 	if (posix_memalign(&ptr, alignment, size))
 	{
-		ptr = NULL;
+		ptr = nullptr;
 	}
 #endif
 
@@ -207,7 +207,7 @@ niExportFunc(void*) ni_aligned_malloc(size_t size, size_t alignment,const char *
 niExportFunc(void*) ni_realloc(void* ptr, size_t size, const char *f, int l, const char *sf)
 {
   CHECK_ZERO_MEMORY();
-  if ((ptr == NULL) || (ptr == _memZero._buffer)) {
+  if ((ptr == nullptr) || (ptr == _memZero._buffer)) {
     return ni_malloc(size, f, l, sf);
   }
 
@@ -218,7 +218,7 @@ niExportFunc(void*) ni_realloc(void* ptr, size_t size, const char *f, int l, con
 niExportFunc(void) ni_free(void* ptr, const char *f, int l, const char *sf)
 {
   CHECK_ZERO_MEMORY();
-  if ((ptr == NULL) || (ptr == _memZero._buffer)) {
+  if ((ptr == nullptr) || (ptr == _memZero._buffer)) {
     return;
   }
   _numFree.Inc();
@@ -252,7 +252,7 @@ public:
   }
   ~sWeakPtrImpl() {
     __sync_local_ptr(iUnknown,pObserved);
-    niAssert(pObserved.ptr() == NULL); // Observed object should have been nulled
+    niDebugAssert(pObserved.ptr() == nullptr); // Observed object should have been nulled
 #ifdef COUNT_WEAK_PTR
     SYNC_DECREMENT(&_nWeakPtrCount);
 #endif
@@ -292,7 +292,7 @@ public:
 #endif
     __sync_local_ptr(iUnknown,pObserved);
     iUnknown* o = pObserved.ptr();
-    return o ? o->QueryInterface(aIID) : (iUnknown*)NULL;
+    return o ? o->QueryInterface(aIID) : (iUnknown*)nullptr;
   }
   void __stdcall ListInterfaces(iMutableCollection* apLst, tU32 anListFlags) const niOverride {
     __sync_local_ptr(iUnknown,pObserved);
@@ -308,7 +308,7 @@ public:
   }
 
   void SetObservedNull() {
-    __sync_set(mpObserved,(iUnknown*)NULL);
+    __sync_set(mpObserved,(iUnknown*)nullptr);
   }
 
   iUnknown* Deref() {
@@ -319,16 +319,16 @@ public:
 #ifdef _DEBUG
         niLog(Debug,niFmt("Deref: Trying to revive %p with weak pointer.", (tIntPtr)o));
 #endif
-        return NULL;
+        return nullptr;
       }
       return o;
     }
-    return NULL;
+    return nullptr;
   }
 };
 
 #define MEMORY_INIT_HEADER(P,SIZE)                  \
-  ((sObjectMemoryHeader*)(P))->mpWeakPtr = NULL;
+  ((sObjectMemoryHeader*)(P))->mpWeakPtr = nullptr;
 
 #define MEMORY_GET_HEADER(apObjectPtr)                                  \
   ((sObjectMemoryHeader*)(((tPtr)(apObjectPtr))-sizeof(sObjectMemoryHeader)))
@@ -356,13 +356,18 @@ static SyncCounter _numObjectFree(0);
 
 niExportFunc(void*) ni_object_alloc(size_t anSize, const achar* file, int line, const achar* fun)
 {
-  niAssert(anSize > 0);
+  niDebugAssert(anSize > 0);
   CHECK_ZERO_MEMORY();
   _numObjectAlloc.Inc();
 
   const tSize nAllocSize = sizeof(sObjectMemoryHeader)+anSize;
   void* p = ni_malloc(nAllocSize, file, line, fun);
-  niAssert(p != NULL);
+  // XXX: Using niDebugAssert because if this triggers we're probably not
+  // gonna achieve much since a single object is likely to be a small
+  // allocation and whatever a niPanicAssert would try to allocate would also
+  // fall over and crash somewhere else... If we one day care about this we
+  // should write a proper test for this somehow - which won't be trivial.
+  niDebugAssert(p != nullptr);
   memset(p,0,nAllocSize);
   {
     MEMORY_INIT_HEADER(p, nAllocSize);
@@ -377,7 +382,7 @@ niExportFunc(void) ni_object_free(void* apObjectPtr, const char* file, int line,
   _numObjectFree.Inc();
 
   sObjectMemoryHeader* basePtr = MEMORY_GET_HEADER(apObjectPtr);
-  niAssert((void*)basePtr != (void*)&_memZero);
+  niDebugAssert((void*)basePtr != (void*)&_memZero);
   OBJECT_MEMORY_DESTRUCT(basePtr);
   ni_free(basePtr, file, line, fun);
   // printf("... OBJECT FREE: %s:%d in %s\n", file?file:"NF", line, fun?fun:"NF");
@@ -385,22 +390,22 @@ niExportFunc(void) ni_object_free(void* apObjectPtr, const char* file, int line,
 
 niExportFunc(tBool) ni_object_has_weak_ptr(iUnknown* apObject) {
   sObjectMemoryHeader* basePtr = MEMORY_GET_HEADER(apObject);
-  return basePtr->mpWeakPtr != NULL;
+  return basePtr->mpWeakPtr != nullptr;
 }
 
 niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObject) {
 #if 0
-  // Discourage improper usage of the API ; assert if apObjectPtr is NULL or
+  // Discourage improper usage of the API ; assert if apObjectPtr is nullptr or
   // if it is already a weak pointer object.
-  niAssert(apObject != NULL
-           && apObject->QueryInterface(niGetInterfaceUUID(iWeakPtr)) == NULL);
+  niPanicAssert(apObject != nullptr
+                && apObject->QueryInterface(niGetInterfaceUUID(iWeakPtr)) == nullptr);
 #endif
 
   // Ensure that we get the actual base object. That is mainly to handle the case where
   // get_weak_ptr() is called with a weak pointer as parameter.
-  iUnknown* pBaseObject = apObject ? apObject->QueryInterface(niGetInterfaceUUID(iUnknown)) : NULL;
+  iUnknown* pBaseObject = apObject ? apObject->QueryInterface(niGetInterfaceUUID(iUnknown)) : nullptr;
   if (!pBaseObject)
-    return NULL;
+    return nullptr;
 
   sObjectMemoryHeader* basePtr = MEMORY_GET_HEADER(pBaseObject);
   if (!basePtr->mpWeakPtr) {
@@ -422,17 +427,17 @@ niExportFunc(iUnknown*) ni_object_get_weak_ptr(iUnknown* apObject) {
 
 niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr) {
   if (!apWeakPtr)
-    return NULL;
+    return nullptr;
 #ifdef _DEBUG
   // Check for improper usage of the API ; assert if apWeakPtr not a weak pointer.
-  niAssert(apWeakPtr->QueryInterface(niGetInterfaceUUID(iWeakPtr)) != NULL);
+  niDebugAssert(apWeakPtr->QueryInterface(niGetInterfaceUUID(iWeakPtr)) != nullptr);
 #endif
   sWeakPtrImpl* weakPtr = (sWeakPtrImpl*)apWeakPtr;
   return weakPtr->Deref();
 }
 
 niExportFunc(sVec4i*) ni_mem_get_stats(sVec4i* apStats) {
-  niAssert(apStats != NULL);
+  niPanicAssert(apStats != nullptr);
   apStats->x = _numAlloc.Get();
   apStats->y = _numFree.Get();
   apStats->z = _numObjectAlloc.Get();

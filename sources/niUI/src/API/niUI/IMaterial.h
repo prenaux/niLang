@@ -19,12 +19,12 @@ struct iShaderConstants;
  */
 
 //! Material flags.
-enum eMaterialFlags
-{
+enum eMaterialFlags {
   //! Material is double sided.
-  //! \remark This is independant of the culling mode, the graphics driver is responsible
-  //!         for making sure that double sided materials are drawn both sides when this
-  //!         flag is set.
+  //! \remark This is independant of the culling mode, the graphics driver is
+  //! responsible
+  //!         for making sure that double sided materials are drawn both sides
+  //!         when this flag is set.
   eMaterialFlags_DoubleSided = niBit(0),
   //! Material is translucent.
   eMaterialFlags_Translucent = niBit(1),
@@ -63,6 +63,8 @@ enum eMaterialFlags
   eMaterialFlags_NoCollision = niBit(16),
   //! Using polygon offset in this material
   eMaterialFlags_PolygonOffset = niBit(17),
+  //! Reverses current culling
+  eMaterialFlags_ReverseCulling = niBit(18),
   //! \internal
   eMaterialFlags_ForceDWORD = 0xFFFFFFFF
 };

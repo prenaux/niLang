@@ -60,6 +60,9 @@
 			<value name="eMaterialFlags_PolygonOffset" value="niBit ( 17 ) ">
 				<comments desc="Using polygon offset in this material "/>
 			</value>
+			<value name="eMaterialFlags_ReverseCulling" value="niBit ( 18 ) ">
+				<comments desc="Reverses current culling "/>
+			</value>
 		</enum>
 		<enum name="eMaterialChannel">
 			<comments desc="Material channel "/>

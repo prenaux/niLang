@@ -1029,11 +1029,11 @@ static void GL_ApplyDepthStencilStates(sGLCache& aCache, const sDepthStencilStat
 }
 
 ///////////////////////////////////////////////
-static void GL_ApplyRasterizerStates(sGLCache& aCache, const sRasterizerStatesDesc& v,
+static void GL_ApplyRasterizerStates(sGLCache &aCache,
+                                     const sRasterizerStatesDesc &v,
                                      const tBool abDoubleSided,
                                      const tBool abDepthOnly,
-                                     const tBool abFlippedRT)
-{
+                                     const tBool abNotReverseCulling) {
 
   // Fill mode //
 #ifdef _glPolygonMode
@@ -1055,13 +1055,13 @@ static void GL_ApplyRasterizerStates(sGLCache& aCache, const sRasterizerStatesDe
         break;
       case eCullingMode_CCW:
         _glEnable(GL_CULL_FACE);
-        _glFrontFace(abFlippedRT ? GL_CCW : GL_CW);
+        _glFrontFace(abNotReverseCulling ? GL_CCW : GL_CW);
         _glCullFace(GL_BACK);
         GLERR_RET(;);
         break;
       case eCullingMode_CW:
         _glEnable(GL_CULL_FACE);
-        _glFrontFace(abFlippedRT ? GL_CW : GL_CCW);
+        _glFrontFace(abNotReverseCulling ? GL_CW : GL_CCW);
         _glCullFace(GL_BACK);
         GLERR_RET(;);
         break;
@@ -4579,12 +4579,15 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
         {
           iRasterizerStates* pRSStates = mpGraphics->GetCompiledRasterizerStates(hRS);
           niCheck(pRSStates,eFalse);
+          tBool isNotReversedCulling =
+              niFlagIs(matFlags, eMaterialFlags_ReverseCulling) ? !isFlippedRT
+                                                                : isFlippedRT;
           GL_ApplyRasterizerStates(
               this->mCache,
-              *(const sRasterizerStatesDesc*)pRSStates->GetDescStructPtr(),
-              niFlagIs(matFlags,eMaterialFlags_DoubleSided),
-              niFlagIs(matFlags,eMaterialFlags_DepthOnly),
-              isFlippedRT);
+              *(const sRasterizerStatesDesc *)pRSStates->GetDescStructPtr(),
+              niFlagIs(matFlags, eMaterialFlags_DoubleSided),
+              niFlagIs(matFlags, eMaterialFlags_DepthOnly),
+              isNotReversedCulling);
         }
       }
 

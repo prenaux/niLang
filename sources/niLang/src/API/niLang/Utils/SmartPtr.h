@@ -30,6 +30,9 @@ struct Ptr
   template<class U> friend struct Nonnull;
 
 public:
+  // don't allow as in<> parameter, use nn<> or Opt/QPtr<> instead.
+  typedef void in_type_t;
+
   Ptr() : mPtr(NULL) {}
 
   Ptr(const T* _p) {

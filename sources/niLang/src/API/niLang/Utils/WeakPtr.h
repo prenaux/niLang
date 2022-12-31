@@ -28,6 +28,9 @@ struct WeakPtr {
   template<class U> friend struct Nonnull;
 
  public:
+  // don't allow as in<> parameter, use nn<> or Opt/QPtr<> instead.
+  typedef void in_type_t;
+
   WeakPtr() {}
   WeakPtr(std::nullptr_t) { *this = nullptr; }
   WeakPtr(const T* other) { *this = other; }

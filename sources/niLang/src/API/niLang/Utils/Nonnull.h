@@ -39,6 +39,8 @@ struct Nonnull
   typedef const T* tConstRawPtr;
   typedef astl::non_null<tRawPtr> non_null_t;
   typedef astl::non_null<tConstRawPtr> const_non_null_t;
+  // don't allow as in<> parameter, use nn<> instead.
+  typedef void in_type_t;
 
   // Explicit so that its clear at callsites that it will enforce it to be
   // non-null.

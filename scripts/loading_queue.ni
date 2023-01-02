@@ -136,7 +136,7 @@
             }
             return true
           })
-          ::concurrent.mainRun(function() { ::SleepMs(100); });
+          ::concurrent.mainRun(function() { return false; });
           break;
         }
         default: {

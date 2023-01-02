@@ -46,7 +46,7 @@ if (!::gUIContext) {
 
   ///////////////////////////////////////////////
   function startFormApp(aFormPath,aDir,aConfig) {
-    local load = function() : (aFormPath,aDir,aConfig) {
+    local loadForm = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
       // Load the form
       local formPath = aFormPath
       local formDT = ::lang.loadDataTable("xml",formPath)
@@ -89,7 +89,7 @@ if (!::gUIContext) {
       }
     }
 
-    local reloadApp = (("gFormWidget" in ::getroottable()) && ::gFormWidget != null)
+    local reloadApp = mStarted;
     if (!reloadApp) {
       //
       // This is called once at startup
@@ -116,20 +116,80 @@ if (!::gUIContext) {
       loadConfig();
 
       // Queue the loading method...
-      ::app.queueStartup(load)
+      ::app.queueStartup([
+        "Loading Form.",
+        loadForm
+      ])
       // Startup the application
       ::app.startup(::gConfig)
     }
     else {
       loadConfig();
-      // setWindowPositionAndSizeFromConfig(); // I dont think we want to reset the window post when reloading an app we're working on
-      ::app.queueStartup(load)
+      ::app.queueStartup([
+        "Reloading Form.",
+        loadForm,
+        null // done
+      ])
     }
   }
 
-  function getConfigPath() {
-    return ::gLang.property["ni.dirs.home"]+"niApp/config/"+
-      ::gLang.property["ni.app.name"]+".config.xml"
+  ///////////////////////////////////////////////
+  mConfigDir = null
+
+  function setConfigDir(aDir) {
+    mConfigDir = "".setdir(aDir);
+    ::gRootFS.FileMakeDir(mConfigDir)
+    if (!::fs.dirExists(mConfigDir)) {
+      throw "Config directory doesn't exist and can't be created: '" + mConfigDir + "'"
+    }
+  }
+
+  function setConfigDirOnce(aDir) {
+    if (mConfigDir == null) {
+      setConfigDir(aDir)
+    }
+  }
+
+  function getConfigDir() {
+    if (mConfigDir == null) {
+      local appName = ::lang.getProperty("ni.app.name")
+      if (!appName.len())
+        throw "getConfigDir: Can't get ni.app.name for the default config directory."
+      setConfigDir(
+        "".setdir(::lang.getProperty("ni.dirs.config")).adddirback(appName))
+    }
+    return mConfigDir
+  }
+
+  function getConfigPath(aName) {
+    if (!aName.?len())
+      throw "getConfigPath: aName not specified."
+    return getConfigDir().setfile(aName).setext("appconfig.xml")
+  }
+
+  function loadConfig(aName) {
+    local path = getConfigPath(aName)
+    if (path && ::fs.fileExists(path)) {
+      local dt = ::lang.loadDataTable("xml",path)
+      ::log("Loaded config '" + aName + "' from '" + path + "'.")
+      return dt
+    }
+    return null
+  }
+
+  function loadConfigNew(aName) {
+    local cfg = loadConfigNew(aName)
+    if (cfg) return cfg
+    local dt = ::gLang.CreateDataTable(aName)
+    writeConfig(dt,aName)
+    return dt
+  }
+
+  function writeConfig(aDT,aName) {
+    local path = getConfigPath(aName);
+    ::gRootFS.FileMakeDir(path.getdir())
+    ::lang.writeDataTable("xml", aDT, path)
+    ::log("Wrote config '" + aName + "' to '" + path + "'.")
   }
 
   ///////////////////////////////////////////////
@@ -384,8 +444,12 @@ if (!::gUIContext) {
 
       ::app.queueStartup(#{
         ::console.registerCommand("Global","Reload","", ::reload, ::eKey.F9);
-        ::console.registerCommand("Global","ReloadSkin","", function() {
-          ::gui.reloadSkin();
+        ::console.registerCommand("Global","ReloadSkin","", #{
+          ::app.queueLoading([
+            "Reloading Skin."
+            #{ ::gui.reloadSkin() }
+            null
+          ]);
         }, ::eKey.F2);
         ::console.registerCommand("Global","DebugUI","", function() {
           ::gUIContext.debug_draw = !::gUIContext.debug_draw

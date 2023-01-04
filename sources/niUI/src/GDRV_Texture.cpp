@@ -6,7 +6,7 @@
 #include "BlitClip.h"
 #include "VideoUtils.h"
 
-#define CREATE_AUTOGEN_MIPMAPS_ALWAYS
+// #define CREATE_AUTOGEN_MIPMAPS_ALWAYS
 // #define CREATE_AUTOGEN_MIPMAPS_NOT_OVERLAY
 
 sRecti _NextMip(const sRecti& aV) {
@@ -105,6 +105,16 @@ iTexture* __stdcall cGraphics::CreateTextureFromBitmap(iHString* ahspName, iBitm
                     ptrBmp->GetDepth(),
                     ptrBmp->GetPixelFormat()->GetFormat()));
     apBitmap->CreateMipMaps(0,eTrue);
+  }
+#else
+  if (niFlagIs(aFlags,eTextureFlags_MipMaps) && !apBitmap->GetNumMipMaps()) {
+    apBitmap->CreateMipMaps(0,ni::eTrue);
+    niWarning(niFmt(
+        "Auto-Generated %d mipmaps for texture '%s' fmt: %s res: %dx%dx%d.\n",
+        apBitmap->GetNumMipMaps(),
+        ahspName,
+        apBitmap->GetPixelFormat()->GetFormat(),
+        apBitmap->GetWidth(),apBitmap->GetHeight(),apBitmap->GetDepth()));
   }
 #endif
 

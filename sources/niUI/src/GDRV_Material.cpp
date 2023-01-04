@@ -121,9 +121,13 @@ class cMaterial :
 
   ///////////////////////////////////////////////
   tBool __stdcall SetBlendMode(eBlendMode aBlendMode) {
-    niAssert(aBlendMode <= 8);
-    mBlendMode = aBlendMode;
-    return eTrue;
+    if (aBlendMode >= eBlendMode_Last) {
+      return eFalse;
+    }
+    else {
+      mBlendMode = aBlendMode;
+      return eTrue;
+    }
   }
   eBlendMode __stdcall GetBlendMode() const {
     return mBlendMode;

@@ -116,89 +116,71 @@ class cHString :  public cIUnknownImpl<iHString,ni::eIUnknownImplFlags_Default>
   niBeginClass(cHString);
 
  public:
-  cHString();
-  ~cHString();
+  cHString() {
+  }
+  ~cHString() {
+    niAssert(maszChars);
+    GetLangImpl()->_UnregisterHString(this);
+  }
 
-  tBool __stdcall IsOK() const;
-  void __stdcall Invalidate();
+  tBool __stdcall IsOK() const niImpl {
+    niClassIsOK(cHString);
+    return eTrue;
+  }
 
-  const achar* __stdcall GetChars() const;
-  tU32 __stdcall GetLength() const;
+  void __stdcall Invalidate() niImpl {
+  }
 
-  iHString* __stdcall GetLocalized() const;
-  iHString* __stdcall GetLocalizedEx(iHString* locale) const;
-  tBool __stdcall IsLocalized(iHString* locale) const;
+  const achar* __stdcall GetChars() const niImpl {
+    return maszChars;
+  }
+  tU32 __stdcall GetLength() const niImpl {
+    return mnLength;
+  }
 
-  tI32 __stdcall Cmp(const iHString* ahspRight) const;
-  tI32 __stdcall ICmp(const iHString* ahspRight) const;
-  iHStringCharIt* __stdcall CreateCharIt(tU32 offset) const;
-  iHStringCharIt* __stdcall CreateRangeIt(tU32 offset, tU32 size) const;
-  //// iHString /////////////////////////////////
+  iHString* __stdcall GetLocalized() const niImpl {
+    return GetLangImpl()->_GetLocalized(NULL,niThis(cHString));
+  }
+  iHString* __stdcall GetLocalizedEx(iHString* locale) const niImpl {
+    return GetLangImpl()->_GetLocalized(locale,niThis(cHString));
+  }
+  tBool __stdcall IsLocalized(iHString* locale) const niImpl {
+    return GetLangImpl()->_GetLocalized(locale,niThis(cHString)) != this;
+  }
 
+  tI32 __stdcall Cmp(const iHString* ahspRight) const niImpl {
+    if (ahspRight == NULL)
+      return -1;
+    if (this != ahspRight) {
+      return ni::StrCmp(maszChars,ahspRight->GetChars());
+    }
+    return 0;
+  }
+
+  tI32 __stdcall ICmp(const iHString* ahspRight) const niImpl {
+    if (ahspRight == NULL)
+      return -1;
+    if (this != ahspRight) {
+      return ni::StrICmp(GetChars(),ahspRight->GetChars());
+    }
+    return 0;
+  }
+
+  iHStringCharIt* __stdcall CreateCharIt(tU32 offset) const niImpl {
+    if (offset > mnLength) return NULL;
+    return niNew cHStringCharIt(this,offset,mnLength-offset);
+  }
+  iHStringCharIt* __stdcall CreateRangeIt(tU32 offset, tU32 size) const niImpl {
+    if (offset+size > mnLength) return NULL;
+    return niNew cHStringCharIt(this,offset,size);
+  }
+
+ public:
   const achar* maszChars;
-  tU32   mnLength;
+  tU32 mnLength;
 
   niEndClass(cHString);
 };
-
-cHString::cHString() {
-}
-cHString::~cHString() {
-  niAssert(maszChars);
-  GetLangImpl()->_UnregisterHString(this);
-}
-
-tBool __stdcall cHString::IsOK() const {
-  niClassIsOK(cHString);
-  return eTrue;
-}
-
-void __stdcall cHString::Invalidate() {
-}
-
-const achar* __stdcall cHString::GetChars() const {
-  return maszChars;
-}
-tU32 __stdcall cHString::GetLength() const {
-  return mnLength;
-}
-
-iHString* __stdcall cHString::GetLocalized() const {
-  return GetLangImpl()->_GetLocalized(NULL,niThis(cHString));
-}
-iHString* __stdcall cHString::GetLocalizedEx(iHString* locale) const {
-  return GetLangImpl()->_GetLocalized(locale,niThis(cHString));
-}
-tBool __stdcall cHString::IsLocalized(iHString* locale) const {
-  return GetLangImpl()->_GetLocalized(locale,niThis(cHString)) != this;
-}
-
-tI32 __stdcall cHString::Cmp(const iHString* ahspRight) const {
-  if (ahspRight == NULL)
-    return -1;
-  if (this != ahspRight) {
-    return ni::StrCmp(maszChars,ahspRight->GetChars());
-  }
-  return 0;
-}
-
-tI32 __stdcall cHString::ICmp(const iHString* ahspRight) const {
-  if (ahspRight == NULL)
-    return -1;
-  if (this != ahspRight) {
-    return ni::StrICmp(GetChars(),ahspRight->GetChars());
-  }
-  return 0;
-}
-
-iHStringCharIt* __stdcall cHString::CreateCharIt(tU32 offset) const {
-  if (offset > mnLength) return NULL;
-  return niNew cHStringCharIt(this,offset,mnLength-offset);
-}
-iHStringCharIt* __stdcall cHString::CreateRangeIt(tU32 offset, tU32 size) const {
-  if (offset+size > mnLength) return NULL;
-  return niNew cHStringCharIt(this,offset,size);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // HStringTable implementation.
@@ -240,6 +222,9 @@ tHStringPtr cLang::CreateHString(const cString& astrKey) {
       it = astl::upsert(*mapHStrings, astrKey, hsp);
       ((cHString*)hsp.ptr())->maszChars = it->first.Chars();
       ((cHString*)hsp.ptr())->mnLength = it->first.Length();
+      niDebugAssertMsg(
+        mapHStrings->find(hsp->GetChars()) != mapHStrings->end(),
+        "Can't find string just after adding it, string likely contains a zero before its length.");
     }
     else {
       hsp = (cHString*)it->second;
@@ -252,7 +237,7 @@ tHStringPtr cLang::CreateHString(const cString& astrKey) {
 void cLang::_UnregisterHString(iHString* apHString) {
   __sync_local_type_(tStringTableHMap,mapHStrings,HStringTable);
   tStringTableHMap::iterator it = mapHStrings->find(apHString->GetChars());
-  niAssert(it != mapHStrings->end());
+  niPanicAssert(it != mapHStrings->end());
   mapHStrings->erase(it);
 }
 

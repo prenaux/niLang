@@ -190,7 +190,8 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
   // HString
   void __stdcall _InvalidateHStringTable();
 
-  typedef astl::hash_map<cString,iHString*>      tStringTableHMap;
+  // TODO: eastl::intrusive_hashtable might be better for this.
+  typedef astl::hash_map<cString,iHString*> tStringTableHMap;
   ni::ThreadMutex mmutexHStringTable;
   niSync tStringTableHMap mmapHStrings;
   void _UnregisterHString(iHString* apHString);

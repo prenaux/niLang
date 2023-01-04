@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <niLang/Utils/TimerSleep.h>
 #include <niLang/Utils/ModuleUtils.h>
+#include "sq_hstring.h"
 
 bool str2num(const SQChar *s,SQObjectPtr &res)
 {
@@ -166,13 +167,13 @@ static int base_getbasestackinfos(HSQUIRRELVM v)
     if(si.funcname)fn = si.funcname;
     if(si.source)src = si.source;
     sq_newtable(v);
-    sq_pushstring(v, _A("func"), -1);
-    sq_pushstring(v, fn, -1);
+    sq_pushstring(v, _HC(func));
+    sq_pushstring(v, _H(fn));
     sq_createslot(v, -3);
-    sq_pushstring(v, _A("src"), -1);
-    sq_pushstring(v, src, -1);
+    sq_pushstring(v, _HC(src));
+    sq_pushstring(v, _H(src));
     sq_createslot(v, -3);
-    sq_pushstring(v, _A("line"), -1);
+    sq_pushstring(v, _HC(line));
     sq_pushint(v, si.line);
     sq_createslot(v, -3);
     return 1;
@@ -195,22 +196,22 @@ static int base_getstackinfos(HSQUIRRELVM v)
     if(si.funcname)fn = si.funcname;
     if(si.source)src = si.source;
     sq_newtable(v);
-    sq_pushstring(v, _A("func"), -1);
-    sq_pushstring(v, fn, -1);
+    sq_pushstring(v, _HC(func));
+    sq_pushstring(v, _H(fn));
     sq_createslot(v, -3);
-    sq_pushstring(v, _A("src"), -1);
-    sq_pushstring(v, src, -1);
+    sq_pushstring(v, _HC(src));
+    sq_pushstring(v, _H(src));
     sq_createslot(v, -3);
-    sq_pushstring(v, _A("line"), -1);
+    sq_pushstring(v, _HC(line));
     sq_pushint(v, si.line);
     sq_createslot(v, -3);
-    sq_pushstring(v, _A("locals"), -1);
+    sq_pushstring(v, _HC(locals));
     sq_newtable(v);
     seq=0;
     for (;;) {
       name = sq_getlocal(v, level, seq);
       if (!name) break;
-      sq_pushstring(v, name, -1);
+      sq_pushstring(v, _H(name));
       sq_push(v, -2);
       sq_createslot(v, -4);
       sq_pop(v, 1);
@@ -482,7 +483,7 @@ static int base_MessageID_ToString(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
     return sq_throwerror(v,_A("Invalid integer parameter 0."));
   cString str = ni::MessageID_ToString(msgID);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v,_H(str.Chars()));
   return 1;
 }
 
@@ -550,7 +551,7 @@ static int base_EnumToString(HSQUIRRELVM v)
     return sq_throwerror(v,_A("base_EnumToString: Can't get value."));
 
   const cString str = ni::GetLang()->EnumToString(nValue, enumDef, nEnumToStringFlags);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v,_H(str));
   return 1;
 }
 
@@ -622,7 +623,7 @@ static int base_GetModuleFileName(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,-1,&src)))
     return sq_throwerror(v,_A("Invalid string parameter 0."));
   ni::cString moduleFilename = ni::GetModuleFileName(src);
-  sq_pushstring(v,moduleFilename.Chars(),moduleFilename.Len());
+  sq_pushstring(v,_H(moduleFilename));
   return 1;
 }
 
@@ -1195,7 +1196,7 @@ static int string_split(HSQUIRRELVM v)
 
   sq_newarray(v,0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,vToks[i].Chars(),vToks[i].Len());
+    sq_pushstring(v,_H(vToks[i]));
     sq_arrayappend(v,-2);
   }
 
@@ -1212,7 +1213,7 @@ static int string_split_sep(HSQUIRRELVM v)
 
   sq_newarray(v,0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,vToks[i].Chars(),vToks[i].Len());
+    sq_pushstring(v,_H(vToks[i]));
     sq_arrayappend(v,-2);
   }
 
@@ -1232,7 +1233,7 @@ static int string_split_sep_quoted(HSQUIRRELVM v)
 
   sq_newarray(v,0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,vToks[i].Chars(),vToks[i].Len());
+    sq_pushstring(v,_H(vToks[i]));
     sq_arrayappend(v,-2);
   }
 
@@ -1252,7 +1253,7 @@ static int string_split_csv_fields(HSQUIRRELVM v)
 
   sq_newarray(v,0);
   for (tU32 i = 0; i < vFields.size(); ++i) {
-    sq_pushstring(v,vFields[i].Chars(),vFields[i].Len());
+    sq_pushstring(v,_H(vFields[i]));
     sq_arrayappend(v,-2);
   }
 
@@ -1455,7 +1456,7 @@ static int string_format(HSQUIRRELVM v)
       nparam ++;
     }
   }
-  sq_pushstring(v,strDest.Chars(),strDest.Len());
+  sq_pushstring(v,_H(strDest));
   return 1;
 }
 
@@ -1511,7 +1512,7 @@ static int string_setfile(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid file parameter."));
   cPath path(str);
   path.SetFile(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1519,7 +1520,7 @@ static int string_getfile(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cPath(str).GetFile().Chars(),-1);
+  sq_pushstring(v,_H(cPath(str).GetFile()));
   return 1;
 }
 
@@ -1527,7 +1528,7 @@ static int string_getpath(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cPath(str).GetPath().Chars(),-1);
+  sq_pushstring(v,_H(cPath(str).GetPath()));
   return 1;
 }
 
@@ -1540,7 +1541,7 @@ static int string_setfilenoext(HSQUIRRELVM v)
   cString curExt = pathCur.GetExtension();
   pathCur.SetFile(cPath(param).GetFile().Chars());
   pathCur.SetExtension(curExt.Chars());
-  sq_pushstring(v,pathCur.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(pathCur.GetPath()));
   return 1;
 }
 
@@ -1550,7 +1551,7 @@ static int string_getfilenoext(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   cPath path(str);
   path.SetExtension(NULL);
-  sq_pushstring(v,path.GetFile().Chars(),-1);
+  sq_pushstring(v,_H(path.GetFile()));
   return 1;
 }
 
@@ -1561,7 +1562,7 @@ static int string_setext(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid extension parameter."));
   cPath path(str);
   path.SetExtension(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1569,7 +1570,7 @@ static int string_getext(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cPath(str).GetExtension().Chars(),-1);
+  sq_pushstring(v,_H(cPath(str).GetExtension()));
   return 1;
 }
 
@@ -1580,7 +1581,7 @@ static int string_setdir(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
   cPath path(str);
   path.SetDirectory(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1588,7 +1589,7 @@ static int string_getdir(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cPath(str).GetDirectory().Chars(),-1);
+  sq_pushstring(v,_H(cPath(str).GetDirectory()));
   return 1;
 }
 
@@ -1599,7 +1600,7 @@ static int string_setprotocol(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid extension parameter."));
   cPath path(str);
   path.SetProtocol(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1607,7 +1608,7 @@ static int string_getprotocol(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cPath(str).GetProtocol().Chars(),-1);
+  sq_pushstring(v,_H(cPath(str).GetProtocol()));
   return 1;
 }
 
@@ -1618,7 +1619,7 @@ static int string_adddirfront(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
   cPath path(str);
   path.AddDirectoryFront(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1629,7 +1630,7 @@ static int string_adddirback(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
   cPath path(str);
   path.AddDirectoryBack(param);
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1639,7 +1640,7 @@ static int string_removedirback(HSQUIRRELVM v)
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   cPath path(str);
   path.RemoveDirectoryBack();
-  sq_pushstring(v,path.GetPath().Chars(),-1);
+  sq_pushstring(v,_H(path.GetPath()));
   return 1;
 }
 
@@ -1684,7 +1685,7 @@ static int string_trimrightex(HSQUIRRELVM v)
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimrightex, Invalid parameter."));
-  sq_pushstring(v,cString(str).TrimRightEx(param),-1);
+  sq_pushstring(v,_H(cString(str).TrimRightEx(param)));
   return 1;
 }
 
@@ -1692,7 +1693,7 @@ static int string_trimright(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cString(str).TrimRight(),-1);
+  sq_pushstring(v,_H(cString(str).TrimRight()));
   return 1;
 }
 
@@ -1701,7 +1702,7 @@ static int string_trimleftex(HSQUIRRELVM v)
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimleftex, Invalid parameter."));
-  sq_pushstring(v,cString(str).TrimLeftEx(param),-1);
+  sq_pushstring(v,_H(cString(str).TrimLeftEx(param)));
   return 1;
 }
 
@@ -1709,7 +1710,7 @@ static int string_trimleft(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cString(str).TrimLeft(),-1);
+  sq_pushstring(v,_H(cString(str).TrimLeft()));
   return 1;
 }
 
@@ -1718,7 +1719,7 @@ static int string_trimex(HSQUIRRELVM v)
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimex, Invalid parameter."));
-  sq_pushstring(v,cString(str).TrimEx(param),-1);
+  sq_pushstring(v,_H(cString(str).TrimEx(param)));
   return 1;
 }
 
@@ -1726,7 +1727,7 @@ static int string_trim(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cString(str).Trim(),-1);
+  sq_pushstring(v,_H(cString(str).Trim()));
   return 1;
 }
 
@@ -1734,7 +1735,7 @@ static int string_normalize(HSQUIRRELVM v)
 {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,cString(str).Normalize(),-1);
+  sq_pushstring(v,_H(cString(str).Normalize()));
   return 1;
 }
 
@@ -1742,28 +1743,28 @@ static int string_before(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_before, Invalid parameter."));
-  sq_pushstring(v,cString(str).Before(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).Before(param).Chars()));
   return 1;
 }
 static int string_rbefore(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rbefore, Invalid parameter."));
-  sq_pushstring(v,cString(str).RBefore(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).RBefore(param)));
   return 1;
 }
 static int string_after(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_after, Invalid parameter."));
-  sq_pushstring(v,cString(str).After(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).After(param)));
   return 1;
 }
 static int string_rafter(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rafter, Invalid parameter."));
-  sq_pushstring(v,cString(str).RAfter(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).RAfter(param)));
   return 1;
 }
 
@@ -1771,28 +1772,28 @@ static int string_beforei(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_beforei, Invalid parameter."));
-  sq_pushstring(v,cString(str).BeforeI(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).BeforeI(param)));
   return 1;
 }
 static int string_rbeforei(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rbeforei, Invalid parameter."));
-  sq_pushstring(v,cString(str).RBeforeI(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).RBeforeI(param)));
   return 1;
 }
 static int string_afteri(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_afteri, Invalid parameter."));
-  sq_pushstring(v,cString(str).AfterI(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).AfterI(param)));
   return 1;
 }
 static int string_rafteri(HSQUIRRELVM v) {
   const SQChar *str,*param;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rafteri, Invalid parameter."));
-  sq_pushstring(v,cString(str).RAfterI(param).Chars(),-1);
+  sq_pushstring(v,_H(cString(str).RAfterI(param)));
   return 1;
 }
 
@@ -1802,8 +1803,7 @@ static int string_left(HSQUIRRELVM v) {
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
     return sq_throwerror(v,_A("string_left, Invalid count parameter."));
-  cString s = cString(str).Left(count);
-  sq_pushstring(v,s.Chars(),s.length());
+  sq_pushstring(v,_H(cString(str).Left(count)));
   return 1;
 }
 static int string_right(HSQUIRRELVM v) {
@@ -1812,8 +1812,7 @@ static int string_right(HSQUIRRELVM v) {
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
   if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
     return sq_throwerror(v,_A("string_right, Invalid count parameter."));
-  cString s = cString(str).Right(count);
-  sq_pushstring(v,s.Chars(),s.length());
+  sq_pushstring(v,_H(cString(str).Right(count)));
   return 1;
 }
 static int string_mid(HSQUIRRELVM v) {
@@ -1825,8 +1824,7 @@ static int string_mid(HSQUIRRELVM v) {
     return sq_throwerror(v,_A("string_mid, Invalid first parameter."));
   if (!SQ_SUCCEEDED(sq_getint(v,3,&count)))
     return sq_throwerror(v,_A("string_mid, Invalid count parameter."));
-  cString s = cString(str).Mid(first,count);
-  sq_pushstring(v,s.Chars(),s.length());
+  sq_pushstring(v,_H(cString(str).Mid(first,count)));
   return 1;
 }
 
@@ -1906,10 +1904,10 @@ static int string_getlocalized(HSQUIRRELVM v)
     return sq_throwerror(v,_A("string_getlocalized, can't get this string."));
   }
   if ((sq_gettop(v) > 1) && SQ_SUCCEEDED(sq_gethstring(v,2,&hspLocale))) {
-    sq_pushhstring(v,hspText->GetLocalizedEx(hspLocale));
+    sq_pushstring(v,hspText->GetLocalizedEx(hspLocale));
   }
   else {
-    sq_pushhstring(v,hspText->GetLocalized());
+    sq_pushstring(v,hspText->GetLocalized());
   }
   return 1;
 }
@@ -2553,7 +2551,7 @@ SQRegFunction SQSharedState::_base_funcs[] = {
 niExportFunc(int) sq_registerfuncs(HSQUIRRELVM v, const SQRegFunction* regs) {
   int i = 0;
   while (regs[i].name != NULL) {
-    sq_pushstring(v,regs[i].name,-1);
+    sq_pushstring(v,_H(regs[i].name));
     sq_newclosure(v,regs[i].f,0);
     sq_setnativeclosurename(v,-1,regs[i].name);
     sq_setparamscheck(v,regs[i].nparamscheck,NULL);

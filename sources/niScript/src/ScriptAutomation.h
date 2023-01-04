@@ -35,6 +35,8 @@ inline SQFloat _toSQFloat(T a) {
 int indexedproperty_set(HSQUIRRELVM v);
 int indexedproperty_get(HSQUIRRELVM v);
 
+void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v, const iUnknown* apI);
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cScriptAutomation declaration.
 

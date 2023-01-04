@@ -119,17 +119,7 @@ niExportFunc(void) sq_pushnull(HSQUIRRELVM v)
   v->Push(_null_);
 }
 
-niExportFunc(void) sq_pushstring(HSQUIRRELVM v,const SQChar *s,int len)
-{
-  if (niStringIsOK(s)) {
-    v->Push(SQObjectPtr(_H(cString(s,len))));
-  }
-  else {
-    v->Push(v->GetEmptyString());
-  }
-}
-
-niExportFunc(void) sq_pushhstring(HSQUIRRELVM v, iHString* hstr)
+niExportFunc(void) sq_pushstring(HSQUIRRELVM v, const iHString* hstr)
 {
   if (!HStringIsEmpty(hstr)) {
     v->Push(SQObjectPtr(hstr));

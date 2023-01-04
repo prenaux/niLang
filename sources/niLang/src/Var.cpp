@@ -515,8 +515,7 @@ niExportFuncCPP(Ptr<iHString>) VarGetHString(const Var& aVar)
       break;
     case eType_String: {
       niAssert(!niFlagTest(aVar.mType,eTypeFlags_Pointer));
-      const cString& str = *aVar.mpString;
-      return _H(str.Chars());
+      return _H(*aVar.mpString);
     }
     case eType_AChar:
       if (niFlagIs(aVar.mType,eTypeFlags_Pointer)) {

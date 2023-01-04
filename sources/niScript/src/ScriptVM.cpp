@@ -15,6 +15,7 @@
 #include "sqclosure.h"
 #include "ScriptVM_Concurrent.h"
 #include <niLang/Utils/ConcurrentImpl.h>
+#include "sq_hstring.h"
 
 #ifdef niWindows
 #include <niLang/Platforms/Win32/Win32_UTF.h>
@@ -25,8 +26,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Squirrel static functions interface.
-
-const achar* iunknown_gettype(HSQUIRRELVM v, cString& astrOut, iUnknown* apI);
 
 static tU32 _fccClosure = SQ_CLOSURESTREAM_HEAD;
 
@@ -77,9 +76,10 @@ void sqGetIndexDump(cString& strOut, HSQUIRRELVM v, int idx, int size)
     }
     case eScriptType_IUnknown: {
       iUnknown* p = _iunknown(obj);
-      cString strType;
       strOut << niFmt(_A("%p %s"),p,p);
-      strOut << _A("[") << iunknown_gettype(v,strType,p) << _A("]");
+      strOut << _A("[");
+      iunknown_gettype_concat(strOut,v,p);
+      strOut << _A("]");
       break;
     }
     case eScriptType_MethodDef: {
@@ -928,7 +928,7 @@ tI32 __stdcall cScriptVM::CollectGarbage()
 //! Register a function.
 tBool __stdcall cScriptVM::RegisterFunction(const sMethodDef* apFunction, const achar* aaszName)
 {
-  sq_pushstring(mptrVM, aaszName?aaszName:apFunction->maszName, -1);
+  sq_pushstring(mptrVM, _H(aaszName?aaszName:apFunction->maszName));
   sqa_pushMethodDef(mptrVM,NULL,apFunction);
   sq_createslot(mptrVM,-3);
   return eTrue;
@@ -944,9 +944,9 @@ tBool __stdcall cScriptVM::PushRootTable()
 
 ///////////////////////////////////////////////
 //! Push a string on the stack.
-tBool __stdcall cScriptVM::PushString(const achar* aaszString, tSize anLen)
+tBool __stdcall cScriptVM::PushString(const iHString* ahspValue)
 {
-  sq_pushstring(mptrVM, aaszString, anLen);
+  sq_pushstring(mptrVM, ahspValue);
   return eTrue;
 }
 
@@ -1092,7 +1092,7 @@ tBool __stdcall cScriptVM::_DoImport(tBool abNew, iUnknown* apPathOrFile, iScrip
   // get the import closure
   sq_pushroottable(mptrVM);
   ++nNumPop;
-  sq_pushstring(mptrVM,abNew?"NewImport":"Import",-1);
+  sq_pushstring(mptrVM,abNew?_HC(NewImport):_HC(Import));
   if (!SQ_SUCCEEDED(sq_get(mptrVM,-2))) {
     niError(_A("Can't get the Import closure."));
     Pop(nNumPop);
@@ -1110,7 +1110,7 @@ tBool __stdcall cScriptVM::_DoImport(tBool abNew, iUnknown* apPathOrFile, iScrip
       Pop(nNumPop);
       return eFalse;
     }
-    sq_pushstring(mptrVM,aaszModule,-1);
+    sq_pushstring(mptrVM,_H(aaszModule));
     ++nNumPop;
   }
   else
@@ -1181,7 +1181,7 @@ iScriptObject* __stdcall cScriptVM::CreateObject(tI32 anIndex, tI32 anNumPop)
 //! \return NULL if the object can't be found or that the type doesn't match aRequiredType.
 iScriptObject* __stdcall cScriptVM::CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType, tI32 anNumPop)
 {
-  sq_pushstring(mptrVM,aaszKey,-1);
+  sq_pushstring(mptrVM,_H(aaszKey));
   if (SQ_FAILED(sq_get(mptrVM,-2)))
   {
     niError(niFmt(_A("Can't get the object '%s'."), aaszKey));

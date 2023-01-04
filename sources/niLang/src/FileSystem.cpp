@@ -54,6 +54,63 @@ niExportFuncCPP(ni::cString) agetcwd() {
 
 #define DEVICE_SEPARATOR ':'
 
+static bool _RemovePathSlashPatterns(char* apData) {
+  bool modified = false;
+
+  /* remove duplicate slashes */
+  {
+    char* p = NULL;
+    const char t[] = {'/','/',0};
+    while ((p = (char*)StrStr(apData, t)) != NULL) {
+      StrRemove(p, 0);
+      modified = true;
+    }
+  }
+
+  /* remove /./ patterns */
+  {
+    char* p = NULL;
+    const char t[] = {'/','.','/',0};
+    while ((p = (char*)StrStr(apData, t)) != NULL) {
+      StrRemove(p, 0);
+      StrRemove(p, 0);
+      modified = true;
+    }
+  }
+
+  /* collapse /../ patterns */
+  {
+    char* p = NULL;
+    const char t[] = {'/','.','.','/',0};
+    char* buf = apData;
+    while ((p = (char*)StrStr(buf,t)) != NULL) {
+      int i;
+      for (i=0; buf+StrOffset(buf, i) < p; i++)
+        ;
+
+      while (--i > 0) {
+        tU32 c1 = StrGetAt(buf, i);
+        if (c1 == '/')
+          break;
+
+        if (c1 == DEVICE_SEPARATOR) {
+          i++;
+          break;
+        }
+      }
+
+      if (i < 0)
+        i = 0;
+
+      p += StrSize(t);
+      memmove(buf+StrOffset(buf, i+1), p, StrSizeZ(p));
+      modified = true;
+    }
+  }
+
+  return modified;
+}
+
 // Returns the canonical form of the specified filename, i.e. the minimal
 // absolute filename describing the same file.
 niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool forceDirectory = eFalse)
@@ -112,66 +169,15 @@ niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool 
   o.append(filename);
   StrMakeStdPath(o.data());
 
-  /* remove duplicate slashes */
-  {
-    char* p = NULL;
-    const char t[] = {'/','/',0};
-    while ((p = (char*)StrStr(o.data(), t)) != NULL) {
-      StrRemove(p, 0);
-    }
-    if (p) {
-      o.resize(StrSize(o.data()));
-    }
+  if (_RemovePathSlashPatterns(o.data())) {
+    o.resize(StrSize(o.data()));
   }
 
-  /* remove /./ patterns */
-  {
-    char* p = NULL;
-    const char t[] = {'/','.','/',0};
-    while ((p = (char*)StrStr(o.data(), t)) != NULL) {
-      StrRemove(p, 0);
-      StrRemove(p, 0);
-    }
-    if (p) {
-      o.resize(StrSize(o.data()));
-    }
-  }
-
-  /* collapse /../ patterns */
-  {
-    char* p = NULL;
-    const char t[] = {'/','.','.','/',0};
-    char* buf = o.data();
-    while ((p = (char*)StrStr(buf,t)) != NULL) {
-      int i;
-      for (i=0; buf+StrOffset(buf, i) < p; i++)
-        ;
-
-      while (--i > 0) {
-        tU32 c1 = StrGetAt(buf, i);
-        if (c1 == '/')
-          break;
-
-        if (c1 == DEVICE_SEPARATOR) {
-          i++;
-          break;
-        }
-      }
-
-      if (i < 0)
-        i = 0;
-
-      p += StrSize(t);
-      memmove(buf+StrOffset(buf, i+1), p, StrSizeZ(p));
-    }
-    if (p) {
-      o.resize(StrSize(o.data()));
-    }
-  }
-
+  // add a trailing / to directories
   if (isDirectory && !StrIsPathSep(o.back())) {
     o.appendChar('/');
   }
+
   o.compact();
   return o;
 }

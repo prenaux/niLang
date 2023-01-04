@@ -237,18 +237,16 @@ IDLC_METH_BEGIN(ni,iScriptVM,PushRootTable,0)
 IDLC_METH_END(ni,iScriptVM,PushRootTable,0)
 #endif // niMinFeatures(15)
 
-/** ni -> iScriptVM::PushString/2 -> MIN FEATURES '15' **/
+/** ni -> iScriptVM::PushString/1 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iScriptVM::PushString/2 **/
-IDLC_METH_BEGIN(ni,iScriptVM,PushString,2)
-	IDLC_DECL_VAR(achar*,aaszString)
-	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszString)
-	IDLC_DECL_VAR(tSize,anLen)
-	IDLC_BUF_TO_BASE(ni::eType_Size,anLen)
+/** ni -> iScriptVM::PushString/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,PushString,1)
+	IDLC_DECL_VAR(iHString*,ahspValue)
+	IDLC_BUF_TO_INTF(iHString,ahspValue)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushString,2,(aaszString,anLen))
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,PushString,1,(ahspValue))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iScriptVM,PushString,2)
+IDLC_METH_END(ni,iScriptVM,PushString,1)
 #endif // niMinFeatures(15)
 
 /** ni -> iScriptVM::PushInteger/1 -> MIN FEATURES '15' **/

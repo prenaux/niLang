@@ -77,12 +77,11 @@ niExportFunc(int) sqa_pushvar(HSQUIRRELVM v, const Var& aVar)
       if (!aVar.IsACharConstPointer()) {
         niSQThrowError(_A("AChar not a constant pointer."));
       }
-      sq_pushstring(v,aVar.GetACharConstPointer()?aVar.GetACharConstPointer():cString::ConstSharpNull(),-1);
+      sq_pushstring(v,_H(aVar.GetACharConstPointer()?aVar.GetACharConstPointer():cString::ConstSharpNull()));
       return SQ_OK;
     }
     case eType_String:  {
-      const cString str(aVar.GetString());
-      sq_pushstring(v,str.Chars(),str.Len());
+      sq_pushstring(v,_H(aVar.GetString()));
       return SQ_OK;
     }
     default: {

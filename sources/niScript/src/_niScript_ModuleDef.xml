@@ -645,21 +645,15 @@
 				java_name="pushString"
 				min_features="15"
 				name="PushString"
-				num_parameters="2">
+				num_parameters="1">
 				<comments desc="Push a string on the stack. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
-					name="aaszString"
-					type="const achar *"
-					typec="const achar*"
-					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
-				<parameter
-					default="-1 "
 					last="1"
-					name="anLen"
-					type="tSize"
-					typec="tSize"
-					typei="ni::eType_Size"/>
+					name="ahspValue"
+					type="const iHString *"
+					typec="const iHString*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				java_name="pushInteger"

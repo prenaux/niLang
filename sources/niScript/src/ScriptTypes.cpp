@@ -17,6 +17,7 @@
 #include "sqtable.h"
 #include "sqvm.h"
 #include "sqarray.h"
+#include "sq_hstring.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 static int matrixf_constructor(HSQUIRRELVM v);
@@ -116,7 +117,7 @@ niExportFuncCPP(cString) sqa_gettypestring(int type) {
 niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const achar* aaszName, SQFUNCTION func)
 {
   sq_pushroottable(v);
-  sq_pushstring(v,aaszName,-1);
+  sq_pushstring(v,_H(aaszName));
   sq_newclosure(v,func,0);
   sq_setnativeclosurename(v,-1,aaszName);
   sq_createslot(v,-3);
@@ -126,7 +127,7 @@ niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const achar* aaszNa
 ///////////////////////////////////////////////
 niExportFunc(void) sqa_registerfunction(HSQUIRRELVM v, const achar* aaszName, SQFUNCTION func)
 {
-  sq_pushstring(v,aaszName,-1);
+  sq_pushstring(v,_H(aaszName));
   sq_newclosure(v,func,0);
   sq_setnativeclosurename(v,-1,aaszName);
   sq_createslot(v,-3);
@@ -136,25 +137,23 @@ niExportFunc(void) sqa_registerfunction(HSQUIRRELVM v, const achar* aaszName, SQ
 niExportFunc(void) sqa_setdebugname(HSQUIRRELVM v, int idx, const achar* aaszName)
 {
   niAssert(idx<0);
-  sq_pushstring(v, _A("__debug_name"), -1);
-  sq_pushstring(v, aaszName, -1);
+  sq_pushstring(v, _HC(__debug_name));
+  sq_pushstring(v, _H(aaszName));
   sq_createslot(v,idx-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // sMethodDef
 
-static _HDecl(method);
-
 static int method_typeof(HSQUIRRELVM v) {
-  sq_pushhstring(v, _HC(method));
+  sq_pushstring(v, _HC(method));
   return 1;
 }
 
 static int method_Name(HSQUIRRELVM v) {
   sScriptTypeMethodDef* pV = sqa_getud<sScriptTypeMethodDef>(v,1);
   if (!pV) return SQ_ERROR;
-  sq_pushstring(v,pV->pMethodDef->maszName,-1);
+  sq_pushstring(v,_H(pV->pMethodDef->maszName));
   return 1;
 }
 
@@ -162,7 +161,7 @@ static int method_interfaceName(HSQUIRRELVM v) {
   sScriptTypeMethodDef* pV = sqa_getud<sScriptTypeMethodDef>(v,1);
   if (!pV) return SQ_ERROR;
   if (pV->pInterfaceDef) {
-    sq_pushstring(v,pV->pInterfaceDef->maszName,-1);
+    sq_pushstring(v,_H(pV->pInterfaceDef->maszName));
   }
   else {
     sq_pushnull(v);
@@ -173,7 +172,7 @@ static int method_interfaceName(HSQUIRRELVM v) {
 static int method_returnType(HSQUIRRELVM v) {
   sScriptTypeMethodDef* pV = sqa_getud<sScriptTypeMethodDef>(v,1);
   if (!pV)  return SQ_ERROR;
-  sq_pushstring(v,pV->pMethodDef->mReturnTypeName,-1);
+  sq_pushstring(v,_H(pV->pMethodDef->mReturnTypeName));
   return 1;
 }
 
@@ -204,7 +203,7 @@ static int method_parameterName(HSQUIRRELVM v) {
     return sq_throwerror(v, niFmt(_A("method_parameterName, index '%d' to get in the method parameters '%s' is out of range (size:%d)."),idx,methodDef->maszName,methodDef->mnNumParameters));
 
   if (methodDef->mpParameters) {
-    sq_pushstring(v,methodDef->mpParameters[idx].maszName,-1);
+    sq_pushstring(v,_H(methodDef->mpParameters[idx].maszName));
   }
   else {
     sq_pushnull(v);
@@ -246,7 +245,7 @@ static int method_parameterType(HSQUIRRELVM v) {
     return sq_throwerror(v, niFmt(_A("method_parameterValue, index '%d' to get in the method parameters '%s' is out of range (size:%d)."),idx,methodDef->maszName,methodDef->mnNumParameters));
 
   if (methodDef->mpParameters) {
-    sq_pushstring(v,methodDef->mpParameters[idx].mTypeName,-1);
+    sq_pushstring(v,_H(methodDef->mpParameters[idx].mTypeName));
   }
   else {
     sq_pushnull(v);
@@ -341,7 +340,7 @@ static int enum_typeof(HSQUIRRELVM v)
 {
   const sEnumDef* pV;
   if (!SQ_SUCCEEDED(sqa_getEnumDef(v,1,&pV))) return sq_throwerror(v,_A("Can't get enum definition."));
-  sq_pushstring(v, niFmt(_A("enum[%s]"),pV->maszName), -1);
+  sq_pushstring(v, _H(niFmt(_A("enum[%s]"),pV->maszName)));
   return 1;
 }
 
@@ -424,7 +423,7 @@ static int enum_enumName(HSQUIRRELVM v)
   //  cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v,1);
   if (!pV)  return SQ_ERROR;
-  sq_pushstring(v,pV->pEnumDef->maszName,-1);
+  sq_pushstring(v,_H(pV->pEnumDef->maszName));
   return 1;
 }
 
@@ -443,7 +442,7 @@ static int enum_elementName(HSQUIRRELVM v)
   if ((tU32)idx > enumDef->mnNumValues)
     return sq_throwerror(v, niFmt(_A("enum_elementName, index '%d' to get in the enumeration table '%s' is out of range (size:%d)."),idx,enumDef->maszName,enumDef->mnNumValues));
 
-  sq_pushstring(v,enumDef->mpValues[idx].maszName,-1);
+  sq_pushstring(v,_H(enumDef->mpValues[idx].maszName));
   return 1;
 }
 
@@ -1024,14 +1023,14 @@ static int vec2f_tostring(HSQUIRRELVM v)
   sScriptTypeVec2f* pV = sqa_getud<sScriptTypeVec2f>(v,-1);
   if (!pV) return SQ_ERROR;
   cString str(pV->_val);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v,_H(str));
   return 1;
 }
 
 ///////////////////////////////////////////////
 static int vec2f_typeof(HSQUIRRELVM v)
 {
-  sq_pushstring(v, _A("Vec2"), -1);
+  sq_pushstring(v, _HC(Vec2));
   return 1;
 }
 
@@ -1227,7 +1226,7 @@ static int vec3f_tostring(HSQUIRRELVM v)
   sScriptTypeVec3f* pV = sqa_getud<sScriptTypeVec3f>(v,-1);
   if (!pV) return SQ_ERROR;
   cString str(pV->_val);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v,_H(str));
   return 1;
 }
 
@@ -1244,7 +1243,7 @@ static int vec3f_toint(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 static int vec3f_typeof(HSQUIRRELVM v)
 {
-  sq_pushstring(v, _A("Vec3"), -1);
+  sq_pushstring(v, _HC(Vec3));
   return 1;
 }
 
@@ -1474,7 +1473,7 @@ static int vec4f_tostring(HSQUIRRELVM v)
   sScriptTypeVec4f* pV = sqa_getud<sScriptTypeVec4f>(v,-1);
   if (!pV) return SQ_ERROR;
   cString str(pV->_val);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v,_H(str));
   return 1;
 }
 
@@ -1491,7 +1490,7 @@ static int vec4f_toint(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 static int vec4f_typeof(HSQUIRRELVM v)
 {
-  sq_pushstring(v, _A("Vec4"), -1);
+  sq_pushstring(v, _HC(Vec4));
   return 1;
 }
 
@@ -1871,14 +1870,14 @@ static int matrixf_tostring(HSQUIRRELVM v)
   if (!pV) return SQ_ERROR;
   const sMatrixf& vals = pV->_val;
   cString str(vals);
-  sq_pushstring(v,str.Chars(),str.Len());
+  sq_pushstring(v, _H(str));
   return 1;
 }
 
 ///////////////////////////////////////////////
 static int matrixf_typeof(HSQUIRRELVM v)
 {
-  sq_pushstring(v, _A("Matrix"), -1);
+  sq_pushstring(v, _HC(Matrix));
   return 1;
 }
 
@@ -2172,14 +2171,14 @@ static int uuid_tostring(HSQUIRRELVM v)
 {
   sScriptTypeUUID* pV = sqa_getud<sScriptTypeUUID>(v,-1);
   if (!pV) return SQ_ERROR;
-  sq_pushstring(v,pV->mUUID.ToString().Chars(),-1);
+  sq_pushstring(v, _H(pV->mUUID.ToString()));
   return 1;
 }
 
 ///////////////////////////////////////////////
 static int uuid_typeof(HSQUIRRELVM v)
 {
-  sq_pushstring(v, _A("UUID"), -1);
+  sq_pushstring(v, _HC(UUID));
   return 1;
 }
 

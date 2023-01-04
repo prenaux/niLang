@@ -151,7 +151,7 @@ struct iScriptVM : public iScriptingHost
   //! Push the root table on the stack.
   virtual tBool __stdcall PushRootTable() = 0;
   //! Push a string on the stack.
-  virtual tBool __stdcall PushString(const achar* aaszString, tSize anLen = -1) = 0;
+  virtual tBool __stdcall PushString(const iHString* ahspValue) = 0;
   //! Push an integer on the stack.
   virtual tBool __stdcall PushInteger(tI32 anValue) = 0;
   //! Push a float on the stack.

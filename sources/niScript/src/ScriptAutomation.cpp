@@ -14,6 +14,7 @@
 #include "sqvm.h"
 #include "sqtable.h"
 #include <niLang/Utils/Trace.h>
+#include "sq_hstring.h"
 
 #define UUID_ASZ(UUID) ni::sUUID(UUID).ToString().Chars()
 
@@ -114,14 +115,14 @@ static int std_createinstance(HSQUIRRELVM v)
 // can be imported in different table.
 static int std_pushimports(HSQUIRRELVM v)
 {
-  sq_pushstring(v,kaszImportsTable,-1);
+  sq_pushstring(v,_HC(__imports));
   if (SQ_FAILED(sq_get(v,-2)))
   {
-    sq_pushstring(v,kaszImportsTable,-1);
+    sq_pushstring(v,_HC(__imports));
     sq_newtable(v);
     sq_createslot(v,-3);
 
-    sq_pushstring(v,kaszImportsTable,-1);
+    sq_pushstring(v,_HC(__imports));
     sq_get(v,-2);
 
     sqa_setdebugname(v,-1,_A("__imports"));
@@ -196,7 +197,7 @@ static int std_import_ex(HSQUIRRELVM v, tBool abNew)
       if (ptrTable.IsOK()) pVM->PushObject(ptrTable);
       else          pVM->PushRootTable();
       std_pushimports(v);
-      sq_pushstring(v,aszModule,-1);
+      sq_pushstring(v,_H(aszModule));
       tBool bAlreadyImported = SQ_SUCCEEDED(sq_get(v,-2));
       sq_pop(v,2); // pop the imports and root tables
       if (bAlreadyImported)
@@ -220,7 +221,7 @@ static int std_import_ex(HSQUIRRELVM v, tBool abNew)
       if (ptrTable.IsOK()) pVM->PushObject(ptrTable);
       else          pVM->PushRootTable();
       std_pushimports(v);
-      sq_pushstring(v,aszModule,-1);
+      sq_pushstring(v,_H(aszModule));
       sq_pushint(v,1);
       sq_createslot(v,-3);
       sq_pop(v,2);  // pop the imports and root tables
@@ -386,10 +387,10 @@ static int iunknown_tostring(HSQUIRRELVM v)
     if (ptrToString.IsOK()) {
       cString str;
       str << ptrToString.ptr();
-      sq_pushstring(v,str.Chars(),str.Len());
+      sq_pushstring(v,_H(str));
     }
     else {
-      sq_pushstring(v,_A("[not iToString]"),-1);
+      sq_pushstring(v,_HC(NOT_ITOSTRING));
     }
   }
 
@@ -397,7 +398,7 @@ static int iunknown_tostring(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
-const achar* iunknown_gettype(HSQUIRRELVM v, cString& astrOut, iUnknown* apI)
+void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v, const iUnknown* apI)
 {
   if (!niIsOK(apI)) {
     astrOut = _A("Invalid");
@@ -431,8 +432,6 @@ const achar* iunknown_gettype(HSQUIRRELVM v, cString& astrOut, iUnknown* apI)
       }
     }
   }
-
-  return astrOut.Chars();
 }
 
 ///////////////////////////////////////////////
@@ -443,8 +442,8 @@ static int iunknown_getimplementedinterfaces(HSQUIRRELVM v)
     return sq_throwerror(v,_A("iunknown_getimplementedinterfaces, [this] is an invalid iunknown."));
 
   cString str;
-  iunknown_gettype(v,str,pV->pObject);
-  sq_pushstring(v,str.Chars(),str.Len());
+  iunknown_gettype_concat(str,v,pV->pObject);
+  sq_pushstring(v,_H(str));
   return 1;
 }
 
@@ -654,7 +653,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUI
           }
 
           {
-            sq_pushstring(v, pMethodDef->maszName, -1);
+            sq_pushstring(v, _H(pMethodDef->maszName));
             sqa_pushMethodDef(v, pInterfaceDef, pMethodDef);
             sq_createslot(v,-3);
             if (SHOULD_TRACE_REGISTER_INTERFACE()) {
@@ -673,7 +672,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUI
           // sqa_setdebugname(v, -1, niFmt(_A("__properties:%s"),pInterfaceDef->maszName));
           for (itProp = mapProps.begin(); itProp != mapProps.end(); ++itProp)
           {
-            sq_pushstring(v, itProp->first.Chars(), -1);
+            sq_pushstring(v, _H(itProp->first));
             sqa_pushPropertyDef(v, pInterfaceDef, itProp->second.pSet, itProp->second.pGet);
             sq_createslot(v,-3);
           }
@@ -825,10 +824,10 @@ tBool cScriptAutomation::Import(HSQUIRRELVM vm, const achar* aszMod)
   {
     const sEnumDef* pEnumDef = ptrModuleDef->GetEnum(i);
     if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
-      sq_pushstring(vm, "e", -1);
+      sq_pushstring(vm, _HC(e));
     }
     else {
-      sq_pushstring(vm, pEnumDef->maszName, -1);
+      sq_pushstring(vm, _H(pEnumDef->maszName));
     }
     sqa_pushEnumDef(vm,ptrModuleDef->GetEnum(i));
     sq_createslot(vm,-3);
@@ -858,7 +857,7 @@ tBool cScriptAutomation::Import(HSQUIRRELVM vm, const achar* aszMod)
     const sConstantDef* pConstDef = ptrModuleDef->GetConstant(i);
     //    niLog(Info,niFmt(_A("Const reg: %s\n"),pConstDef->GetName()));
     //    niPrintln(niFmt(_A("Const reg: %s\n"),pConstDef->GetName()));
-    sq_pushstring(vm,pConstDef->maszName,-1);
+    sq_pushstring(vm,_H(pConstDef->maszName));
     if (SQ_FAILED(sqa_pushvar(vm,pConstDef->mvarValue))) {
       sq_pop(vm,1); // pop the key
       niWarning(niFmt(_A("Can't push the value of constant '%s'."),pConstDef->maszName));
@@ -968,7 +967,7 @@ int cScriptAutomation::GetIUnknown(HSQUIRRELVM v, int idx, iUnknown** appIUnknow
         *appIUnknown = _iunknown(o)->QueryInterface(aIID);
         if (!*appIUnknown) {
           cString str;
-          iunknown_gettype(v,str,_iunknown(o));
+          iunknown_gettype_concat(str,v,_iunknown(o));
 
           niWarning(niFmt(_A("IUnknown (%s) doesnt implement interface '%s' {%s}."),
                           str,

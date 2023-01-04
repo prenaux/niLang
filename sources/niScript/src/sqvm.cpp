@@ -23,7 +23,6 @@
 cString _strLastCallStack;
 #endif
 
-const achar* iunknown_gettype(HSQUIRRELVM v, cString& astrOut, iUnknown* apI);
 cString sq_getcallinfo_string(HSQUIRRELVM v, int level);
 
 #pragma niTodo("DeepClone can get in infinite loop because of some internal cycles, fix this.")
@@ -512,7 +511,7 @@ bool SQVM::StringCat(const SQObjectPtr & str, const SQObjectPtr & obj, SQObjectP
           }
           else {
             cString strUnknown;
-            iunknown_gettype(this,strUnknown,_iunknown(obj));
+            iunknown_gettype_concat(strUnknown,this,_iunknown(obj));
             newStr << niFmt("<%s>@%p",strUnknown.Chars(),(tIntPtr)_iunknown(obj));
           }
         }

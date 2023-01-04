@@ -30,6 +30,8 @@ using namespace ni;
 
 #include <stdio.h>
 
+_HDecl(print);
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // VM version string.
 #if defined NI_CONSOLE
@@ -746,7 +748,7 @@ void REPL(HSQUIRRELVM v)
               PutString(stdout,_A("==> "),false);
             }
             sq_pushroottable(v);
-            sq_pushstring(v,_A("print"),-1);
+            sq_pushstring(v,_HC(print));
             sq_get(v,-2);
             sq_pushroottable(v);
             sq_push(v,-4);

@@ -38,5 +38,20 @@ _HDecl(this);
 _HDecl(compilecontext);
 _HDecl_(AT_ITERATOR_AT,"@ITERATOR@");
 _HDecl_(AT_INDEX_AT,"@INDEX@");
+_HDecl(func);
+_HDecl(src);
+_HDecl(line);
+_HDecl(locals);
+_HDecl(Import);
+_HDecl(NewImport);
+_HDecl(method);
+_HDecl(Vec2);
+_HDecl(Vec3);
+_HDecl(Vec4);
+_HDecl(Matrix);
+_HDecl(UUID);
+_HDecl(__imports);
+_HDecl_(NOT_ITOSTRING,"[not iToString]");
+_HDecl(e);
 
 #endif // __sq_HSTRING_H__

@@ -756,14 +756,13 @@ static const ni::sMethodDef iScriptVM_PushRootTable = {
 
 #if niMinFeatures(15)
 // Method: PushString
-static const ni::sParameterDef iScriptVM_PushString_Parameters[2] = { 
-  { "aaszString", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
-  { "anLen", ni::eType_Size, NULL, "tSize" }
+static const ni::sParameterDef iScriptVM_PushString_Parameters[1] = { 
+  { "ahspValue", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "const iHString*" }
 }; 
 static const ni::sMethodDef iScriptVM_PushString = {
   "PushString",
   0|ni::eType_I8, NULL, "tBool",
-  2, iScriptVM_PushString_Parameters,
+  1, iScriptVM_PushString_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iScriptVM_PushString)
 #else

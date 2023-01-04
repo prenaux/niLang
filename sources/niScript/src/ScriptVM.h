@@ -42,8 +42,6 @@ class cScriptObject;
 #define niSqUnGuard(v)
 #endif
 
-const achar* const kaszImportsTable = _A("__imports");
-
 ASTL_RAW_ALLOCATOR_IMPL(scriptobjectlist);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +88,7 @@ class cScriptVM : public cIUnknownImpl<iScriptVM,eIUnknownImplFlags_DontInherit1
   tBool __stdcall RegisterFunction(const sMethodDef* apFunction, const achar* aaszName);
 
   tBool __stdcall PushRootTable();
-  tBool __stdcall PushString(const achar* aaszString, tSize anLen);
+  tBool __stdcall PushString(const iHString* ahspValue);
   tBool __stdcall PushInteger(tI32 anValue);
   tBool __stdcall PushFloat(tF64 afValue);
   tBool __stdcall PushInterface(iUnknown* apInterface);

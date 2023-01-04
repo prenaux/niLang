@@ -699,10 +699,10 @@ niExportFunc(ni::iLang*) GetLang();
 #define niFullFlagsToChars(ENUM,VALUE)                                  \
   ni::GetLang()->EnumToString((ENUM)VALUE,GetEnumDef_##ENUM(),ni::eEnumToStringFlags_Flags|ni::eEnumToStringFlags_Full).Chars()
 
-#define niDefConstHString_(VARNAME,STRING)                              \
-  inline ni::iHString* GetHString_##VARNAME() {                         \
-    static ni::tHStringPtr _hstr_##VARNAME = _H(STRING); \
-    return _hstr_##VARNAME;                                             \
+#define niDefConstHString_(VARNAME,STRING)                \
+  __forceinline ni::iHString* GetHString_##VARNAME() {    \
+    static ni::tHStringPtr _hstr_##VARNAME = _H(STRING);  \
+    return _hstr_##VARNAME;                               \
   }
 
 #define niDefConstHString(STR)  niDefConstHString_(STR,#STR)

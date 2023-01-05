@@ -501,6 +501,11 @@ void cComboBoxWidget::_UpdateEditBoxText()
   else {
     mpwEditBox->SetText(mpwDroppedBox->GetText());
   }
+  QPtr<iWidgetEditBox> eb = mpwEditBox;
+  if (eb.IsOK()) {
+    eb->MoveCursorHome(eFalse);
+    eb->SetSelection(sVec4i::Zero());
+  }
   niFlagOff(mnStatus,CBSTATUS_SETEBTEXT);
   mpWidget->SendCommand(mpWidget->GetParent(),eWidgetListBoxCmd_SelectionChanged);
 }

@@ -208,10 +208,12 @@ static __forceinline cString _ToLogTimeIndexString(const tF64 afTime) {
 static __forceinline cString _LogTime(const tF64 afTime, const tF64 afPrevTime) {
   cString final;
   if (afTime > 0) {
-    final << _A("[") << _ToLogTimeIndexString(afTime);
+    final << _A("[");
     if (afPrevTime > 0) {
-      final << _A(":") << _ToLogTimeIndexString(afTime-afPrevTime);
+      final << _ToLogTimeIndexString(afTime-afPrevTime);
     }
+    final << _A(":");
+    final << _ToLogTimeIndexString(afTime);
     final << _A("]");
   }
   return final;

@@ -2,7 +2,6 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cppbuild",
 			"label": "Build Test_niLang_da",
 			"command": "../ham/bin/ham",
 			"args": [
@@ -22,7 +21,6 @@
 			"detail": "compiler: ham"
 		},
 		{
-			"type": "cppbuild",
 			"label": "Build HelloUI_cpp_da",
 			"command": "../ham/bin/ham",
 			"args": [

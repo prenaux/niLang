@@ -201,7 +201,7 @@ tU32 cWidgetListBox::_ComputeColumnWidth(const tU32 anCol, const tU32 anDefaultC
 ///////////////////////////////////////////////
 tU32 cWidgetListBox::_ComputeItemsPerPage() const {
   const tF32 itemHeight = GetItemHeight();
-  return 1+(tU32)ni::Floor((mfRealH-itemHeight)/itemHeight);
+  return (tU32)ni::Ceil(mfRealH/itemHeight);
 }
 
 ///////////////////////////////////////////////
@@ -510,12 +510,9 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
     case eUIMessage_MouseMove:
     case eUIMessage_NCMouseMove:
       if (mnHeaderHandlePressed != eInvalidHandle) {
-        tF32 diff = varParam1.GetVec2f().x - mvHeaderPivot.x;
-        if (fabs(diff)>0) {
-          tU32 nSize = mnBaseSize;
-          nSize += (tU32)diff;
-          if (nSize < 5)
-            nSize = 5;
+        tI32 diff = ni::FloatToIntNearest(varParam1.GetVec2f().x - mvHeaderPivot.x);
+        if (diff != 0) {
+          tI32 nSize = ni::Max(5, (tI32)mnBaseSize + diff);
           mvColumns[mnHeaderHandlePressed].nSetSize = nSize;
           UpdateLayout();
         }
@@ -539,6 +536,8 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         sVec2f vMousePos = varParam1.GetVec2f();
         if (mrectHeader.Intersect(vMousePos)) {
           mnHeaderHandlePressed = GetSelectedColumnHandle(vMousePos);
+          niDebugFmt(("... mnHeaderHandlePressed: %d",
+                      mnHeaderHandlePressed));
           if (mnHeaderHandlePressed != eInvalidHandle) {
             mvHeaderPivot = vMousePos;
             mnBaseSize = mvColumns[mnHeaderHandlePressed].nSetSize;
@@ -651,14 +650,20 @@ void cWidgetListBox::DoUpdateLayout(tBool abForce)
       tU32 scrollpos = (tU32)ptrVSB->GetScrollPosition();
       tU32 pagesize = (tU32)ptrVSB->GetPageSize();
       tU32 destPos = mvSelection.empty() ? mvItems.size()-1 : mvSelection.back();
-      // SetScrollPosition to destPos+1 to scroll to the bottom of the line
-      // and make sure its fully visible. Otherwise it scrolls to the top of
-      // the line which results in partially visible lines.
-      if (destPos >= (scrollpos+pagesize))  {
-        ptrVSB->SetScrollPosition((tF32)destPos+1-pagesize);
+      // niDebugFmt(("... scrollpos: %g, pagesize: %g, destPos: %g, items: %g",
+                  // scrollpos, pagesize, destPos, mvItems.size()));
+      if (pagesize <= 1) {
+        ptrVSB->SetScrollPosition(destPos);
+        // niDebugFmt(("... smallpage"));
       }
-      else if (destPos < scrollpos) {
-        ptrVSB->SetScrollPosition((tF32)destPos+1);
+      else if (destPos >= scrollpos &&
+               destPos < (scrollpos+pagesize-1)) {
+        // niDebugFmt(("... inview"));
+      }
+      else {
+        niDebugFmt(("... tomiddle"));
+        const tI32 midPageOffset = ni::Max(0,(pagesize/2) - 1);
+        ptrVSB->SetScrollPosition((tF32)destPos - midPageOffset);
       }
     }
     QPtr<iWidgetScrollBar> ptrHSB = mptrHzScroll.ptr();
@@ -865,52 +870,33 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
   const tF32 fh = (tF32)GetItemHeight();
   const tF32 fw = (tF32)mpWidget->GetFont()->GetMaxCharWidth();
 
-  mfRealW = w;
-  mfRealH = h - mrectHeader.GetHeight();
-  tU32 nItemsPerPage = _ComputeItemsPerPage();
-  tBool bVertScollbar = eFalse;
-  tBool bHorzScollbar = eFalse;
   QPtr<iWidgetScrollBar> ptrHSB = mptrHzScroll.ptr();
   QPtr<iWidgetScrollBar> ptrVSB = mptrVtScroll.ptr();
   if (!ptrHSB.IsOK() || !ptrVSB.IsOK())
     return;
 
+  const tF32 scrollBarW = mptrVtScroll->GetClientSize().x;
+  const tF32 scrollBarH = mptrHzScroll->GetClientSize().y;
+
   const sRectf borders = skin.normalFrame->GetFrame();
-  mfRealW -= borders.x+borders.z;
-  mfRealH -= borders.y+borders.w;
+  mfRealW = w - (borders.x+borders.z);
+  mfRealH = h - mrectHeader.GetHeight() - (borders.y+borders.w);
 
-  if (nItemsPerPage < mvItems.size()) {
-    bVertScollbar = eTrue;
-    mfRealW -= mptrVtScroll->GetClientRect().GetWidth();
-    if (mfWidestItem > mfRealW) {
-      mfRealH -= mptrHzScroll->GetClientRect().GetHeight();
-      bHorzScollbar = eTrue;
-    }
-  }
-  else if (mfWidestItem > mfRealW) {
-    mfRealH -= mptrHzScroll->GetClientRect().GetHeight();
-    bHorzScollbar = eTrue;
-    nItemsPerPage = _ComputeItemsPerPage();
-    if (nItemsPerPage < mvItems.size()) {
-      bVertScollbar = eTrue;
-      sRectf wr = mptrVtScroll->GetClientRect();
-      mfRealW -= wr.GetWidth();
-    }
-  }
+  const sVec2f vSize = mpWidget->GetSize();
 
-  if (bVertScollbar) {
-    mptrVtScroll->SetVisible(eTrue);
-    mptrVtScroll->SetEnabled(eTrue);
-  }
-  else {
-    mptrVtScroll->SetVisible(eFalse);
-    mptrVtScroll->SetEnabled(eFalse);
-    ptrVSB->SetScrollPosition(0);
-  }
-
+  // We show the hz scrolling if the widest item would overflow with the vt
+  // scrollbar visible.
+  const tBool bHorzScollbar = (mfWidestItem > (mfRealW-scrollBarW));
   if (bHorzScollbar) {
+    mfRealH -= scrollBarH;
     mptrHzScroll->SetVisible(eTrue);
     mptrHzScroll->SetEnabled(eTrue);
+    tF32 nHorzItemsPage = ni::Floor<tF32>(mfRealW/fw);
+    ptrHSB->SetPageSize((tF32)nHorzItemsPage);
+    ptrHSB->SetScrollRange(Vec2<tF32>(0,(tF32)((mfWidestItem/fw)-nHorzItemsPage)));
+    mptrHzScroll->SetRect(sRectf(
+      borders.x,vSize.y-kfScrollBarSize-borders.w,
+      mfRealW,kfScrollBarSize));
   }
   else {
     mptrHzScroll->SetVisible(eFalse);
@@ -918,22 +904,30 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
     ptrHSB->SetScrollPosition(0);
   }
 
-  nItemsPerPage = _ComputeItemsPerPage();
-  tF32 nHorzItemsPage = ni::Floor<tF32>(mfRealW/fw);
-
-  ptrVSB->SetPageSize((tF32)nItemsPerPage);
-  ptrVSB->SetScrollRange(Vec2<tF32>(0,(tF32)(mvItems.size()-nItemsPerPage)));
-
-  ptrHSB->SetPageSize((tF32)nHorzItemsPage);
-  ptrHSB->SetScrollRange(Vec2<tF32>(0,(tF32)((mfWidestItem/fw)-nHorzItemsPage)));
-
-  sVec2f vSize = mpWidget->GetSize();
-  tF32 vertY = borders.y;
-  if (GetNumColumns() && eWidgetListBoxStyle_HasHeader&mpWidget->GetStyle()) {
-    vertY = mrectHeader.GetBottom();
+  const tBool bVertScollbar = (_ComputeItemsPerPage() < mvItems.size());
+  if (bVertScollbar) {
+    mfRealW -= scrollBarW;
+    mptrVtScroll->SetVisible(eTrue);
+    mptrVtScroll->SetEnabled(eTrue);
+    auto nItemsPerPage = _ComputeItemsPerPage();
+    ptrVSB->SetPageSize((tF32)nItemsPerPage);
+    ptrVSB->SetScrollRange(Vec2<tF32>(0,(tF32)(1+mvItems.size()-nItemsPerPage)));
+    tF32 vertY;
+    if (GetNumColumns() && (mpWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
+      vertY = mrectHeader.GetBottom();
+    }
+    else {
+      vertY = borders.y;
+    }
+    mptrVtScroll->SetRect(sRectf(
+      vSize.x-kfScrollBarSize-borders.z,vertY,
+      kfScrollBarSize,mfRealH));
   }
-  mptrVtScroll->SetRect(sRectf(vSize.x-kfScrollBarSize-borders.z,vertY,kfScrollBarSize,mfRealH-vertY));
-  mptrHzScroll->SetRect(sRectf(borders.x,vSize.y-kfScrollBarSize-borders.w,mfRealW,kfScrollBarSize));
+  else {
+    mptrVtScroll->SetVisible(eFalse);
+    mptrVtScroll->SetEnabled(eFalse);
+    ptrVSB->SetScrollPosition(0);
+  }
 }
 
 ///////////////////////////////////////////////
@@ -994,21 +988,21 @@ tBool cWidgetListBox::SelectItemByPos(const sVec2f& avAbsPos)
 void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
 {
   if (mvItems.empty()) return;
+  iFont *font = mpWidget->GetFont();
+  const tF32 fh = (tF32)GetItemHeight();
   const tU32 numCols = mvColumns.size();
   const tF32 scrollpos = _GetVScrollPos();
+  const tF32 scrollposY = scrollpos * fh;
   const tBool hasHeader = ((numCols > 1) && (mpWidget->GetStyle()&eWidgetListBoxStyle_HasHeader));
   const tF32 sepw = hasHeader ? LB_SEP_W : 0;
   const sRectf rect = mpWidget->GetClientRect();
-  iFont *font = mpWidget->GetFont();
-  const tF32 fh = (tF32)GetItemHeight();
-  tF32 y = hasHeader ? 1.0f : 0.0f;
-  const tF32 x = _GetScrolledBaseX();
+  const tF32 startX = _GetScrolledBaseX();
   const tF32 clientW = mpWidget->GetClientSize().x;
   const sVec2f vAbsPos = mpWidget->GetAbsolutePosition()+mpWidget->GetClientPosition();
   const tU32 defColW = _ComputeDefaultColumnWidth();
 
   auto paintItem = [this,apCanvas,font,vAbsPos,defColW,&rect,fh,sepw,clientW,numCols]
-      (const sItem& item, tU32 itemIndex, tF32 x, tF32 y) -> tF32
+      (const sItem& item, const tU32 itemIndex, const tF32 startX, const tF32 y) -> tF32
   {
     if (this->GetIsItemSelected(itemIndex)) {
       iOverlay *sel = mpWidget->GetHasFocus() ? skin.sel : skin.selNF;
@@ -1017,6 +1011,7 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
         sel);
     }
 
+    tF32 curX = startX;
     const tU32 wasFontColor = font->GetColor();
     niLoop(col,mvColumns.size()) {
       const sItemColumnData& itemColData = item.vData[col];
@@ -1024,9 +1019,9 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
       if (col == 0 && item.ptrIcon.IsOK()) {
         const sVec2f iconSize = item.ptrIcon->GetSize();
         apCanvas->BlitOverlay(
-          sRectf(x,y+(fh-iconSize.y)/2,iconSize.x,iconSize.x),
+          sRectf(curX,y+(fh-iconSize.y)/2,iconSize.x,iconSize.x),
           item.ptrIcon);
-        x += iconSize.x;
+        curX += iconSize.x;
       }
 
       iWidget* pW = itemColData.ptrWidget;
@@ -1034,8 +1029,8 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
         pW->SetVisible(eTrue);
         sRectf curRect = pW->GetAbsoluteRect();
         sRectf newRect;
-        newRect.SetLeft(vAbsPos.x+x);
-        newRect.SetRight(vAbsPos.x+x+colw);
+        newRect.SetLeft(vAbsPos.x+curX);
+        newRect.SetRight(vAbsPos.x+curX+colw);
         tF32 offset = (fh-curRect.GetHeight())/2;
         newRect.SetTop(vAbsPos.y+y+offset);
         newRect.SetHeight(curRect.GetHeight());
@@ -1045,7 +1040,7 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
       }
       else
       {
-        const sRectf textRect = sRectf(x,y,colw,fh);
+        const sRectf textRect = sRectf(curX,y,colw,fh);
         const achar* text = itemColData.strText.c_str();
         font->SetColor(itemColData.nTextColor ? itemColData.nTextColor : wasFontColor);
         apCanvas->BlitText(
@@ -1054,8 +1049,8 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
           eFontFormatFlags_CenterV, text);
       }
 
-      x += (colw+sepw);
-      if (x > rect.GetRight())
+      curX += (colw+sepw);
+      if (curX > rect.GetRight())
         break;
     }
 
@@ -1063,17 +1058,21 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
     return fh;
   };
 
-  niLoop(i,mvItems.size()) {
-    const astl::shared_ptr<sItem> item = mvItems[i];
-    if (i >= scrollpos && y < mfRealH) {
-      y += paintItem(*item,i,x,y);
-    }
-    else {
-      niLoop(col,numCols) {
-        if (item->vData[col].ptrWidget.IsOK()) {
-          item->vData[col].ptrWidget->SetVisible(eFalse);
+  {
+    tF32 curY = 0;
+    niLoop(i,mvItems.size()) {
+      const astl::shared_ptr<sItem> item = mvItems[i];
+      if (i >= (scrollpos-1) && (curY-scrollposY) < mfRealH) {
+        paintItem(*item,i,startX,curY-scrollposY);
+      }
+      else {
+        niLoop(col,numCols) {
+          if (item->vData[col].ptrWidget.IsOK()) {
+            item->vData[col].ptrWidget->SetVisible(eFalse);
+          }
         }
       }
+      curY += fh;
     }
   }
 }

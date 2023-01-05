@@ -898,9 +898,9 @@
         blendmode="Translucent" />
 
       <Background
-        color="RGBA(30,32,34,0)/255" />
+        color="RGBA(30,32,34,255)/255" />
       <Frame
-        mapping="Rect(108,5,18,18)"
+        mapping="Vec4(215,4,235,24)"
         blendmode="Translucent"
         frame="Vec4(1,1,1,1)" />
       <ArrowUp
@@ -914,6 +914,12 @@
         blendmode="Translucent"
         />
     </Normal>
+    <Focused>
+      <Frame
+        mapping="Vec4(86,25,104,43)"
+        blendmode="Translucent"
+        frame="Vec4(1,1,1,1)" />
+    </Focused>
   </ListBox>
 
   <!--***** LIST BOX ******-->

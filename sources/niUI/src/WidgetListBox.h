@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include <niLang/Utils/STLVectorTypes.h>
-#include <niLang/STL/EASTL/intrusive_list.h>
 
 static const tU32 knWidgetListBoxMinDefaultColumnWidth = 100;
 
@@ -177,6 +176,7 @@ class cWidgetListBox : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImp
   struct sSkin {
     Ptr<iFont>    headerFont;
     Ptr<iOverlay> normalFrame;
+    Ptr<iOverlay> focusedFrame;
     Ptr<iOverlay> header;
     Ptr<iOverlay> curResizeHz;
     Ptr<iOverlay> sel;
@@ -184,6 +184,7 @@ class cWidgetListBox : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImp
     Ptr<iOverlay> arrow;
     Ptr<iOverlay> arrowUp;
     Ptr<iOverlay> arrowDown;
+    tU32          ulcolBg;
   } skin;
 
   tF32 _GetVScrollPos() const;

@@ -490,13 +490,16 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       iCanvas* c = VarQueryInterface<iCanvas>(varParam1);
       if (c) {
         sRectf rect = mpWidget->GetWidgetRect();
+        if (ULColorGetA(skin.ulcolBg) > 0) {
+          c->BlitFillAlpha(rect, skin.ulcolBg);
+        }
         if (GetNumColumns() && (apWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
           Paint_Header(c,rect);
         }
-        if (GetNumColumns() && eWidgetListBoxStyle_HasHeader&mpWidget->GetStyle()) {
-          rect.SetTop(mrectHeader.GetBottom());
-        }
-        c->BlitOverlayFrame(rect,skin.normalFrame,eRectFrameFlags_All);
+        c->BlitOverlayFrame(
+          rect,
+          apWidget->GetHasFocus() ? skin.focusedFrame : skin.normalFrame,
+          eRectFrameFlags_Edges);
       }
       break;
     }
@@ -884,6 +887,9 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
 
   const sVec2f vSize = mpWidget->GetSize();
 
+  sRectf rectHz;
+  sRectf rectVt;
+
   // We show the hz scrolling if the widest item would overflow with the vt
   // scrollbar visible.
   const tBool bHorzScollbar = (mfWidestItem > (mfRealW-scrollBarW));
@@ -894,9 +900,9 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
     tF32 nHorzItemsPage = ni::Floor<tF32>(mfRealW/fw);
     ptrHSB->SetPageSize((tF32)nHorzItemsPage);
     ptrHSB->SetScrollRange(Vec2<tF32>(0,(tF32)((mfWidestItem/fw)-nHorzItemsPage)));
-    mptrHzScroll->SetRect(sRectf(
+    rectHz = sRectf(
       borders.x,vSize.y-kfScrollBarSize-borders.w,
-      mfRealW,kfScrollBarSize));
+      mfRealW,kfScrollBarSize);
   }
   else {
     mptrHzScroll->SetVisible(eFalse);
@@ -912,21 +918,26 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
     auto nItemsPerPage = _ComputeItemsPerPage();
     ptrVSB->SetPageSize((tF32)nItemsPerPage);
     ptrVSB->SetScrollRange(Vec2<tF32>(0,(tF32)(1+mvItems.size()-nItemsPerPage)));
-    tF32 vertY;
+    tF32 vertY = borders.y;
     if (GetNumColumns() && (mpWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
-      vertY = mrectHeader.GetBottom();
+      vertY += mrectHeader.GetBottom();
     }
-    else {
-      vertY = borders.y;
-    }
-    mptrVtScroll->SetRect(sRectf(
+    rectVt = sRectf(
       vSize.x-kfScrollBarSize-borders.z,vertY,
-      kfScrollBarSize,mfRealH));
+      kfScrollBarSize,mfRealH);
+    rectHz.SetRight(rectHz.GetRight() - kfScrollBarSize);
   }
   else {
     mptrVtScroll->SetVisible(eFalse);
     mptrVtScroll->SetEnabled(eFalse);
     ptrVSB->SetScrollPosition(0);
+  }
+
+  if (bHorzScollbar) {
+    mptrHzScroll->SetRect(rectHz);
+  }
+  if (bVertScollbar) {
+    mptrVtScroll->SetRect(rectVt);
   }
 }
 
@@ -1182,6 +1193,9 @@ tF32 __stdcall cWidgetListBox::GetItemHeight() const
 void cWidgetListBox::InitSkin()
 {
   skin.normalFrame = mpWidget->FindSkinElement(NULL,NULL,_H("Frame"));
+  skin.focusedFrame = mpWidget->FindSkinElement(NULL,_H("Focused"),_H("Frame"));
+  if (skin.focusedFrame == mpWidget->GetUIContext()->GetErrorOverlay())
+    skin.focusedFrame = skin.normalFrame;
   skin.header = mpWidget->FindSkinElement(NULL,NULL,_H("Header"));
   skin.curResizeHz = mpWidget->FindSkinCursor(NULL,NULL,_H("ResizeHorizontal"));
   skin.sel = mpWidget->FindSkinElement(NULL,NULL,_H("Selection"));
@@ -1190,6 +1204,8 @@ void cWidgetListBox::InitSkin()
   skin.arrowUp = mpWidget->FindSkinElement(NULL,NULL,_H("ArrowUp"));
   skin.arrow = skin.arrowDown;
   skin.headerFont = mpWidget->FindSkinFont(NULL,NULL,_H("Header"));
+  skin.ulcolBg = ULColorBuild(
+    mpWidget->FindSkinColor(sVec4f::Zero(),NULL,NULL,_H("Background")));
 }
 
 ///////////////////////////////////////////////

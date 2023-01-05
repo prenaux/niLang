@@ -63,8 +63,6 @@ enum eMaterialFlags {
   eMaterialFlags_NoCollision = niBit(16),
   //! Using polygon offset in this material
   eMaterialFlags_PolygonOffset = niBit(17),
-  //! Reverses current culling
-  eMaterialFlags_ReverseCulling = niBit(18),
   //! \internal
   eMaterialFlags_ForceDWORD = 0xFFFFFFFF
 };

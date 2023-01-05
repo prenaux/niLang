@@ -36,8 +36,7 @@ static GLint samplerFilterAnisotropySharp = 8;
 //  Cache
 //
 //--------------------------------------------------------------------------------------------
-enum eGLCache
-{
+enum eGLCache {
   eGLCache_Context,
   eGLCache_ContextSyncCounter,
   eGLCache_DepthStencil,
@@ -45,6 +44,7 @@ enum eGLCache
   eGLCache_RasterizerDoubleSided,
   eGLCache_RasterizerDepthOnly,
   eGLCache_RasterizerFlippedRT,
+  eGLCache_ReversedCulling,
   eGLCache_AlwaysOn, // ALWAYS ON CACHING...
   eGLCache_MaterialChannel,
   eGLCache_Material,
@@ -1033,7 +1033,8 @@ static void GL_ApplyRasterizerStates(sGLCache &aCache,
                                      const sRasterizerStatesDesc &v,
                                      const tBool abDoubleSided,
                                      const tBool abDepthOnly,
-                                     const tBool abNotReverseCulling) {
+                                     const tBool abFlippedRT,
+                                     const eCullingMode cullingMode) {
 
   // Fill mode //
 #ifdef _glPolygonMode
@@ -1047,24 +1048,24 @@ static void GL_ApplyRasterizerStates(sGLCache &aCache,
     GLERR_RET(;);
   }
   else {
-    switch (v.mCullingMode) {
-      default:
-      case eCullingMode_None:
-        _glDisable(GL_CULL_FACE);
-        GLERR_RET(;);
-        break;
-      case eCullingMode_CCW:
-        _glEnable(GL_CULL_FACE);
-        _glFrontFace(abNotReverseCulling ? GL_CCW : GL_CW);
-        _glCullFace(GL_BACK);
-        GLERR_RET(;);
-        break;
-      case eCullingMode_CW:
-        _glEnable(GL_CULL_FACE);
-        _glFrontFace(abNotReverseCulling ? GL_CW : GL_CCW);
-        _glCullFace(GL_BACK);
-        GLERR_RET(;);
-        break;
+    switch (cullingMode) {
+    default:
+    case eCullingMode_None:
+      _glDisable(GL_CULL_FACE);
+      GLERR_RET(;);
+      break;
+    case eCullingMode_CCW:
+      _glEnable(GL_CULL_FACE);
+      _glFrontFace(abFlippedRT ? GL_CCW : GL_CW);
+      _glCullFace(GL_BACK);
+      GLERR_RET(;);
+      break;
+    case eCullingMode_CW:
+      _glEnable(GL_CULL_FACE);
+      _glFrontFace(abFlippedRT ? GL_CW : GL_CCW);
+      _glCullFace(GL_BACK);
+      GLERR_RET(;);
+      break;
     }
   }
 
@@ -4347,6 +4348,13 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
     return eTrue;
   }
 
+  static inline eCullingMode _ReverseCulling(eCullingMode cullingMode) {
+    if (cullingMode == eCullingMode_CCW) {
+      return eCullingMode_CW;
+    } else {
+      return eCullingMode_CCW;
+    }
+  }
   ///////////////////////////////////////////////
   inline tBool DoDrawOp(
       sGLCache& aCache,
@@ -4565,6 +4573,19 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
         return eFalse;
       }
 
+      // XXX: We automatically reverse the culling when there is a reflection
+      // and no double sided flag is set
+      tBool isReversedCulling = eFalse;
+      if (!niFlagIs(matFlags, eMaterialFlags_DoubleSided)) {
+        const sMatrixf &drawOpMatrix = apDrawOp->GetMatrix();
+        if (niFloatIsNegative(ni::Det3x3(
+                drawOpMatrix._11, drawOpMatrix._12, drawOpMatrix._13,
+                drawOpMatrix._21, drawOpMatrix._22, drawOpMatrix._23,
+                drawOpMatrix._31, drawOpMatrix._32, drawOpMatrix._33))) {
+          isReversedCulling = eTrue;
+        }
+      }
+
       // Rasterizer states
       {
         const tIntPtr hRS = apContext->_GetRS(pMatDesc);
@@ -4575,19 +4596,23 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
         mCache.ShouldUpdate(&bShouldUpdate,eGLCache_RasterizerDepthOnly,
                             niFlagIs(matFlags,eMaterialFlags_DepthOnly));
         mCache.ShouldUpdate(&bShouldUpdate,eGLCache_RasterizerFlippedRT,isFlippedRT);
+        mCache.ShouldUpdate(&bShouldUpdate, eGLCache_ReversedCulling,
+                            isReversedCulling);
         if (bShouldUpdate)
         {
           iRasterizerStates* pRSStates = mpGraphics->GetCompiledRasterizerStates(hRS);
+
+          sRasterizerStatesDesc v =
+              *(sRasterizerStatesDesc *)pRSStates->GetDescStructPtr();
+
+          eCullingMode cullingMode = isReversedCulling
+                                         ? _ReverseCulling(v.mCullingMode)
+                                         : v.mCullingMode;
           niCheck(pRSStates,eFalse);
-          tBool isNotReversedCulling =
-              niFlagIs(matFlags, eMaterialFlags_ReverseCulling) ? !isFlippedRT
-                                                                : isFlippedRT;
           GL_ApplyRasterizerStates(
-              this->mCache,
-              *(const sRasterizerStatesDesc *)pRSStates->GetDescStructPtr(),
-              niFlagIs(matFlags, eMaterialFlags_DoubleSided),
-              niFlagIs(matFlags, eMaterialFlags_DepthOnly),
-              isNotReversedCulling);
+              this->mCache, v, niFlagIs(matFlags, eMaterialFlags_DoubleSided),
+              niFlagIs(matFlags, eMaterialFlags_DepthOnly), isFlippedRT,
+              cullingMode);
         }
       }
 
@@ -4595,8 +4620,7 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
       if (anAA) {
         if (niFlagIs(pMatDesc->mFlags,eMaterialFlags_TransparentAA)) {
           glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-        }
-        else {
+        } else {
           glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         }
       }
@@ -4617,8 +4641,7 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
           GL_ApplyBlendMode(
               (niFlagIs(matFlags,eMaterialFlags_Translucent)) ?
               eBlendMode_Translucent : blendMode);
-        }
-        else {
+        } else {
           GL_ApplyBlendMode(blendMode);
         }
       }

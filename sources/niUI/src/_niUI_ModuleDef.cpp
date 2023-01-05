@@ -36695,7 +36695,6 @@ static const ni::sEnumValueDef Enum_eMaterialFlags_Values[] = {
 	{ "TransparentAA", ni::eMaterialFlags_TransparentAA },
 	{ "NoCollision", ni::eMaterialFlags_NoCollision },
 	{ "PolygonOffset", ni::eMaterialFlags_PolygonOffset },
-	{ "ReverseCulling", ni::eMaterialFlags_ReverseCulling },
 };
 static const ni::sEnumDef Enum_eMaterialFlags = {
 	"eMaterialFlags",

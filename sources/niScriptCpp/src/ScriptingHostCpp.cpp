@@ -511,7 +511,7 @@ niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost() {
   return niNew CppScriptingHost();
 }
 
-niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Var& /*avarB*/) {
+niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   return ScriptCpp_CreateScriptingHost();
 }
 

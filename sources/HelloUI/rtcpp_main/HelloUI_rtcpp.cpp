@@ -87,7 +87,7 @@ niConsoleMain() {
 
   ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
-  QPtr<iScriptingHost> ptrScriptingHost = niCreateInstance(ScriptingHost,Cpp,NULL,NULL);
+  QPtr<iScriptingHost> ptrScriptingHost = niCreateInstance(niScriptCpp,ScriptingHost,NULL,NULL);
   ni::GetLang()->AddScriptingHost(_H("cpp"),ptrScriptingHost.ptr());
   ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
   ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"1");

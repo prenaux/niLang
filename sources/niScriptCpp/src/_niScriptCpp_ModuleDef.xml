@@ -8,7 +8,7 @@
 		<dependency name="niLang"/>
 	</dependencies>
 	<objecttypes>
-		<objecttype category="ScriptingHost" name="Cpp"/>
+		<objecttype name="ScriptingHost"/>
 	</objecttypes>
 	<includes>
 		<include>niScriptCpp/src/_idl/ScriptCpp.h.idl.xml</include>

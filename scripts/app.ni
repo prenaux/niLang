@@ -45,11 +45,34 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
+  function registerCppScriptingHost() {
+    local shName = "niScriptCpp.ScriptingHost";
+    if (::gLang.GetGlobalInstance(shName))
+      return; // already registered
+    ::log("Registering Cpp ScriptingHost.");
+    ::Import("niScriptCpp");
+    local sh = ::CreateGlobalInstance(shName);
+    ::gLang.AddScriptingHost("cpp",sh);
+    ::gLang.AddScriptingHost("cpp2",sh);
+    ::gLang.AddScriptingHost("cni",sh);
+    // enable Cpp compilation
+    ::gLang.SetProperty("niScriptCpp.Compile", "1");
+  }
+
+  ///////////////////////////////////////////////
   function startFormApp(aFormPath,aDir,aConfig) {
-    local load = function() : (aFormPath,aDir,aConfig) {
+    local load = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
       // Load the form
       local formPath = aFormPath
       local formDT = ::lang.loadDataTable("xml",formPath)
+
+      local formCode = formDT.string.code
+      if (formCode.?len() &&
+          (formCode.contains(".cpp") ||
+           formCode.contains(".cni"))) {
+        registerCppScriptingHost();
+      }
+
       local formTitle = formDT.string.title
       if (formTitle.empty()) {
         formTitle = "FormApp"
@@ -63,6 +86,9 @@ if (!::gUIContext) {
 
       // Create the form
       ::gFormWidget <- ::gUIContext.CreateWidgetFromDataTable(formDT,::gUIContext.root_widget,null,null)
+      if (!::gFormWidget) {
+        throw "Can't create main form widget."
+      }
 
       // Fill the form if its a canvas and that no dock_style has been defined
       if (formDT.name == "Canvas") {

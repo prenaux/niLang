@@ -6,6 +6,6 @@
         initfunctions='no'
 >
   <dependency name='niLang' />
-  <objecttype  category='ScriptingHost' name='Cpp'  />
+  <objecttype  name='ScriptingHost'  />
   <include>niScriptCpp/src/_idl/ScriptCpp.h.idl.xml</include>
 </module>

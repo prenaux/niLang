@@ -17,6 +17,6 @@ niModule_Begin
   initfunctions='"no"'
 ;
 niModule_Dep "niLang" ;
-niModule_OT category='"ScriptingHost"' name='"Cpp"' ;
+niModule_OT name='"ScriptingHost"' ;
 niModule_Includes $(IDLS) ;
 niModule_End ;

@@ -60,8 +60,9 @@ Ptr<iUnknown> EvalImpl(iHString* ahspContext, iHString* ahspCodeFile, const tUUI
 struct FScriptCpp {
   FScriptCpp() {
     niRunOnce {
-      QPtr<iScriptingHost> ptrScriptingHost = niCreateInstance(ScriptingHost,Cpp,NULL,NULL);
+      QPtr<iScriptingHost> ptrScriptingHost = niCreateInstance(niScriptCpp,ScriptingHost,NULL,NULL);
       ni::GetLang()->AddScriptingHost(_H("cpp"),ptrScriptingHost.ptr());
+      ni::GetLang()->AddScriptingHost(_H("cpp2"),ptrScriptingHost.ptr());
       ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
     };
   }

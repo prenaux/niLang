@@ -61,7 +61,7 @@ if (!::gUIContext) {
 
   ///////////////////////////////////////////////
   function startFormApp(aFormPath,aDir,aConfig) {
-    local load = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
+    local loadForm = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
       // Load the form
       local formPath = aFormPath
       local formDT = ::lang.loadDataTable("xml",formPath)
@@ -115,7 +115,7 @@ if (!::gUIContext) {
       }
     }
 
-    local reloadApp = (("gFormWidget" in ::getroottable()) && ::gFormWidget != null)
+    local reloadApp = mStarted;
     if (!reloadApp) {
       //
       // This is called once at startup
@@ -142,14 +142,20 @@ if (!::gUIContext) {
       loadConfig();
 
       // Queue the loading method...
-      ::app.queueStartup(load)
+      ::app.queueStartup([
+        "Loading Form.",
+        loadForm
+      ])
       // Startup the application
       ::app.startup(::gConfig)
     }
     else {
       loadConfig();
-      // setWindowPositionAndSizeFromConfig(); // I dont think we want to reset the window post when reloading an app we're working on
-      ::app.queueStartup(load)
+      ::app.queueStartup([
+        "Reloading Form.",
+        loadForm,
+        null // done
+      ])
     }
   }
 

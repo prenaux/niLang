@@ -2394,19 +2394,19 @@ void cWidget::ApplyRelativeRect()
         ptrParent->GetSize():ptrParent->GetClientSize();
   }
   if (mrectRelative.Left() > niEpsilon5)
-    newRect.Left() = mrectRelative.Left()*vParentSize.x;
+    newRect.Left() = UnitSnapf(mrectRelative.Left()*vParentSize.x);
   if (mrectRelative.Top() > niEpsilon5)
-    newRect.Top() = mrectRelative.Top()*vParentSize.y;
+    newRect.Top() = UnitSnapf(mrectRelative.Top()*vParentSize.y);
 
   if (mrectRelative.GetWidth() > niEpsilon5)
-    newRect.SetWidth(mrectRelative.GetWidth()*vParentSize.x);
+    newRect.SetWidth(UnitSnapf(mrectRelative.GetWidth()*vParentSize.x));
   else if (mrectRelative.GetWidth() < -niEpsilon5)
-    newRect.SetWidth(vParentSize.x+mrectRelative.GetWidth());
+    newRect.SetWidth(UnitSnapf(vParentSize.x+mrectRelative.GetWidth()));
 
   if (mrectRelative.GetHeight() > niEpsilon5)
-    newRect.SetHeight(mrectRelative.GetHeight()*vParentSize.y);
+    newRect.SetHeight(UnitSnapf(mrectRelative.GetHeight()*vParentSize.y));
   else if (mrectRelative.GetHeight() < -niEpsilon5)
-    newRect.SetHeight(vParentSize.y+mrectRelative.GetHeight());
+    newRect.SetHeight(UnitSnapf(vParentSize.y+mrectRelative.GetHeight()));
 
   SetRect(newRect);
 }

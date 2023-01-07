@@ -1324,6 +1324,23 @@ tBool __stdcall cUIContext::SerializeWidget(iWidget* apWidget, iDataTable* apDT,
     return eFalse;
   }
 
+  Ptr<iWidgetSink> ptrSink;
+  if (niFlagIs(anFlags,eWidgetSerializeFlags_Read))
+  {
+    ni::cString strScriptPath = apDT->GetString(_A("code"));
+    if (strScriptPath.IsNotEmpty()) {
+#if niMinFeatures(15)
+      ptrSink = this->CreateWidgetSinkFromScript(_H(strScriptPath));
+      if (!ptrSink.IsOK()) {
+        niError(niFmt(_A("Can't create the widget sink from code file '%s'."),strScriptPath.Chars()));
+        return NULL;
+      }
+#else
+      niWarning(niFmt("Scripting Host not available to load code file '%s'.",strScriptPath));
+#endif
+    }
+  }
+
   {
     if (niFlagIs(anFlags,eWidgetSerializeFlags_Read)) {
       if (niFlagIsNot(anFlags,eWidgetSerializeFlags_NoRoot)) {
@@ -1385,28 +1402,15 @@ tBool __stdcall cUIContext::SerializeWidget(iWidget* apWidget, iDataTable* apDT,
     apWidget->SendMessage(eUIMessage_SerializeFinalize,apDT,anFlags);
   }
 
-  if (niFlagIs(anFlags,eWidgetSerializeFlags_Read))
-  {
-    ni::cString strScriptPath = apDT->GetString(_A("code"));
-    if (strScriptPath.IsNotEmpty()) {
-#if niMinFeatures(15)
-      Ptr<iWidgetSink> ptrSink = this->CreateWidgetSinkFromScript(_H(strScriptPath));
-      if (!ptrSink.IsOK()) {
-        niError(niFmt(_A("Can't create the widget sink from code file '%s'."),strScriptPath.Chars()));
-        return NULL;
-      }
-      apWidget->AddSink(ptrSink);
+  if (niFlagIs(anFlags,eWidgetSerializeFlags_Read) && ptrSink.IsOK()) {
+    apWidget->AddSink(ptrSink);
 
-      // Send the SerializeWidget & SerializeFinalize messages explicitly so
-      // that the code sink has a chance to do custom serialization. The code
-      // sink hasn't received any serialization message since the sink is added
-      // after all serialization occured.
-      ptrSink->OnWidgetSink(apWidget,eUIMessage_SerializeWidget,apDT,anFlags);
-      ptrSink->OnWidgetSink(apWidget,eUIMessage_SerializeFinalize,apDT,anFlags);
-#else
-      niWarning(niFmt("Scripting Host not available to load code file '%s'.",strScriptPath));
-#endif
-    }
+    // Send the SerializeWidget & SerializeFinalize messages explicitly so
+    // that the code sink has a chance to do custom serialization. The code
+    // sink hasn't received any serialization message since the sink is added
+    // after all serialization occured.
+    ptrSink->OnWidgetSink(apWidget,eUIMessage_SerializeWidget,apDT,anFlags);
+    ptrSink->OnWidgetSink(apWidget,eUIMessage_SerializeFinalize,apDT,anFlags);
   }
 
   return eTrue;

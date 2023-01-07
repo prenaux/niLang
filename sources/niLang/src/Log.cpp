@@ -296,7 +296,7 @@ niExportFunc(void) ni_log_format_message(
             if (!niFlagIs(aType,eLogFlags_FormatMSVC) && niStringIsOK(aaszFile))
             {
               if (afTime >= 0) {
-                final << " " << _LogTime(afTime,afPrevTime);;
+                final << " " << _LogTime(afTime,afPrevTime);
               }
               if (niStringIsOK(aaszFile)) {
                 const tU32 slashChars[] = {'\\','/'};
@@ -613,7 +613,10 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logFile, const char* lo
     }
 #endif // LOG_APPLE_OS_LOG
 
-    _fPrevTime = logTime;
+    // Previous time shouldn't be updated when the relative time is not printed
+    if (!niFlagIs(logType,eLogFlags_Raw)) {
+      _fPrevTime = logTime;
+    }
   }
 }
 

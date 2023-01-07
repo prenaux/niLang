@@ -2,10 +2,14 @@
 rule niRunInDir {
   runInDir_ Run_$(<) : ni : $(2) : $(3) ;
   runInDebugger_ Debug_$(<) : ni : $(2) : $(3) ;
+  DEPENDS Run_$(<) : $(<) ;
+  DEPENDS Debug_$(<) : $(<) ;
 }
 rule niwRunInDir {
   runInDir_ Run_$(<) : niw : $(2) : $(3) ;
   runInDebugger_ Debug_$(<) : niw : $(2) : $(3) ;
+  DEPENDS Run_$(<) : $(<) ;
+  DEPENDS Debug_$(<) : $(<) ;
 }
 
 # niScriptSrc SRC : TOADDONCE ;

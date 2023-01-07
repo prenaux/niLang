@@ -201,6 +201,7 @@ static tBool ScriptCpp_TryCompileSource(
   StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);
 
   hamCmd << "\"" << hamPath << + "\""
+         // This should use "TOOLKIT/_ham_project" instead of default
          << " -T default"
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"
@@ -229,6 +230,8 @@ static tBool ScriptCpp_TryCompileSource(
 
   SCRIPTCPP_TRACE(("outputPathNotStamped: %s", pathOutputNotStamped.GetPath()));
   SCRIPTCPP_TRACE(("outputPath: %s", pathOutput.GetPath()));
+
+  niLog(Info,niFmt("Building Module '%s'.", mc.name));
 
   Ptr<iOSProcessManager> pm = GetLang()->GetProcessManager();
   sVec2i procRet = {eFalse,0};
@@ -446,8 +449,9 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
 
     if (ScriptCpp_GetCompileEnabled()) {
       if (!ScriptCpp_TryCompileSource(itModule->second,strSourcePath,strSourceAppDir)) {
-        niWarning(niFmt("Can't compile module '%s' for code resource '%s'.",
-                        strModule, ahspCodeResource));
+        niError(niFmt("Can't compile module '%s' for code resource '%s'.",
+                      strModule, ahspCodeResource));
+        return NULL;
       }
     }
     else {
@@ -511,9 +515,8 @@ niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost() {
   return niNew CppScriptingHost();
 }
 
-niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Var& /*avarB*/) {
+niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   return ScriptCpp_CreateScriptingHost();
 }
-
 }
 #endif

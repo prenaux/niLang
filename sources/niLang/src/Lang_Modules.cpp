@@ -53,10 +53,12 @@ tBool cLang::_FinalizeRegisterModuleDef(const cLang::sModuleDef& mod) {
   const iModuleDef* mdef = mod.mptrModuleDef;
   niLoop(i,mdef->GetNumEnums()) {
     const sEnumDef* edef = mdef->GetEnum(i);
+    // TRACE_LOAD_MODULE(("_FinalizeRegisterModuleDef: adding enum: %s.",edef->maszName));
     RegisterEnumDef(edef);
   }
   niLoop(i,mdef->GetNumObjectTypes()) {
     const iObjectTypeDef* odef = mdef->GetObjectType(i);
+    // TRACE_LOAD_MODULE(("_FinalizeRegisterModuleDef: adding odef: %s.",odef->GetName()));
     astl::upsert(*mmapCreateInstance, odef->GetName(),niNew sObjectTypeDefCallback(odef));
   }
   return eTrue;

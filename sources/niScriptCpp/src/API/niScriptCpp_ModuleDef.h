@@ -14,7 +14,7 @@ namespace ni {
 
 static const char *const kVersion_niScriptCpp = "1,0,0";
 niExportFunc(const ni::iModuleDef*) GetModuleDef_niScriptCpp();
-niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const ni::Var&, const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const ni::Var&, const ni::Var&);
 
 
 

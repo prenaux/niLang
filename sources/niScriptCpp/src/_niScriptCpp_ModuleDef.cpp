@@ -51,7 +51,7 @@ niExportFunc(const ni::iModuleDef*) GetModuleDef_niScriptCpp()
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Object types definition
 //////////////////////////////////////////////////////////////////////////////////////////////
-static const ni::sObjectTypeDef ObjectType_ScriptingHost_Cpp("ScriptingHost.Cpp",New_ScriptingHost_Cpp);
+static const ni::sObjectTypeDef ObjectType__ScriptingHost("niScriptCpp.ScriptingHost",New_niScriptCpp_ScriptingHost);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ static const ni::achar* Dependencies[] = {
   "niLang",
 };
 static const ni::sObjectTypeDef* ObjectTypes[] = {
-  &ObjectType_ScriptingHost_Cpp,
+  &ObjectType__ScriptingHost,
 };
 
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef

@@ -878,8 +878,10 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
   if (!ptrHSB.IsOK() || !ptrVSB.IsOK())
     return;
 
-  const tF32 scrollBarW = mptrVtScroll->GetClientSize().x;
-  const tF32 scrollBarH = mptrHzScroll->GetClientSize().y;
+  // Use the value we'll set, don't get it from the scrollbar itself since it
+  // might not have been initialized yet.
+  const tF32 vtScrollBarW = kfScrollBarSize;
+  const tF32 vtScrollBarH = kfScrollBarSize;
 
   const sRectf borders = skin.normalFrame->GetFrame();
   mfRealW = w - (borders.x+borders.z);
@@ -892,9 +894,9 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
 
   // We show the hz scrolling if the widest item would overflow with the vt
   // scrollbar visible.
-  const tBool bHorzScollbar = (mfWidestItem > (mfRealW-scrollBarW));
+  const tBool bHorzScollbar = (mfWidestItem > (mfRealW-vtScrollBarW));
   if (bHorzScollbar) {
-    mfRealH -= scrollBarH;
+    mfRealH -= vtScrollBarH;
     mptrHzScroll->SetVisible(eTrue);
     mptrHzScroll->SetEnabled(eTrue);
     tF32 nHorzItemsPage = ni::Floor<tF32>(mfRealW/fw);
@@ -912,7 +914,7 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
 
   const tBool bVertScollbar = (_ComputeItemsPerPage() < mvItems.size());
   if (bVertScollbar) {
-    mfRealW -= scrollBarW;
+    mfRealW -= vtScrollBarW;
     mptrVtScroll->SetVisible(eTrue);
     mptrVtScroll->SetEnabled(eTrue);
     auto nItemsPerPage = _ComputeItemsPerPage();

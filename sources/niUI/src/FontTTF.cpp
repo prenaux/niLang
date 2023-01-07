@@ -155,7 +155,7 @@ static int GetTTFGlyphKernAdvance(FT_Face aFace, tU32 anPixelSize, tU32* apLastK
 #endif
 
 static __forceinline agg_real int26p6_to_dbl(int p) {
-  return agg_real(p) / 64.0;
+  return (agg_real)(p / 64.0);
 }
 static __forceinline int dbl_to_int26p6(agg_real p) {
   return int(p * 64.0 + 0.5);
@@ -887,7 +887,7 @@ static tU8 get_SDF_radial(
   int max_radius)
 {
   //  hideous brute force method
-  float d2 = max_radius*max_radius+1.0;
+  float d2 = max_radius*max_radius+1.0f;
   tU8 v = fontmap[x+y*w];
   for( int radius = 1; (radius <= max_radius) && (radius*radius < d2); ++radius )
   {
@@ -1002,8 +1002,8 @@ static tU8 get_SDF_radial(
   {
     d2 = -d2;
   }
-  d2 *= 127.5 / max_radius;
-  d2 += 127.5;
+  d2 *= 127.5f / max_radius;
+  d2 += 127.5f;
   if( d2 < 0.0 ) d2 = 0.0;
   if( d2 > 255.0 ) d2 = 255.0;
   return (tU8)(d2 + 0.5);

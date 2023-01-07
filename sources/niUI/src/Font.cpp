@@ -1309,8 +1309,8 @@ sVec2i __stdcall cFont::BlitCharEx(iBitmap2D* apDestBmp, tI32 anX, tI32 anY, tI3
   Ptr<iBitmap2D> pSrcBmp = g->img->GrabBitmap(eImageUsage_Source,sRecti::Null());
   niCheckIsOK(pSrcBmp,sVec2i::Zero());
 
-  anX += g->lead.x;
-  anY += g->lead.y;
+  anX += (tI32)g->lead.x;
+  anY += (tI32)g->lead.y;
   const sRecti rectSrc {
     (tI32)(g->texCoo.x * (float)pSrcBmp->GetWidth()),
     (tI32)(g->texCoo.y * (float)pSrcBmp->GetHeight()),

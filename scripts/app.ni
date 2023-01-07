@@ -470,8 +470,12 @@ if (!::gUIContext) {
 
       ::app.queueStartup(#{
         ::console.registerCommand("Global","Reload","", ::reload, ::eKey.F9);
-        ::console.registerCommand("Global","ReloadSkin","", function() {
-          ::gui.reloadSkin();
+        ::console.registerCommand("Global","ReloadSkin","", #{
+          ::app.queueLoading([
+            "Reloading Skin."
+            #{ ::gui.reloadSkin() }
+            null
+          ]);
         }, ::eKey.F2);
         ::console.registerCommand("Global","DebugUI","", function() {
           ::gUIContext.debug_draw = !::gUIContext.debug_draw

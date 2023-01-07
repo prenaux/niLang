@@ -1087,15 +1087,15 @@ inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const s
                                                               sVec3f* pEA, sVec3f* pEB,
                                                               tBool* pbEdgeFlag) const
 {
-  tBool   bFound = eFalse;
-  tF32    fClosestDistance = 0.0f;
+  tBool  bFound = eFalse;
+  tF32   fClosestDistance = 0.0f;
   sVec3f vClosestPoint = kvec3fZero;
   sVec3f vClosestP0, vClosestP1;
-  tBool   bEdgeFlag;
 
   const sVec3f *p0 = reinterpret_cast<sVec3f*>(GetVertex(GetNumVertices()-1)), *p1;
   sVec3f cp;
-  tI32  index = 0, lClosestIndex;
+  tI32  index = 0, lClosestIndex = -1;
+  tBool bEdgeFlag = eFalse;
 
   for (tPtr itV = GetFirstVertex(); !IsEndVertex(itV); itV = GetNextVertex(itV), ++index)
   {
@@ -1119,7 +1119,7 @@ inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const s
     p0 = p1;
   }
 
-  if (pEA && pEB)
+  if (pEA && pEB && lClosestIndex >= 0)
   {
     if (!bEdgeFlag)
     {
@@ -1135,7 +1135,9 @@ inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const s
     }
   }
 
-  if (pbEdgeFlag) *pbEdgeFlag = bEdgeFlag;
+  if (pbEdgeFlag)
+    *pbEdgeFlag = bEdgeFlag;
+
   vOut = vClosestPoint;
   return vOut;
 }

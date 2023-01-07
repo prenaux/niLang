@@ -262,7 +262,7 @@ tBool cScrollBarWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& va
 
     case eUIMessage_NCWheel:
     case eUIMessage_Wheel: {
-      tF64 fMove = varParam0.GetFloatValue();
+      tF32 fMove = (tF32)varParam0.GetFloatValue();
       _SetScrollPosition(ComputeRoundedPosition(mfScrollPos-fMove),eTrue);
       break;
     }
@@ -278,11 +278,11 @@ tBool cScrollBarWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& va
         }
         nIndex = ptrDT->GetPropertyIndex(_A("scroll_position"));
         if (nIndex != eInvalidHandle) {
-          SetScrollPosition(ptrDT->GetFloatFromIndex(nIndex));
+          SetScrollPosition((tF32)ptrDT->GetFloatFromIndex(nIndex));
         }
         nIndex = ptrDT->GetPropertyIndex(_A("scroll_page_size"));
         if (nIndex != eInvalidHandle) {
-          SetPageSize(ptrDT->GetFloatFromIndex(nIndex));
+          SetPageSize((tF32)ptrDT->GetFloatFromIndex(nIndex));
         }
       }
       else {

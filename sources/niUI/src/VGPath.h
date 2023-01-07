@@ -114,7 +114,7 @@ class cVGPath : public ni::cIUnknownImpl<iVGPath>
   virtual tBool __stdcall SetCommand(tU32 anIndex, eVGPathCommand aCmd) {
     if (anIndex >= m_storage.total_vertices())
       return eFalse;
-    m_storage.set_command(anIndex,(unsigned)aCmd);
+    m_storage.set_command(anIndex,(unsigned char)aCmd);
     return eTrue;
   }
 
@@ -852,14 +852,14 @@ class cVGPath : public ni::cIUnknownImpl<iVGPath>
     const tF32 tx, const tF32 ty,
     const tF32 arrowGap, const tF32 arrowLen) niImpl
   {
-    const tF32 ag2 = arrowGap/2.0;
+    const tF32 ag2 = arrowGap/2.0f;
     const tF32 x2 = x+w;
     const tF32 y2 = y+h;
-    const tF32 cx = x+(w/2.0);
-    const tF32 cy = y+(w/2.0);
+    const tF32 cx = x+(w/2.0f);
+    const tF32 cy = y+(w/2.0f);
     MoveTo(x+rx,y);
 
-    tF32 testArrowLen = arrowLen / 2.0;
+    tF32 testArrowLen = arrowLen / 2.0f;
     int edge = -1;
     // bottom edge?
     if (

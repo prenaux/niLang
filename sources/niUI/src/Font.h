@@ -50,8 +50,8 @@ struct sFontGlyph {
     texCoo.SetTop(y);
     texCoo.SetRight(x+(1/16.0f));
     texCoo.SetBottom(y+(1/16.0f));
-    dim.x = avSize.x;
-    dim.y = avSize.y;
+    dim.x = (tI32)avSize.x;
+    dim.y = (tI32)avSize.y;
     xadv = avSize.x;
   }
 };

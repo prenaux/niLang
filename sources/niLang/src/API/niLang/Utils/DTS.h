@@ -21,7 +21,7 @@
     pSerializeDT->SetMetadata(NAME,_H(MT));    \
   }
 #define _DTS_READ_(NAME,VAL,TYPE)                                       \
-  if (!bSerializeRO) { (VAL) = pSerializeDT->Get##TYPE##Default(NAME,VAL); }
+  if (!bSerializeRO) { (VAL) = static_cast<decltype(VAL)>(pSerializeDT->Get##TYPE##Default(NAME,VAL)); }
 #define _DTS_RAW_(NAME,VAL,TYPE)                            \
   if (bSerializeWrite) { _DTS_WRITE_RAW_(NAME,VAL,TYPE); }  \
   else { _DTS_READ_(NAME,VAL,TYPE); }

@@ -449,8 +449,9 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
 
     if (ScriptCpp_GetCompileEnabled()) {
       if (!ScriptCpp_TryCompileSource(itModule->second,strSourcePath,strSourceAppDir)) {
-        niWarning(niFmt("Can't compile module '%s' for code resource '%s'.",
-                        strModule, ahspCodeResource));
+        niError(niFmt("Can't compile module '%s' for code resource '%s'.",
+                      strModule, ahspCodeResource));
+        return NULL;
       }
     }
     else {

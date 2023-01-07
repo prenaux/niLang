@@ -201,6 +201,7 @@ static tBool ScriptCpp_TryCompileSource(
   StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);
 
   hamCmd << "\"" << hamPath << + "\""
+         // This should use "TOOLKIT/_ham_project" instead of default
          << " -T default"
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"
@@ -229,6 +230,8 @@ static tBool ScriptCpp_TryCompileSource(
 
   SCRIPTCPP_TRACE(("outputPathNotStamped: %s", pathOutputNotStamped.GetPath()));
   SCRIPTCPP_TRACE(("outputPath: %s", pathOutput.GetPath()));
+
+  niLog(Info,niFmt("Building Module '%s'.", mc.name));
 
   Ptr<iOSProcessManager> pm = GetLang()->GetProcessManager();
   sVec2i procRet = {eFalse,0};
@@ -514,6 +517,5 @@ niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost() {
 niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   return ScriptCpp_CreateScriptingHost();
 }
-
 }
 #endif

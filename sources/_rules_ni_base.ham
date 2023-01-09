@@ -283,11 +283,13 @@ rule niImportModuleHdrs {
   }
 }
 
+# niImportModuleDll LIBRARY : TOOLKITNAME ;
 rule niImportModuleDll {
   niImportModuleHdrs $(1) : $(2) ;
   tkPkgLinkDll $(1) : $(2) ;
 }
 
+# niImportModuleLibs LIBRARY : TOOLKITNAME ;
 rule niImportModuleLibs {
   niImportModuleHdrs $(1) : $(2) ;
   tkPkgLinkLibs $(1) : $(2) ;

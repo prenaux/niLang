@@ -11,7 +11,7 @@ namespace ni {
  */
 
 //! Blend two 15 bits colors (RGB/BGR 555 colors) using a 0-255 blend factor
-inline tU32 ULColorBlend15(tU32 x, tU32 y, tU32 n) {
+__forceinline tU32 ULColorBlend15(tU32 x, tU32 y, tU32 n) {
   ni::tU32 result;
   if (n) n = (n + 1) / 8;
   x = ((x & 0xFFFF) | (x << 16)) & 0x3E07C1F;
@@ -21,8 +21,7 @@ inline tU32 ULColorBlend15(tU32 x, tU32 y, tU32 n) {
 }
 
 //! Blend two 16 bits colors (RGB/BGR 565 colors) using a 0-255 blend factor
-inline tU32 ULColorBlend16(tU32 x, tU32 y, tU32 n)
-{
+__forceinline tU32 ULColorBlend16(tU32 x, tU32 y, tU32 n) {
   tU32 result;
 
   if(n)
@@ -36,7 +35,7 @@ inline tU32 ULColorBlend16(tU32 x, tU32 y, tU32 n)
   return ((result & 0xFFFF) | (result >> 16));
 }
 
-tU32 ULColorBlend24(tU32 x, tU32 y, tU32 t) {
+__forceinline tU32 ULColorBlend24(tU32 x, tU32 y, tU32 t) {
   const tU32 s = 255 - t;
   return (
     (((((y >> 0)  & 0xff) * s +
@@ -49,7 +48,7 @@ tU32 ULColorBlend24(tU32 x, tU32 y, tU32 t) {
   );
 }
 
-tU32 ULColorBlend32(tU32 x, tU32 y, tU32 t) {
+__forceinline tU32 ULColorBlend32(tU32 x, tU32 y, tU32 t) {
   const tU32 s = 255 - t;
   return (
     (((((y >> 0)  & 0xff) * s +

@@ -68,6 +68,37 @@ int AssertException::LineNumber() const
   return m_lineNumber;
 }
 
+CollectAssertHandler::CollectAssertHandler() {
+  // we shouldn't set to CollectAssertHandler at the same time
+  niPanicAssert(_current == nullptr);
+  _current = this;
+  ni_set_should_ignore_assert_handler(_MyShouldIgnoreAssertHandler);
+}
+CollectAssertHandler::~CollectAssertHandler() {
+  ni_set_should_ignore_assert_handler(nullptr);
+  _current = nullptr;
+}
+
+int CollectAssertHandler::_MyShouldIgnoreAssertHandler(
+  int isPanic,
+  const char* exp,
+  const char* file,
+  int line,
+  const char* func,
+  const char* desc)
+{
+  ++_current->_numCollected;
+  _current->_isPanic = isPanic;
+  _current->_exp = exp;
+  _current->_file = file;
+  _current->_line = line;
+  _current->_func = func;
+  _current->_desc = desc;
+  return 1;
+}
+
+CollectAssertHandler* CollectAssertHandler::_current = nullptr;
+
 }
 #endif
 
@@ -732,18 +763,24 @@ TimeConstraint::~TimeConstraint()
 //--------------------------------------------------------------------------------------------
 namespace UnitTest {
 
-void CheckStringsEqual(TestResults& results, char const* const expected, char const* const actual,
-                       char const* const testName, char const* const filename, int const line)
+void CheckStringsEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) != 0) {
     ni::cString stream;
-    stream << "Expected [" << expected << "] == [" << actual << "]";
+    stream << msg << ": Expected [" << expected << "] == [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
 
-void CheckStringsNotEqual(TestResults& results, char const* const expected, char const* const actual,
-                       char const* const testName, char const* const filename, int const line)
+void CheckStringsNotEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) == 0) {
     ni::cString stream;
@@ -752,16 +789,22 @@ void CheckStringsNotEqual(TestResults& results, char const* const expected, char
   }
 }
 
-void CheckEqual(TestResults& results, char const* const expected, char const* const actual,
-                char const* const testName, char const* const filename, int const line)
+void CheckEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
-  CheckStringsEqual(results, expected, actual, testName, filename, line);
+  CheckStringsEqual(results, msg, expected, actual, testName, filename, line);
 }
 
-void CheckNotEqual(TestResults& results, char const* const expected, char const* const actual,
-                   char const* const testName, char const* const filename, int const line)
+void CheckNotEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
-  CheckStringsNotEqual(results, expected, actual, testName, filename, line);
+  CheckStringsNotEqual(results, msg, expected, actual, testName, filename, line);
 }
 
 }

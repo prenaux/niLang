@@ -479,14 +479,14 @@ struct UnitTestMemDelta {
 
 #define CHECK_EQUAL(expected, actual)                                   \
   TEST_TRY() {                                                             \
-    UnitTest::CheckEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
+    UnitTest::CheckEqual(testResults_, "CHECK_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_EQUAL(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_NOT_EQUAL(expected, actual)                               \
   TEST_TRY() {                                                             \
-    UnitTest::CheckNotEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
+    UnitTest::CheckNotEqual(testResults_, "CHECK_NOT_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")")
@@ -612,6 +612,33 @@ class AssertException : public astl::exception
   const int m_lineNumber;
 };
 #endif
+
+struct CollectAssertHandler {
+  CollectAssertHandler();
+  ~CollectAssertHandler();
+
+  int _numCollected = 0;
+  int _isPanic = {};
+  ni::cString _exp = {};
+  ni::cString _file = {};
+  int _line = {};
+  ni::cString _func = {};
+  ni::cString _desc = {};
+
+private:
+  static int _MyShouldIgnoreAssertHandler(
+    int isPanic,
+    const char* exp,
+    const char* file,
+    int line,
+    const char* func,
+    const char* desc);
+  static CollectAssertHandler* _current;
+};
+
+#define CHECK_ASSERT(EXPECTED_DESC,ASSERT)      \
+  CHECK_EQUAL(2, (ASSERT)._numCollected);       \
+  CHECK_EQUAL(EXPECTED_DESC, (ASSERT)._desc);
 
 }
 
@@ -846,7 +873,9 @@ bool Check(Value const value)
 }
 
 template< typename Expected, typename Actual >
-void CheckEqual(TestResults& results, Expected const expected, Actual const actual,
+void CheckEqual(TestResults& results,
+                char const* const msg,
+                Expected const expected, Actual const actual,
                 char const* const testName, char const* const filename, int const line)
 {
 #ifdef _MSC_VER
@@ -856,7 +885,7 @@ void CheckEqual(TestResults& results, Expected const expected, Actual const actu
   if (!(expected == actual))
   {
     ni::cString stream;
-    stream << "Expected [" << expected << "] == [" << actual << "]";
+    stream << msg << ": Expected [" << expected << "] == [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 #ifdef _MSC_VER
@@ -865,7 +894,9 @@ void CheckEqual(TestResults& results, Expected const expected, Actual const actu
 }
 
 template< typename Expected, typename Actual >
-void CheckNotEqual(TestResults& results, Expected const expected, Actual const actual,
+void CheckNotEqual(TestResults& results,
+                   char const* const msg,
+                   Expected const expected, Actual const actual,
                    char const* const testName, char const* const filename, int const line)
 {
 #ifdef _MSC_VER
@@ -883,10 +914,14 @@ void CheckNotEqual(TestResults& results, Expected const expected, Actual const a
 #endif
 }
 
-void CheckEqual(TestResults& results, char const* expected, char const* actual,
+void CheckEqual(TestResults& results,
+                char const* msg,
+                char const* expected, char const* actual,
                 char const* testName, char const* filename, int line);
 
-void CheckNotEqual(TestResults& results, char const* expected, char const* actual,
+void CheckNotEqual(TestResults& results,
+                   char const* msg,
+                   char const* expected, char const* actual,
                    char const* testName, char const* filename, int line);
 
 template< typename Expected, typename Actual, typename Tolerance >

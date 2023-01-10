@@ -12,6 +12,20 @@
 
 namespace ni {
 
+typedef int (__ni_export_call_decl *tpfnShouldIgnoreAssertHandler)(
+  int isPanic,
+  const char* exp,
+  const char* file,
+  int line,
+  const char* func,
+  const char* desc);
+
+static tpfnShouldIgnoreAssertHandler _pfnShouldIgnoreAssertHandler = nullptr;
+
+niExportFunc(void) ni_set_should_ignore_assert_handler(tpfnShouldIgnoreAssertHandler aHandler) {
+  _pfnShouldIgnoreAssertHandler = aHandler;
+}
+
 static void _FormatAssertMessage(
   cString& fmt,
   const achar* kind,
@@ -76,6 +90,11 @@ niExportFunc(int) ni_debug_assert(
       file, line, func, desc);
     niError(fmt.Chars());
 
+    // After niError, we dont want to allow the AssertHandler to hide the assert.
+    if (_pfnShouldIgnoreAssertHandler && _pfnShouldIgnoreAssertHandler(
+          eTrue,exp,file,line,func,desc))
+      return 0;
+
     if (ni_debug_get_show_assert_message_box()) {
       fmt.CatFormat("\nDo you want to ignore the assert?");
       eOSMessageBoxReturn ret = GetLang()->MessageBox(
@@ -111,6 +130,11 @@ niExportFunc(void) ni_panic_assert(
       fmt, "ASSERT", exp,
       file, line, func, desc);
     niError(fmt.Chars());
+
+    // After niError, we dont want to allow the AssertHandler to hide the assert.
+    if (_pfnShouldIgnoreAssertHandler && _pfnShouldIgnoreAssertHandler(
+          eTrue,exp,file,line,func,desc))
+      return;
 
     if (ni_debug_get_show_assert_message_box()) {
       ni::GetLang()->FatalError(fmt.Chars());

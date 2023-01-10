@@ -891,6 +891,20 @@ niExportFunc(int)  ni_debug_get_show_assert_message_box();
 niExportFunc(void) ni_debug_set_show_assert_message_box(int aShowAssertMessageBox);
 // Return 1 if we should break in the debugger / crash.
 niExportFunc(int)  ni_debug_assert(int expression, const char* exp, const char* file, int line, const char* func, int* alwaysignore, const char* desc);
+
+typedef int (__ni_export_call_decl *tpfnShouldIgnoreAssertHandler)(
+  int isPanic,
+  const char* exp,
+  const char* file,
+  int line,
+  const char* func,
+  const char* desc);
+
+// Sets a handler function which returns whether an assert should be
+// ignored. The assert message will still be logged.
+// \remark This is meant to be used ONLY in unit tests to test for expected
+//         asserts and panics.
+niExportFunc(void) ni_set_should_ignore_assert_handler(tpfnShouldIgnoreAssertHandler aHandler);
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

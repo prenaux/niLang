@@ -542,16 +542,16 @@ typedef SYNC_INT_TYPE tSyncInt;
 
 // Exceptions
 #ifdef niNoExceptions
-#  define niTry()
+#  define niTry
 #  define niCatchAll() if(0)
 #  define niCatch(X) if(0)
 #  define niThrow(X) ;
 #  define niThrowSpec()
 #else
-#  define niTry()      try
 #  define niCatch(X)   catch(X)
 #  define niCatchAll() catch(...)
 #  define niThrow(X)   throw X
+#  define niTry         try
 #  define niThrowSpec() throw()
 #endif
 

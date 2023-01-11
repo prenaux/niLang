@@ -10,6 +10,8 @@
 #define niCrashReportHasMinidump
 #endif
 
+#include "API/niLang/Utils/Exception.h"
+
 namespace ni {
 
 typedef int (__ni_export_call_decl *tpfnShouldIgnoreAssertHandler)(
@@ -36,6 +38,7 @@ static void _FormatAssertMessage(
   const char* desc)
 {
   const tBool hasDesc = niStringIsOK(desc);
+  fmt.append("================================\n");
   ni_log_format_message(
     fmt,
     eLogFlags_Error|eLogFlags_NoLogTypePrefix,
@@ -49,8 +52,9 @@ static void _FormatAssertMessage(
           hasDesc?desc:_A(""),
           hasDesc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A("")),
     -1, -1);
-  fmt.CatFormat("%s STACK:\n", kind);
+  fmt.append("--- CALLSTACK ------------------\n");
   ni_stack_get_current(fmt,NULL);
+  fmt.append("================================\n");
 }
 
 ///////////////////////////////////////////////
@@ -233,3 +237,71 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
 #endif
 }
 #endif // #if !defined niNoCrashReport
+
+namespace ni {
+
+niExportFunc(ni::iHString*) GetHString_panic() {
+  static ni::tHStringPtr _hstr_panic = _H("panic");
+  return _hstr_panic;
+}
+
+sPanicException::sPanicException(const iHString* aKind, const char* aMsg) noexcept
+    : _kind(aKind)
+    , _msg(aMsg)
+{
+  niPanicAssert(HStringIsNotEmpty(_kind));
+}
+
+const char* sPanicException::what() const noexcept {
+  return niHStr(_kind);
+}
+
+static void _FormatThrowMessage(
+  cString& fmt,
+  const char* file,
+  int line,
+  const char* func,
+  const iHString* exceptionKind,
+  const char* exceptionMsg)
+{
+  const tBool hasMsg = niStringIsOK(exceptionMsg);
+  fmt.append("================================\n");
+  ni_log_format_message(
+    fmt,
+    eLogFlags_Error|eLogFlags_NoLogTypePrefix,
+    file,
+    line,
+    func,
+    niFmt("EXC: %s%s%s%s",
+          exceptionKind,
+          hasMsg?_A(": "):_A(""),
+          hasMsg?exceptionMsg:_A(""),
+          hasMsg?(exceptionMsg[StrSize(exceptionMsg)-1]=='\n'?_A(""):_A("\n")):_A("")),
+    -1, -1);
+  fmt.append("--- CALLSTACK ------------------\n");
+  ni_stack_get_current(fmt,NULL);
+  fmt.append("================================\n");
+}
+
+///////////////////////////////////////////////
+niExportFuncCPP(void) ni_throw_panic(
+    const char* file,
+    int line,
+    const char* func,
+    sPanicException&& exc)
+{
+#if defined niNoExceptions
+  ni_panic_assert(0, niHStr(exc._kind), file, line, func, exc._msg.c_str());
+#else
+  cString fmt;
+  _FormatThrowMessage(
+    fmt,
+    file, line, func,
+    exc._kind,
+    exc._msg.c_str());
+  niError(fmt.Chars());
+  throw exc;
+#endif
+}
+
+}

@@ -388,7 +388,7 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -431,7 +431,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 
 bool Test::Run(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -469,7 +469,7 @@ bool Test::Run(TestResults& testResults) const
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif

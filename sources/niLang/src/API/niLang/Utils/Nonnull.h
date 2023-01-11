@@ -6,6 +6,7 @@
 #include "../Types.h"
 #include "../STL/non_null.h"
 #include "../STL/EASTL/utility.h"
+#include "Exception.h"
 
 #ifndef TRACE_NI_NONNULL
 #define TRACE_NI_NONNULL(X)
@@ -46,8 +47,8 @@ struct Nonnull
   // non-null.
   explicit Nonnull(const T* aPtr) {
     TRACE_NI_NONNULL("COPY explicit constructor T*")
-    niPanicAssertMsg(aPtr != nullptr,
-                     "Nonnull explicit constructor, T* can't be null.");
+    niCheckThrowPanicMsg(aPtr != nullptr,
+                         "Nonnull explicit constructor, T* can't be null.");
     mRefPtr = niConstCast(T*,aPtr);
     ni::AddRef(mRefPtr);
   }

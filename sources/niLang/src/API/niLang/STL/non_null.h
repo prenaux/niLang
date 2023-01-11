@@ -9,6 +9,7 @@
 //
 
 #include "../Types.h"
+#include "../Utils/Exception.h"
 #include "EASTL/functional.h"
 #include "EASTL/type_traits.h"
 
@@ -55,13 +56,13 @@ struct non_null
   template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
   constexpr explicit non_null(U&& u) : ptr_(eastl::forward<U>(u))
   {
-    niPanicAssert(ptr_ != nullptr);
+    niCheckThrowPanic(ptr_ != nullptr);
   }
 
   template <typename = eastl::enable_if_t<!eastl::is_same<std::nullptr_t, T>::value>>
   constexpr explicit non_null(T u) : ptr_(eastl::move(u))
   {
-    niPanicAssert(ptr_ != nullptr);
+    niCheckThrowPanic(ptr_ != nullptr);
   }
 
   template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>

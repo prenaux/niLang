@@ -5,19 +5,18 @@
 using namespace ni;
 using namespace astl;
 
-_HDecl(my_exception);
+_HSymImpl(my_exception);
+_HSymExport(my_exception);
 
 struct FException {
 };
 
 void TestThrowPanic() {
   niThrowPanic(panic);
-  // throw sMyPanic{"sMyPanic",nullptr};
 }
 
 void TestThrowPanicMsg(const char* msg) {
   niThrowPanicMsg(my_exception, msg);
-  // throw sMyPanic{"sMyPanic",nullptr};
 }
 
 TEST_FIXTURE(FException,Test) {
@@ -28,7 +27,7 @@ TEST_FIXTURE(FException,Test) {
     TestThrowPanic();
   }
   niCatchPanic(e) {
-    CHECK_EQUAL(_ASTR(niHStr(_HC(panic))), _ASTR(niHStr(e._kind)));
+    CHECK_EQUAL(_ASTR(niHStr(_HC(panic))), _ASTR(niHStr(e.GetKind())));
   }
 
 #else
@@ -58,7 +57,7 @@ TEST_FIXTURE(FException,Msg) {
   }
   niCatchPanic(e) {
     niDebugFmt(("... sPanicException: %s", e.what()));
-    CHECK_EQUAL(_ASTR(niHStr(_HC(my_exception))), _ASTR(niHStr(e._kind)));
-    CHECK_EQUAL(_ASTR("foo bar qoo"), e._msg);
+    CHECK_EQUAL(_ASTR(niHStr(_HC(my_exception))), _ASTR(niHStr(e.GetKind())));
+    CHECK_EQUAL(_ASTR("foo bar qoo"), e.GetMsg());
   }
 };

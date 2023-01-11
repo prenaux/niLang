@@ -240,20 +240,43 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
 
 namespace ni {
 
-niExportFunc(ni::iHString*) GetHString_panic() {
-  static ni::tHStringPtr _hstr_panic = _H("panic");
-  return _hstr_panic;
+_HSymImpl(panic);
+
+sPanicException::sPanicException(sPanicException&& aRight) noexcept
+    : _kind(aRight._kind)
+    , _msg(aRight._msg)
+{
+  aRight._kind = nullptr;
+  aRight._msg = nullptr;
 }
 
 sPanicException::sPanicException(const iHString* aKind, const char* aMsg) noexcept
     : _kind(aKind)
-    , _msg(aMsg)
+    , _msg(niStringIsOK(aMsg) ? ni::StrDupModule(aMsg) : AZEROSTR)
 {
   niPanicAssert(HStringIsNotEmpty(_kind));
+  const_cast<iHString*>(_kind)->AddRef();
+}
+
+sPanicException::~sPanicException() {
+  if (_kind) {
+    const_cast<iHString*>(_kind)->Release();
+  }
+  if (niStringIsOK(_msg)) {
+    niFree(_msg);
+  }
 }
 
 const char* sPanicException::what() const noexcept {
   return niHStr(_kind);
+}
+
+const iHString* __stdcall sPanicException::GetKind() const noexcept {
+  return _kind;
+}
+
+const char* __stdcall sPanicException::GetMsg() const noexcept {
+  return _msg;
 }
 
 static void _FormatThrowMessage(
@@ -297,8 +320,8 @@ niExportFuncCPP(void) ni_throw_panic(
   _FormatThrowMessage(
     fmt,
     file, line, func,
-    exc._kind,
-    exc._msg.c_str());
+    exc.GetKind(),
+    exc.GetMsg());
   niError(fmt.Chars());
   throw exc;
 #endif

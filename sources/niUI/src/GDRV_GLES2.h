@@ -551,25 +551,29 @@ static const char* GL_Error(GLenum err) {
 niDeclareModuleTrace_(niUI,GDRV_GL2);
 #define _CheckGLError() niModuleShouldTrace_(niUI,GDRV_GL2)
 
-#define GLERR_WARN() if (_CheckGLError()) {                             \
-    GLenum err = _glGetError();                                         \
-    if (err != GL_NO_ERROR) {                                           \
-      ni::GetLang()->Log(eLogFlags_Warning,__FILE__,__FUNCTION__,__LINE__, \
-                         niFmt(_A("GL Error: %d, %s\n"),                \
-                               err,GL_Error(err)));                     \
-      niAssertUnreachable("GL Error");                                  \
-    }                                                                   \
+#define GLERR_WARN() if (_CheckGLError()) {     \
+    GLenum err = _glGetError();                 \
+    if (err != GL_NO_ERROR) {                   \
+      ni::GetLang()->Log(                       \
+        eLogFlags_Warning,                      \
+        niFmt(_A("GL Error: %d, %s\n"),         \
+              err,GL_Error(err)),               \
+        niSourceLoc);                           \
+      niAssertUnreachable("GL Error");          \
+    }                                           \
   }
 
-#define GLERR_RET(RET) if (_CheckGLError()) {                           \
-    GLenum err = _glGetError();                                         \
-    if (err != GL_NO_ERROR) {                                           \
-      ni::GetLang()->Log(eLogFlags_Error,__FILE__,__FUNCTION__,__LINE__, \
-                         niFmt(_A("GL Error: %d, %s\n"),                \
-                               err,GL_Error(err)));                     \
-      niAssertUnreachable("GL Error");                                  \
-      return RET;                                                       \
-    }                                                                   \
+#define GLERR_RET(RET) if (_CheckGLError()) {   \
+    GLenum err = _glGetError();                 \
+    if (err != GL_NO_ERROR) {                   \
+      ni::GetLang()->Log(                       \
+        eLogFlags_Error,                        \
+        niFmt(_A("GL Error: %d, %s\n"),         \
+              err,GL_Error(err)),               \
+        niSourceLoc);                           \
+      niAssertUnreachable("GL Error");          \
+      return RET;                               \
+    }                                           \
   }
 
 #else

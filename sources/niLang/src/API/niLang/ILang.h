@@ -273,7 +273,7 @@ struct iLang : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetLogFilter() const = 0;
   //! Log a message.
-  virtual void __stdcall Log(tLogFlags type, const achar* file, const achar* func, tU32 line, const achar* msg) = 0;
+  virtual void __stdcall Log(tLogFlags type, const achar* msg, const achar* file, tU32 line, const achar* func) = 0;
   //! @}
 
   //########################################################################################

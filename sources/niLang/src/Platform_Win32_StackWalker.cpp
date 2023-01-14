@@ -2,7 +2,7 @@
 
 using namespace ni;
 
-#if defined niWinDesktop && !defined niNoCrashReport
+#if defined niWinDesktop
 
 #include "API/niLang/ILang.h"
 #include "API/niLang/Utils/CrashReport.h"
@@ -1605,7 +1605,8 @@ struct MyStackWalker : public StackWalker {
   }
 };
 
-niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void* apExp) {
+niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
+
   EXCEPTION_POINTERS* pExp = (EXCEPTION_POINTERS*)apExp;
   if (pExp) {
     EXCEPTION_RECORD *pRecord = pExp->ExceptionRecord;
@@ -1732,7 +1733,7 @@ struct CrashLog
 
   static LONG WINAPI TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
   {
-    ni_harakiri("## Unhandled exception in TopLevelFilter ##", pExceptionInfo);
+    niHarakiri("## Unhandled exception in TopLevelFilter ##", pExceptionInfo);
     return EXCEPTION_EXECUTE_HANDLER;
   }
 

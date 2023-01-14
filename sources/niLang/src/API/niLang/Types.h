@@ -404,10 +404,6 @@ typedef SYNC_INT_TYPE tSyncInt;
 #endif
 
 #ifndef niPlatformDetected
-#  include "Platforms/WinRT.h" // VC++ and WinRT
-#endif
-
-#ifndef niPlatformDetected
 #  include "Platforms/MSVC.h" // VC++ or Intel C++ and Win32
 #endif
 
@@ -542,17 +538,17 @@ typedef SYNC_INT_TYPE tSyncInt;
 
 // Exceptions
 #ifdef niNoExceptions
-#  define niTry()
-#  define niCatchAll() if(0)
-#  define niCatch(X) if(0)
+#  define niTry
+#  define niCatch(T,EXC) if(EA_MAYBE_UNUSED const T EXC = {}; 0)
+#  define niCatchAll()   if(0)
 #  define niThrow(X) ;
 #  define niThrowSpec()
 #else
-#  define niTry()      try
-#  define niCatch(X)   catch(X)
-#  define niCatchAll() catch(...)
-#  define niThrow(X)   throw X
-#  define niThrowSpec() throw()
+#  define niCatch(T,EXC) catch(EA_MAYBE_UNUSED const T& EXC)
+#  define niCatchAll()   catch(...)
+#  define niThrow(X)     throw X
+#  define niTry          try
+#  define niThrowSpec()  throw()
 #endif
 
 #ifdef niDebug
@@ -879,19 +875,166 @@ __forceinline bool IsNullPtr(const T* p) {
 #  endif
 #endif // niDeprecated
 
+#ifndef niAssume
+#  define niAssume(x)
+#endif
+
+#define _A(x) x
+#define niACharIsCChar
+
+#define AZEROSTR _A("\0\0\0")
+#define AEOL     _A("\n")
+#define ASPACE   ((achar)(32))
+
+#define niConstExpr EA_CONSTEXPR
+
+#ifndef niConst
+#  define niConst const
+#endif
+#ifndef niConstValue
+#ifdef __cplusplus
+#  define niConstValue static niConstExpr const
+#else
+#  define niConstValue static const
+#endif
+#endif
+
+#ifdef __cplusplus
+#  define niDefaultParam(VAL) = VAL
+#  define niDefaultTemplate template <typename T>
+#else // __cplusplus
+#  define niDefaultParam(VAL)
+#  define niDefaultTemplate
+#endif // __cplusplus
+
+#ifndef niDefaultTypeT
+#  define niDefaultTypeT  niNamespace(ni,tF32)
+#endif
+
+#if !defined __FUNCTION__
+#  define __FUNCTION__ __func__
+#endif
+
+#ifdef niMSVC
+// __PRETTY_FUNCTION__ allow us to get the name of the class, not available on MSVC
+#  define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+
+#define niSourceLoc __FILE__,__LINE__,__FUNCTION__
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
+//--------------------------------------------------------------------------------------------
+//
+//  Assert & Panic
+//
+//--------------------------------------------------------------------------------------------
 #if !defined niShaderLanguage
+#ifdef __cplusplus
+namespace ni {
+#endif // __cplusplus
+
+struct iHString;
+
+/** \addtogroup niLang
+ * @{
+ */
+
+#define _HSymGetName(X) GetHString_##X
+#define _HSymExport(X) niExportFunc(niConst struct niNamespace(ni,iHString)*) _HSymGetName(X)()
+#define _HSymImpl(X) _HSymImpl_(X,#X)
+#define _HSymGet(X) _HSymGetName(X)()
+#define _HSym(NS,X) niNamespace(NS,_HSymGet(X))
+
+#ifdef __cplusplus
+#define _HSymImpl_(VARNAME,STRING)                        \
+  _HSymExport(VARNAME) {                                  \
+    static ni::tHStringPtr _hstr_##VARNAME = _H(STRING);  \
+    return _hstr_##VARNAME.raw_ptr();                     \
+  }
+#endif
+
+_HSymExport(not_initialized);
+_HSymExport(panic);
+_HSymExport(unreachable);
+_HSymExport(debug_assert);
+_HSymExport(nullptr);
+_HSymExport(astl);
+_HSymExport(invalid_cast);
+_HSymExport(harakiri);
+
 // Sets whether we should show a message box for asserts & fatal errors before
 // exiting or breaking in the debugger. Defaults to 0 (disabled) and can be
-// overwritten with the 'niLang.ShowAssertMessageBox' property.
-niExportFunc(int)  ni_debug_get_show_assert_message_box();
-niExportFunc(void) ni_debug_set_show_assert_message_box(int aShowAssertMessageBox);
-// Return 1 if we should break in the debugger / crash.
-niExportFunc(int)  ni_debug_assert(int expression, const char* exp, const char* file, int line, const char* func, int* alwaysignore, const char* desc);
+// overwritten with the 'niLang.ShowFatalErrorMessageBox' property.
+niExportFunc(int)  ni_get_show_fatal_error_message_box();
+niExportFunc(void) ni_set_show_fatal_error_message_box(int abShow);
+
+typedef void (__ni_export_call_decl *tpfnHarakiriHandler)(niConst struct iHString* aKind, niConst char* msg, void* apExcPtr, niConst char* file, int line, niConst char* func);
+niExportFunc(void) ni_set_harakiri_handler(tpfnHarakiriHandler apfnHarakiriHandler);
+niExportFunc(tpfnHarakiriHandler) ni_get_harakiri_handler();
+niExportFunc(void) ni_harakiri(niConst struct iHString* aKind, niConst char* msg, void* apExcPtr, niConst char* file, int line, niConst char* func);
+
+#define niHarakiri(MSG,EXCPTR) \
+  ni_harakiri(_HSym(ni,harakiri),MSG,EXCPTR,niSourceLoc)
+#define niCheckHarakiri(EXP) niAssume(EXP); if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),#EXP,NULL,niSourceLoc); }
+#define niCheckHarakiriMsg(EXP,MSG) niAssume(EXP); if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),MSG,NULL,niSourceLoc); }
+
+#ifdef __cplusplus
+struct __ni_module_export sPanicException final : public std::exception {
+  sPanicException(const iHString* aKind) noexcept;
+  sPanicException(const sPanicException& aRight) noexcept;
+  sPanicException(sPanicException&& aRight) noexcept;
+  sPanicException() noexcept;
+  ~sPanicException();
+
+  // std::exception api
+  const char* what() const noexcept override;
+
+  // ni::iException
+  const iHString* __stdcall GetKind() const noexcept;
+
+private:
+  const iHString* _kind;
+};
+
+niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char* msg, const char* file, int line, const char* func);
+
+#define niThrowPanic(NS,KIND,MSG) ni_throw_panic(_HSym(NS,KIND),MSG,niSourceLoc)
+
+#else
+
+#define niThrowPanic(NS,KIND,MSG) ni_harakiri(_HSym(NS,KIND),MSG,NULL,niSourceLoc)
+
 #endif
+
+#define niCheckPanic(NS,KIND,EXP) niAssume(EXP); if (!(EXP)) { niThrowPanic(NS,KIND,#EXP); }
+#define niCheckPanicMsg(NS,KIND,EXP,MSG) niAssume(EXP); if (!(EXP)) { niThrowPanic(NS,KIND,MSG); }
+
+#define niPanicAssert(exp) niCheckPanic(ni,panic,exp)
+#define niPanicAssertMsg(exp,msg) niCheckPanicMsg(ni,panic,exp,msg)
+#define niPanicUnreachable(msg) niThrowPanic(ni,unreachable,msg)
+
+#ifdef _DEBUG
+#  define niDebugAssert(exp) niCheckPanic(ni,debug_assert,exp)
+#  define niDebugAssertMsg(exp,msg) niCheckPanicMsg(ni,debug_assert,exp,msg)
+#  define niDebugAssertUnreachable(msg) niPanicUnreachable(msg)
+#else
+#  define niDebugAssert(exp) niAssume(exp)
+#  define niDebugAssertMsg(exp,msg) niAssume(exp)
+#  define niDebugAssertUnreachable(msg)
+#endif
+
+#define niAssert(exp) niDebugAssert(exp)
+#define niAssertMsg(exp,msg) niDebugAssertMsg(exp,msg)
+#define niAssertUnreachable(msg) niDebugAssertUnreachable(msg)
+
+/**@}*/
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+#endif // niShaderLanguage
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ni_debug_break
@@ -995,21 +1138,12 @@ __inline__ static void ni_debug_break(void) {
 namespace ni {
 #endif // __cplusplus
 
-#if !defined __FUNCTION__
-#  define __FUNCTION__ __func__
-#endif
-
-#ifdef niMSVC
-// __PRETTY_FUNCTION__ allow us to get the name of the class, not available on MSVC
-#  define __PRETTY_FUNCTION__ __FUNCTION__
-#endif
-
 #ifndef niPrint
-#  define niPrint(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout)|niNamespace(ni,eLogFlags_NoNewLine),__FILE__,__FUNCTION__,__LINE__,x)
+#  define niPrint(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout)|niNamespace(ni,eLogFlags_NoNewLine),x,niSourceLoc)
 #endif
 
 #ifndef niPrintln
-#  define niPrintln(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout),__FILE__,__FUNCTION__,__LINE__,x)
+#  define niPrintln(x)  niNamespace(ni,ni_log)(niNamespace(ni,eLogFlags_Raw)|niNamespace(ni,eLogFlags_Stdout),x,niSourceLoc)
 #endif
 
 #if !defined niPrintFmt && defined __cplusplus
@@ -1018,69 +1152,6 @@ namespace ni {
     niPrintln(formatted.Chars());                 \
   }
 #endif
-
-#ifndef niAssume
-#  define niAssume(x)
-#endif
-
-#define niDoAssert(exp)                                                 \
-  do {                                                                  \
-    static int __ignoreAssert = 0;                                      \
-    if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, NULL)) \
-      { ni_debug_break(); }                                             \
-    }                                                                   \
-  } while(0)
-
-#define niDoAssertMsg(exp, desc)                                        \
-  do {                                                                  \
-    static int __ignoreAssert = 0;                                      \
-    if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, desc)) \
-      { ni_debug_break(); }                                             \
-    }                                                                   \
-  } while(0)
-
-#define niDoAssertUnreachable(msg)                                      \
-  do {                                                                  \
-    static int __ignoreAssert = 0;                                      \
-    if(!__ignoreAssert) {                                               \
-      if(ni_debug_assert(0, msg, __FILE__, __LINE__, __FUNCTION__, &__ignoreAssert, NULL)) \
-      { ni_debug_break(); }                                             \
-    }                                                                   \
-  } while(0)
-
-#ifndef niAssert
-#  ifdef _DEBUG
-#    define niAssert(exp) niDoAssert(exp)
-#  elif defined _LINT
-#    define niAssert(exp) niAssume(exp)
-#  else
-#    define niAssert(exp)
-#  endif
-#endif
-
-#ifndef niAssertMsg
-#  ifdef _DEBUG
-#    define niAssertMsg(exp,desc) niDoAssertMsg(exp,desc)
-#  elif defined _LINT
-#    define niAssertMsg(exp,desc) niAssume(exp)
-#  else
-#    define niAssertMsg(exp,desc)
-#  endif
-#endif
-
-#ifndef niAssertUnreachable
-#  ifdef _DEBUG
-#    define niAssertUnreachable(msg) niDoAssertUnreachable(msg)
-#  else
-#    define niAssertUnreachable(msg)
-#  endif
-#endif
-
-#define niDebugAssert niAssert
-#define niDebugAssertMsg niAssertMsg
-#define niDebugAssertUnreachable niAssertUnreachable
 
 #ifndef niUnused
 #  ifdef __cplusplus
@@ -1137,78 +1208,7 @@ namespace ni {
 // Usage: instead of writing 0x1234567890123456 write niU64Const2Parts(0x12345678,90123456);
 #define niU64Const2Parts(a, b) (((static_cast<ni::tU64>(a) << 32) + 0x##b##u))
 
-#define niConstExpr EA_CONSTEXPR
-
-#ifndef niConst
-#  define niConst const
-#endif
-#ifndef niConstValue
-#ifdef __cplusplus
-#  define niConstValue static niConstExpr const
-#else
-#  define niConstValue static const
-#endif
-#endif
-
-#ifdef __cplusplus
-#  define niDefaultParam(VAL) = VAL
-#  define niDefaultTemplate template <typename T>
-#else // __cplusplus
-#  define niDefaultParam(VAL)
-#  define niDefaultTemplate
-#endif // __cplusplus
-
-#ifndef niDefaultTypeT
-#  define niDefaultTypeT  niNamespace(ni,tF32)
-#endif
-
 #define niSafeFloatDiv
-
-/**@}*/
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
-//--------------------------------------------------------------------------------------------
-//
-//  PanicAssert
-//
-//--------------------------------------------------------------------------------------------
-#ifdef __cplusplus
-namespace ni {
-#endif // __cplusplus
-/** \addtogroup niLang
- * @{
- */
-
-niExportFunc(void) ni_panic_assert(
-    int expression,
-    const char* exp,
-    const char* file,
-    int line,
-    const char* func,
-    const char* desc);
-
-#ifndef niPanicAssert
-#define niPanicAssert(exp)                                              \
-  niAssume(exp);                                                        \
-  if (!(exp)) {                                                         \
-    niNamespace(ni,ni_panic_assert)((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, NULL); \
-  }
-#endif
-
-#ifndef niPanicAssertMsg
-#define niPanicAssertMsg(exp,msg)                                       \
-  niAssume(exp);                                                        \
-  if (!(exp)) {                                                         \
-    niNamespace(ni,ni_panic_assert)((exp)?1:0, #exp, __FILE__, __LINE__, __FUNCTION__, msg); \
-  }
-#endif
-
-#ifndef niPanicUnreachable
-#define niPanicUnreachable(...)                                         \
-  niNamespace(ni,ni_panic_assert)(0, "UNREACHABLE", __FILE__, __LINE__, __FUNCTION__, "" __VA_ARGS__);
-#endif
 
 /**@}*/
 #ifdef __cplusplus
@@ -1668,8 +1668,8 @@ inline TDest bit_castz(const TSrc& source) {
 
 #    define niCCast(TYPE,VAL)           ((TYPE)(VAL))
 #    define niUnsafeCast(TYPE,VAL)          ((TYPE)(VAL))
-#    define niIUnknownCast(VAL)           ((ni::iUnknown*)(VAL))
-#    define niIUnknownCCast(VAL)            ((ni::iUnknown*)(VAL))
+#    define niIUnknownCast(VAL)           ((niNamespace(ni,iUnknown)*)(VAL))
+#    define niIUnknownCCast(VAL)            ((niNamespace(ni,iUnknown)*)(VAL))
 #    define niStaticCast(TYPE,VAL)          ((TYPE)(VAL))
 #    define niConstCast(TYPE,VAL)         ((TYPE)(VAL))
 #    define niConstStaticCast(CTYPE,STYPE,VAL)    ((TYPE)(VAL))
@@ -1742,8 +1742,6 @@ niCAssert(sizeof(L"X"[0]) == sizeof(uchar));
 
 typedef cchar achar;
 typedef cchar tAChar;
-#  define _A(x) x
-#  define niACharIsCChar
 niCAssert(sizeof(cchar) == sizeof(achar));
 
 niConstValue tU32 knTypeStringMaxSizeInChar = 32;
@@ -1761,10 +1759,6 @@ __forceinline bool IsStringOK(const T* aChars) {
 #  define niIsStringOK(str) niIsStringOK_(str)
 #  define niStringIsOK(str) niIsStringOK_(str)
 #endif
-
-#  define AZEROSTR  _A("\0\0\0")
-#  define AEOL    _A("\n")
-#  define ASPACE    ((achar)(32))
 
 // MAX Size defs
 #  define AMAX_DIR  _MAX_DIR  // Maximum length of directory component
@@ -2034,11 +2028,11 @@ static void ni_delete(T* ptr, const char *f, int l, const char *sf)
 #  endif
 
 #  if !defined niEmbedded && !defined _REDIST
-#    define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,__FILE__,__LINE__,__FUNCTION__)
-#    define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,__FILE__,__LINE__,__FUNCTION__)
-#    define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),__FILE__,__LINE__,__FUNCTION__)
-#    define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,__FILE__,__LINE__,__FUNCTION__)
-#    define niNew     new(__FILE__,__LINE__,__FUNCTION__)
+#    define niMalloc(size)                  niNamespace(ni,ni_malloc)(size,niSourceLoc)
+#    define niAlignedMalloc(size,alignment) niNamespace(ni,ni_aligned_malloc)(size,alignment,niSourceLoc)
+#    define niFree(ptr)                     niNamespace(ni,ni_free)((void*)(ptr),niSourceLoc)
+#    define niRealloc(ptr,size)             niNamespace(ni,ni_realloc)((void*)(ptr),size,niSourceLoc)
+#    define niNew     new(niSourceLoc)
 #    define niNewM    new(__FILE__,__LINE__,"member_init")
 #    define niDelete  delete
 #  else
@@ -2138,7 +2132,7 @@ niExportFunc(void) ni_log_set_callback(tpfnLogMessage);
 
 niExportFunc(void) ni_log_system_info_once();
 
-niExportFunc(void) ni_log(tLogFlags type, const char* file, const char* func, int line, const char* msg);
+niExportFunc(void) ni_log(tLogFlags type, const char* msg, const char* file, int line, const char* func);
 
 #  ifdef __cplusplus
 niExportFunc(void) ni_log_format_message(cString& strOut,
@@ -2151,7 +2145,7 @@ niExportFunc(void) ni_log_format_message(cString& strOut,
                                          const tF64 afPrevTime);
 #  endif
 
-#  define niLog_(FLAGS,MSG) ni::ni_log(FLAGS, __FILE__, __FUNCTION__, __LINE__, MSG)
+#  define niLog_(FLAGS,MSG) ni::ni_log(FLAGS, MSG, niSourceLoc)
 #  define niLog(TYPE,MSG) niLog_(ni::eLogFlags_##TYPE, MSG)
 
 #  define niInfo(desc) niLog(Info,desc)
@@ -4182,7 +4176,7 @@ niExportFunc(const achar*) GetTypeString(achar* aStr, tType aType);
 #else
 #  define niDebugFmt(FMT) {                                             \
     ni::cString debugFmt; debugFmt.Format FMT;                          \
-    ni::ni_log(ni::eLogFlags_Debug,__FILE__,__FUNCTION__,__LINE__,debugFmt.Chars()); \
+    ni::ni_log(ni::eLogFlags_Debug,debugFmt.Chars(),niSourceLoc); \
   }
 #endif
 

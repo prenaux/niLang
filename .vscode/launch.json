@@ -3,20 +3,33 @@
   "configurations": [
     {
       "name": "(osx-x64) Test_niLang_da",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/bin/osx-x64/Test_niLang_da",
-      "args": ["FNonnull"],
+      "args": ["FException"],
       "cwd": "${workspaceFolder}/bin/osx-x64/",
       "stopAtEntry": false,
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",
-      "preLaunchTask": "Build Test_niLang_da"
+      "preLaunchTask": "ham Test_niLang (da)"
+    },
+    {
+      "name": "(osx-x64) Test_niLang_ra",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/osx-x64/Test_niLang_ra",
+      "args": ["FException"],
+      "cwd": "${workspaceFolder}/bin/osx-x64/",
+      "stopAtEntry": false,
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "ham Test_niLang (ra)"
     },
     {
       "name": "(osx-x64) HelloUI_cpp_da",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/bin/osx-x64/HelloUI_cpp_da",
       "args": [],
@@ -25,7 +38,7 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",
-      "preLaunchTask": "Build HelloUI_cpp_da"
+      "preLaunchTask": "ham HelloUI_cpp (da)"
     }
   ]
 }

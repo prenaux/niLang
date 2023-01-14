@@ -27,7 +27,7 @@ if $(FEATURES) >= 15 {
 }
 
 IDLS = [ niBuildModuleDef ] ;
-BUILD_SRC = [ tkBuildPackage $(SRC) : lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
 ### DEFINITION ##########################################################
 niModule_Begin

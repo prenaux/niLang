@@ -9636,12 +9636,12 @@
 					typec="tLogFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
-					name="file"
+					name="msg"
 					type="const achar *"
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="func"
+					name="file"
 					type="const achar *"
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
@@ -9652,7 +9652,7 @@
 					typei="ni::eType_U32"/>
 				<parameter
 					last="1"
-					name="msg"
+					name="func"
 					type="const achar *"
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>

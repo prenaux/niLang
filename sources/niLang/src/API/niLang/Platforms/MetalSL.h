@@ -23,7 +23,6 @@
 #define niAssume(EXPR) __assume(EXPR)
 
 #define niNoThreads 1
-#define niNoCrashReport 1
 #define niNoProcess 1
 #define niNoSocket 1
 #define niNoDLL 1

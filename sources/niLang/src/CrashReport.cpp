@@ -12,16 +12,77 @@
 
 namespace ni {
 
-static void _FormatAssertMessage(
+_HSymImpl(not_initialized);
+_HSymImpl(panic);
+_HSymImpl(unreachable);
+_HSymImpl(debug_assert);
+_HSymImpl(nullptr);
+_HSymImpl(astl);
+_HSymImpl(invalid_cast);
+_HSymImpl(harakiri);
+
+static int _bShowFatalErrorMessageBox = -1;
+niExportFunc(void) ni_set_show_fatal_error_message_box(int aShowAssertMessageBox) {
+  _bShowFatalErrorMessageBox = aShowAssertMessageBox;
+}
+niExportFunc(int) ni_get_show_fatal_error_message_box() {
+  if (_bShowFatalErrorMessageBox == -1) {
+    if (!ni::GetLang()->HasProperty("niLang.ShowFatalErrorMessageBox")) {
+      _bShowFatalErrorMessageBox = 0;
+    }
+    else {
+      _bShowFatalErrorMessageBox = ni::GetLang()->GetProperty("niLang.ShowAssertMessageBox").Long();
+    }
+  }
+  return _bShowFatalErrorMessageBox;
+}
+
+sPanicException::sPanicException(sPanicException&& aRight) noexcept
+    : _kind(aRight._kind)
+{
+  aRight._kind = nullptr;
+}
+
+sPanicException::sPanicException(const sPanicException& aRight) noexcept
+    : sPanicException(aRight._kind)
+{
+}
+
+sPanicException::sPanicException() noexcept
+    : sPanicException(_HSymGet(not_initialized))
+{
+}
+
+sPanicException::sPanicException(const iHString* aKind) noexcept
+    : _kind(aKind)
+{
+  const_cast<iHString*>(_kind)->AddRef();
+}
+
+sPanicException::~sPanicException() {
+  if (_kind) {
+    const_cast<iHString*>(_kind)->Release();
+  }
+}
+
+const char* sPanicException::what() const noexcept {
+  return niHStr(_kind);
+}
+
+const iHString* __stdcall sPanicException::GetKind() const noexcept {
+  return _kind;
+}
+
+static void _FormatThrowMessage(
   cString& fmt,
-  const achar* kind,
-  const char* exp,
   const char* file,
   int line,
   const char* func,
-  const char* desc)
+  const char* aPrefix,
+  const iHString* exceptionKind,
+  const char* exceptionMsg)
 {
-  const tBool hasDesc = niStringIsOK(desc);
+  const tBool hasMsg = niStringIsOK(exceptionMsg);
   ni_log_format_message(
     fmt,
     eLogFlags_Error|eLogFlags_NoLogTypePrefix,
@@ -29,170 +90,106 @@ static void _FormatAssertMessage(
     line,
     func,
     niFmt("%s: %s%s%s%s",
-          kind,
-          exp,
-          hasDesc?_A(": "):_A(""),
-          hasDesc?desc:_A(""),
-          hasDesc?(desc[StrSize(desc)-1]=='\n'?_A(""):_A("\n")):_A("")),
+          aPrefix,
+          exceptionKind,
+          hasMsg?_A(": "):_A(""),
+          hasMsg?exceptionMsg:_A(""),
+          hasMsg?(exceptionMsg[StrSize(exceptionMsg)-1]=='\n'?_A(""):_A("\n")):_A("")),
     -1, -1);
-  fmt.CatFormat("%s STACK:\n", kind);
-  ni_stack_get_current(fmt,NULL);
+  fmt.append("--- CALLSTACK ------------------\n");
+  ni_stack_get_current(fmt,nullptr,1); // 1 to skip _FormatThrowMessage
 }
 
 ///////////////////////////////////////////////
-static int _bShowAssertMessageBox = -1;
-niExportFunc(void) ni_debug_set_show_assert_message_box(int aShowAssertMessageBox) {
-  _bShowAssertMessageBox = aShowAssertMessageBox;
-}
-niExportFunc(int) ni_debug_get_show_assert_message_box() {
-  if (_bShowAssertMessageBox == -1) {
-    if (!ni::GetLang()->HasProperty("niLang.ShowAssertMessageBox")) {
-      _bShowAssertMessageBox = 0;
-    }
-    else {
-      _bShowAssertMessageBox = ni::GetLang()->GetProperty("niLang.ShowAssertMessageBox").Long();
-    }
-  }
-  return _bShowAssertMessageBox;
-}
-
-///////////////////////////////////////////////
-niExportFunc(int) ni_debug_assert(
-    int expression,
-    const char* exp,
-    const char* file,
-    int line,
-    const char* func,
-    int *alwaysignore,
-    const char* desc)
+niExportFuncCPP(void) ni_throw_panic(
+  niConst struct iHString* aKind,
+  const char* msg,
+  const char* file,
+  int line,
+  const char* func)
 {
-  if (alwaysignore && *alwaysignore == 1)
-    return 0;
-
-  if (!expression) {
-    cString fmt;
-    _FormatAssertMessage(
-      fmt, "ASSERT", exp,
-      file, line, func, desc);
-    niError(fmt.Chars());
-
-    if (ni_debug_get_show_assert_message_box()) {
-      fmt.CatFormat("\nDo you want to ignore the assert?");
-      eOSMessageBoxReturn ret = GetLang()->MessageBox(
-        NULL, "Assert", fmt.Chars(),
-        eOSMessageBoxFlags_FatalError|eOSMessageBoxFlags_YesNo);
-      if (ret == eOSMessageBoxReturn_Yes) {
-        if (alwaysignore) {
-          *alwaysignore = 1;
-        }
-        return 0;
-      }
-    }
-
-    return 1;
-  }
-  else {
-    return 0;
-  }
-}
-
-///////////////////////////////////////////////
-niExportFunc(void) ni_panic_assert(
-    int expression,
-    const char* exp,
-    const char* file,
-    int line,
-    const char* func,
-    const char* desc)
-{
-  if (!expression) {
-    cString fmt;
-    _FormatAssertMessage(
-      fmt, "ASSERT", exp,
-      file, line, func, desc);
-    niError(fmt.Chars());
-
-    if (ni_debug_get_show_assert_message_box()) {
-      ni::GetLang()->FatalError(fmt.Chars());
-    }
-    else {
-#ifdef niWindows
-      if (::IsDebuggerPresent())
+#if defined niNoExceptions
+  ni_harakiri(aKind,msg,nullptr,file,line,func);
+#else
+  cString fmt;
+  fmt.append("================================\n");
+  _FormatThrowMessage(
+    fmt,
+    file, line, func,
+    "EXC",
+    aKind,
+    msg);
+  fmt.append("================================\n");
+  niError(fmt.Chars());
+  throw sPanicException{aKind};
 #endif
-      {
-        ni_debug_break();
-      }
-      ni::GetLang()->Exit(0xDEADBEEF);
-    }
-  }
 }
 
-}
-
-#if !defined niNoCrashReport
-
-using namespace ni;
-
-static tpfnHarakiriHandler _pfnHarakiriHandler = NULL;
+static tpfnHarakiriHandler _pfnHarakiriHandler = nullptr;
 
 extern "C" void __ni_module_export ni_set_harakiri_handler(tpfnHarakiriHandler apfnHarakiriHandler) {
   _pfnHarakiriHandler = apfnHarakiriHandler;
 }
+
 extern "C" tpfnHarakiriHandler __ni_module_export ni_get_harakiri_handler() {
   return _pfnHarakiriHandler;
 }
-extern "C" void __ni_module_export ni_harakiri(const char* msg, void* apExp) {
+
+extern "C" void __ni_module_export ni_harakiri(niConst iHString* aKind, niConst char* msg, void* apExcPtr, niConst char* file, int line, niConst char* func) {
   if (_pfnHarakiriHandler) {
-    _pfnHarakiriHandler(msg,apExp);
+    _pfnHarakiriHandler(aKind, msg, apExcPtr, file, line, func);
   }
   else {
-    cString o;
-    o << "--- Harakiri ---\n";
-    o << msg;
-    if (!o.EndsWith("\n"))
-      o << "\n";
+    cString fmt;
+    fmt.append("================================\n");
+    _FormatThrowMessage(
+      fmt,
+      file, line, func,
+      "HARAKIRI",
+      aKind,
+      msg);
 #ifdef niCrashReportHasMinidump
-    o << "--- Minidump ---\n";
-    o << ni_generate_minidump(apExp);
-    o << "\n";
+    fmt.append("--- MINIDUMP -------------------\n");
+    fmt << ni_generate_minidump(apExp);
+    fmt << "\n";
 #endif
-    o << "--- Stack ---\n";
-    ni_stack_get_current(o,apExp);
-    ni::GetLang()->FatalError(o.Chars());
+    fmt.append("================================\n");
+    ni::GetLang()->FatalError(fmt.Chars());
   }
 }
 
 extern "C" __ni_module_export void cpp_terminate_handler() {
-  ni_harakiri("## cpp_terminate_handler ##", NULL);
+  niHarakiri("## cpp_terminate_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_unexp_handler() {
-  ni_harakiri("## cpp_unexp_handler ##", NULL);
+  niHarakiri("## cpp_unexp_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_purecall_handler() {
-  ni_harakiri("## cpp_purecall_handler ##", NULL);
+  niHarakiri("## cpp_purecall_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_security_handler(int code, void *x) {
-  ni_harakiri("## cpp_security_handler ##", NULL);
+  niHarakiri("## cpp_security_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved) {
-  ni_harakiri("## cpp_invalid_parameter_handler ##", NULL);
+  niHarakiri("## cpp_invalid_parameter_handler ##", nullptr);
 }
 extern "C" __ni_module_export int cpp_new_handler(size_t) {
-  ni_harakiri("##  cpp_new_handler ##", NULL);
+  niHarakiri("##  cpp_new_handler ##", nullptr);
   return 0; // return 1 to retry alloc...
 }
 extern "C" __ni_module_export void cpp_sigfpe_handler(int /*code*/, int subcode) {
-  ni_harakiri("## cpp_sigfpe_handler ##", NULL);
+  niHarakiri("## cpp_sigfpe_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_sigill_handler(int) {
-  ni_harakiri("## cpp_sigill_handler ##", NULL);
+  niHarakiri("## cpp_sigill_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_sigsegv_handler(int) {
-  ni_harakiri("## cpp_sigsegv_handler ##", NULL);
+  niHarakiri("## cpp_sigsegv_handler ##", nullptr);
 }
 extern "C" __ni_module_export void cpp_sigterm_handler(int) {
-  ni_harakiri("## cpp_sigterm_handler ##", NULL);
+  niHarakiri("## cpp_sigterm_handler ##", nullptr);
 }
+
 extern "C" __ni_module_export void cpp_sigint_handler(int) {
 #ifdef niWindows
   ::TerminateProcess(::GetCurrentProcess(),444);
@@ -200,12 +197,14 @@ extern "C" __ni_module_export void cpp_sigint_handler(int) {
   abort();
 #endif
 }
+
 extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
 #ifdef niWindows
-  ni_harakiri("## cpp_sigabrt_handler ##", NULL);
+  ni_harakiri("## cpp_sigabrt_handler ##", nullptr);
 #else
   // When Ctrl-C is pressed...
   exit(0x12345678);
 #endif
 }
-#endif // #if !defined niNoCrashReport
+
+}

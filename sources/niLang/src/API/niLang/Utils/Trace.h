@@ -21,6 +21,7 @@ niExportFuncCPP(ni::cString) GetTraceFunc(const char* aPrettyFunction);
 #define niTraceFile ni::GetTraceFile(__FILE__)
 #define niTraceLine __LINE__
 #define niTraceFunc ni::GetTraceFunc(__PRETTY_FUNCTION__).c_str()
+#define niTraceSourceLoc niTraceFile,niTraceLine,niTraceFunc
 
 #define niTraceFmt(FMT) {                                               \
     ni::cString traceFmt;                                               \
@@ -28,7 +29,7 @@ niExportFuncCPP(ni::cString) GetTraceFunc(const char* aPrettyFunction);
     traceFmt.append(niTraceFunc);                                       \
     traceFmt.append(": ");                                              \
     traceFmt.CatFormat FMT;                                             \
-    ni::ni_log(ni::eLogFlags_Debug, niTraceFile, NULL, niTraceLine, traceFmt.Chars()); \
+    ni::ni_log(ni::eLogFlags_Debug, traceFmt.Chars(), niTraceFile, niTraceLine, NULL); \
   }
 
 #define niTraceFmtIf(COND,FMT) if (COND) { niTraceFmt(FMT); }

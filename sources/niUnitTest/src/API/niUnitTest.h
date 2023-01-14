@@ -42,12 +42,14 @@
 #  define TEST_CATCH niCatch
 #  define TEST_CATCHALL niCatchAll
 #else
-#  define TEST_TRY()
-#  define TEST_CATCH(X) if(0)
+#  define TEST_TRY
+#  define TEST_CATCH(T,X) if(const T EXC = {}; 0)
 #  define TEST_CATCHALL() if(0)
 #endif
 
 namespace UnitTest {
+
+_HSymExport(unittest_assert);
 
 static inline ni::cString GetTestInputFilePath(const ni::achar* fn) {
   ni::cString dir = ni::GetLang()->GetProperty("ni.dirs.data");
@@ -150,11 +152,11 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 #define TEST(Name) TEST_EX(Name,UnitTest::Test::GetTestList())
 
 #ifdef TEST_NITHROWASSERT
-#  define TEST_CATCH_ASSERT_EXCEPTION(MSG)                                \
-  niCatch (UnitTest::AssertException const& e) {                        \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,          \
-                               (ni::cString(MSG)+                       \
-                                ni::cString(niFmt("\n%s(%d): %s",e.Filename(),e.LineNumber(),e.what()))).Chars()); \
+#  define TEST_CATCH_ASSERT_EXCEPTION(MSG)              \
+  niCatch(ni::sPanicException,e) {                      \
+    testResults_.OnTestFailure(                         \
+      __FILE__, __LINE__, m_testName,                   \
+      niFmt("sPanicException: %s: %s", MSG, e.what())); \
   }
 #else
 #  define TEST_CATCH_ASSERT_EXCEPTION(MSG)
@@ -192,21 +194,21 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
    private:                                                             \
    mutable Fixture##Name##Helper* _mt;                                  \
    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-     TEST_TRY() {                                                          \
+     TEST_TRY {                                                          \
        _mt = new Fixture##Name##Helper(m_testName);                     \
      }                                                                  \
      TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture)\
    }                                                                    \
    virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
-     TEST_TRY() {                                                          \
+     TEST_TRY {                                                          \
        _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
      }                                                                  \
      TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
    }                                                                    \
    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-     TEST_TRY() {                                                          \
+     TEST_TRY {                                                          \
        delete _mt;                                                      \
        _mt = NULL;                                                      \
      }                                                                  \
@@ -246,7 +248,7 @@ class Test##Name : public UnitTest::Test                                        
  Test##Name() : Test(#Name, __FILE__, __LINE__) {}                               \
  private:                                                                        \
  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {         \
-   TEST_TRY() {                                                                  \
+   TEST_TRY {                                                                  \
      TEST_STEPS(5);                                                              \
      UnitTest::TestAppSetCurrentTestWidgetSink(                                  \
        niNew Name(TEST_PARAMS_CALL),                                             \
@@ -256,13 +258,13 @@ class Test##Name : public UnitTest::Test                                        
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Name) \
  }                                                                               \
  virtual void RunImpl(UnitTest::TestResults& testResults_) const  {              \
-   TEST_TRY() {                                                                  \
+   TEST_TRY {                                                                  \
    }                                                                             \
    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Name)             \
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name)            \
  }                                                                               \
  virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {          \
-   TEST_TRY() {                                                                  \
+   TEST_TRY {                                                                  \
      UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                     \
    }                                                                             \
    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Name)   \
@@ -291,12 +293,12 @@ class Test##Fixture##Name : public UnitTest::Test                               
  private:                                                                            \
  mutable Fixture##Name##Helper* _mt;                                                 \
  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {             \
-   TEST_TRY() {                                                                      \
+   TEST_TRY {                                                                      \
      _mt = new Fixture##Name##Helper(m_testName);                                    \
    }                                                                                 \
    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture)  \
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture) \
-   TEST_TRY() {                                                                      \
+   TEST_TRY {                                                                      \
      TEST_STEPS(5);                                                                  \
      UnitTest::TestAppSetCurrentTestWidgetSink(                                      \
        niNew Name(TEST_PARAMS_CALL),                                                 \
@@ -306,18 +308,18 @@ class Test##Fixture##Name : public UnitTest::Test                               
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Fixture)  \
  }                                                                                   \
  virtual void RunImpl(UnitTest::TestResults& testResults_) const  {                  \
-   TEST_TRY() {                                                                      \
+   TEST_TRY {                                                                      \
    }                                                                                 \
    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture)              \
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture)             \
  }                                                                                   \
  virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {              \
-   TEST_TRY() {                                                                      \
+   TEST_TRY {                                                                      \
      UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                         \
    }                                                                                 \
    TEST_CATCH_ASSERT_EXCEPTION("Assert exception in widget destructor " #Fixture)    \
    TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Fixture)   \
-   TEST_TRY() {                                                                      \
+   TEST_TRY {                                                                      \
      delete _mt;                                                                     \
      _mt = NULL;                                                                     \
    }                                                                                 \
@@ -333,19 +335,13 @@ UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
 #define TEST_FIXTURE_WIDGET_EX_DISABLED(FIXTURE,NAME,LIST)
 
 #ifdef TEST_NITHROWASSERT
-#  define TEST_THROW_ASSERT(DESC)   niThrow(UnitTest::AssertException(ni::cString(DESC).Chars(),__FILE__,__LINE__))
+#  define TEST_THROW_ASSERT(DESC)  niThrowPanic(UnitTest,unittest_assert,DESC)
 #  undef niAssert
 #  undef niAssertMsg
 #  undef niAssertUnreachable
 #  define niAssert(exp)            if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp)); }
 #  define niAssertMsg(exp,msg)     if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp) ": " msg); }
 #  define niAssertUnreachable(...) TEST_THROW_ASSERT("ASSERT UNREACHABLE: " __VA_ARGS__);
-#  undef niPanicAssert
-#  undef niPanicAssertMsg
-#  undef niPanicUnreachable
-#  define niPanicAssert(exp)        if (!(exp)) { TEST_THROW_ASSERT("PANIC: " _A(#exp)); }
-#  define niPanicAssertMsg(exp,msg) if (!(exp)) { TEST_THROW_ASSERT("PANIC: " _A(#exp) ": " msg); }
-#  define niPanicUnreachable(...)   TEST_THROW_ASSERT("PANIC UNREACHABLE: " __VA_ARGS__);
 #else
 #  define TEST_THROW_ASSERT(DESC)
 #endif
@@ -445,9 +441,10 @@ struct UnitTestMemDelta {
     ni_mem_get_stats(&delta);
     delta -= _memStart;
     ni::ni_log(
-      ni::eLogFlags_Raw, _file, _func, _line,
+      ni::eLogFlags_Raw,
       niFmt("MemTracking delta: numAlloc: %d, numFree: %d, numObjectAlloc: %d, numObjectFree: %d",
-            delta.x, delta.y, delta.z, delta.w));
+            delta.x, delta.y, delta.z, delta.w),
+      _file, _line, _func);
     _memStart = ni::sVec4i::Zero();
   }
 };
@@ -466,7 +463,7 @@ struct UnitTestMemDelta {
 #endif
 
 #define CHECK(value)                                                    \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     if (!UnitTest::Check(value))                                        \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #value); \
   }                                                                     \
@@ -474,7 +471,7 @@ struct UnitTestMemDelta {
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")")
 
 #define CHECK_RETURN_IF_FAILED(value)                                   \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     if (!UnitTest::Check(value)) {                                      \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #value); \
       return;                                                           \
@@ -484,28 +481,28 @@ struct UnitTestMemDelta {
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")") \
 
 #define CHECK_EQUAL(expected, actual)                                   \
-  TEST_TRY() {                                                             \
-    UnitTest::CheckEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
+  TEST_TRY {                                                             \
+    UnitTest::CheckEqual(testResults_, "CHECK_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_EQUAL(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_NOT_EQUAL(expected, actual)                               \
-  TEST_TRY() {                                                             \
-    UnitTest::CheckNotEqual(testResults_, expected, actual, m_testName, __FILE__, __LINE__); \
+  TEST_TRY {                                                             \
+    UnitTest::CheckNotEqual(testResults_, "CHECK_NOT_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")")
 
 #define CHECK_CLOSE(expected, actual, tolerance)                        \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckClose(testResults_, expected, actual, tolerance, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_CLOSE(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_CLOSE(" #expected ", " #actual ")")
 
 #define CHECK_ARRAY_CLOSE(expected, actual, count, tolerance)           \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckArrayClose(testResults_, expected, actual, count, tolerance, m_testName, __FILE__, __LINE__); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")") \
@@ -515,7 +512,7 @@ struct UnitTestMemDelta {
   {                                                                     \
     bool caught_ = false;                                               \
     TEST_TRY { expression; }                                             \
-    TEST_CATCH (ExpectedExceptionType const&) { caught_ = true; }          \
+    TEST_CATCH(ExpectedExceptionType,_) { caught_ = true; }          \
     if (!caught_) {                                                     \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, "Expected exception: \"" #ExpectedExceptionType "\" not thrown"); \
     }                                                                   \
@@ -532,7 +529,7 @@ struct UnitTestMemDelta {
 
 #ifdef TEST_NITHROWASSERT
 #  define CHECK_THROW_ASSERT(expression)                \
-  CHECK_THROW(expression, UnitTest::AssertException);
+  CHECK_THROW(expression, const ni::sPanicException);
 #else
 #  define CHECK_THROW_ASSERT(expression)
 #endif
@@ -546,14 +543,14 @@ struct UnitTestMemDelta {
 #define CHECK_LOGWARNING_END_CLOSE(EXPECTED,DELTA)  CHECK_CLOSE(EXPECTED,testResults_.GetLogWarningsDelta(),DELTA);
 
 #define CHECK_PRED(expected, actual, name, pred)                        \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, #name, pred); \
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_PRED(" #expected ", " #actual ", " #name ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_PRED(" #expected ", " #actual ", " #name ")")
 
 #define CHECK_LE(expected, actual)                                      \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
                         "<=", [&](auto aLeft, auto aRight) {            \
                           return aLeft <= aRight;                       \
@@ -563,7 +560,7 @@ struct UnitTestMemDelta {
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LE(" #expected ", " #actual ")")
 
 #define CHECK_LT(expected, actual)                                      \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
                         "<", [&](auto aLeft, auto aRight) {             \
                           return aLeft < aRight;                        \
@@ -573,7 +570,7 @@ struct UnitTestMemDelta {
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LT(" #expected ", " #actual ")")
 
 #define CHECK_GE(expected, actual)                                      \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FIGE__, __LINE__, \
                         ">=", [&](auto aLeft, auto aRight) {            \
                           return aLeft >= aRight;                       \
@@ -583,7 +580,7 @@ struct UnitTestMemDelta {
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GE(" #expected ", " #actual ")")
 
 #define CHECK_GT(expected, actual)                                      \
-  TEST_TRY() {                                                             \
+  TEST_TRY {                                                             \
     UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
                         ">", [&](auto aLeft, auto aRight) {             \
                           return aLeft > aRight;                        \
@@ -591,35 +588,6 @@ struct UnitTestMemDelta {
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK_GT(" #expected ", " #actual ")") \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GT(" #expected ", " #actual ")")
-
-//--------------------------------------------------------------------------------------------
-//
-//  Assert Exception
-//
-//--------------------------------------------------------------------------------------------
-
-namespace UnitTest {
-
-#ifdef TEST_NITHROWASSERT
-class AssertException : public astl::exception
-{
- public:
-  AssertException(char const* description, char const* filename, int lineNumber);
-  virtual ~AssertException() niThrowSpec();
-
-  virtual char const* what() const niThrowSpec();
-
-  char const* Filename() const;
-  int LineNumber() const;
-
- private:
-  ni::cString m_description;
-  const ni::cString m_filename;
-  const int m_lineNumber;
-};
-#endif
-
-}
 
 //--------------------------------------------------------------------------------------------
 //
@@ -852,7 +820,9 @@ bool Check(Value const value)
 }
 
 template< typename Expected, typename Actual >
-void CheckEqual(TestResults& results, Expected const expected, Actual const actual,
+void CheckEqual(TestResults& results,
+                char const* const msg,
+                Expected const expected, Actual const actual,
                 char const* const testName, char const* const filename, int const line)
 {
 #ifdef _MSC_VER
@@ -862,7 +832,7 @@ void CheckEqual(TestResults& results, Expected const expected, Actual const actu
   if (!(expected == actual))
   {
     ni::cString stream;
-    stream << "Expected [" << expected << "] == [" << actual << "]";
+    stream << msg << ": Expected [" << expected << "] == [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 #ifdef _MSC_VER
@@ -871,7 +841,9 @@ void CheckEqual(TestResults& results, Expected const expected, Actual const actu
 }
 
 template< typename Expected, typename Actual >
-void CheckNotEqual(TestResults& results, Expected const expected, Actual const actual,
+void CheckNotEqual(TestResults& results,
+                   char const* const msg,
+                   Expected const expected, Actual const actual,
                    char const* const testName, char const* const filename, int const line)
 {
 #ifdef _MSC_VER
@@ -889,10 +861,14 @@ void CheckNotEqual(TestResults& results, Expected const expected, Actual const a
 #endif
 }
 
-void CheckEqual(TestResults& results, char const* expected, char const* actual,
+void CheckEqual(TestResults& results,
+                char const* msg,
+                char const* expected, char const* actual,
                 char const* testName, char const* filename, int line);
 
-void CheckNotEqual(TestResults& results, char const* expected, char const* actual,
+void CheckNotEqual(TestResults& results,
+                   char const* msg,
+                   char const* expected, char const* actual,
                    char const* testName, char const* filename, int line);
 
 template< typename Expected, typename Actual, typename Tolerance >

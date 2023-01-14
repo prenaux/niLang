@@ -5,6 +5,7 @@
 #include "../Types.h"
 #include "../StringDef.h"
 
+namespace ni {
 /** \addtogroup niLang
  * @{
  */
@@ -12,9 +13,9 @@
  * @{
  */
 
-niExportFunc(const ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp);
+niExportFunc(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp, int skip);
 
-#if defined niNoCrashReport || !defined __cplusplus
+#if !defined __cplusplus
 
 #define niCrashReport_DeclareHandler()
 #define niCrashReport_ModuleInstall()
@@ -26,11 +27,6 @@ niExportFunc(const ni::cString&) ni_stack_get_current(ni::cString& aOutput, void
 #define niCrashReportHasMinidump
 niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
 #endif
-
-typedef void (__ni_export_call_decl *tpfnHarakiriHandler)(const char* msg, void* apExp);
-niExportFunc(void) ni_set_harakiri_handler(tpfnHarakiriHandler apfnHarakiriHandler);
-niExportFunc(tpfnHarakiriHandler) ni_get_harakiri_handler();
-niExportFunc(void) ni_harakiri(const char* msg, void* apExp);
 
 niExportFunc(void) cpp_terminate_handler();
 niExportFunc(void) cpp_unexp_handler();
@@ -160,7 +156,7 @@ struct sNiCrashReport {
 };
 
 // Should be declared above your main() function
-#define niCrashReport_DeclareHandler() sNiCrashReport _niCrashReport;
+#define niCrashReport_DeclareHandler() ni::sNiCrashReport _niCrashReport;
 
 #ifdef niWindows
 // This should only be necessary on Windows since on other platforms the
@@ -175,4 +171,5 @@ struct sNiCrashReport {
 
 /**@}*/
 /**@}*/
+} // namespace ni
 #endif // __CRASHRPT_H_39E74FD9_5FD5_4D06_A7BE_773E182E83CC__

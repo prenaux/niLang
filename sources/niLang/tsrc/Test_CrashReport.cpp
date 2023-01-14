@@ -10,7 +10,7 @@ struct FCrashReport {};
 
 TEST_FIXTURE(FCrashReport,StackGetCurrent) {
   ni::cString stack;
-  ni_stack_get_current(stack,NULL);
+  ni_stack_get_current(stack,NULL,0);
   niDebugFmt(("... stack: %s", stack));
   CHECK(stack.contains("FCrashReportStackGetCurrentHelper::RunTest"));
 }
@@ -38,7 +38,7 @@ TEST_FIXTURE(FCrashReport,PanicAssertMsg) {
 TEST_FIXTURE(FCrashReport,PanicUnreachable) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   if (isInteractive) {
-    niPanicUnreachable();
+    niPanicUnreachable("");
   }
   else {
     niLog(Info,"Skipped because not interactive.");
@@ -59,8 +59,8 @@ TEST_FIXTURE(FCrashReport,AssertMessageBox) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   if (isInteractive) {
     niDebugFmt(("... FCrashReport,AssertMessageBox"));
-    ni_debug_set_show_assert_message_box(1);
-    niDoAssert(false);
+    ni_set_show_fatal_error_message_box(1);
+    niHarakiri("AssertMessageBox",nullptr);
   }
   else {
     niLog(Info,"Skipped because not interactive.");

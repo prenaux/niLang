@@ -12,6 +12,8 @@
  * @{
  */
 
+_HSymExport(rtcpp_panic);
+
 //--------------------------------------------------------------------------------------------
 //
 // Windows implementation
@@ -166,15 +168,12 @@ struct sScriptCppGuard
   if (!__rtguard.mAlwaysIgnore) {                     \
   __rtguard.mGuardName = #NAME;                       \
   __try {                                             \
-  auto __rtimpl = [&] () -> RETTYPE
+    auto __rtimpl = [&] () -> RETTYPE
 
 #define SCRIPTCPP_LEAVE_GUARD()                                         \
-  ; __rtRet = __rtimpl();                                               \
+    ; __rtRet = __rtimpl();                                               \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
-    if (ni_debug_assert(0, "RTCpp Exception", __FILE__, __LINE__, __FUNCTION__, \
-                        &__rtguard.mAlwaysIgnore, __rtguard.ToExceptionString().Chars())) \
-    { ni_debug_break(); }                                               \
-    }                                                                   \
+    niThrowPanic(ni,rtcpp_panic,__rtguard.ToExceptionString().Chars()); \
   }                                                                     \
   return __rtRet;
 
@@ -184,15 +183,12 @@ struct sScriptCppGuard
   if (!__rtguard.mAlwaysIgnore) {                     \
   __rtguard.mGuardName = #NAME;                       \
   __try {                                             \
-  auto __rtimpl = [&] () -> void
+    auto __rtimpl = [&] () -> void
 
 #define SCRIPTCPP_LEAVE_VOID_GUARD()                                    \
-  ; __rtimpl();                                                         \
+    ; __rtimpl();                                                         \
   } __except(__rtguard.ExceptionFilter(GetExceptionInformation(),&__rtguard)) { \
-    if (ni_debug_assert(0, "RTCpp Exception", __FILE__, __LINE__, __FUNCTION__, \
-                        &__rtguard.mAlwaysIgnore, __rtguard.ToExceptionString().Chars())) \
-    { ni_debug_break(); }                                               \
-    }                                                                   \
+    niThrowPanic(ni,rtcpp_panic,__rtguard.ToExceptionString().Chars());       \
   }
 
 #endif

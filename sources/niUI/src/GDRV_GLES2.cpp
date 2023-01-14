@@ -416,15 +416,17 @@ static const achar* GL_FBOStatus(GLenum status) {
     default: return "Unknown FrameBuffer Status";
   }
 };
-#define GLFBO_RET(ret) if (_CheckGLError()) {                           \
-    GLenum fboStatus = _glCheckFramebufferStatus(GL_FRAMEBUFFER);       \
-    if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {                         \
-      ni::GetLang()->Log(eLogFlags_Warning,__FILE__,__FUNCTION__,__LINE__, \
-                         niFmt(_A("GL FBO Incomplete: %d, %s\n"),       \
-                               fboStatus,GL_FBOStatus(fboStatus)));     \
-      niAssertUnreachable("GL FBO Error");                              \
-      return ret;                                                       \
-    }                                                                   \
+#define GLFBO_RET(ret) if (_CheckGLError()) {                     \
+    GLenum fboStatus = _glCheckFramebufferStatus(GL_FRAMEBUFFER); \
+    if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {                   \
+      ni::GetLang()->Log(                                         \
+        eLogFlags_Warning,                                        \
+        niFmt(_A("GL FBO Incomplete: %d, %s\n"),                  \
+              fboStatus,GL_FBOStatus(fboStatus)),                 \
+        niSourceLoc);                                             \
+      niAssertUnreachable("GL FBO Error");                        \
+      return ret;                                                 \
+    }                                                             \
   }
 #else
 #define GLFBO_RET(ret)

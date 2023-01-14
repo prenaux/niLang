@@ -33,46 +33,6 @@
 
 //--------------------------------------------------------------------------------------------
 //
-//  AssertException
-//
-//--------------------------------------------------------------------------------------------
-#ifdef TEST_NITHROWASSERT
-namespace UnitTest {
-
-AssertException::AssertException(char const* description, char const* filename, int const lineNumber)
-    : m_lineNumber(lineNumber)
-    , m_description(description)
-    , m_filename(filename)
-
-{
-  m_description << "\nCallstack:\n";
-  ni_stack_get_current(m_description,NULL);
-}
-
-AssertException::~AssertException() niThrowSpec()
-{
-}
-
-char const* AssertException::what() const niThrowSpec()
-{
-  return m_description.c_str();
-}
-
-char const* AssertException::Filename() const
-{
-  return m_filename.c_str();
-}
-
-int AssertException::LineNumber() const
-{
-  return m_lineNumber;
-}
-
-}
-#endif
-
-//--------------------------------------------------------------------------------------------
-//
 //  SEH
 //
 //--------------------------------------------------------------------------------------------
@@ -332,6 +292,8 @@ static SignalTranslator _signalTranslator;
 
 namespace UnitTest {
 
+_HSymImpl(unittest_assert);
+
 TestList& Test::GetTestList()
 {
   static TestList s_list;
@@ -357,7 +319,7 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -378,13 +340,15 @@ bool Test::BeforeRun(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch (AssertException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+  niCatch(ni::sPanicException,e) {
+    ni::cString stream;
+    stream << "Unhandled panic: " << e.what();
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch (astl::exception const& e) {
+  niCatch(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -400,7 +364,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 
 bool Test::Run(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -416,13 +380,15 @@ bool Test::Run(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch (AssertException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+  niCatch(ni::sPanicException,e) {
+    ni::cString stream;
+    stream << "Unhandled panic: " << e.what();
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch (astl::exception const& e) {
+  niCatch(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -438,7 +404,7 @@ bool Test::Run(TestResults& testResults) const
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  niTry() {
+  niTry {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -457,13 +423,15 @@ bool Test::AfterRun(TestResults& testResults) const
     }
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch (AssertException const& e) {
-    testResults.OnTestFailure(e.Filename(), e.LineNumber(), m_testName, e.what());
+  niCatch(ni::sPanicException,e) {
+    ni::cString stream;
+    stream << "Unhandled panic: " << e.what();
+    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch (astl::exception const& e) {
+  niCatch(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -732,18 +700,24 @@ TimeConstraint::~TimeConstraint()
 //--------------------------------------------------------------------------------------------
 namespace UnitTest {
 
-void CheckStringsEqual(TestResults& results, char const* const expected, char const* const actual,
-                       char const* const testName, char const* const filename, int const line)
+void CheckStringsEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) != 0) {
     ni::cString stream;
-    stream << "Expected [" << expected << "] == [" << actual << "]";
+    stream << msg << ": Expected [" << expected << "] == [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
 
-void CheckStringsNotEqual(TestResults& results, char const* const expected, char const* const actual,
-                       char const* const testName, char const* const filename, int const line)
+void CheckStringsNotEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) == 0) {
     ni::cString stream;
@@ -752,16 +726,22 @@ void CheckStringsNotEqual(TestResults& results, char const* const expected, char
   }
 }
 
-void CheckEqual(TestResults& results, char const* const expected, char const* const actual,
-                char const* const testName, char const* const filename, int const line)
+void CheckEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
-  CheckStringsEqual(results, expected, actual, testName, filename, line);
+  CheckStringsEqual(results, msg, expected, actual, testName, filename, line);
 }
 
-void CheckNotEqual(TestResults& results, char const* const expected, char const* const actual,
-                   char const* const testName, char const* const filename, int const line)
+void CheckNotEqual(
+  TestResults& results,
+  char const* const msg,
+  char const* const expected, char const* const actual,
+  char const* const testName, char const* const filename, int const line)
 {
-  CheckStringsNotEqual(results, expected, actual, testName, filename, line);
+  CheckStringsNotEqual(results, msg, expected, actual, testName, filename, line);
 }
 
 }

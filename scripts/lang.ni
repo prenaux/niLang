@@ -748,7 +748,7 @@ local __lint = {
       line = si.line
     }
     aMsg = ::lang.toPrintString(aMsg)
-    ::gLang.Log(aType,src,func,line,aMsg);
+    ::gLang.Log(aType,aMsg,src,line,func);
   }
 
   function log(_args_) {
@@ -783,7 +783,7 @@ local __lint = {
     }
     msg += "-----------\n"
 
-    ::gLang.Log(::eLogFlags.Debug,src,func,line,msg);
+    ::gLang.Log(::eLogFlags.Debug,msg,src,line,func);
   }
 
   ///////////////////////////////////////////////

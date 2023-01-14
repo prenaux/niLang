@@ -49,7 +49,7 @@ void _DumpStack(const achar* aName) {
     niLog(Debug,aName);
   }
   cString r;
-  ni_stack_get_current(r,NULL);
+  ni_stack_get_current(r,NULL,0);
   niLog(Warning,r);
 }
 #define DUMP_STACK(NAME) //_DumpStack(NAME)

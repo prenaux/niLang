@@ -25,9 +25,6 @@
 #define niLittleEndian 1  // Endianess
 
 #define niNoProcess
-// CrashReport is disabled now, we can't find those header in the NDK
-// and Android's logcat will do this for us anyway
-#define niNoCrashReport
 #define niCPP11
 
 #ifndef niEmbedded

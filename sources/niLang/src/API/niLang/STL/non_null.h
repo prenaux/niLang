@@ -229,16 +229,14 @@ non_null(T) -> non_null<T>;
   EA_DISABLE_GCC_WARNING_AS_ERROR();              \
   if ((V).raw_ptr() == nullptr)
 
-#define niPanicNonnull(V,EXPR)                                          \
-  niNonnullIfNull(V,EXPR) {                                             \
-    niNamespace(ni,ni_panic_assert)(                                    \
-      0, "Unexpected nullptr", __FILE__, __LINE__, __FUNCTION__, #EXPR); \
+#define niPanicNonnull(V,EXPR)                  \
+  niNonnullIfNull(V,EXPR) {                     \
+    niThrowPanic(ni,nullptr,#EXPR);             \
   }
 
-#define niPanicNonnullMsg(V,EXPR,MSG)                                   \
-  niNonnullIfNull(V,EXPR) {                                             \
-    niNamespace(ni,ni_panic_assert)(                                    \
-      0, "Unexpected nullptr", __FILE__, __LINE__, __FUNCTION__, MSG);  \
+#define niPanicNonnullMsg(V,EXPR,MSG)           \
+  niNonnullIfNull(V,EXPR) {                     \
+    niThrowPanic(ni,nullptr,MSG);               \
   }
 
 #define niCheckNonnull(V,EXPR,RET)                  \

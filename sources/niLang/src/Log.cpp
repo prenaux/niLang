@@ -415,7 +415,7 @@ niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs) 
 }
 #endif
 
-niExportFunc(void) ni_log(tLogFlags logType, const char* logFile, const char* logFunc, int logLine, const char* logMsg)
+niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* logFile, int logLine, const char* logFunc)
 {
   if (logType & _logFilter)
     return;
@@ -434,8 +434,8 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logFile, const char* lo
     }
     else {
       ni_log(logType|eLogFlags_NoCallbackOutput,
-             logFile, logFunc, logLine,
-             niFmt("Too many re-entrant log callback '%d'.",_inCallback.Get()));
+             niFmt("Too many re-entrant log callback '%d'.",_inCallback.Get()),
+             logFile, logLine, logFunc);
     }
     _inCallback.Dec();
     if (!callbackRet) {
@@ -631,6 +631,6 @@ void __stdcall cLang::SetLogFilter(tU32 exclude) {
 tU32 __stdcall cLang::GetLogFilter() const {
   return ni_log_get_filter();
 }
-void __stdcall cLang::Log(tLogFlags type, const achar* file, const achar* func, tU32 line, const achar* msg) {
-  ni_log(type,file,func,line,msg);
+void __stdcall cLang::Log(tLogFlags type, const achar* msg, const achar* file, tU32 line, const achar* func) {
+  ni_log(type,msg,file,line,func);
 }

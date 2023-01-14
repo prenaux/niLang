@@ -472,13 +472,7 @@ namespace eastl
 
 #ifndef EASTL_ASSERT
 	#if EASTL_ASSERT_ENABLED
-		#define EASTL_ASSERT(expression) \
-			EA_DISABLE_VC_WARNING(4127) \
-			do { \
-				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, NULL))); \
-			} while (0) \
-			EA_RESTORE_VC_WARNING()
+		#define EASTL_ASSERT(expression) niCheckPanic(ni,astl,expression)
   #else
 		#define EASTL_ASSERT(expression)
 	#endif
@@ -488,13 +482,7 @@ namespace eastl
 // Normally disabled for users since it validates internal things and not user things.
 #ifndef EASTL_DEV_ASSERT
 	#if EASTL_DEV_ASSERT_ENABLED
-		#define EASTL_DEV_ASSERT(expression) \
-			EA_DISABLE_VC_WARNING(4127) \
-			do { \
-				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, NULL))); \
-			} while(0) \
-			EA_RESTORE_VC_WARNING()
+		#define EASTL_DEV_ASSERT(expression) niCheckPanic(ni,astl,expression)
   #else
 		#define EASTL_DEV_ASSERT(expression)
 	#endif
@@ -511,13 +499,7 @@ namespace eastl
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef EASTL_ASSERT_MSG
 	#if EASTL_ASSERT_ENABLED
-		#define EASTL_ASSERT_MSG(expression, message) \
-			EA_DISABLE_VC_WARNING(4127) \
-			do { \
-				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (ni_debug_assert(0, #expression, __FILE__, __LINE__, __FUNCTION__, NULL, message))); \
-			} while (0) \
-			EA_RESTORE_VC_WARNING()
+		#define EASTL_ASSERT_MSG(expression, message) niCheckPanicMsg(ni,astl,expression,message)
 	#else
 		#define EASTL_ASSERT_MSG(expression, message)
 	#endif
@@ -537,7 +519,7 @@ namespace eastl
 
 #ifndef EASTL_FAIL_MSG
 	#if EASTL_ASSERT_ENABLED
-		#define EASTL_FAIL_MSG(message) (ni::ni_panic_assert(0, message, __FILE__, __LINE__, __FUNCTION__, NULL))
+		#define EASTL_FAIL_MSG(message) niThrowPanic(ni,astl,message)
 	#else
 		#define EASTL_FAIL_MSG(message)
 	#endif

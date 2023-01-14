@@ -153,7 +153,7 @@ static void _FatalError(const achar* aszMsg) {
 
   niLog(Error,logMessage);
 
-  if (ni_debug_get_show_assert_message_box()) {
+  if (ni_get_show_fatal_error_message_box()) {
     ni::Windows::UTF16Buffer wMsg;
     niWin32_UTF8ToUTF16(wMsg,dialogMessage.Chars());
     ::MessageBoxW(NULL,wMsg.begin(),L"Fatal Error",

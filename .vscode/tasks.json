@@ -1,8 +1,44 @@
 {
 	"version": "2.0.0",
 	"tasks": [
+    {
+      "label": "ham niLang (da)",
+      "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared"
+      },
+      "command": "bash",
+      "args": [
+          "-c",
+          "BUILD=da ham -T '${workspaceFolder}/_ham_project' -D niLang pass1 all"
+      ],
+      "problemMatcher": [],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+    },
+    {
+      "label": "ham niLang (ra)",
+      "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared"
+      },
+      "command": "bash",
+      "args": [
+          "-c",
+          "BUILD=ra ham -T '${workspaceFolder}/_ham_project' -D niLang pass1 all"
+      ],
+      "problemMatcher": [],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+    },
 		{
-			"label": "Build Test_niLang_da",
+			"label": "ham Test_niLang (da)",
 			"command": "../ham/bin/ham",
 			"args": [
 				"-T",
@@ -21,7 +57,26 @@
 			"detail": "compiler: ham"
 		},
 		{
-			"label": "Build HelloUI_cpp_da",
+			"label": "ham Test_niLang (ra)",
+			"command": "../ham/bin/ham",
+			"args": [
+				"-T",
+				"default",
+        "pass1",
+				"Test_niLang",
+				"BUILD=ra"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: ham"
+		},
+		{
+			"label": "ham HelloUI_cpp (da)",
 			"command": "../ham/bin/ham",
 			"args": [
 				"-T",

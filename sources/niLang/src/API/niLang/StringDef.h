@@ -44,8 +44,8 @@ static inline const achar* ToChars(const cString& v) {
   return v.c_str();
 }
 
-__forceinline void ni_log(tLogFlags type, const char* file, const char* func, int line, const cString& msg) {
-  return ni_log(type, file, func, line, msg.c_str());
+__forceinline void ni_log(tLogFlags type, const cString& msg, const char* file, int line, const char* func) {
+  return ni_log(type, msg.c_str(), file, line, func);
 }
 
 niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs);

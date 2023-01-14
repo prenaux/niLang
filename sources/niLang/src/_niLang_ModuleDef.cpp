@@ -12211,10 +12211,10 @@ static const ni::sMethodDef iLang_GetLogFilter = {
 // Method: Log
 static const ni::sParameterDef iLang_Log_Parameters[5] = { 
   { "type", ni::eType_Enum, NULL, "tLogFlags" }, 
+  { "msg", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "file", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
-  { "func", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "line", ni::eType_U32, NULL, "tU32" }, 
-  { "msg", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+  { "func", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
 }; 
 static const ni::sMethodDef iLang_Log = {
   "Log",

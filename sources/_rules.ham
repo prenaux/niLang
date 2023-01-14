@@ -1,5 +1,6 @@
 TK_NAME = "niLang" ;
 TK_DIR = [ FGetAbsolutePath [ FDirName $(TOP) .. ] ] ;
+TK_NONCE = 3 ;
 TOP_DIR = [ FDirName $(TK_DIR) sources ] ;
 NILANG_BUILD = 1 ;
 

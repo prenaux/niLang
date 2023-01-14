@@ -330,8 +330,14 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
     if (!ptrParentTreeNode.IsOK()) return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == 0) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex-1);
+    while (nIndex != 0) {
+      --nIndex;
+      cWidgetTreeNode* pRet = (cWidgetTreeNode*)ptrParentTreeNode->GetChildNode(nIndex);
+      if (pRet->GetIsVisible()) {
+        return pRet;
+      }
+    }
+    return NULL;
   }
 
   ///////////////////////////////////////////////
@@ -340,8 +346,14 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
     if (!ptrParentTreeNode.IsOK()) return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == ptrParentTreeNode->GetNumChildNodes()-1) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex+1);
+    while (nIndex != ptrParentTreeNode->GetNumChildNodes() -1) {
+      ++nIndex;
+      cWidgetTreeNode* pRet = (cWidgetTreeNode*)ptrParentTreeNode->GetChildNode(nIndex);
+      if (pRet->GetIsVisible()) {
+        return pRet;
+      }
+    }
+    return NULL;
   }
 
   ///////////////////////////////////////////////
@@ -359,11 +371,18 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
       while (pRet->GetNumChildNodes() && pRet->GetExpanded()) {
         pRet = pRet->GetChildNode(pRet->GetNumChildNodes()-1);
       }
-      return pRet;
+    }
+    else {
+      // if no previous sibling, the parent is above
+      pRet = ptrParentTreeNode.GetRawAndSetNull();
     }
 
-    // if no previous sibling, the parent is above
-    return ptrParentTreeNode.GetRawAndSetNull();
+    // check if the node above is visible
+    if (pRet && !((cWidgetTreeNode*)pRet)->GetIsVisible()) {
+      return pRet->GetAbove();
+    }
+
+    return pRet;
   }
 
   ///////////////////////////////////////////////
@@ -374,7 +393,14 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
 
     // if has children and is expanded, return the first child
     if (!mvChildren.empty() && GetExpanded()) {
-      return mvChildren[0];
+      iWidgetTreeNode* pRet = mvChildren[0];
+      if (((cWidgetTreeNode*)pRet)->GetIsVisible()) {
+        return pRet;
+      }
+
+      pRet = pRet->GetNextSibling();
+      if (pRet)
+        return pRet;
     }
 
     // not expanded or no children, get the first sibling
@@ -423,6 +449,17 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
   ///////////////////////////////////////////////
   const achar * __stdcall GetName() const {
     return mstrName.Chars();
+  }
+
+  ///////////////////////////////////////////////
+  tBool __stdcall SetDisplayName(const achar *aVal) {
+    mstrDisplayName = aVal;
+    return eTrue;
+  }
+
+  ///////////////////////////////////////////////
+  const achar * __stdcall GetDisplayName() const {
+    return mstrDisplayName.IsEmpty() ? mstrName.Chars() : mstrDisplayName.Chars();
   }
 
   ///////////////////////////////////////////////
@@ -689,7 +726,7 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
             mTextRect.Move(Vec2<tF32>(mptrWidget->GetSize().x+margin.x+margin.z,0));
           }
           else {
-            newPos.x = treePos.x+nodeRect.Left()+mTextRect.GetWidth();
+            newPos.x = ptrParentWidget->mpWidget->GetAbsoluteRect().GetRight() - mptrWidget->GetSize().x - margin.z;
           }
         }
         mptrWidget->SetAbsolutePosition(newPos);
@@ -827,6 +864,7 @@ class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnkno
   tU32        mnDrawIndex;
   tTreeNodeVec    mvChildren;
   cString       mstrName;
+  cString       mstrDisplayName;
   tWidgetTreeNodeFlags  mFlags;
   Ptr<iOverlay> mptrIcon;
   Ptr<iUnknown> mptrUserdata;
@@ -906,7 +944,7 @@ static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont, cW
         apNode->_GetFont(),
         r,
         eFontFormatFlags_CenterV,
-        apNode->GetName());
+        apNode->GetDisplayName());
   }
 }
 
@@ -1143,9 +1181,14 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
   switch (anMsg)
   {
     case eUIMessage_Destroy:
+      // Make sure all nodes are destoried before we release the mpWidget
+      ClearSelection();
+      if (mptrRootNode.IsOK()) {
+        mptrRootNode->Invalidate();
+        mptrRootNode = NULL;
+      }
+
       mpWidget = NULL;
-      // Clear won't create a new root since mpWidget is NULL
-      Clear();
       break;
     case eUIMessage_NCSize:
       _NotifyUpdateLayout(TREENOTIFY_ALL);
@@ -1313,7 +1356,7 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
         Ptr<iDataTable> dt = ni::VarQueryInterface<ni::iDataTable>(avarA);
         if (dt.IsOK()) {
           cString selName;
-          iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected[0];
+          iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected.size() > 0 ? mvSelected[0] : NULL;
           if (node) {
             selName = node->GetName();
           }

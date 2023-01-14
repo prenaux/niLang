@@ -238,6 +238,12 @@ struct iWidgetTreeNode : public iUnknown
   //! Get the node's name.
   //! {Property}
   virtual const achar* __stdcall GetName() const = 0;
+  //! Set the node's display name.
+  //! {Property}
+  virtual tBool __stdcall SetDisplayName(const achar* aVal) = 0;
+  //! Get the node's display name.
+  //! {Property}
+  virtual const achar* __stdcall GetDisplayName() const = 0;
   //! Set the node's icon
   //! {Property}
   virtual tBool __stdcall SetIcon(iOverlay* aVal) = 0;

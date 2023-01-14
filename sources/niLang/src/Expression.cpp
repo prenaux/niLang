@@ -4499,6 +4499,23 @@ tBool DoEvaluate(iExpressionContext*)
 }
 EndOp()
 
+//! FormatTime(TIMEFORMAT: string) the current time.
+BeginOpVF(FormatTimeSeconds,2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  Ptr<iTime> t = ni::GetLang()->GetCurrentTime()->Clone();
+  t->SetUnixTimeSecs(mvOperands[0].GetVariable()->GetFloat());
+  mptrResult->SetString(t->Format(mvOperands[1].GetVariable()->GetString().Chars()));
+  return eTrue;
+}
+EndOp()
+
 //! StrLen(aText) -> Int
 BeginOpF(StrLen,1)
 tBool SetupEvaluation(iExpressionContext*)
@@ -5679,6 +5696,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(StrRFind);
 
   AddOp(Format);
+  AddOp(FormatTimeSeconds);
   AddOp(FormatCurrentTime);
   AddOp(DigestHex);
   AddOp(KDFGenSaltBlowfish);

@@ -3,6 +3,7 @@
 #include "API/niLang/Types.h"
 #include "API/niLang/ILang.h"
 #include "API/niLang/IExpression.h"
+#include "API/niLang/IDataTable.h"
 #include "API/niLang/ICrypto.h"
 #include "API/niLang/Utils/UnknownImpl.h"
 #include "API/niLang/Utils/ConcurrentImpl.h"
@@ -43,7 +44,7 @@ class Evaluator;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Mathematic variables.
 
-static tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar) {
+inline tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar) {
   niAssert(niIsOK(apExprVar));
   Var value = aVar;
   switch (apExprVar->GetType()) {
@@ -71,13 +72,16 @@ static tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar)
       VarConvertType(value,eType_String);
       apExprVar->SetString(value.GetString());
       break;
+    case eExpressionVariableType_IUnknown:
+      apExprVar->SetIUnknown(value.GetIUnknownPointer());
+      break;
     default:
       return eFalse;
   }
   return eTrue;
 }
 
-static Var _ToVar(const iExpressionVariable* apExprVar) {
+inline Var _ToVar(const iExpressionVariable* apExprVar) {
   niAssert(niIsOK(apExprVar));
   switch (apExprVar->GetType()) {
     case eExpressionVariableType_Float:
@@ -92,6 +96,8 @@ static Var _ToVar(const iExpressionVariable* apExprVar) {
       return apExprVar->GetMatrix();
     case eExpressionVariableType_String:
       return apExprVar->GetString();
+    case eExpressionVariableType_IUnknown:
+      return apExprVar->GetIUnknown();
   }
   return niVarNull;
 }
@@ -114,55 +120,11 @@ struct ExprVar : public cIUnknownImpl<iExpressionVariable>
   tExpressionVariableFlags __stdcall GetFlags() const;
 
   tBool __stdcall SetVar(const Var& aVar) {
-
-    Var value = aVar;
-    switch (Type) {
-      case eExpressionVariableType_Float:
-        VarConvertType(value,eType_F64);
-        this->SetFloat(value.GetFloatValue());
-        break;
-      case eExpressionVariableType_Vec2:
-        VarConvertType(value,eType_Vec2f);
-        this->SetVec2(value.GetVec2fValue());
-        break;
-      case eExpressionVariableType_Vec3:
-        VarConvertType(value,eType_Vec3f);
-        this->SetVec3(value.GetVec3fValue());
-        break;
-      case eExpressionVariableType_Vec4:
-        VarConvertType(value,eType_Vec4f);
-        this->SetVec4(value.GetVec4fValue());
-        break;
-      case eExpressionVariableType_Matrix:
-        VarConvertType(value,eType_Matrixf);
-        this->SetMatrix(value.GetMatrixf());
-        break;
-      case eExpressionVariableType_String:
-        VarConvertType(value,eType_String);
-        this->SetString(value.GetString());
-        break;
-      default:
-        return eFalse;
-    }
-    return eTrue;
+    return _FromVar(this, aVar);
   }
 
   Var __stdcall ToVar() const {
-    switch (Type) {
-      case eExpressionVariableType_Float:
-        return GetFloat();
-      case eExpressionVariableType_Vec2:
-        return GetVec2();
-      case eExpressionVariableType_Vec3:
-        return GetVec3();
-      case eExpressionVariableType_Vec4:
-        return GetVec4();
-      case eExpressionVariableType_Matrix:
-        return GetMatrix();
-      case eExpressionVariableType_String:
-        return GetString();
-    }
-    return niVarNull;
+    return _ToVar(this);
   }
 };
 
@@ -238,6 +200,13 @@ struct ExprVarFromRunnable : public ExprVar
       case eExpressionVariableType_String:
         VarConvertType(aValue,eType_String);
         break;
+      case eExpressionVariableType_IUnknown:
+        // we can't convert other types to IUnknown, this will lead to undefined behavior
+        if (!aValue.IsIUnknownPointer()) {
+          aValue = niVarNull;
+        }
+        break;
+
       default:
         niAssertUnreachable("Unreachable.");
         break;
@@ -276,16 +245,23 @@ struct ExprVarFromRunnable : public ExprVar
     return v.GetString();
   }
 
+  virtual iUnknown* __stdcall GetIUnknown() const niImpl {
+    Var v;
+    _UpdateValue(v,eExpressionVariableType_IUnknown);
+    return v.GetIUnknownPointer();
+  }
+
   virtual void __stdcall SetFloat(tScalarFloat aV) {}
   virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) {}
   virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) {}
   virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) {}
   virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) {}
   virtual void __stdcall SetString(const cString& aString) {}
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
-struct ExprVarFloat :  public ExprVar
+struct ExprVarFloat : public ExprVar
 {
   ExprVarFloat(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Float) { Value = 0; }
   tScalarFloat Value;
@@ -314,6 +290,10 @@ struct ExprVarFloat :  public ExprVar
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString.Double();
   }
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -345,6 +325,11 @@ struct ExprVarVec2 :  public ExprVar
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString.Vec2<tVectorFloat>();
   }
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -376,6 +361,11 @@ struct ExprVarVec3 :  public ExprVar
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString.Vec3<tVectorFloat>();
   }
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -407,6 +397,11 @@ struct ExprVarVec4 :  public ExprVar
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString.Vec4<tVectorFloat>();
   }
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -433,6 +428,11 @@ struct ExprVarMatrix :  public ExprVar
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString.Matrix<tVectorFloat>();
   }
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
 
 ///////////////////////////////////////////////
@@ -454,13 +454,58 @@ struct ExprVarString :  public ExprVar
   virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value = niFmt("%s",aV); }
   virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)   { Value = niFmt("%s",aV); }
 
+
   virtual cString __stdcall GetString() const {
     return Value;
   }
   virtual void __stdcall SetString(const cString& aString) {
     Value = aString;
   }
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return NULL;
+  }
+
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {}
 };
+
+///////////////////////////////////////////////
+struct ExprVarIUnknown :  public ExprVar
+{
+  ExprVarIUnknown(iHString* ahspName) :
+    ExprVar(ahspName,eExpressionVariableType_IUnknown) {}
+  Ptr<iUnknown> Value;
+
+  virtual tScalarFloat        __stdcall GetFloat() const { return reinterpret_cast<tUIntPtr>(Value.ptr()); }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Vec2<tVectorFloat>(GetFloat(),tVectorFloat(0)); }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Vec3<tVectorFloat>(GetFloat(),tVectorFloat(0),tVectorFloat(0)); }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Vec4<tVectorFloat>(GetFloat(),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0)); }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const {
+    return Matrix<tVectorFloat>(GetFloat(),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
+                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
+                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
+                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0)); }
+
+  virtual void __stdcall SetFloat(tScalarFloat aV) {}
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) {}
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) {}
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) {}
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) {}
+
+  virtual cString __stdcall GetString() const {
+    return niFmt("%s",Value);
+  }
+
+  virtual void __stdcall SetString(const cString& aString) {}
+
+  virtual iUnknown* __stdcall GetIUnknown() const {
+    return Value;
+  }
+  virtual void __stdcall SetIUnknown(const iUnknown* aV) {
+    Value = aV;
+  }
+};
+
 
 static ExprVar* _CreateVariable(const achar* aaszName, eExpressionVariableType aType, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default)
 {
@@ -487,6 +532,9 @@ static ExprVar* _CreateVariable(const achar* aaszName, eExpressionVariableType a
       break;
     case eExpressionVariableType_String:
       pVar = niNew ExprVarString(hspName);
+      break;
+    case eExpressionVariableType_IUnknown:
+      pVar = niNew ExprVarIUnknown(hspName);
       break;
     default:
       niAssertUnreachable("Unreachable code.");
@@ -1358,6 +1406,11 @@ tBool ExprVar::Copy(const iExpressionVariable* apVar)
         static_cast<ExprVarString*>(this)->Value = apVar->GetString();
         break;
       }
+    case eExpressionVariableType_IUnknown:
+      {
+        static_cast<ExprVarIUnknown*>(this)->Value = apVar->GetIUnknown();
+        break;
+      }
 
     default:
       niAssertUnreachable("Unreachable.");
@@ -1414,7 +1467,12 @@ iExpressionVariable* __stdcall  ExprVar::Clone() const
         static_cast<ExprVarString*>(pNew)->Value = this->GetString();
         break;
       }
-
+    case eExpressionVariableType_IUnknown:
+      {
+        pNew = niNew ExprVarString(hspName);
+        static_cast<ExprVarIUnknown*>(pNew)->Value = this->GetIUnknown();
+        break;
+      }
     default:
       niAssertUnreachable("Unreachable.");
       break;
@@ -1939,6 +1997,7 @@ class OpGroup : public Op
   }
 
   tBool DoEvaluate(iExpressionContext*) {
+    mptrResult = mvOperands[0].GetVariable();
     return eTrue;
   }
 };
@@ -1963,76 +2022,22 @@ class OpURL : public Op
 
   Op* Create() const { return niNew OpURL(mptrResolver,mstrURL); }
 
-  tBool SetupEvaluation(iExpressionContext*) {
-    if (!mptrResolver.IsOK() || mstrURL.empty())
+  tBool SetupEvaluation(iExpressionContext* ctx) {
+    if(!mptrResolver.IsOK() || mstrURL.empty())
       return eFalse;
-
-    Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-
-    eExpressionVariableType type;
-    switch (niType(v.GetType())) {
-      case eType_Vec2i:
-      case eType_Vec2f: {
-        type = eExpressionVariableType_Vec2;
-        break;
-      }
-      case eType_Vec3i:
-      case eType_Vec3f: {
-        type = eExpressionVariableType_Vec3;
-        break;
-      }
-      case eType_Vec4i:
-      case eType_Vec4f: {
-        type = eExpressionVariableType_Vec4;
-        break;
-      }
-      case eType_Matrixf: {
-        type = eExpressionVariableType_Matrix;
-        break;
-      }
-      default:
-        if (VarIsIntType(v.GetType()) ||
-            VarIsFloatType(v.GetType())) {
-          type = eExpressionVariableType_Float;
-        }
-        else if (VarIsString(v)) {
-          type = eExpressionVariableType_String;
-        }
-        else if (v.IsNull()) {
-          type = eExpressionVariableType_Float;
-          v.SetF64(0.0f);
-        }
-        else {
-          EXPRESSION_TRACE(niFmt("Invalid URL resolve return type: %s.", GetTypeString(v.GetType())));
-          type = eExpressionVariableType_Float;
-          v.SetF64(-1.0);
-        }
-        break;
-    }
-
-    mptrResult = _CreateVariable(NULL,type);
-    if (!_FromVar(mptrResult,v)) {
-      EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
-      return eFalse;
-    }
-
+    mptrResult = ctx->CreateVariableFromVar(NULL, mptrResolver->ResolveURL(mstrURL.Chars()));
     // Don't eval in the first DoEvaluate since we already have the initial value...
     mbShouldEval = eFalse;
     return eTrue;
   }
 
-  tBool DoEvaluate(iExpressionContext*) {
+  tBool DoEvaluate(iExpressionContext* ctx) {
     if (mbShouldEval) {
-      Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-      if (!_FromVar(mptrResult,v)) {
-        EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
-        return eFalse;
-      }
+      mptrResult = ctx->CreateVariableFromVar(NULL, mptrResolver->ResolveURL(mstrURL.Chars()));
     }
-
     // We always re-eval the value at the next DoEvaluate(iExpressionContext*)
     mbShouldEval = eTrue;
-    return eTrue;
+    return mptrResult.IsOK();
   }
 };
 
@@ -4997,12 +5002,226 @@ tBool DoEvaluate(iExpressionContext* apContext)
 {
   auto v = mvOperands[0];
   v.Eval(apContext);
-  if (v.GetVariable()) {
-    mptrResult->Copy(apContext->Eval(v.GetVariable()->GetString().Chars()));
+  auto newV = v.GetVariable();
+  if (newV && newV->GetType() == ni::eExpressionVariableType_String) {
+    mptrResult = apContext->Eval(v.GetVariable()->GetString().Chars());
   }
   return eTrue;
 }
 EndOp()
+
+
+inline eExpressionVariableType _VarTypeToExpressionType(eDataTablePropertyType aType) {
+  switch (aType) {
+    case eDataTablePropertyType_String:
+      return eExpressionVariableType_String;
+    case eDataTablePropertyType_Bool:
+    case eDataTablePropertyType_Int32:
+    case eDataTablePropertyType_Int64:
+    case eDataTablePropertyType_Float32:
+    case eDataTablePropertyType_Float64:
+      return eExpressionVariableType_Float;
+    case eDataTablePropertyType_Vec2:
+      return eExpressionVariableType_Vec2;
+    case eDataTablePropertyType_Vec3:
+      return eExpressionVariableType_Vec3;
+    case eDataTablePropertyType_Vec4:
+      return eExpressionVariableType_Vec4;
+    case eDataTablePropertyType_Matrix:
+      return eExpressionVariableType_Matrix;
+    case eDataTablePropertyType_IUnknown:
+      return ni::eExpressionVariableType_IUnknown;
+    default:
+    case eDataTablePropertyType_Unknown:
+      niAssert("Invalid type");
+      return eExpressionVariableType_Float;
+  };
+}
+
+// DataTable function
+BeginOpF(DTGet,2)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+
+  auto var = mvOperands[1].GetVariable();
+  if (var->GetType() == ni::eExpressionVariableType_Float) {
+    Ptr<ExprVar> ret = _CreateVariable(NULL, _VarTypeToExpressionType(dt->GetPropertyTypeFromIndex(var->GetFloat())));
+    ret->SetVar(dt->GetVarFromIndex(var->GetFloat()));
+    mptrResult = ret;
+  }
+  else if (var->GetType() == ni::eExpressionVariableType_String) {
+    cString path = var->GetString();
+    if (path.contains("@")) {
+      const Var& v = dt->GetVarFromPath(var->GetString().Chars(), niVarNull);
+      mptrResult = apContext->CreateVariableFromVar(NULL, v);
+    }
+    else {
+      Ptr<ExprVar> ret = _CreateVariable(NULL, _VarTypeToExpressionType(dt->GetPropertyType(var->GetString().Chars())));
+      ret->SetVar(dt->GetVar(var->GetString().Chars()));
+      mptrResult = ret;
+    }
+  }
+  else {
+    return eFalse;
+  }
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetChild,2)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+
+  auto var = mvOperands[1].GetVariable();
+  if (var->GetType() == ni::eExpressionVariableType_Float) {
+    mptrResult->SetIUnknown(dt->GetChildFromIndex(var->GetFloat()));
+  }
+  else if (var->GetType() == ni::eExpressionVariableType_String) {
+    mptrResult->SetIUnknown(dt->GetChild(var->GetString().Chars()));
+  }
+  else {
+    return eFalse;
+  }
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTFindChild,3)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTSearch(): operation, input 0 is not a valid datatable.");
+    return eFalse;
+  }
+
+  auto var1 = mvOperands[1].GetVariable()->GetString();
+  auto var2 = mvOperands[2].GetVariable()->GetString();
+  niLoop(i, dt->GetNumChildren()) {
+    Ptr<iDataTable> c = dt->GetChildFromIndex(i);
+    cString val = c->GetString(var1.Chars());
+    if (val.Eq(var2)) {
+      mptrResult->SetIUnknown(c);
+      break;
+    }
+  }
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetChildIndex,2)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+
+  auto var = mvOperands[1].GetVariable()->GetString();
+  mptrResult->SetFloat(dt->GetChildIndex(var.Chars()));
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetNumChildren,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetFloat(dt->GetNumChildren());
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetName,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetString(dt->GetName());
+  return eTrue;
+}
+EndOp()
+
+// DataTable function
+BeginOpF(DTGetIndex,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetFloat(dt->GetIndex());
+  return eTrue;
+}
+EndOp()
+
+
 
 #undef DoSwitch
 #undef DoSwitch1
@@ -5470,6 +5689,14 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(If);
   AddOp(Eval);
 
+  AddOp(DTGet);
+  AddOp(DTGetChild);
+  AddOp(DTFindChild);
+  AddOp(DTGetChildIndex);
+  AddOp(DTGetNumChildren);
+  AddOp(DTGetName);
+  AddOp(DTGetIndex);
+
   return eTrue;
 }
 
@@ -5547,6 +5774,10 @@ iExpressionVariable* Evaluator::CreateVariableFromVar(const achar* aaszName, con
     }
     case eType_Matrixf: {
       type = eExpressionVariableType_Matrix;
+      break;
+    }
+    case eType_IUnknown: {
+      type = ni::eExpressionVariableType_IUnknown;
       break;
     }
     default:

@@ -30,6 +30,7 @@ struct Ptr
   template<class U> friend struct Nonnull;
 
 public:
+  typedef T element_type;
   // don't allow as in<> parameter, use nn<> or Opt/QPtr<> instead.
   typedef void in_type_t;
 
@@ -170,11 +171,12 @@ public:
   tBool has_value() const {
     return mPtr != nullptr;
   }
+
   ni::Nonnull<T>& non_null() const {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<T>&,*this);
   }
-  ni::Nonnull<const T>& c_non_null() const {
+  ni::Nonnull<const T>& non_null_const() const {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<const T>&,*this);
   }

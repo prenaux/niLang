@@ -689,7 +689,7 @@ tBool __stdcall cLang::SerializeDataTable(const achar* aaszType, eSerializeMode 
       if (isJSON)
       {
         if (niFlagIs(aMode,eSerializeFlags_Read)) {
-          if (DataTableSerialize_ReadJSON(apFile,astl::make_non_null(apTable)) == eInvalidHandle) {
+          if (DataTableSerialize_ReadJSON(apFile,astl::as_non_null(apTable)) == eInvalidHandle) {
             niError(_A("Can't read the JSON data table."));
             return eFalse;
           }

@@ -38,7 +38,7 @@ struct Nonnull
   typedef T* tRawPtr;
   typedef const T* tConstRawPtr;
   typedef astl::non_null<tRawPtr> non_null_t;
-  typedef astl::non_null<tConstRawPtr> const_non_null_t;
+  typedef astl::non_null<tConstRawPtr> non_null_const_t;
   // don't allow as in<> parameter, use nn<> instead.
   typedef void in_type_t;
 
@@ -191,8 +191,8 @@ struct Nonnull
   template <
     typename U = T,
     typename eastl::enable_if<!eastl::is_const<U>::value,int>::type* = nullptr>
-  operator const_non_null_t () const {
-    return c_non_null();
+  operator non_null_const_t () const {
+    return non_null_const();
   }
 
   // Casting to a const T* pointer.
@@ -219,7 +219,7 @@ struct Nonnull
     niDebugAssert(mRefPtr != nullptr);
     return niCCast(astl::non_null<T*>&,mRefPtr);
   }
-  const_non_null_t c_non_null() const {
+  non_null_const_t non_null_const() const {
     niDebugAssert(mRefPtr != nullptr);
     return niCCast(astl::non_null<const T*>&,mRefPtr);
   }
@@ -364,6 +364,21 @@ inline EA_CONSTEXPR ni::Nonnull<T> MakeNonnull(Args&&... args) {
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
 }
 
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(T* p) {
+  return ni::Nonnull<T>{p};
+}
+
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(Ptr<T>&& p) {
+  return p.non_null();
+}
+
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(QPtr<T>&& p) {
+  return p.non_null();
+}
+
 /**@}*/
 /**@}*/
 }; // End of ni
@@ -376,7 +391,7 @@ astl::non_null<DestT> const_cast_non_null(const ni::Nonnull<SrcT>& p) {
 }
 
 template<typename T>
-astl::non_null<T*> to_non_null(const ni::Nonnull<T>& v) {
+astl::non_null<T*> as_non_null(const ni::Nonnull<T>& v) {
   return v.non_null();
 }
 

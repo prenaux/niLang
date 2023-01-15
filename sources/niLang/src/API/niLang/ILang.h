@@ -702,7 +702,7 @@ niExportFunc(ni::iLang*) GetLang();
 #define niDefConstHString_(VARNAME,STRING)                \
   __forceinline ni::iHString* GetHString_##VARNAME() {    \
     static ni::tHStringPtr _hstr_##VARNAME = _H(STRING);  \
-    return _hstr_##VARNAME;                               \
+    return _hstr_##VARNAME.raw_ptr();                     \
   }
 
 #define niDefConstHString(STR)  niDefConstHString_(STR,#STR)

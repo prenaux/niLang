@@ -18,8 +18,6 @@ niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr);
 
 /**
  * A weak reference to an iUnknown instance.
- *
- * The underlying object can be accessed dereferencing it with QPtr, Deref or niCheckNonnull.
  */
 template <typename T>
 struct WeakPtr {
@@ -28,15 +26,16 @@ struct WeakPtr {
   template<class U> friend struct Nonnull;
 
  public:
+  typedef T element_type;
   // don't allow as in<> parameter, use nn<> or Opt/QPtr<> instead.
   typedef void in_type_t;
 
   WeakPtr() {}
-  WeakPtr(std::nullptr_t) { *this = nullptr; }
-  WeakPtr(const T* other) { *this = other; }
-  WeakPtr(const Ptr<T>& other) { *this = other; }
-  WeakPtr(const QPtr<T>& other) { *this = other; }
-  WeakPtr(const Nonnull<T>& other) { *this = other; }
+  WeakPtr(std::nullptr_t) { this->_Set(nullptr); }
+  WeakPtr(const T* other) { this->_Set(other); }
+  WeakPtr(const Ptr<T>& other) { this->_Set(other.raw_ptr()); }
+  WeakPtr(const QPtr<T>& other) { this->_Set(other.raw_ptr()); }
+  WeakPtr(const Nonnull<T>& other) { this->_Set(other.raw_ptr()); }
 
   WeakPtr& operator=(std::nullptr_t) {
     this->_Set(nullptr);
@@ -90,7 +89,7 @@ struct WeakPtr {
   ni::Nonnull<T> non_null() const {
     return ni::Nonnull<T>(this->Deref());
   }
-  ni::Nonnull<const T> c_non_null() const {
+  ni::Nonnull<const T> non_null_const() const {
     return ni::Nonnull<const T>(this->Deref());
   }
 

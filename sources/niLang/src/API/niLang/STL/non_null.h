@@ -201,7 +201,7 @@ auto operator>=(const non_null<T>& lhs,
 static_assert(sizeof(non_null<int*>) == sizeof(int*), "non_null<> must be the same size as a pointer.");
 
 template <class T>
-auto make_non_null(T&& t) noexcept
+auto as_non_null(T&& t) noexcept
 {
   return non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>>{eastl::forward<T>(t)};
 }
@@ -228,16 +228,6 @@ non_null(T) -> non_null<T>;
   EA_DISABLE_CLANG_WARNING_AS_ERROR();            \
   EA_DISABLE_GCC_WARNING_AS_ERROR();              \
   if ((V).raw_ptr() == nullptr)
-
-#define niPanicNonnull(V,EXPR)                  \
-  niNonnullIfNull(V,EXPR) {                     \
-    niThrowPanic(ni,nullptr,#EXPR);             \
-  }
-
-#define niPanicNonnullMsg(V,EXPR,MSG)           \
-  niNonnullIfNull(V,EXPR) {                     \
-    niThrowPanic(ni,nullptr,MSG);               \
-  }
 
 #define niCheckNonnull(V,EXPR,RET)                  \
   niNonnullIfNull(V,EXPR) {                         \

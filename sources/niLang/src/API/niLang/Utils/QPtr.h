@@ -39,6 +39,7 @@ struct QPtr
   template<class U> friend struct Nonnull;
 
  public:
+  typedef T element_type;
   typedef typename T::IUnknownBaseType tInterface;
   // Can be used as input parameter to specify an optional iUnknown object.
   typedef const QPtr<T>& in_type_t;
@@ -50,14 +51,15 @@ struct QPtr
     if (mPtr)
       ni::AddRef(mPtr);
   }
+
   QPtr(const Ptr<T>& aP) {
     mPtr = niConstCast(T*,aP.raw_ptr());
     if (mPtr)
       ni::AddRef(mPtr);
   }
-  QPtr(const Nonnull<T>& aP) {
-    mPtr = niConstCast(T*,aP.raw_ptr());
-    ni::AddRef(mPtr);
+  QPtr(Ptr<T>&& aP) {
+    mPtr = aP.mPtr;
+    aP.mPtr = NULL;
   }
 
   QPtr(const QPtr<T>& aP) {
@@ -68,6 +70,11 @@ struct QPtr
   QPtr(QPtr<T>&& aP) {
     mPtr = aP.mPtr;
     aP.mPtr = NULL;
+  }
+
+  QPtr(const Nonnull<T>& aP) {
+    mPtr = niConstCast(T*,aP.raw_ptr());
+    ni::AddRef(mPtr);
   }
 
   QPtr(const Var& aV) {
@@ -88,6 +95,7 @@ struct QPtr
     if (mPtr)
       ni::AddRef(mPtr);
   }
+
   template <typename S>
   QPtr(const Nonnull<S>& aP) {
     mPtr = (T*)ni::QueryInterface<tInterface>(aP.raw_ptr());
@@ -194,11 +202,12 @@ struct QPtr
   tBool has_value() const {
     return mPtr != nullptr;
   }
+
   ni::Nonnull<T>& non_null() const {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<T>&,*this);
   }
-  ni::Nonnull<const T>& c_non_null() const {
+  ni::Nonnull<const T>& non_null_const() const {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<const T>&,*this);
   }
@@ -267,6 +276,11 @@ __forceinline bool IsOK(QPtr<T> const& a) {
 template <typename T>
 __forceinline bool IsNullPtr(QPtr<T> const& a) {
   return (a.raw_ptr() == nullptr);
+}
+
+template <typename T, typename... Args>
+inline EA_CONSTEXPR ni::QPtr<T> MakeQPtr(Args&&... args) {
+  return ni::QPtr<T>(niNew T(eastl::forward<Args>(args)...));
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

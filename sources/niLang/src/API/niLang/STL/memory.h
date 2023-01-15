@@ -40,12 +40,12 @@ unique_non_null<T> make_unique_non_null(Args&&... args) {
 }
 
 template<typename T>
-astl::non_null<T*> to_non_null(const astl::shared_non_null<T>& v) {
+astl::non_null<T*> as_non_null(const astl::shared_non_null<T>& v) {
   return astl::non_null<T*>(v.raw_ptr().get());
 }
 
 template<typename T>
-astl::non_null<T*> to_non_null(const astl::unique_non_null<T>& v) {
+astl::non_null<T*> as_non_null(const astl::unique_non_null<T>& v) {
   return astl::non_null<T*>(v.raw_ptr().get());
 }
 

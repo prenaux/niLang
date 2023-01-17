@@ -85,15 +85,15 @@ struct non_null
   }
 
   constexpr operator T() const {
-    EASTL_ASSERT(ptr_ != nullptr);
+    niDebugAssert(ptr_ != nullptr);
     return raw_ptr();
   }
   constexpr decltype(auto) operator->() const {
-    EASTL_ASSERT(ptr_ != nullptr);
+    niDebugAssert(ptr_ != nullptr);
     return raw_ptr();
   }
   constexpr decltype(auto) operator*() const {
-    EASTL_ASSERT(ptr_ != nullptr);
+    niDebugAssert(ptr_ != nullptr);
     return *raw_ptr();
   }
 

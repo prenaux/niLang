@@ -150,7 +150,7 @@ extern "C" void __ni_module_export ni_harakiri(niConst iHString* aKind, niConst 
       msg);
 #ifdef niCrashReportHasMinidump
     fmt.append("--- MINIDUMP -------------------\n");
-    fmt << ni_generate_minidump(apExp);
+    fmt << ni_generate_minidump(apExcPtr);
     fmt << "\n";
 #endif
     fmt.append("================================\n");
@@ -200,7 +200,7 @@ extern "C" __ni_module_export void cpp_sigint_handler(int) {
 
 extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
 #ifdef niWindows
-  ni_harakiri("## cpp_sigabrt_handler ##", nullptr);
+  niHarakiri("## cpp_sigabrt_handler ##", nullptr);
 #else
   // When Ctrl-C is pressed...
   exit(0x12345678);

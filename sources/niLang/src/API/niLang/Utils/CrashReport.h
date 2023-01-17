@@ -13,7 +13,7 @@ namespace ni {
  * @{
  */
 
-niExportFunc(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp, int skip);
+niExportFuncCPP(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp, int skip);
 
 #if !defined __cplusplus
 

@@ -6,7 +6,7 @@
 
 using namespace ni;
 
-niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void*, int) {
+niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void*, int) {
   aOutput << "NO STACK\n";
   return aOutput;
 }

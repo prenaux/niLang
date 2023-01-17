@@ -4,8 +4,7 @@
 using namespace ni;
 using namespace astl;
 
-static_assert(sizeof(sPanicException) == (sizeof(tIntPtr)+sizeof(std::exception)));
-static_assert(std::is_base_of<std::exception,sPanicException>::value, "sPanicException is not a base of std::exception.");
+static_assert(sizeof(sPanicException) == sizeof(tIntPtr));
 
 namespace foo {
 _HSymImpl(my_exception);
@@ -28,12 +27,15 @@ TEST_FIXTURE(FException,Test) {
   // sPanicException should be the size of one pointer
   CHECK_THROW(TestThrowPanic(), sPanicException);
 
+  tHStringPtr caught;
   niTry {
     TestThrowPanic();
   }
   niCatch(ni::sPanicException,e) {
-    CHECK_EQUAL(_HC(panic), e.GetKind());
+    caught = e.GetKind();
+    niDebugFmt(("... caught: %s", caught));
   }
+  CHECK_EQUAL(_HC(panic), caught.raw_ptr());
 
   {
     sPanicException a;

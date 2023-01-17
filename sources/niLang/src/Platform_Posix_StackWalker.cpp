@@ -47,7 +47,7 @@ static cString& Backtrace(cString& aOutput, int skip)
   return aOutput;
 }
 
-niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int skip) {
+niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int skip) {
   niUnused(apExp);
   // +2 to skip the Backtrace and ni_stack_get_current functions
   return Backtrace(aOutput, ni::Max(0,skip)+2);
@@ -65,7 +65,7 @@ niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void* apExp,
 
 namespace ni {
 
-niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void*, int skip) {
+niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void*, int skip) {
   unw_cursor_t cursor = {};
   unw_context_t context = {};
 

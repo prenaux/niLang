@@ -982,7 +982,13 @@ niExportFunc(void) ni_harakiri(niConst struct iHString* aKind, niConst char* msg
 #define niCheckHarakiriMsg(EXP,MSG) niAssume(EXP); if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),MSG,NULL,niSourceLoc); }
 
 #ifdef __cplusplus
-struct __ni_module_export sPanicException final : public std::exception {
+// \remark We can't inherit std::exception on Windows because it forces us to
+//         use the DLL version of the CRT which forces us to redistribute the
+//         vcredist package which makes it impossible to create self contained
+//         exes without creating a different build target. It also makes it
+//         impossible to cleanly distribute an application without a Windows
+//         installer.
+struct __ni_module_export sPanicException final {
   sPanicException(const iHString* aKind) noexcept;
   sPanicException(const sPanicException& aRight) noexcept;
   sPanicException(sPanicException&& aRight) noexcept;
@@ -990,7 +996,7 @@ struct __ni_module_export sPanicException final : public std::exception {
   ~sPanicException();
 
   // std::exception api
-  const char* what() const noexcept override;
+  const char* what() const noexcept;
 
   // ni::iException
   const iHString* __stdcall GetKind() const noexcept;

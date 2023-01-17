@@ -1605,7 +1605,7 @@ struct MyStackWalker : public StackWalker {
   }
 };
 
-niExportFunc(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
+niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
 
   EXCEPTION_POINTERS* pExp = (EXCEPTION_POINTERS*)apExp;
   if (pExp) {

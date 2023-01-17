@@ -116,6 +116,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
+#pragma clang diagnostic ignored "-Wdeprecated-enum-enum-conversion"
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////

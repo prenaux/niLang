@@ -375,12 +375,22 @@ static tBool _logFileInitialized = eFalse;
 static Ptr<iFile> _logFile = NULL;
 
 #ifdef LOG_LAST_LOGS
+// This is needed since its possible that sLastLogs get destructed before
+// other global variable destructors that call the logger.
+static SyncCounter _lastLogDestructed;
+
 struct sLastLogs {
 private:
   const tU32 _maxStoredLogs = 1000;
   astl::deque<cString> _logs;
 
 public:
+  sLastLogs() {
+  }
+  ~sLastLogs() {
+    _lastLogDestructed.Set(1);
+  }
+
   void Add(const cString& aLog) {
     __sync_log();
     _logs.push_back(aLog);
@@ -401,12 +411,18 @@ public:
     return (tU32)numLogs;
   }
 };
-static sLastLogs& _GetLastLogs() {
+static sLastLogs* _GetLastLogs() {
   static sLastLogs _lastLogs;
-  return _lastLogs;
+  // this can happen in a termination handler
+  if (_lastLogDestructed.Get())
+    return nullptr;
+  return &_lastLogs;
 }
 niExportFunc(tU32) ni_get_last_logs(astl::vector<cString>* logs, tSize numLogs) {
-  tU32 r = _GetLastLogs().Get(logs,numLogs);
+  sLastLogs* lastLogs = _GetLastLogs();
+  if (!lastLogs)
+    return 0;
+  tU32 r = lastLogs->Get(logs,numLogs);
   return r;
 }
 #else
@@ -451,14 +467,15 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* log
     __sync_log();
 
 #ifdef LOG_LAST_LOGS
-    {
+    sLastLogs* lastLogs = _GetLastLogs();
+    if (lastLogs) {
       cString final;
       ni_log_format_message(final,logType,logFile,logLine,logFunc,logMsg,logTime,_fPrevTime);
       if (!niFlagIs(logType,eLogFlags_NoNewLine) &&
           (final.empty() || final[final.size()-1] != '\n')) {
         final.appendChar('\n');
       }
-      _GetLastLogs().Add(final);
+      lastLogs->Add(final);
     }
 #endif
 

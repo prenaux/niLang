@@ -58,8 +58,10 @@ enum eDataTablePathOp
   eDataTablePathOp_DataTable = 3,
   //! Path operation, property.
   eDataTablePathOp_Property = 4,
+  //! Path operation, datatable with predicate.
+  eDataTablePathOp_Predicate = 5,
   //! \internal
-  eDataTablePathOp_Last = 5,
+  eDataTablePathOp_Last = 6,
   //! \internal
   eDataTablePathOp_ForceDWORD = 0xFFFFFFFF
 };
@@ -71,7 +73,9 @@ class cDataTablePathOp : public ImplRC<iUnknown>
 
  public:
   //! Constructor.
-  cDataTablePathOp(eDataTablePathOp aPathOp, const achar* aaszValue);
+  cDataTablePathOp(eDataTablePathOp aPathOp,
+                   const achar *aaszValue,
+                   const achar *aaszPred = AZEROSTR);
   //! Destructor.
   ~cDataTablePathOp();
 
@@ -87,10 +91,12 @@ class cDataTablePathOp : public ImplRC<iUnknown>
   //// iDataTablePathOp ///////////////////////////
 
   const cString& __stdcall GetValue() const;
+  const cString& __stdcall GetPredicate() const;
 
  public:
-  eDataTablePathOp  mOp;
-  cString             mstrValue;
+  eDataTablePathOp mOp;
+  cString mstrValue;
+  cString mstrPredicate;
   Ptr<iRegex> mptrRegex;
 
   niEndClass(cDataTablePathOp);

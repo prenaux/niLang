@@ -4,11 +4,12 @@
 
 #include "API/niLang/StringDef.h"
 
-using namespace ni;
+namespace ni {
 
 niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void*, int) {
   aOutput << "NO STACK\n";
   return aOutput;
 }
 
+}
 #endif

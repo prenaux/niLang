@@ -41,6 +41,88 @@ TEST_FIXTURE(FDTSerialize,Types) {
   CHECK_EQUAL(eDataTablePropertyType_Int32, dt->GetVarFromIndex(i).GetType());
 }
 
+TEST_FIXTURE(FDTSerialize,Path) {
+  const cString xml = R"(
+<Root>
+  <C1 S='123'>
+    <GC1 F='1.23' />
+  </C1>
+  <C2 />
+  <C2 U='123'>
+    <GC2 B='1' />
+    <GC3 V2='Vec2(1,1)' V3='Vec3(1,1,1)' />
+    <GC3 />
+  </C2>
+</Root>
+)";
+  auto dtRoot = ni::CreateDataTableFromXML(xml.Chars());
+  auto dtC1 = dtRoot->GetChild("C1");
+  auto dtGC1 = dtC1->GetChild("GC1");
+  auto dtC2 = dtRoot->GetChildFromIndex(2); // Target by index to avoid the 'C2' dummy
+  auto dtGC2 = dtC2->GetChild("GC2");
+  auto dtGC3 = dtC2->GetChild("GC3");
+
+  const cString s = dtC1->GetString("S");
+  const tF32 f = dtGC1->GetString("F").Float();
+  const tF32 u = dtC2->GetString("U").ULong();
+  const tBool b = dtGC2->GetString("B").Bool();
+  const sVec2f v2 = dtGC3->GetString("V2").Vec2<tF32>();
+  const sVec3f v3 = dtGC3->GetString("V3").Vec3<tF32>();
+
+  const Var nullS("");
+  CHECK(s.Eq(dtRoot->GetVarFromPath("C1/@S", nullS).GetString()));
+  CHECK(s.Eq(dtC1->GetVarFromPath("/C1/@S", nullS).GetString()));
+  CHECK(s.Eq(dtRoot->GetVarFromPath("[0]/@S", nullS).GetString()));
+  CHECK(s.Eq(dtC1->GetVarFromPath("@S", nullS).GetString()));
+  CHECK_EQUAL(u, dtRoot->GetVarFromPath("C2[1]/@U", nullS).GetString().ULong());
+  CHECK_EQUAL(nullS, dtRoot->GetVarFromPath("C2/@U", nullS)); // This should get the first C2
+  CHECK_EQUAL(nullS, dtRoot->GetVarFromPath("C2[0]/@U", nullS)); // This should get the first C2
+  CHECK_EQUAL(u, dtRoot->GetVarFromPath("[2]/@U", nullS).GetString().ULong());
+  CHECK_EQUAL(u, dtC2->GetVarFromPath("@U", nullS).GetString().ULong());
+  CHECK_EQUAL(f, dtRoot->GetVarFromPath("C1/GC1/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtRoot->GetVarFromPath("C1/[0]/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtRoot->GetVarFromPath("[0]/GC1/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtRoot->GetVarFromPath("[0]/[0]/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtC1->GetVarFromPath("GC1/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtC1->GetVarFromPath("[0]/@F", nullS).GetString().Float());
+  CHECK_EQUAL(f, dtGC1->GetVarFromPath("@F", nullS).GetString().Float());
+  CHECK_EQUAL(b, dtRoot->GetVarFromPath("C2[1]/GC2/@B", nullS).GetString().Bool());
+  CHECK_EQUAL(b, dtRoot->GetVarFromPath("[2]/GC2/@B", nullS).GetString().Bool());
+  CHECK_EQUAL(b, dtRoot->GetVarFromPath("[2]/[0]/@B", nullS).GetString().Bool());
+  CHECK_EQUAL(b, dtC2->GetVarFromPath("[0]/@B", nullS).GetString().Bool());
+  CHECK_EQUAL(b, dtGC2->GetVarFromPath("@B", nullS).GetString().Bool());
+  CHECK_EQUAL(v2, dtRoot->GetVarFromPath("C2[1]/GC3/@V2", nullS).GetString().Vec2<tF32>());
+  CHECK_EQUAL(v2, dtRoot->GetVarFromPath("[2]/GC3/@V2", nullS).GetString().Vec2<tF32>());
+  CHECK_EQUAL(v2, dtRoot->GetVarFromPath("[2]/[1]/@V2", nullS).GetString().Vec2<tF32>());
+  CHECK_EQUAL(v2, dtC2->GetVarFromPath("[1]/@V2", nullS).GetString().Vec2<tF32>());
+  CHECK_EQUAL(v2, dtGC3->GetVarFromPath("@V2", nullS).GetString().Vec2<tF32>());
+  CHECK_EQUAL(v3, dtRoot->GetVarFromPath("C2[1]/GC3/@V3", nullS).GetString().Vec3<tF32>());
+  CHECK_EQUAL(v3, dtRoot->GetVarFromPath("[2]/GC3/@V3", nullS).GetString().Vec3<tF32>());
+  CHECK_EQUAL(v3, dtRoot->GetVarFromPath("[2]/[1]/@V3", nullS).GetString().Vec3<tF32>());
+  CHECK_EQUAL(v3, dtC2->GetVarFromPath("[1]/@V3", nullS).GetString().Vec3<tF32>());
+  CHECK_EQUAL(v3, dtGC3->GetVarFromPath("@V3", nullS).GetString().Vec3<tF32>());
+
+  cString pS,pU,pF,pB,pV2,pV3;
+  pS = GetLang()->GetAbsoluteDataTablePath(dtC1, 0);
+  pU = GetLang()->GetAbsoluteDataTablePath(dtC2, 0);
+  pF = GetLang()->GetAbsoluteDataTablePath(dtGC1, 0);
+  pB = GetLang()->GetAbsoluteDataTablePath(dtGC2, 0);
+  pV2 = GetLang()->GetAbsoluteDataTablePath(dtGC3, 0);
+  pV3 = GetLang()->GetAbsoluteDataTablePath(dtGC3, 1);
+  CHECK(pS.Eq("/C1/@S"));
+  CHECK(pF.Eq("/C1/GC1/@F"));
+  CHECK(pU.Eq("/C2[1]/@U"));
+  CHECK(pB.Eq("/C2[1]/GC2/@B"));
+  CHECK(pV2.Eq("/C2[1]/GC3/@V2"));
+  CHECK(pV3.Eq("/C2[1]/GC3/@V3"));
+  CHECK(dtRoot->GetVarFromPath(pS.Chars(), nullS).GetString().Eq(s));
+  CHECK_EQUAL(dtRoot->GetVarFromPath(pU.Chars(), nullS).GetString().ULong(), u);
+  CHECK_EQUAL(dtRoot->GetVarFromPath(pF.Chars(), nullS).GetString().Float(), f);
+  CHECK_EQUAL(dtRoot->GetVarFromPath(pB.Chars(), nullS).GetString().Bool(), b);
+  CHECK_EQUAL(dtRoot->GetVarFromPath(pV2.Chars(), nullS).GetString().Vec2<tF32>(), v2);
+  CHECK_EQUAL(dtRoot->GetVarFromPath(pV3.Chars(), nullS).GetString().Vec3<tF32>(), v3);
+}
+
 TEST_FIXTURE(FDTSerialize,Base64) {
   cString compressedString;
   niDebugFmt(("... ORIGINAL STRING: %d bytes", _dtXML.size()));

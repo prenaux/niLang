@@ -5,6 +5,8 @@
 #include "API/niLang/Utils/StringTokenizerImpl.h"
 #include "API/niLang/ILang.h"
 #include "DataTablePath.h"
+#include "niLang/IStringTokenizer.h"
+#include "niLang/StringLib.h"
 
 using namespace ni;
 
@@ -12,11 +14,14 @@ using namespace ni;
 // cDataTablePathOp implementation.
 
 ///////////////////////////////////////////////
-cDataTablePathOp::cDataTablePathOp(eDataTablePathOp aPathOp, const achar* aaszValue)
+cDataTablePathOp::cDataTablePathOp(eDataTablePathOp aPathOp,
+                                   const achar *aaszValue,
+                                   const achar *aaszPredicate)
 {
   ZeroMembers();
   mOp = aPathOp;
   mstrValue = aaszValue;
+  mstrPredicate = aaszPredicate;
   mptrRegex = ni::CreateFilePatternRegex(aaszValue,NULL);
 }
 
@@ -57,21 +62,42 @@ const cString& __stdcall cDataTablePathOp::GetValue() const
   return mstrValue;
 }
 
+///////////////////////////////////////////////
+const cString& __stdcall cDataTablePathOp::GetPredicate() const
+{
+  return mstrPredicate;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 struct cDataTablePathParserTokenizer : public ImplRC<iStringTokenizer>
 {
-  cDataTablePathParserTokenizer() : mbFirstChar(eTrue) {}
+  cDataTablePathParserTokenizer() {}
 
   eStringTokenizerCharType __stdcall GetCharType(tU32 c) {
     eStringTokenizerCharType tokType = eStringTokenizerCharType_Normal;
-    if (c == '/' || c == '\\') {
-      tokType = mbFirstChar?eStringTokenizerCharType_SplitterAndToken:eStringTokenizerCharType_Splitter;
+    // slurp [predicate]
+    if (mInPredicate > 0) {
+      if (c == '[') {
+        ++mInPredicate;
+      } else if (c == ']') {
+        --mInPredicate;
+        if (mInPredicate == 0) {
+          tokType = eStringTokenizerCharType_SplitterAndToken;
+        }
+      }
     }
-    else if (c == '@' || c == ',') {
-      tokType = eStringTokenizerCharType_SplitterAndToken;
+    // handle regular tokens
+    else {
+      if (c == '/' || c == '\\' ||  c == '@' || c == ',') {
+        tokType = eStringTokenizerCharType_SplitterAndToken;
+      }
+      // start [predicate]
+      else if (c == '[') {
+        tokType = eStringTokenizerCharType_SplitterAndToken;
+        mInPredicate = 1;
+      }
     }
-    mbFirstChar = eFalse;
     return tokType;
   }
 
@@ -79,9 +105,8 @@ struct cDataTablePathParserTokenizer : public ImplRC<iStringTokenizer>
   }
 
  private:
-  tBool mbFirstChar;
+  tInt mInPredicate = 0;
 };
-
 
 tBool __stdcall ParseDataTablePathOp(const achar* aaszPath, tDataTablePathOpPtrCLst& aLst)
 {
@@ -90,12 +115,14 @@ tBool __stdcall ParseDataTablePathOp(const achar* aaszPath, tDataTablePathOpPtrC
   path = path.Trim();
   cDataTablePathParserTokenizer tokDT;
   StringTokenize(path,vToks,&tokDT);
-  astl::vector<cString>::iterator it = vToks.begin();
+  astl::vector<cString>::const_iterator it = vToks.begin();
   while (it != vToks.end())
   {
     // Root expression
     if (*it == _A("/") || *it == _A("\\")) {
-      aLst.push_back(niNew cDataTablePathOp(eDataTablePathOp_Root,it->Chars()));
+      if (it == vToks.begin()) {
+        aLst.push_back(niNew cDataTablePathOp(eDataTablePathOp_Root,it->Chars()));
+      }
     }
     // Property
     else if (*it == _A("@")) {
@@ -122,7 +149,27 @@ tBool __stdcall ParseDataTablePathOp(const achar* aaszPath, tDataTablePathOpPtrC
     }
     // DataTable
     else {
-      aLst.push_back(niNew cDataTablePathOp(eDataTablePathOp_DataTable,it->Chars()));
+      const cString &name = *it;
+      auto itNext = it + 1;
+      auto isPredicate = *it == _A("[");
+      auto lookaheadIsPredicate = itNext != vToks.end() && *itNext == _A("[");
+      if (!isPredicate && !lookaheadIsPredicate) {
+        aLst.push_back(niNew cDataTablePathOp(eDataTablePathOp_DataTable, name.Chars()));
+      } else {
+        const achar *childName;
+        if (isPredicate) {
+          childName = AZEROSTR;
+          // currently at '['
+        } else /* if (lookaheadIsPredicate) */ {
+          childName = name.Chars();
+          // currently at datatable name, following with predicate
+          ++it; // Move to '['
+        }
+        ++it; // Move to predicate
+        const cString &pred = *it;
+        ++it; // Move to ']'
+        aLst.push_back(niNew cDataTablePathOp(eDataTablePathOp_Predicate, childName, pred.Chars()));
+      }
     }
     ++it;
   }
@@ -240,20 +287,52 @@ tBool __stdcall cDataTablePath::Evaluate(iDataTable* apDT)
             return eFalse;
           }
           pCur = pCur->GetChildFromIndex(nS);
-          ++it;
-          continue;
+          break;
+        }
+      case eDataTablePathOp_Predicate:
+        {
+          const cString &name = pOp->GetValue();
+          // TODO: Support complex predicates
+          const tU32 nS = pOp->GetPredicate().ULong();
+          if (name.empty()) {
+            if (nS >= pCur->GetNumChildren()) {
+#pragma niTodo("Better error report mech, for now it bloats the output, so its disabled.")
+              // niError(niFmt(_A("Can't find child at index '%s' (%d)."), pOp->GetValue(), nS));
+              return eFalse;
+            }
+            pCur = pCur->GetChildFromIndex(nS);
+          } else {
+            tU32 namedChildFound = 0;
+            tBool found = eFalse;
+            niLoop(i, pCur->GetNumChildren()) {
+              auto child = pCur->GetChildFromIndex(i);
+              if (name.Eq(child->GetName())) {
+                if (nS == namedChildFound) {
+                  pCur = child;
+                  found = eTrue;
+                  break;
+                }
+                ++namedChildFound;
+              }
+            }
+            if (!found) {
+#pragma niTodo("Better error report mech, for now it bloats the output, so its disabled.")
+              // niError(niFmt(_A("Can't find child '%s[%d]'."), pOp->GetValue(), nS));
+              return eFalse;
+            }
+          }
+          break;
         }
       case eDataTablePathOp_Property:
         {
           tU32 nP;
-          for (nP = 0; nP < pCur->GetNumProperties(); ++nP)
-          {
+          for (nP = 0; nP < pCur->GetNumProperties(); ++nP) {
             if (pOp->GetRegex()->DoesMatch(pCur->GetPropertyName(nP)))
               break;
           }
           if (nP == pCur->GetNumProperties()) {
 #pragma niTodo("Better error report mech, for now it bloats the output, so its disabled.")
-            //niError(niFmt(_A("Can't find script property '%s'."), pOp->GetRegex()->GetRegexString()));
+            // niError(niFmt(_A("Can't find script property '%s'."), pOp->GetRegex()->GetRegexString()));
             return eFalse;
           }
           mResultType = eDataTablePathResultType_Property;
@@ -321,20 +400,41 @@ cString __stdcall cDataTablePath::GetRootPathToDataTable(iDataTable* apDT, tU32 
     niCheck(ret != _A("@"),AZEROSTR);
   }
 
-  if  (apDT->GetParent()) {
-    while (apDT->GetParent()) {
-      cString cur;
-      cur = _A("/");
-      cur += apDT->GetName();
-      cur += ret;
-      ret = cur;
-      apDT = apDT->GetParent();
+  cString tmp;
+  while (apDT->GetParent()) {
+
+    // Compute our 'per-name index'
+    const achar* childName = apDT->GetName();
+    tU32 childIndex = 0;
+    niLoop(i, apDT->GetParent()->GetNumChildren()) {
+      auto child = apDT->GetParent()->GetChildFromIndex(i);
+      if (child == apDT) {
+        break;
+      }
+      if (StrEq(childName, child->GetName())) {
+        ++childIndex;
+      }
     }
-  }
-  else {
-    ret = cString(_A("/")) + ret;
+
+    // Compute whatever should precede the current ret
+    tmp << childName;
+    if (childIndex > 0) {
+      // If our child index is different from 0 we use the predicate
+      // to ensure we will target the right data table (and property).
+      tmp << "[" << childIndex << "]";
+    }
+    tmp << "/";
+    tmp << ret;
+
+    // Update ret and clear the tmp
+    ret = tmp;
+    tmp.clear();
+
+    // Next loop, if necessary
+    apDT = apDT->GetParent();
   }
 
+  ret = cString(_A("/")) + ret;
   return ret;
 }
 

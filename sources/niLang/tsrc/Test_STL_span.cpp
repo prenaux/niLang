@@ -26,7 +26,8 @@ ni::cString ToString(const astl::span<T,N>& seq)
 
 TEST_FIXTURE(ASTL_span,c_array) {
   constexpr int a[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-  constexpr int b[] { 8, 7, 6 };
+  constexpr auto b = astl::array<int,3> { 8, 7, 6 };
+  static_assert(b[1] == 7);
 
   astl::vector<ni::cString> r;
   for (tSize offset{}; ; ++offset) {

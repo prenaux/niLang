@@ -1,12 +1,12 @@
 #ifndef ASTL_ARRAY
 #define ASTL_ARRAY
 
-#include <array>
+#include "EASTL/array.h"
 
 namespace astl {
 
 template <typename T, size_t N = 1>
-using array = std::array<T,N>;
+using array = eastl::array<T,N>;
 
 }  // namespace astl
 #endif /* ASTL_ARRAY */

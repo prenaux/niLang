@@ -40,6 +40,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Begin niLang defines
+
 #define EASTL_USER_DEFINED_ALLOCATOR 1
 #define EASTL_ALLOCATOR_NI 1
 #define EASTLAllocatorType eastl::allocator_ni
@@ -51,6 +52,13 @@
 #define EASTL_EASTDC_LOCAL
 #define EA_COMPILER_NO_NOEXCEPT
 #define EASTL_EXCEPTIONS_ENABLED 0
+// XXX: Consider enabling this in release aswell
+#ifdef niDebug
+#define EASTL_ASSERT_ENABLED 1
+#endif
+
+#define EA_COMPILER_CPP14_ENABLED 1
+
 // End niLang defines
 
 #ifdef EASTL_USER_CONFIG_HEADER
@@ -158,18 +166,12 @@
 // http://en.wikipedia.org/wiki/C%2B%2B14#Relaxed_constexpr_restrictions
 //
 #if !defined(EA_CPP14_CONSTEXPR)
-
 	#if defined(EA_COMPILER_MSVC_2015)
 		#define EA_CPP14_CONSTEXPR  // not supported
-		#define EA_NO_CPP14_CONSTEXPR
-	#elif defined(__GNUC__) && (EA_COMPILER_VERSION < 9000)   // Before GCC 9.0
-		#define EA_CPP14_CONSTEXPR  // not supported
-		#define EA_NO_CPP14_CONSTEXPR
 	#elif defined(EA_COMPILER_CPP14_ENABLED)
-		#define EA_CPP14_CONSTEXPR constexpr
+		#define EA_CPP14_CONSTEXPR EA_CONSTEXPR
 	#else
 		#define EA_CPP14_CONSTEXPR  // not supported
-		#define EA_NO_CPP14_CONSTEXPR
 	#endif
 #endif
 

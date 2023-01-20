@@ -23,8 +23,6 @@ niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Va
 
 namespace ni {
 
-_HSymImpl(rtcpp_panic);
-
 niDeclareModuleTrace_(niScriptCpp,Trace);
 #define SCRIPTCPP_TRACE(X) niModuleTrace_(niScriptCpp,Trace,X)
 

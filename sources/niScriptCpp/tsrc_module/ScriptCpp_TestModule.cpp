@@ -15,4 +15,4 @@ Ptr<iRunnable> CreateTestModule() {
   });
 }
 
-SCRIPTCPP_EXPORT_FUNC(TestScriptCpp,ScriptCpp_TestModule,CreateTestModule);
+niScriptCppExportFunc(TestScriptCpp,ScriptCpp_TestModule,CreateTestModule);

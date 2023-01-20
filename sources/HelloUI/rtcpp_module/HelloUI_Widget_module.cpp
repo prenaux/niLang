@@ -146,4 +146,4 @@ struct HelloUIWidget : public cWidgetSinkImpl<>
   }
 };
 
-SCRIPTCPP_EXPORT_CLASS(UIWidget,HelloUI,HelloUIWidget);
+niScriptCppExportClass(UIWidget,HelloUI,HelloUIWidget);

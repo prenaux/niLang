@@ -1650,13 +1650,19 @@ tBool cGeometryPolygonal::_OptimizeRebuildIndexArray(tGeometryOptimizeFlags aFla
   for (tFaceVecIt itFace = avFaces.begin(); itFace != avFaces.end(); ++itFace)
   {
     *pIndices = itFace->ulA;
-    niAssert(*pIndices < numVerts);
+#ifdef _DEBUG
+    niDebugAssert(*pIndices < numVerts);
+#endif
     ++pIndices;
     *pIndices = itFace->ulB;
-    niAssert(*pIndices < numVerts);
+#ifdef _DEBUG
+    niDebugAssert(*pIndices < numVerts);
+#endif
     ++pIndices;
     *pIndices = itFace->ulC;
-    niAssert(*pIndices < numVerts);
+#ifdef _DEBUG
+    niDebugAssert(*pIndices < numVerts);
+#endif
     ++pIndices;
   }
 
@@ -1859,7 +1865,7 @@ iGeometry* cGraphics::CreateGeometryPolygonalPlane(tGeometryCreateFlags aFlags, 
                                                             tF32 afWidth, tF32 afHeight, tU32 aulNumDiv,
                                                             tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  aulNumDiv = ni::Clamp(aulNumDiv,1,_knMaxGeomSubDiv);
+  aulNumDiv = ni::Clamp(aulNumDiv,(tU32)1,_knMaxGeomSubDiv);
 
   tU32 ulNumVertices = (aulNumDiv+1)*(aulNumDiv+1);
   tU32 ulNumIndices = (aulNumDiv*aulNumDiv)*6;
@@ -2016,8 +2022,8 @@ iGeometry* __stdcall cGraphics::CreateGeometryPolygonalCylinder(
     tBool abCW, tU32 aulColor, const sMatrixf& amtxUV,
     tBool abCap, tBool abCentered)
 {
-  slices = ni::Clamp(slices,3,_knMaxGeomSubDiv);
-  stacks = ni::Clamp(stacks,1,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,3,(tI32)_knMaxGeomSubDiv);
+  stacks = ni::Clamp(stacks,1,(tI32)_knMaxGeomSubDiv);
   return QuadricCylinder(this,aFlags,aFVF,baseRadius,topRadius,height,slices,stacks,abCW,aulColor,amtxUV,
                          abCap,abCentered);
 }
@@ -2027,8 +2033,8 @@ iGeometry* __stdcall cGraphics::CreateGeometryPolygonalSphere(tGeometryCreateFla
                                                                        tF32 radius, tI32 slices, tI32 stacks,
                                                                        tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  slices = ni::Clamp(slices,3,_knMaxGeomSubDiv);
-  stacks = ni::Clamp(stacks,3,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,3,(tI32)_knMaxGeomSubDiv);
+  stacks = ni::Clamp(stacks,3,(tI32)_knMaxGeomSubDiv);
   return QuadricSphere(this,aFlags,aFVF,radius,slices,stacks,abCW,aulColor,amtxUV);
 }
 
@@ -2037,7 +2043,7 @@ iGeometry* __stdcall cGraphics::CreateGeometryPolygonalGeosphere(tGeometryCreate
                                                                           tF32 radius, tI32 slices,
                                                                           tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  slices = ni::Clamp(slices,2,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,2,(tI32)_knMaxGeomSubDiv);
   return GeoSphere(this,aFlags,aFVF,0,eFalse,radius,slices,abCW,aulColor,amtxUV);
 }
 
@@ -2046,8 +2052,8 @@ iGeometry* __stdcall cGraphics::CreateGeometryPolygonalDiskSweep(tGeometryCreate
                                                                           tF32 innerRadius, tF32 outerRadius, tI32 slices, tI32 stacks, tF32 startAngle, tF32 sweepAngle,
                                                                           tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  slices = ni::Clamp(slices,2,_knMaxGeomSubDiv);
-  stacks = ni::Clamp(stacks,1,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,2,(tI32)_knMaxGeomSubDiv);
+  stacks = ni::Clamp(stacks,1,(tI32)_knMaxGeomSubDiv);
   return QuadricDiskSweep(this,aFlags,aFVF,innerRadius,outerRadius,slices,stacks,startAngle,sweepAngle,abCW,aulColor,amtxUV);
 }
 
@@ -2056,8 +2062,8 @@ tBool __stdcall cGraphics::UpdateGeometryPolygonalDiskSweep(iGeometry* apGeom,
                                                             tF32 innerRadius, tF32 outerRadius, tI32 slices, tI32 stacks, tF32 startAngle, tF32 sweepAngle,
                                                             tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  slices = ni::Clamp(slices,2,_knMaxGeomSubDiv);
-  stacks = ni::Clamp(stacks,1,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,2,(tI32)_knMaxGeomSubDiv);
+  stacks = ni::Clamp(stacks,1,(tI32)_knMaxGeomSubDiv);
   return QuadricDiskSweepEx(apGeom,innerRadius,outerRadius,slices,stacks,startAngle,sweepAngle,abCW,aulColor,amtxUV);
 }
 
@@ -2066,7 +2072,7 @@ iGeometry* __stdcall cGraphics::CreateGeometryPolygonalDisk(tGeometryCreateFlags
                                                                      tF32 innerRadius, tF32 outerRadius, tI32 slices, tI32 stacks,
                                                                      tBool abCW, tU32 aulColor, const sMatrixf& amtxUV)
 {
-  slices = ni::Clamp(slices,2,_knMaxGeomSubDiv);
-  stacks = ni::Clamp(stacks,1,_knMaxGeomSubDiv);
+  slices = ni::Clamp(slices,2,(tI32)_knMaxGeomSubDiv);
+  stacks = ni::Clamp(stacks,1,(tI32)_knMaxGeomSubDiv);
   return QuadricDisk(this,aFlags,aFVF,innerRadius,outerRadius,slices,stacks,abCW,aulColor,amtxUV);
 }

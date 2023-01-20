@@ -1,13 +1,24 @@
 #include "API/niLang/Types.h"
 
-using namespace ni;
-
 #if defined niWinDesktop
 
 #include "API/niLang/ILang.h"
 #include "API/niLang/Utils/CrashReport.h"
 #include "API/niLang/Platforms/Win32/Win32_UTF.h"
 #include "API/niLang/Platforms/Win32/Win32_Redef.h"
+#include "API/niLang/StringDef.h"
+#include "API/niLang/Utils/ThreadImpl.h"
+#include "API/niLang/Utils/Path.h"
+
+#include <windows.h>
+#undef _tprintf
+#include <stdio.h>
+#include <stdlib.h>
+#pragma comment(lib, "version.lib")  // for "VerQueryValue"
+#pragma warning(disable:4826)
+#include <dbghelp.h>
+
+using namespace ni;
 
 /**********************************************************************
  *
@@ -90,12 +101,6 @@ using namespace ni;
  *   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  **********************************************************************/
-#include <windows.h>
-#undef _tprintf
-#include <stdio.h>
-#include <stdlib.h>
-#pragma comment(lib, "version.lib")  // for "VerQueryValue"
-#pragma warning(disable:4826)
 
 // special defines for VC5/6 (if no actual PSDK is installed):
 #if _MSC_VER < 1300
@@ -1542,10 +1547,6 @@ void StackWalker::OnOutput(LPCSTR buffer)
   OutputDebugStringA(buffer);
 }
 
-#include "API/niLang/StringDef.h"
-#include "API/niLang/Utils/ThreadImpl.h"
-#include "API/niLang/Utils/Path.h"
-
 struct MyStackWalker : public StackWalker {
   ni::tU32 _stackIndex;
   ni::cString* _output;
@@ -1605,8 +1606,8 @@ struct MyStackWalker : public StackWalker {
   }
 };
 
-niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
-
+namespace ni {
+niExportFuncCPP(cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
   EXCEPTION_POINTERS* pExp = (EXCEPTION_POINTERS*)apExp;
   if (pExp) {
     EXCEPTION_RECORD *pRecord = pExp->ExceptionRecord;
@@ -1674,8 +1675,7 @@ niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void* apE
 
   return aOutput;
 }
-
-#include <dbghelp.h>
+}
 
 // based on dbghelp.h
 typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -1833,12 +1833,12 @@ struct CrashLog
     return eTrue;
   }
 };
-
 WCHAR CrashLog::m_szDumpDir[_MAX_PATH] = L"./";
 static CrashLog _CrashLog;
 
+namespace ni {
 niExportFuncCPP(cString) ni_generate_minidump(void* apExp) {
   return CrashLog::GenerateMinidump((struct _EXCEPTION_POINTERS*)apExp);
 }
-
+}
 #endif // #ifdef niWinDesktop

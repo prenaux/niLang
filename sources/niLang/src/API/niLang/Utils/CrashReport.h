@@ -162,7 +162,7 @@ struct sNiCrashReport {
 // This should only be necessary on Windows since on other platforms the
 // standard C library is shared between the modules. On Windows DLLs can have
 // a different CRT and thus set of signal table and handlers.
-#define niCrashReport_ModuleInstall() __niCrashReportModuleInstall()
+#define niCrashReport_ModuleInstall() ni::__niCrashReportModuleInstall()
 #else
 #define niCrashReport_ModuleInstall()
 #endif

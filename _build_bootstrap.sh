@@ -1,6 +1,12 @@
 #!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
+
+if [ "$1" = "clean" ]; then
+  shift
+  (set -ex ; ./_clean_deep.sh doit)
+fi
+
 source _env_ci.sh
 
 set -ex

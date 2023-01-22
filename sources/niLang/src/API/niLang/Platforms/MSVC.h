@@ -79,8 +79,6 @@ namespace { __forceinline void dummyReallyDisable4786() {} }
 
 #define niBaseInterfacePadding virtual void __stdcall __dummy__() {}
 
-#define niAssume(EXPR) __assume(EXPR)
-
 #define niDLLSuffix ".dll"
 
 //////////////////////////////////////////////////////////////////////////////////////////////

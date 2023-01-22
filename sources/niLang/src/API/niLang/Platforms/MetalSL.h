@@ -20,8 +20,6 @@
 #define niMetalSL
 #define niShaderLanguage
 
-#define niAssume(EXPR) __assume(EXPR)
-
 #define niNoThreads 1
 #define niNoProcess 1
 #define niNoSocket 1

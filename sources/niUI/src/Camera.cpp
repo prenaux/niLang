@@ -81,7 +81,7 @@ class cCamera : public ni::cIUnknownImpl<ni::iCamera,ni::eIUnknownImplFlags_Defa
 
   ///////////////////////////////////////////////
   virtual void __stdcall Copy(const iCamera* apSrc) {
-    niWarningAssert_(apSrc != NULL,);
+    niPanicAssert(apSrc != NULL);
     const cCamera* pSrc = static_cast<const cCamera*>(apSrc);
     this->mProjection = pSrc->mProjection;
     this->mViewport = pSrc->mViewport;

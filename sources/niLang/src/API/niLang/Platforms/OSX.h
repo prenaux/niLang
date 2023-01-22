@@ -43,8 +43,6 @@
 // Compiler support #pragma comment(lib,"libfile.lib")
 #define niPragmaCommentLib
 
-#define niAssume(EXPR) //__assume(EXPR)
-
 #define niDLLSuffix ".dylib"
 
 #define _vsnprintf  vsnprintf

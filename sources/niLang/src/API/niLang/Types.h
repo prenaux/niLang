@@ -875,8 +875,32 @@ __forceinline bool IsNullPtr(const T* p) {
 #  endif
 #endif // niDeprecated
 
+#ifndef niUnreachable
+#  if defined niMSVC
+#    define niUnreachable() __assume(false)
+#  elif defined niClang || defined niGCC
+#    define niUnreachable(x) __builtin_unreachable()
+#  else
+#    define niUnreachable(x) ((void)0)
+#  endif
+#endif
+
+// Assume which requires a pure expression. Becomes an empty statement on
+// compilers that do not support it.
+#ifndef niPureAssume
+#  if defined niMSVC
+#    define niPureAssume(EXPR) __assume(EXPR)
+#  elif (defined niCLang || defined niGCC) && __has_builtin(__builtin_assume)
+#    define niPureAssume(x) __builtin_assume(x)
+#  elif (defined niCLang || defined niGCC)
+#    define niPureAssume(x)
+#  endif
+#endif
+
+// niAssume that has the same semantic on all platforms. Its used as an
+// optimization hints to replace asserts when they are disabled.
 #ifndef niAssume
-#  define niAssume(x)
+#  define niAssume(x) do { if (!(x)) { niUnreachable(); } } while(0);
 #endif
 
 #define _A(x) x
@@ -978,8 +1002,8 @@ niExportFunc(void) ni_harakiri(niConst struct iHString* aKind, niConst char* msg
 
 #define niHarakiri(MSG,EXCPTR) \
   ni_harakiri(_HSym(ni,harakiri),MSG,EXCPTR,niSourceLoc)
-#define niCheckHarakiri(EXP) niAssume(EXP); if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),#EXP,NULL,niSourceLoc); }
-#define niCheckHarakiriMsg(EXP,MSG) niAssume(EXP); if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),MSG,NULL,niSourceLoc); }
+#define niCheckHarakiri(EXP) do { if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),#EXP,NULL,niSourceLoc); } } while(0);
+#define niCheckHarakiriMsg(EXP,MSG) do { if (!(EXP)) { ni_harakiri(_HSym(ni,harakiri),MSG,NULL,niSourceLoc); } } while(0);
 
 #ifdef __cplusplus
 // \remark We can't inherit std::exception on Windows because it forces us to
@@ -1015,8 +1039,8 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char*
 
 #endif
 
-#define niCheckPanic(NS,KIND,EXP) niAssume(EXP); if (!(EXP)) { niThrowPanic(NS,KIND,#EXP); }
-#define niCheckPanicMsg(NS,KIND,EXP,MSG) niAssume(EXP); if (!(EXP)) { niThrowPanic(NS,KIND,MSG); }
+#define niCheckPanic(NS,KIND,EXP) do { if (!(EXP)) { niThrowPanic(NS,KIND,#EXP); } } while(0);
+#define niCheckPanicMsg(NS,KIND,EXP,MSG) do { if (!(EXP)) { niThrowPanic(NS,KIND,MSG); } } while(0);
 
 #define niPanicAssert(exp) niCheckPanic(ni,panic,exp)
 #define niPanicAssertMsg(exp,msg) niCheckPanicMsg(ni,panic,exp,msg)
@@ -1029,7 +1053,7 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char*
 #else
 #  define niDebugAssert(exp) niAssume(exp)
 #  define niDebugAssertMsg(exp,msg) niAssume(exp)
-#  define niDebugAssertUnreachable(msg)
+#  define niDebugAssertUnreachable(msg) niUnreachable()
 #endif
 
 #define niAssert(exp) niDebugAssert(exp)
@@ -1161,7 +1185,7 @@ namespace ni {
 
 #ifndef niUnused
 #  ifdef __cplusplus
-#    define niUnused(x) (void)(x);
+#    define niUnused(x) ((void)(x))
 #  else
 #    define niUnused(x)
 #  endif
@@ -2053,23 +2077,23 @@ static void ni_delete(T* ptr, const char *f, int l, const char *sf)
 
 // Safe memory freeing
 #  ifndef niSafeDelete
-#    define niSafeDelete(p)   { if(p) { niDelete p; (p)=NULL; } }
+#    define niSafeDelete(p)   do { if(p) { niDelete p; (p)=NULL; } } while (0);
 #  endif
 
 #  ifndef niSafeDeleteArray
-#    define niSafeDeleteArray(p)  { if(p) { niDelete[] p; (p)=NULL; } }
+#    define niSafeDeleteArray(p)  do { if(p) { niDelete[] p; (p)=NULL; } } while (0);
 #  endif
 
 #  ifndef niSafeRelease
-#    define niSafeRelease(p)    { if(p) { (p)->Release(); (p)=NULL; } }
+#    define niSafeRelease(p)    do { if(p) { (p)->Release(); (p)=NULL; } } while (0);
 #  endif
 
 #  ifndef niSafeInvalidateRelease
-#    define niSafeInvalidateRelease(p)  { if(p) { (p)->Invalidate(); (p)->Release();  (p)=NULL; } }
+#    define niSafeInvalidateRelease(p)  do { if(p) { (p)->Invalidate(); (p)->Release();  (p)=NULL; } } while (0);
 #  endif
 
 #  ifndef niSafeFree
-#    define niSafeFree(p)     { if(p) { niFree(p);  (p)=NULL; } }
+#    define niSafeFree(p)     do { if(p) { niFree(p);  (p)=NULL; } } while (0);
 #  endif
 
 #  define niTMalloc(TYPE,COUNT) (TYPE*)niMalloc(sizeof(TYPE)*(COUNT))
@@ -2164,17 +2188,11 @@ niExportFunc(void) ni_log_format_message(cString& strOut,
 #    define niWarning(desc) niLog(Warning,desc)
 #  endif // #ifdef _REDIST
 
-#  define niCheck_(COND,MSG,RET)        if (!(COND)) { niError(MSG _A("Check '") _A(#COND) _A("' failed.")); return RET; }
+#  define niCheck_(COND,MSG,RET)        do { if (!(COND)) { niError(MSG _A("Check '") _A(#COND) _A("' failed.")); return RET; } } while (0);
 #  define niCheck(COND,RET)             niCheck_(COND,_A(""),RET)
 #  define niCheckIsOK_(PARAM,MSG,RET)   niCheck_(niIsOK(PARAM),MSG,RET)
 #  define niCheckIsOK(COND,RET)         niCheckIsOK_(COND,_A(""),RET)
-#  define niCheckSilent(COND,RET)       if (!(COND)) { return RET; }
-
-#  ifdef niDebug
-#    define niCheckAssert(COND,MSG,RET)     if (!(COND)) { niAssertMsg(COND,MSG); return RET; }
-#  else
-#    define niCheckAssert(COND,MSG,RET)     if (!(COND)) { return RET; }
-#  endif
+#  define niCheckSilent(COND,RET)       do { if (!(COND)) { return RET; } } while (0);
 
 /**@}*/
 #  ifdef __cplusplus
@@ -4213,11 +4231,6 @@ namespace ni {
 
 #define niTodo(x) message(niFileLine "TODO : " x "\n")
 #define niFixme(x)  message(niFileLine "FIXME : " x "\n")
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Run-time
-#define niWarningAssert(COND) if (!(COND)) { niWarning(_A(#COND)); }
-#define niWarningAssert_(COND,RET)  if (!(COND)) { niWarning(_A(#COND)); return RET; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // General use debugging macros

@@ -877,7 +877,7 @@ __forceinline bool IsNullPtr(const T* p) {
 
 #ifndef niUnreachable
 #  if defined niMSVC
-#    define niUnreachable() __assume(false)
+#    define niUnreachable() __assume(0)
 #  elif defined niClang || defined niGCC
 #    define niUnreachable(x) __builtin_unreachable()
 #  else

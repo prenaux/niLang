@@ -56,7 +56,7 @@ namespace ni {
 //! Generally coarse and imprecise (up to 15ms variation) but uses the least
 //! cpu. Use ni::SleepSecsPrecise if you need a precise sleep.
 __forceinline void SleepSecsCoarse(ni::tF64 aSeconds) {
-  ni::SleepMs(aSeconds * 1000.0);
+  ni::SleepMs((tU32)(aSeconds * 1000.0));
 }
 
 //! The most precise sleep method, but uses 100% cpu.
@@ -86,9 +86,9 @@ __forceinline void SleepSecs(ni::tF64 aSeconds) {
 
     ++count;
     const ni::tF64 delta = observed - mean;
-    mean += delta / count;
+    mean += delta / ((ni::tF64)count);
     m2   += delta * (observed - mean);
-    const ni::tF64 stddev = sqrt(m2 / (count - 1));
+    const ni::tF64 stddev = sqrt(m2 / (ni::tF64)(count - 1));
     estimate = mean + stddev;
   }
 

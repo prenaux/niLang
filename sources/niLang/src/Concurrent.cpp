@@ -200,7 +200,7 @@ struct RunnableQueue : public cIUnknownImpl<iRunnableQueue> {
 #if !defined niNoThreads
     _hasRunnable.Signal();
 #endif
-    // RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], queue-end...", _queueIndex));
+    // RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], queue-end...", _queueIndex));
     return eTrue;
   }
 
@@ -372,7 +372,7 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
 #if !defined niNoThreads
     _hasMessage.Signal();
 #endif
-    // RUNNABLE_QUEUE_TRACE(("D/MessageQueue[%d], queue-end...", _queueIndex));
+    // RUNNABLE_QUEUE_TRACE(("MessageQueue[%d], queue-end...", _queueIndex));
     return eTrue;
   }
 
@@ -528,7 +528,7 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
 
   ExecutorCooperative(tU64 aThreadID, tU32 aMaxItems)
   {
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorCooperative, created for thread %d, with max %d items in queue",
+    RUNNABLE_QUEUE_TRACE(("ExecutorCooperative, created for thread %d, with max %d items in queue",
                           aThreadID,aMaxItems));
     SYNC_WRITE(&_doneCount,0);
     _queue = niNew RunnableQueue(aThreadID,aMaxItems);
@@ -600,7 +600,7 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
     for (;;) {
       Ptr<iRunnable> r = queue->Poll();
       if (!r.IsOK() || (_this->_shutdownMode.Get() == 2)) {
-        RUNNABLE_QUEUE_TRACE(("D/ExecutorCooperative::Update(): break, empty queue."));
+        RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(): break, empty queue."));
         break;
       }
 
@@ -615,13 +615,13 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
 
       timerElapsed = ni::TimerInSeconds() - timerStart;
       if (timerElapsed >= timeSlice) {
-        RUNNABLE_QUEUE_TRACE(("D/ExecutorCooperative::Update(): break, time slice exceeded."));
+        RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(): break, time slice exceeded."));
         break;
       }
     }
 
     if (numExecuted > 0) {
-      RUNNABLE_QUEUE_TRACE(("D/ExecutorCooperative::Update(%d, slice:%g, elapsed: %g): executed %d runnable in %d ms.",
+      RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(%d, slice:%g, elapsed: %g): executed %d runnable in %d ms.",
                             anTimeSliceMs, timeSlice, timerElapsed, numExecuted, timerElapsed));
     }
 
@@ -727,7 +727,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
       : _numThreads(ni::Clamp<ni::tU32>(anNumThreads,1,64))
       , _event(eTrue)
   {
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, created with %d queues",_numThreads));
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, created with %d queues",_numThreads));
     SYNC_WRITE(&_doneCount,0);
     _threads = new sThread[_numThreads];
     niLoop(i,_numThreads) {
@@ -741,7 +741,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
   }
 
   ~ExecutorThreadPool() {
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool %p, destructor.",(tIntPtr)this));
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, destructor.",(tIntPtr)this));
     Invalidate();
     if (_threads) {
       delete[] _threads;
@@ -754,7 +754,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
   }
 
   void __stdcall Invalidate() {
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool %p, invalidate.",(tIntPtr)this));
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, invalidate.",(tIntPtr)this));
     if (_shutdownMode.Get() != 2) {
       // Auto shutdown, not great in general, SleepMs to prevent race
       // conditions with IsAlive on Windows because all the threads are
@@ -794,10 +794,10 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
   Ptr<iRunnable> __stdcall _StealRunnable(const tU64 aThreadID) {
     const tU32 leastAvailQueue = _GetLeastAvailableQueue();
     niUnused(leastAvailQueue);
-    EXECUTOR_STEAL_TRACE(("D/ExecutorThreadPool, thread %p trying to steal task from queue %d with %d tasks.", aThreadID, leastAvailQueue, _threads[leastAvailQueue].queue->GetSize()));
+    EXECUTOR_STEAL_TRACE(("ExecutorThreadPool, thread %p trying to steal task from queue %d with %d tasks.", aThreadID, leastAvailQueue, _threads[leastAvailQueue].queue->GetSize()));
     Ptr<iRunnable> r = _threads[_GetLeastAvailableQueue()].queue->_StealPoll();
     if (r.IsOK()) {
-      EXECUTOR_STEAL_TRACE(("D/ExecutorThreadPool, thread %p stole task from queue %d.", aThreadID, leastAvailQueue));
+      EXECUTOR_STEAL_TRACE(("ExecutorThreadPool, thread %p stole task from queue %d.", aThreadID, leastAvailQueue));
       return r;
     }
     return NULL;
@@ -808,7 +808,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     if (_shutdownMode.Get() != 0)
       return eFalse;
     tU32 mostAvailableQueue = _GetMostAvailableQueue();
-    // RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, Execute queued in queue %d",mostAvailableQueue));
+    // RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Execute queued in queue %d",mostAvailableQueue));
     niAssert(mostAvailableQueue < _numThreads);
     niAssert(_threads[mostAvailableQueue].queue.IsOK());
     ni::tBool r = _threads[mostAvailableQueue].queue->Add(aRunnable);
@@ -820,7 +820,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     if (_shutdownMode.Get() != 0)
       return NULL;
     tU32 mostAvailableQueue = _GetMostAvailableQueue();
-    // RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, Submit queued in queue %d",mostAvailableQueue));
+    // RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Submit queued in queue %d",mostAvailableQueue));
     Ptr<sFutureRunnable> futureRun = niNew sFutureRunnable(aRunnable);
     niAssert(mostAvailableQueue < _numThreads);
     niAssert(_threads[mostAvailableQueue].queue.IsOK());
@@ -835,7 +835,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     }
     if (_threads) {
       niLoop(i,_numThreads) {
-        RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, Shutdown signal queue %d",i));
+        RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Shutdown signal queue %d",i));
         if (!_threads[i].thread->GetIsAlive()) {
           _IncDoneCountForShutdown();
         }
@@ -844,7 +844,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
         }
       }
     }
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, Shutdown waiting for queues"));
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Shutdown waiting for queues"));
     return _event.WaitEx(anTimeOut);
   }
 
@@ -856,7 +856,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     _shutdownMode.Set(2);
     if (_threads) {
       niLoop(i,_numThreads) {
-        // RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, ShutdownNow signal queue %d, thread is alive %d, is busy %d.", i, _threads[i].thread->GetIsAlive(), _threads[i].isBusy.Get()));
+        // RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, ShutdownNow signal queue %d, thread is alive %d, is busy %d.", i, _threads[i].thread->GetIsAlive(), _threads[i].isBusy.Get()));
         if (!_threads[i].thread->GetIsAlive()) {
           _IncDoneCountForShutdown();
         }
@@ -865,7 +865,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
         }
       }
     }
-    RUNNABLE_QUEUE_TRACE(("D/ExecutorThreadPool, ShutdownNow waiting for queues"));
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, ShutdownNow waiting for queues"));
     return _event.WaitEx(anTimeOut);
   }
 
@@ -897,30 +897,30 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
     sThread* thread = &_this->_threads[queueIndex];
     thread->queue = queue;
     _this->_event.Signal();
-    RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], thread started.",queueIndex));
+    RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], thread started.",queueIndex));
 
     if (_pfnConcurrentThreadStart) {
       _pfnConcurrentThreadStart(threadID);
     }
 
     for (;;) {
-      RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], wait...", queueIndex));
+      RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], wait...", queueIndex));
       queue->WaitForRunnable(eInvalidHandle);
       queue->_hasRunnable.Reset();
       if (_this->_shutdownMode.Get() == 2) {
-        RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], skipped %d runnable in the shutdown.",
+        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], skipped %d runnable in the shutdown.",
                               queueIndex, queue->GetSize()));
         queue->Invalidate();
         break;
       }
       else if (_this->_shutdownMode.Get() == 1) {
-        RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], shutdown 1, %d runnable.",
+        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], shutdown 1, %d runnable.",
                               queueIndex, queue->GetSize()));
       }
 
       thread->isBusy.Set(1);
       for (;;) {
-        RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], unqueue...", queueIndex));
+        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], unqueue...", queueIndex));
         Ptr<iRunnable> r = queue->Poll();
         if (!r.IsOK() || (_this->_shutdownMode.Get() == 2)) {
           if (_this->_shutdownMode.Get() == 2) {
@@ -933,14 +933,14 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
             break;
           }
         }
-        RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], run...", queueIndex));
+        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], run...", queueIndex));
         r->Run();
         thread->numExecuted.Inc();
       }
       thread->isBusy.Set(0);
 
       if (_this->_shutdownMode.Get() != 0) {
-        RUNNABLE_QUEUE_TRACE(("D/RunnableQueue[%d], shutdown %d", _this->_shutdownMode.Get()));
+        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], shutdown %d", _this->_shutdownMode.Get()));
         break;
       }
     }
@@ -951,7 +951,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
 
     _this->_IncDoneCountForShutdown();
     RUNNABLE_QUEUE_TRACE(
-        ("D/RunnableQueue[%d], thread ended, executed %d runnable. %d thread closed.",
+        ("RunnableQueue[%d], thread ended, executed %d runnable. %d thread closed.",
          queueIndex, thread->numExecuted.Get(), _this->_doneCount));
     return 0;
   }

@@ -14,10 +14,10 @@ niConsoleMain()
   int r = ParseToolsCommandLine(
     GetCurrentOSProcessCmdLine(), '@',
     [&](const achar* aTool, const achar* aCmdLine, int argc, const achar** argv) -> int {
-      TRACE_CMD_LINE(("D/TOOL: %s", aTool));
-      TRACE_CMD_LINE(("D/CMDLINE: %s", aCmdLine));
+      TRACE_CMD_LINE(("TOOL: %s", aTool));
+      TRACE_CMD_LINE(("CMDLINE: %s", aCmdLine));
       niLoop(i,argc) {
-        TRACE_CMD_LINE(("D/ARGS[%d]: '%s'", i, argv[i]));
+        TRACE_CMD_LINE(("ARGS[%d]: '%s'", i, argv[i]));
       }
 
       if (StrEq(aTool,"@default") || StrEq(aTool,"@legacy")) {

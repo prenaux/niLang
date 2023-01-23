@@ -112,16 +112,16 @@ static inline cString CmdLineStrCharItReadFile(StrCharIt& it, const tU32 anEndOn
 
 // Standard command line parsing. Handles -D & -- system properties.
 static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apInputFileName = NULL, ni::tStringCVec* apOtherFiles = NULL, ni::tStringCVec* apUnknownParams = NULL) {
-  // niDebugFmt(("D/parseCommandLine: %s", aaszCmdLine));
+  // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
   tI32 parametersPos = ni::CmdLineGetParametersPos(strCmdLine);
-  // niDebugFmt(("D/parametersPos: %d", parametersPos));
+  // niDebugFmt(("parametersPos: %d", parametersPos));
   if (parametersPos <= 0)
     return eTrue;
 
   StrCharIt it = strCmdLine.charZIt(parametersPos);
-  // niDebugFmt(("D/parseCommandLine:params: %s", it.current()));
+  // niDebugFmt(("parseCommandLine:params: %s", it.current()));
   // Read the VM arguments
   tU32 prevChar = 0;
   while (!it.is_end()) {

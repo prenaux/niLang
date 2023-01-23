@@ -230,16 +230,16 @@ void Warning(const achar* aszMsg) {
 }
 
 tBool parseCommandLine(const achar* aaszCmdLine) {
-  // niDebugFmt(("D/parseCommandLine: %s", aaszCmdLine));
+  // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
   tI32 parametersPos = ni::CmdLineGetParametersPos(strCmdLine);
-  // niDebugFmt(("D/parametersPos: %d", parametersPos));
+  // niDebugFmt(("parametersPos: %d", parametersPos));
   if (parametersPos <= 0)
     return eTrue;
 
   StrCharIt it = strCmdLine.charZIt(parametersPos);
-  // niDebugFmt(("D/parseCommandLine:params: %s", it.current()));
+  // niDebugFmt(("parseCommandLine:params: %s", it.current()));
   // Read the VM arguments
   tU32 prevChar = 0;
   while (!it.is_end()) {
@@ -286,23 +286,23 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
           break;
         }
         case 'd':
-          // niDebugFmt(("D/debug infos"));
+          // niDebugFmt(("debug infos"));
           _GetOptions()->_bDebugInfos = ni::eTrue;
           break;
         case 'c':
-          // niDebugFmt(("D/compile only"));
+          // niDebugFmt(("compile only"));
           _GetOptions()->_bRun = ni::eFalse;
           break;
 #ifdef NI_CONSOLE
         case 'i':
-          // niDebugFmt(("D/repl"));
+          // niDebugFmt(("repl"));
           _GetOptions()->_bRunREPL = ni::eTrue;
           ni::GetLang()->SetProperty("ni.repl.version",_aszVersion);
           break;
 #endif
         case 'o': {
           cString outputFile = ni::CmdLineStrCharItReadFile(it);
-          // niDebugFmt(("D/compile output file: %s",outputFile));
+          // niDebugFmt(("compile output file: %s",outputFile));
           if (outputFile.empty()) {
             ErrorHelp("-o option, invalid output file name.");
           }
@@ -313,19 +313,19 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
         case 'D': {
           cString pname = ni::CmdLineStrCharItReadFile(it,'=');
           cString pvalue = ni::CmdLineStrCharItReadFile(it);
-          // niDebugFmt(("D/system property: %s = %s",pname,pvalue));
+          // niDebugFmt(("system property: %s = %s",pname,pvalue));
           ni::GetLang()->SetProperty(pname.Chars(),pvalue.Chars());
           break;
         }
         case 'I': {
           cString incl = ni::CmdLineStrCharItReadFile(it,0);
-          // niDebugFmt(("D/add include: %s",incl));
+          // niDebugFmt(("add include: %s",incl));
           _GetOptions()->_vIncludes.push_back(incl);
           break;
         }
         case 'L': {
           cString incl = ni::CmdLineStrCharItReadFile(it,0);
-          // niDebugFmt(("D/add library: %s",incl));
+          // niDebugFmt(("add library: %s",incl));
           _GetOptions()->_vLibraries.push_back(incl);
           break;
         }
@@ -340,7 +340,7 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
 #ifdef NI_WINDOWED
         case 'A': {
           _GetOptions()->_strHostedAppName = ni::CmdLineStrCharItReadFile(it,0);
-          niDebugFmt(("D/run as hosted app: %s", _GetOptions()->_strHostedAppName));
+          niDebugFmt(("run as hosted app: %s", _GetOptions()->_strHostedAppName));
           break;
         }
 #endif

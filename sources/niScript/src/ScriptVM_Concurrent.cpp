@@ -46,7 +46,7 @@ struct VMPool : public cIUnknownImpl<iUnknown>
       return eFalse;
     }
 #ifdef _DEBUG
-    niDebugFmt(("D/ScriptVM[%p], detached from thread '%d'",(void*)it->second.ptr(),aThreadID));
+    niDebugFmt(("ScriptVM[%p], detached from thread '%d'",(void*)it->second.ptr(),aThreadID));
 #endif
     _mapVM.erase(aThreadID);
     return eTrue;
@@ -64,7 +64,7 @@ struct VMPool : public cIUnknownImpl<iUnknown>
       Ptr<iScriptVM> newVM = CreateChildScriptVM(_root);
       it = astl::upsert(_mapVM,aThreadID,newVM);
 #ifdef _DEBUG
-      niDebugFmt(("D/ScriptVM[%p], attached to thread '%d'",(void*)newVM.ptr(),aThreadID));
+      niDebugFmt(("ScriptVM[%p], attached to thread '%d'",(void*)newVM.ptr(),aThreadID));
 #endif
     }
     return it->second;

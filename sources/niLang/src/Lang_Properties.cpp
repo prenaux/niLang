@@ -402,16 +402,16 @@ static tBool _InitDirProp(tStringCMap* props, const achar* binDir,
 static tBool _ParseCmdLineProperties(tStringCMap* props, const achar* aaszCmdLine) {
   if (!niStringIsOK(aaszCmdLine))
     return eTrue;
-  // niDebugFmt(("D/parseCommandLine: %s", aaszCmdLine));
+  // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
   tI32 parametersPos = CmdLineGetParametersPos(strCmdLine);
-  // niDebugFmt(("D/parametersPos: %d", parametersPos));
+  // niDebugFmt(("parametersPos: %d", parametersPos));
   if (parametersPos <= 0)
     return eTrue;
 
   StrCharIt it = strCmdLine.charZIt(parametersPos);
-  // niDebugFmt(("D/parseCommandLine:params: %s", it.current()));
+  // niDebugFmt(("parseCommandLine:params: %s", it.current()));
   // Read the VM arguments
   tU32 prevChar = 0;
   while (!it.is_end()) {

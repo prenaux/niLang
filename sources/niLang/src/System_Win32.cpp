@@ -982,7 +982,7 @@ class cThreadedWindow : public ni::cIUnknownImpl<ni::iUnknown>
     mThread->Start(_ThreadProc,(void*)this);
     meventSetup.Wait();
 #ifdef _DEBUG
-    niDebugFmt(("D/cThreadedWindow using thread '%d'",mThread->GetThreadID()));
+    niDebugFmt(("cThreadedWindow using thread '%d'",mThread->GetThreadID()));
 #endif
   }
   ~cThreadedWindow() {

@@ -116,17 +116,17 @@ void Warning(const achar* aszMsg) {
 }
 
 tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
-  TRACE_CMD_LINE(("D/parseCommandLine: %s", aaszCmdLine));
+  TRACE_CMD_LINE(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
   tI32 parametersPos = ni::CmdLineGetParametersPos(strCmdLine);
-  TRACE_CMD_LINE(("D/parametersPos: %d", parametersPos));
+  TRACE_CMD_LINE(("parametersPos: %d", parametersPos));
   if (parametersPos <= 0) {
     ErrorHelp("No parameters.");
   }
 
   StrCharIt it = strCmdLine.charZIt(parametersPos);
-  TRACE_CMD_LINE(("D/parseCommandLine:params: %s", it.current()));
+  TRACE_CMD_LINE(("parseCommandLine:params: %s", it.current()));
 
   // Read the VM arguments
   tU32 prevChar = 0;
@@ -154,20 +154,20 @@ tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
           break;
         }
         case 'd':
-          TRACE_CMD_LINE(("D/debug infos"));
+          TRACE_CMD_LINE(("debug infos"));
           aOptions._bDebugInfos = ni::eTrue;
           break;
         case '-': // -- is a synonym for -D
         case 'D': {
           cString pname = ni::CmdLineStrCharItReadFile(it,'=');
           cString pvalue = ni::CmdLineStrCharItReadFile(it);
-          TRACE_CMD_LINE(("D/add define: %s = %s",pname,pvalue));
+          TRACE_CMD_LINE(("add define: %s = %s",pname,pvalue));
           aOptions._ptrDefines->SetString(pname.Chars(),pvalue.Chars());
           break;
         }
         case 'I': {
           cString incl = ni::CmdLineStrCharItReadFile(it,0);
-          TRACE_CMD_LINE(("D/add include: %s",incl));
+          TRACE_CMD_LINE(("add include: %s",incl));
           aOptions._vIncludes.push_back(incl);
           break;
         }
@@ -213,7 +213,7 @@ tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
       ErrorHelp(niFmt("Unknown shader profile '%s'.", aOptions._hspShaderProfile));
     }
     aOptions._ptrDefines->SetString(niHStr(aOptions._hspShaderProfile), "1");
-    TRACE_CMD_LINE(("D/_hspShaderProfile: %s", aOptions._hspShaderProfile));
+    TRACE_CMD_LINE(("_hspShaderProfile: %s", aOptions._hspShaderProfile));
   }
 
   {
@@ -223,7 +223,7 @@ tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
       if (HStringIsEmpty(aOptions._hspShaderName)) {
         ErrorHelp("No shader name specified.");
       }
-      TRACE_CMD_LINE(("D/_hspShaderName: %s", aOptions._hspShaderName));
+      TRACE_CMD_LINE(("_hspShaderName: %s", aOptions._hspShaderName));
     }
 
     // read the input shader
@@ -236,7 +236,7 @@ tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
       if (!aOptions._fpInput.IsOK()) {
         ErrorHelp(niFmt("Can't open input file '%s'.", input));
       }
-      TRACE_CMD_LINE(("D/input: %s", input));
+      TRACE_CMD_LINE(("input: %s", input));
     }
 
     // read the output file
@@ -246,7 +246,7 @@ tBool parseCommandLine(sLegacyOptions& aOptions, const achar* aaszCmdLine) {
         ErrorHelp("No output shader file specified.");
       }
       aOptions._strOutput = output;
-      TRACE_CMD_LINE(("D/output: %s", output));
+      TRACE_CMD_LINE(("output: %s", output));
     }
   }
 

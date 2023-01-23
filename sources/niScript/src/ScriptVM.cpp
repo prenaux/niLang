@@ -362,13 +362,13 @@ struct VMList : public cIUnknownImpl<iUnknown>
       _vmTimeStart = ni::TimerInSeconds();
       if (_gc()->_gc_chain_lastgc_sync == _gc()->_gc_chain_sync) {
 #ifdef _DEBUG
-        niDebugFmt(("D/GC, %d VM(s), skipped, no change since last gc.",
+        niDebugFmt(("GC, %d VM(s), skipped, no change since last gc.",
                     _vmList.size()));
 #endif
         return 0;
       }
 #ifdef _DEBUG
-      niDebugFmt(("D/GC, %d VM(s), start GC.",_vmList.size()));
+      niDebugFmt(("GC, %d VM(s), start GC.",_vmList.size()));
 #endif
     }
     else {
@@ -405,7 +405,7 @@ struct VMList : public cIUnknownImpl<iUnknown>
     if (_vmTimeGC) {
 #ifdef _DEBUG
       double time = ni::TimerInSeconds() - _vmTimeStart;
-      niDebugFmt(("D/GC, %d VM(s), collected %d garbage(s) in %gs.",
+      niDebugFmt(("GC, %d VM(s), collected %d garbage(s) in %gs.",
                   _vmList.size(),
                   n,time));
 #endif
@@ -565,7 +565,7 @@ cScriptVM::cScriptVM(cScriptVM* apParentVM)
     sqa_setdebugname(mptrVM,-1, _A("roottable"));
 
 #ifdef _DEBUG
-    niDebugFmt(("D/ScriptVM[%p], child VM initialized.",(tIntPtr)this));
+    niDebugFmt(("ScriptVM[%p], child VM initialized.",(tIntPtr)this));
 #endif
   }
   else {
@@ -607,7 +607,7 @@ cScriptVM::cScriptVM(cScriptVM* apParentVM)
     RegisterFunction(&kFuncDecl_PrintLn,_A("println"));
 
 #ifdef _DEBUG
-    niDebugFmt(("D/ScriptVM[%p], root VM initialized.",(tIntPtr)this));
+    niDebugFmt(("ScriptVM[%p], root VM initialized.",(tIntPtr)this));
 #endif
   }
 
@@ -645,7 +645,7 @@ void __stdcall cScriptVM::Invalidate()
   if (mptrVM.IsOK()) {
     if (concurrent_vm_is_started() && concurrent_vm_mainvm() == mptrVM.ptr()) {
 #ifdef _DEBUG
-      niDebugFmt(("D/ScriptVM[%p], root VM, concurrent shutdown.\n", (tIntPtr)this));
+      niDebugFmt(("ScriptVM[%p], root VM, concurrent shutdown.\n", (tIntPtr)this));
 #endif
       concurrent_vm_shutdown();
       if (concurrent_vm_is_started()) {
@@ -657,10 +657,10 @@ void __stdcall cScriptVM::Invalidate()
     mptrVM = NULL;
 #ifdef niDebug
     if (mptrParentVM.IsOK()) {
-      niDebugFmt(("D/ScriptVM[%p], child VM invalidated, %d refs.\n", (tIntPtr)this, v->GetNumRefs()));
+      niDebugFmt(("ScriptVM[%p], child VM invalidated, %d refs.\n", (tIntPtr)this, v->GetNumRefs()));
     }
     else {
-      niDebugFmt(("D/ScriptVM[%p], root VM invalidated, %d refs.\n", (tIntPtr)this, v->GetNumRefs()));
+      niDebugFmt(("ScriptVM[%p], root VM invalidated, %d refs.\n", (tIntPtr)this, v->GetNumRefs()));
     }
 #endif
     niAssert(v->GetNumRefs() == 1);
@@ -1545,7 +1545,7 @@ niExportFunc(ni::iUnknown*) New_niScript_ScriptVM(const ni::Var& avarA, const ni
         SQSharedState::_concurrent_funcs);
 
 #ifdef niDebug
-      niDebugFmt(("D/ScriptVM[%p], concurrent VM initialized.",(tIntPtr)ptrNewVM.ptr()));
+      niDebugFmt(("ScriptVM[%p], concurrent VM initialized.",(tIntPtr)ptrNewVM.ptr()));
 #endif
       return ptrNewVM.GetRawAndSetNull();
     }

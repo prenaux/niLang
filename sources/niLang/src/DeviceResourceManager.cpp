@@ -28,7 +28,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
   ~cDeviceResourceManager()
   {
     Invalidate();
-    DRM_TRACE(("D/DRM[(%p)%s]: Destructed", (tIntPtr)this, mhspType));
+    DRM_TRACE(("DRM[(%p)%s]: Destructed", (tIntPtr)this, mhspType));
   }
 
   //! Zeros all the class members.
@@ -77,7 +77,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
         (*itL)->Invalidate();
       mlstResources.clear();
     }
-    DRM_TRACE(("D/DRM[(%p)%s]: Cleared", (tIntPtr)this, mhspType));
+    DRM_TRACE(("DRM[(%p)%s]: Cleared", (tIntPtr)this, mhspType));
   }
 
   ///////////////////////////////////////////////
@@ -138,7 +138,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
         return eFalse;
       }
 
-      DRM_TRACE(("D/DRM[(%p)%s]: REGISTER named resource (%p) '%s'",
+      DRM_TRACE(("DRM[(%p)%s]: REGISTER named resource (%p) '%s'",
                  (void*)this,mhspType,(void*)apRes,apRes->GetDeviceResourceName()));
       tResHMapIt it = mmapResources.find(apRes->GetDeviceResourceName());
       if (it == mmapResources.end()) {
@@ -160,7 +160,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
                       niHStr(mhspType)));
         return eFalse;
       }
-      DRM_TRACE(("D/DRM[(%p)%s]: REGISTER unnamed resource (%p)",
+      DRM_TRACE(("DRM[(%p)%s]: REGISTER unnamed resource (%p)",
                  (void*)this,mhspType,(void*)apRes));
       mlstResources.push_back(apRes);
     }
@@ -173,7 +173,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
     __sync_lock();
     if (HStringIsNotEmpty(apRes->GetDeviceResourceName()))
     {
-      DRM_TRACE(("D/DRM[(%p)%s]: Unregister named resource (%p) '%s'",
+      DRM_TRACE(("DRM[(%p)%s]: Unregister named resource (%p) '%s'",
                  (void*)this,mhspType,(void*)apRes,apRes->GetDeviceResourceName()));
       tResHMapIt it = mmapResources.find(apRes->GetDeviceResourceName());
       if (it == mmapResources.end())
@@ -189,7 +189,7 @@ class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
     }
     else
     {
-      DRM_TRACE(("D/DRM[(%p)%s]: Unregister unnamed resource (%p)",
+      DRM_TRACE(("DRM[(%p)%s]: Unregister unnamed resource (%p)",
                  (void*)this,mhspType,(void*)apRes));
       if (!astl::find_erase(mlstResources,apRes))
         return eFalse;

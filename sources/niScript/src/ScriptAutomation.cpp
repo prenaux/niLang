@@ -730,7 +730,7 @@ cScriptAutomation::cScriptAutomation() {
 #endif
 
 #ifdef niDebug
-  niDebugFmt(("D/ScriptAutomation[%p] initialized.",(tIntPtr)this));
+  niDebugFmt(("ScriptAutomation[%p] initialized.",(tIntPtr)this));
 #endif
 }
 
@@ -778,7 +778,7 @@ void cScriptAutomation::Invalidate()
   mbIsValid = eFalse;
 
 #ifdef niDebug
-  niDebugFmt(("D/ScriptAutomation[%p] invalidated.",(tIntPtr)this));
+  niDebugFmt(("ScriptAutomation[%p] invalidated.",(tIntPtr)this));
 #endif
 }
 

@@ -21,5 +21,8 @@ indent_size = 2
 [docker-compose.yml]
 indent_size = 4
 
-[*.{c,cpp,h,hpp,cxx,hxx,inl}]
+[*.{c,cpp,cpp2,cni,h,hpp,cxx,hxx,inl}]
 indent_size = 2
+
+[*.sh]
+indent_size = 4

@@ -10,7 +10,7 @@
 #include <niLang/STL/sort.h>
 #include "API/niUI/IImage.h"
 
-#define TRACE_BUFFER_CACHE(X) niDebugFmt(X)
+#define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
 #include "API/niUI/Utils/BufferCache.h"
 // #define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
 

@@ -62,6 +62,9 @@ if (!::gUIContext) {
   ///////////////////////////////////////////////
   function startFormApp(aFormPath,aDir,aConfig) {
     local loadForm = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
+      local loadingStart = ::clock()
+      ::log("Loading form app '" + aFormPath + "'.")
+
       // Load the form
       local formPath = aFormPath
       local formDT = ::lang.loadDataTable("xml",formPath)
@@ -101,7 +104,8 @@ if (!::gUIContext) {
         ::gFormWidget.SetFocus();
       }
 
-      ::log("Loaded form app:" aFormPath)
+      ::log(::format("Done, loaded form app '%s' in %.6fs",
+                     aFormPath, ::clock()-loadingStart))
     }
 
     local loadConfig = function() : (aFormPath) {

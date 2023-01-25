@@ -324,45 +324,43 @@ cString __stdcall _URLFindFilePath(const achar* aszRes, const achar* aszBasePath
   const cPath basePath(aszBasePath);
 
   cString ret;
-  if (aLoaderPrefix) {
-    const cString ext = _ASTR(aszRes).RAfter(".").ToLower();
-    if (ext.empty()) {
-      Ptr<tGlobalInstanceCMap> mapGI = ni::GetLang()->GetGlobalInstanceMap();
+  const cString ext = _ASTR(aszRes).RAfter(".").ToLower();
+  if (aLoaderPrefix && ext.empty()) {
+    Ptr<tGlobalInstanceCMap> mapGI = ni::GetLang()->GetGlobalInstanceMap();
 
-      // try to find the file with the base path
-      if (ret.empty()) {
-        for (tGlobalInstanceCMap::const_iterator it = mapGI->lower_bound(*aLoaderPrefix);
-             it != mapGI->end() && it->first.StartsWith(aLoaderPrefix->Chars()); ++it)
-        {
-          cPath path(aszRes);
-          path.SetExtension(it->first.After(*aLoaderPrefix).Chars());
+    // try to find the file with the base path
+    if (ret.empty()) {
+      for (tGlobalInstanceCMap::const_iterator it = mapGI->lower_bound(*aLoaderPrefix);
+            it != mapGI->end() && it->first.StartsWith(aLoaderPrefix->Chars()); ++it)
+      {
+        cPath path(aszRes);
+        path.SetExtension(it->first.After(*aLoaderPrefix).Chars());
 
-          ret = _TryPathAndBasePath(path.GetPath().Chars(), basePath);
-          if (!ret.empty())
-            break;
-        }
-      }
-
-      // try to find the file with all the subdir components
-      if (ret.empty()) {
-        for (tGlobalInstanceCMap::const_iterator it = mapGI->lower_bound(*aLoaderPrefix);
-             it != mapGI->end() && it->first.StartsWith(aLoaderPrefix->Chars()); ++it)
-        {
-          cPath path(aszRes);
-          path.SetExtension(it->first.After(*aLoaderPrefix).Chars());
-
-          ret = _TryPathAllDirs(path.GetPath().Chars(), aszBasePath);
-          if (!ret.empty())
-            break;
-        }
+        ret = _TryPathAndBasePath(path.GetPath().Chars(), basePath);
+        if (!ret.empty())
+          break;
       }
     }
-    else {
-      ret = _TryPathAndBasePath(resPath, basePath);
-      if (ret.empty()) {
-        TRACE_FFP_WARN(niFmt("Couldn't find directly '%s' (%s), trying harder...", aszRes, aszBasePath));
-        ret = _TryPathAllDirs(resPath, basePath);
+
+    // try to find the file with all the subdir components
+    if (ret.empty()) {
+      for (tGlobalInstanceCMap::const_iterator it = mapGI->lower_bound(*aLoaderPrefix);
+            it != mapGI->end() && it->first.StartsWith(aLoaderPrefix->Chars()); ++it)
+      {
+        cPath path(aszRes);
+        path.SetExtension(it->first.After(*aLoaderPrefix).Chars());
+
+        ret = _TryPathAllDirs(path.GetPath().Chars(), aszBasePath);
+        if (!ret.empty())
+          break;
       }
+    }
+  }
+  else {
+    ret = _TryPathAndBasePath(resPath, basePath);
+    if (ret.empty()) {
+      TRACE_FFP_WARN(niFmt("Couldn't find directly '%s' (%s), trying harder...", aszRes, aszBasePath));
+      ret = _TryPathAllDirs(resPath, basePath);
     }
   }
 

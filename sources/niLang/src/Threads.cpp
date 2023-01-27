@@ -255,7 +255,13 @@ struct ThreadImpl : public cIUnknownImpl<iThread>
         impl->mThreadProcCompletedEvent.Signal(); // signal for Join
       }
     } // WeakPtr scope end
-    pthread_exit((void*)r);
+
+    // XXX: We should not call pthread_exit just before return, as it is
+    //      automatically called when the function exits. Calling pthread_exit
+    //      result in a double-free bug when called here. pthread_exit should
+    //      only be called to exit a thread early - although getting to a return
+    //      is always a better choice if possible since its essentially the
+    //      equivalent of the exit() method for a process.
     return (void*)r;
 #endif
   }

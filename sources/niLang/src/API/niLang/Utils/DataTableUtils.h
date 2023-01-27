@@ -30,7 +30,7 @@ inline Ptr<iDataTable> LoadDataTable(iFile* fp, const achar* aaszSerFormat = "xm
 ///////////////////////////////////////////////
 inline Ptr<iDataTable> LoadDataTable(const achar* aURL, const achar* aaszSerFormat = "xml") {
   Ptr<iFile> fp = ni::GetLang()->URLOpen(aURL);
-  return LoadDataTable(fp,aaszSerFormat);
+  return LoadDataTable(fp.raw_ptr(),aaszSerFormat);
 }
 
 ///////////////////////////////////////////////

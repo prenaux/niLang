@@ -1140,7 +1140,15 @@ niExportFunc(achar*) StrSepQuoted(achar** appString, const achar *aaszDelim, con
   bool inQuote = false;
   for (tok = s;;) {
     pc = c;
-    c = *s++;
+    c = *s;
+    if (c == 0) {
+      *appString = nullptr;
+      return (tok);
+    }
+    else {
+      ++s;
+    }
+
     if (inQuote) {
       if (c == aQuote) {
         if (*s == aQuote) {
@@ -1155,26 +1163,18 @@ niExportFunc(achar*) StrSepQuoted(achar** appString, const achar *aaszDelim, con
         }
       }
       else if (c == 0) {
-        if (c == 0)
-          s = NULL;
-        else
-          s[-1] = 0;
+        s[-1] = 0;
         *appString = s;
         // niDebugFmt(("... StrSepQuoted RET: '%s'", tok));
         return (tok);
       }
-    }
-    else if (c == aQuote) {
+    } else if (c == aQuote) {
       inQuote = true;
-    }
-    else {
+    } else {
       spanp = aaszDelim;
       do {
         if ((sc = *spanp++) == c) {
-          if (c == 0)
-            s = NULL;
-          else
-            s[-1] = 0;
+          s[-1] = 0;
           *appString = s;
           // niDebugFmt(("... StrSepQuoted RET: '%s'", tok));
           return (tok);

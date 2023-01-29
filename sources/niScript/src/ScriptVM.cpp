@@ -206,8 +206,8 @@ cString& sqGetCallstack(cString& astrOut, HSQUIRRELVM v, int aLevel)
         addedCallstack = true;
       }
       astrOut << niFmt("%s [%s", (si.funcname ? si.funcname : "unknown"), (si.source ? si.source : "unknown"));
-      if (si.line >= 0) {
-        astrOut << niFmt(":%d",si.line+pVM->GetErrorLineOffset());
+      if (si.lineCol.x >= 0) {
+        astrOut << niFmt(":%d:%d",si.lineCol.x+pVM->GetErrorLineOffset(),si.lineCol.y);
       }
       astrOut << "]\n";
       level++;

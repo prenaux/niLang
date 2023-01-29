@@ -39,7 +39,11 @@ struct SQLocalVarInfo
   unsigned int _pos;
 };
 
-struct SQLineInfo { int _line;int _op; };
+struct SQLineInfo {
+  int _line {};
+  int _column {};
+  int _op {};
+};
 
 SQ_VECTOR_TYPEDEF(SQOuterVar,SQOuterVarVec);
 SQ_VECTOR_TYPEDEF(SQLocalVarInfo,SQLocalVarInfoVec);
@@ -68,10 +72,10 @@ public:
     return niNew SQFunctionProto();
   }
   const SQChar* GetLocal(SQVM *v,tU32 stackbase,tU32 nseq,tU32 nop);
-  static tI32 _GetLine(const SQInstructionVec& instructions,
-                       const SQInstruction *curr,
-                       const SQLineInfoVec& lineinfos);
-  tI32 GetLine(const SQInstruction *curr);
+  static sVec2i _GetLineCol(const SQInstructionVec& instructions,
+                            const SQInstruction *curr,
+                            const SQLineInfoVec& lineinfos);
+  sVec2i GetLineCol(const SQInstruction *curr) const;
 
   void __stdcall SetName(iHString* ahspName) {
     this->_name = ni::HStringIsEmpty(ahspName) ? _null_ : ahspName;
@@ -87,8 +91,8 @@ public:
       return NULL;
     return _stringhval(this->_sourcename);
   }
-  int __stdcall GetSourceLine() const {
-    return this->_sourceline;
+  sVec2i __stdcall GetSourceLineCol() const {
+    return Vec2i(this->_sourceline,this->_sourcecol);
   }
 
   void LintTrace(
@@ -104,6 +108,7 @@ public:
   SQInstructionVec _instructions;
   SQObjectPtr _sourcename;
   int _sourceline;
+  int _sourcecol;
   SQObjectPtr _name;
   SQLocalVarInfoVec _localvarinfos;
   SQLineInfoVec _lineinfos;

@@ -87,7 +87,7 @@ struct sCompileErrors {
   astl::vector<sError> _errors;
 
   sCompileErrors() {
-    _AddError(eCompileResult_OK,0,0,"");
+    _AddError(eCompileResult_OK,Vec2i(0,0),"");
   }
 
   tBool HasError() const {
@@ -102,30 +102,30 @@ struct sCompileErrors {
     return _errors.back();
   }
 
-  sError& _AddError(eCompileResult aType, int aLine, int aCol, const char* aMsg) {
+  sError& _AddError(eCompileResult aType, sVec2i aLineCol, const char* aMsg) {
     sError& e = astl::push_back(_errors);
     e.type = aType;
-    e.line = aLine;
-    e.col = aCol;
+    e.line = aLineCol.x;
+    e.col = aLineCol.y;
     if (aMsg) {
       e.msg = aMsg;
     }
     return e;
   }
-  eCompileResult CompilerError(int aLine, int aCol, const char* aMsg) {
+  eCompileResult CompilerError(sVec2i aLineCol, const char* aMsg) {
     return _AddError(
         eCompileResult_CompilerError,
-        aLine,aCol,aMsg).type;
+        aLineCol,aMsg).type;
   }
-  eCompileResult LexerError(int aLine, int aCol, const char* aMsg) {
+  eCompileResult LexerError(sVec2i aLineCol, const char* aMsg) {
     return _AddError(
         eCompileResult_LexerError,
-        aLine,aCol,aMsg).type;
+        aLineCol,aMsg).type;
   }
-  eCompileResult InternalError(int aLine, int aCol, const char* aMsg) {
+  eCompileResult InternalError(sVec2i aLineCol, const char* aMsg) {
     return _AddError(
         eCompileResult_InternalError,
-        aLine,aCol,aMsg).type;
+        aLineCol,aMsg).type;
   }
 };
 

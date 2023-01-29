@@ -53,14 +53,14 @@
 #define TERMINATE_BUFFER() {_longstr.appendChar(_A('\0'));}
 #define ADD_KEYWORD(key,id) _keywords->NewSlot(_H(#key),SQInt(id))
 
-#define LEXER_ERROR(ERR)                                      \
-  niWarning(niFmt("Lexer Error: %s",ERR));                    \
-  return aErrors.LexerError(GetLastTokenLine(),_currentcolumn,ERR)
+#define LEXER_ERROR(ERR)                                \
+  niWarning(niFmt("Lexer Error: %s",ERR));              \
+  return aErrors.LexerError(GetLastTokenLineCol(),ERR)
 
-#define INTERNAL_ERROR(ERR)                                     \
-  niWarning(niFmt("InternalError Error: %s",ERR));              \
-  niAssertUnreachable(ERR);                                     \
-  return aErrors.InternalError(GetLastTokenLine(),_currentcolumn,ERR)
+#define INTERNAL_ERROR(ERR)                               \
+  niWarning(niFmt("InternalError Error: %s",ERR));        \
+  niAssertUnreachable(ERR);                               \
+  return aErrors.InternalError(GetLastTokenLineCol(),ERR)
 
 /*
   Rule for SExp operators:
@@ -182,8 +182,9 @@ void SQLexer::Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up)
 
   _readf = rg;
   _up = up;
-  _lasttokenline = _currentline = 1;
+  _currentline = 1;
   _currentcolumn = 0;
+  _lasttokenlinecol = Vec2i(_currentline, _currentcolumn);
   _prevtoken = -1;
   _svalue = NULL;
   _nvalue = 0;
@@ -216,7 +217,7 @@ void SQLexer::Next()
     // that we'll process it once only here (much better than
     // spreading the inc around...)
     if (t == _A('\n')) {
-      _lasttokenline = _currentline;
+      _lasttokenlinecol = Vec2i(_currentline, _currentcolumn);
       ++_currentline;
     }
     _currdata = t;
@@ -289,7 +290,7 @@ eCompileResult SQLexer::LexBlockComment(sCompileErrors& aErrors)
 }
 
 eCompileResult SQLexer::Lex(sCompileErrors& aErrors, int* apTok) {
-  _lasttokenline = _currentline;
+  _lasttokenlinecol = Vec2i(_currentline, _currentcolumn);
   switch (STATE_CURRENT()) {
     case STATE_REGULAR:
       return LexScript(aErrors,apTok,0);
@@ -1197,8 +1198,8 @@ int SQLexer::FinalizeSExpStringLiteral(const int aSExpType, const tU32 aSymbolPr
                      aSymbolPrefix,
                      _longstr,
                      _fileName,
-                     GetLastTokenLine(),
-                     _currentcolumn-len,
+                     GetLastTokenLineCol().x,
+                     GetLastTokenLineCol().y,
                      kind);
     _svalue = _longstr.Chars();
   }
@@ -1328,7 +1329,10 @@ void SQLexer::ReadCompilerCommand() {
   }
 }
 
-int SQLexer::GetLastTokenLine() const {
-  // if CUR_CHAR == \n _currentline already has been incremented but the actual 'current line' to display errors, etc... is still the previous line
-  return (CUR_CHAR == '\n') ? _lasttokenline : _currentline;
+sVec2i SQLexer::GetLastTokenLineCol() const {
+  return Vec2i(
+    // If CUR_CHAR == \n _currentline already has been incremented but the actual
+    // 'current line' to display errors, etc... is still the previous line.
+    (CUR_CHAR == '\n') ? _lasttokenlinecol.x : _currentline,
+    _lasttokenlinecol.y);
 }

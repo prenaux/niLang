@@ -17,12 +17,12 @@
 #define MAX_FUNC_STACKSIZE (1024)
 #define MAX_LITERALS       (1024*1024)
 
-SQFuncState::SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahspSourceName,int sourceline)
-    : _breaktargets(tI32CVec::Create())
-    , _unresolvedbreaks(tI32CVec::Create())
-    , _continuetargets(tI32CVec::Create())
-    , _unresolvedcontinues(tI32CVec::Create())
-{
+SQFuncState::SQFuncState(SQFunctionProto *func, SQFuncState *parent,
+                         iHString *ahspSourceName, sVec2i aSourceLineCol)
+    : _breaktargets(tI32CVec::Create()),
+      _unresolvedbreaks(tI32CVec::Create()),
+      _continuetargets(tI32CVec::Create()),
+      _unresolvedcontinues(tI32CVec::Create()) {
   _nliterals = 0;
   _literals = SQTable::Create();
   _lastline = 0;
@@ -33,7 +33,8 @@ SQFuncState::SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahs
   _returnexp = 0;
   _funcproto(_func)->_sourcename =
       ni::HStringIsEmpty(ahspSourceName) ? _null_ : ahspSourceName;
-  _funcproto(_func)->_sourceline = sourceline;
+  _funcproto(_func)->_sourceline = aSourceLineCol.x;
+  _funcproto(_func)->_sourcecol = aSourceLineCol.y;
 }
 
 int SQFuncState::GetStringConstant(const SQObjectPtr& cons) {
@@ -203,16 +204,25 @@ void SQFuncState::AddParameter(const SQObjectPtr &name, const SQObjectPtr &typeN
   _parameters.push_back(param);
 }
 
-void SQFuncState::AddLineInfos(int line,bool lineop,bool force)
+void SQFuncState::AddLineInfos(sVec2i aLineCol,bool lineop,bool force)
 {
-  if (_lastline!=line || force) {
-    SQLineInfo li;
-    li._line = line;
-    li._op = (GetCurrentPos()+1);
+  SQLineInfo li;
+  li._line = aLineCol.x;
+  li._column = aLineCol.y;
+  li._op = (GetCurrentPos()+1);
+  if (_lastline!=aLineCol.x || force) {
     if (lineop)
-      AddInstruction(_OP_LINE,0,line);
+      AddInstruction(_OP_LINE,0,aLineCol.x);
+    _lastline=aLineCol.x;
+  }
+  if (!_lineinfos.empty() &&
+      _lineinfos.back()._line == aLineCol.x &&
+      _lineinfos.back()._column == aLineCol.y)
+  {
+    _lineinfos.back() = li;
+  }
+  else {
     _lineinfos.push_back(li);
-    _lastline=line;
   }
 }
 

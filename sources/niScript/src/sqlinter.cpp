@@ -277,10 +277,10 @@ typedef astl::hash_map<const SQFunctionProto*,Ptr<LintClosure> > tFuncClosureMap
 #define _LKEY(KIND) (kLint_##KIND.key)
 #define _LNAME(KIND) (kLint_##KIND.name.ptr())
 #define _LTRACE(MSG) if (shouldLintTrace) { niDebugFmt(MSG); }
-#define _LINTERNAL_ERROR(MSG) aLinter.Log(_LKEY(internal_error), _LNAME(internal_error), *thisfunc, thisfunc->GetSourceLine(), MSG)
-#define _LINTERNAL_WARNING(MSG) aLinter.Log(_LKEY(internal_warning), _LNAME(internal_warning), *thisfunc, thisfunc->GetSourceLine(), MSG)
+#define _LINTERNAL_ERROR(MSG) aLinter.Log(_LKEY(internal_error), _LNAME(internal_error), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
+#define _LINTERNAL_WARNING(MSG) aLinter.Log(_LKEY(internal_warning), _LNAME(internal_warning), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
 #define _LENABLED(KIND) aLinter.IsEnabled(_LKEY(KIND))
-#define _LINT(KIND,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, getline(inst), MSG)
+#define _LINT(KIND,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, getlinecol(inst), MSG)
 
 static tU32 _lintKeyGen = 0;
 #define _DEF_LINT(NAME,CAT1,CAT2) \
@@ -423,7 +423,7 @@ struct sLinter {
     const tU32 aLint,
     const iHString* aLintName,
     const SQFunctionProto& aProto,
-    const int aLine,
+    const sVec2i aLineCol,
     const cString& aMsg)
   {
 #if defined SQLINTER_LOG_INLINE
@@ -445,13 +445,13 @@ struct sLinter {
       o << niHStr(aLintName) << ": ";
     // }
     o << aMsg;
-    if (aLine == aProto.GetSourceLine()) {
+    if (aLineCol.x == aProto._sourceline) {
       o << niFmt(" (in %s)", aProto.GetName());
     }
     else {
-      o << niFmt(" (in %s:L%s)", aProto.GetName(), aProto.GetSourceLine());
+      o << niFmt(" (in %s:%s)", aProto.GetName(), aProto._sourceline);
     }
-    o << niFmt(" [%s:L%s]\n", aProto.GetSourceName(), aLine);
+    o << niFmt(" [%s:%s:%s]\n", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
 #ifdef SQLINTER_LOG_INLINE
     niPrintln(o);
 #endif
@@ -501,8 +501,8 @@ void SQFuncState::LintDump()
   SQFunctionProto *func=_funcproto(_func);
   cString o;
   o << niFmt(_A("--------------------------------------------------------------------\n"));
-  o << niFmt(_A("-----FUNCTION: %s (%s:L%s)\n"),
-             func->GetName(), func->GetSourceName(),func->GetSourceLine());
+  o << niFmt(_A("-----FUNCTION: %s (%s:%s:%s)\n"),
+             func->GetName(), func->GetSourceName(),func->_sourceline,func->_sourcecol);
   {
     o << niFmt(_A("-----INFO\n"));
     o << niFmt(_A("stack size = %d\n"),func->_stacksize);
@@ -557,7 +557,7 @@ void SQFuncState::LintDump()
     o << niFmt(_A("-----Instructions\n"));
     for(int i=0;i<_instructions.size();i++){
       SQInstruction &inst=_instructions[i];
-      const int line = SQFunctionProto::_GetLine(_instructions,&inst,_lineinfos);
+      const sVec2i linecol = SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
       if (inst.op==_OP_LOAD ||
           inst.op==_OP_PREPCALLK ||
           inst.op==_OP_GETK ||
@@ -567,11 +567,11 @@ void SQFuncState::LintDump()
             inst.op==_OP_DIV) &&
            inst._arg3==0xFF))
       {
-        o << niFmt(_A("[%03d:L%03d] %20s %d "),i,line,_GetOpDesc(inst.op),inst._arg0);
-        if (inst._arg1==0xFFFF) {
+        o << niFmt(_A("[%03d:L%03d:C%03d] %20s %d "), i, linecol.x, linecol.y,
+                   _GetOpDesc(inst.op), inst._arg0);
+        if (inst._arg1 == 0xFFFF) {
           o << niFmt(_A("null"));
-        }
-        else {
+        } else {
           cString literalStr;
           if (inst._arg1 < vLiterals.size()) {
             literalStr = _ObjToString(vLiterals[inst._arg1]);
@@ -596,7 +596,9 @@ void SQFuncState::LintDump()
         }
       }
       else {
-        o << niFmt(_A("[%03d:L%03d] %20s %d %d %d %d "),i,line,_GetOpDesc(inst.op),inst._arg0,inst._arg1,inst._arg2,inst._arg3);
+        o << niFmt(_A("[%03d:L%03d:C%03d] %20s %d %d %d %d "), i, linecol.x,
+                   linecol.y, _GetOpDesc(inst.op), inst._arg0, inst._arg1,
+                   inst._arg2, inst._arg3);
       }
       _AddOpExt(o,inst._ext);
       o << "\n";
@@ -726,13 +728,14 @@ void SQFunctionProto::LintTrace(
   const tBool shouldLintTrace = niModuleShouldTrace_(niScript,LintTrace);
   const SQFunctionProto* thisfunc = this;
   _LTRACE(("--- TRACE FUNCTION ------------------------------------\n"));
-  _LTRACE(("... func: %s [%s:L%s]\n",
+  _LTRACE(("... func: %s [%s:%s:%s]\n",
            thisfunc->GetName(),
            thisfunc->GetSourceName(),
-           thisfunc->GetSourceLine()));
+           thisfunc->_sourceline,
+           thisfunc->_sourcecol));
 
-  auto getline = [&](const SQInstruction& inst) -> int {
-    return SQFunctionProto::_GetLine(_instructions,&inst,_lineinfos);
+  auto getlinecol = [&](const SQInstruction& inst) -> sVec2i {
+    return SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
   };
 
   // Build the symbol tables & functions list

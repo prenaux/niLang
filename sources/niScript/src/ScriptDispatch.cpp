@@ -170,7 +170,7 @@ tBool __stdcall cScriptDispatch::CallMethod(const sMethodDef* const apMethodDef,
     else if (mOwnerVM != vm && !mbDidPrintMultiThreadedWarning) {
       mbDidPrintMultiThreadedWarning = eTrue;
       cString strFunc = "NA", strSource = "NA";
-      tU32 nLine = 0;
+      sVec2i lineCol {0,0};
       if (_sqtype(objMeth) == OT_CLOSURE) {
         SQFunctionProto *func = _funcproto(_closure(objMeth)->_function);
         if (_sqtype(func->_name) == OT_STRING) {
@@ -179,9 +179,13 @@ tBool __stdcall cScriptDispatch::CallMethod(const sMethodDef* const apMethodDef,
         if (_sqtype(func->_sourcename) == OT_STRING) {
           strSource = _stringval(func->_sourcename);
         }
-        nLine = func->GetLine(func->_instructions.data());
+        lineCol = func->GetLineCol(func->_instructions.data());
       }
-      niWarning(niFmt("ScriptDispatch %x (%s:%s:%d): Called from multiple threads, the calls will be serialized, thus very likely rendering the multi-threading useless and creating potential deadlocks.", (tIntPtr)this, strFunc, strSource, nLine));
+      niWarning(niFmt(
+          "ScriptDispatch %x (%s:%s:%d:%d): Called from multiple threads, "
+          "the calls will be serialized, thus very likely rendering the "
+          "multi-threading useless and creating potential deadlocks.",
+          (tIntPtr)this, strFunc, strSource, lineCol.x, lineCol.y));
     }
   }
 

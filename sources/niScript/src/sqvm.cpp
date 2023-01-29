@@ -799,7 +799,7 @@ void SQVM::CallDebugHook(int type,int forcedline)
   Push(_roottable);
   Push(type);
   Push(func->_sourcename);
-  Push(forcedline?forcedline:(int)func->GetLine(_ci->_ip));
+  Push(forcedline?forcedline:(int)func->GetLineCol(_ci->_ip).x);
   Push(func->_name);
   Call(_debughook,nparams,_top-nparams,temp_reg);
   Pop(nparams);

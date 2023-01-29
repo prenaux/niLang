@@ -41,6 +41,7 @@ _HDecl_(AT_INDEX_AT,"@INDEX@");
 _HDecl(func);
 _HDecl(src);
 _HDecl(line);
+_HDecl(col);
 _HDecl(locals);
 _HDecl(Import);
 _HDecl(NewImport);

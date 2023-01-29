@@ -47,7 +47,7 @@ SQ_VECTOR_TYPEDEF(ExpState,ExpStateVec);
   }
 
 #define COMPILER_ERROR(ERRMSG)                                          \
-  return aErrors.CompilerError(_lex.GetLastTokenLine(),_lex._currentcolumn,ERRMSG)
+  return aErrors.CompilerError(_lex.GetLastTokenLineCol(),ERRMSG)
 
 #define IS_TK_COMMA(TK) ((TK) == ',' || (TK) == TK_SEXP_START_COMMA)
 
@@ -193,7 +193,8 @@ class SQCompiler
     {
       SQFuncState funcstate(
         SQFunctionProto::Create(), NULL,
-        _stringhval(_sourcename), _lex.GetLastTokenLine());
+        _stringhval(_sourcename),
+        _lex.GetLastTokenLineCol());
       _fs = &funcstate;
       _fs->proto().SetName(_HC(compilecontext));
       _fs->AddParameter(_HC(this),_null_);
@@ -208,7 +209,9 @@ class SQCompiler
         }
       }
       _fs->CleanStack(stacksize);
-      _fs->AddLineInfos(_lex._currentline, getGenerateLineInfo(), true);
+      _fs->AddLineInfos(
+        Vec2i(_lex._currentline, _lex._currentcolumn),
+        getGenerateLineInfo(), true);
       _fs->AddInstruction(_OP_RETURN, 0xFF);
       _fs->SetStackSize(0);
       _fs->FinalizeFuncProto();
@@ -251,7 +254,7 @@ class SQCompiler
 
   eCompileResult Statement(sCompileErrors& aErrors, int* apPos)
   {
-    _fs->AddLineInfos(_lex._currentline, getGenerateLineInfo());
+    _fs->AddLineInfos(Vec2i(_lex._currentline, _lex._currentcolumn), getGenerateLineInfo());
     switch(_token){
       case ';': {
         COMPILE_CHECK(Lex(aErrors));
@@ -703,7 +706,7 @@ class SQCompiler
       int opExt;
       COMPILE_CHECK(OpExt(aErrors,opExt));
       COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&idx));
-      _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+      _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo());
       _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(idx));
       if (_exst._opExt & _OPEXT_EXPLICIT_THIS) {
         _fs->SetTopInstructionOpExt(_OPEXT_EXPLICIT_THIS);
@@ -826,7 +829,7 @@ class SQCompiler
     switch(_token) {
       case TK_STRING_LITERAL: {
         SQObjectPtr id(_H(_lex._svalue));
-        _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+        _fs->AddLineInfos(_lex.GetLastTokenLineCol(), _lex._currentcolumn, getGenerateLineInfo());
         _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
         COMPILE_CHECK(Lex(aErrors));
         break;
@@ -846,7 +849,7 @@ class SQCompiler
           }
 
           COMPILE_CHECK(Lex(aErrors));
-          _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+          _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo());
           const int pos = _fs->GetLocalVariable(id);
           if (isThis) {
             if (pos == -1) {
@@ -941,7 +944,7 @@ class SQCompiler
                 COMPILE_CHECK(Lex(aErrors));
                 SQObjectPtr id;
                 COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
-                _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+                _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo());
                 bool hasArgList;
                 COMPILE_CHECK(ExpectFuncArgList(aErrors,hasArgList));
                 _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
@@ -960,7 +963,7 @@ class SQCompiler
             default: {
               SQObjectPtr id;
               COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
-              _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+              _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo());
               _fs->AddInstruction(
                   _OP_LOAD, _fs->PushTarget(),
                   _fs->GetStringConstant(id));
@@ -1398,7 +1401,7 @@ class SQCompiler
     }
 
     COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
-    _fs->AddLineInfos(_lex.GetLastTokenLine(), getGenerateLineInfo());
+    _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo());
     if (bPushTarget0) _fs->PushTarget(0);
     _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
 
@@ -1407,7 +1410,9 @@ class SQCompiler
     while(_token == TK_DOUBLE_COLON) {
       COMPILE_CHECK(Lex(aErrors));
       COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
-      _fs->AddLineInfos(_lex._currentline, getGenerateLineInfo());
+      _fs->AddLineInfos(
+        Vec2i(_lex._currentline, _lex._currentcolumn),
+        getGenerateLineInfo());
       _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
       if (_token == TK_DOUBLE_COLON)
         Emit2ArgsOP(_OP_GET);
@@ -1542,7 +1547,8 @@ class SQCompiler
   {
     SQFuncState funcstate(
       SQFunctionProto::Create(), _fs,
-      sq_isstring(_sourcename) ? _stringhval(_sourcename) : NULL, _lex.GetLastTokenLine());
+      sq_isstring(_sourcename) ? _stringhval(_sourcename) : NULL,
+      _lex.GetLastTokenLineCol());
     funcstate.proto().SetName(sq_isstring(name) ? _stringhval(name) : NULL);
     funcstate.AddParameter(_HC(this),_null_);
 
@@ -1600,7 +1606,7 @@ class SQCompiler
     _fs = &funcstate;
     COMPILE_CHECK(Statement(aErrors,apPos));
     funcstate.AddLineInfos(
-        _lex.GetLastTokenLine(),
+        _lex.GetLastTokenLineCol(),
         getGenerateLineInfo(), true);
     funcstate.AddInstruction(_OP_RETURN, -1);
     funcstate.SetStackSize(0);

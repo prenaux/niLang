@@ -174,7 +174,10 @@ static int base_getbasestackinfos(HSQUIRRELVM v)
     sq_pushstring(v, _H(src));
     sq_createslot(v, -3);
     sq_pushstring(v, _HC(line));
-    sq_pushint(v, si.line);
+    sq_pushint(v, si.lineCol.x);
+    sq_createslot(v, -3);
+    sq_pushstring(v, _HC(col));
+    sq_pushint(v, si.lineCol.y);
     sq_createslot(v, -3);
     return 1;
   }
@@ -203,7 +206,10 @@ static int base_getstackinfos(HSQUIRRELVM v)
     sq_pushstring(v, _H(src));
     sq_createslot(v, -3);
     sq_pushstring(v, _HC(line));
-    sq_pushint(v, si.line);
+    sq_pushint(v, si.lineCol.x);
+    sq_createslot(v, -3);
+    sq_pushstring(v, _HC(col));
+    sq_pushint(v, si.lineCol.y);
     sq_createslot(v, -3);
     sq_pushstring(v, _HC(locals));
     sq_newtable(v);

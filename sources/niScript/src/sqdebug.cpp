@@ -13,7 +13,7 @@ cString sq_getcallinfo_string(HSQUIRRELVM v, int level)
   if (cssize > level)
   {
     cString strFunc = _A("unknown"), strSource = _A("NOSOURCE");
-    tI32 nLine = 0;
+    sVec2i lineCol {0,0};
     SQCallInfo &ci = v->_callsstack[cssize-level-1];
     switch (_sqtype(ci._closurePtr))
     {
@@ -26,7 +26,7 @@ cString sq_getcallinfo_string(HSQUIRRELVM v, int level)
           if (_sqtype(func->_sourcename) == OT_STRING) {
             strSource = _stringval(func->_sourcename);
           }
-          nLine = func->GetLine(ci._ip);
+          lineCol = func->GetLineCol(ci._ip);
           break;
         }
       case OT_NATIVECLOSURE:
@@ -35,13 +35,15 @@ cString sq_getcallinfo_string(HSQUIRRELVM v, int level)
           strFunc = _A("unknown");
           if(_sqtype(_nativeclosure(ci._closurePtr)->_name) == OT_STRING)
             strFunc = _stringval(_nativeclosure(ci._closurePtr)->_name);
-          nLine = -1;
+          lineCol = {-1,-1};
           break;
         }
       default:
         return AZEROSTR;
     }
-    return niFmt(_A("%s(%d): FUNCTION [%s]"),strSource.Chars(),nLine+pVM->GetErrorLineOffset(),strFunc.Chars());
+    return niFmt(_A("%s(%d:%d): FUNCTION [%s]"), strSource.Chars(),
+                 lineCol.x + pVM->GetErrorLineOffset(), lineCol.y,
+                 strFunc.Chars());
   }
   return AZEROSTR;
 }
@@ -63,7 +65,7 @@ niExportFunc(SQRESULT) sq_stackinfos(HSQUIRRELVM v, int level, SQStackInfos *si)
             si->funcname = _stringval(func->_name);
           if (_sqtype(func->_sourcename) == OT_STRING)
             si->source = _stringval(func->_sourcename);
-          si->line = func->GetLine(ci._ip);
+          si->lineCol = func->GetLineCol(ci._ip);
           break;
         }
       case OT_NATIVECLOSURE:
@@ -72,7 +74,7 @@ niExportFunc(SQRESULT) sq_stackinfos(HSQUIRRELVM v, int level, SQStackInfos *si)
           si->funcname = _A("unknown");
           if(_sqtype(_nativeclosure(ci._closurePtr)->_name) == OT_STRING)
             si->funcname = _stringval(_nativeclosure(ci._closurePtr)->_name);
-          si->line = -1;
+          si->lineCol = {-1,-1};
           break;
         }
     }

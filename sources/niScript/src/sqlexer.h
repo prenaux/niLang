@@ -19,7 +19,8 @@ struct SQLexer
   void Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up);
   SQObjectPtr Tok2Str(int tok);
   eCompileResult Lex(sCompileErrors& errors, int* apTok);
-  int GetLastTokenLine() const;
+
+  sVec2i GetLastTokenLineCol() const;
 
  private:
   eCompileResult LexScript(sCompileErrors& errors, int* apTok, tU32 backToSExpChar);
@@ -47,7 +48,7 @@ struct SQLexer
   astl::stack<sState> _stateStack;
   int _prevtoken;
   int _currentline;
-  int _lasttokenline;
+  sVec2i _lasttokenlinecol;
   int _currentcolumn;
   const SQChar *_svalue;
   SQInt _nvalue;

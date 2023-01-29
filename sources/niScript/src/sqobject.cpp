@@ -48,23 +48,25 @@ const SQChar* SQFunctionProto::GetLocal(SQVM *vm,tU32 stackbase,tU32 nseq,tU32 n
   return res;
 }
 
-tI32 SQFunctionProto::_GetLine(const SQInstructionVec& instructions,
-                               const SQInstruction *curr,
-                               const SQLineInfoVec& lineinfos)
-{
-  tI32 op=(curr-(&instructions[0]));
-  tI32 line=lineinfos[0]._line;
-  for (tU32 i=1; i<lineinfos.size();i++) {
-    if (lineinfos[i]._op > op)
-      return line;
-    line=lineinfos[i]._line;
+sVec2i SQFunctionProto::_GetLineCol(const SQInstructionVec &instructions,
+                                    const SQInstruction *curr,
+                                    const SQLineInfoVec &lineinfos) {
+  tI32 op = (curr - (&instructions[0]));
+  tI32 line = lineinfos[0]._line;
+  tI32 column = lineinfos[0]._column;
+  for (tU32 i = 1; i < lineinfos.size(); i++) {
+    if (lineinfos[i]._op > op) {
+      return Vec2i(line, column);
+    }
+    line = lineinfos[i]._line;
+    column = lineinfos[i]._column;
   }
-  return line;
+  return Vec2i(line, column);
 }
 
-tI32 SQFunctionProto::GetLine(const SQInstruction *curr)
+sVec2i SQFunctionProto::GetLineCol(const SQInstruction *curr) const
 {
-  return _GetLine(_instructions, curr, _lineinfos);
+  return _GetLineCol(_instructions, curr, _lineinfos);
 }
 
 #define _CHECK_IO(exp)  { if(!exp) { v->Raise_MsgError("io error"); return false; } }

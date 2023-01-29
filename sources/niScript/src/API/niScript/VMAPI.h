@@ -86,7 +86,7 @@ struct SQObject {
 typedef struct tagSQStackInfos{
   const SQChar* funcname;
   const SQChar* source;
-  int line;
+  sVec2i lineCol;
 }SQStackInfos;
 
 typedef struct SQVM* HSQUIRRELVM;

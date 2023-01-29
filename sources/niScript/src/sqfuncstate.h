@@ -8,7 +8,7 @@
 
 struct SQFuncState
 {
-  SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahspSourceName,int sourceline);
+  SQFuncState(SQFunctionProto *func,SQFuncState *parent,iHString* ahspSourceName,sVec2i aSourceLineCol);
   void AddInstruction(SQOpcode _op,int arg0=0,int arg1=0,int arg2=0,int arg3=0,int ext=0){SQInstruction i(_op,arg0,arg1,arg2,arg3,ext);AddInstruction(i);}
   void AddInstruction(SQInstruction &i);
   void SetIntructionParams(int pos,int arg0,int arg1,int arg2=0,int arg3=0);
@@ -28,7 +28,7 @@ struct SQFuncState
   int GenerateCode();
   int GetStackSize();
   int CalcStackFrameSize();
-  void AddLineInfos(int line,bool lineop,bool force=false);
+  void AddLineInfos(sVec2i aSourceLineCol,bool lineop,bool force=false);
   int AllocStackPos();
   int PushTarget(int n=-1);
   int PopTarget();

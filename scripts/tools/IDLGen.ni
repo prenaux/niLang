@@ -919,10 +919,16 @@
         }
         // Inline functions, static inline functions, and templates
         else if (mLine.startswith("inline") ||
+                 mLine.startswith("__forceinline") ||
                  mLine.startswith("static") ||
                  mLine.startswith("template") ||
-                 mLine.startswith("niExportFunc"))
+                 mLine.startswith("niExportFunc") ||
+                 mLine.startswith("niExportFuncCPP") ||
+                 mLine.startswith("niFn") ||
+                 mLine.startswith("niFnS") ||
+                 mLine.startswith("niFnV"))
         {
+          local start = mLine;
           if (mLine.endswith(";")) {
             // line ends with ';' so it's a prototype or forward declaration
             // just skip this line
@@ -930,14 +936,24 @@
           else
           {
             // skip the block
+            local shouldSkipBlock = false;
             while (1) {
-              if (mLine.find("{") != null)
+              if (mLine.find("{") != null) {
+                shouldSkipBlock = true;
                 break;
+              }
+              if (mLine.endswith(";")) {
+                // this is a forward declaration
+                shouldSkipBlock = false;
+                break;
+              }
               if (mSrc.partial_read)
-                parserError(mLineCount,"Unexpected end of file while looking for block start.");
+                parserError(mLineCount,"Unexpected end of file while looking for block start for: " + start);
               mLine = readLine();
             }
-            skipBlock();
+            if (shouldSkipBlock) {
+              skipBlock();
+            }
           }
         }
         // Comments
@@ -1905,13 +1921,13 @@
   ///////////////////////////////////////////////
   function parserError(aLine,aText)
   {
-    throw mSrc.source_path+"("+aLine+"): "+aText
+    throw mSrc.source_path+":"+aLine+": "+aText
   }
 
   ///////////////////////////////////////////////
   function parserWarning(aLine,aText)
   {
-    ::println(mSrc.source_path+"("+aLine+"): "+aText)
+    ::println(mSrc.source_path+":"+aLine+": "+aText)
   }
 
   ///////////////////////////////////////////////

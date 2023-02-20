@@ -4,6 +4,7 @@
 
 #include <niLang/Utils/ConcurrentImpl.h>
 #include <niLang/Utils/Trace.h>
+#include <niLang/Utils/DataTableUtils.h>
 
 #ifdef niWindows
 #include <niLang/Platforms/Win32/Win32_Redef.h>
@@ -650,14 +651,20 @@ class cCURL : public cIUnknownImpl<iCURL>
   tHStringPtr mhspUserName;
   tHStringPtr mhspUserPass;
   eCURLHttpAuth mHttpAuth;
-
+#ifdef niJSCC
+  tBool _hasFetchOverride;
+#endif
   cCURL() {
     mnConnectionTimeoutInSecs = 10;
     mnRequestTimeoutInSecs = 60;
     mhspUserAgent = _H("niCURL");
     mHttpAuth = eCURLHttpAuth_None;
+#ifdef niJSCC
+    _hasFetchOverride = static_cast<tBool>(EM_ASM_INT({
+      return Module["niCURL"].handleFetchOverride != null;
+    }));
+#endif
   }
-
 
   virtual void __stdcall SetConnectionTimeoutInSecs(tU32 anInSecs) {
     mnConnectionTimeoutInSecs = anInSecs;
@@ -1401,6 +1408,98 @@ class cCURL : public cIUnknownImpl<iCURL>
                                       iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
+    if (_hasFetchOverride) {
+      TRACE_FETCH(("niCURL: Using JS fetch override."));
+      cString retString = (const char*) EM_ASM_PTR({
+        console.log("niCURL: Fetching using Module.niCURL.handleFetchOverride");
+        let result = Module.niCURL.handleFetchOverride();
+        return allocateUTF8(result);
+      });
+      if (!retString.empty()) {
+        TRACE_FETCH(("niCurl: %s", retString));
+        Ptr<iDataTable> dt = CreateDataTable("FetchResult");
+        Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128,"");
+        retFile->WriteString(retString.Chars());
+        retFile->SeekSet(0);
+        ni::GetLang()->SerializeDataTable("Json", ni::eSerializeMode_Read, dt, retFile);
+        // cString xmlString = ni::DataTableToXML(dt);
+        // TRACE_FETCH(("niCurl: DataTable: %s", xmlString));
+
+        Ptr<iDataTable> jobj = dt->GetChild("jobj");
+        niCheckIsOK(jobj, NULL);
+
+        cString url = jobj->GetString("url");
+        niCheck(!url.empty(), NULL);
+
+        Ptr<iDataTable> dataDT = jobj->GetChild("payload");
+        niCheckIsOK(dataDT, NULL);
+        cString data = ni::DataTableToXML(dataDT);
+
+        Nonnull<tStringCVec> headers { tStringCVec::Create() };
+        Ptr<iDataTable> headersDT = jobj->GetChild("headers");
+        tU32 headersCount = headersDT->GetNumProperties();
+        niLoop(i, headersCount) {
+          cString name = headersDT->GetPropertyName(i);
+          cString value = headersDT->GetString(name.Chars());
+          headers->push_back(niFmt("%s: %s", name, value));
+        }
+
+        TRACE_FETCH(("niCurl: url: %s", url));
+        TRACE_FETCH(("niCurl: data: %s", data));
+        TRACE_FETCH(("niCurl: headers count: %s", headersCount));
+
+        Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0,NULL);
+        niCheckIsOK(dataFp,NULL);
+        dataFp->WriteString(data.Chars());
+        dataFp->SeekSet(0);
+
+        Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0,NULL);
+        niCheckIsOK(headersFp,NULL);
+        niLoop(i, headersCount) {
+          cString header = headers->Get(i).GetString();
+          headersFp->WriteString(header.Chars());
+          TRACE_FETCH(("niCurl: headers[%d]: %s", i, header));
+        }
+
+        headersFp->SeekSet(0);
+
+        Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
+          aMethod,
+          url.Chars(),
+          headersFp,
+          dataFp,
+          apSink
+        );
+        TRACE_FETCH(("... Fetch[%s]: Created reply request object", request->_url));
+        return request;
+      }
+      else {
+        TRACE_FETCH(("niCurl: handleFetchOverride exists but returns garbage. We return a 500 error."));
+        Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0,NULL);
+        niCheckIsOK(dataFp,NULL);
+        cString payload = cString(R"""(
+<payload status="ERROR">
+  <data message="Invalid handleFetchOverride"/>
+</payload>
+/>)""");
+        dataFp->WriteString(payload.Chars());
+        dataFp->SeekSet(0);
+        Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
+          aMethod,
+          "unknown",
+          ni::CreateFileDynamicMemory(128,""),
+          dataFp,
+          apSink
+        );
+        // NOTE: this is kind of rude but this is a quite special case anyways...
+        request->_status = 500;
+        return request;
+      }
+    }
+    else {
+      niDebugFmt(("niCURL: Using emscripten fetch..."));
+    }
+
     Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
       aMethod,
       aURL,

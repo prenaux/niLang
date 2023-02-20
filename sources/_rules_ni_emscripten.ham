@@ -7,5 +7,6 @@ LINKFLAGS +=
   -s MINIFY_HTML=0 --closure=0 --minify=0 # Make debugging much easier
   -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
   --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten pre_js_0.js ] ]
+  --post-js [ FQuote [ FDirName $(TOP_DIR) emscripten post_js_0.js ] ]
   --shell-file [ FQuote [ FDirName $(TOP_DIR) emscripten shell.html ] ]
 ;

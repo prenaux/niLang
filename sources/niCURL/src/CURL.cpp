@@ -1407,109 +1407,102 @@ class cCURL : public cIUnknownImpl<iCURL>
     }
   }
 
-  // Some examples:
-  // https://github.com/emscripten-core/emscripten/blob/37909f7e618a8193a25efbc8b79a834fec4e93b8/test/fetch/to_memory.cpp
-  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
+  Ptr<iFetchRequest> __stdcall _FetchWithOverdrive(
+      eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
+      iFetchSink* apSink, const tStringCVec* apHeaders)
+{
+    TRACE_FETCH(("Using JS fetch override."));
+    cString retString = (const char*)EM_ASM_PTR({
+      console.log("Fetching using Module.niCURL.handleFetchOverride");
+      let result = Module.niCURL.handleFetchOverride();
+      return allocateUTF8(result);
+    });
+    if (!retString.empty()) {
+      TRACE_FETCH(("Override reply: %s", retString));
+      Ptr<iDataTable> dt = CreateDataTable("FetchResult");
+      Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128, "");
+      retFile->WriteString(retString.Chars());
+      retFile->SeekSet(0);
+      ni::GetLang()->SerializeDataTable("Json", ni::eSerializeMode_Read, dt,
+                                        retFile);
+      // cString xmlString = ni::DataTableToXML(dt);
+      // TRACE_FETCH(("DataTable: %s", xmlString));
+
+      Ptr<iDataTable> jobj = dt->GetChild("jobj");
+      niCheckIsOK(jobj, NULL);
+
+      cString url = jobj->GetString("url");
+      niCheck(!url.empty(), NULL);
+
+      Ptr<iDataTable> dataDT = jobj->GetChild("payload");
+      niCheckIsOK(dataDT, NULL);
+      cString data = ni::DataTableToXML(dataDT);
+
+      Nonnull<tStringCVec> headers{tStringCVec::Create()};
+      Ptr<iDataTable> headersDT = jobj->GetChild("headers");
+      tU32 headersCount = headersDT->GetNumProperties();
+      niLoop(i, headersCount) {
+        cString name = headersDT->GetPropertyName(i);
+        cString value = headersDT->GetString(name.Chars());
+        headers->push_back(niFmt("%s: %s", name, value));
+      }
+
+      TRACE_FETCH(("url: %s", url));
+      TRACE_FETCH(("data: %s", data));
+      TRACE_FETCH(("headers count: %s", headersCount));
+
+      Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0, NULL);
+      niCheckIsOK(dataFp, NULL);
+      dataFp->WriteString(data.Chars());
+      dataFp->SeekSet(0);
+
+      Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
+      niCheckIsOK(headersFp, NULL);
+      niLoop(i, headersCount) {
+        cString header = headers->Get(i).GetString();
+        headersFp->WriteString(header.Chars());
+        TRACE_FETCH(("headers[%d]: %s", i, header));
+      }
+
+      headersFp->SeekSet(0);
+
+      Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
+          aMethod, url.Chars(), headersFp, dataFp, apSink);
+      TRACE_FETCH(
+          ("... Fetch[%s]: Created reply request object", request->_url));
+      // NOTE: this is kind of rude but this is a quite special case anyways...
+      request->_status = 200;
+      request->_UpdateReadyState(eFetchReadyState_Done);
+      return request;
+    } else {
+      TRACE_FETCH(
+          ("handleFetchOverride exists but returns garbage. We return "
+           "a 500 error."));
+      Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0, NULL);
+      niCheckIsOK(dataFp, NULL);
+      cString payload = cString(R"""(
+<payload status="ERROR">
+  <data message="Invalid handleFetchOverride"/>
+</payload>)""");
+      dataFp->WriteString(payload.Chars());
+      dataFp->SeekSet(0);
+      Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
+          aMethod, "unknown", ni::CreateFileDynamicMemory(128, ""), dataFp,
+          apSink);
+      // NOTE: this is kind of rude but this is a quite special case anyways...
+      request->_status = 500;
+      request->_UpdateReadyState(eFetchReadyState_Done);
+      return request;
+    }
+  }
+
+  Ptr<iFetchRequest> __stdcall _EmpscriptenFetch(eFetchMethod aMethod,
                                       const achar* aURL,
                                       iFile* apPostData,
                                       iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
-    if (_hasFetchOverride) {
-      TRACE_FETCH(("niCURL: Using JS fetch override."));
-      cString retString = (const char*) EM_ASM_PTR({
-        console.log("niCURL: Fetching using Module.niCURL.handleFetchOverride");
-        let result = Module.niCURL.handleFetchOverride();
-        return allocateUTF8(result);
-      });
-      if (!retString.empty()) {
-        TRACE_FETCH(("niCurl: %s", retString));
-        Ptr<iDataTable> dt = CreateDataTable("FetchResult");
-        Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128,"");
-        retFile->WriteString(retString.Chars());
-        retFile->SeekSet(0);
-        ni::GetLang()->SerializeDataTable("Json", ni::eSerializeMode_Read, dt, retFile);
-        // cString xmlString = ni::DataTableToXML(dt);
-        // TRACE_FETCH(("niCurl: DataTable: %s", xmlString));
-
-        Ptr<iDataTable> jobj = dt->GetChild("jobj");
-        niCheckIsOK(jobj, NULL);
-
-        cString url = jobj->GetString("url");
-        niCheck(!url.empty(), NULL);
-
-        Ptr<iDataTable> dataDT = jobj->GetChild("payload");
-        niCheckIsOK(dataDT, NULL);
-        cString data = ni::DataTableToXML(dataDT);
-
-        Nonnull<tStringCVec> headers { tStringCVec::Create() };
-        Ptr<iDataTable> headersDT = jobj->GetChild("headers");
-        tU32 headersCount = headersDT->GetNumProperties();
-        niLoop(i, headersCount) {
-          cString name = headersDT->GetPropertyName(i);
-          cString value = headersDT->GetString(name.Chars());
-          headers->push_back(niFmt("%s: %s", name, value));
-        }
-
-        TRACE_FETCH(("niCurl: url: %s", url));
-        TRACE_FETCH(("niCurl: data: %s", data));
-        TRACE_FETCH(("niCurl: headers count: %s", headersCount));
-
-        Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0,NULL);
-        niCheckIsOK(dataFp,NULL);
-        dataFp->WriteString(data.Chars());
-        dataFp->SeekSet(0);
-
-        Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0,NULL);
-        niCheckIsOK(headersFp,NULL);
-        niLoop(i, headersCount) {
-          cString header = headers->Get(i).GetString();
-          headersFp->WriteString(header.Chars());
-          TRACE_FETCH(("niCurl: headers[%d]: %s", i, header));
-        }
-
-        headersFp->SeekSet(0);
-
-        Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-          aMethod,
-          url.Chars(),
-          headersFp,
-          dataFp,
-          apSink
-        );
-        TRACE_FETCH(("... Fetch[%s]: Created reply request object", request->_url));
-        // NOTE: this is kind of rude but this is a quite special case anyways...
-        request->_status = 200;
-        request->_UpdateReadyState(eFetchReadyState_Done);
-        return request;
-      }
-      else {
-        TRACE_FETCH(("niCurl: handleFetchOverride exists but returns garbage. We return a 500 error."));
-        Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0,NULL);
-        niCheckIsOK(dataFp,NULL);
-        cString payload = cString(R"""(
-<payload status="ERROR">
-  <data message="Invalid handleFetchOverride"/>
-</payload>)""");
-        dataFp->WriteString(payload.Chars());
-        dataFp->SeekSet(0);
-        Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-          aMethod,
-          "unknown",
-          ni::CreateFileDynamicMemory(128,""),
-          dataFp,
-          apSink
-        );
-        // NOTE: this is kind of rude but this is a quite special case anyways...
-        request->_status = 500;
-        request->_UpdateReadyState(eFetchReadyState_Done);
-        return request;
-      }
-    }
-    else {
-      niDebugFmt(("niCURL: Using emscripten fetch..."));
-    }
-
+    TRACE_FETCH(("Using emscripten fetch..."));
     Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
       aMethod,
       aURL,
@@ -1578,6 +1571,23 @@ class cCURL : public cIUnknownImpl<iCURL>
 
     request->_emfetch = emscripten_fetch(&attrs, request->_url.Chars());
     return request;
+  }
+
+  // Some examples:
+  // https://github.com/emscripten-core/emscripten/blob/37909f7e618a8193a25efbc8b79a834fec4e93b8/test/fetch/to_memory.cpp
+  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
+                                      const achar* aURL,
+                                      iFile* apPostData,
+                                      iFetchSink* apSink,
+                                      const tStringCVec* apHeaders)
+  {
+    if (_hasFetchOverride) {
+      Ptr<iFetchRequest> request = _FetchWithOverdrive(aMethod, aURL, apPostData, apSink, apHeaders);
+      if(request.IsOK()) {
+        return request;
+      }
+    }
+    return _EmpscriptenFetch(aMethod, aURL, apPostData, apSink, apHeaders);
   }
 
   virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {

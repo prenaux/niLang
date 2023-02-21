@@ -4,7 +4,6 @@
 
 #include <niLang/Utils/ConcurrentImpl.h>
 #include <niLang/Utils/Trace.h>
-#include <niLang/Utils/DataTableUtils.h>
 
 #ifdef niWindows
 #include <niLang/Platforms/Win32/Win32_Redef.h>
@@ -1425,8 +1424,6 @@ class cCURL : public cIUnknownImpl<iCURL>
       retFile->SeekSet(0);
       ni::GetLang()->SerializeDataTable("Json", ni::eSerializeMode_Read, dt,
                                         retFile);
-      // cString xmlString = ni::DataTableToXML(dt);
-      // TRACE_FETCH(("DataTable: %s", xmlString));
 
       Ptr<iDataTable> jobj = dt->GetChild("jobj");
       niCheckIsOK(jobj, NULL);
@@ -1436,7 +1433,6 @@ class cCURL : public cIUnknownImpl<iCURL>
 
       Ptr<iDataTable> dataDT = jobj->GetChild("payload");
       niCheckIsOK(dataDT, NULL);
-      cString data = ni::DataTableToXML(dataDT);
 
       Nonnull<tStringCVec> headers{tStringCVec::Create()};
       Ptr<iDataTable> headersDT = jobj->GetChild("headers");
@@ -1448,13 +1444,7 @@ class cCURL : public cIUnknownImpl<iCURL>
       }
 
       TRACE_FETCH(("url: %s", url));
-      TRACE_FETCH(("data: %s", data));
       TRACE_FETCH(("headers count: %s", headersCount));
-
-      Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0, NULL);
-      niCheckIsOK(dataFp, NULL);
-      dataFp->WriteString(data.Chars());
-      dataFp->SeekSet(0);
 
       Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
       niCheckIsOK(headersFp, NULL);
@@ -1465,9 +1455,9 @@ class cCURL : public cIUnknownImpl<iCURL>
       }
 
       headersFp->SeekSet(0);
-
+      retFile->SeekSet(0);
       Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-          aMethod, url.Chars(), headersFp, dataFp, apSink);
+          aMethod, url.Chars(), headersFp, retFile, apSink);
       TRACE_FETCH(
           ("... Fetch[%s]: Created reply request object", request->_url));
       // NOTE: this is kind of rude but this is a quite special case anyways...
@@ -1476,14 +1466,12 @@ class cCURL : public cIUnknownImpl<iCURL>
       return request;
     } else {
       TRACE_FETCH(
-          ("handleFetchOverride exists but returns garbage. We return "
+          ("... handleFetchOverride exists but returns garbage. We return "
            "a 500 error."));
       Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0, NULL);
       niCheckIsOK(dataFp, NULL);
-      cString payload = cString(R"""(
-<payload status="ERROR">
-  <data message="Invalid handleFetchOverride"/>
-</payload>)""");
+      cString payload = cString(
+          R"""({ "status": 500, "data": "Invalid handlefetchOverride" })""");
       dataFp->WriteString(payload.Chars());
       dataFp->SeekSet(0);
       Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(

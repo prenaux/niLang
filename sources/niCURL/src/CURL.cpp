@@ -661,7 +661,14 @@ class cCURL : public cIUnknownImpl<iCURL>
     mHttpAuth = eCURLHttpAuth_None;
 #ifdef niJSCC
     _hasFetchOverride = static_cast<tBool>(EM_ASM_INT({
-      return Module["niCURL"].handleFetchOverride != null;
+      if (typeof Module["niCURL"] != "undefined") {
+        if (Module["niCURL"] != null) {
+          if (typeof Module["niCURL"]["handleFetchOverride"] != "undefined") {
+            return Module["niCURL"].handleFetchOverride != null;
+          }
+        }
+      }
+      return false;
     }));
 #endif
   }
@@ -1471,6 +1478,9 @@ class cCURL : public cIUnknownImpl<iCURL>
           apSink
         );
         TRACE_FETCH(("... Fetch[%s]: Created reply request object", request->_url));
+        // NOTE: this is kind of rude but this is a quite special case anyways...
+        request->_status = 200;
+        request->_UpdateReadyState(eFetchReadyState_Done);
         return request;
       }
       else {
@@ -1480,8 +1490,7 @@ class cCURL : public cIUnknownImpl<iCURL>
         cString payload = cString(R"""(
 <payload status="ERROR">
   <data message="Invalid handleFetchOverride"/>
-</payload>
-/>)""");
+</payload>)""");
         dataFp->WriteString(payload.Chars());
         dataFp->SeekSet(0);
         Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
@@ -1493,6 +1502,7 @@ class cCURL : public cIUnknownImpl<iCURL>
         );
         // NOTE: this is kind of rude but this is a quite special case anyways...
         request->_status = 500;
+        request->_UpdateReadyState(eFetchReadyState_Done);
         return request;
       }
     }
@@ -1559,11 +1569,11 @@ class cCURL : public cIUnknownImpl<iCURL>
           sh[i].Before(":")).c_str();
         *rh++ = request->_emHeadersKV.emplace_back(
           sh[i].After(":")).c_str();
-        // niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh-2), *(rh-1)));
+        niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh-2), *(rh-1)));
       }
       *rh++ = NULL;
       attrs.requestHeaders = request->_emHeaders;
-      // niDebugFmt(("... HEADERS: %d", apHeaders->size()));
+      niDebugFmt(("... HEADERS: %d", apHeaders->size()));
     }
 
     request->_emfetch = emscripten_fetch(&attrs, request->_url.Chars());

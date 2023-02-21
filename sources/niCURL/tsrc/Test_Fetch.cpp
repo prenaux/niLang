@@ -37,6 +37,135 @@ struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
                 niEnumToChars(eFetchReadyState,apFetch->GetReadyState())));
   }
 };
+TEST_FIXTURE(FCURLFetch,OverrideFetchSkip) {
+#ifdef niJSCC
+  emscripten_run_script(R"""({
+    niExtensions = {
+      niCURL: {
+        handleFetchOverride: function () {
+          console.log("Module.niCURL: handleFetchOverride");
+          return `{ "status": "SKIP"  }`
+        }
+      }
+    }
+
+    Object.assign(Module, niExtensions);
+  })""");
+#endif
+
+  // We need to recreate niCURL because niCURL looks if there is a fetch override in
+  // the constructor (which makes sense generally but not for testing)
+  _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
+
+  Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
+
+  Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
+  requestHeaders->push_back("Accept: application/json");
+  Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
+  Nonnull<iFetchRequest> request = _curl->FetchGet(
+    "https://api.coinlore.com/api/ticker/?id=90",
+    sink,
+    requestHeaders).non_null();
+  UnitTest::TestLoop(TEST_PARAMS_CALL,
+    ni::Runnable([mq,request]() {
+      mq->PollAndDispatch();
+      if (request->GetReadyState() == eFetchReadyState_Done) {
+        return eFalse;
+      }
+      return eTrue;
+    }),
+    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+      cString headers = request->GetReceivedHeaders()->ReadString();
+      niDebugFmt(("... headers: %d bytes, %s",
+                  request->GetReceivedHeaders()->GetSize(),
+                  headers));
+
+      Ptr<iFile> receivedData = request->GetReceivedData();
+      cString data = receivedData->ReadString();
+      niDebugFmt(("... data: %d bytes, %s",
+                  request->GetReceivedData()->GetSize(),
+                  data));
+      receivedData->SeekSet(0);
+      Ptr<iDataTable> dataDT = ni::CreateDataTable("");
+      const tBool validJson =
+          JsonParseFileToDataTable(receivedData, dataDT);
+      CHECK(validJson);
+      CHECK(data.StartsWith("[{\"id\":"));
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+      return eTrue;
+    }));
+}
+
+TEST_FIXTURE(FCURLFetch,OverrideFetchError) {
+#ifdef niJSCC
+  emscripten_run_script(R"""({
+    niExtensions = {
+      niCURL: {
+        handleFetchOverride: function () {
+          console.log("Module.niCURL: handleFetchOverride");
+          return `
+              {
+                "status": "ERROR",
+                "url": "http://example.com",
+                "payload": "Couldn't fetch the URL"
+              }`
+        }
+      }
+    }
+
+    Object.assign(Module, niExtensions);
+  })""");
+#endif
+
+  // We need to recreate niCURL because niCURL looks if there is a fetch override in
+  // the constructor (which makes sense generally but not for testing)
+  _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
+
+  Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
+
+  Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
+  requestHeaders->push_back("Accept: application/json");
+  Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
+  Nonnull<iFetchRequest> request = _curl->FetchGet(
+    "https://api.coinlore.com/api/ticker/?id=90",
+    sink,
+    requestHeaders).non_null();
+  UnitTest::TestLoop(TEST_PARAMS_CALL,
+    ni::Runnable([mq,request]() {
+      mq->PollAndDispatch();
+      if (request->GetReadyState() == eFetchReadyState_Done) {
+        return eFalse;
+      }
+      return eTrue;
+    }),
+    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+      cString headers = request->GetReceivedHeaders()->ReadString();
+      niDebugFmt(("... headers: %d bytes, %s",
+                  request->GetReceivedHeaders()->GetSize(),
+                  headers));
+
+      Ptr<iFile> receivedData = request->GetReceivedData();
+      cString data = receivedData->ReadString();
+      niDebugFmt(("... data: %d bytes, %s",
+                  request->GetReceivedData()->GetSize(),
+                  data));
+      receivedData->SeekSet(0);
+      Ptr<iDataTable> dataDT = ni::CreateDataTable("");
+      const tBool validJson =
+          JsonParseFileToDataTable(receivedData, dataDT);
+      CHECK(validJson);
+#ifdef niJSCC
+      // cString xml = ni::DataTableToXML(dataDT);
+      // niDebugFmt(("XML: %s", xml));
+      CHECK_EQUAL(request->GetStatus(), 500);
+      CHECK_EQUAL(dataDT->GetString("payload"), "Couldn't fetch the URL");
+#else
+      CHECK(data.StartsWith("[{\"id\":"));
+#endif
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+      return eTrue;
+    }));
+}
 
 TEST_FIXTURE(FCURLFetch,Get) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
@@ -124,6 +253,32 @@ TEST_FIXTURE(FCURLFetch,Post) {
 }
 
 TEST_FIXTURE(FCURLFetch,GetJson) {
+#ifdef niJSCC
+  emscripten_run_script(R"""({
+    niExtensions = {
+      niCURL: {
+        handleFetchOverride: function () {
+          console.log("Module.niCURL: handleFetchOverride");
+          return `
+              {
+                "status": "OK",
+                "url": "http://example.com",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                "payload": "[{\\"id\\":\\"90\\"}]"
+              }`
+        }
+      }
+    }
+
+    Object.assign(Module, niExtensions);
+  })""");
+#endif
+  // We need to recreate niCURL because niCURL looks if there is a fetch override in
+  // the constructor (which makes sense generally but not for testing)
+  _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
   Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
@@ -151,10 +306,17 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
                   request->GetReceivedData()->GetSize(),
                   data));
 
-      CHECK(data.StartsWith("[{\"id\":\"90\""));
 #if !defined niJSCC
       CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
 #endif
+#ifdef niJSCC
+      Ptr<iFile> recData = request->GetReceivedData();
+      recData->SeekSet(0);
+      Ptr<iDataTable> dt = ni::CreateDataTable();
+      const tBool validJson = JsonParseFileToDataTable(recData, dt);
+      data = dt->GetString("payload");
+#endif
+      CHECK(data.StartsWith("[{\"id\":\"90\""));
       CHECK(headers.icontains("Content-Type: application/json"));
       CHECK_EQUAL(eFalse, request->GetHasFailed());
       return eFalse;
@@ -221,86 +383,6 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchNotImplemented) {
     }));
 }
 
-// this tests a correct override
-// It should work in desktop and web. In desktop it should just do a normal fetch.
-TEST_FIXTURE(FCURLFetch,OverrideFetch) {
-#ifdef niJSCC
-  emscripten_run_script(R"""({
-    niExtensions = {
-      niCURL: {
-        handleFetchOverride: function () {
-          console.log("Module.niCURL: handleFetchOverride");
-          return `
-              {
-                "url": "http://example.com",
-                "headers": {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-                },
-                "payload": {
-                  "status": "OK",
-                  "data": "this will be send back to client in xml format"
-                }
-              }`
-        }
-      }
-    }
-
-    Object.assign(Module, niExtensions);
-  })""");
-
-  tBool hasFetchOverride = static_cast<tBool>(EM_ASM_INT({
-      return Module["niCURL"].handleFetchOverride != null;
-    }));
-  CHECK(hasFetchOverride);
-#endif
-
-  // We need to recreate niCURL because niCURL looks if there is a fetch override in
-  // the constructor (which makes sense generally but not for testing)
-  _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
-
-  Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
-
-  Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
-  requestHeaders->push_back("X-Ni-Header: HdrNarf");
-  Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
-  Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
-    sink,
-    requestHeaders).non_null();
-  UnitTest::TestLoop(TEST_PARAMS_CALL,
-    ni::Runnable([mq,request]() {
-      mq->PollAndDispatch();
-      if (request->GetReadyState() == eFetchReadyState_Done) {
-        return eFalse;
-      }
-      return eTrue;
-    }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
-      cString headers = request->GetReceivedHeaders()->ReadString();
-      niDebugFmt(("... headers: %d bytes, %s",
-                  request->GetReceivedHeaders()->GetSize(),
-                  headers));
-
-      cString data = request->GetReceivedData()->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
-
-
-#ifdef niJSCC
-      Ptr<iDataTable> dataDT = ni::CreateDataTableFromXML(data.Chars());
-      CHECK_EQUAL(dataDT->GetName(), "payload");
-#else
-      Ptr<iDataTable> dataDT = ni::CreateDataTable("");
-      const tBool validJson = JsonParseFileToDataTable(request->GetReceivedData(), dataDT);
-      CHECK(validJson);
-      CHECK(data.StartsWith("[{\"id\":"));
-#endif
-      CHECK_EQUAL(eFalse, request->GetHasFailed());
-      return eTrue;
-    }));
-}
 
 TEST_FIXTURE(FCURLFetch,NoOverrideFetchExists) {
 #ifdef niJSCC

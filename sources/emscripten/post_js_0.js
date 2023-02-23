@@ -20,7 +20,7 @@ niExtensions = {
     //    - In the case of "ERROR" status it contains a description of the error.
     //    - In the case of "SKIP" status it contains an empty string.
     // Example:
-    //   handleFetchOverride: function (request_url) {
+    //   handleFetchOverride: function (aRequestUrl) {
     //     console.log("Module.niCURL: handleFetchOverride");
     //     return `
     //         {

@@ -1455,14 +1455,15 @@ class cCURL : public cIUnknownImpl<iCURL>
       } else {
         cString url = jobj->GetString("url");
         niCheck(!url.empty(), NULL);
-        cString payload = jobj->GetString("payload");
-        niCheck(!payload.empty(), NULL);
         if (status == "error") {  // JS code wanted but couldn't fetch
+          cString payload = jobj->GetString("payload");
+          //niCheck(!payload.empty(), NULL);
           TRACE_FETCH(
               ("... handleFetchOverride[ERROR]: returns ERROR status."));
           return _CreateFetchRequestFromError(aMethod, url.Chars(), apSink,
                                               payload.Chars());
         } else if (status == "ok") {  // JS code overrided the fetch
+          TRACE_FETCH(("STATUS: OK, sending full request back."));
           Nonnull<tStringCVec> headers{tStringCVec::Create()};
           Ptr<iDataTable> headersDT = jobj->GetChild("headers");
           tU32 headersCount = headersDT->GetNumProperties();

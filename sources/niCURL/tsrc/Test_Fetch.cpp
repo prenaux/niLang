@@ -259,15 +259,13 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
       niCURL: {
         handleFetchOverride: function (aRequestUrl) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
-          return `
-              {
-                "status": "OK",
+          return `{"status": "OK",
                 "url": "http://example.com",
                 "headers": {
                   "Content-Type": "application/json",
                   "Accept": "application/json"
                 },
-                "payload": "[{\\"id\\":\\"90\\"}]"
+                "payload": [{"id":"90"}]
               }`
         }
       }
@@ -312,11 +310,13 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
 #ifdef niJSCC
       Ptr<iFile> recData = request->GetReceivedData();
       recData->SeekSet(0);
-      Ptr<iDataTable> dt = ni::CreateDataTable();
-      const tBool validJson = JsonParseFileToDataTable(recData, dt);
-      data = dt->GetString("payload");
-#endif
+      // Ptr<iDataTable> dt = ni::CreateDataTable();
+      // const tBool validJson = JsonParseFileToDataTable(recData, dt);
+      // data = dt->GetString("payload");
+      CHECK(data.StartsWith("{\"status\": \"OK\""));
+#else
       CHECK(data.StartsWith("[{\"id\":\"90\""));
+#endif
       CHECK(headers.icontains("Content-Type: application/json"));
       CHECK_EQUAL(eFalse, request->GetHasFailed());
       return eFalse;

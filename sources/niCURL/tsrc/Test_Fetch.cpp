@@ -42,8 +42,8 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchSkip) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function () {
-          console.log("Module.niCURL: handleFetchOverride");
+        handleFetchOverride: function (request_url) {
+          console.log("Module.niCURL: handleFetchOverride: " + request_url);
           return `{ "status": "SKIP"  }`
         }
       }
@@ -101,8 +101,8 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchError) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function () {
-          console.log("Module.niCURL: handleFetchOverride");
+        handleFetchOverride: function (request_url) {
+          console.log("Module.niCURL: handleFetchOverride: "  + request_url);
           return `
               {
                 "status": "ERROR",
@@ -257,8 +257,8 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function () {
-          console.log("Module.niCURL: handleFetchOverride");
+        handleFetchOverride: function (request_url) {
+          console.log("Module.niCURL: handleFetchOverride: " + request_url);
           return `
               {
                 "status": "OK",

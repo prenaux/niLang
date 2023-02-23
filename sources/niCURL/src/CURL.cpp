@@ -1434,9 +1434,10 @@ class cCURL : public cIUnknownImpl<iCURL>
     TRACE_FETCH(("Using JS fetch override."));
     cString retString = (const char*)EM_ASM_PTR({
       console.log("Fetching using Module.niCURL.handleFetchOverride");
-      let result = Module.niCURL.handleFetchOverride();
+      var url = UTF8ToString($0);
+      let result = Module.niCURL.handleFetchOverride(url);
       return allocateUTF8(result);
-    });
+    }, aURL);
     if (!retString.empty()) {
       TRACE_FETCH(("Override reply: %s", retString));
       Ptr<iDataTable> dt = CreateDataTable("FetchResult");

@@ -267,7 +267,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
                   "Content-Type": "application/json",
                   "Accept": "application/json"
                 },
-                "payload": "[{\\"id\\":\\"90\\"}]"
+                "payload": [{"id":"90","symbol":"BTC","name":"Bitcoin","nameid":"bitcoin","rank":1,"price_usd":"23864.25","percent_change_24h":"-2.25","percent_change_1h":"0.17","percent_change_7d":"-4.28","market_cap_usd":"460296162080.63","volume24":"28850217961.42","volume24_native":"1208930.23","csupply":"19288102.00","price_btc":"1.00","tsupply":"19288102","msupply":"21000000"}]
               }`
         }
       }
@@ -308,13 +308,6 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
 
 #if !defined niJSCC
       CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
-#endif
-#ifdef niJSCC
-      Ptr<iFile> recData = request->GetReceivedData();
-      recData->SeekSet(0);
-      Ptr<iDataTable> dt = ni::CreateDataTable();
-      const tBool validJson = JsonParseFileToDataTable(recData, dt);
-      data = dt->GetString("payload");
 #endif
       CHECK(data.StartsWith("[{\"id\":\"90\""));
       CHECK(headers.icontains("Content-Type: application/json"));

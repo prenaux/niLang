@@ -1444,7 +1444,7 @@ class cCURL : public cIUnknownImpl<iCURL>
       Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128, "");
       retFile->WriteString(retString.Chars());
       retFile->SeekSet(0);
-      ni::GetLang()->SerializeDataTable("Json", ni::eSerializeMode_Read, dt,
+      ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
                                         retFile);
 
       Ptr<iDataTable> jobj = dt->GetChild("jobj");
@@ -1455,11 +1455,11 @@ class cCURL : public cIUnknownImpl<iCURL>
       } else {
         cString url = jobj->GetString("url");
         niCheck(!url.empty(), NULL);
-        cString payload = jobj->GetString("payload");
-        niCheck(!payload.empty(), NULL);
         if (status == "error") {  // JS code wanted but couldn't fetch
           TRACE_FETCH(
               ("... handleFetchOverride[ERROR]: returns ERROR status."));
+          cString payload = jobj->GetString("payload");
+          niCheck(!payload.empty(), NULL);
           return _CreateFetchRequestFromError(aMethod, url.Chars(), apSink,
                                               payload.Chars());
         } else if (status == "ok") {  // JS code overrided the fetch
@@ -1483,10 +1483,15 @@ class cCURL : public cIUnknownImpl<iCURL>
             TRACE_FETCH(("headers[%d]: %s", i, header));
           }
 
+          Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
+          Ptr<iDataTable> dataDT = jobj->GetChild("payload");
+          niDebugFmt(("dataDT NAME: %s", dataDT->GetName()));
+          ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, dataDT,
+                                        dataFile);
           headersFp->SeekSet(0);
-          retFile->SeekSet(0);
+          dataFile->SeekSet(0);
           Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-              aMethod, url.Chars(), headersFp, retFile, apSink);
+              aMethod, url.Chars(), headersFp, dataFile, apSink);
           TRACE_FETCH(
               ("... Fetch[%s]: Created reply request object", request->_url));
           // NOTE: this is kind of rude but this is a quite special case

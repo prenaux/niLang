@@ -598,6 +598,82 @@ static tSize DataTableSerialize_ReadJSON(iFile* apFile, astl::non_null<iDataTabl
   return (tSize)(pos-apFile->Tell());
 }
 
+static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
+                                    ni::Nonnull<ni::iJsonWriter> jsonWriter) {
+  jsonWriter->ObjectBegin();
+  tU32 numProps = dt->GetNumProperties();
+  niLoop(j, numProps) {
+    cString propName = dt->GetPropertyName(j);
+    if (propName.Eq("__jsonVer")) continue;
+    ni::eDataTablePropertyType propType = dt->GetPropertyTypeFromIndex(j);
+    cString enumName = niEnumToChars(eDataTablePropertyType, propType);
+    switch (propType) {
+      case eDataTablePropertyType_Int:
+      case eDataTablePropertyType_Int32:
+      case eDataTablePropertyType_Float:
+      case eDataTablePropertyType_Float32: {
+        cString propVal = dt->GetStringFromIndex(j);
+        jsonWriter->ObjectNumber(propName.Chars(), propVal.Chars());
+        break;
+      }
+      case eDataTablePropertyType_Bool: {
+        tBool propVal = dt->GetBoolFromIndex(j);
+        jsonWriter->ObjectBool(propName.Chars(), propVal);
+        break;
+      }
+      case eDataTablePropertyType_Unknown: {
+        jsonWriter->ObjectNull(propName.Chars());
+        break;
+      }
+      default: {
+        cString propVal = dt->GetStringFromIndex(j);
+        jsonWriter->ObjectString(propName.Chars(), propVal.Chars());
+      }
+    }
+  }
+  jsonWriter->ObjectEnd();
+}
+
+static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT,
+                                   ni::Nonnull<ni::iJsonWriter> jsonWriter) {
+  tU32 childCount = topDT->GetNumChildren();
+  jsonWriter->ArrayBegin();
+  niLoop(i, childCount) {
+    Nonnull<iDataTable> dt(topDT->GetChildFromIndex(i));
+    _WriteJSONObject(dt, jsonWriter);
+  }
+  jsonWriter->ArrayEnd();
+}
+//
+// Sample DataTable structure in XML for reference
+//
+//<payload __isArray="1">
+//  <jobj string="bar" number="123" isnull="" bool="1"/>
+//  <jobj string="bar" number="321" isnull="" bool="0"/>
+//</payload>
+static tBool DataTableSerialize_WriteJSON(iFile* apFile, iDataTable* apTable,
+                                          const tBool wantsIndent) {
+  Nonnull<iJsonWriter> jsonWriter(
+      ni::CreateJsonFileWriter(apFile, wantsIndent));
+  Nonnull<iDataTable> topDT(apTable);
+  cString name = topDT->GetName();
+  if (name == "jobj") {
+    _WriteJSONObject(topDT, jsonWriter);
+  } else if (name == "jarr") {
+    _WriteJSONArray(topDT, jsonWriter);
+  } else {
+    tBool isArray = topDT->GetBoolDefault("__isArray", eFalse);
+    if (isArray) {
+      _WriteJSONArray(topDT, jsonWriter);
+    } else {
+      _WriteJSONObject(topDT, jsonWriter);
+    }
+  }
+
+  apFile->SeekSet(0);
+  return eTrue;
+}
+
 ///////////////////////////////////////////////
 tBool __stdcall cLang::SerializeDataTable(const achar* aaszType, eSerializeMode aMode, iDataTable* apTable, iFile* apFile)
 {
@@ -695,8 +771,11 @@ tBool __stdcall cLang::SerializeDataTable(const achar* aaszType, eSerializeMode 
           }
         }
         else if (niFlagIs(aMode,eSerializeFlags_Write)) {
-          niError(_A("Can't write the JSON data table: JSON write serialization of datatable not implemented."));
-          return eFalse;
+          if (!DataTableSerialize_WriteJSON(
+                  apFile, apTable, strFileType.IEq(_A("json-stream")))) {
+            niError(_A("Can't write the JSON."));
+            return eFalse;
+          }
         }
         return eTrue;
       }

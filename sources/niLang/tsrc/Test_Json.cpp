@@ -6,7 +6,11 @@
 using namespace ni;
 
 static const cString _dtJson = R"""(
-  {"string":"bar","number":123,"isnull":null}
+  {"string":"bar","number":123,"isnull":null,"bool":true}
+)""";
+
+static const cString _dtJsonArray = R"""(
+  [{"string":"bar","number":123,"isnull":null,"bool":true},{"string":"bar","number":321,"isnull":null,"bool":false}]
 )""";
 
 struct FJson {
@@ -24,4 +28,24 @@ TEST_FIXTURE(FJson,JsonCrash) {
   Ptr<iDataTable> dt = ni::CreateDataTable("dt");
   Ptr<iFile> fp = niFileOpenBin2H(json_crash_html);
   CHECK_EQUAL(eFalse, JsonParseFileToDataTable(fp, dt));
+}
+
+
+TEST_FIXTURE(FJson,JSONWriter) {
+  Ptr<iDataTable> dt = ni::CreateDataTable("");
+  ni::Ptr<iFile> fp = ni::CreateFileMemory((tPtr)_dtJson.Chars(),_dtJson.size(),eFalse,NULL);
+  ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
+                                        fp);
+  Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
+  ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
+  CHECK_EQUAL(file->ReadString(), R"""({"string":"bar","number":123,"isnull":null,"bool":1})""");
+
+  Ptr<iDataTable> dt2 = ni::CreateDataTable("");
+  ni::Ptr<iFile> fp2 = ni::CreateFileMemory((tPtr)_dtJsonArray.Chars(),_dtJsonArray.size(),eFalse,NULL); ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt2,
+                                        fp2);
+  Ptr<iFile> file2 = ni::CreateFileDynamicMemory(0, NULL);
+  ni::SerializeDataTable("json", eSerializeMode_Write, dt2, file2);
+  CHECK_EQUAL(file2->ReadString(), R"""([{"string":"bar","number":123,"isnull":null,"bool":1},{"string":"bar","number":321,"isnull":null,"bool":0}])""");
+
+
 }

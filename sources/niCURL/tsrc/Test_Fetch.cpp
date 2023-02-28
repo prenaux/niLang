@@ -17,15 +17,19 @@ struct FCURLFetch {
 };
 
 struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
+  cString result = "";
+
   virtual void __stdcall OnFetchSink_Success(iFetchRequest* apFetch) {
     niDebugFmt(("... OnFetchSink_Success: status: %d, got %d bytes",
                 apFetch->GetStatus(),
                 apFetch->GetReceivedData()->GetSize()));
+    result = "success";
   }
   virtual void __stdcall OnFetchSink_Error(iFetchRequest* apFetch) {
     niDebugFmt(("... OnFetchSink_Error: status: %d, got %d bytes",
                 apFetch->GetStatus(),
                 apFetch->GetReceivedData()->GetSize()));
+    result = "error";
   }
   virtual void __stdcall OnFetchSink_Progress(iFetchRequest* apFetch) {
     niDebugFmt(("... OnFetchSink_Progress: status: %d, got %d bytes",
@@ -74,7 +78,7 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchSkip) {
       }
       return eTrue;
     }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
@@ -92,6 +96,7 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchSkip) {
       CHECK(validJson);
       CHECK(data.StartsWith("[{\"id\":"));
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(sink->result, "success");
       return eTrue;
     }));
 }
@@ -138,7 +143,7 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchError) {
       }
       return eTrue;
     }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
@@ -159,6 +164,7 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchError) {
       // niDebugFmt(("XML: %s", xml));
       CHECK_EQUAL(request->GetStatus(), 500);
       CHECK_EQUAL(dataDT->GetString("payload"), "Couldn't fetch the URL");
+      CHECK_EQUAL(sink->result, "error");
 #else
       CHECK(data.StartsWith("[{\"id\":"));
 #endif
@@ -295,7 +301,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
       }
       return eTrue;
     }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
@@ -312,6 +318,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
       CHECK(data.StartsWith("[{\"id\":\"90\""));
       CHECK(headers.icontains("Content-Type: application/json"));
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(sink->result, "success");
       return eFalse;
     }));
 }

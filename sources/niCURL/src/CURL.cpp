@@ -1425,6 +1425,9 @@ class cCURL : public cIUnknownImpl<iCURL>
     // NOTE: this is kind of rude but this is a quite special case anyways...
     request->_status = 500;
     request->_UpdateReadyState(eFetchReadyState_Done);
+    if (request->_sink.IsOK()) {
+      request->_sink->OnFetchSink_Error(request);
+    }
     return request;
   }
 
@@ -1498,6 +1501,9 @@ class cCURL : public cIUnknownImpl<iCURL>
           // anyways...
           request->_status = 200;
           request->_UpdateReadyState(eFetchReadyState_Done);
+          if (request->_sink.IsOK()) {
+            request->_sink->OnFetchSink_Success(request);
+          }
           return request;
         } else {
           TRACE_FETCH(

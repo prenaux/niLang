@@ -1431,7 +1431,7 @@ class cCURL : public cIUnknownImpl<iCURL>
     return request;
   }
 
-  Ptr<iFetchRequest> __stdcall _FetchWithOverdrive(
+  Ptr<iFetchRequest> __stdcall _FetchWithOverride(
       eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
       iFetchSink* apSink, const tStringCVec* apHeaders) {
     TRACE_FETCH(("Using JS fetch override."));
@@ -1520,7 +1520,7 @@ class cCURL : public cIUnknownImpl<iCURL>
     }
   }
 
-  Ptr<iFetchRequest> __stdcall _EmpscriptenFetch(eFetchMethod aMethod,
+  Ptr<iFetchRequest> __stdcall _EmscriptenFetch(eFetchMethod aMethod,
                                                  const achar* aURL,
                                                  iFile* apPostData,
                                                  iFetchSink* apSink,
@@ -1599,12 +1599,12 @@ class cCURL : public cIUnknownImpl<iCURL>
                                       const tStringCVec* apHeaders) {
     if (_hasFetchOverride) {
       Ptr<iFetchRequest> request =
-          _FetchWithOverdrive(aMethod, aURL, apPostData, apSink, apHeaders);
+          _FetchWithOverride(aMethod, aURL, apPostData, apSink, apHeaders);
       if (request.IsOK()) {
         return request;
       }
     }
-    return _EmpscriptenFetch(aMethod, aURL, apPostData, apSink, apHeaders);
+    return _EmscriptenFetch(aMethod, aURL, apPostData, apSink, apHeaders);
   }
 
   virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {

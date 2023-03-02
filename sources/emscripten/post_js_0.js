@@ -3,36 +3,48 @@
 // niModuleName: { // here all the extra functions }
 niExtensions = {
   niCURL: {
+    // this function is used to filter the url the JavaScript code wants to fetch.
+    // Return true to execute your own fetch in handleFetchOverride
+    // Return false if you want a normal emscripten fetch.
+    shouldOverrideFetch: function(url) {
+      return false;
+    },
     // This function allows the JavaScript code to intercept a fetch request
     // coming from C++ niCurl library and overrides it for anything you want.
-    // The return value will be sent back to the niCURL client. It should be
-    // a JSON with the fields "url", "headers" and "payload". url and headers are
-    // self explanatory. Payload contains two fields:
-    //  - status (string): A string that tells niCURL if the override was properly
-    //    handled. It can be 3 different values:
-    //    - OK: The JS code didn't encountered any problem and will put the result
-    //          of the fetch as-is in the "payload" field.
-    //    - ERROR: The JS code found a problem while trying to fetch the data.
-    //    - SKIP: The JS code decided that is not gonna override the fetch. Normally
-    //            this is because is not interested in the URL being fetched.
-    //  - payload (string): Depends on the content of status:
-    //    - In the case of "OK" status it contains the result of the fetch.
-    //    - In the case of "ERROR" status it contains a description of the error.
-    //    - In the case of "SKIP" status it contains an empty string.
+    // The function receives these parameters:
+    //  - aRequestUrl: The Url the client wants to fetch
+    //  - onSuccess(json): A callback that returns a successful fetch result in json.
+    //      The client will receive back a status 200 with the json as data.
+    //  - onError(json): A callback that returns an error in json format.
+    //      The client will receive back a status 500 with the json as data.
+    //  - onProgress(json): A callback that return a Progress event to the client
+    //      WIP
+    // The JSON must have the following structure (example):
+    //    {
+    //      "url": "http://example.com",
+    //      "headers": {
+    //        "Content-Type": "application/json",
+    //        "Accept": "application/json"
+    //       },
+    //       "payload": [{"id":"90","symbol":"BTC","name":"Bitcoin","nameid":"bitcoin","rank":1,"price_usd":"23864.25","percent_change_24h":"-2.25","percent_change_1h":"0.17","percent_change_7d":"-4.28","market_cap_usd":"460296162080.63","volume24":"28850217961.42","volume24_native":"1208930.23","csupply":"19288102.00","price_btc":"1.00","tsupply":"19288102","msupply":"21000000"}]
+    //    }
+    //
     // Example:
-    //   handleFetchOverride: function (aRequestUrl) {
-    //     console.log("Module.niCURL: handleFetchOverride");
-    //     return `
-    //         {
-    //           "status": "OK",
-    //           "url": "http://example.com",
-    //           "headers": {
-    //             "Content-Type": "application/json",
-    //             "Accept": "application/json"
-    //           },
-    //           "payload": "your fetch result here"
-    //         }`
-    //   }
+    //
+    //    handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
+    //      console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
+    //      await new Promise(r => setTimeout(r, 10000));
+    //      var result = `
+    //           {
+    //            "url": "http://example.com",
+    //            "headers": {
+    //              "Content-Type": "application/json",
+    //              "Accept": "application/json"
+    //            },
+    //            "payload": [{"id":"90","symbol":"BTC","name":"Bitcoin","nameid":"bitcoin","rank":1,"price_usd":"23864.25","percent_change_24h":"-2.25","percent_change_1h":"0.17","percent_change_7d":"-4.28","market_cap_usd":"460296162080.63","volume24":"28850217961.42","volume24_native":"1208930.23","csupply":"19288102.00","price_btc":"1.00","tsupply":"19288102","msupply":"21000000"}]
+    //          }`
+    //      onSuccess(result);
+    //    }
     handleFetchOverride: null
   }
 }

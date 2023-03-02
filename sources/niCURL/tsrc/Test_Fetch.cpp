@@ -43,12 +43,17 @@ struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
 };
 TEST_FIXTURE(FCURLFetch,OverrideFetchSkip) {
 #ifdef niJSCC
+
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function (aRequestUrl) {
-          console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
-          return `{ "status": "SKIP"  }`
+        shouldOverrideFetch: function(url) {
+          return false;
+        },
+        handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
+          // THIS WILL NEVER RUN ANYWAYS
+          await new Promise(r => setTimeout(r, 10000));
+          return false;
         }
       }
     }
@@ -106,14 +111,20 @@ TEST_FIXTURE(FCURLFetch,OverrideFetchError) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function (aRequestUrl) {
-          console.log("Module.niCURL: handleFetchOverride: "  + aRequestUrl);
-          return `
+        shouldOverrideFetch: function(url) {
+          if (url.includes("https://api.coinlore.com/api/ticker/")) {
+            return true;
+          }
+          return false;
+        },
+        handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
+          console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
+          await new Promise(r => setTimeout(r, 5000));
+          onError(`
               {
-                "status": "ERROR",
                 "url": "http://example.com",
                 "payload": "Couldn't fetch the URL"
-              }`
+              }`);
         }
       }
     }
@@ -263,9 +274,16 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
-        handleFetchOverride: function (aRequestUrl) {
+        shouldOverrideFetch: function(url) {
+          if (url.includes("https://api.coinlore.com/api/ticker/")) {
+            return true;
+          }
+          return false;
+        },
+        handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
-          return `
+          await new Promise(r => setTimeout(r, 5000));
+          var result = `
               {
                 "status": "OK",
                 "url": "http://example.com",
@@ -275,6 +293,7 @@ TEST_FIXTURE(FCURLFetch,GetJson) {
                 },
                 "payload": [{"id":"90","symbol":"BTC","name":"Bitcoin","nameid":"bitcoin","rank":1,"price_usd":"23864.25","percent_change_24h":"-2.25","percent_change_1h":"0.17","percent_change_7d":"-4.28","market_cap_usd":"460296162080.63","volume24":"28850217961.42","volume24_native":"1208930.23","csupply":"19288102.00","price_btc":"1.00","tsupply":"19288102","msupply":"21000000"}]
               }`
+          onSuccess(result);
         }
       }
     }

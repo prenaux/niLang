@@ -12,12 +12,6 @@ if ! ( $(USE_SYSTEM_LIBCURL) = 1 ) {
   SubDirHdrs $(SUBDIR) libCURL include ;
 }
 
-if ( $(EMSCRIPTEN) = 1 ) {
-  LINKFLAGS ?= $(LINKFLAGS) ;
-  LINKFLAGS += -s EXPORTED_FUNCTIONS=_main,_malloc,_free,_FetchOverride_Success,_FetchOverride_Error,_FetchOverride_Progress
-    ;
-}
-
 ### API #################################################################
 IDLS = [ niBuildModuleDef ] ;
 

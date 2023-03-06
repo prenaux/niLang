@@ -1414,8 +1414,9 @@ class cCURL : public cIUnknownImpl<iCURL> {
       eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
       iFetchSink* apSink, const tStringCVec* apHeaders) {
     TRACE_FETCH(("Using JS fetch override."));
+    tBool isFetching = kmapurlToRequestCache.count(aURL) > 0;
     // if is a request from a new URL we create it
-    if (kmapurlToRequestCache.count(aURL) == 0) {
+    if (!isFetching) {
       Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
       Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
       Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
@@ -1424,7 +1425,6 @@ class cCURL : public cIUnknownImpl<iCURL> {
           ("... Fetch[%s]: Adding request to the CACHE.", request->_url));
 
       kmapurlToRequestCache.insert({aURL, request.ptr()});
-    }
 
     // wraps the callbacks and pass them to the handleFetchOverride JavaScript
     // function.shouldOverrideFetch
@@ -1479,20 +1479,13 @@ class cCURL : public cIUnknownImpl<iCURL> {
           }
         },
         aURL);
-
-    if (isFetching) {
-      TRACE_FETCH(("... Fetch[%s]: The override IS FETCHING.", aURL));
-      // every URL query has his own request. If client keep asking for it we
-      // return it
-      Ptr<sFetchRequest> request = kmapurlToRequestCache[aURL];
-      return request;
-    } else {
-      if (kmapurlToRequestCache.count(aURL) > 0) {
-        TRACE_FETCH(("... Fetch[%s]: Skipping. Deleting from cache.", aURL));
-        kmapurlToRequestCache.erase(aURL);
-      }
-      return NULL;
     }
+
+    TRACE_FETCH(("... Fetch[%s]: The override IS FETCHING.", aURL));
+    // every URL query has his own request. If client keep asking for it we
+    // return it
+    Ptr<sFetchRequest> request = kmapurlToRequestCache[aURL];
+    return request;
   }
 
   Ptr<iFetchRequest> __stdcall _EmscriptenFetch(eFetchMethod aMethod,
@@ -1643,9 +1636,9 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
   TRACE_FETCH(
       ("... FetchOverride_Success: { url: %s, result: %s }", url, retString));
 
-  niLoopit(turlToRequestCache::const_iterator, it, kmapurlToRequestCache) {
-    niDebugFmt(("URL IN SUCCESS: %s", it->first));
-  }
+  // niLoopit(turlToRequestCache::const_iterator, it, kmapurlToRequestCache) {
+  //   niDebugFmt(("URL IN SUCCESS: %s", it->first));
+  // }
   Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
   if (request.IsOK()) {
     TRACE_FETCH(("Override reply: %s", retString));
@@ -1690,8 +1683,10 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
       kmapurlToRequestCache.erase(url);
     }
   } else {
-    _UpdateFetchRequestWithError(request,
-                                 niFmt("Request for URL [%s] not found.", url));
+    TRACE_FETCH(
+        ("... FetchOverride_Success[%s]: This url is not in the list of "
+         "requests anymore, have you call onSuccess twice? ",
+         url));
   }
 }
 
@@ -1714,10 +1709,13 @@ niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr) {
       return;
     }
     _UpdateFetchRequestWithError(request, payload.Chars());
+    return;
   }
   else {
-    _UpdateFetchRequestWithError(request,
-                                 niFmt("Request for URL [%s] not found.", url));
+    TRACE_FETCH(
+        ("... FetchOverride_Error[%s]: This url is not in the list of "
+         "requests anymore, have you call onError twice? ",
+         url));
   }
 }
 

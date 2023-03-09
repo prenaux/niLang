@@ -1413,63 +1413,53 @@ class cCURL : public cIUnknownImpl<iCURL> {
   Ptr<iFetchRequest> __stdcall _FetchWithOverride(
       eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
       iFetchSink* apSink, const tStringCVec* apHeaders) {
-    TRACE_FETCH(("Using JS fetch override."));
+    TRACE_FETCH(("...Override Fetch[%s]: Using JS fetch override."));
     tBool isFetching = kmapurlToRequestCache.count(aURL) > 0;
     // if is a request from a new URL we create it
     if (!isFetching) {
-      Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
-      Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
-      Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
-          aMethod, aURL, headersFp, dataFile, apSink);
-      TRACE_FETCH(
-          ("... Fetch[%s]: Adding request to the CACHE.", request->_url));
-
-      kmapurlToRequestCache.insert({aURL, request.ptr()});
-
-    // wraps the callbacks and pass them to the handleFetchOverride JavaScript
-    // function.shouldOverrideFetch
-    tBool isFetching = EM_ASM_INT(
+      // if wants the override we create the callback and call the override
+      // function in JavaScript
+      tBool shouldOverrideFetch = EM_ASM_INT(
         {
           console.log("Fetching using Module.niCURL.handleFetchOverride");
           var url = UTF8ToString($0);
-
-          var onSuccess = function(result) {
-            var urlStrPtr = allocateUTF8(url);
-            var resultStrPtr = allocateUTF8(result);
-
-            Module["ccall"]('FetchOverride_Success', 'void',
-                            [ 'number', 'number' ],
-                            [ resultStrPtr, urlStrPtr ]);
-
-            Module._free(resultStrPtr);
-            Module._free(urlStrPtr);
-          };
-
-          var onError = function(result) {
-            var urlStrPtr = allocateUTF8(url);
-            var resultStrPtr = allocateUTF8(result);
-
-            Module["ccall"]('FetchOverride_Error', 'void',
-                            [ 'number', 'number' ],
-                            [ resultStrPtr, urlStrPtr ]);
-
-            Module._free(resultStrPtr);
-            Module._free(urlStrPtr);
-          };
-
-          var onProgress = function(result) {
-            var urlStrPtr = allocateUTF8(url);
-            var resultStrPtr = allocateUTF8(result);
-
-            Module["ccall"]('FetchOverride_Progress', 'void',
-                            [ 'number', 'number' ],
-                            [ resultStrPtr, urlStrPtr ]);
-
-            Module._free(resultStrPtr);
-            Module._free(urlStrPtr);
-          };
-
           if (Module.niCURL.shouldOverrideFetch(url)) {
+            var onSuccess = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Success', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
+            var onError = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Error', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
+            var onProgress = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Progress', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
             // this is an async function
             Module.niCURL.handleFetchOverride(url, onSuccess, onError,
                                               onProgress);
@@ -1479,13 +1469,30 @@ class cCURL : public cIUnknownImpl<iCURL> {
           }
         },
         aURL);
-    }
 
-    TRACE_FETCH(("... Fetch[%s]: The override IS FETCHING.", aURL));
-    // every URL query has his own request. If client keep asking for it we
-    // return it
-    Ptr<sFetchRequest> request = kmapurlToRequestCache[aURL];
-    return request;
+        // if it wants override, we just create the request and cache it to use it when the
+        // override is done
+        if (shouldOverrideFetch) {
+          Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
+          Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
+          Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
+              aMethod, aURL, headersFp, dataFile, apSink);
+          TRACE_FETCH(
+              ("...Override Fetch[%s]: New request added to the CACHE.", request->_url));
+
+          kmapurlToRequestCache.insert({aURL, request.ptr()});
+          TRACE_FETCH(("...Override Fetch[%s]: The override IS FETCHING.", aURL));
+
+          return request;
+        }
+        else {
+          TRACE_FETCH(("...Override Fetch[%s]: Override SKIPPED the request.", aURL));
+          return NULL; // this will force to use Emscripten Fetch
+        }
+    }
+    else {
+      return kmapurlToRequestCache[aURL]; // this request is already being handled, just return it
+    }
   }
 
   Ptr<iFetchRequest> __stdcall _EmscriptenFetch(eFetchMethod aMethod,

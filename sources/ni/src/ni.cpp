@@ -587,7 +587,7 @@ void REPL(HSQUIRRELVM v)
   astl::set<sMonitoredFile> monitored;
 
   PutString(stdout,GetVersionString().Chars(),false);
-  PutString(stdout,niFmt("\nREPL running in %s thead 0x%x",
+  PutString(stdout,niFmt("\nREPL running in '%s' thread '0x%x'",
                          (ni::GetConcurrent()->GetMainThreadID() ==
                           ni::GetConcurrent()->GetCurrentThreadID()) ? "main" : "background",
                          ni::GetConcurrent()->GetCurrentThreadID()),

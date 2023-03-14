@@ -1417,6 +1417,15 @@ class cCURL : public cIUnknownImpl<iCURL> {
     tBool isFetching = kmapurlToRequestCache.count(aURL) > 0;
     // if is a request from a new URL we create it
     if (!isFetching) {
+      // we create the request and cache it for later use when the fetch is ready.
+      Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
+      Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
+      Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
+          aMethod, aURL, headersFp, dataFile, apSink);
+      TRACE_FETCH(
+          ("...Override Fetch[%s]: New request added to the CACHE.", request->_url));
+
+      kmapurlToRequestCache.insert({aURL, request.ptr()});
       // if wants the override we create the callback and call the override
       // function in JavaScript
       tBool shouldOverrideFetch = EM_ASM_INT(
@@ -1470,23 +1479,16 @@ class cCURL : public cIUnknownImpl<iCURL> {
         },
         aURL);
 
-        // if it wants override, we just create the request and cache it to use it when the
-        // override is done
         if (shouldOverrideFetch) {
-          Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
-          Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
-          Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
-              aMethod, aURL, headersFp, dataFile, apSink);
-          TRACE_FETCH(
-              ("...Override Fetch[%s]: New request added to the CACHE.", request->_url));
-
-          kmapurlToRequestCache.insert({aURL, request.ptr()});
           TRACE_FETCH(("...Override Fetch[%s]: The override IS FETCHING.", aURL));
-
           return request;
         }
         else {
           TRACE_FETCH(("...Override Fetch[%s]: Override SKIPPED the request.", aURL));
+          if (kmapurlToRequestCache.count(aURL) > 0) {
+            TRACE_FETCH(("Deletes [%d] from cache", aURL));
+            kmapurlToRequestCache.erase(aURL);
+          }
           return NULL; // this will force to use Emscripten Fetch
         }
     }

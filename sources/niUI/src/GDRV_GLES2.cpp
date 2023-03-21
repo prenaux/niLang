@@ -4251,13 +4251,16 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
       return NULL;
     }
 
-    if (apFile->ReadLE32() != kfccD3DShader) {
-      niError(_A("The file is not a D3D shader."));
+    const tU32 fcc = apFile->ReadLE32();
+    if (fcc != kfccD3DShader) {
+      niError(niFmt("The file '%s' is not a D3D shader (fcc:(%c,%c,%c,%c)).",
+                    ahspName, niFourCCA(fcc), niFourCCB(fcc), niFourCCC(fcc), niFourCCD(fcc)));
       return NULL;
     }
 
-    if (apFile->ReadLE32() != niMakeVersion(1,0,0)) {
-      niError(_A("Incompatible version."));
+    const tU32 version = apFile->ReadLE32();
+    if (version != niMakeVersion(1,0,0)) {
+      niError(niFmt("Incompatible version '%d' for shader '%s'.", version, ahspName));
       return NULL;
     }
 

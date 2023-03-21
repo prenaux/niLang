@@ -187,6 +187,10 @@ tFontFormatFlags TextLayout_ValidateFlags(const sRectf& aRect, tFontFormatFlags 
   return aFlags;
 }
 
+struct sCache {
+  sRectf r;
+  astl::vector<sTextLineMetric> tm;
+};
 niExportFuncCPP(sRectf) TextLayout_Compute(
   const iFont* apFont,
   const sRectf& aRect,
@@ -195,6 +199,22 @@ niExportFuncCPP(sRectf) TextLayout_Compute(
   tFontFormatFlags* apFlags,
   astl::vector<sTextLineMetric>& aMetrics)
 {
+  static astl::map<const iFont*, astl::map<cString, sCache>> sFontComputeCache;
+  auto itFMap = sFontComputeCache.find(apFont);
+  astl::map<cString, sCache> *cacheMap = nullptr;
+  if (itFMap != sFontComputeCache.end()) {
+    cacheMap = &itFMap->second;
+    auto it = cacheMap->find(aaszText);
+    if (it != cacheMap->end()) {
+      const sCache &c = it->second;
+      const sRectf &bb = c.r;
+      aMetrics = c.tm;
+      return bb;
+    }
+  } else {
+    sFontComputeCache[apFont] = {};
+    cacheMap = &sFontComputeCache[apFont];
+  }
   sRectf bbRect = sRectf::Null();
   const tFontFormatFlags flags = *apFlags = TextLayout_ValidateFlags(aRect,*apFlags);
 
@@ -277,5 +297,6 @@ niExportFuncCPP(sRectf) TextLayout_Compute(
     bbRect.Move(Vec2f(0,offY));
   }
 
+  (*cacheMap)[aaszText] = sCache({ bbRect, aMetrics });
   return bbRect;
 }

@@ -12,6 +12,8 @@
 
 #define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
 #include "API/niUI/Utils/BufferCache.h"
+
+#define USE_BUFFER_CACHE_RING_BUFFER
 // #define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
 
 namespace ni {
@@ -22,6 +24,15 @@ static const sVec2f _vTLTex = {0,0};
 static const sVec2f _vTRTex = {1,0};
 static const sVec2f _vBRTex = {1,1};
 static const sVec2f _vBLTex = {0,1};
+
+#ifdef USE_BUFFER_CACHE_RING_BUFFER
+#define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex[mnCurrentBufferCache];
+#define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex[mnCurrentBufferCache];
+static const tU32 _knRingBufferSize = 1024;
+#else
+#define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex;
+#define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex;
+#endif
 
 enum CANVAS_FLAGS {
   CANVAS_FLAGS_BakeTransform = niBit(1),
@@ -641,6 +652,17 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
  public:
   cCanvasGraphics(iGraphics* apGraphics, iGraphicsContext* apContext, iMaterial* apResetMaterial)
   {
+#ifdef USE_BUFFER_CACHE_RING_BUFFER
+    niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_RING_BUFFER");
+#else
+    niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_RING_BUFFER");
+#endif
+#ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
+    niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_BASE_VERTEX_INDEX");
+#else
+    niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_BASE_VERTEX_INDEX");
+#endif
+
     mptrGraphics = apGraphics;
     mptrContext = apContext;
     mfContentsScale = 1.0f;
@@ -706,13 +728,15 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
   ///////////////////////////////////////////////
   virtual tBool __stdcall Flush() {
     if (_HasVertices()) {
-      const sVec2i verts = mptrBufferCacheVertex->Update();
-      const sVec2i inds = mptrBufferCacheIndex->Update();
+      GET_BUFFER_CACHE_VERTEX();
+      GET_BUFFER_CACHE_INDEX();
+      const sVec2i verts = bufferCacheVertex->Update();
+      const sVec2i inds = bufferCacheIndex->Update();
       if (!verts.y || !inds.y) {
         return eFalse;
       }
-      mptrDrawOp->SetVertexArray(mptrBufferCacheVertex->mptrVA);
-      mptrDrawOp->SetIndexArray(mptrBufferCacheIndex->mptrIA);
+      mptrDrawOp->SetVertexArray(bufferCacheVertex->mptrVA);
+      mptrDrawOp->SetIndexArray(bufferCacheIndex->mptrIA);
       mptrDrawOp->SetFirstIndex(inds.x);
       mptrDrawOp->SetNumIndices(inds.y);
 #ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
@@ -968,57 +992,80 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
 
   ///////////////////////////////////////////////
   __forceinline void _AddVertex(const tVertexCanvas& aV) {
+    GET_BUFFER_CACHE_VERTEX();
     if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
       const sMatrixf& m = mStates.mMatrix;
       tVertexCanvas v = aV;
       VecTransformCoord(v.pos,aV.pos,m);
       VecTransformNormal(v.normal,aV.normal,m);
-      mptrBufferCacheVertex->Add(v);
+      bufferCacheVertex->Add(v);
     }
     else {
-      mptrBufferCacheVertex->Add(aV);
+      bufferCacheVertex->Add(aV);
     }
   }
   __forceinline void _AddVertices(const tVertexCanvas* aV, tU32 anCount) {
+    GET_BUFFER_CACHE_VERTEX();
     if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
       const sMatrixf& m = mStates.mMatrix;
       niLoop(i,anCount) {
         tVertexCanvas v = aV[i];
         VecTransformCoord(v.pos,v.pos,m);
         VecTransformNormal(v.normal,v.normal,m);
-        mptrBufferCacheVertex->Add(v);
+        bufferCacheVertex->Add(v);
       }
     }
     else {
-      mptrBufferCacheVertex->Add(aV,anCount);
+      bufferCacheVertex->Add(aV,anCount);
     }
   }
   __forceinline tIndex _GetCurrentVertex() const {
+    GET_BUFFER_CACHE_VERTEX();
 #ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
-    return mptrBufferCacheVertex->GetCurrentIndex();
+    return bufferCacheVertex->GetCurrentIndex();
 #else
-    return mptrBufferCacheVertex->GetCurrentEl();
+    return bufferCacheVertex->GetCurrentEl();
 #endif
   }
   __forceinline void _AddIndex(tIndex anIndex) {
-    mptrBufferCacheIndex->Add(anIndex);
+    GET_BUFFER_CACHE_INDEX();
+    bufferCacheIndex->Add(anIndex);
   }
   __forceinline void _AddIndices(tIndex* apIndices, tU32 anCount) {
-    mptrBufferCacheIndex->Add(apIndices,anCount);
+    GET_BUFFER_CACHE_INDEX();
+    bufferCacheIndex->Add(apIndices,anCount);
   }
   __forceinline tIndex _GetCurrentIndex() const {
-    return mptrBufferCacheIndex->GetCurrentEl();
+    GET_BUFFER_CACHE_INDEX();
+    return bufferCacheIndex->GetCurrentEl();
   }
 
   inline void _BeginNextBatch() {
+#ifdef USE_BUFFER_CACHE_RING_BUFFER
+    if (mnCurrentBufferCache >= _knRingBufferSize-1) {
+      mnCurrentBufferCache = 0;
+    }
+    else {
+      ++mnCurrentBufferCache;
+    }
+    if (!mptrBufferCacheVertex[mnCurrentBufferCache].IsOK()) {
+      mptrBufferCacheVertex[mnCurrentBufferCache] = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), 8192);
+    }
+    if (!mptrBufferCacheIndex[mnCurrentBufferCache].IsOK()) {
+      mptrBufferCacheIndex[mnCurrentBufferCache] = niNew BufferCacheIndex(mptrContext->GetGraphics(), 8192);
+    }
+#else
     if (!mptrBufferCacheVertex.IsOK()) {
       mptrBufferCacheVertex = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), 8192);
     }
     if (!mptrBufferCacheIndex.IsOK()) {
       mptrBufferCacheIndex = niNew BufferCacheIndex(mptrContext->GetGraphics(), 8192);
     }
-    mptrBufferCacheVertex->Reset();
-    mptrBufferCacheIndex->Reset();
+#endif
+    GET_BUFFER_CACHE_VERTEX();
+    GET_BUFFER_CACHE_INDEX();
+    bufferCacheVertex->Reset();
+    bufferCacheIndex->Reset();
   }
   __forceinline tBool _HasVertices() const {
     return _GetCurrentVertex() > 2;
@@ -1912,8 +1959,14 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
   sGraphicsCanvasStates   mStates;
   Ptr<iDrawOperation>     mptrDrawOp;
 
+#ifdef USE_BUFFER_CACHE_RING_BUFFER
+  Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex[_knRingBufferSize];
+  Ptr<BufferCacheIndex> mptrBufferCacheIndex[_knRingBufferSize];
+  tU32 mnCurrentBufferCache = ~0;
+#else
   Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex;
   Ptr<BufferCacheIndex> mptrBufferCacheIndex;
+#endif
 
   Ptr<sCanvasVGPathTesselatedRenderer> mptrCanvasVGPathRenderer;
 };

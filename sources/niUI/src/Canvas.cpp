@@ -13,7 +13,7 @@
 #define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
 #include "API/niUI/Utils/BufferCache.h"
 
-#define USE_BUFFER_CACHE_RING_BUFFER
+// #define USE_BUFFER_CACHE_RING_BUFFER
 // #define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
 
 namespace ni {
@@ -33,6 +33,8 @@ static const tU32 _knRingBufferSize = 1024;
 #define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex;
 #define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex;
 #endif
+
+static const tU32 _knBufferCacheInitSize = 1024;
 
 enum CANVAS_FLAGS {
   CANVAS_FLAGS_BakeTransform = niBit(1),
@@ -1049,17 +1051,17 @@ class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
       ++mnCurrentBufferCache;
     }
     if (!mptrBufferCacheVertex[mnCurrentBufferCache].IsOK()) {
-      mptrBufferCacheVertex[mnCurrentBufferCache] = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), 8192);
+      mptrBufferCacheVertex[mnCurrentBufferCache] = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), _knBufferCacheInitSize);
     }
     if (!mptrBufferCacheIndex[mnCurrentBufferCache].IsOK()) {
-      mptrBufferCacheIndex[mnCurrentBufferCache] = niNew BufferCacheIndex(mptrContext->GetGraphics(), 8192);
+      mptrBufferCacheIndex[mnCurrentBufferCache] = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
     }
 #else
     if (!mptrBufferCacheVertex.IsOK()) {
-      mptrBufferCacheVertex = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), 8192);
+      mptrBufferCacheVertex = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), _knBufferCacheInitSize);
     }
     if (!mptrBufferCacheIndex.IsOK()) {
-      mptrBufferCacheIndex = niNew BufferCacheIndex(mptrContext->GetGraphics(), 8192);
+      mptrBufferCacheIndex = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
     }
 #endif
     GET_BUFFER_CACHE_VERTEX();

@@ -2298,7 +2298,6 @@ struct sStringCatFormat
 
   // Helper for formatting a signed integer.
   static tI32 sprint_int(sFormatArg *string_arg, sInfo *info, tI64 val) {
-    tI32 len = 0;
     if (val < 0) {
       if (info->flags & eStringCatSPrintFlag_NEG_IS_NA) {
         string_arg->data += "N/A";
@@ -2307,7 +2306,6 @@ struct sStringCatFormat
       else {
         val = -val;
         string_arg->data.appendChar('-');
-        len++;
       }
     }
     else {

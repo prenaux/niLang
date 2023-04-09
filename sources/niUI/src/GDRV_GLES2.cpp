@@ -729,6 +729,16 @@ static tBool GL2_InitializeExt() {
 #endif
 
   if (_printedInfos) {
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
+    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: SYSTEM_MEMORY"));
+#elif GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: ORPHANING"));
+#elif GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_NONE
+    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: NONE"));
+#else
+    #error "No GL_DYNAMIC_BUFFER_MODE defined."
+#endif
+
     niDebugFmt(("GL2 hasContextLost: %d",hasContextLost));
     niDebugFmt(("GL2 hasPartialNP2: %d",hasPartialNP2));
     niDebugFmt(("GL2 hasCubeMap: %d",hasCubeMap));
@@ -2902,6 +2912,9 @@ struct sGLBufferImpl : public TDATA {
     mLockFlags = eInvalidHandle;
     mLockFirst = 0;
     mLockNum = 0;
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+    mnLastBoundFrame = ~0;
+#endif
   }
 
   void __stdcall Invalidate() niImpl {
@@ -2945,13 +2958,6 @@ struct sGLBufferImpl : public TDATA {
       return eFalse;
 
     if (!niFlagIs(mLockFlags,eLock_ReadOnly)) {
-      /*
-      // This is supposed to do buffer orphaning, but it gets us even worst perfs with dynamic arrays.
-      if (niFlagIs(mLockFlags,eLock_Discard)) {
-        _DestroyBufferHandle();
-      }
-      */
-
       const GLenum bufferTarget = this->GetBufferTarget();
       const tPtr bufferData = this->GetBufferData();
       const tU32 elSize = this->GetBufferElSize();
@@ -2975,13 +2981,34 @@ struct sGLBufferImpl : public TDATA {
         }
       }
       else {
-        if (justCreated) {
+        if (
+            justCreated
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+            || mnLastBoundFrame == ni::GetLang()->GetFrameNumber()
+#endif
+        )
+        {
+#if GL_DYNAMIC_BUFFER_DEBUG && (GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING)
+          if (mnLastBoundFrame == ni::GetLang()->GetFrameNumber()) {
+            niDebugFmt((
+              "... GL_DYNAMIC_BUFFER '%p' already bound in frame '%d', orphaned.",
+              (tIntPtr)this, ni::GetLang()->GetFrameNumber()));
+          }
+#endif
+
           _glBufferData(
             bufferTarget,
             elSize*elCount,
             NULL,
-            GL_STREAM_DRAW);
+            GL_DYNAMIC_DRAW);
         }
+#if GL_DYNAMIC_BUFFER_DEBUG && (GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING)
+        else {
+          niDebugFmt((
+            "... GL_DYNAMIC_BUFFER '%p' not yet bound in frame '%d', using as-is.",
+            (tIntPtr)this, ni::GetLang()->GetFrameNumber()));
+        }
+#endif
         _glBufferSubData(bufferTarget,
                          (elSize*mLockFirst),
                          (elSize*mLockNum),
@@ -3040,6 +3067,9 @@ struct sGLBufferImpl : public TDATA {
       return NULL;
     }
     _glBindBuffer(bufferTarget,mGLHandle);
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+    mnLastBoundFrame = ni::GetLang()->GetFrameNumber();
+#endif
     return this;
   }
 
@@ -3059,6 +3089,9 @@ struct sGLBufferImpl : public TDATA {
   GLuint                      mGLHandle;
   eArrayUsage                 mUsage;
   tBool                       mbRestore;
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+  tU32                        mnLastBoundFrame;
+#endif
 };
 
 struct sGLVertexArray : public sGLBufferImpl<sGLVertexArrayData> {
@@ -4296,7 +4329,7 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
 
   /////////////////////////////////////////////
   virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
-#if defined USE_SYSTEM_MEMORY_FOR_DYNAMIC_BUFFERS
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
     if (aUsage == eArrayUsage_Static)
 #endif
     {
@@ -4304,14 +4337,14 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
         mpGraphics->GetGenericDeviceResourceManager(),
         anNumVertices,anFVF,aUsage);
     }
-#if defined USE_SYSTEM_MEMORY_FOR_DYNAMIC_BUFFERS
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
     else {
       return _CreateGenericVertexArray(anNumVertices, anFVF);
     }
 #endif
   }
   virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
-#if defined USE_SYSTEM_MEMORY_FOR_DYNAMIC_BUFFERS
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
     if (aUsage == eArrayUsage_Static)
 #endif
     {
@@ -4319,7 +4352,7 @@ struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
         mpGraphics->GetGenericDeviceResourceManager(),
         aPrimitiveType,anNumIndex,anMaxVertexIndex,aUsage);
     }
-#if defined USE_SYSTEM_MEMORY_FOR_DYNAMIC_BUFFERS
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
     else {
       return _CreateGenericIndexArray(aPrimitiveType,anNumIndex,anMaxVertexIndex);
     }

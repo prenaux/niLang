@@ -7,12 +7,35 @@
 #include <niLang/Utils/ConcurrentImpl.h>
 #include <niLang/STL/scope_guard.h>
 
+#define GL_DYNAMIC_BUFFER_MODE GL_DYNAMIC_BUFFER_MODE_ORPHANING
+#define GL_DYNAMIC_BUFFER_DEBUG 0
+
+// This means dont use the system memory or orphaning, its actually the
+// slowest and "incorrect" because the OpenGL API is confusingly
+// speced/documented... If you dont do ORPHANING then you end up with GPU sync
+// points on several platforms which kill performance.
+#define GL_DYNAMIC_BUFFER_MODE_NONE 1
 // I cant get decent perf out glBufferSubData for Dynamic arrays on macOS &
 // iOS. A system memory buffer is always significantly quicker. On Windows
 // perfs are the same with both... (last test ran in June 2019)
-#if !defined niJSCC
-#define USE_SYSTEM_MEMORY_FOR_DYNAMIC_BUFFERS
-#endif
+#define GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY 2
+// This seems to be the best way to do dynamic buffers.
+//
+// Explanation:
+//   OpenGL buffer orphaning is a technique for optimizing buffer
+//   updates in OpenGL. When you update the contents of a buffer object in
+//   OpenGL, the old data needs to be invalidated and the new data needs to be
+//   uploaded to the GPU. This can be an expensive operation, especially if
+//   the buffer is large and the new data is significantly different from the
+//   old data.
+//
+//   Buffer orphaning is a technique that involves allocating a new buffer
+//   object and using it to replace the old buffer object. The old buffer
+//   object is then deleted. This has the effect of invalidating the old data
+//   and allowing the new data to be uploaded to the GPU without waiting for
+//   the old data to be completely invalidated.
+//
+#define GL_DYNAMIC_BUFFER_MODE_ORPHANING 3
 
 #ifdef _DEBUG
 #  ifndef DO_GL_DEBUG_LOG

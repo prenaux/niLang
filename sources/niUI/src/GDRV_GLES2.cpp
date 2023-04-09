@@ -2913,7 +2913,7 @@ struct sGLBufferImpl : public TDATA {
     mLockFirst = 0;
     mLockNum = 0;
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
-    mnLastBoundFrame = ~0;
+    mbShouldOrphanDynamicBuffer = eFalse;
 #endif
   }
 
@@ -2984,15 +2984,17 @@ struct sGLBufferImpl : public TDATA {
         if (
             justCreated
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
-            || mnLastBoundFrame == ni::GetLang()->GetFrameNumber()
+            || mbShouldOrphanDynamicBuffer
 #endif
         )
         {
 #if GL_DYNAMIC_BUFFER_DEBUG && (GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING)
-          if (mnLastBoundFrame == ni::GetLang()->GetFrameNumber()) {
+          if (mbShouldOrphanDynamicBuffer) {
             niDebugFmt((
-              "... GL_DYNAMIC_BUFFER '%p' already bound in frame '%d', orphaned.",
-              (tIntPtr)this, ni::GetLang()->GetFrameNumber()));
+              "... GL_DYNAMIC_BUFFER '%p' bound since last update, orphaned. %d bytes total, %d bytes update.",
+              (tIntPtr)this,
+              elSize*elCount,
+              elSize*mLockNum));
           }
 #endif
 
@@ -3001,12 +3003,17 @@ struct sGLBufferImpl : public TDATA {
             elSize*elCount,
             NULL,
             GL_DYNAMIC_DRAW);
+#if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
+          mbShouldOrphanDynamicBuffer = eFalse;
+#endif
         }
 #if GL_DYNAMIC_BUFFER_DEBUG && (GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING)
         else {
-          niDebugFmt((
-            "... GL_DYNAMIC_BUFFER '%p' not yet bound in frame '%d', using as-is.",
-            (tIntPtr)this, ni::GetLang()->GetFrameNumber()));
+            niDebugFmt((
+              "... GL_DYNAMIC_BUFFER '%p' not bound since last update, use as-is. %d bytes total, %d bytes update.",
+              (tIntPtr)this,
+              elSize*elCount,
+              elSize*mLockNum));
         }
 #endif
         _glBufferSubData(bufferTarget,
@@ -3068,7 +3075,9 @@ struct sGLBufferImpl : public TDATA {
     }
     _glBindBuffer(bufferTarget,mGLHandle);
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
-    mnLastBoundFrame = ni::GetLang()->GetFrameNumber();
+    // If we're using orphaning we should orphan the buffer after its used for
+    // rendering.
+    mbShouldOrphanDynamicBuffer = eTrue;
 #endif
     return this;
   }
@@ -3090,7 +3099,7 @@ struct sGLBufferImpl : public TDATA {
   eArrayUsage                 mUsage;
   tBool                       mbRestore;
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
-  tU32                        mnLastBoundFrame;
+  tBool                       mbShouldOrphanDynamicBuffer;
 #endif
 };
 

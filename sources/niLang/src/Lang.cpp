@@ -39,7 +39,14 @@ static tBool _LogMessageCallback(tLogFlags type, const tF64 afTime, const char* 
 }
 
 ///////////////////////////////////////////////
-static sPropertyBool _logSystemInfo("log.system_info",eFalse);
+static sPropertyBool _logSystemInfo(
+  "log.system_info",
+#ifdef niEmbedded
+  eTrue
+#else
+  eFalse
+#endif
+);
 
 niExportFunc(void) ni_log_system_info_once() {
   niRunOnce {

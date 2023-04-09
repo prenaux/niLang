@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "API/niUnitTest.h"
+#include "../../niLang/src/API/niLang/Utils/URLFileHandler.h"
 #include "../../niLang/src/API/niLang/Utils/URLFileHandlerManifest.h"
 #include "../../niLang/src/API/niLang/Utils/CrashReport.h"
 

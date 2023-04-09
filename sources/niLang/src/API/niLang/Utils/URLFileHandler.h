@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __URLHANDLERMANIFEST_H_717267A8_D672_40A4_ADBB_CD27296AA55C__
-#define __URLHANDLERMANIFEST_H_717267A8_D672_40A4_ADBB_CD27296AA55C__
+#ifndef __URLFILEHANDLER_H_015E7601_79FC_F74F_9B1C_99F4E5A2DF23__
+#define __URLFILEHANDLER_H_015E7601_79FC_F74F_9B1C_99F4E5A2DF23__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include "../ILang.h"
@@ -8,6 +8,62 @@
 #include "../../niLang_ModuleDef.h"
 
 namespace ni {
+
+#if defined niIOS
+#define niNoToolkitDir
+#endif
+
+#if defined niNoToolkitDir
+//
+// iOS only has a hellish way to copy/reference data at build time, the only
+// sane way I found is to reference the module's data folder at the root of
+// the Xcode project. That means no explicit toolkit directory so we don't
+// expose those on iOS to avoid using them inadvertently there.
+//
+
+static inline cString GetModuleDataDir(const achar* /*aToolkitName*/, const achar* aModuleName) {
+  cString dir = ni::GetRootFS()->GetAbsolutePath(
+    ni::GetLang()->GetProperty("ni.dirs.data").Chars());
+  dir += "/";
+  dir += aModuleName;
+  dir += "/";
+  return dir;
+}
+
+#else
+///////////////////////////////////////////////
+static inline cString GetToolkitBinDir(const achar* aToolkitName, const achar* aSubDir) {
+  cString r = ni::GetRootFS()->GetAbsolutePath(
+    (ni::GetLang()->GetProperty("ni.dirs.bin") +
+     "../../../" + aToolkitName + "/").Chars());
+  if (niStringIsOK(aSubDir)) {
+    r += aSubDir;
+    r += "/";
+  }
+  return r;
+}
+
+///////////////////////////////////////////////
+static inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir) {
+  cString r = ni::GetRootFS()->GetAbsolutePath(
+    (ni::GetLang()->GetProperty("ni.dirs.data") +
+     "../../").Chars());
+  if (niStringIsOK(aToolkitName)) {
+    r += aToolkitName;
+    r += "/";
+  }
+  if (niStringIsOK(aSubDir)) {
+    r += aSubDir;
+    r += "/";
+  }
+  return r;
+}
+
+///////////////////////////////////////////////
+static inline cString GetModuleDataDir(const achar* aToolkitName, const achar* aModuleName) {
+  return GetToolkitDir(aToolkitName,"data") + aModuleName + "/";
+}
+#endif
 
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(iFileSystem* apFS, tBool abManifest = eFalse) {
   Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)(abManifest ?
@@ -55,7 +111,8 @@ static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aTool
   Ptr<iURLFileHandler> fileHandler = CreateURLFileHandlerDir(dir.Chars());
   niPanicAssertMsg(
     fileHandler.IsOK(),
-    niFmt("Can't create the file handler for the data directory of the module '%s::%s', check that the '$WORK/%s/data/%s' folder exists.",
+    niFmt("Can't create the file handler for the data directory '%s' of the module '%s::%s', check that the '$WORK/%s/data/%s' folder exists.",
+          dir,
           aToolkitName, aModuleName,
           aToolkitName, aModuleName));
   ni::GetLang()->SetGlobalInstance(instanceName.Chars(), fileHandler);
@@ -63,4 +120,4 @@ static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aTool
 }
 
 } // namespace ni
-#endif // __URLHANDLERMANIFEST_H_717267A8_D672_40A4_ADBB_CD27296AA55C__
+#endif // __URLFILEHANDLER_H_015E7601_79FC_F74F_9B1C_99F4E5A2DF23__

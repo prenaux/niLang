@@ -595,10 +595,14 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
   {
     const cString cwdDir = (*props)["ni.app.cwd"];
     const cString binDir = (*props)["ni.dirs.bin"];
+#ifdef niIOS
+    (*props)["ni.dirs.data"] = (*props)["ni.dirs.bin"];
+#else
     _CopyFromJVM(props,"ni.packages.jars");
     if (!_InitPkgProp(props, binDir.Chars(), "data")) {
       _InitDirProp(props, binDir.Chars(), "data", eTrue);
     }
+#endif
     if (!_InitPkgProp(props, binDir.Chars(), "scripts")) {
       _InitDirProp(props, binDir.Chars(), "scripts", eTrue);
     }

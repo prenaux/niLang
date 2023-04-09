@@ -740,35 +740,6 @@ static inline cString __stdcall GetProperty(const achar* aaszName, const achar* 
 }
 
 ///////////////////////////////////////////////
-static inline cString GetToolkitBinDir(const achar* aToolkitName, const achar* aSubDir) {
-  cString r = ni::GetRootFS()->GetAbsolutePath(
-    (ni::GetLang()->GetProperty("ni.dirs.bin") +
-     "../../../" + aToolkitName + "/").Chars());
-  if (niStringIsOK(aSubDir)) {
-    r += aSubDir;
-    r += "/";
-  }
-  return r;
-}
-
-///////////////////////////////////////////////
-static inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir) {
-  cString r = ni::GetRootFS()->GetAbsolutePath(
-    (ni::GetLang()->GetProperty("ni.dirs.data") +
-     "../../" + aToolkitName + "/").Chars());
-  if (niStringIsOK(aSubDir)) {
-    r += aSubDir;
-    r += "/";
-  }
-  return r;
-}
-
-///////////////////////////////////////////////
-static inline cString GetModuleDataDir(const achar* aToolkitName, const achar* aModuleName) {
-  return GetToolkitDir(aToolkitName,"data") + aModuleName + "/";
-}
-
-///////////////////////////////////////////////
 inline tBool HasCreateInstance(const achar* aaszName) {
   return ni::GetLang()->GetCreateInstanceMap()->find(aaszName) !=
       ni::GetLang()->GetCreateInstanceMap()->end();

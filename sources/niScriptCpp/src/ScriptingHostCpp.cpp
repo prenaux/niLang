@@ -6,7 +6,7 @@
 
 namespace ni {
 
-niExportFunc(ni::iUnknown*) New_ScriptingHost_Cpp(const Var& /*avarA*/, const Var& /*avarB*/) {
+niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   niError("ScriptCpp not supported on this platform.");
   return NULL;
 }

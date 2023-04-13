@@ -19,7 +19,7 @@ on:
 
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build_ubuntu20:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
 
@@ -33,12 +33,70 @@ jobs:
           path: |
             ~/_ham/obj/
             ~/work/niLang/ham
-          key: ${{ runner.os }}-ham-ad13c41-niLang-3
+          key: ${{ runner.os }}-ham-2362698-niLang-3
 
       - name: Install Ubuntu packages
         run: |
           sudo apt update
           DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc libdw-dev libunwind-dev
+
+      - name: Build bootstrap
+        run: |
+          ./_build_bootstrap.sh
+
+      - name: Run_ci BUILD=da
+        continue-on-error: true
+        run: |
+          BUILD=da ./_run_ci.sh
+
+      - name: Run_ci BUILD=ra
+        run: |
+          BUILD=ra ./_run_ci.sh
+
+  build_macos_latest:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Cache Ham
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/_ham/obj/
+            ~/work/niLang/ham
+          key: ${{ runner.os }}-ham-2362698-niLang-3
+
+      - name: Build bootstrap
+        run: |
+          ./_build_bootstrap.sh
+
+      - name: Run_ci BUILD=da
+        continue-on-error: true
+        run: |
+          BUILD=da ./_run_ci.sh
+
+      - name: Run_ci BUILD=ra
+        run: |
+          BUILD=ra ./_run_ci.sh
+
+  build_windows_latest:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Cache Ham
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/_ham/obj/
+            ~/work/niLang/ham
+          key: ${{ runner.os }}-ham-2362698-niLang-3
 
       - name: Build bootstrap
         run: |

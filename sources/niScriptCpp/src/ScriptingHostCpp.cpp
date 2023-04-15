@@ -32,13 +32,8 @@ typedef ni::iUnknown* (__ni_export_call_decl *tpfnNewInstance)();
 #define SCRIPTCPP_BUILD_DA
 #endif
 
-static cString _GetBinDir() {
-  cString dir;
-  dir << "bin/"
-      << GetLang()->GetProperty("ni.loa.os")
-      << "-"
-      << GetLang()->GetProperty("ni.loa.arch");
-  return dir;
+static const achar* _GetBinDir() {
+  return "bin/" niLOA_Bin;
 }
 
 niExportFunc(tBool) ScriptCpp_GetCompileEnabled() {
@@ -178,7 +173,7 @@ static tBool ScriptCpp_TryCompileSource(
     pathBash.SetDirectory(hamHome.Chars());
     pathBash.AddDirectoryBack("bin/nt-x86");
     pathBash.SetFile("bash.exe");
-#elif defined niOSX
+#elif defined niOSX || defined niLinux
     pathBash.SetFile("/bin/bash");
 #else
     {
@@ -218,7 +213,7 @@ static tBool ScriptCpp_TryCompileSource(
   cPath pathOutput;
   {
     pathOutput.SetDirectory(strSourceAppDir.Chars());
-    pathOutput.AddDirectoryBack(_GetBinDir().Chars());
+    pathOutput.AddDirectoryBack(_GetBinDir());
     pathOutput.SetFile(_GetModuleFileName(mc.name).Chars());
     pathOutputNotStamped = pathOutput;
     // add the stamp
@@ -355,7 +350,7 @@ static cString _FindModulePath(const cString& strModuleFileName) {
       cPath pathAppModuleFileName;
       pathAppModuleFileName.SetDirectory(strAppDir.Chars());
       if (!_IsBinDir(strAppDir)) {
-        pathAppModuleFileName.AddDirectoryBack(_GetBinDir().Chars());
+        pathAppModuleFileName.AddDirectoryBack(_GetBinDir());
       }
       pathAppModuleFileName.SetFile(strModuleFileName.Chars());
       SCRIPTCPP_TRACE(("Trying '%s' module path '%s'",

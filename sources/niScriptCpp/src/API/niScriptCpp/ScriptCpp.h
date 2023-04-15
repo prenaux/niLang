@@ -4,7 +4,7 @@
 
 #include <niLang/Types.h>
 
-#if !defined niWindows && !defined niOSX
+#if defined niEmbedded || (!defined niWindows && !defined niOSX && !defined niLinux)
 
 #define niNoScriptCpp
 

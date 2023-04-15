@@ -581,7 +581,7 @@ typedef SYNC_INT_TYPE tSyncInt;
 #elif defined niAndroid
 #  define niOS "adr"
 #elif defined niLinux
-#  define niOS "linux"
+#  define niOS "lin"
 #elif defined niJSCC
 #  define niOS "jscc"
 #elif defined niMetalSL

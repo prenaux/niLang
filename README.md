@@ -1,11 +1,15 @@
 # Overview
 
-niLang a C++ library to abstract the OS: Window management, Input -
-Keyboard/Mouse/Gamepads, Filesystem, Threading, Socket, Http requests,
-Graphics & Audio. It includes an automated way to do introspection on C++
-modules/interfaces/enums which is notably leveraged to automate interop with
-other languages, out of the box with niScript (a derivative of the squirrel
-scripting language) & the JVM.
+niLang is a C++ library engineered to abstract a variety of operating system
+functionalities, encompassing window management, input handling for keyboards,
+mice, and gamepads, filesystem operations, threading, socket communication,
+HTTP requests, 2D & 3D rendering, user interfaces, and audio processing.
+
+In addition, niLang incorporates an automated introspection system for C++
+modules, interfaces, and enums, facilitating seamless interoperability with
+other programming languages. By default, niLang offers integration with
+niScript (a Squirrel scripting language derivative) and the Java Virtual
+Machine (JVM).
 
 # Setup the environment
 
@@ -73,8 +77,9 @@ Or
 
 # License
 
-niLang is available under the MIT License, see the full license text in
-`LICENSE.md`. This project redistributes code from other projects, some of
-which have other licenses besides MIT. Such licenses are generally similar to
-the MIT license for practical purposes. See the `docs/thirdparty/` folder for
-more details.
+niLang is distributed under the MIT License; the full license text can be
+found in `LICENSE.md`. This project incorporates code from other projects, some
+of which are licensed under different terms than MIT. Generally, these
+licenses are similar to the MIT License in terms of practical
+implications. For more information on third-party licenses, refer to the
+`docs/thirdparty` folder.

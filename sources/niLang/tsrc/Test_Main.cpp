@@ -5,7 +5,8 @@
 #if defined niEmbedded
 // #define EMBEDDED_FIXTURE_NAME "FJSCC-OpenGL"
 // #define EMBEDDED_FIXTURE_NAME "FFileSystem-ModuleDataDir"
-#define EMBEDDED_FIXTURE_NAME "FStartPath-OpenUrl"
+// #define EMBEDDED_FIXTURE_NAME "FStartPath-OpenUrl"
+#define EMBEDDED_FIXTURE_NAME "FProperties-BinDir"
 #endif
 
 #if !defined niNoProcess

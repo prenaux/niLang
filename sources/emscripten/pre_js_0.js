@@ -1,6 +1,3 @@
-if (typeof(Module) === "undefined")
-  Module = {};
-
 // We don't want our files to use the preload plugins
 Module.noImageDecoding = true;
 Module.noAudioDecoding = true;
@@ -1004,7 +1001,8 @@ Module["preRun"] = function() {
     NIAPP_CAPI.Initialize();
 
     // Initialize the canvas
-    var canvas = window.Module && Module['canvas'];
+    var canvas = Module['canvas'];
+    console.log("... onRuntimeInitialized: canvas: ", canvas);
     niApp.AddInputEvents(canvas);
     niApp.AddResizeEvents(canvas);
 

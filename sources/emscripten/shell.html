@@ -132,150 +132,157 @@
       ></textarea>
     </div>
 
-    <script type='text/javascript'>
-     var elPlayerContainer = document.getElementById('ni-player-container');
-     var elPlayerStatusText = document.getElementById('ni-player-status');
-     var elPlayerProgress = document.getElementById('ni-player-progress');
-     var elPlayerOverlay = document.getElementById('ni-player-overlay');
-     var elPlayerTerminal = document.getElementById('ni-player-terminal');
-     var didShowwindow = false;
-
-     var Module = {
-       preRun: [],
-       postRun: [],
-       notifyHostHandlers: {
-         ShowWindow: function() {
-           var canvas = Module['canvas'];
-           if (canvas) {
-             canvas.style.display = 'block';
-           }
-           if (elPlayerContainer) {
-             elPlayerContainer.style.display = 'block';
-             niApp.SetCanvasSize(canvas,canvas.clientWidth,canvas.clientHeight);
-           }
-           if (elPlayerTerminal) {
-             elPlayerTerminal.style.display = 'none';
-             elPlayerTerminal = null;
-           }
-         },
-         HideWindow: function() {
-           var canvas = Module['canvas'];
-           if (canvas) {
-             canvas.style.display = 'none';
-           }
-           if (elPlayerContainer) {
-             elPlayerContainer.style.display = 'none';
-           }
-           elPlayerTerminal = document.getElementById('ni-player-terminal');
-           if (elPlayerTerminal) {
-             elPlayerTerminal.style.display = 'block';
-           }
-         },
-         OpenUrl: function(params) {
-           var url = decodeURIComponent(params);
-           console.log("... OpenUrl: " + url);
-           if (NIAPP_BROWSER.isMobile) {
-             window.location.href = url;
-           }
-           else {
-             window.open(url);
-           }
-         },
-       },
-       print: function(text) {
-         if (arguments.length > 1) {
-           text = Array.prototype.slice.call(arguments).join(' ');
-         }
-         console.log(text);
-         if (elPlayerTerminal) {
-           elPlayerTerminal.value += text + "\n";
-           elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
-         }
-       },
-       printErr: function(text) {
-         if (arguments.length > 1) {
-           text = Array.prototype.slice.call(arguments).join(' ');
-         }
-         console.error(text);
-       },
-       canvas: (function() {
-         var canvas = document.getElementById('canvas');
-         // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-         // application robust, you may want to override this behavior before shipping!
-         // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-         canvas.addEventListener(
-           "webglcontextlost",
-           function(e) {
-             alert('WebGL context lost. You will need to reload the page.');
-             e.preventDefault();
-           }, false);
-         return canvas;
-       })(),
-       setStatus: function(text) {
-         if (!Module.setStatus.last) {
-           Module.setStatus.last = { time: Date.now(), text: '' };
-         }
-         if (text === Module.setStatus.last.text) {
-           return;
-         }
-         var isDone = !text.length;
-         if (isDone) {
-           text = "Done";
-         }
-         var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-         var now = Date.now();
-         if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-         Module.setStatus.last.time = now;
-         Module.setStatus.last.text = text;
-         if (m) {
-           /* text = m[1]; */
-           if (elPlayerProgress) {
-             elPlayerProgress.value = parseInt(m[2])*100;
-             elPlayerProgress.max = parseInt(m[4])*100;
-           }
-           if (elPlayerOverlay) {
-             elPlayerOverlay.style.display = 'flex';
-           }
-         } else if (isDone) {
-           console.log("STATUS: " + text);
-           if (elPlayerProgress) {
-             elPlayerProgress.value = 100;
-             elPlayerProgress.max = 100;
-           }
-           if (elPlayerOverlay) {
-             if (isDone) {
-               elPlayerOverlay.style.display = 'none';
-             }
-           }
-           if (elPlayerTerminal) {
-             // if the terminal element is still there make it visible, if we
-             // dont want it ShowWindow should set elPlayerTerminal to null
-             elPlayerTerminal.style.display = 'block';
-           }
-         }
-         if (elPlayerStatusText) {
-           elPlayerStatusText.innerHTML = text;
-         }
-       },
-       totalDependencies: 0,
-       monitorRunDependencies: function(left) {
-         this.totalDependencies = Math.max(this.totalDependencies, left);
-         Module.setStatus(
-           left ?
-           'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' :
-           'All downloads complete.');
-       }
-     };
-     Module.setStatus('Downloading...');
-     window.onerror = function(event) {
-       // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
-       Module.setStatus('Exception thrown, see JavaScript console');
-       Module.setStatus = function(text) {
-         if (text)
-           Module.printErr('[post-exception status] ' + text);
-       };
-     };
-    </script>
     {{{ SCRIPT }}}
+
+    <script type='text/javascript'>
+    window.addEventListener('load', function () {
+      var elPlayerContainer = document.getElementById('ni-player-container');
+      var elPlayerStatusText = document.getElementById('ni-player-status');
+      var elPlayerProgress = document.getElementById('ni-player-progress');
+      var elPlayerOverlay = document.getElementById('ni-player-overlay');
+      var elPlayerTerminal = document.getElementById('ni-player-terminal');
+      var didShowwindow = false;
+
+      function setStatus(text) {
+        if (!setStatus.last) {
+          setStatus.last = { time: Date.now(), text: '' };
+        }
+        if (text === setStatus.last.text) {
+          return;
+        }
+        var isDone = !text.length;
+        if (isDone) {
+          text = "Done";
+        }
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+        setStatus.last.time = now;
+        setStatus.last.text = text;
+        if (m) {
+          /* text = m[1]; */
+          if (elPlayerProgress) {
+            elPlayerProgress.value = parseInt(m[2]) * 100;
+            elPlayerProgress.max = parseInt(m[4]) * 100;
+          }
+          if (elPlayerOverlay) {
+            elPlayerOverlay.style.display = 'flex';
+          }
+        } else if (isDone) {
+          console.log("STATUS: " + text);
+          if (elPlayerProgress) {
+            elPlayerProgress.value = 100;
+            elPlayerProgress.max = 100;
+          }
+          if (elPlayerOverlay) {
+            if (isDone) {
+              elPlayerOverlay.style.display = 'none';
+            }
+          }
+          if (elPlayerTerminal) {
+            // if the terminal element is still there make it visible, if we
+            // dont want it ShowWindow should set elPlayerTerminal to null
+            elPlayerTerminal.style.display = 'block';
+          }
+        }
+        if (elPlayerStatusText) {
+          elPlayerStatusText.innerHTML = text;
+        }
+      };
+
+      console.log('... createDefaultNiModule');
+      var Module = createDefaultNiModule({
+        preRun: [],
+        postRun: [],
+        notifyHostHandlers: {
+          ShowWindow: function () {
+            var canvas = Module['canvas'];
+            if (canvas) {
+              canvas.style.display = 'block';
+            }
+            if (elPlayerContainer) {
+              elPlayerContainer.style.display = 'block';
+              niApp.SetCanvasSize(canvas, canvas.clientWidth, canvas.clientHeight);
+            }
+            if (elPlayerTerminal) {
+              elPlayerTerminal.style.display = 'none';
+              elPlayerTerminal = null;
+            }
+          },
+          HideWindow: function () {
+            var canvas = Module['canvas'];
+            if (canvas) {
+              canvas.style.display = 'none';
+            }
+            if (elPlayerContainer) {
+              elPlayerContainer.style.display = 'none';
+            }
+            elPlayerTerminal = document.getElementById('ni-player-terminal');
+            if (elPlayerTerminal) {
+              elPlayerTerminal.style.display = 'block';
+            }
+          },
+          OpenUrl: function (params) {
+            var url = decodeURIComponent(params);
+            console.log("... OpenUrl: " + url);
+            if (NIAPP_BROWSER.isMobile) {
+              window.location.href = url;
+            }
+            else {
+              window.open(url);
+            }
+          },
+        },
+        print: function (text) {
+          if (arguments.length > 1) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+          }
+          console.log(text);
+          if (elPlayerTerminal) {
+            elPlayerTerminal.value += text + "\n";
+            elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
+          }
+        },
+        printErr: function (text) {
+          if (arguments.length > 1) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+          }
+          console.error(text);
+        },
+        canvas: (function () {
+          var canvas = document.getElementById('canvas');
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener(
+            "webglcontextlost",
+            function (e) {
+              alert('WebGL context lost. You will need to reload the page.');
+              e.preventDefault();
+            }, false);
+          return canvas;
+        })(),
+        setStatus: setStatus,
+        totalDependencies: 0,
+        monitorRunDependencies: function (left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          setStatus(
+            left ?
+              'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' :
+              'All downloads complete.');
+        }
+      }).then(function (aModule) {
+        aModule.setStatus('Module initialized...');
+        window.onerror = function(event) {
+          // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+          aModule.setStatus('Exception thrown, see JavaScript console');
+          aModule.setStatus = function(text) {
+            if (text)
+              aModule.printErr('[post-exception status] ' + text);
+          };
+        };
+      });
+    });
+    </script>
   </body>
 </html>

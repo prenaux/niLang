@@ -583,7 +583,7 @@ typedef SYNC_INT_TYPE tSyncInt;
 #elif defined niLinux
 #  define niOS "lin"
 #elif defined niJSCC
-#  define niOS "jscc"
+#  define niOS "web"
 #elif defined niMetalSL
 #  define niOS "metalsl"
 #elif defined niQNX

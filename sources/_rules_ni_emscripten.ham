@@ -9,4 +9,7 @@ LINKFLAGS +=
   --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten pre_js_0.js ] ]
   --post-js [ FQuote [ FDirName $(TOP_DIR) emscripten post_js_0.js ] ]
   --shell-file [ FQuote [ FDirName $(TOP_DIR) emscripten shell.html ] ]
+  -s WASM_ASYNC_COMPILATION=1
+  -s MODULARIZE=1
+  -s EXPORT_NAME=createDefaultNiModule
 ;

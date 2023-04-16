@@ -284,7 +284,7 @@ tI32 __stdcall cLang::StartPath(const achar* aaszURL)
   if (bIsURL) {
     cString encodedUrl;
     StringEncodeUrl(encodedUrl, strURL);
-    emscripten_run_script(niFmt("niApp.NotifyHost('OpenUrl %s');",encodedUrl));
+    emscripten_run_script(niFmt("NIAPP.NotifyHost('OpenUrl %s');",encodedUrl));
   }
 #elif defined niWinDesktop
   {

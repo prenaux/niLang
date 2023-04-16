@@ -27,7 +27,7 @@ struct HelloUI_AR : public cWidgetSinkImpl<>
     }
 
 #ifdef niJSCC
-    emscripten_run_script("niApp.startAR();");
+    emscripten_run_script("NIAPP.startAR();");
 #endif
 
     return eTrue;

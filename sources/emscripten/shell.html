@@ -195,22 +195,23 @@
         preRun: [],
         postRun: [],
         notifyHostHandlers: {
-          ShowWindow: function () {
-            var canvas = Module['canvas'];
+          ShowWindow: function (aModule) {
+            var NIAPP = aModule['NIAPP'];
+            var canvas = aModule['canvas'];
             if (canvas) {
               canvas.style.display = 'block';
             }
             if (elPlayerContainer) {
               elPlayerContainer.style.display = 'block';
-              niApp.SetCanvasSize(canvas, canvas.clientWidth, canvas.clientHeight);
+              NIAPP.SetCanvasSize(canvas, canvas.clientWidth, canvas.clientHeight);
             }
             if (elPlayerTerminal) {
               elPlayerTerminal.style.display = 'none';
               elPlayerTerminal = null;
             }
           },
-          HideWindow: function () {
-            var canvas = Module['canvas'];
+          HideWindow: function (aModule) {
+            var canvas = aModule['canvas'];
             if (canvas) {
               canvas.style.display = 'none';
             }
@@ -222,7 +223,8 @@
               elPlayerTerminal.style.display = 'block';
             }
           },
-          OpenUrl: function (params) {
+          OpenUrl: function (aModule,params) {
+            var NIAPP_BROWSER= aModule['NIAPP_BROWSER'];
             var url = decodeURIComponent(params);
             console.log("... OpenUrl: " + url);
             if (NIAPP_BROWSER.isMobile) {

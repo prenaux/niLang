@@ -201,10 +201,10 @@ struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFla
     const tBool bShow = !niFlagIs(aShow,eOSWindowShowFlags_Hide);
     // niDebugFmt(("... sJSCCWindow::SetShow: %d", bShow));
     if (bShow) {
-      emscripten_run_script("niApp.NotifyHost('ShowWindow');");
+      emscripten_run_script("NIAPP.NotifyHost('ShowWindow');");
     }
     else {
-      emscripten_run_script("niApp.NotifyHost('HideWindow');");
+      emscripten_run_script("NIAPP.NotifyHost('HideWindow');");
     }
   }
   virtual tOSWindowShowFlags __stdcall GetShow() const niImpl {

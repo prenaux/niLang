@@ -8,7 +8,7 @@ namespace app {
 
 void AppNotifyHost(const char* aCmd) {
 #ifdef niJSCC
-  emscripten_run_script(niFmt("try { niApp.NotifyHost('%s'); } catch(e) {}",aCmd));
+  emscripten_run_script(niFmt("try { NIAPP.NotifyHost('%s'); } catch(e) {}",aCmd));
 #endif
 }
 

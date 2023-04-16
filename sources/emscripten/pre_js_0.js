@@ -2,7 +2,11 @@
 Module.noImageDecoding = true;
 Module.noAudioDecoding = true;
 
-var NIAPP_AR = {
+function _moduleLib(aName, aDefaultValues) {
+  return Module[aName] = Object.assign({},aDefaultValues,Module[aName]);
+};
+
+var NIAPP_AR = _moduleLib('NIAPP_AR', {
   container: null,
   video: null,
   playerCanvas: null,
@@ -39,7 +43,7 @@ var NIAPP_AR = {
         console.log("... NIAPP_AR.startVideo: " + w + ", " + h);
         this.video.setAttribute('width', w);
         this.video.setAttribute('height', h);
-        niApp.NotifyHost("NIAPP_AR.startedVideo");
+        NIAPP.NotifyHost("NIAPP_AR.startedVideo");
       });
       this.video.srcObject = stream;
     }).catch((err) => {
@@ -50,9 +54,9 @@ var NIAPP_AR = {
   start: function() {
     this._startVideo();
   },
-};
+});
 
-var NIAPP_BROWSER = (function() {
+var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function() {
   var b = {};
 
   b.isTouch = ('ontouchend' in document) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || "yobiatch";
@@ -76,9 +80,9 @@ var NIAPP_BROWSER = (function() {
 
   b.isMobile = b.isPhone || b.isTablet;
   return b;
-})();
+})());
 
-var NIAPP_CONFIG = {
+var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
   baseUrl: (function(){
     var url = window.location.href;
     var binPos = url.indexOf("niLang/bin/web-js");
@@ -104,9 +108,9 @@ var NIAPP_CONFIG = {
   ],
 
   watchResizeDelay: undefined,
-};
+});
 
-var NIAPP_CAPI = {
+var NIAPP_CAPI = _moduleLib('NIAPP_CAPI', {
   IsInitialized: function() {
     return !!this._didInitialize;
   },
@@ -152,9 +156,9 @@ var NIAPP_CAPI = {
     w('WndInputFingerMove', z, [n,n,n,n]);
     w('WndInputFingerPress', z, [n,n,n,n,n]);
   }
-}
+});
 
-var NIAPP_INPUT = (function NIAPP_INPUT() {
+function _makeNiInputLib() {
   var _isMouseHover = false;
   var _keyIsDown = {};
   var _keyDownCount = 0;
@@ -365,7 +369,7 @@ var NIAPP_INPUT = (function NIAPP_INPUT() {
 
     //// Pointer Lock Lost ////
     handlePointerLockError: function(event) {
-      niApp.Debug("handlePointerLockError");
+      NIAPP.Debug("handlePointerLockError");
       _setIsLocked(false);
     },
     handlePointerLockChange: function(event) {
@@ -374,7 +378,7 @@ var NIAPP_INPUT = (function NIAPP_INPUT() {
         document.pointerLockElement === canvas ||
           document.mozPointerLockElement === canvas ||
           document.webkitPointerLockElement === canvas);
-      niApp.Debug("handlePointerLockChange:" + _isLocked);
+      NIAPP.Debug("handlePointerLockChange:" + _isLocked);
     },
 
     //// Context Menu ////
@@ -487,7 +491,7 @@ var NIAPP_INPUT = (function NIAPP_INPUT() {
       inputListener.addEventListener("dblclick", this.handleDoubleClick, true);
     },
   }
-});
+}
 
 function niPath_Join(aArray) {
   if (arguments.length > 1) {
@@ -561,7 +565,7 @@ function niFS_AddFiles(basePath, baseUrl, aFiles, aCreateFile) {
   }
 }
 
-var NIAPP_FSMODULES = {
+var NIAPP_FSMODULES = _moduleLib('NIAPP_FSMODULES', {
   // dirs: find "$WORK/niLang/data/test" -type d | sed "s~$WORK/niLang/data/test/~~g" | sort
   // files: find "$WORK/niLang/data/test" -type f | sed "s~$WORK/niLang/data/test/~~g" | sort
   test: function() {
@@ -749,9 +753,9 @@ var NIAPP_FSMODULES = {
       "loading.tga"
     ]);
   },
-};
+});
 
-var niApp = {
+var NIAPP = _moduleLib('NIAPP', {
   Assert: function Assert(check, msg) {
     if (!check) {
       var theMsg = "" + msg + new Error().stack;
@@ -777,15 +781,15 @@ var niApp = {
     else {
       cmd = aCmdLine;
     }
-    console.log("... niApp.NotifyHost: cmd: " + cmd + ", params: " + params);
+    console.log("... NIAPP.NotifyHost: cmd: " + cmd + ", params: " + params);
     var notifyHostHandlers = Module['notifyHostHandlers'];
     var handler = notifyHostHandlers && notifyHostHandlers[cmd];
-    handler && handler(params,cmd);
+    handler && handler(Module,params,cmd);
   },
 
   SetCanvasSize: function SetCanvasSize(canvas,width,height) {
     var contentsScale = NIAPP_CONFIG.useBestResolution ? (window.devicePixelRatio || 1) : 1;
-    /* console.log("... niApp.SetCanvasSize: ", canvas, " w: ", width, " h: ", height, " contentsScale: ", contentsScale); */
+    /* console.log("... NIAPP.SetCanvasSize: ", canvas, " w: ", width, " h: ", height, " contentsScale: ", contentsScale); */
 
     if (!width) {
       width = canvas.width / (window.devicePixelRatio || 1);
@@ -824,7 +828,7 @@ var niApp = {
       if (NIAPP_CONFIG.lastCanvasWidth != width ||
           NIAPP_CONFIG.lastCanvasHeight != height)
       {
-        niApp.Debug("niApp.SetCanvasSize - canvasSize: w: " + width + ", h: " + height);
+        NIAPP.Debug("NIAPP.SetCanvasSize - canvasSize: w: " + width + ", h: " + height);
         canvas.width = width;
         canvas.height = height;
         NIAPP_CONFIG.lastCanvasWidth = width;
@@ -834,7 +838,7 @@ var niApp = {
     if (NIAPP_CONFIG.lastCapiWidth != width ||
         NIAPP_CONFIG.lastCapiHeight != height)
     {
-      niApp.Debug("niApp.SetCanvasSize - capiSize: w: " + width + ", h: " + height);
+      NIAPP.Debug("NIAPP.SetCanvasSize - capiSize: w: " + width + ", h: " + height);
       NIAPP_CAPI.WndNotifyResize(width,height,contentsScale);
       NIAPP_CONFIG.lastCapiWidth = width;
       NIAPP_CONFIG.lastCapiHeight = height;
@@ -848,7 +852,7 @@ var niApp = {
       aElement = document.getElementById(aElement);
     }
 
-    var inputLib = NIAPP_INPUT();
+    var inputLib = _makeNiInputLib();
     inputLib.addEvents(aElement);
     return inputLib;
   },
@@ -865,11 +869,11 @@ var niApp = {
           clearTimeout(doResizeTimeout);
         }
         doResizeTimeout = setTimeout(function() {
-          niApp.SetCanvasSize(aElement,width,height);
+          NIAPP.SetCanvasSize(aElement,width,height);
         }, NIAPP_CONFIG.watchResizeDelay);
       }
       else {
-        niApp.SetCanvasSize(aElement,width,height);
+        NIAPP.SetCanvasSize(aElement,width,height);
       }
     }
 
@@ -880,7 +884,7 @@ var niApp = {
       delayResized(aElement.clientWidth,aElement.clientHeight);
     });
 
-    niApp.SetCanvasSize(aElement,aElement.clientWidth,aElement.clientHeight);
+    NIAPP.SetCanvasSize(aElement,aElement.clientWidth,aElement.clientHeight);
   },
 
   GetParamsAsObject: function GetParamsAsObject(query) {
@@ -932,12 +936,12 @@ var niApp = {
   startAR: function() {
     NIAPP_AR.start();
   },
-};
+});
 
 Module["preRun"] = function() {
   console.log("I/preRun BEGIN: baseUrl: " + NIAPP_CONFIG.baseUrl);
 
-  var params = niApp.GetParamsAsObject(location.search);
+  var params = NIAPP.GetParamsAsObject(location.search);
   var title = "niLang";
   var fsModules = NIAPP_CONFIG.fsModules;
 
@@ -1003,8 +1007,8 @@ Module["preRun"] = function() {
     // Initialize the canvas
     var canvas = Module['canvas'];
     console.log("... onRuntimeInitialized: canvas: ", canvas);
-    niApp.AddInputEvents(canvas);
-    niApp.AddResizeEvents(canvas);
+    NIAPP.AddInputEvents(canvas);
+    NIAPP.AddResizeEvents(canvas);
 
     // Parse and set the parameters
     for (var pname in params) {

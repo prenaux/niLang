@@ -52,14 +52,16 @@ IDLC_END_INTF(ni,iCommandSink)
 
 /** interface : iConsoleSink **/
 IDLC_BEGIN_INTF(ni,iConsoleSink)
-/** ni -> iConsoleSink::OnConsoleSink_NamespaceVariableChanged/2 **/
-IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2)
+/** ni -> iConsoleSink::OnConsoleSink_NamespaceVariableChanged/3 **/
+IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,3)
+	IDLC_DECL_VAR(achar*,aNamespace)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aNamespace)
 	IDLC_DECL_VAR(achar*,aaszName)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszName)
 	IDLC_DECL_VAR(achar*,aaszValue)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszValue)
-	IDLC_METH_CALL_VOID(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2,(aaszName,aaszValue))
-IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,2)
+	IDLC_METH_CALL_VOID(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,3,(aNamespace,aaszName,aaszValue))
+IDLC_METH_END(ni,iConsoleSink,OnConsoleSink_NamespaceVariableChanged,3)
 
 /** ni -> iConsoleSink::OnConsoleSink_BeforeRunCommand/1 **/
 IDLC_METH_BEGIN(ni,iConsoleSink,OnConsoleSink_BeforeRunCommand,1)

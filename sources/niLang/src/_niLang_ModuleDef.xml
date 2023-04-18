@@ -1175,9 +1175,14 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method java_name="onConsoleSink_NamespaceVariableChanged" name="OnConsoleSink_NamespaceVariableChanged" num_parameters="2">
+			<method java_name="onConsoleSink_NamespaceVariableChanged" name="OnConsoleSink_NamespaceVariableChanged" num_parameters="3">
 				<comments desc="Called when a variable value changed "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aNamespace"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aaszName"
 					type="const achar *"

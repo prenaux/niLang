@@ -1872,14 +1872,15 @@ static const ni::sInterfaceDef InterfaceDef_iCommandSink = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iConsoleSink() {
 
 // Method: OnConsoleSink_NamespaceVariableChanged
-static const ni::sParameterDef iConsoleSink_OnConsoleSink_NamespaceVariableChanged_Parameters[2] = { 
+static const ni::sParameterDef iConsoleSink_OnConsoleSink_NamespaceVariableChanged_Parameters[3] = { 
+  { "aNamespace", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aaszValue", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
 }; 
 static const ni::sMethodDef iConsoleSink_OnConsoleSink_NamespaceVariableChanged = {
   "OnConsoleSink_NamespaceVariableChanged",
   0|ni::eType_Null, NULL, "void",
-  2, iConsoleSink_OnConsoleSink_NamespaceVariableChanged_Parameters,
+  3, iConsoleSink_OnConsoleSink_NamespaceVariableChanged_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iConsoleSink_OnConsoleSink_NamespaceVariableChanged)
 #else
@@ -1979,11 +1980,12 @@ struct niHidden DispatchWrapper_iConsoleSink : public ni::cIUnknownImpl<ni::iCon
 	}
 
   // Method (0): iConsoleSink::OnConsoleSink_NamespaceVariableChanged
-  void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar * aaszName, const achar * aaszValue) {
-    ni::Var _params_[2];
-    _params_[0] = aaszName;
-    _params_[1] = aaszValue;
-    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iConsoleSink_OnConsoleSink_NamespaceVariableChanged,0,_params_,2,NULL);
+  void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar * aNamespace, const achar * aaszName, const achar * aaszValue) {
+    ni::Var _params_[3];
+    _params_[0] = aNamespace;
+    _params_[1] = aaszName;
+    _params_[2] = aaszValue;
+    ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iConsoleSink_OnConsoleSink_NamespaceVariableChanged,0,_params_,3,NULL);
 	}
 
   // Method (1): iConsoleSink::OnConsoleSink_BeforeRunCommand

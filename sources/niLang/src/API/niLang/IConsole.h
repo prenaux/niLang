@@ -101,7 +101,7 @@ struct iConsoleSink : public iUnknown
 {
   niDeclareInterfaceUUID(iConsoleSink,0x415f0fc4,0x3e03,0x49ea,0xb2,0x1b,0x68,0xa5,0x10,0x82,0x1e,0x19)
   //! Called when a variable value changed
-  virtual void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar* aaszName, const achar* aaszValue) = 0;
+  virtual void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar* aNamespace, const achar* aaszName, const achar* aaszValue) = 0;
   //! Called before a console command is ran.
   //! \return false to disallow the command run
   virtual tBool __stdcall OnConsoleSink_BeforeRunCommand(const achar* aaszCmd) = 0;

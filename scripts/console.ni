@@ -8,7 +8,7 @@
 ::console <- {
   //! Console sink
   consoleSink = {
-    function OnConsoleSink_NamespaceVariableChanged(aName,aValue) {
+    function OnConsoleSink_NamespaceVariableChanged(aNS,aName,aValue) {
     }
     function OnConsoleSink_BeforeRunCommand(aCmd) {
       return true

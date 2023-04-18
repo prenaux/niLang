@@ -244,7 +244,8 @@ tBool cConsole::SetVariable(const achar* aszName, const achar* aszValue)
 
     itVar->second = aszValue;
 
-    niCallSinkVoid_(ConsoleSink,msinkList,NamespaceVariableChanged,(itVar->first.Chars(), itVar->second.Chars()));
+    niCallSinkVoid_(ConsoleSink,msinkList,NamespaceVariableChanged,
+                    (strNS.Chars(), itVar->first.Chars(), itVar->second.Chars()));
   }
   return eTrue;
 }

@@ -1,0 +1,88 @@
+console.log("I/js: niLang/test_pre");
+niAssert(NIAPP_FSMODULES);
+niAssert(NIAPP_FSMODULES['test'] == undefined, 'FSModule "test" already defined');
+
+// dirs: find "$WORK/niLang/data/test" -type d | sed "s~$WORK/niLang/data/test/~~g" | sort
+// files: find "$WORK/niLang/data/test" -type f | sed "s~$WORK/niLang/data/test/~~g" | sort
+NIAPP_FSMODULES['test'] = function FS_test() {
+  console.log("FSModule: test");
+  var dir = "/Work/niLang/data/test";
+  var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/test/");
+  FS.mkdir(dir);
+  niFS_AddDirs(dir, [
+    "fonts",
+    "img_diff",
+    "ipcam",
+    "tex",
+  ]);
+  niFS_AddFiles(dir, url, [
+    "fonts/Copper-Kern-Bold.ttf",
+    "fonts/EyeOT-Mono-Bold.ttf",
+    "fonts/EyeOT-Mono-Medium.ttf",
+    "fonts/EyeOT-Mono.ttf",
+    "fonts/Fax Sans Beta.otf",
+    "fonts/FuturaLT-Bold.ttf",
+    "fonts/FuturaLT-BoldOblique.ttf",
+    "fonts/FuturaLT-Book.ttf",
+    "fonts/FuturaLT-BookOblique.ttf",
+    "fonts/FuturaLT-Heavy.ttf",
+    "fonts/FuturaLT-HeavyOblique.ttf",
+    "fonts/FuturaLT-Oblique.ttf",
+    "fonts/FuturaLT.ttf",
+    "fonts/Junction-bold.otf",
+    "fonts/Junction-light.otf",
+    "fonts/Junction-regular.otf",
+    "fonts/LeagueGothic-CondensedItalic.otf",
+    "fonts/LeagueGothic-CondensedRegular.otf",
+    "fonts/LeagueGothic-Italic.otf",
+    "fonts/LeagueGothic-Regular.otf",
+    "fonts/LeagueSpartan-Bold.otf",
+    "fonts/LeagueSpartan-Bold.ttf",
+    "fonts/Linden Hill Italic.otf",
+    "fonts/Linden Hill.otf",
+    "fonts/Orbitron Black.otf",
+    "fonts/Orbitron Bold.otf",
+    "fonts/Orbitron Light.otf",
+    "fonts/Orbitron Medium.otf",
+    "fonts/OstrichSans-Black.otf",
+    "fonts/OstrichSans-Bold.otf",
+    "fonts/OstrichSans-Heavy.otf",
+    "fonts/OstrichSans-Light.otf",
+    "fonts/OstrichSans-Medium.otf",
+    "fonts/OstrichSansDashed-Medium.otf",
+    "fonts/OstrichSansInline-Italic.otf",
+    "fonts/OstrichSansInline-Regular.otf",
+    "fonts/OstrichSansRounded-Medium.otf",
+    "fonts/Sniglet-Regular.ttf",
+    "fonts/Univers67-Condensed-Bold.ttf",
+    "fonts/UniversalisADFStd-Bold.otf",
+    "fonts/UniversalisADFStd-BoldCond.otf",
+    "fonts/UniversalisADFStd-BoldCondIt.otf",
+    "fonts/UniversalisADFStd-BoldItalic.otf",
+    "fonts/UniversalisADFStd-Cond.otf",
+    "fonts/UniversalisADFStd-CondItalic.otf",
+    "fonts/UniversalisADFStd-Italic.otf",
+    "fonts/UniversalisADFStd-Regular.otf",
+    "fonts/times.ttf",
+    "fonts/timesbd.ttf",
+    "fonts/timesbi.ttf",
+    "fonts/timesi.ttf",
+    "fonts/unvr67w.ttf",
+    "img_diff/AnimMixer_A.jpg",
+    "img_diff/AnimMixer_B.jpg",
+    "ipcam/CCTV-01.ipcam",
+    "ipcam/CCTV-02.ipcam",
+    "tex/Beach_cubemap_128.dds",
+    "tex/Beach_probe_128.dds",
+    "tex/earth_b.jpg",
+    "tex/earth_clouds_d.jpg",
+    "tex/earth_clouds_o.jpg",
+    "tex/earth_d.jpg",
+    "tex/earth_lights.jpg",
+    "tex/earth_s.jpg",
+    "tex/glass.tga",
+    "tex/glass_cubemap.dds",
+    "tex/rust_steel.jpg",
+    "tex/tree.dds",
+  ]);
+};

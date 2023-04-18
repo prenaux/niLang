@@ -1,3 +1,7 @@
+console.log("I/js: niLang/0_post");
+
+Module.callMain = niAssert(callMain, 'callMain');
+
 // Here you can extend some APIs to use from C++
 // The format is:
 // niModuleName: { // here all the extra functions }

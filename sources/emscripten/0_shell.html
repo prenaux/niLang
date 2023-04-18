@@ -159,6 +159,9 @@
         if (m && now - setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
         setStatus.last.time = now;
         setStatus.last.text = text;
+        if (!m) { // if m is set its a progress update, so dont show it
+          console.log("I/STATUS: " + text);
+        }
         if (m) {
           /* text = m[1]; */
           if (elPlayerProgress) {
@@ -169,7 +172,6 @@
             elPlayerOverlay.style.display = 'flex';
           }
         } else if (isDone) {
-          console.log("STATUS: " + text);
           if (elPlayerProgress) {
             elPlayerProgress.value = 100;
             elPlayerProgress.max = 100;
@@ -283,6 +285,8 @@
               aModule.printErr('[post-exception status] ' + text);
           };
         };
+        // Start the app
+        aModule.callMain();
       });
     });
     </script>

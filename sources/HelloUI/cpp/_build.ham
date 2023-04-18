@@ -13,3 +13,9 @@ SRC = [ tkPkgSrc ] ;
 
 runInDir HelloUI_cpp ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : data : $(CHK_SOURCES) ] ;
+
+if ( $(EMSCRIPTEN) = 1 ) {
+  TargetLinkFlags $(PKGTARGETF) :
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_pre.js ] ]
+  ;
+}

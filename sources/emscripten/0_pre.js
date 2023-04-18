@@ -1,9 +1,18 @@
+console.log("I/js: niLang/0_pre");
+
+function niAssert(condition, message) {
+  if (!condition) {
+    throw new Error(message || "Assertion failed");
+  }
+  return condition;
+}
+
 // We don't want our files to use the preload plugins
 Module.noImageDecoding = true;
 Module.noAudioDecoding = true;
 
 function _moduleLib(aName, aDefaultValues) {
-  return Module[aName] = Object.assign({},aDefaultValues,Module[aName]);
+  return Module[aName] = Object.assign({}, aDefaultValues, Module[aName]);
 };
 
 var NIAPP_AR = _moduleLib('NIAPP_AR', {
@@ -11,7 +20,7 @@ var NIAPP_AR = _moduleLib('NIAPP_AR', {
   video: null,
   playerCanvas: null,
 
-  _startVideo: function() {
+  _startVideo: function () {
     console.log("... NIAPP_AR.startVideo");
 
     // TODO: Hardcoding the IDs (ni-player-container & canvas) isnt great
@@ -34,10 +43,12 @@ var NIAPP_AR = _moduleLib('NIAPP_AR', {
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({audio: false, video: {
-      facingMode: 'environment',
-    }}).then((stream) => {
-      this.video.addEventListener( 'loadedmetadata', () => {
+    navigator.mediaDevices.getUserMedia({
+      audio: false, video: {
+        facingMode: 'environment',
+      }
+    }).then((stream) => {
+      this.video.addEventListener('loadedmetadata', () => {
         var w = this.video.videoWidth;
         var h = this.video.videoHeight;
         console.log("... NIAPP_AR.startVideo: " + w + ", " + h);
@@ -51,12 +62,12 @@ var NIAPP_AR = _moduleLib('NIAPP_AR', {
     });
   },
 
-  start: function() {
+  start: function () {
     this._startVideo();
   },
 });
 
-var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function() {
+var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function () {
   var b = {};
 
   b.isTouch = ('ontouchend' in document) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || "yobiatch";
@@ -83,11 +94,11 @@ var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function() {
 })());
 
 var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
-  baseUrl: (function(){
+  baseUrl: (function () {
     var url = window.location.href;
     var binPos = url.indexOf("niLang/bin/web-js");
     if (binPos >= 0) {
-      url = url.substr(url,binPos);
+      url = url.substr(url, binPos);
     }
     return url;
   }()),
@@ -102,27 +113,22 @@ var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
   fingerRelativeLockedSpeed: 0.4,
   fingerRelativeNormalSpeed: 0.6,
 
-  /* file systems to preload */
-  fsModules: [
-    'niUI',
-  ],
-
   watchResizeDelay: undefined,
 });
 
 var NIAPP_CAPI = _moduleLib('NIAPP_CAPI', {
-  IsInitialized: function() {
+  IsInitialized: function () {
     return !!this._didInitialize;
   },
 
-  CWrap: function(name, ret, args) {
+  CWrap: function (name, ret, args) {
     var mname = "niJSCC_" + name;
-    var m = Module['cwrap'](mname,ret,args);
+    var m = Module['cwrap'](mname, ret, args);
     this[name] = m;
     return m;
   },
 
-  Initialize: function() {
+  Initialize: function () {
     if (this._didInitialize)
       return;
     this._didInitialize = true;
@@ -136,25 +142,25 @@ var NIAPP_CAPI = _moduleLib('NIAPP_CAPI', {
     w('TranslateDOMKeyCode', n, [n]);
     w('TranslateDOMMouseButton', n, [n]);
     // System
-    w('SetProperty', z, [s,s]);
+    w('SetProperty', z, [s, s]);
     w('GetProperty', s, [s]);
     w('RunCommand', n, [s]);
     // Window notification
     w('HasWindow', n, []);
-    w('WndNotifyResize', z, [n,n,n]);
+    w('WndNotifyResize', z, [n, n, n]);
     w('WndNotifyFocus', z, [n]);
     // Window keyboard input
     w('WndInputKey', z, [n, n]);
     w('WndInputString', z, [s]);
     // Window mouse input
-    w('WndInputMouseMove', z, [n,n]);
-    w('WndInputMouseRelativeMove', z, [n,n]);
-    w('WndInputMouseButton', z, [n,n]);
+    w('WndInputMouseMove', z, [n, n]);
+    w('WndInputMouseRelativeMove', z, [n, n]);
+    w('WndInputMouseButton', z, [n, n]);
     w('WndInputMouseDoubleClick', z, [n]);
     w('WndInputMouseWheel', z, [n]);
     // Window finger input / touch input
-    w('WndInputFingerMove', z, [n,n,n,n]);
-    w('WndInputFingerPress', z, [n,n,n,n,n]);
+    w('WndInputFingerMove', z, [n, n, n, n]);
+    w('WndInputFingerPress', z, [n, n, n, n, n]);
   }
 });
 
@@ -168,14 +174,14 @@ function _makeNiInputLib() {
   // Needed to avoid relative move "pop" when entering/exiting pointer locked
   var _eatNextMouseRelative = 0;
 
-  var _isThisTarget = function(event) {
+  var _isThisTarget = function (event) {
     return event.target == Module['canvas'];
   }
 
   var _inputDebug = undefined;
   // var _inputDebug = function(msg) { console.log(msg); }
 
-  var _calculatePointerPos = function(event) {
+  var _calculatePointerPos = function (event) {
     var canvas = Module["canvas"];
     var scrollX = window.scrollX || document.documentElement.scrollLeft || window.pageXOffset;
     var scrollY = window.scrollY || document.documentElement.scrollTop || window.pageYOffset;
@@ -187,10 +193,10 @@ function _makeNiInputLib() {
     var ch = canvas.height;
     x = x * (cw / rect.width);
     y = y * (ch / rect.height);
-    return {x:x,y:y};
+    return { x: x, y: y };
   }
 
-  var _calculateMouseEvent = function(event) {
+  var _calculateMouseEvent = function (event) {
     var pos = _calculatePointerPos(event);
     _mouseMove.relX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     _mouseMove.relY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -198,7 +204,7 @@ function _makeNiInputLib() {
     _mouseMove.absY = pos.y;
   };
 
-  var _sendRelativeMouseMove = function(bt, afX, afY) {
+  var _sendRelativeMouseMove = function (bt, afX, afY) {
     if (_eatNextMouseRelative > 0) {
       (_inputDebug && _inputDebug("_eatNextMouseRelative: " + _eatNextMouseRelative));
       _eatNextMouseRelative--;
@@ -209,7 +215,7 @@ function _makeNiInputLib() {
     }
   };
 
-  var _sendMouseMove = function(event,canRelative) {
+  var _sendMouseMove = function (event, canRelative) {
     // console.log("_sendMouseMove: " + event.type + ", mx: " + event.pageX + ", my: " + event.pageY + ", rx: " + event.webkitMovementX + ", ry: " + event.webkitMovementY);
     var canvas = Module['canvas'];
     var lastX = _mouseMove.absX;
@@ -255,13 +261,13 @@ function _makeNiInputLib() {
 
   var _isLocked = false;
 
-  var _setIsLocked = function(abLocked) {
+  var _setIsLocked = function (abLocked) {
     _isLocked = abLocked;
     _eatNextMouseRelative = 1;
     NIAPP_CAPI.SetPointerLocked(_isLocked);
   }
 
-  var _setPointerLock = function(e,abLocked) {
+  var _setPointerLock = function (e, abLocked) {
     if (abLocked) {
       e.requestPointerLock = e.requestPointerLock ||
         e.mozRequestPointerLock ||
@@ -282,7 +288,7 @@ function _makeNiInputLib() {
 
   return {
     //// Key Events ////
-    handleKeyDown: function(event) {
+    handleKeyDown: function (event) {
       // console.log("handleKeyDown: " + event['keyCode']);
 
       if ((_mouseButton == 0) && !_isMouseHover && !_isLocked)
@@ -294,22 +300,22 @@ function _makeNiInputLib() {
           ++_keyDownCount;
           _keyIsDown[keyCode] = true;
         }
-        NIAPP_CAPI.WndInputKey(keyCode,1);
+        NIAPP_CAPI.WndInputKey(keyCode, 1);
         (_inputDebug && _inputDebug("KEYDOWN: count: " + _keyDownCount + ", key:" + keyCode + " event: " + event['keyCode'] + " target: " + event.target.id));
         event.preventDefault();
       }
 
       var key = event["key"];
       if (key && key.length === 1) {
-        NIAPP_CAPI.WndInputString(""+key);
+        NIAPP_CAPI.WndInputString("" + key);
       }
     },
-    handleKeyUp: function(event) {
+    handleKeyUp: function (event) {
       if ((_keyDownCount == 0) && (_mouseButton == 0) && !_isMouseHover && !_isLocked)
         return;
       var keyCode = _translateKeyCode(event['keyCode']);
       if (keyCode && keyCode > 0) {
-        NIAPP_CAPI.WndInputKey(keyCode,0);
+        NIAPP_CAPI.WndInputKey(keyCode, 0);
         if (_keyIsDown[keyCode]) {
           --_keyDownCount;
           _keyIsDown[keyCode] = false;
@@ -320,12 +326,12 @@ function _makeNiInputLib() {
     },
 
     //// Mouse Events ////
-    handleMouseMove: function(event) {
-      if (_sendMouseMove(event,true)) {
+    handleMouseMove: function (event) {
+      if (_sendMouseMove(event, true)) {
         event.preventDefault();
       }
     },
-    handleMouseDown: function(event) {
+    handleMouseDown: function (event) {
       _sendMouseMove(event);
       var bt = _translateMouseButton(event['button']);
       if (_isThisTarget(event) && ((_mouseButton & (1 << bt)) == 0)) {
@@ -341,7 +347,7 @@ function _makeNiInputLib() {
         }
       }
     },
-    handleMouseUp: function(event) {
+    handleMouseUp: function (event) {
       _sendMouseMove(event);
       var bt = _translateMouseButton(event['button']);
       if ((_mouseButton & (1 << bt)) != 0) {
@@ -359,7 +365,7 @@ function _makeNiInputLib() {
     },
 
     //// Double click ////
-    handleDoubleClick: function(event) {
+    handleDoubleClick: function (event) {
       if (!_isThisTarget(event))
         return;
       var bt = _translateMouseButton(event['button']);
@@ -368,21 +374,21 @@ function _makeNiInputLib() {
     },
 
     //// Pointer Lock Lost ////
-    handlePointerLockError: function(event) {
+    handlePointerLockError: function (event) {
       NIAPP.Debug("handlePointerLockError");
       _setIsLocked(false);
     },
-    handlePointerLockChange: function(event) {
+    handlePointerLockChange: function (event) {
       var canvas = Module['canvas'];
       _setIsLocked(
         document.pointerLockElement === canvas ||
-          document.mozPointerLockElement === canvas ||
-          document.webkitPointerLockElement === canvas);
+        document.mozPointerLockElement === canvas ||
+        document.webkitPointerLockElement === canvas);
       NIAPP.Debug("handlePointerLockChange:" + _isLocked);
     },
 
     //// Context Menu ////
-    handleContextMenu: function(event) {
+    handleContextMenu: function (event) {
       if (_isMouseHover || _eatNextContextMenu) {
         (_inputDebug && _inputDebug("HANDLE CONTEXT MENU"));
         event.preventDefault();
@@ -391,7 +397,7 @@ function _makeNiInputLib() {
     },
 
     //// Mouse Wheel ////
-    handleMouseWheel: function(event) {
+    handleMouseWheel: function (event) {
       if (!NIAPP_CONFIG.captureMouseWheel)
         return; // for now we dont send the mouse wheel event if its not captured...
 
@@ -412,10 +418,10 @@ function _makeNiInputLib() {
     },
 
     //// Touch Events ////
-    handleTouchMove: function(event) {
+    handleTouchMove: function (event) {
       if (_isThisTarget(event)) {
         var touches = event.changedTouches;
-        var numTouches  = touches.length;
+        var numTouches = touches.length;
         for (var i = 0; i < numTouches; ++i) {
           var touch = touches[i];
           var touchPos = _calculatePointerPos(touch);
@@ -424,10 +430,10 @@ function _makeNiInputLib() {
         }
       }
     },
-    handleTouchDown: function(event) {
+    handleTouchDown: function (event) {
       if (_isThisTarget(event)) {
         var touches = event.changedTouches;
-        var numTouches  = touches.length;
+        var numTouches = touches.length;
         for (var i = 0; i < numTouches; ++i) {
           var touch = touches[i];
           var touchPos = _calculatePointerPos(touch);
@@ -441,10 +447,10 @@ function _makeNiInputLib() {
         event.preventDefault();
       }
     },
-    handleTouchUp: function(event) {
+    handleTouchUp: function (event) {
       if (_isThisTarget(event)) {
         var touches = event.changedTouches;
-        var numTouches  = touches.length;
+        var numTouches = touches.length;
         for (var i = 0; i < numTouches; ++i) {
           var touch = touches[i];
           var touchPos = _calculatePointerPos(touch);
@@ -458,7 +464,7 @@ function _makeNiInputLib() {
       }
     },
 
-    addEvents: function(inputListener) {
+    addEvents: function (inputListener) {
       inputListener.addEventListener("contextmenu", this.handleContextMenu, true);
 
       inputListener.addEventListener("keydown", this.handleKeyDown, true);
@@ -499,13 +505,13 @@ function niPath_Join(aArray) {
   }
   return aArray
     .join("/")
-    .replaceAll("//","/")
+    .replaceAll("//", "/")
     /* restore protocol :// */
-    .replace(":/","://");
+    .replace(":/", "://");
 }
 function niPath_SplitDirAndFilename(aPath) {
   var r = aPath.match(/^(.*?)([^\\\/]*)$/, '$2');
-  return [r[1],r[2]];
+  return [r[1], r[2]];
 }
 function niPath_GetDirname(aPath) {
   return aPath.replace(/^(.*?)([^\\\/]*)$/, '$1');
@@ -548,7 +554,7 @@ function niFS_AddDirs(basePath, aDirs) {
   var numDirs = aDirs.length;
   for (var i = 0; i < numDirs; ++i) {
     var dir = aDirs[i];
-    var path = niPath_Join(basePath,dir);
+    var path = niPath_Join(basePath, dir);
     console.log("niFS_AddDirs: " + path);
     FS.mkdir(path);
   }
@@ -559,201 +565,13 @@ function niFS_AddFiles(basePath, baseUrl, aFiles, aCreateFile) {
   var numFiles = aFiles.length;
   for (var i = 0; i < numFiles; ++i) {
     var fn = aFiles[i];
-    var path = niPath_Join(basePath,fn);
-    var url = niPath_Join(baseUrl,fn);
+    var path = niPath_Join(basePath, fn);
+    var url = niPath_Join(baseUrl, fn);
     aCreateFile(path, url);
   }
 }
 
-var NIAPP_FSMODULES = _moduleLib('NIAPP_FSMODULES', {
-  // dirs: find "$WORK/niLang/data/test" -type d | sed "s~$WORK/niLang/data/test/~~g" | sort
-  // files: find "$WORK/niLang/data/test" -type f | sed "s~$WORK/niLang/data/test/~~g" | sort
-  test: function() {
-    console.log("FSModule: test");
-    var dir = "/Work/niLang/data/test";
-    var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/test/");
-    FS.mkdir(dir);
-    niFS_AddDirs(dir, [
-      "fonts",
-      "img_diff",
-      "ipcam",
-      "tex",
-    ]);
-    niFS_AddFiles(dir, url, [
-      "fonts/Copper-Kern-Bold.ttf",
-      "fonts/EyeOT-Mono-Bold.ttf",
-      "fonts/EyeOT-Mono-Medium.ttf",
-      "fonts/EyeOT-Mono.ttf",
-      "fonts/Fax Sans Beta.otf",
-      "fonts/FuturaLT-Bold.ttf",
-      "fonts/FuturaLT-BoldOblique.ttf",
-      "fonts/FuturaLT-Book.ttf",
-      "fonts/FuturaLT-BookOblique.ttf",
-      "fonts/FuturaLT-Heavy.ttf",
-      "fonts/FuturaLT-HeavyOblique.ttf",
-      "fonts/FuturaLT-Oblique.ttf",
-      "fonts/FuturaLT.ttf",
-      "fonts/Junction-bold.otf",
-      "fonts/Junction-light.otf",
-      "fonts/Junction-regular.otf",
-      "fonts/LeagueGothic-CondensedItalic.otf",
-      "fonts/LeagueGothic-CondensedRegular.otf",
-      "fonts/LeagueGothic-Italic.otf",
-      "fonts/LeagueGothic-Regular.otf",
-      "fonts/LeagueSpartan-Bold.otf",
-      "fonts/LeagueSpartan-Bold.ttf",
-      "fonts/Linden Hill Italic.otf",
-      "fonts/Linden Hill.otf",
-      "fonts/Orbitron Black.otf",
-      "fonts/Orbitron Bold.otf",
-      "fonts/Orbitron Light.otf",
-      "fonts/Orbitron Medium.otf",
-      "fonts/OstrichSans-Black.otf",
-      "fonts/OstrichSans-Bold.otf",
-      "fonts/OstrichSans-Heavy.otf",
-      "fonts/OstrichSans-Light.otf",
-      "fonts/OstrichSans-Medium.otf",
-      "fonts/OstrichSansDashed-Medium.otf",
-      "fonts/OstrichSansInline-Italic.otf",
-      "fonts/OstrichSansInline-Regular.otf",
-      "fonts/OstrichSansRounded-Medium.otf",
-      "fonts/Sniglet-Regular.ttf",
-      "fonts/Univers67-Condensed-Bold.ttf",
-      "fonts/UniversalisADFStd-Bold.otf",
-      "fonts/UniversalisADFStd-BoldCond.otf",
-      "fonts/UniversalisADFStd-BoldCondIt.otf",
-      "fonts/UniversalisADFStd-BoldItalic.otf",
-      "fonts/UniversalisADFStd-Cond.otf",
-      "fonts/UniversalisADFStd-CondItalic.otf",
-      "fonts/UniversalisADFStd-Italic.otf",
-      "fonts/UniversalisADFStd-Regular.otf",
-      "fonts/times.ttf",
-      "fonts/timesbd.ttf",
-      "fonts/timesbi.ttf",
-      "fonts/timesi.ttf",
-      "fonts/unvr67w.ttf",
-      "img_diff/AnimMixer_A.jpg",
-      "img_diff/AnimMixer_B.jpg",
-      "ipcam/CCTV-01.ipcam",
-      "ipcam/CCTV-02.ipcam",
-      "tex/Beach_cubemap_128.dds",
-      "tex/Beach_probe_128.dds",
-      "tex/earth_b.jpg",
-      "tex/earth_clouds_d.jpg",
-      "tex/earth_clouds_o.jpg",
-      "tex/earth_d.jpg",
-      "tex/earth_lights.jpg",
-      "tex/earth_s.jpg",
-      "tex/glass.tga",
-      "tex/glass_cubemap.dds",
-      "tex/rust_steel.jpg",
-      "tex/tree.dds",
-    ]);
-  },
-
-  // dirs: find "$WORK/niLang/data/Test_niLang" -type d | sed "s~$WORK/niLang/data/Test_niLang/~~g" | sort
-  // files: find "$WORK/niLang/data/Test_niLang" -type f | sed "s~$WORK/niLang/data/Test_niLang/~~g" | sort
-  Test_niLang: function() {
-    console.log("FSModule: Test_niLang");
-    var dir = "/Work/niLang/data/Test_niLang";
-    var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/Test_niLang/");
-    FS.mkdir(dir);
-    niFS_AddFiles(dir, url, [
-      "hello-file-system.txt"
-    ]);
-  },
-
-  // dirs: find "$WORK/niLang/data/Test_niSound" -type d | sed "s~$WORK/niLang/data/Test_niSound/~~g"
-  // files: find "$WORK/niLang/data/Test_niSound" -type f | sed "s~$WORK/niLang/data/Test_niSound/~~g"
-  Test_niSound: function() {
-    console.log("FSModule: Test_niSound");
-    var dir = "/Work/niLang/data/Test_niSound";
-    var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/Test_niSound/");
-    FS.mkdir(dir);
-    niFS_AddFiles(dir, url, [
-      "atmo_loop_01.wav",
-      "step_stone5.wav",
-      "step_stone4.wav",
-      "step_stone1.wav",
-      "step_stone3.wav",
-      "atmo_loop_01.ogg",
-      "step_stone2.wav",
-      "music_sketch8.ogg",
-      "lobby_chat.wav",
-      "lobby_chat.ogg",
-      "click.wav",
-      "music_punch.ogg",
-      "click.ogg",
-    ]);
-  },
-
-  // dirs: find "$WORK/niLang/data/niUI" -type d | sed "s~$WORK/niLang/data/niUI/~~g"
-  // files: find "$WORK/niLang/data/niUI" -type f | sed "s~$WORK/niLang/data/niUI/~~g"
-  niUI: function() {
-    console.log("FSModule: niUI");
-    var dir = "/Work/niLang/data/niUI";
-    var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/niUI");
-    FS.mkdir(dir);
-    niFS_AddDirs(dir, [
-      "skins",
-      "shaders",
-      "fonts",
-    ]);
-    niFS_AddFiles(dir, url, [
-      "error.dds",
-      "skins/UIDark.png",
-      "skins/default.uiskin.xml",
-      "shaders/fixed_ps_decal_distancefield.cgo",
-      "shaders/fixed_ps_decal_base_alphatest.cgo",
-      "shaders/fixed_ps_base_opacity_alphatest.cgo",
-      "shaders/fixed_vs_pnat1.cgo",
-      "shaders/fixed_vs_pna.cgo",
-      "shaders/fixed_vs_pnat2.cgo",
-      "shaders/fixed_ps_base.cgo",
-      "shaders/fixed_ps_decal_opacity_alphatest.cgo",
-      "shaders/fixed_vs_pn.cgo",
-      "shaders/fixed_vs_p.cgo",
-      "shaders/fixed_ps_base_alphatest.cgo",
-      "shaders/fixed_ps_decal_alphatest.cgo",
-      "shaders/fixed_ps_translucent.cgo",
-      "shaders/fixed_ps_decal_opacity_translucent.cgo",
-      "shaders/fixed_ps_distancefield.cgo",
-      "shaders/fixed_ps_opacity_translucent.cgo",
-      "shaders/fixed_ps_decal_base_opacity_translucent.cgo",
-      "shaders/fixed_ps.cgo",
-      "shaders/fixed_vs_pb4inat1.cgo",
-      "shaders/fixed_ps_opacity_alphatest.cgo",
-      "shaders/fixed_vs_pa.cgo",
-      "shaders/fixed_ps_base_distancefield.cgo",
-      "shaders/fixed_ps_alphatest.cgo",
-      "shaders/fixed_ps_decal.cgo",
-      "shaders/fixed_ps_base_opacity_translucent.cgo",
-      "shaders/fixed_ps_decal_translucent.cgo",
-      "shaders/fixed_vs_pnt2.cgo",
-      "shaders/fixed_ps_decal_base.cgo",
-      "shaders/fixed_ps_decal_base_translucent.cgo",
-      "shaders/fixed_vs_pb4int1.cgo",
-      "shaders/fixed_ps_decal_base_distancefield.cgo",
-      "shaders/fixed_ps_decal_base_opacity_alphatest.cgo",
-      "shaders/fixed_ps_base_translucent.cgo",
-      "shaders/fixed_vs_pnt1.cgo",
-      "fonts/fas-900.otf",
-      "fonts/far-400.otf",
-      "fonts/fab-400.otf",
-      "fonts/Roboto-Regular.ttf",
-      "fonts/PlayfairDisplay-Bold.ttf",
-      "fonts/NotoSansCJKsc-Regular.otf",
-      "fonts/PlayfairDisplay-Italic.ttf",
-      "fonts/Roboto-Bold.ttf",
-      "fonts/PlayfairDisplay-BoldItalic.ttf",
-      "fonts/NotoMono-Regular.ttf",
-      "fonts/Roboto-Italic.ttf",
-      "fonts/Roboto-BoldItalic.ttf",
-      "fonts/PlayfairDisplay-Regular.ttf",
-      "loading.tga"
-    ]);
-  },
-});
+var NIAPP_FSMODULES = _moduleLib('NIAPP_FSMODULES', {});
 
 var NIAPP = _moduleLib('NIAPP', {
   Assert: function Assert(check, msg) {
@@ -775,8 +593,8 @@ var NIAPP = _moduleLib('NIAPP', {
     var cmd, params;
     var spaceIndex = aCmdLine.indexOf(' ');
     if (spaceIndex >= 0) {
-      cmd = aCmdLine.substr(0,spaceIndex);
-      params = aCmdLine.substr(spaceIndex+1);
+      cmd = aCmdLine.substr(0, spaceIndex);
+      params = aCmdLine.substr(spaceIndex + 1);
     }
     else {
       cmd = aCmdLine;
@@ -784,10 +602,10 @@ var NIAPP = _moduleLib('NIAPP', {
     console.log("... NIAPP.NotifyHost: cmd: " + cmd + ", params: " + params);
     var notifyHostHandlers = Module['notifyHostHandlers'];
     var handler = notifyHostHandlers && notifyHostHandlers[cmd];
-    handler && handler(Module,params,cmd);
+    handler && handler(Module, params, cmd);
   },
 
-  SetCanvasSize: function SetCanvasSize(canvas,width,height) {
+  SetCanvasSize: function SetCanvasSize(canvas, width, height) {
     var contentsScale = NIAPP_CONFIG.useBestResolution ? (window.devicePixelRatio || 1) : 1;
     /* console.log("... NIAPP.SetCanvasSize: ", canvas, " w: ", width, " h: ", height, " contentsScale: ", contentsScale); */
 
@@ -810,24 +628,22 @@ var NIAPP = _moduleLib('NIAPP', {
     height *= contentsScale;
 
     if ((NIAPP_CONFIG.maxWidth && NIAPP_CONFIG.maxHeight) &&
-        (width > NIAPP_CONFIG.maxWidth || height > NIAPP_CONFIG.maxHeight))
-    {
+      (width > NIAPP_CONFIG.maxWidth || height > NIAPP_CONFIG.maxHeight)) {
       var maxRatio = NIAPP_CONFIG.maxHeight / NIAPP_CONFIG.maxWidth;
       var canvasRatio = height / width;
       var scale = (canvasRatio < maxRatio) ?
-                  (NIAPP_CONFIG.maxWidth / width) :
-                  (NIAPP_CONFIG.maxHeight / height);
+        (NIAPP_CONFIG.maxWidth / width) :
+        (NIAPP_CONFIG.maxHeight / height);
       width *= scale;
-      width = Math.floor(width+0.5);
+      width = Math.floor(width + 0.5);
       height *= scale;
-      height = Math.floor(height+0.5);
+      height = Math.floor(height + 0.5);
       contentsScale = 1.0;
     }
 
     if (canvas) {
       if (NIAPP_CONFIG.lastCanvasWidth != width ||
-          NIAPP_CONFIG.lastCanvasHeight != height)
-      {
+        NIAPP_CONFIG.lastCanvasHeight != height) {
         NIAPP.Debug("NIAPP.SetCanvasSize - canvasSize: w: " + width + ", h: " + height);
         canvas.width = width;
         canvas.height = height;
@@ -836,10 +652,9 @@ var NIAPP = _moduleLib('NIAPP', {
       }
     }
     if (NIAPP_CONFIG.lastCapiWidth != width ||
-        NIAPP_CONFIG.lastCapiHeight != height)
-    {
+      NIAPP_CONFIG.lastCapiHeight != height) {
       NIAPP.Debug("NIAPP.SetCanvasSize - capiSize: w: " + width + ", h: " + height);
-      NIAPP_CAPI.WndNotifyResize(width,height,contentsScale);
+      NIAPP_CAPI.WndNotifyResize(width, height, contentsScale);
       NIAPP_CONFIG.lastCapiWidth = width;
       NIAPP_CONFIG.lastCapiHeight = height;
     }
@@ -848,7 +663,7 @@ var NIAPP = _moduleLib('NIAPP', {
   },
 
   AddInputEvents: function AddInputEvents(aElement) {
-    if (typeof(aElement) == "string") {
+    if (typeof (aElement) == "string") {
       aElement = document.getElementById(aElement);
     }
 
@@ -858,33 +673,33 @@ var NIAPP = _moduleLib('NIAPP', {
   },
 
   AddResizeEvents: function AddResizeEvents(aElement) {
-    if (typeof(aElement) == "string") {
+    if (typeof (aElement) == "string") {
       aElement = document.getElementById(aElement);
     }
 
     var doResizeTimeout;
-    function delayResized(width,height) {
+    function delayResized(width, height) {
       if (NIAPP_CONFIG.watchResizeDelay) {
         if (doResizeTimeout) {
           clearTimeout(doResizeTimeout);
         }
-        doResizeTimeout = setTimeout(function() {
-          NIAPP.SetCanvasSize(aElement,width,height);
+        doResizeTimeout = setTimeout(function () {
+          NIAPP.SetCanvasSize(aElement, width, height);
         }, NIAPP_CONFIG.watchResizeDelay);
       }
       else {
-        NIAPP.SetCanvasSize(aElement,width,height);
+        NIAPP.SetCanvasSize(aElement, width, height);
       }
     }
 
-    aElement.addEventListener("resize", function(){
-      delayResized(aElement.clientWidth,aElement.clientHeight);
+    aElement.addEventListener("resize", function () {
+      delayResized(aElement.clientWidth, aElement.clientHeight);
     });
-    window.addEventListener("resize", function(){
-      delayResized(aElement.clientWidth,aElement.clientHeight);
+    window.addEventListener("resize", function () {
+      delayResized(aElement.clientWidth, aElement.clientHeight);
     });
 
-    NIAPP.SetCanvasSize(aElement,aElement.clientWidth,aElement.clientHeight);
+    NIAPP.SetCanvasSize(aElement, aElement.clientWidth, aElement.clientHeight);
   },
 
   GetParamsAsObject: function GetParamsAsObject(query) {
@@ -927,37 +742,30 @@ var NIAPP = _moduleLib('NIAPP', {
           levels.push(key);
         });
         assign(params, levels, params[prop]);
-        delete(params[prop]);
+        delete (params[prop]);
       }
     }
     return params;
   },
 
-  startAR: function() {
+  startAR: function () {
     NIAPP_AR.start();
   },
 });
 
-Module["preRun"] = function() {
+Module["preRun"] = function () {
   console.log("I/preRun BEGIN: baseUrl: " + NIAPP_CONFIG.baseUrl);
 
   var params = NIAPP.GetParamsAsObject(location.search);
   var title = "niLang";
-  var fsModules = NIAPP_CONFIG.fsModules;
 
   // Set the default title and fs modules based on the app name
   var appName = niPath_NoExt(niPath_GetFilename(location.pathname));
   if (appName) {
     if (appName.endsWith("_ra") || appName.endsWith("_da")) {
-      appName = appName.substr(0,appName.length-3);
+      appName = appName.substr(0, appName.length - 3);
     }
     title = appName;
-    if (appName.toLowerCase().startsWith("test")) {
-      fsModules.push("test");
-    }
-    if (NIAPP_FSMODULES[appName]) {
-      fsModules.push(appName);
-    }
   }
   console.log("AppName: " + appName);
 
@@ -973,13 +781,11 @@ Module["preRun"] = function() {
   FS.mkdir(niLangDir + "/bin/web-js");
 
   // Load FS modules
-  for (var i = 0; i < fsModules.length; ++i) {
-    var mname = fsModules[i];
-    var registerFSModule = NIAPP_FSMODULES[mname];
-    if (!registerFSModule) {
-      throw new Error("No FileSystem for '" + mname + "'.");
+  for (var key in NIAPP_FSMODULES) {
+    if (NIAPP_FSMODULES.hasOwnProperty(key)) {
+      console.log("I/Register NIAPP_FSMODULES: " + key);
+      NIAPP_FSMODULES[key]();
     }
-    registerFSModule();
   }
 
   // Set the current directory so that it looks like a regular executable
@@ -991,7 +797,7 @@ Module["preRun"] = function() {
     packagePath = '/Work/Package.vpk';
     packageUrl = params["OpenFile"]; // niPath_Join(NIAPP_CONFIG.baseUrl,'_Packages/Tesla-Template-Version-1.vpk');
     console.log("Package: " + packagePath + " from " + packageUrl);
-    niFS_AddSingleFile(packagePath,packageUrl);
+    niFS_AddSingleFile(packagePath, packageUrl);
     if (!title) {
       document.title = niPath_GetFilename(packageUrl);
     }
@@ -1000,7 +806,7 @@ Module["preRun"] = function() {
     document.title = title;
   }
 
-  Module.onRuntimeInitialized = function() {
+  Module.onRuntimeInitialized = function () {
     // Initialize the CAPI bridge
     NIAPP_CAPI.Initialize();
 
@@ -1016,11 +822,11 @@ Module["preRun"] = function() {
       console.log("... Property: " + pname + " = " + pval);
       switch (pname) {
         case "OpenFile": {
-          NIAPP_CAPI.SetProperty("OpenFile",packagePath);
+          NIAPP_CAPI.SetProperty("OpenFile", packagePath);
           break;
         }
         default:
-          NIAPP_CAPI.SetProperty(pname,pval);
+          NIAPP_CAPI.SetProperty(pname, pval);
           break;
       }
     }

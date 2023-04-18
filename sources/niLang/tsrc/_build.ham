@@ -12,3 +12,9 @@ SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niLang ] ;
+
+if ( $(EMSCRIPTEN) = 1 ) {
+  TargetLinkFlags $(PKGTARGETF) :
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten Test_niLang_pre.js ] ]
+  ;
+}

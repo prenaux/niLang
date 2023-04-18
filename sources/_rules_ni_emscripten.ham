@@ -6,10 +6,12 @@ LINKFLAGS +=
   # --proxy-to-worker # Needed for FS.createLazyFile
   -s MINIFY_HTML=0 --closure=0 --minify=0 # Make debugging much easier
   -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
-  --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten pre_js_0.js ] ]
-  --post-js [ FQuote [ FDirName $(TOP_DIR) emscripten post_js_0.js ] ]
-  --shell-file [ FQuote [ FDirName $(TOP_DIR) emscripten shell.html ] ]
+  --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten 0_pre.js ] ]
+  --post-js [ FQuote [ FDirName $(TOP_DIR) emscripten 0_post.js ] ]
+  --shell-file [ FQuote [ FDirName $(TOP_DIR) emscripten 0_shell.html ] ]
   -s WASM_ASYNC_COMPILATION=1
   -s MODULARIZE=1
   -s EXPORT_NAME=createDefaultNiModule
+  -s INVOKE_RUN=0
+  -s EXIT_RUNTIME=0
 ;

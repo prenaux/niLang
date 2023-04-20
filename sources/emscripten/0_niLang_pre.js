@@ -1,5 +1,16 @@
 console.log("I/js: niLang/0_pre");
 
+function _moduleVal(aName, aDefaultVal) {
+  if (Module[aName] === undefined) {
+    Module[aName] = aDefaultVal;
+  }
+  return Module[aName];
+};
+
+function _moduleLib(aName, aDefaultValues) {
+  return Module[aName] = Object.assign({}, aDefaultValues, Module[aName]);
+};
+
 function niAssert(condition, message) {
   if (!condition) {
     throw new Error(message || "Assertion failed");
@@ -7,13 +18,22 @@ function niAssert(condition, message) {
   return condition;
 }
 
+_moduleVal("print", function (text) {
+  if (arguments.length > 1) {
+    text = Array.prototype.slice.call(arguments).join(' ');
+  }
+  console.log(text);
+});
+_moduleVal("printErr", function (text) {
+  if (arguments.length > 1) {
+    text = Array.prototype.slice.call(arguments).join(' ');
+  }
+  console.error(text);
+});
+
 // We don't want our files to use the preload plugins
 Module.noImageDecoding = true;
 Module.noAudioDecoding = true;
-
-function _moduleLib(aName, aDefaultValues) {
-  return Module[aName] = Object.assign({}, aDefaultValues, Module[aName]);
-};
 
 var NIAPP_AR = _moduleLib('NIAPP_AR', {
   container: null,
@@ -95,11 +115,8 @@ var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function () {
 
 var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
   baseUrl: (function () {
-    var url = window.location.href;
-    var binPos = url.indexOf("niLang/bin/web-js");
-    if (binPos >= 0) {
-      url = url.substr(url, binPos);
-    }
+    var url = window.location.protocol;
+    url += "//" + window.location.host + "/";
     return url;
   }()),
 
@@ -114,6 +131,11 @@ var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
   fingerRelativeNormalSpeed: 0.6,
 
   watchResizeDelay: undefined,
+
+  workDir: "/Work",
+  exePath: (function () {
+    return "/Work" + window.location.pathname;
+  }()),
 });
 
 var NIAPP_CAPI = _moduleLib('NIAPP_CAPI', {
@@ -523,6 +545,51 @@ function niPath_NoExt(aPath) {
   return aPath.replace(new RegExp("\.[^/.]+$"), "");
 }
 
+function niFS_ErrnoMessage(aErrno) {
+  var reason = "Can't create";
+  if (aErrno == 20) {
+    reason = "Already exists";
+  }
+  else if (aErrno == 44) {
+    reason = "Parent directory doesn't exist";
+  }
+  return reason;
+}
+
+function niFS_MakeDir(aDir) {
+  try {
+    // console.log("D/niFS_MakeDir: " + aDir);
+    FS.mkdir(aDir);
+  }
+  catch (fsError) {
+    var err = new Error("E/niFS_MakeDir: " + niFS_ErrnoMessage(fsError.errno) + ":" + aDir);
+    console.error(err, ":", fsError);
+    throw err;
+  }
+}
+
+function niFS_ChDir(aDir) {
+  try {
+    FS.chdir(aDir);
+  }
+  catch (fsError) {
+    var err = new Error("E/niFS_ChDir: " + niFS_ErrnoMessage(fsError.errno) + ":" + aDir);
+    console.error(err, ":", fsError);
+    throw err;
+  }
+}
+
+function niFS_WriteFile(aPath, aContent) {
+  try {
+    FS.writeFile(aPath, aContent);
+  }
+  catch (fsError) {
+    var err = new Error("E/niFS_WriteFile: " + niFS_ErrnoMessage(fsError.errno) + ":" + aPath);
+    console.error(err, ":", fsError);
+    throw err;
+  }
+}
+
 function niFS_AddSingleFilePreloaded(aPath, aUrl) {
   var pathdir = niPath_GetDirname(aPath);
   var pathfile = niPath_GetFilename(aPath);
@@ -550,13 +617,27 @@ function niFS_AddSingleFileLazy(aPath, aUrl) {
 // TODO: Auto-detect whether we should preload or lazily load by default
 var niFS_AddSingleFile = niFS_AddSingleFilePreloaded;
 
+function niFS_GetToolkitDir(aName) {
+  return niPath_Join(NIAPP_CONFIG.workDir, aName);
+}
+
+function niFS_InitToolkit(aName) {
+  var dir = niFS_GetToolkitDir(aName);
+  console.log("I/niFS_InitToolkit: " + aName + ", " + dir);
+  niFS_MakeDir(dir);
+  niFS_MakeDir(niPath_Join(dir, "data"));
+  niFS_MakeDir(niPath_Join(dir, "bin"));
+  niFS_MakeDir(niPath_Join(dir, "bin/web-js"));
+  return dir;
+}
+
 function niFS_AddDirs(basePath, aDirs) {
   var numDirs = aDirs.length;
   for (var i = 0; i < numDirs; ++i) {
     var dir = aDirs[i];
     var path = niPath_Join(basePath, dir);
-    console.log("niFS_AddDirs: " + path);
-    FS.mkdir(path);
+    // console.log("D/niFS_AddDirs: " + path);
+    niFS_MakeDir(path);
   }
 }
 
@@ -567,6 +648,7 @@ function niFS_AddFiles(basePath, baseUrl, aFiles, aCreateFile) {
     var fn = aFiles[i];
     var path = niPath_Join(basePath, fn);
     var url = niPath_Join(baseUrl, fn);
+    // console.log("D/niFS_AddFiles: " + path + " -> " + url);
     aCreateFile(path, url);
   }
 }
@@ -753,13 +835,25 @@ var NIAPP = _moduleLib('NIAPP', {
   },
 });
 
-Module["preRun"] = function () {
-  console.log("I/preRun BEGIN: baseUrl: " + NIAPP_CONFIG.baseUrl);
+var _prerunList = [];
+function _preRun(aFn) {
+  _prerunList.push(aFn);
+}
+
+_preRun(function niLang_preRun() {
+  console.log("I/niLang_preRun BEGIN");
+  var dir = niFS_InitToolkit("niLang");
+  niFS_ChDir(niPath_Join(dir, "bin/web-js"));
+  console.log("I/niLang_preRun DONE");
+});
+
+Module["preRun"] = function Module_preRun(params) {
+  console.log("I/Module_preRun BEGIN");
 
   var params = NIAPP.GetParamsAsObject(location.search);
-  var title = "niLang";
+  var title = "niApp";
 
-  // Set the default title and fs modules based on the app name
+  // Get the default appName from the URL
   var appName = niPath_NoExt(niPath_GetFilename(location.pathname));
   if (appName) {
     if (appName.endsWith("_ra") || appName.endsWith("_da")) {
@@ -769,27 +863,22 @@ Module["preRun"] = function () {
   }
   console.log("AppName: " + appName);
 
-  // Create the virtual WORK & niLang folders
-  var workDir = "/Work";
-  FS.mkdir(workDir);
+  // Init the work directory
+  var workDir = niAssert(NIAPP_CONFIG.workDir);
+  niFS_MakeDir(workDir);
 
-  // niLang
-  var niLangDir = workDir + "/niLang";
-  FS.mkdir(niLangDir);
-  FS.mkdir(niLangDir + "/data");
-  FS.mkdir(niLangDir + "/bin");
-  FS.mkdir(niLangDir + "/bin/web-js");
+  // Run all the other preRun functions
+  _prerunList.forEach(function (aFn) {
+    aFn();
+  })
 
-  // Load FS modules
+  // Load the FS modules
   for (var key in NIAPP_FSMODULES) {
     if (NIAPP_FSMODULES.hasOwnProperty(key)) {
       console.log("I/Register NIAPP_FSMODULES: " + key);
       NIAPP_FSMODULES[key]();
     }
   }
-
-  // Set the current directory so that it looks like a regular executable
-  FS.chdir(niLangDir + "/bin/web-js");
 
   // Process the build-in parameters
   var packagePath, packageUrl;
@@ -805,6 +894,11 @@ Module["preRun"] = function () {
   if (title) {
     document.title = title;
   }
+
+  // Create a dummy file for the executable in case we're looking for one
+  var exePath = niAssert(NIAPP_CONFIG.exePath, 'exePath');
+  console.log("I/exePath: " + exePath);
+  niFS_WriteFile(exePath, "JSCC_EXE: " + exePath);
 
   Module.onRuntimeInitialized = function () {
     // Initialize the CAPI bridge
@@ -832,5 +926,5 @@ Module["preRun"] = function () {
     }
   };
 
-  console.log("I/preRun DONE");
+  console.log("I/Module_preRun DONE");
 };

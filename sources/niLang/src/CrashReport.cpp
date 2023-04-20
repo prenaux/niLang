@@ -10,6 +10,10 @@
 #define niCrashReportHasMinidump
 #endif
 
+#ifdef niJSCC
+#include <emscripten.h>
+#endif
+
 namespace ni {
 
 _HSymImpl(not_initialized);
@@ -100,6 +104,14 @@ static void _FormatThrowMessage(
   ni_stack_get_current(fmt,nullptr,1); // 1 to skip _FormatThrowMessage
 }
 
+#ifdef niJSCC
+void JSCC_ConsoleError(const char* message) {
+  EM_ASM({
+    console.error(UTF8ToString($0));
+  }, message);
+}
+#endif
+
 ///////////////////////////////////////////////
 niExportFuncCPP(void) ni_throw_panic(
   niConst struct iHString* aKind,
@@ -120,6 +132,9 @@ niExportFuncCPP(void) ni_throw_panic(
     aKind,
     msg);
   fmt.append("================================\n");
+  #ifdef niJSCC
+  JSCC_ConsoleError(fmt.Chars());
+  #endif
   niError(fmt.Chars());
   throw sPanicException{aKind};
 #endif

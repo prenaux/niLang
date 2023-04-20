@@ -9,3 +9,6 @@ if $(BUILD_JNI) {
 if $(ANDROID) = 1 {
   include [ FDirName $(NILANG_DIR) sources _rules_ni_android.ham ] ;
 }
+if $(EMSCRIPTEN) = 1 {
+  include [ FDirName $(NILANG_DIR) sources _rules_ni_emscripten.ham ] ;
+}

@@ -22,7 +22,6 @@ niExportFunc(int) _OSXOpenURL(const char* aUrl);
 #if defined niJSCC
 #include <emscripten.h>
 #include <emscripten/html5.h>
-extern "C" void JSCC_InitModule_niLang();
 #endif
 
 static tBool _LogMessageCallback(tLogFlags type, const tF64 afTime, const char* file, const char* func, int line, const char* msg)
@@ -111,10 +110,6 @@ cLang::cLang()
 ///////////////////////////////////////////////
 void cLang::_Construct()
 {
-#if defined niJSCC
-  JSCC_InitModule_niLang();
-#endif
-
   _StartupModules();
 
   // Init the default system properties

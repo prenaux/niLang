@@ -25,11 +25,16 @@ int main(int argc, const char** argv, const char** envp) {
     niCrashReport_DeclareHandler();
     ni::cString fixtureName;
 
-    printf("I/env:\n");
-    for (const char **env = envp; *env != nullptr; env++) {
-      printf("- %s\n", *env);
+    if (!envp) {
+      printf("I/env: NONE\n");
     }
-    fflush(stdout);
+    else {
+      printf("I/env:\n");
+      for (const char **env = envp; *env != nullptr; env++) {
+        printf("- %s\n", *env);
+      }
+      fflush(stdout);
+    }
 
     ni::ni_log_system_info_once();
 

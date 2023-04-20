@@ -1,7 +1,7 @@
 SubDir TOP niScriptCpp ;
 
+SubInclude TOP niScriptCpp src ;
 if $(TARGET_FEATURE_RTCPP) = 1 {
-  SubInclude TOP niScriptCpp src ;
   SubInclude TOP niScriptCpp tsrc ;
   SubInclude TOP niScriptCpp tsrc_module ;
 }

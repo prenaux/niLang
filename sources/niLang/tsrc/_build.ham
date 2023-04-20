@@ -16,5 +16,7 @@ DEPENDS Run_ci : [ runInDir Test_niLang ] ;
 if ( $(EMSCRIPTEN) = 1 ) {
   TargetLinkFlags $(PKGTARGETF) :
     --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten Test_niLang_pre.js ] ]
+    # -gsource-map
+    # --source-map-base http://localhost:8222/niLang/bin/web-js/
   ;
 }

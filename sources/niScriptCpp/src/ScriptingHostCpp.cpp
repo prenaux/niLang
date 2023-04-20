@@ -4,14 +4,19 @@
 
 #if defined niNoScriptCpp
 
+// Disabled, better to have a linker error than a runtime error. The correct way
+// to handle this is to not register the ScriptCpp host when its not supported.
+// The module still builds so that we can keep it as dependency and use the
+// niNoScriptCpp compilte time flag to check whether its actually supported.
+#if 0
 namespace ni {
-
 niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   niError("ScriptCpp not supported on this platform.");
   return NULL;
 }
-
 }
+#endif
+
 #else
 
 #include <niLang/StringDef.h>

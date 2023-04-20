@@ -10,24 +10,23 @@
 
 using namespace ni;
 
-#define JSCC_WORK_DIR "/Work"
-#define JSCC_EXE_PATH JSCC_WORK_DIR "/niLang/bin/web-js/web-js.html"
+EM_JS(char*, _JSCC_GetConfigProperty, (const char* aProperty), {
+  var propertyStr = UTF8ToString(aProperty);
+  var jsString = Module["NIAPP_CONFIG"][propertyStr] || "";
+  // console.log("... _JSCC_GetConfigProperty: " + propertyStr + " = " + jsString);
+  var lengthBytes = lengthBytesUTF8(jsString) + 1;
+  var stringOnWasmHeap = _malloc(lengthBytes);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
+  return stringOnWasmHeap;
+});
 
-EM_JS(
-  void, _JSCC_InitModule_niLang, (const char* aWorkDir, const char* aExePath), {
-    console.log("JSCC_InitModule_niLang");
-
-    // Create a dummy file for the executable in case we're looking for one
-    var exePath = UTF8ToString(aExePath);
-    FS.writeFile(exePath, "JSCC_EXE: " + exePath);
-  }
-);
-
-extern "C" void JSCC_InitModule_niLang() {
-  // not strictly necessary but convenient to run unit tests
-  setenv("WORK", JSCC_WORK_DIR, 1);
-  // initialize the file system
-  _JSCC_InitModule_niLang(JSCC_WORK_DIR,JSCC_EXE_PATH);
+namespace ni {
+niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty) {
+  char* asz = _JSCC_GetConfigProperty(aProperty);
+  ni::cString str = asz;
+  free(asz);
+  return str;
+}
 }
 
 #if niMinFeatures(15)
@@ -61,7 +60,8 @@ cString cLang::GetEnv(const achar* aaszEnv) const {
 
 ///////////////////////////////////////////////
 niExportFunc(achar*) ni_get_exe_path(ni::achar* buffer) {
-  StrZCpy(buffer,AMAX_PATH, JSCC_EXE_PATH);
+  cString exePath = niJSCC_Get_NIAPP_CONFIG("exePath");
+  StrZCpy(buffer,AMAX_PATH,exePath.Chars());
   return buffer;
 }
 #endif

@@ -26,6 +26,9 @@
 
 #ifdef niJSCC
 #include <emscripten.h>
+namespace ni {
+niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty);
+}
 #endif
 
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
@@ -980,6 +983,10 @@ bool TestRunner_Startup(TestReporter& reporter,
                       char const* fixtureName)
 {
   TestRunner_Shutdown();
+#ifdef niJSCC
+  // Set the $WORK envvar
+  setenv("WORK",ni::niJSCC_Get_NIAPP_CONFIG("workDir").c_str(),1);
+#endif
   ni::GetLang()->SetGlobalInstance("URLFileHandler.default",niNew URLFileHandler_Tests());
   ni::GetLang()->SetGlobalInstance("URLFileHandler.script",niNew URLFileHandler_Tests());
   runFixtureName = fixtureName;

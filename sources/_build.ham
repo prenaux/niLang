@@ -3,9 +3,9 @@ SubDir TOP ;
 ### Lang ###
 SubInclude TOP niLang ;
 SubInclude TOP niCURL ;
+SubInclude TOP niScriptCpp ;
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
-  SubInclude TOP niScriptCpp ;
   SubInclude TOP niUnitTest ;
   SubInclude TOP niTestInterop ;
   SubInclude TOP ni ;

@@ -17,7 +17,7 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
   niFS_AddFiles(dir, url, [
     "error.dds",
     "fonts/NotoMono-Regular.ttf",
-    "fonts/NotoSansCJKsc-Regular.otf",
+    // "fonts/NotoSansCJKsc-Regular.otf", // for Unicode characters, ~18MB :(
     "fonts/PlayfairDisplay-Bold.ttf",
     "fonts/PlayfairDisplay-BoldItalic.ttf",
     "fonts/PlayfairDisplay-Italic.ttf",
@@ -64,7 +64,6 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
     "shaders/fixed_vs_pnat2.cgo",
     "shaders/fixed_vs_pnt1.cgo",
     "shaders/fixed_vs_pnt2.cgo",
-    "skins/UIDark.aseprite-data",
     "skins/UIDark.png",
     "skins/default.uiskin.xml",
   ]);

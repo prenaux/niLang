@@ -62,3 +62,6 @@ xcuserdata/
 /bin/osx-*/*_da
 /bin/lin-*/*.so
 /bin/lin-*/*.x64
+
+## ignore the http server
+_http_server/

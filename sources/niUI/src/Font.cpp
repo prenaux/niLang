@@ -873,7 +873,7 @@ tBool __stdcall cFont::GetIsFixedResolution() const {
   return mptrTTF.IsOK() ? eFalse : eTrue;
 }
 tBool __stdcall cFont::GetHasKerning() const {
-  return mptrTTF.IsOK() ? mptrTTF->GetHasKerning() :eFalse;
+  return mptrTTF.IsOK() ? mptrTTF->GetHasKerning() : eFalse;
 }
 tU32 __stdcall cFont::GetMaxResolution() const {
   return mptrTTF.IsOK() ? mptrTTF->GetMaxCharSize() : mptrImage->GetWidth()/16;
@@ -1217,7 +1217,8 @@ const sFontGlyph* cFont::GetGlyph(tU32 anChar, sFontGlyph* apTmpStorage) const {
     // 16x16 grid of glyphs, max 256 characters
     if (anChar >= 0xFF)
       anChar = '?';
-    apTmpStorage->SetGlyphInBitmap(anChar, GetSize());
+    const tF32 fontSizeByRes = ni::FDiv(this->mStates.GetWidth(),(tF32)this->mStates.mnResolution);
+    apTmpStorage->SetGlyphInBitmap(anChar, GetSize(), fontSizeByRes);
     apTmpStorage->img = mptrImage;
     return apTmpStorage;
   }

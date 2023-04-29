@@ -43,7 +43,8 @@ struct sFontGlyph {
     return dim.y;
   }
 
-  inline void SetGlyphInBitmap(tU32 anChar, const sVec2f& avSize) {
+  inline void SetGlyphInBitmap(tU32 anChar, const sVec2f& avSize,
+                               const tF32 afFontSizeDivByRes) {
     const tF32 x = float(anChar&0xF)*(1/16.0f);
     const tF32 y = float(anChar>>4)*(1/16.0f);
     texCoo.SetLeft(x);
@@ -52,7 +53,9 @@ struct sFontGlyph {
     texCoo.SetBottom(y+(1/16.0f));
     dim.x = (tI32)avSize.x;
     dim.y = (tI32)avSize.y;
-    xadv = avSize.x;
+    // '/ afFontSizeDivByRes' to match the convention used by ttf fonts
+    xadv = avSize.x / afFontSizeDivByRes;
+    lead = sVec2f::Zero();
   }
 };
 

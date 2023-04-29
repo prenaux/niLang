@@ -17,5 +17,7 @@ BUILD_SRC = [ tkBuildPackage $(SRC) : data : $(CHK_SOURCES) ] ;
 if ( $(EMSCRIPTEN) = 1 ) {
   TargetLinkFlags $(PKGTARGETF) :
     --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_pre.js ] ]
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_fonts.js ] ]
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_fonts_cjk.js ] ]
   ;
 }

@@ -287,6 +287,8 @@
         };
         // Start the app
         aModule.callMain();
+      }).catch(function(aError) {
+        console.error("Module creation error: ", aError);
       });
     });
     </script>

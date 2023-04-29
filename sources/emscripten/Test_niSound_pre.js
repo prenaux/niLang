@@ -8,7 +8,7 @@ NIAPP_FSMODULES['Test_niSound'] = function FS_Test_niSound() {
   console.log("FSModule: Test_niSound");
   var dir = "/Work/niLang/data/Test_niSound";
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/Test_niSound/");
-  FS.mkdir(dir);
+  niFS_MakeDir(dir);
   niFS_AddFiles(dir, url, [
     "atmo_loop_01.wav",
     "step_stone5.wav",

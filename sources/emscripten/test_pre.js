@@ -8,7 +8,7 @@ NIAPP_FSMODULES['test'] = function FS_test() {
   console.log("FSModule: test");
   var dir = "/Work/niLang/data/test";
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/test/");
-  FS.mkdir(dir);
+  niFS_MakeDir(dir);
   niFS_AddDirs(dir, [
     "fonts",
     "img_diff",

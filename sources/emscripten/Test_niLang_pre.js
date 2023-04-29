@@ -8,7 +8,7 @@ NIAPP_FSMODULES['Test_niLang'] = function FS_Test_niLang() {
   console.log("FSModule: Test_niLang");
   var dir = "/Work/niLang/data/Test_niLang";
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/Test_niLang/");
-  FS.mkdir(dir);
+  niFS_MakeDir(dir);
   niFS_AddFiles(dir, url, [
     "hello-file-system.txt"
   ]);

@@ -8,7 +8,7 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
   console.log("FSModule: niUI");
   var dir = "/Work/niLang/data/niUI";
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/niUI");
-  FS.mkdir(dir);
+  niFS_MakeDir(dir);
   niFS_AddDirs(dir, [
     "skins",
     "shaders",
@@ -16,19 +16,6 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
   ]);
   niFS_AddFiles(dir, url, [
     "error.dds",
-    "fonts/NotoMono-Regular.ttf",
-    // "fonts/NotoSansCJKsc-Regular.otf", // for Unicode characters, ~18MB :(
-    "fonts/PlayfairDisplay-Bold.ttf",
-    "fonts/PlayfairDisplay-BoldItalic.ttf",
-    "fonts/PlayfairDisplay-Italic.ttf",
-    "fonts/PlayfairDisplay-Regular.ttf",
-    "fonts/Roboto-Bold.ttf",
-    "fonts/Roboto-BoldItalic.ttf",
-    "fonts/Roboto-Italic.ttf",
-    "fonts/Roboto-Regular.ttf",
-    "fonts/fab-400.otf",
-    "fonts/far-400.otf",
-    "fonts/fas-900.otf",
     "loading.tga",
     "shaders/fixed_ps.cgo",
     "shaders/fixed_ps_alphatest.cgo",

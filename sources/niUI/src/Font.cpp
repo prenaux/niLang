@@ -824,6 +824,11 @@ tBool cFont::_Create8x8(iHString* ahspName)
   SetFiltering(eFalse);
   mStates.SetResolution(8);
   SetSizeAndResolution(sVec2f::Zero(),8,1);
+  // TODO: Calling UpdateMaterial updates the filtering mode, we need to update
+  //       the code so that it becomes a private method and doesn't have to be
+  //       called manually. Every single user so far have got this wrong...
+  //       (Thus we're wrong and should change it)
+  UpdateMaterial(eTrue);
 
   if (!HStringIsEmpty(ahspName)) {
     mhspName = ahspName;

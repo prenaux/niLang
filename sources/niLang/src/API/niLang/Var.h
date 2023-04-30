@@ -218,6 +218,14 @@ struct Var : public VarData
 #define C_VPNEW_NC(T,TN)                        \
   C_VPNEW_SETGET(T,TN);
 
+#define VAR_ASSERT_NOT_CONVERTIBLE(KIND)           \
+  {                                                \
+    char bufType[32];                              \
+    ni::cString msg = #KIND ": var type not convertible: "; \
+    msg += GetTypeString(bufType, this->mType);    \
+    niAssertUnreachable(msg.c_str());              \
+  }
+
   void SetVar(const Var& aV)
   {
     if (&aV == this)
@@ -412,11 +420,16 @@ struct Var : public VarData
   }
   //! Get the variant's pointer type value.
   inline tIntPtr GetPtrValue() const {
-    niAssert(IsPtrValue());
-    if (IsPtrValue())
+    if (IsPtrValue()) {
       return this->mIntPtr;
-    else
+    }
+    else if (niType(mType) == eType_Null) {
       return 0;
+    }
+    else {
+      VAR_ASSERT_NOT_CONVERTIBLE(GetPtrValue);
+      return 0;
+    }
   }
 
   //! Check whether the variant is a number type value.
@@ -439,7 +452,6 @@ struct Var : public VarData
   }
   //! Get the variant's number value.
   inline tI64 GetIntValue() const {
-    niAssert(IsIntValue());
     switch (niType(mType)) {
       case eType_I8:  return (tI64)this->mI8;
       case eType_I16: return (tI64)this->mI16;
@@ -452,6 +464,8 @@ struct Var : public VarData
       case eType_F32: return (tI64)this->mF32;
       case eType_F64: return (tI64)this->mF64;
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetIntValue);
+      case eType_Null:
         return 0;
     }
   }
@@ -476,7 +490,6 @@ struct Var : public VarData
   }
   //! Get the variant's float value.
   inline tF64 GetFloatValue() const {
-    niAssert(IsFloatValue());
     switch (niType(mType)) {
       case eType_I8:  return (tF64)this->mI8;
       case eType_I16: return (tF64)this->mI16;
@@ -489,6 +502,8 @@ struct Var : public VarData
       case eType_F32: return (tF64)this->mF32;
       case eType_F64: return (tF64)this->mF64;
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetFloatValue);
+      case eType_Null:
         return 0;
     }
   }
@@ -518,7 +533,6 @@ struct Var : public VarData
   }
   //! Get the variant's vec2f type value.
   inline sVec2f GetVec2fValue() const {
-    niAssert(IsVec2fValue());
     switch (niType(mType)) {
       case eType_Vec2f:
         return this->mVec2f;
@@ -527,12 +541,13 @@ struct Var : public VarData
             (tF32)this->mVec2i.x,
             (tF32)this->mVec2i.y);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec2fValue);
+      case eType_Null:
         return sVec2f::Zero();
     }
   }
   //! Get the variant's vec2i type value.
   inline sVec2i GetVec2iValue() const {
-    niAssert(IsVec2fValue());
     switch (niType(mType)) {
       case eType_Vec2i:
         return this->mVec2i;
@@ -541,6 +556,8 @@ struct Var : public VarData
             (tI32)this->mVec2f.x,
             (tI32)this->mVec2f.y);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec2iValue);
+      case eType_Null:
         return sVec2i::Zero();
     }
   }
@@ -561,7 +578,6 @@ struct Var : public VarData
   }
   //! Get the variant's vec3f type value.
   inline sVec3f GetVec3fValue() const {
-    niAssert(IsVec3fValue());
     switch (niType(mType)) {
       case eType_Vec3f:
         return this->mVec3f;
@@ -571,12 +587,13 @@ struct Var : public VarData
             (tF32)this->mVec3i.y,
             (tF32)this->mVec3i.z);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec3fValue);
+      case eType_Null:
         return sVec3f::Zero();
     }
   }
   //! Get the variant's vec3i type value.
   inline sVec3i GetVec3iValue() const {
-    niAssert(IsVec3fValue());
     switch (niType(mType)) {
       case eType_Vec3i:
         return this->mVec3i;
@@ -586,6 +603,8 @@ struct Var : public VarData
             (tI32)this->mVec3f.y,
             (tI32)this->mVec3f.z);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec3iValue);
+      case eType_Null:
         return sVec3i::Zero();
     }
   }
@@ -606,7 +625,6 @@ struct Var : public VarData
   }
   //! Get the variant's vec4f type value.
   inline sVec4f GetVec4fValue() const {
-    niAssert(IsVec4fValue());
     switch (niType(mType)) {
       case eType_Vec4f:
         return this->mVec4f;
@@ -617,12 +635,13 @@ struct Var : public VarData
             (tF32)this->mVec4i.z,
             (tF32)this->mVec4i.w);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec4fValue);
+      case eType_Null:
         return sVec4f::Zero();
     }
   }
   //! Get the variant's vec4i type value.
   inline sVec4i GetVec4iValue() const {
-    niAssert(IsVec4fValue());
     switch (niType(mType)) {
       case eType_Vec4i:
         return this->mVec4i;
@@ -633,6 +652,8 @@ struct Var : public VarData
             (tI32)this->mVec4f.z,
             (tI32)this->mVec4f.w);
       default:
+        VAR_ASSERT_NOT_CONVERTIBLE(GetVec4iValue);
+      case eType_Null:
         return sVec4i::Zero();
     }
   }

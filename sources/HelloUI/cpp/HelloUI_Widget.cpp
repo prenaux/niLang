@@ -79,6 +79,7 @@ struct HelloUIWidget : public cWidgetSinkImpl<>
 
 #ifdef TEST_ONPAINT_CANVAS_TEXT
   Ptr<iFont> _monoFont;
+  Ptr<iFont> _bmpFont;
 #endif
 
 #ifdef TEST_IPCAM
@@ -109,6 +110,8 @@ struct HelloUIWidget : public cWidgetSinkImpl<>
     {
       _monoFont = mpWidget->GetGraphics()->LoadFont(_H("Monospace"));
       _monoFont->SetSizeAndResolution(Vec2f(12,12),12,mpWidget->GetUIContext()->GetContentsScale());
+      _bmpFont = mpWidget->GetGraphics()->LoadFont(_H("8x8"));
+      _bmpFont->SetSizeAndResolution(Vec2f(16,16),8,mpWidget->GetUIContext()->GetContentsScale());
     }
 #endif
 
@@ -277,11 +280,26 @@ struct HelloUIWidget : public cWidgetSinkImpl<>
       }
 
       niLoop(i,blitTextLoopCount) {
-        apCanvas->BlitText(
+        const tF32 r = mpWidget->GetSize().x - 20;
+        const tF32 x = r - (mpWidget->GetSize().x/3);
+        const tF32 w = mpWidget->GetSize().x/3;
+
+        apCanvas->BlitFill(
+          Rectf(r-12,20,12,12),
+          0xFF558855);
+        const tF32 th = apCanvas->BlitText(
           _monoFont,
-          Rectf(mpWidget->GetSize().x - (mpWidget->GetSize().x/3) - 20, 20,
-                mpWidget->GetSize().x/3, mpWidget->GetSize().y-20),
-          eFontFormatFlags_Right, _kText);
+          Rectf(x, 20, w, 0),
+          eFontFormatFlags_Right, _kText).GetHeight();
+
+        apCanvas->BlitFill(
+          Rectf(r-16,20+th,16,16),
+          0xFF555588);
+        apCanvas->BlitText(
+          _bmpFont,
+          Rectf(x, 20 + th, w, 0),
+          eFontFormatFlags_Right, _kText).GetHeight();
+
         apCanvas->Flush();
       }
     }

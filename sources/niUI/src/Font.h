@@ -5,12 +5,16 @@
 #define __FONT_H__
 
 #include "Graphics.h"
+#include "niUI_HString.h"
 
 namespace ni {
 
 class cGraphics;
 class cFontTTF;
 struct sMyFTLibrary;
+
+niConstValue auto kFontFilterOnSS = eCompiledStates_SS_SharpClamp;
+niConstValue auto kFontFilterOffSS = eCompiledStates_SS_PointClamp;
 
 struct sFontGlyph {
   Ptr<iBitmap2D> bmp;
@@ -118,7 +122,7 @@ class cFont : public cIUnknownImpl<iFont>
   tBool __stdcall ClearCache();
   tIntPtr __stdcall GetCacheID() const;
 
-  tBool __stdcall UpdateMaterial(ni::tBool abUpdateMaterialStates);
+  tBool __stdcall _UpdateMaterial(ni::tBool abUpdateMaterialStates);
   sRectf __stdcall GetCharTexCoo(tU32 c) const;
   iTexture* __stdcall GetTexture();
   iMaterial* __stdcall GetMaterial() const;
@@ -180,24 +184,32 @@ class cFont : public cIUnknownImpl<iFont>
     sVec2f mvSize;
     tF32 mfInvResolution;
     tF32 mfYSign;
-    eBlendMode mBlendMode;
     tBool mbFiltering;
     tBool mbDistanceField;
     tBool mbMaterialInstanced;
     tF32 mfLineSpacing;
 
-    sStates() {
+    sStates(iGraphics* apGraphics) {
       mfTabSize = 4;
       mfYSign = 1.0f;
       mbFiltering = eTrue;
       mbDistanceField = eFalse;
       mnColor = 0xFFFFFFFF;
-      mBlendMode = eBlendMode_Translucent;
       mnResolution = 0;
       mvSize = sVec2f::Zero();
       mptrMaterial = NULL;
       mbMaterialInstanced = eFalse;
       mfLineSpacing = 1.0f;
+      mptrMaterial = apGraphics->CreateMaterial();
+      mptrMaterial->SetName(_HC(Default));
+      mptrMaterial->SetFlags(mptrMaterial->GetFlags()|
+                             eMaterialFlags_Transparent|
+                             eMaterialFlags_Translucent|
+                             eMaterialFlags_NoLighting|
+                             eMaterialFlags_DoubleSided|
+                             eMaterialFlags_Vertex);
+      mptrMaterial->SetBlendMode(eBlendMode_Translucent);
+      mptrMaterial->SetChannelSamplerStates(eMaterialChannel_Base,kFontFilterOnSS);
     }
     tF32 GetWidth() const {
       return mvSize.x;
@@ -214,21 +226,11 @@ class cFont : public cIUnknownImpl<iFont>
       return mnResolution;
     }
     void NewMaterial(iGraphics* apGraphics) {
-      mptrMaterial = apGraphics->CreateMaterial();
-      mptrMaterial->SetName(_H("Default"));
-      mptrMaterial->SetFlags(mptrMaterial->GetFlags()|
-                             eMaterialFlags_Transparent|
-                             eMaterialFlags_Translucent|
-                             eMaterialFlags_NoLighting|
-                             eMaterialFlags_DoubleSided|
-                             eMaterialFlags_Vertex);
-      mptrMaterial->SetBlendMode(eBlendMode_Translucent);
-      mptrMaterial->SetChannelSamplerStates(eMaterialChannel_Base,eCompiledStates_SS_SmoothClamp);
     }
    private:
     sStates(const sStates&);
   };
-  sStates           mStates;
+  sStates mStates;
 };
 } // end of namespace ni
 

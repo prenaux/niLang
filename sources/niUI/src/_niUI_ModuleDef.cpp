@@ -7036,21 +7036,6 @@ static const ni::sMethodDef iFont_GetLineHeight = {
 #endif
 };
 
-// Method: UpdateMaterial
-static const ni::sParameterDef iFont_UpdateMaterial_Parameters[1] = { 
-  { "abUpdateMaterialStates", ni::eType_I8, NULL, "tBool" }
-}; 
-static const ni::sMethodDef iFont_UpdateMaterial = {
-  "UpdateMaterial",
-  0|ni::eType_I8, NULL, "tBool",
-  1, iFont_UpdateMaterial_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iFont_UpdateMaterial)
-#else
-  NULL
-#endif
-};
-
 // Method: CacheText
 static const ni::sParameterDef iFont_CacheText_Parameters[1] = { 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
@@ -7385,7 +7370,6 @@ static const ni::sMethodDef* Methods_iFont[] = {
 	&iFont_SetLineSpacing,
 	&iFont_GetLineSpacing,
 	&iFont_GetLineHeight,
-	&iFont_UpdateMaterial,
 	&iFont_CacheText,
 	&iFont_CacheRange,
 	&iFont_ClearCache,

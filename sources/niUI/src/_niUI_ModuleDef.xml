@@ -8211,18 +8211,6 @@
 				</comments>
 				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
 			</method>
-			<method java_name="updateMaterial" name="UpdateMaterial" num_parameters="1">
-				<comments desc="Update the font&apos;s material. " return="eFalse on failure, else eTrue. ">
-					<params text="abUpdateMaterialStates if true the states will set otherwise only the material&apos;s base channel texture is set to the current glyph cache&apos;s texture. "/>
-				</comments>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-				<parameter
-					last="1"
-					name="abUpdateMaterialStates"
-					type="tBool"
-					typec="tBool"
-					typei="ni::eType_I8"/>
-			</method>
 			<method java_name="cacheText" name="CacheText" num_parameters="1">
 				<comments desc="Cache the caracters contained in the passed string. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>

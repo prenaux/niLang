@@ -79,4 +79,7 @@ _HDecl(Button_Down);
 _HDecl(Button_Hover);
 _HDecl(Button_FocusMarker);
 
+_HDecl(Fallback);
+_HDecl(Default);
+
 #endif // __niUI_HSTRING_H__

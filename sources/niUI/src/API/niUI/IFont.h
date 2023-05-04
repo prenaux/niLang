@@ -244,10 +244,6 @@ struct iFont : public iUnknown
   //########################################################################################
   //! @{
 
-  //! Update the font's material.
-  //! \param abUpdateMaterialStates if true the states will set otherwise only the material's base channel texture is set to the current glyph cache's texture.
-  //! \return eFalse on failure, else eTrue.
-  virtual tBool __stdcall UpdateMaterial(tBool abUpdateMaterialStates) = 0;
   //! Cache the caracters contained in the passed string.
   virtual tBool __stdcall CacheText(const achar* aaszText) = 0;
   //! Cache a range of character.

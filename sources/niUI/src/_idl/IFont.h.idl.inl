@@ -298,15 +298,6 @@ IDLC_METH_BEGIN(ni,iFont,GetLineHeight,0)
 	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
 IDLC_METH_END(ni,iFont,GetLineHeight,0)
 
-/** ni -> iFont::UpdateMaterial/1 **/
-IDLC_METH_BEGIN(ni,iFont,UpdateMaterial,1)
-	IDLC_DECL_VAR(tBool,abUpdateMaterialStates)
-	IDLC_BUF_TO_BASE(ni::eType_I8,abUpdateMaterialStates)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iFont,UpdateMaterial,1,(abUpdateMaterialStates))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iFont,UpdateMaterial,1)
-
 /** ni -> iFont::CacheText/1 **/
 IDLC_METH_BEGIN(ni,iFont,CacheText,1)
 	IDLC_DECL_VAR(achar*,aaszText)

@@ -718,9 +718,8 @@ static inline void _Draw8BitFontChar(const tU8* apFontData, iBitmap2D* apBmp, tU
 // Font interface implementation
 
 ///////////////////////////////////////////////
-cFont::cFont(cGraphics* apGraphics) {
+cFont::cFont(cGraphics* apGraphics) : mStates(apGraphics) {
   mpwGraphics = apGraphics;
-  mStates.NewMaterial(apGraphics);
 }
 
 ///////////////////////////////////////////////
@@ -824,11 +823,6 @@ tBool cFont::_Create8x8(iHString* ahspName)
   SetFiltering(eFalse);
   mStates.SetResolution(8);
   SetSizeAndResolution(sVec2f::Zero(),8,1);
-  // TODO: Calling UpdateMaterial updates the filtering mode, we need to update
-  //       the code so that it becomes a private method and doesn't have to be
-  //       called manually. Every single user so far have got this wrong...
-  //       (Thus we're wrong and should change it)
-  UpdateMaterial(eTrue);
 
   if (!HStringIsEmpty(ahspName)) {
     mhspName = ahspName;
@@ -937,15 +931,13 @@ tU32 cFont::GetTabSize() const {
 }
 
 ///////////////////////////////////////////////
-void cFont::SetFiltering(tBool abFiltering)
-{
-  mStates.mbFiltering = abFiltering;
+void cFont::SetFiltering(tBool abFiltering) {
+  mStates.mptrMaterial->SetChannelSamplerStates(
+    eMaterialChannel_Base,
+    abFiltering ? kFontFilterOnSS : kFontFilterOffSS);
 }
-
-///////////////////////////////////////////////
-tBool cFont::GetFiltering() const
-{
-  return mStates.mbFiltering;
+tBool cFont::GetFiltering() const {
+  return mStates.mptrMaterial->GetChannelSamplerStates(eMaterialChannel_Base) == kFontFilterOnSS;
 }
 
 ///////////////////////////////////////////////
@@ -974,12 +966,10 @@ tU32 cFont::GetColor() const
 
 ///////////////////////////////////////////////
 void __stdcall cFont::SetBlendMode(eBlendMode aMode) {
-  mStates.mBlendMode = aMode;
+  mStates.mptrMaterial->SetBlendMode(aMode);
 }
-
-///////////////////////////////////////////////
 eBlendMode __stdcall cFont::GetBlendMode() const {
-  return mStates.mBlendMode;
+  return mStates.mptrMaterial->GetBlendMode();
 }
 
 ///////////////////////////////////////////////
@@ -1179,36 +1169,6 @@ tBool __stdcall cFont::CacheRange(tU32 anFirst, tU32 anLast)
     for (tU32 i = anFirst; i <= anLast; ++i) {
       mptrTTF->RenderCodepoint(i,mStates.mnResolution,mStates.mbDistanceField);
     }
-  }
-  return eTrue;
-}
-
-///////////////////////////////////////////////
-tBool cFont::UpdateMaterial(tBool abUpdateMaterialStates) {
-  iMaterial* pMat = mStates.mptrMaterial;
-  if (!pMat)
-    return eFalse;
-
-  pMat->SetChannelTexture(eMaterialChannel_Base,GetTexture());
-  if (abUpdateMaterialStates) {
-    pMat->SetBlendMode(mStates.mBlendMode);
-    switch (mStates.mBlendMode) {
-      case eBlendMode_NoBlending:
-        // Solid drawing
-        // pMat->SetFlags(pMat->GetFlags()&(~eMaterialFlags_Translucent));
-        // pMat->SetChannelColor(eMaterialChannel_Opacity,Vec4<tF32>(1,1,1,0.3f));
-        break;
-      default:
-        // Translucent drawing
-        // pMat->SetFlags(pMat->GetFlags()|eMaterialFlags_Translucent);
-        // pMat->SetChannelColor(eMaterialChannel_Opacity,Vec4<tF32>(1,1,1,1.0f/255.0f));
-        break;
-    }
-    pMat->SetChannelSamplerStates(
-        eMaterialChannel_Base,
-        mStates.mbFiltering ?
-        eCompiledStates_SS_SharpClamp :
-        eCompiledStates_SS_PointClamp);
   }
   return eTrue;
 }

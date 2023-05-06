@@ -21,7 +21,7 @@
     <style>
      html,
      body {
-       background-color: #38a; /* Use a color that works to test transparencies */
+       background-color: #222;
        font-family: arial;
        padding: 0;
        margin: 0;
@@ -30,25 +30,8 @@
        height: 100%;
        overflow: hidden;
      }
-
      *:focus {
        outline: none;
-     }
-
-     progress {
-       /* Reset the default appearance */
-       -webkit-appearance: none;
-       appearance: none;
-     }
-     progress[value]::-webkit-progress-bar {
-       background-color: #eee;
-       border-radius: 1px;
-       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
-     }
-     progress[value]::-webkit-progress-value {
-       background-color: #0ae;
-       border-radius: 2px;
-       background-size: 35px 20px, 100% 100%, 100% 100%;
      }
 
      .ni-player-container {
@@ -61,7 +44,11 @@
      }
      #ni-player-status {
        font-weight: bold;
-       color: rgb(255,255,255);
+       color: #eee;
+       text-align: center;
+       font-family: 'Lucida Console', Monaco, monospace;
+       font-size: 0.7rem;
+       line-height: 1.2rem;
      }
      #ni-player-overlay {
        position: absolute;
@@ -91,16 +78,6 @@
        font-family: 'Lucida Console', Monaco, monospace;
        outline: none;
      }
-     .ni-player-ar-canvas {
-       position: absolute;
-       left: 0px;
-       top: 0px;
-     }
-     .ni-player-ar-video {
-       position: absolute;
-       left: 0px;
-       top: 0px;
-     }
     </style>
   </head>
   <body>
@@ -108,15 +85,15 @@
     <div id="ni-player-container" class="ni-player-container">
       <div id="ni-player-overlay" oncontextmenu="event.preventDefault()"
            style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="position: relative; background-color: rgba(0,0,0,0.5); padding: 1em 3em;">
-          <img src="./ni-player-logo.png" style="margin-left: calc(50% - 150px); width: 300px; height: 300px;" />
-          <div id="ni-player-status">Status</div>
-          <progress value="100" max="100" id="ni-player-progress" style="width: 100%;"></progress>
+        <div style="position: relative; background-color: rgba(0,0,0,0.3); padding: 3rem 1rem 3rem 1rem;">
+          <img src="./ni-player-loading.gif" style="margin-left: calc(50% - 16px); width: 32px; height: 32px;" />
+          <div id="ni-player-status">Loading</div>
+          <!-- <progress value="100" max="100" id="ni-player-progress" style="width: 100%;"></progress> -->
         </div>
       </div>
 
       <canvas
-        id="canvas"
+        id="ni-player-canvas"
         class="ni-player-canvas"
         oncontextmenu="event.preventDefault()"
         tabindex="-1"
@@ -141,7 +118,7 @@
       var elPlayerProgress = document.getElementById('ni-player-progress');
       var elPlayerOverlay = document.getElementById('ni-player-overlay');
       var elPlayerTerminal = document.getElementById('ni-player-terminal');
-      var didShowwindow = false;
+      var elPlayerCanvas = document.getElementById('ni-player-canvas');
 
       function setStatus(text) {
         if (!setStatus.last) {
@@ -156,17 +133,25 @@
         }
         var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
         var now = Date.now();
-        if (m && now - setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-        setStatus.last.time = now;
-        setStatus.last.text = text;
+        if (m && now - setStatus.last.time < 30)
+          return; // if this is a progress update, skip it if too soon
         if (!m) { // if m is set its a progress update, so dont show it
           console.log("I/STATUS: " + text);
         }
         if (m) {
+          var curValue = parseInt(m[2]);
+          var maxValue = parseInt(m[4]);
           /* text = m[1]; */
+          var percent = Math.floor((curValue/maxValue) * 100.0);
+          if (percent >= 97.0) {
+            text = "Initializing";
+          }
+          else {
+            text = "Downloading " + percent + "%";
+          }
           if (elPlayerProgress) {
-            elPlayerProgress.value = parseInt(m[2]) * 100;
-            elPlayerProgress.max = parseInt(m[4]) * 100;
+            elPlayerProgress.value = curValue * 100;
+            elPlayerProgress.max = maxValue * 100;
           }
           if (elPlayerOverlay) {
             elPlayerOverlay.style.display = 'flex';
@@ -190,6 +175,8 @@
         if (elPlayerStatusText) {
           elPlayerStatusText.innerHTML = text;
         }
+        setStatus.last.time = now;
+        setStatus.last.text = text;
       };
 
       console.log('... createDefaultNiModule');
@@ -220,7 +207,6 @@
             if (elPlayerContainer) {
               elPlayerContainer.style.display = 'none';
             }
-            elPlayerTerminal = document.getElementById('ni-player-terminal');
             if (elPlayerTerminal) {
               elPlayerTerminal.style.display = 'block';
             }
@@ -254,9 +240,8 @@
           console.error(text);
         },
         canvas: (function () {
-          var canvas = document.getElementById('canvas');
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
+          var canvas = elPlayerCanvas;
+          // As a default initial behavior, pop up an alert when webgl context is lost.
           // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
           canvas.addEventListener(
             "webglcontextlost",
@@ -272,7 +257,7 @@
           this.totalDependencies = Math.max(this.totalDependencies, left);
           setStatus(
             left ?
-              'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' :
+              'Downloading (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' :
               'All downloads complete.');
         }
       }).then(function (aModule) {
@@ -291,6 +276,6 @@
         console.error("Module creation error: ", aError);
       });
     });
-    </script>
+  </script>
   </body>
 </html>

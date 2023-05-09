@@ -757,6 +757,12 @@ local __lint = {
   function dbg(_args_) {
     ::lang.logEx(::eLogFlags.Debug,_args_,3);
   }
+  function logInfo(_args_) {
+    ::lang.logEx(::eLogFlags.Info,_args_,3);
+  }
+  function logDebug(_args_) {
+    ::lang.logEx(::eLogFlags.Debug,_args_,3);
+  }
   function logError(_args_) {
     ::lang.logEx(::eLogFlags.Error,_args_,3);
   }
@@ -1200,6 +1206,8 @@ local __lint = {
 }
 
 ::log <- ::lang.log
+::logInfo <- ::lang.logInfo
+::logDebug <- ::lang.logDebug
 ::logWarning <- ::lang.logWarning
 ::logError <- ::lang.logError
 ::trace <- ::lang.dbg

@@ -7,6 +7,7 @@
 
 #if defined NI_CONSOLE
 #pragma message("Building Console Ni")
+#define NI_REPL
 #elif defined NI_WINDOWED
 #pragma message("Building Windowed Ni")
 #else
@@ -34,16 +35,31 @@ _HDecl(REPL_PrintResult);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // VM version string.
+
+#if defined NI_CONSOLE && defined NI_WINDOWED
+#error "F/Invalid ni cli mode set, NI_CONSOLE and NI_WINDOWED shouldn't be defined at the same time."
+#endif
+
 #if defined NI_CONSOLE
+
 static const achar* _aszVersion = _A("9.0");
 #ifndef NI_EXE_NAME
 #define NI_EXE_NAME "ni"
 #endif
+
 #elif defined NI_WINDOWED
+
 static const achar* _aszVersion = _A("9.0w");
 #ifndef NI_EXE_NAME
 #define NI_EXE_NAME "niw"
 #endif
+
+#else
+#error "F/No ni cli mode set, NI_CONSOLE or NI_WINDOWED should be defined."
+#endif
+
+#ifdef NI_REPL
+niConstValue char* _kaszREPLVersion = "v2.0";
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +90,7 @@ struct sOptions {
   // Remark: This is only for niw so that "ni" doesn't have a dependency on niUI.
   cString _strHostedAppName;
 #endif
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
   // REPL.
   tBool _bRunREPL;
   astl::vector<cString> _vREPLStartupExec;
@@ -91,7 +107,9 @@ struct sOptions {
     _vLibraries.clear();
     _ptrScriptVM = NULL;
     _vArgs = NULL;
+#ifdef NI_REPL
     _vREPLStartupExec.clear();
+#endif
   }
 };
 static sOptions* _GetOptions() {
@@ -149,7 +167,8 @@ cString GetHelpString() {
       _A("   -M entrypoint  \t set the main script function (default: ::main)\n")
 #ifdef NI_WINDOWED
       _A("   -A appName     \t run as hosted app, the main function is ran in OnAppStarted\n")
-#else
+#endif
+#ifdef NI_REPL
       _A("   -i             \t run the repl after executing the script\n")
       _A("   -x cmd         \t run the specifed command when the repl starts\n")
       _A("\n")
@@ -335,11 +354,11 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
           break;
         }
 #endif
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
         case 'i': {
           // niDebugFmt(("repl"));
           _GetOptions()->_bRunREPL = ni::eTrue;
-          ni::GetLang()->SetProperty("ni.repl.version",_aszVersion);
+          ni::GetLang()->SetProperty("ni.repl.version",_kaszREPLVersion);
           break;
         }
         case 'x': {
@@ -370,7 +389,7 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
   // read the input script
   _GetOptions()->_strInput = ni::CmdLineStrCharItReadFile(it);
   if (_GetOptions()->_strInput.empty()) {
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
     if (_GetOptions()->_bRunREPL) {
       return eTrue;
     }
@@ -406,7 +425,7 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
 //  REPL function
 //
 //--------------------------------------------------------------------------------------------
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
 
 #include <niScript/VMAPI.h>
 
@@ -820,7 +839,7 @@ void REPL(iScriptVM* apVM)
     }
   }
 }
-#endif
+#endif // #ifdef NI_REPL
 
 //--------------------------------------------------------------------------------------------
 //
@@ -961,10 +980,10 @@ static Var OnExit() {
 }
 
 int
-#ifdef NI_CONSOLE
-ni_main
-#else
+#ifdef NI_WINDOWED
 niw_main
+#else
+ni_main
 #endif
 (const achar* aCommandLine)
 {
@@ -973,14 +992,14 @@ niw_main
     ErrorHelp("Invalid Command Line.");
   }
 
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
   // Some sanity check for arguments conflict
   if (_GetOptions()->_bRunREPL) {
     if (!_GetOptions()->_bRun) {
       ErrorHelp("REPL specified with compile-only.");
     }
   }
-#endif
+#endif // #ifdef NI_REPL
 
   // Add the OnExit hook
   ni::GetLang()->OnExit(ni::Runnable<tpfnRunnable>(OnExit));
@@ -994,12 +1013,12 @@ niw_main
     ni::GetLang()->AddScriptingHost(_H("ni"),_GetOptions()->_ptrScriptVM);
 
     _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_GetArgs,"GetArgs");
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
     if (_GetOptions()->_bRunREPL) {
       _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_REPL_Close,"REPL_Close");
       _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_REPL_SetRunCallback,"REPL_SetRunCallback");
     }
-#endif
+#endif // #ifdef NI_REPL
 
 #ifdef niWindows
     MsWin_ScriptRegister(_GetOptions()->_ptrScriptVM);
@@ -1069,7 +1088,7 @@ niw_main
   cString strInput = _GetOptions()->_strInput;
   ni::Ptr<ni::iFile> ptrInputFile;
   {
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
     if (strInput.empty()) {
       if (!_GetOptions()->_bRunREPL) {
         ErrorHelp(_A("No input file specified."));
@@ -1089,7 +1108,7 @@ niw_main
 
         if (!ptrInputFile.IsOK()) {
           cString msg = niFmt(_A("Can't open input file '%s' !\n"),_GetOptions()->_strInput);
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
           if (_GetOptions()->_bRunREPL) {
             if (!_GetOptions()->_strInput.empty()) {
               niLog(Warning,msg.Chars());
@@ -1111,7 +1130,7 @@ niw_main
         {
           QPtr<iURLFileHandler> zipURLFileHandler = niCreateInstance(niLang,URLFileHandlerZip,ptrInputFile.ptr(),niVarNull);
           if (!zipURLFileHandler.IsOK()) {
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
             if (!_GetOptions()->_bRunREPL) {
               ErrorExit(niFmt(_A("Can't open '%s' as an archive !\n"),strInput.Chars()));
             }
@@ -1171,7 +1190,7 @@ niw_main
   tU32 nRet = 0;
   const tBool hasMainScript = (_GetOptions()->_bRun && !strInput.empty());
 
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
   Ptr<iFuture> replFuture;
   if (_GetOptions()->_bRunREPL) {
     Ptr<iExecutor> replExecutor;
@@ -1235,7 +1254,7 @@ niw_main
     }
   }
 
-#ifdef NI_CONSOLE
+#ifdef NI_REPL
   if (replFuture.IsOK()) {
     // Wait for the REPL to close...
     replFuture->Wait(eInvalidHandle);
@@ -1248,23 +1267,18 @@ niw_main
 #if !defined NI_NO_MAIN
 niCrashReport_DeclareHandler();
 
-#ifdef NI_CONSOLE
-niConsoleMain()
-#else
+#ifdef NI_WINDOWED
 niWindowedMain()
-#endif
 {
-#ifdef NI_CONSOLE
-  ni::GetLang()->SetProperty("ni.app.name","ni");
-#else
   ni::GetLang()->SetProperty("ni.app.name","niw");
-#endif
-
-#ifdef NI_CONSOLE
-  return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
-#else
   return niw_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
-#endif
 }
+#else
+niConsoleMain()
+{
+  ni::GetLang()->SetProperty("ni.app.name","ni");
+  return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+}
+#endif
 
 #endif

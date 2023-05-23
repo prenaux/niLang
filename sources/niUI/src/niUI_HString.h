@@ -6,22 +6,16 @@
 #undef _HDecl
 #undef _HC
 
+#define _HC(X) _hstr_niUI_##X
+
 #if defined __MODULE_HSTRING_TABLE_IMPL__
-#pragma message("-- HString Table implementation --")
-
-#define _HDecl_(X,STRING) ni::tHStringPtr _hstr_##X = _H(STRING)
+#pragma message("I/HString Table implementation")
+#define _HDecl_(X,STRING) ni::tHStringPtr _HC(X) = _H(STRING)
 #define _HDecl(X) _HDecl_(X,#X)
-
 #else
-
-#define _HDecl_(X,STRING)                       \
-  extern ni::tHStringPtr _hstr_##X
-#define _HDecl(X)                               \
-  extern ni::tHStringPtr _hstr_##X
-
+#define _HDecl_(X,STRING) extern ni::tHStringPtr _HC(X)
+#define _HDecl(X) extern ni::tHStringPtr _HC(X)
 #endif
-
-#define _HC(X) _hstr_##X
 
 _HDecl(ID_Desktop);
 

@@ -1,22 +1,24 @@
 <!---
-- Provide a general summary of your changes in the Title above
-- Include your name with main subject of your change.
-- Example: "Pierre: module-name: Added amazing new feature."
+- Provide a general summary of your changes in the Title above.
+- Include your username with the main subject of your change.
+- Use the imperative mood, steering clear of gerunds (verbs acting as nouns, usually ending in 'ing') and past tense in the title. Focus on the result, not your actions.
+- Example: "Squirrel: module-name: Add the recipe for nuts racoon foie-gras."
+- NOTE: Use the same imperative mood for commit messages & formal notes.
 -->
 
 ## Formal Notes
 <!---
-- NOTE: Release notes are PUBLIC and go into the project's release notes. Other notes are internal.
-- NOTE: Do NOT mention private/internal info in public RN.
-- Release note format: "RN: module-name: Adds support for FooFeature."
-- No-release note format: "NoRN: module-name: Improves or fixes FooThing."
-- Use RN or NoRN for all the entires.
+- Release notes (RN) should be considered PUBLIC and go into the project's public release notes. Other notes are internal.
+- NOTE: Do NOT mention private/internal info in public release notes.
+- Use the imperative mood, steering clear of gerunds and past tense in the notes. Focus on the result, not your actions.
+- Example of a public note: "RN: module-name: Add support for FooFeature."
+- Example of an internal note: "NoRN: module-name: Improve or fix FooThing."
+- All entries must use RN or NoRN.
 -->
 
-This PR fixes:
 * RN:
 * RN:
-* RN:
+* NoRN:
 
 ## Description, Motivation and Context
 <!---
@@ -51,14 +53,14 @@ ham Run_ci
 * I have updated the documentation appropriately.
 -->
 
-## Types of changes
+## Types Of Changes
 <!---
 - What types of changes does your code introduce? Put an `x` in all the boxes that apply:
 -->
 
 * [ ] Bug fix (non-breaking change which fixes an issue)
 * [ ] New feature (non-breaking change which adds functionality)
-* [ ] Breaking change (fix or feature that cause existing functionality to change)
+* [ ] Breaking change (fix or feature that causes existing functionality to change)
 * [ ] Documentation (code docs, comments, or changes to the doc systems)
 * [ ] Testing/Build (test coverage or the test/build subsystems themselves)
 * [ ] Packaging (adds examples or modifies a release package)

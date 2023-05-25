@@ -14,7 +14,7 @@ using namespace ni;
 
 // 128MB... avoid morons allocating crap load of memory in script or whatever... if you need
 // that much memory use C++ and the low level allocations...
-static const ni::tU32 knMaxSensibleFileMemSize = 128*1024*1024;
+static const ni::tU32 knMaxSensibleFileMemSize = 1024*1024*1024;
 
 //! File interface implementation.
 class cFileImpl : public ImplRC<iFile,eImplFlags_Default>

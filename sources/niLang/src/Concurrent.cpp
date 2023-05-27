@@ -130,6 +130,8 @@ struct sExecutorImmediate : public cIUnknownImpl<iExecutor> {
   tU32 __stdcall Update(tU32) {
     return 0;
   }
+  void __stdcall InterruptUpdate() niImpl {
+  }
 };
 
 //===========================================================================
@@ -522,15 +524,14 @@ struct sFutureCooperativeRunnable : public cIUnknownImpl<iFuture,eIUnknownImplFl
 //
 //===========================================================================
 struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
-  tSyncInt           _doneCount;
   ni::SyncCounter    _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
   Ptr<RunnableQueue> _queue;
+  tBool              _interruptedUpdate = eFalse;
 
   ExecutorCooperative(tU64 aThreadID, tU32 aMaxItems)
   {
     RUNNABLE_QUEUE_TRACE(("ExecutorCooperative, created for thread %d, with max %d items in queue",
                           aThreadID,aMaxItems));
-    SYNC_WRITE(&_doneCount,0);
     _queue = niNew RunnableQueue(aThreadID,aMaxItems);
   }
 
@@ -597,6 +598,8 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
     const tF64 timeSlice = ((tF64)anTimeSliceMs) / 1000.0;
     const tF64 timerStart = ni::TimerInSeconds();
     tF64 timerElapsed = 0;
+
+    _this->_interruptedUpdate = eFalse;
     for (;;) {
       Ptr<iRunnable> r = queue->Poll();
       if (!r.IsOK() || (_this->_shutdownMode.Get() == 2)) {
@@ -604,11 +607,13 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
         break;
       }
 
-      Var runRet = r->Run();
-      if (!runRet.GetBoolValue()) {
+      r->Run();
+      ++numExecuted;
+
+      if (_this->_interruptedUpdate) {
         break;
       }
-      ++numExecuted;
+
       if (_this->_shutdownMode.Get() != 0) {
         break;
       }
@@ -626,6 +631,10 @@ struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
     }
 
     return (tU32)((ni::TimerInSeconds() - timerStart) * 1000.0);
+  }
+
+  void __stdcall InterruptUpdate() niImpl {
+    this->_interruptedUpdate = eTrue;
   }
 };
 
@@ -879,6 +888,9 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
 
   tU32 __stdcall Update(tU32) {
     return 0;
+  }
+
+  void __stdcall InterruptUpdate() niImpl {
   }
 
   void _IncDoneCountForShutdown() {

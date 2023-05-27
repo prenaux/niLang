@@ -455,7 +455,6 @@
 			<method java_name="update" name="Update" num_parameters="1">
 				<comments desc="Update the executor. " return="The duration (in milliseconds) of the execution of the runnables. Always 0 for immediate and thread pool executors. ">
 					<remark text="On multi-threaded platforms this call is superflous for all but the cooperative executors. For the default executors provided in iConcurrent this should be called in the main app&apos;s for the main executor (which is always cooperative). "/>
-					<remark text="A runnable can interrupt the current update cycle early by returning eFalse. This is useful to stop the update loop in a cooperative executor. A common use case is to make the next runnables execute on the next frame by queuing a `return eFalse` runnable on the Main executor, the Main executor being updated only once per frame. "/>
 					<params text="anTimeSliceInMs the suggested maximum time allocated to execute the runnables queued in the executor, at least one runnable is executed per update if any are queued. "/>
 				</comments>
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
@@ -465,6 +464,12 @@
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="interruptUpdate" name="InterruptUpdate" num_parameters="0">
+				<comments desc="Interrupts the update cycle of a cooperative executor early. ">
+					<remark text="A use case is to make the next runnables execute on the next frame by using InterruptUpdate() in the current runnable. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
 			</method>
 		</interface>
 		<interface name="iConcurrent" uuid1="8553D3D4-95F9-4438-B970-06A9F06A74A7" uuid2="0x8553d3d4,0x95f9,0x4438,0xb9,0x70,0x06,0xa9,0xf0,0x6a,0x74,0xa7">

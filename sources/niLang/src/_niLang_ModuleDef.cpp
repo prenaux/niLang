@@ -1397,6 +1397,18 @@ static const ni::sMethodDef iExecutor_Update = {
 #endif
 };
 
+// Method: InterruptUpdate
+static const ni::sMethodDef iExecutor_InterruptUpdate = {
+  "InterruptUpdate",
+  0|ni::eType_Null, NULL, "void",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iExecutor_InterruptUpdate)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iExecutor[] = {
 	&iExecutor_GetIsShutdown,
 	&iExecutor_GetIsTerminated,
@@ -1405,6 +1417,7 @@ static const ni::sMethodDef* Methods_iExecutor[] = {
 	&iExecutor_Shutdown,
 	&iExecutor_ShutdownNow,
 	&iExecutor_Update,
+	&iExecutor_InterruptUpdate,
 
 };
 

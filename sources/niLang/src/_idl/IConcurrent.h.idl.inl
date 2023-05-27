@@ -339,6 +339,11 @@ IDLC_METH_BEGIN(ni,iExecutor,Update,1)
 	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
 IDLC_METH_END(ni,iExecutor,Update,1)
 
+/** ni -> iExecutor::InterruptUpdate/0 **/
+IDLC_METH_BEGIN(ni,iExecutor,InterruptUpdate,0)
+	IDLC_METH_CALL_VOID(ni,iExecutor,InterruptUpdate,0,())
+IDLC_METH_END(ni,iExecutor,InterruptUpdate,0)
+
 IDLC_END_INTF(ni,iExecutor)
 
 /** interface : iConcurrent **/

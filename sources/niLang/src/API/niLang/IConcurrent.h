@@ -243,13 +243,12 @@ struct iExecutor : public iUnknown {
   //!         but the cooperative executors. For the default executors
   //!         provided in iConcurrent this should be called in the main app's
   //!         for the main executor (which is always cooperative).
-  //! \remark A runnable can interrupt the current update cycle early by
-  //!         returning eFalse. This is useful to stop the update loop in a
-  //!         cooperative executor. A common use case is to make the next
-  //!         runnables execute on the next frame by queuing a `return eFalse`
-  //!         runnable on the Main executor, the Main executor being updated
-  //!         only once per frame.
   virtual tU32 __stdcall Update(tU32 anTimeSliceInMs) = 0;
+
+  //! Interrupts the update cycle of a cooperative executor early.
+  //! \remark A use case is to make the next runnables execute on the next
+  //!         frame by using InterruptUpdate() in the current runnable.
+  virtual void __stdcall InterruptUpdate() = 0;
 };
 
 struct iConcurrent : public iUnknown {

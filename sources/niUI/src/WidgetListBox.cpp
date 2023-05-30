@@ -493,13 +493,15 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         if (ULColorGetA(skin.ulcolBg) > 0) {
           c->BlitFillAlpha(rect, skin.ulcolBg);
         }
-        if (GetNumColumns() && (apWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
-          Paint_Header(c,rect);
-        }
         c->BlitOverlayFrame(
           rect,
           apWidget->GetHasFocus() ? skin.focusedFrame : skin.normalFrame,
-          eRectFrameFlags_Edges);
+          eRectFrameFlags_All); // here we should draw all frame;
+
+        // The Columns should draw after the UI background
+        if (GetNumColumns() && (apWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
+          Paint_Header(c,rect);
+        }
       }
       break;
     }

@@ -170,9 +170,7 @@ iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit eBlit) const
 //! Create a copy of the bitmap that use the given format.
 iBitmapBase* cBitmapCube::CreateConvertedFormat(const iPixelFormat* pFmt) const
 {
-  Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
-
-  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, ptrPxfClone, eFalse);
+  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, pFmt->Clone(), eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;

@@ -4,6 +4,7 @@
 #ifdef niJSCC
 #include <emscripten.h>
 #include <emscripten/html5.h>
+niExportJSCC(void) niJSCC_SetMainLoopFn(em_arg_callback_func aFn, void* apArg);
 #endif
 
 #define niProfiler
@@ -52,7 +53,7 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
     mpContext->_window = apWnd;
     niCheck(mpContext->_window.IsOK(),eFalse);
     mpContext->_window->GetMessageHandlers()->AddSink(this);
-    mpContext->_window->SetRefreshTimer(mpContext->_config.windowRefreshTimer);
+    mpContext->_window->SetRefreshTimer(mpContext->_config.windowRefreshTimerForeground);
     if (!mpContext->_config.windowRect.IsNull()) {
       mpContext->_window->SetRect(mpContext->_config.windowRect);
     }
@@ -477,10 +478,10 @@ struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Defau
       return;
     }
     else if (msgId == eOSWindowMessage_SwitchIn) {
-      mpContext->_window->SetRefreshTimer(0);
+      mpContext->_window->SetRefreshTimer(mpContext->_config.windowRefreshTimerForeground);
     }
     else if (msgId == eOSWindowMessage_SwitchOut) {
-      mpContext->_window->SetRefreshTimer(-1);
+      mpContext->_window->SetRefreshTimer(mpContext->_config.windowRefreshTimerBackground);
     }
 
     if (mpContext->_uiContext.IsOK()) {
@@ -542,6 +543,12 @@ tBool AppStartup(astl::non_null<AppContext*> apContext, iOSWindow* apWindow, iRu
   niCheckIsOK(apWindow,eFalse);
   AppNotifyHost("BeforeStartup");
 
+  if (ni::GetLang()->HasProperty("windowRefreshTimerForeground")) {
+    apContext->_config.windowRefreshTimerForeground = ni::GetLang()->GetProperty("windowRefreshTimerForeground").Float();
+  }
+  if (ni::GetLang()->HasProperty("windowRefreshTimerBackground")) {
+    apContext->_config.windowRefreshTimerBackground = ni::GetLang()->GetProperty("windowRefreshTimerBackground").Float();
+  }
   if (ni::GetLang()->HasProperty("maxFPS")) {
     apContext->_config.maxFPS = ni::GetLang()->GetProperty("maxFPS").Long();
   }
@@ -745,18 +752,13 @@ int AppNativeMainLoop(astl::non_null<AppContext*> apContext) {
   ni_log_system_info_once();
 
 #ifdef niJSCC
-  static std::function<void()> _fnJSCCLoop;
   struct _JSCCLoop {
-    static void Loop() {
-      _fnJSCCLoop();
+    static void Loop(void* apArgContext) {
+      astl::non_null<AppContext*> context { (AppContext*)apArgContext };
+      app::AppUpdate(context);
     };
   };
-
-  _fnJSCCLoop = [apContext] { app::AppUpdate(apContext); };
-  emscripten_set_main_loop(_JSCCLoop::Loop,
-                           // apContext->_config.maxFPS ? apContext->_config.maxFPS : 60,
-                           0,
-                           true);
+  niJSCC_SetMainLoopFn(_JSCCLoop::Loop, (void*)apContext);
 #else
   for (;;) {
     const tF64 frameStartTime = ni::TimerInSeconds();

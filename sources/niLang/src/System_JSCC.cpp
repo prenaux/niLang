@@ -31,6 +31,106 @@ static int _jsccDefaultW = 300;
 static int _jsccDefaultH = 300;
 static tF32 _jsccDefaultContentsScale = 1.0f;
 
+static em_arg_callback_func _jsccMainLoopFn = nullptr;
+niExportJSCC(void) niJSCC_SetMainLoopFn(em_arg_callback_func aFn, void* apArg) {
+  if (_jsccMainLoopFn == aFn)
+    return;
+  if (_jsccMainLoopFn) {
+    // there was a main loop, cancel it
+    emscripten_cancel_main_loop();
+  }
+  _jsccMainLoopFn = aFn;
+  if (_jsccMainLoopFn) {
+    // set the new main loop if there's one
+    emscripten_set_main_loop_arg(_jsccMainLoopFn, apArg, 0, true);
+  }
+}
+
+/*
+
+  See: https://emscripten.org/docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop_arg
+
+  The timing value to activate for the main loop. This value interpreted
+  differently according to the mode parameter:
+
+  If mode is EM_TIMING_SETTIMEOUT, then value specifies the number of milliseconds
+  to wait between subsequent ticks to the main loop and updates occur independent
+  of the vsync rate of the display (vsync off). This method uses the JavaScript
+  setTimeout function to drive the animation.
+
+  If mode is EM_TIMING_RAF, then updates are performed using the
+  requestAnimationFrame function (with vsync enabled), and this value is
+  interpreted as a “swap interval” rate for the main loop. The value of 1
+  specifies the runtime that it should render at every vsync (typically 60fps),
+  whereas the value 2 means that the main loop callback should be called only
+  every second vsync (30fps). As a general formula, the value n means that the
+  main loop is updated at every n’th vsync, or at a rate of 60/n for 60Hz
+  displays, and 120/n for 120Hz displays.
+
+  If mode is EM_TIMING_SETIMMEDIATE, then updates are performed using the
+  setImmediate function, or if not available, emulated via postMessage. See
+  setImmediate on MDN
+  <https://developer.mozilla.org/en-US/docs/Web/API/Window/setImmediate> for more
+  information. Note that this mode is strongly not recommended to be used when
+  deploying Emscripten output to the web, since it depends on an unstable web
+  extension that is in draft status, browsers other than IE do not currently
+  support it, and its implementation has been considered controversial in review.
+
+*/
+struct sJSCCMainLoopRefreshMode {
+  int _setMainLoopRefreshMode = -1;
+  int _setMainLoopRefreshValue = -1;
+
+  void ApplyWindowRefreshMode(const tF32 afRefreshTimer, const tBool abIsActive) {
+    int requestedMainLoopRefreshMode = EM_TIMING_RAF;
+    int requestedMainLoopRefreshValue = 0;
+    if (afRefreshTimer < 0 && !abIsActive) {
+      // bg refresh, 5fps
+      requestedMainLoopRefreshMode = EM_TIMING_SETTIMEOUT;
+      requestedMainLoopRefreshValue = 200;
+    }
+    else {
+      requestedMainLoopRefreshMode = EM_TIMING_RAF;
+      // 0 should be "whatever is considered the native platform's refresh rate"
+      // 20fps = 1/20 = 0.05
+      // 30fps = 1/30 = 0.03333333333
+      // 40fps = 1/40 = 0.025
+      // 50fps = 1/50 = 0.02
+      // 60fps = 1/60 = 0.01666666667
+      if (afRefreshTimer >= (1.0f/15.0f)) {
+        // VSync 3, ~15fps. !!! This will be 7fps in low-power mode in browser.
+        requestedMainLoopRefreshValue = 4;
+      }
+      else if (afRefreshTimer >= (1.0f/20.0f)) {
+        // VSync 3, ~15fps. !!! This will be 10fps in low-power mode in browser.
+        requestedMainLoopRefreshValue = 3;
+      }
+      else if (afRefreshTimer >= (1.0f/35.0f)) {
+        // VSync 2, ~30fps. !!! This will be 15fps in low-power mode in browser.
+        requestedMainLoopRefreshValue = 2;
+      }
+      else {
+        // VSync 1, ~60fps. !!! This will be 30fps in low-power mode in browser.
+        requestedMainLoopRefreshValue = 1;
+      }
+    }
+
+    if (_jsccMainLoopFn &&
+        ((requestedMainLoopRefreshMode != _setMainLoopRefreshMode) ||
+         (requestedMainLoopRefreshValue != _setMainLoopRefreshValue))) {
+      // emscripten_set_main_loop_timing is another mind-bending emscripten API
+      // that only works when planets are aligned, so we brute force it here...
+      // ApplyWindowRefreshMode should be called before SwapBuffers to make sure
+      // its actually been applied
+      emscripten_set_main_loop_timing(requestedMainLoopRefreshMode,
+                                      requestedMainLoopRefreshValue);
+      _setMainLoopRefreshMode = requestedMainLoopRefreshMode;
+      _setMainLoopRefreshValue = requestedMainLoopRefreshValue;
+    }
+  }
+};
+struct sJSCCMainLoopRefreshMode _jsccMainLoopRefreshMode;
+
 struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default> {
   niBeginClass(sJSCCWindow);
 
@@ -169,11 +269,13 @@ struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFla
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
-    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
+    mbIsActive = eTrue;
+    _SendMessage(eOSWindowMessage_SwitchIn, anReason);
     return eTrue;
   }
   virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {
-    _SendMessage(eOSWindowMessage_SwitchOut,anReason);
+    mbIsActive = eFalse;
+    _SendMessage(eOSWindowMessage_SwitchOut, anReason);
     return eTrue;
   }
 
@@ -184,9 +286,11 @@ struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFla
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl {
+    // Note: We don't want the native code to set web page's title...
+    // emscripten_set_window_title(aaszTitle);
   }
   virtual const achar* __stdcall GetTitle() const niImpl {
-    return NULL;
+    return emscripten_get_window_title();
   }
 
   ///////////////////////////////////////////////
@@ -266,6 +370,7 @@ struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFla
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
+    _jsccMainLoopRefreshMode.ApplyWindowRefreshMode(mfRefreshTimer, mbIsActive);
     this->_SendMessage(eOSWindowMessage_Paint);
     eglSwapBuffers(egldisplay, eglsurface);
     return eFalse;
@@ -364,7 +469,9 @@ struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFla
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetRefreshTimer(tF32 afRefreshTimer) niImpl {
-    mfRefreshTimer = -1;
+    if (mfRefreshTimer == afRefreshTimer)
+      return;
+    mfRefreshTimer = afRefreshTimer;
   }
   virtual tF32 __stdcall GetRefreshTimer() const niImpl {
     return mfRefreshTimer;
@@ -620,12 +727,15 @@ niExportJSCC(void) niJSCC_WndNotifyResize(ni::tI32 w, ni::tI32 h, ni::tF32 afCon
   wnd->SetRect(ni::Recti(0,0,w,h));
   wnd->mfContentsScale = afContentsScale;
 }
+
 niExportJSCC(void) niJSCC_WndNotifyFocus(ni::tBool abFocused) {
   TRACE_JSCC_CAPI(("... niJSCC_WndNotifyFocus: focused: %d", abFocused));
   CHECK_WINDOW(;);
-  wnd->SwitchIn(abFocused ?
-                eOSWindowSwitchReason_Activated :
-                eOSWindowSwitchReason_Deactivated);
+  if (abFocused) {
+    wnd->SwitchIn(eOSWindowSwitchReason_SetFocus);
+  } else {
+    wnd->SwitchOut(eOSWindowSwitchReason_LostFocus);
+  }
 }
 
 niExportJSCC(void) niJSCC_WndInputKey(ni::eKey aKey, ni::tBool abIsDown) {

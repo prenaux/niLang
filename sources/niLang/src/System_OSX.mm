@@ -920,8 +920,8 @@ class cOSXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags
   }
   virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
     TRACE_OSX(("... OSX: switchIn"));
-    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
     mbIsActive = eTrue;
+    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
     return eTrue;
   }
   virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {

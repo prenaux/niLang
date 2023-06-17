@@ -144,7 +144,7 @@ iBitmap2D* cBitmapCube::GetFace(eBitmapCubeFace Face) const
 
 ///////////////////////////////////////////////
 //! Create a copy of the bitmap.
-iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit eBlit) const
+iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit aBlitMode) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
@@ -156,7 +156,7 @@ iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit eBlit) const
 
   for (tU32 i = 0; i < 6; ++i)
   {
-    ptrOut->mptrFaces[i] = niStaticCast(iBitmap2D*,mptrFaces[i]->Clone(eBlit));
+    ptrOut->mptrFaces[i] = niStaticCast(iBitmap2D*,mptrFaces[i]->Clone(aBlitMode));
     if (!niIsOK(ptrOut->mptrFaces[i])) {
       niError(niFmt(_A("Can't create copy of face %d."), i));
       return NULL;
@@ -168,9 +168,12 @@ iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit eBlit) const
 
 ///////////////////////////////////////////////
 //! Create a copy of the bitmap that use the given format.
-iBitmapBase* cBitmapCube::CreateConvertedFormat(const iPixelFormat* pFmt) const
+iBitmapBase* cBitmapCube::CreateConvertedFormat(const iPixelFormat* apFmt) const
 {
-  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, pFmt->Clone(), eFalse);
+  niCheckIsOK(apFmt, NULL);
+  Ptr<iPixelFormat> ptrPxfClone = apFmt->Clone();
+
+  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;

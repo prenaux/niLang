@@ -254,7 +254,7 @@ tU32 cBitmap3D::GetNumMipMaps() const
 
 ///////////////////////////////////////////////
 //! Create a copy of the bitmap.
-iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit eBlit) const
+iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit aBlitMode) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
@@ -274,7 +274,7 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit eBlit) const
   if (GetNumMipMaps()) {
     ptrOut->_ResizeMipMapsVector(GetNumMipMaps());
     niLoop(i,GetNumMipMaps()) {
-      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->Clone(eBlit);
+      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->Clone(aBlitMode);
       if (!ptrOut->mvMipMaps[i].IsOK()) {
         niError(niFmt(_A("Can't process mipmap '%d'."),i));
         return NULL;
@@ -287,11 +287,14 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit eBlit) const
 
 ///////////////////////////////////////////////
 //! Create a copy of the bitmap that use the given format.
-iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* pFmt) const
+iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* apFmt) const
 {
+  niCheckIsOK(apFmt,NULL);
+  Ptr<iPixelFormat> ptrPxfClone = apFmt->Clone();
+
   Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mpGraphics, NULL,
                                           mulWidth, mulHeight, mulDepth,
-                                          pFmt->Clone(), eTrue);
+                                          ptrPxfClone, eTrue);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -305,7 +308,7 @@ iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* pFmt) const
   if (GetNumMipMaps()) {
     ptrOut->_ResizeMipMapsVector(GetNumMipMaps());
     niLoop(i,GetNumMipMaps()) {
-      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->CreateConvertedFormat(pFmt);
+      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->CreateConvertedFormat(apFmt);
       if (!ptrOut->mvMipMaps[i].IsOK()) {
         niError(niFmt(_A("Can't process mipmap '%d'."),i));
         return NULL;

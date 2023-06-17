@@ -991,6 +991,7 @@ bool TestRunner_Startup(TestReporter& reporter,
   ni::GetLang()->SetGlobalInstance("URLFileHandler.script",niNew URLFileHandler_Tests());
   runFixtureName = fixtureName;
   normalizeFixtureName(runFixtureName);
+  niLog(Info,niFmt("Running all tests matching fixture '%s'.", runFixtureName));
   _defaultTestRunner = new TestRunner(reporter,list,maxTestTimeInMs,fixtureName);
   return true;
 };

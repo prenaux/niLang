@@ -91,7 +91,11 @@ static ni::Var OnAppShutdown() {
   return ni::eTrue;
 }
 
-int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName) {
+int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName) {
+  const cString fixtureName = [aDefaultFixtureName]() {
+     return ni::GetProperty("FIXTURE", aDefaultFixtureName);
+  }();
+
   GetTestAppContext()->_config.drawFPS = 2;
   GetTestAppContext()->_config.backgroundUpdate = eTrue;
   // Refresh as fast as possible. Without this we'll have a sleep on some
@@ -101,7 +105,7 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName) {
   // to show it. Note that by default the TEST_WIDGET macros will show the
   // window when a test is run interactively.
   GetTestAppContext()->_config.windowShow = eFalse;
-  UnitTest::TestRunner_Startup(aFixtureName);
+  UnitTest::TestRunner_Startup(fixtureName.Chars());
 
   if (!app::AppNativeStartup(GetTestAppContext(),
                              aTitle, 0, 0,
@@ -117,9 +121,9 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName) {
 }
 
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv) {
-  cString fixtureName;
-  ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
-  return TestAppNativeMainLoop(aTitle, fixtureName.Chars());
+  cString defaultFixtureName;
+  ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&defaultFixtureName);
+  return TestAppNativeMainLoop(aTitle, defaultFixtureName.Chars());
 }
 
 }

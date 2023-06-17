@@ -43,10 +43,6 @@ int main(int argc, const char** argv, const char** envp) {
 #else
     ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
 #endif
-
-    printf("I/Run all tests with fixtureName '%s'.\n", fixtureName.c_str());
-    fflush(stdout);
-
     return UnitTest::RunAllTests(fixtureName.Chars());
   }
 }

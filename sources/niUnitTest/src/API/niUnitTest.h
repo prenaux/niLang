@@ -994,7 +994,7 @@ int RunAllTests(TestReporter& reporter,
                 int maxTestTimeInMs = 0,
                 char const* fixtureName = NULL);
 
-int TestAppNativeMainLoop(const char* aTitle, const char* aFixtureName);
+int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName);
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
 void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink, ni::tBool abInteractive);
 

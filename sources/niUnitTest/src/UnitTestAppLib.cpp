@@ -100,7 +100,8 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName) {
   GetTestAppContext()->_config.backgroundUpdate = eTrue;
   // Refresh as fast as possible. Without this we'll have a sleep on some
   // platforms to save energy since the window is considered to be inactive.
-  GetTestAppContext()->_config.windowRefreshTimer = 0.0f;
+  GetTestAppContext()->_config.windowRefreshTimerForeground = 0.0f;
+  GetTestAppContext()->_config.windowRefreshTimerBackground = 0.0f;
   // By we dont display the app window, use GetTestAppContext()->ShowWindow()
   // to show it. Note that by default the TEST_WIDGET macros will show the
   // window when a test is run interactively.

@@ -1,0 +1,28 @@
+if [ SubDirOnce TOP niThrift tsrc ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+HAM_TEST_THRIFT_DIR = [ FDirName $(WORK) ham sources ham tests ham-test-thrift ] ;
+SubDirHdrs $(HAM_TEST_THRIFT_DIR) ;
+
+tkDefTest Test_niThrift : 1.0.0 : niThrift ;
+hamToolsetHdrs boost_cppm : ham ;
+hamToolsetLibs thrift_cppm : ham ;
+niImportModuleHdrs niThrift ;
+niImportModuleLibs niUnitTest ;
+niImportModuleDll niLang ;
+niImportModuleDll niCURL ;
+niImportModuleHdrs niAppLib ;
+tkPkgLinkLibs niAppLibConsole : niLang ;
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
+niCURL_LinkLibs_Deps $(PKGTARGET) ;
+
+# XXX: This should be in the openssl toolset
+if $(LINUX) = 1 {
+  LINKLIBS on $(PKGTARGET) += -lcrypto -lssl ;
+  ObjectDefines $(BUILD_SRC) : USE_SSL_SOCKET=1 ;
+}
+
+DEPENDS Run_ci : [ runInDir Test_niThrift ] ;

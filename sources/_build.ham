@@ -4,6 +4,7 @@ SubDir TOP ;
 SubInclude TOP niLang ;
 SubInclude TOP niCURL ;
 SubInclude TOP niScriptCpp ;
+SubInclude TOP niThrift ;
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
   SubInclude TOP niUnitTest ;

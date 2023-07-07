@@ -1,0 +1,10 @@
+#########################################################################
+#
+# -- niThrift --
+#
+#########################################################################
+
+SubDir TOP niThrift ;
+
+# SubInclude TOP niThrift src ; # Header only
+SubInclude TOP niThrift tsrc ;

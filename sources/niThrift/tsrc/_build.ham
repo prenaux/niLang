@@ -12,7 +12,7 @@ niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
 niImportModuleDll niCURL ;
 niImportModuleHdrs niAppLib ;
-tkPkgLinkLibs niAppLibConsole : niLang ;
+tkPkgLinkLibs niAppLibConsole ;
 
 SRC = [ tkPkgSrc ] ;
 

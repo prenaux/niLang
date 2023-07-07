@@ -12,8 +12,7 @@
 
 using namespace ni;
 
-// TODO: Change to main branch URL once its published
-niConstValue char* _kDefaultServiceUrl = "https://ham-test-thrift-james-add-thrift-deploy-action-de-xywazuhpsq-as.a.run.app/service";
+niConstValue char* _kDefaultServiceUrl = "https://ham-test-thrift-master-dev-xywazuhpsq-as.a.run.app/";
 
 struct sCalculatorClient : public TClientImpl<tutorial::CalculatorClient> {
   tU32 _msgSent = 0;

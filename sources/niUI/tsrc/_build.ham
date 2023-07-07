@@ -11,10 +11,7 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
-# TODO: Linux support, needs iOSWindow
-if ! ( $(LINUX) = 1 ) {
-  DEPENDS Run_ci : [ runInDir Test_niUI ] ;
-}
+DEPENDS Run_ci : [ runInDir Test_niUI ] ;
 
 if ( $(EMSCRIPTEN) = 1 ) {
   TargetLinkFlags $(PKGTARGETF) :

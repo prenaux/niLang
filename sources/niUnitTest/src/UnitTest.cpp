@@ -758,7 +758,7 @@ void CheckNotEqual(
 
 namespace UnitTest {
 
-inline bool shouldSkipFixture(char const* filter, char const* fixtureName, char const* testName) {
+static inline bool _ShouldSkipFixture(char const* filter, char const* fixtureName, char const* testName) {
   if (filter && *filter) {
     if (ni::StrICmp(filter,"*") == 0 ||
         ni::StrICmp(filter,"all") == 0 ||
@@ -775,11 +775,27 @@ inline bool shouldSkipFixture(char const* filter, char const* fixtureName, char 
   return false;
 }
 
-inline void normalizeFixtureName(ni::cString& fixtureName) {
+static inline void _NormalizeFixtureName(ni::cString& fixtureName) {
   ni::tI32 commaPos = fixtureName.find(',');
   if (commaPos >= 0) {
     fixtureName.data()[commaPos] = '-';
   }
+}
+
+ni::tBool IsRunningInCI() {
+  {
+    ni::cString envGITHUB_ACTIONS = ni::GetLang()->GetEnv("GITHUB_ACTIONS");
+    if (envGITHUB_ACTIONS.Bool(ni::eFalse) == ni::eTrue) {
+      return ni::eTrue;
+    }
+  }
+  {
+    ni::cString envCI = ni::GetLang()->GetEnv("CI");
+    if (envCI.Bool(ni::eFalse) == ni::eTrue) {
+      return ni::eTrue;
+    }
+  }
+  return ni::eFalse;
 }
 
 struct TestRunner {
@@ -809,13 +825,13 @@ struct TestRunner {
       , numTestRun(0)
       , result(NULL)
   {
-    normalizeFixtureName(fixtureName);
+    _NormalizeFixtureName(fixtureName);
 
     shouldRun = 0;
     curTest = list.GetHead();
     while (curTest != 0) {
       Test const* nextTest = curTest->next;
-      if (shouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
+      if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
         curTest = nextTest;
         continue;
       }
@@ -846,7 +862,7 @@ struct TestRunner {
       return false;
 
     nextTest = curTest->next;
-    if (shouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
+    if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
       curTest = nextTest;
       curTestSteps = 0;
       return false;
@@ -990,7 +1006,7 @@ bool TestRunner_Startup(TestReporter& reporter,
   ni::GetLang()->SetGlobalInstance("URLFileHandler.default",niNew URLFileHandler_Tests());
   ni::GetLang()->SetGlobalInstance("URLFileHandler.script",niNew URLFileHandler_Tests());
   runFixtureName = fixtureName;
-  normalizeFixtureName(runFixtureName);
+  _NormalizeFixtureName(runFixtureName);
   niLog(Info,niFmt("Running all tests matching fixture '%s'.", runFixtureName));
   _defaultTestRunner = new TestRunner(reporter,list,maxTestTimeInMs,fixtureName);
   return true;

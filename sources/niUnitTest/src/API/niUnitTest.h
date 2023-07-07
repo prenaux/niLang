@@ -408,15 +408,24 @@ UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
 #define LEAVE_WARNING_MODE() --testResults_.m_warningMode
 
 struct sAutoWarningMode {
+  const ni::tBool _enableWarningMode;
   int& _warningMode;
-  sAutoWarningMode(int& warningMode) : _warningMode(warningMode) {
-    ++_warningMode;
+  sAutoWarningMode(int& aWarningMode, ni::tBool aEnableWarningMode = ni::eTrue)
+      : _warningMode(aWarningMode)
+      , _enableWarningMode(aEnableWarningMode)
+  {
+    if (_enableWarningMode) {
+      ++_warningMode;
+    }
   }
   ~sAutoWarningMode() {
-    --_warningMode;
+    if (_enableWarningMode) {
+      --_warningMode;
+    }
   }
 };
 
+#define AUTO_WARNING_MODE_IF(COND) sAutoWarningMode __autoWarningMode(testResults_.m_warningMode, !!(COND))
 #define AUTO_WARNING_MODE() sAutoWarningMode __autoWarningMode(testResults_.m_warningMode)
 
 struct UnitTestMemDelta {
@@ -976,6 +985,8 @@ extern ni::cString runFixtureName;
 
 class TestReporter;
 class TestList;
+
+ni::tBool IsRunningInCI();
 
 bool TestRunner_Startup(TestReporter& reporter,
                         TestList const& list,

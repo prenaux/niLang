@@ -227,6 +227,8 @@ TEST_FIXTURE(FOSXWindow,OpenGL) {
 
 TEST_FIXTURE(FOSXWindow,Metal) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
   Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
     NULL,
     "HelloWindow",

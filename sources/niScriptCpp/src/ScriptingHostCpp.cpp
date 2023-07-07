@@ -195,14 +195,25 @@ static tBool ScriptCpp_TryCompileSource(
 
   Ptr<tStringCMap> envMap = ni::GetOSProcessManager()->GetEnvs();
   astl::upsert(*envMap, "HAM_HOME", hamHome);
+  astl::upsert(*envMap, "HAM_NO_VER_CHECK", "1");
   EnvCopyIfExists(envMap, ni::GetLang(), "CLANG_SANITIZE");
 
   cString strSourceAppDirUrl;
   StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);
 
+  cString hamProject;
+  {
+    cPath pathHamProject(strSourceAppDir, "_ham_project");
+    if (ni::GetRootFS()->FileExists(pathHamProject.c_str(),
+                                    eFileAttrFlags_AllFiles)) {
+      hamProject = pathHamProject.c_str();
+    } else {
+      hamProject = "default";
+    }
+  }
+
   hamCmd << "\"" << hamPath << + "\""
-         // This should use "TOOLKIT/_ham_project" instead of default
-         << " -T default"
+         << " -T \"" << hamProject << "\""
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"
          << " BUILD=" << ScriptCpp_GetCompileModuleType()
@@ -238,7 +249,7 @@ static tBool ScriptCpp_TryCompileSource(
   Ptr<iOSProcess> proc = pm->SpawnProcessEx(
     hamCmd.Chars(), NULL, envMap, eOSProcessSpawnFlags_StdFiles|eOSProcessSpawnFlags_Detached);
   if (proc.IsOK()) {
-    niLog(Raw, "=== Build Output ===");
+    niLog(Info, "=== Build Output BEGIN ===");
     // drain stdout...
     Ptr<iFile> procStdOut = proc->GetFile(eOSProcessFile_StdOut);
     Ptr<iFile> procStdErr = proc->GetFile(eOSProcessFile_StdErr);
@@ -260,6 +271,7 @@ static tBool ScriptCpp_TryCompileSource(
         break;
       }
     }
+    niLog(Info, "=== Build Output END ===");
   }
   if (procRet.x && procRet.y == 0) {
     niLog(Info,niFmt("Module '%s': build succeeded: %s", mc.name, pathOutput.GetPath()));

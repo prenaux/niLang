@@ -6,7 +6,7 @@ fi
 
 export PM2_ENV_NAME=niLang
 
-BUILD_TARGET=${BUILD_TARGET:-$HAM_BIN_LOA}
+BUILD_TARGET=${BUILD_TARGET:-default}
 CPP_TOOLSET=$(ham-cppm-get-toolset "${BUILD_TARGET}")
 retcheck $? "Can't get C++ toolset for BUILD_TARGET '$BUILD_TARGET'." || return 1
 

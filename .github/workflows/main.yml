@@ -27,14 +27,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Cache Ham
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/_ham/obj/
-            ~/work/niLang/ham
-          key: ${{ runner.os }}-ham-2362698-niLang-3
-
       - name: Install Ubuntu packages
         run: |
           sudo apt update
@@ -61,14 +53,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Cache Ham
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/_ham/obj/
-            ~/work/niLang/ham
-          key: ${{ runner.os }}-ham-2362698-niLang-3
-
       - name: Build bootstrap
         run: |
           ./_build_bootstrap.sh
@@ -89,14 +73,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      - name: Cache Ham
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/_ham/obj/
-            ~/work/niLang/ham
-          key: ${{ runner.os }}-ham-2362698-niLang-3
 
       - name: Build bootstrap
         run: |

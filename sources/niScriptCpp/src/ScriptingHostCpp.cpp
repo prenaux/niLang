@@ -66,10 +66,12 @@ inline cString ToString(iTime* apToString) {
 inline tBool EnvCopyIfExists(tStringCMap* envMap, iLang* apLang, const achar* aEnvVarName) {
   cString v = apLang->GetEnv(aEnvVarName);
   if (v.IsNotEmpty()) {
+    // niDebugFmt(("... Copying Env '%s': %s'.", aEnvVarName, v));
     astl::upsert(*envMap, aEnvVarName, v);
     return eTrue;
   }
   else {
+    // niDebugFmt(("... Can't find Env '%s'.", aEnvVarName));
     return eFalse;
   }
 }
@@ -193,10 +195,71 @@ static tBool ScriptCpp_TryCompileSource(
 
   const cString stamp = _GetStampString(sourceTime);
 
-  Ptr<tStringCMap> envMap = ni::GetOSProcessManager()->GetEnvs();
-  astl::upsert(*envMap, "HAM_HOME", hamHome);
-  astl::upsert(*envMap, "HAM_NO_VER_CHECK", "1");
-  EnvCopyIfExists(envMap, ni::GetLang(), "CLANG_SANITIZE");
+  Ptr<tStringCMap> envMap = tStringCMap::Create();
+  // Copy only the envvar we need for Ham to work correctly. We do this mostly
+  // because there is a 32kb envvar size limit which Windows Github Actions
+  // hit - quite likely because of their humongous PATH, and the fact its
+  // UTF16... Anyway it's also neater this way.
+  {
+#define ENV_COPY(NAME) EnvCopyIfExists(envMap, ni::GetLang(), #NAME)
+#define ENV_SET(NAME,V) astl::upsert(*envMap, #NAME, V)
+
+    // Common
+    ENV_COPY(CWD);
+    ENV_COPY(HOME);
+    ENV_COPY(OS);
+    ENV_COPY(PATH);
+    ENV_COPY(USER);
+    ENV_COPY(TMP);
+    ENV_COPY(TMPDIR);
+    ENV_COPY(TEMP);
+    ENV_COPY(TEMPDIR);
+    ENV_COPY(PWD);
+    ENV_COPY(DIR);
+    ENV_COPY(TERM);
+    ENV_COPY(TERMCAP);
+    ENV_COPY(TERM_NCOLORS);
+
+    // Ham
+    ENV_COPY(WORK);
+    ENV_SET(HAM_HOME, hamHome);
+    ENV_SET(HAM_NO_VER_CHECK, "1");
+
+    // Emacs
+    ENV_COPY(EMACS);
+    ENV_COPY(INSIDE_EMACS);
+
+    // Windows only
+#ifdef niWindows
+    ENV_COPY(ALLUSERSPROFILE);
+    ENV_COPY(APPDATA);
+    ENV_COPY(COMMONPROGRAMFILES(X86));
+    ENV_COPY(COMMONPROGRAMFILES);
+    ENV_COPY(COMMONPROGRAMW6432);
+    ENV_COPY(COMPUTERNAME);
+    ENV_COPY(COMSPEC);
+    ENV_COPY(CYGWIN);
+    ENV_COPY(LOCALAPPDATA);
+    ENV_COPY(LOGONSERVER);
+    ENV_COPY(NUMBER_OF_PROCESSORS);
+    ENV_COPY(PROGRAMDATA);
+    ENV_COPY(PROGRAMFILES(X86));
+    ENV_COPY(PROGRAMFILES);
+    ENV_COPY(PROGRAMW6432);
+    ENV_COPY(PROMPT);
+    ENV_COPY(SESSIONNAME);
+    ENV_COPY(SYSTEMDRIVE);
+    ENV_COPY(SYSTEMROOT);
+    ENV_COPY(USERDOMAIN);
+    ENV_COPY(USERDOMAIN_ROAMINGPROFILE);
+    ENV_COPY(USERNAME);
+    ENV_COPY(USERPROFILE);
+    ENV_COPY(WINDIR);
+#endif
+
+#undef ENV_COPY
+#undef ENV_SET
+  }
 
   cString strSourceAppDirUrl;
   StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);

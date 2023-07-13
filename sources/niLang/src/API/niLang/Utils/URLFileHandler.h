@@ -115,7 +115,7 @@ static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aTool
           dir,
           aToolkitName, aModuleName,
           aToolkitName, aModuleName));
-  ni::GetLang()->SetGlobalInstance(instanceName.Chars(), fileHandler);
+  ni::GetLang()->SetGlobalInstance(instanceName.Chars(), fileHandler.raw_ptr());
   return;
 }
 

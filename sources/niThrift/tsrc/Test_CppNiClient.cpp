@@ -12,8 +12,6 @@
 
 using namespace ni;
 
-niConstValue char* _kDefaultServiceUrl = "https://ham-test-thrift-master-dev-xywazuhpsq-as.a.run.app/";
-
 struct sCalculatorClient : public TClientImpl<tutorial::CalculatorClient> {
   tU32 _msgSent = 0;
   tU32 _msgConsumed = 0;
@@ -72,7 +70,7 @@ struct sCalculatorClient : public TClientImpl<tutorial::CalculatorClient> {
     return eTrue;
   }
 
-  virtual tBool __stdcall OnThriftClientException(const ::apache::thrift::TException& aException) {
+  virtual tBool __stdcall OnThriftClientException(const ::apache::thrift::TException& aException) override {
     tBase::OnThriftClientException(aException);
     ++_exceptions;
     return eFalse;
@@ -93,7 +91,8 @@ void UpdateLoop(Nonnull<iMessageQueue> mq) {
   sMessageDesc msg;
   while (mq->Poll(&msg)) {
     // dispatch
-    msg.mptrHandler->HandleMessage(msg.mnMsg, msg.mvarA, msg.mvarB);
+    niLet handler = msg.mptrHandler.non_null();
+    handler->HandleMessage(msg.mnMsg, msg.mvarA, msg.mvarB);
     if (msg.mnMsg == eOSWindowMessage_Paint)
       break;
   }
@@ -103,9 +102,7 @@ struct FCppNiClient {
 };
 
 TEST_FIXTURE(FCppNiClient, Calculator) {
-  const cString url = GetProperty(
-    "url", _kDefaultServiceUrl
-  );
+  const cString url = GetTestThriftServiceUrl();
 
   niPrintln(niFmt("... url: %s", url));
   niPrintln(niFmt("... Main Thread: %d", ni::ThreadGetCurrentThreadID()));

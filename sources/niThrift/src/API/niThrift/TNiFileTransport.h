@@ -2,7 +2,7 @@
 #ifndef __TNIFILETRANSPORT_H_B35DE076_218F_FF45_816D_130C0CFB7C2A__
 #define __TNIFILETRANSPORT_H_B35DE076_218F_FF45_816D_130C0CFB7C2A__
 
-#include <niLang/Types.h>
+#include <niCC.h>
 #include <niLang/IFile.h>
 
 #include <thrift/transport/TTransport.h>
@@ -12,7 +12,7 @@ namespace ni {
 using namespace apache::thrift::transport;
 
 struct TNiFileReaderTransport : public TTransport {
-  TNiFileReaderTransport(ni::iFile* apFile)
+  TNiFileReaderTransport(in_nn<ni::iFile> apFile)
       : _readBuffer(apFile) {
   }
 
@@ -34,13 +34,11 @@ struct TNiFileReaderTransport : public TTransport {
   }
 
   uint32_t read_virt(uint8_t* buf, uint32_t len) override {
-    niPanicAssertMsg(_readBuffer.IsOK(), 0);
     // niDebugFmt(("... Read: len: %d", len));
     uint32_t nread = _readBuffer->ReadRaw(buf, len);
     return nread;
   }
   uint32_t readAll_virt(uint8_t* buf, uint32_t len) override {
-    niPanicAssertMsg(_readBuffer.IsOK(), 0);
     // niDebugFmt(("... ReadAll: len: %d", len));
     uint32_t nread = _readBuffer->ReadRaw(buf, len);
     return nread;
@@ -65,11 +63,11 @@ struct TNiFileReaderTransport : public TTransport {
     return "TNiFileReaderTransport";
   }
 
-  ni::Ptr<ni::iFile> _readBuffer;
+  ni::Nonnull<ni::iFile> _readBuffer;
 };
 
 struct TNiFileWriterTransport : public TTransport {
-  TNiFileWriterTransport(ni::iFile* apFile)
+  TNiFileWriterTransport(in_nn<ni::iFile> apFile)
       : _writeBuffer(apFile) {
   }
 
@@ -118,7 +116,7 @@ struct TNiFileWriterTransport : public TTransport {
     return "TNiFileWriterTransport";
   }
 
-  ni::Ptr<ni::iFile> _writeBuffer;
+  ni::Nonnull<ni::iFile> _writeBuffer;
 };
 
 }

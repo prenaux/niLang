@@ -66,8 +66,8 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-but-set-variable);
   #endif
 #endif
 
-#if niStdCppVersion < 2020
-  #error "niCC.h requires C++20 or above."
+#if niStdCppVersion < 2017
+  #error "niCC.h requires C++17 or above."
 #endif
 
 namespace astl {

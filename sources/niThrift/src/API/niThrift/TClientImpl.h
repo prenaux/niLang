@@ -2,6 +2,7 @@
 #ifndef __TCLIENTIMPL_H_E177FD19_1EBB_0744_9486_E42F1286AA07__
 #define __TCLIENTIMPL_H_E177FD19_1EBB_0744_9486_E42F1286AA07__
 
+#include <niCC.h>
 #include "TNiFileTransport.h"
 #include "TCurlWriterTransport.h"
 #include "TSeqProtocol.h"
@@ -49,7 +50,7 @@ protected:
         break;
       }
       case eThriftResponse_ReceivedResponse: {
-        Ptr<iFile> fp = VarQueryInterface<iFile>(avarA);
+        Nonnull<iFile> fp = niCheckNN(fp, VarQueryInterface<iFile>(avarA), ;);
         this->DispatchThriftResponse(fp);
         break;
       }
@@ -91,7 +92,8 @@ public:
 
   virtual tBool __stdcall Connect() niOverride {
     try {
-      _readerTransport = std::make_shared<TNiFileReaderTransport>(nullptr);
+      _readerTransport = std::make_shared<TNiFileReaderTransport>(ni::AsNonnull(
+        ni::GetLang()->CreateFileWriteDummy()));
       _readProtocol = std::make_shared<tThriftClientProtocol>(_readerTransport);
 
       _writerTransport = std::make_shared<TCurlWriterTransport>(_serviceUrl.c_str(),this);
@@ -128,7 +130,7 @@ public:
     try {
       tBool r = eFalse;
 
-      _readerTransport->_readBuffer = apReceivedBuffer;
+      _readerTransport->_readBuffer = AsNonnull(apReceivedBuffer);
       // niDebugFmt(("received: %s", _readerTransport->_readBuffer->ReadString()));
 
       _readerTransport->_readBuffer->SeekSet(0);

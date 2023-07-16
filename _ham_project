@@ -5,16 +5,11 @@ if [[ -z $HAM_PROJECT_DIR ]]; then
 fi
 
 export PM2_ENV_NAME=niLang
-
-BUILD_TARGET=${BUILD_TARGET:-default}
-CPP_TOOLSET=$(ham-cppm-get-toolset "${BUILD_TARGET}")
-retcheck $? "Can't get C++ toolset for BUILD_TARGET '$BUILD_TARGET'." || return 1
-
 case $HAM_OS in
     NT*)
-        toolset_import_list "repos" "dx9sdk2004" "$CPP_TOOLSET" boost_cppm thrift_cppm || return 1
+        toolset_import_list "repos" "dx9sdk2004" cppm boost_cppm thrift_cppm || return 1
         ;;
     *)
-        toolset_import_list "repos" "$CPP_TOOLSET" boost_cppm thrift_cppm || return 1
+        toolset_import_list "repos" cppm boost_cppm thrift_cppm || return 1
         ;;
 esac

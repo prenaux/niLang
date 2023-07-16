@@ -6,6 +6,7 @@ export WORK="$( cd "$SCRIPT_DIR/.." && pwd )"
 if [ -z "$HAM_HOME" ]; then
     export HAM_HOME="$WORK/ham"
 fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # Get ham if its not already on our system
 if [ ! -d "$HAM_HOME" ]; then
@@ -17,20 +18,13 @@ if [ ! -d "$HAM_HOME" ]; then
 else
     (set -ex ;
      pushd "$HAM_HOME" ;
-     # equivalent to `git-force-pull main`
-     git checkout -b tmp-git-force-pull &&\
-         git fetch origin +master:master &&\
-         git checkout master&&\
-         git branch -D tmp-git-force-pull
+     PATH="$HAM_HOME/toolsets/repos/":$PATH git-update .
      popd)
 fi
 
 if [ -z "$BASH_START_PATH" ]; then
    export BASH_START_PATH="$PATH"
 fi
-
-# Set the ham environment
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # Setup the toolsets
 . hat

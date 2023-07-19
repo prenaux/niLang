@@ -1,4 +1,5 @@
 #!/bin/bash -e
+SCRIPT_SOURCED=$((return 0 2>/dev/null) && echo yes || echo "")
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
@@ -6,7 +7,15 @@ export WORK="$( cd "$SCRIPT_DIR/.." && pwd )"
 if [ -z "$HAM_HOME" ]; then
     export HAM_HOME="$WORK/ham"
 fi
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+function source_ham_env() {
+    if [ -e "$HAM_HOME/bin/ham-bash-setenv.sh" ]; then
+        source "$HAM_HOME/bin/ham-bash-setenv.sh"
+    else
+        echo "E/Can't find '$HAM_HOME/bin/ham-bash-setenv.sh'"
+        return 1
+    fi
+}
 
 # Get ham if its not already on our system
 if [ ! -d "$HAM_HOME" ]; then
@@ -15,7 +24,9 @@ if [ ! -d "$HAM_HOME" ]; then
      pushd $WORK
      git clone --depth 1 https://github.com/prenaux/ham.git
      popd)
+    source_ham_env || return 1
 else
+    source_ham_env || return 1
     (set -ex ;
      pushd "$HAM_HOME" ;
      PATH="$HAM_HOME/toolsets/repos/":$PATH git-update .

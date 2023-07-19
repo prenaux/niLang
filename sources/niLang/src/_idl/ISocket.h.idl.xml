@@ -1,0 +1,679 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eRemoteAddressType">
+			<comments desc="Remote address types. "/>
+			<value name="eRemoteAddressType_Unknown" value="0 ">
+				<comments desc="Unknown remote address type. "/>
+			</value>
+			<value name="eRemoteAddressType_IPv4" value="1 ">
+				<comments desc="IP v4 address type. "/>
+			</value>
+			<value name="eRemoteAddressType_IPv6" value="2 ">
+				<comments desc="IP v6 address type. "/>
+			</value>
+			<value name="eRemoteAddressType_IPC" value="3 ">
+				<comments desc="IPC (inter-process communication) address. "/>
+			</value>
+		</enum>
+		<interface name="iRemoteAddress" uuid1="3E076B8B-75A5-47C8-9E7D-4A4BA453DB58" uuid2="0x3e076b8b,0x75a5,0x47c8,0x9e,0x7d,0x4a,0x4b,0xa4,0x53,0xdb,0x58">
+			<comments desc="Remote address base interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the address. "/>
+				<return type="iRemoteAddress *" typec="iRemoteAddress*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="compare" name="Compare" num_parameters="1">
+				<comments desc="Compare to another address. " return="0 if the address is the same, -1 if it&apos;s &apos;smaller&apos; and 1 if it&apos;s greater. If the addresses are not of the same type the type value is compared. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="apAddr"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the address type. "/>
+				<return type="eRemoteAddressType" typec="eRemoteAddressType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setAddressString"
+				name="SetAddressString"
+				num_parameters="1"
+				property="set"
+				property_name2="addressString"
+				property_name="address_string">
+				<comments desc="Set the address from a string. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszAddress"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAddressString"
+				name="GetAddressString"
+				num_parameters="0"
+				property="get"
+				property_name2="addressString"
+				property_name="address_string">
+				<comments desc="Get the address&apos;s string. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+			<method
+				java_name="setPort"
+				name="SetPort"
+				num_parameters="1"
+				property="set"
+				property_name2="port"
+				property_name="port">
+				<comments desc="Set the port of the address. ">
+					<params text="usPort is the port to assign the address. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anPort"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPort"
+				name="GetPort"
+				num_parameters="0"
+				property="get"
+				property_name2="port"
+				property_name="port">
+				<comments desc="Get the port of the address. " return="the port assigned to the address. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsNull"
+				name="GetIsNull"
+				num_parameters="0"
+				property="get"
+				property_name2="isNull"
+				property_name="is_null">
+				<comments desc="Get whether the address (NOT including the port) is null / equivalent to zero. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<enum name="eRemoteAddressIPv4Reserved">
+			<comments desc="IPv4 remote address reserved values. "/>
+			<value name="eRemoteAddressIPv4Reserved_Any" value="0 ">
+				<comments desc="Any address will do. Used by server/listener. "/>
+			</value>
+			<value name="eRemoteAddressIPv4Reserved_Broadcast" value="0xFFFFFFFF ">
+				<comments desc="Address used to broadcast a packet. "/>
+			</value>
+		</enum>
+		<interface name="iRemoteAddressIPv4" uuid1="C7BE5396-23F2-46B7-ADCA-A09F58CC94E3" uuid2="0xc7be5396,0x23f2,0x46b7,0xad,0xca,0xa0,0x9f,0x58,0xcc,0x94,0xe3">
+			<comments desc="IPv4 remote address interface. "/>
+			<parents>
+				<parent name="iRemoteAddress"/>
+			</parents>
+			<method
+				java_name="setHost"
+				name="SetHost"
+				num_parameters="1"
+				property="set"
+				property_name2="host"
+				property_name="host">
+				<comments desc="Set the ip address from a FOURCC code. ">
+					<remark text="FourCC can be also a eRemoteAddressIPv4Reserved enumeration element. "/>
+					<params text="ulFourCC is the FourCC code which represent the address. It can be build with the niFourCC macro. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anFourCC"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHost"
+				name="GetHost"
+				num_parameters="0"
+				property="get"
+				property_name2="host"
+				property_name="host">
+				<comments desc="Get the ip address in FOURCC form. " return="a FourCC code which contain the address. Individual elements of the address can be retrived with the niFourCC macros. ">
+					<remark text="The returned value can be also a eRemoteAddressIPv4Reserved enumeration element. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHostName"
+				name="GetHostName"
+				num_parameters="0"
+				property="get"
+				property_name2="hostName"
+				property_name="host_name">
+				<comments desc="Get the host name. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+			</method>
+		</interface>
+		<enum name="eSocketProtocol">
+			<comments desc="Socket protocols. "/>
+			<value name="eSocketProtocol_Unknown" value="0 ">
+				<comments desc="Unknown protocol. "/>
+			</value>
+			<value name="eSocketProtocol_UDP" value="1 ">
+				<comments desc="UDP protocol. "/>
+			</value>
+			<value name="eSocketProtocol_TCP" value="2 ">
+				<comments desc="TCP protocol "/>
+			</value>
+		</enum>
+		<enum name="eSocketWaitFlags">
+			<comments desc="Socket wait flags. "/>
+			<value name="eSocketWaitFlags_None" value="0 ">
+				<comments desc="No flags, failure/timeout. "/>
+			</value>
+			<value name="eSocketWaitFlags_Send" value="niBit ( 0 ) ">
+				<comments desc="Wait for send. "/>
+			</value>
+			<value name="eSocketWaitFlags_Receive" value="niBit ( 1 ) ">
+				<comments desc="Wait for receive. "/>
+			</value>
+			<value name="eSocketWaitFlags_Error" value="0xFFFFFFFF ">
+				<comments desc="Wait error "/>
+			</value>
+		</enum>
+		<enum name="eSocketErrno">
+			<comments desc="Socket Error codes "/>
+			<value name="eSocketErrno_OK" value="0 ">
+				<comments desc="No Error "/>
+			</value>
+			<value name="eSocketErrno_Unknown" value="1 ">
+				<comments desc="Generic &apos;unknown&apos; error. "/>
+			</value>
+			<value name="eSocketErrno_WouldBlock" value="2 ">
+				<comments desc="(EWOULDBLOCK/EAGAIN) Resource temporarily unavailable. This is a temporary condition and later calls to the same routine may complete normally. "/>
+			</value>
+			<value name="eSocketErrno_Interrupted" value="3 ">
+				<comments desc="(EINTR) Interrupted function call. A blocking operation was interrupted. "/>
+			</value>
+			<value name="eSocketErrno_Invalid" value="4 ">
+				<comments desc="(EINVAL) Invalid argument. "/>
+			</value>
+			<value name="eSocketErrno_Already" value="5 ">
+				<comments desc="(EALREADY) Operation already in progress. An operation was attempted on a non-blocking object that already had an operation in progress. "/>
+			</value>
+			<value name="eSocketErrno_BadFile" value="6 ">
+				<comments desc="(EBADF) Bad file descriptor. "/>
+			</value>
+			<value name="eSocketErrno_HostDown" value="7 ">
+				<comments desc="(EHOSTDOWN) Host is down. A socket operation failed because the destination host was down. A socket operation encountered a dead host. Networking activity on the local host has not been initiated. "/>
+			</value>
+			<value name="eSocketErrno_InProgress" value="8 ">
+				<comments desc="(EINPROGRESS) Operation now in progress. An operation that takes a long time to complete (such as a Connect()) was attempted on a non-blocking socket. "/>
+			</value>
+			<value name="eSocketErrno_MessageTooLong" value="9 ">
+				<comments desc="(EMSGSIZE) Message too long. A message sent on a socket was larger than the internal message buffer or some other network limit. "/>
+			</value>
+			<value name="eSocketErrno_Shutdown" value="10 ">
+				<comments desc="(ESHUTDOWN) Cannot send after socket shutdown. "/>
+			</value>
+			<value name="eSocketErrno_Timeout" value="11 ">
+				<comments desc="(ETIMEDOUT) Connection timed out. A connect or send request failed because the connected party did not properly respond after a period of time. "/>
+			</value>
+			<value name="eSocketErrno_TooManyUsers" value="12 ">
+				<comments desc="(EUSERS) Too many users. "/>
+			</value>
+			<value name="eSocketErrno_AlreadyConnected" value="13 ">
+				<comments desc="(EISCONN) Socket is already connected. A Connect request was made on an already connected socket; or, a send request on a connected socket specified a destination when already connected. "/>
+			</value>
+			<value name="eSocketErrno_NotConnected" value="14 ">
+				<comments desc="(ENOTCONN) Socket is not connected. A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket) no address was supplied. "/>
+			</value>
+			<value name="eSocketErrno_ConnectionAborted" value="15 ">
+				<comments desc="(ECONNABORTED) Software caused connection abort. "/>
+			</value>
+			<value name="eSocketErrno_ConnectionRefused" value="16 ">
+				<comments desc="(ECONNREFUSED) Connection refused. No connection could be made because the target machine actively refused it. This usually results from trying to connect to a service that is inactive on the foreign host. "/>
+			</value>
+			<value name="eSocketErrno_ConnectionReset" value="17 ">
+				<comments desc="(ECONNRESET) Connection reset by peer. A connection was forcibly closed by a peer. This normally results from a loss of the connection on the remote socket due to a timeout or a reboot. "/>
+			</value>
+			<value name="eSocketErrno_AddressInUser" value="18 ">
+				<comments desc="(EADDRINUSE) Address already in use. An attempt was made to access a file in a way forbidden by its file access permissions. "/>
+			</value>
+			<value name="eSocketErrno_CannotAssignAddress" value="19 ">
+				<comments desc="(EADDRNOTAVAIL) Cannot assign requested address. "/>
+			</value>
+			<value name="eSocketErrno_NetworkDown" value="20 ">
+				<comments desc="(ENETDOWN) Network is down. "/>
+			</value>
+			<value name="eSocketErrno_NetworkReset" value="21 ">
+				<comments desc="(ENETRESET) Network dropped connection on reset. "/>
+			</value>
+			<value name="eSocketErrno_NetworkUnreachable" value="22 ">
+				<comments desc="(ENETUNREACH) Network is unreachable. "/>
+			</value>
+			<value name="eSocketErrno_NoBufferSpace" value="23 ">
+				<comments desc="(ENOBUFS) No buffer space available. "/>
+			</value>
+			<value name="eSocketErrno_MessagePartial" value="24 ">
+				<comments desc="Only a portion of the message has been received. ">
+					<remark text="Currently, this can be set by ReceiveBuffers only. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iSocket" uuid1="9262952D-F667-47A9-8147-25C59FBB367D" uuid2="0x9262952d,0xf667,0x47a9,0x81,0x47,0x25,0xc5,0x9f,0xbb,0x36,0x7d">
+			<comments desc="Network socket interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getHandle"
+				name="GetHandle"
+				num_parameters="0"
+				property="get"
+				property_name2="handle"
+				property_name="handle">
+				<comments desc="Get the socket&apos;s handle/descriptor. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAddress"
+				name="GetAddress"
+				num_parameters="0"
+				property="get"
+				property_name2="address"
+				property_name="address">
+				<comments desc="Get the socket&apos;s associated address. "/>
+				<return type="iRemoteAddress *" typec="iRemoteAddress*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProtocol"
+				name="GetProtocol"
+				num_parameters="0"
+				property="get"
+				property_name2="protocol"
+				property_name="protocol">
+				<comments desc="Get the protocol. "/>
+				<return type="eSocketProtocol" typec="eSocketProtocol" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="makeNonBlocking" name="MakeNonBlocking" num_parameters="0">
+				<comments desc="Make the socket to be non-blocking. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsNonBlocking"
+				name="GetIsNonBlocking"
+				num_parameters="0"
+				property="get"
+				property_name2="isNonBlocking"
+				property_name="is_non_blocking">
+				<comments desc="Get whether the socket is non-blocking "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getErrno"
+				name="GetErrno"
+				num_parameters="0"
+				property="get"
+				property_name2="errno"
+				property_name="errno">
+				<comments desc="Get the last error code. ">
+					<remark text="The error code is never reset to OK, as such it should be queried only when one of the functions return an error code. "/>
+				</comments>
+				<return type="eSocketErrno" typec="eSocketErrno" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRawErrno"
+				name="GetRawErrno"
+				num_parameters="0"
+				property="get"
+				property_name2="rawErrno"
+				property_name="raw_errno">
+				<comments desc="Get the last raw error code. ">
+					<remark text="Get the error code as returned by the platform/OS. "/>
+					<remark text="The error code is never reset to OK, as such it should be queried only when one of the functions return an error code. "/>
+				</comments>
+				<return type="tInt" typec="tInt" typei="ni::eType_Int"/>
+			</method>
+			<method java_name="connect" name="Connect" num_parameters="1">
+				<comments desc="Connect the socket to the specified address. " return="eFalse if the connection failed, else eTrue. ">
+					<remark text="Sets the socket address to the connected address. "/>
+					<remark text="Blocking on blocking sockets. "/>
+					<params text="apAddress is the address to connect to. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apAddress"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="accept" name="Accept" num_parameters="0">
+				<comments desc="Accept incoming connections. ">
+					<remark text="Blocking on blocking sockets. "/>
+				</comments>
+				<return type="iSocket *" typec="iSocket*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="bindPortAny" name="BindPortAny" num_parameters="1">
+				<comments desc="Bind a socket to listen on a specific port. " return="eFalse if the binding failed, else eTrue. The binding will fail if the port is already listened by another socket. ">
+					<params text="usPort is the port to listen. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anPort"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="bind" name="Bind" num_parameters="1">
+				<comments desc="Bind a socket to listen the specified address. " return="eFalse if the binding failed, else eTrue. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apAddr"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="listen" name="Listen" num_parameters="1">
+				<comments desc="Starts listening for incoming connections. ">
+					<params text="anBacklog is the maximum length of the queue of pending connections, if it is 0 or invalid a reasonable maximal value will be used. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anBacklog"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsListening"
+				name="GetIsListening"
+				num_parameters="0"
+				property="get"
+				property_name2="isListening"
+				property_name="is_listening">
+				<comments desc="Get whether the socket is in listening mode. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="send" name="Send" num_parameters="2">
+				<comments desc="Send a packet to this socket. " return="-1 if an error happen, else the number of bytes effectivly sent. ">
+					<remark text="The method will try to send all required bytes unless an error occur. "/>
+					<params text="apFile is the file to send. "/>
+					<params text="anBytes is the number of bytes from from the current file position to send. If zero the file from it&apos;s current position to the end will be sent. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anBytes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="sendTo" name="SendTo" num_parameters="3">
+				<comments desc="Send a packet to the specified address. " return="-1 if an error happen, else the number of bytes effectivly sent. An error happen if the destination address cannot be found or is invalid. ">
+					<params text="apFile is the file to send. "/>
+					<params text="anBytes is the number of bytes from the current file position to send. If zero the file from it&apos;s current position to the end will be sent. "/>
+					<params text="apAddress is where the data must be sent. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anBytes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="pAddress"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="sendBuffers"
+				name="SendBuffers"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Send the specified buffers to the specified address. "/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="apAddress" type="const iRemoteAddress *" typec="const iRemoteAddress*"/>
+				<parameter name="apBuffers" type="const sSocketBuffer *" typec="const sSocketBuffer*"/>
+				<parameter
+					last="1"
+					name="anBufCount"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method java_name="receive" name="Receive" num_parameters="1">
+				<comments desc="Receive connected data. " return="-1 if an error happen, else the number of bytes effectivly received. An error can happen if the destination address cannot be found or is invalid. ">
+					<remark text="If no error happen, block until data are received. "/>
+					<remark text="Blocking on blocking sockets. "/>
+					<params text="apFile is where the received data will be stored. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="receiveFrom" name="ReceiveFrom" num_parameters="2">
+				<comments desc="Receive datagram data. " return="-1 if an error happen, else the number of bytes effectivly received. An error can happen if the destination address cannot be found or is invalid. ">
+					<remark text="If no error happen, block until data are received. "/>
+					<remark text="Blocking on blocking sockets. "/>
+					<params text="apFile is where the received data will be stored. "/>
+					<params text="apAddress will contain the address of the data sender. "/>
+				</comments>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apAddress"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="receiveBuffers"
+				name="ReceiveBuffers"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Receive buffers. "/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="apAddr" type="iRemoteAddress *" typec="iRemoteAddress*"/>
+				<parameter name="apBuffers" type="sSocketBuffer *" typec="sSocketBuffer*"/>
+				<parameter
+					last="1"
+					name="anBufCount"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method java_name="doWait" name="Wait" num_parameters="2">
+				<comments desc="Wait on the specified events. " return="The event that stopped the waiting, or ni::eSocketWaitFlags_None if timeout. "/>
+				<return type="tSocketWaitFlags" typec="tSocketWaitFlags" typei="ni::eType_Enum"/>
+				<parameter
+					name="aFlags"
+					type="tSocketWaitFlags"
+					typec="tSocketWaitFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="anTimeoutInMs"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setNodeName"
+				name="SetNodeName"
+				num_parameters="1"
+				property="set"
+				property_name2="nodeName"
+				property_name="node_name">
+				<comments desc="Set the node name associated with the socket. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNodeName"
+				name="GetNodeName"
+				num_parameters="0"
+				property="get"
+				property_name2="nodeName"
+				property_name="node_name">
+				<comments desc="Get the node name associated with the socket. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setKeepAlive"
+				name="SetKeepAlive"
+				num_parameters="1"
+				property="set"
+				property_name2="keepAlive"
+				property_name="keep_alive">
+				<comments desc="Set the socket to KEEPALIVE mode "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aKeepAlive"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsKeepAlive"
+				name="GetIsKeepAlive"
+				num_parameters="0"
+				property="get"
+				property_name2="isKeepAlive"
+				property_name="is_keep_alive">
+				<comments desc="Whether the socket is in KEEPALIVE mode "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setKeepAliveParameters"
+				name="SetKeepAliveParameters"
+				num_parameters="3"
+				property="set"
+				property_name2="keepAliveParameters"
+				property_name="keep_alive_parameters">
+				<comments desc="Set KEEPALIVE interval on the current socket ">
+					<remark text="If you don&apos;t want to set all the parameters, just set the parameter to 0. "/>
+					<params text="anTimeMS the interval to wait before probing the idle connection, in milliseconds. "/>
+					<params text="anIntvlMS the interval to wait before retrying the probe after an initial failure to respond, in milliseconds. "/>
+					<params text="anProbes the maximum number of times to retry the probe. Not supported on Windows. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anTimeMS"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					name="anIntvl"
+					type="tU64"
+					typec="tU64"
+					typei="ni::eType_U64"/>
+				<parameter
+					last="1"
+					name="anProbes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKeepAliveInterval"
+				name="GetKeepAliveInterval"
+				num_parameters="0"
+				property="get"
+				property_name2="keepAliveInterval"
+				property_name="keep_alive_interval">
+				<comments desc="Get KEEPALIVE interval on the current socket, in milliseconds. ">
+					<remark text="the interval to wait before retrying the probe after an initial failure to respond. "/>
+				</comments>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKeepAliveProbes"
+				name="GetKeepAliveProbes"
+				num_parameters="0"
+				property="get"
+				property_name2="keepAliveProbes"
+				property_name="keep_alive_probes">
+				<comments desc="Get KEEPALIVE probes on the current socket. ">
+					<remark text="the maximum number of times to retry the probe. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKeepAliveTime"
+				name="GetKeepAliveTime"
+				num_parameters="0"
+				property="get"
+				property_name2="keepAliveTime"
+				property_name="keep_alive_time">
+				<comments desc="Get KEEPALIVE time on the current socket, in milliseconds. ">
+					<remark text="the interval to wait before probing the idle connection Not supported on Windows. "/>
+				</comments>
+				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

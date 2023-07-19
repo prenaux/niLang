@@ -1284,6 +1284,59 @@ IDLC_METH_BEGIN(ni,iLang,GetGameCtrl,1)
 	IDLC_RET_FROM_INTF(iGameCtrl,_Ret)
 IDLC_METH_END(ni,iLang,GetGameCtrl,1)
 
+/** ni -> iLang::CreateRemoteAddressIPv4/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateRemoteAddressIPv4,2)
+	IDLC_DECL_VAR(tU32,anIP)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIP)
+	IDLC_DECL_VAR(tU32,anPort)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPort)
+	IDLC_DECL_RETVAR(iRemoteAddressIPv4*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateRemoteAddressIPv4,2,(anIP,anPort))
+	IDLC_RET_FROM_INTF(iRemoteAddressIPv4,_Ret)
+IDLC_METH_END(ni,iLang,CreateRemoteAddressIPv4,2)
+
+/** ni -> iLang::CreateRemoteAddressIPv4FromString/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateRemoteAddressIPv4FromString,1)
+	IDLC_DECL_VAR(achar*,aAddress)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aAddress)
+	IDLC_DECL_RETVAR(iRemoteAddressIPv4*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateRemoteAddressIPv4FromString,1,(aAddress))
+	IDLC_RET_FROM_INTF(iRemoteAddressIPv4,_Ret)
+IDLC_METH_END(ni,iLang,CreateRemoteAddressIPv4FromString,1)
+
+/** ni -> iLang::CreateRemoteAddressIPv4RO/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateRemoteAddressIPv4RO,2)
+	IDLC_DECL_VAR(tU32,anIP)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIP)
+	IDLC_DECL_VAR(tU32,anPort)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anPort)
+	IDLC_DECL_RETVAR(iRemoteAddressIPv4*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateRemoteAddressIPv4RO,2,(anIP,anPort))
+	IDLC_RET_FROM_INTF(iRemoteAddressIPv4,_Ret)
+IDLC_METH_END(ni,iLang,CreateRemoteAddressIPv4RO,2)
+
+/** ni -> iLang::CreateRemoteAddressIPv4ROFromString/1 **/
+IDLC_METH_BEGIN(ni,iLang,CreateRemoteAddressIPv4ROFromString,1)
+	IDLC_DECL_VAR(achar*,aAddress)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aAddress)
+	IDLC_DECL_RETVAR(iRemoteAddressIPv4*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateRemoteAddressIPv4ROFromString,1,(aAddress))
+	IDLC_RET_FROM_INTF(iRemoteAddressIPv4,_Ret)
+IDLC_METH_END(ni,iLang,CreateRemoteAddressIPv4ROFromString,1)
+
+/** ni -> iLang::CreateSocket/2 **/
+IDLC_METH_BEGIN(ni,iLang,CreateSocket,2)
+	IDLC_DECL_VAR(eSocketProtocol,aProtocol)
+	IDLC_BUF_TO_ENUM(eSocketProtocol,aProtocol)
+	IDLC_DECL_VAR(iRemoteAddress*,apAddr)
+	IDLC_BUF_TO_INTF(iRemoteAddress,apAddr)
+	IDLC_DECL_RETVAR(iSocket*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,CreateSocket,2,(aProtocol,apAddr))
+	IDLC_RET_FROM_INTF(iSocket,_Ret)
+IDLC_METH_END(ni,iLang,CreateSocket,2)
+
+/** ni -> iLang::CreateSocketFromHandle/2 -> NO AUTOMATION **/
+/** ni -> iLang::CloseSocketHandle/1 -> NO AUTOMATION **/
 IDLC_END_INTF(ni,iLang)
 
 IDLC_END_NAMESPACE()

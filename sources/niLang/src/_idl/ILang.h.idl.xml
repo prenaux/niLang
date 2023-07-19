@@ -2107,6 +2107,98 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
+			<method java_name="createRemoteAddressIPv4" name="CreateRemoteAddressIPv4" num_parameters="2">
+				<comments desc=""/>
+				<return type="iRemoteAddressIPv4 *" typec="iRemoteAddressIPv4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anIP"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anPort"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createRemoteAddressIPv4FromString" name="CreateRemoteAddressIPv4FromString" num_parameters="1">
+				<comments desc=""/>
+				<return type="iRemoteAddressIPv4 *" typec="iRemoteAddressIPv4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aAddress"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createRemoteAddressIPv4RO" name="CreateRemoteAddressIPv4RO" num_parameters="2">
+				<comments desc=""/>
+				<return type="iRemoteAddressIPv4 *" typec="iRemoteAddressIPv4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anIP"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anPort"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createRemoteAddressIPv4ROFromString" name="CreateRemoteAddressIPv4ROFromString" num_parameters="1">
+				<comments desc=""/>
+				<return type="iRemoteAddressIPv4 *" typec="iRemoteAddressIPv4*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aAddress"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createSocket" name="CreateSocket" num_parameters="2">
+				<comments desc=""/>
+				<return type="iSocket *" typec="iSocket*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aProtocol"
+					type="eSocketProtocol"
+					typec="eSocketProtocol"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apAddr"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="createSocketFromHandle"
+				name="CreateSocketFromHandle"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="iSocket *" typec="iSocket*"/>
+				<parameter name="aSocket" type="tInt" typec="tInt"/>
+				<parameter
+					last="1"
+					name="apAddr"
+					type="iRemoteAddress *"
+					typec="iRemoteAddress*"/>
+			</method>
+			<method
+				java_name="closeSocketHandle"
+				name="CloseSocketHandle"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void"/>
+				<parameter
+					last="1"
+					name="aSocket"
+					type="tInt"
+					typec="tInt"/>
+			</method>
 		</interface>
 	</namespace>
 </niIDL>

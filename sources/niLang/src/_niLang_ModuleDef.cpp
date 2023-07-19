@@ -47,6 +47,7 @@
 #include "_idl/IScriptingHost.h.idl.inl"
 #include "_idl/ISerializable.h.idl.inl"
 #include "_idl/ISinkList.h.idl.inl"
+#include "_idl/ISocket.h.idl.inl"
 #include "_idl/IStringTokenizer.h.idl.inl"
 #include "_idl/ITime.h.idl.inl"
 #include "_idl/IToString.h.idl.inl"
@@ -13591,6 +13592,107 @@ static const ni::sMethodDef iLang_GetGameCtrl = {
 #endif
 };
 
+// Method: CreateRemoteAddressIPv4
+static const ni::sParameterDef iLang_CreateRemoteAddressIPv4_Parameters[2] = { 
+  { "anIP", ni::eType_U32, NULL, "tU32" }, 
+  { "anPort", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iLang_CreateRemoteAddressIPv4 = {
+  "CreateRemoteAddressIPv4",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddressIPv4), "iRemoteAddressIPv4*",
+  2, iLang_CreateRemoteAddressIPv4_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_CreateRemoteAddressIPv4)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateRemoteAddressIPv4FromString
+static const ni::sParameterDef iLang_CreateRemoteAddressIPv4FromString_Parameters[1] = { 
+  { "aAddress", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+}; 
+static const ni::sMethodDef iLang_CreateRemoteAddressIPv4FromString = {
+  "CreateRemoteAddressIPv4FromString",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddressIPv4), "iRemoteAddressIPv4*",
+  1, iLang_CreateRemoteAddressIPv4FromString_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_CreateRemoteAddressIPv4FromString)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateRemoteAddressIPv4RO
+static const ni::sParameterDef iLang_CreateRemoteAddressIPv4RO_Parameters[2] = { 
+  { "anIP", ni::eType_U32, NULL, "tU32" }, 
+  { "anPort", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iLang_CreateRemoteAddressIPv4RO = {
+  "CreateRemoteAddressIPv4RO",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddressIPv4), "iRemoteAddressIPv4*",
+  2, iLang_CreateRemoteAddressIPv4RO_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_CreateRemoteAddressIPv4RO)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateRemoteAddressIPv4ROFromString
+static const ni::sParameterDef iLang_CreateRemoteAddressIPv4ROFromString_Parameters[1] = { 
+  { "aAddress", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+}; 
+static const ni::sMethodDef iLang_CreateRemoteAddressIPv4ROFromString = {
+  "CreateRemoteAddressIPv4ROFromString",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddressIPv4), "iRemoteAddressIPv4*",
+  1, iLang_CreateRemoteAddressIPv4ROFromString_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_CreateRemoteAddressIPv4ROFromString)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateSocket
+static const ni::sParameterDef iLang_CreateSocket_Parameters[2] = { 
+  { "aProtocol", ni::eType_Enum, NULL, "eSocketProtocol" }, 
+  { "apAddr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iLang_CreateSocket = {
+  "CreateSocket",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSocket), "iSocket*",
+  2, iLang_CreateSocket_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_CreateSocket)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateSocketFromHandle
+static const ni::sParameterDef iLang_CreateSocketFromHandle_Parameters[2] = { 
+  { "aSocket", ni::eType_Int, NULL, "tInt" }, 
+  { "apAddr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iLang_CreateSocketFromHandle = {
+  "CreateSocketFromHandle",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSocket), "iSocket*",
+  2, iLang_CreateSocketFromHandle_Parameters,
+NULL
+};
+
+// Method: CloseSocketHandle
+static const ni::sParameterDef iLang_CloseSocketHandle_Parameters[1] = { 
+  { "aSocket", ni::eType_Int, NULL, "tInt" }
+}; 
+static const ni::sMethodDef iLang_CloseSocketHandle = {
+  "CloseSocketHandle",
+  0|ni::eType_Null, NULL, "void",
+  1, iLang_CloseSocketHandle_Parameters,
+NULL
+};
+
 static const ni::sMethodDef* Methods_iLang[] = {
 #if niMinFeatures(15)
 	&iLang_GetProcessManager,
@@ -13752,6 +13854,13 @@ static const ni::sMethodDef* Methods_iLang[] = {
 	&iLang_PickDirectoryDialog,
 	&iLang_GetNumGameCtrls,
 	&iLang_GetGameCtrl,
+	&iLang_CreateRemoteAddressIPv4,
+	&iLang_CreateRemoteAddressIPv4FromString,
+	&iLang_CreateRemoteAddressIPv4RO,
+	&iLang_CreateRemoteAddressIPv4ROFromString,
+	&iLang_CreateSocket,
+	&iLang_CreateSocketFromHandle,
+	&iLang_CloseSocketHandle,
 
 };
 
@@ -22877,6 +22986,657 @@ static const ni::sInterfaceDef InterfaceDef_iSinkList = {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// iRemoteAddress wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRemoteAddress() {
+
+// Method: Clone
+static const ni::sMethodDef iRemoteAddress_Clone = {
+  "Clone",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_Clone)
+#else
+  NULL
+#endif
+};
+
+// Method: Compare
+static const ni::sParameterDef iRemoteAddress_Compare_Parameters[1] = { 
+  { "apAddr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iRemoteAddress_Compare = {
+  "Compare",
+  0|ni::eType_I32, NULL, "tI32",
+  1, iRemoteAddress_Compare_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_Compare)
+#else
+  NULL
+#endif
+};
+
+// Method: GetType
+static const ni::sMethodDef iRemoteAddress_GetType = {
+  "GetType",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eRemoteAddressType",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_GetType)
+#else
+  NULL
+#endif
+};
+
+// Method: SetAddressString
+static const ni::sParameterDef iRemoteAddress_SetAddressString_Parameters[1] = { 
+  { "aaszAddress", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+}; 
+static const ni::sMethodDef iRemoteAddress_SetAddressString = {
+  "SetAddressString",
+  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "tBool",
+  1, iRemoteAddress_SetAddressString_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_SetAddressString)
+#else
+  NULL
+#endif
+};
+
+// Method: GetAddressString
+static const ni::sMethodDef iRemoteAddress_GetAddressString = {
+  "GetAddressString",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_String, NULL, "cString",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_GetAddressString)
+#else
+  NULL
+#endif
+};
+
+// Method: SetPort
+static const ni::sParameterDef iRemoteAddress_SetPort_Parameters[1] = { 
+  { "anPort", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iRemoteAddress_SetPort = {
+  "SetPort",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
+  1, iRemoteAddress_SetPort_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_SetPort)
+#else
+  NULL
+#endif
+};
+
+// Method: GetPort
+static const ni::sMethodDef iRemoteAddress_GetPort = {
+  "GetPort",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_GetPort)
+#else
+  NULL
+#endif
+};
+
+// Method: GetIsNull
+static const ni::sMethodDef iRemoteAddress_GetIsNull = {
+  "GetIsNull",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddress_GetIsNull)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iRemoteAddress[] = {
+	&iRemoteAddress_Clone,
+	&iRemoteAddress_Compare,
+	&iRemoteAddress_GetType,
+	&iRemoteAddress_SetAddressString,
+	&iRemoteAddress_GetAddressString,
+	&iRemoteAddress_SetPort,
+	&iRemoteAddress_GetPort,
+	&iRemoteAddress_GetIsNull,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iRemoteAddress[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iRemoteAddress = {
+  niGetInterfaceID(iRemoteAddress),
+  &niGetInterfaceUUID(iRemoteAddress),
+  1,
+  Parents_iRemoteAddress,
+  niCountOf(Methods_iRemoteAddress),Methods_iRemoteAddress,
+  NULL
+};
+
+	return &InterfaceDef_iRemoteAddress;
+}
+
+// End of iRemoteAddress wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iRemoteAddressIPv4 wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRemoteAddressIPv4() {
+
+// Method: SetHost
+static const ni::sParameterDef iRemoteAddressIPv4_SetHost_Parameters[1] = { 
+  { "anFourCC", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iRemoteAddressIPv4_SetHost = {
+  "SetHost",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
+  1, iRemoteAddressIPv4_SetHost_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddressIPv4_SetHost)
+#else
+  NULL
+#endif
+};
+
+// Method: GetHost
+static const ni::sMethodDef iRemoteAddressIPv4_GetHost = {
+  "GetHost",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddressIPv4_GetHost)
+#else
+  NULL
+#endif
+};
+
+// Method: GetHostName
+static const ni::sMethodDef iRemoteAddressIPv4_GetHostName = {
+  "GetHostName",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_String, NULL, "cString",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRemoteAddressIPv4_GetHostName)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iRemoteAddressIPv4[] = {
+	&iRemoteAddressIPv4_SetHost,
+	&iRemoteAddressIPv4_GetHost,
+	&iRemoteAddressIPv4_GetHostName,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iRemoteAddressIPv4[] = {
+  &niGetInterfaceUUID(iRemoteAddress),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iRemoteAddressIPv4 = {
+  niGetInterfaceID(iRemoteAddressIPv4),
+  &niGetInterfaceUUID(iRemoteAddressIPv4),
+  1,
+  Parents_iRemoteAddressIPv4,
+  niCountOf(Methods_iRemoteAddressIPv4),Methods_iRemoteAddressIPv4,
+  NULL
+};
+
+	return &InterfaceDef_iRemoteAddressIPv4;
+}
+
+// End of iRemoteAddressIPv4 wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iSocket wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iSocket() {
+
+// Method: GetHandle
+static const ni::sMethodDef iSocket_GetHandle = {
+  "GetHandle",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IntPtr, NULL, "tIntPtr",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetHandle)
+#else
+  NULL
+#endif
+};
+
+// Method: GetAddress
+static const ni::sMethodDef iSocket_GetAddress = {
+  "GetAddress",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetAddress)
+#else
+  NULL
+#endif
+};
+
+// Method: GetProtocol
+static const ni::sMethodDef iSocket_GetProtocol = {
+  "GetProtocol",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eSocketProtocol",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetProtocol)
+#else
+  NULL
+#endif
+};
+
+// Method: MakeNonBlocking
+static const ni::sMethodDef iSocket_MakeNonBlocking = {
+  "MakeNonBlocking",
+  0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_MakeNonBlocking)
+#else
+  NULL
+#endif
+};
+
+// Method: GetIsNonBlocking
+static const ni::sMethodDef iSocket_GetIsNonBlocking = {
+  "GetIsNonBlocking",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetIsNonBlocking)
+#else
+  NULL
+#endif
+};
+
+// Method: GetErrno
+static const ni::sMethodDef iSocket_GetErrno = {
+  "GetErrno",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eSocketErrno",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetErrno)
+#else
+  NULL
+#endif
+};
+
+// Method: GetRawErrno
+static const ni::sMethodDef iSocket_GetRawErrno = {
+  "GetRawErrno",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Int, NULL, "tInt",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetRawErrno)
+#else
+  NULL
+#endif
+};
+
+// Method: Connect
+static const ni::sParameterDef iSocket_Connect_Parameters[1] = { 
+  { "apAddress", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iSocket_Connect = {
+  "Connect",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_Connect_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Connect)
+#else
+  NULL
+#endif
+};
+
+// Method: Accept
+static const ni::sMethodDef iSocket_Accept = {
+  "Accept",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSocket), "iSocket*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Accept)
+#else
+  NULL
+#endif
+};
+
+// Method: BindPortAny
+static const ni::sParameterDef iSocket_BindPortAny_Parameters[1] = { 
+  { "anPort", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iSocket_BindPortAny = {
+  "BindPortAny",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_BindPortAny_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_BindPortAny)
+#else
+  NULL
+#endif
+};
+
+// Method: Bind
+static const ni::sParameterDef iSocket_Bind_Parameters[1] = { 
+  { "apAddr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iSocket_Bind = {
+  "Bind",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_Bind_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Bind)
+#else
+  NULL
+#endif
+};
+
+// Method: Listen
+static const ni::sParameterDef iSocket_Listen_Parameters[1] = { 
+  { "anBacklog", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iSocket_Listen = {
+  "Listen",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_Listen_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Listen)
+#else
+  NULL
+#endif
+};
+
+// Method: GetIsListening
+static const ni::sMethodDef iSocket_GetIsListening = {
+  "GetIsListening",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetIsListening)
+#else
+  NULL
+#endif
+};
+
+// Method: Send
+static const ni::sParameterDef iSocket_Send_Parameters[2] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "anBytes", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iSocket_Send = {
+  "Send",
+  0|ni::eType_I32, NULL, "tI32",
+  2, iSocket_Send_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Send)
+#else
+  NULL
+#endif
+};
+
+// Method: SendTo
+static const ni::sParameterDef iSocket_SendTo_Parameters[3] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "anBytes", ni::eType_U32, NULL, "tU32" }, 
+  { "pAddress", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iSocket_SendTo = {
+  "SendTo",
+  0|ni::eType_I32, NULL, "tI32",
+  3, iSocket_SendTo_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_SendTo)
+#else
+  NULL
+#endif
+};
+
+// Method: SendBuffers
+static const ni::sParameterDef iSocket_SendBuffers_Parameters[3] = { 
+  { "apAddress", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "const iRemoteAddress*" }, 
+  { "apBuffers", ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sSocketBuffer*" }, 
+  { "anBufCount", ni::eType_Size, NULL, "tSize" }
+}; 
+static const ni::sMethodDef iSocket_SendBuffers = {
+  "SendBuffers",
+  0|ni::eType_I32, NULL, "tI32",
+  3, iSocket_SendBuffers_Parameters,
+NULL
+};
+
+// Method: Receive
+static const ni::sParameterDef iSocket_Receive_Parameters[1] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
+}; 
+static const ni::sMethodDef iSocket_Receive = {
+  "Receive",
+  0|ni::eType_I32, NULL, "tI32",
+  1, iSocket_Receive_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Receive)
+#else
+  NULL
+#endif
+};
+
+// Method: ReceiveFrom
+static const ni::sParameterDef iSocket_ReceiveFrom_Parameters[2] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "apAddress", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }
+}; 
+static const ni::sMethodDef iSocket_ReceiveFrom = {
+  "ReceiveFrom",
+  0|ni::eType_I32, NULL, "tI32",
+  2, iSocket_ReceiveFrom_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_ReceiveFrom)
+#else
+  NULL
+#endif
+};
+
+// Method: ReceiveBuffers
+static const ni::sParameterDef iSocket_ReceiveBuffers_Parameters[3] = { 
+  { "apAddr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRemoteAddress), "iRemoteAddress*" }, 
+  { "apBuffers", ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "sSocketBuffer*" }, 
+  { "anBufCount", ni::eType_Size, NULL, "tSize" }
+}; 
+static const ni::sMethodDef iSocket_ReceiveBuffers = {
+  "ReceiveBuffers",
+  0|ni::eType_I32, NULL, "tI32",
+  3, iSocket_ReceiveBuffers_Parameters,
+NULL
+};
+
+// Method: Wait
+static const ni::sParameterDef iSocket_Wait_Parameters[2] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tSocketWaitFlags" }, 
+  { "anTimeoutInMs", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iSocket_Wait = {
+  "Wait",
+  0|ni::eType_Enum, NULL, "tSocketWaitFlags",
+  2, iSocket_Wait_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_Wait)
+#else
+  NULL
+#endif
+};
+
+// Method: SetNodeName
+static const ni::sParameterDef iSocket_SetNodeName_Parameters[1] = { 
+  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+}; 
+static const ni::sMethodDef iSocket_SetNodeName = {
+  "SetNodeName",
+  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "void",
+  1, iSocket_SetNodeName_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_SetNodeName)
+#else
+  NULL
+#endif
+};
+
+// Method: GetNodeName
+static const ni::sMethodDef iSocket_GetNodeName = {
+  "GetNodeName",
+  ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetNodeName)
+#else
+  NULL
+#endif
+};
+
+// Method: SetKeepAlive
+static const ni::sParameterDef iSocket_SetKeepAlive_Parameters[1] = { 
+  { "aKeepAlive", ni::eType_I8, NULL, "tBool" }
+}; 
+static const ni::sMethodDef iSocket_SetKeepAlive = {
+  "SetKeepAlive",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_SetKeepAlive_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_SetKeepAlive)
+#else
+  NULL
+#endif
+};
+
+// Method: GetIsKeepAlive
+static const ni::sMethodDef iSocket_GetIsKeepAlive = {
+  "GetIsKeepAlive",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetIsKeepAlive)
+#else
+  NULL
+#endif
+};
+
+// Method: SetKeepAliveParameters
+static const ni::sParameterDef iSocket_SetKeepAliveParameters_Parameters[3] = { 
+  { "anTimeMS", ni::eType_U64, NULL, "tU64" }, 
+  { "anIntvl", ni::eType_U64, NULL, "tU64" }, 
+  { "anProbes", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iSocket_SetKeepAliveParameters = {
+  "SetKeepAliveParameters",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
+  3, iSocket_SetKeepAliveParameters_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_SetKeepAliveParameters)
+#else
+  NULL
+#endif
+};
+
+// Method: GetKeepAliveInterval
+static const ni::sMethodDef iSocket_GetKeepAliveInterval = {
+  "GetKeepAliveInterval",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U64, NULL, "tU64",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetKeepAliveInterval)
+#else
+  NULL
+#endif
+};
+
+// Method: GetKeepAliveProbes
+static const ni::sMethodDef iSocket_GetKeepAliveProbes = {
+  "GetKeepAliveProbes",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetKeepAliveProbes)
+#else
+  NULL
+#endif
+};
+
+// Method: GetKeepAliveTime
+static const ni::sMethodDef iSocket_GetKeepAliveTime = {
+  "GetKeepAliveTime",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U64, NULL, "tU64",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetKeepAliveTime)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iSocket[] = {
+	&iSocket_GetHandle,
+	&iSocket_GetAddress,
+	&iSocket_GetProtocol,
+	&iSocket_MakeNonBlocking,
+	&iSocket_GetIsNonBlocking,
+	&iSocket_GetErrno,
+	&iSocket_GetRawErrno,
+	&iSocket_Connect,
+	&iSocket_Accept,
+	&iSocket_BindPortAny,
+	&iSocket_Bind,
+	&iSocket_Listen,
+	&iSocket_GetIsListening,
+	&iSocket_Send,
+	&iSocket_SendTo,
+	&iSocket_SendBuffers,
+	&iSocket_Receive,
+	&iSocket_ReceiveFrom,
+	&iSocket_ReceiveBuffers,
+	&iSocket_Wait,
+	&iSocket_SetNodeName,
+	&iSocket_GetNodeName,
+	&iSocket_SetKeepAlive,
+	&iSocket_GetIsKeepAlive,
+	&iSocket_SetKeepAliveParameters,
+	&iSocket_GetKeepAliveInterval,
+	&iSocket_GetKeepAliveProbes,
+	&iSocket_GetKeepAliveTime,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iSocket[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iSocket = {
+  niGetInterfaceID(iSocket),
+  &niGetInterfaceUUID(iSocket),
+  1,
+  Parents_iSocket,
+  niCountOf(Methods_iSocket),Methods_iSocket,
+  NULL
+};
+
+	return &InterfaceDef_iSocket;
+}
+
+// End of iSocket wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 // iStringTokenizer wrapper
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iStringTokenizer() {
@@ -26081,6 +26841,109 @@ static const ni::sEnumDef Enum_eSerializeMode = {
 	return &Enum_eSerializeMode;
 }
 
+// --- eRemoteAddressType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eRemoteAddressType() {
+
+static const ni::sEnumValueDef Enum_eRemoteAddressType_Values[] = {
+	{ "Unknown", ni::eRemoteAddressType_Unknown },
+	{ "IPv4", ni::eRemoteAddressType_IPv4 },
+	{ "IPv6", ni::eRemoteAddressType_IPv6 },
+	{ "IPC", ni::eRemoteAddressType_IPC },
+};
+static const ni::sEnumDef Enum_eRemoteAddressType = {
+	"eRemoteAddressType",
+  niCountOf(Enum_eRemoteAddressType_Values), Enum_eRemoteAddressType_Values
+};
+
+	return &Enum_eRemoteAddressType;
+}
+
+// --- eRemoteAddressIPv4Reserved ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eRemoteAddressIPv4Reserved() {
+
+static const ni::sEnumValueDef Enum_eRemoteAddressIPv4Reserved_Values[] = {
+	{ "Any", ni::eRemoteAddressIPv4Reserved_Any },
+	{ "Broadcast", ni::eRemoteAddressIPv4Reserved_Broadcast },
+};
+static const ni::sEnumDef Enum_eRemoteAddressIPv4Reserved = {
+	"eRemoteAddressIPv4Reserved",
+  niCountOf(Enum_eRemoteAddressIPv4Reserved_Values), Enum_eRemoteAddressIPv4Reserved_Values
+};
+
+	return &Enum_eRemoteAddressIPv4Reserved;
+}
+
+// --- eSocketProtocol ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eSocketProtocol() {
+
+static const ni::sEnumValueDef Enum_eSocketProtocol_Values[] = {
+	{ "Unknown", ni::eSocketProtocol_Unknown },
+	{ "UDP", ni::eSocketProtocol_UDP },
+	{ "TCP", ni::eSocketProtocol_TCP },
+};
+static const ni::sEnumDef Enum_eSocketProtocol = {
+	"eSocketProtocol",
+  niCountOf(Enum_eSocketProtocol_Values), Enum_eSocketProtocol_Values
+};
+
+	return &Enum_eSocketProtocol;
+}
+
+// --- eSocketWaitFlags ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eSocketWaitFlags() {
+
+static const ni::sEnumValueDef Enum_eSocketWaitFlags_Values[] = {
+	{ "None", ni::eSocketWaitFlags_None },
+	{ "Send", ni::eSocketWaitFlags_Send },
+	{ "Receive", ni::eSocketWaitFlags_Receive },
+	{ "Error", ni::eSocketWaitFlags_Error },
+};
+static const ni::sEnumDef Enum_eSocketWaitFlags = {
+	"eSocketWaitFlags",
+  niCountOf(Enum_eSocketWaitFlags_Values), Enum_eSocketWaitFlags_Values
+};
+
+	return &Enum_eSocketWaitFlags;
+}
+
+// --- eSocketErrno ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eSocketErrno() {
+
+static const ni::sEnumValueDef Enum_eSocketErrno_Values[] = {
+	{ "OK", ni::eSocketErrno_OK },
+	{ "Unknown", ni::eSocketErrno_Unknown },
+	{ "WouldBlock", ni::eSocketErrno_WouldBlock },
+	{ "Interrupted", ni::eSocketErrno_Interrupted },
+	{ "Invalid", ni::eSocketErrno_Invalid },
+	{ "Already", ni::eSocketErrno_Already },
+	{ "BadFile", ni::eSocketErrno_BadFile },
+	{ "HostDown", ni::eSocketErrno_HostDown },
+	{ "InProgress", ni::eSocketErrno_InProgress },
+	{ "MessageTooLong", ni::eSocketErrno_MessageTooLong },
+	{ "Shutdown", ni::eSocketErrno_Shutdown },
+	{ "Timeout", ni::eSocketErrno_Timeout },
+	{ "TooManyUsers", ni::eSocketErrno_TooManyUsers },
+	{ "AlreadyConnected", ni::eSocketErrno_AlreadyConnected },
+	{ "NotConnected", ni::eSocketErrno_NotConnected },
+	{ "ConnectionAborted", ni::eSocketErrno_ConnectionAborted },
+	{ "ConnectionRefused", ni::eSocketErrno_ConnectionRefused },
+	{ "ConnectionReset", ni::eSocketErrno_ConnectionReset },
+	{ "AddressInUser", ni::eSocketErrno_AddressInUser },
+	{ "CannotAssignAddress", ni::eSocketErrno_CannotAssignAddress },
+	{ "NetworkDown", ni::eSocketErrno_NetworkDown },
+	{ "NetworkReset", ni::eSocketErrno_NetworkReset },
+	{ "NetworkUnreachable", ni::eSocketErrno_NetworkUnreachable },
+	{ "NoBufferSpace", ni::eSocketErrno_NoBufferSpace },
+	{ "MessagePartial", ni::eSocketErrno_MessagePartial },
+};
+static const ni::sEnumDef Enum_eSocketErrno = {
+	"eSocketErrno",
+  niCountOf(Enum_eSocketErrno_Values), Enum_eSocketErrno_Values
+};
+
+	return &Enum_eSocketErrno;
+}
+
 // --- eStringTokenizerCharType ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eStringTokenizerCharType() {
 
@@ -27313,6 +28176,9 @@ static const ni::sInterfaceDef* Interfaces[] = {
   GetInterfaceDef_iScriptingHost(),
   GetInterfaceDef_iSerializable(),
   GetInterfaceDef_iSinkList(),
+  GetInterfaceDef_iRemoteAddress(),
+  GetInterfaceDef_iRemoteAddressIPv4(),
+  GetInterfaceDef_iSocket(),
   GetInterfaceDef_iStringTokenizer(),
   GetInterfaceDef_iTime(),
   GetInterfaceDef_iToString(),
@@ -27376,6 +28242,11 @@ static const ni::sEnumDef* Enumerations[] = {
 #endif // niMinFeatures(15)
   GetEnumDef_eSerializeFlags(),
   GetEnumDef_eSerializeMode(),
+  GetEnumDef_eRemoteAddressType(),
+  GetEnumDef_eRemoteAddressIPv4Reserved(),
+  GetEnumDef_eSocketProtocol(),
+  GetEnumDef_eSocketWaitFlags(),
+  GetEnumDef_eSocketErrno(),
   GetEnumDef_eStringTokenizerCharType(),
   GetEnumDef_eTimeZone(),
   GetEnumDef_eRawToStringEncoding(),

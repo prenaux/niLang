@@ -47,6 +47,7 @@
   <include>niLang/src/_idl/IScriptingHost.h.idl.xml</include>
   <include>niLang/src/_idl/ISerializable.h.idl.xml</include>
   <include>niLang/src/_idl/ISinkList.h.idl.xml</include>
+  <include>niLang/src/_idl/ISocket.h.idl.xml</include>
   <include>niLang/src/_idl/IStringTokenizer.h.idl.xml</include>
   <include>niLang/src/_idl/ITime.h.idl.xml</include>
   <include>niLang/src/_idl/IToString.h.idl.xml</include>

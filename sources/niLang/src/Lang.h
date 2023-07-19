@@ -175,6 +175,14 @@ class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknown
 
   Ptr<iHString> __stdcall CreateHString(const cString& astrKey);
   tBool __stdcall LoadLocalization(iDataTable* apDT);
+
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(const achar* aAddress);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(const achar* aAddress);
+  iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol, iRemoteAddress* apAddr);
+  iSocket* __stdcall CreateSocketFromHandle(tInt aSocket, iRemoteAddress* apAddr);
+  void __stdcall CloseSocketHandle(tInt aSocket);
   //// iLang //////////////////////////////////
 
  public:

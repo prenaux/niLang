@@ -14,6 +14,7 @@
 #include "IExpression.h"
 #include "ISerializable.h"
 #include "IOSWindow.h"
+#include "ISocket.h"
 #include "Utils/CollectionImpl.h"
 #include "Math/MathRect.h"
 
@@ -677,6 +678,22 @@ struct iLang : public iUnknown
   //!     iGameCtrl interface.
   //! {Property}
   virtual iGameCtrl* __stdcall GetGameCtrl(tU32 aulIdx) const = 0;
+  //! @}
+
+  //########################################################################################
+  //! \name Network
+  //########################################################################################
+  //! @{
+
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(const achar* aAddress) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(const achar* aAddress) = 0;
+  virtual iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol, iRemoteAddress* apAddr) = 0;
+  //! {NoAutomation}
+  virtual iSocket* __stdcall CreateSocketFromHandle(tInt aSocket, iRemoteAddress* apAddr) = 0;
+  //! {NoAutomation}
+  virtual void __stdcall CloseSocketHandle(tInt aSocket) = 0;
   //! @}
 };
 

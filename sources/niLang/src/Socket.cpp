@@ -2,25 +2,25 @@
 #include "Lang.h"
 
 #ifdef niNoSocket
-
-iSocket* __stdcall cLang::CreateSocketFromHandle(
+namespace ni {
+ni::iSocket* __stdcall cLang::CreateSocketFromHandle(
   ni::tInt aSocket,
   ni::iRemoteAddress* apAddr)
 {
-  niAssertUnreachable("Not implemented");
+  niError("Not implemented");
   return NULL;
 }
-iSocket* __stdcall cLang::CreateSocket(
+ni::iSocket* __stdcall cLang::CreateSocket(
   ni::eSocketProtocol aProtocol,
   ni::iRemoteAddress* apAddr)
 {
-  niAssertUnreachable("Not implemented");
+  niError("Not implemented");
   return NULL;
 }
 void __stdcall cLang::CloseSocketHandle(ni::tInt aSocket) {
-  niAssertUnreachable("Not implemented");
+  niError("Not implemented");
 }
-
+}
 #elif niMinFeatures(15)
 
 #include "API/niLang/ISocket.h"

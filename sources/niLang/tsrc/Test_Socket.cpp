@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "../src/API/niLang/ISocket.h"
+
+#if !defined niNoSocket
+
 #include "../src/API/niLang/Utils/RemoteAddress.h"
 #include "../src/API/niLang/Utils/Random.h"
 #include "../src/API/niLang/Utils/SyncPtr.h"
@@ -294,3 +297,4 @@ TEST_FIXTURE(FSocket_TCP,KeepAlive) {
     CHECK_EQUAL(6,ptrSocket->GetKeepAliveProbes());
   }
 }
+#endif

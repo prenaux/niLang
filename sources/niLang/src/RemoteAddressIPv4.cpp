@@ -5,24 +5,24 @@
 #include "Lang.h"
 
 #ifdef niNoSocket
-
+namespace ni {
 iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4FromString(const char* aAddress) {
-  niAssertUnreachable("Not implemented.");
+  niError("Not implemented.");
   return NULL;
 }
 iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort) {
-  niAssertUnreachable("Not implemented.");
+  niError("Not implemented.");
   return NULL;
 }
 iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4ROFromString(const char* aAddress) {
-  niAssertUnreachable("Not implemented.");
+  niError("Not implemented.");
   return NULL;
 }
 iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) {
-  niAssertUnreachable("Not implemented.");
+  niError("Not implemented.");
   return NULL;
 }
-
+}
 #else
 
 #include "API/niLang/Utils/RemoteAddress.h"

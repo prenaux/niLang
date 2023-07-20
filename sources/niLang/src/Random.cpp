@@ -48,6 +48,9 @@ tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
 }  // namespace ni
 
 #elif defined niWindows
+#include <windows.h>
+#include <wincrypt.h>
+#undef GetCurrentTime
 
 namespace ni {
 tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
@@ -65,7 +68,6 @@ tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
 
 namespace ni {
 tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
-  ??
   return eFalse;
 }
 }

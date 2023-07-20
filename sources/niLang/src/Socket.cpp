@@ -842,21 +842,22 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     return eTrue;
 #elif defined niLinux
     if (anIntvlMS!=0) {
-      tU64 nTimeMS = anTimeMS / 1000;
+      const int nTimeMS = (int)(anTimeMS / 1000);
       if (setsockopt(mSocket, SOL_SOCKET, TCP_KEEPIDLE, &nTimeMS, sizeof(nTimeMS)) != 0) {
         niError("Can't set TCP_KEEPIDLE.");
         return eFalse;
       }
     }
     if (anIntvlMS!=0) {
-      tU64 nIntvl = anIntvlMS / 1000;
+      const int nIntvl = (int)(anIntvlMS / 1000);
       if (setsockopt(mSocket, SOL_SOCKET, TCP_KEEPINTVL, &nIntvl, sizeof(nIntvl)) != 0) {
         niError("Can't set TCP_KEEPINTVL.");
         return eFalse;
       }
     }
     if (anProbes!=0) {
-      if (setsockopt(mSocket, SOL_SOCKET, TCP_KEEPCNT, &anProbes, sizeof(anProbes)) != 0) {
+      const int nProbes = (int)(nProbes);
+      if (setsockopt(mSocket, SOL_SOCKET, TCP_KEEPCNT, &nProbes, sizeof(nProbes)) != 0) {
         niError("Can't set TCP_KEEPCNT.");
         return eFalse;
       }
@@ -890,7 +891,7 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     }
     return nTimeMS * 1000;
 #elif defined niLinux
-    tU32 nTimeMS = 0;
+    int nTimeMS = 0;
     socklen_t nOptSize = sizeof(nTimeMS);
     if (getsockopt(mSocket, SOL_SOCKET, TCP_KEEPIDLE, &nTimeMS, &nOptSize) != 0) {
       niError("Can't get TCP_KEEPIDLE.");
@@ -915,7 +916,7 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     }
     return nIntvl * 1000;
 #elif defined niLinux
-    tU32 nIntvl = 0;
+    int nIntvl = 0;
     socklen_t nOptSize = sizeof(nIntvl);
     if (getsockopt(mSocket, SOL_SOCKET, TCP_KEEPINTVL, &nIntvl, &nOptSize) != 0) {
       niError("Can't get TCP_KEEPINTVL.");
@@ -940,7 +941,7 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     }
     return nProbes;
 #elif defined niLinux
-    tU32 nProbes = 0;
+    int nProbes = 0;
     socklen_t nOptSize = sizeof(nProbes);
     if (getsockopt(mSocket, SOL_SOCKET, TCP_KEEPCNT, &nProbes, &nOptSize) != 0) {
       niError("Can't get TCP_KEEPCNT.");

@@ -6,6 +6,7 @@
 #include "../src/API/niLang/Utils/TimerSleep.h"
 #include "../src/API/niLang/Utils/ConcurrentImpl.h"
 #include "../src/API/niLang/IFile.h"
+#include "../src/API/niLang/STL/scope_guard.h"
 
 const ni::achar* _kaszTestString = _A("Test string");
 const ni::achar* _kaszTestString2 = _A("Second Test string");
@@ -13,10 +14,11 @@ const ni::achar* _kaszTestString3 = _A("Third Test string");
 
 static struct _SocketGetRandomPort {
   _SocketGetRandomPort() {
-    ni::RandSeed((ni::tU32)(ni::TimerInSeconds()*1000));
   }
   ni::tU16 GetPort() const {
-    ni::RandSeed((ni::tU32)(ni::TimerInSeconds()*1000));
+    ni::tU64 seed = ni::ni_prng_get_seed_from_maybe_secure_source();
+    niDebugFmt(("SEED: %d\n",seed));
+    ni::RandSeed(seed);
     ni::tU16 p = (ni::tU16)ni::RandIntRange(40000,44000);
     niDebugFmt(("SOCKET USING PORT: %d\n",p));
     return p;
@@ -134,19 +136,25 @@ struct SimpleTCPServer : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
   SimpleTCPServer() : _error(_H("")) {}
 
   ni::Var __stdcall Run() override {
+    niDefer {
+      _eventListening.Signal();
+    };
 
     ni::Ptr<ni::iSocket> socketConnect = ni::GetLang()->CreateSocket(ni::eSocketProtocol_TCP,NULL);
     // bind to the connection port
     if (!socketConnect->BindPortAny(_knPort)) {
       _error = _H("Can't bind port");
+      niError(niHStr(_error));
       return 0;
     }
 
     // listen for connection
     if (!socketConnect->Listen(0)) {
       _error = _H("Can't listen connection");
+      niError(niHStr(_error));
       return 0;
     }
+
     _eventListening.Signal();
 
     // accept connection
@@ -191,9 +199,6 @@ struct SimpleTCPServer : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
     niDebugFmt((_A("SERVER: Done...")));
     return 0;
   }
-  void __stdcall FlushThread() {
-    _eventListening.Signal();
-  }
 
   ni::tHStringPtr _error;
   ni::ThreadEvent _eventListening;
@@ -237,8 +242,8 @@ struct SimpleTCPClient : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
     return 0;
   }
 
-  ni::tHStringPtr       _error;
-  ni::cString         _received;
+  ni::tHStringPtr _error;
+  ni::cString     _received;
 };
 
 ///////////////////////////////////////////////
@@ -255,9 +260,7 @@ TEST_FIXTURE(FSocket_TCP,Connect) {
   server->_eventListening.Wait();
   niDebugFmt((_A("SERVER-THREAD: Done...")));
 
-  // wait for 1ms makes sure that the accept function has been entered in the serverThread
-  ni::SleepMs(100);
-  if (server->_error == _H("")) {
+  if (ni::HStringIsEmpty(server->_error)) {
     ni::Ptr<ni::iFuture> clientThreadFuture = ni::GetConcurrent()->ThreadRun(client);
     // wait until the client is done
     niDebugFmt((_A("CLIENT-THREAD: Waiting for client...")));

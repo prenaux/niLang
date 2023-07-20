@@ -24,9 +24,13 @@ static struct _SocketGetRandomPort {
     return p;
   }
 } _socketRandomizePort;
-// We randomize the port number because some OS, such as Linux,
-// lock the socket for a while before allowing it to be reused.
-static ni::tU16 _knPort = _socketRandomizePort.GetPort();
+
+static ni::tU16 _GetTestSocketPort() {
+  // We randomize the port number because some OS, such as Linux,
+  // lock the socket for a while before allowing it to be reused.
+  static ni::tU16 _port = _socketRandomizePort.GetPort();
+  return _port;
+}
 
 //--------------------------------------------------------------------------------------------
 //
@@ -49,7 +53,7 @@ TEST_FIXTURE(FSocket_UDP,QueryInterface) {
 TEST_FIXTURE(FSocket_UDP,Bind) {
   ni::Ptr<ni::iRemoteAddressIPv4> ra = ni::GetLang()->CreateRemoteAddressIPv4(0,0);
   ra->SetHost(niFourCC(127,0,0,1));
-  ra->SetPort(_knPort);
+  ra->SetPort(_GetTestSocketPort());
 
   ni::Ptr<ni::iSocket> recv = ni::GetLang()->CreateSocket(ni::eSocketProtocol_UDP,NULL);
   CHECK(recv.IsOK());
@@ -60,14 +64,14 @@ TEST_FIXTURE(FSocket_UDP,Bind) {
 TEST_FIXTURE(FSocket_UDP,BindPortAny) {
   ni::Ptr<ni::iSocket> recv = ni::GetLang()->CreateSocket(ni::eSocketProtocol_UDP,NULL);
   CHECK(recv.IsOK());
-  CHECK(recv->BindPortAny(_knPort) == ni::eTrue);
+  CHECK(recv->BindPortAny(_GetTestSocketPort()) == ni::eTrue);
 }
 
 ///////////////////////////////////////////////
 TEST_FIXTURE(FSocket_UDP,LoopbackSendRecv) {
   ni::Ptr<ni::iRemoteAddressIPv4> ra = ni::GetLang()->CreateRemoteAddressIPv4(0,0);
   ra->SetHost(niFourCC(127,0,0,1));
-  ra->SetPort(_knPort);
+  ra->SetPort(_GetTestSocketPort());
 
   // create the receiver
   ni::Ptr<ni::iSocket> recv = ni::GetLang()->CreateSocket(ni::eSocketProtocol_UDP,NULL);
@@ -142,7 +146,7 @@ struct SimpleTCPServer : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
 
     ni::Ptr<ni::iSocket> socketConnect = ni::GetLang()->CreateSocket(ni::eSocketProtocol_TCP,NULL);
     // bind to the connection port
-    if (!socketConnect->BindPortAny(_knPort)) {
+    if (!socketConnect->BindPortAny(_GetTestSocketPort())) {
       _error = _H("Can't bind port");
       niError(niHStr(_error));
       return 0;
@@ -212,7 +216,7 @@ struct SimpleTCPClient : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
 
     // connect to the server
     niDebugFmt((_A("CLIENT: Connecting...")));
-    ni::Ptr<ni::iRemoteAddressIPv4> serverAddr = ni::GetLang()->CreateRemoteAddressIPv4(niFourCC(127,0,0,1),_knPort);
+    ni::Ptr<ni::iRemoteAddressIPv4> serverAddr = ni::GetLang()->CreateRemoteAddressIPv4(niFourCC(127,0,0,1),_GetTestSocketPort());
     if (!socket->Connect(serverAddr)) {
       _error = _H("Can't connect to server");
       return 0;
@@ -248,8 +252,6 @@ struct SimpleTCPClient : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
 
 ///////////////////////////////////////////////
 TEST_FIXTURE(FSocket_TCP,Connect) {
-  _knPort = _socketRandomizePort.GetPort();
-
   ni::Ptr<SimpleTCPServer> server = niNew SimpleTCPServer();
   ni::Ptr<SimpleTCPClient> client = niNew SimpleTCPClient();
 

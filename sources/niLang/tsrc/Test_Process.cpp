@@ -360,29 +360,29 @@ TEST_FIXTURE(FProcess,SpawnStdFiles) {
   cString r;
   // skip the test program initial message
   r = fpFrom->ReadStringLine();
+  niDebugFmt(("TEST RECEIVED: '%s'", r));
   CHECK(r.contains(_A("test mode")));
-  niDebugFmt(("TEST RECEIVED: %s", r));
 
   fpTo->WriteStringZ(_A("hello"));
   fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: %s", fpErr->ReadString()));
+  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
   r = fpFrom->ReadString();
+  niDebugFmt(("TEST RECEIVED: '%s'", r));
   CHECK_EQUAL(_ASTR("HELLO"),r);
-  niDebugFmt(("TEST RECEIVED: %s", r));
 
   fpTo->WriteStringZ(_A("world!"));
   fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: %s", fpErr->ReadString()));
+  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
   r = fpFrom->ReadString();
+  niDebugFmt(("TEST RECEIVED: '%s'", r));
   CHECK_EQUAL(_ASTR("WORLD!"),r);
-  niDebugFmt(("TEST RECEIVED: %s", r));
 
   fpTo->WriteStringZ(_A("exit"));
   fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: %s", fpErr->ReadString()));
+  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
   r = fpFrom->ReadString();
+  niDebugFmt(("TEST RECEIVED: '%s'", r));
   CHECK_EQUAL(_ASTR("EXIT"),r);
-  niDebugFmt(("TEST RECEIVED: %s", r));
 
   tBool cleanClose = spawned->Wait(1000);
   CHECK(cleanClose);

@@ -42,6 +42,7 @@ void __stdcall cLang::CloseSocketHandle(ni::tInt aSocket) {
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #define INVALID_SOCKET   -1
 #define SOCKET_ERROR     -1
@@ -59,6 +60,8 @@ typedef int SOCKET;
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
+#include <unistd.h>
+
 #define INVALID_SOCKET   -1
 #define SOCKET_ERROR     -1
 typedef int SOCKET;

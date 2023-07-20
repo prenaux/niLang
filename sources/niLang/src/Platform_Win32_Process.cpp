@@ -652,7 +652,9 @@ ni::tIntPtr GetParentProcessFromPid(ni::tIntPtr dwPID) {
 ni::cString GetProcessExePathFromPid(ni::tIntPtr pid) {
   WCHAR exePath[AMAX_PATH] = {0};
   GetProcessExePath(pid,exePath,AMAX_PATH);
-  return exePath;
+  ni::cString r = exePath;
+  ni::Windows::utf8_FixDriveLetter(r.data());
+  return r;
 }
 
 int GetProcessCount(const astl::string& executable_name,

@@ -198,6 +198,7 @@ inline BOOL ConvertUTF16ToUTF8(UTF8Buffer& aOut, const WCHAR* pszTextUTF16, size
 niExportFunc(void) utf8_OutputDebugString(const char* aaszMsg);
 
 #ifdef niWinDesktop
+niExportFunc(char*) utf8_FixDriveLetter(char* apOut);
 niExportFunc(char*) utf8_GetModuleFileName(HMODULE ahDLL, char* apOut);
 niExportFunc(HMODULE) utf8_GetModuleHandle(const char* aaszPath);
 niExportFuncCPP(cString) utf8_getcwd();

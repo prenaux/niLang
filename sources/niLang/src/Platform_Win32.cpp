@@ -393,6 +393,7 @@ niExportFunc(char*) utf8_GetCommandLine() {
   static ni::Windows::UTF8Buffer _cmdLine;
   const WCHAR* cmdLine = ::GetCommandLineW();
   niWin32_UTF16ToUTF8(_cmdLine,cmdLine);
+  utf8_FixDriveLetter(_cmdLine.begin());
   return _cmdLine.begin();
 }
 
@@ -420,13 +421,22 @@ niExportFunc(int) utf8_access(const char* aaszPath, int mode) {
   return _waccess(wPath.begin(),mode);
 }
 
+niExportFunc(char*) utf8_FixDriveLetter(char* apOut) {
+  // make sure the drive letter is lower case for consistency
+  int c0 = StrToLower(apOut[0]);
+  if ((c0 >= 'a') && (c0 <= 'z') && (apOut[1] == ':'))  {
+    apOut[0] = c0;
+  }
+  return apOut;
+}
+
 niExportFunc(char*) utf8_GetModuleFileName(HMODULE ahDLL, char* apOut) {
   WCHAR buffer[_MAX_PATH];
   ::GetModuleFileNameW(ahDLL,buffer,_MAX_PATH);
   *apOut = 0;
   UTF8Buffer uOut; uOut.Adopt(apOut);
   niWin32_UTF16ToUTF8(uOut,buffer);
-  return apOut;
+  return utf8_FixDriveLetter(apOut);
 }
 
 niExportFunc(HMODULE) utf8_GetModuleHandle(const char* aaszPath) {
@@ -445,7 +455,7 @@ niExportFuncCPP(cString) utf8_getcwd() {
   _wgetcwd(buffer,_MAX_PATH);
   UTF8Buffer uOut;
   niWin32_UTF16ToUTF8(uOut,buffer);
-  return uOut.begin();
+  return utf8_FixDriveLetter(uOut.begin());
 }
 
 }}

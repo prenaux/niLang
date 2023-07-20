@@ -27,9 +27,10 @@ if [ ! -d "$HAM_HOME" ]; then
     source_ham_env || return 1
 else
     source_ham_env || return 1
+    HAM_NO_VER_CHECK=1 . hat repos > /dev/null
     (set -ex ;
      pushd "$HAM_HOME" ;
-     PATH="$HAM_HOME/toolsets/repos/":$PATH git-update .
+     git-update .
      popd)
 fi
 

@@ -21,6 +21,8 @@
 #include <niLang/Math/MathRect.h>
 #include <niLang/ILang.h>  // For _HDecl & _HC
 #include <niLang/STL/source_location.h>
+#include <niLang/STL/run_once.h>
+#include <niLang/STL/scope_guard.h>
 
 // clang-format off
 // This is because we want to allow [[nodiscard]] everywhere and I dont want

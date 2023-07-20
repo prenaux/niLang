@@ -7,7 +7,7 @@ struct FRand {
 using namespace ni;
 
 TEST_FIXTURE(FRand,ObjectBase) {
-  int4 randObj = ni_prng_init(0);
+  int4 randObj = ni_prng_init(ni_prng_get_seed_from_maybe_secure_source());
   niDebugFmt(("... randObj: %s", randObj));
   niLoop(i,10) {
     niDebugFmt(("... rand[%d]: %s", i, ni_prng_next_i32(&randObj)));

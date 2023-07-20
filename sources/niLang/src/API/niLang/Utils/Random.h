@@ -12,14 +12,20 @@ namespace ni {
  * @{
  */
 
-typedef tBool (*tpfnRandomEntrpySource)(tU8* buffer, tSize buflen);
+//! Generate a seed from the secure random entropy source.
+//! \remark You can use RandSecureGetBytes(&someInt,sizeof(someInt)) to
+//!         detect if a secure entropy source is available.
+//! \remark Panic if they are no secure entropy source available.
+niExportFunc(tI64) ni_prng_get_seed_from_secure_source();
+//! Generate a seed from a weak time based entropy source.
+//! \remark This is not a secure source of entropy.
+niExportFunc(tI64) ni_prng_get_seed_from_time_source();
+//! Generate a seed from a secure entropy source is possible otherwise fallback
+//! to the time based source.
+//! \remark This is not a secure source of entropy.
+niExportFunc(tI64) ni_prng_get_seed_from_maybe_secure_source();
 
-//! Set the current random entropy source. By default uses the 'best' source available on the platform.
-niExportFunc(void) ni_prng_set_entropy_source(tpfnRandomEntrpySource apfnRandomEntropySource);
-//! Generate a seed from the current random entropy source.
-niExportFunc(tI64) ni_prng_get_seed_from_entropy_source();
-
-//! Initialize a new PRNG, if anSeed == 0 seed from the current entropy source.
+//! Initialize a new PRNG with the specified seed.
 niExportFunc(int4) ni_prng_init(tU64 anSeed);
 //! Seed a random number generator
 niExportFunc(void) ni_prng_seed(int4* aPRNG, tU64 anSeed);
@@ -53,6 +59,12 @@ niExportFunc(int4*) ni_prng_global();
 
 //! Computes a 64bit seed from the specified string.
 niExportFunc(tU64) ni_prng_seed_from_string(const achar* aString, const tI32 aStrLen = 0);
+
+//! Get random bytes from a secure random entropy source.
+//! \return eFalse if we can't get bytes from a secure random entropy source.
+//! \remark Note that we rely on the OS/underlying platform to respect the
+//!         definition of the APIs we're using.
+niExportFunc(tBool) RandSecureGetBytes(tPtr apOutput, tSize anSize);
 
 //! Seed a random number generator.
 inline void RandSeed(tU64 aSeed, int4* aPRNG = ni_prng_global()) {

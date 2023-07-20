@@ -1,13 +1,76 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#ifdef _MSC_VER
-#define _CRT_RAND_S
-#endif
-#include "API/niLang/Types.h"
 #include "API/niLang/Utils/Random.h"
+
 #include "API/niLang/ILang.h"
 #include "API/niLang/Math/MathUtils.h"
+#include "API/niLang/STL/run_once.h"
+#include "API/niLang/STL/scope_guard.h"
+#include "API/niLang/Types.h"
 #include "API/niLang/Utils/CryptoUtils.h"
+
+#if defined niLinux
+#include <fcntl.h>
+#include <unistd.h>
+
+namespace ni {
+tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
+  int fd = open("/dev/urandom", O_RDONLY);
+  if (fd < 0) {
+    return eFalse;
+  }
+  niDefer { close(fd); };
+  if (anSize > 0) {
+    niPanicAssert(apOutput != nullptr);
+    if (read(fd, apOutput, anSize) != anSize) {
+      return eFalse;
+    }
+  }
+  return eTrue;
+}
+}  // namespace ni
+
+#elif defined niOSX || defined niIOS
+
+#include <Security/Security.h>
+
+namespace ni {
+tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
+  if (anSize > 0) {
+    niPanicAssert(apOutput != nullptr);
+    if (SecRandomCopyBytes(kSecRandomDefault, anSize, (uint8_t*)apOutput) !=
+        errSecSuccess) {
+      return eFalse;
+    }
+  }
+  return eTrue;
+}
+}  // namespace ni
+
+#elif defined niWindows
+
+namespace ni {
+tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
+  if (anSize > 0) {
+    niPanicAssert(apOutput != nullptr);
+    if (!CryptGenRandom(NULL, anSize, apOutput)) {
+      return eFalse;
+    }
+  }
+  return eTrue;
+}
+}  // namespace ni
+
+#else
+
+namespace ni {
+tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
+  ??
+  return eFalse;
+}
+}
+
+#endif
 
 namespace ni {
 //
@@ -36,70 +99,38 @@ namespace ni {
 // This class is neither reentrant nor threadsafe.
 //
 
-static tpfnRandomEntrpySource _pfnRandomEntropySource = NULL;
-
-niExportFunc(void) ni_prng_set_entropy_source(tpfnRandomEntrpySource apfnRandomEntropySource) {
-  _pfnRandomEntropySource = apfnRandomEntropySource;
+niExportFunc(tI64) ni_prng_get_seed_from_time_source() {
+  tI64 seed =
+      ((tI64)(ni::GetLang()->GetCurrentTime()->GetUnixTimeSecs()) << 24) +
+      ((tI64)(ni::GetLang()->TimerInSeconds() * 1e6));
+  seed ^= (tI64)(ni::TimerInSeconds() * 1000) << 16;
+  seed ^= (tI64)(ni::TimerInSeconds() * 1000) << 8;
+  return seed;
 }
 
-niExportFunc(tI64) ni_prng_get_seed_from_entropy_source() {
-  if (_pfnRandomEntropySource != NULL) {
-    tI64 seed;
-    if (_pfnRandomEntropySource(reinterpret_cast<unsigned char*>(&seed), sizeof(seed))) {
-      return seed;
-    }
+niExportFunc(tI64) ni_prng_get_seed_from_secure_source() {
+  tI64 seed;
+  if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
+    niPanicUnreachable("No secure random entropy source.");
   }
-
-#ifdef niWin32
-  // Use rand_s() to gather entropy on Windows. See:
-  // https://code.google.com/p/v8/issues/detail?id=2905
-  unsigned first_half, second_half;
-  errno_t result = rand_s(&first_half);
-  niAssert(0 == result);
-  result = rand_s(&second_half);
-  niAssert(0 == result);
-  return (static_cast<tI64>(first_half) << 32) + second_half;
-#else
-
-#if defined niOSX || defined niLinux
-  // Gather entropy from /dev/urandom if available.
-  FILE* fp = fopen("/dev/urandom", "rb");
-  if (fp != NULL) {
-    tI64 seed;
-    size_t n = fread(&seed, sizeof(seed), 1, fp);
-    fclose(fp);
-    if (n == 1) {
-      return seed;
-    }
-  }
-#endif
-
-  // We cannot assume that random() or rand() were seeded
-  // properly, so instead of relying on random() or rand(),
-  // we just seed our PRNG using timing data as fallback.
-  // This is weak entropy, but it's sufficient, because
-  // it is the responsibility of the embedder to install
-  // an entropy source using v8::V8::SetEntropySource(),
-  // which provides reasonable entropy, see:
-  // https://code.google.com/p/v8/issues/detail?id=2905
-  tI64 seed = (tI64)(ni::GetLang()->GetCurrentTime()->GetUnixTimeSecs()) << 24;
-  seed ^= (tI64)(ni::TimerInSeconds()*1000) << 16;
-  seed ^= (tI64)(ni::TimerInSeconds()*1000) << 8;
   return seed;
+}
 
-#endif
+niExportFunc(tI64) ni_prng_get_seed_from_maybe_secure_source() {
+  tI64 seed;
+  if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
+    return ni_prng_get_seed_from_time_source();
+  }
+  return seed;
 }
 
 struct RandomNumberGenerator {
-
   // Returns the next pseudorandom, uniformly distributed int value from this
   // random number generator's sequence. The general contract of |NextInt()| is
   // that one int value is pseudorandomly generated and returned.
   // All 2^32 possible integer values are produced with (approximately) equal
   // probability.
-  __forceinline tI32 NextInt() {
-    return Next(32);
-  }
+  __forceinline tI32 NextInt() { return Next(32); }
 
   // Returns a pseudorandom, uniformly distributed int value between 0
   // (inclusive) and the specified max value (exclusive), drawn from this random
@@ -133,9 +164,7 @@ struct RandomNumberGenerator {
   // |NextBoolean()| is that one boolean value is pseudorandomly generated and
   // returned. The values true and false are produced with (approximately) equal
   // probability.
-  __forceinline tBool NextBool() {
-    return Next(1) != 0;
-  }
+  __forceinline tBool NextBool() { return Next(1) != 0; }
 
   // Returns the next pseudorandom, uniformly distributed double value between
   // 0.0 and 1.0 from this random number generator's sequence.
@@ -210,7 +239,8 @@ struct RandomNumberGenerator {
 };
 niCAssert(sizeof(int4) == sizeof(RandomNumberGenerator));
 
-niExportFunc(tU64) ni_prng_seed_from_string(const achar* aString, const tI32 aStrLen) {
+niExportFunc(tU64)
+    ni_prng_seed_from_string(const achar* aString, const tI32 aStrLen) {
   Ptr<iCryptoHash> hash = ni::CreateHash("SHA512_256");
   ni::HashString(hash, "prng", 4);
   ni::HashString(hash, aString, aStrLen);
@@ -225,10 +255,7 @@ niExportFunc(int4) ni_prng_init(tU64 anSeed) {
 
 niExportFunc(void) ni_prng_seed(int4* aPRNG, tU64 anSeed) {
   niCAssert(sizeof(*aPRNG) == sizeof(RandomNumberGenerator));
-  ((RandomNumberGenerator*)aPRNG)->SetSeed(
-      (anSeed == 0) ?
-      ni_prng_get_seed_from_entropy_source() :
-      anSeed);
+  ((RandomNumberGenerator*)aPRNG)->SetSeed(anSeed);
 }
 
 niExportFunc(tI32) ni_prng_next_i32(int4* aPRNG) {
@@ -243,8 +270,9 @@ niExportFunc(tF64) ni_prng_next_f64(int4* aPRNG) {
   return ((RandomNumberGenerator*)aPRNG)->NextDouble();
 }
 
-niExportFunc(void) ni_prng_next_bytes(int4* aPRNG, tPtr apBytes, tSize anNumBytes) {
-  ((RandomNumberGenerator*)aPRNG)->NextBytes(apBytes,anNumBytes);
+niExportFunc(void)
+    ni_prng_next_bytes(int4* aPRNG, tPtr apBytes, tSize anNumBytes) {
+  ((RandomNumberGenerator*)aPRNG)->NextBytes(apBytes, anNumBytes);
 }
 
 niExportFunc(tBool) ni_prng_next_bool(int4* aPRNG) {
@@ -256,4 +284,4 @@ niExportFunc(int4*) ni_prng_global() {
   return &_sState;
 }
 
-}
+}  // namespace ni

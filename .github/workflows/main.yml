@@ -50,13 +50,11 @@ jobs:
       - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          export BUILD=da
-          ./ham/bin/ham -X niLang ./_run_ci.sh
+          ./ham/bin/ham -X niLang -E BUILD=da _run_ci.sh
 
       - name: niLang _run_ci.sh BUILD=ra
         run: |
-          export BUILD=ra
-          ./ham/bin/ham -X niLang ./_run_ci.sh
+          ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
   build_macos_latest:
     # The type of runner that the job will run on
@@ -88,13 +86,11 @@ jobs:
       - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          export BUILD=da
-          ./ham/bin/ham -X niLang ./_run_ci.sh
+          ./ham/bin/ham -X niLang -E BUILD=da _run_ci.sh
 
       - name: niLang _run_ci.sh BUILD=ra
         run: |
-          export BUILD=ra
-          ./ham/bin/ham -X niLang ./_run_ci.sh
+          ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
   build_windows_latest:
     # The type of runner that the job will run on
@@ -135,10 +131,8 @@ jobs:
       - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          set BUILD=da
-          .\ham\bin\ham.cmd -X niLang _run_ci.sh
+          .\ham\bin\ham.cmd -X niLang -E BUILD=da _run_ci.sh
 
       - name: niLang _run_ci.sh BUILD=ra
         run: |
-          set BUILD=ra
-          .\ham\bin\ham.cmd -X niLang _run_ci.sh
+          .\ham\bin\ham.cmd -X niLang -E BUILD=ra _run_ci.sh

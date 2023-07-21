@@ -178,8 +178,14 @@ static tBool ScriptCpp_TryCompileSource(
     cPath pathBash;
 #if defined niWindows
     pathBash.SetDirectory(hamHome.Chars());
-    pathBash.AddDirectoryBack("bin/nt-x86");
+    pathBash.AddDirectoryBack("toolsets/repos/nt-x86/git/bin");
     pathBash.SetFile("bash.exe");
+    if (!ni::GetRootFS()->FileExists(pathBash.GetPath().Chars(),
+                                     eFileAttrFlags_AllFiles)) {
+      pathBash.SetDirectory(hamHome.Chars());
+      pathBash.AddDirectoryBack("bin/nt-x86");
+      pathBash.SetFile("bash.exe");
+    }
 #elif defined niOSX || defined niLinux
     pathBash.SetFile("/bin/bash");
 #else

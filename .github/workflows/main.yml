@@ -1,9 +1,5 @@
 name: run_ci
 
-defaults:
-  run:
-    shell: bash
-
 concurrency:
   group: main-${{ github.head_ref }}
   cancel-in-progress: true
@@ -24,65 +20,125 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      # Check-out and init ham
+      - name: Check-out ham
+        uses: actions/checkout@v3
+        with:
+          repository: prenaux/ham
+          ref: master
+          path: ham
 
       - name: Install Ubuntu packages
         run: |
           sudo apt update
           DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc libdw-dev libunwind-dev
 
-      - name: Build bootstrap
+      - name: ham-toolset repos cppm
         run: |
-          ./_build_bootstrap.sh
+          ./ham/bin/ham-toolset repos cppm
 
-      - name: Run_ci BUILD=da
+      # Check-out our repo
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          path: niLang
+
+      - name: niLang _build_bootstrap.sh
+        run: |
+          ./ham/bin/ham -X niLang _build_bootstrap.sh
+
+      - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          BUILD=da ./_run_ci.sh
+          export BUILD=da
+          ./ham/bin/ham -X niLang ./_run_ci.sh
 
-      - name: Run_ci BUILD=ra
+      - name: niLang _run_ci.sh BUILD=ra
         run: |
-          BUILD=ra ./_run_ci.sh
+          export BUILD=ra
+          ./ham/bin/ham -X niLang ./_run_ci.sh
 
   build_macos_latest:
     # The type of runner that the job will run on
     runs-on: macos-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      # Check-out and init ham
+      - name: Check-out ham
+        uses: actions/checkout@v3
+        with:
+          repository: prenaux/ham
+          ref: master
+          path: ham
 
-      - name: Build bootstrap
+      - name: ham-toolset repos cppm
         run: |
-          ./_build_bootstrap.sh
+          ./ham/bin/ham-toolset repos cppm
 
-      - name: Run_ci BUILD=da
+      # Check-out our repo
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          path: niLang
+
+      - name: niLang _build_bootstrap.sh
+        run: |
+          ./ham/bin/ham -X niLang _build_bootstrap.sh
+
+      - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          BUILD=da ./_run_ci.sh
+          export BUILD=da
+          ./ham/bin/ham -X niLang ./_run_ci.sh
 
-      - name: Run_ci BUILD=ra
+      - name: niLang _run_ci.sh BUILD=ra
         run: |
-          BUILD=ra ./_run_ci.sh
+          export BUILD=ra
+          ./ham/bin/ham -X niLang ./_run_ci.sh
 
   build_windows_latest:
     # The type of runner that the job will run on
     runs-on: windows-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Build bootstrap
+      - name: Turn off git eol insanity on Windows
         run: |
-          ./_build_bootstrap.sh
+          git config --global core.autocrlf false
+          git config --global core.eol lf
 
-      - name: Run_ci BUILD=da
+      # Check-out and init ham
+      - name: Check-out ham
+        uses: actions/checkout@v3
+        with:
+          repository: prenaux/ham
+          ref: master
+          path: ham
+
+      - name: ham-install-for-windows
+        run: |
+          .\ham\bin\ham-install-for-windows.cmd
+
+      - name: ham-toolset repos cppm
+        run: |
+          .\ham\bin\ham-toolset.cmd repos cppm
+
+      # Check-out our repo
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          path: niLang
+
+      - name: niLang _build_bootstrap.sh
+        run: |
+          .\ham\bin\ham.cmd -X niLang _build_bootstrap.sh
+
+      - name: niLang _run_ci.sh BUILD=da
         continue-on-error: true
         run: |
-          BUILD=da ./_run_ci.sh
+          set BUILD=da
+          .\ham\bin\ham.cmd -X niLang _run_ci.sh
 
-      - name: Run_ci BUILD=ra
+      - name: niLang _run_ci.sh BUILD=ra
         run: |
-          BUILD=ra ./_run_ci.sh
+          set BUILD=ra
+          .\ham\bin\ham.cmd -X niLang _run_ci.sh

@@ -515,13 +515,15 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* log
       _SetConsoleColors(final,0,eTrue);
 #endif
 
-      FILE* fpout = isStdoutLogtype ? stdout : stderr;
-      fputs(final.Chars(),fpout);
+      iFile* fpOut = ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(
+        isStdoutLogtype ? eOSProcessFile_StdOut : eOSProcessFile_StdErr);
+      niPanicAssert(niIsOK(fpOut));
+      fpOut->WriteString(final.Chars());
       if (!niFlagIs(logType,eLogFlags_NoNewLine) &&
           (final.empty() || final[final.size()-1] != '\n')) {
-        fputs("\n",fpout);
+        fpOut->WriteString("\n");
       }
-      fflush(fpout);
+      fpOut->Flush();
     }
 #endif // LOG_STDIO
 
@@ -561,7 +563,8 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* log
         }
       }
       if (_logFile.IsOK()) {
-        cString final;        ni_log_format_message(final,logType,logFile,logLine,logFunc,logMsg,logTime,_fPrevTime);
+        cString final;
+        ni_log_format_message(final,logType,logFile,logLine,logFunc,logMsg,logTime,_fPrevTime);
         _logFile->WriteString(final.Chars());
         if (!niFlagIs(logType,eLogFlags_NoNewLine) &&
             (final.empty() || final[final.size()-1] != '\n')) {

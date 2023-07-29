@@ -75,7 +75,7 @@ int ChildProcessMain_Process__(int argc, const ni::achar** argv) {
     niLoop(i,1024*1024*1024) {
       *p++ = (tU8)i;
     }
-    fputs((char*)p,stdout);
+    ni::GetStdOut()->WriteString((char*)p);
   }
   else if (mode == _A("printloop")) {
     niLoop(i,kPrintLoopCount) {

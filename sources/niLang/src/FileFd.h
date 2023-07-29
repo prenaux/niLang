@@ -50,7 +50,6 @@
 #endif
 #endif
 
-#define afputs    fputs
 niExportFunc(FILE*) afopen(const char* file, const char* mode, ni::cString* apPathOnDisk);
 niExportFunc(int)   amkdir(const char* dir);
 niExportFunc(int)   armdir(const char* dir);

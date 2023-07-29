@@ -114,7 +114,8 @@ struct iOSProcess : public iUnknown {
   //! will do nothing.
   virtual void __stdcall Terminate(tInt aResultCode) = 0;
 
-  //! Get a standard file object beloging to the process.
+  //! Get a standard file object belonging to the process.
+  //! \remark The file returned is always in binary mode.
   //! {Property}
   virtual iFile* __stdcall GetFile(eOSProcessFile aFile) const = 0;
 };
@@ -167,10 +168,18 @@ struct iOSProcessManager : public iUnknown {
   virtual Ptr<tStringCMap> __stdcall GetEnvs() const = 0;
 };
 
-#ifndef niNoProcess
 //! Get the OS process manager.
 niExportFunc(ni::iOSProcessManager*) GetOSProcessManager();
-#endif
+
+inline iFile* GetStdOut() {
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdOut);
+}
+inline iFile* GetStdErr() {
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdErr);
+}
+inline iFile* GetStdIn() {
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdIn);
+}
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

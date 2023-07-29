@@ -17733,7 +17733,9 @@
 				property="get"
 				property_name2="file"
 				property_name="file">
-				<comments desc="Get a standard file object beloging to the process. "/>
+				<comments desc="Get a standard file object belonging to the process. ">
+					<remark text="The file returned is always in binary mode. "/>
+				</comments>
 				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"

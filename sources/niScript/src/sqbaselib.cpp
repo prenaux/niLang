@@ -269,12 +269,13 @@ static int get_slice_params(HSQUIRRELVM v,int &sidx,int &eidx,SQObjectPtr &o)
 static void _doPrint(bool bNewLine, const ni::achar* str) {
   static ThreadMutex _printMutex;
   AutoThreadLock lock(_printMutex);
-  FILE* f = stdout;
-  fputs(str,f);
+  iFile* fpStdOut = ni::GetStdOut();
+  niPanicAssert(niIsOK(fpStdOut));
+  fpStdOut->WriteString(str);
   if (bNewLine) {
-    fputs("\n",f);
+    fpStdOut->WriteString("\n");
   }
-  fflush(f);
+  fpStdOut->Flush();
 }
 
 static int base_print_(HSQUIRRELVM v, bool bNewLine)

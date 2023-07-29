@@ -5,8 +5,6 @@
 
 #if niMinFeatures(15)
 
-#ifndef niNoProcess
-
 #include "API/niLang/IOSProcess.h"
 #include "API/niLang/IFile.h"
 #include "API/niLang/Utils/UnknownImpl.h"
@@ -906,7 +904,5 @@ niExportFunc(ni::iOSProcessManager*) GetOSProcessManager() {
 }
 
 }
-
-#endif // #ifdef niNoProcess
 
 #endif // #if niMinFeatures(15)

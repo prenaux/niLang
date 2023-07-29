@@ -21,6 +21,7 @@
 #include <niLang/Utils/Path.h>
 #include <niLang/Utils/StrBreakIt.h>
 #include <niLang/IZip.h>
+#include <niLang/IOSProcess.h>
 #include <niLang_ModuleDef.h>
 #include <niScript.h>
 #ifdef NI_WINDOWED
@@ -179,17 +180,18 @@ cString GetHelpString() {
   return strHelp;
 }
 
-static void PutString(FILE* f, const ni::achar* str, bool bForceNewLine = true) {
-  fputs(str,f);
+static void PutString(iFile* f, const ni::achar* str, bool bForceNewLine = true) {
+  f->WriteString(str);
   if (bForceNewLine) {
-    if (str[strlen(str)-1] != '\n')
-      fputs(_A("\n"),f);
+    if (str[ni::StrSize(str)-1] != '\n') {
+      f->WriteString("\n");
+    }
   }
-  fflush(f);
+  f->Flush();
 }
 
 void InfoExit(const achar* aszMsg) {
-  PutString(stdout,aszMsg);
+  PutString(ni::GetStdOut(),aszMsg);
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(aszMsg);
 #endif
@@ -205,7 +207,7 @@ void ErrorHelp(const achar* aszMsg) {
   str += _A("\n");
   str += GetHelpString();
   str += _A("\n");
-  PutString(stdout,str.Chars());
+  PutString(ni::GetStdOut(),str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
@@ -217,7 +219,7 @@ void ErrorExit(const achar* aszMsg) {
   str = _A("Error:\n");
   str += aszMsg;
   str += _A("\n");
-  PutString(stdout,str.Chars());
+  PutString(ni::GetStdOut(),str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
@@ -239,7 +241,7 @@ void ErrorScript(const astl::vector<cString>* apErrors, const achar* aszMsg) {
     }
   }
   str += _A("\n");
-  PutString(stdout,str.Chars());
+  PutString(ni::GetStdOut(),str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
@@ -558,7 +560,7 @@ static void REPL_CompilerErrorHandler(HSQUIRRELVM v, const SQChar *desc, const S
       NULL,0,NULL,
       niFmt("Compilation Error (L%d C%d): %s",line,column,desc),
       -1,-1);
-  PutString(stderr, strDesc.Chars());
+  PutString(ni::GetStdErr(), strDesc.Chars());
   _lastCompilerErrorLine = line;
   _lastCompilerErrorColumn = column;
 }
@@ -632,10 +634,10 @@ void REPL(iScriptVM* apVM)
       int retval = 1;
       if (SQ_SUCCEEDED(sq_call(v,1,retval)) && retval) {
         if (aCodeToRun.contains("print") && !aCodeToRun.contains("println")) {
-          PutString(stdout,_A("\n==> "),false);
+          PutString(ni::GetStdOut(),_A("\n==> "),false);
         }
         else {
-          PutString(stdout,_A("==> "),false);
+          PutString(ni::GetStdOut(),_A("==> "),false);
         }
         sq_pushroottable(v);
         sq_pushstring(v,_HC(REPL_PrintResult));
@@ -650,7 +652,7 @@ void REPL(iScriptVM* apVM)
       int line = 1;
       StrBreakIt<StrBreakLine> breaker(aCodeToRun.charIt());
       while (!breaker.is_end()) {
-        PutString(stderr,cString(breaker.current()).Chars());
+        PutString(ni::GetStdErr(),cString(breaker.current()).Chars());
         if (_lastCompilerErrorLine == line &&
             (_lastCompilerErrorColumn > 0 &&
              _lastCompilerErrorColumn < 120))
@@ -661,7 +663,7 @@ void REPL(iScriptVM* apVM)
             marker.appendChar(' ');
           }
           marker.appendChar('^');
-          PutString(stderr,marker.Chars());
+          PutString(ni::GetStdErr(),marker.Chars());
         }
         ++line;
         breaker.next();
@@ -677,8 +679,8 @@ void REPL(iScriptVM* apVM)
     niLoopit(auto,it,_GetOptions()->_vREPLStartupExec) {
       tBool ret;
       const cString& l = *it;
-      PutString(stdout,_A("ni$ "),false);
-      PutString(stdout,l.Chars());
+      PutString(ni::GetStdOut(),_A("ni$ "),false);
+      PutString(ni::GetStdOut(),l.Chars());
       if (isCmd(l)) {
         ret = runCmd(l);
       }
@@ -705,7 +707,7 @@ void REPL(iScriptVM* apVM)
   // Print startup text
   niLog(Info,"Input ':q' to exit the REPL");
   niLog(Info,"Input ':import filename' to import a script to be monitored");
-  PutString(stdout,"ni> ",false);
+  PutString(ni::GetStdOut(),"ni> ",false);
 
   // Interactive REPL
   while (!_bREPLClose)
@@ -768,7 +770,7 @@ void REPL(iScriptVM* apVM)
           achar* pWriteBuffer = indent.data();
           pWriteBuffer[indentLen] = 0;
           memset(pWriteBuffer,' ',indentLen);
-          PutString(stdout,pWriteBuffer,false);
+          PutString(ni::GetStdOut(),pWriteBuffer,false);
         }
 
         niLoop(j,blocks*2) {
@@ -806,7 +808,7 @@ void REPL(iScriptVM* apVM)
     if (!isMultiLine && isCmd(buffer)) {
       if (!runCmd(buffer)) {
         niLog(Warning,niFmt("Unknown repl command '%s'",buffer));
-        PutString(stdout,_A("\nni> "),false);
+        PutString(ni::GetStdOut(),_A("\nni> "),false);
         continue;
       }
     }
@@ -829,13 +831,13 @@ void REPL(iScriptVM* apVM)
     if (_REPLRunCallback.IsOK()) {
       _REPLRunCallback->RunCallback(ni::Runnable([&runCode,&codeToRun]() -> tBool {
         const tBool r = runCode(codeToRun);
-        PutString(stdout,_A("\nni> "),false);
+        PutString(ni::GetStdOut(),_A("\nni> "),false);
         return r;
       }),codeToRun);
     }
     else {
       runCode(codeToRun);
-      PutString(stdout,_A("\nni> "),false);
+      PutString(ni::GetStdOut(),_A("\nni> "),false);
     }
   }
 }
@@ -967,8 +969,8 @@ void __stdcall MsWin_ScriptRegister(iScriptVM* apVM) {
 //
 //--------------------------------------------------------------------------------------------
 static Var OnExit() {
-  ::fflush(stdout);
-  ::fflush(stderr);
+  ni::GetStdOut()->Flush();
+  ni::GetStdErr()->Flush();
   _GetOptions()->_vArgs = NULL;
 #pragma niNote("The script VM HAS to be invalidated before being released, otherwise resources will leak, this is because an instance of an object created in a table may contain a reference to this VM and so create a cycle.")
   if (_GetOptions()->_ptrScriptVM.IsOK()) {

@@ -527,7 +527,16 @@ tSize __stdcall TextEncodingFormatWriteString(iFile* apFile, eTextEncodingFormat
   switch (aFormat) {
     case eTextEncodingFormat_UTF8:
     case eTextEncodingFormat_UTF8BOM: {
+#if 1
+      if (!niIsStringOK(aaszStr))
+        return abWriteEndZero?apFile->Write8(0):0;
+      auto size = ni::StrSize(aaszStr);
+      apFile->WriteRaw((tPtr)aaszStr, size);
+      if (abWriteEndZero)
+        nSize += apFile->Write8(0);
+#else
       WRITE_LOOP(_TextEncodingFormatWriteCharUTF8,Write8);
+#endif
       break;
     }
     case eTextEncodingFormat_UTF16LE: WRITE_LOOP(_TextEncodingFormatWriteCharUTF16LE,WriteLE16); break;

@@ -40,11 +40,11 @@ case $NI_OS in
         ;;
     NT*)
         case $BUILD_BIN_LOA in
-            *-x64)
+            *)
                 export BIN_LOA=nt-x64
                 export BIN_EXT=.exe
             ;;
-            *)
+            *-x86)
                 export BIN_LOA=nt-x86
                 export BIN_EXT=.exe
             ;;

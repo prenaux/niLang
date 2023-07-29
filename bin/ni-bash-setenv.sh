@@ -12,6 +12,11 @@ if [ -z $NI_OS ]; then
         Darwin)
             export NI_OS=OSX
             ;;
+        MINGW*_NT*)
+            export NI_OS=NT
+            # Convert all paths for us pls...
+            export MSYS2_ARG_CONV_EXCL=''
+            ;;
         *)
             export NI_OS=`uname`
             ;;
@@ -30,18 +35,6 @@ case $NI_OS in
             ;;
             *)
                 export BIN_LOA=osx-x64
-            ;;
-        esac
-        ;;
-    MINGW32_NT*)
-        case $BUILD_BIN_LOA in
-            *-x64)
-                export BIN_LOA=nt-x64
-                export BIN_EXT=.exe
-            ;;
-            *)
-                export BIN_LOA=nt-x86
-                export BIN_EXT=.exe
             ;;
         esac
         ;;
@@ -70,7 +63,7 @@ case $NI_OS in
         export BIN_EXT=.x64
         ;;
     *)
-        echo "E/Unknown OS: '$NI_OS'"
+        echo "E/ni-bash-setenv: Unknown OS: '$NI_OS'"
         exit 1
         ;;
 esac

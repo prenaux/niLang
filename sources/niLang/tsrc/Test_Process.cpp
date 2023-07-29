@@ -5,9 +5,14 @@
 #include "../src/API/niLang/IRegex.h"
 #include "../src/API/niLang/Utils/TimerSleep.h"
 
-#if !defined niNoProcess
-
 using namespace ni;
+
+//--------------------------------------------------------------------------------------------
+//
+//  Child process main
+//
+//--------------------------------------------------------------------------------------------
+#if !defined niNoProcess
 
 #include "../src/Platform.h"
 
@@ -19,11 +24,6 @@ using namespace ni;
 
 static const int kPrintLoopCount = 10;
 
-//--------------------------------------------------------------------------------------------
-//
-//  Child process main
-//
-//--------------------------------------------------------------------------------------------
 #define RUN_IN_SIGNAL_HANDLER_V(PROC,ARGC,ARGV)       \
   __try { return PROC(ARGC,ARGV); }                   \
   __except(EXCEPTION_EXECUTE_HANDLER) { return -1; }
@@ -104,6 +104,7 @@ bool Test_ChildProcess_Start(int argc, const char** argv, int& ret) {
   }
   return true;
 }
+#endif
 
 //--------------------------------------------------------------------------------------------
 //
@@ -158,6 +159,27 @@ TEST_FIXTURE(FProcess,ThisFiles) {
   fpErr->Flush();
 }
 
+TEST_FIXTURE(FProcess,Environ) {
+  // astl::map<cString,cString>* environ;
+  Ptr<tStringCMap> envs = _pman->GetEnvs();
+  // for (auto it : *envs) {
+    // niDebugFmt(("... %s = %s", it.first, it.second));
+  // }
+  cString path = astl::get_default(*envs,"PATH","");
+  CHECK(path.IsNotEmpty());
+}
+
+TEST_FIXTURE(FProcess,Cwd) {
+  cString cwd = _pman->GetCwd();
+  // niDebugFmt(("... cwd: %s", cwd));
+  CHECK(cwd.IsNotEmpty());
+  cString oa = niFmt("%s-%s",
+                     ni::GetProperty("ni.loa.osx"),
+                     ni::GetProperty("ni.loa.arch"));
+  CHECK(cwd.EndsWith(oa.Chars()));
+}
+
+#if !defined niNoProcess
 TEST_FIXTURE(FProcess,EnumAll) {
   struct MyEnum : public cIUnknownImpl<iOSProcessEnumSink,eIUnknownImplFlags_Local> {
     TEST_PARAMS_DECL;
@@ -496,24 +518,4 @@ TEST_FIXTURE(FProcess,SpawnPrintLoop) {
     spawned->Terminate(-1);
   }
 }
-
-TEST_FIXTURE(FProcess,Environ) {
-  // astl::map<cString,cString>* environ;
-  Ptr<tStringCMap> envs = _pman->GetEnvs();
-  // for (auto it : *envs) {
-    // niDebugFmt(("... %s = %s", it.first, it.second));
-  // }
-  cString path = astl::get_default(*envs,"PATH","");
-  CHECK(path.IsNotEmpty());
-}
-
-TEST_FIXTURE(FProcess,Cwd) {
-  cString cwd = _pman->GetCwd();
-  // niDebugFmt(("... cwd: %s", cwd));
-  CHECK(cwd.IsNotEmpty());
-  cString oa = niFmt("%s-%s",
-                     ni::GetProperty("ni.loa.osx"),
-                     ni::GetProperty("ni.loa.arch"));
-  CHECK(cwd.EndsWith(oa.Chars()));
-}
-#endif
+#endif // niNoProcess

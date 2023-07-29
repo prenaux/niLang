@@ -170,7 +170,7 @@ static ni::iFile* _CreateFilePipeWrite(HANDLE hFile, const ni::achar* aaszName, 
 //  Posix Utils
 //
 //--------------------------------------------------------------------------------------------
-#ifdef niPosix
+#if defined niPosix && !defined niNoProcess
 #include "FileFd.h"
 
 static ni::iFile* _CreateFilePipeRead(int hFile, const ni::achar* aaszName, tBool abOwned = ni::eTrue) {
@@ -198,7 +198,7 @@ static ni::iFile* _CreateFilePipeWrite(int hFile, const ni::achar* aaszName, tBo
 //  Utils
 //
 //--------------------------------------------------------------------------------------------
-
+#if !defined niNoProcess
 static tU32 _IsParentProcess(tInt aPID, tInt aParentPID) {
   tBool isParent = eFalse;
   tU32 c = 0;
@@ -215,6 +215,7 @@ static tU32 _IsParentProcess(tInt aPID, tInt aParentPID) {
   }
   return isParent ? c : 0;
 }
+#endif
 
 //--------------------------------------------------------------------------------------------
 //
@@ -225,7 +226,9 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
   niBeginClass(cOSCurrentProcess);
  public:
   cOSCurrentProcess() {
+#if !defined niNoProcess
     _p = base::Process::Current();
+#endif
   }
   ~cOSCurrentProcess() {
   }
@@ -233,7 +236,8 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
   ///////////////////////////////////////////////
   virtual const ni::achar* __stdcall GetExePath() const {
     if (_exePath.empty()) {
-      niThis(cOSCurrentProcess)->_exePath = base::GetProcessExePathFromPid(GetPID());
+      achar exePathBuff[AMAX_PATH];
+      niThis(cOSCurrentProcess)->_exePath = ni_get_exe_path(exePathBuff);
     }
     return _exePath.Chars();
   }
@@ -246,12 +250,20 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
 
   ///////////////////////////////////////////////
   virtual tInt __stdcall GetPID() const {
+#ifdef niNoProcess
+    return 0;
+#else
     return _p.pid();
+#endif
   }
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall GetIsCurrent() const {
+#ifdef niNoProcess
+    return eTrue;
+#else
     return !!_p.is_current();
+#endif
   }
 
   ///////////////////////////////////////////////
@@ -276,7 +288,9 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
 
   ///////////////////////////////////////////////
   virtual void __stdcall Terminate(tInt aResultCode) {
+#if !defined niNoProcess
     _p.Terminate(aResultCode);
+#endif
   }
 
   ///////////////////////////////////////////////
@@ -349,22 +363,33 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
 
   ///////////////////////////////////////////////
   virtual tInt __stdcall GetParentPID() const {
+#ifdef niNoProcess
+    return 0;
+#else
     tInt thisPID = GetPID();
     return thisPID ? base::GetParentProcessFromPid(thisPID) : 0;
+#endif
   }
   virtual tU32 __stdcall IsParentProcess(tInt aParentPID) const {
+#ifdef niNoProcess
+    return 0;
+#else
     tInt thisPID = GetPID();
     return thisPID ? _IsParentProcess(thisPID,aParentPID) : 0;
+#endif
   }
 
  private:
+#if !defined niNoProcess
+  base::Process _p;
+  inline base::ProcessHandle _GetHandle() const { return _p.handle(); }
+#endif
+
   cString _exePath;
   cString _cmdLine;
-  base::Process _p;
   Ptr<iFile> _fpStdin;
   Ptr<iFile> _fpStdout;
   Ptr<iFile> _fpStderr;
-  inline base::ProcessHandle _GetHandle() const { return _p.handle(); }
 
   niEndClass(cOSCurrentProcess);
 };
@@ -374,6 +399,7 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
 //  Spawned Process
 //
 //--------------------------------------------------------------------------------------------
+#if !defined niNoProcess
 class cOSProcess : public cIUnknownImpl<ni::iOSProcess> {
   niBeginClass(cOSProcess);
  public:
@@ -487,6 +513,19 @@ class cOSProcess : public cIUnknownImpl<ni::iOSProcess> {
   niEndClass(cOSProcess);
 };
 
+///////////////////////////////////////////////
+static cOSProcess* __stdcall _CreateOSProcessFromHandle(
+  base::ProcessHandle aHandle,
+  int aPID,
+  const ni::achar* aaszExePath,
+  const ni::achar* aaszCmdLine)
+{
+  niAssert(aHandle != ((base::ProcessHandle)0));
+  base::Process* p = new base::Process(aHandle,aPID);
+  return niNew cOSProcess(p,aaszExePath,aaszCmdLine);
+}
+#endif
+
 //--------------------------------------------------------------------------------------------
 //
 //  Process Manager
@@ -498,34 +537,31 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
  public:
   ///////////////////////////////////////////////
   virtual tInt __stdcall GetCurrentProcessID() const {
-    return base::GetCurrentProcId();
+    return this->GetCurrentProcess()->GetPID();
   }
+
   ///////////////////////////////////////////////
   iOSProcess* __stdcall GetCurrentProcess() const {
     static cOSCurrentProcess _current;
     return &_current;
   }
+
   ///////////////////////////////////////////////
-  cOSProcess* __stdcall _CreateOSProcessFromHandle(
-      base::ProcessHandle aHandle,
-      int aPID,
-      const ni::achar* aaszExePath,
-      const ni::achar* aaszCmdLine)
-  {
-    niAssert(aHandle != ((base::ProcessHandle)0));
-    base::Process* p = new base::Process(aHandle,aPID);
-    return niNew cOSProcess(p,aaszExePath,aaszCmdLine);
-  }
   virtual iOSProcess* __stdcall CreateProcess(tInt aPID) {
+#ifdef niNoProcess
+    niError("Not implemented.");
+    return nullptr;
+#else
     base::ProcessHandle handle =
-        #ifdef niProcessProcessHandleNotPID
+#ifdef niProcessProcessHandleNotPID
         base::OpenProcessHandle(aPID)
-        #else
+#else
         aPID
-        #endif
+#endif
         ;
     niCheck(handle != ((base::ProcessHandle)0),NULL);
     return _CreateOSProcessFromHandle(handle,aPID,AZEROSTR,AZEROSTR);
+#endif
   }
 
   ///////////////////////////////////////////////
@@ -533,7 +569,12 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
       const ni::achar* aaszCmdLine,
       tOSProcessSpawnFlags aSpawn)
   {
+#ifdef niNoProcess
+    niError("Not implemented.");
+    return nullptr;
+#else
     return SpawnProcessEx(aaszCmdLine,NULL,NULL,aSpawn);
+#endif
   }
 
   ///////////////////////////////////////////////
@@ -543,6 +584,10 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
       const tStringCMap* apEnvs,
       tOSProcessSpawnFlags aSpawn)
   {
+#ifdef niNoProcess
+    niError("Not implemented.");
+    return nullptr;
+#else
     niCheck(niStringIsOK(aaszCmdLine),NULL);
     cString strExePath;
     cString strCmdLine = aaszCmdLine;
@@ -839,13 +884,14 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
     }
     return NULL;
 #endif
+#endif // niNoProcess
   }
 
   ///////////////////////////////////////////////
   virtual tU32 __stdcall EnumProcesses(ni::iRegex* apFilter, iOSProcessEnumSink* apSink) {
-
     tU32 c = 0;
 
+#if !defined niNoProcess
     struct MyProcessFilter : public base::ProcessFilter {
       virtual bool Includes(ni::tI32 pid, ni::tI32 parent_pid) const {
         return true; // include all...
@@ -870,6 +916,7 @@ class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownIm
       }
       ++c;
     }
+#endif
 
     return c;
   }

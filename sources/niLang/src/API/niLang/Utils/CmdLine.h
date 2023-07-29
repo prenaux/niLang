@@ -10,11 +10,9 @@
 namespace ni {
 
 static inline const achar* GetCurrentOSProcessCmdLine() {
-#ifndef niNoProcess
   if (ni::GetOSProcessManager() && ni::GetOSProcessManager()->GetCurrentProcess()) {
     return ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine();
   }
-#endif
   return AZEROSTR;
 }
 

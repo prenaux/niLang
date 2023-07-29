@@ -468,7 +468,7 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
 
   //---- App -----------------------------------------------------
   {
-    achar exePathBuff[niStackBufferSize];
+    achar exePathBuff[AMAX_PATH];
     cPath exePath(ni_get_exe_path(exePathBuff));
     exePath.SetExtension(AZEROSTR);
     (*props)["ni.app.name"] = exePath.GetFile();

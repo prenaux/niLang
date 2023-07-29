@@ -171,11 +171,6 @@ static void _FatalError(const achar* aszMsg) {
 static HINSTANCE  _hInstance = NULL;
 
 ///////////////////////////////////////////////
-iOSProcessManager* cLang::GetProcessManager() const {
-  return ni::GetOSProcessManager();
-}
-
-///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
   _niWinMainShutdown();
 

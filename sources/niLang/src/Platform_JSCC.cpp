@@ -29,13 +29,6 @@ niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty) {
 }
 }
 
-#if niMinFeatures(15)
-///////////////////////////////////////////////
-iOSProcessManager* cLang::GetProcessManager() const {
-  return NULL;
-}
-#endif
-
 ///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
   niLog(Info,niFmt("_PlatformExit: 0x%X", aulErrorCode));
@@ -56,6 +49,11 @@ void cLang::SetEnv(const achar* aaszEnv, const achar* aaszValue) const {
 }
 cString cLang::GetEnv(const achar* aaszEnv) const {
   return agetenv(aaszEnv);
+}
+
+///////////////////////////////////////////////
+cString _GetCommandLine() {
+  return niJSCC_Get_NIAPP_CONFIG("exePath");
 }
 
 ///////////////////////////////////////////////

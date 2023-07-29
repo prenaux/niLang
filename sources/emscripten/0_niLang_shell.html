@@ -238,6 +238,10 @@
             text = Array.prototype.slice.call(arguments).join(' ');
           }
           console.error(text);
+          if (elPlayerTerminal) {
+            elPlayerTerminal.value += "STDERR>>" + text + "\n";
+            elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
+          }
         },
         canvas: (function () {
           var canvas = elPlayerCanvas;

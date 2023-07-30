@@ -23,20 +23,36 @@ class cFilePosTracker : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Defaul
   inline tFileFlags __stdcall GetFileFlags() const {
     return mBase->GetFileFlags();
   }
+
   inline tBool  __stdcall Seek(tI64 offset) {
-    if (mBase->SeekSet(offset)) {
+    if (mBase->Seek(offset)) {
       mnPos += offset;
       return eTrue;
     }
-    return eFalse;
+    else {
+      return eFalse;
+    }
   }
   inline tBool  __stdcall SeekSet(tI64 offset) {
     if (mBase->SeekSet(offset)) {
       mnPos = offset;
       return eTrue;
     }
-    return eTrue;
+    else {
+      return eFalse;
+    }
   }
+  inline tBool __stdcall SeekEnd(tI64 offset) {
+    if (mBase->SeekEnd(offset)) {
+      const tSize size = this->GetSize();
+      mnPos = (offset < size) ? (size - offset) : 0;
+      return eTrue;
+    }
+    else {
+      return eFalse;
+    }
+  }
+
   inline tSize  __stdcall ReadRaw(void* pOut, tSize nSize) {
     const tSize read = mBase->ReadRaw(pOut,nSize);
     mnPos += read;
@@ -47,6 +63,7 @@ class cFilePosTracker : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Defaul
     mnPos += written;
     return written;
   }
+
   inline tI64 __stdcall Tell() {
     return mnPos;
   }
@@ -57,12 +74,20 @@ class cFilePosTracker : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Defaul
     return NULL;
   }
 
-  inline tBool __stdcall SeekEnd(tI64 offset) { return SeekSet((offset<GetSize())?(GetSize()-offset):0); }
-  inline tBool __stdcall Flush()  { return eTrue; }
-  inline tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const { niUnused(aFileTime);niUnused(apTime); return eFalse; }
-  inline tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) { niUnused(aFileTime);niUnused(apTime); return eFalse; }
-  inline tBool __stdcall Resize(tI64 newSize) { return eFalse; }
-  //// iFile ////////////////////////////////
+  inline tBool __stdcall Flush()  {
+    mBase->Flush();
+    return eTrue;
+  }
+
+  inline tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const {
+    return mBase->GetTime(aFileTime,apTime);
+  }
+  inline tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) {
+    return mBase->SetTime(aFileTime,apTime);
+  }
+  inline tBool __stdcall Resize(tI64 newSize) {
+    return mBase->Resize(newSize);
+  }
 
  protected:
   ni::Nonnull<iFileBase> mBase;

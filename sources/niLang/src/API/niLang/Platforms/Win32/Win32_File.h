@@ -225,8 +225,15 @@ class cOSWinFile : public cIUnknownImpl<iFileBase>
   }
 
   virtual tBool __stdcall Flush() {
-    if (!mhWrite) return eFalse;
-    return !!FlushFileBuffers(mhWrite);
+    if (mhWrite) {
+      if (_CanSeek()) {
+        // This hangs on pipes, so we do it only if we can seek / we know its
+        // not a pipe.
+        return !!::FlushFileBuffers(mhWrite);
+      }
+      return eFalse;
+    }
+    return eTrue;
   }
 
   virtual tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const {

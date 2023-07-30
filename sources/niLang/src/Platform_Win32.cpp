@@ -307,11 +307,9 @@ niExportFunc(ni::tPtr) ni_dll_get_proc(ni::tIntPtr aModule, const char* aProcNam
 #include "API/niLang/StringDef.h"
 #include "API/niLang/Platforms/Win32/Win32_UTF.h"
 
-#if !defined niWinRT
 ni::cString _GetCommandLine() {
   return Win32GetCommandLine();
 }
-#endif
 
 niExportFunc(FILE*) afopen(const achar* file, const achar* mode, ni::cString* apPathOnDisk) {
   if (!niStringIsOK(file)) return NULL;

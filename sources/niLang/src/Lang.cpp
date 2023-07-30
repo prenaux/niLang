@@ -238,8 +238,7 @@ const iTime* cLang::GetCurrentTime() const
 ///////////////////////////////////////////////
 tI32 __stdcall cLang::RunCommand(const achar* aaszCmd)
 {
-#if defined niWinRT || defined niAndroid || defined niIOS
-  // Can't run command on WinRT
+#if defined niAndroid || defined niIOS || defined niJSCC
   return -1;
 #elif defined niWinDesktop
   ni::Windows::UTF16Buffer wCmd;

@@ -398,7 +398,7 @@ niExportFunc(iUnknown*) New_niLang_OSWindowGeneric(const Var&, const Var&) {
 //  Generic system platform stuff
 //
 //--------------------------------------------------------------------------------------------
-#if defined niAndroid || defined niIOS || defined niWinRT || defined niJSCC || defined niLinux || defined niQNX
+#if defined niAndroid || defined niIOS || defined niJSCC || defined niLinux || defined niQNX
 
 #include "Lang.h"
 

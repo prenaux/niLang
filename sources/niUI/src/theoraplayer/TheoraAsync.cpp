@@ -8,68 +8,26 @@ the terms of the BSD license: http://opensource.org/licenses/BSD-3-Clause
 *************************************************************************************/
 #include <niLang/Types.h>
 
-#include <stdlib.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <pthread.h>
-#endif
-
 #include "TheoraAsync.h"
 #include "TheoraUtil.h"
 #include "TheoraVideoManager.h"
-
-#ifdef _WINRT
-#include <wrl.h>
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Mutex
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-TheoraMutex::TheoraMutex()
-{
-#ifdef _WIN32
-#ifndef _WINRT // WinXP does not have CreateTheoraMutexEx()
-	mHandle = CreateMutex(0, 0, 0);
-#else
-	mHandle = CreateMutexEx(NULL, NULL, 0, SYNCHRONIZE);
-#endif
-#else
-	mHandle = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init((pthread_mutex_t*)mHandle, 0);
-#endif
+TheoraMutex::TheoraMutex() {
 }
 
-TheoraMutex::~TheoraMutex()
-{
-#ifdef _WIN32
-	CloseHandle(mHandle);
-#else
-	pthread_mutex_destroy((pthread_mutex_t*)mHandle);
-	free((pthread_mutex_t*)mHandle);
-	mHandle = NULL;
-#endif
+TheoraMutex::~TheoraMutex() {
 }
 
-void TheoraMutex::lock()
-{
-#ifdef _WIN32
-	WaitForSingleObjectEx(mHandle, INFINITE, FALSE);
-#else
-	pthread_mutex_lock((pthread_mutex_t*)mHandle);
-#endif
+void TheoraMutex::lock() {
+  mMutex.ThreadLock();
 }
 
-void TheoraMutex::unlock()
-{
-#ifdef _WIN32
-	ReleaseMutex(mHandle);
-#else
-	pthread_mutex_unlock((pthread_mutex_t*)mHandle);
-#endif
+void TheoraMutex::unlock() {
+  mMutex.ThreadUnlock();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

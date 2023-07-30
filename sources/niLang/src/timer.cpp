@@ -34,63 +34,6 @@ niExportFunc(tF64) TimerInSeconds() {
 
 //--------------------------------------------------------------------------------------------
 //
-//  WinRT
-//
-//--------------------------------------------------------------------------------------------
-#elif defined niWinRT
-
-#include "API/niLang/Platforms/Win32/Win32_Redef.h"
-#include <winbase.h>
-
-static ULONGLONG mStartTick;
-static LONGLONG mLastTime;
-static LARGE_INTEGER mStart;
-static LARGE_INTEGER mFreq;
-
-static void _Start() {
-  ::QueryPerformanceFrequency(&mFreq);
-  ::QueryPerformanceCounter(&mStart);
-  mStartTick = ::GetTickCount64();
-  mLastTime = 0;
-}
-
-static LONGLONG _GetMicroseconds() {
-  static bool _isStarted = false;
-  if (!_isStarted) {
-    _isStarted = true;
-    _Start();
-  }
-
-  LARGE_INTEGER curTime;
-  QueryPerformanceCounter(&curTime);
-
-  LONGLONG newTime = curTime.QuadPart - mStart.QuadPart;
-
-  // check against GetTickCount
-  tU64 newTicks = (tU32)(1000 * newTime / mFreq.QuadPart);
-  tU64 check = GetTickCount64() - mStartTick;
-  tI64 msOff = (tI64)(newTicks - check);
-  if (msOff < -100 || msOff > 100) {
-    LONGLONG adjust = ni::Min(msOff * mFreq.QuadPart / 1000, newTime - mLastTime);
-    mStart.QuadPart += adjust;
-    newTime -= adjust;
-  }
-
-  mLastTime = newTime;
-
-  return 1000000 * newTime / mFreq.QuadPart;
-}
-
-namespace ni {
-
-niExportFunc(tF64) TimerInSeconds() {
-  return (double)_GetMicroseconds() / 1e6;
-}
-
-}
-
-//--------------------------------------------------------------------------------------------
-//
 //  OSX
 //
 //--------------------------------------------------------------------------------------------

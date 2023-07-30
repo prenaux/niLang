@@ -36,11 +36,7 @@ astl::string strf(float i)
 void _psleep(int miliseconds)
 {
 #ifdef _WIN32
-#ifndef _WINRT
 	Sleep(miliseconds);
-#else
-	WaitForSingleObjectEx(GetCurrentThread(), miliseconds, 0);
-#endif
 #else
 	usleep(miliseconds * 1000);
 #endif

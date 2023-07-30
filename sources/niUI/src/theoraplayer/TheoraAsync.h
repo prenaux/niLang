@@ -9,10 +9,7 @@ the terms of the BSD license: http://opensource.org/licenses/BSD-3-Clause
 #ifndef _TheoraAsync_h
 #define _TheoraAsync_h
 
-#include <stdlib.h>
-#ifndef _WIN32
-#include <pthread.h>
-#endif
+#include <niLang/Utils/ThreadImpl.h>
 
 /// @note Based on hltypes::Thread
 class TheoraMutex
@@ -35,8 +32,7 @@ public:
 	void unlock();
 
 protected:
-	void* mHandle;
-
+	ni::ThreadMutex mMutex;
 };
 
 #endif

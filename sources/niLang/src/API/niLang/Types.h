@@ -122,7 +122,7 @@
 #  if defined __CPU_ARM64__
 #    define niCPUArch "arm64"
 #  elif defined _M_ARM_FP
-// Assume WinRT, ARMv7 VFPv3
+// Assume ARMv7 VFPv3
 #    define niCPUArch "armv7a"
 #  elif defined __CPU_ARMv7N__
 #    define niCPUArch "armv7n"

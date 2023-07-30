@@ -25,27 +25,15 @@ tUUID __stdcall cLang::CreateGlobalUUID() {
 namespace ni {
 
 niExportFunc(tUUID) UUIDGenLocal() {
-#  ifdef niWinRT
-  UUID uuid;
-  CoCreateGuid((GUID*)&uuid);
-  return *(tUUID*)&uuid;
-#  else // defined niWinDesktop
   UUID uuid;
   UuidCreateSequential(&uuid);
   return *(tUUID*)&uuid;
-#  endif
 }
 
 niExportFunc(tUUID) UUIDGenGlobal() {
-#  ifdef niWinRT
-  UUID uuid;
-  CoCreateGuid((GUID*)&uuid);
-  return *(tUUID*)&uuid;
-#  else // defined niWinDesktop
   UUID uuid;
   UuidCreate(&uuid);
   return *(tUUID*)&uuid;
-#  endif
 }
 
 }

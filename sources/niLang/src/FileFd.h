@@ -55,10 +55,8 @@ niExportFunc(int)   amkdir(const char* dir);
 niExportFunc(int)   armdir(const char* dir);
 niExportFunc(int)   aunlink(const char* file);
 
-#ifndef niWinRT
 niExportFuncCPP(ni::cString) agetenv(const char* env);
 niExportFunc(int)            aputenv(const char* envString);
-#endif
 
 niExportFuncCPP(ni::cString) agetcwd();
 

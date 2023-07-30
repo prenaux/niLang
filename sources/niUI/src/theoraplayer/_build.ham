@@ -54,9 +54,6 @@ if $(NI_VIDEO_USE_OGG) = 1 {
 if $(ANDROID) = 1 {
   ObjectDefines $(BUILD_SRC) : _ANDROID ;
 }
-else if $(WINRT) = 1 {
-  ObjectDefines $(BUILD_SRC) : _WINRT ;
-}
 else if $(OSX) = 1 {
   if $(MACOSX_ARCH:U) = ARM64 {
     # Disable NEON because ARM64 asm isn't the same as standard NEON

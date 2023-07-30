@@ -12,8 +12,8 @@
 
 #define LOG_LAST_LOGS
 
-// Log for Windows & Windows RT
-#if defined niWinDesktop || defined niWinRT
+// Log for Windows
+#if defined niWinDesktop
 #  include "API/niLang/Platforms/Win32/Win32_UTF.h"
 #  define LOG_OUTPUT_DEBUG_STRING
 #  if defined niWinDesktop
@@ -35,7 +35,7 @@
 #elif defined niLinux || defined niQNX
 #  define LOG_STDIO
 #  define LOG_FILE
-// Log for Webasm & Flash
+// Log for JSCC
 #elif defined niJSCC
 #  define LOG_STDIO
 #else

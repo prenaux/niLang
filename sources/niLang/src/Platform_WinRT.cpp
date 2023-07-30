@@ -17,11 +17,6 @@ using namespace Platform;
 //--------------------------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-iOSProcessManager* cLang::GetProcessManager() const {
-  return NULL;
-}
-
-///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
   throw ref new Platform::Exception(-1,ref new Platform::String(L"cOSPlatformWindows::Exit"));
 }

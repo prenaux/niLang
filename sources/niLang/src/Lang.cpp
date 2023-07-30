@@ -383,9 +383,11 @@ tBool __stdcall cLang::LoadLocalization(iDataTable* apDT) {
 }
 
 ///////////////////////////////////////////////
+#if niMinFeatures(15)
 iOSProcessManager* cLang::GetProcessManager() const {
   return ni::GetOSProcessManager();
 }
+#endif
 
 //--------------------------------------------------------------------------------------------
 //

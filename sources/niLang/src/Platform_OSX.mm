@@ -127,15 +127,6 @@ cString _GetCommandLine(void) {
 }
 
 ///////////////////////////////////////////////
-iOSProcessManager* cLang::GetProcessManager() const {
-#ifdef niNoProcess
-  return NULL;
-#else
-  return ni::GetOSProcessManager();
-#endif
-}
-
-///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
   exit(aulErrorCode);
 }

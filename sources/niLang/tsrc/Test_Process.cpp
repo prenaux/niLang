@@ -7,6 +7,68 @@
 
 using namespace ni;
 
+class cFilePosTracker : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+{
+ public:
+  cFilePosTracker(iFileBase* apBase)
+    : mBase(apBase)
+  {
+    mnPos = 0;
+  }
+
+  ~cFilePosTracker() {
+  }
+
+  //// iFile ////////////////////////////////
+  inline tFileFlags __stdcall GetFileFlags() const {
+    return mBase->GetFileFlags();
+  }
+  inline tBool  __stdcall Seek(tI64 offset) {
+    if (mBase->SeekSet(offset)) {
+      mnPos += offset;
+      return eTrue;
+    }
+    return eFalse;
+  }
+  inline tBool  __stdcall SeekSet(tI64 offset) {
+    if (mBase->SeekSet(offset)) {
+      mnPos = offset;
+      return eTrue;
+    }
+    return eTrue;
+  }
+  inline tSize  __stdcall ReadRaw(void* pOut, tSize nSize) {
+    const tSize read = mBase->ReadRaw(pOut,nSize);
+    mnPos += read;
+    return read;
+  }
+  inline tSize  __stdcall WriteRaw(const void* apIn, tSize nSize) {
+    const tSize written = mBase->WriteRaw(apIn,nSize);
+    mnPos += written;
+    return written;
+  }
+  inline tI64 __stdcall Tell() {
+    return mnPos;
+  }
+  inline tI64 __stdcall GetSize() const {
+    return mBase->GetSize();
+  }
+  inline const achar* __stdcall GetSourcePath() const {
+    return NULL;
+  }
+
+  inline tBool __stdcall SeekEnd(tI64 offset) { return SeekSet((offset<GetSize())?(GetSize()-offset):0); }
+  inline tBool __stdcall Flush()  { return eTrue; }
+  inline tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const { niUnused(aFileTime);niUnused(apTime); return eFalse; }
+  inline tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) { niUnused(aFileTime);niUnused(apTime); return eFalse; }
+  inline tBool __stdcall Resize(tI64 newSize) { return eFalse; }
+  //// iFile ////////////////////////////////
+
+ protected:
+  ni::Nonnull<iFileBase> mBase;
+  tI64 mnPos;
+};
+
 //--------------------------------------------------------------------------------------------
 //
 //  Child process main
@@ -51,9 +113,11 @@ int ChildProcessMain_Process__(int argc, const ni::achar** argv) {
     tU32 c = 0;
     while (++c < 10) {
       cString str = fpIn->ReadString();
-      fpErr->WriteStringZ(niFmt(_A("Received: %s\n"),str.Chars()));
+      // log to stderr
+      fpErr->WriteStringZ(niFmt("CHILD RECEIVED: %s\n",str));
       fpErr->Flush();
       str.ToUpper();
+      // write result to stdin
       fpOut->WriteStringZ(str.Chars());
       fpOut->Flush();
       if (str == _A("EXIT"))
@@ -339,6 +403,7 @@ TEST_FIXTURE(FProcess,SpawnHangTerminate) {
   spawned->Terminate(123);
 
   sVec2i r = spawned->WaitForExitCode(eInvalidHandle);
+  niDebugFmt(("spawned->WaitForExitCode(): %s", r));
 #ifdef niWindows
   CHECK_EQUAL(1,r.x);
   CHECK_EQUAL(123,r.y);
@@ -362,48 +427,68 @@ TEST_FIXTURE(FProcess,SpawnStdFiles) {
       eOSProcessSpawnFlags_StdFiles);
   CHECK_RETURN_IF_FAILED(spawned.IsOK());
 
-  Ptr<iFile> fpTo = spawned->GetFile(eOSProcessFile_StdIn);
-  CHECK_RETURN_IF_FAILED(fpTo.IsOK());
-  CHECK(niFlagIs(fpTo->GetFileFlags(),eFileFlags_Write));
-  CHECK(niFlagIsNot(fpTo->GetFileFlags(),eFileFlags_Read));
-
-  Ptr<iFile> fpFrom = spawned->GetFile(eOSProcessFile_StdOut);
-  CHECK_RETURN_IF_FAILED(fpFrom.IsOK());
-  CHECK(niFlagIs(fpFrom->GetFileFlags(),eFileFlags_Read));
-  CHECK(niFlagIsNot(fpFrom->GetFileFlags(),eFileFlags_Write));
+  Ptr<iFile> fpTo;
+  {
+    fpTo = spawned->GetFile(eOSProcessFile_StdIn);
+    Nonnull<cFilePosTracker> fpToTrackerBase { niNew cFilePosTracker(fpTo->GetFileBase()) };
+    fpTo = ni::GetLang()->CreateFile(fpToTrackerBase);
+    CHECK_RETURN_IF_FAILED(fpTo.IsOK());
+    CHECK(niFlagIs(fpTo->GetFileFlags(),eFileFlags_Write));
+    CHECK(niFlagIsNot(fpTo->GetFileFlags(),eFileFlags_Read));
+  }
 
   Ptr<iFile> fpErr = spawned->GetFile(eOSProcessFile_StdErr);
   CHECK_RETURN_IF_FAILED(fpErr.IsOK());
   CHECK(niFlagIs(fpErr->GetFileFlags(),eFileFlags_Read));
   CHECK(niFlagIsNot(fpErr->GetFileFlags(),eFileFlags_Write));
 
-  CHECK(fpErr.ptr() == fpFrom.ptr());
+  Ptr<iFile> fpFrom;
+  {
+    fpFrom = spawned->GetFile(eOSProcessFile_StdOut);
+    CHECK(fpErr.ptr() == fpFrom.ptr());
+    Nonnull<cFilePosTracker> fpFromTrackerBase { niNew cFilePosTracker(fpFrom->GetFileBase()) };
+    fpFrom = ni::GetLang()->CreateFile(fpFromTrackerBase);
+    CHECK_RETURN_IF_FAILED(fpFrom.IsOK());
+    CHECK(niFlagIs(fpFrom->GetFileFlags(),eFileFlags_Read));
+    CHECK(niFlagIsNot(fpFrom->GetFileFlags(),eFileFlags_Write));
+  }
 
   cString r;
   // skip the test program initial message
   r = fpFrom->ReadStringLine();
-  niDebugFmt(("TEST RECEIVED: '%s'", r));
+  niDebugFmt(("TEST RECEIVED INITIAL: '%s'", r));
   CHECK(r.contains(_A("test mode")));
 
-  fpTo->WriteStringZ(_A("hello"));
-  fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
-  r = fpFrom->ReadString();
-  niDebugFmt(("TEST RECEIVED: '%s'", r));
-  CHECK_EQUAL(_ASTR("HELLO"),r);
+  {
+    niDebugFmt(("TEST1 SEND"));
+    const tSize tellBeforeWrite = fpTo->Tell();
+    fpTo->WriteStringZ(_A("hello"));
+    fpTo->Flush();
+    const tSize wroteBytes = fpTo->Tell()-tellBeforeWrite;
+    niDebugFmt(("TEST1 SENT: %d bytes", wroteBytes));
+
+    niDebugFmt(("TEST1 CHILD STDERR: '%s'", fpErr->ReadString()));
+    const tSize tellBeforeRead = fpFrom->Tell();
+    r = fpFrom->ReadString();
+    const tSize receivedBytes = fpFrom->Tell()-tellBeforeRead;
+    niDebugFmt(("TEST1 RECEIVED: %d bytes, '%s'", receivedBytes, r));
+    CHECK_EQUAL(_ASTR("HELLO"),r);
+    CHECK_EQUAL(6,receivedBytes);
+    CHECK_EQUAL(wroteBytes,receivedBytes);
+  }
 
   fpTo->WriteStringZ(_A("world!"));
   fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
+  niDebugFmt(("TEST2 CHILD STDERR: '%s'", fpErr->ReadString()));
   r = fpFrom->ReadString();
-  niDebugFmt(("TEST RECEIVED: '%s'", r));
+  niDebugFmt(("TEST2 RECEIVED: '%s'", r));
   CHECK_EQUAL(_ASTR("WORLD!"),r);
 
   fpTo->WriteStringZ(_A("exit"));
   fpTo->Flush();
-  niDebugFmt(("TEST CHILD STDERR: '%s'", fpErr->ReadString()));
+  niDebugFmt(("TEST3 CHILD STDERR: '%s'", fpErr->ReadString()));
   r = fpFrom->ReadString();
-  niDebugFmt(("TEST RECEIVED: '%s'", r));
+  niDebugFmt(("TEST3 RECEIVED: '%s'", r));
   CHECK_EQUAL(_ASTR("EXIT"),r);
 
   tBool cleanClose = spawned->Wait(1000);

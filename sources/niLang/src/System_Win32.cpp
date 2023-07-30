@@ -33,6 +33,9 @@
 #include <niLang/Utils/JNIUtils.h>
 #endif
 
+#include <fcntl.h>
+#include <io.h>
+
 #pragma comment(lib,"version.lib")
 #pragma comment(lib,"rpcrt4.lib")
 #pragma comment(lib,"advapi32.lib")
@@ -2855,6 +2858,18 @@ static astl::vector<cOSWindowWindows*> _vWindows;
 static ni::tBool _bInitializedGameCtrls = eFalse;
 
 void cLang::_PlatformStartup() {
+#define SET_FILE_HANDLE_TO_BINARY_MODE(FILEHANDLE) \
+    fflush(FILEHANDLE); \
+    if (_setmode(_fileno(FILEHANDLE), _O_BINARY) == -1) { \
+      niError("Couldn't set " #FILEHANDLE " to binary mode."); \
+    }
+
+  // Disable the f'up windows text mode that converts \n to \r\n for
+  // stdin/out/err
+  SET_FILE_HANDLE_TO_BINARY_MODE(stdin);
+  SET_FILE_HANDLE_TO_BINARY_MODE(stdout);
+  SET_FILE_HANDLE_TO_BINARY_MODE(stderr);
+
   _SetDPIAware();
 #ifdef USE_IDROPTARGET
   ::OleInitialize(NULL);

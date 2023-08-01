@@ -282,7 +282,7 @@ niExportFunc(tBool) ni_prng_next_bool(int4* aPRNG) {
 }
 
 niExportFunc(int4*) ni_prng_global() {
-  static int4 _sState = ni_prng_init(0);
+  static int4 _sState = ni_prng_init(ni_prng_get_seed_from_maybe_secure_source());
   return &_sState;
 }
 

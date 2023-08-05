@@ -418,6 +418,7 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     if (mFlags&FLAGS_LISTENING) {
       return eTrue;
     }
+
     switch (mProtocol) {
       // TCP/IP listening
       case eSocketProtocol_TCP:
@@ -436,6 +437,7 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
       default:
         break;
     }
+
     mFlags |= FLAGS_LISTENING;
     return eTrue;
   }
@@ -787,10 +789,8 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
   virtual tBool __stdcall SetKeepAlive(tBool aKeepAlive) {
     tI32 nKeepAlive = 1;
     socklen_t nOptSize = sizeof(nKeepAlive);
-#if defined niPosix
-    return setsockopt(mSocket, SOL_SOCKET, SO_KEEPALIVE, &nKeepAlive, nOptSize) == 0;
-#elif defined niWindows
-    return setsockopt(mSocket, SOL_SOCKET, SO_KEEPALIVE, (const char*)&nKeepAlive, nOptSize) == 0;
+#if defined niPosix || defined niWindows
+    return setsockopt(mSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&nKeepAlive, nOptSize) == 0;
 #else
     niError("Not implemented");
     return eFalse;
@@ -955,6 +955,26 @@ class cSocket : public cIUnknownImpl<ni::iSocket>
     niError("Not implemented");
     return 0;
 #endif
+  }
+
+
+  ///////////////////////////////////////////////
+  virtual tBool __stdcall SetReuseAddress(tBool abReuseAddress) {
+    int optval = abReuseAddress ? 1 : 0;
+    if (setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, sizeof(int)) < 0) {
+      _UpdateErrno();
+      return eFalse;
+    }
+    return eTrue;
+  }
+  virtual tBool __stdcall GetReuseAddress() const {
+    int optval = 0;
+    socklen_t nOptSize = sizeof(optval);
+    if (getsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, &nOptSize) != 0) {
+      niError("Can't get SO_REUSEADDR.");
+      return eFalse;
+    }
+    return optval?eTrue:eFalse;
   }
 
   ///////////////////////////////////////////////

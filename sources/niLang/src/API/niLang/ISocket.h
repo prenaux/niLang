@@ -377,6 +377,11 @@ struct iSocket : public iUnknown
   //!         Not supported on Windows.
   //! {Property}
   virtual tU64 __stdcall GetKeepAliveTime() const = 0;
+
+  //! {Property}
+  virtual tBool __stdcall SetReuseAddress(tBool abReuseAddress) = 0;
+  //! {Property}
+  virtual tBool __stdcall GetReuseAddress() const = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

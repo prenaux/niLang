@@ -21633,6 +21633,33 @@
 				</comments>
 				<return type="tU64" typec="tU64" typei="ni::eType_U64"/>
 			</method>
+			<method
+				java_name="setReuseAddress"
+				name="SetReuseAddress"
+				num_parameters="1"
+				property="set"
+				property_name2="reuseAddress"
+				property_name="reuse_address">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abReuseAddress"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReuseAddress"
+				name="GetReuseAddress"
+				num_parameters="0"
+				property="get"
+				property_name2="reuseAddress"
+				property_name="reuse_address">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niLang/src/_idl/IStringTokenizer.h.idl.xml">

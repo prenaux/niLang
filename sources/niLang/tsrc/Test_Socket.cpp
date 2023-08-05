@@ -297,4 +297,15 @@ TEST_FIXTURE(FSocket_TCP,KeepAlive) {
     CHECK_EQUAL(6,ptrSocket->GetKeepAliveProbes());
   }
 }
+
+/////////////////////////////////////////////////////
+TEST_FIXTURE(FSocket_TCP,ReuseAddress) {
+  ni::Ptr<ni::iRemoteAddressIPv4> ra = ni::GetLang()->CreateRemoteAddressIPv4(0,44719);
+  ni::Ptr<ni::iSocket> ptrSocket = ni::GetLang()->CreateSocket(ni::eSocketProtocol_TCP,ra);
+  CHECK(ptrSocket.IsOK());
+  CHECK(ptrSocket->SetReuseAddress(ni::eTrue));
+  CHECK(ptrSocket->GetReuseAddress());
+  CHECK(ptrSocket->SetReuseAddress(ni::eFalse));
+  CHECK(!ptrSocket->GetReuseAddress());
+}
 #endif

@@ -23584,6 +23584,33 @@ static const ni::sMethodDef iSocket_GetKeepAliveTime = {
 #endif
 };
 
+// Method: SetReuseAddress
+static const ni::sParameterDef iSocket_SetReuseAddress_Parameters[1] = { 
+  { "abReuseAddress", ni::eType_I8, NULL, "tBool" }
+}; 
+static const ni::sMethodDef iSocket_SetReuseAddress = {
+  "SetReuseAddress",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
+  1, iSocket_SetReuseAddress_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_SetReuseAddress)
+#else
+  NULL
+#endif
+};
+
+// Method: GetReuseAddress
+static const ni::sMethodDef iSocket_GetReuseAddress = {
+  "GetReuseAddress",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iSocket_GetReuseAddress)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iSocket[] = {
 	&iSocket_GetHandle,
 	&iSocket_GetAddress,
@@ -23613,6 +23640,8 @@ static const ni::sMethodDef* Methods_iSocket[] = {
 	&iSocket_GetKeepAliveInterval,
 	&iSocket_GetKeepAliveProbes,
 	&iSocket_GetKeepAliveTime,
+	&iSocket_SetReuseAddress,
+	&iSocket_GetReuseAddress,
 
 };
 

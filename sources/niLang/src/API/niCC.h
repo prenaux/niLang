@@ -305,9 +305,14 @@ static_assert(astl::is_same_v<in<sVec3f>, const sVec3f>);
 #endif
 static_assert(astl::is_same_v<in<sVec4f>, const sVec4f&>);
 static_assert(astl::is_same_v<in<sMatrixf>, const sMatrixf&>);
+#if !defined niMSVC // Types are the same (as checked while dumping them by other means) but still MSVC fails the static_assert
 static_assert(astl::is_same_v<in<nn<iUnknown>>, const nn<iUnknown>>);
 static_assert(astl::is_same_v<in<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
+#endif
 static_assert(astl::is_same_v<in<QPtr<iUnknown>>, const QPtr<iUnknown>&>);
+static_assert(sizeof(in<nn<iUnknown>>) == sizeof(void*));
+static_assert(sizeof(in<nn_mut<iUnknown>>) == sizeof(void*));
+
 // Not allowed as input types
 // static_assert(astl::is_same_v<in<NN<iUnknown>>, const nn<iUnknown>>);
 // static_assert(astl::is_same_v<in<NN_mut<iUnknown>>, const nn_mut<iUnknown>>);

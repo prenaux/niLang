@@ -39,6 +39,7 @@ niExportFuncCPP(ni::cString) agetcwd();
 #include "API/niLang/Platforms/Win32/Win32_File.h"
 
 #define WIN_HANDLE_IS_VALID(H) (((H) != NULL) && ((H) != INVALID_HANDLE_VALUE))
+// #define USE_WINDOWS_STD_HANDLE
 
 /*
  * Note, inheritRead == FALSE means "inheritWrite", i.e. one of the
@@ -297,7 +298,7 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
   virtual iFile* __stdcall GetFile(eOSProcessFile aFile) const {
     switch (aFile) {
       case eOSProcessFile_StdIn: {
-#ifdef niWindows
+#ifdef USE_WINDOWS_STD_HANDLE
         if (!_fpStdin.IsOK()) {
           HANDLE hStdin = ::GetStdHandle(STD_INPUT_HANDLE);
           if (hStdin) {
@@ -317,7 +318,7 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
         return _fpStdin;
       }
       case eOSProcessFile_StdOut: {
-#ifdef niWindows
+#ifdef USE_WINDOWS_STD_HANDLE
         if (!_fpStdout.IsOK()) {
           HANDLE hStdout = ::GetStdHandle(STD_OUTPUT_HANDLE);
           if (hStdout) {
@@ -337,7 +338,7 @@ class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags
         return _fpStdout;
       }
       case eOSProcessFile_StdErr: {
-#ifdef niWindows
+#ifdef USE_WINDOWS_STD_HANDLE
         if (!_fpStderr.IsOK()) {
           HANDLE hStderr = ::GetStdHandle(STD_ERROR_HANDLE);
           if (hStderr) {

@@ -6,6 +6,8 @@
 #include "../StringDef.h"
 #include "../IOSProcess.h"
 #include "../ILang.h"
+#include "../STL/function_ref.h"
+#include "../STL/optional.h"
 
 namespace ni {
 
@@ -108,8 +110,14 @@ static inline cString CmdLineStrCharItReadFile(StrCharIt& it, const tU32 anEndOn
   }
 }
 
+typedef astl::function_ref<void(const achar* aProperty, const achar* aValue, tBool abIsShortHand)> tCmdLineParseArgFn;
+typedef astl::function_ref<void(const cString& aFilename)> tCmdLineParseFileFn;
+
 // Standard command line parsing. Handles -D & -- system properties.
-static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apInputFileName = NULL, ni::tStringCVec* apOtherFiles = NULL, ni::tStringCVec* apUnknownParams = NULL) {
+static inline tBool ParseCommandLine(
+  const achar* aaszCmdLine,
+  astl::optional<tCmdLineParseArgFn> afnParseArg,
+  astl::optional<tCmdLineParseFileFn> afnParseFile) {
   // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
@@ -125,29 +133,41 @@ static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apIn
   while (!it.is_end()) {
     const tU32 c = it.next();
     if (prevChar == '-') {
-      switch (c) {
-        case '-': // -- is a synonym for -D
-        case 'D': {
-          cString pname = ni::CmdLineStrCharItReadFile(it,'=');
-          cString pvalue = ni::CmdLineStrCharItReadFile(it);
-          ni::GetLang()->SetProperty(pname.Chars(),pvalue.Chars());
-          break;
+      if (c == '-' && StrIsSpace(it.peek_next())) {
+        // -- with a space means the begining of the list of files
+        break;
+      }
+
+      // --prop=value, -Dprop=value otherwise considered shorthand
+      const tBool isShorthand = (c != '-' && c != 'D');
+      if (isShorthand) {
+        it.prior();
+      }
+      tOffset nameOffset = tOffset{0};
+      cString pname = ni::CmdLineStrCharItReadFile(it,'=');
+      const tU32 prior = it.peek_prior();
+      cString pvalue;
+      if (prior == '=') {
+        pvalue = ni::CmdLineStrCharItReadFile(it);
+      }
+      else {
+        if (pname.StartsWith("no-")) {
+          pvalue = "false";
+          nameOffset = 3;
         }
-        default: {
-          it.prior();
-          cString pvalue = ni::CmdLineStrCharItReadFile(it);
-          if (apUnknownParams) {
-            apUnknownParams->push_back(pvalue);
-          }
-          break;
+        else {
+          pvalue = "true";
         }
+      }
+      if (afnParseArg.has_value()) {
+        afnParseArg.value()(pname.Chars()+nameOffset,pvalue.Chars(),isShorthand);
       }
       prevChar = 0;
     }
     else if (StrIsSpace(c)) {
       continue;
     }
-    else  {
+    else {
       prevChar = c;
       if (prevChar != '-') {
         it.prior();
@@ -156,22 +176,61 @@ static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apIn
     }
   }
 
-  // read the input script
-  if (apInputFileName) {
-    *apInputFileName = ni::CmdLineStrCharItReadFile(it);
-  }
-
-  if (apOtherFiles) {
+  // read the remaining as files
+  if (afnParseFile.has_value()) {
+    const tCmdLineParseFileFn parseFile = afnParseFile.value();
     // get the other arguments...
     while (!it.is_end()) {
       cString arg = ni::CmdLineStrCharItReadFile(it,0,0);
       if (!arg.empty()) {
-        apOtherFiles->Add(arg);
+        parseFile(arg);
       }
     }
   }
 
   return eTrue;
+}
+
+niDeprecated(20230807, ParseCommandLine(tCmdLineParseArgFn,tCmdLineParseFileFn))
+static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apInputFileName = NULL, ni::tStringCVec* apOtherFiles = NULL, ni::tStringCVec* apUnknownParams = NULL) {
+
+  tU32 numFiles = 0;
+  return ParseCommandLine(
+    aaszCmdLine,
+    tCmdLineParseArgFn{[&](const achar* aProperty, const achar* aValue, tBool aIsShorthand) {
+      if (aIsShorthand) {
+        if (apUnknownParams) {
+          if (niStringIsOK(aValue)) {
+            if (ni::StrIEq(aValue,"true")) {
+              apUnknownParams->push_back(aProperty);
+            }
+            else {
+              // Pierre: This is jank in quite a few ways but at least we dont lose the value?
+              apUnknownParams->push_back(niFmt("'%s'='%s'", aProperty, aValue));
+            }
+          }
+          else {
+            apUnknownParams->push_back(aProperty);
+          }
+        }
+      }
+      else {
+        ni::GetLang()->SetProperty(aProperty,aValue);
+      }
+    }},
+    tCmdLineParseFileFn{[&](const cString& aFile) {
+      if (numFiles == 0) {
+        if (apInputFileName) {
+          *apInputFileName = aFile;
+        }
+      }
+      else {
+        if (apOtherFiles) {
+          apOtherFiles->Add(aFile);
+        }
+      }
+      ++numFiles;
+    }});
 }
 
 // Parse a command line that can optionally be split in multiple sections

@@ -2,6 +2,7 @@ TK_NAME = "niLang" ;
 TK_DIR = [ FGetAbsolutePath [ FDirName $(TOP) .. ] ] ;
 TK_NONCE = 3 ;
 TOP_DIR = [ FDirName $(TK_DIR) sources ] ;
+C++VERSION = c++20 ;
 NILANG_BUILD = 1 ;
 
 Import toolkit.ham ;

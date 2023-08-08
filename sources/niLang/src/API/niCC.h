@@ -161,11 +161,6 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niStaticAssertExprType(EXPR, TYPE) \
   static_assert(astl::is_same_v<decltype(EXPR), TYPE>)
 
-#define niArgIn(TYPE) ni::in<TYPE>
-#define niArgMove(TYPE) TYPE&&
-#define niArgOut(TYPE) TYPE&
-#define niArgInAuto const auto
-
 #define niLet const auto
 #define niVar auto
 // "compile time constant (k)" let
@@ -275,7 +270,7 @@ using Opt = ni::QPtr<const T>;
 
 // primary template handles types that have no nested ::type member:
 template <typename T, typename = void>
-struct to_in_t : astl::false_type {
+struct to_ain_t : astl::false_type {
   using type = astl::conditional_t<
     (sizeof(T) < 2 * sizeof(void*) &&
      astl::is_trivially_copy_constructible_v<T>),
@@ -285,7 +280,7 @@ struct to_in_t : astl::false_type {
 
 // specialization recognizes types that do have a nested ::type member:
 template <typename T>
-struct to_in_t<T, astl::void_t<typename T::in_type_t>> : astl::true_type {
+struct to_ain_t<T, astl::void_t<typename T::in_type_t>> : astl::true_type {
   typedef typename T::in_type_t const type;
   static_assert(
     not astl::is_same_v<void* const, type> &&
@@ -294,41 +289,60 @@ struct to_in_t<T, astl::void_t<typename T::in_type_t>> : astl::true_type {
 };
 
 template <typename T>
-using in = typename to_in_t<T>::type;
+using ain = typename to_ain_t<T>::type;
+
+template <typename T>
+struct to_amove_t {
+  using type = T&&;
+};
+
+template <typename T>
+using amove = typename to_amove_t<T>::type;
+
+template <typename T>
+struct to_aout_t {
+  using type = T&;
+};
+
+template <typename T>
+using aout = typename to_aout_t<T>::type;
 
 #ifdef ni32
-static_assert(astl::is_same_v<in<sVec2f>, const sVec2f&>);
-static_assert(astl::is_same_v<in<sVec3f>, const sVec3f&>);
+static_assert(astl::is_same_v<ain<sVec2f>, const sVec2f&>);
+static_assert(astl::is_same_v<ain<sVec3f>, const sVec3f&>);
 #else
-static_assert(astl::is_same_v<in<sVec2f>, const sVec2f>);
-static_assert(astl::is_same_v<in<sVec3f>, const sVec3f>);
+static_assert(astl::is_same_v<ain<sVec2f>, const sVec2f>);
+static_assert(astl::is_same_v<ain<sVec3f>, const sVec3f>);
 #endif
-static_assert(astl::is_same_v<in<sVec4f>, const sVec4f&>);
-static_assert(astl::is_same_v<in<sMatrixf>, const sMatrixf&>);
+static_assert(astl::is_same_v<ain<sVec4f>, const sVec4f&>);
+static_assert(astl::is_same_v<ain<sMatrixf>, const sMatrixf&>);
 #if !defined niMSVC // Types are the same (as checked while dumping them by other means) but still MSVC fails the static_assert
-static_assert(astl::is_same_v<in<nn<iUnknown>>, const nn<iUnknown>>);
-static_assert(astl::is_same_v<in<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
+static_assert(astl::is_same_v<ain<nn<iUnknown>>, const nn<iUnknown>>);
+static_assert(astl::is_same_v<ain<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
 #endif
-static_assert(astl::is_same_v<in<QPtr<iUnknown>>, const QPtr<iUnknown>&>);
-static_assert(sizeof(in<nn<iUnknown>>) == sizeof(void*));
-static_assert(sizeof(in<nn_mut<iUnknown>>) == sizeof(void*));
+static_assert(astl::is_same_v<ain<QPtr<iUnknown>>, const QPtr<iUnknown>&>);
+static_assert(sizeof(ain<nn<iUnknown>>) == sizeof(void*));
+static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(void*));
+
+static_assert(astl::is_same_v<amove<sVec2f>, sVec2f&&>);
+static_assert(astl::is_same_v<aout<sVec2f>, sVec2f&>);
 
 // Not allowed as input types
-// static_assert(astl::is_same_v<in<NN<iUnknown>>, const nn<iUnknown>>);
-// static_assert(astl::is_same_v<in<NN_mut<iUnknown>>, const nn_mut<iUnknown>>);
-// static_assert(astl::is_same_v<in<Ptr<iUnknown>>, const Ptr<iUnknown>&>);
-// static_assert(astl::is_same_v<in<WeakPtr<iUnknown>>, const WeakPtr<iUnknown>&>);
+// static_assert(astl::is_same_v<ain<NN<iUnknown>>, const nn<iUnknown>>);
+// static_assert(astl::is_same_v<ain<NN_mut<iUnknown>>, const nn_mut<iUnknown>>);
+// static_assert(astl::is_same_v<ain<Ptr<iUnknown>>, const Ptr<iUnknown>&>);
+// static_assert(astl::is_same_v<ain<WeakPtr<iUnknown>>, const WeakPtr<iUnknown>&>);
 
-// in_nn_mut doesnt need in since we know its a trivial pointer sized constructor
+// ain_nn_mut doesnt need ain since we know its a trivial pointer sized constructor
 template <typename T>
-using in_nn_mut = in<astl::non_null<T*>>;
+using ain_nn_mut = ain<astl::non_null<T*>>;
 
 #ifdef niCCScriptMode
 template <typename T>
-using in_nn = in_nn_mut<T>;
+using ain_nn = ain_nn_mut<T>;
 #else
 template <typename T>
-using in_nn = in<astl::non_null<const T*>>;
+using ain_nn = ain<astl::non_null<const T*>>;
 #endif
 
 namespace details {
@@ -376,7 +390,7 @@ typedef const achar* tChars;
 typedef achar* tMutChars;
 
 template <typename... Args>
-inline tStr Fmt(in<tChars> aFmt, Args&&... args) {
+inline tStr Fmt(ain<tChars> aFmt, Args&&... args) {
   tStr s;
   s.Format(aFmt, astl::forward<Args>(args)...);
   return s;

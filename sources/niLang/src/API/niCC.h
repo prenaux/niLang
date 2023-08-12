@@ -162,7 +162,7 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
   static_assert(astl::is_same_v<decltype(EXPR), TYPE>)
 
 #define niLet const auto
-#define niVar auto
+#define niLetMut auto
 // "compile time constant (k)" let
 #define niLetK static constexpr auto
 

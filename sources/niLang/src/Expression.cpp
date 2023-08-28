@@ -952,7 +952,7 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   {
     cString strRet;
     if (mpDefaultEnum) {
-      niLoop(k,mpDefaultEnum->mnNumValues) {
+      niLoopr(k,mpDefaultEnum->mnNumValues) {
         const sEnumValueDef& ev = mpDefaultEnum->mpValues[k];
         const tU32 v = ev.mnValue;
         if (v != 0 && niFlagTest(anValue,v)) {
@@ -965,7 +965,7 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
         }
       }
     }
-    niLoopit(tEnumMap::const_iterator,it,mmapEnums) {
+    niLooprit(auto,it,mmapEnums) {
       const sEnumDef* pDef = it->second;
       if (!pDef || pDef == mpDefaultEnum)
         continue;

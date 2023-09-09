@@ -104,6 +104,12 @@ local __lint = {
         excludeRegex = ::regex.pcre(f.exclude)
         // ::println("EXCLUDE:" f.exclude "- regex:" excludeRegex)
       }
+
+      local dirPath = getFolderPath(f.name)
+      if (!::fs.dirExists(dirPath)) {
+        throw "Folder doesn't exist '" + f.name + "' (" + dirPath + ")."
+      }
+
       local d = addFolders(_dirs,f.name,dest,filter,excludeRegex,recursive,flags,pkg,sign)
       if (d && ("icongroup" in f)) {
         d.icongroup = f.icongroup
@@ -146,15 +152,20 @@ local __lint = {
     return destName
   }
 
+  function getFolderPath(aFolder) {
+    local path = aFolder
+    if (!path.startswithi(_baseDir) && (path.len() < 1 || path[1] != ':'))
+      path = _baseDir + aFolder
+    return path
+  }
+
   function addFolders(aDirs,aFolder,aDest,aFilesFilter,aExcludeRegex,aRecursive,aFlags,aPkg,aSign) {
     if (aExcludeRegex.?DoesMatch(aFolder)) {
       // ::println("SKIPPED FOLDER: " + aFolder);
       return null;
     }
 
-    local path = aFolder
-    if (!path.startswithi(_baseDir) && (path.len() < 1 || path[1] != ':'))
-      path = _baseDir + aFolder
+    local path = getFolderPath(aFolder)
 
     // get directory table
     local d

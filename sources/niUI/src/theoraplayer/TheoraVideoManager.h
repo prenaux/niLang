@@ -15,7 +15,8 @@ the terms of the BSD license: http://opensource.org/licenses/BSD-3-Clause
 TheoraVideoClip* Theora_createVideoClip(ni::iFile* data_source,
                                         TheoraOutputMode output_mode,
                                         int numPrecachedOverride,
-                                        bool usePower2Stride);
+                                        bool usePower2Stride,
+                                        bool decodeFirstFirstFrame = true);
 void Theora_destroyVideoClip(TheoraVideoClip* clip);
 
 #endif

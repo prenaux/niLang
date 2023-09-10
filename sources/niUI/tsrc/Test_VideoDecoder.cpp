@@ -68,3 +68,64 @@ struct IPCam : public ni::cWidgetSinkImpl<> {
 
 // Skipped because its doing an infinite loop atm.
 // SKIP: TEST_FIXTURE_WIDGET(FVideoDecoder, IPCam);
+
+struct Player : public ni::cWidgetSinkImpl<> {
+  Ptr<iTexture> mTexture;
+  Ptr<iOverlay> mOverlay;
+  cString tex1 = "";
+  cString tex2 = "";
+  tBool useA = false;
+  tF32 test = 3;
+
+  TEST_CONSTRUCTOR(Player) {
+    TEST_STEPS(7500);
+  }
+  ~Player() {
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    const cString dataDir = ni::GetLang()->GetProperty("ni.dirs.data");
+    tex1 = dataDir + "/test/ipcam/cut_50_FPS.ogv";
+    // tex1 = dataDir + "/test/ipcam/cut_24_FPS.ogv";
+    niLog(Info, "Player::OnSinkAttached");
+
+    mTexture = mpWidget->GetGraphics()->CreateTextureFromRes(_H(tex1), NULL, eTextureFlags_Overlay);
+    mOverlay = mpWidget->GetGraphics()->CreateOverlayTexture(mTexture);
+    mOverlay->GetMaterial()->SetChannelTexture(eMaterialChannel_Base, mTexture);
+    return eTrue;
+  };
+
+  tBool __stdcall OnKeyDown(eKey aKey, tU32 aKeyMod) niImpl {
+
+    if (aKey == eKey_n1) {
+      QPtr<iVideoDecoder> decoder = mOverlay->GetMaterial()->GetChannelTexture(eMaterialChannel_Base);
+      if (decoder.IsOK()) {
+        decoder->SetPause(!decoder->GetPause());
+      }
+    }
+    else if (aKey == eKey_n2) {
+      mOverlay->GetMaterial()->SetChannelTexture(eMaterialChannel_Base, NULL);
+      mTexture = NULL;
+    }
+    return eTrue;
+  }
+
+  tBool __stdcall OnDestroy() niImpl {
+    niLog(Info, "Player::OnDestroy");
+    return eTrue;
+  }
+
+  tBool __stdcall OnSinkDetached() niImpl {
+    niLog(Info, "Player::OnSinkDetached");
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f &avMousePos, iCanvas *apCanvas) niImpl {
+    if (mTexture.IsOK() && mOverlay.IsOK()) {
+      apCanvas->BlitOverlay(Rectf(0, 0, mTexture->GetWidth() * 0.25, mTexture->GetHeight()*0.25), mOverlay);
+    }
+    return eFalse;
+  }
+};
+
+// TEST_FIXTURE_WIDGET(FVideoDecoder, Player);

@@ -59,7 +59,8 @@ void benchmark(TheoraVideoClip* clip)
 TheoraVideoClip* Theora_createVideoClip(ni::iFile* data_source,
                                         TheoraOutputMode output_mode,
                                         int numPrecachedOverride,
-                                        bool usePower2Stride)
+                                        bool usePower2Stride,
+                                        bool decodeFirstFirstFrame)
 {
 	TheoraVideoClip* clip = NULL;
 	int nPrecached = numPrecachedOverride ? numPrecachedOverride : _knDefaultNumPrecachedFrames;
@@ -93,20 +94,22 @@ TheoraVideoClip* Theora_createVideoClip(ni::iFile* data_source,
   }
 #endif
 
-	if (clip != NULL)
-	{
-		if (!clip->load(data_source)) {
-      niError("Couldn't load the video clip.");
-			delete clip;
+  if (decodeFirstFirstFrame) {
+    if (clip != NULL)
+    {
+      if (!clip->load(data_source)) {
+        niError("Couldn't load the video clip.");
+        delete clip;
+        return NULL;
+      }
+      clip->decodeNextFrame(); // ensure the first frame is always preloaded and have the main thread do it to prevent potential thread starvation
+    }
+    else
+    {
+      niError(niFmt("Failed creating video clip: '%s'.", data_source->GetSourcePath()));
       return NULL;
     }
-		clip->decodeNextFrame(); // ensure the first frame is always preloaded and have the main thread do it to prevent potential thread starvation
-	}
-	else
-	{
-		niError(niFmt("Failed creating video clip: '%s'.", data_source->GetSourcePath()));
-    return NULL;
-	}
+  }
 
 #ifdef _DECODING_BENCHMARK
 	benchmark(clip);

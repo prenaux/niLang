@@ -10,7 +10,7 @@ mCmdLine <- null
 mColors <- {
   [::eLogFlags.Raw] = ::eColor.lightgrey,
   [::eLogFlags.Debug] = ::eColor.palegreen,
-  [::eLogFlags.Error] = ::eColor.yellow,
+  [::eLogFlags.Error] = ::eColor.red,
   [::eLogFlags.Warning] = ::eColor.darkorange
 }
 

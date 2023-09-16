@@ -554,6 +554,12 @@ static_assert(std::is_same<
               select_local_type_t<WeakPtr<ni::iUnknown>>,
               ni::Nonnull<ni::iUnknown>>::value);
 
+#define niIfNN(V, EXPR)                                                   \
+  ni::select_local_type_t<decltype(EXPR)>{                                \
+    ni::select_local_type_t<decltype(EXPR)>::tUnsafeUncheckedInitializer{ \
+      EXPR}};                                                             \
+  if ((V).raw_ptr() != nullptr)
+
 #define niCheckNNIfNull(V, EXPR)                                           \
   ni::select_local_type_t<decltype(EXPR)>{                                       \
     ni::select_local_type_t<decltype(EXPR)>::tUnsafeUncheckedInitializer{EXPR}}; \

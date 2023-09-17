@@ -4093,9 +4093,9 @@ int CmpByRef(const T& a, const T& b) {
 ///////////////////////////////////////////////
 template<typename T,typename S,typename R>
 inline T Clamp(T v, const S min, const R max) {
-  if (v < min)
+  if (v < (T)min)
     v = (T)min;
-  if (v > max)
+  if (v > (T)max)
     v = (T)max;
   return v;
 }

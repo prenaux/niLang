@@ -134,8 +134,9 @@ niExportFuncCPP(void) ni_throw_panic(
   fmt.append("================================\n");
   #ifdef niJSCC
   JSCC_ConsoleError(fmt.Chars());
-  #endif
+  #else
   niError(fmt.Chars());
+  #endif
   throw sPanicException{aKind};
 #endif
 }

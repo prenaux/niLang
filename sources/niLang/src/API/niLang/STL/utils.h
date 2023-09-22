@@ -81,6 +81,21 @@ dangling_iterator find(T&& container, const typename T::value_type& v) {
   return dangling_iterator();
 }
 
+template <typename T, typename Predicate>
+typename T::const_iterator find_if(const T& container, Predicate aPred) {
+  return astl::find_if(container.begin(), container.end(), aPred);
+}
+
+template <typename T, typename Predicate>
+typename T::const_iterator find_if(T& container, Predicate aPred) {
+  return astl::find_if(container.begin(), container.end(), aPred);
+}
+
+template <typename T, typename Predicate>
+dangling_iterator find_if(T&& container, Predicate aPred) {
+  return dangling_iterator();
+}
+
 template <typename T>
 void fill(T& container, const typename T::value_type& v) {
   eastl::fill(container.begin(), container.end(), v);

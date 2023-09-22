@@ -84,6 +84,7 @@ using eastl::true_type;
 using eastl::is_trivially_copy_constructible_v;
 
 using eastl::is_same_v;
+using eastl::is_pointer_v;
 using eastl::void_t;
 
 using eastl::integral_constant;
@@ -248,13 +249,23 @@ using NN = ni::Nonnull<const T>;
 #endif
 
 template <typename T>
-using opt_mut = astl::optional<T*>;
+struct opt_raw_ptr : public astl::optional<T> {
+  static_assert(astl::is_pointer_v<T>, "T must be a pointer type");
+  using astl::optional<T>::optional;
+  // do not allow nullptr, caller meant nullopt 99% of the time
+  opt_raw_ptr(std::nullptr_t) = delete;
+  // do not allow nullptr, caller meant nullopt 99% of the time
+  opt_raw_ptr& operator=(std::nullptr_t) = delete;
+};
+
+template <typename T>
+using opt_mut = opt_raw_ptr<T*>;
 #ifdef niCCScriptMode
 template <typename T>
-using opt = opt_mut<T>;
+using opt = opt_raw_ptr<T*>;
 #else
 template <typename T>
-using opt = astl::optional<const T*>;
+using opt = opt_raw_ptr<const T*>;
 #endif
 
 template <typename T>

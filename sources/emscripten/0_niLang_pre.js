@@ -201,7 +201,7 @@ function _makeNiInputLib() {
   }
 
   var _inputDebug = undefined;
-  // var _inputDebug = function(msg) { console.log(msg); }
+  //var _inputDebug = function(msg) { console.log(msg); }
 
   var _calculatePointerPos = function (event) {
     var canvas = Module["canvas"];
@@ -308,10 +308,28 @@ function _makeNiInputLib() {
     }
   }
 
+  // We don't want to intercept standard browser keyboard inputs as to not
+  // drive our users insane.For now just the "refresh page" shortcuts but
+  // eventually we need a proper list and/or utility function to set this up
+  // cleanly at init time.
+  function dontInterceptKey(event,isDown) {
+    if (event.code === 'KeyR' && (event.metaKey || event.ctrlKey)) {
+      console.log('I/dontInterceptKey: isDown:' + isDown + ': Cmd+R or Ctrl+R was pressed');
+      return true;
+    } else if (event.code === 'F5') {
+      console.log('I/dontInterceptKey: isDown:' + isDown + ': F5 was pressed');
+      return true;
+    }
+    return false;
+  }
+
   return {
     //// Key Events ////
     handleKeyDown: function (event) {
       // console.log("handleKeyDown: " + event['keyCode']);
+      if (dontInterceptKey(event,true)) {
+        return;
+      }
 
       if ((_mouseButton == 0) && !_isMouseHover && !_isLocked)
         return;
@@ -323,7 +341,7 @@ function _makeNiInputLib() {
           _keyIsDown[keyCode] = true;
         }
         NIAPP_CAPI.WndInputKey(keyCode, 1);
-        (_inputDebug && _inputDebug("KEYDOWN: count: " + _keyDownCount + ", key:" + keyCode + " event: " + event['keyCode'] + " target: " + event.target.id));
+        (_inputDebug && _inputDebug("KEYDOWN: count: " + _keyDownCount + ", key:" + keyCode + " event.keyCode: " + event['keyCode'] + " event.code: " + event['code'] + " target: " + event.target.id));
         event.preventDefault();
       }
 
@@ -332,7 +350,11 @@ function _makeNiInputLib() {
         NIAPP_CAPI.WndInputString("" + key);
       }
     },
+
     handleKeyUp: function (event) {
+      if (dontInterceptKey(event,false)) {
+        return;
+      }
       if ((_keyDownCount == 0) && (_mouseButton == 0) && !_isMouseHover && !_isLocked)
         return;
       var keyCode = _translateKeyCode(event['keyCode']);
@@ -342,7 +364,7 @@ function _makeNiInputLib() {
           --_keyDownCount;
           _keyIsDown[keyCode] = false;
         }
-        (_inputDebug && _inputDebug("KEYUP: count: " + _keyDownCount + ", key:" + keyCode + " event: " + event['keyCode'] + " target: " + event.target.id));
+        (_inputDebug && _inputDebug("KEYUP: count: " + _keyDownCount + ", key:" + keyCode + " event.keyCode: " + event['keyCode'] + " event.code: " + event['code'] + " target: " + event.target.id));
         event.preventDefault();
       }
     },

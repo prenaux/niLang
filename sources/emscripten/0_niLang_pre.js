@@ -841,10 +841,10 @@ var NIAPP = _moduleLib('NIAPP', {
       delayResized(aElement.clientWidth, aElement.clientHeight);
     });
     window.addEventListener("blur", function () {
-      NIAPP_CAPI.WndNotifyFocus(false);
+      // NIAPP_CAPI.WndNotifyFocus(false);
     });
     window.addEventListener("focus", function () {
-      NIAPP_CAPI.WndNotifyFocus(true);
+      // NIAPP_CAPI.WndNotifyFocus(true);
     });
 
     NIAPP.SetCanvasSize(aElement, aElement.clientWidth, aElement.clientHeight);

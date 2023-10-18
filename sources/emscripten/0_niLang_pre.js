@@ -791,6 +791,16 @@ var NIAPP = _moduleLib('NIAPP', {
   },
 
   GetParamsAsObject: function GetParamsAsObject(query) {
+    // first we get the parameters passed to the module
+    var moduleParams = Module["Params"];
+    var params = {};
+    for (var prop in moduleParams) {
+        var value = moduleParams[prop];
+        params[prop] = value;
+    }
+
+    // user can create new params or overwrite the module ones
+    // by using the URL query params
     query = query.substring(query.indexOf('?') + 1);
 
     var re = /([^&=]+)=?([^&]*)/g;
@@ -800,7 +810,7 @@ var NIAPP = _moduleLib('NIAPP', {
       return decodeURIComponent(str.replace(decodeRE, " "));
     };
 
-    var params = {}, e;
+    var e;
     while (e = re.exec(query)) {
       var k = decode(e[1]), v = decode(e[2]);
       if (k.substring(k.length - 2) === '[]') {

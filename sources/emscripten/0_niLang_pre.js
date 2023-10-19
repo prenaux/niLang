@@ -745,13 +745,22 @@ var NIAPP = _moduleLib('NIAPP', {
   },
 
   AddInputEvents: function AddInputEvents(aElement) {
-    if (typeof (aElement) == "string") {
-      aElement = document.getElementById(aElement);
-    }
+    NIAPP.Assert("UseInput" in Module, "Missing UseInput param. Set true or false on Module creation.");
+    NIAPP.Assert(typeof(Module["UseInput"]) == "boolean", "UseInput must be a boolean.");
+    if (Module["UseInput"] == true) {
+      console.log("I/Canvas input ENABLED");
+      if (typeof (aElement) == "string") {
+        aElement = document.getElementById(aElement);
+      }
 
-    var inputLib = _makeNiInputLib();
-    inputLib.addEvents(aElement);
-    return inputLib;
+      var inputLib = _makeNiInputLib();
+      inputLib.addEvents(aElement);
+      return inputLib;
+    }
+    else {
+      console.log("I/Canvas input DISABLED");
+      return null;
+    }
   },
 
   AddResizeEvents: function AddResizeEvents(aElement) {

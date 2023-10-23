@@ -932,14 +932,14 @@ static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont, cW
   if (icon) {
     const sVec2f iconSize = icon->GetSize();
     c->BlitOverlay(
-        sRectf(r.Left(),r.Top()+(r.GetHeight()-iconSize.y)/2,iconSize.x,iconSize.x),
+      sRectf(r.Left(),r.Top()+(r.GetHeight()-iconSize.y)/2,iconSize.x,iconSize.y),
         icon);
-    r.Left() += iconSize.x;
+    r.Left() += iconSize.x + 2;
   }
   if (niFlagIsNot(nodeFlags,eWidgetTreeNodeFlags_DontDrawName)) {
     tU32 colFront = _GetTextFrontColor(apTree, apNode);
     apNode->_GetFont()->SetColor(colFront);
-    r.Top() += 1;
+    r.Top() -= 1;
     c->BlitText(
         apNode->_GetFont(),
         r,

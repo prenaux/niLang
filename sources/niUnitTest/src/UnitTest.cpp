@@ -323,7 +323,7 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  niTry {
+  TEST_TRY {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -344,7 +344,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch(ni::sPanicException,e) {
+  TEST_CATCH(ni::sPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -352,13 +352,13 @@ bool Test::BeforeRun(TestResults& testResults) const
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch(astl::exception, e) {
+  TEST_CATCH(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
-  niCatchAll() {
+  TEST_CATCHALL() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
@@ -368,7 +368,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 
 bool Test::Run(TestResults& testResults) const
 {
-  niTry {
+  TEST_TRY {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -384,7 +384,7 @@ bool Test::Run(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch(ni::sPanicException,e) {
+  TEST_CATCH(ni::sPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -392,13 +392,13 @@ bool Test::Run(TestResults& testResults) const
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch(astl::exception, e) {
+  TEST_CATCH(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
-  niCatchAll() {
+  TEST_CATCHALL() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
@@ -408,7 +408,7 @@ bool Test::Run(TestResults& testResults) const
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  niTry {
+  TEST_TRY {
 #ifdef USE_SIGNALS
     TEST_THROW_SIGNALS;
 #endif
@@ -427,7 +427,7 @@ bool Test::AfterRun(TestResults& testResults) const
     }
   }
 #ifdef TEST_NITHROWASSERT
-  niCatch(ni::sPanicException,e) {
+  TEST_CATCH(ni::sPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -435,13 +435,13 @@ bool Test::AfterRun(TestResults& testResults) const
   }
 #endif
 #if defined TEST_NICATCHALL
-  niCatch(astl::exception, e) {
+  TEST_CATCH(astl::exception, e) {
     ni::cString stream;
     stream << "Unhandled exception: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
   }
-  niCatchAll() {
+  TEST_CATCHALL() {
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
     return false;
   }
@@ -1056,7 +1056,9 @@ int RunAllTests(TestReporter& reporter,
 
 int RunAllTests(char const* fixtureName)
 {
-  TestReporterStdout reporter;
+  // Static so that it outlives RunAllTests. This can happen with
+  // deferred/async tests & on special platforms such as web-js.
+  static TestReporterStdout reporter;
   return RunAllTests(reporter, Test::GetTestList(), 0, fixtureName);
 }
 

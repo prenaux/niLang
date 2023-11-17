@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#ifdef niCPP_Lambda
+#include "Test_Utils.h"
 
 using namespace ni;
 
@@ -10,9 +10,9 @@ struct FCURLGetString {
   }
 };
 
-TEST_FIXTURE(FCURLGetString,APICoinLore) {
-  cString content = _curl->URLGetString("https://api.coinlore.com/api/ticker/?id=90");
-  CHECK(content.StartsWith("[{\"id\":\"90\""));
+TEST_FIXTURE(FCURLGetString,SomeJson) {
+  cString content = _curl->URLGetString(
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str());
+  CHECK(content.StartsWith(R"""({"name":"Test_niCURL_FetchGetJson",)"""));
   niDebugFmt(("... content: %s", content));
 }
-#endif

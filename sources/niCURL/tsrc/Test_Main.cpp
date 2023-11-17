@@ -4,7 +4,6 @@
 niCrashReport_DeclareHandler();
 
 #if defined niEmbedded
-// http://localhost:8123/niLang/bin/web-js/Test_niCURL_ra.html?FIXTURE=FCURLFetch-Post
 #define EMBEDDED_FIXTURE_NAME "FCURLFetch-Get"
 #endif
 

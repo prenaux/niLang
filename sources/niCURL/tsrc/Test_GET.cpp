@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#ifdef niCPP_Lambda
+#include "Test_Utils.h"
 
 using namespace ni;
 
@@ -9,8 +9,6 @@ struct FCURLGet {
     _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
   }
 };
-
-static const achar* const _kTestPHPBaseUrl = "https://www.bytecollider.com/test_cases/";
 
 TEST_FIXTURE(FCURLGet,HttpAuthBasic) {
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
@@ -61,7 +59,7 @@ TEST_FIXTURE(FCURLGet,HttpAuthBasic) {
         }
       }
     }),
-    niFmt("%s/Test_niCURL_basic_auth.php", _kTestPHPBaseUrl),
+    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
     recvData,
     recvHeader);
   runnable->Run();
@@ -85,7 +83,7 @@ TEST_FIXTURE(FCURLGet,HttpAuthBasic) {
   CHECK_EQUAL(cString("login_ok"), result);
 }
 
-TEST_FIXTURE(FCURLGet,HttpAuthBasicEmpty) {
+TEST_FIXTURE(FCURLGet,HttpAuthBasicIncorrectPwd) {
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
   QPtr<iFuture> futureValue;
@@ -134,7 +132,7 @@ TEST_FIXTURE(FCURLGet,HttpAuthBasicEmpty) {
         }
       }
     }),
-    niFmt("%s/Test_niCURL_basic_auth.php", _kTestPHPBaseUrl),
+    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
     recvData,
     recvHeader);
   runnable->Run();
@@ -202,7 +200,7 @@ TEST_FIXTURE(FCURLGet,GetPage) {
             }
           }
         }),
-      "https://www.bytecollider.com/",
+      _GetHTTPSTestCasesUrl("index.php").c_str(),
       recvData,
       recvHeader);
   runnable->Run();
@@ -213,14 +211,17 @@ TEST_FIXTURE(FCURLGet,GetPage) {
               recvHeader->ReadString()));
 
   recvData->SeekSet(0);
+  ni::cString content = recvData->ReadString();
   niDebugFmt(("I/Page Data: Received %d bytes\n%s",
               recvData->GetSize(),
-              recvData->ReadString()));
+              content));
 
   CHECK_EQUAL(eTrue,bCompleted);
   CHECK_EQUAL(eTrue,futureValue->GetIsDone());
   CHECK_EQUAL(eTrue,futureValue->Wait(0));
   CHECK_EQUAL(eTrue,futureValue->GetValue().GetBoolValue());
+  CHECK_EQUAL(eTrue,content.contains("<h1>ByteCollider</h1>"));
+  CHECK_EQUAL(eTrue,content.contains("<h2>Test Cases</h2>"));
 }
 
 
@@ -269,7 +270,7 @@ TEST_FIXTURE(FCURLGet,GetPageAsync) {
             }
           }
         }),
-      "https://www.bytecollider.com/",
+      _GetHTTPSTestCasesUrl("index.php").c_str(),
       recvData,
       recvHeader);
 
@@ -287,17 +288,21 @@ TEST_FIXTURE(FCURLGet,GetPageAsync) {
               recvHeader->ReadString()));
 
   recvData->SeekSet(0);
-  niDebugFmt(("I/Async Page Data: Received %d bytes\n%s",
+  ni::cString content = recvData->ReadString();
+  niDebugFmt(("I/Page Data: Received %d bytes\n%s",
               recvData->GetSize(),
-              recvData->ReadString()));
+              content));
 
   CHECK_EQUAL(eTrue,bCompleted);
   CHECK_EQUAL(eTrue,futureValue->GetIsDone());
   CHECK_EQUAL(eTrue,futureValue->Wait(0));
   CHECK_EQUAL(eTrue,futureValue->GetValue().GetBoolValue());
+
+  CHECK_EQUAL(eTrue,content.contains("<h1>ByteCollider</h1>"));
+  CHECK_EQUAL(eTrue,content.contains("<h2>Test Cases</h2>"));
 }
 
-TEST_FIXTURE(FCURLGet,GetFileAsync) {
+TEST_FIXTURE(FCURLGet,GetFileLocal) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
@@ -384,7 +389,7 @@ TEST_FIXTURE(FCURLGet,GetFileHTTPS) {
   QPtr<iFuture> futureValue;
   tBool bCompleted = eFalse;
 
-  cString testURL = "https://s3.amazonaws.com/uploads.hipchat.com/591182/4013923/yfpbVRDDdp1lcjR/Text_FormatCurrentTime.vpk";
+  cString testURL = _GetHTTPSTestCasesUrl("AnimMixer_Basic.vpk");
   niDebugFmt(("... TESTPATH: %s", testURL));
 
   Ptr<iRunnable> runnable = _curl->URLGet(
@@ -446,11 +451,10 @@ TEST_FIXTURE(FCURLGet,GetFileHTTPS) {
   recvData->SeekSet(0);
   niDebugFmt(("I/Async File Data: Received %d bytes",
               recvData->GetSize()));
+  CHECK_EQUAL(730848, recvData->GetSize());
 
   CHECK_EQUAL(eTrue,bCompleted);
   CHECK_EQUAL(eTrue,futureValue->GetIsDone());
   CHECK_EQUAL(eTrue,futureValue->Wait(0));
   CHECK_EQUAL(eTrue,futureValue->GetValue().GetBoolValue());
 }
-
-#endif

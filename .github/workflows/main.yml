@@ -15,9 +15,9 @@ on:
 
 jobs:
   # This workflow contains a single job called "build"
-  build_ubuntu20:
+  build_ubuntu22:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       # Check-out and init ham
@@ -28,10 +28,9 @@ jobs:
           ref: master
           path: ham
 
-      - name: Install Ubuntu packages
+      - name: Install OS packages
         run: |
-          sudo apt update
-          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc libdw-dev libunwind-dev
+          ./ham/bin/ham-install-os-packages
 
       - name: ham-toolset repos cppm
         run: |
@@ -40,7 +39,6 @@ jobs:
       # Check-out our repo
       - uses: actions/checkout@v3
         with:
-          ref: main
           path: niLang
 
       - name: niLang _build_bootstrap.sh
@@ -69,6 +67,10 @@ jobs:
           ref: master
           path: ham
 
+      - name: Install OS packages
+        run: |
+          ./ham/bin/ham-install-os-packages
+
       - name: ham-toolset repos cppm
         run: |
           ./ham/bin/ham-toolset repos cppm
@@ -76,7 +78,6 @@ jobs:
       # Check-out our repo
       - uses: actions/checkout@v3
         with:
-          ref: main
           path: niLang
 
       - name: niLang _build_bootstrap.sh
@@ -121,7 +122,6 @@ jobs:
       # Check-out our repo
       - uses: actions/checkout@v3
         with:
-          ref: main
           path: niLang
 
       - name: niLang _build_bootstrap.sh

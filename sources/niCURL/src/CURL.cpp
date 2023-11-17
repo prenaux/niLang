@@ -640,6 +640,11 @@ struct FileWritePart : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default
 };
 #endif // #ifdef HAS_CURL
 
+#ifdef niJSCC
+typedef astl::hash_map<cString, Ptr<sFetchRequest>> turlToRequestCache;
+static turlToRequestCache kmapurlToRequestCache;
+#endif
+
 class cCURL : public cIUnknownImpl<iCURL>
 {
   niBeginClass(cCURL);
@@ -1406,117 +1411,90 @@ class cCURL : public cIUnknownImpl<iCURL>
     }
   }
 
-  Ptr<iFetchRequest> __stdcall _CreateFetchRequestFromError(
-      eFetchMethod aMethod, const achar* aURL, iFetchSink* apSink,
-      const achar* errorMsg) {
-    TRACE_FETCH((errorMsg));
-    Ptr<iFile> dataFp = ni::CreateFileDynamicMemory(0, NULL);
-    niCheckIsOK(dataFp, NULL);
-    cString payload = cString(
-        niFmt(R"""({ "status": "ERROR", "url": "%s", "payload": "%s" })""",
-              aURL, errorMsg));
-    dataFp->WriteString(payload.Chars());
-    dataFp->SeekSet(0);
-    Ptr<iFile> headers = ni::CreateFileDynamicMemory(128, "");
-    headers->WriteString("Content-Type: application/json");
-    headers->SeekSet(0);
-    Nonnull<sFetchRequest> request =
-        ni::MakeNonnull<sFetchRequest>(aMethod, aURL, headers, dataFp, apSink);
-    // NOTE: this is kind of rude but this is a quite special case anyways...
-    request->_status = 500;
-    request->_UpdateReadyState(eFetchReadyState_Done);
-    if (request->_sink.IsOK()) {
-      request->_sink->OnFetchSink_Error(request);
-    }
-    return request;
-  }
-
   Ptr<iFetchRequest> __stdcall _FetchWithOverride(
       eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
       iFetchSink* apSink, const tStringCVec* apHeaders) {
-    TRACE_FETCH(("Using JS fetch override."));
-    cString retString = (const char*)EM_ASM_PTR({
-      console.log("Fetching using Module.niCURL.handleFetchOverride");
-      var url = UTF8ToString($0);
-      let result = Module.niCURL.handleFetchOverride(url);
-      return allocateUTF8(result);
-    }, aURL);
-    if (!retString.empty()) {
-      TRACE_FETCH(("Override reply: %s", retString));
-      Ptr<iDataTable> dt = CreateDataTable("FetchResult");
-      Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128, "");
-      retFile->WriteString(retString.Chars());
-      retFile->SeekSet(0);
-      ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
-                                        retFile);
+    TRACE_FETCH(("...Override Fetch[%s]: Using JS fetch override."));
+    tBool isFetching = kmapurlToRequestCache.count(aURL) > 0;
+    // if is a request from a new URL we create it
+    if (!isFetching) {
+      // we create the request and cache it for later use when the fetch is ready.
+      Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
+      Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
+      Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
+          aMethod, aURL, headersFp, dataFile, apSink);
+      TRACE_FETCH(
+          ("...Override Fetch[%s]: New request added to the CACHE.", request->_url));
 
-      Ptr<iDataTable> jobj = dt->GetChild("jobj");
-      niCheckIsOK(jobj, NULL);
-      cString status = jobj->GetString("status").ToLower();
-      if (status == "skip") {
-        return NULL;  // JS code discarded the override
-      } else {
-        cString url = jobj->GetString("url");
-        niCheck(!url.empty(), NULL);
-        if (status == "error") {  // JS code wanted but couldn't fetch
-          TRACE_FETCH(
-              ("... handleFetchOverride[ERROR]: returns ERROR status."));
-          cString payload = jobj->GetString("payload");
-          niCheck(!payload.empty(), NULL);
-          return _CreateFetchRequestFromError(aMethod, url.Chars(), apSink,
-                                              payload.Chars());
-        } else if (status == "ok") {  // JS code overrided the fetch
-          Nonnull<tStringCVec> headers{tStringCVec::Create()};
-          Ptr<iDataTable> headersDT = jobj->GetChild("headers");
-          tU32 headersCount = headersDT->GetNumProperties();
-          niLoop(i, headersCount) {
-            cString name = headersDT->GetPropertyName(i);
-            cString value = headersDT->GetString(name.Chars());
-            headers->push_back(niFmt("%s: %s", name, value));
+      kmapurlToRequestCache.insert({aURL, request.ptr()});
+      // if wants the override we create the callback and call the override
+      // function in JavaScript
+      tBool shouldOverrideFetch = EM_ASM_INT(
+        {
+          console.log("Fetching using Module.niCURL.handleFetchOverride");
+          var url = UTF8ToString($0);
+          if (Module.niCURL.shouldOverrideFetch(url)) {
+            var onSuccess = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Success', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
+            var onError = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Error', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
+            var onProgress = function(result) {
+              var urlStrPtr = allocateUTF8(url);
+              var resultStrPtr = allocateUTF8(result);
+
+              Module["ccall"]('FetchOverride_Progress', 'void',
+                              [ 'number', 'number' ],
+                              [ resultStrPtr, urlStrPtr ]);
+
+              Module._free(resultStrPtr);
+              Module._free(urlStrPtr);
+            };
+
+            // this is an async function
+            Module.niCURL.handleFetchOverride(url, onSuccess, onError,
+                                              onProgress);
+            return true;
+          } else {
+            return false;
           }
+        },
+        aURL);
 
-          TRACE_FETCH(("url: %s", url));
-          TRACE_FETCH(("headers count: %s", headersCount));
-
-          Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
-          niCheckIsOK(headersFp, NULL);
-          niLoop(i, headersCount) {
-            cString header = headers->Get(i).GetString();
-            headersFp->WriteString(header.Chars());
-            TRACE_FETCH(("headers[%d]: %s", i, header));
-          }
-
-          Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
-          Ptr<iDataTable> dataDT = jobj->GetChild("payload");
-          niDebugFmt(("dataDT NAME: %s", dataDT->GetName()));
-          ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, dataDT,
-                                        dataFile);
-          headersFp->SeekSet(0);
-          dataFile->SeekSet(0);
-          Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-              aMethod, url.Chars(), headersFp, dataFile, apSink);
-          TRACE_FETCH(
-              ("... Fetch[%s]: Created reply request object", request->_url));
-          // NOTE: this is kind of rude but this is a quite special case
-          // anyways...
-          request->_status = 200;
-          request->_UpdateReadyState(eFetchReadyState_Done);
-          if (request->_sink.IsOK()) {
-            request->_sink->OnFetchSink_Success(request);
-          }
+        if (shouldOverrideFetch) {
+          TRACE_FETCH(("...Override Fetch[%s]: The override IS FETCHING.", aURL));
           return request;
-        } else {
-          TRACE_FETCH(
-              ("... handleFetchOverride[ERROR]: returns an unknown status "
-               "value."));
-          return _CreateFetchRequestFromError(
-              aMethod, url.Chars(), apSink,
-              "JS handleFetchOverride returns an unknown status value.");
         }
-      }
-    } else {
-      return _CreateFetchRequestFromError(aMethod, aURL, apSink,
-                                          "Invalid handlefetchOverride");
+        else {
+          TRACE_FETCH(("...Override Fetch[%s]: Override SKIPPED the request.", aURL));
+          if (kmapurlToRequestCache.count(aURL) > 0) {
+            TRACE_FETCH(("Deletes [%d] from cache", aURL));
+            kmapurlToRequestCache.erase(aURL);
+          }
+          return NULL; // this will force to use Emscripten Fetch
+        }
+    }
+    else {
+      return kmapurlToRequestCache[aURL]; // this request is already being handled, just return it
     }
   }
 
@@ -1624,6 +1602,141 @@ class cCURL : public cIUnknownImpl<iCURL>
 
   niEndClass(cCURL);
 };
+#ifdef niJSCC
+Ptr<iDataTable> GetFetchResultDataTable(cString retString) {
+  Ptr<iDataTable> dt = CreateDataTable("FetchResult");
+  Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128, "");
+  retFile->WriteString(retString.Chars());
+  retFile->SeekSet(0);
+  ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
+                                    retFile);
+
+  Ptr<iDataTable> jobj = dt->GetChild("jobj");
+  return jobj;
+}
+
+Ptr<iFetchRequest> __stdcall _UpdateFetchRequestWithError(
+    Ptr<sFetchRequest> request, const achar* errorMsg) {
+  TRACE_FETCH((errorMsg));
+  Nonnull<iFile> dataFp = request->_fpData;
+  cString url = request->_url;
+  cString payload = cString(
+      niFmt(R"""({ "status": "ERROR", "url": "%s", "payload": "%s" })""",
+            url, errorMsg));
+  dataFp->WriteString(payload.Chars());
+  dataFp->SeekSet(0);
+  Ptr<iFile> headers = request->_fpHeaders;
+  headers->WriteString("Content-Type: application/json");
+  headers->SeekSet(0);
+  request->_status = 500;
+  request->_UpdateReadyState(eFetchReadyState_Done);
+  if (request->_sink.IsOK()) {
+    request->_sink->OnFetchSink_Error(request);
+  }
+  if (kmapurlToRequestCache.count(url) > 0) {
+    TRACE_FETCH(("Deletes [%d] from cache", url));
+    kmapurlToRequestCache.erase(url);
+  }
+  return request;
+}
+
+niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
+  cString retString = (const char*)resultPtr;
+  cString url = (const char*)urlPtr;
+  TRACE_FETCH(
+      ("... FetchOverride_Success: { url: %s, result: %s }", url, retString));
+
+  // niLoopit(turlToRequestCache::const_iterator, it, kmapurlToRequestCache) {
+  //   niDebugFmt(("URL IN SUCCESS: %s", it->first));
+  // }
+  Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
+  if (request.IsOK()) {
+    TRACE_FETCH(("Override reply: %s", retString));
+    Ptr<iDataTable> jobj = GetFetchResultDataTable(retString);
+    if (!jobj.IsOK()) {
+      _UpdateFetchRequestWithError(request, "Error reading JSON result");
+      return;
+    }
+    Nonnull<tStringCVec> headers{tStringCVec::Create()};
+    Ptr<iDataTable> headersDT = jobj->GetChild("headers");
+    tU32 headersCount = headersDT->GetNumProperties();
+    niLoop(i, headersCount) {
+      cString name = headersDT->GetPropertyName(i);
+      cString value = headersDT->GetString(name.Chars());
+      headers->push_back(niFmt("%s: %s", name, value));
+    }
+
+    TRACE_FETCH(("url: %s", url));
+    TRACE_FETCH(("headers count: %s", headersCount));
+
+    Nonnull<iFile> headersFp = request->_fpHeaders;
+    niLoop(i, headersCount) {
+      cString header = headers->Get(i).GetString();
+      headersFp->WriteString(header.Chars());
+      TRACE_FETCH(("headers[%d]: %s", i, header));
+    }
+
+    Ptr<iFile> dataFile = request->_fpData;
+    Ptr<iDataTable> dataDT = jobj->GetChild("payload");
+    niDebugFmt(("dataDT NAME: %s", dataDT->GetName()));
+    ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, dataDT,
+                                      dataFile);
+    headersFp->SeekSet(0);
+    dataFile->SeekSet(0);
+    request->_status = 200;
+    request->_UpdateReadyState(eFetchReadyState_Done);
+    if (request->_sink.IsOK()) {
+      request->_sink->OnFetchSink_Success(request);
+    }
+    if (kmapurlToRequestCache.count(url) > 0) {
+      TRACE_FETCH(("Deletes [%d] from cache", url));
+      kmapurlToRequestCache.erase(url);
+    }
+  } else {
+    TRACE_FETCH(
+        ("... FetchOverride_Success[%s]: This url is not in the list of "
+         "requests anymore, have you call onSuccess twice? ",
+         url));
+  }
+}
+
+niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr) {
+  cString retString = (const char*)resultPtr;
+  cString url = (const char*)urlPtr;
+  TRACE_FETCH(
+      ("... FetchOverride_Error: { url = %s, result: %s }", url, retString));
+
+  Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
+  if (request.IsOK()) {
+    Ptr<iDataTable> jobj = GetFetchResultDataTable(retString);
+    if (!jobj.IsOK()) {
+      _UpdateFetchRequestWithError(request, "Error reading JSON result");
+      return;
+    }
+    cString payload = jobj->GetString("payload");
+    if (payload.empty()) {
+      _UpdateFetchRequestWithError(request, "Payload is empty.");
+      return;
+    }
+    _UpdateFetchRequestWithError(request, payload.Chars());
+    return;
+  }
+  else {
+    TRACE_FETCH(
+        ("... FetchOverride_Error[%s]: This url is not in the list of "
+         "requests anymore, have you call onError twice? ",
+         url));
+  }
+}
+
+niExportFunc(void) FetchOverride_Progress(tU32 resultPtr, tU32 urlPtr) {
+  const char* result = (const char*)resultPtr;
+  const char* url = (const char*)urlPtr;
+  TRACE_FETCH(
+      ("... FetchOverride_Progress: { url = %s, result: %s }", url, result));
+  // WIP
+}
+#endif
 
 niExportFunc(iUnknown*) New_niCURL_CURL(const Var&, const Var&) {
   return niNew cCURL();

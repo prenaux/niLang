@@ -226,7 +226,8 @@ if $(JSCC) = 1 || $(LINUX) = 1 || $(LOA_OS) = qnx {
 rule niCURL_LinkLibs_Deps {
   if $(USE_SYSTEM_LIBCURL) = 1 {
     if $(JSCC) = 1 {
-      LINKLIBS on $(<) += -sFETCH ;
+      # without _main it whould just exit immediatly
+      LINKLIBS on $(<) += -sFETCH -sEXPORTED_FUNCTIONS=_main,_free,_FetchOverride_Success,_FetchOverride_Error,_FetchOverride_Progress ;
     }
     else {
       LINKLIBS on $(<) += -lcurl ;

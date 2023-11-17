@@ -16,11 +16,11 @@ struct FCURLFetch {
 #ifdef niJSCC
     // We remove any JSCC extension to have a clean test.
     // TODO: This shouldn't be a global module thing ideally.
-    emscripten_run_script(R"""(function() {
+    emscripten_run_script(R"""({
       if ("niCURL" in Module) {
-        delete Module.niCURL;
+          delete Module.niCURL;
       }
-    }();)""");
+    })""");
 #endif
     _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
   }

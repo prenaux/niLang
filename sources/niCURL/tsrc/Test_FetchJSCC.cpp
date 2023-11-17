@@ -4,6 +4,7 @@
 #ifdef niJSCC
 
 #include <emscripten.h>
+#include "Test_Utils.h"
 
 namespace {
 
@@ -12,13 +13,14 @@ using namespace ni;
 struct FCURLFetchJSCC {
   QPtr<iCURL> _curl;
   FCURLFetchJSCC() {
-      // we remove any JSCC extension to have a clean test
-      emscripten_run_script(R"""({
+    // We remove any JSCC extension to have a clean test.
+    // TODO: This shouldn't be a global module thing ideally.
+    emscripten_run_script(R"""({
       if ("niCURL" in Module) {
-        delete Module.niCURL;
+          delete Module.niCURL;
       }
-      })""");
-      _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
+    })""");
+    _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
   }
 };
 
@@ -66,16 +68,21 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchNotImplemented) {
 
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
+  Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
+  requestHeaders->push_back("X-Ni-Header: HdrNarf_GetJson");
+
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
-    NULL).non_null();
+    requestHeaders).non_null();
 
   UnitTest::TestLoop(TEST_PARAMS_CALL,
-    ni::Runnable([mq,request]() {
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      niUnused(testResults_);
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       return eTrue;
@@ -86,17 +93,16 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchNotImplemented) {
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      cString data = request->GetReceivedData()->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
 
-      CHECK(data.StartsWith("[{\"id\":\"90\""));
       CHECK(headers.icontains("Content-Type: application/json"));
       Ptr<iDataTable> dataDT = ni::CreateDataTable();
-      const tBool validJson = JsonParseFileToDataTable(request->GetReceivedData(), dataDT);
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
       CHECK(validJson);
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
+      CHECK_EQUAL(_ASTR("HdrNarf_GetJson"), dataDT->GetString("received_x_ni_header"));
       return eTrue;
     }));
 }
@@ -106,50 +112,59 @@ TEST_FIXTURE(FCURLFetchJSCC,NoOverrideFetchExists) {
 
   Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
   requestHeaders->push_back("Accept: application/json");
+  requestHeaders->push_back("X-Ni-Header: HdrNarf_GetJson");
 
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
     requestHeaders).non_null();
 
   UnitTest::TestLoop(TEST_PARAMS_CALL,
-    ni::Runnable([mq,request]() {
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      niUnused(testResults_);
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       return eTrue;
     }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA]() {
+    ni::Runnable([request,sink,TEST_PARAMS_LAMBDA]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      cString data = request->GetReceivedData()->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
 
       Ptr<iDataTable> dataDT = ni::CreateDataTable("");
-      const tBool validJson = JsonParseFileToDataTable(request->GetReceivedData(), dataDT);
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
       CHECK(validJson);
-      CHECK(data.StartsWith("[{\"id\":"));
+
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
+      CHECK_EQUAL(_ASTR("HdrNarf_GetJson"), dataDT->GetString("received_x_ni_header"));
+      CHECK_EQUAL(sink->result, "success");
       return eTrue;
     }));
 }
 
-TEST_FIXTURE(FCURLFetchJSCC,SpamRequest) {
+TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSuccess) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
         shouldOverrideFetch: function(url) {
-          if (url.includes("https://api.coinlore.com/api/ticker/")) {
+          console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: " + url);
+          if (url.includes("/test_cases/Test_niCURL_FetchGetJson.php")) {
+            console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: yes");
             return true;
           }
-          return false;
+          else {
+            console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: no");
+            return false;
+          }
         },
         handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
@@ -179,7 +194,7 @@ TEST_FIXTURE(FCURLFetchJSCC,SpamRequest) {
 
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
     NULL).non_null();
 
@@ -188,30 +203,33 @@ TEST_FIXTURE(FCURLFetchJSCC,SpamRequest) {
     ni::Runnable([mq,request,sink,curl,TEST_PARAMS_LAMBDA]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       // try to make the same request multiple times (it should always return the
       // same request until that request is done)
       Nonnull<iFetchRequest> theRequest = curl->FetchGet(
-      "https://api.coinlore.com/api/ticker/?id=90",
+      _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
       sink,
       NULL).non_null();
       CHECK_EQUAL(theRequest, request);
       return eTrue;
       }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
+    ni::Runnable([request,sink,TEST_PARAMS_LAMBDA]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      cString data = request->GetReceivedData()->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
 
-      CHECK(data.StartsWith("[{\"id\":\"90\""));
+      Ptr<iDataTable> dataDT = ni::CreateDataTable("");
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
+      CHECK(validJson);
+
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
       CHECK_EQUAL(sink->result, "success");
       return eFalse;
     }));
@@ -245,14 +263,16 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSkip) {
   requestHeaders->push_back("Accept: application/json");
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
     requestHeaders).non_null();
 
   UnitTest::TestLoop(TEST_PARAMS_CALL,
-    ni::Runnable([mq,request]() {
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      niUnused(testResults_);
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       return eTrue;
@@ -263,18 +283,15 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSkip) {
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      Ptr<iFile> receivedData = request->GetReceivedData();
-      cString data = receivedData->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
-      receivedData->SeekSet(0);
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
+
       Ptr<iDataTable> dataDT = ni::CreateDataTable("");
-      const tBool validJson =
-          JsonParseFileToDataTable(receivedData, dataDT);
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
       CHECK(validJson);
-      CHECK(data.StartsWith("[{\"id\":"));
+
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
       CHECK_EQUAL(sink->result, "success");
       return eTrue;
     }));
@@ -285,10 +302,15 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchError) {
     niExtensions = {
       niCURL: {
         shouldOverrideFetch: function(url) {
-          if (url.includes("https://api.coinlore.com/api/ticker/")) {
+          console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: " + url);
+          if (url.includes("/test_cases/Test_niCURL_FetchGetJson.php")) {
+            console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: yes");
             return true;
           }
-          return false;
+          else {
+            console.log("OverrideFetchError: Module.niCURL: shouldOverrideFetch: no");
+            return false;
+          }
         },
         handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
@@ -316,7 +338,7 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchError) {
   requestHeaders->push_back("Accept: application/json");
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
     requestHeaders).non_null();
   QPtr<iCURL> curl = _curl;
@@ -324,39 +346,36 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchError) {
     ni::Runnable([mq,request,sink,curl,TEST_PARAMS_LAMBDA]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       // we also test spamming, if should return the same request always.
       // I would like to override request with the result but I am in const territory here...
       Nonnull<iFetchRequest> theRequest = curl->FetchGet(
-      "https://api.coinlore.com/api/ticker/?id=90",
+      _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
       sink,
       NULL).non_null();
       CHECK_EQUAL(theRequest, request);
       return eTrue;
     }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
+    ni::Runnable([request,sink,TEST_PARAMS_LAMBDA]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      Ptr<iFile> receivedData = request->GetReceivedData();
-      cString data = receivedData->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
-      receivedData->SeekSet(0);
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
+
       Ptr<iDataTable> dataDT = ni::CreateDataTable("");
-      const tBool validJson =
-          JsonParseFileToDataTable(receivedData, dataDT);
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
       CHECK(validJson);
-      // cString xml = ni::DataTableToXML(dataDT);
-      // niDebugFmt(("XML: %s", xml));
+
+      CHECK_EQUAL(eFalse, request->GetHasFailed());
+
       CHECK_EQUAL(request->GetStatus(), 500);
       CHECK_EQUAL(dataDT->GetString("payload"), "Couldn't fetch the URL");
       CHECK_EQUAL(sink->result, "error");
-      CHECK_EQUAL(eFalse, request->GetHasFailed());
       return eTrue;
     }));
 }
@@ -394,7 +413,7 @@ TEST_FIXTURE(FCURLFetchJSCC,RequestNoAwaits) {
 
   Nonnull<FCURLFetchJSCCSink> sink = ni::MakeNonnull<FCURLFetchJSCCSink>();
   Nonnull<iFetchRequest> request = _curl->FetchGet(
-    "https://api.coinlore.com/api/ticker/?id=90",
+    _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
     NULL).non_null();
 
@@ -403,32 +422,33 @@ TEST_FIXTURE(FCURLFetchJSCC,RequestNoAwaits) {
     ni::Runnable([mq,request,sink,curl,TEST_PARAMS_LAMBDA]() {
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
+        niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
       // try to make the same request multiple times (it should always return the
       // same request until that request is done)
       Nonnull<iFetchRequest> theRequest = curl->FetchGet(
-      "https://api.coinlore.com/api/ticker/?id=90",
+      _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
       sink,
       NULL).non_null();
       CHECK_EQUAL(theRequest, request);
       return eTrue;
       }),
-    ni::Runnable([request,TEST_PARAMS_LAMBDA,sink]() {
+    ni::Runnable([request,sink,TEST_PARAMS_LAMBDA]() {
       cString headers = request->GetReceivedHeaders()->ReadString();
       niDebugFmt(("... headers: %d bytes, %s",
                   request->GetReceivedHeaders()->GetSize(),
                   headers));
 
-      cString data = request->GetReceivedData()->ReadString();
-      niDebugFmt(("... data: %d bytes, %s",
-                  request->GetReceivedData()->GetSize(),
-                  data));
+      cString content = request->GetReceivedData()->ReadString();
+      niDebugFmt(("... content: %d bytes, %s", content.size(), content));
 
-      CHECK(headers.icontains("Access-Control-Allow-Origin: *"));
-      CHECK(data.StartsWith("[{\"id\":\"90\""));
-      CHECK(headers.icontains("Content-Type: application/json"));
+      Ptr<iDataTable> dataDT = ni::CreateDataTable("");
+      const tBool validJson = JsonParseStringToDataTable(content, dataDT);
+      CHECK(validJson);
+
       CHECK_EQUAL(eFalse, request->GetHasFailed());
+      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
       CHECK_EQUAL(sink->result, "success");
       return eFalse;
     }));

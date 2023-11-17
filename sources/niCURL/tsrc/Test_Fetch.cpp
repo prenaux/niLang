@@ -2,6 +2,10 @@
 #include <niCURL_ModuleDef.h>
 #include "Test_Utils.h"
 
+#ifdef niJSCC
+#include <emscripten.h>
+#endif
+
 namespace {
 
 using namespace ni;

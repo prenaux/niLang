@@ -11,7 +11,7 @@ using namespace ni;
 
 struct FCURLFetchJSCC {
   QPtr<iCURL> _curl;
-  FCURLFetch() {
+  FCURLFetchJSCC() {
       // we remove any JSCC extension to have a clean test
       emscripten_run_script(R"""({
       if ("niCURL" in Module) {
@@ -48,7 +48,7 @@ struct FCURLFetchJSCCSink : public cIUnknownImpl<iFetchSink> {
   }
 };
 
-TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchNotImplemented) {
+TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchNotImplemented) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
@@ -101,7 +101,7 @@ TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchNotImplemented) {
     }));
 }
 
-TEST_FIXTURE(FCURLFetch,JSCC_NoOverrideFetchExists) {
+TEST_FIXTURE(FCURLFetchJSCC,NoOverrideFetchExists) {
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
   Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
@@ -141,7 +141,7 @@ TEST_FIXTURE(FCURLFetch,JSCC_NoOverrideFetchExists) {
     }));
 }
 
-TEST_FIXTURE(FCURLFetch,JSCC_SpamRequest) {
+TEST_FIXTURE(FCURLFetchJSCC,SpamRequest) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
@@ -217,7 +217,7 @@ TEST_FIXTURE(FCURLFetch,JSCC_SpamRequest) {
     }));
 }
 
-TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchSkip) {
+TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSkip) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
@@ -280,7 +280,7 @@ TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchSkip) {
     }));
 }
 
-TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchError) {
+TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchError) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {
@@ -361,7 +361,7 @@ TEST_FIXTURE(FCURLFetch,JSCC_OverrideFetchError) {
     }));
 }
 
-TEST_FIXTURE(FCURLFetch,JSCC_RequestNoAwaits) {
+TEST_FIXTURE(FCURLFetchJSCC,RequestNoAwaits) {
   emscripten_run_script(R"""({
     niExtensions = {
       niCURL: {

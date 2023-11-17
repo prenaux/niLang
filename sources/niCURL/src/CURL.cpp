@@ -4,6 +4,7 @@
 
 #include <niLang/Utils/ConcurrentImpl.h>
 #include <niLang/Utils/Trace.h>
+#include <niLang/Utils/DataTableUtils.h>
 
 #ifdef niWindows
 #include <niLang/Platforms/Win32/Win32_Redef.h>
@@ -1559,11 +1560,11 @@ class cCURL : public cIUnknownImpl<iCURL>
       niLoop(i, sh.size()) {
         *rh++ = request->_emHeadersKV.emplace_back(sh[i].Before(":")).c_str();
         *rh++ = request->_emHeadersKV.emplace_back(sh[i].After(":")).c_str();
-        niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh - 2), *(rh - 1)));
+        // niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh - 2), *(rh - 1)));
       }
       *rh++ = NULL;
       attrs.requestHeaders = request->_emHeaders;
-      niDebugFmt(("... HEADERS: %d", apHeaders->size()));
+      // niDebugFmt(("... HEADERS: %d", apHeaders->size()));
     }
 
     request->_emfetch = emscripten_fetch(&attrs, request->_url.Chars());
@@ -1603,16 +1604,12 @@ class cCURL : public cIUnknownImpl<iCURL>
   niEndClass(cCURL);
 };
 #ifdef niJSCC
-Ptr<iDataTable> GetFetchResultDataTable(cString retString) {
+static Ptr<iDataTable> _GetFetchResultDataTable(const cString& retString) {
   Ptr<iDataTable> dt = CreateDataTable("FetchResult");
-  Ptr<iFile> retFile = ni::CreateFileDynamicMemory(128, "");
-  retFile->WriteString(retString.Chars());
-  retFile->SeekSet(0);
-  ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
-                                    retFile);
-
-  Ptr<iDataTable> jobj = dt->GetChild("jobj");
-  return jobj;
+  Ptr<iFile> retFile = ni::CreateFileMemory((tPtr)retString.c_str(), retString.size(), eFalse, "---CURL---");
+  if (!ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt, retFile))
+    return nullptr;
+  return dt->GetChild("jobj");
 }
 
 Ptr<iFetchRequest> __stdcall _UpdateFetchRequestWithError(
@@ -1644,7 +1641,7 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
   cString retString = (const char*)resultPtr;
   cString url = (const char*)urlPtr;
   TRACE_FETCH(
-      ("... FetchOverride_Success: { url: %s, result: %s }", url, retString));
+      ("... FetchOverride_Success: url: %s, result: %s", url, retString));
 
   // niLoopit(turlToRequestCache::const_iterator, it, kmapurlToRequestCache) {
   //   niDebugFmt(("URL IN SUCCESS: %s", it->first));
@@ -1652,42 +1649,50 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
   Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
   if (request.IsOK()) {
     TRACE_FETCH(("Override reply: %s", retString));
-    Ptr<iDataTable> jobj = GetFetchResultDataTable(retString);
+    Ptr<iDataTable> jobj = _GetFetchResultDataTable(retString);
     if (!jobj.IsOK()) {
       _UpdateFetchRequestWithError(request, "Error reading JSON result");
       return;
     }
-    Nonnull<tStringCVec> headers{tStringCVec::Create()};
+
+    Ptr<iDataTable> payloadDT = jobj->GetChild("payload");
+    if (!payloadDT.IsOK()) {
+      _UpdateFetchRequestWithError(request, "Error JSON result has not payload field.");
+      return;
+    }
+
     Ptr<iDataTable> headersDT = jobj->GetChild("headers");
-    tU32 headersCount = headersDT->GetNumProperties();
-    niLoop(i, headersCount) {
-      cString name = headersDT->GetPropertyName(i);
-      cString value = headersDT->GetString(name.Chars());
-      headers->push_back(niFmt("%s: %s", name, value));
+    if (!headersDT.IsOK()) {
+      _UpdateFetchRequestWithError(request, "Error JSON result has not headers field.");
+      return;
     }
 
     TRACE_FETCH(("url: %s", url));
-    TRACE_FETCH(("headers count: %s", headersCount));
+    TRACE_FETCH(("payloadDT: %s", DataTableToXML(payloadDT)));
+    TRACE_FETCH(("headersDS: %s", DataTableToXML(headersDT)));
 
-    Nonnull<iFile> headersFp = request->_fpHeaders;
-    niLoop(i, headersCount) {
-      cString header = headers->Get(i).GetString();
-      headersFp->WriteString(header.Chars());
-      TRACE_FETCH(("headers[%d]: %s", i, header));
+    {
+      auto& fpData = request->_fpData;
+      ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, payloadDT, fpData);
+      fpData->SeekSet(0);
     }
 
-    Ptr<iFile> dataFile = request->_fpData;
-    Ptr<iDataTable> dataDT = jobj->GetChild("payload");
-    niDebugFmt(("dataDT NAME: %s", dataDT->GetName()));
-    ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, dataDT,
-                                      dataFile);
-    headersFp->SeekSet(0);
-    dataFile->SeekSet(0);
+    {
+      auto& fpHeaders = request->_fpHeaders;
+      niLoop(i, headersDT->GetNumProperties()) {
+        fpHeaders->WriteString(headersDT->GetPropertyName(i));
+        fpHeaders->WriteString(": ");
+        fpHeaders->WriteString(headersDT->GetStringFromIndex(i).c_str());
+      }
+      fpHeaders->SeekSet(0);
+    }
+
     request->_status = 200;
     request->_UpdateReadyState(eFetchReadyState_Done);
     if (request->_sink.IsOK()) {
       request->_sink->OnFetchSink_Success(request);
     }
+
     if (kmapurlToRequestCache.count(url) > 0) {
       TRACE_FETCH(("Deletes [%d] from cache", url));
       kmapurlToRequestCache.erase(url);
@@ -1708,7 +1713,7 @@ niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr) {
 
   Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
   if (request.IsOK()) {
-    Ptr<iDataTable> jobj = GetFetchResultDataTable(retString);
+    Ptr<iDataTable> jobj = _GetFetchResultDataTable(retString);
     if (!jobj.IsOK()) {
       _UpdateFetchRequestWithError(request, "Error reading JSON result");
       return;

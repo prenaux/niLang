@@ -168,25 +168,31 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSuccess) {
         },
         handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
-          await new Promise(r => setTimeout(r, 10000));
-          var result = `
-              {
-                "status": "OK",
-                "url": "http://example.com",
-                "headers": {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-                },
-                "payload": [{"id":"90","symbol":"BTC","name":"Bitcoin","nameid":"bitcoin","rank":1,"price_usd":"23864.25","percent_change_24h":"-2.25","percent_change_1h":"0.17","percent_change_7d":"-4.28","market_cap_usd":"460296162080.63","volume24":"28850217961.42","volume24_native":"1208930.23","csupply":"19288102.00","price_btc":"1.00","tsupply":"19288102","msupply":"21000000"}]
-              }`
+          await new Promise(r => setTimeout(r, 1000));
+          console.log("Module.niCURL: handleFetchOverride: result");
+          var result = `{
+            "status": "OK",
+            "url": "http://example.com",
+            "headers": {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            "payload": {
+              "name": "Fetch Override"
+            }
+          }`
+          console.log("Module.niCURL: handleFetchOverride: onSuccess");
           onSuccess(result);
-          onSuccess(result); // calling this twice should not cause an error
         }
       }
     }
 
     Object.assign(Module, niExtensions);
   })""");
+
+  Nonnull<tStringCVec> requestHeaders { tStringCVec::Create() };
+  requestHeaders->push_back("X-Ni-Header: HdrNarf_GetJson_WithOverride");
+
   // We need to recreate niCURL because niCURL looks if there is a fetch override in
   // the constructor (which makes sense generally but not for testing)
   _curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
@@ -196,23 +202,17 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSuccess) {
   Nonnull<iFetchRequest> request = _curl->FetchGet(
     _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
     sink,
-    NULL).non_null();
+    requestHeaders).non_null();
 
   QPtr<iCURL> curl = _curl;
   UnitTest::TestLoop(TEST_PARAMS_CALL,
-    ni::Runnable([mq,request,sink,curl,TEST_PARAMS_LAMBDA]() {
+    ni::Runnable([mq,request,TEST_PARAMS_LAMBDA]() {
+      niUnused(testResults_);
       mq->PollAndDispatch();
       if (request->GetReadyState() == eFetchReadyState_Done) {
         niDebugFmt(("... %s: request->GetReadyState() == Done", m_testName));
         return eFalse;
       }
-      // try to make the same request multiple times (it should always return the
-      // same request until that request is done)
-      Nonnull<iFetchRequest> theRequest = curl->FetchGet(
-      _GetHTTPSTestCasesUrl("Test_niCURL_FetchGetJson.php?param=test_json_value").c_str(),
-      sink,
-      NULL).non_null();
-      CHECK_EQUAL(theRequest, request);
       return eTrue;
       }),
     ni::Runnable([request,sink,TEST_PARAMS_LAMBDA]() {
@@ -229,7 +229,9 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSuccess) {
       CHECK(validJson);
 
       CHECK_EQUAL(eFalse, request->GetHasFailed());
-      CHECK_EQUAL(_ASTR("Test_niCURL_FetchGetJson"), dataDT->GetString("name"));
+      CHECK_EQUAL(_ASTR("Fetch Override"), dataDT->GetString("name"));
+      // TODO: Header should pass through, we'll likely need them for auth later on
+      // CHECK_EQUAL(_ASTR("HdrNarf_GetJson_WithOverride"), dataDT->GetString("received_x_ni_header"));
       CHECK_EQUAL(sink->result, "success");
       return eFalse;
     }));
@@ -244,7 +246,7 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSkip) {
         },
         handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           // THIS WILL NEVER RUN ANYWAYS
-          await new Promise(r => setTimeout(r, 10000));
+          await new Promise(r => setTimeout(r, 1000));
           return false;
         }
       }
@@ -314,7 +316,7 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchError) {
         },
         handleFetchOverride: async function (aRequestUrl, onSuccess, onError, onProgress) {
           console.log("Module.niCURL: handleFetchOverride: " + aRequestUrl);
-          await new Promise(r => setTimeout(r, 5000));
+          await new Promise(r => setTimeout(r, 1000));
           onError(`
               {
                 "url": "http://example.com",

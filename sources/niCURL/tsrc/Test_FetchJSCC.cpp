@@ -171,8 +171,6 @@ TEST_FIXTURE(FCURLFetchJSCC,OverrideFetchSuccess) {
           await new Promise(r => setTimeout(r, 1000));
           console.log("Module.niCURL: handleFetchOverride: result");
           var result = `{
-            "status": "OK",
-            "url": "http://example.com",
             "headers": {
               "Content-Type": "application/json",
               "Accept": "application/json"

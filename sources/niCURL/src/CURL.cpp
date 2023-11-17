@@ -1432,7 +1432,7 @@ class cCURL : public cIUnknownImpl<iCURL>
       // function in JavaScript
       tBool shouldOverrideFetch = EM_ASM_INT(
         {
-          console.log("Fetching using Module.niCURL.handleFetchOverride");
+          // console.log("Fetching using Module.niCURL.handleFetchOverride");
           var url = UTF8ToString($0);
           if (Module.niCURL.shouldOverrideFetch(url)) {
             var onSuccess = function(result) {

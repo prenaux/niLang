@@ -76,6 +76,31 @@
        color: white;
        font-family: 'Lucida Console', Monaco, monospace;
        outline: none;
+       font-size: 12px;
+     }
+     .ni-player-terminal > div:nth-child(odd) {
+       background-color: #111;
+     }
+     .ni-player-terminal > div:nth-child(even) {
+       background-color: #333;
+     }
+     .ni-log-info {
+       color: #0dd;
+     }
+     .ni-log-debug {
+       color: #0d0;
+     }
+     .ni-log-error {
+       color: #c00;
+     }
+     .ni-log-warning {
+       color: #fa0;
+     }
+     .ni-log-stderr {
+       color: #f00;
+     }
+     .ni-log-fatal {
+       color: #c0c;
      }
     </style>
   </head>
@@ -99,13 +124,13 @@
         style="display: none;"
       ></canvas>
 
-      <textarea
+      <div
         id="ni-player-terminal"
         class="ni-player-terminal"
         rows="10"
         style="display: none;"
         spellcheck="false"
-      ></textarea>
+      ></div>
     </div>
 
     {{{ SCRIPT }}}
@@ -178,6 +203,25 @@
         setStatus.last.text = text;
       };
 
+      function logText(aTerminalEl,aText,aClass) {
+        var newDiv = document.createElement('div');
+        newDiv.textContent = aText;
+        var cl = aClass || '';
+        cl += " ni-log";
+        if (aText.startsWith("I/")) cl += " ni-log-info";
+        if (aText.startsWith("D/")) cl += " ni-log-debug";
+        if (aText.startsWith("W/")) cl += " ni-log-warning";
+        if (aText.startsWith("E/")) cl += " ni-log-error";
+        if (aText.startsWith("F/")) cl += " ni-log-fatal";
+        newDiv.className = cl;
+        aTerminalEl.appendChild(newDiv);
+      }
+
+      function scrollToBottom(aaTerminalEl) {
+        var focusedElement = document.activeElement;
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+
       console.log('... createDefaultNiModule');
       var Module = createDefaultNiModule({
         UseInput: true,
@@ -229,8 +273,8 @@
           }
           console.log(text);
           if (elPlayerTerminal) {
-            elPlayerTerminal.value += text + "\n";
-            elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
+            logText(elPlayerTerminal, text, "ni-log-stdout");
+            scrollToBottom();
           }
         },
         printErr: function (text) {
@@ -239,8 +283,8 @@
           }
           console.error(text);
           if (elPlayerTerminal) {
-            elPlayerTerminal.value += "STDERR>>" + text + "\n";
-            elPlayerTerminal.scrollTop = elPlayerTerminal.scrollHeight; // focus on bottom
+            logText(elPlayerTerminal, text, "ni-log-stderr");
+            scrollToBottom();
           }
         },
         canvas: (function () {

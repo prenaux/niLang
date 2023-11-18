@@ -2,6 +2,32 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "(osx-x64) Test_niCURL_da",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/osx-x64/Test_niCURL_da",
+      "args": ["FCURLFetch-Get"],
+      "cwd": "${workspaceFolder}/bin/osx-x64/",
+      "stopAtEntry": false,
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "ham Test_niCURL (da)"
+    },
+    {
+      "name": "(osx-arm64) Test_niCURL_da",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/osx-arm64/Test_niCURL_da",
+      "args": ["FCURLFetch-Get"],
+      "cwd": "${workspaceFolder}/bin/osx-arm64/",
+      "stopAtEntry": false,
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "ham Test_niCURL (da)"
+    },
+    {
       "name": "(osx-x64) Test_niLang_da",
       "type": "lldb",
       "request": "launch",

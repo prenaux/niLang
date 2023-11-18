@@ -908,9 +908,13 @@ struct TestRunner {
         if (!ShouldRun())
           return curTest != NULL;
         BeforeRun();
+        if (curTest->m_numSteps == ni::eInvalidHandle) {
+          curTestSteps = 1;
+        }
       }
       RunStep();
-      if (++curTestSteps >= curTest->m_numSteps) {
+      if (curTest->m_numSteps != ni::eInvalidHandle &&
+          ++curTestSteps >= curTest->m_numSteps) {
         AfterRun();
       }
     }

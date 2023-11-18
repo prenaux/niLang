@@ -543,6 +543,14 @@ function _makeNiInputLib() {
   }
 }
 
+// That's not in emscripen anymore for some reason
+function niSys_AllocUTF8(str) {
+  var size = lengthBytesUTF8(str) + 1;
+  var ret = _malloc(size);
+  if (ret) stringToUTF8Array(str, HEAP8, ret, size);
+  return ret;
+}
+
 function niPath_Join(aArray) {
   if (arguments.length > 1) {
     aArray = Array.from(arguments);
@@ -946,14 +954,6 @@ Module["preRun"] = function Module_preRun(params) {
   var exePath = niAssert(NIAPP_CONFIG.exePath, 'exePath');
   console.log("I/exePath: " + exePath);
   niFS_WriteFile(exePath, "JSCC_EXE: " + exePath);
-
-  // That's not in emscripen anymore for some reason
-  Module.allocateUTF8 = function allocateUTF8(str) {
-    var size = lengthBytesUTF8(str) + 1;
-    var ret = _malloc(size);
-    if (ret) stringToUTF8Array(str, HEAP8, ret, size);
-    return ret;
-  }
 
   Module.onRuntimeInitialized = function () {
     // Initialize the CAPI bridge

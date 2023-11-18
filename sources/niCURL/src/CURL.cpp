@@ -1436,8 +1436,8 @@ class cCURL : public cIUnknownImpl<iCURL>
           var url = UTF8ToString($0);
           if (Module.niCURL.shouldOverrideFetch(url)) {
             var onSuccess = function(result) {
-              var urlStrPtr = Module.allocateUTF8(url);
-              var resultStrPtr = Module.allocateUTF8(result);
+              var urlStrPtr = niSys_AllocUTF8(url);
+              var resultStrPtr = niSys_AllocUTF8(result);
 
               Module["ccall"]('FetchOverride_Success', 'void',
                               [ 'number', 'number' ],
@@ -1448,8 +1448,8 @@ class cCURL : public cIUnknownImpl<iCURL>
             };
 
             var onError = function(result) {
-              var urlStrPtr = Module.allocateUTF8(url);
-              var resultStrPtr = Module.allocateUTF8(result);
+              var urlStrPtr = niSys_AllocUTF8(url);
+              var resultStrPtr = niSys_AllocUTF8(result);
 
               Module["ccall"]('FetchOverride_Error', 'void',
                               [ 'number', 'number' ],
@@ -1460,8 +1460,8 @@ class cCURL : public cIUnknownImpl<iCURL>
             };
 
             var onProgress = function(result) {
-              var urlStrPtr = Module.allocateUTF8(url);
-              var resultStrPtr = Module.allocateUTF8(result);
+              var urlStrPtr = niSys_AllocUTF8(url);
+              var resultStrPtr = niSys_AllocUTF8(result);
 
               Module["ccall"]('FetchOverride_Progress', 'void',
                               [ 'number', 'number' ],

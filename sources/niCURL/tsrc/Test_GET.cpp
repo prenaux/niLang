@@ -62,6 +62,7 @@ TEST_FIXTURE(FCURLGet,HttpAuthBasic) {
     _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
     recvData,
     recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
@@ -135,6 +136,7 @@ TEST_FIXTURE(FCURLGet,HttpAuthBasicIncorrectPwd) {
     _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
     recvData,
     recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
@@ -203,6 +205,7 @@ TEST_FIXTURE(FCURLGet,GetPage) {
       _GetHTTPSTestCasesUrl("index.php").c_str(),
       recvData,
       recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
@@ -273,6 +276,7 @@ TEST_FIXTURE(FCURLGet,GetPageAsync) {
       _GetHTTPSTestCasesUrl("index.php").c_str(),
       recvData,
       recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
 
@@ -303,15 +307,21 @@ TEST_FIXTURE(FCURLGet,GetPageAsync) {
 }
 
 TEST_FIXTURE(FCURLGet,GetFileLocal) {
+  niDebugFmt(("... A: %x", ni::ThreadGetCurrentThreadID()));
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
+  niDebugFmt(("... B"));
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
+  niDebugFmt(("... C"));
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
   QPtr<iFuture> futureValue;
   tBool bCompleted = eFalse;
 
+  niDebugFmt(("... D"));
   cPath testPath = ni::GetLang()->GetProperty("ni.dirs.data").Chars();
   testPath.RemoveDirectoryBack();
+  niDebugFmt(("... E"));
   testPath.AddDirectoryBack("data/niUI");
+  niDebugFmt(("... F"));
   testPath.SetFile("loading.tga");
   testPath.SetProtocol("file");
   niDebugFmt(("... TESTPATH: %s", testPath.GetPath()));
@@ -358,6 +368,7 @@ TEST_FIXTURE(FCURLGet,GetFileLocal) {
       testPath.GetPath().Chars(),
       recvData,
       recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
 
@@ -434,6 +445,7 @@ TEST_FIXTURE(FCURLGet,GetFileHTTPS) {
       testURL.Chars(),
       recvData,
       recvHeader);
+  CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
 

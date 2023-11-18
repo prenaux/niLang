@@ -94,5 +94,23 @@
 			"group": "build",
 			"detail": "compiler: ham"
 		},
+		{
+			"label": "ham Test_niCURL (da)",
+			"command": "../ham/bin/hamx",
+			"args": [
+				":niLang",
+        "pass1",
+				"Test_niCURL",
+				"BUILD=da"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: ham"
+		},
 	]
 }

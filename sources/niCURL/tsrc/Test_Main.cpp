@@ -3,16 +3,8 @@
 #include <niLang/Utils/CrashReport.h>
 niCrashReport_DeclareHandler();
 
-#if defined niEmbedded
-#define EMBEDDED_FIXTURE_NAME "FCURLFetch-Get"
-#endif
-
 niConsoleMain() {
-  ni::cString fixtureName;
-#ifdef EMBEDDED_FIXTURE_NAME
-  fixtureName = ni::GetProperty("FIXTURE", EMBEDDED_FIXTURE_NAME);
-#else
+  ni::cString fixtureName = ni::GetProperty("FIXTURE", "");
   ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
-#endif
   return UnitTest::RunAllTests(fixtureName.Chars());
 }

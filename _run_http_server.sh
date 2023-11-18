@@ -26,5 +26,5 @@ SERVER_DIR=$WORK/niLang/_http_server
 
  # Run server
  cd "$SERVER_DIR/www" ;
- simple-http-server -d "$SERVER_DIR/www" -p 20801 regular ;
+ simple-http-server -x -e -d "$SERVER_DIR/www" -p 20801 regular ;
 )

@@ -145,7 +145,7 @@ void TestList::Add(Test* test)
   }
 }
 
-const Test* TestList::GetHead() const
+Test* TestList::GetHead() const
 {
   return m_head;
 }
@@ -321,7 +321,7 @@ Test::~Test()
 {
 }
 
-bool Test::BeforeRun(TestResults& testResults) const
+bool Test::BeforeRun(TestResults& testResults)
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -366,7 +366,7 @@ bool Test::BeforeRun(TestResults& testResults) const
   return true;
 }
 
-bool Test::Run(TestResults& testResults) const
+bool Test::Run(TestResults& testResults)
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -406,7 +406,7 @@ bool Test::Run(TestResults& testResults) const
   return true;
 }
 
-bool Test::AfterRun(TestResults& testResults) const
+bool Test::AfterRun(TestResults& testResults)
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -801,19 +801,21 @@ ni::tBool IsRunningInCI() {
 struct TestRunner {
   ni::tF64 startTime;
   TestReporter& reporter;
-  TestList const& list;
-  int const maxTestTimeInMs;
+  TestList& list;
+  const int maxTestTimeInMs;
   ni::cString fixtureName;
   int shouldRun;
-  Test const* curTest;
+  Test* curTest;
   int curTestSteps;
   int numTestRun;
   TestResults* result;
+  ni::tF64 testTimeStart;
+  Test* nextTest;
 
   TestRunner(TestReporter& aReporter,
-             TestList const& aList,
-             int const aMaxTestTimeInMs,
-             char const* aFixtureName)
+             TestList& aList,
+             const int aMaxTestTimeInMs,
+             const char* aFixtureName)
       : startTime(ni::TimerInSeconds())
       , reporter(aReporter)
       , list(aList)
@@ -830,7 +832,7 @@ struct TestRunner {
     shouldRun = 0;
     curTest = list.GetHead();
     while (curTest != 0) {
-      Test const* nextTest = curTest->next;
+      Test* nextTest = curTest->next;
       if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
         curTest = nextTest;
         continue;
@@ -853,9 +855,6 @@ struct TestRunner {
     curTest = list.GetHead();
     curTestSteps = 0;
   }
-
-  ni::tF64 testTimeStart;
-  Test const* nextTest;
 
   bool ShouldRun() {
     if (!curTest)
@@ -884,7 +883,7 @@ struct TestRunner {
   bool AfterRun() {
     curTest->AfterRun(*result);
 
-    int const testTimeInMs = ni::TimerInSeconds() - testTimeStart;
+    const int testTimeInMs = ni::TimerInSeconds() - testTimeStart;
     if (maxTestTimeInMs > 0 && testTimeInMs > maxTestTimeInMs && !curTest->m_timeConstraintExempt)
     {
       ni::cString stream;
@@ -994,9 +993,9 @@ static TestReporterStdout _defaultReporterStdout;
 static TestRunner* _defaultTestRunner = NULL;
 
 bool TestRunner_Startup(TestReporter& reporter,
-                      TestList const& list,
-                      int const maxTestTimeInMs,
-                      char const* fixtureName)
+                        TestList& list,
+                        const int maxTestTimeInMs,
+                        const char* fixtureName)
 {
   TestRunner_Shutdown();
 #ifdef niJSCC
@@ -1012,7 +1011,7 @@ bool TestRunner_Startup(TestReporter& reporter,
   return true;
 };
 
-bool TestRunner_Startup(char const* fixtureName)
+bool TestRunner_Startup(const char* fixtureName)
 {
   return TestRunner_Startup(_defaultReporterStdout, Test::GetTestList(), 0, fixtureName);
 }
@@ -1041,19 +1040,6 @@ const char* TestRunner_GetCurrentTestName() {
 
 ni::cString runFixtureName;
 
-int RunAllTests(TestReporter& reporter,
-                TestList const& list,
-                int const maxTestTimeInMs,
-                char const* fixtureName)
-{
-  TestRunner_Startup(reporter,list,maxTestTimeInMs,fixtureName);
-  while (TestRunner_RunNext()) {
-  }
-  int r = TestRunner_ReportSummary();
-  TestRunner_Shutdown();
-  return r;
-}
-
 int RunAllTests(char const* fixtureName)
 {
   // Static so that it outlives RunAllTests. This can happen with
@@ -1064,52 +1050,40 @@ int RunAllTests(char const* fixtureName)
 
 #ifdef niJSCC
 
-static ni::cString _runUnitTestName;
-static ni::Ptr<ni::iRunnable> _runUnitTestEnd;
-static ni::Ptr<ni::iRunnable> _runUnitTestLoop;
-
-void UnitTest_Loop() {
-  if (!_runUnitTestLoop.IsOK()) {
+static void Loop_RegularTests() {
+  if (TestRunner_RunNext())
     return;
-  }
 
-  ni::Var r = _runUnitTestLoop->Run();
-  if (!r.GetBoolValue(ni::eTrue)) {
-    if (_runUnitTestEnd.IsOK()) {
-      _runUnitTestEnd->Run();
-    }
-    niLog(Info, niFmt("TestLoop '%s' finished.", _runUnitTestName));
-    _runUnitTestLoop = NULL;
-    _runUnitTestEnd = NULL;
-    _runUnitTestName = AZEROSTR;
-    // XXX: How can we resume to run the next test? Atm this interrupts the
-    // test runner :(
-    emscripten_cancel_main_loop();
-  }
+  ni::tInt r = TestRunner_ReportSummary();
+  TestRunner_Shutdown();
+  niDebugFmt(("End of Loop_RegularTests: %d", r));
+  emscripten_cancel_main_loop();
 }
 
-void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd) {
-  niPanicAssert(aLoop.IsOK());
-  _runUnitTestLoop = aLoop;
-  _runUnitTestEnd = aTestEnd;
-  _runUnitTestName = m_testName;
-  emscripten_set_main_loop(UnitTest_Loop,30,1);
+int RunAllTests(TestReporter& reporter,
+                TestList& list,
+                const int maxTestTimeInMs,
+                const char* fixtureName)
+{
+  TestRunner_Startup(reporter,list,maxTestTimeInMs,fixtureName);
+  emscripten_cancel_main_loop();
+  emscripten_set_main_loop(Loop_RegularTests,30,1);
+  return 0;
 }
 
 #else
 
-void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd) {
-  niPanicAssert(aLoop.IsOK());
-  while (1) {
-      ni::Var r = aLoop->Run();
-      if (!r.GetBoolValue(ni::eTrue)) {
-        break;
-      }
+int RunAllTests(TestReporter& reporter,
+                TestList& list,
+                const int maxTestTimeInMs,
+                const char* fixtureName)
+{
+  TestRunner_Startup(reporter,list,maxTestTimeInMs,fixtureName);
+  while (TestRunner_RunNext()) {
   }
-  if (aTestEnd.IsOK()) {
-    aTestEnd->Run();
-  }
-  niLog(Info, niFmt("TestLoop '%s' finished.", m_testName));
+  int r = TestRunner_ReportSummary();
+  TestRunner_Shutdown();
+  return r;
 }
 
 #endif

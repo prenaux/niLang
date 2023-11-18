@@ -138,6 +138,10 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 
 #define TEST_EX_DISABLED(NAME,LIST) TEST_DISABLED(NAME)
 
+#define TEST_CLASS(CLASS)                                               \
+  static CLASS test_##CLASS##_instance;                                 \
+  UnitTest::ListAdder adder_test_##CLASS(UnitTest::Test::GetTestList(), &test_##CLASS##_instance);
+
 #define TEST_EX(Name,List)                                            \
   class Test##Name : public UnitTest::Test                            \
   {                                                                   \
@@ -193,22 +197,22 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
    Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
    private:                                                             \
    mutable Fixture##Name##Helper* _mt;                                  \
-   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
+   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) {    \
      TEST_TRY {                                                          \
        _mt = new Fixture##Name##Helper(m_testName);                     \
      }                                                                  \
      TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture)\
    }                                                                    \
-   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
-     TEST_TRY {                                                          \
+   virtual void RunImpl(UnitTest::TestResults& testResults_)  {         \
+     TEST_TRY {                                                         \
        _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
      }                                                                  \
-     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture) \
+     TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture)  \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
    }                                                                    \
-   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-     TEST_TRY {                                                          \
+   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) {     \
+     TEST_TRY {                                                         \
        delete _mt;                                                      \
        _mt = NULL;                                                      \
      }                                                                  \
@@ -614,7 +618,7 @@ class TestList
   TestList();
   void Add (Test* test);
 
-  const Test* GetHead() const;
+  Test* GetHead() const;
 
  private:
   Test* m_head;
@@ -645,26 +649,26 @@ class Test
   Test(char const* testName, char const* filename = "",
        int lineNumber = 0, char const* fixtureName = "");
   virtual ~Test();
-  bool BeforeRun(TestResults& testResults) const;
-  bool Run(TestResults& testResults) const;
-  bool AfterRun(TestResults& testResults) const;
+  bool BeforeRun(TestResults& testResults);
+  bool Run(TestResults& testResults);
+  bool AfterRun(TestResults& testResults);
 
   Test* next;
   char const* const m_testName;
   char const* const m_filename;
   char const* const m_fixtureName;
   int const m_lineNumber;
-  mutable bool m_timeConstraintExempt;
-  mutable ni::tF64 m_timeStart;
-  mutable bool m_timeReport;
-  mutable int m_numSteps;
+  bool m_timeConstraintExempt;
+  ni::tF64 m_timeStart;
+  bool m_timeReport;
+  int m_numSteps;
 
   static TestList& GetTestList();
 
  private:
-  virtual void BeforeRunImpl(TestResults& testResults_) const {}
-  virtual void AfterRunImpl(TestResults& testResults_) const {}
-  virtual void RunImpl(TestResults& testResults_) const {}
+  virtual void BeforeRunImpl(TestResults& testResults_) = 0;
+  virtual void AfterRunImpl(TestResults& testResults_) = 0;
+  virtual void RunImpl(TestResults& testResults_) = 0;
 
   // revoked
   Test(Test const&);
@@ -989,27 +993,25 @@ class TestList;
 ni::tBool IsRunningInCI();
 
 bool TestRunner_Startup(TestReporter& reporter,
-                        TestList const& list,
-                        int const maxTestTimeInMs,
-                        char const* fixtureName);
-bool TestRunner_Startup(char const* fixtureName);
+                        TestList& list,
+                        const int maxTestTimeInMs,
+                        const char* fixtureName);
+bool TestRunner_Startup(const char* fixtureName);
 void TestRunner_Shutdown();
 void TestRunner_Reset();
 bool TestRunner_RunNext();
 const char* TestRunner_GetCurrentTestName();
 int TestRunner_ReportSummary();
 
-int RunAllTests(char const* fixtureName = NULL);
+int RunAllTests(const char* fixtureName = NULL);
 int RunAllTests(TestReporter& reporter,
-                TestList const& list,
-                int maxTestTimeInMs = 0,
-                char const* fixtureName = NULL);
+                TestList& list,
+                const int maxTestTimeInMs = 0,
+                const char* fixtureName = NULL);
 
 int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName);
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
 void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink, ni::tBool abInteractive);
-
-void TestLoop(TEST_PARAMS_FUNC, ni::Ptr<ni::iRunnable> aLoop, ni::Ptr<ni::iRunnable> aTestEnd);
 
 astl::non_null<app::AppContext*> GetTestAppContext();
 

@@ -15,9 +15,11 @@ on:
 
 jobs:
   # This workflow contains a single job called "build"
-  build_ubuntu22:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+  build_ubuntu:
+    # Use Ubuntu 20, because the Ubuntu 22 image broke the C++20 compiler.
+    # See https://github.com/actions/runner-images/issues/8659
+    # Fix the ubuntu version to avoid surprise updates in ubuntu-latest
+    runs-on: ubuntu-20.04 # ubuntu-22.04
 
     steps:
       # Check-out and init ham
@@ -54,9 +56,9 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_macos_latest:
-    # The type of runner that the job will run on
-    runs-on: macos-latest
+  build_macos:
+    # Fix the macOS version to avoid surprise updates in macos-latest
+    runs-on: macos-12
 
     steps:
       # Check-out and init ham
@@ -93,9 +95,9 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_windows_latest:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
+  build_windows:
+    # Fix the Windows version to avoid surprise updates in windows-latest
+    runs-on: windows-2019
 
     steps:
       - name: Turn off git eol insanity on Windows

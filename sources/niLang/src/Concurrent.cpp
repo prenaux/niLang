@@ -303,10 +303,8 @@ struct sMessageDescImpl : public cIUnknownImpl<iMessageDesc>
 //  MessageQueue
 //
 //===========================================================================
-#if !defined niNoThreads
 // Called by MessageQueue::Invalidate
 static void _Unregister_MessageQueue(struct MessageQueue* mq);
-#endif
 
 struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
   __sync_mutex();
@@ -314,17 +312,13 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
   astl::deque<sMessageDesc> _queue;
   tBool _canAdd;
   tU64 _threadID;
-#if !defined niNoThreads
   ThreadEvent _hasMessage;
-#endif
 
   MessageQueue(tU64 aThreadID, tU32 aMaxItems)
       : _canAdd(eTrue)
       , _maxItems(aMaxItems)
       , _threadID(aThreadID)
-#if !defined niNoThreads
       , _hasMessage(eTrue)
-#endif
   {}
   ~MessageQueue() {
     Invalidate();
@@ -332,13 +326,11 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
 
   void __stdcall Invalidate() niImpl {
     __sync_lock();
-#if !defined niNoThreads
     if (_canAdd) {
       _canAdd = eFalse;
       _queue.clear();
       _Unregister_MessageQueue(this);
     }
-#endif
   }
 
   tU64 __stdcall GetThreadID() const {
@@ -371,9 +363,7 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
     msg.mnMsg = anMsg;
     msg.mvarA = avarA;
     msg.mvarB = avarB;
-#if !defined niNoThreads
     _hasMessage.Signal();
-#endif
     // RUNNABLE_QUEUE_TRACE(("MessageQueue[%d], queue-end...", _queueIndex));
     return eTrue;
   }
@@ -385,12 +375,10 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
 
   tBool __stdcall Peek(sMessageDesc* apMessageDesc) {
     __sync_lock();
-#if !defined niNoThreads
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       return eFalse;
     }
-#endif
     if (_queue.empty())
       return eFalse;
     if (apMessageDesc) {
@@ -409,25 +397,21 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
 
   tBool __stdcall Poll(sMessageDesc* apMessageDesc) {
     __sync_lock();
-#if !defined niNoThreads
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       niError(niFmt("Polling from wrong thread, expected:%p, got: %p.",
                     _threadID, ni::ThreadGetCurrentThreadID()));
       return eFalse;
     }
-#endif
     if (_queue.empty())
       return eFalse;
     if (apMessageDesc) {
       *apMessageDesc = _queue.front();
     }
     _queue.pop_front();
-#if !defined niNoThreads
     if (_queue.empty()) {
       _hasMessage.Reset();
     }
-#endif
     return eTrue;
   }
 
@@ -450,15 +434,11 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
   }
 
   tBool __stdcall WaitForMessage(tU32 anTimeOut) {
-#if defined niNoThreads
-    return eFalse;
-#else
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       return eFalse;
     }
     return _hasMessage.WaitEx(anTimeOut);
-#endif
   }
 };
 
@@ -1285,11 +1265,9 @@ static sConcurrent* _GetConcurrent() {
   return _ptrConcurrent;
 }
 
-#if !defined niNoThreads
 static void _Unregister_MessageQueue(MessageQueue* mq) {
   _GetConcurrent()->_Unregister_MessageQueue(mq);
 }
-#endif
 
 namespace ni {
 

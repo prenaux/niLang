@@ -30,6 +30,42 @@ struct AutoThreadLock {
   ~AutoThreadLock() {}
 };
 
+struct ThreadEvent : public cMemImpl {
+  ThreadEvent(tBool abManualReset = eFalse) {
+    mIsSignaled = abManualReset;
+  }
+  ~ThreadEvent() {
+  }
+
+  // put in non-signaled state
+  void __stdcall Reset() {
+    mIsSignaled = eFalse;
+  }
+  // put in signaled state
+  void __stdcall Signal() {
+    mIsSignaled = eTrue;
+  }
+  // wait for an event, set it back to non-signaled state when returning
+  tBool __stdcall WaitEx(tU32 anTimeout = eInvalidHandle) {
+    if (!mIsSignaled)
+      return eFalse;
+    mIsSignaled = eFalse;
+    return eTrue;
+  }
+
+  //
+  // Wait() cannot be implemented sanely in niNoThreads mode since it should
+  // block and guarantee to continue only if the signal has been signaled.  In
+  // fact it probably shouldn't exist at all since its a deadlock factory...
+  //
+  //
+  // void __stdcall Wait()
+  //
+
+ private:
+  tBool mIsSignaled;
+};
+
 }
 
 #else

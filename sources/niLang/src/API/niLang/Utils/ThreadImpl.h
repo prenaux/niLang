@@ -46,7 +46,8 @@ struct ThreadEvent : public cMemImpl {
     mIsSignaled = eTrue;
   }
   // wait for an event, set it back to non-signaled state when returning
-  tBool __stdcall WaitEx(tU32 anTimeout = eInvalidHandle) {
+  tBool __stdcall Wait(tU32 anTimeout) {
+    niUnused(anTimeout);
     if (!mIsSignaled)
       return eFalse;
     mIsSignaled = eFalse;
@@ -54,12 +55,12 @@ struct ThreadEvent : public cMemImpl {
   }
 
   //
-  // Wait() cannot be implemented sanely in niNoThreads mode since it should
-  // block and guarantee to continue only if the signal has been signaled.  In
-  // fact it probably shouldn't exist at all since its a deadlock factory...
+  // InfiniteWait() cannot be implemented sanely in niNoThreads mode since it
+  // should block and guarantee to continue only if the signal has been
+  // signaled.  In fact it probably shouldn't exist at all since its a
+  // deadlock factory...
   //
-  //
-  // void __stdcall Wait()
+  // void __stdcall InfiniteWait()
   //
 
  private:
@@ -251,18 +252,14 @@ struct ThreadEvent : public cMemImpl {
 #endif
   }
   // wait for an event, set it back to non-signaled state when returning
-  tBool __stdcall WaitEx(tU32 anTimeout = eInvalidHandle) {
-    if (anTimeout == eInvalidHandle) {
-      Wait();
-      return eTrue;
-    }
+  tBool __stdcall Wait(tU32 anTimeout) {
 #ifdef niWin32
     return WaitForSingleObject(mHandle,anTimeout) == MY_WAIT_OBJECT_0;
 #else
     return ni::Unix::WaitForSingleObject(mHandle,anTimeout) == ni::Unix::WAIT_OBJECT_0;
 #endif
   }
-  void __stdcall Wait() {
+  void __stdcall InfiniteWait() {
 #ifdef niWin32
     WaitForSingleObject(mHandle,MY_INFINITE);
 #else
@@ -330,7 +327,7 @@ struct ThreadSem : public cMemImpl {
   // Decrements the semaphore. If the resulting value is less than zero, it
   // waits for a signal from a thread that increments the semaphore by calling
   // Signal() before returning.
-  void Wait() {
+  void InfiniteWait() {
 #ifdef niWin32
     WaitForSingleObject(_winSem, MY_INFINITE);
 #elif defined niOSX || defined niIOS

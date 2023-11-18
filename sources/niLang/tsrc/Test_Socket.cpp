@@ -262,7 +262,7 @@ TEST_FIXTURE(FSocket_TCP,Connect) {
 
   // wait until the server accepts connections
   niDebugFmt((_A("SERVER-THREAD: Waiting for server...")));
-  server->_eventListening.Wait();
+  CHECK(server->_eventListening.Wait(5000));
   niDebugFmt((_A("SERVER-THREAD: Done...")));
 
   if (ni::HStringIsEmpty(server->_error)) {

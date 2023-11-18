@@ -983,7 +983,7 @@ class cThreadedWindow : public ni::cIUnknownImpl<ni::iUnknown>
     mbRequestedClose = eFalse;
     mThread = ni_create_thread();
     mThread->Start(_ThreadProc,(void*)this);
-    meventSetup.Wait();
+    niPanicAssert(meventSetup.Wait(5000));
 #ifdef _DEBUG
     niDebugFmt(("cThreadedWindow using thread '%d'",mThread->GetThreadID()));
 #endif
@@ -1000,7 +1000,7 @@ class cThreadedWindow : public ni::cIUnknownImpl<ni::iUnknown>
   void __stdcall WaitForMessage() {
     // We put a timeout of 1sec to ensure that the application never
     // deadlock no matter what is its state.
-    meventHandledMsg.WaitEx(1000);
+    meventHandledMsg.Wait(1000);
   }
   void __stdcall SetRequestedClose(tBool abRequestedClose) {
     mbRequestedClose = abRequestedClose;

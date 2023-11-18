@@ -1838,7 +1838,7 @@ struct cMetalContextBase :
 
     // wait on the previous frame to be completed
     {
-      mFrameSem.Wait();
+      mFrameSem.InfiniteWait();
       mDirtyFlags = DIRTY_VIEWPORT | DIRTY_SCISSOR;
       mNumDrawOps = 0;
       mCurrentBufferOffset = 0;

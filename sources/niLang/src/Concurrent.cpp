@@ -63,14 +63,14 @@ struct sFutureValue : public cIUnknownImpl<iFutureValue,eIUnknownImplFlags_DontI
 
   tBool __stdcall GetIsDone() const {
 #if !defined niNoThreads
-    return meventSet.WaitEx(0);
+    return meventSet.Wait(0);
 #else
     return mbIsSet;
 #endif
   }
   tBool __stdcall Wait(tU32 anMs) {
 #if !defined niNoThreads
-    return meventSet.WaitEx(anMs);
+    return meventSet.Wait(anMs);
 #else
     return mbIsSet;
 #endif
@@ -250,7 +250,7 @@ struct RunnableQueue : public cIUnknownImpl<iRunnableQueue> {
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       return eFalse;
     }
-    return _hasRunnable.WaitEx(anTimeOut);
+    return _hasRunnable.Wait(anTimeOut);
 #endif
   }
 
@@ -438,7 +438,7 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       return eFalse;
     }
-    return _hasMessage.WaitEx(anTimeOut);
+    return _hasMessage.Wait(anTimeOut);
   }
 };
 
@@ -660,10 +660,10 @@ struct sFutureRunnable : public cIUnknownImpl<iFuture,eIUnknownImplFlags_Default
     return !mptrRunnable.IsOK();
   }
   tBool __stdcall GetIsDone() const {
-    return meventRan.WaitEx(0);
+    return meventRan.Wait(0);
   }
   tBool __stdcall Wait(tU32 anMs) {
-    return meventRan.WaitEx(anMs);
+    return meventRan.Wait(anMs);
   }
   Var __stdcall GetValue() const {
     if (!GetIsDone()) return niVarNull;
@@ -723,7 +723,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
       SYNC_WRITE(&_doneCount,i);
       _threads[i].thread = ni_create_thread();
       _threads[i].thread->Start(_Run,(void*)this);
-      _event.Wait(); // wait for _Run to initialize the current queue
+      niPanicAssertMsg(_event.Wait(5000), "_Run should initialize the current queue.");
       _event.Reset();
     }
     SYNC_WRITE(&_doneCount,0);
@@ -834,7 +834,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
       }
     }
     RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Shutdown waiting for queues"));
-    return _event.WaitEx(anTimeOut);
+    return _event.Wait(anTimeOut);
   }
 
   tBool __stdcall ShutdownNow(tU32 anTimeOut) {
@@ -855,7 +855,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
       }
     }
     RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, ShutdownNow waiting for queues"));
-    return _event.WaitEx(anTimeOut);
+    return _event.Wait(anTimeOut);
   }
 
   tBool __stdcall GetIsShutdown() const {
@@ -863,7 +863,7 @@ struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
   }
 
   tBool __stdcall GetIsTerminated() const {
-    return niThis(ExecutorThreadPool)->_event.WaitEx(0);
+    return niThis(ExecutorThreadPool)->_event.Wait(0);
   }
 
   tU32 __stdcall Update(tU32) {
@@ -966,83 +966,83 @@ iExecutor* New_ExecutorThreadPool(tI32 anNumThreads) {
 #if !defined niNoThreads
 
 struct sThreadRun : public cIUnknownImpl<iFuture> {
-    Ptr<iThread> mThread;
-    Ptr<iRunnable> mptrRunnable;
-    ThreadEvent meventStarted;
-    Var mRet;
-    SyncCounter mIsStarted;
+  Ptr<iThread> mThread;
+  Ptr<iRunnable> mptrRunnable;
+  ThreadEvent meventStarted;
+  Var mRet;
+  SyncCounter mIsStarted;
 
-    sThreadRun(iRunnable* apRunnable) {
-        mptrRunnable = apRunnable;
-        mThread = ni_create_thread();
-        // This is not correct, the _ThreadProc holds a reference to this and could
-        // release it before the holder takes a reference to the object
-        // _Start();
-    }
-    ~sThreadRun() {
+  sThreadRun(iRunnable* apRunnable) {
+    mptrRunnable = apRunnable;
+    mThread = ni_create_thread();
+    // This is not correct, the _ThreadProc holds a reference to this and could
+    // release it before the holder takes a reference to the object
+    // _Start();
+  }
+  ~sThreadRun() {
 #if 0
-        if (mThread->GetIsAlive()) {
-            niWarning(
-              niFmt("ThreadRun future %p destroyed in thread '%d' while its thread '%d' is still alive.",
-                              (void*)this,
-                              ni::ThreadGetCurrentThreadID(),
-                              mThread->GetThreadID()));
-        }
+    if (mThread->GetIsAlive()) {
+      niWarning(
+        niFmt("ThreadRun future %p destroyed in thread '%d' while its thread '%d' is still alive.",
+              (void*)this,
+              ni::ThreadGetCurrentThreadID(),
+              mThread->GetThreadID()));
+    }
 #endif
-        // Close only closes the thread handle it doesnt stop the thread.
-        mThread->Close();
-    }
+    // Close only closes the thread handle it doesnt stop the thread.
+    mThread->Close();
+  }
 
-    __forceinline void _Start() {
-        if (mIsStarted.Get() == 0 && mIsStarted.Inc() == 1) {
-            mThread->Start(_ThreadProc,(void*)this);
-            meventStarted.Wait();
-        }
+  __forceinline void _Start() {
+    if (mIsStarted.Get() == 0 && mIsStarted.Inc() == 1) {
+      mThread->Start(_ThreadProc,(void*)this);
+      niPanicAssertMsg(meventStarted.Wait(5000), "_ThreadProc should have started.");
     }
+  }
 
-    tI32 __stdcall AddRef() {
-        tI32 r = BaseImpl::AddRef();
-        // Start only on the first add ref, we must make sure their is a valid
-        // root reference to the object before we can start it to avoid it
-        // being released by the _ThreadProc before we hold it in our program
-        _Start();
-        return r;
-    }
+  tI32 __stdcall AddRef() {
+    tI32 r = BaseImpl::AddRef();
+    // Start only on the first add ref, we must make sure their is a valid
+    // root reference to the object before we can start it to avoid it
+    // being released by the _ThreadProc before we hold it in our program
+    _Start();
+    return r;
+  }
 
-    void __stdcall Cancel() { }
-    tBool __stdcall GetIsCancelled() const { return eFalse; }
-    tBool __stdcall GetIsDone() const { return niThis(sThreadRun)->Wait(0); }
-    tBool __stdcall Wait(tU32 anMs) {
-        // niDebugFmt(("Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
-        tBool b = mThread->Join(anMs);
-        // niDebugFmt(("... Done Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
-        return b;
-    }
-    Var __stdcall GetValue() const {
-        if (!GetIsDone()) return niVarNull;
-        return mRet;
-    }
+  void __stdcall Cancel() { }
+  tBool __stdcall GetIsCancelled() const { return eFalse; }
+  tBool __stdcall GetIsDone() const { return niThis(sThreadRun)->Wait(0); }
+  tBool __stdcall Wait(tU32 anMs) {
+    // niDebugFmt(("Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
+    tBool b = mThread->Join(anMs);
+    // niDebugFmt(("... Done Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
+    return b;
+  }
+  Var __stdcall GetValue() const {
+    if (!GetIsDone()) return niVarNull;
+    return mRet;
+  }
 
-    static tIntPtr _ThreadProc(void* apData) {
-        const tU64 threadID = ni::ThreadGetCurrentThreadID();
-        if (_pfnConcurrentThreadStart) {
-          _pfnConcurrentThreadStart(threadID);
-        }
-        // niDebugFmt(("Future %p thread start in %d",(void*)apData,threadID));
-        {
-            Ptr<sThreadRun> _this = (sThreadRun*)apData;
-            niAssert(_this->mThread->GetThreadID() == threadID);
-            _this->meventStarted.Signal();
-            if (_this->mptrRunnable.IsOK()) {
-                _this->mRet = _this->mptrRunnable->Run();
-            }
-        }
-        // niDebugFmt(("Future %p thread end in %d",(void*)apData,threadID));
-        if (_pfnConcurrentThreadEnd) {
-          _pfnConcurrentThreadEnd(threadID);
-        }
-        return 0;
+  static tIntPtr _ThreadProc(void* apData) {
+    const tU64 threadID = ni::ThreadGetCurrentThreadID();
+    if (_pfnConcurrentThreadStart) {
+      _pfnConcurrentThreadStart(threadID);
     }
+    // niDebugFmt(("Future %p thread start in %d",(void*)apData,threadID));
+    {
+      Ptr<sThreadRun> _this = (sThreadRun*)apData;
+      niAssert(_this->mThread->GetThreadID() == threadID);
+      _this->meventStarted.Signal();
+      if (_this->mptrRunnable.IsOK()) {
+        _this->mRet = _this->mptrRunnable->Run();
+      }
+    }
+    // niDebugFmt(("Future %p thread end in %d",(void*)apData,threadID));
+    if (_pfnConcurrentThreadEnd) {
+      _pfnConcurrentThreadEnd(threadID);
+    }
+    return 0;
+  }
 };
 #endif
 

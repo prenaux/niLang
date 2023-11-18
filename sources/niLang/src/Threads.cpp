@@ -74,7 +74,7 @@ struct ThreadImpl : public cIUnknownImpl<iThread>
       return eFalse;
     }
     // wait for the ID to be set
-    mThreadProcCompletedEvent.Wait();
+    niPanicAssertMsg(mThreadProcCompletedEvent.Wait(5000), "Thread didn't start in time.");
     niAssert(mnID != eInvalidHandle);
 #endif
     return eTrue;
@@ -117,7 +117,7 @@ struct ThreadImpl : public cIUnknownImpl<iThread>
           return eFalse;
         }
 #else
-        if (!mThreadProcCompletedEvent.WaitEx(anTimeout)) {
+        if (!mThreadProcCompletedEvent.Wait(anTimeout)) {
           // thread didn't complete in time...
           return eFalse;
         }

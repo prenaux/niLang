@@ -2227,21 +2227,21 @@ niExportFunc(void) osxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait)
     if (window->mfRefreshTimer < 0) {
       if (window->mbIsActive) {
         TRACE_OSX(("... OSX: osxglSwapBuffers wait Active"));
-        window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Active);
+        window->nsGL.drawEvent.Wait(_knEventDrivenWindowTimerMs_Active);
       }
       else if (window->GetIsMinimized()) {
         TRACE_OSX(("... OSX: osxglSwapBuffers wait Minimized"));
-        window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Minimized);
+        window->nsGL.drawEvent.Wait(_knEventDrivenWindowTimerMs_Minimized);
       }
       else {
         TRACE_OSX(("... OSX: osxglSwapBuffers wait backgroundUpdate"));
-        window->nsGL.drawEvent.WaitEx(_knEventDrivenWindowTimerMs_Background);
+        window->nsGL.drawEvent.Wait(_knEventDrivenWindowTimerMs_Background);
       }
     }
 
     if (window->nsGL.swapInterval > 0) {
       // Wait for 200ms max, in case something went wrong with the displaylink I guess?
-      window->nsGL.vsyncEvent.WaitEx(1000/5);
+      window->nsGL.vsyncEvent.Wait(1000/5);
     }
   }
 

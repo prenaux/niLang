@@ -76,12 +76,12 @@ TEST_FIXTURE(FRand,RandFloat) {
 
 TEST_FIXTURE(FRand,RandSignedFloat) {
   RandSeed(0);
-  tF32 nMin = TypeMax<tF32>(), nMax = TypeMin<tF32>();
+  tF64 nMin = TypeMax<tF64>(), nMax = TypeMin<tF64>();
   niLoop(i,10) {
     niDebugFmt(("... RandSignedFloat[%d]: %s", i, RandSignedFloat()));
   }
   niLoop(i,10000) {
-    tF32 r = RandSignedFloat();
+    tF64 r = RandSignedFloat();
     nMin = Min(r,nMin);
     nMax = Max(r,nMax);
   }

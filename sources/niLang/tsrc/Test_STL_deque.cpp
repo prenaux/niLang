@@ -3,9 +3,11 @@
 
 // template class astl::deque<ni::tInt>;
 
+struct ASTL_deque {};
+
 const ni::tU32 kNumTests = 10000;
 
-TEST(ASTL_deque_insert_time) {
+TEST_FIXTURE(ASTL_deque,insert_time) {
   TEST_TIMEREPORT();
   astl::deque<ni::tU32> v;
   TEST_PRINT(niFmt(_A("DEQUE SIZE: %d\n"),sizeof(v)));
@@ -23,7 +25,7 @@ typedef astl::deque<ni::tU8>  tU8Deq;
 typedef astl::deque<ni::tU16> tU16Deq;
 typedef astl::deque<ni::tU32> tU32Deq;
 
-TEST(ASTL_deque_IntDeq_pushback) {
+TEST_FIXTURE(ASTL_deque,IntDeq_pushback) {
   tIntDeq deq;
   deq.push_back(1);
   deq.push_back(2);
@@ -34,7 +36,7 @@ TEST(ASTL_deque_IntDeq_pushback) {
   CHECK_EQUAL(3,deq.size());
 }
 
-TEST(ASTL_deque_U8Deq_pushback) {
+TEST_FIXTURE(ASTL_deque,U8Deq_pushback) {
   tU8Deq deq;
   deq.push_back(1);
   deq.push_back(2);
@@ -45,7 +47,7 @@ TEST(ASTL_deque_U8Deq_pushback) {
   CHECK_EQUAL(3,deq.size());
 }
 
-TEST(ASTL_deque_U16Deq_pushback) {
+TEST_FIXTURE(ASTL_deque,U16Deq_pushback) {
   tU16Deq deq;
   deq.push_back(1);
   deq.push_back(2);
@@ -56,7 +58,7 @@ TEST(ASTL_deque_U16Deq_pushback) {
   CHECK_EQUAL(3,deq.size());
 }
 
-TEST(ASTL_deque_U32Deq_pushback) {
+TEST_FIXTURE(ASTL_deque,U32Deq_pushback) {
   tU32Deq deq;
   deq.push_back(1);
   deq.push_back(2);

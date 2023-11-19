@@ -56,7 +56,7 @@ class cSoundFactory : public cIUnknownImpl<iSoundFactory>
   iSoundBuffer* __stdcall GetSoundBuffer(iHString* ahspName);
 
   //! Update the sounds.
-  tBool __stdcall Update(ni::tF32 afDelta);
+  tBool __stdcall Update(ni::tF64 afDelta);
 
   void __stdcall SetListenerPosition(const sVec3f& aV);
   sVec3f __stdcall GetListenerPosition() const;

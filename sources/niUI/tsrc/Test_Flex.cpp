@@ -398,7 +398,7 @@ struct BaseWidget : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  virtual tBool __stdcall OnCommand(iWidgetCommand* apCmd) {
+  virtual tBool __stdcall OnCommand(iWidgetCommand* apCmd) niImpl {
     if (apCmd->GetID() != eWidgetButtonCmd_Checked) {
       return eFalse;
     }

@@ -559,7 +559,7 @@ ni::tBool __stdcall cSoundFactory::MusicVolume(ni::tF32 afVolume, ni::tF32 afBle
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundFactory::Update(ni::tF32 afUpdateTime)
+tBool __stdcall cSoundFactory::Update(ni::tF64 afUpdateTime)
 {
   if (!mptrDriver.IsOK())
     return eFalse;

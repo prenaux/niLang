@@ -60,7 +60,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tF32 mfAnimationTime;
+  tF64 mfAnimationTime;
   void _ToggleAnimation() {
     mbAnimated = !mbAnimated;
   }
@@ -77,7 +77,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     if (!mbHasInput && mMove == sVec3f::Zero())
       return;
 
-    const tF32 dt = ni::GetLang()->GetFrameTime();
+    const tF32 dt = (tF32)ni::GetLang()->GetFrameTime();
     const tF32 speed = ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
                         kfRunSpeed : kfNormalSpeed);
     mptrCamera->MoveForward(mMove.z * speed * dt);
@@ -97,7 +97,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     return eFalse;
   }
 
-  tBool __stdcall OnLeftClickDown(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnLeftClickDown(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     if (mbCameraInput) {
       mbMouseLook = eTrue;
       mPrevMousePos = avNCMP + mpWidget->GetAbsolutePosition();
@@ -105,21 +105,21 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     }
     return eFalse;
   }
-  tBool __stdcall OnNCLeftClickDown(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnNCLeftClickDown(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     return OnLeftClickDown(avMP,avNCMP);
   }
-  tBool __stdcall OnLeftClickUp(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnLeftClickUp(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     if (mbCameraInput) {
       mbMouseLook = eFalse;
       mpWidget->SetCapture(eFalse);
     }
     return eFalse;
   }
-  tBool __stdcall OnNCLeftClickUp(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnNCLeftClickUp(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     return OnLeftClickUp(avMP,avNCMP);
   }
 
-  tBool __stdcall OnMouseMove(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnMouseMove(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     if (mbMouseLook) {
       const sVec2f newPos = (avNCMP + mpWidget->GetAbsolutePosition());
       sVec2f deltaMove = newPos - mPrevMousePos;
@@ -129,7 +129,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     }
     return eFalse;
   }
-  tBool __stdcall OnNCMouseMove(const sVec2f& avMP, const sVec2f& avNCMP) {
+  tBool __stdcall OnNCMouseMove(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
     return OnMouseMove(avMP,avNCMP);
   }
 
@@ -189,6 +189,10 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
         mbHasInput = true;
         break;
       }
+
+        // we dont care about the other keys
+      default:
+        break;
     }
     return eFalse;
   }
@@ -212,6 +216,9 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
       case eKey_R:
       case eKey_F:
         mMove.y = 0.0;
+        break;
+        // we dont care about the other keys
+      default:
         break;
     }
     return eFalse;
@@ -237,10 +244,10 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
     }
 
     const sVec4f vTime = Vec4f(
-      ni::GetLang()->GetTotalFrameTime(),
-      ni::GetLang()->GetTotalFrameTime(),
-      ni::Sin(ni::GetLang()->GetTotalFrameTime()),
-      ni::GetLang()->GetFrameTime()
+      (tF32)ni::GetLang()->GetTotalFrameTime(),
+      (tF32)ni::GetLang()->GetTotalFrameTime(),
+      (tF32)ni::Sin(ni::GetLang()->GetTotalFrameTime()),
+      (tF32)ni::GetLang()->GetFrameTime()
     );
 
     _drawOpSet->Draw(gc, mptrCamera->GetFrustum());

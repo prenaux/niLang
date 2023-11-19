@@ -902,7 +902,7 @@ static const ni::sMethodDef iSoundFactory_SwitchOut = {
 
 // Method: Update
 static const ni::sParameterDef iSoundFactory_Update_Parameters[1] = { 
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }
+  { "afDeltaTime", ni::eType_F64, NULL, "ni::tF64" }
 }; 
 static const ni::sMethodDef iSoundFactory_Update = {
   "Update",

@@ -72,7 +72,7 @@ struct sCalculatorClient : public TClientImpl<tutorial::CalculatorClient> {
     return eTrue;
   }
 
-  virtual tBool __stdcall OnThriftClientException(const ::apache::thrift::TException& aException) {
+  virtual tBool __stdcall OnThriftClientException(const ::apache::thrift::TException& aException) override {
     tBase::OnThriftClientException(aException);
     ++_exceptions;
     return eFalse;

@@ -370,7 +370,7 @@ TEST_FIXTURE(FExpression,VecFloatMul) {
     Ptr<iExpression> expr = ptrCtx->CreateExpression("Vec3(1,2,3) * time");
     CHECK_RETURN_IF_FAILED(expr.IsOK());
 
-    const sVec3f r = Vec3f(1, 2, 3) * time;
+    const sVec3f r = Vec3f(1, 2, 3) * (tF32)time;
     const sVec3f v = expr->GetEvalResult()->GetVec3();
     niDebugFmt((_A("V: %s, r: %s"),v,r));
     CHECK_CLOSE(r, v, Vec3f(0.1f,0.1f,0.1f));
@@ -383,7 +383,7 @@ TEST_FIXTURE(FExpression,Enums) {
     Ptr<iExpressionContext> ptrCtx = ni::GetLang()->CreateExpressionContext();
     ptrCtx->SetGlobalEnumSearch(eTrue);
     tU32 v;
-    v = ptrCtx->Eval("eType.U32")->GetFloat();
+    v = (tU32)ptrCtx->Eval("eType.U32")->GetFloat();
     niDebugFmt((_A("V: %d"),v));
     CHECK_EQUAL(0,v);
 
@@ -393,7 +393,7 @@ TEST_FIXTURE(FExpression,Enums) {
     // if its already registered the test above will fail...
     ni::GetLang()->RegisterModuleDef(GetModuleDef_niLang());
 
-    v = ptrCtx->Eval("eType.U32")->GetFloat();
+    v = (tU32)ptrCtx->Eval("eType.U32")->GetFloat();
     niDebugFmt((_A("V: %d"),v));
     CHECK_EQUAL(eType_U32,v);
   }

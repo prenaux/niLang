@@ -76,70 +76,80 @@ TEST_FIXTURE(FBlitStretch, UpsampleAtZeroZeroBGRA) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapLogo());
   ResampleAndSave(bmp,_A("B8G8R8A8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*UPSAMPLE_X),(bmp->GetWidth()*UPSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*UPSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*UPSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, UpsampleAtZeroZeroRGBA) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapLogo());
   ResampleAndSave(bmp,_A("R8G8B8A8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*UPSAMPLE_X),(bmp->GetWidth()*UPSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*UPSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*UPSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroBGRA) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapLogo());
   ResampleAndSave(bmp,_A("B8G8R8A8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroRGBA) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapA());
   ResampleAndSave(bmp,_A("R8G8B8A8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, UpsampleAtZeroZeroBGR) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapA());
   ResampleAndSave(bmp,_A("B8G8R8A8"),
                   TEST_FILEPATH(niFmt("%s.jpg",m_testName)),
-                  (bmp->GetWidth()*UPSAMPLE_X),(bmp->GetWidth()*UPSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*UPSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*UPSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, UpsampleAtZeroZeroRGB) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapA());
   ResampleAndSave(bmp,_A("R8G8B8A8"),
                   TEST_FILEPATH(niFmt("%s.jpg",m_testName)),
-                  (bmp->GetWidth()*UPSAMPLE_X),(bmp->GetWidth()*UPSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*UPSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*UPSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroBGR) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapA());
   ResampleAndSave(bmp,_A("B8G8R8A8"),
                   TEST_FILEPATH(niFmt("%s.jpg",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroRGB) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapA());
   ResampleAndSave(bmp,_A("R8G8B8A8"),
                   TEST_FILEPATH(niFmt("%s.jpg",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroBGR_24) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapLogo());
   ResampleAndSave(bmp,_A("B8G8R8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, DownsampleAtZeroZeroRGB_24) {
   CHECK_RETURN_IF_FAILED(LoadTestBitmapLogo());
   ResampleAndSave(bmp,_A("R8G8B8"),
                   TEST_FILEPATH(niFmt("%s.png",m_testName)),
-                  (bmp->GetWidth()*DOWNSAMPLE_X),(bmp->GetWidth()*DOWNSAMPLE_Y));
+                  (tU32)((tF32)bmp->GetWidth()*DOWNSAMPLE_X),
+                  (tU32)((tF32)bmp->GetHeight()*DOWNSAMPLE_Y));
 }
 
 TEST_FIXTURE(FBlitStretch, NoResampleRGB_24) {

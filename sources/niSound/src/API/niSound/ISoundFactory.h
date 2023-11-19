@@ -79,7 +79,7 @@ struct iSoundFactory : public iUnknown
   //! Find the first free channel, possibily over a used channel with the specified priority.
   tU32 __stdcall FindFreeChannelPriority(eSoundMode aMode, tU32 anPriority) const;
   //! Update the sounds.
-  virtual tBool __stdcall Update(ni::tF32 afDeltaTime) = 0;
+  virtual tBool __stdcall Update(ni::tF64 afDeltaTime) = 0;
   //! @}
 
   //########################################################################################

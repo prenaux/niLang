@@ -125,8 +125,8 @@ IDLC_METH_END(ni,iSoundFactory,SwitchOut,0)
 
 /** ni -> iSoundFactory::Update/1 **/
 IDLC_METH_BEGIN(ni,iSoundFactory,Update,1)
-	IDLC_DECL_VAR(ni::tF32,afDeltaTime)
-	IDLC_BUF_TO_BASE(ni::eType_F32,afDeltaTime)
+	IDLC_DECL_VAR(ni::tF64,afDeltaTime)
+	IDLC_BUF_TO_BASE(ni::eType_F64,afDeltaTime)
 	IDLC_DECL_RETVAR(tBool,_Ret)
 	IDLC_METH_CALL(_Ret,ni,iSoundFactory,Update,1,(afDeltaTime))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "API/niUnitTest.h"
-#include "../../niLang/src/API/niLang/Utils/URLFileHandler.h"
-#include "../../niLang/src/API/niLang/Utils/URLFileHandlerManifest.h"
-#include "../../niLang/src/API/niLang/Utils/CrashReport.h"
+#include <niLang/Utils/URLFileHandler.h>
+#include <niLang/Utils/URLFileHandlerManifest.h>
+#include <niLang/Utils/CrashReport.h>
+#include <niLang/IRegex.h>
 
 #ifdef niWindows
 #  ifdef niMSVC
@@ -145,7 +146,7 @@ void TestList::Add(Test* test)
   }
 }
 
-Test* TestList::GetHead() const
+const Test* TestList::GetHead() const
 {
   return m_head;
 }
@@ -321,7 +322,7 @@ Test::~Test()
 {
 }
 
-bool Test::BeforeRun(TestResults& testResults)
+bool Test::BeforeRun(TestResults& testResults) const
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -366,7 +367,7 @@ bool Test::BeforeRun(TestResults& testResults)
   return true;
 }
 
-bool Test::Run(TestResults& testResults)
+bool Test::Run(TestResults& testResults) const
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -406,7 +407,7 @@ bool Test::Run(TestResults& testResults)
   return true;
 }
 
-bool Test::AfterRun(TestResults& testResults)
+bool Test::AfterRun(TestResults& testResults) const
 {
   TEST_TRY {
 #ifdef USE_SIGNALS
@@ -493,7 +494,7 @@ void TestResults::OnCountLog(int type)
   }
 }
 
-void TestResults::OnTestTime(const char* testName, float secondsElapsed)
+void TestResults::OnTestTime(const char* testName, ni::tF64 secondsElapsed)
 {
   if (m_testReporter)
     m_testReporter->ReportTime(testName, secondsElapsed);
@@ -514,7 +515,7 @@ void TestResults::OnTestFailure(char const* file, int const line,
   }
 }
 
-void TestResults::OnTestFinish(char const* testName, float secondsElapsed)
+void TestResults::OnTestFinish(char const* testName, ni::tF64 secondsElapsed)
 {
   if (m_totalFailureCount-m_totalFailureCountPush > 0) {
     ++m_testFailedCount;
@@ -587,7 +588,7 @@ int TestResults::GetLogWarningsDelta() const
 
 namespace UnitTest {
 
-void TestReporterStdout::ReportTime(char const* testName, float secondsElapsed)
+void TestReporterStdout::ReportTime(char const* testName, ni::tF64 secondsElapsed)
 {
   ni::cString str = niFmt(_A("Test %s took %.5f seconds.\n"),_ASZ(testName),secondsElapsed);
   niPrintln(str.Chars());
@@ -624,7 +625,7 @@ void TestReporterStdout::ReportTestStart(char const* test)
   niUnused(test);
 }
 
-void TestReporterStdout::ReportTestFinish(char const* test, float)
+void TestReporterStdout::ReportTestFinish(char const* test, ni::tF64)
 {
   niUnused(test);
 }
@@ -632,7 +633,7 @@ void TestReporterStdout::ReportTestFinish(char const* test, float)
 void TestReporterStdout::ReportSummary(int testCount,
                                        int failedCount, int totalFailedCount,
                                        int warnedCount, int totalWarnedCount,
-                                       float secondsElapsed)
+                                       ni::tF64 secondsElapsed)
 {
   ni::cString str;
   if (warnedCount > 0) {
@@ -801,19 +802,19 @@ ni::tBool IsRunningInCI() {
 struct TestRunner {
   ni::tF64 startTime;
   TestReporter& reporter;
-  TestList& list;
+  const TestList& list;
   const int maxTestTimeInMs;
   ni::cString fixtureName;
   int shouldRun;
-  Test* curTest;
+  const Test* curTest;
   int curTestSteps;
   int numTestRun;
   TestResults* result;
   ni::tF64 testTimeStart;
-  Test* nextTest;
+  const Test* nextTest;
 
   TestRunner(TestReporter& aReporter,
-             TestList& aList,
+             const TestList& aList,
              const int aMaxTestTimeInMs,
              const char* aFixtureName)
       : startTime(ni::TimerInSeconds())
@@ -832,7 +833,7 @@ struct TestRunner {
     shouldRun = 0;
     curTest = list.GetHead();
     while (curTest != 0) {
-      Test* nextTest = curTest->next;
+      Test const* nextTest = curTest->next;
       if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
         curTest = nextTest;
         continue;
@@ -883,16 +884,17 @@ struct TestRunner {
   bool AfterRun() {
     curTest->AfterRun(*result);
 
-    const int testTimeInMs = ni::TimerInSeconds() - testTimeStart;
+    const ni::tF64 testTimeIsSecs = ni::TimerInSeconds() - testTimeStart;
+    const ni::tI64 testTimeInMs = (ni::tI64)(testTimeIsSecs * 1000.0);
     if (maxTestTimeInMs > 0 && testTimeInMs > maxTestTimeInMs && !curTest->m_timeConstraintExempt)
     {
       ni::cString stream;
-      stream << "Global time constraint failed. Expected under " << maxTestTimeInMs <<
-          "ms but took " << testTimeInMs << "ms.";
+      stream << "Global time constraint failed. Expected under " << maxTestTimeInMs
+             << "ms but took " << testTimeInMs << "ms.";
       result->OnTestFailure(curTest->m_filename, curTest->m_lineNumber,
                            curTest->m_testName, stream.c_str());
     }
-    result->OnTestFinish(curTest->m_testName, testTimeInMs/1000.0f);
+    result->OnTestFinish(curTest->m_testName, testTimeIsSecs);
 
     curTest = nextTest;
     curTestSteps = 0;
@@ -989,7 +991,7 @@ struct URLFileHandler_Tests : public URLFileHandler_Manifest {
   virtual tBool __stdcall URLExists(const achar* aURL) {
     cString path;
     _GetExistingPath(aURL,path);
-    return ni::GetRootFS()->FileExists(path.Chars(),eFileAttrFlags_AllFiles);
+    return ni::GetRootFS()->FileExists(path.Chars(),eFileAttrFlags_AllFiles) != 0;
   }
 };
 
@@ -997,7 +999,7 @@ static TestReporterStdout _defaultReporterStdout;
 static TestRunner* _defaultTestRunner = NULL;
 
 bool TestRunner_Startup(TestReporter& reporter,
-                        TestList& list,
+                        const TestList& list,
                         const int maxTestTimeInMs,
                         const char* fixtureName)
 {
@@ -1044,7 +1046,7 @@ const char* TestRunner_GetCurrentTestName() {
 
 ni::cString runFixtureName;
 
-int RunAllTests(char const* fixtureName)
+int RunAllTests(const char* fixtureName)
 {
   // Static so that it outlives RunAllTests. This can happen with
   // deferred/async tests & on special platforms such as web-js.
@@ -1065,7 +1067,7 @@ static void Loop_RegularTests() {
 }
 
 int RunAllTests(TestReporter& reporter,
-                TestList& list,
+                const TestList& list,
                 const int maxTestTimeInMs,
                 const char* fixtureName)
 {
@@ -1078,7 +1080,7 @@ int RunAllTests(TestReporter& reporter,
 #else
 
 int RunAllTests(TestReporter& reporter,
-                TestList& list,
+                const TestList& list,
                 const int maxTestTimeInMs,
                 const char* fixtureName)
 {

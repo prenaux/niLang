@@ -29,7 +29,7 @@ TEST_FIXTURE(FMath,ComputeNumPow2Levels) {
 TEST_FIXTURE(FMath,Matrix2Euler) {
   sMatrixf R = sMatrixf::Identity();
 
-  MatrixRotationYawPitchRoll<tF32>(R, niRad(45), niRad(30), niRad(10));
+  MatrixRotationYawPitchRoll<tF32>(R, niRadf(45), niRadf(30), niRadf(10));
   niDebugFmt(("... R: %s", R));
 
   // tF32 yaw, pitch, roll;
@@ -37,9 +37,9 @@ TEST_FIXTURE(FMath,Matrix2Euler) {
   // niDebugFmt(("... R: yaw: %g, pitch: %g, roll: %g", yaw, pitch, roll));
 
   sVec3f e = MatrixDecomposeYawPitchRoll(R);
-  e.x = niDeg(e.x);
-  e.y = niDeg(e.y);
-  e.z = niDeg(e.z);
+  e.x = niDegf(e.x);
+  e.y = niDegf(e.y);
+  e.z = niDegf(e.z);
   niDebugFmt(("... R: x: %g, y: %g, z: %g", e.x, e.y, e.z));
 
   CHECK_CLOSE(Vec3f(30, 45, 10), e, sVec3f::Epsilon());

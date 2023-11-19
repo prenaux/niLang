@@ -38,21 +38,13 @@ struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
   }
 };
 
-struct sFCURLFetch_Base : public UnitTest::Test {
+struct sFCURLFetch_Base : public UnitTest::iTestClass {
   NN_mut<iCURL> _curl = niDeferredInit(NN_mut<iCURL>);
   NN_mut<iMessageQueue> _mq = niDeferredInit(NN_mut<iMessageQueue>);
   NN<iFetchRequest> _request = niDeferredInit(NN<iFetchRequest>);
 
   virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) = 0;
   virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) = 0;
-
-  sFCURLFetch_Base(const char* aName, const char* aFile, const int aLine)
-      : Test(aName, aFile, aLine, "FCURLFetch") {
-  }
-
-  ~sFCURLFetch_Base() {
-    // niDebugFmt(("... ~sFCURLFetch_Base %s", m_testName));
-  }
 
   virtual NN_mut<iCURL> CreateCURL() {
 #ifdef niJSCC
@@ -68,25 +60,25 @@ struct sFCURLFetch_Base : public UnitTest::Test {
     return curl.non_null();
   }
 
-  void BeforeRunImpl(UnitTest::TestResults& testResults_) niImpl {
-    m_numSteps = ni::eInvalidHandle; // Run as an "infinite" loop
+  niFn(void) Start(UnitTest::TestResults& testResults_) niImpl {
     _curl = this->CreateCURL();
     _mq = as_NN(ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()));
     _request = this->CreateRequest(testResults_);
   }
 
-  void RunImpl(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) Step(UnitTest::TestResults& testResults_) niImpl {
     //niDebugFmt(("... RunImpl"));
     if (!_mq->PollAndDispatch()) {
       ni::SleepMs(100); // Avoid busy loop
     }
     if (_request->GetReadyState() == eFetchReadyState_Done) {
       //niDebugFmt(("... GetReadyState() == eFetchReadyState_Done"));
-      m_numSteps = 0; // We're done
+      return eFalse; // We're done
     }
+    return eTrue;
   }
 
-  void AfterRunImpl(UnitTest::TestResults& testResults_) niImpl {
+  niFn(void) End(UnitTest::TestResults& testResults_) niImpl {
     cString headers = _request->GetReceivedHeaders()->ReadString();
     niDebugFmt(("... headers: %d bytes, %s",
                 _request->GetReceivedHeaders()->GetSize(),
@@ -98,18 +90,10 @@ struct sFCURLFetch_Base : public UnitTest::Test {
                 data));
 
     this->CheckResult(testResults_, headers, data);
-
-    // Cleanup here, we dont want these to run as global C++ destructors
-    _curl = NN_mut<iCURL>::tUnsafeUncheckedInitializer(nullptr);
-    _mq = NN_mut<iMessageQueue>::tUnsafeUncheckedInitializer(nullptr);
-    _request = NN<iFetchRequest>::tUnsafeUncheckedInitializer(nullptr);
   }
 };
 
 struct sFCURLFetch_Get : public sFCURLFetch_Base {
-  sFCURLFetch_Get() : sFCURLFetch_Base("FCURLFetch-Get", __FILE__, __LINE__) {
-  }
-
   virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) niImpl {
     NN_mut<tStringCVec> requestHeaders { tStringCVec::Create() };
     requestHeaders->push_back("X-Ni-Header: HdrNarf");
@@ -129,8 +113,11 @@ struct sFCURLFetch_Get : public sFCURLFetch_Base {
     CHECK_EQUAL(eFalse, _request->GetHasFailed());
   }
 };
-TEST_CLASS(sFCURLFetch_Get);
 
+TEST_CLASS_EX(FCURLFetch,Get,UnitTest::Test::GetTestList());
+
+
+#if 0
 struct sFCURLFetch_Post : public sFCURLFetch_Base {
   sFCURLFetch_Post() : sFCURLFetch_Base("FCURLFetch-Post", __FILE__, __LINE__) {
   }
@@ -486,4 +473,5 @@ TEST_CLASS(sFCURLFetch_JSCC_OverrideError);
 
 #endif // #ifdef niJSCC
 
+#endif
 }

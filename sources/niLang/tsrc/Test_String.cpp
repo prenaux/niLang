@@ -461,7 +461,7 @@ TEST_FIXTURE(niCore_String,Erase) {
 }
 
 ///////////////////////////////////////////////
-TEST(niCore_StrLib_Compare) {
+TEST_FIXTURE(niCore_String,StrCmp) {
   CHECK(ni::StrCmp("loadme","loadme_id") < 0);
   CHECK(ni::StrCmp("loadme","loadme_id") <= 0);
   CHECK(ni::StrCmp("loadme_id","loadme") > 0);

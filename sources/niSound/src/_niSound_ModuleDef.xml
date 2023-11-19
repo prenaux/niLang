@@ -595,9 +595,9 @@
 				<parameter
 					last="1"
 					name="afDeltaTime"
-					type="ni::tF32"
-					typec="ni::tF32"
-					typei="ni::eType_F32"/>
+					type="ni::tF64"
+					typec="ni::tF64"
+					typei="ni::eType_F64"/>
 			</method>
 			<method java_name="loadSoundData" name="LoadSoundData" num_parameters="1">
 				<comments desc="Load sound data from the specified file. "/>

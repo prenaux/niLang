@@ -41,7 +41,7 @@ inline void ProbSampleBuildAliasMethodArrays(const tF64* p, const tSize n, tF64*
 
   // set up alias table, initialize q with n*p0,...n*p_n-1
   niLoop(i,n) {
-    q[i] = p[i]*n;
+    q[i] = p[i]*(tF64)n;
   }
 
   // initialize a with indices

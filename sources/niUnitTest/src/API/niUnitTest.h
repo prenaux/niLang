@@ -3,7 +3,9 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#include <niLang.h>
+// XXX: Here because of legacy code
+#define niCCAllowUnsafePtr
+#include <niCC.h>
 
 /** \addtogroup niUnitTest
  * @{
@@ -49,6 +51,8 @@
 
 namespace UnitTest {
 
+class TestResults;
+
 _HSymExport(unittest_assert);
 
 static inline ni::cString GetTestInputFilePath(const ni::achar* fn) {
@@ -76,6 +80,7 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 //  Test Macros
 //
 //--------------------------------------------------------------------------------------------
+namespace UnitTest {
 
 #ifdef TEST
 #  error "TEST macro already defined."
@@ -88,26 +93,26 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 // Macros to declare the parameters necessary to add to a classe that wants to use
 // the CHECK_* macros
 // Example :
-//    class MyTestRun {
-//         TEST_PARAMS_DECL;
-//         int _x;
-//         cMyTestRun(TEST_PARAMS_FUNC, int x) : TEST_PARAMS_CONS, _x(x) {}
-//    }
+//  class MyTestRun {
+//    TEST_PARAMS_DECL;
+//    int _x;
+//    cMyTestRun(TEST_PARAMS_FUNC, int x) : TEST_PARAMS_CONS, _x(x) {}
+//  }
 //
-//  TEST(Something) {
+//  TEST_FIXTURE(MyFixture,MyTest) {
 //    new MyTestRun(TEST_PARAMS_CALL);
 //  }
 //
-#define TEST_PARAMS_DECL                                            \
-  UnitTest::TestResults& testResults_;                              \
-  char const* const m_testName;                                     \
-  bool& m_timeReport;                                               \
+#define TEST_PARAMS_DECL                        \
+  UnitTest::TestResults& testResults_;          \
+  char const* const m_testName;                 \
+  bool& m_timeReport;                           \
   int& m_numSteps;
 
-#define TEST_PARAMS_FUNC                                          \
-  UnitTest::TestResults& testResults_,                            \
-    char const* const m_testName,                                 \
-    bool& m_timeReport,                                           \
+#define TEST_PARAMS_FUNC                        \
+  UnitTest::TestResults& testResults_,          \
+    char const* const m_testName,               \
+    bool& m_timeReport,                         \
     int& m_numSteps
 
 #define TEST_PARAMS_CONS testResults_(testResults_), m_testName(m_testName), m_timeReport(m_timeReport), m_numSteps(m_numSteps)
@@ -124,36 +129,6 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 
 #define TEST_CONSTRUCTOR_BASE(NAME,BASE)          \
   NAME(TEST_PARAMS_FUNC) : BASE(TEST_PARAMS_CALL)
-
-#define TEST_DISABLED(NAME)                                     \
-  void DisabledTest##NAME(UnitTest::TestResults& testResults_,  \
-                          char const* const m_testName,         \
-                          char const* const m_filename,         \
-                          int const m_lineNumber,               \
-                          bool m_timeConstraintExempt,          \
-                          ni::tF64& m_timeStart,                \
-                          bool m_timeReport,                    \
-                          int m_numSteps                        \
-                          )
-
-#define TEST_EX_DISABLED(NAME,LIST) TEST_DISABLED(NAME)
-
-#define TEST_CLASS(CLASS)                                               \
-  static CLASS test_##CLASS##_instance;                                 \
-  UnitTest::ListAdder adder_test_##CLASS(UnitTest::Test::GetTestList(), &test_##CLASS##_instance);
-
-#define TEST_EX(Name,List)                                            \
-  class Test##Name : public UnitTest::Test                            \
-  {                                                                   \
- public:                                                              \
-    Test##Name() : Test(#Name, __FILE__, __LINE__) {}                 \
- private:                                                             \
-    virtual void RunImpl(UnitTest::TestResults& testResults_) const;  \
-  } test##Name##Instance;                                             \
-  UnitTest::ListAdder adder##Name (List, &test##Name##Instance);      \
-  void Test##Name::RunImpl(UnitTest::TestResults& testResults_) const
-
-#define TEST(Name) TEST_EX(Name,UnitTest::Test::GetTestList())
 
 #ifdef TEST_NITHROWASSERT
 #  define TEST_CATCH_ASSERT_EXCEPTION(MSG)              \
@@ -197,21 +172,21 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
    Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
    private:                                                             \
    mutable Fixture##Name##Helper* _mt;                                  \
-   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) {    \
+   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
      TEST_TRY {                                                          \
        _mt = new Fixture##Name##Helper(m_testName);                     \
      }                                                                  \
      TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture constructor " #Fixture) \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture)\
    }                                                                    \
-   virtual void RunImpl(UnitTest::TestResults& testResults_)  {         \
+   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
      TEST_TRY {                                                         \
        _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
      }                                                                  \
      TEST_CATCH_ASSERT_EXCEPTION("Assert exception in fixture " #Fixture)  \
      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
    }                                                                    \
-   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) {     \
+   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
      TEST_TRY {                                                         \
        delete _mt;                                                      \
        _mt = NULL;                                                      \
@@ -232,7 +207,6 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 
 #define TEST_FIXTURE(Fixture,Name) TEST_FIXTURE_EX(Fixture,Name,UnitTest::Test::GetTestList())
 
-
 #define TEST_FIXTURE_DISABLED(FIXTURE,NAME)                             \
   void DisabledTest##FIXTURE##NAME(UnitTest::TestResults& testResults_, \
                                    char const* const m_testName,        \
@@ -244,6 +218,43 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
                                    int m_numSteps)
 
 #define TEST_FIXTURE_EX_DISABLED(FIXTURE,NAME,LIST) TEST_FIXTURE_DISABLED(FIXTURE,NAME)
+
+struct iTestClass {
+  virtual ~iTestClass() {}
+  const ni::achar* m_testName = AZEROSTR;
+
+  niFnV(void) Start(UnitTest::TestResults& testResults_) = 0;
+  //! \return eTrue to continue, eFalse to stop execution.
+  niFnV(ni::tBool) Step(UnitTest::TestResults& testResults_) = 0;
+  niFnV(void) End(UnitTest::TestResults& testResults_) = 0;
+};
+
+#define TEST_CLASS_EX(Fixture, Name, List)                              \
+  class Test##Fixture##Name : public UnitTest::Test {                   \
+  public:                                                               \
+   Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
+  private:                                                              \
+   mutable UnitTest::iTestClass* _mt;                                   \
+   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
+     this->m_numSteps = ni::eInvalidHandle;                             \
+     _mt = new s##Fixture##_##Name();                                   \
+     _mt->m_testName = this->m_testName;                                \
+     _mt->Start(testResults_);                                          \
+   }                                                                    \
+   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
+     if (!_mt->Step(testResults_)) {                                    \
+       this->m_numSteps = 0;                                            \
+     }                                                                  \
+   }                                                                    \
+   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
+     _mt->End(testResults_);                                            \
+     delete _mt;                                                        \
+     _mt = NULL;                                                        \
+   }                                                                    \
+  } test##Fixture##Name##Instance;                                      \
+  UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
+
+#define TEST_CLASS(Fixture,Name) TEST_CLASS_EX(Fixture,Name,UnitTest::Test::GetTestList())
 
 #define TEST_WIDGET_EX(Name, List)                                               \
 class Test##Name : public UnitTest::Test                                         \
@@ -429,8 +440,8 @@ struct sAutoWarningMode {
   }
 };
 
-#define AUTO_WARNING_MODE_IF(COND) sAutoWarningMode __autoWarningMode(testResults_.m_warningMode, !!(COND))
-#define AUTO_WARNING_MODE() sAutoWarningMode __autoWarningMode(testResults_.m_warningMode)
+#define AUTO_WARNING_MODE_IF(COND) UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode, !!(COND))
+#define AUTO_WARNING_MODE() UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode)
 
 struct UnitTestMemDelta {
   const char* _file;
@@ -462,8 +473,9 @@ struct UnitTestMemDelta {
   }
 };
 
-#define TEST_TRACK_MEMORY_BEGIN() UnitTestMemDelta __memtrack(__FILE__,__LINE__,__FUNCTION__);
+#define TEST_TRACK_MEMORY_BEGIN() UnitTest::UnitTestMemDelta __memtrack(__FILE__,__LINE__,__FUNCTION__);
 #define TEST_TRACK_MEMORY_END() __memtrack.EndTracking();
+}
 
 //--------------------------------------------------------------------------------------------
 //
@@ -618,7 +630,7 @@ class TestList
   TestList();
   void Add (Test* test);
 
-  Test* GetHead() const;
+  const Test* GetHead() const;
 
  private:
   Test* m_head;
@@ -641,34 +653,32 @@ class ListAdder
 //--------------------------------------------------------------------------------------------
 namespace UnitTest {
 
-class TestResults;
-
 class Test
 {
  public:
   Test(char const* testName, char const* filename = "",
        int lineNumber = 0, char const* fixtureName = "");
   virtual ~Test();
-  bool BeforeRun(TestResults& testResults);
-  bool Run(TestResults& testResults);
-  bool AfterRun(TestResults& testResults);
+  bool BeforeRun(TestResults& testResults) const;
+  bool Run(TestResults& testResults) const;
+  bool AfterRun(TestResults& testResults) const;
 
   Test* next;
   char const* const m_testName;
   char const* const m_filename;
   char const* const m_fixtureName;
   int const m_lineNumber;
-  bool m_timeConstraintExempt;
-  ni::tF64 m_timeStart;
-  bool m_timeReport;
-  int m_numSteps;
+  mutable bool m_timeConstraintExempt;
+  mutable ni::tF64 m_timeStart;
+  mutable bool m_timeReport;
+  mutable int m_numSteps;
 
   static TestList& GetTestList();
 
  private:
-  virtual void BeforeRunImpl(TestResults& testResults_) = 0;
-  virtual void AfterRunImpl(TestResults& testResults_) = 0;
-  virtual void RunImpl(TestResults& testResults_) = 0;
+  virtual void BeforeRunImpl(TestResults& testResults_) const {}
+  virtual void AfterRunImpl(TestResults& testResults_) const {}
+  virtual void RunImpl(TestResults& testResults_) const {}
 
   // revoked
   Test(Test const&);
@@ -694,9 +704,9 @@ class TestResults
 
   void OnTestStart(char const* testName);
   void OnCountLog(int type);
-  void OnTestTime(char const* testName, float secondsElapsed);
+  void OnTestTime(char const* testName, ni::tF64 secondsElapsed);
   void OnTestFailure(char const* file, int line, char const* testName, char const* failure);
-  void OnTestFinish(char const* testName, float secondsElapsed);
+  void OnTestFinish(char const* testName, ni::tF64 secondsElapsed);
 
   int GetTestCount() const;
   int GetTestFailedCount() const;
@@ -746,14 +756,14 @@ class TestReporter
   virtual ~TestReporter() {}
 
   virtual void ReportTestStart(char const* testName) = 0;
-  virtual void ReportTime(char const* testName, float secondsElapsed) = 0;
+  virtual void ReportTime(char const* testName, ni::tF64 secondsElapsed) = 0;
   virtual void ReportFailure(char const* file, int line, char const* testName, char const* failure) = 0;
   virtual void ReportWarning(char const* file, int line, char const* testName, char const* failure) = 0;
-  virtual void ReportTestFinish(char const* testName, float secondsElapsed) = 0;
+  virtual void ReportTestFinish(char const* testName, ni::tF64 secondsElapsed) = 0;
   virtual void ReportSummary(int testCount,
                              int failedCount, int totalFailedCount,
                              int warnedCount, int totalWarnedCount,
-                             float secondsElapsed) = 0;
+                             ni::tF64 secondsElapsed) = 0;
 };
 
 }
@@ -769,14 +779,14 @@ class TestReporterStdout : public TestReporter
 {
  private:
   virtual void ReportTestStart(char const* testName);
-  virtual void ReportTime(char const* testName, float secondsElapsed);
+  virtual void ReportTime(char const* testName, ni::tF64 secondsElapsed);
   virtual void ReportFailure(char const* file, int line, char const* testName, char const* failure);
   virtual void ReportWarning(char const* file, int line, char const* testName, char const* failure);
-  virtual void ReportTestFinish(char const* testName, float secondsElapsed);
+  virtual void ReportTestFinish(char const* testName, ni::tF64 secondsElapsed);
   virtual void ReportSummary(int testCount,
                              int failedCount, int totalFailedCount,
                              int warnedCount, int totalWarnedCount,
-                             float secondsElapsed);
+                             ni::tF64 secondsElapsed);
 
   astl::vector<ni::cString> _warnings;
   astl::vector<ni::cString> _failures;
@@ -791,9 +801,6 @@ class TestReporterStdout : public TestReporter
 //--------------------------------------------------------------------------------------------
 
 namespace UnitTest {
-
-class TestResults;
-
 
 class TimeConstraint
 {
@@ -993,7 +1000,7 @@ class TestList;
 ni::tBool IsRunningInCI();
 
 bool TestRunner_Startup(TestReporter& reporter,
-                        TestList& list,
+                        const TestList& list,
                         const int maxTestTimeInMs,
                         const char* fixtureName);
 bool TestRunner_Startup(const char* fixtureName);
@@ -1005,7 +1012,7 @@ int TestRunner_ReportSummary();
 
 int RunAllTests(const char* fixtureName = NULL);
 int RunAllTests(TestReporter& reporter,
-                TestList& list,
+                const TestList& list,
                 const int maxTestTimeInMs = 0,
                 const char* fixtureName = NULL);
 

@@ -272,7 +272,7 @@ struct Icons : public VGBase {
     sVec2f glyphAdvance = fontIcons->GetGlyphPath(mptrPath, gi, pos+Vec2f(0,ascent), 1.0f);
 
     // Draw the glyph's box
-    apCanvas->BlitFill(Rectf(pos.x,pos.y,fontIcons->GetResolution(),fontIcons->GetResolution()), 0xCCCCCC);
+    apCanvas->BlitFill(Rectf(pos.x,pos.y,(tF32)fontIcons->GetResolution(),(tF32)fontIcons->GetResolution()), 0xCCCCCC);
     apCanvas->BlitFill(Rectf(pos.x,pos.y+height,100,1), 0);
     apCanvas->BlitFill(Rectf(pos.x,pos.y+ascent,100,1), 0xFF00FF);
     apCanvas->BlitFill(Rectf(pos.x,pos.y+glyphAdvance.y,100,1), 0xFF0000);

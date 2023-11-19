@@ -43,7 +43,7 @@ struct IPCam : public ni::cWidgetSinkImpl<> {
   }
 
   tBool __stdcall OnPaint(const sVec2f &avMousePos, iCanvas *apCanvas) niImpl {
-    test += ni::GetLang()->GetFrameTime();
+    test += (ni::tF32)ni::GetLang()->GetFrameTime();
     float k = 1; // wait timer
     if (test > k) {
       test -= k;

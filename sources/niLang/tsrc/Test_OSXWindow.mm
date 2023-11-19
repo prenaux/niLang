@@ -174,7 +174,7 @@ TEST_FIXTURE(FOSXWindow,OpenGL) {
 
       glMatrixMode( GL_PROJECTION );
       sMatrixf mtx;
-      MatrixPerspectiveFovRH<tF32>(mtx, niRad(45.0f), (tF32)size.x/(tF32)size.y, 0.1f, 100.0f);
+      MatrixPerspectiveFovRH<tF32>(mtx, niRadf(45.0f), (tF32)size.x/(tF32)size.y, 0.1f, 100.0f);
       glLoadMatrixf(mtx.ptr());
 
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );

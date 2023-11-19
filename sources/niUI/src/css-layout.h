@@ -763,7 +763,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, float parentM
     if (isRowUndefined || isColumnUndefined) {
       css_dim_t measureDim = node->measure(
         node->context,
-        
+
         width,
         height
       );
@@ -1118,14 +1118,14 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, float parentM
         remainingMainDim = fmaxf(remainingMainDim, 0);
         if (flexibleChildrenCount + nonFlexibleChildrenCount - 1 != 0) {
           betweenMainDim = remainingMainDim /
-            (flexibleChildrenCount + nonFlexibleChildrenCount - 1);
+            (float)(flexibleChildrenCount + nonFlexibleChildrenCount - 1);
         } else {
           betweenMainDim = 0;
         }
       } else if (justifyContent == CSS_JUSTIFY_SPACE_AROUND) {
         // Space on the edges is half of the space between elements
         betweenMainDim = remainingMainDim /
-          (flexibleChildrenCount + nonFlexibleChildrenCount);
+          (float)(flexibleChildrenCount + nonFlexibleChildrenCount);
         leadingMainDim = betweenMainDim / 2;
       }
     }
@@ -1292,7 +1292,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, float parentM
       currentLead += remainingAlignContentDim / 2;
     } else if (alignContent == CSS_ALIGN_STRETCH) {
       if (nodeCrossAxisInnerSize > linesCrossDim) {
-        crossDimLead = (remainingAlignContentDim / linesCount);
+        crossDimLead = (remainingAlignContentDim / (float)linesCount);
       }
     }
 

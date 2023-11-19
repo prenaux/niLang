@@ -98,7 +98,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool mbAnimated;
-  tF32 mfAnimationTime;
+  tF64 mfAnimationTime;
   void _ToggleAnimation() {
     mbAnimated = !mbAnimated;
   }
@@ -139,7 +139,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
                                     30.0f, 30.0f);
     apCanvas->SetMatrix(
       MatrixRotationPivot(
-        u, ni::MatrixRotationZ<tF32>(t,ni::WrapRad(ni::GetLang()->TimerInSeconds())), Vec3f(rect2.GetCenter().x,rect2.GetCenter().y,0)));
+        u, ni::MatrixRotationZ<tF32>(t,(tF32)ni::WrapRad(ni::GetLang()->TimerInSeconds())), Vec3f(rect2.GetCenter().x,rect2.GetCenter().y,0)));
     apCanvas->BlitFill(rect2, 0xFF00FFFF);
     apCanvas->SetMatrix(sMatrixf::Identity());
     return eTrue;
@@ -185,7 +185,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
       const sVec3f center = { rect.GetCenter().x, rect.GetCenter().y, 0 };
       m *= MatrixTranslation(t,-center);
       m *= MatrixRotationZ<tF32>(
-          t,ni::FMod<tF32>(mfAnimationTime/3.0f,niPif*2.0f));
+          t,ni::FMod<tF32>((tF32)mfAnimationTime/3.0f,niPif*2.0f));
       m *= MatrixTranslation(t,center);
       apCanvas->SetMatrix(m);
       apCanvas->BlitOverlay(rect,_topRightOverlay);
@@ -196,7 +196,7 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
       const sVec3f center = { rect.GetCenter().x, rect.GetCenter().y, 0 };
       m *= MatrixTranslation(t,-center);
       m *= MatrixRotationZ<tF32>(
-          t,ni::FMod<tF32>(mfAnimationTime/3.0f,niPif*2.0f));
+          t,ni::FMod<tF32>((tF32)mfAnimationTime/3.0f,niPif*2.0f));
       m *= MatrixTranslation(t,center);
       apCanvas->SetMatrix(m);
       apCanvas->BlitOverlay(rect,_botRightOverlay);
@@ -220,8 +220,8 @@ struct RT1 : public RTBase {
         (ni::Min(apCanvas->GetViewport().GetWidth(),apCanvas->GetViewport().GetHeight())-20) / 10.f);
     niLoop(i,10) {
       niLoop(j,10) {
-        const sRectf rect = ni::sRectf(i * cellSize + 10,
-                                       j * cellSize + 10,
+        const sRectf rect = ni::sRectf((tF32)i * cellSize + 10,
+                                       (tF32)j * cellSize + 10,
                                        cellSize, cellSize);
         if (i == 0 && j == 0) {
           apCanvas->BlitFill(rect, 0xFF990000);
@@ -250,8 +250,8 @@ struct RT1 : public RTBase {
         (ni::Min(apCanvas->GetViewport().GetWidth(),apCanvas->GetViewport().GetHeight())-20) / 10.f);
     niLoop(i,10) {
       niLoop(j,10) {
-        const sRectf rect = ni::sRectf(i * cellSize + 10,
-                                       j * cellSize + 10,
+        const sRectf rect = ni::sRectf((tF32)i * cellSize + 10,
+                                       (tF32)j * cellSize + 10,
                                        cellSize, cellSize);
         if (i == 0 && j == 0) {
           apCanvas->BlitFill(rect, 0xFF990000);

@@ -18,6 +18,20 @@ function niAssert(condition, message) {
   return condition;
 }
 
+function niGetBasePathFromPathName(aPathName) {
+  var path = aPathName || window.location.pathname;
+  // Handle TOOLKIT/bin/web-js
+  var binPos = path.indexOf("/bin/web-js");
+  if (binPos >= 0) {
+    path = path.substr(path,binPos);
+    path = path.substr(path,path.lastIndexOf("/"));
+  }
+  else {
+    path = "";
+  }
+  return path;
+}
+
 _moduleVal("print", function (text) {
   if (arguments.length > 1) {
     text = Array.prototype.slice.call(arguments).join(' ');
@@ -115,8 +129,10 @@ var NIAPP_BROWSER = _moduleLib('NIAPP_BROWSER', (function () {
 
 var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
   baseUrl: (function () {
-    var url = window.location.protocol;
-    url += "//" + window.location.host + "/";
+    var url = window.location.protocol + "//" + niPath_Join([
+      window.location.host,
+      niGetBasePathFromPathName()
+    ]);
     return url;
   }()),
 
@@ -134,7 +150,12 @@ var NIAPP_CONFIG = _moduleLib('NIAPP_CONFIG', {
 
   workDir: "/Work",
   exePath: (function () {
-    return "/Work" + window.location.pathname;
+    var exePath = window.location.pathname;
+    var basePath = niGetBasePathFromPathName();
+    if (basePath.length > 0) {
+      exePath = exePath.substr(basePath.length);
+    }
+    return "/Work" + exePath;
   }()),
 });
 
@@ -939,7 +960,11 @@ Module["preRun"] = function Module_preRun(params) {
   var packagePath, packageUrl;
   if (params["OpenFile"]) {
     packagePath = '/Work/Package.vpk';
-    packageUrl = params["OpenFile"]; // niPath_Join(NIAPP_CONFIG.baseUrl,'_Packages/Tesla-Template-Version-1.vpk');
+    packageUrl = params["OpenFile"];
+    if (!packageUrl.startsWith("/") && (packageUrl.indexOf("://") < 0)) {
+      // packageUrl is a relative path
+      packageUrl = niPath_Join(NIAPP_CONFIG.baseUrl,packageUrl);
+    }
     console.log("Package: " + packagePath + " from " + packageUrl);
     niFS_AddSingleFile(packagePath, packageUrl);
     if (!title) {

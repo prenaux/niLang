@@ -6,8 +6,6 @@
 #pragma niTodo("Mix the two stereo channels in a mono channel for 3d output, add a 3d sound flag to the creation method.")
 #pragma niTodo("3D Sounds works only with mono sounds.")
 
-#define BUFFER_SIZE 0xFFFF
-
 //! Sound buffer instance implementation.
 class cSoundBufferMemInstance : public cIUnknownImpl<iSoundBuffer>
 {
@@ -114,14 +112,29 @@ cSoundBufferMem::cSoundBufferMem(iDeviceResourceManager* apRM, iSoundData* apDat
   mnFrequency = apData->GetFrequency();
 
   apData->Reset();
+  //
+  // Note: We use a astl::vector<> because a 64K buffer on the stack in
+  // jscc/emscripten/wasm causes a stack overwrite. Seems the stack allocation
+  // size isn't always honored :|
+  //
+  // Emscripten default stack size has been changed to 64K:
+  // https://www.mail-archive.com/emscripten-discuss%40googlegroups.com/msg10104.html
+  //
+  // Compiler doesn't warn of this issue, yey.
+  //
+  // Note that I changed the emscripten stack size back to 512K using '-s
+  // STACK_SIZE=524288' as linker flag. Still this code is better, so I've
+  // kept the updated version that doesnt use the stack for the buffer.
+  //
+  astl::vector<tU8> vBuffer;
+  vBuffer.resize(0xFFFF);
   mptrFile = ni::CreateFileDynamicMemory(0,NULL);
-  tU8 buffer[BUFFER_SIZE];
   tU32 numRead = 0;
   while (1) {
-    numRead = apData->ReadRaw(&buffer[0], BUFFER_SIZE);
+    numRead = apData->ReadRaw(vBuffer.data(), vBuffer.size());
     if (numRead == 0)
       break;
-    mptrFile->WriteRaw(&buffer[0],numRead);
+    mptrFile->WriteRaw(vBuffer.data(),numRead);
   }
 
   mhspName = ahspName;

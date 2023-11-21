@@ -3,18 +3,13 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-enum eSoundSourceFlags
-{
+enum eSoundSourceFlags {
   eSoundSourceFlags_Loop = niBit(0),
   eSoundSourceFlags_Paused = niBit(1),
   eSoundSourceFlags_Channel3D = niBit(2),
 };
 
-typedef tU32  tSoundSourceFlags;
-
-#define STMBUFFER_SIZE    (4096*4)
-#define STMBUFFER_COUNT   (4)
-#define STMBUFFER_UPDATEMINTIME (100)
+typedef tU32 tSoundSourceFlags;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cSoundSource declaration.

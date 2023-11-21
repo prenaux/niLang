@@ -52,11 +52,11 @@ struct FSoundDecode {
 };
 
 TEST_FIXTURE(FSoundDecode,DecodeWAV) {
-  CHECK(mptrSoundFactory.IsOK());
+  CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.wav");
-    CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
+    CHECK_RETURN_IF_FAILED(fpSound.IsOK());
 
     Ptr<iSoundBuffer> sndBuffer;
     {
@@ -69,11 +69,11 @@ TEST_FIXTURE(FSoundDecode,DecodeWAV) {
 }
 
 TEST_FIXTURE(FSoundDecode,DecodeWAVEJUNK) {
-  CHECK(mptrSoundFactory.IsOK());
+  CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://weapon_13_shoot_1.wav");
-    CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
+    CHECK_RETURN_IF_FAILED(fpSound.IsOK());
 
     Ptr<iSoundBuffer> sndBuffer;
     {
@@ -86,11 +86,11 @@ TEST_FIXTURE(FSoundDecode,DecodeWAVEJUNK) {
 }
 
 TEST_FIXTURE(FSoundDecode,DecodeOGG) {
-  CHECK(mptrSoundFactory.IsOK());
+  CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.ogg");
-    CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
+    CHECK_RETURN_IF_FAILED(fpSound.IsOK());
 
     Ptr<iSoundBuffer> sndBuffer;
     {

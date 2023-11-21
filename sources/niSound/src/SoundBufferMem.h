@@ -17,9 +17,6 @@ class cSoundBufferMem : public cIUnknownImpl<iSoundBuffer>
   //! Destructor.
   ~cSoundBufferMem();
 
-  //! Zeros all the class members.
-  void ZeroMembers();
-
   //! Sanity check.
   tBool __stdcall IsOK() const;
   //! Invalidate.

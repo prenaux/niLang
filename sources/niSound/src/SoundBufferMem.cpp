@@ -102,9 +102,9 @@ class cSoundBufferMemInstance : public cIUnknownImpl<iSoundBuffer>
 ///////////////////////////////////////////////
 cSoundBufferMem::cSoundBufferMem(iDeviceResourceManager* apRM, iSoundData* apData, iHString* ahspName)
 {
-
-  ZeroMembers();
-
+  mFormat = eSoundFormat_Unknown;
+  mnFrequency = 0;
+  mpRM = NULL;
   if (!niIsOK(apData)) {
     niError(_A("Invalid sound data."));
     return;
@@ -154,15 +154,6 @@ void cSoundBufferMem::Invalidate()
 iHString* __stdcall cSoundBufferMem::GetDeviceResourceName() const
 {
   return mhspName.IsOK() ? mhspName.ptr() : (iHString*)NULL;
-}
-
-///////////////////////////////////////////////
-//! Zeros all the class members.
-void cSoundBufferMem::ZeroMembers()
-{
-  mFormat = eSoundFormat_Unknown;
-  mnFrequency = 0;
-  mpRM = NULL;
 }
 
 ///////////////////////////////////////////////

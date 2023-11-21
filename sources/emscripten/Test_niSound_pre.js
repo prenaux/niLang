@@ -10,18 +10,19 @@ NIAPP_FSMODULES['Test_niSound'] = function FS_Test_niSound() {
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/Test_niSound/");
   niFS_MakeDir(dir);
   niFS_AddFiles(dir, url, [
-    "atmo_loop_01.wav",
-    "step_stone5.wav",
-    "step_stone4.wav",
-    "step_stone1.wav",
-    "step_stone3.wav",
     "atmo_loop_01.ogg",
-    "step_stone2.wav",
-    "music_sketch8.ogg",
-    "lobby_chat.wav",
-    "lobby_chat.ogg",
-    "click.wav",
-    "music_punch.ogg",
+    "atmo_loop_01.wav",
     "click.ogg",
+    "click.wav",
+    "lobby_chat.ogg",
+    "lobby_chat.wav",
+    "music_punch.ogg",
+    "music_sketch8.ogg",
+    "step_stone1.wav",
+    "step_stone2.wav",
+    "step_stone3.wav",
+    "step_stone4.wav",
+    "step_stone5.wav",
+    "weapon_13_shoot_1.wav",
   ]);
 };

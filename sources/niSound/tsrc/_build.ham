@@ -17,5 +17,12 @@ if ! ( $(LINUX) = 1 ) {
   DEPENDS Run_ci : [ runInDir Test_niSound ] ;
 }
 
+if ( $(EMSCRIPTEN) = 1 ) {
+  TargetLinkFlags $(PKGTARGETF) :
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_pre.js ] ]
+    --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten Test_niSound_pre.js ] ]
+  ;
+}
+
 # Dependencies
 tkDepends Test_niSound : niSound : TOP niSound src ;

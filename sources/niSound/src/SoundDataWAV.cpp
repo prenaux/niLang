@@ -78,7 +78,6 @@ static int ReadChunk(iFile *src, sWaveChunk *chunk);
 static tBool InitMS_ADPCM(sMsADPCMDecoder& aDecoder, sWaveFormat *format)
 {
   tU8* rogue_feel;
-  tU16 extra_info;
   int i;
 
   // Set the rogue pointer to the MS_ADPCM specific data
@@ -92,7 +91,7 @@ static tBool InitMS_ADPCM(sMsADPCMDecoder& aDecoder, sWaveFormat *format)
   rogue_feel = (tU8*)format+sizeof(*format);
   if (sizeof(*format) == 16)
   {
-    extra_info = ((rogue_feel[1]<<8)|rogue_feel[0]);
+    // extra_info = ((rogue_feel[1]<<8)|rogue_feel[0]);
     rogue_feel += sizeof(tU16);
   }
 
@@ -282,7 +281,6 @@ static tBool MS_ADPCM_decode(sMsADPCMDecoder& aDecoder, tU8 **audio_buf, tU32 *a
 static tBool InitIMA_ADPCM(sImaADPCMDecoder& aDecoder, sWaveFormat *format)
 {
   tU8 *rogue_feel;
-  tU16 extra_info;
 
   aDecoder.wavefmt.encoding = niSwapLE16(format->encoding);
   aDecoder.wavefmt.channels = niSwapLE16(format->channels);
@@ -295,7 +293,7 @@ static tBool InitIMA_ADPCM(sImaADPCMDecoder& aDecoder, sWaveFormat *format)
 
   if (sizeof(*format) == 16)
   {
-    extra_info = ((rogue_feel[1]<<8)|rogue_feel[0]);
+    // extra_info = ((rogue_feel[1]<<8)|rogue_feel[0]);
     rogue_feel += sizeof(tU16);
   }
 
@@ -499,7 +497,6 @@ class cSoundDataWAV : public cIUnknownImpl<iSoundData>
   cSoundDataWAV(iFile* apFile)
   {
     sWaveChunk chunk;
-    tU32 nWaveSize;
 
     // Check the file header
     if (apFile->ReadLE32() != RIFF)
@@ -508,9 +505,12 @@ class cSoundDataWAV : public cIUnknownImpl<iSoundData>
       return;
     }
 
-    nWaveSize = apFile->ReadLE32();
-    if (apFile->ReadLE32() != WAVE)
     {
+      tU32 nWaveSize = apFile->ReadLE32();
+      niUnused(nWaveSize);
+    }
+
+    if (apFile->ReadLE32() != WAVE) {
       niError(_A("Not a WAVE riff file."));
       return;
     }

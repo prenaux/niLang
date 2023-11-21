@@ -14,6 +14,7 @@
 #define CheckValid(RET) if (!mptrMixer.IsOK()) return RET;
 #define CheckValid3D(RET) if (!mptrMixer3D.IsOK()) return RET;
 
+iSoundDriver* __stdcall New_SoundDriverSilent();
 iSoundDataLoader* New_SoundDataLoaderWAV();
 iSoundDataLoader* New_SoundDataLoaderOGG_STB();
 
@@ -47,6 +48,9 @@ cSoundFactory::cSoundFactory()
 #endif
 
 #endif
+
+  mvDrivers.push_back(New_SoundDriverSilent());
+  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
 
   // sound buffer manager
   mptrSoundBufferMgr = ni::GetLang()->CreateDeviceResourceManager(_A("SoundBuffer"));

@@ -69,37 +69,51 @@ tBool __stdcall cGraphics::RegisterSystemFonts()
   Ptr<iFont> font = CreateFont8x8(_H("8x8"));
   RegisterSystemFont(font->GetName(),NULL,font);
 
-#define REGISTER_FONT(NAME,PATH) {                                      \
-    Ptr<iFont> font = LoadFont(_H(PATH));                               \
-    if (font.IsOK()) {                                                  \
-      RegisterSystemFont(_H(NAME),NULL,font);                           \
-    }                                                                   \
-    else {                                                              \
-      niWarning(niFmt("Couldn't load font '%s' with '%s'.", NAME, PATH)); \
-    }                                                                   \
-  }
+  auto registerFontNamed = [&](const achar* aName, const achar* aPath) {
+    Ptr<iFont> font = LoadFont(_H(aPath));
+    if (font.IsOK()) {
+      RegisterSystemFont(_H(aName),NULL,font);
+    }
+    else {
+      niWarning(niFmt("Couldn't load font '%s', named '%s'.", aName, aPath));
+    }
+  };
+
+  auto registerFontFromPath = [&](const achar* aName, const achar* aPath) {
+    if (!ni::GetLang()->URLExists(aPath)) {
+      niWarning(niFmt("Couldn't find font '%s', path '%s'.", aName, aPath));
+    }
+    registerFontNamed(aName,aPath);
+  };
 
   // Regular Fonts
-  REGISTER_FONT("Sans", "niUI://fonts/Roboto-Regular.ttf");
-  REGISTER_FONT("Sans Italic", "niUI://fonts/Roboto-Italic.ttf");
-  REGISTER_FONT("Sans Bold", "niUI://fonts/Roboto-Bold.ttf");
-  REGISTER_FONT("Sans Bold Italic", "niUI://fonts/Roboto-BoldItalic.ttf");
-  REGISTER_FONT("Serif", "niUI://fonts/PlayfairDisplay-Regular.ttf");
-  REGISTER_FONT("Serif Italic", "niUI://fonts/PlayfairDisplay-Italic.ttf");
-  REGISTER_FONT("Serif Bold", "niUI://fonts/PlayfairDisplay-Bold.ttf");
-  REGISTER_FONT("Serif Bold Italic", "niUI://fonts/PlayfairDisplay-BoldItalic.ttf");
-  REGISTER_FONT("Monospace", "niUI://fonts/NotoMono-Regular.ttf");
-  REGISTER_FONT("Fallback", "niUI://fonts/NotoSansCJKsc-Regular.otf");
-  REGISTER_FONT("Default", "Sans");
-  REGISTER_FONT("Default Italic", "Sans Italic");
-  REGISTER_FONT("Default Bold", "Sans Bold");
-  REGISTER_FONT("Default Bold Italic", "Sans Bold Italic");
-  REGISTER_FONT("Code", "Monospace");
+  registerFontFromPath("Sans", "niUI://fonts/Roboto-Regular.ttf");
+  registerFontFromPath("Sans Italic", "niUI://fonts/Roboto-Italic.ttf");
+  registerFontFromPath("Sans Bold", "niUI://fonts/Roboto-Bold.ttf");
+  registerFontFromPath("Sans Bold Italic", "niUI://fonts/Roboto-BoldItalic.ttf");
+  registerFontFromPath("Serif", "niUI://fonts/PlayfairDisplay-Regular.ttf");
+  registerFontFromPath("Serif Italic", "niUI://fonts/PlayfairDisplay-Italic.ttf");
+  registerFontFromPath("Serif Bold", "niUI://fonts/PlayfairDisplay-Bold.ttf");
+  registerFontFromPath("Serif Bold Italic", "niUI://fonts/PlayfairDisplay-BoldItalic.ttf");
+  registerFontFromPath("Monospace", "niUI://fonts/NotoMono-Regular.ttf");
+
+  if (ni::GetLang()->URLExists("niUI://fonts/NotoSansCJKsc-Regular.otf")) {
+    registerFontFromPath("Fallback", "niUI://fonts/NotoSansCJKsc-Regular.otf");
+  }
+  else {
+    registerFontNamed("Fallback", "Sans");
+  }
+
+  registerFontNamed("Default", "Sans");
+  registerFontNamed("Default Italic", "Sans Italic");
+  registerFontNamed("Default Bold", "Sans Bold");
+  registerFontNamed("Default Bold Italic", "Sans Bold Italic");
+  registerFontNamed("Code", "Monospace");
 
   // Icon Fonts
-  REGISTER_FONT("fab", "niUI://fonts/fab-400.otf");
-  REGISTER_FONT("far", "niUI://fonts/far-400.otf");
-  REGISTER_FONT("fas", "niUI://fonts/fas-900.otf");
+  registerFontFromPath("fab", "niUI://fonts/fab-400.otf");
+  registerFontFromPath("far", "niUI://fonts/far-400.otf");
+  registerFontFromPath("fas", "niUI://fonts/fas-900.otf");
 
 #undef REGISTER_FONT
   return eTrue;

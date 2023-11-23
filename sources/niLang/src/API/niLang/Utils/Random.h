@@ -91,7 +91,7 @@ inline tI64 RandInt64(int4* aPRNG = ni_prng_global()) {
   return ni_prng_next_i64(aPRNG);
 }
 
-//! Return a random integer in the specified half-opened range [ aMin ; aMax ].
+//! Return a random integer in the range [ aMin ; aMax ].
 inline tI32 RandIntRange(tI32 aMin, tI32 aMax, int4* aPRNG = ni_prng_global()) {
   const tI64 r = ni_prng_next_i32(aPRNG) + (tI64)TypeMax<tI32>();
   const tI64 q = (r % ((aMax-aMin)+1)) + aMin;

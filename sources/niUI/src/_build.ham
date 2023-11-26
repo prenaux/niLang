@@ -153,8 +153,6 @@ fixedShader fixed_ps : fixed_ps.cgc : ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
-ObjectDefines $(BUILD_SRC) : agg_real=float ;
-
 ### Platform dependent SDKs #############################################
 if $(ANDROID) = 1 {
   LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;

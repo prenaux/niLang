@@ -5,10 +5,6 @@
 
 #define AGG_PIXELFORMAT _A("R8G8B8A8")
 
-#ifndef agg_real
-#error agg_real not defined ! should be defined to float or double.
-#endif
-
 #include "agg/gpc.h"
 #include "agg/agg_basics.h"
 #include "agg/agg_rendering_buffer.h"

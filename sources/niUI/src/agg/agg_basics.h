@@ -63,43 +63,39 @@ template<class T> struct obj_allocator
 // empty by default.
 //
 #ifndef AGG_INT8
-#define AGG_INT8 signed char
+#define AGG_INT8 ni::tI8
 #endif
 
 #ifndef AGG_INT8U
-#define AGG_INT8U unsigned char
+#define AGG_INT8U ni::tU8
 #endif
 
 #ifndef AGG_INT16
-#define AGG_INT16 short
+#define AGG_INT16 ni::tI16
 #endif
 
 #ifndef AGG_INT16U
-#define AGG_INT16U unsigned short
+#define AGG_INT16U ni::tU16
 #endif
 
 #ifndef AGG_INT32
-#define AGG_INT32 int
+#define AGG_INT32 ni::tI32
 #endif
 
 #ifndef AGG_INT32U
-#define AGG_INT32U unsigned
+#define AGG_INT32U ni::tU32
 #endif
 
 #ifndef AGG_INT64
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#define AGG_INT64 signed __int64
-#else
-#define AGG_INT64 signed long long
-#endif
+#define AGG_INT64 ni::tI64
 #endif
 
 #ifndef AGG_INT64U
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#define AGG_INT64U unsigned __int64
-#else
-#define AGG_INT64U unsigned long long
+#define AGG_INT64U ni::tU64
 #endif
+
+#ifndef agg_real
+#define agg_real ni::tF32
 #endif
 
 //------------------------------------------------ Some fixes for MS Visual C++

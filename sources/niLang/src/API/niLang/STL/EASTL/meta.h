@@ -5,8 +5,8 @@
 #ifndef EASTL_META_H
 #define EASTL_META_H
 
-#include "../internal/config.h"
-#include "../type_traits.h"
+#include "internal/config.h"
+#include "type_traits.h"
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
 	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
@@ -77,7 +77,7 @@ namespace eastl
 
 
 		////////////////////////////////////////////////////////////////////////////////////////////
-		// type_count_v 
+		// type_count_v
 		//
 		// Returns the number of occurrences of type T in a typelist.
 		//
@@ -99,7 +99,7 @@ namespace eastl
 
 		////////////////////////////////////////////////////////////////////////////////////////////
 		// duplicate_type_check_v
-		// 
+		//
 		// Checks if a type T occurs in a typelist more than once.
 		//
 		template <typename T, typename... Types>
@@ -113,7 +113,7 @@ namespace eastl
 
 
 		//////////////////////////////////////////////////////////////////////////////////
-		// type_list 
+		// type_list
 		//
 		// type_list is a simple struct that allows us to pass template parameter packs
 		// around in a single struct, and deduce parameter packs from function arguments
@@ -170,8 +170,8 @@ namespace eastl
 
 
 		////////////////////////////////////////////////////////////////////////////////////////////
-		// overload_resolution_t 
-		// 
+		// overload_resolution_t
+		//
 		// Given an input type and a typelist (which is a stand-in for alternative
 		// function overloads) this traits will return the same type chosen as if
 		// overload_resolution has selected a function to run.
@@ -215,8 +215,7 @@ namespace eastl
 		template <typename T, typename OverloadSet>
 		using overload_resolution_t = typename overload_resolution<decay_t<T>, OverloadSet>::type;
 
-	} // namespace meta 
+	} // namespace meta
 } // namespace eastl
 
 #endif // EASTL_META_H
-

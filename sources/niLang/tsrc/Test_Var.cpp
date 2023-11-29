@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../src/API/niLang/Var.h"
+#include <niLang/STL/EASTL/variant.h>
 
 struct FVar {
 };
@@ -20,7 +21,7 @@ TEST_FIXTURE(FVar,ConvertString) {
   hstr = NULL;
 }
 
-tI32 _AllocDiff() {
+static tI32 _AllocDiff() {
   sVec4i ms;
   ni_mem_get_stats(&ms);
   return ms.x-ms.y;
@@ -145,5 +146,57 @@ TEST_FIXTURE(FVar,IntPtrIsOtherType) {
     Var u = (uintptr_t)987;
     CHECK_EQUAL(v,u);
     CHECK_EQUAL((uintptr_t)987,(uintptr_t)v.GetIntValue());
+  }
+}
+
+TEST_FIXTURE(FVar,Size) {
+  {
+    Var v;
+    niDebugFmt(("... sizeof(Var): %d", sizeof(v)));
+  }
+
+  {
+    std::variant<tI32,cString,sMatrixf> v;
+    niDebugFmt(("... sizeof(std::variant<tI32,cString,sMatrixf>): %d", sizeof(v)));
+  }
+  {
+    eastl::variant<tI32,cString,sMatrixf> v;
+    niDebugFmt(("... sizeof(eastl::variant<tI32,cString,sMatrixf>): %d", sizeof(v)));
+  }
+
+  {
+    std::variant<tI32,cString> v;
+    niDebugFmt(("... sizeof(std::variant<tI32,cString>): %d", sizeof(v)));
+  }
+  {
+    eastl::variant<tI32,cString> v;
+    niDebugFmt(("... sizeof(eastl::variant<tI32,cString>): %d", sizeof(v)));
+  }
+
+  {
+    std::variant<tI32,sVec3f,cString> v;
+    niDebugFmt(("... sizeof(std::variant<tI32,sVec3f,cString>): %d", sizeof(v)));
+  }
+  {
+    eastl::variant<tI32,sVec3f,cString> v;
+    niDebugFmt(("... sizeof(eastl::variant<tI32,sVec3f,cString>): %d", sizeof(v)));
+  }
+
+  {
+    std::variant<tI32,sVec2f,tI64> v;
+    niDebugFmt(("... sizeof(std::variant<tI32,sVec2f,tI64>): %d", sizeof(v)));
+  }
+  {
+    eastl::variant<tI32,sVec2f,tI64> v;
+    niDebugFmt(("... sizeof(eastl::variant<tI32,sVec2f,tI64>): %d", sizeof(v)));
+  }
+
+  {
+    std::variant<tI32,Ptr<iUnknown>,std::unique_ptr<cString>,std::unique_ptr<sMatrixf>> v;
+    niDebugFmt(("... sizeof(std::variant<tI32,Ptr<iUnknown>,astl::unique_ptr<cString>,astl::unique_ptr<sMatrixf>>): %d", sizeof(v)));
+  }
+  {
+    eastl::variant<tI32,Ptr<iUnknown>,astl::unique_ptr<cString>,astl::unique_ptr<sMatrixf>> v;
+    niDebugFmt(("... sizeof(eastl::variant<tI32,Ptr<iUnknown>,astl::unique_ptr<cString>,astl::unique_ptr<sMatrixf>>): %d", sizeof(v)));
   }
 }

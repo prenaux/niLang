@@ -331,5 +331,11 @@ niExportFuncCPP(sRectf) TextLayout_Compute(
     bbRect.Move(Vec2f(0,offY));
   }
 
+  if (niFlagIs(flags, eFontFormatFlags_CenterH)) {
+    bbRect.Move(Vec2f((aRect.GetWidth() - bbRect.GetWidth()) / 2,0));
+  }
+  else if (niFlagIs(flags, eFontFormatFlags_Right)) {
+    bbRect.Move(Vec2f(aRect.GetWidth() - bbRect.GetWidth(), 0));
+  }
   return bbRect;
 }

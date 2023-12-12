@@ -25,13 +25,6 @@ if [ ! -d "$HAM_HOME" ]; then
      git clone --depth 1 https://github.com/prenaux/ham.git
      popd)
     source_ham_env || return 1
-else
-    source_ham_env || return 1
-    HAM_NO_VER_CHECK=1 . hat repos > /dev/null
-    (set -ex ;
-     pushd "$HAM_HOME" ;
-     git-update .
-     popd)
 fi
 
 if [ -z "$BASH_START_PATH" ]; then

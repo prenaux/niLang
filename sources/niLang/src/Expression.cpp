@@ -5221,7 +5221,121 @@ tBool DoEvaluate(iExpressionContext* apContext)
 }
 EndOp()
 
+// Json function
+BeginOpF(JsonArray,eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  return eTrue;
+}
 
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  if (mvOperands.size() > 0) {
+    Ptr<iDataTable> dt = ni::CreateDataTable();
+    dt->SetBool("__isArray", true);
+    Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+    for (auto const& v: mvOperands) {
+      Ptr<iExpressionVariable> val = v.GetVariable();
+      if (val.IsOK()) {
+        switch (val->GetType()) {
+          case eExpressionVariableType_Float: {
+            stack->PushNew("jnum");
+            stack->SetFloat("v", val->GetFloat());
+            stack->Pop();
+          }
+          case eExpressionVariableType_Vec2:
+          case eExpressionVariableType_Vec3:
+          case eExpressionVariableType_Vec4:
+          case eExpressionVariableType_Matrix:
+          case eExpressionVariableType_String: {
+            stack->PushNew("jstr");
+            stack->SetString("v", val->GetString().Chars());
+            stack->Pop();
+            break;
+          }
+          case eExpressionVariableType_IUnknown:
+            QPtr<iDataTable> data = val->GetIUnknown();
+            if (data.IsOK()) {
+              stack->PushAppend(data);
+              stack->Pop();
+            }
+            else {
+              stack->PushNew("jnull");
+              stack->Pop();
+            }
+            break;
+        }
+      }
+    }
+
+    Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
+    ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
+    mptrResult->SetString(file->ReadString());
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpF(JsonObject,eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  if (mvOperands.size() % 2 != 0) {
+    EXPRESSION_TRACE("JsonObject(K,V...) -> String: Number of parameters should be even.");
+    return eFalse;
+  }
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  if (mvOperands.size() > 0) {
+    Ptr<iDataTable> dt = ni::CreateDataTable();
+    for (tU32 i = 0; i < mvOperands.size(); i += 2) {
+      Ptr<iExpressionVariable> key = mvOperands[i].GetVariable();
+      if (key->GetType() != ni::eExpressionVariableType_String) {
+        EXPRESSION_TRACE(niFmt("JsonObject(K,V...) -> String: Key[%s] should be string", i));
+        return eFalse;
+      }
+      else {
+        cString k = key->GetString();
+        if (k.IsEmpty()) {
+          EXPRESSION_TRACE(niFmt("JsonObject(K,V...) -> String: Key[%s] is empty, skip", i));
+          continue;
+        }
+
+        Ptr<iExpressionVariable> val = mvOperands[i + 1].GetVariable();
+        switch (val->GetType()) {
+          case eExpressionVariableType_Float: {
+            dt->SetVar(k.Chars(), val->GetFloat()); break;
+          }
+          case eExpressionVariableType_Vec2:
+          case eExpressionVariableType_Vec3:
+          case eExpressionVariableType_Vec4:
+          case eExpressionVariableType_Matrix:
+          case eExpressionVariableType_String: {
+            dt->SetString(k.Chars(), val->GetString().Chars()); break;
+            break;
+          }
+          case eExpressionVariableType_IUnknown:
+            QPtr<iDataTable> data = val->GetIUnknown();
+            Ptr<iDataTable> newDT = data.IsOK() ? data->Clone() : ni::CreateDataTable();
+            newDT->SetName(k.Chars());
+            dt->AddChild(newDT);
+            break;
+        }
+
+      }
+    }
+
+    Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
+    ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
+    mptrResult->SetString(file->ReadString());
+  }
+  return eTrue;
+}
+EndOp()
 
 #undef DoSwitch
 #undef DoSwitch1
@@ -5697,6 +5811,9 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTGetNumChildren);
   AddOp(DTGetName);
   AddOp(DTGetIndex);
+
+  AddOp(JsonArray);
+  AddOp(JsonObject);
 
   return eTrue;
 }

@@ -466,6 +466,7 @@ struct sJsonParserSinkDT : public ImplRC<ni::iJsonParserSink> {
       , _dt(CreateDataTableWriteStack(_rootDT))
   {
     _isArray.push(eFalse);
+    _isRoot = eTrue;
   }
 
   void __stdcall OnJsonParserSink_Error(const achar* aaszReason, tU32 anLine, tU32 anCol) override {
@@ -475,23 +476,19 @@ struct sJsonParserSinkDT : public ImplRC<ni::iJsonParserSink> {
 
   __forceinline void _PushDT(tBool isArray) {
     _isArray.push(isArray);
-    if (_currentName.empty()) {
-      if (StrIsEmpty(_dt->GetTop()->GetName())) {
-        // We're at the root we dont push a new object
-        _dt->SetName(isArray ? "jarr" : "jobj");
-        // json to datatable reader version
-        _dt->SetInt("__jsonVer", 1);
-      }
-      else {
-        _dt->PushNew(isArray ? "jarr" : "jobj");
-      }
+    if (_isRoot) {
+      // json to datatable reader version for the root table
+      _dt->SetInt("__jsonVer", 1);
+      _isRoot = eFalse;
     }
     else {
-      _dt->PushNew(_currentName.c_str());
-      if (isArray) {
-        _dt->SetInt("__isArray", 1);
-      }
+      _dt->PushNew(_currentName.IsNotEmpty() ? _currentName.Chars() : isArray ? "jarr" : "jobj");
     }
+
+    if (isArray) {
+      _dt->SetBool("__isArray", true);
+    }
+
     _currentName.clear();
   }
 
@@ -584,6 +581,7 @@ struct sJsonParserSinkDT : public ImplRC<ni::iJsonParserSink> {
   Nonnull<iDataTable> _rootDT;
   Nonnull<iDataTableWriteStack> _dt;
   astl::stack<tBool> _isArray;
+  tBool _isRoot;
   ni::cString _currentName;
 };
 
@@ -597,6 +595,9 @@ static tSize DataTableSerialize_ReadJSON(iFile* apFile, astl::non_null<iDataTabl
   }
   return (tSize)(pos-apFile->Tell());
 }
+
+static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT,
+                                   ni::Nonnull<ni::iJsonWriter> jsonWriter);
 
 static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
                                     ni::Nonnull<ni::iJsonWriter> jsonWriter) {
@@ -631,6 +632,18 @@ static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
       }
     }
   }
+
+  niLoop(i, dt->GetNumChildren()) {
+    Nonnull<iDataTable> child(dt->GetChildFromIndex(i));
+    tBool isArray = child->GetBoolDefault("__isArray", eFalse);
+    jsonWriter->Name(child->GetName());
+    if (isArray) {
+      _WriteJSONArray(child, jsonWriter);
+    }
+    else {
+      _WriteJSONObject(child, jsonWriter);
+    }
+  }
   jsonWriter->ObjectEnd();
 }
 
@@ -640,7 +653,26 @@ static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT,
   jsonWriter->ArrayBegin();
   niLoop(i, childCount) {
     Nonnull<iDataTable> dt(topDT->GetChildFromIndex(i));
-    _WriteJSONObject(dt, jsonWriter);
+    cString name = dt->GetName();
+    if (name == "jnum") {
+      jsonWriter->ValueNumber(dt->GetString("v").Chars());
+    }
+    else if (name == "jstr") {
+      jsonWriter->ValueString(dt->GetString("v").Chars());
+    }
+    else if (name == "jbool") {
+      jsonWriter->ValueBool(dt->GetBool("v"));
+    }
+    else if (name == "jnull") {
+      jsonWriter->ValueNull();
+    }
+    else if (name == "jarr" || dt->GetBoolDefault("__isArray", eFalse)) {
+      _WriteJSONArray(dt, jsonWriter);
+    }
+    else {
+      // fallback to default json object;
+      _WriteJSONObject(dt, jsonWriter);
+    }
   }
   jsonWriter->ArrayEnd();
 }

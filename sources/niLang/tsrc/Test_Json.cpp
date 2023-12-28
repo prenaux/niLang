@@ -13,6 +13,8 @@ static const cString _dtJsonArray = R"""(
   [{"string":"bar","number":123,"isnull":null,"bool":true},{"string":"bar","number":321,"isnull":null,"bool":false}]
 )""";
 
+static const cString _dtJsonArray1 = R"(["bar",123,null,true,false,{"S":1,"arr":[11,222],"b":{"a":1}}])";
+
 struct FJson {
 };
 
@@ -22,6 +24,14 @@ TEST_FIXTURE(FJson,Basic) {
   CHECK_EQUAL(_ASTR("bar"), dt->GetString("string"));
   CHECK_EQUAL(123, dt->GetInt("number"));
   CHECK_EQUAL(0, dt->GetInt("isnull"));
+
+  Ptr<iDataTable> dt2 = ni::CreateDataTable();
+  ni::Ptr<iFile> fp2 = ni::CreateFileMemory((tPtr)_dtJsonArray1.Chars(),_dtJsonArray1.size(),eFalse,NULL);
+  ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt2, fp2);
+
+  Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
+  ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, dt2, file);
+  CHECK_EQUAL(file->ReadString(), _dtJsonArray1);
 }
 
 TEST_FIXTURE(FJson,JsonCrash) {

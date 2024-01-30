@@ -1407,13 +1407,13 @@ void cWidgetTree::_Paint(const sVec2f& avMousePos, iCanvas* c)
     rect.Left() = 0;
     rect.Right() = clSize.x;
     if (n->GetTreeIndex() == (tU32)mnHoverTreeNodeIndex) {
-      c->BlitFill(rect,skin.colRowHover);
+      c->BlitFillAlpha(rect,skin.colRowHover);
     }
     else if (n->mnRowColor) {
-      c->BlitFill(rect,n->mnRowColor);
+      c->BlitFillAlpha(rect,n->mnRowColor);
     }
     else {
-      c->BlitFill(rect,
+      c->BlitFillAlpha(rect,
                   (n->GetSelected() || (n->_GetDrawIndex()&1)) ?
                   skin.colSec :
                   skin.colFirst);

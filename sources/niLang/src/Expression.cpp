@@ -5243,6 +5243,7 @@ tBool DoEvaluate(iExpressionContext* apContext)
             stack->PushNew("jnum");
             stack->SetFloat("v", val->GetFloat());
             stack->Pop();
+            break;
           }
           case eExpressionVariableType_Vec2:
           case eExpressionVariableType_Vec3:
@@ -5308,14 +5309,15 @@ tBool DoEvaluate(iExpressionContext* apContext)
         Ptr<iExpressionVariable> val = mvOperands[i + 1].GetVariable();
         switch (val->GetType()) {
           case eExpressionVariableType_Float: {
-            dt->SetVar(k.Chars(), val->GetFloat()); break;
+            dt->SetVar(k.Chars(), val->GetFloat());
+            break;
           }
           case eExpressionVariableType_Vec2:
           case eExpressionVariableType_Vec3:
           case eExpressionVariableType_Vec4:
           case eExpressionVariableType_Matrix:
           case eExpressionVariableType_String: {
-            dt->SetString(k.Chars(), val->GetString().Chars()); break;
+            dt->SetString(k.Chars(), val->GetString().Chars());
             break;
           }
           case eExpressionVariableType_IUnknown:

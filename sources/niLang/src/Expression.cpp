@@ -5221,11 +5221,11 @@ tBool DoEvaluate(iExpressionContext* apContext)
 }
 EndOp()
 
-// Json function
-BeginOpF(JsonArray,eInvalidHandle)
+// DT Json function
+BeginOpF(DTArray,eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
-  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
   return eTrue;
 }
 
@@ -5270,22 +5270,20 @@ tBool DoEvaluate(iExpressionContext* apContext)
       }
     }
 
-    Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
-    ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
-    mptrResult->SetString(file->ReadString());
+    mptrResult->SetIUnknown(dt);
   }
   return eTrue;
 }
 EndOp()
 
-BeginOpF(JsonObject,eInvalidHandle)
+BeginOpF(DTObject,eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
   if (mvOperands.size() % 2 != 0) {
-    EXPRESSION_TRACE("JsonObject(K,V...) -> String: Number of parameters should be even.");
+    EXPRESSION_TRACE("Object(K,V...) -> String: Number of parameters should be even.");
     return eFalse;
   }
-  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
   return eTrue;
 }
 
@@ -5296,13 +5294,13 @@ tBool DoEvaluate(iExpressionContext* apContext)
     for (tU32 i = 0; i < mvOperands.size(); i += 2) {
       Ptr<iExpressionVariable> key = mvOperands[i].GetVariable();
       if (key->GetType() != ni::eExpressionVariableType_String) {
-        EXPRESSION_TRACE(niFmt("JsonObject(K,V...) -> String: Key[%s] should be string", i));
+        EXPRESSION_TRACE(niFmt("Object(K,V...) -> String: Key[%s] should be string", i));
         return eFalse;
       }
       else {
         cString k = key->GetString();
         if (k.IsEmpty()) {
-          EXPRESSION_TRACE(niFmt("JsonObject(K,V...) -> String: Key[%s] is empty, skip", i));
+          EXPRESSION_TRACE(niFmt("Object(K,V...) -> String: Key[%s] is empty, skip", i));
           continue;
         }
 
@@ -5330,14 +5328,55 @@ tBool DoEvaluate(iExpressionContext* apContext)
 
       }
     }
-
-    Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
-    ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
-    mptrResult->SetString(file->ReadString());
+    mptrResult->SetIUnknown(dt);
   }
   return eTrue;
 }
 EndOp()
+
+BeginOpF(DTToJson,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_String);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTToJson(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+  Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
+  ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
+  mptrResult->SetString(file->ReadString());
+  return eTrue;
+}
+EndOp()
+
+BeginOpF(DTFromJson,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  cString json = mvOperands[0].GetVariable()->GetString();
+  Ptr<iDataTable> dt = CreateDataTable();
+  Nonnull<iFile> fp(ni::GetLang()->CreateFileMemory(
+                      (tPtr)json.data(),json.size(),eFalse,"::CreateDataTableFromJson"));
+  if (!ni::SerializeDataTable("json", eSerializeMode_Read, dt, fp)) {
+    EXPRESSION_TRACE("DTFromJson(): operation, input is not a valid json.");
+    return eFalse;
+  }
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
 
 #undef DoSwitch
 #undef DoSwitch1
@@ -5813,9 +5852,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTGetNumChildren);
   AddOp(DTGetName);
   AddOp(DTGetIndex);
-
-  AddOp(JsonArray);
-  AddOp(JsonObject);
+  AddOp(DTArray);
+  AddOp(DTObject);
+  AddOp(DTToJson);
+  AddOp(DTFromJson);
 
   return eTrue;
 }

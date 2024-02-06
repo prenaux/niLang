@@ -596,8 +596,8 @@ static tSize DataTableSerialize_ReadJSON(iFile* apFile, astl::non_null<iDataTabl
   return (tSize)(pos-apFile->Tell());
 }
 
-static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT,
-                                   ni::Nonnull<ni::iJsonWriter> jsonWriter);
+static inline void _WriteJSON(ni::Nonnull<ni::iDataTable> dt, ni::Nonnull<ni::iJsonWriter> jsonWriter);
+static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT, ni::Nonnull<ni::iJsonWriter> jsonWriter);
 
 static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
                                     ni::Nonnull<ni::iJsonWriter> jsonWriter) {
@@ -622,6 +622,14 @@ static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
         jsonWriter->ObjectBool(propName.Chars(), propVal);
         break;
       }
+      case eDataTablePropertyType_IUnknown: {
+        QPtr<iDataTable> child = dt->GetVarFromIndex(j);
+        if (child.IsOK()) {
+          child->SetName(dt->GetPropertyName(j));
+          _WriteJSON(Nonnull<iDataTable>(child), jsonWriter);
+        }
+        break;
+      }
       case eDataTablePropertyType_Unknown: {
         jsonWriter->ObjectNull(propName.Chars());
         break;
@@ -634,15 +642,7 @@ static inline void _WriteJSONObject(ni::Nonnull<ni::iDataTable> dt,
   }
 
   niLoop(i, dt->GetNumChildren()) {
-    Nonnull<iDataTable> child(dt->GetChildFromIndex(i));
-    tBool isArray = child->GetBoolDefault("__isArray", eFalse);
-    jsonWriter->Name(child->GetName());
-    if (isArray) {
-      _WriteJSONArray(child, jsonWriter);
-    }
-    else {
-      _WriteJSONObject(child, jsonWriter);
-    }
+    _WriteJSON(Nonnull<iDataTable>(dt->GetChildFromIndex(i)), jsonWriter);
   }
   jsonWriter->ObjectEnd();
 }
@@ -676,6 +676,18 @@ static inline void _WriteJSONArray(ni::Nonnull<ni::iDataTable> topDT,
   }
   jsonWriter->ArrayEnd();
 }
+
+static inline void _WriteJSON(ni::Nonnull<ni::iDataTable> dt, ni::Nonnull<ni::iJsonWriter> jsonWriter) {
+  tBool isArray = dt->GetBoolDefault("__isArray", eFalse);
+  jsonWriter->Name(dt->GetName());
+  if (isArray) {
+    _WriteJSONArray(dt, jsonWriter);
+  }
+  else {
+    _WriteJSONObject(dt, jsonWriter);
+  }
+}
+
 //
 // Sample DataTable structure in XML for reference
 //

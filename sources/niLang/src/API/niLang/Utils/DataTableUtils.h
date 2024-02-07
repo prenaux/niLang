@@ -64,10 +64,10 @@ inline Ptr<iDataTable> CreateDataTableFromXML(const achar* aaszText, tI32 anSize
 }
 
 ///////////////////////////////////////////////
-inline cString DataTableToXML(iDataTable* apDT, tBool abStream = eTrue) {
+inline cString DataTableToXML(const iDataTable* apDT, tBool abStream = eTrue) {
   niCheckIsOK(apDT,"");
   Nonnull<iFile> fp(ni::GetLang()->CreateFileDynamicMemory());
-  if (!ni::GetLang()->SerializeDataTable(abStream ? "xml-stream" : "xml",eSerializeMode_Write,apDT,fp))
+  if (!ni::GetLang()->SerializeDataTable(abStream ? "xml-stream" : "xml",eSerializeMode_Write,const_cast<iDataTable*>(apDT),fp))
     return AZEROSTR;
   fp->SeekSet(0);
   return fp->ReadString();
@@ -77,13 +77,13 @@ inline cString DataTableToXML(iDataTable* apDT, tBool abStream = eTrue) {
 static const char* _kDataTableCompressedStringMode = "xml-stream";
 
 ///////////////////////////////////////////////
-inline cString DataTableToCompressedString(iDataTable* apDT) {
+inline cString DataTableToCompressedString(const iDataTable* apDT) {
   niCheckIsOK(apDT,"");
   Nonnull<iFile> fp(ni::GetLang()->CreateFileDynamicMemory());
 
   {
     Nonnull<iFile> fpXml(ni::GetLang()->CreateFileDynamicMemory());
-    if (!ni::GetLang()->SerializeDataTable(_kDataTableCompressedStringMode,eSerializeMode_Write,apDT,fpXml))
+    if (!ni::GetLang()->SerializeDataTable(_kDataTableCompressedStringMode,eSerializeMode_Write,const_cast<iDataTable*>(apDT),fpXml))
       return AZEROSTR;
     fpXml->SeekSet(0);
     fp->WriteLE32(0);

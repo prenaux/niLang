@@ -14,6 +14,7 @@
 #include "API/niLang/Math/MathVec4.h"
 #include "API/niLang/Math/MathQuat.h"
 #include "API/niLang_ModuleDef.h"
+#include "niLang/Utils/Path.h"
 
 using namespace ni;
 
@@ -5377,6 +5378,32 @@ tBool DoEvaluate(iExpressionContext* apContext)
 }
 EndOp()
 
+BeginOpF(DTFromPath,1)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  cPath path = mvOperands[0].GetVariable()->GetString();
+  Ptr<iFile> fp = ni::GetLang()->URLOpen(path.Chars());
+  if (!fp.IsOK()) {
+    EXPRESSION_TRACE("DTFromPath(): operation, path not found.");
+    return eFalse;
+  }
+
+  Ptr<iDataTable> dt = CreateDataTable();
+  if (!ni::GetLang()->SerializeDataTable(path.GetExtension().Chars(),eSerializeMode_Read,dt,fp)) {
+    EXPRESSION_TRACE("DTFromPath(): operation, path is not a valid datatable.");
+    return eFalse;
+  }
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
 
 #undef DoSwitch
 #undef DoSwitch1
@@ -5856,6 +5883,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTObject);
   AddOp(DTToJson);
   AddOp(DTFromJson);
+  AddOp(DTFromPath);
 
   return eTrue;
 }

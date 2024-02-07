@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C191BF2D2B72604900D9A7FC /* HelloUI_cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C191BF2C2B72604900D9A7FC /* HelloUI_cpp.cpp */; };
+		C191BF302B7261E900D9A7FC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF2F2B7261E900D9A7FC /* Foundation.framework */; };
+		C191BF322B7261F100D9A7FC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF312B7261F100D9A7FC /* CoreServices.framework */; };
+		C191BF342B7261F800D9A7FC /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF332B7261F800D9A7FC /* AudioUnit.framework */; };
+		C191BF362B72620000D9A7FC /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF352B72620000D9A7FC /* CoreAudio.framework */; };
+		C191BF382B72620600D9A7FC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF372B72620600D9A7FC /* Cocoa.framework */; };
+		C191BF3A2B72620D00D9A7FC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF392B72620D00D9A7FC /* IOKit.framework */; };
+		C191BF3C2B72621500D9A7FC /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3B2B72621500D9A7FC /* OpenGL.framework */; };
+		C191BF3E2B72621B00D9A7FC /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3D2B72621B00D9A7FC /* AGL.framework */; };
+		C191BF402B72622300D9A7FC /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3F2B72622300D9A7FC /* Metal.framework */; };
+		C191BF422B72622A00D9A7FC /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF412B72622A00D9A7FC /* MetalKit.framework */; };
+		C191BF442B72623000D9A7FC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF432B72623000D9A7FC /* QuartzCore.framework */; };
+		C191BF462B72623900D9A7FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF452B72623900D9A7FC /* Security.framework */; };
+		C191BF482B7262CF00D9A7FC /* HelloUI_Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C191BF472B7262CF00D9A7FC /* HelloUI_Widget.cpp */; };
+		C191BF622B727C6200D9A7FC /* niLang in Resources */ = {isa = PBXBuildFile; fileRef = C191BF612B727C6200D9A7FC /* niLang */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C191BEF72B72577500D9A7FC /* HelloUI_osx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloUI_osx.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C191BF2C2B72604900D9A7FC /* HelloUI_cpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelloUI_cpp.cpp; path = ../../cpp/HelloUI_cpp.cpp; sourceTree = "<group>"; };
+		C191BF2F2B7261E900D9A7FC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C191BF312B7261F100D9A7FC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		C191BF332B7261F800D9A7FC /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		C191BF352B72620000D9A7FC /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		C191BF372B72620600D9A7FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		C191BF392B72620D00D9A7FC /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		C191BF3B2B72621500D9A7FC /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		C191BF3D2B72621B00D9A7FC /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = System/Library/Frameworks/AGL.framework; sourceTree = SDKROOT; };
+		C191BF3F2B72622300D9A7FC /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		C191BF412B72622A00D9A7FC /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		C191BF432B72623000D9A7FC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		C191BF452B72623900D9A7FC /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		C191BF472B7262CF00D9A7FC /* HelloUI_Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelloUI_Widget.cpp; path = ../../cpp/HelloUI_Widget.cpp; sourceTree = "<group>"; };
+		C191BF4D2B7269B700D9A7FC /* HelloUI-osx-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HelloUI-osx-Info.plist"; sourceTree = SOURCE_ROOT; };
+		C191BF612B727C6200D9A7FC /* niLang */ = {isa = PBXFileReference; lastKnownFileType = folder; name = niLang; path = HelloUI_osx/niLang; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C191BEF42B72577500D9A7FC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C191BF462B72623900D9A7FC /* Security.framework in Frameworks */,
+				C191BF442B72623000D9A7FC /* QuartzCore.framework in Frameworks */,
+				C191BF422B72622A00D9A7FC /* MetalKit.framework in Frameworks */,
+				C191BF402B72622300D9A7FC /* Metal.framework in Frameworks */,
+				C191BF3E2B72621B00D9A7FC /* AGL.framework in Frameworks */,
+				C191BF3C2B72621500D9A7FC /* OpenGL.framework in Frameworks */,
+				C191BF3A2B72620D00D9A7FC /* IOKit.framework in Frameworks */,
+				C191BF382B72620600D9A7FC /* Cocoa.framework in Frameworks */,
+				C191BF362B72620000D9A7FC /* CoreAudio.framework in Frameworks */,
+				C191BF342B7261F800D9A7FC /* AudioUnit.framework in Frameworks */,
+				C191BF322B7261F100D9A7FC /* CoreServices.framework in Frameworks */,
+				C191BF302B7261E900D9A7FC /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C191BEEE2B72577500D9A7FC = {
+			isa = PBXGroup;
+			children = (
+				C191BF612B727C6200D9A7FC /* niLang */,
+				C191BEF92B72577500D9A7FC /* HelloUI_osx */,
+				C191BEF82B72577500D9A7FC /* Products */,
+				C191BF2E2B7261E900D9A7FC /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		C191BEF82B72577500D9A7FC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C191BEF72B72577500D9A7FC /* HelloUI_osx.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C191BEF92B72577500D9A7FC /* HelloUI_osx */ = {
+			isa = PBXGroup;
+			children = (
+				C191BF4D2B7269B700D9A7FC /* HelloUI-osx-Info.plist */,
+				C191BF472B7262CF00D9A7FC /* HelloUI_Widget.cpp */,
+				C191BF2C2B72604900D9A7FC /* HelloUI_cpp.cpp */,
+			);
+			path = HelloUI_osx;
+			sourceTree = "<group>";
+		};
+		C191BF2E2B7261E900D9A7FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C191BF452B72623900D9A7FC /* Security.framework */,
+				C191BF432B72623000D9A7FC /* QuartzCore.framework */,
+				C191BF412B72622A00D9A7FC /* MetalKit.framework */,
+				C191BF3F2B72622300D9A7FC /* Metal.framework */,
+				C191BF3D2B72621B00D9A7FC /* AGL.framework */,
+				C191BF3B2B72621500D9A7FC /* OpenGL.framework */,
+				C191BF392B72620D00D9A7FC /* IOKit.framework */,
+				C191BF372B72620600D9A7FC /* Cocoa.framework */,
+				C191BF352B72620000D9A7FC /* CoreAudio.framework */,
+				C191BF332B7261F800D9A7FC /* AudioUnit.framework */,
+				C191BF312B7261F100D9A7FC /* CoreServices.framework */,
+				C191BF2F2B7261E900D9A7FC /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C191BEF62B72577500D9A7FC /* HelloUI_osx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C191BF1D2B72577700D9A7FC /* Build configuration list for PBXNativeTarget "HelloUI_osx" */;
+			buildPhases = (
+				C191BEF32B72577500D9A7FC /* Sources */,
+				C191BEF42B72577500D9A7FC /* Frameworks */,
+				C191BEF52B72577500D9A7FC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HelloUI_osx;
+			productName = HelloUI_osx;
+			productReference = C191BEF72B72577500D9A7FC /* HelloUI_osx.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C191BEEF2B72577500D9A7FC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					C191BEF62B72577500D9A7FC = {
+						CreatedOnToolsVersion = 15.2;
+					};
+				};
+			};
+			buildConfigurationList = C191BEF22B72577500D9A7FC /* Build configuration list for PBXProject "HelloUI_osx" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C191BEEE2B72577500D9A7FC;
+			productRefGroup = C191BEF82B72577500D9A7FC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C191BEF62B72577500D9A7FC /* HelloUI_osx */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C191BEF52B72577500D9A7FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C191BF622B727C6200D9A7FC /* niLang in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C191BEF32B72577500D9A7FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C191BF482B7262CF00D9A7FC /* HelloUI_Widget.cpp in Sources */,
+				C191BF2D2B72604900D9A7FC /* HelloUI_cpp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C191BF1B2B72577700D9A7FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C191BF1C2B72577700D9A7FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C191BF1E2B72577700D9A7FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HelloUI_osx/HelloUI_osx.entitlements;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TMMCER4VXJ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = "niLang/*";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HelloUI-osx-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = (
+					"-I\"../../../sources/niAppLib/src/API\"",
+					"-I\"../../../sources/niLang/src/API\"",
+					"-I\"../../../sources/niUI/src/API\"",
+					"-I\"../../../sources/niScript/src/API\"",
+				);
+				OTHER_LDFLAGS = (
+					"-L\"../../../libs/clang-osx-x64\"",
+					"-lbz2",
+					"-liconv",
+					"-lniLang_ra",
+					"-lniCURL_ra",
+					"-llibCURL_ra",
+					"-lniUI_ra",
+					"-lniUI_ogg_ra",
+					"-llibMojoshader_ra",
+					"-lniUI_theoraplayer_ra",
+					"-lniAppLib_ra",
+					"-lniScript_ra",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "sdk.HelloUI-osx";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		C191BF1F2B72577700D9A7FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HelloUI_osx/HelloUI_osx.entitlements;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TMMCER4VXJ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = "niLang/*";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HelloUI-osx-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = (
+					"-I\"../../../sources/niAppLib/src/API\"",
+					"-I\"../../../sources/niLang/src/API\"",
+					"-I\"../../../sources/niUI/src/API\"",
+					"-I\"../../../sources/niScript/src/API\"",
+				);
+				OTHER_LDFLAGS = (
+					"-L\"../../../libs/clang-osx-x64\"",
+					"-lbz2",
+					"-liconv",
+					"-lniLang_ra",
+					"-lniCURL_ra",
+					"-llibCURL_ra",
+					"-lniUI_ra",
+					"-lniUI_ogg_ra",
+					"-llibMojoshader_ra",
+					"-lniUI_theoraplayer_ra",
+					"-lniAppLib_ra",
+					"-lniScript_ra",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "sdk.HelloUI-osx";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C191BEF22B72577500D9A7FC /* Build configuration list for PBXProject "HelloUI_osx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C191BF1B2B72577700D9A7FC /* Debug */,
+				C191BF1C2B72577700D9A7FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C191BF1D2B72577700D9A7FC /* Build configuration list for PBXNativeTarget "HelloUI_osx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C191BF1E2B72577700D9A7FC /* Debug */,
+				C191BF1F2B72577700D9A7FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C191BEEF2B72577500D9A7FC /* Project object */;
+}

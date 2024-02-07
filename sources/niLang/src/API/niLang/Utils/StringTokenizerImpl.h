@@ -283,6 +283,117 @@ inline tSize StringTokenize(const cString& aToTok, TVEC& vTokens, iStringTokeniz
   return numToks;
 }
 
+template <typename TOKENIZER>
+struct sTokenGenerator {
+private:
+  TOKENIZER _tokenizer;
+  const achar* _pIterator;
+  cString _token;
+  tI64 _numTokens;
+  tU32 _queuedChar;
+
+public:
+  sTokenGenerator(const achar* apChars) : sTokenGenerator(apChars,TOKENIZER()) {
+  }
+
+  sTokenGenerator(const achar* apChars, TOKENIZER&& aTokenizer)
+      : _tokenizer(aTokenizer) {
+    _token.clear();
+    _token.reserve(64);
+    _numTokens = 0;
+    _pIterator = apChars;
+    _queuedChar = 0;
+  }
+
+  const tI64 GetNumTokens() const {
+    return _numTokens;
+  }
+
+  const tI64 GetIndex() const {
+    return _numTokens - 1;
+  }
+
+  cString& GetCurrentToken() {
+    return _token;
+  }
+
+  const cString& GetValue() const {
+    return _token;
+  }
+
+  tBool GetNext() {
+    if (!_pIterator || *_pIterator == 0)
+      return eFalse;
+
+    ++_numTokens;
+    _token.clear();
+    if (_queuedChar) {
+      _token.appendChar(_queuedChar);
+      _queuedChar = 0;
+      return eTrue;
+    }
+
+    do {
+      const tU32 c = StrGetNextX(&_pIterator);
+      if (!c) {
+        _pIterator = nullptr;
+        break;
+      }
+
+      switch (_tokenizer.GetCharType(c)) {
+        case eStringTokenizerCharType_Normal: {
+          _token.appendChar(c);
+          break;
+        }
+        case eStringTokenizerCharType_Skip: {
+          break;
+        }
+        case eStringTokenizerCharType_SplitterStart: {
+          if (_token.IsNotEmpty()) {
+            return eTrue;
+          }
+          _token.appendChar(c);
+          break;
+        }
+        case eStringTokenizerCharType_SplitterEnd: {
+          _token.appendChar(c);
+          return eTrue;
+        }
+        case eStringTokenizerCharType_Splitter: {
+          if (_token.IsNotEmpty()) {
+            return eTrue;
+          }
+          _token.clear();
+          break;
+        }
+        case eStringTokenizerCharType_SplitterAndToken: {
+          if (_token.IsNotEmpty()) {
+            _queuedChar = c;
+            return eTrue;
+          }
+          else {
+            _token.appendChar(c);
+            return eTrue;
+          }
+          break;
+        }
+        case eStringTokenizerCharType_ForceDWORD: {
+          break;
+        }
+      }
+    } while (1);
+
+    if (_token.IsNotEmpty()) {
+      return eTrue;
+    }
+    else {
+      // because we inc the number of tokens at the begining
+      --_numTokens;
+      return eFalse;
+    }
+  }
+};
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/

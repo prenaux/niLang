@@ -1128,12 +1128,12 @@ struct cMetalTexture : public ni::cIUnknownImpl<iTexture,eIUnknownImplFlags_Dont
   }
 
   iBitmap2D* GetBitmap() {
-    if (!niIsOK(mptrBitmap)) {
-      Ptr<iBitmap2D> bmp = mpGraphics->CreateBitmap2DEx(mnW, mnH, mptrPxf);
+    QPtr<iBitmap2D> bmp(mptrBitmap);
+    if (!bmp.IsOK()) {
+      bmp = mpGraphics->CreateBitmap2DEx(mnW, mnH, mptrPxf);
       [_tex getBytes:bmp->GetData() bytesPerRow:bmp->GetPitch() fromRegion:MTLRegionMake2D(0, 0, mnW, mnH) mipmapLevel:mnMM];
-      return bmp;
     }
-    return (iBitmap2D*)mptrBitmap.ptr();
+    return bmp.GetRawAndSetNull();
   }
 };
 
@@ -1388,7 +1388,7 @@ struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
     niCheckSilent(niIsOK(apDest),eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_2D, eFalse);
     cMetalTexture* tex = (cMetalTexture*)apDest;
-    iBitmap2D* texBmp = tex->GetBitmap();
+    Ptr<iBitmap2D> texBmp = tex->GetBitmap();
     niCheckSilent(niIsOK(texBmp),eFalse);
     texBmp = texBmp->GetLevel(anDestLevel);
     niCheckSilent(niIsOK(texBmp),eFalse);
@@ -1412,7 +1412,7 @@ struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
     niCheckSilent(apSrc->GetType() == eBitmapType_2D, eFalse);
 
     cMetalTexture* tex = (cMetalTexture*)apSrc;
-    iBitmap2D* texBmp = tex->GetBitmap();
+    Ptr<iBitmap2D> texBmp = tex->GetBitmap();
     niCheckSilent(niIsOK(texBmp),eFalse);
     apDest->BlitStretch(
       texBmp,
@@ -1429,10 +1429,10 @@ struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
     niCheckSilent(apSrc->GetType() == eBitmapType_2D, eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_2D, eFalse);
     cMetalTexture* sTex = (cMetalTexture*)apSrc;
-    iBitmap2D* sTexBmp = sTex->GetBitmap();
+    Ptr<iBitmap2D> sTexBmp = sTex->GetBitmap();
     niCheckSilent(niIsOK(sTexBmp),eFalse);
     cMetalTexture* dTex = (cMetalTexture*)apDest;
-    iBitmap2D* dTexBmp = dTex->GetBitmap();
+    Ptr<iBitmap2D> dTexBmp = dTex->GetBitmap();
     niCheckSilent(niIsOK(dTexBmp),eFalse);
     dTexBmp->BlitStretch(
       sTexBmp,

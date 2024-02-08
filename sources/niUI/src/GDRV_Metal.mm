@@ -506,6 +506,9 @@ struct sMetalRenderPipelineId {
   sMetalRenderPipelineId() {
     (tU128&)(*this) = 0;
   }
+
+  void Clear() { (tU128&)(*this) = 0; };
+
   tBool IsNull() const {
     return (tU128&)(*this) == 0;
   }
@@ -1811,7 +1814,7 @@ struct cMetalContextBase :
   tIntPtr mCurrentDS = eInvalidHandle;
   tIntPtr mCurrentSS = eInvalidHandle;
   tU32 mCurrentBufferOffset = 0;
-  tU64 mCurrentRenderPipelineId = 0;
+  sMetalRenderPipelineId mCurrentRenderPipelineId;
   tU32 mNumDrawOps = 0;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
@@ -1837,7 +1840,7 @@ struct cMetalContextBase :
       mDirtyFlags = DIRTY_VIEWPORT | DIRTY_SCISSOR;
       mNumDrawOps = 0;
       mCurrentBufferOffset = 0;
-      mCurrentRenderPipelineId = 0;
+      mCurrentRenderPipelineId.Clear();
       mCurrentRS = eInvalidHandle;
       mCurrentDS = eInvalidHandle;
       mCurrentSS = eInvalidHandle;

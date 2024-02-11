@@ -29,11 +29,25 @@
 		8F96C21D1B9BE6EB004D217D /* niUIView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F96C21C1B9BE6EB004D217D /* niUIView.mm */; };
 		8F96C21F1B9BF273004D217D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F96C21E1B9BF273004D217D /* QuartzCore.framework */; };
 		8F9F4B2819FBCD7500B34C80 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F9F4B2719FBCD7500B34C80 /* Images.xcassets */; };
-		8FDF63C429E280510029E615 /* niUI in Resources */ = {isa = PBXBuildFile; fileRef = 8FDF63C329E280510029E615 /* niUI */; };
+		8FDA3DBA2B7954730061F365 /* niUI in Copy Files (1 item) */ = {isa = PBXBuildFile; fileRef = 8FDF63C329E280510029E615 /* niUI */; };
 		8FFB66791E4797BE0076BB98 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FFB66781E4797BE0076BB98 /* Security.framework */; };
 		C180C1C2263A71EB00FC32B3 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C180C1C1263A71EB00FC32B3 /* Metal.framework */; };
 		C180C1C4263A71F500FC32B3 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C180C1C3263A71F500FC32B3 /* MetalKit.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8FDA3DB92B79546C0061F365 /* Copy Files (1 item) */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = niLang/data;
+			dstSubfolderSpec = 7;
+			files = (
+				8FDA3DBA2B7954730061F365 /* niUI in Copy Files (1 item) */,
+			);
+			name = "Copy Files (1 item)";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8F245FDC1A0F8809001B4D41 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -172,6 +186,7 @@
 				8F72FA1A17E6FB430073CD44 /* Sources */,
 				8F72FA1B17E6FB430073CD44 /* Frameworks */,
 				8F72FA1C17E6FB430073CD44 /* Resources */,
+				8FDA3DB92B79546C0061F365 /* Copy Files (1 item) */,
 			);
 			buildRules = (
 			);
@@ -221,7 +236,6 @@
 			files = (
 				8F72FA3017E6FB430073CD44 /* InfoPlist.strings in Resources */,
 				8F9F4B2819FBCD7500B34C80 /* Images.xcassets in Resources */,
-				8FDF63C429E280510029E615 /* niUI in Resources */,
 				8F72FA3817E6FB430073CD44 /* Default.png in Resources */,
 				8F72FA3A17E6FB430073CD44 /* Default@2x.png in Resources */,
 				8F72FA3C17E6FB430073CD44 /* Default-568h@2x.png in Resources */,

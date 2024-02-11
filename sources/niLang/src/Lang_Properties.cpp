@@ -323,16 +323,24 @@ static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
 #if defined niOSX
   {
     if (StrEndsWithI(aaszBinDir,"macos/")) {
-      const cString resDirName = _AppleGetInfoPlistPropertyValue("niAppResourceDirName");
+      const cString plistPropName = niFmt("niAppResourceDir.%s",aaszName);
+      const cString resDirName = _AppleGetInfoPlistPropertyValue(plistPropName.c_str());
       niPanicAssertMsg(!resDirName.IsEmpty(),
-                       "The property 'niAppResourceDirName' isnt set in the macOS app's Info.plist.");
+                       niFmt("The property '%s' isnt set in the macOS app's Info.plist.",plistPropName));
+      if (resDirName.IEq("__NONE__")) {
+        return AZEROSTR;
+      }
       v.clear();
-      v << aaszBinDir << "../Resources/" << resDirName << "/" << aaszName;
+      v << aaszBinDir << "../Resources/" << resDirName;
       // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
       if (ni::DirExists(v.Chars())) {
         // GetLang()->MessageBox(NULL, "BLA U", "HAS DATA", eOSMessageBoxFlags_Ok);
         path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
         return path.GetDirectory();
+      }
+      else {
+        niPanicUnreachable(niFmt("Cant find dir '%s' set for '%s'.", v, plistPropName));
+        return AZEROSTR;
       }
     }
   }

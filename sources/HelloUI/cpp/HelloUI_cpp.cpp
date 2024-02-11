@@ -26,6 +26,8 @@ ni::Var OnAppStarted() {
 }
 
 niConsoleMain() {
+  ni_log_system_info_once();
+
   // gAppContext._config.drawFPS = 2;
   // bg update, makes profiling/debugging a lot simpler
   gAppContext->_config.backgroundUpdate = eTrue;

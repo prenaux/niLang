@@ -13,8 +13,13 @@
 #define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
 #include "API/niUI/Utils/BufferCache.h"
 
-// #define USE_BUFFER_CACHE_RING_BUFFER
-// #define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
+
+// NOTE: We don't have a complete implementation to lock and sync MtlBuffer
+// so here need to enable CACHE_RING_BUFFER for the driver to work correctly
+#ifdef GDRV_METAL
+#define USE_BUFFER_CACHE_RING_BUFFER
+#define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
+#endif
 
 namespace ni {
 template struct BufferCacheVertex<tVertexCanvas>;
@@ -28,7 +33,7 @@ static const sVec2f _vBLTex = {0,1};
 #ifdef USE_BUFFER_CACHE_RING_BUFFER
 #define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex[mnCurrentBufferCache];
 #define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex[mnCurrentBufferCache];
-static const tU32 _knRingBufferSize = 1024;
+static const tU32 _knRingBufferSize = 24;
 #else
 #define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex;
 #define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex;

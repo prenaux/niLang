@@ -131,7 +131,7 @@ struct sMetalAPIForWindow : public cIUnknownImpl<iOSXMetalAPI> {
     _window = apWindow;
     _commandQueue = [_device newCommandQueue];
 
-    const sVec2i wndSize = apWindow->GetClientSize() / apWindow->GetContentsScale();
+    const sVec2i wndSize = apWindow->GetRect().GetSize();
     NSWindow* nsWindow = (__bridge NSWindow*)osxWindow->GetNSWindow();
     this->_mtkView = [[MTKView alloc] initWithFrame:CGRectMake(0,0,wndSize.x,wndSize.y) device:this->_device];
     this->_mtkViewDelegate = [[NIMTKViewDelegate alloc] initWithContext:this];
@@ -182,12 +182,6 @@ struct sMetalAPIForWindow : public cIUnknownImpl<iOSXMetalAPI> {
     }
     if (_commandBuffer) {
       [_commandBuffer presentDrawable:[_mtkView currentDrawable]];
-      if (apOnCompleted) {
-        ni::Ptr<iRunnable> onCompleted = apOnCompleted;
-        [_commandBuffer addCompletedHandler: ^(id<MTLCommandBuffer> _Nonnull) {
-          onCompleted->Run();
-        }];
-      }
       [_commandBuffer commit];
     }
     _commandEncoder = NULL;
@@ -211,7 +205,7 @@ sMetalAPIForWindow* _context;
   if (_context) {
     QPtr<iOSWindow> wnd = _context->_window;
     if (wnd.IsOK()) {
-      const sVec2i wndSize = wnd->GetClientSize() / wnd->GetContentsScale();
+      const sVec2i wndSize = wnd->GetRect().GetSize();
       if (wndSize.x != view.frame.size.width ||
           wndSize.y != view.frame.size.height)
       {

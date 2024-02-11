@@ -1061,10 +1061,11 @@ class cOSXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags
 
   ///////////////////////////////////////////////
   virtual tF32 __stdcall GetContentsScale() const {
-    if (nsGL.context && nsGL.useBestResolution) {
-      return [nsWindow backingScaleFactor];
-    }
-    return 1.0f;
+    // if (nsGL.context && nsGL.useBestResolution) {
+    // NOTE: We need for metal driver as well, maybe just always enable it
+    return [nsWindow backingScaleFactor];
+    // }
+    // return 1.0f;
   }
 
   ///////////////////////////////////////////////

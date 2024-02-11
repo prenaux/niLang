@@ -1793,6 +1793,7 @@ struct cMetalContextBase :
   id<MTLRenderCommandEncoder> mCommandEncoder;
 
   sMetalRenderPipelineId mBaseRenderPipelineId;
+  sMetalRenderPipelineId mCurrentRenderPipelineId;
 
   tIntPtr mFixedShaderVertexFVFPosColor;
   tIntPtr mFixedShaderVertexFVFPosNormalColor;
@@ -1819,7 +1820,7 @@ struct cMetalContextBase :
   tIntPtr mCurrentDS = eInvalidHandle;
   tIntPtr mCurrentSS = eInvalidHandle;
   tU32 mCurrentBufferOffset = 0;
-  sMetalRenderPipelineId mCurrentRenderPipelineId;
+
   tU32 mNumDrawOps = 0;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
@@ -1829,7 +1830,7 @@ struct cMetalContextBase :
     mpParent = apParent;
     niAssert(mpParent != NULL);
 
-    mFrameSem.Signal(mFrameMaxInFlight);
+    // mFrameSem.Signal(mFrameMaxInFlight);
 
   }
 
@@ -1841,7 +1842,7 @@ struct cMetalContextBase :
 
     // wait on the previous frame to be completed
     {
-      mFrameSem.InfiniteWait();
+      // mFrameSem.InfiniteWait();
       mDirtyFlags = DIRTY_VIEWPORT | DIRTY_SCISSOR;
       mNumDrawOps = 0;
       mCurrentBufferOffset = 0;
@@ -1871,6 +1872,8 @@ struct cMetalContextBase :
     _PresentAndCommit(this);
     mCommandEncoder = NULL;
     mbBeganFrame = eFalse;
+    // niDebugFmt(("... _EndFrame: %d", mNumDrawOps));
+    mNumDrawOps = 0;
     // niDebugFmt(("... _EndFrame: %d", ni::GetLang()->GetFrameNumber()));
   }
 
@@ -1915,8 +1918,6 @@ struct cMetalContextBase :
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
 
-    ++mNumDrawOps;
-
     niAssert(mbBeganFrame);
     if (!mbBeganFrame) {
 #if 0
@@ -1935,6 +1936,20 @@ struct cMetalContextBase :
       return eFalse;
     }
 
+    cMetalIndexArray* ia = (cMetalIndexArray*)apDrawOp->GetIndexArray();
+    if (!ia) {
+      return eFalse;
+    }
+
+    if (mDirtyFlags & DIRTY_VIEWPORT) {
+      [mCommandEncoder setViewport:mViewport];
+    }
+
+    if (mDirtyFlags & DIRTY_SCISSOR) {
+      [mCommandEncoder setScissorRect:mScissorRect];
+    }
+
+
     METAL_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
     const iMaterial* pDOMat = apDrawOp->GetMaterial();
     const sMaterialDesc* pDOMatDesc = (const sMaterialDesc*)pDOMat->GetDescStructPtr();
@@ -1942,192 +1957,177 @@ struct cMetalContextBase :
     const sFixedStatesDesc* fixedDesc = (const sFixedStatesDesc*)mptrFS->GetDescStructPtr();
     const tMaterialFlags matFlags = _GetMaterialFlags(pDOMatDesc);
 
-    cMetalIndexArray* ia = (cMetalIndexArray*)apDrawOp->GetIndexArray();
-    if (ia) {
-      const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
-      const tU32 firstInd = apDrawOp->GetFirstIndex();
-      tU32 numInds = apDrawOp->GetNumIndices();
-      if (!numInds) {
-        numInds = ia->GetNumIndices()-firstInd;
-      }
-
-      // niDebugFmt(("... DrawOperation: frame: %d, base: %d, first: %d, num: %d (%d tris), uoff: %d, uSize: %d",
-                  // ni::GetLang()->GetFrameNumber(),
-                  // baseVertexIndex, firstInd, numInds, numInds/3,
-                  // mCurrentBufferOffset,
-                  // sizeof(sUniformsFixed)));
-
-      sMetalRenderPipelineId rpId = mBaseRenderPipelineId;
 
 
-      iShader* pVS = pDOMatDesc->mShaders[eShaderUnit_Vertex];
-      iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
+    // if (!numInds) {
+      // numInds = ia->GetNumIndices()-firstInd;
+    // }
 
+    // niDebugFmt(("... DrawOperation: frame: %d, base: %d, first: %d, num: %d (%d tris), uoff: %d, uSize: %d",
+
+    sMetalRenderPipelineId rpId = mBaseRenderPipelineId;
+    iShader* pVS = pDOMatDesc->mShaders[eShaderUnit_Vertex];
+    iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
+
+    if (!pVS) {
+      pVS = mpParent->mFixedShaders.GetVertexShader(va->_fvf,*pDOMatDesc);
       if (!pVS) {
-        pVS = mpParent->mFixedShaders.GetVertexShader(va->_fvf,*pDOMatDesc);
-        if (!pVS) {
-          niError("Can't get fixed vertex shader.");
-          return eFalse;
-        }
-        METAL_TRACE(("VS : %s",pVS->GetDeviceResourceName()));
-        FixedShaders_UpdateConstants(this, (iShaderConstants*)pVS->GetConstants(), apDrawOp);
+        niError("Can't get fixed vertex shader.");
+        return eFalse;
       }
+      METAL_TRACE(("VS : %s",pVS->GetDeviceResourceName()));
+      FixedShaders_UpdateConstants(this, (iShaderConstants*)pVS->GetConstants(), apDrawOp);
+    }
+
+
+    if (!pPS) {
+      pPS = mpParent->mFixedShaders.GetPixelShader(*pDOMatDesc);
       if (!pPS) {
-        pPS = mpParent->mFixedShaders.GetPixelShader(*pDOMatDesc);
-        if (!pPS) {
-          niError("Can't get fixed pixel shader.");
-          return eFalse;
-        }
-        METAL_TRACE(("PS : %s",pPS->GetDeviceResourceName()));
-        FixedShaders_UpdateConstants(this, (iShaderConstants*)pPS->GetConstants(), apDrawOp);
+        niError("Can't get fixed pixel shader.");
+        return eFalse;
       }
-
-      rpId.vertFuncId = ((cMetalShaderVertex*)pVS)->GetUID();
-      rpId.fragFuncId = ((cMetalShaderPixel*)pPS)->GetUID();
-      rpId.blendMode = _GetBlendMode(pDOMatDesc);
-      rpId.fvf = va->_fvf;
-
-      {
-        const tIntPtr hRS = _GetRS(pDOMatDesc);
-        if (mCurrentRS != hRS) {
-          mCurrentRS = hRS;
-        }
-      }
-
-      {
-        const tIntPtr hDS = _GetDS(pDOMatDesc);
-        if (rpId.ds && (mCurrentDS != hDS)) {
-          [mCommandEncoder setDepthStencilState:mpParent->_GetMTLDepthStencilState(hDS)];
-          mCurrentDS = hDS;
-        }
-      }
-
-      if (rpId != mCurrentRenderPipelineId) {
-        id<MTLRenderPipelineState> pipeline = mpParent->mLibrary.GetRenderPipeline(mpParent->mMetalDevice,
-                                                                                   rpId,
-                                                                                   (cMetalShaderVertex*)pVS,
-                                                                                   (cMetalShaderPixel*)pPS);
-        if (!pipeline) {
-          niError("Can't get the render pipeline.");
-          return eFalse;
-        }
-        [mCommandEncoder setRenderPipelineState:pipeline];
-        mCurrentRenderPipelineId = rpId;
-      }
-
-      if (mDirtyFlags & DIRTY_VIEWPORT) {
-        [mCommandEncoder setViewport:mViewport];
-      }
-      if (mDirtyFlags & DIRTY_SCISSOR) {
-        [mCommandEncoder setScissorRect:mScissorRect];
-      }
-
-      [mCommandEncoder setVertexBuffer:va->_buffer._mtlBuffer offset:(baseVertexIndex*va->_fvfStride) atIndex:0];
-
-      auto applyMaterialChannel =
-      [&](cMetalContextBase* apContext, iGraphics* apGraphics, tU32 anTSS, eMaterialChannel aChannel, const sMaterialDesc* apDOMat)
-      {
-        const sMaterialChannel& ch = apContext->_GetChannel(apDOMat, aChannel);
-        if (ch.mTexture.IsOK()) {
-          cMetalTexture* tex = (cMetalTexture*)ch.mTexture->Bind(NULL);
-          if (tex == NULL || tex->_tex == nil) {
-            // Probably trying to use the frame buffer we don't support this atm...
-            [mCommandEncoder setFragmentTexture:NULL atIndex:anTSS];
-          }
-          else {
-            [mCommandEncoder setFragmentTexture:tex->_tex atIndex:anTSS];
-            // niDebugFmt(("TEX SET >>> %s",tex->GetDeviceResourceName()));
-            if (mCurrentSS != ch.mhSS) {
-              [mCommandEncoder setFragmentSamplerState: mpParent->_GetMTLSamplerState(ch.mhSS) atIndex: anTSS];
-              mCurrentSS = ch.mhSS;
-            }
-          }
-        }
-        else {
-          [mCommandEncoder setFragmentTexture:NULL atIndex: anTSS];
-        }
-      };
-
-      niLoop(i,eMaterialChannel_Last) {
-        eMaterialChannel channel = (eMaterialChannel)i;
-        if (pDOMatDesc->mChannels[channel].mTexture.IsOK()) {
-          const tI8 nSamplerIndex = (tI8)i;
-          applyMaterialChannel(
-            this,
-            mpParent->GetGraphics(),
-            nSamplerIndex,
-            channel,
-            pDOMatDesc);
-        }
-      }
-
-      auto updateConstant =
-      [&](eShaderUnit aUnit, const sShaderConstantsDesc* constDesc) {
-        tU32 size = 0;
-        sVec4f vf[constDesc->mvFloatRegisters.size()];
-        for (auto c : constDesc->mvConstants) {
-          auto cd = constDesc;
-          iHString* hspName = c.hspName;
-          // niDebugFmt(("Bind Constant[%s] %s,%s,%s,%s,%s",hspName,c.Type,c.hspMetadata,c.nDataIndex,c.nSize,c.nHwIndex));
-          if (hspName) {
-            auto matConst = pDOMatDesc->mptrConstants;
-            if (matConst.IsOK()) {
-              niDebugFmt(("material is ok"));
-              const sShaderConstantsDesc* ct = (const sShaderConstantsDesc*)matConst->GetDescStructPtr();
-              sShaderConstantsDesc::tConstMap::const_iterator it = ct->mmapConstants.find(hspName);
-              if (it != ct->mmapConstants.end() && it->second != eInvalidHandle) {
-                niDebugFmt(("Find const material %s",hspName));
-                c = ct->mvConstants[it->second];
-                cd = ct;
-              }
-            }
-          }
-
-          switch (c.Type) {
-            case eShaderRegisterType_ConstFloat: {
-              niLoop(i, c.nSize) {
-                vf[i + c.nHwIndex] = cd->mvFloatRegisters[i + c.nDataIndex];
-              }
-              size += c.nSize * sizeof(sVec4f);
-              break;
-            }
-            case eShaderRegisterType_ConstInt: {
-
-              break;
-            }
-            case eShaderRegisterType_ConstBool: {
-              break;
-            }
-            default:
-              niAssertUnreachable("Unreachable.");
-              return eFalse;
-          }
-        }
-
-        if (aUnit == eShaderUnit_Vertex) {
-          [mCommandEncoder setVertexBytes:&vf[0] length:size atIndex:16];
-        }
-        else if (aUnit == eShaderUnit_Pixel) {
-          [mCommandEncoder setFragmentBytes:&vf[0] length:size atIndex:16];
-        }
-        return eTrue;
-      };
-
-      updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
-      updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
-
-      [mCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
-       indexCount:numInds
-       indexType:MTLIndexTypeUInt32
-       indexBuffer:ia->_buffer._mtlBuffer
-       indexBufferOffset:(firstInd*sizeof(tU32))];
-      METAL_TRACE(("DrawOperation END"));
+      METAL_TRACE(("PS : %s",pPS->GetDeviceResourceName()));
+      FixedShaders_UpdateConstants(this, (iShaderConstants*)pPS->GetConstants(), apDrawOp);
     }
-    else {
+
+    rpId.vertFuncId = ((cMetalShaderVertex*)pVS)->GetUID();
+    rpId.fragFuncId = ((cMetalShaderPixel*)pPS)->GetUID();
+    rpId.blendMode = _GetBlendMode(pDOMatDesc);
+    rpId.fvf = va->_fvf;
+
+    {
+      const tIntPtr hRS = _GetRS(pDOMatDesc);
+      if (mCurrentRS != hRS) {
+        mCurrentRS = hRS;
+      }
     }
+
+    {
+      const tIntPtr hDS = _GetDS(pDOMatDesc);
+      if (rpId.ds && (mCurrentDS != hDS)) {
+        [mCommandEncoder setDepthStencilState:mpParent->_GetMTLDepthStencilState(hDS)];
+        mCurrentDS = hDS;
+      }
+    }
+
+    if (rpId != mCurrentRenderPipelineId) {
+      id<MTLRenderPipelineState> pipeline = mpParent->mLibrary.GetRenderPipeline(mpParent->mMetalDevice,
+                                                                                 rpId,
+                                                                                 (cMetalShaderVertex*)pVS,
+                                                                                 (cMetalShaderPixel*)pPS);
+      if (!pipeline) {
+        niError("Can't get the render pipeline.");
+        return eFalse;
+      }
+      [mCommandEncoder setRenderPipelineState:pipeline];
+      mCurrentRenderPipelineId = rpId;
+    }
+
+    // update channel textures;
+    niLoop(i,eMaterialChannel_Last) {
+      const sMaterialChannel& ch = _GetChannel(pDOMatDesc, (eMaterialChannel)i);
+      if (ch.mTexture.IsOK()) {
+        cMetalTexture* tex = (cMetalTexture*)ch.mTexture->Bind(NULL);
+        auto texId = tex->_tex;
+        if (texId == nil) {
+          tex = (cMetalTexture*)mpParent->GetGraphics()->GetTextureFromName(tex->mhspName);
+          if (tex) {
+            texId = tex->_tex;
+          }
+        }
+
+        if (texId == nil) {
+          continue;
+        }
+
+        [mCommandEncoder setFragmentTexture:texId atIndex:i];
+        [mCommandEncoder setFragmentSamplerState: mpParent->_GetMTLSamplerState(ch.mhSS) atIndex: i];
+      }
+    }
+
+    auto updateConstant =
+    [&](eShaderUnit aUnit, const sShaderConstantsDesc* constDesc) {
+      tU32 size = 0;
+      sVec4f vf[constDesc->mvFloatRegisters.size()];
+      for (auto c : constDesc->mvConstants) {
+        auto cd = constDesc;
+        iHString* hspName = c.hspName;
+        // niDebugFmt(("Bind Constant[%s] %s,%s,%s,%s,%s",hspName,c.Type,c.hspMetadata,c.nDataIndex,c.nSize,c.nHwIndex));
+        if (hspName) {
+          auto matConst = pDOMatDesc->mptrConstants;
+          if (matConst.IsOK()) {
+            niDebugFmt(("material is ok"));
+            const sShaderConstantsDesc* ct = (const sShaderConstantsDesc*)matConst->GetDescStructPtr();
+            sShaderConstantsDesc::tConstMap::const_iterator it = ct->mmapConstants.find(hspName);
+            if (it != ct->mmapConstants.end() && it->second != eInvalidHandle) {
+              niDebugFmt(("Find const material %s",hspName));
+              c = ct->mvConstants[it->second];
+              cd = ct;
+            }
+          }
+        }
+
+        switch (c.Type) {
+          case eShaderRegisterType_ConstFloat: {
+            niLoop(i, c.nSize) {
+              vf[i + c.nHwIndex] = cd->mvFloatRegisters[i + c.nDataIndex];
+            }
+            size += c.nSize * sizeof(sVec4f);
+            break;
+          }
+          case eShaderRegisterType_ConstInt: {
+            niDebugFmt(("eShaderRegisterType_ConstInt"));
+            break;
+          }
+          case eShaderRegisterType_ConstBool: {
+            niDebugFmt(("eShaderRegisterType_ConstBool"));
+            break;
+          }
+          default:
+            niAssertUnreachable("Unreachable.");
+            return eFalse;
+        }
+      }
+
+      if (aUnit == eShaderUnit_Vertex) {
+        [mCommandEncoder setVertexBytes:&vf length:size atIndex:16];
+      }
+      else if (aUnit == eShaderUnit_Pixel) {
+        [mCommandEncoder setFragmentBytes:&vf length:size atIndex:16];
+      }
+      return eTrue;
+    };
+
+    updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
+    updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
+
+    const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
+    const tU32 firstInd = apDrawOp->GetFirstIndex();
+    tU32 numInds = apDrawOp->GetNumIndices();
+
+    if (!numInds) {
+      numInds = ia->GetNumIndices()-firstInd;
+    }
+
+    // niDebugFmt(("[%s] >> numInds %s ia %s first %s vert %s",
+    // mNumDrawOps,
+    // numInds,
+    // ia->GetNumIndices(),
+    // firstInd,
+    // baseVertexIndex));
+
+    [mCommandEncoder setVertexBuffer:va->_buffer._mtlBuffer offset:(baseVertexIndex*va->_fvfStride) atIndex:0];
+
+    [mCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+     indexCount: numInds
+     indexType:MTLIndexTypeUInt32
+     indexBuffer:ia->_buffer._mtlBuffer
+     indexBufferOffset:(firstInd*sizeof(tU32))];
+    METAL_TRACE(("DrawOperation END"));
+
+    ++mNumDrawOps;
 
     mDirtyFlags = 0;
-
     return eTrue;
   }
 
@@ -2325,7 +2325,6 @@ struct cMetalContextRT : public cMetalContextBase
     }
 
     _commandEncoder = [_commandBuffer renderCommandEncoderWithDescriptor:passDesc];
-    [_commandBuffer enqueue];
     return _commandEncoder;
   }
   virtual tBool __stdcall _PresentAndCommit(iRunnable* apOnCompleted) {
@@ -2335,13 +2334,6 @@ struct cMetalContextRT : public cMetalContextBase
     }
 
     if (_commandBuffer) {
-      if (apOnCompleted) {
-        Ptr<iRunnable> onCompleted = apOnCompleted;
-        [_commandBuffer addCompletedHandler: ^(id<MTLCommandBuffer> _Nonnull) {
-            onCompleted->Run();
-          }];
-      }
-
 #ifdef niOSX
       // NOTE: iOS don't have synchronizeTexture function, maybe there is no need to, we need some test..
       // we need to synchronize the renderTarget here to get the right texture;
@@ -2361,11 +2353,9 @@ struct cMetalContextRT : public cMetalContextBase
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall ChangeRenderTarget(tU32 anIndex, iTexture* apRT) niImpl {
-    niCheck(_commandEncoder == NULL, eFalse); // can't change the RT while rendering is happening
     return cMetalContextBase::ChangeRenderTarget(anIndex,apRT);
   }
   virtual tBool __stdcall ChangeDepthStencil(iTexture* apDS) niImpl {
-    niCheck(_commandEncoder == NULL, eFalse); // can't change the DS while rendering is happening
     return cMetalContextBase::ChangeDepthStencil(apDS);
   }
 };

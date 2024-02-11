@@ -12,6 +12,10 @@
 
 using namespace ni;
 
+NSString* _ToNSString(const ni::achar* aString) {
+  return [[NSString alloc] initWithUTF8String:aString];
+}
+
 ///////////////////////////////////////////////
 niExportFunc(uint64_t) __niMach_TimerNano() {
   static uint64_t start = 0;
@@ -174,6 +178,18 @@ achar* _AppleGetDirTemp(achar* buffer) {
   NSString* dir = NSTemporaryDirectory();
   StrZCpy(buffer,AMAX_PATH,[dir UTF8String]);
   return buffer;
+}
+
+cString _AppleGetInfoPlistPropertyValue(const achar* aProperty) {
+  @autoreleasepool {
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    niCheck(mainBundle, AZEROSTR);
+    NSString *propertyKey = _ToNSString(aProperty);
+    niCheck(propertyKey, AZEROSTR);
+    NSString *propertyValue = [mainBundle objectForInfoDictionaryKey:propertyKey];
+    niCheck(propertyValue, AZEROSTR);
+    return _ASTR([propertyValue UTF8String]);
+  }
 }
 
 //--------------------------------------------------------------------------------------------

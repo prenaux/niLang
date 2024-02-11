@@ -320,28 +320,35 @@ static tBool _InitPkgProp(tStringCMap* props, const achar* binDir, const achar* 
 static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
   cString v; cPath path;
 
+#if defined niOSX || defined niIOS
 #if defined niOSX
+  if (StrEndsWithI(aaszBinDir,"macos/"))
+#endif
   {
-    if (StrEndsWithI(aaszBinDir,"macos/")) {
-      const cString plistPropName = niFmt("niAppResourceDir.%s",aaszName);
-      const cString resDirName = _AppleGetInfoPlistPropertyValue(plistPropName.c_str());
-      niPanicAssertMsg(!resDirName.IsEmpty(),
-                       niFmt("The property '%s' isnt set in the macOS app's Info.plist.",plistPropName));
-      if (resDirName.IEq("__NONE__")) {
-        return AZEROSTR;
-      }
-      v.clear();
-      v << aaszBinDir << "../Resources/" << resDirName;
-      // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
-      if (ni::DirExists(v.Chars())) {
-        // GetLang()->MessageBox(NULL, "BLA U", "HAS DATA", eOSMessageBoxFlags_Ok);
-        path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
-        return path.GetDirectory();
-      }
-      else {
-        niPanicUnreachable(niFmt("Cant find dir '%s' set for '%s'.", v, plistPropName));
-        return AZEROSTR;
-      }
+    const cString plistPropName = niFmt("niAppResourceDir.%s",aaszName);
+    const cString resDirName = _AppleGetInfoPlistPropertyValue(plistPropName.c_str());
+    niPanicAssertMsg(!resDirName.IsEmpty(),
+                     niFmt("The property '%s' isnt set in the macOS app's Info.plist.",plistPropName));
+    if (resDirName.IEq("__NONE__")) {
+      return AZEROSTR;
+    }
+    v.clear();
+    v << aaszBinDir;
+#ifdef niOSX
+    v << "../Resources/";
+#else
+    v << "/";
+#endif
+    v << resDirName;
+    // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
+    if (ni::DirExists(v.Chars())) {
+      // GetLang()->MessageBox(NULL, "BLA U", "HAS DATA", eOSMessageBoxFlags_Ok);
+      path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
+      return path.GetDirectory();
+    }
+    else {
+      niPanicUnreachable(niFmt("Cant find dir '%s' set for '%s'.", v, plistPropName));
+      return AZEROSTR;
     }
   }
 #endif
@@ -603,14 +610,10 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
   {
     const cString cwdDir = (*props)["ni.app.cwd"];
     const cString binDir = (*props)["ni.dirs.bin"];
-#ifdef niIOS
-    (*props)["ni.dirs.data"] = (*props)["ni.dirs.bin"];
-#else
     _CopyFromJVM(props,"ni.packages.jars");
     if (!_InitPkgProp(props, binDir.Chars(), "data")) {
       _InitDirProp(props, binDir.Chars(), "data", eTrue);
     }
-#endif
     if (!_InitPkgProp(props, binDir.Chars(), "scripts")) {
       _InitDirProp(props, binDir.Chars(), "scripts", eTrue);
     }

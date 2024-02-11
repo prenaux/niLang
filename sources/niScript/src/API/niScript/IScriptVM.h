@@ -329,7 +329,6 @@ inline ni::tBool ScriptAddImportDir(
   }
 }
 
-#if !defined niNoToolkitDir
 ///////////////////////////////////////////////
 inline ni::tBool ScriptAddToolkitImportDir(
   ni::iScriptVM* apVM,
@@ -340,7 +339,6 @@ inline ni::tBool ScriptAddToolkitImportDir(
   cString path = GetToolkitDir(aTKName,aDirInTK);
   return ScriptAddImportDir(apVM,path.Chars(),apFS);
 }
-#endif
 
 ///////////////////////////////////////////////
 inline ni::QPtr<iScriptVM> ScriptGetDefaultVM() {
@@ -356,11 +354,7 @@ inline ni::Ptr<iScriptVM> ScriptCreateOrGetDefaultVM(ni::iFileSystem* apFS = ni:
     ni::GetLang()->SetGlobalInstance("niLang.ScriptVM", vm);
   }
   if (vm.IsOK() && !ni::GetLang()->GetScriptingHostFromName(_H("ni"))) {
-#if defined niNoToolkitDir
-    ScriptAddImportDir(apVM,ni::GetLang()->GetProperty("ni.dirs.scripts").Chars(),apFS);
-#else
     ScriptAddToolkitImportDir(vm,"niLang","scripts",apFS);
-#endif
     niCheck(vm->Import(_H("lang.ni"),NULL),NULL);
     ni::GetLang()->AddScriptingHost(_H("ni"),vm);
   }

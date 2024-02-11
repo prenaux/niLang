@@ -238,9 +238,8 @@ static unsigned int _ToNSWindowStyle(tOSWindowStyleFlags aStyle) {
   }
   return style;
 }
-static NSString* _ToNSString(const ni::achar* aString) {
-  return [[NSString alloc] initWithUTF8String:aString];
-}
+
+extern NSString* _ToNSString(const ni::achar* aString);
 
 static bool _cursorVisible = true;
 static void _ShowCursor() {
@@ -261,18 +260,6 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
   location.x = abAbsPos.x;
   location.y = abAbsPos.y;
   CGWarpMouseCursorPosition(location);
-}
-
-cString _AppleGetInfoPlistPropertyValue(const achar* aProperty) {
-  @autoreleasepool {
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    niCheck(mainBundle, AZEROSTR);
-    NSString *propertyKey = _ToNSString(aProperty);
-    niCheck(propertyKey, AZEROSTR);
-    NSString *propertyValue = [mainBundle objectForInfoDictionaryKey:propertyKey];
-    niCheck(propertyValue, AZEROSTR);
-    return _ASTR([propertyValue UTF8String]);
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

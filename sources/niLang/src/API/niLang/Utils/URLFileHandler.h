@@ -9,28 +9,6 @@
 
 namespace ni {
 
-#if defined niIOS
-#define niNoToolkitDir
-#endif
-
-#if defined niNoToolkitDir
-//
-// iOS only has a hellish way to copy/reference data at build time, the only
-// sane way I found is to reference the module's data folder at the root of
-// the Xcode project. That means no explicit toolkit directory so we don't
-// expose those on iOS to avoid using them inadvertently there.
-//
-
-static inline cString GetModuleDataDir(const achar* /*aToolkitName*/, const achar* aModuleName) {
-  cString dir = ni::GetRootFS()->GetAbsolutePath(
-    ni::GetLang()->GetProperty("ni.dirs.data").Chars());
-  dir += "/";
-  dir += aModuleName;
-  dir += "/";
-  return dir;
-}
-
-#else
 ///////////////////////////////////////////////
 static inline cString GetToolkitBinDir(const achar* aToolkitName, const achar* aSubDir) {
   cString r = ni::GetRootFS()->GetAbsolutePath(
@@ -63,8 +41,8 @@ static inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSub
 static inline cString GetModuleDataDir(const achar* aToolkitName, const achar* aModuleName) {
   return GetToolkitDir(aToolkitName,"data") + aModuleName + "/";
 }
-#endif
 
+///////////////////////////////////////////////
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(iFileSystem* apFS, tBool abManifest = eFalse) {
   Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)(abManifest ?
       niCreateInstance(niLang,URLFileHandlerManifestFileSystem,apFS,niVarNull) :
@@ -73,6 +51,7 @@ static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(iFileSystem* a
   return fileHandler;
 }
 
+///////////////////////////////////////////////
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerDir(const achar* aDir, tBool abManifest = eFalse, tFileSystemRightsFlags aFlags = eFileSystemRightsFlags_IOOnly) {
   cString absDir = ni::GetRootFS()->GetAbsolutePath(aDir);
   if (!ni::GetRootFS()->FileExists(absDir.Chars(), eFileAttrFlags_Directory)) {
@@ -90,18 +69,21 @@ static inline Ptr<iURLFileHandler> CreateURLFileHandlerDir(const achar* aDir, tB
   return fileHandler;
 }
 
+///////////////////////////////////////////////
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerZip(iFile* apZipFile) {
   Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(niLang,URLFileHandlerZip,apZipFile,niVarNull);
   niCheckIsOK(fileHandler,NULL);
   return fileHandler;
 }
 
+///////////////////////////////////////////////
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerPrefixed(iURLFileHandler* apFileHandler, const achar* aPrefix) {
   Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(niLang,URLFileHandlerPrefixed,apFileHandler,aPrefix);
   niCheckIsOK(fileHandler,NULL);
   return fileHandler;
 }
 
+///////////////////////////////////////////////
 static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aToolkitName, const achar* aModuleName) {
   const cString instanceName = niFmt("URLFileHandler.%s", aModuleName);
   if (ni::GetLang()->GetGlobalInstance(instanceName.Chars())) {

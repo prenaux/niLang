@@ -23,6 +23,12 @@
 		8F72FA4917E6FB430073CD44 /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F72FA4717E6FB430073CD44 /* ViewController_iPad.xib */; };
 		8F72FA5117E6FC730073CD44 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F72FA4F17E6FC730073CD44 /* AppDelegate.mm */; };
 		8F72FA5417E6FD4A0073CD44 /* HelloUI_ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F72FA5317E6FD4A0073CD44 /* HelloUI_ios.cpp */; };
+		8F80D8DC2B7A9464008927FF /* HelloUI_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8DB2B7A9464008927FF /* HelloUI_SwiftUIApp.swift */; };
+		8F80D8DE2B7A9464008927FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8DD2B7A9464008927FF /* ContentView.swift */; };
+		8F80D8E02B7A9465008927FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F80D8DF2B7A9465008927FF /* Assets.xcassets */; };
+		8F80D8E32B7A9465008927FF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */; };
+		8F80D8E82B7A963C008927FF /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E72B7A963C008927FF /* Renderer.swift */; };
+		8F80D8EA2B7A967F008927FF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E92B7A967F008927FF /* Shaders.metal */; };
 		8F8E68591DB1D2A50091754D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E68581DB1D2A50091754D /* VideoToolbox.framework */; };
 		8F8E685B1DB1D3200091754D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685A1DB1D3200091754D /* CoreMedia.framework */; };
 		8F8E685D1DB1D3320091754D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685C1DB1D3320091754D /* CoreVideo.framework */; };
@@ -70,6 +76,14 @@
 		8F72FA4817E6FB430073CD44 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 		8F72FA4F17E6FC730073CD44 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		8F72FA5317E6FD4A0073CD44 /* HelloUI_ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelloUI_ios.cpp; sourceTree = "<group>"; };
+		8F80D8D92B7A9464008927FF /* HelloUI_SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloUI_SwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F80D8DB2B7A9464008927FF /* HelloUI_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelloUI_SwiftUIApp.swift; sourceTree = "<group>"; };
+		8F80D8DD2B7A9464008927FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8F80D8DF2B7A9465008927FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8F80D8E72B7A963C008927FF /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		8F80D8E92B7A967F008927FF /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		8F80D8EB2B7A96AF008927FF /* ShaderDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefs.h; sourceTree = "<group>"; };
 		8F8E68581DB1D2A50091754D /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		8F8E685A1DB1D3200091754D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8F8E685C1DB1D3320091754D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -104,6 +118,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8F80D8D62B7A9464008927FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -112,6 +133,7 @@
 			children = (
 				8FDF63C329E280510029E615 /* niUI */,
 				8F72FA2B17E6FB430073CD44 /* HelloUI_ios */,
+				8F80D8DA2B7A9464008927FF /* HelloUI_SwiftUI */,
 				8F72FA2017E6FB430073CD44 /* Frameworks */,
 				8F72FA1F17E6FB430073CD44 /* Products */,
 			);
@@ -121,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				8F72FA1E17E6FB430073CD44 /* HelloUI_ios.app */,
+				8F80D8D92B7A9464008927FF /* HelloUI_SwiftUI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -176,6 +199,29 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		8F80D8DA2B7A9464008927FF /* HelloUI_SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				8F80D8DB2B7A9464008927FF /* HelloUI_SwiftUIApp.swift */,
+				8F80D8DD2B7A9464008927FF /* ContentView.swift */,
+				8F80D8DF2B7A9465008927FF /* Assets.xcassets */,
+				8F80D8E12B7A9465008927FF /* Preview Content */,
+				8F80D8E72B7A963C008927FF /* Renderer.swift */,
+				8F80D8E92B7A967F008927FF /* Shaders.metal */,
+				8F80D8EB2B7A96AF008927FF /* ShaderDefs.h */,
+			);
+			path = HelloUI_SwiftUI;
+			sourceTree = "<group>";
+			tabWidth = 4;
+		};
+		8F80D8E12B7A9465008927FF /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -197,17 +243,40 @@
 			productReference = 8F72FA1E17E6FB430073CD44 /* HelloUI_ios.app */;
 			productType = "com.apple.product-type.application";
 		};
+		8F80D8D82B7A9464008927FF /* HelloUI_SwiftUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F80D8E62B7A9465008927FF /* Build configuration list for PBXNativeTarget "HelloUI_SwiftUI" */;
+			buildPhases = (
+				8F80D8D52B7A9464008927FF /* Sources */,
+				8F80D8D62B7A9464008927FF /* Frameworks */,
+				8F80D8D72B7A9464008927FF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HelloUI_SwiftUI;
+			productName = HelloUI_SwiftUI;
+			productReference = 8F80D8D92B7A9464008927FF /* HelloUI_SwiftUI.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		8F72FA1617E6FB430073CD44 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = Bytecollider;
 				TargetAttributes = {
 					8F72FA1D17E6FB430073CD44 = {
 						DevelopmentTeam = W63PLW47W3;
+					};
+					8F80D8D82B7A9464008927FF = {
+						CreatedOnToolsVersion = 15.2;
+						DevelopmentTeam = P6NS676J5B;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -225,6 +294,7 @@
 			projectRoot = "";
 			targets = (
 				8F72FA1D17E6FB430073CD44 /* HelloUI_ios */,
+				8F80D8D82B7A9464008927FF /* HelloUI_SwiftUI */,
 			);
 		};
 /* End PBXProject section */
@@ -245,6 +315,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8F80D8D72B7A9464008927FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F80D8E32B7A9465008927FF /* Preview Assets.xcassets in Resources */,
+				8F80D8E02B7A9465008927FF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -256,6 +335,17 @@
 				8F72FA5117E6FC730073CD44 /* AppDelegate.mm in Sources */,
 				8F72FA5417E6FD4A0073CD44 /* HelloUI_ios.cpp in Sources */,
 				8F96C21D1B9BE6EB004D217D /* niUIView.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F80D8D52B7A9464008927FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F80D8EA2B7A967F008927FF /* Shaders.metal in Sources */,
+				8F80D8DE2B7A9464008927FF /* ContentView.swift in Sources */,
+				8F80D8E82B7A963C008927FF /* Renderer.swift in Sources */,
+				8F80D8DC2B7A9464008927FF /* HelloUI_SwiftUIApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +542,111 @@
 			};
 			name = Release;
 		};
+		8F80D8E42B7A9465008927FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_ASSET_PATHS = "\"HelloUI_SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = P6NS676J5B;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.HelloUI-SwiftUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = HelloUI_SwiftUI/ShaderDefs.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8F80D8E52B7A9465008927FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "\"HelloUI_SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = P6NS676J5B;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.HelloUI-SwiftUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = HelloUI_SwiftUI/ShaderDefs.h;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -469,6 +664,15 @@
 			buildConfigurations = (
 				8F72FA4D17E6FB430073CD44 /* Debug */,
 				8F72FA4E17E6FB430073CD44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8F80D8E62B7A9465008927FF /* Build configuration list for PBXNativeTarget "HelloUI_SwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F80D8E42B7A9465008927FF /* Debug */,
+				8F80D8E52B7A9465008927FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

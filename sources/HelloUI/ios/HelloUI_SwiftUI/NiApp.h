@@ -10,7 +10,11 @@
 #define NiApp_hpp
 
 #import <Metal/Metal.h>
+#import <MetalKit/MTKView.h>
 #include "ShaderDefs.h"
+#ifdef __cplusplus
+#import <niAppLib.h>
+#endif
 
 @interface NiApp : NSObject
 
@@ -18,7 +22,7 @@
 - (void)startupWithDevice:(id<MTLDevice>)device;
 - (void)shutdown;
 - (void)draw;
-- (void)resizeWithSize:(CGSize)size;
+- (void)resizeWithView:(MTKView*)mtkView size:(CGSize)size;
 
 @end
 

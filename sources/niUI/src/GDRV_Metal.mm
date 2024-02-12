@@ -33,11 +33,7 @@
 
 namespace ni {
 
-#ifdef _DEBUG
-#define METAL_TRACE(aFmt) niDebugFmt(aFmt)
-#else
-#define METAL_TRACE(aFmt)
-#endif
+#define METAL_TRACE(aFmt) //niDebugFmt(aFmt)
 
 #define METAL_DEVICE(aDevice) id<MTLDevice> mMetalDevice = (id<MTLDevice>)aDevice->GetDevice();
 
@@ -687,7 +683,7 @@ struct sMetalShaderLibrary {
         niError(niFmt("CompileShader FIALED function[%s] not found",aShaderFunc));
         niError(niFmt("IN Library[%s]",aShaderProgram));
       }
-      niDebugFmt(("Shader Function Loaded %s",aShaderFunc));
+      // niDebugFmt(("Shader Function Loaded %s",aShaderFunc));
       return shaderFunc;
     }
     niError("CompileShader FIALED library not loaded");
@@ -700,7 +696,7 @@ struct sMetalShaderLibrary {
       id<MTLRenderPipelineState> metalRenderPipelineState = _CreatePipeline(
         aDevice,(sMetalRenderPipelineId&)aPipelineId,vs,ps);
       if (!metalRenderPipelineState) {
-        niDebugFmt(("VS %s, PS %s",vs->GetCode(),ps->GetCode()));
+        // niDebugFmt(("VS %s, PS %s",vs->GetCode(),ps->GetCode()));
         niError("Can't create the metal render pipeline states.");
         return NULL;
       }
@@ -1914,7 +1910,7 @@ struct cMetalContextBase :
 
     ++mNumDrawOps;
 
-    niAssert(mbBeganFrame);
+    // niAssert(mbBeganFrame);
     if (!mbBeganFrame) {
 #if 0
       static tU32 _lastErrorFrame = ni::eInvalidHandle;
@@ -2069,11 +2065,11 @@ struct cMetalContextBase :
           if (hspName) {
             auto matConst = pDOMatDesc->mptrConstants;
             if (matConst.IsOK()) {
-              niDebugFmt(("material is ok"));
+              // niDebugFmt(("material is ok"));
               const sShaderConstantsDesc* ct = (const sShaderConstantsDesc*)matConst->GetDescStructPtr();
               sShaderConstantsDesc::tConstMap::const_iterator it = ct->mmapConstants.find(hspName);
               if (it != ct->mmapConstants.end() && it->second != eInvalidHandle) {
-                niDebugFmt(("Find const material %s",hspName));
+                // niDebugFmt(("Find const material %s",hspName));
                 c = ct->mvConstants[it->second];
                 cd = ct;
               }

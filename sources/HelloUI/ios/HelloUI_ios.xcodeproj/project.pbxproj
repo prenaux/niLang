@@ -30,6 +30,7 @@
 		8F80D8E82B7A963C008927FF /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E72B7A963C008927FF /* Renderer.swift */; };
 		8F80D8EA2B7A967F008927FF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E92B7A967F008927FF /* Shaders.metal */; };
 		8F80D8EE2B7A9E42008927FF /* NiApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8EC2B7A9E42008927FF /* NiApp.mm */; };
+		8F80D8F02B7AA8A8008927FF /* niUI in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FDF63C329E280510029E615 /* niUI */; };
 		8F8E68591DB1D2A50091754D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E68581DB1D2A50091754D /* VideoToolbox.framework */; };
 		8F8E685B1DB1D3200091754D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685A1DB1D3200091754D /* CoreMedia.framework */; };
 		8F8E685D1DB1D3320091754D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685C1DB1D3320091754D /* CoreVideo.framework */; };
@@ -43,6 +44,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		8F80D8EF2B7AA8A0008927FF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = niLang/data;
+			dstSubfolderSpec = 7;
+			files = (
+				8F80D8F02B7AA8A8008927FF /* niUI in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8FDA3DB92B79546C0061F365 /* Copy Files (1 item) */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -87,6 +98,7 @@
 		8F80D8EB2B7A96AF008927FF /* ShaderDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefs.h; sourceTree = "<group>"; };
 		8F80D8EC2B7A9E42008927FF /* NiApp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NiApp.mm; sourceTree = "<group>"; };
 		8F80D8ED2B7A9E42008927FF /* NiApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NiApp.h; sourceTree = "<group>"; };
+		8F80D8F12B7AAB00008927FF /* HelloUI-SwiftUI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HelloUI-SwiftUI-Info.plist"; sourceTree = SOURCE_ROOT; };
 		8F8E68581DB1D2A50091754D /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		8F8E685A1DB1D3200091754D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8F8E685C1DB1D3320091754D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -205,6 +217,7 @@
 		8F80D8DA2B7A9464008927FF /* HelloUI_SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				8F80D8F12B7AAB00008927FF /* HelloUI-SwiftUI-Info.plist */,
 				8F80D8DB2B7A9464008927FF /* HelloUI_SwiftUIApp.swift */,
 				8F80D8DD2B7A9464008927FF /* ContentView.swift */,
 				8F80D8DF2B7A9465008927FF /* Assets.xcassets */,
@@ -255,6 +268,7 @@
 				8F80D8D52B7A9464008927FF /* Sources */,
 				8F80D8D62B7A9464008927FF /* Frameworks */,
 				8F80D8D72B7A9464008927FF /* Resources */,
+				8F80D8EF2B7AA8A0008927FF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -578,6 +592,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HelloUI-SwiftUI-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -593,6 +608,7 @@
 					"-I\"../../../sources/niAppLib/src/API\"",
 					"-I\"../../../sources/niLang/src/API\"",
 					"-I\"../../../sources/niUI/src/API\"",
+					"-Wno-documentation",
 				);
 				OTHER_LDFLAGS = (
 					"-L\"../../../libs/gcc-ios-$CURRENT_ARCH\"",
@@ -650,6 +666,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HelloUI-SwiftUI-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -665,6 +682,7 @@
 					"-I\"../../../sources/niAppLib/src/API\"",
 					"-I\"../../../sources/niLang/src/API\"",
 					"-I\"../../../sources/niUI/src/API\"",
+					"-Wno-documentation",
 				);
 				OTHER_LDFLAGS = (
 					"-L\"../../../libs/gcc-ios-$CURRENT_ARCH\"",

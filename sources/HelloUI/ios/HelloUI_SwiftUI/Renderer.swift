@@ -10,6 +10,7 @@ import MetalKit
 
 class Renderer: NSObject, MTKViewDelegate {
     
+    let niApp: NiApp
     var parent: ContentView
     var metalDevice: MTLDevice!
     var metalCommandQueue: MTLCommandQueue!
@@ -37,16 +38,20 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         let vertices = [
-            Vertex(position: [-1, -1], color: [1, 0, 0, 1]),
+            Vertex(position: [-1, -1], color: [1, 1, 0, 1]),
             Vertex(position: [1, -1], color: [0, 1, 0, 1]),
-            Vertex(position: [0, 1], color: [0, 0, 1, 1])
+            Vertex(position: [0, 1], color: [1, 0, 1, 1])
         ]
         vertexBuffer = metalDevice.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<Vertex>.stride, options: [])!
+        
+        self.niApp = NiApp()
+        self.niApp.startup(with: self.metalDevice)
+        
         super.init()
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        
+        self.niApp.resize(with: size)
     }
     
     func draw(in view: MTKView) {
@@ -72,5 +77,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         commandBuffer?.present(drawable)
         commandBuffer?.commit()
+        
+        self.niApp.draw()
     }
 }

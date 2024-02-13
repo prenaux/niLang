@@ -1248,12 +1248,6 @@ struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
 #endif
     }
 
-    MTKView* mtkView = (__bridge MTKView*)metalAPI->GetMTKView();
-    if (!mtkView) {
-      niError("Can't get metal api's mtkview.");
-      return NULL;
-    }
-
     mMetalCommandQueue = (__bridge id<MTLCommandQueue>)metalAPI->GetCommandQueue();
     if (!mMetalCommandQueue) {
       niError("Can't get metal api's command queue.");
@@ -1261,12 +1255,17 @@ struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
     }
     niAssert(mMetalDevice == mMetalCommandQueue.device);
 
-    mtkView.depthStencilPixelFormat = _toMTLDepthFormat[_GetDSRenderPipelineDepthFormat(aaszDSFormat)];
-    if (anSwapInterval) {
-      mtkView.preferredFramesPerSecond = (anSwapInterval == 2) ? 30 : 60;
-    }
-    else {
-      mtkView.preferredFramesPerSecond = 120;
+    {
+      MTKView* mtkView = (__bridge MTKView*)metalAPI->GetMTKView();
+      if (mtkView) {
+        mtkView.depthStencilPixelFormat = _toMTLDepthFormat[_GetDSRenderPipelineDepthFormat(aaszDSFormat)];
+        if (anSwapInterval) {
+          mtkView.preferredFramesPerSecond = (anSwapInterval == 2) ? 30 : 60;
+        }
+        else {
+          mtkView.preferredFramesPerSecond = 120;
+        }
+      }
     }
 
     _DetectShaderProfiles();

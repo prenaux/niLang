@@ -1061,10 +1061,7 @@ class cOSXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags
 
   ///////////////////////////////////////////////
   virtual tF32 __stdcall GetContentsScale() const {
-    if (nsGL.context && nsGL.useBestResolution) {
-      return [nsWindow backingScaleFactor];
-    }
-    return 1.0f;
+    return (nsWindow != nil) ? [nsWindow backingScaleFactor] : 1.0f;
   }
 
   ///////////////////////////////////////////////

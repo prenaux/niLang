@@ -628,52 +628,14 @@ class cVGPath : public ni::ImplRC<iVGPath>
             curved_smooth_trans         trans_smooth(smooth,trans);
             curved_trans_smooth_dash      trans_smooth_dash(trans_smooth);
             curved_trans_smooth_dash_stroked  trans_smooth_dash_stroked(trans_smooth_dash);
-
-            for (tU32 i = 0; i < apStyle->GetNumDashes(); ++i) {
-              sVec2f d = apStyle->GetDash(i);
-              trans_smooth_dash.add_dash(d.x,d.y);
-            }
-            trans_smooth_dash.dash_start(apStyle->GetDashStart());
-
-            trans_smooth_dash_stroked.width(apStyle->GetStrokeWidth());
-            trans_smooth_dash_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            trans_smooth_dash_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            trans_smooth_dash_stroked.miter_limit(apStyle->GetMiterLimit());
-            trans_smooth_dash_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            trans_smooth_dash_stroked.approximation_scale(scl);
-
-            // If the *visual* line width is considerable we
-            // turn on processing of curve cusps.
-            //---------------------
-            if (apStyle->GetStrokeWidth() /** scl*/ > 1.0) {
-              m_curved.angle_tolerance(agg_real(0.2));
-            }
+            dash_stroke(m_curved, trans_smooth_dash, trans_smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_smooth_dash_stroked,apStyle,eTrue);
           }
           else {
             curved_smooth_dash          smooth_dash(smooth);
             curved_smooth_dash_stroked      smooth_dash_stroked(smooth_dash);
             curved_smooth_dash_stroked_trans  smooth_dash_stroked_trans(smooth_dash_stroked,trans);
-
-            for (tU32 i = 0; i < apStyle->GetNumDashes(); ++i) {
-              sVec2f d = apStyle->GetDash(i);
-              smooth_dash.add_dash(d.x,d.y);
-            }
-            smooth_dash.dash_start(apStyle->GetDashStart());
-
-            smooth_dash_stroked.width(apStyle->GetStrokeWidth());
-            smooth_dash_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            smooth_dash_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            smooth_dash_stroked.miter_limit(apStyle->GetMiterLimit());
-            smooth_dash_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            smooth_dash_stroked.approximation_scale(scl);
-
-            // If the *visual* line width is considerable we
-            // turn on processing of curve cusps.
-            //---------------------
-            if (apStyle->GetStrokeWidth() * scl > 1.0) {
-              m_curved.angle_tolerance(agg_real(0.2));
-            }
+            dash_stroke(m_curved, smooth_dash, smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(smooth_dash_stroked_trans,apStyle,eTrue);
           }
         }
@@ -682,52 +644,14 @@ class cVGPath : public ni::ImplRC<iVGPath>
             curved_trans        trans_curve(m_curved_count,trans);
             curved_trans_dash     trans_dash(trans_curve);
             curved_trans_dash_stroked trans_dash_stroked(trans_dash);
-
-            for (tU32 i = 0; i < apStyle->GetNumDashes(); ++i) {
-              sVec2f d = apStyle->GetDash(i);
-              trans_dash.add_dash(d.x,d.y);
-            }
-            trans_dash.dash_start(apStyle->GetDashStart());
-
-            trans_dash_stroked.width(apStyle->GetStrokeWidth());
-            trans_dash_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            trans_dash_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            trans_dash_stroked.miter_limit(apStyle->GetMiterLimit());
-            trans_dash_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            trans_dash_stroked.approximation_scale(scl);
-
-            // If the *visual* line width is considerable we
-            // turn on processing of curve cusps.
-            //---------------------
-            if (apStyle->GetStrokeWidth() * scl > 1.0) {
-              m_curved.angle_tolerance(agg_real(0.2));
-            }
+            dash_stroke(m_curved, trans_dash, trans_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_dash_stroked,apStyle,eTrue);
           }
           else {
             curved_dash         dash(m_curved_count);
             curved_dash_stroked     dash_stroked(dash);
             curved_dash_stroked_trans dash_stroked_trans(dash_stroked,trans);
-
-            for (tU32 i = 0; i < apStyle->GetNumDashes(); ++i) {
-              sVec2f d = apStyle->GetDash(i);
-              dash.add_dash(d.x,d.y);
-            }
-            dash.dash_start(apStyle->GetDashStart());
-
-            dash_stroked.width(apStyle->GetStrokeWidth());
-            dash_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            dash_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            dash_stroked.miter_limit(apStyle->GetMiterLimit());
-            dash_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            dash_stroked.approximation_scale(scl);
-
-            // If the *visual* line width is considerable we
-            // turn on processing of curve cusps.
-            //---------------------
-            if (apStyle->GetStrokeWidth() * scl > 1.0) {
-              m_curved.angle_tolerance(agg_real(0.2));
-            }
+            dash_stroke(m_curved, dash, dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(dash_stroked_trans,apStyle,eTrue);
           }
         }
@@ -737,24 +661,13 @@ class cVGPath : public ni::ImplRC<iVGPath>
           if (apStyle->GetStrokeTransformed()) {
             curved_smooth_trans       smooth_trans(smooth,trans);
             curved_trans_smooth_stroked   trans_smooth_stroked(smooth_trans);
-
-            trans_smooth_stroked.width(apStyle->GetStrokeWidth());
-            trans_smooth_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            trans_smooth_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            trans_smooth_stroked.miter_limit(apStyle->GetMiterLimit());
-            trans_smooth_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            trans_smooth_stroked.approximation_scale(scl);
+            stroke(trans_smooth_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_smooth_stroked,apStyle,eTrue);
           }
           else {
             curved_smooth_stroked     smooth_stroked(smooth);
             curved_smooth_stroked_trans smooth_stroked_trans(smooth_stroked,trans);
-            smooth_stroked.width(apStyle->GetStrokeWidth());
-            smooth_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            smooth_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            smooth_stroked.miter_limit(apStyle->GetMiterLimit());
-            smooth_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            smooth_stroked.approximation_scale(scl);
+            stroke(smooth_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(smooth_stroked_trans,apStyle,eTrue);
           }
         }
@@ -762,23 +675,13 @@ class cVGPath : public ni::ImplRC<iVGPath>
           if (apStyle->GetStrokeTransformed()) {
             curved_trans      trans_curve(m_curved_count,trans);
             curved_trans_stroked  trans_stroked(trans_curve);
-            trans_stroked.width(apStyle->GetStrokeWidth());
-            trans_stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            trans_stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            trans_stroked.miter_limit(apStyle->GetMiterLimit());
-            trans_stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            trans_stroked.approximation_scale(scl);
+            stroke(trans_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_stroked,apStyle,eTrue);
           }
           else {
             curved_stroked      stroked(m_curved_count);
             curved_stroked_trans  stroked_trans(stroked,trans);
-            stroked.width(apStyle->GetStrokeWidth());
-            stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
-            stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
-            stroked.miter_limit(apStyle->GetMiterLimit());
-            stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
-            stroked.approximation_scale(scl);
+            stroke(stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(stroked_trans,apStyle,eTrue);
           }
         }
@@ -787,6 +690,46 @@ class cVGPath : public ni::ImplRC<iVGPath>
       aRas.Ras_EndAddPath(apStyle,eTrue);
     }
   }
+
+  template<class T> static inline void stroke(
+    T& stroked,
+    const iVGStyle* apStyle,
+    const agg::trans_affine& trans,
+    const curved_count& curved_count,
+    const agg_real scl) {
+    stroked.width(apStyle->GetStrokeWidth());
+    stroked.line_join((agg::line_join_e)apStyle->GetLineJoin());
+    stroked.line_cap((agg::line_cap_e)apStyle->GetLineCap());
+    stroked.miter_limit(apStyle->GetMiterLimit());
+    stroked.inner_miter_limit(apStyle->GetMiterLimit());
+    stroked.inner_join((agg::inner_join_e)apStyle->GetInnerJoin());
+    stroked.approximation_scale(scl);
+  }
+
+  template<class Stroke, class Dash> static inline void dash_stroke(
+    curved& curved,
+    Dash& dash,
+    Stroke& stroked,
+    const iVGStyle* apStyle,
+    const agg::trans_affine& trans,
+    const curved_count& curved_count,
+    const agg_real scl) {
+
+    for (tU32 i = 0; i < apStyle->GetNumDashes(); ++i) {
+      sVec2f d = apStyle->GetDash(i);
+      dash.add_dash(d.x,d.y);
+    }
+    dash.dash_start(apStyle->GetDashStart());
+    stroke<Stroke>(stroked, apStyle, trans, curved_count, scl);
+
+    // If the *visual* line width is considerable we
+    // turn on processing of curve cusps.
+    //---------------------
+    if (apStyle->GetStrokeWidth() * scl > 1.0) {
+      curved.angle_tolerance(agg_real(0.2));
+    }
+  }
+
 
   tBool __stdcall Text(iFont* apFont, const sVec2f& avPos, const achar* aaszText) {
     if (!niIsOK(apFont))

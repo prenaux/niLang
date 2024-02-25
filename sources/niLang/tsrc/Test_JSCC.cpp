@@ -25,7 +25,7 @@ static const GLchar* fragmentSource =
     "  gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0 );\n"
     "}\n";
 
-static std::function<void()> _MainLoopFn;
+static astl::function<void()> _MainLoopFn;
 static void CallMainLoop() {
   _MainLoopFn();
 }

@@ -8,7 +8,7 @@
 
 import MetalKit
 
-class Renderer: NSObject, MTKViewDelegate {
+class NiAppRenderer: NSObject, MTKViewDelegate {
     
     let niApp: NiApp
     var parent: ContentView

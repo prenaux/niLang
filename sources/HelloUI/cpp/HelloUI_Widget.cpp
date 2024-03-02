@@ -377,6 +377,6 @@ struct HelloUIWidget : public cWidgetSinkImpl<>
   }
 };
 
-niExportFunc(iWidgetSink*) New_HelloUI_Widget() {
+niExportFunc(ni::iWidgetSink*) New_HelloUI_Widget() {
   return niNew HelloUIWidget();
 }

@@ -25,7 +25,6 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
   {
     mfSpeed = 1.0f;
     mbPaused = eFalse;
-    mbDecoding = eFalse;
     mnNumLoops = eInvalidHandle;
     mnLastUpdateFrameId = eInvalidHandle;
     mptrGraphics = apGraphics;
@@ -33,62 +32,53 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
     niLog(Info,niFmt("Video started loading: '%s'",apFile->GetSourcePath()));
 
     const tBool withAlpha = StrEndsWith(apFile->GetSourcePath(),".ogw");
-
-    iExecutor* pLoadingExecutor =
-        ni::GetConcurrent()->GetExecutorIO()
-        // ni::GetConcurrent()->GetExecutorMain()
-        ;
-
     Ptr<iFile> _fp = apFile;
-    Ptr<cVideoDecoderTheoraPlayer> _this = this;
-    niExec_(pLoadingExecutor,_this,_fp,withAlpha) {
-      TheoraVideoClip* pTheoraVideoClip = Theora_createVideoClip(
-          _fp,
-          withAlpha ? VIDEO_OUTPUTMODE_ALPHA : VIDEO_OUTPUTMODE,
-          2,
-          false);
-      if (!pTheoraVideoClip) {
-        niError(niFmt("Can't create the video clip '%s'.",_fp->GetSourcePath()));
-        return ni::eFalse;
+    mpTheoraVideoClip = Theora_createVideoClip(
+      _fp,
+      withAlpha ? VIDEO_OUTPUTMODE_ALPHA : VIDEO_OUTPUTMODE,
+      4,
+      false,
+      false);
+
+    if (!mpTheoraVideoClip) {
+      niError(niFmt("Can't create the video clip '%s'.",_fp->GetSourcePath()));
+      return;
+    }
+
+    if (!mpTheoraVideoClip->load(_fp)) {
+      niError("Couldn't load the video clip.");
+      return;
+    }
+
+    if (niFlagIs(mFlags,eVideoDecoderFlags_TargetTexture)) {
+      Ptr<iTexture> ptrTex = mptrGraphics->CreateTexture(
+        NULL,
+        eBitmapType_2D,
+        VIDEO_PIXELFORMAT,
+        0,
+        mpTheoraVideoClip->getWidth(), mpTheoraVideoClip->getHeight(), 0,
+        ni::eTextureFlags_Dynamic|ni::eTextureFlags_Overlay);
+
+      if (!ptrTex.IsOK()) {
+        niError(niFmt(_A("Can't create target texture for video '%s'."),_fp->GetSourcePath()));
+        return;
       }
+      mpTargetTexture->mptrTexture = ptrTex;
+    }
 
-      niExec(Main,_this,pTheoraVideoClip,_fp,withAlpha)  {
-        _this->mpTheoraVideoClip = pTheoraVideoClip;
-
-        if (niFlagIs(_this->mFlags,eVideoDecoderFlags_TargetTexture)) {
-          Ptr<iTexture> ptrTex = _this->mptrGraphics->CreateTexture(
-              NULL,
-              eBitmapType_2D,
-              VIDEO_PIXELFORMAT,
-              0,
-              pTheoraVideoClip->getWidth(), pTheoraVideoClip->getHeight(), 0,
-              eTextureFlags_Dynamic);
-          if (!ptrTex.IsOK()) {
-            niError(niFmt(_A("Can't create target texture for video '%s'."),_fp->GetSourcePath()));
-            return ni::eFalse;
-          }
-          _this->mpTargetTexture->mptrTexture = ptrTex;
-        }
-
-        niLog(Info,niFmt(
+    niLog(Info,niFmt(
             "Video created: '%s' %s, %dx%d, %gsecs, %gfps\n",
             _fp->GetSourcePath(),
             withAlpha ? "rgba" : "rgb",
-            pTheoraVideoClip->getWidth(),
-            pTheoraVideoClip->getHeight(),
-            _this->GetLength(),
-            _this->GetVideoFps()));
+            mpTheoraVideoClip->getWidth(),
+            mpTheoraVideoClip->getHeight(),
+            GetLength(),
+            GetVideoFps()));
 
-        _this->SetNumLoops(_this->mnNumLoops);
-        _this->SetSpeed(_this->mfSpeed);
-        _this->SetPause(_this->mbPaused);
-
-        return ni::eTrue;
-      };
-
-      return ni::eTrue;
-    };
-
+    SetNumLoops(mnNumLoops);
+    SetSpeed(mfSpeed);
+    SetPause(mbPaused);
+    mpExecutor = GetConcurrent()->CreateExecutorThreadPool(1);
   }
 
   ///////////////////////////////////////////////
@@ -112,7 +102,7 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
     return _A("THEORAPLAYER");
   }
   virtual tF64 __stdcall GetVideoFps() const {
-    return mpTheoraVideoClip ? 1.0/24.0 : mpTheoraVideoClip->getFPS();
+    return mpTheoraVideoClip ? mpTheoraVideoClip->getFPS() : 1.0/24.0 ;
   }
 
   ///////////////////////////////////////////////
@@ -182,16 +172,38 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall Update(tBool abUpdateTarget, tF32 afFrameTime) {
-    if (!mpTheoraVideoClip)
+    if (!mpTheoraVideoClip || !mpTargetTexture)
       return eTrue;
 
     if (afFrameTime > 0.0f && !mbPaused) {
       mpTheoraVideoClip->update(afFrameTime);
       mbTargetDirty = eTrue;
+
+      WeakPtr<cVideoDecoderTheoraPlayer> _this = this;
+      mpExecutor->Execute(ni::Runnable([_this]() {
+        QPtr<cVideoDecoderTheoraPlayer> player(_this);
+        if (!player.IsOK()) return eTrue;
+        auto clip = player->mpTheoraVideoClip;
+        if (!clip) return eTrue;
+
+        if (clip->mSeekFrame >= 0) {
+          clip->doSeek();
+        }
+        clip->decodedAudioCheck();
+        clip->decodeNextFrame();
+        return eTrue;
+      }));
     }
 
     if (abUpdateTarget && mbTargetDirty && (mnLastUpdateFrameId != ni::GetLang()->GetFrameNumber())) {
-      _UpdateTarget();
+      auto f = mpTheoraVideoClip->getNextFrame();
+      if (f) {
+        mptrTargetBitmap = f->getBitmap(mptrGraphics, VIDEO_PIXELFORMAT);
+        if (niFlagIs(mFlags,eVideoDecoderFlags_TargetTexture) && mpTargetTexture) {
+          mptrGraphics->BlitBitmapToTexture(mptrTargetBitmap,mpTargetTexture->mptrTexture,0);
+        }
+        mpTheoraVideoClip->popFrame();
+      }
       mnLastUpdateFrameId = ni::GetLang()->GetFrameNumber();
       mbTargetDirty = eFalse;
     }
@@ -207,47 +219,7 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
       }
       this->SetTime(currentTime);
     }
-
     return eTrue;
-  }
-
-  void _UpdateTarget() {
-    if (!mpTheoraVideoClip)
-      return; // no decoding...
-
-    if (mbDecoding)
-      return;
-
-    Ptr<cVideoDecoderTheoraPlayer> _this = this;
-    niExec(CPU,_this) {
-      _this->mbDecoding = eTrue;
-
-      // if user requested seeking, do that then.
-      if (_this->mpTheoraVideoClip->mSeekFrame >= 0) {
-        _this->mpTheoraVideoClip->doSeek();
-      }
-
-      _this->mpTheoraVideoClip->decodedAudioCheck();
-      _this->mpTheoraVideoClip->decodeNextFrame();
-
-      TheoraVideoFrame* f = _this->mpTheoraVideoClip->getNextFrame();
-      if (f) {
-        niExec(Main,_this,f) {
-          _this->mptrTargetBitmap = f->getBitmap(_this->mptrGraphics, VIDEO_PIXELFORMAT);
-          if (niFlagIs(_this->mFlags,eVideoDecoderFlags_TargetTexture) && _this->mpTargetTexture) {
-            _this->mptrGraphics->BlitBitmapToTexture(_this->mptrTargetBitmap,_this->mpTargetTexture->mptrTexture,0);
-          }
-          _this->mpTheoraVideoClip->popFrame();
-          _this->mbDecoding = eFalse;
-          return eTrue;
-        };
-      }
-      else {
-        _this->mbDecoding = eFalse;
-      }
-
-      return eTrue;
-    };
   }
 
  private:
@@ -257,11 +229,11 @@ class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni:
   sVideoDecoderTexture*    mpTargetTexture;
   Ptr<iBitmap2D>           mptrTargetBitmap;
   tBool                    mbPaused;
-  tBool                    mbDecoding;
   tU32                     mnNumLoops;
   tF32                     mfSpeed;
   tU32                     mnLastUpdateFrameId;
   tBool                    mbTargetDirty;
+  Ptr<iExecutor>           mpExecutor;
 
   niEndClass(cVideoDecoderTheoraPlayer);
 };

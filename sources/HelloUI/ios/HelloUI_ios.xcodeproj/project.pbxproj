@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -27,10 +27,11 @@
 		8F80D8DE2B7A9464008927FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8DD2B7A9464008927FF /* ContentView.swift */; };
 		8F80D8E02B7A9465008927FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F80D8DF2B7A9465008927FF /* Assets.xcassets */; };
 		8F80D8E32B7A9465008927FF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */; };
-		8F80D8E82B7A963C008927FF /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E72B7A963C008927FF /* Renderer.swift */; };
+		8F80D8E82B7A963C008927FF /* NiAppRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E72B7A963C008927FF /* NiAppRenderer.swift */; };
 		8F80D8EA2B7A967F008927FF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8E92B7A967F008927FF /* Shaders.metal */; };
 		8F80D8EE2B7A9E42008927FF /* NiApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F80D8EC2B7A9E42008927FF /* NiApp.mm */; };
 		8F80D8F02B7AA8A8008927FF /* niUI in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FDF63C329E280510029E615 /* niUI */; };
+		8F87975D2B935F8F00DFF627 /* HelloUI_Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F87975B2B935F3100DFF627 /* HelloUI_Widget.cpp */; };
 		8F8E68591DB1D2A50091754D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E68581DB1D2A50091754D /* VideoToolbox.framework */; };
 		8F8E685B1DB1D3200091754D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685A1DB1D3200091754D /* CoreMedia.framework */; };
 		8F8E685D1DB1D3320091754D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E685C1DB1D3320091754D /* CoreVideo.framework */; };
@@ -93,12 +94,14 @@
 		8F80D8DD2B7A9464008927FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8F80D8DF2B7A9465008927FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8F80D8E72B7A963C008927FF /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		8F80D8E72B7A963C008927FF /* NiAppRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiAppRenderer.swift; sourceTree = "<group>"; };
 		8F80D8E92B7A967F008927FF /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		8F80D8EB2B7A96AF008927FF /* ShaderDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefs.h; sourceTree = "<group>"; };
 		8F80D8EC2B7A9E42008927FF /* NiApp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NiApp.mm; sourceTree = "<group>"; };
 		8F80D8ED2B7A9E42008927FF /* NiApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NiApp.h; sourceTree = "<group>"; };
 		8F80D8F12B7AAB00008927FF /* HelloUI-SwiftUI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HelloUI-SwiftUI-Info.plist"; sourceTree = SOURCE_ROOT; };
+		8F87975B2B935F3100DFF627 /* HelloUI_Widget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = HelloUI_Widget.cpp; path = ../cpp/HelloUI_Widget.cpp; sourceTree = "<group>"; };
+		8F87975E2B935FF200DFF627 /* HelloUI_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelloUI_data.h; path = ../cpp/HelloUI_data.h; sourceTree = "<group>"; };
 		8F8E68581DB1D2A50091754D /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		8F8E685A1DB1D3200091754D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8F8E685C1DB1D3320091754D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -146,6 +149,7 @@
 		8F72FA1517E6FB430073CD44 = {
 			isa = PBXGroup;
 			children = (
+				8F87975C2B935F6800DFF627 /* cpp */,
 				8FDF63C329E280510029E615 /* niUI */,
 				8F72FA2B17E6FB430073CD44 /* HelloUI_ios */,
 				8F80D8DA2B7A9464008927FF /* HelloUI_SwiftUI */,
@@ -222,7 +226,7 @@
 				8F80D8DD2B7A9464008927FF /* ContentView.swift */,
 				8F80D8DF2B7A9465008927FF /* Assets.xcassets */,
 				8F80D8E12B7A9465008927FF /* Preview Content */,
-				8F80D8E72B7A963C008927FF /* Renderer.swift */,
+				8F80D8E72B7A963C008927FF /* NiAppRenderer.swift */,
 				8F80D8E92B7A967F008927FF /* Shaders.metal */,
 				8F80D8EB2B7A96AF008927FF /* ShaderDefs.h */,
 				8F80D8EC2B7A9E42008927FF /* NiApp.mm */,
@@ -238,6 +242,15 @@
 				8F80D8E22B7A9465008927FF /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8F87975C2B935F6800DFF627 /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				8F87975E2B935FF200DFF627 /* HelloUI_data.h */,
+				8F87975B2B935F3100DFF627 /* HelloUI_Widget.cpp */,
+			);
+			name = cpp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,6 +278,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8F80D8E62B7A9465008927FF /* Build configuration list for PBXNativeTarget "HelloUI_SwiftUI" */;
 			buildPhases = (
+				8F87975F2B93626600DFF627 /* ShellScript */,
 				8F80D8D52B7A9464008927FF /* Sources */,
 				8F80D8D62B7A9464008927FF /* Frameworks */,
 				8F80D8D72B7A9464008927FF /* Resources */,
@@ -345,6 +359,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		8F87975F2B93626600DFF627 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Go to the $WORK folder\ncd \"$PROJECT_DIR/../../../..\"\npwd\necho \"I/Build the debug version\"\n./ham/bin/hamx :niLang BUILD=da BUILD_TARGET=ios-arm64 pass1 all\necho \"I/Build the release version\"\n./ham/bin/hamx :niLang BUILD=ra BUILD_TARGET=ios-arm64 pass1 all\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8F72FA1A17E6FB430073CD44 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -363,8 +398,9 @@
 			files = (
 				8F80D8EA2B7A967F008927FF /* Shaders.metal in Sources */,
 				8F80D8EE2B7A9E42008927FF /* NiApp.mm in Sources */,
+				8F87975D2B935F8F00DFF627 /* HelloUI_Widget.cpp in Sources */,
 				8F80D8DE2B7A9464008927FF /* ContentView.swift in Sources */,
-				8F80D8E82B7A963C008927FF /* Renderer.swift in Sources */,
+				8F80D8E82B7A963C008927FF /* NiAppRenderer.swift in Sources */,
 				8F80D8DC2B7A9464008927FF /* HelloUI_SwiftUIApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -599,7 +635,10 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -673,7 +712,10 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

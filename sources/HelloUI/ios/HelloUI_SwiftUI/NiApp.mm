@@ -10,6 +10,10 @@
 #import "NiApp.h"
 #include <niLang/Platforms/OSX/osxMetal.h>
 
+#define HELLOUI_INCLUDE_DATA
+#include "../../cpp/HelloUI_data.h"
+niExportFunc(ni::iWidgetSink*) New_HelloUI_Widget();
+
 using namespace ni;
 
 @interface NiApp() {}
@@ -77,7 +81,7 @@ using namespace ni;
         // App startup
         auto appCtx = astl::as_non_null(self.appContext);
         app::AppStartup(appCtx, ptrWindow, ni::Runnable([appCtx]() -> Var {
-          // TODO: appCtx->_uiContext->GetRootWidget()->AddSink(...);
+          appCtx->_uiContext->GetRootWidget()->AddSink(New_HelloUI_Widget());
           return ni::eTrue;
         }),NULL);
     }

@@ -3,8 +3,8 @@ import MetalKit
 
 struct ContentView: UIViewRepresentable {
     
-    func makeCoordinator() -> Renderer {
-        Renderer(self)
+    func makeCoordinator() -> NiAppRenderer {
+        NiAppRenderer(self)
     }
     
     func makeUIView(context: UIViewRepresentableContext<ContentView>) -> MTKView {

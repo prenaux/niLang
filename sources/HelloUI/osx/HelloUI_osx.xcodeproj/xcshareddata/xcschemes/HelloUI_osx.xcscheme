@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8FDA3D1B2B78F2F00061F365"
-               BuildableName = "HelloUI_osx_arm64.app"
-               BlueprintName = "HelloUI_osx_arm64"
+               BuildableName = "HelloUI_osx.app"
+               BlueprintName = "HelloUI_osx"
                ReferencedContainer = "container:HelloUI_osx.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FDA3D1B2B78F2F00061F365"
-            BuildableName = "HelloUI_osx_arm64.app"
-            BlueprintName = "HelloUI_osx_arm64"
+            BuildableName = "HelloUI_osx.app"
+            BlueprintName = "HelloUI_osx"
             ReferencedContainer = "container:HelloUI_osx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,8 +61,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FDA3D1B2B78F2F00061F365"
-            BuildableName = "HelloUI_osx_arm64.app"
-            BlueprintName = "HelloUI_osx_arm64"
+            BuildableName = "HelloUI_osx.app"
+            BlueprintName = "HelloUI_osx"
             ReferencedContainer = "container:HelloUI_osx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

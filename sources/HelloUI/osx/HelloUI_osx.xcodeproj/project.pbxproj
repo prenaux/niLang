@@ -19,32 +19,16 @@
 		8FDA3D292B78F2F00061F365 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF332B7261F800D9A7FC /* AudioUnit.framework */; };
 		8FDA3D2A2B78F2F00061F365 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF312B7261F100D9A7FC /* CoreServices.framework */; };
 		8FDA3D2B2B78F2F00061F365 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF2F2B7261E900D9A7FC /* Foundation.framework */; };
-		8FDA3D382B78F69F0061F365 /* HelloUI_osx-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8FDA3D372B78F69F0061F365 /* HelloUI_osx-Info.plist */; };
 		8FDA3D392B78F69F0061F365 /* HelloUI_osx-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8FDA3D372B78F69F0061F365 /* HelloUI_osx-Info.plist */; };
-		8FDA3D452B78FA3D0061F365 /* HelloUI_Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA3D432B78FA3D0061F365 /* HelloUI_Widget.cpp */; };
 		8FDA3D462B78FA3D0061F365 /* HelloUI_Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA3D432B78FA3D0061F365 /* HelloUI_Widget.cpp */; };
-		8FDA3D472B78FA3E0061F365 /* HelloUI_cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA3D442B78FA3D0061F365 /* HelloUI_cpp.cpp */; };
 		8FDA3D482B78FA3E0061F365 /* HelloUI_cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA3D442B78FA3D0061F365 /* HelloUI_cpp.cpp */; };
-		C191BF302B7261E900D9A7FC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF2F2B7261E900D9A7FC /* Foundation.framework */; };
-		C191BF322B7261F100D9A7FC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF312B7261F100D9A7FC /* CoreServices.framework */; };
-		C191BF342B7261F800D9A7FC /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF332B7261F800D9A7FC /* AudioUnit.framework */; };
-		C191BF362B72620000D9A7FC /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF352B72620000D9A7FC /* CoreAudio.framework */; };
-		C191BF382B72620600D9A7FC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF372B72620600D9A7FC /* Cocoa.framework */; };
-		C191BF3A2B72620D00D9A7FC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF392B72620D00D9A7FC /* IOKit.framework */; };
-		C191BF3C2B72621500D9A7FC /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3B2B72621500D9A7FC /* OpenGL.framework */; };
-		C191BF3E2B72621B00D9A7FC /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3D2B72621B00D9A7FC /* AGL.framework */; };
-		C191BF402B72622300D9A7FC /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF3F2B72622300D9A7FC /* Metal.framework */; };
-		C191BF422B72622A00D9A7FC /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF412B72622A00D9A7FC /* MetalKit.framework */; };
-		C191BF442B72623000D9A7FC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF432B72623000D9A7FC /* QuartzCore.framework */; };
-		C191BF462B72623900D9A7FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C191BF452B72623900D9A7FC /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8FDA3D312B78F2F00061F365 /* HelloUI_osx_arm64.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloUI_osx_arm64.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FDA3D312B78F2F00061F365 /* HelloUI_osx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloUI_osx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FDA3D372B78F69F0061F365 /* HelloUI_osx-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HelloUI_osx-Info.plist"; sourceTree = SOURCE_ROOT; };
 		8FDA3D432B78FA3D0061F365 /* HelloUI_Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelloUI_Widget.cpp; path = ../cpp/HelloUI_Widget.cpp; sourceTree = "<group>"; };
 		8FDA3D442B78FA3D0061F365 /* HelloUI_cpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelloUI_cpp.cpp; path = ../cpp/HelloUI_cpp.cpp; sourceTree = "<group>"; };
-		C191BEF72B72577500D9A7FC /* HelloUI_osx_x64.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloUI_osx_x64.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C191BF2F2B7261E900D9A7FC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C191BF312B7261F100D9A7FC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		C191BF332B7261F800D9A7FC /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -79,25 +63,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C191BEF42B72577500D9A7FC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C191BF462B72623900D9A7FC /* Security.framework in Frameworks */,
-				C191BF442B72623000D9A7FC /* QuartzCore.framework in Frameworks */,
-				C191BF422B72622A00D9A7FC /* MetalKit.framework in Frameworks */,
-				C191BF402B72622300D9A7FC /* Metal.framework in Frameworks */,
-				C191BF3E2B72621B00D9A7FC /* AGL.framework in Frameworks */,
-				C191BF3C2B72621500D9A7FC /* OpenGL.framework in Frameworks */,
-				C191BF3A2B72620D00D9A7FC /* IOKit.framework in Frameworks */,
-				C191BF382B72620600D9A7FC /* Cocoa.framework in Frameworks */,
-				C191BF362B72620000D9A7FC /* CoreAudio.framework in Frameworks */,
-				C191BF342B7261F800D9A7FC /* AudioUnit.framework in Frameworks */,
-				C191BF322B7261F100D9A7FC /* CoreServices.framework in Frameworks */,
-				C191BF302B7261E900D9A7FC /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -125,8 +90,7 @@
 		C191BEF82B72577500D9A7FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C191BEF72B72577500D9A7FC /* HelloUI_osx_x64.app */,
-				8FDA3D312B78F2F00061F365 /* HelloUI_osx_arm64.app */,
+				8FDA3D312B78F2F00061F365 /* HelloUI_osx.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,9 +117,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8FDA3D1B2B78F2F00061F365 /* HelloUI_osx_arm64 */ = {
+		8FDA3D1B2B78F2F00061F365 /* HelloUI_osx */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8FDA3D2E2B78F2F00061F365 /* Build configuration list for PBXNativeTarget "HelloUI_osx_arm64" */;
+			buildConfigurationList = 8FDA3D2E2B78F2F00061F365 /* Build configuration list for PBXNativeTarget "HelloUI_osx" */;
 			buildPhases = (
 				8FDA3D1C2B78F2F00061F365 /* Sources */,
 				8FDA3D1F2B78F2F00061F365 /* Frameworks */,
@@ -166,27 +130,9 @@
 			);
 			dependencies = (
 			);
-			name = HelloUI_osx_arm64;
+			name = HelloUI_osx;
 			productName = HelloUI_osx;
-			productReference = 8FDA3D312B78F2F00061F365 /* HelloUI_osx_arm64.app */;
-			productType = "com.apple.product-type.application";
-		};
-		C191BEF62B72577500D9A7FC /* HelloUI_osx_x64 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C191BF1D2B72577700D9A7FC /* Build configuration list for PBXNativeTarget "HelloUI_osx_x64" */;
-			buildPhases = (
-				C191BEF32B72577500D9A7FC /* Sources */,
-				C191BEF42B72577500D9A7FC /* Frameworks */,
-				C191BEF52B72577500D9A7FC /* Resources */,
-				8FDA3DB82B7952220061F365 /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = HelloUI_osx_x64;
-			productName = HelloUI_osx;
-			productReference = C191BEF72B72577500D9A7FC /* HelloUI_osx_x64.app */;
+			productReference = 8FDA3D312B78F2F00061F365 /* HelloUI_osx.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -197,11 +143,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastUpgradeCheck = 1520;
-				TargetAttributes = {
-					C191BEF62B72577500D9A7FC = {
-						CreatedOnToolsVersion = 15.2;
-					};
-				};
 			};
 			buildConfigurationList = C191BEF22B72577500D9A7FC /* Build configuration list for PBXProject "HelloUI_osx" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -216,8 +157,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C191BEF62B72577500D9A7FC /* HelloUI_osx_x64 */,
-				8FDA3D1B2B78F2F00061F365 /* HelloUI_osx_arm64 */,
+				8FDA3D1B2B78F2F00061F365 /* HelloUI_osx */,
 			);
 		};
 /* End PBXProject section */
@@ -231,35 +171,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C191BEF52B72577500D9A7FC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8FDA3D382B78F69F0061F365 /* HelloUI_osx-Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		8FDA3DB72B79447D0061F365 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "echo \"copying $SRCROOT/../../../data/niUI to $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang/data/niUI\"\nmkdir -p \"$TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang/data\"\ncp -R \"$SRCROOT/../../../data/niUI\" \"$TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang/data\"\necho \"copying $SRCROOT/../../../scripts to $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang/scripts\"\nmkdir -p \"$TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang\"\ncp -R \"$SRCROOT/../../../scripts\" \"$TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Resources/niLang\"\n";
-		};
-		8FDA3DB82B7952220061F365 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -285,15 +200,6 @@
 			files = (
 				8FDA3D482B78FA3E0061F365 /* HelloUI_cpp.cpp in Sources */,
 				8FDA3D462B78FA3D0061F365 /* HelloUI_Widget.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C191BEF32B72577500D9A7FC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8FDA3D472B78FA3E0061F365 /* HelloUI_cpp.cpp in Sources */,
-				8FDA3D452B78FA3D0061F365 /* HelloUI_Widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,8 +237,24 @@
 					"-I\"../../../sources/niScript/src/API\"",
 					"-Wno-documentation",
 				);
-				OTHER_LDFLAGS = (
+				OTHER_LDFLAGS = "";
+				"OTHER_LDFLAGS[arch=arm64]" = (
 					"-L\"../../../libs/clang-osx-arm64\"",
+					"-lbz2",
+					"-liconv",
+					"-lniLang_da",
+					"-lniCURL_da",
+					"-llibCURL_da",
+					"-lniUI_da",
+					"-lniUI_ogg_da",
+					"-llibMojoshader_da",
+					"-lniUI_theoraplayer_da",
+					"-lniAppLib_da",
+					"-lniScript_da",
+					"-fsanitize=address",
+				);
+				"OTHER_LDFLAGS[arch=x86_64]" = (
+					"-L\"../../../libs/clang-osx-x64\"",
 					"-lbz2",
 					"-liconv",
 					"-lniLang_da",
@@ -384,8 +306,23 @@
 					"-I\"../../../sources/niScript/src/API\"",
 					"-Wno-documentation",
 				);
-				OTHER_LDFLAGS = (
+				OTHER_LDFLAGS = "";
+				"OTHER_LDFLAGS[arch=arm64]" = (
 					"-L\"../../../libs/clang-osx-arm64\"",
+					"-lbz2",
+					"-liconv",
+					"-lniLang_ra",
+					"-lniCURL_ra",
+					"-llibCURL_ra",
+					"-lniUI_ra",
+					"-lniUI_ogg_ra",
+					"-llibMojoshader_ra",
+					"-lniUI_theoraplayer_ra",
+					"-lniAppLib_ra",
+					"-lniScript_ra",
+				);
+				"OTHER_LDFLAGS[arch=x86_64]" = (
+					"-L\"../../../libs/clang-osx-x64\"",
 					"-lbz2",
 					"-liconv",
 					"-lniLang_ra",
@@ -520,114 +457,10 @@
 			};
 			name = Release;
 		};
-		C191BF1E2B72577700D9A7FC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HelloUI_osx/HelloUI_osx.entitlements;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TMMCER4VXJ;
-				ENABLE_HARDENED_RUNTIME = YES;
-				EXCLUDED_SOURCE_FILE_NAMES = "niLang/*";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "HelloUI_osx-Info.plist";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
-				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				OTHER_CFLAGS = (
-					"-I\"../../../sources/niAppLib/src/API\"",
-					"-I\"../../../sources/niLang/src/API\"",
-					"-I\"../../../sources/niUI/src/API\"",
-					"-I\"../../../sources/niScript/src/API\"",
-					"-Wno-documentation",
-				);
-				OTHER_LDFLAGS = (
-					"-L\"../../../libs/clang-osx-x64\"",
-					"-lbz2",
-					"-liconv",
-					"-lniLang_ra",
-					"-lniCURL_ra",
-					"-llibCURL_ra",
-					"-lniUI_ra",
-					"-lniUI_ogg_ra",
-					"-llibMojoshader_ra",
-					"-lniUI_theoraplayer_ra",
-					"-lniAppLib_ra",
-					"-lniScript_ra",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "sdk.HelloUI-osx";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-			};
-			name = Debug;
-		};
-		C191BF1F2B72577700D9A7FC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HelloUI_osx/HelloUI_osx.entitlements;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TMMCER4VXJ;
-				ENABLE_HARDENED_RUNTIME = YES;
-				EXCLUDED_SOURCE_FILE_NAMES = "niLang/*";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "HelloUI_osx-Info.plist";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
-				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				OTHER_CFLAGS = (
-					"-I\"../../../sources/niAppLib/src/API\"",
-					"-I\"../../../sources/niLang/src/API\"",
-					"-I\"../../../sources/niUI/src/API\"",
-					"-I\"../../../sources/niScript/src/API\"",
-					"-Wno-documentation",
-				);
-				OTHER_LDFLAGS = (
-					"-L\"../../../libs/clang-osx-x64\"",
-					"-lbz2",
-					"-liconv",
-					"-lniLang_ra",
-					"-lniCURL_ra",
-					"-llibCURL_ra",
-					"-lniUI_ra",
-					"-lniUI_ogg_ra",
-					"-llibMojoshader_ra",
-					"-lniUI_theoraplayer_ra",
-					"-lniAppLib_ra",
-					"-lniScript_ra",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "sdk.HelloUI-osx";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8FDA3D2E2B78F2F00061F365 /* Build configuration list for PBXNativeTarget "HelloUI_osx_arm64" */ = {
+		8FDA3D2E2B78F2F00061F365 /* Build configuration list for PBXNativeTarget "HelloUI_osx" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8FDA3D2F2B78F2F00061F365 /* Debug */,
@@ -641,15 +474,6 @@
 			buildConfigurations = (
 				C191BF1B2B72577700D9A7FC /* Debug */,
 				C191BF1C2B72577700D9A7FC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C191BF1D2B72577700D9A7FC /* Build configuration list for PBXNativeTarget "HelloUI_osx_x64" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C191BF1E2B72577700D9A7FC /* Debug */,
-				C191BF1F2B72577700D9A7FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

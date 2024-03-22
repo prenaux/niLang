@@ -1470,7 +1470,7 @@ iExpressionVariable* __stdcall  ExprVar::Clone() const
       }
     case eExpressionVariableType_IUnknown:
       {
-        pNew = niNew ExprVarString(hspName);
+        pNew = niNew ExprVarIUnknown(hspName);
         static_cast<ExprVarIUnknown*>(pNew)->Value = this->GetIUnknown();
         break;
       }
@@ -4840,6 +4840,65 @@ tBool DoEvaluate(iExpressionContext*)
 }
 EndOp()
 
+// Global function
+BeginOpLF(Global,eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  const tSize numOperands = mvOperands.size();
+  if (numOperands < 3) {
+    EXPRESSION_TRACE(_A("Global(): must have at least three operands."));
+    return eFalse;
+  }
+  if ((numOperands % 2) != 1) {
+    EXPRESSION_TRACE("Global(): must have a last operand which is the returned valued.");
+    return eFalse;
+  }
+
+  for (tU32 i = 0; i < numOperands - 1; i += 2) {
+    Op::sOperand& opKey = mvOperands[i];
+    if (!opKey.Eval(apContext)) {
+      EXPRESSION_TRACE(niFmt("Global(): operation, can't evaluate key operand '%s' (%d).",
+                             opKey.GetName(), i));
+      return eFalse;
+    }
+    if (opKey.GetVariable()->GetType() != eExpressionVariableType_String) {
+      EXPRESSION_TRACE(niFmt("Global(): operation, key operand '%s' (%d) is not a string.",
+                             opKey.GetName(), i));
+      return eFalse;
+    }
+    tHStringPtr key = _H(opKey.GetVariable()->GetString());
+    if (HStringIsEmpty(key)) {
+      EXPRESSION_TRACE(niFmt("Global(): variable name resolves to an empty string '%s' (%d).",
+                             key, i+1));
+      return eFalse;
+    }
+
+    Op::sOperand& opVal = mvOperands[i+1];
+    if (!opVal.Eval(apContext)) {
+      EXPRESSION_TRACE(niFmt("Global(): operation, can't evaluate value operand '%s' (%d).",
+                             key, i+1));
+      return eFalse;
+    }
+
+    Ptr<iExpressionVariable> val = opVal.GetVariable()->Clone();
+    val->SetName(key);
+    if (!apContext->AddVariable(val)) {
+      EXPRESSION_TRACE(niFmt("Global(): operation, can't add variable '%s' (%d).",
+                             key, i));
+      return eFalse;
+    }
+  }
+
+  mptrResult = mvOperands.back().GetVariable();
+  return eTrue;
+}
+tBool DoEvaluate(iExpressionContext*)
+{
+  return eTrue;
+}
+EndOp()
+
+
 // Set function
 BeginOpLF(Set,eInvalidHandle)
 Ptr<iExpressionContext> mptrLocalContext;
@@ -5871,6 +5930,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(Set);
   AddOp(If);
   AddOp(Eval);
+  AddOp(Global);
 
   AddOp(DTGet);
   AddOp(DTGetChild);

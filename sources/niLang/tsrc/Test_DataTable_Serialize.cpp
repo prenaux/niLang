@@ -64,7 +64,7 @@ TEST_FIXTURE(FDTSerialize,Path) {
 
   const cString s = dtC1->GetString("S");
   const tF32 f = dtGC1->GetString("F").Float();
-  const tF32 u = dtC2->GetString("U").ULong();
+  const tU32 u = dtC2->GetString("U").ULong();
   const tBool b = dtGC2->GetString("B").Bool();
   const sVec2f v2 = dtGC3->GetString("V2").Vec2<tF32>();
   const sVec3f v3 = dtGC3->GetString("V3").Vec3<tF32>();

@@ -1815,5 +1815,23 @@
 				<return type="void *" typec="void*"/>
 			</method>
 		</interface>
+		<interface
+			name="iOSWindowLinux"
+			noautomation="yes"
+			uuid1="662A125B-3A03-0244-9F3B-4918D61F3B44"
+			uuid2="0x662a125b,0x3a03,0x0244,0x9f,0x3b,0x49,0x18,0xd6,0x1f,0x3b,0x44">
+			<comments desc="Linux window. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getScreenHandle"
+				name="GetScreenHandle"
+				num_parameters="0">
+				<comments desc="Get the native screen handle "/>
+				<return type="void *" typec="void*"/>
+			</method>
+		</interface>
 	</namespace>
 </niIDL>

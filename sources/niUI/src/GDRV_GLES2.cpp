@@ -199,7 +199,7 @@ static bool hasTexFmtDepth = false;
 #define _glReadPixels glReadPixels
 
 // FBOs MUST be tested for each platform before being enabled
-#if defined niWindows || defined niJSCC || defined niAndroid || defined niOSX || defined niIOS || defined niQNX
+#if defined niWindows || defined niJSCC || defined niAndroid || defined niOSX || defined niIOS || defined niQNX || defined niLinux
 #define USE_FBO
 #endif
 
@@ -356,7 +356,7 @@ static GLint kGL2_MaxPixelUniforms = 0;
 #define GL_FBOAPI
 #endif
 
-#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid
+#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid || defined niLinux
 #define GL_FBO_DECLAPI(RET,NAME,PARAMS)         \
   typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS; \
   tpfn_##NAME _##NAME = NAME;
@@ -690,7 +690,7 @@ static tBool GL2_InitializeExt() {
 
 #ifdef USE_FBO
   {
-#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid || defined niQNX
+#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid || defined niQNX || defined niLinux
     hasFBO = true;
 #elif defined niWindows
     hasFBO = false;

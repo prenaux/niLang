@@ -168,7 +168,6 @@
 #elif defined niLinux
 #  include "GDRV_GLContext.h"
 #  undef __TSGL_NOCONTEXT__
-#  include <GL/glext.h>
 
 #else
 #  error "Unknown platform."

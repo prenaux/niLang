@@ -499,5 +499,8 @@ IDLC_END_INTF(ni,iOSWindowGeneric)
 /** interface : iOSWindowQNX **/
 /** iOSWindowQNX -> NO AUTOMATION **/
 /** ni -> iOSWindowQNX::GetScreenHandle/0 -> NO AUTOMATION **/
+/** interface : iOSWindowLinux **/
+/** iOSWindowLinux -> NO AUTOMATION **/
+/** ni -> iOSWindowLinux::GetScreenHandle/0 -> NO AUTOMATION **/
 IDLC_END_NAMESPACE()
 // EOF //

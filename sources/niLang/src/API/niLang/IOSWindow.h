@@ -847,6 +847,15 @@ struct iOSWindowQNX : public iUnknown {
   virtual void* __stdcall GetScreenHandle() const = 0;
 };
 
+//! Linux window.
+//! {NoAutomation}
+struct iOSWindowLinux : public iUnknown {
+  niDeclareInterfaceUUID(iOSWindowLinux,0x662a125b,0x3a03,0x0244,0x9f,0x3b,0x49,0x18,0xd6,0x1f,0x3b,0x44);
+
+  //! Get the native screen handle
+  virtual void* __stdcall GetScreenHandle() const = 0;
+};
+
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

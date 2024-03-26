@@ -426,7 +426,7 @@ tOSMonitorFlags __stdcall cLang::GetMonitorFlags(tU32 anIndex) const {
   return 0;
 }
 
-#if !defined niQNX && !defined niJSCC
+#if !defined niQNX && !defined niJSCC && !defined niLinux
 ///////////////////////////////////////////////
 iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) {
   return 0;

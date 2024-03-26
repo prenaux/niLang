@@ -38,8 +38,7 @@ using namespace ni;
 #elif defined niQNX
 #  define GDRV_GL2
 #elif defined niLinux
-// None atm, GDRV_GL2 should work almost as-is once we have the windowing
-// system wired.
+#  define GDRV_GL2
 #else
 #  error "No Graphics driver set for this platform."
 #endif

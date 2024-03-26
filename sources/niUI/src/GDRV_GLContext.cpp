@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#if defined niOSX || defined niWindows
+#if defined niOSX || defined niWindows || defined niLinux
 
 #include "GDRV_GLContext.h"
 

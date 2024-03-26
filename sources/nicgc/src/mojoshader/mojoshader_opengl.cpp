@@ -73,7 +73,7 @@
 
 #  define GL_GLEXT_LEGACY 1
 #  include <GL/gl.h>
-#  include "../../../niUI/src/GL/glext.h"
+#  include "../../../niUI/src/GL/legacy_glext.h"
 
 #endif
 

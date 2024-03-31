@@ -564,7 +564,7 @@ inline ni::sVec3<T> __stdcall GetScreenPosition(const ni::sVec3<T>& avPos, const
   T fVPTop = aRect.GetTop();
   T RHW = ni::FInvert(v.w);
   v.x = (v.x*RHW)*fVPW2 + (fVPLeft+fVPW2);
-  v.y = fVPBot-((v.y*RHW)*fVPH2 + (fVPTop+fVPH2));
+  v.y = fVPBot- (1 + v.y*RHW)*fVPH2;
   v.z *= RHW;
   v.w = RHW;  // could put RHW here instead of 1.0
   return v.GetPosition();

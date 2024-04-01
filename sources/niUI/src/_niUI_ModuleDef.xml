@@ -22236,7 +22236,7 @@
 					typec="iCanvas*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="drawTransformedWidget" name="DrawTransformedWidget" num_parameters="3">
+			<method java_name="drawTransformedWidget" name="DrawTransformedWidget" num_parameters="4">
 				<comments desc="Draw the specified widget in the specified canvas. The widget is transformed using the specified matrix. Clipping and scissoring is disabled. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -22250,11 +22250,16 @@
 					typec="iCanvas*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					last="1"
 					name="aBaseMatrix"
 					type="const sMatrixf &amp;"
 					typec="const sMatrixf&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abUseScissor"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
 			</method>
 			<method
 				java_name="setDragStartDistance"

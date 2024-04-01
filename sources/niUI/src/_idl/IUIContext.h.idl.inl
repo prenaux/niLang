@@ -581,18 +581,20 @@ IDLC_METH_BEGIN(ni,iUIContext,DrawWidget,2)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iUIContext,DrawWidget,2)
 
-/** ni -> iUIContext::DrawTransformedWidget/3 **/
-IDLC_METH_BEGIN(ni,iUIContext,DrawTransformedWidget,3)
+/** ni -> iUIContext::DrawTransformedWidget/4 **/
+IDLC_METH_BEGIN(ni,iUIContext,DrawTransformedWidget,4)
 	IDLC_DECL_VAR(iWidget*,apWidget)
 	IDLC_BUF_TO_INTF(iWidget,apWidget)
 	IDLC_DECL_VAR(iCanvas*,apCanvas)
 	IDLC_BUF_TO_INTF(iCanvas,apCanvas)
 	IDLC_DECL_VAR(sMatrixf,aBaseMatrix)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aBaseMatrix)
+	IDLC_DECL_VAR(tBool,abUseScissor)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abUseScissor)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iUIContext,DrawTransformedWidget,3,(apWidget,apCanvas,aBaseMatrix))
+	IDLC_METH_CALL(_Ret,ni,iUIContext,DrawTransformedWidget,4,(apWidget,apCanvas,aBaseMatrix,abUseScissor))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iUIContext,DrawTransformedWidget,3)
+IDLC_METH_END(ni,iUIContext,DrawTransformedWidget,4)
 
 /** ni -> iUIContext::SetDragStartDistance/1 **/
 IDLC_METH_BEGIN(ni,iUIContext,SetDragStartDistance,1)

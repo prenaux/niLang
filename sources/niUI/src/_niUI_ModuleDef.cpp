@@ -20845,15 +20845,16 @@ static const ni::sMethodDef iUIContext_DrawWidget = {
 };
 
 // Method: DrawTransformedWidget
-static const ni::sParameterDef iUIContext_DrawTransformedWidget_Parameters[3] = { 
+static const ni::sParameterDef iUIContext_DrawTransformedWidget_Parameters[4] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
-  { "aBaseMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
+  { "aBaseMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "abUseScissor", ni::eType_I8, NULL, "tBool" }
 }; 
 static const ni::sMethodDef iUIContext_DrawTransformedWidget = {
   "DrawTransformedWidget",
   0|ni::eType_I8, NULL, "tBool",
-  3, iUIContext_DrawTransformedWidget_Parameters,
+  4, iUIContext_DrawTransformedWidget_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iUIContext_DrawTransformedWidget)
 #else

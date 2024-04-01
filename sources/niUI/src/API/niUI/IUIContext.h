@@ -343,7 +343,7 @@ struct iUIContext : public iUnknown
   //! Draw the specified widget in the specified canvas. The widget is
   //! transformed using the specified matrix. Clipping and scissoring is
   //! disabled.
-  virtual tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix) = 0;
+  virtual tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix, tBool abUseScissor) = 0;
   //! @}
 
 

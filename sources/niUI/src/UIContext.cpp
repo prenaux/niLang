@@ -16,6 +16,9 @@
 #include <niLang/Platforms/Win32/Win32_DelayLoadImpl.h>
 #endif
 
+#define RAW_VIEWPORT 1
+#define RAW_VIEWPORT_SCISSOR 2
+
 static void _ApplyViewport(iGraphicsContext* apContext,
                            const sRectf& aViewport,
                            const sRecti& aScissor,
@@ -64,13 +67,43 @@ static void _ApplyViewport(iGraphicsContext* apContext,
                            orthoRect,0.0f,1.0f));
 }
 
-static void _ApplyWidgetViewport(iCanvas* apCanvas, const sRectf& aViewport, const sRecti& aScissor, tBool abRawViewport, const sMatrixf& aBaseMatrix, const tF32 afContentsScale) {
+static inline void _ApplyTransformedScissor(iCanvas* apCanvas, const sRecti& aScissor, const sMatrixf& aBaseMatrix) {
+  sRectf fsc = aScissor.ToFloat();
+  sVec2f tl, br;
+  VecTransformCoord(tl, Vec2f(aScissor.x, -aScissor.y), aBaseMatrix);
+  VecTransformCoord(br, Vec2f(aScissor.z, -aScissor.w), aBaseMatrix);
+  Ptr<iGraphicsContext> gc = apCanvas->GetGraphicsContext();
+  sMatrixf vp = gc->GetFixedStates()->GetCameraViewProjectionMatrix();
+  sRectf r = apCanvas->GetViewport();
+
+  ni::sVec4f v1, v2;
+  ni::VecTransform(v1,tl,vp);
+  ni::VecTransform(v2,br,vp);
+  tF32 fVPW2 = r.GetWidth() * 0.5f;
+  tF32 fVPH2 = r.GetHeight() * 0.5f;
+
+  tF32 RHW1 = ni::FInvert(v1.w);
+  v1.x = (v1.x*RHW1)*fVPW2 + (r.x+fVPW2);
+  v1.y = r.w- (1 + v1.y*RHW1)*fVPH2;
+
+  tF32 RHW2 = ni::FInvert(v2.w);
+  v2.x = (v2.x*RHW2)*fVPW2 + (r.x+fVPW2);
+  v2.y = r.w- (1 + v2.y*RHW2)*fVPH2;
+
+  gc->SetScissorRect(Vec4i(v1.x, v1.y, v2.x,v2.y));
+}
+
+
+static void _ApplyWidgetViewport(iCanvas* apCanvas, const sRectf& aViewport, const sRecti& aScissor, tU32 anRawViewport, const sMatrixf& aBaseMatrix, const tF32 afContentsScale) {
   apCanvas->ResetStates();
-  if (abRawViewport) {
+  if (anRawViewport) {
     sMatrixf viewportMatrix = sMatrixf::Identity();
     MatrixTranslation(viewportMatrix,Vec3f(aViewport.x,-aViewport.y,0));
     MatrixScale(viewportMatrix,viewportMatrix,Vec3f(1,-1,1));
     apCanvas->SetMatrix(viewportMatrix * aBaseMatrix);
+    if (anRawViewport == RAW_VIEWPORT_SCISSOR) {
+      _ApplyTransformedScissor(apCanvas, aScissor, aBaseMatrix);
+    }
   }
   else {
     apCanvas->SetContentsScale(afContentsScale);
@@ -911,7 +944,7 @@ tBool __stdcall cUIContext::DrawWidget(iWidget* apWidget, iCanvas* apCanvas) {
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix) {
+tBool __stdcall cUIContext::DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix, tBool abUseScissor) {
   if (!niIsOK(apWidget)) {
     niError(niFmt("Invalid Widget '%s' (%p).",
                   (apWidget?niHStr(apWidget->GetID()):""),
@@ -924,13 +957,13 @@ tBool __stdcall cUIContext::DrawTransformedWidget(iWidget* apWidget, iCanvas* ap
   }
   cWidget* w = (cWidget*)apWidget;
   const sRectf rectContext = apWidget->GetWidgetRect();
-  tBool r = _DrawWidget(w,apCanvas,rectContext,eTrue,aBaseMatrix);
+  tBool r = _DrawWidget(w,apCanvas,rectContext,abUseScissor ? RAW_VIEWPORT_SCISSOR : RAW_VIEWPORT,aBaseMatrix);
   apCanvas->Flush();
   return r;
 }
 
 ///////////////////////////////////////////////
-tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aParentRect, tBool abRawViewport, const sMatrixf& aBaseMatrix)
+tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aParentRect, tU32 anRawViewport, const sMatrixf& aBaseMatrix)
 {
   niAssert(niFlagIsNot(w->mStatus,WDGSTATUS_INVALID));
   niCheck(niFlagIsNot(w->mStatus,WDGSTATUS_INVALID),eFalse);
@@ -998,7 +1031,7 @@ tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aPare
   }
 
 #define CANVAS_SET_VIEWPORT_AND_SCISSOR(NEW_VP,NEW_SCISSOR)             \
-  _ApplyWidgetViewport(canvas, NEW_VP, NEW_SCISSOR, abRawViewport, aBaseMatrix, mfContentsScale);
+  _ApplyWidgetViewport(canvas, NEW_VP, NEW_SCISSOR, anRawViewport, aBaseMatrix, mfContentsScale);
 
 #define CANVAS_RESTORE_VIEWPORT_AND_SCISSOR()
 
@@ -1062,7 +1095,7 @@ tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aPare
                   ++numNonClientChildren;
                   continue;
                 }
-                if (!_DrawWidget(*lit,canvas,clientVP,abRawViewport,aBaseMatrix) || zmapTouch != w->mZMap.GetTouchCount()) {
+                if (!_DrawWidget(*lit,canvas,clientVP,anRawViewport,aBaseMatrix) || zmapTouch != w->mZMap.GetTouchCount()) {
                   bDrawError = eTrue;
                   break;
                 }
@@ -1085,7 +1118,7 @@ tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aPare
             if (!niFlagIs((*lit)->GetStyle(),eWidgetStyle_NCRelative)) {
               continue;
             }
-            if (!_DrawWidget(*lit,canvas,nonClientVP,abRawViewport,aBaseMatrix) || zmapTouch != w->mZMap.GetTouchCount()) {
+            if (!_DrawWidget(*lit,canvas,nonClientVP,anRawViewport,aBaseMatrix) || zmapTouch != w->mZMap.GetTouchCount()) {
               bDrawError = eTrue;
               break;
             }
@@ -1103,7 +1136,7 @@ tBool cUIContext::_DrawWidget(cWidget* w, iCanvas* apCanvas, const sRectf& aPare
 
   if (!inheritCanvas) {
     canvas->Flush(); // flush the widget's own canvas
-    _ApplyWidgetViewport(apCanvas, aParentRect, sRecti::Null(),abRawViewport,aBaseMatrix,mfContentsScale);
+    _ApplyWidgetViewport(apCanvas, aParentRect, sRecti::Null(),anRawViewport,aBaseMatrix,mfContentsScale);
     apCanvas->BlitStretch(w->GetRect(),canvas->GetGraphicsContext()->GetRenderTarget(0),w->GetWidgetRect());
   }
 

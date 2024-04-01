@@ -338,9 +338,9 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
 
   // Drawing
   tBool __stdcall _DrawWidget(cWidget* apWidget, iCanvas* apCanvas, const sRectf& aParentRect,
-                              tBool abRawViewport, const sMatrixf& aBaseMatrix);
+                              tU32 anRawViewport, const sMatrixf& aBaseMatrix);
   tBool __stdcall DrawWidget(iWidget* apWidget, iCanvas* apCanvas);
-  tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix);
+  tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix, tBool abUseScissor);
 
   // Localization
   tHStringPtr mhspCurrentLocale;

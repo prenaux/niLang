@@ -758,6 +758,13 @@
 			<value name="eUIMessage_UserMessage" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;Z&apos; , 0 ) ">
 				<comments desc="First user message id "/>
 			</value>
+			<value name="eUIMessage_ExpressionUpdate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;E&apos; , 0 ) ">
+				<comments desc="ExpressionUpdate message ">
+					<remark text="Called when expression context updated "/>
+					<params text="A: iExpressionContext interface where the widget updates should use. "/>
+					<params text="B: unused "/>
+				</comments>
+			</value>
 			<value name="eUIMessage_ContextUpdate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;X&apos; , &apos;u&apos; ) ">
 				<comments desc="Sent after the context is updated. ">
 					<params text="A: tF32 FrameTime. "/>

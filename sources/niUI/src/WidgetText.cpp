@@ -181,6 +181,14 @@ class cWidgetText : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetText>
         return eFalse;
       }
 
+      case eUIMessage_ExpressionUpdate: {
+        if (mptrTextObject.IsOK()) {
+          mptrTextObject->SetExpressionContext(QPtr<iExpressionContext>(aA));
+          mptrTextObject->Update();
+        }
+        break;
+      }
+
       case eUIMessage_Copy: {
         QPtr<ni::iDataTable> ptrDT = aA;
         if (ptrDT.IsOK() && mptrTextObject.IsOK()) {

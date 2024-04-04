@@ -607,6 +607,16 @@ enum eUIMessage
   eUIMessage_UserMessage = niMessageID('_','U','I','Z',0),
   //! @}
 
+  //! \name Expression
+  //! @{
+
+  //! ExpressionUpdate message
+  //! \param A: iExpressionContext interface where the widget updates should use.
+  //! \param B: unused
+  //! \remark Called when expression context updated
+  eUIMessage_ExpressionUpdate = niMessageID('_','U','I','E',0),
+  //! @}
+
   //! \name Context
   //! @{
   //! Context messages are sent only to the root widget.

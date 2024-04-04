@@ -38269,6 +38269,7 @@ static const ni::sEnumValueDef Enum_eUIMessage_Values[] = {
 	{ "SerializeChildren", ni::eUIMessage_SerializeChildren },
 	{ "SerializeFinalize", ni::eUIMessage_SerializeFinalize },
 	{ "UserMessage", ni::eUIMessage_UserMessage },
+	{ "ExpressionUpdate", ni::eUIMessage_ExpressionUpdate },
 	{ "ContextUpdate", ni::eUIMessage_ContextUpdate },
 	{ "ContextBeforeDraw", ni::eUIMessage_ContextBeforeDraw },
 	{ "ContextAfterDraw", ni::eUIMessage_ContextAfterDraw },

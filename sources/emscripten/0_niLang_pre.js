@@ -967,10 +967,11 @@ Module["preRun"] = function Module_preRun(params) {
     }
     console.log("Package: " + packagePath + " from " + packageUrl);
     niFS_AddSingleFile(packagePath, packageUrl);
-    if (!title) {
-      document.title = niPath_GetFilename(packageUrl);
-    }
+
+    // using vpk file name as title
+    title = niPath_NoExt(niPath_GetFilename(packageUrl));
   }
+
   if (title) {
     document.title = title;
   }

@@ -2859,7 +2859,7 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
     apDT->SetString(_A("text"),niHStr(mhspText));
     apDT->SetString(_A("hover_text"),niHStr(mhspHoverText));
     apDT->SetString(_A("font"),niHStr(this->GetFont()->GetName()));
-    apDT->SetInt(_A("font_size"),this->GetFont()->GetResolution());
+    apDT->SetInt(_A("font_size"),this->GetFont()->GetResolution() * mpUICtx->mfContentsScale);
     apDT->SetString(_A("skin"),niHStr(this->GetSkin()));
     if (HStringIsNotEmpty(mhspSkinClass) && mhspSkinClass != mhspClass)
       apDT->SetString(_A("skin_class"),niHStr(this->GetSkinClass()));

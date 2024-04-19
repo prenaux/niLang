@@ -195,6 +195,10 @@ struct iVGPaintGradient : public iVGPaint
   //! Get the gradient table.
   //! {Property}
   virtual iVGGradientTable* __stdcall GetGradientTable() const = 0;
+
+  //! Get the gradient image.
+  //! {Property}
+  virtual iVGImage* __stdcall GetGradientImage() = 0;
 };
 
 #endif // niMinFeatures

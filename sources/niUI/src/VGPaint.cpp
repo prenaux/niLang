@@ -209,7 +209,8 @@ class cVGGradientTable : public ImplRC<iVGGradientTable>
       trans.invert();
     }
     tAGGLinearInterpolator  inter(trans);
-    tAGGGradientSpanGen   span_gen(inter, *ptrGrad, AGGGetGradientTable(this), agg_real(anD1), agg_real(anD2));
+    sAGGGradientTable t = AGGGetGradientTable(this);
+    tAGGGradientSpanGen span_gen(inter, *ptrGrad, t, agg_real(anD1), agg_real(anD2));
     tAGGRendererBinGradient r1(rb, span_alloc, span_gen);
 
     tAGGRasterizerScanline pf;

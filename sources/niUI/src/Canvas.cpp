@@ -523,8 +523,8 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
               imageFilter = eVGImageFilter_Bilinear;
               Ptr<iVGTransform> transform = CreateVGTransform();
               vScale *= pTransform->GetScaling()*0.5f;
-              vTrans.x = tF32(nResX/2);
-              vTrans.y = tF32(nResY/2);
+              vTrans.x = nResX * 0.5f;
+              vTrans.y = nResY * 0.5f;
               transform->Scaling(vScale);
               transform->Translate(vTrans);
               ptrImage = pPaintGrad->GetGradientTable()->

@@ -22603,6 +22603,20 @@ static const ni::sMethodDef iVGPaintGradient_GetGradientTable = {
 };
 #endif // niMinFeatures(20)
 
+#if niMinFeatures(20)
+// Method: GetGradientImage
+static const ni::sMethodDef iVGPaintGradient_GetGradientImage = {
+  "GetGradientImage",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "iVGImage*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iVGPaintGradient_GetGradientImage)
+#else
+  NULL
+#endif
+};
+#endif // niMinFeatures(20)
+
 static const ni::sMethodDef* Methods_iVGPaintGradient[] = {
 #if niMinFeatures(20)
 	&iVGPaintGradient_SetGradientType,
@@ -22654,6 +22668,9 @@ static const ni::sMethodDef* Methods_iVGPaintGradient[] = {
 #endif // niMinFeatures(20)
 #if niMinFeatures(20)
 	&iVGPaintGradient_GetGradientTable,
+#endif // niMinFeatures(20)
+#if niMinFeatures(20)
+	&iVGPaintGradient_GetGradientImage,
 #endif // niMinFeatures(20)
 
 };

@@ -23798,6 +23798,17 @@
 				<comments desc="Get the gradient table. "/>
 				<return type="iVGGradientTable *" typec="iVGGradientTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method
+				java_name="getGradientImage"
+				min_features="20"
+				name="GetGradientImage"
+				num_parameters="0"
+				property="get"
+				property_name2="gradientImage"
+				property_name="gradient_image">
+				<comments desc="Get the gradient image. "/>
+				<return type="iVGImage *" typec="iVGImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niUI/src/_idl/IVGPath.h.idl.xml">

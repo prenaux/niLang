@@ -502,40 +502,10 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         eVGWrapType wrapType;
         eVGImageFilter imageFilter;
         if (apPaint->GetType() == eVGPaintType_Gradient) {
-          tU32 nResX = 128, nResY = 128;
-          const iVGPaintGradient* pPaintGrad = niStaticCast(const iVGPaintGradient*,apPaint);
-          switch (pPaintGrad->GetGradientType()) {
-          default:
-          case eVGGradientType_Linear:
-            {
-              wrapType = eVGWrapType_Mirror;
-              imageFilter = eVGImageFilter_Bilinear;
-              ptrImage = pPaintGrad->GetGradientTable()->CreateImage(pPaintGrad->GetGradientType(),pPaintGrad->GetWrapType(),NULL,nResX,1,pPaintGrad->GetD1(),pPaintGrad->GetD2());
-              break;
-            }
-          case eVGGradientType_Radial:
-          case eVGGradientType_Conic:
-          case eVGGradientType_SqrtCross:
-          case eVGGradientType_Cross:
-          case eVGGradientType_Diamond:
-            {
-              wrapType = eVGWrapType_Clamp;
-              imageFilter = eVGImageFilter_Bilinear;
-              Ptr<iVGTransform> transform = CreateVGTransform();
-              vScale *= pTransform->GetScaling()*0.5f;
-              vTrans.x = nResX * 0.5f;
-              vTrans.y = nResY * 0.5f;
-              transform->Scaling(vScale);
-              transform->Translate(vTrans);
-              ptrImage = pPaintGrad->GetGradientTable()->
-                  CreateImage(pPaintGrad->GetGradientType(),pPaintGrad->GetWrapType(),
-                              transform,
-                              nResX,nResX,pPaintGrad->GetD1(),pPaintGrad->GetD2());
-              vTrans /= vScale;
-              //VecInverse(vScale,vScale);
-              break;
-            }
-          }
+          QPtr<iVGPaintGradient> pPaintGradient(apPaint);
+          ptrImage = pPaintGradient->GetGradientImage();
+          wrapType = pPaintGradient->GetWrapType();
+          imageFilter = eVGImageFilter_Bilinear;
         }
         else {
           const iVGPaintImage* pPaintImage = niStaticCast(const iVGPaintImage*,apPaint);
@@ -597,6 +567,8 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         vertexColor.w *= apStyle->GetOpacity();
 
 #if 1
+        // we have the clear the ChannelTexture if there is any
+        mptrVGMaterial->SetChannelTexture(eMaterialChannel_Base, NULL);
         mptrVGMaterial->SetBlendMode(eBlendMode_Translucent);
         _canvas->SetMaterial(mptrVGMaterial);
 #else
@@ -622,21 +594,37 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
   //! Called to add the path's polygons.
   virtual void __stdcall AddPathPolygons(iVGPolygonTesselator* apTess, const iVGStyle* apStyle, tBool abStroke) {
     const tVec2fCVec* pVerts = apTess->GetTesselatedVertices();
-    if (pVerts) {
+    if (pVerts && !pVerts->empty()) {
       _canvas->SetColorA(mnAddPathPolygons_VertexColor);
       if (mbAddPathPolygons_TexGen) {
         agg::trans_affine paintTrans = AGGGetTransform(
             mVGTransforms[abStroke?eVGTransform_StrokePaint:eVGTransform_FillPaint].ptr());
-        // paintTrans.invert();
-        for (tVec2fCVec::const_iterator it = pVerts->begin(); it != pVerts->end(); ++it) {
-          const tF32 x = it->x;
-          const tF32 y = it->y;
-          agg_real tx = x;
-          agg_real ty = y;
-          paintTrans.transform(&tx,&ty);
-          tx = tx * mvAddPathPolygons_TexGen_Scale.x + mvAddPathPolygons_TexGen_Translation.x;
-          ty = ty * mvAddPathPolygons_TexGen_Scale.y + mvAddPathPolygons_TexGen_Translation.y;
-          _canvas->VertexPT(Vec3f(x,y,0.0f),Vec2f(tx,ty));
+
+        // fit image into the bounding box
+        sVec2f first = pVerts->GetFirst().mVec2f;
+        tF32 min_x, max_x, min_y, max_y;
+        min_x = max_x = first.x;
+        min_y = max_y = first.y;
+        astl::vector<sVec2f> v_transformed(pVerts->GetSize());
+        niLoop(i, pVerts->GetSize()) {
+          sVec2f v = pVerts->Get(i).mVec2f;
+          paintTrans.transform(&v.x,&v.y);
+          v_transformed[i] = v;
+
+          min_x = Min(min_x, v.x);
+          max_x = Max(max_x, v.x);
+
+          min_y = Min(min_y, v.y);
+          max_y = Max(max_y, v.y);
+        }
+
+        tF32 width = max_x - min_x;
+        tF32 height = max_y - min_y;
+
+        for (const auto& v : v_transformed) {
+          tF32 tx = (v.x - min_x) / width;
+          tF32 ty = (v.y - min_y) / height;
+          _canvas->VertexPT(Vec3f(v.x,v.y,0.0f),Vec2f(tx,ty));
         }
       }
       else {

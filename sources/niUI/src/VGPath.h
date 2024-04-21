@@ -628,14 +628,14 @@ class cVGPath : public ni::ImplRC<iVGPath>
             curved_smooth_trans         trans_smooth(smooth,trans);
             curved_trans_smooth_dash      trans_smooth_dash(trans_smooth);
             curved_trans_smooth_dash_stroked  trans_smooth_dash_stroked(trans_smooth_dash);
-            dash_stroke(m_curved, trans_smooth_dash, trans_smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
+            _SetDashedStrokeFromStyle(m_curved, trans_smooth_dash, trans_smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_smooth_dash_stroked,apStyle,eTrue);
           }
           else {
             curved_smooth_dash          smooth_dash(smooth);
             curved_smooth_dash_stroked      smooth_dash_stroked(smooth_dash);
             curved_smooth_dash_stroked_trans  smooth_dash_stroked_trans(smooth_dash_stroked,trans);
-            dash_stroke(m_curved, smooth_dash, smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
+            _SetDashedStrokeFromStyle(m_curved, smooth_dash, smooth_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(smooth_dash_stroked_trans,apStyle,eTrue);
           }
         }
@@ -644,14 +644,14 @@ class cVGPath : public ni::ImplRC<iVGPath>
             curved_trans        trans_curve(m_curved_count,trans);
             curved_trans_dash     trans_dash(trans_curve);
             curved_trans_dash_stroked trans_dash_stroked(trans_dash);
-            dash_stroke(m_curved, trans_dash, trans_dash_stroked, apStyle, trans, m_curved_count, scl);
+            _SetDashedStrokeFromStyle(m_curved, trans_dash, trans_dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_dash_stroked,apStyle,eTrue);
           }
           else {
             curved_dash         dash(m_curved_count);
             curved_dash_stroked     dash_stroked(dash);
             curved_dash_stroked_trans dash_stroked_trans(dash_stroked,trans);
-            dash_stroke(m_curved, dash, dash_stroked, apStyle, trans, m_curved_count, scl);
+            _SetDashedStrokeFromStyle(m_curved, dash, dash_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(dash_stroked_trans,apStyle,eTrue);
           }
         }
@@ -661,13 +661,13 @@ class cVGPath : public ni::ImplRC<iVGPath>
           if (apStyle->GetStrokeTransformed()) {
             curved_smooth_trans       smooth_trans(smooth,trans);
             curved_trans_smooth_stroked   trans_smooth_stroked(smooth_trans);
-            stroke(trans_smooth_stroked, apStyle, trans, m_curved_count, scl);
+            _SetFilledStrokeFromStyle(trans_smooth_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_smooth_stroked,apStyle,eTrue);
           }
           else {
             curved_smooth_stroked     smooth_stroked(smooth);
             curved_smooth_stroked_trans smooth_stroked_trans(smooth_stroked,trans);
-            stroke(smooth_stroked, apStyle, trans, m_curved_count, scl);
+            _SetFilledStrokeFromStyle(smooth_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(smooth_stroked_trans,apStyle,eTrue);
           }
         }
@@ -675,13 +675,13 @@ class cVGPath : public ni::ImplRC<iVGPath>
           if (apStyle->GetStrokeTransformed()) {
             curved_trans      trans_curve(m_curved_count,trans);
             curved_trans_stroked  trans_stroked(trans_curve);
-            stroke(trans_stroked, apStyle, trans, m_curved_count, scl);
+            _SetFilledStrokeFromStyle(trans_stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(trans_stroked,apStyle,eTrue);
           }
           else {
             curved_stroked      stroked(m_curved_count);
             curved_stroked_trans  stroked_trans(stroked,trans);
-            stroke(stroked, apStyle, trans, m_curved_count, scl);
+            _SetFilledStrokeFromStyle(stroked, apStyle, trans, m_curved_count, scl);
             aRas.Ras_AddPath(stroked_trans,apStyle,eTrue);
           }
         }
@@ -691,7 +691,7 @@ class cVGPath : public ni::ImplRC<iVGPath>
     }
   }
 
-  template<class T> static inline void stroke(
+  template<class T> static inline void _SetFilledStrokeFromStyle(
     T& stroked,
     const iVGStyle* apStyle,
     const agg::trans_affine& trans,
@@ -706,7 +706,7 @@ class cVGPath : public ni::ImplRC<iVGPath>
     stroked.approximation_scale(scl);
   }
 
-  template<class Stroke, class Dash> static inline void dash_stroke(
+  template<class Stroke, class Dash> static inline void _SetDashedStrokeFromStyle(
     curved& curved,
     Dash& dash,
     Stroke& stroked,
@@ -720,7 +720,7 @@ class cVGPath : public ni::ImplRC<iVGPath>
       dash.add_dash(d.x,d.y);
     }
     dash.dash_start(apStyle->GetDashStart());
-    stroke<Stroke>(stroked, apStyle, trans, curved_count, scl);
+    _SetFilledStrokeFromStyle<Stroke>(stroked, apStyle, trans, curved_count, scl);
 
     // If the *visual* line width is considerable we
     // turn on processing of curve cusps.

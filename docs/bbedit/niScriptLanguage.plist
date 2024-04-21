@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+  BBEdit codeless language module for niScript files.
+
+  To install copy the file in the Language Modules folder.
+
+  To open the folder in Finder go in the Application Menu > Folders > Language Modules.
+-->
+<dict>
+  <key>BBEditDocumentType</key>
+  <string>CodelessLanguageModule</string>
+  <key>BBLMColorsSyntax</key>
+  <true/>
+  <key>BBLMIsCaseSensitive</key>
+  <true/>
+
+  <key>BBLMLanguageDisplayName</key>
+  <string>niScript</string>
+  <key>BBLMLanguageCode</key>
+  <string>niS</string>
+  <key>BBLMScansFunctions</key>
+  <true/>
+  <key>BBLMPreferredFilenameExtension</key>
+  <string>ni</string>
+  <key>BBLMSuffixMap</key>
+  <array>
+    <dict>
+      <key>BBLMLanguageSuffix</key>
+      <string>.ni</string>
+    </dict>
+    <dict>
+      <key>BBLMLanguageSuffix</key>
+      <string>.nip</string>
+    </dict>
+    <dict>
+      <key>BBLMLanguageSuffix</key>
+      <string>.niw</string>
+    </dict>
+    <dict>
+      <key>BBLMLanguageSuffix</key>
+      <string>.nim</string>
+    </dict>
+  </array>
+  <key>BBLMSupportsTextCompletion</key>
+  <true/>
+  <key>BBLMBalanceSpecialRunKinds</key>
+  <array>
+    <string>com.barebones.bblm.JavaScript.regexp</string>
+    <string>com.barebones.bblm.syntax-error</string>
+  </array>
+
+  <key>Language Features</key>
+  <dict>
+    <key>Close Parameter Lists</key>
+    <string>)</string>
+    <key>Close Statement Blocks</key>
+    <string>}</string>
+    <key>Identifier and Keyword Characters</key>
+    <string>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz</string>
+    <key>Open Parameter Lists</key>
+    <string>(</string>
+    <key>Open Statement Blocks</key>
+    <string>{</string>
+
+    <key>Function Pattern</key>
+    <string><![CDATA[(?x:
+       (?P<leadspace>^[ \t]*)
+       (?P<function>
+           (?>function)\s+
+               (?P<function_name>
+                   ([A-Za-z_$][\w$.]*)
+               )
+           (?s:.+?)
+           \r(?P=leadspace)\}
+       )
+    )]]></string>
+
+    <key>Comment Pattern</key>
+    <string><![CDATA[(?x:
+        (?>  (?<!\\)    //  .*      $   ) |
+        (?> /\* (?s:.*?) (?> \*/ | \z ) )
+    )]]></string>
+
+    <key>String Pattern</key>
+    <string><![CDATA[(?x:
+        (?> "   [^"\r]*   ") |
+        (?> '   [^'\r]*   ') |
+        (?> `   [^`]*     `)
+    )]]></string>
+
+    <key>Skip Pattern</key>
+    <string><![CDATA[
+    (?x:
+        (?P>comment) |
+        (?P>string)
+    )]]></string>
+  </dict>
+
+  <key>BBLMKeywordList</key>
+  <array>
+    <!-- keyword -->
+    <string>break</string>
+    <string>case</string>
+    <string>catch</string>
+    <string>continue</string>
+    <string>default</string>
+    <string>delete</string>
+    <string>do</string>
+    <string>else</string>
+    <string>for</string>
+    <string>foreach</string>
+    <string>function</string>
+    <string>if</string>
+    <string>in</string>
+    <string>return</string>
+    <string>switch</string>
+    <string>this</string>
+    <string>throw</string>
+    <string>try</string>
+    <string>typeof</string>
+    <string>while</string>
+    <string>_args_</string>
+
+    <!-- basic -->
+    <string>local</string>
+    <string>let</string>
+    <string>void</string>
+    <string>any</string>
+    <string>bool</string>
+    <string>int</string>
+    <string>float</string>
+    <string>string</string>
+    <string>mut</string>
+    <string>var</string>
+    <string>out</string>
+
+    <!-- constant -->
+    <string>false</string>
+    <string>invalid</string>
+    <string>null</string>
+    <string>true</string>
+
+    <!-- lisp -->
+    <string>function</string>
+    <string>static</string>
+    <string>operator</string>
+    <string>meta</string>
+    <string>macro</string>
+    <string>macrolib</string>
+    <string>module</string>
+    <string>new</string>
+    <string>class</string>
+    <string>struct</string>
+    <string>import</string>
+    <string>interface</string>
+    <string>cond</string>
+    <string>scope</string>
+    <string>not_implemented</string>
+    <string>set_local_value</string>
+    <string>set_local_ref</string>
+    <string>set_member_value</string>
+    <string>set_member_ref</string>
+    <string>get_member</string>
+    <string>match_type</string>
+    <string>defer</string>
+
+    <!-- stdlib -->
+    <string>CreateInstance</string>
+    <string>CreateGlobalInstance</string>
+    <string>QueryInterface</string>
+    <string>Import</string>
+    <string>NewImport</string>
+    <string>ImportModule</string>
+    <string>NewImportModule</string>
+    <string>Array</string>
+    <string>Table</string>
+    <string>List</string>
+    <string>Map</string>
+    <string>Set</string>
+    <string>Vector</string>
+    <string>Vec2</string>
+    <string>Vec3</string>
+    <string>Vec4</string>
+    <string>RGB</string>
+    <string>RGBA</string>
+    <string>Quat</string>
+    <string>Plane</string>
+    <string>Rect</string>
+    <string>Matrix</string>
+    <string>UUID</string>
+
+    <!-- Regular stuff -->
+    <string>namespace</string>
+    <string>delegate</string>
+    <string>dbg</string>
+    <string>dbgs</string>
+    <string>dbgl</string>
+    <string>log</string>
+    <string>logd</string>
+    <string>logConsole</string>
+    <string>logConsoled</string>
+    <string>logWarning</string>
+    <string>logWarningd</string>
+    <string>logError</string>
+    <string>logErrord</string>
+    <string>logServer</string>
+    <string>logServerd</string>
+    <string>logClient</string>
+    <string>logClientd</string>
+    <string>main</string>
+    <string>print</string>
+    <string>println</string>
+    <string>printdebug</string>
+    <string>printdebugln</string>
+    <string>isValid</string>
+    <string>isModule</string>
+    <string>MessageID</string>
+    <string>clock</string>
+    <string>setraiseerrormode</string>
+    <string>getraiseerrormode</string>
+    <string>assert</string>
+    <string>getroottable</string>
+    <string>getvmroottable</string>
+    <string>compilestring</string>
+    <string>bind</string>
+    <string>ultof</string>
+    <string>ftoul</string>
+    <string>FourCC</string>
+    <string>enumStringValue</string>
+    <string>enumValueString</string>
+    <string>enumFlagsString</string>
+    <string>enumDefaultValueString</string>
+    <string>enumDefaultFlagsString</string>
+    <string>enumID</string>
+    <string>enumName</string>
+    <string>numElements</string>
+    <string>elementName</string>
+    <string>elementValue</string>
+    <string>getdelegate</string>
+    <string>setdelegate</string>
+    <string>getparent</string>
+    <string>invalidate</string>
+    <string>hasdelegate</string>
+    <string>tostring</string>
+    <string>toint</string>
+    <string>tofloat</string>
+  </array>
+</dict>
+</plist>

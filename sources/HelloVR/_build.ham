@@ -1,0 +1,5 @@
+SubDir TOP HelloVR ;
+
+if $(TARGET_FEATURE_EXE) {
+  SubInclude TOP HelloVR cpp ;
+}

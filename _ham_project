@@ -7,7 +7,7 @@ fi
 export PM2_ENV_NAME=niLang
 case $HAM_OS in
     NT*)
-        toolset_import_list "repos" "dx9sdk2004" cppm boost_cppm thrift_cppm || return 1
+        toolset_import_list "repos" "dx9sdk2004" cppm boost_cppm thrift_cppm openxr_cppm || return 1
         ;;
     *)
         toolset_import_list "repos" cppm boost_cppm thrift_cppm || return 1

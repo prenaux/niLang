@@ -1185,8 +1185,16 @@ static int string_slice(HSQUIRRELVM v)
   }
   else {
     const achar* p = &_stringval(o)[sidx];
-    const int len = eidx-sidx;
-    v->Push(_H(cString(p,len)));
+    const int slen = _stringlen(o);
+    if (sidx >= slen) {
+      v->Push(v->GetEmptyString());
+    }
+    else {
+      int count = eidx-sidx;
+      if ((sidx+count) >= slen)
+        count = slen - sidx;
+      v->Push(_H(cString(p,count)));
+    }
   }
   return 1;
 }

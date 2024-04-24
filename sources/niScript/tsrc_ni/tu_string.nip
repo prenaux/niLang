@@ -1,0 +1,27 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+
+::FIXTURE(["string"])
+
+::TEST("string" "slice" #{
+  local r0 = "$2a$08$VXQoSyZF288.82vVBGuEN.".slice(7,0);
+  ::CHECK_EQUAL("", r0);
+
+  local r1 = "$2a$08$VXQoSyZF288.82vVBGuEN.".slice(7,-1);
+  ::CHECK_EQUAL("VXQoSyZF288.82vVBGuEN", r1);
+
+  local r2 = "$2a$08$VXQoSyZF288.82vVBGuEN.".slice(7,-3);
+  ::CHECK_EQUAL("VXQoSyZF288.82vVBGu", r2);
+
+  local r3 = "$2a$08$VXQoSyZF288.82vVBGuEN.".slice(0);
+  ::CHECK_EQUAL("$2a$08$VXQoSyZF288.82vVBGuEN.", r3);
+
+  local r4 = "$2a$08$VXQoSyZF288.82vVBGuEN.".slice(0,1000);
+  ::CHECK_EQUAL("$2a$08$VXQoSyZF288.82vVBGuEN.", r4);
+
+  local r5 = "Hello World".slice(0,100);
+  ::CHECK_EQUAL("Hello World", r5);
+
+  local r6 = "Hello World".slice(6,100);
+  ::CHECK_EQUAL("World", r6);
+});

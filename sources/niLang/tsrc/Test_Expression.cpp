@@ -472,10 +472,10 @@ TEST_FIXTURE(FExpression,StrLen) {
 }
 
 TEST_FIXTURE(FExpression,StrSlice) {
-  // 7 to last character
+  // empty string
   cString r0 = ni::GetLang()->Eval("StrSlice('$2a$08$VXQoSyZF288.82vVBGuEN.',7,0)")->GetString();
   TEST_DEBUGFMT("r0: %s", r0);
-  CHECK_EQUAL(_ASTR("VXQoSyZF288.82vVBGuEN."), r0);
+  CHECK_EQUAL(_ASTR(""), r0);
 
   // trim the last character
   cString r1 = ni::GetLang()->Eval("StrSlice('$2a$08$VXQoSyZF288.82vVBGuEN.',7,-1)")->GetString();
@@ -487,15 +487,32 @@ TEST_FIXTURE(FExpression,StrSlice) {
   TEST_DEBUGFMT("r2: %s", r2);
   CHECK_EQUAL(_ASTR("VXQoSyZF288.82vVBGu"), r2);
 
+  // whole string
   cString r3 = ni::GetLang()->Eval("StrSlice('$2a$08$VXQoSyZF288.82vVBGuEN.',0)")->GetString();
   TEST_DEBUGFMT("r3: %s", r3);
   CHECK_EQUAL(_ASTR("$2a$08$VXQoSyZF288.82vVBGuEN."), r3);
+
+  cString r4 = ni::GetLang()->Eval("StrSlice('$2a$08$VXQoSyZF288.82vVBGuEN.',0,1000)")->GetString();
+  TEST_DEBUGFMT("r4: %s", r4);
+  CHECK_EQUAL(_ASTR("$2a$08$VXQoSyZF288.82vVBGuEN."), r4);
+
+  cString r5 = ni::GetLang()->Eval("StrSlice('Hello World',0,100)")->GetString();
+  TEST_DEBUGFMT("r5: %s", r5);
+  CHECK_EQUAL(_ASTR("Hello World"), r5);
+
+  cString r6 = ni::GetLang()->Eval("StrSlice('Hello World',6,100)")->GetString();
+  TEST_DEBUGFMT("r6: %s", r6);
+  CHECK_EQUAL(_ASTR("World"), r6);
 }
 
 TEST_FIXTURE(FExpression,StrMid) {
   cString r1 = ni::GetLang()->Eval("StrMid('$2a$08$VXQoSyZF288.82vVBGuEN.',7,5)")->GetString();
   TEST_DEBUGFMT("r1: %s", r1);
   CHECK_EQUAL(_ASTR("VXQoS"), r1);
+
+  cString r2 = ni::GetLang()->Eval("StrMid('$2a$08$VXQoSyZF288.82vVBGuEN.',7,5000)")->GetString();
+  TEST_DEBUGFMT("r2: %s", r2);
+  CHECK_EQUAL(_ASTR("VXQoSyZF288.82vVBGuEN."), r2);
 }
 
 TEST_FIXTURE(FExpression,StrLeft) {

@@ -4530,24 +4530,7 @@ tBool DoEvaluate(iExpressionContext*)
   const tInt slen = text.size();
   tInt sidx = (tInt)mvOperands[1].GetVariable()->GetFloat();
   tInt eidx = (mvOperands.size() >= 3) ? (tInt)mvOperands[2].GetVariable()->GetFloat() : slen;
-  if (sidx < 0) {
-    sidx = slen+sidx;
-  }
-  if (eidx <= 0) {
-    eidx = slen+eidx;
-  }
-  if (eidx < sidx) {
-    mptrResult->SetString(AZEROSTR);
-  }
-  else {
-    const int len = eidx-sidx;
-    if (len == slen) {
-      mptrResult->SetString(text);
-    }
-    else {
-      mptrResult->SetString(cString(text.c_str()+sidx,len));
-    }
-  };
+  mptrResult->SetString(text.slice(sidx,eidx));
   return eTrue;
 }
 EndOp()

@@ -74,6 +74,8 @@ tBool __stdcall ReadMjpegPart(iGraphics* apGraphics, iFile* apJpeg, tU32 anPartI
 }
 
 TEST_FIXTURE(FCURLMJpeg,IPCam) {
+  AUTO_WARNING_MODE(); // We dont control the test mjpeg stream...
+
   const cString url = ni::GetProperty("url_mjpeg",_kDefaultMjpegURL);
 
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());

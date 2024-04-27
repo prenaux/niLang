@@ -474,8 +474,11 @@ struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
   }
 
   virtual tBool __stdcall CanEvalImpl(iHString* ahspContext, iHString* ahspCodeResource) {
-    return StrEndsWith(niHStr(ahspCodeResource),".cpp") ||
-        StrEndsWith(niHStr(ahspCodeResource),".cni");
+    return (
+      StrEndsWith(niHStr(ahspCodeResource),".cpp") ||
+      StrEndsWith(niHStr(ahspCodeResource),".cpp2") ||
+      StrEndsWith(niHStr(ahspCodeResource),".cni")
+    );
   }
 
   // DIR/FILENAME.cpp -> MODULE=DIR, CLASS=FILENAME

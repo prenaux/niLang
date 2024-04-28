@@ -238,6 +238,17 @@ using unn = astl::unique_non_null<const T>;
 #endif
 
 template <typename T>
+using snn_mut = astl::shared_non_null<T>;
+
+#ifdef niCCScriptMode
+template <typename T>
+using snn = snn_mut<T>;
+#else
+template <typename T>
+using snn = astl::shared_non_null<const T>;
+#endif
+
+template <typename T>
 using NN_mut = ni::Nonnull<T>;
 
 #ifdef niCCScriptMode
@@ -396,6 +407,16 @@ unn_mut<T> make_unn_mut(Args&&... args) {
   return unn_mut<T>(astl::make_unique<T>(astl::forward<Args>(args)...));
 }
 
+template <typename T, typename... Args>
+snn<T> make_snn(Args&&... args) {
+  return snn<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
+}
+
+template <typename T, typename... Args>
+snn_mut<T> make_snn_mut(Args&&... args) {
+  return snn_mut<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
+}
+
 typedef ni::cString tStr;
 typedef const achar* tChars;
 typedef achar* tMutChars;
@@ -407,7 +428,12 @@ inline tStr Fmt(ain<tChars> aFmt, Args&&... args) {
   return s;
 }
 
-#define niHFmt(...) _H(niFmt(__VA_ARGS__))
+template <typename... Args>
+inline NN<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
+  tStr s;
+  s.Format(aFmt, astl::forward<Args>(args)...);
+  return ni::GetLang()->CreateHString(s.c_str()).non_null();
+}
 
 //##################################################################
 // as_NN

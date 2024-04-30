@@ -201,6 +201,7 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 
 template <typename T>
 T* Decay(const T* ptr) {
+  niPanicAssert(ptr != nullptr);
   return const_cast<T*>(ptr);
 }
 
@@ -398,22 +399,12 @@ constexpr T narrow_cast(U u) noexcept(false) {
 }
 
 template <typename T, typename... Args>
-unn<T> make_unn(Args&&... args) {
-  return unn<T>(astl::make_unique<T>(astl::forward<Args>(args)...));
-}
-
-template <typename T, typename... Args>
-unn_mut<T> make_unn_mut(Args&&... args) {
+unn_mut<T> make_unn(Args&&... args) {
   return unn_mut<T>(astl::make_unique<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
-snn<T> make_snn(Args&&... args) {
-  return snn<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
-}
-
-template <typename T, typename... Args>
-snn_mut<T> make_snn_mut(Args&&... args) {
+snn_mut<T> make_snn(Args&&... args) {
   return snn_mut<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
 
@@ -428,8 +419,10 @@ inline tStr Fmt(ain<tChars> aFmt, Args&&... args) {
   return s;
 }
 
+// XXX: iHString is in fact always immutable, but a most legacy APIs just use
+// iHString* instead of const iHString* so we use NN_mut.
 template <typename... Args>
-inline NN<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
+inline NN_mut<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
   tStr s;
   s.Format(aFmt, astl::forward<Args>(args)...);
   return ni::GetLang()->CreateHString(s.c_str()).non_null();
@@ -474,16 +467,6 @@ inline niConstExpr ni::Nonnull<T> as_NN(const astl::non_null<T*> p) {
 }
 
 template <typename T>
-inline Nonnull<T> as_NN(
-  opt_mut<Nonnull<T>>&& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_NN_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
-  }
-  return p.value();
-}
-
-template <typename T>
 inline astl::non_null<T*> as_nn(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p) {
     ni_throw_panic(
@@ -519,8 +502,8 @@ inline astl::non_null<T*> as_nn(
 }
 
 template <typename T>
-inline astl::non_null<T*> as_nn(
-  opt_mut<astl::non_null<T*>>&& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline nn_mut<T> as_nn(
+  const opt_mut<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
     ni_throw_panic(
       _HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);

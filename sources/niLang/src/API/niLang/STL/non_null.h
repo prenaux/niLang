@@ -49,6 +49,9 @@ struct is_comparable_to_nullptr<
 template <class T>
 struct non_null
 {
+  template<class U>
+  friend struct non_null;
+
  public:
   static_assert(details::is_comparable_to_nullptr<T>::value, "T cannot be compared to nullptr.");
 

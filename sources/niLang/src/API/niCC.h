@@ -429,7 +429,7 @@ inline NN_mut<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
 }
 
 //##################################################################
-// as_NN
+// as_nn, as_NN, as_opt, as_Opt
 //##################################################################
 
 template <typename T>
@@ -530,6 +530,35 @@ inline astl::non_null<T*> as_nn(
 }
 
 template <typename T>
+inline ni::opt<T> as_opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return typename ni::opt<T>{p};
+}
+
+template <typename T>
+inline ni::Opt<T> as_Opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return typename ni::Opt<T>{p};
+}
+
+template <typename I, typename T>
+inline ni::Opt<I> as_Opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return typename ni::Opt<I>{p};
+}
+
+template <typename T>
+inline ni::Opt<T> as_Opt(const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return typename ni::Opt<T>{p.raw_ptr};
+}
+
+template <typename I, typename T>
+inline ni::Opt<I> as_Opt(const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return typename ni::Opt<I>{p.raw_ptr};
+}
+
+//##################################################################
+// niCheckNN
+//##################################################################
+
+template <typename T>
 struct select_local_type {
   using type = T;
 };
@@ -573,12 +602,6 @@ static_assert(std::is_same<
 static_assert(std::is_same<
               select_local_type_t<WeakPtr<ni::iUnknown>>,
               ni::Nonnull<ni::iUnknown>>::value);
-
-#define niIfNN(V, EXPR)                                                   \
-  ni::select_local_type_t<decltype(EXPR)>{                                \
-    ni::select_local_type_t<decltype(EXPR)>::tUnsafeUncheckedInitializer{ \
-      EXPR}};                                                             \
-  if ((V).raw_ptr() != nullptr)
 
 #define niCheckNNIfNull(V, EXPR)                                           \
   ni::select_local_type_t<decltype(EXPR)>{                                       \

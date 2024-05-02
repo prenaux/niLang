@@ -636,5 +636,73 @@ static_assert(std::is_same<
     return RET;                               \
   }
 
+//##################################################################
+// to_container & to_vector
+//##################################################################
+
+#define niDecayType(EXPR) astl::decay<decltype(EXPR)>::type
+
+template<typename TOUT, typename TIN, typename TFUN>
+void to_container(TOUT& out, const TIN& aIn, TFUN afnConvertItem) {
+  if constexpr (requires { aIn.size(); }) {
+    out.reserve(aIn.size());
+  }
+#if 0
+  else {
+    aIn.__error_no_size_function__();
+  }
+#endif
+  for (niLet& item : aIn) {
+    out.push_back(afnConvertItem(item));
+  }
+}
+
+template<typename TOUT, typename TIN, typename TFUN>
+TOUT to_container(const TIN& aIn, TFUN afnConvertItem) {
+  TOUT out;
+  to_container(out, aIn, afnConvertItem);
+  return out;
+}
+
+template<typename TOUT, typename TIN>
+void to_container(TOUT& out, const TIN& aIn) {
+  if constexpr (requires { aIn.size(); }) {
+    out.reserve(aIn.size());
+  }
+#if 0
+  else {
+    aIn.__error_no_size_function__();
+  }
+#endif
+  for (niLet& item : aIn) {
+    if constexpr (requires { typename TOUT::value_type(item); }) {
+      out.push_back(typename TOUT::value_type(item));
+    }
+    else if constexpr (requires { typename TOUT::value_type(item.c_str()); }) {
+      out.push_back(typename TOUT::value_type(item.c_str()));
+    }
+    else {
+      item.__not_compatible_with_output_element_type__();
+    }
+  }
+}
+
+template<typename TOUT, typename TIN>
+TOUT to_container(const TIN& aIn) {
+  TOUT out;
+  to_container(out, aIn);
+  return out;
+}
+
+template<typename TOUT, typename TIN, typename TFUN>
+astl::vector<TOUT> to_vector(const TIN& aIn, TFUN afnConvertItem) {
+  return to_container<astl::vector<TOUT>>(aIn,afnConvertItem);
+}
+
+template<typename TOUT, typename TIN>
+astl::vector<TOUT> to_vector(const TIN& aIn) {
+  return to_container<astl::vector<TOUT>>(aIn);
+}
+
 }  // namespace ni
 #endif  // __NICC_H_2D298329_7F10_164A_B1C3_CF6D0695867A__

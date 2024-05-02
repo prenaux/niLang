@@ -330,6 +330,22 @@ struct to_aout_t {
 template <typename T>
 using aout = typename to_aout_t<T>::type;
 
+template <typename T>
+struct to_ainout_t {
+  using type = T&;
+};
+
+template <typename T>
+using ainout = typename to_ainout_t<T>::type;
+
+template <typename T>
+struct to_acopy_t {
+  using type = T;
+};
+
+template <typename T>
+using acopy = typename to_acopy_t<T>::type;
+
 #ifdef ni32
 static_assert(astl::is_same_v<ain<sVec2f>, const sVec2f&>);
 static_assert(astl::is_same_v<ain<sVec3f>, const sVec3f&>);

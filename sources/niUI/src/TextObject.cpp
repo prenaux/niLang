@@ -1665,6 +1665,7 @@ class cTextObject : public ImplRC<iTextObject>
           }
           break;
         case eXmlParserNodeType_ElementEnd:
+          if (tagValue.empty()) break; // If the tag value is empty, this xml is most likely broken, so we have to skip;
           if (StrIEq(aName,"font") || StrIEq(aName,"f")) {
             if (!fontAttrs.empty()) {
               const tU32 lastFontAttrs = fontAttrs.top();

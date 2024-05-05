@@ -52,10 +52,7 @@
 #define EASTL_EASTDC_LOCAL
 #define EA_COMPILER_NO_NOEXCEPT
 #define EASTL_EXCEPTIONS_ENABLED 0
-// XXX: Consider enabling this in release aswell
-#ifdef niDebug
 #define EASTL_ASSERT_ENABLED 1
-#endif
 
 #define EA_COMPILER_CPP14_ENABLED 1
 

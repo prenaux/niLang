@@ -120,7 +120,7 @@ class EditorBuffer
   Position &SetCursorPos(const Position &pos,bool forcelogicalcol);
   bool GetSelectionData(const Selection &sel,cString &dest) const;
   //pos
-  Position GetClosestValidPos(const Position &pos);
+  Position GetClosestValidPos(const Position &pos, const int moveDelta = 0);
 
   int GetLineLen(unsigned int line) const;
   int GetLinesCount() const;

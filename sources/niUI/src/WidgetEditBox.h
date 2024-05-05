@@ -51,6 +51,7 @@ class cEditBoxWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Defau
   void __stdcall MoveCursorEnd(tBool abLine);
   void __stdcall MoveCursor(const sVec2i& pos, tBool abForceLogicalCol);
   void __stdcall MoveCursorWordDelta(tI32 word);
+  void __stdcall MoveCursorParaDelta(const tI32 aDelta);
 
   sVec2i __stdcall GetCursorPosition() const;
   tU32 __stdcall GetCursorLine() const;

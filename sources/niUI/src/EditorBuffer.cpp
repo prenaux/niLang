@@ -21,7 +21,7 @@ void EditorBuffer::PushLine(Line &line)
   _lines.push_back(line);
 }
 
-Position EditorBuffer::GetClosestValidPos(const Position &pos)
+Position EditorBuffer::GetClosestValidPos(const Position &pos, const int moveDelta)
 {
   Position ret;
   if(pos._line>=_lines.size())
@@ -30,10 +30,22 @@ Position EditorBuffer::GetClosestValidPos(const Position &pos)
     ret._line=pos._line;
 
   Line &line=_lines[ret._line];
-  if (pos._col > line.GetLength())
+  if (moveDelta < 0) {
+    // moving up/previous, go to begining of the line
+    ret._col = 0;
+  }
+  else if (moveDelta > 0) {
+    // moving down/next, go to end of the line
     ret._col = (unsigned int)line.GetLength();
-  else
-    ret._col=pos._col;
+  }
+  else {
+    // no delta, we want to keep the current column if possible
+    if (pos._col > line.GetLength())
+      ret._col = (unsigned int)line.GetLength();
+    else
+      ret._col=pos._col;
+  }
+
   return ret;
 }
 

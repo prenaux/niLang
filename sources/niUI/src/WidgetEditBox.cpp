@@ -4,8 +4,11 @@
 #include "stdafx.h"
 #include "WidgetEditBox.h"
 #include "HardCodedSkin.h"
+#include <niLang/STL/scope_guard.h>
 
 #define EB_SB_SIZE kfScrollBarSize
+niConstValue tU32 knBlinkTimerID = 500;
+niConstValue tF32 kfBlinkTimerTime = 0.5f;
 
 inline tBool _IsSeparator(tU32 c) {
   return !StrIsLetterDigit(c);
@@ -117,7 +120,7 @@ void cEditBoxWidget::AutoScroll() {
 
 void cEditBoxWidget::AutoScroll(tBool abForceRefresh)
 {
-  if (mpWidget->GetStyle() & eWidgetEditBoxStyle_MultiLine) {
+  if (mpsbScrollBarLeft && (mpWidget->GetStyle() & eWidgetEditBoxStyle_MultiLine)) {
     Position cur = mbufText.GetCursor();
     tF32 scrollpos = mpsbScrollBarLeft->GetScrollPosition();
     tF32 pagesize = mpsbScrollBarLeft->GetPageSize();
@@ -128,6 +131,8 @@ void cEditBoxWidget::AutoScroll(tBool abForceRefresh)
       mpsbScrollBarLeft->SetScrollPosition((tF32)cur._line);
     }
   }
+
+  const tF32 leftScrollBarWidth = mpLeftScrollbar ? mpLeftScrollbar->GetSize().x : 0.0f;
   const tF32 w = mpWidget->GetClientSize().x -
       ((mpLeftScrollbar&&mpLeftScrollbar->GetVisible()) ?
        mpLeftScrollbar->GetSize().x : 0);
@@ -153,7 +158,7 @@ void cEditBoxWidget::AutoScroll(tBool abForceRefresh)
     const tF32 curX = txtW+mfHScrollOffs+mpWidget->GetPadding().x;
     if (abForceRefresh || curX < scrollMargin || curX > w-scrollMargin) {
       mfHScrollOffs = ni::Min(w-(txtW+(w/2)),0);
-      mfHScrollOffs = ni::Max(mfHScrollOffs,w-(fullTxtW+charWidth));
+      mfHScrollOffs = ni::Max(mfHScrollOffs,w-(fullTxtW+charWidth)) - leftScrollBarWidth;
     }
   }
 
@@ -214,7 +219,7 @@ tBool cEditBoxWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varP
       break;
     }
     case eUIMessage_SetFocus: {
-      apWidget->SetTimer(500,0.3f);
+      apWidget->SetTimer(knBlinkTimerID,kfBlinkTimerTime);
       mbCursorVisible = eTrue;
       if (!(mpWidget->GetStyle()&eWidgetEditBoxStyle_NoSelect)) {
         if (mpWidget->GetStyle()&eWidgetEditBoxStyle_SelectAllOnSetFocus) {
@@ -230,7 +235,7 @@ tBool cEditBoxWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varP
       return eFalse;
     }
     case eUIMessage_LostFocus: {
-      apWidget->SetTimer(500,-1);
+      apWidget->SetTimer(knBlinkTimerID,-1);
       mbCursorVisible = eFalse;
       if (!(mpWidget->GetStyle()&eWidgetEditBoxStyle_DontLoseSelection)) {
         mSelection = Selection(); // clear the selection when losing the focus
@@ -612,6 +617,9 @@ void cEditBoxWidget::MoveCursor(const sVec2i &pos, tBool forcelogicalcol)
   else {
     mSelection = Selection();
   }
+  if (mpWidget->GetHasFocus()) {
+    mpWidget->SetTimer(knBlinkTimerID,kfBlinkTimerTime);
+  }
 }
 
 void __stdcall cEditBoxWidget::MoveCursorWordDelta(tI32 word) {
@@ -625,6 +633,7 @@ void __stdcall cEditBoxWidget::MoveCursorWordDelta(tI32 word) {
     const Line& line = mbufText.GetLine(pos._line);
     if (line.IsEmpty()) {
       MoveCursorLineDelta(bPrev?-1:1);
+      bPrev ? MoveCursorEnd(eTrue) : MoveCursorHome(eTrue);
       continue;
     }
     if (bPrev) {
@@ -685,6 +694,51 @@ void __stdcall cEditBoxWidget::MoveCursorWordDelta(tI32 word) {
   }
 }
 
+void __stdcall cEditBoxWidget::MoveCursorParaDelta(const tI32 aDelta) {
+  if (!aDelta || !mbufText.GetLinesCount())
+    return;
+
+  const tBool bPrev = aDelta < 0 ? eTrue : eFalse;
+  niDefer {
+    Position closestPos = mbufText.GetClosestValidPos(mbufText.GetCursor(),aDelta);
+    if (closestPos != mbufText.GetCursor()) {
+      MoveCursor((sVec2i&)closestPos,eFalse);
+    }
+  };
+
+  auto isCurrentLineEmpty = [&]() -> tBool {
+    const Position pos = mbufText.GetCursor();
+    const Line& line = mbufText.GetLine(pos._line);
+    return line.IsEmpty();
+  };
+
+  auto nextLine = [&]() {
+    const Position pos = mbufText.GetCursor();
+    MoveCursorLineDelta(bPrev?-1:1);
+    if (pos == mbufText.GetCursor()) {
+      // Cursor hasnt move, so we reached the begining or the end of the file so
+      // we should stop.
+      return eFalse;
+    }
+    return eTrue;
+  };
+
+  const tU32 count = (tU32)ni::Abs(aDelta);
+  niLoop(i,count) {
+    // we're starting in an empty line, so got to the first non empty line
+    while (isCurrentLineEmpty()) {
+      if (!nextLine())
+        return;
+    }
+
+    // skip the non empty lines
+    while (!isCurrentLineEmpty()) {
+      if (!nextLine())
+        return;
+    }
+  }
+}
+
 void cEditBoxWidget::MoveCursorLineDelta(tI32 line)
 {
   Position cursor=mbufText.GetCursor();
@@ -692,7 +746,7 @@ void cEditBoxWidget::MoveCursorLineDelta(tI32 line)
   tI32 targetcol=mbufText.GetLogicalCursorCol();
   if(targetline<0)targetline=0;
   Position pos(targetline,targetcol);
-  Position closestPos = mbufText.GetClosestValidPos(pos);
+  Position closestPos = mbufText.GetClosestValidPos(pos,0);
   MoveCursor((sVec2i&)closestPos,eFalse);
 }
 
@@ -760,6 +814,10 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
           mpsbScrollBarLeft->SetScrollPosition(
               mpsbScrollBarLeft->GetScrollPosition()-1);
       }
+      else if (niFlagIs(mod,eKeyMod_Alt)) {
+        MoveCursorParaDelta(-1);
+        AutoScroll();
+      }
       else {
         MoveCursorLineDelta(-1);
         AutoScroll();
@@ -772,13 +830,17 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
           mpsbScrollBarLeft->SetScrollPosition(
               mpsbScrollBarLeft->GetScrollPosition()+1);
       }
+      else if (niFlagIs(mod,eKeyMod_Alt)) {
+        MoveCursorParaDelta(1);
+        AutoScroll();
+      }
       else {
         MoveCursorLineDelta(1);
         AutoScroll();
       }
       break;
     case eKey_Left: {
-      if (niFlagIs(mod,eKeyMod_Control)) {
+      if (niFlagIs(mod,eKeyMod_Control) || niFlagIs(mod,eKeyMod_Alt)) {
         MoveCursorWordDelta(-1);
         AutoScroll();
       }
@@ -789,7 +851,7 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
       break;
     }
     case eKey_Right: {
-      if (niFlagIs(mod,eKeyMod_Control)) {
+      if (niFlagIs(mod,eKeyMod_Control) || niFlagIs(mod,eKeyMod_Alt)) {
         MoveCursorWordDelta(1);
         AutoScroll();
       }
@@ -842,54 +904,8 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
       }
       break;
     case eKey_Home: {
-      if (mbufText.GetLinesCount() > 0) {
-        if (niFlagIs(mod,eKeyMod_Control)) {
-          MoveCursorHome(eFalse);
-        }
-        else if (!(mpWidget->GetStyle()&eWidgetEditBoxStyle_MultiLine)) {
-          // Single line edit box, just go home
-          MoveCursorHome(eTrue);
-        }
-        else {
-          const Position& cur = mbufText.GetCursor();
-          StrCharIt it(mbufText.GetLine(cur._line).GetChars());
-          if (!_IsSeparator(it.peek_next())) {
-            // start with a word, so we go home no question asked
-            MoveCursorHome(eTrue);
-          }
-          else {
-            tBool hasWords = eFalse;
-            while (!it.is_end()) {
-              if (!_IsSeparator(it.peek_next())) {
-                hasWords = eTrue;
-                break ;
-              }
-              it.next();
-            }
-            if (!hasWords) {
-              // no words, go home aswell
-              MoveCursorHome(eTrue);
-            }
-            else {
-              if (mbufText.GetCursor()._col == 0) {
-                // already at col 0 we go to the first (next) word...
-                MoveCursorWordDelta(1);
-              }
-              else {
-                // move back one word, if we reach the first column we're done
-                MoveCursorWordDelta(-1);
-                if (mbufText.GetCursor()._col != 0) {
-                  // nope, so we'll go to col zero and move
-                  // to the begining of the first word
-                  MoveCursorHome(!niFlagIs(mod,eKeyMod_Control));
-                  MoveCursorWordDelta(1);
-                }
-              }
-            }
-          }
-        }
-        AutoScroll();
-      }
+      MoveCursorHome(!niFlagIs(mod,eKeyMod_Control));
+      AutoScroll();
       break;
     }
     case eKey_End: {

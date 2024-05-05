@@ -666,6 +666,7 @@ TOUT to_container(const TIN& aIn, TFUN afnConvertItem) {
 
 template<typename TOUT, typename TIN>
 void to_container(TOUT& out, const TIN& aIn) {
+  typedef typename TOUT::value_type tOutValue;
   if constexpr (requires { aIn.size(); }) {
     out.reserve(aIn.size());
   }
@@ -675,11 +676,11 @@ void to_container(TOUT& out, const TIN& aIn) {
   }
 #endif
   for (niLet& item : aIn) {
-    if constexpr (requires { typename TOUT::value_type(item); }) {
-      out.push_back(typename TOUT::value_type(item));
+    if constexpr (requires { tOutValue(item); }) {
+      out.push_back(tOutValue(item));
     }
-    else if constexpr (requires { typename TOUT::value_type(item.c_str()); }) {
-      out.push_back(typename TOUT::value_type(item.c_str()));
+    else if constexpr (requires { tOutValue(item.c_str()); }) {
+      out.push_back(tOutValue(item.c_str()));
     }
     else {
       item.__not_compatible_with_output_element_type__();

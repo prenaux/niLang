@@ -60,6 +60,7 @@ class cButtonWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetButton
   tHStringPtr mhspGroupID;
   sVec4f mvIconMargin;
   sVec2f mvIconSize;
+  tHStringPtr mhspIconPath;
   sRectf mrectIcon;
   tRectFrameFlags mDrawFrameFlags;
 

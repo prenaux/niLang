@@ -345,6 +345,7 @@ tBool cButtonWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varPa
         if (nFlags & eWidgetSerializeFlags_Write) {
           ptrDT->SetString(_A("group_id"),niHStr(mhspGroupID));
           ptrDT->SetInt(_A("checked"),GetCheck());
+          ptrDT->SetString(_A("icon_path"),niHStr(mhspIconPath));
         }
         else if (nFlags & eWidgetSerializeFlags_Read) {
           tU32 nIndex = ptrDT->GetPropertyIndex(_A("group_id"));
@@ -363,6 +364,7 @@ tBool cButtonWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varPa
               o->SetFiltering(eTrue);
               this->SetIcon(o);
             }
+            mhspIconPath = path;
           }
           nIndex = ptrDT->GetPropertyIndex(_A("icon_size"));
           if (nIndex != eInvalidHandle && mptrIconNormal.IsOK()) {

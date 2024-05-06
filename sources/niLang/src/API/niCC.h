@@ -209,6 +209,8 @@ T* Decay(const T* ptr) {
 // functions that take a mutable iUnknown* while the const version would do.
 #define niDecay(PTR) ni::Decay((PTR).raw_ptr())
 
+#define niDecayType(EXPR) astl::decay<decltype(EXPR)>::type
+
 #define niDeferredInit(TYPE)            \
   TYPE {                                \
     TYPE::tUnsafeUncheckedInitializer { \
@@ -640,8 +642,6 @@ static_assert(std::is_same<
 // to_container & to_vector
 //##################################################################
 
-#define niDecayType(EXPR) astl::decay<decltype(EXPR)>::type
-
 template<typename TOUT, typename TIN, typename TFUN>
 void to_container(TOUT& out, const TIN& aIn, TFUN afnConvertItem) {
   if constexpr (requires { aIn.size(); }) {
@@ -706,4 +706,34 @@ astl::vector<TOUT> to_vector(const TIN& aIn) {
 }
 
 }  // namespace ni
+
+//##################################################################
+// Literals
+//##################################################################
+namespace ni {
+
+inline constexpr ni::tI8 operator"" _i8(unsigned long long aVal) { return static_cast<ni::tI8>(aVal); }
+inline constexpr ni::tI16 operator"" _i16(unsigned long long aVal) { return static_cast<ni::tI16>(aVal); }
+inline constexpr ni::tI32 operator"" _i32(unsigned long long aVal) { return static_cast<ni::tI32>(aVal); }
+inline constexpr ni::tI64 operator"" _i64(unsigned long long aVal) { return static_cast<ni::tI64>(aVal); }
+
+inline constexpr ni::tU8 operator"" _u8(unsigned long long aVal) { return static_cast<ni::tU8>(aVal); }
+inline constexpr ni::tU16 operator"" _u16(unsigned long long aVal) { return static_cast<ni::tU16>(aVal); }
+inline constexpr ni::tU32 operator"" _u32(unsigned long long aVal) { return static_cast<ni::tU32>(aVal); }
+inline constexpr ni::tU64 operator"" _u64(unsigned long long aVal) { return static_cast<ni::tU64>(aVal); }
+
+inline constexpr ni::tF32 operator"" _f32(unsigned long long aVal) { return static_cast<ni::tF32>(aVal); }
+inline constexpr ni::tF32 operator"" _f32(long double aVal) { return static_cast<ni::tF32>(aVal); }
+inline constexpr ni::tF64 operator"" _f64(unsigned long long aVal) { return static_cast<ni::tF64>(aVal); }
+inline constexpr ni::tF64 operator"" _f64(long double aVal) { return static_cast<ni::tF64>(aVal); }
+
+inline ni::cString operator"" _str(const char* aStr, std::size_t aLen) {
+    return ni::cString(aStr,aLen);
+}
+
+inline ni::tHStringPtr operator"" _hstr(const char* aStr, std::size_t aLen) {
+    return ni::GetLang()->CreateHString(ni::cString(aStr,aLen));
+}
+
+} // end namespace ni
 #endif  // __NICC_H_2D298329_7F10_164A_B1C3_CF6D0695867A__

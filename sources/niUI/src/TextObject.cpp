@@ -932,6 +932,7 @@ class cTextObject : public ImplRC<iTextObject>
               fWordYPos = fLineYPos + (rLine.ascent - pFont->GetAscent());
             }
             sRawString& rawString = mlstWords[rWord.index];
+            if (rawString.string.IsEmpty()) continue;
             const cString& string = rawString.truncatedString.empty() ?
                 rawString.string : rawString.truncatedString;
             if (TextLineMetric_IsEmpty(&rawString.textMetric)) {

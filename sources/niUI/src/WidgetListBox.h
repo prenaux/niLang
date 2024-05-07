@@ -18,7 +18,9 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
 
   struct sColumn {
     tHStringPtr hspName;
+    tHStringPtr hspKey;
     tU32        nSetSize;
+    Ptr<iFont>  ptrFont = NULL;
   };
 
   struct sItemColumnData {
@@ -171,6 +173,7 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   sRectf mrectHeader;
   tF32 mfItemHeight;
   tU32 mnInputSelected;
+  cString mstrItemsExpr;
 
   void InitSkin();
   struct sSkin {

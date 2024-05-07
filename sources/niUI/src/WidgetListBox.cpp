@@ -14,6 +14,33 @@
 #define SEL_RANGE 1
 #define SEL_ADD   2
 
+static Ptr<iFont> SerializeReadFont(iUIContext* apCtx, iDataTable* apDT) {
+  Ptr<iFont> font = apCtx->GetGraphics()->LoadFont(apDT->GetHStringDefault("font", _H("default")));
+  font->SetColor(ULColorBuild(apDT->GetVec4Default("font_color", sColor4f::White())));
+
+  tF32 fontSize = Clamp(apDT->GetFloatDefault("font_size", 24), 4, 256);
+  font->SetSizeAndResolution(
+    Vec2f(fontSize, fontSize),
+    Clamp(apDT->GetIntDefault("font_res", 64), 4, 64),
+    apCtx->GetContentsScale());
+  font->SetFiltering(eTrue);
+  font->SetBlendMode(ni::eBlendMode_Translucent);
+  return font;
+}
+
+static void SerializeWriteFont(iFont* apFont, iDataTable* apDT, tBool hasMetadata) {
+  apDT->SetString("font", apFont->GetName()->GetChars());
+  apDT->SetInt("font_res", apFont->GetResolution());
+  apDT->SetFloat("font_size", apFont->GetSize().x);
+  apDT->SetVec4("font_color", ULColorToVec4f(apFont->GetColor()));
+
+  if (hasMetadata) {
+    apDT->SetMetadata("font_res", _H("irange[min=4,max=64,step=1]"));
+    apDT->SetMetadata("font_size", _H("range[min=4,max=256,step=1]"));
+    apDT->SetMetadata("font_color", _H("color"));
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetListBox implementation.
 
@@ -23,12 +50,12 @@ cWidgetListBox::cWidgetListBox(iWidget *apWidget)
   ZeroMembers();
   mpWidget = apWidget;
   // vertical scroll bar
-  mptrVtScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_NCRelative);
+  mptrVtScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_DontSerialize|eWidgetStyle_NCRelative);
   QPtr<iWidgetScrollBar>(mptrVtScroll)->SetScrollPosition(0);
   mptrVtScroll->SetVisible(eFalse);
   mptrVtScroll->SetEnabled(eFalse);
   // horizontal scroll bar
-  mptrHzScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_NoClip|eWidgetStyle_NCRelative|eWidgetScrollBarStyle_Horz);
+  mptrHzScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_DontSerialize|eWidgetStyle_NoClip|eWidgetStyle_NCRelative|eWidgetScrollBarStyle_Horz);
   QPtr<iWidgetScrollBar>(mptrHzScroll)->SetScrollPosition(0);
   mptrHzScroll->SetVisible(eFalse);
   mptrHzScroll->SetEnabled(eFalse);
@@ -101,20 +128,31 @@ tBool __stdcall cWidgetListBox::SetColumn(tU32 anColumn, const achar* aaszName, 
 tBool cWidgetListBox::RemoveColumn(tU32 anColumn)
 {
   const tU32 numCols = GetNumColumns();
-  if (numCols <= 1 || anColumn >= numCols)
+  if (numCols < 0 || anColumn >= numCols)
     return eFalse;
   mvColumns.erase(mvColumns.begin()+anColumn);
-  niLoop(i,mvItems.size()) {
-    sItem& item = *mvItems[i];
-    item.InvalidateColumn(anColumn);
-    item.vData.erase(item.vData.begin()+anColumn);
-  }
+
+  // niLoop(i,mvItems.size()) {
+    // sItem& item = *mvItems[i];
+    // item.InvalidateColumn(anColumn);
+    // item.vData.erase(item.vData.begin()+anColumn);
+  // }
 
   // it may sort an invalid column after the column is removed, so we reset it
   mnSortKey = eInvalidHandle;
 
   UpdateLayout();
   return eTrue;
+}
+
+///////////////////////////////////////////////
+void cWidgetListBox::ClearColumns()
+{
+  tI32 n = GetNumColumns() - 1;
+  while (n >= 0) {
+    RemoveColumn(n);
+    --n;
+  }
 }
 
 ///////////////////////////////////////////////
@@ -215,7 +253,7 @@ tU32 cWidgetListBox::AddItem(const achar *aszName)
   sItem& item = *astl::push_back(mvItems, astl::make_shared<sItem>());
   item.vData.resize(GetNumColumns());
   item.vData[0].strText = aszName;
-  mInternalFlags.bShouldSortItems = eTrue;
+  mInternalFlags.bShouldSortItems = (bool)eTrue;
   UpdateLayout();
   return mvItems.size()-1;
 }
@@ -238,7 +276,7 @@ tBool cWidgetListBox::SetItemText(tU32 anColumn, tU32 anItem, const achar *aaszT
     return eFalse;
   mvItems[anItem]->vData[anColumn].strText = aaszText;
   if (mnSortKey == anColumn) {
-    mInternalFlags.bShouldSortItems = eTrue;
+    mInternalFlags.bShouldSortItems = (bool)eTrue;
   }
   return eTrue;
 }
@@ -345,7 +383,7 @@ tBool cWidgetListBox::SetSortKey(tU32 anKeyColumn)
     if (mnSortKey == anKeyColumn)
       return eTrue; // nothing changed
     mnSortKey = anKeyColumn;
-    mInternalFlags.bShouldSortItems = eTrue;
+    mInternalFlags.bShouldSortItems = (bool)eTrue;
     return !(mnSortKey==eInvalidHandle);
   }
 }
@@ -362,7 +400,7 @@ void cWidgetListBox::SetSortAscendant(tBool abAscendant)
   if (abAscendant == mbSortType)
     return; // nothing changed
   mbSortType = abAscendant;
-  mInternalFlags.bShouldSortItems = eTrue;
+  mInternalFlags.bShouldSortItems = (bool)eTrue;
 }
 
 ///////////////////////////////////////////////
@@ -623,6 +661,111 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         }
       }
       break;
+
+    case eUIMessage_ExpressionUpdate: {
+      QPtr<iExpressionContext> ctx(varParam0);
+      if (!ctx.IsOK()) return eTrue;
+
+      if (mstrItemsExpr.IsNotEmpty()) {
+        ClearItems();
+
+        Ptr<iExpressionVariable> v = ctx->Eval(mstrItemsExpr.Chars());
+        if (!v.IsOK()) return eFalse;
+
+        QPtr<iDataTable> dt = v->GetIUnknown();
+        if (!dt.IsOK()) return eFalse;
+
+
+        tU32 numColumns = GetNumColumns();
+        niLoop(i, dt->GetNumChildren()) {
+          Ptr<iDataTable> item = dt->GetChildFromIndex(i);
+          tU32 itemId = AddItem(item->GetName());
+          tBool isArray = item->GetBoolDefault("__isArray", false);
+
+          niLoop(j, numColumns) {
+            if (isArray) {
+              Ptr<iDataTable> itemVar = item->GetChildFromIndex(j);
+              if (itemVar.IsOK()) {
+                SetItemText(j, itemId, itemVar->GetString("v").Chars());
+              }
+            }
+            else {
+              cString text = item->GetString(HStringGetStringEmpty(mvColumns[j].hspKey));
+              SetItemText(j, itemId, text.Chars());
+            }
+          }
+        }
+      }
+      break;
+    }
+
+    case eUIMessage_SerializeWidget: {
+      QPtr<iDataTable> ptrDT(varParam0);
+      if (!ptrDT.IsOK()) return eTrue;
+
+      tU32 nFlags = varParam1.mU32;
+      if (nFlags & eWidgetSerializeFlags_Read) {
+        mfItemHeight = ptrDT->GetFloatDefault("item_height", mfItemHeight);
+        mstrItemsExpr = ptrDT->GetString("item_expr");
+
+        Ptr<iDataTable> columns = ptrDT->GetChild("Columns");
+        if (columns.IsOK()) {
+          tU32 num = columns->GetNumChildren();
+          while (GetNumColumns() > num) {
+            RemoveColumn(GetNumColumns() - 1);
+          }
+
+          while (GetNumColumns() < num) {
+            AddColumn("", 100);
+          }
+
+          niLoop(i, num) {
+            Ptr<iDataTable> column = columns->GetChildFromIndex(i);
+            SetColumn(i, column->GetString("header").Chars(), column->GetInt("width"));
+
+            mvColumns[i].hspKey = column->GetHString("key");
+            Ptr<iDataTable> f = column->GetChild("Font");
+            if (f.IsOK()) {
+              mvColumns[i].ptrFont = SerializeReadFont(mpWidget->GetUIContext(), f);
+            }
+          }
+        }
+      }
+      else if (nFlags & eWidgetSerializeFlags_Write) {
+        tBool hasMetadata = niFlagIs(nFlags,eWidgetSerializeFlags_PropertyBox);
+        ptrDT->SetFloat("item_height", GetItemHeight());
+        ptrDT->SetString("item_expr", mstrItemsExpr.Chars());
+        if (hasMetadata) {
+          ptrDT->SetMetadata("item_height", _H("range[min=0,max=10000,step=1]"));
+        }
+
+        Ptr<iDataTable> columns = CreateDataTable("Columns");
+        niLoop(i, GetNumColumns())
+        {
+          Ptr<iDataTable> column = CreateDataTable("column");
+          column->SetString("header", GetColumnName(i));
+          column->SetHString("key", mvColumns[i].hspKey);
+          column->SetInt("width", GetColumnWidth(i));
+
+          if (hasMetadata) {
+            column->SetMetadata(_A("width"),_H("range[min=4,max=10000,step=1]"));
+          }
+
+          Ptr<iFont> font = mvColumns[i].ptrFont;
+          if (!font.IsOK()) {
+            font = mpWidget->GetFont();
+          }
+
+          Ptr<iDataTable> f = CreateDataTable("Font");
+          SerializeWriteFont(font, f, hasMetadata);
+          column->AddChild(f);
+
+          columns->AddChild(column);
+        }
+        ptrDT->AddChild(columns);
+      }
+      break;
+    }
     default:
       return eFalse;
   }
@@ -632,7 +775,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
 ///////////////////////////////////////////////
 void cWidgetListBox::UpdateLayout()
 {
-  mInternalFlags.bShouldUpdateLayout = ni::eTrue;
+  mInternalFlags.bShouldUpdateLayout = (bool)eTrue;
 }
 
 void cWidgetListBox::DoUpdateLayout(tBool abForce)
@@ -737,7 +880,7 @@ tU32 cWidgetListBox::GetSelectedColumnHandle(const sVec2f &mpos)
 ///////////////////////////////////////////////
 void cWidgetListBox::AutoScroll()
 {
-  mInternalFlags.bShouldAutoScroll = eTrue;
+  mInternalFlags.bShouldAutoScroll = (bool)eTrue;
 }
 
 ///////////////////////////////////////////////
@@ -955,7 +1098,7 @@ void cWidgetListBox::NotifySelChange()
 {
   if (mInternalFlags.bInNotifySelChanged)
     return;
-  mInternalFlags.bInNotifySelChanged = eTrue;
+  mInternalFlags.bInNotifySelChanged = (bool)eTrue;
   mpWidget->SendCommand(mpWidget->GetParent(),eWidgetListBoxCmd_SelectionChanged,mnInputSelected);
   mInternalFlags.bInNotifySelChanged = eFalse;
 }
@@ -1036,8 +1179,14 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
     }
 
     tF32 curX = startX;
-    const tU32 wasFontColor = font->GetColor();
+
     niLoop(col,mvColumns.size()) {
+      Ptr<iFont> pFont = mvColumns[col].ptrFont;
+      if (!pFont.IsOK()) {
+        pFont = font;
+      }
+
+      const tU32 wasFontColor = pFont->GetColor();
       const sItemColumnData& itemColData = item.vData[col];
       const tU32 colw = _ComputeColumnWidth(col,defColW);
       if (col == 0 && item.ptrIcon.IsOK()) {
@@ -1066,19 +1215,19 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
       {
         const sRectf textRect = sRectf(curX,y,colw,fh);
         const achar* text = itemColData.strText.c_str();
-        font->SetColor(itemColData.nTextColor ? itemColData.nTextColor : wasFontColor);
+        pFont->SetColor(itemColData.nTextColor ? itemColData.nTextColor : wasFontColor);
         apCanvas->BlitText(
-          font, textRect,
+          pFont, textRect,
           ((numCols > 1) ? eFontFormatFlags_ClipH : 0)|
           eFontFormatFlags_CenterV, text);
       }
 
+      pFont->SetColor(wasFontColor);
       curX += (colw+sepw);
       if (curX > rect.GetRight())
         break;
     }
 
-    font->SetColor(wasFontColor);
     return fh;
   };
 

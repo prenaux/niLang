@@ -735,5 +735,7 @@ inline ni::tHStringPtr operator"" _hstr(const char* aStr, std::size_t aLen) {
     return ni::GetLang()->CreateHString(ni::cString(aStr,aLen));
 }
 
+inline constexpr ni::tSize operator"" _sz(unsigned long long aVal) { return static_cast<ni::tSize>(aVal); }
+
 } // end namespace ni
 #endif  // __NICC_H_2D298329_7F10_164A_B1C3_CF6D0695867A__

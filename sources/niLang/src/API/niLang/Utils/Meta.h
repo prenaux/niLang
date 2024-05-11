@@ -10,7 +10,6 @@ namespace ni {
  * @{
  */
 
-// Some fucking library author are retarded (found in GCC obviously...)
 #undef T0
 #undef T1
 #undef B0

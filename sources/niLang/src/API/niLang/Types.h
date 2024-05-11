@@ -452,8 +452,6 @@ typedef SYNC_INT_TYPE tSyncInt;
 
 #ifdef __GNUC__
 #  undef NULL
-// This disable 'most' (yup GCC can't get everything right...) the retarded
-// 'arithmetic with NULL' crap...
 #  define NULL 0
 #  undef __forceinline
 #  define __forceinline inline
@@ -815,6 +813,28 @@ template <> struct sTAssert<true> { static void TAssert() {}; };
 #endif
 
 #define niImpl niOverride niFinal
+
+#if !defined niEmptyBases
+//
+// cf: https://stackoverflow.com/questions/12701469/why-is-the-empty-base-class-optimization-ebo-is-not-working-in-msvc
+//
+// This is a longstanding bug in the Visual C++ compiler. When a class derives
+// from multiple empty base classes, only the initial empty base class will be
+// optimized using the empty base optimization (EBO).
+//
+// cf: https://devblogs.microsoft.com/cppblog/optimizing-the-layout-of-empty-base-classes-in-vs2015-update-2-3/
+//
+// There is a fix since VS2015 Update 2. We check for VS 2017 (_MSC_VER ==
+// 1910) because VS2015 Update 2 uses the same _MSC_VER (1900) as the base
+// VS2015 RTM release that doesnt have the fix. That and they are additional
+// caveats until VS2015 Update 3.
+//
+#  if (defined(_MSC_VER) && _MSC_VER >= 1910)
+#    define niEmptyBases __declspec(empty_bases)
+#  else
+#    define niEmptyBases
+#  endif
+#endif
 
 #ifndef niEndMain
 #  define niEndMain(x) ni::GetLang()->Exit(x); return x;

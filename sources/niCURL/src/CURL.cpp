@@ -123,7 +123,7 @@ struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
 };
 
 // This flattens all properties, it doesnt handle objects or arrays...
-struct _JsonParseToDataTableSink : cIUnknownImpl<iJsonParserSink,eIUnknownImplFlags_Local> {
+struct _JsonParseToDataTableSink : public ImplLocal<iJsonParserSink> {
   cString _keyName;
   iDataTable* _dt;
   _JsonParseToDataTableSink(iDataTable* apDT) : _dt(apDT) {}

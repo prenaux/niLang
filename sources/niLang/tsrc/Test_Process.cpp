@@ -270,7 +270,7 @@ TEST_FIXTURE(FProcess,Cwd) {
 
 #if !defined niNoProcess
 TEST_FIXTURE(FProcess,EnumAll) {
-  struct MyEnum : public cIUnknownImpl<iOSProcessEnumSink,eIUnknownImplFlags_Local> {
+  struct MyEnum : public ImplLocal<iOSProcessEnumSink> {
     TEST_PARAMS_DECL;
     tU32 _count;
     MyEnum(TEST_PARAMS_FUNC) : TEST_PARAMS_CONS, _count(0) {}
@@ -286,14 +286,13 @@ TEST_FIXTURE(FProcess,EnumAll) {
     }
   } myEnum(TEST_PARAMS_CALL);
 
-
   niDebugFmt((_A("- Processes: EnumAll - ")));
   tU32 numProcesses = _pman->EnumProcesses(NULL,&myEnum);
   CHECK(numProcesses > 10); // fair to assume that at least 10 procs will be running on any modern os..
 }
 
 TEST_FIXTURE(FProcess,EnumTestExe) {
-  struct MyEnum : public cIUnknownImpl<iOSProcessEnumSink,eIUnknownImplFlags_Local> {
+  struct MyEnum : public ImplLocal<iOSProcessEnumSink> {
     TEST_PARAMS_DECL;
     tU32 _count;
     MyEnum(TEST_PARAMS_FUNC) : TEST_PARAMS_CONS, _count(0) {}

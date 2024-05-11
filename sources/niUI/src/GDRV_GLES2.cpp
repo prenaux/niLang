@@ -1342,7 +1342,7 @@ class cMojoShaderPixel : public cMojoShaderBase<
   }
 };
 
-struct cMojoShaderNativeWrapper : public cIUnknownImpl<iGLShader,eIUnknownImplFlags_Local>
+struct cMojoShaderNativeWrapper : public ImplLocal<iGLShader>
 {
   virtual const tI32* __stdcall GetVertexAttributeLocationArray() const niImpl {
     return MOJOSHADER_glGetVertexAttribLocationArray(MOJOSHADER_USAGE_TEXCOORD);

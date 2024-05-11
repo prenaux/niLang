@@ -7,10 +7,9 @@
 
 namespace ni {
 
-struct cCrypto : public iCrypto
+struct cCrypto : public ImplLocal<iCrypto>
 {
   niBeginClass(cCrypto);
-  niIUnknownImpl_Local(iCrypto);
 
   //! Compute the hash of the specified data.
   virtual cString __stdcall DigestRaw(const tPtr apData, tSize anSize, const achar* aType, eRawToStringEncoding aEncoding) {

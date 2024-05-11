@@ -14,10 +14,8 @@ namespace ni {
  * @{
  */
 
-struct sObjectTypeDef : public iObjectTypeDef
+struct sObjectTypeDef : public ImplLocal<iObjectTypeDef>
 {
-  niIUnknownImpl_Local(iObjectTypeDef);
-
  private:
   const achar*  mName;
   tpfnCreateObjectInstance  mpfnCreateInstance;
@@ -33,10 +31,8 @@ struct sObjectTypeDef : public iObjectTypeDef
   }
 };
 
-struct sModuleDef : public iModuleDef
+struct sModuleDef : public ImplLocal<iModuleDef>
 {
-  niIUnknownImpl_Local(iModuleDef);
-
  private:
   const achar*  mName;
   const achar*  mVersion;

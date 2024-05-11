@@ -10,7 +10,7 @@
 namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cZip : public cIUnknownImpl<iZip,eIUnknownImplFlags_Local>
+class cZip : public ImplLocal<iZip>
 {
  public:
   cZip();

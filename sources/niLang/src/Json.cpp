@@ -837,7 +837,7 @@ void sJsonWriter::_BufferAppend(tU32 c) {
 //======================================================================
 // Json to DataTable
 //======================================================================
-struct _JsonParseToDataTableSink : cIUnknownImpl<iJsonParserSink,eIUnknownImplFlags_Local> {
+struct _JsonParseToDataTableSink : ImplLocal<iJsonParserSink> {
   cString _keyName;
   iDataTable* _dt;
   _JsonParseToDataTableSink(iDataTable* apDT) : _dt(apDT) {}

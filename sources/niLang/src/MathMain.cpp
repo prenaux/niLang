@@ -30,10 +30,9 @@ using namespace ni;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cMath declaration.
-class cMath : public iMath
+class cMath : public ImplLocal<iMath>
 {
   niBeginClass(cMath);
-  niIUnknownImpl_Local(iMath);
 
  public:
   //! Constructor.

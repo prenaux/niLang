@@ -5,15 +5,13 @@ using namespace ni;
 
 #if defined niProfiler
 
-class cProfiler : public cIUnknownImpl<ni::iProf,eIUnknownImplFlags_Local>
+class cProfiler : public ImplLocal<ni::iProf>
 {
   tBool mbRecord;
 
  public:
   cProfiler() {
     mbRecord = eTrue;
-  }
-  ~cProfiler() {
   }
 
   virtual void __stdcall SetRecord(ni::tBool abRecord) {

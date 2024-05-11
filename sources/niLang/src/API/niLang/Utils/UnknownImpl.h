@@ -89,7 +89,6 @@ enum eIUnknownImplFlags
   eIUnknownImplFlags_EmptyDeleteThis = niBit(7),
   eIUnknownImplFlags_Default = 0,
   eIUnknownImplFlags_RefCount = 0,
-  eIUnknownImplFlags_Local = eIUnknownImplFlags_NoRefCount|eIUnknownImplFlags_NoMemoryAllocator|eIUnknownImplFlags_EmptyDeleteThis,
   eIUnknownImplFlags_ForceDWORD = 0xFFFFFFFF
 };
 

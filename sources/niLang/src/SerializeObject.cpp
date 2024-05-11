@@ -12,7 +12,7 @@
 using namespace ni;
 
 ///////////////////////////////////////////////
-struct sStringIDSerializer : public cIUnknownImpl<iSerializable,eIUnknownImplFlags_Local>
+struct sStringIDSerializer : public ImplLocal<iSerializable>
 {
   sStringIDSerializer(cString& aStringID) : mStringID(aStringID) {}
 

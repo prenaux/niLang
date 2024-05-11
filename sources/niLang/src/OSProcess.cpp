@@ -223,7 +223,7 @@ static tU32 _IsParentProcess(tInt aPID, tInt aParentPID) {
 //  Current Process
 //
 //--------------------------------------------------------------------------------------------
-class cOSCurrentProcess : public cIUnknownImpl<ni::iOSProcess,eIUnknownImplFlags_Local> {
+class cOSCurrentProcess : public ImplLocal<ni::iOSProcess> {
   niBeginClass(cOSCurrentProcess);
  public:
   cOSCurrentProcess() {
@@ -532,7 +532,7 @@ static cOSProcess* __stdcall _CreateOSProcessFromHandle(
 //  Process Manager
 //
 //--------------------------------------------------------------------------------------------
-class cOSProcessManager : public cIUnknownImpl<ni::iOSProcessManager,eIUnknownImplFlags_Local> {
+class cOSProcessManager : public ImplLocal<ni::iOSProcessManager> {
   niBeginClass(cOSProcessManager);
 
  public:

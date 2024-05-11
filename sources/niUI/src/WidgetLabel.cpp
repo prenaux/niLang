@@ -9,6 +9,7 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
   niBeginClass(cWidgetLabel);
 
   tU32 mFontFormatFlags;
+  tHStringPtr mhspExpr;
 
   ///////////////////////////////////////////////
   cWidgetLabel() {
@@ -104,12 +105,15 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
         if (ptrDT.IsOK()) {
           const tU32 nFlags = aB.mU32;
           if (nFlags & eWidgetSerializeFlags_Write) {
+            ptrDT->SetHString(_A("text_expr"), mhspExpr);
             ptrDT->SetEnum(_A("font_format_flags"),niFlagsExpr(eFontFormatFlags),mFontFormatFlags);
             if (nFlags & eSerializeFlags_TypeInfoMetadata) {
+              ptrDT->SetMetadata(_A("text_expr"), _H("expr"));
               ptrDT->SetMetadata(_A("font_format_flags"),_H("flags[*eFontFormatFlags]"));
             }
           }
           else if (nFlags & eWidgetSerializeFlags_Read) {
+            mhspExpr = ptrDT->GetHStringDefault(_A("text_expr"), mhspExpr);
             mFontFormatFlags = ptrDT->GetEnumDefault("font_format_flags",niFlagsExpr(eFontFormatFlags),mFontFormatFlags);
             if (ptrDT->HasProperty("_data")) {
               apWidget->SetText(ptrDT->GetHString("_data"));
@@ -117,6 +121,16 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
           }
         }
         break;
+      }
+
+      case eUIMessage_ExpressionUpdate: {
+        QPtr<iExpressionContext> ctx(aA);
+        if (ctx.IsOK() && HStringIsNotEmpty(mhspExpr)) {
+          Ptr<iExpressionVariable> v = ctx->Eval(HStringGetStringEmpty(mhspExpr));
+          if (v.IsOK()) {
+            apWidget->SetText(_H(v->GetString()));
+          }
+        }
       }
     }
     return eFalse;

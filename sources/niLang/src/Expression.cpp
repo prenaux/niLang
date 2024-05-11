@@ -15,6 +15,7 @@
 #include "API/niLang/Math/MathQuat.h"
 #include "API/niLang_ModuleDef.h"
 #include "niLang/Utils/Path.h"
+#include <niLang/IRegex.h>
 
 using namespace ni;
 
@@ -494,7 +495,7 @@ struct ExprVarIUnknown :  public ExprVar
   virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) {}
 
   virtual cString __stdcall GetString() const {
-    return niFmt("%s",Value);
+    return Value.IsOK() ? niFmt("%s",Value) : AZEROSTR;
   }
 
   virtual void __stdcall SetString(const cString& aString) {}
@@ -5200,6 +5201,45 @@ tBool DoEvaluate(iExpressionContext* apContext)
 EndOp()
 
 // DataTable function
+BeginOpF(DTCopyMatch,3)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTSearch(): operation, input 0 is not a valid datatable.");
+    return eFalse;
+  }
+
+  cString var1 = mvOperands[1].GetVariable()->GetString();
+  if (var1.IsEmpty()) {
+    mptrResult->SetIUnknown(dt->Clone());
+    return eTrue;
+  }
+
+  Ptr<iDataTable> ret = dt->CloneEx(eDataTableCopyFlags_Default);
+  cString var2 = mvOperands[2].GetVariable()->GetString();
+  Ptr<iRegex> regex = ni::CreateFilePatternRegex(var2.Chars());
+  niLoop(i, dt->GetNumChildren()) {
+    Ptr<iDataTable> c = dt->GetChildFromIndex(i);
+    cString val = c->GetString(var1.Chars());
+    if (regex.IsOK() && regex->DoesMatch(val.Chars())) {
+      ret->AddChild(c->Clone());
+    }
+  }
+
+  mptrResult->SetIUnknown(ret);
+  return eTrue;
+}
+EndOp()
+
+
+// DataTable function
 BeginOpF(DTGetChildIndex,2)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
@@ -5935,6 +5975,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTGet);
   AddOp(DTGetChild);
   AddOp(DTFindChild);
+  AddOp(DTCopyMatch);
   AddOp(DTGetChildIndex);
   AddOp(DTGetNumChildren);
   AddOp(DTGetName);

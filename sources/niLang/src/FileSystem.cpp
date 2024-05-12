@@ -876,9 +876,7 @@ niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink*
   __rebased_##NAME << _##NAME;                  \
   const char* NAME = __rebased_##NAME.Chars();
 
-//! File system directory implementation
-template <eIUnknownImplFlags FLAGS = eIUnknownImplFlags_Default>
-class cFileSystemDir : public cIUnknownImpl<ni::iFileSystem,FLAGS>
+class cFileSystemDir : public ImplRC<ni::iFileSystem>
 {
   niBeginClass(cFileSystemDir);
  public:
@@ -1348,9 +1346,9 @@ struct FileSystemHashed : public cIUnknownImpl<ni::iFileSystem>
 namespace ni {
 
 niExportFunc(iFileSystem*) GetRootFS() {
-  static cFileSystemDir<eIUnknownImplFlags_NoRefCount> _rootFS(
+  static Ptr<cFileSystemDir> _rootFS = niNew cFileSystemDir(
       NULL,eFileSystemRightsFlags_All);
-  return &_rootFS;
+  return _rootFS;
 }
 
 niExportFunc(iFileSystem*) CreateFileSystemDir(const achar* aaszDir, tFileSystemRightsFlags aRights)
@@ -1363,7 +1361,7 @@ niExportFunc(iFileSystem*) CreateFileSystemDir(const achar* aaszDir, tFileSystem
     niError(niFmt(_A("No rights specified.")));
     return NULL;
   }
-  return niNew cFileSystemDir<eIUnknownImplFlags_Default>(aaszDir,aRights);
+  return niNew cFileSystemDir(aaszDir,aRights);
 }
 
 

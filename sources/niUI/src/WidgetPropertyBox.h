@@ -88,7 +88,7 @@ class cWidgetPropertyBox : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknow
   typedef astl::hstring_hash_map<tEBLst>  tEBMap;
   tEBMap mmapEB;
 
-  struct sSink : public cIUnknownImpl<iDataTableSink,eIUnknownImplFlags_NoRefCount,iWidgetSink>
+  struct sSink : public ImplLocal<iDataTableSink,0,iWidgetSink>
   {
     friend class cWidgetPropertyBox;
     sSink(cWidgetPropertyBox* apParent) : mpParent(apParent), mnIgnoreSetProperty(eInvalidHandle) {}

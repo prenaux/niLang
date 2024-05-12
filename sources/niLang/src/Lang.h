@@ -17,12 +17,19 @@
 namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cLang : public cIUnknownImpl<iLang,eIUnknownImplFlags_NoRefCount|eIUnknownImplFlags_NoMemoryAllocator>
+class cLang : public ImplLocal<iLang>
 {
   niBeginClass(cLang);
 
  public:
   static iUnknown* __stdcall _CreateInstance(const Var& aVarA, const Var& aVarB);
+
+  void* operator new(size_t, void* apMem)  {
+    return apMem;
+  }
+  void operator delete(void*) {
+    niPanicUnreachable("Cant delete cLang.");
+  }
 
   cLang();
   ~cLang();

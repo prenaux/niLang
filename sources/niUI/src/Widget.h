@@ -263,7 +263,7 @@ class cWidget : public cIUnknownImpl<iWidget,ni::eIUnknownImplFlags_DontInherit1
   void ChildChangedRelative(cWidget* apChild);
   void NotifyChangedRelative();
 
-  iWidgetZMap* GetOwnerZMap() const;
+  iWidgetZMap* _GetOwnerZMap() const;
 
   void _UpdateMinMaxSize(sVec2f newMin, sVec2f newMax);
   void _CheckCaptureAndExclusive();

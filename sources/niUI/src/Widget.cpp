@@ -277,8 +277,9 @@ tBool __stdcall cWidget::SetStyle(tU32 anStyle)
   // free style changed, so update the owner zmap
   const tBool bZMapUpdate = niFlagIs(anStyle,eWidgetStyle_Free) != niFlagIs(nOldStyle,eWidgetStyle_Free);
   if (bZMapUpdate) {
-    // remove of the current zmap, before the style flag is changed as GetOwnerZMap checks the current style
-    iWidgetZMap* pOwnerZMap = GetOwnerZMap();
+    // remove of the current zmap, before the style flag is changed as
+    // _GetOwnerZMap checks the current style
+    iWidgetZMap* pOwnerZMap = _GetOwnerZMap();
     if (pOwnerZMap) {
       pOwnerZMap->RemoveOfZMap(this);
     }
@@ -371,7 +372,7 @@ tBool cWidget::DoSetParent(ni::iWidget *apParent)
 
   QPtr<cWidget> ptrOldParent(mpwParent);
   // Has to be done here, as in RemoveChild the ZMap will already be linked to the new parent
-  iWidgetZMap* pOwnerZMap = GetOwnerZMap();
+  iWidgetZMap* pOwnerZMap = _GetOwnerZMap();
   if (pOwnerZMap) {
     pOwnerZMap->RemoveOfZMap(this);
   }
@@ -416,7 +417,7 @@ void __stdcall cWidget::SetZOrder(eWidgetZOrder aZOrder)
 {
   const eWidgetZOrder wasZOrder = aZOrder;
   mZOrder = aZOrder;
-  iWidgetZMap* pOwnerZMap = GetOwnerZMap();
+  iWidgetZMap* pOwnerZMap = _GetOwnerZMap();
   if (pOwnerZMap) {
     pOwnerZMap->SetZOrder(this,aZOrder);
     if (wasZOrder != mZOrder || !niFlagIs(mStatus,WDGSTATUS_UPDATINGAUTOLAYOUT)) {
@@ -434,7 +435,7 @@ eWidgetZOrder __stdcall cWidget::GetZOrder() const
 ///////////////////////////////////////////////
 void __stdcall cWidget::SetZOrderAbove(iWidget* apWidget)
 {
-  iWidgetZMap* pOwnerZMap = GetOwnerZMap();
+  iWidgetZMap* pOwnerZMap = _GetOwnerZMap();
   if (pOwnerZMap) {
     pOwnerZMap->SetZOrderAbove(this,(cWidget*)apWidget);
     UpdateParentAutoLayout("Parent-ZOrder-Above");
@@ -1584,7 +1585,7 @@ void cWidget::RemoveChild(cWidget *pChild)
     bRes = astl::find_erase(mvecFreeChildren,pChild);
   }
   if (bRes) {
-    iWidgetZMap* pOwnerZMap = pChild->GetOwnerZMap();
+    iWidgetZMap* pOwnerZMap = pChild->_GetOwnerZMap();
     if (pOwnerZMap) {
       pOwnerZMap->RemoveOfZMap(pChild);
     }
@@ -3051,7 +3052,7 @@ void cWidget::NotifyChangedRelative()
 }
 
 ///////////////////////////////////////////////
-iWidgetZMap* cWidget::GetOwnerZMap() const
+iWidgetZMap* cWidget::_GetOwnerZMap() const
 {
   if (mnStyle & eWidgetStyle_Free) {
     return &mpUICtx->mFreeWidgets;

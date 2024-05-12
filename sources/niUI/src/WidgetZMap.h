@@ -26,7 +26,7 @@ struct iWidgetZMap : public iUnknown
   virtual void __stdcall SetZOrderAbove(cWidget* apW, cWidget* apAbove) = 0;
 };
 
-class cWidgetZMap : public cIUnknownImpl<iWidgetZMap,eIUnknownImplFlags_NoRefCount>
+class cWidgetZMap : public ImplLocal<iWidgetZMap>
 {
  public:
   cWidgetZMap() {

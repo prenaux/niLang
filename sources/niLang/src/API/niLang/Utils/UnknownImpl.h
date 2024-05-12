@@ -79,15 +79,12 @@ template <typename BaseImpl, typename T, typename B> struct sQueryInterfaceInher
 //{NoAutomation}
 enum eIUnknownImplFlags
 {
-  eIUnknownImplFlags_NoMemoryAllocator = niBit(0),
-  eIUnknownImplFlags_NoRefCount = niBit(1),
   eIUnknownImplFlags_DontInherit1 = niBit(3),
   eIUnknownImplFlags_DontInherit2 = niBit(4),
   eIUnknownImplFlags_DontInherit3 = niBit(5),
   eIUnknownImplFlags_DontInherit4 = niBit(6),
   eIUnknownImplFlags_EmptyDeleteThis = niBit(7),
   eIUnknownImplFlags_Default = 0,
-  eIUnknownImplFlags_RefCount = 0,
   eIUnknownImplFlags_ForceDWORD = 0xFFFFFFFF
 };
 
@@ -155,7 +152,7 @@ struct UnkImpl_EmptyDeleteThis : public BASE {
 //! Do the inheritance for IUnknown impl.
 template <typename T0, tIUnknownImplFlags FLAGS, typename T1, typename T2, typename T3, typename T4>
 class UnkImpl_Inherit :
-      public niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_NoMemoryAllocator),cUnknown0,cMemImpl),
+      public cMemImpl,
       public T0,
       public niMetaSelect(niFlagIsNot(FLAGS,eIUnknownImplFlags_DontInherit1),T1,cUnknown1),
       public niMetaSelect(niFlagIsNot(FLAGS,eIUnknownImplFlags_DontInherit2),T2,cUnknown2),
@@ -166,7 +163,6 @@ public:
   typedef T0 IUnknownBaseType;
 protected:
   typedef T0 BaseType;
-  typedef typename niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_NoMemoryAllocator),cUnknown0,cMemImpl) tBaseMemAlloc;
 };
 
 #define NI_UNKIMPL_ADDREF() {                     \
@@ -319,9 +315,7 @@ template <typename T0,
           typename T2 = cUnknown2,
           typename T3 = cUnknown3,
           typename T4 = cUnknown4>
-class cIUnknownImpl : public niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_NoRefCount),
-                                          MetaImplementInherit(NoRefCount),
-                                          MetaImplementInherit(RefCount))
+class cIUnknownImpl : public MetaImplementInherit(RefCount)
 {
 public:
   typedef cIUnknownImpl<T0,FLAGS,T1,T2,T3,T4> BaseImpl;
@@ -616,9 +610,9 @@ class Impl_NoHeapAlloc {
 protected:
   void* operator new(size_t anSize, const achar* file, int line, const achar* fun);
   void* operator new[](size_t anSize, const achar* file, int line, const achar* fun);
-  void* operator new(size_t anSize, void* apMem);
   void* operator new(size_t anSize);
   void* operator new[](size_t anSize);
+  void* operator new(size_t anSize, void* apMem);
 };
 
 //! Do the inheritance for IZupnown impl.

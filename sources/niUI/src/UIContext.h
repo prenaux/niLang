@@ -288,7 +288,7 @@ class cUIContext : public cIUnknownImpl<iUIContext,eIUnknownImplFlags_Default>, 
 
   // Widgets
   tWeakWidgetList mlstWidgets;
-  struct sFreeWidgets : public cIUnknownImpl<iWidgetZMap,eIUnknownImplFlags_NoRefCount> {
+  struct sFreeWidgets : public ImplLocal<iWidgetZMap> {
     cWidgetZMap zmapInput;
     cWidgetZMap zmapDraw;
     sFreeWidgets() {

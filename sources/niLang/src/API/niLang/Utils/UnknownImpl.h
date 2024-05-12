@@ -200,8 +200,7 @@ enum eImplFlags {
 typedef tU32 tImplFlags;
 
 //! Implements new/delete for ni memory allocator
-class Impl_HeapAlloc {
-public:
+struct Impl_HeapAlloc {
   inline void* operator new(size_t anSize, const achar* file, int line, const achar* fun) {
     return (void*)ni_object_alloc(anSize,file,line,fun);
   }
@@ -245,7 +244,7 @@ public:
 };
 
 //! Dont allow heap allocation
-class Impl_NoHeapAlloc {
+struct Impl_NoHeapAlloc {
 protected:
   void* operator new(size_t anSize, const achar* file, int line, const achar* fun);
   void* operator new[](size_t anSize, const achar* file, int line, const achar* fun);
@@ -256,13 +255,13 @@ protected:
 
 //! Do the inheritance for IZupnown impl.
 template <typename TMEM, typename T0, tImplFlags FLAGS, typename T1, typename T2, typename T3, typename T4>
-class Impl_Inherit :
-      public TMEM,
-      public T0,
-      public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit1),T1,cUnknown1),
-      public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit2),T2,cUnknown2),
-      public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit3),T3,cUnknown3),
-      public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit4),T4,cUnknown4)
+struct niEmptyBases Impl_Inherit :
+    public TMEM,
+    public T0,
+    public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit1),T1,cUnknown1),
+    public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit2),T2,cUnknown2),
+    public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit3),T3,cUnknown3),
+    public niMetaSelect(niFlagIsNot(FLAGS,eImplFlags_DontInherit4),T4,cUnknown4)
 {
 public:
   typedef T0 IUnknownBaseType;

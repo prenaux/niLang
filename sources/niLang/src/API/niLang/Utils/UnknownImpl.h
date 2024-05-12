@@ -270,10 +270,6 @@ protected:
   typedef T0 BaseType;
 };
 
-#if niPragmaPack
-#pragma niPackPush(4)
-#endif
-
 //! Implements ref counting policy.
 template <typename T0,
           tImplFlags FLAGS = eImplFlags_Default,
@@ -287,8 +283,8 @@ struct niEmptyBases ImplRC : public niImpl_Inherit(HeapAlloc)
   niImpl_QueryInterface();
   niImpl_Base_DeleteThis();
   niImpl_RefCount();
-} niAligned(4) niPacked(4);
-static_assert(sizeof(ni::ImplRC<iUnknown>) == sizeof(void*)+sizeof(SYNC_INT_TYPE));
+};
+static_assert(sizeof(ni::ImplRC<iUnknown>) == sizeof(void*)+sizeof(void*));
 
 //! Implements aggregation policy.
 template <typename T0,
@@ -303,7 +299,7 @@ struct niEmptyBases ImplAggregate : public niImpl_Inherit(HeapAlloc)
   niImpl_QueryInterface();
   niImpl_Base_DeleteThis();
   niImpl_Aggregate();
-} niAligned(4) niPacked(4);
+};
 static_assert(sizeof(ni::ImplAggregate<iUnknown>) == sizeof(void*)+sizeof(ni::iUnknown*));
 
 //! Implements a local/member/stack only policy.
@@ -319,12 +315,8 @@ struct niEmptyBases ImplLocal : public niImpl_Inherit(NoHeapAlloc)
   niImpl_QueryInterface();
   niImpl_Base_EmptyDeleteThis();
   niImpl_NoRefCount();
-} niAligned(4) niPacked(4);
+};
 static_assert(sizeof(ni::ImplLocal<iUnknown>) == sizeof(void*));
-
-#if niPragmaPack
-#pragma niPackPop()
-#endif
 
 /**@}*/
 /**@}*/

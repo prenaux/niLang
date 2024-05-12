@@ -102,7 +102,7 @@ struct sDDSHeader
 #pragma pack(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-struct BitmapLoader_DDS : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_DDS : public ImplRC<iBitmapLoader> {
   virtual iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics, iFile* pFile) niImpl {
     sDDSHeader ddsHeader;
     cString strFormat;

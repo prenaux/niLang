@@ -471,7 +471,7 @@ niExportFunc(int) afilepattern_matchn(const FPAT_CHAR* pat, const FPAT_CHAR* fna
   return (rc);
 }
 
-class cFilePatternRegex : public cIUnknownImpl<ni::iRegex> {
+class cFilePatternRegex : public ImplRC<ni::iRegex> {
  public:
   cFilePatternRegex(const achar* aaszPattern, const achar* aaszPatSplitSep) {
     cString str = aaszPattern;

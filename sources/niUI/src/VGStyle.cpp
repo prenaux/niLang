@@ -11,7 +11,7 @@
 #define GET(PARAM,V)    (top().V)
 #define GETEX(PARAM,T,V)  ((T)top().V)
 
-class cVGStyle : public cIUnknownImpl<iVGStyle>
+class cVGStyle : public ImplRC<iVGStyle>
 {
  public:
   cVGStyle() {

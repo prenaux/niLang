@@ -11,7 +11,7 @@ static _HDecl(SearchBar_ShowBox);
 //  cSearchEngineFilePattern
 //
 //=================================================================
-class cSearchEngineFilePattern : public cIUnknownImpl<iSearchEngine, eIUnknownImplFlags_Default>
+class cSearchEngineFilePattern : public ImplRC<iSearchEngine, eImplFlags_Default>
 {
  public:
   cSearchEngineFilePattern() {}
@@ -80,7 +80,7 @@ class cSearchEngineFilePattern : public cIUnknownImpl<iSearchEngine, eIUnknownIm
 //  cSearchContainer
 //
 //=================================================================
-class cSearchContainer : public cIUnknownImpl<iSearchContainer, eIUnknownImplFlags_Default>
+class cSearchContainer : public ImplRC<iSearchContainer, eImplFlags_Default>
 {
   astl::vector<tSearchItem> mContainer;
 

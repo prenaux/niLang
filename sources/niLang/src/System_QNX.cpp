@@ -26,7 +26,7 @@
 
 using namespace ni;
 
-class cQNXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default,ni::iOSWindowQNX> {
+class cQNXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowQNX> {
   niBeginClass(cQNXWindow);
 
   public:

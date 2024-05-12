@@ -188,7 +188,7 @@ static D3DMATERIAL9 _d3d9Material;
 #define DevCallBreak(Msg, Func, Params) mpD3D9Device->Func Params
 #endif
 
-struct sD3D9Context : public sGraphicsContext<4,cIUnknownImpl<iGraphicsContextRT,eIUnknownImplFlags_DontInherit1,iGraphicsContext> > {
+struct sD3D9Context : public sGraphicsContext<4,ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> > {
   sRecti            mrectScissor;
   sRecti            mrectViewport;
   tU32              mnSyncCounter;
@@ -913,7 +913,7 @@ class cD3D9VertexDeclarations
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Vertex array
-class cD3D9VertexArray : public cIUnknownImpl<iD3D9VertexArray,eIUnknownImplFlags_DontInherit1,iVertexArray>
+class cD3D9VertexArray : public ImplRC<iD3D9VertexArray,eImplFlags_DontInherit1,iVertexArray>
 {
  public:
   cD3D9VertexArray(iGraphics* apGraphics, IDirect3DDevice9* apDevice, tU32 ulNumVert, tFVF aFVF, eArrayUsage Usage)
@@ -1105,7 +1105,7 @@ inline void D3D9_Copy32To16(tU32* apSrc, tU16* apDest, tU32 anCount, const tU32 
   }
 }
 
-class cD3D9IndexArray : public cIUnknownImpl<iD3D9IndexArray,eIUnknownImplFlags_DontInherit1,iIndexArray>
+class cD3D9IndexArray : public ImplRC<iD3D9IndexArray,eImplFlags_DontInherit1,iIndexArray>
 {
  public:
   iGraphics*              mpGraphics;
@@ -1633,7 +1633,7 @@ struct sGDD3DTextureVolumeLock
   }
 };
 
-class cD3D9Texture : public cIUnknownImpl<iD3D9Texture,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iTexture,iDeviceResource>
+class cD3D9Texture : public ImplRC<iD3D9Texture,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iTexture,iDeviceResource>
 {
   niBeginClass(cD3D9Texture);
  public:
@@ -2414,7 +2414,7 @@ class cD3D9ShaderBase : public T, public sShaderDesc
 
 // Vertex program
 class cD3D9ShaderVertex :
-    public cD3D9ShaderBase<cIUnknownImpl<iD3D9ShaderVertex,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iShader,iDeviceResource> >
+    public cD3D9ShaderBase<ImplRC<iD3D9ShaderVertex,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cD3D9ShaderVertex(iGraphics* apGraphics, iHString* ahspName, iDeviceResourceManager* apDevResMan, IDirect3DVertexShader9* pVS, iHString* ahspProfile, ID3DXBuffer* apData)
@@ -2456,7 +2456,7 @@ class cD3D9ShaderVertex :
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Pixel program
 class cD3D9ShaderPixel :
-    public cD3D9ShaderBase<cIUnknownImpl<iD3D9ShaderPixel,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iShader,iDeviceResource> >
+    public cD3D9ShaderBase<ImplRC<iD3D9ShaderPixel,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cD3D9ShaderPixel(iGraphics* apGraphics, iHString* ahspName, iDeviceResourceManager* apDevResMan, IDirect3DPixelShader9* pPS, iHString* ahspProfile, ID3DXBuffer* apData)
@@ -2502,7 +2502,7 @@ class cD3D9ShaderPixel :
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cD3D9OcclusionQuery declaration.
-class cD3D9OcclusionQuery : public ni::cIUnknownImpl<ni::iD3D9OcclusionQuery,ni::eIUnknownImplFlags_DontInherit1,iOcclusionQuery,iDeviceResource>
+class cD3D9OcclusionQuery : public ni::ImplRC<ni::iD3D9OcclusionQuery,ni::eImplFlags_DontInherit1,iOcclusionQuery,iDeviceResource>
 {
   niBeginClass(cD3D9OcclusionQuery);
 
@@ -3839,7 +3839,7 @@ tBool D3D9_ApplyPixelShader(sD3D9Context* apContext, sD3D9StateCache& aCache, ID
 //  D3D9 Graphics Driver
 //
 //--------------------------------------------------------------------------------------------
-class cD3D9 : public cIUnknownImpl<iGraphicsDriver,eIUnknownImplFlags_Default,iD3D9Graphics>
+class cD3D9 : public ImplRC<iGraphicsDriver,eImplFlags_Default,iD3D9Graphics>
 {
   niBeginClass(cD3D9);
 

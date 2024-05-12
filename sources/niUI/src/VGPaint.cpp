@@ -17,7 +17,7 @@ typedef sTimedLerp<tF32CVec,tF32,sTimedLerp_GetKeyTimeStaticCast<tF32,tF32> > tT
 //
 //--------------------------------------------------------------------------------------------
 template<class GradientF>
-class gradient_reflect_polymorphic_wrapper : public cIUnknownImpl<iAGGGradientPolymorphicWrapperBase>
+class gradient_reflect_polymorphic_wrapper : public ImplRC<iAGGGradientPolymorphicWrapperBase>
 {
  public:
   gradient_reflect_polymorphic_wrapper() : m_adaptor(m_gradient) {}
@@ -29,7 +29,7 @@ class gradient_reflect_polymorphic_wrapper : public cIUnknownImpl<iAGGGradientPo
   agg::gradient_reflect_adaptor<GradientF> m_adaptor;
 };
 template<class GradientF>
-class gradient_repeat_polymorphic_wrapper : public cIUnknownImpl<iAGGGradientPolymorphicWrapperBase>
+class gradient_repeat_polymorphic_wrapper : public ImplRC<iAGGGradientPolymorphicWrapperBase>
 {
  public:
   gradient_repeat_polymorphic_wrapper() : m_adaptor(m_gradient) {}
@@ -41,7 +41,7 @@ class gradient_repeat_polymorphic_wrapper : public cIUnknownImpl<iAGGGradientPol
   agg::gradient_repeat_adaptor<GradientF> m_adaptor;
 };
 template<class GradientF>
-class gradient_clamp_polymorphic_wrapper : public cIUnknownImpl<iAGGGradientPolymorphicWrapperBase>
+class gradient_clamp_polymorphic_wrapper : public ImplRC<iAGGGradientPolymorphicWrapperBase>
 {
  public:
   gradient_clamp_polymorphic_wrapper() : m_adaptor(m_gradient) {}
@@ -90,7 +90,7 @@ iAGGGradientPolymorphicWrapperBase* GetNewGradientWrapperBase(eVGGradientType aT
 #undef SELWRAP
 }
 
-class cVGGradientTable : public cIUnknownImpl<iVGGradientTable>
+class cVGGradientTable : public ImplRC<iVGGradientTable>
 {
  public:
   cVGGradientTable(iGraphics* apGraphics, tU32 anSize)
@@ -242,7 +242,7 @@ sAGGGradientTable AGGGetGradientTable(const iVGGradientTable* apTable)
 //  Paint Solid
 //
 //--------------------------------------------------------------------------------------------
-class cVGPaintSolid : public cIUnknownImpl<iVGPaint>
+class cVGPaintSolid : public ImplRC<iVGPaint>
 {
  public:
   cVGPaintSolid(const sColor4f& avColor = sColor4f::White()) {
@@ -284,7 +284,7 @@ class cVGPaintSolid : public cIUnknownImpl<iVGPaint>
 //  Paint Image
 //
 //--------------------------------------------------------------------------------------------
-class cVGPaintImage : public cIUnknownImpl<iVGPaintImage,eIUnknownImplFlags_DontInherit1,iVGPaint>
+class cVGPaintImage : public ImplRC<iVGPaintImage,eImplFlags_DontInherit1,iVGPaint>
 {
  public:
   cVGPaintImage(iGraphics* apGraphics, iVGImage* apImage = NULL, const sColor4f& avColor = sColor4f::White()) {
@@ -414,7 +414,7 @@ class cVGPaintImage : public cIUnknownImpl<iVGPaintImage,eIUnknownImplFlags_Dont
 //  Paint Gradient
 //
 //--------------------------------------------------------------------------------------------
-class cVGPaintGradient : public cIUnknownImpl<iVGPaintGradient,eIUnknownImplFlags_DontInherit1,iVGPaint>
+class cVGPaintGradient : public ImplRC<iVGPaintGradient,eImplFlags_DontInherit1,iVGPaint>
 {
  public:
   cVGPaintGradient(iGraphics* apGraphics, const sColor4f& avColor = sColor4f::White(), iVGGradientTable* apTable = NULL) {

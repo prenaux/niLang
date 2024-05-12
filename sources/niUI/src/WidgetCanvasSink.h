@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetCanvasSink declaration.
-class cWidgetCanvasSink : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetCanvas>
+class cWidgetCanvasSink : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetCanvas>
 {
   niBeginClass(cWidgetCanvasSink);
 

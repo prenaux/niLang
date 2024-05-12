@@ -17,11 +17,11 @@ namespace ni {
  */
 
 template <typename T=cUnknown1>
-class cWidgetSinkImpl : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,T>
+class cWidgetSinkImpl : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,T>
 {
  public:
   typedef cWidgetSinkImpl tWidgetBaseImpl;
-  typedef ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,T> BaseImpl;
+  typedef ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,T> BaseImpl;
 
   iWidget* mpWidget;
 

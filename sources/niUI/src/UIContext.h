@@ -89,7 +89,7 @@ const sVec2f _kvMaxSize = {100000,100000};
 const tU32 knDrawOpCaptureToggleKey = eKeyMod_Alt|eKey_Tilde;
 const tU32 knTerminalToggleKey = eKeyMod_Control|eKey_Tilde;
 
-class cUIContext : public cIUnknownImpl<iUIContext,eIUnknownImplFlags_Default>, public TimerManager
+class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerManager
 {
   niBeginClass(cUIContext);
 

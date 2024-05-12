@@ -10,7 +10,7 @@
 // cScriptObject declaration.
 
 //! Script object implementation.
-class cScriptObject : public cIUnknownImpl<iScriptObject>
+class cScriptObject : public ImplRC<iScriptObject>
 {
   niBeginClass(cScriptObject);
 

@@ -26,7 +26,7 @@ static cString _getWebcamName(int aIndex) {
   <webcam device_index="0" preferred_mode="0" width="640" height="480" />
 
  */
-class cVideoDecoderWebcam : public ni::cIUnknownImpl<ni::iVideoDecoder,ni::eIUnknownImplFlags_Default>
+class cVideoDecoderWebcam : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
 {
   niBeginClass(cVideoDecoderWebcam);
 

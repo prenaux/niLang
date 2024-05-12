@@ -10,7 +10,7 @@ iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNu
 _HDecl(SDL);
 
 //! Sound driver buffer waveout implementation.
-class cSoundDriverBufferSDL : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownImplFlags_Default>
+class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
 {
   niBeginClass(cSoundDriverBufferSDL);
 
@@ -153,7 +153,7 @@ class cSoundDriverBufferSDL : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownI
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverSDL : public cIUnknownImpl<iSoundDriver>
+class cSoundDriverSDL : public ImplRC<iSoundDriver>
 {
   niBeginClass(cSoundDriverSDL);
 

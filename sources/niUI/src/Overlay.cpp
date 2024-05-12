@@ -20,7 +20,7 @@ static Ptr<iMaterial> _CreateOverlayMaterial(iGraphics* apGraphics, iTexture* ap
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cOverlay : public cIUnknownImpl<iOverlay>
+class cOverlay : public ImplRC<iOverlay>
 {
  public:
   cOverlay(iMaterial* apMaterial);

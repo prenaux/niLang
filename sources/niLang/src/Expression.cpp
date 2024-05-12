@@ -97,7 +97,7 @@ static Var _ToVar(const iExpressionVariable* apExprVar) {
 }
 
 ///////////////////////////////////////////////
-struct ExprVar : public cIUnknownImpl<iExpressionVariable>
+struct ExprVar : public ImplRC<iExpressionVariable>
 {
  protected:
   ExprVar(iHString* ahspName, eExpressionVariableType aType) : hspName(ahspName), Type(aType) {}
@@ -554,7 +554,7 @@ enum eMathOperationType
 };
 
 //! Math operation
-struct Op : public cIUnknownImpl<ni::iUnknown>
+struct Op : public ImplRC<ni::iUnknown>
 {
   struct sOperand
   {
@@ -660,7 +660,7 @@ struct Op : public cIUnknownImpl<ni::iUnknown>
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-struct Expression : public cIUnknownImpl<ni::iExpression> {
+struct Expression : public ImplRC<ni::iExpression> {
   Ptr<iExpressionContext> _context;
   Ptr<Op> _root;
 
@@ -683,7 +683,7 @@ struct Expression : public cIUnknownImpl<ni::iExpression> {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class Evaluator : public cIUnknownImpl<ni::iExpressionContext>
+class Evaluator : public ImplRC<ni::iExpressionContext>
 {
  public:
   typedef astl::map<cString,Ptr<Op>>  tOperationMap;
@@ -5029,7 +5029,7 @@ tBool Evaluator::_RegisterReservedVariables() {
       return OP_GET_FRAME_TIME;
     }
   };
-  struct IotaRunnable : public cIUnknownImpl<iRunnable> {
+  struct IotaRunnable : public ImplRC<iRunnable> {
     tU32 _iota = 0;
     virtual Var __stdcall Run() {
       return (tF64)_iota++;

@@ -21,7 +21,7 @@ struct ThreadImpl;
 static ThreadMutex _threadListMutex;
 static astl::vector<ThreadImpl*> _threadList;
 
-struct ThreadImpl : public cIUnknownImpl<iThread>
+struct ThreadImpl : public ImplRC<iThread>
 {
   ThreadImpl() {
     mnID = eInvalidHandle;

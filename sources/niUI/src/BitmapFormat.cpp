@@ -6,7 +6,7 @@
 
 static Ptr<iPixelFormat> _defaultPxf;
 
-class cBitmapFormat : public cIUnknownImpl<iBitmapFormat>
+class cBitmapFormat : public ImplRC<iBitmapFormat>
 {
   niBeginClass(cBitmapFormat);
  public:

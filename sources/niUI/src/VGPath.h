@@ -13,7 +13,7 @@
 #include "SVGPathTokenizer.h"
 
 // Path container and renderer.
-class cVGPath : public ni::cIUnknownImpl<iVGPath>
+class cVGPath : public ni::ImplRC<iVGPath>
 {
  public:
   template<class VertexSource> class conv_count

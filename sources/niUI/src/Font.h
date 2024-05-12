@@ -65,7 +65,7 @@ struct sFontGlyph {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Font interface implementation
-class cFont : public cIUnknownImpl<iFont>
+class cFont : public ImplRC<iFont>
 {
  public:
   cFont(cGraphics* pFontFactory);

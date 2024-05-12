@@ -49,7 +49,7 @@ using namespace ni;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cDataTable declaration.
-class cDataTable : public ni::cIUnknownImpl<ni::iDataTable,ni::eIUnknownImplFlags_Default,ni::iSerializable>
+class cDataTable : public ni::ImplRC<ni::iDataTable,ni::eImplFlags_Default,ni::iSerializable>
 {
   niBeginClass(cDataTable);
 

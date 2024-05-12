@@ -257,7 +257,7 @@ struct sLint {
   const tHStringPtr name;
 };
 
-struct LintClosure : public cIUnknownImpl<iUnknown>
+struct LintClosure : public ImplRC<iUnknown>
 {
   LintClosure(SQFunctionProto *func, SQTable* rootTable, SQTable* thisTable) {
     _func = func;

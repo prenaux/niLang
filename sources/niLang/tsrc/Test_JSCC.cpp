@@ -30,7 +30,7 @@ static void CallMainLoop() {
   _MainLoopFn();
 }
 
-struct sOpenGLWindowSink : public cIUnknownImpl<iMessageHandler> {
+struct sOpenGLWindowSink : public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   WeakPtr<iOSWindow> _wnd;
 

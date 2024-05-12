@@ -13,7 +13,7 @@
 
 #define TRACE_WIDGET_TEXT(X) // niDebugFmt(X)
 
-class cWidgetText : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetText>
+class cWidgetText : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetText>
 {
   niBeginClass(cWidgetText);
 

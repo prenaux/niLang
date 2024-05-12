@@ -484,7 +484,7 @@ static int ReadChunk(iFile *src, sWaveChunk *chunk)
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cSoundDataWAV implementation.
 
-class cSoundDataWAV : public cIUnknownImpl<iSoundData>
+class cSoundDataWAV : public ImplRC<iSoundData>
 {
   niBeginClass(cSoundDataWAV);
 
@@ -733,7 +733,7 @@ class cSoundDataWAV : public cIUnknownImpl<iSoundData>
 //////////////////////////////////////////////////////////////////////////////////////////////
 // WAV loader
 
-class cSoundDataLoaderWAV : public cIUnknownImpl<iSoundDataLoader>
+class cSoundDataLoaderWAV : public ImplRC<iSoundDataLoader>
 {
   iSoundData* __stdcall LoadSoundData(iFile* apFile) {
     return niNew cSoundDataWAV(apFile);

@@ -35,7 +35,7 @@
     Decoding = green (0,1,0)
     Unknown = pink (1,0,1)
 */
-struct cVideoDecoderIpcam : public ni::cIUnknownImpl<ni::iVideoDecoder,ni::eIUnknownImplFlags_Default>
+struct cVideoDecoderIpcam : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
 {
   niBeginClass(cVideoDecoderIpcam);
 

@@ -13,7 +13,7 @@
 //
 //--------------------------------------------------------------------------------------------
 
-class cFixedStates : public cIUnknownImpl<iFixedStates>,
+class cFixedStates : public ImplRC<iFixedStates>,
                      public sFixedStatesDesc {
   niBeginClass(cFixedStates);
 

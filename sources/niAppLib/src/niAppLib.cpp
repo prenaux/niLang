@@ -34,7 +34,7 @@ AppConfig::AppConfig() {
   contentsScale = 0;
 };
 
-struct AppWindow : public cIUnknownImpl<iMessageHandler,eIUnknownImplFlags_Default,iWidgetSink> {
+struct AppWindow : public ImplRC<iMessageHandler,eImplFlags_Default,iWidgetSink> {
  private:
   AppWindow(AppWindow&);
 

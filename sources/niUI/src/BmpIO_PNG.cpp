@@ -61,7 +61,7 @@ static void my_png_flush_data(ni_png_structp ctx)
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
-struct BitmapLoader_PNG : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_PNG : public ImplRC<iBitmapLoader> {
   virtual iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics, iFile* pFile) niImpl {
     ni_png_structp ni_png_ptr = NULL;
     ni_png_infop   info_ptr = NULL;
@@ -193,7 +193,7 @@ struct BitmapLoader_PNG : public cIUnknownImpl<iBitmapLoader> {
 };
 
 ///////////////////////////////////////////////
-struct BitmapSaver_PNG : public cIUnknownImpl<iBitmapSaver> {
+struct BitmapSaver_PNG : public ImplRC<iBitmapSaver> {
   tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pFile, iBitmapBase* pBmpBase, tU32 ulCompression) niImpl
   {
     QPtr<iBitmap2D> pBmp = pBmpBase;

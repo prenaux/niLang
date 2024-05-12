@@ -14,7 +14,7 @@
 
 template <tBool IS_RO>
 class cRasterizerStates :
-    public cIUnknownImpl<iRasterizerStates>,
+    public ImplRC<iRasterizerStates>,
     public sRasterizerStatesDesc
 {
   niBeginClass(cRasterizerStates);

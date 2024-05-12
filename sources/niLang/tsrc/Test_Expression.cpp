@@ -156,7 +156,7 @@ TEST_FIXTURE(FExpression,StringFormat) {
   CHECK_EQUAL(_ASTR("str:foo=bar"),ni::GetLang()->Eval("'str:'+format('%s=%s','foo','bar')")->GetString());
 }
 
-struct MapURLResolver : public cIUnknownImpl<iExpressionURLResolver> {
+struct MapURLResolver : public ImplRC<iExpressionURLResolver> {
   typedef astl::map<cString,tU32> tMap;
   tMap map;
   virtual Var __stdcall ResolveURL(const achar* aURL) {

@@ -65,7 +65,7 @@ enum eDataTablePathOp
 };
 
 //! DataTable path operation interface.
-class cDataTablePathOp : public cIUnknownImpl<iUnknown>
+class cDataTablePathOp : public ImplRC<iUnknown>
 {
   niBeginClass(cDataTablePathOp);
 
@@ -100,7 +100,7 @@ class cDataTablePathOp : public cIUnknownImpl<iUnknown>
 // cDataTablePath declaration.
 
 //! DataTable path implementation.
-class cDataTablePath : public cIUnknownImpl<iUnknown>
+class cDataTablePath : public ImplRC<iUnknown>
 {
   niBeginClass(cDataTablePath);
 

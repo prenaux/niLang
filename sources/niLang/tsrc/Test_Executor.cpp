@@ -73,7 +73,7 @@ TEST_FIXTURE(FExecutor,Main) {
   CHECK_EQUAL(kNumRun,_Local::counter().Get());
 }
 
-struct MyCounter : public ni::cIUnknownImpl<ni::iUnknown> {
+struct MyCounter : public ni::ImplRC<ni::iUnknown> {
   ni::SyncCounter _v;
   void Inc() {
     _v.Inc();

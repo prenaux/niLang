@@ -13,7 +13,7 @@
 #include "sq_hstring.h"
 
 // Once SQObjectPtr is a Var we can use iIterator
-struct SQTableIterator : public cIUnknownImpl<iUnknown> {
+struct SQTableIterator : public ImplRC<iUnknown> {
   SQTableIterator* mpNextIterator;
   SQTable*         mpTable;
   SQTable::tHMapIt mIt;

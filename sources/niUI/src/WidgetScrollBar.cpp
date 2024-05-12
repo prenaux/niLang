@@ -51,7 +51,7 @@ struct sScrollBarThumbMetrics {
   }
 };
 
-class cThumbButton : public cIUnknownImpl<iWidgetSink>
+class cThumbButton : public ImplRC<iWidgetSink>
 {
  public:
   cThumbButton(cScrollBarWidget *parent){ mpParent=parent; mbDragging = eFalse;}

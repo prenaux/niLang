@@ -12,7 +12,7 @@
 #define SKIN_AUTOHIDE       niBit(0)
 #define SKIN_DRAWBACKFRAME  niBit(1)
 
-struct sToolbarSkin : public cIUnknownImpl<ni::iUnknown>
+struct sToolbarSkin : public ImplRC<ni::iUnknown>
 {
   tU32          flags;
   sColor4f      backgroundColor;

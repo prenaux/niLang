@@ -9,7 +9,7 @@ typedef tWidgetMenuItemVec::const_iterator        tWidgetMenuItemVecCIt;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetMenu declaration.
-class cWidgetMenu : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetMenu>
+class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetMenu>
 {
   niBeginClass(cWidgetMenu);
 

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "API/niUI_ModuleDef.h"
 
-struct cWidgetLabel : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetLabel>
+struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
 {
   niBeginClass(cWidgetLabel);
 

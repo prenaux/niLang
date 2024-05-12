@@ -8,7 +8,7 @@ static const tF32 kSplitterFoldedSize = 32.0f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetSplitter declaration.
-class cWidgetSplitter : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetSplitter>
+class cWidgetSplitter : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetSplitter>
 {
   niBeginClass(cWidgetSplitter);
 

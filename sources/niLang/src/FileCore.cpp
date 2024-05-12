@@ -17,11 +17,11 @@ using namespace ni;
 static const ni::tU32 knMaxSensibleFileMemSize = 128*1024*1024;
 
 //! File interface implementation.
-class cFileImpl : public cIUnknownImpl<iFile,eIUnknownImplFlags_Default>
+class cFileImpl : public ImplRC<iFile,eImplFlags_Default>
 {
   niBeginClass(cFileImpl);
 
-  typedef cIUnknownImpl<iFile,eIUnknownImplFlags_Default> BaseImpl;
+  typedef ImplRC<iFile,eImplFlags_Default> BaseImpl;
 
  public:
   ///////////////////////////////////////////////
@@ -1366,7 +1366,7 @@ class cFileImpl : public cIUnknownImpl<iFile,eIUnknownImplFlags_Default>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Dummy iFile implementation.
-class cFileWriteDummy : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFileWriteDummy : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   cFileWriteDummy(tI64 anSize) {
@@ -1439,7 +1439,7 @@ class cFileWriteDummy : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Defaul
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! File interface that can read and write in any preallocated system memory buffer
-class cFileMem : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default,iFileMemory>
+class cFileMem : public ImplRC<iFileBase,eImplFlags_Default,iFileMemory>
 {
  public:
   ///////////////////////////////////////////////
@@ -1615,7 +1615,7 @@ class cFileMem : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default,iFile
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! File interface that grow when you write outside his orginal size.
-class cFileDynamicMem : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default,iFileMemory>
+class cFileDynamicMem : public ImplRC<iFileBase,eImplFlags_Default,iFileMemory>
 {
  public:
   cFileDynamicMem(tSize anSize = 0, const achar* aszPath = NULL)
@@ -1764,7 +1764,7 @@ class cFileDynamicMem : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Defaul
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! File window
-class cFileWindow : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFileWindow : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   ///////////////////////////////////////////////
@@ -1966,7 +1966,7 @@ class cFileWindow : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! File chain
-class cFileChain : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFileChain : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   ///////////////////////////////////////////////

@@ -9,7 +9,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cDataTableReadStack declaration.
-class cDataTableReadStack : public ni::cIUnknownImpl<ni::iDataTableReadStack,ni::eIUnknownImplFlags_Default>
+class cDataTableReadStack : public ni::ImplRC<ni::iDataTableReadStack,ni::eImplFlags_Default>
 {
   niBeginClass(cDataTableReadStack);
 

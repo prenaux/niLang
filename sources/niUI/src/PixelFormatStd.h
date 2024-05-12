@@ -63,7 +63,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cPixelFormatStd declaration
-class cPixelFormatStd : public cIUnknownImpl<iPixelFormat>
+class cPixelFormatStd : public ImplRC<iPixelFormat>
 {
  public:
 #pragma pack(push,4)

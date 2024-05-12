@@ -9,7 +9,7 @@ const tU32 _kfccMatLib1 = niFourCC('A','M','L','1');
 const tU32 _kfccMatTex = niFourCC('A','M','T','X');
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cMaterialLibrary : public cIUnknownImpl<ni::iMaterialLibrary,eIUnknownImplFlags_Default>
+class cMaterialLibrary : public ImplRC<ni::iMaterialLibrary,eImplFlags_Default>
 {
   niBeginClass(cMaterialLibrary);
 

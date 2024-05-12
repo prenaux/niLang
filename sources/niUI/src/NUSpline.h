@@ -10,7 +10,7 @@ using namespace ni;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cNUSpline declaration.
-class cNUSpline : public ni::cIUnknownImpl<ni::iNUSpline,ni::eIUnknownImplFlags_Default,ni::iSerializable>
+class cNUSpline : public ni::ImplRC<ni::iNUSpline,ni::eImplFlags_Default,ni::iSerializable>
 {
   niBeginClass(cNUSpline);
 

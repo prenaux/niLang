@@ -30,7 +30,7 @@
 
 #define FFMPEG_TRACE(aFmt) niDebugFmt(aFmt)
 
-struct cVideoDecoderFFmpeg : public ni::cIUnknownImpl<ni::iVideoDecoder,ni::eIUnknownImplFlags_Default>
+struct cVideoDecoderFFmpeg : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
 {
   niBeginClass(cVideoDecoderFFmpeg);
 

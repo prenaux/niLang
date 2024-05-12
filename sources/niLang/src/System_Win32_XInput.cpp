@@ -82,7 +82,7 @@ static tpfnXInputGetBatteryInformation _pfnXInputGetBatteryInformation = NULL;
 //  cXInputGameCtrl implementation
 //
 //--------------------------------------------------------------------------------------------
-class cXInputGameCtrl : public cIUnknownImpl<iGameCtrl>
+class cXInputGameCtrl : public ImplRC<iGameCtrl>
 {
   const tU32 mnIndex;
   struct sStates {

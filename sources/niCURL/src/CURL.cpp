@@ -43,7 +43,7 @@ niDeclareModuleTrace_(niCURL,TraceFetch);
 //
 // That being said, this is used in a message handler that runs in the same
 // thread as the caller so it should be fairly well behaved.
-struct sFetchRequest : public cIUnknownImpl<iFetchRequest> {
+struct sFetchRequest : public ImplRC<iFetchRequest> {
   const eFetchMethod _method;
   const cString _url;
   eFetchReadyState _readyState = eFetchReadyState_Unsent;
@@ -217,7 +217,7 @@ static int _curlTrace(CURL *handle, curl_infotype type,
   return 0;
 }
 
-struct CURLRunnable : public cIUnknownImpl<iRunnable>
+struct CURLRunnable : public ImplRC<iRunnable>
 {
   CURL* _curl;
   CURL* _multiHandle;
@@ -530,7 +530,7 @@ struct CURLRunnable : public cIUnknownImpl<iRunnable>
 };
 
 
-struct FileWritePart : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+struct FileWritePart : public ImplRC<iFileBase,eImplFlags_Default>
 {
   FileWritePart(const char* aURL, const char* aExt, iMessageHandler* apHandler) {
     _numParts = 0;
@@ -646,7 +646,7 @@ typedef astl::hash_map<cString, Ptr<sFetchRequest>> turlToRequestCache;
 static turlToRequestCache kmapurlToRequestCache;
 #endif
 
-class cCURL : public cIUnknownImpl<iCURL>
+class cCURL : public ImplRC<iCURL>
 {
   niBeginClass(cCURL);
  public:

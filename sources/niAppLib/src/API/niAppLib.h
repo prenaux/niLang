@@ -48,7 +48,7 @@ struct AppConfig {
   }
 };
 
-struct AppContext : public ni::cIUnknownImpl<ni::iUnknown> {
+struct AppContext : public ni::ImplRC<ni::iUnknown> {
   AppConfig                     _config;
   ni::tU32                      _appRenderCount;
   ni::Ptr<ni::iMessageHandler>  _appWnd;

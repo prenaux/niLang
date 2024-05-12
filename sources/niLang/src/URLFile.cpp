@@ -14,7 +14,7 @@
 using namespace ni;
 
 // Directly uses a file system
-struct URLFileHandler_FileSystem : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_FileSystem : public ImplRC<iURLFileHandler> {
   Ptr<iFileSystem> _fileSystem;
   URLFileHandler_FileSystem(iFileSystem* apFileSystem) {
     niAssert(niIsOK(apFileSystem));
@@ -116,7 +116,7 @@ niExportFunc(iUnknown*) New_niLang_URLFileHandlerManifestFileSystem(const Var& a
 
 // Decode a URL and then delegate the decoded result to the regular URLOpen
 // TODO: Prevent infinite loop if the decode url decodes the url:// protocol...
-struct URLFileHandler_URL : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_URL : public ImplRC<iURLFileHandler> {
   virtual iFile* __stdcall URLOpen(const achar* aURL) niImpl {
     cString urlDecoded;
     StringDecodeUrl(urlDecoded, StringURLGetPath(aURL));
@@ -134,7 +134,7 @@ niExportFunc(iUnknown*) New_niLang_URLFileHandlerURL(const Var& avarA, const Var
 }
 
 
-struct URLFileHandler_Prefixed : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Prefixed : public ImplRC<iURLFileHandler> {
   Ptr<iURLFileHandler> _handler;
   cString _prefix;
 

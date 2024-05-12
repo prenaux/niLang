@@ -19,7 +19,7 @@ namespace ni {
 /** Default tokenizer, the separator is the space character, strings between two quote are
  * one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cDefaultStringTokenizer : public cIUnknownImpl<iStringTokenizer>
+class cDefaultStringTokenizer : public ImplRC<iStringTokenizer>
 {
  public:
   cDefaultStringTokenizer()
@@ -72,7 +72,7 @@ class cDefaultStringTokenizer : public cIUnknownImpl<iStringTokenizer>
 /** Function tokenizer, the separator are the space character, ',', '(' and ')', strings
  * between two quote are one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cFunctionStringTokenizer : public cIUnknownImpl<iStringTokenizer>
+class cFunctionStringTokenizer : public ImplRC<iStringTokenizer>
 {
  public:
   cFunctionStringTokenizer()
@@ -132,7 +132,7 @@ class cFunctionStringTokenizer : public cIUnknownImpl<iStringTokenizer>
 /** Flags tokenizer, the separator are the '|' and space characters, strings
  * between two quote are one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cFlagsStringTokenizer : public cIUnknownImpl<iStringTokenizer>
+class cFlagsStringTokenizer : public ImplRC<iStringTokenizer>
 {
  public:
   cFlagsStringTokenizer()
@@ -185,7 +185,7 @@ class cFlagsStringTokenizer : public cIUnknownImpl<iStringTokenizer>
 /** CommandLine tokenizer, the separator is the space character, strings between two quotes
  * are one token.
  */
-class cCommandLineStringTokenizer : public cIUnknownImpl<iStringTokenizer>
+class cCommandLineStringTokenizer : public ImplRC<iStringTokenizer>
 {
  public:
   cCommandLineStringTokenizer()

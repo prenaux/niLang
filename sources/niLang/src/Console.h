@@ -16,7 +16,7 @@ class cCommandSink_Help;
 namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cConsole : public cIUnknownImpl<iConsole>
+class cConsole : public ImplRC<iConsole>
 {
  public:
   // Namespace

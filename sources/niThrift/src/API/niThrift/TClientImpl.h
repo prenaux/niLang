@@ -22,7 +22,7 @@ using namespace apache::thrift::transport;
 typedef TSeqProtocol<TJSONProtocol> tThriftClientProtocol;
 
 template <typename TCLIENT>
-struct TClientImpl : public cIUnknownImpl<iThriftClient,eIUnknownImplFlags_Default,iThriftClientSink,iMessageHandler> {
+struct TClientImpl : public ImplRC<iThriftClient,eImplFlags_Default,iThriftClientSink,iMessageHandler> {
   typedef TClientImpl<TCLIENT> tBase;
 
 protected:

@@ -482,12 +482,12 @@ struct CollectionTraitsMap : public astl::map<typename KEYT::tValueType,typename
   }
 };
 
-template <typename TRAITS, typename BASEIMPL=cIUnknownImpl<iCollection> >
+template <typename TRAITS, typename BASEIMPL=ImplRC<iCollection> >
 class cCollectionImpl : public TRAITS, public BASEIMPL {
   niClassNoCopyAssign(cCollectionImpl);
 
  public:
-  typedef cCollectionImpl<TRAITS,cIUnknownImpl<iCollection> > tImmutable;
+  typedef cCollectionImpl<TRAITS,ImplRC<iCollection> > tImmutable;
   typedef cCollectionImpl<TRAITS,BASEIMPL>                    tThisImmutable;
   typedef typename TRAITS::tKeyTraits                   tKeyTraits;
   typedef typename TRAITS::tValTraits                   tValTraits;
@@ -497,7 +497,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
   typedef typename tContainer::const_iterator           const_iterator;
   typedef typename tContainer::const_reverse_iterator   const_reverse_iterator;
 
-  struct sIterator : public cIUnknownImpl<iIterator> {
+  struct sIterator : public ImplRC<iIterator> {
     Ptr<tThisImmutable> mptrContainer;
     const_iterator   mIt;
     Var              mKey, mVal;
@@ -735,7 +735,7 @@ class cCollectionImpl : public TRAITS, public BASEIMPL {
 
 template <typename TRAITS,
           typename IMMIMPL=cCollectionImpl<
-            TRAITS,cIUnknownImpl<iMutableCollection,eIUnknownImplFlags_DontInherit1,iCollection> > >
+            TRAITS,ImplRC<iMutableCollection,eImplFlags_DontInherit1,iCollection> > >
 class cMutableCollectionImpl : public IMMIMPL {
   niClassNoCopyAssign(cMutableCollectionImpl);
 
@@ -752,7 +752,7 @@ class cMutableCollectionImpl : public IMMIMPL {
   typedef typename tContainer::iterator                 iterator;
   typedef typename tContainer::reverse_iterator         reverse_iterator;
 
-  struct sIterator : public cIUnknownImpl<iIterator> {
+  struct sIterator : public ImplRC<iIterator> {
     Ptr<tMutable> mptrContainer;
     sIterator* mpNext;
     iterator mIt;

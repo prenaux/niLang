@@ -8,7 +8,7 @@ struct FGlobalInstance
 {
 };
 
-struct Dummy : public cIUnknownImpl<iUnknown> {
+struct Dummy : public ImplRC<iUnknown> {
   cString _name;
   Dummy(const achar* aName) : _name(aName) {}
 };

@@ -24,7 +24,7 @@ niExportFunc(struct FT_FaceRec_*) MyFT_Face_Open(struct FT_LibraryRec_* aLib, ni
 
 namespace ni {
 
-struct sMyFTLibrary : public ni::cIUnknownImpl<ni::iUnknown>
+struct sMyFTLibrary : public ni::ImplRC<ni::iUnknown>
 {
   sMyFTLibrary();
   ~sMyFTLibrary();

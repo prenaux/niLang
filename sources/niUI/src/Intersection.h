@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cIntersection declaration.
-class cIntersection : public ni::cIUnknownImpl<ni::iIntersection,ni::eIUnknownImplFlags_Default>
+class cIntersection : public ni::ImplRC<ni::iIntersection,ni::eImplFlags_Default>
 {
   niBeginClass(cIntersection);
 

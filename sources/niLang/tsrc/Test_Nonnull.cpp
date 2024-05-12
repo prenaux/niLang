@@ -26,7 +26,7 @@ using namespace ni;
    I just spent 2hrs debugging this:
    ```
    Test_Nonnull.cpp
-     struct sTestItem : public cIUnknownImpl<iUnknown> {
+     struct sTestItem : public ImplRC<iUnknown> {
 
    Test_STL_list.cpp
      struct sTestItem {
@@ -68,7 +68,7 @@ struct sAddRefReleaseCounter {
   ni::tU32 _numRelease = 0;
 };
 
-struct sTestItem : public cIUnknownImpl<iUnknown> {
+struct sTestItem : public ImplRC<iUnknown> {
   sTestItem(const achar* aName, sAddRefReleaseCounter* apAddRefReleaseCounter = NULL)
       : _name(aName)
       , _addRefReleaseCounter(apAddRefReleaseCounter)

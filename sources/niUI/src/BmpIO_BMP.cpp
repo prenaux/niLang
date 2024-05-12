@@ -323,7 +323,7 @@ static void read_RLE8_compressed_image(iFile *pFile, iBitmap2D *pBmp, NI_BITMAPI
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBmp interface implementation
-struct BitmapLoader_BMP : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_BMP : public ImplRC<iBitmapLoader> {
   virtual iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics, iFile* pFile) niImpl
   {
     niCheckIsOK(apGraphics,NULL);
@@ -436,7 +436,7 @@ struct BitmapLoader_BMP : public cIUnknownImpl<iBitmapLoader> {
   }
 };
 
-struct BitmapSaver_BMP : public cIUnknownImpl<iBitmapSaver> {
+struct BitmapSaver_BMP : public ImplRC<iBitmapSaver> {
   tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pFile, iBitmapBase* pBmpBase, tU32 ulCompression) niImpl
   {
     niAssert(pBmpBase->GetType() == eBitmapType_2D);

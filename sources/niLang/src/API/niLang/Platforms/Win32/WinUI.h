@@ -1657,7 +1657,7 @@ class BrowseForFolder
 //////////////////////////////////////////////////////////////////////
 
 //! \brief Base window class for Dialog and Window
-class BaseWindow : public ni::cIUnknownImpl<ni::iUnknown>
+class BaseWindow : public ni::ImplRC<ni::iUnknown>
 {
  public:
   BaseWindow() { m_hWnd = NULL; m_bDestroy = TRUE; };

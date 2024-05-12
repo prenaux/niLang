@@ -22,7 +22,7 @@ enum ePropertyEditBoxType
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetPropertyBox declaration.
-class cWidgetPropertyBox : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetPropertyBox>
+class cWidgetPropertyBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetPropertyBox>
 {
   niBeginClass(cWidgetPropertyBox);
 

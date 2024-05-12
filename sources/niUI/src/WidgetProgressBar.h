@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-class cProgressBarWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetProgressBar>
+class cProgressBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetProgressBar>
 {
   niBeginClass(cProgressBarWidget);
  public:

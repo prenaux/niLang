@@ -20,7 +20,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cPixelFormatDXTn declaration
-class cPixelFormatDXTn : public cIUnknownImpl<iPixelFormat>
+class cPixelFormatDXTn : public ImplRC<iPixelFormat>
 {
  public:
   cPixelFormatDXTn(const achar* cszFormat);

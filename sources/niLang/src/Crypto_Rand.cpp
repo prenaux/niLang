@@ -35,7 +35,7 @@ tInt _RandMakeChunk(mbedtls_ctr_drbg_context* ctx, unsigned char* buffer, tSize 
   return 0; // success
 }
 
-struct cCryptoRand : public cIUnknownImpl<iCryptoRand> {
+struct cCryptoRand : public ImplRC<iCryptoRand> {
   mbedtls_entropy_context  _entropy;
   mbedtls_ctr_drbg_context _ctx;
 

@@ -62,14 +62,14 @@ struct IDGeneratorTpl : public BASE
 };
 
 //! ID generator.
-struct IDGenerator : public IDGeneratorTpl<tU32,cIUnknownImpl<iUnknown> >
+struct IDGenerator : public IDGeneratorTpl<tU32,ImplRC<iUnknown> >
 {
   IDGenerator* Create(tSize aFreeListPopSize = 10) {
     return niNew IDGenerator(aFreeListPopSize);
   }
 
  private:
-  IDGenerator(tSize aFreeListPopSize = 10) : IDGeneratorTpl<tU32,cIUnknownImpl<iUnknown> >(aFreeListPopSize) {}
+  IDGenerator(tSize aFreeListPopSize = 10) : IDGeneratorTpl<tU32,ImplRC<iUnknown> >(aFreeListPopSize) {}
 };
 
 //! Local ID generator.

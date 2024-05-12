@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 //! TestInterop implementation.
-class cTestInterop : public cIUnknownImpl<iTestInterop,eIUnknownImplFlags_DontInherit1,iTestInteropForEach>
+class cTestInterop : public ImplRC<iTestInterop,eImplFlags_DontInherit1,iTestInteropForEach>
 {
   niBeginClass(cTestInterop);
 

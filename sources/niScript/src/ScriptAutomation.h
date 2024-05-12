@@ -43,7 +43,7 @@ void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v, const iUnknown* ap
 ASTL_RAW_ALLOCATOR_IMPL(ScriptDispatch);
 
 //! Script automation system.
-class cScriptAutomation : public cIUnknownImpl<iUnknown>
+class cScriptAutomation : public ImplRC<iUnknown>
 {
   niBeginClass(cScriptAutomation);
 

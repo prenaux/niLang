@@ -3,7 +3,7 @@
 
 using namespace ni;
 
-class cFileFd : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFileFd : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   cFileFd(int anRead, int anWrite, tFileFdFlags aFileFlags, const char* aaszFileName)

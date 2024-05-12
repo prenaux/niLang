@@ -148,7 +148,7 @@ struct BufferCache
 };
 
 template <typename TVERTEX>
-struct BufferCacheVertex : public BufferCache<TVERTEX,BufferCacheVertex<TVERTEX> >, public cIUnknownImpl<iUnknown> {
+struct BufferCacheVertex : public BufferCache<TVERTEX,BufferCacheVertex<TVERTEX> >, public ImplRC<iUnknown> {
   typedef BufferCache<TVERTEX,BufferCacheVertex<TVERTEX> > tBase;
   typedef TVERTEX tVertex;
 
@@ -185,7 +185,7 @@ struct BufferCacheVertex : public BufferCache<TVERTEX,BufferCacheVertex<TVERTEX>
   }
 };
 
-struct BufferCacheIndex : public BufferCache<tU32,BufferCacheIndex>, public cIUnknownImpl<iUnknown> {
+struct BufferCacheIndex : public BufferCache<tU32,BufferCacheIndex>, public ImplRC<iUnknown> {
   typedef BufferCache<tU32,BufferCacheIndex> tBase;
   typedef tU32 tIndex;
 

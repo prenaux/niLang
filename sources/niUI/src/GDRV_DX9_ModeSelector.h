@@ -8,7 +8,7 @@
 // cModeSelector declaration.
 
 //! Mode selector class.
-class cModeSelector : public cIUnknownImpl<iUnknown,eIUnknownImplFlags_Default>
+class cModeSelector : public ImplRC<iUnknown,eImplFlags_Default>
 {
   niBeginClass(cModeSelector);
 

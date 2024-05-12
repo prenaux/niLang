@@ -6,9 +6,9 @@
 namespace ni {
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmap3D declaration
-class cBitmap3D : public cIUnknownImpl<iBitmap3D,
-                                       eIUnknownImplFlags_DontInherit1|
-                                       eIUnknownImplFlags_DontInherit3,
+class cBitmap3D : public ImplRC<iBitmap3D,
+                                       eImplFlags_DontInherit1|
+                                       eImplFlags_DontInherit3,
                                        iBitmapBase,iTexture,iDeviceResource>
 {
  public:

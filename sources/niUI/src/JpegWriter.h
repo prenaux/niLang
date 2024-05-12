@@ -11,7 +11,7 @@ extern "C" {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cJpegWriter declaration.
-class cJpegWriter : public ni::cIUnknownImpl<ni::iJpegWriter,ni::eIUnknownImplFlags_Default>
+class cJpegWriter : public ni::ImplRC<ni::iJpegWriter,ni::eImplFlags_Default>
 {
   niBeginClass(cJpegWriter);
 

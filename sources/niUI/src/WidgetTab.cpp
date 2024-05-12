@@ -22,7 +22,7 @@ static tF32 _UpdateWidgetButtonSize(ni::iWidget* apWidget, const sRectf& avMargi
 }
 
 ///////////////////////////////////////////////
-class cTabPageContainer : public cIUnknownImpl<iWidgetSink>
+class cTabPageContainer : public ImplRC<iWidgetSink>
 {
  public:
   cTabPageContainer(cTabWidget *tw) {mpParent = tw; }

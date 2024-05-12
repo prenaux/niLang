@@ -9,7 +9,7 @@
 
 namespace ni {
 
-class cGameCtrlAcc : public cIUnknownImpl<iGameCtrl>
+class cGameCtrlAcc : public ImplRC<iGameCtrl>
 {
   niBeginClass(cGameCtrlAcc);
 

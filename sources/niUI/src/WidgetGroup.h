@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetGroup declaration.
-class cWidgetGroup : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetGroup>
+class cWidgetGroup : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetGroup>
 {
   niBeginClass(cWidgetGroup);
 

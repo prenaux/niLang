@@ -4,7 +4,7 @@
 
 #define MAX_FREQUENCY 441000 // allows 10 times the speed of a 44100 sample...
 
-class cSoundMixerSoftware : public cIUnknownImpl<iSoundMixer,eIUnknownImplFlags_Default,iSoundDriverBufferDataSink>
+class cSoundMixerSoftware : public ImplRC<iSoundMixer,eImplFlags_Default,iSoundDriverBufferDataSink>
 {
   niBeginClass(cSoundMixerSoftware);
 

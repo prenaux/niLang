@@ -11,7 +11,7 @@
   return RET;
 
 
-struct sCapturedGraphicsContext : public cIUnknownImpl<iGraphicsContext> {
+struct sCapturedGraphicsContext : public ImplRC<iGraphicsContext> {
   Ptr<iGraphicsContext> mptrCapturedContext;
   Ptr<iFixedStates> mptrFS;
   Ptr<iMaterial> mptrMaterial;
@@ -97,7 +97,7 @@ struct sCapturedGraphicsContext : public cIUnknownImpl<iGraphicsContext> {
   }
 };
 
-class cGraphicsDrawOpCapture : public cIUnknownImpl<iGraphicsDrawOpCapture>
+class cGraphicsDrawOpCapture : public ImplRC<iGraphicsDrawOpCapture>
 {
   niBeginClass(cGraphicsDrawOpCapture);
 

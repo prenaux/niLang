@@ -37,7 +37,7 @@ static const sMaterialDesc& _GetDefaultMaterial() {
 //--------------------------------------------------------------------------------------------
 
 class cMaterial :
-    public ni::cUserdata<ni::cIUnknownImpl<ni::iMaterial> >,
+    public ni::cUserdata<ni::ImplRC<ni::iMaterial> >,
     public sMaterialDesc
 {
   niBeginClass(cMaterial);

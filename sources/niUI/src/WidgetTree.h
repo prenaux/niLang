@@ -14,7 +14,7 @@ static const tU32 knNumTreeNodeAttributes = 32;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetTree declaration.
-class cWidgetTree : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetTree>
+class cWidgetTree : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetTree>
 {
   niBeginClass(cWidgetTree);
 

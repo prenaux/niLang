@@ -14,7 +14,7 @@
 namespace ni {
 
 ///////////////////////////////////////////////
-class cGZipFile : public cIUnknownImpl<iFileBase>
+class cGZipFile : public ImplRC<iFileBase>
 {
  public:
   cGZipFile(iFileBase* apFile, tU32 aulCompressionMode, bool abA25Z);

@@ -48,7 +48,7 @@ ASTL_RAW_ALLOCATOR_IMPL(scriptobjectlist);
 // cScriptVM declaration.
 
 //! Script VM.
-class cScriptVM : public cIUnknownImpl<iScriptVM,eIUnknownImplFlags_DontInherit1,iScriptingHost>
+class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost>
 {
   niBeginClass(cScriptVM);
 

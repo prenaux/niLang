@@ -13,7 +13,7 @@
 #define VIDEO_PIXELFORMAT "R8G8B8A8"
 #define VIDEO_PIXELFORMAT_BPP 4
 
-class cVideoDecoderTheoraPlayer : public ni::cIUnknownImpl<ni::iVideoDecoder,ni::eIUnknownImplFlags_Default>
+class cVideoDecoderTheoraPlayer : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
 {
   niBeginClass(cVideoDecoderTheoraPlayer);
 

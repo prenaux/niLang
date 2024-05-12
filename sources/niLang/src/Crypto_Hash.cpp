@@ -235,7 +235,7 @@ SHA512_VARIANT(SHA512, 512);
 //
 //===========================================================================
 template <typename tHashModule>
-class cCryptoHash : public cIUnknownImpl<iCryptoHash>
+class cCryptoHash : public ImplRC<iCryptoHash>
 {
   static const tU32 BLOCKSIZE = 4096;
 

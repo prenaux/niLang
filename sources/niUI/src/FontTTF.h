@@ -12,7 +12,7 @@ class cGraphics;
 typedef tU64 tGlyphHash;
 
 // True type loader class
-class cFontTTF : public cIUnknownImpl<iUnknown,eIUnknownImplFlags_Default>
+class cFontTTF : public ImplRC<iUnknown,eImplFlags_Default>
 {
  public:
   typedef astl::hash_map<tGlyphHash,sFontGlyph>  tGlyphCacheHMap;

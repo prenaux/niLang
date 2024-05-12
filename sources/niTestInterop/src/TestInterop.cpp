@@ -14,7 +14,7 @@ static ni::ThreadMutex _mutexObjects;
 ///
 
 //! Test interop object
-struct sTestInteropObject : public cIUnknownImpl<iTestInteropObject>
+struct sTestInteropObject : public ImplRC<iTestInteropObject>
 {
   astl::vector<tU32> _vItems;
   astl::map<cString,tU32> _mapItems;

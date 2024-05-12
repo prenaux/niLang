@@ -14,7 +14,7 @@
 
 template <tBool IS_RO>
 class cDepthStencilStates :
-    public cIUnknownImpl<iDepthStencilStates>,
+    public ImplRC<iDepthStencilStates>,
     public sDepthStencilStatesDesc
 {
   niBeginClass(cDepthStencilStates);

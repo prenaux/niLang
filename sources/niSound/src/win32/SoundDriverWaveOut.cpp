@@ -25,7 +25,7 @@ _HDecl(WaveOut);
 static DWORD WINAPI _WaveOutThreadProc(LPVOID apData);
 
 //! Sound driver buffer waveout implementation.
-class cSoundDriverBufferWaveOut : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownImplFlags_Default>
+class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
 {
   niBeginClass(cSoundDriverBufferWaveOut);
 
@@ -270,7 +270,7 @@ static DWORD WINAPI _WaveOutThreadProc(LPVOID apData)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverWaveOut : public cIUnknownImpl<iSoundDriver>
+class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
 {
   niBeginClass(cSoundDriverWaveOut);
 

@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-class cComboBoxWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetComboBox>
+class cComboBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetComboBox>
 {
   friend class cComboListBox;
   niBeginClass(cComboBoxWidget);

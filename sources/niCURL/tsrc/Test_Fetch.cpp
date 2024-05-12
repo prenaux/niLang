@@ -12,7 +12,7 @@ namespace {
 
 using namespace ni;
 
-struct MyFetchSink : public cIUnknownImpl<iFetchSink> {
+struct MyFetchSink : public ImplRC<iFetchSink> {
   cString result = "";
 
   virtual void __stdcall OnFetchSink_Success(iFetchRequest* apFetch) {

@@ -13,9 +13,9 @@ namespace ni {
 class cGraphics;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cBitmap2D : public cIUnknownImpl<iBitmap2D,
-                                       eIUnknownImplFlags_DontInherit1|
-                                       eIUnknownImplFlags_DontInherit3,
+class cBitmap2D : public ImplRC<iBitmap2D,
+                                       eImplFlags_DontInherit1|
+                                       eImplFlags_DontInherit3,
                                        iBitmapBase,iTexture,iDeviceResource>
 {
  public:

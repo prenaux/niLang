@@ -130,19 +130,19 @@ struct sDampedSpring : public BASE
 //! 1D spring.
 typedef sDampedSpring<tF32,tF32,cUnknown,tF32>              sDampedSpring1f;
 //! 1D spring, implements the ni::iDampedSpring1 interface.
-typedef sDampedSpring<tF32,tF32,cIUnknownImpl<iDampedSpring1>,tF32 >  sDampedSpring1fImpl;
+typedef sDampedSpring<tF32,tF32,ImplRC<iDampedSpring1>,tF32 >  sDampedSpring1fImpl;
 //! 2D spring.
 typedef sDampedSpring<sVec2f,tF32>                 sDampedSpring2f;
 //! 2D spring, implements the ni::iDampedSpring2 interface.
-typedef sDampedSpring<sVec2f,tF32,cIUnknownImpl<iDampedSpring2> >  sDampedSpring2fImpl;
+typedef sDampedSpring<sVec2f,tF32,ImplRC<iDampedSpring2> >  sDampedSpring2fImpl;
 //! 3D spring.
 typedef sDampedSpring<sVec3f,tF32>                 sDampedSpring3f;
 //! 3D spring, implements the ni::iDampedSpring3 interface.
-typedef sDampedSpring<sVec3f,tF32,cIUnknownImpl<iDampedSpring3> >  sDampedSpring3fImpl;
+typedef sDampedSpring<sVec3f,tF32,ImplRC<iDampedSpring3> >  sDampedSpring3fImpl;
 //! 4D spring.
 typedef sDampedSpring<sVec4f,tF32>                 sDampedSpring4f;
 //! 4D spring, implements the ni::iDampedSpring4 interface.
-typedef sDampedSpring<sVec4f,tF32,cIUnknownImpl<iDampedSpring4> >  sDampedSpring4fImpl;
+typedef sDampedSpring<sVec4f,tF32,ImplRC<iDampedSpring4> >  sDampedSpring4fImpl;
 
 //! Integrate one frame of the spring simulation using a simple euler method.
 template <typename T, typename TF>
@@ -253,19 +253,19 @@ struct sDampedSpringPosition : public sDampedSpring<T,TF,BASE,TREF> {
 //! 1D spring position.
 typedef sDampedSpringPosition<tF32,tF32,cUnknown,tF32>              sDampedSpringPosition1f;
 //! 1D spring position, implements the ni::iDampedSpringPosition1 interface.
-typedef sDampedSpringPosition<tF32,tF32,cIUnknownImpl<iDampedSpringPosition1,eIUnknownImplFlags_DontInherit1,iDampedSpring1>,tF32 > sDampedSpringPosition1fImpl;
+typedef sDampedSpringPosition<tF32,tF32,ImplRC<iDampedSpringPosition1,eImplFlags_DontInherit1,iDampedSpring1>,tF32 > sDampedSpringPosition1fImpl;
 //! 2D spring position.
 typedef sDampedSpringPosition<sVec2f,tF32>                 sDampedSpringPosition2f;
 //! 2D spring position, implements the ni::iDampedSpringPosition2 interface.
-typedef sDampedSpringPosition<sVec2f,tF32,cIUnknownImpl<iDampedSpringPosition2,eIUnknownImplFlags_DontInherit1,iDampedSpring2> > sDampedSpringPosition2fImpl;
+typedef sDampedSpringPosition<sVec2f,tF32,ImplRC<iDampedSpringPosition2,eImplFlags_DontInherit1,iDampedSpring2> > sDampedSpringPosition2fImpl;
 //! 3D spring position.
 typedef sDampedSpringPosition<sVec3f,tF32>                 sDampedSpringPosition3f;
 //! 3D spring position, implements the ni::iDampedSpringPosition3 interface.
-typedef sDampedSpringPosition<sVec3f,tF32,cIUnknownImpl<iDampedSpringPosition3,eIUnknownImplFlags_DontInherit1,iDampedSpring3> > sDampedSpringPosition3fImpl;
+typedef sDampedSpringPosition<sVec3f,tF32,ImplRC<iDampedSpringPosition3,eImplFlags_DontInherit1,iDampedSpring3> > sDampedSpringPosition3fImpl;
 //! 4D spring position.
 typedef sDampedSpringPosition<sVec4f,tF32>                 sDampedSpringPosition4f;
 //! 4D spring position, implements the ni::iDampedSpringPosition4 interface.
-typedef sDampedSpringPosition<sVec4f,tF32,cIUnknownImpl<iDampedSpringPosition4,eIUnknownImplFlags_DontInherit1,iDampedSpring4> > sDampedSpringPosition4fImpl;
+typedef sDampedSpringPosition<sVec4f,tF32,ImplRC<iDampedSpringPosition4,eImplFlags_DontInherit1,iDampedSpring4> > sDampedSpringPosition4fImpl;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

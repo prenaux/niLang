@@ -31,7 +31,7 @@
 
 static const ni::sVec2f _kvMinOrthoRectSize = { 10.0f, 10.0f };
 
-class cCamera : public ni::cIUnknownImpl<ni::iCamera,ni::eIUnknownImplFlags_Default>
+class cCamera : public ni::ImplRC<ni::iCamera,ni::eImplFlags_Default>
 {
   niBeginClass(cCamera);
 

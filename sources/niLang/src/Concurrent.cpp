@@ -18,7 +18,7 @@ using namespace ni;
 //  sFutureImmediate
 //
 //===========================================================================
-struct sFutureImmediate : public cIUnknownImpl<iFuture> {
+struct sFutureImmediate : public ImplRC<iFuture> {
   Var mValue;
   sFutureImmediate(const Var& aValue) : mValue(aValue) {}
   void __stdcall Cancel() {}
@@ -33,7 +33,7 @@ struct sFutureImmediate : public cIUnknownImpl<iFuture> {
 //  sFutureValue
 //
 //===========================================================================
-struct sFutureValue : public cIUnknownImpl<iFutureValue,eIUnknownImplFlags_DontInherit1,iFuture> {
+struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture> {
   Var mValue;
   SyncCounter mCanceled;
 #if !defined niNoThreads
@@ -113,7 +113,7 @@ struct sFutureValue : public cIUnknownImpl<iFutureValue,eIUnknownImplFlags_DontI
 //  sExecutorImmediate
 //
 //===========================================================================
-struct sExecutorImmediate : public cIUnknownImpl<iExecutor> {
+struct sExecutorImmediate : public ImplRC<iExecutor> {
   tBool __stdcall Execute(iRunnable* aRunnable) {
     niAssert(niIsOK(aRunnable));
     aRunnable->Run();
@@ -139,7 +139,7 @@ struct sExecutorImmediate : public cIUnknownImpl<iExecutor> {
 //  RunnableQueue
 //
 //===========================================================================
-struct RunnableQueue : public cIUnknownImpl<iRunnableQueue> {
+struct RunnableQueue : public ImplRC<iRunnableQueue> {
   __sync_mutex();
   const tU32 _maxItems;
   astl::deque<Ptr<iRunnable> > _queue;
@@ -272,7 +272,7 @@ struct RunnableQueue : public cIUnknownImpl<iRunnableQueue> {
 //  MessageDesc
 //
 //===========================================================================
-struct sMessageDescImpl : public cIUnknownImpl<iMessageDesc>
+struct sMessageDescImpl : public ImplRC<iMessageDesc>
 {
   sMessageDesc _desc;
 
@@ -306,7 +306,7 @@ struct sMessageDescImpl : public cIUnknownImpl<iMessageDesc>
 // Called by MessageQueue::Invalidate
 static void _Unregister_MessageQueue(struct MessageQueue* mq);
 
-struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
+struct MessageQueue : public ImplRC<iMessageQueue> {
   __sync_mutex();
   const tU32 _maxItems;
   astl::deque<sMessageDesc> _queue;
@@ -449,7 +449,7 @@ struct MessageQueue : public cIUnknownImpl<iMessageQueue> {
 //===========================================================================
 struct ExecutorCooperative;
 
-struct sFutureCooperativeRunnable : public cIUnknownImpl<iFuture,eIUnknownImplFlags_Default,iRunnable> {
+struct sFutureCooperativeRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
   __sync_mutex();
   Ptr<ExecutorCooperative> mptrExecutor;
   Ptr<iRunnable> mptrRunnable;
@@ -503,7 +503,7 @@ struct sFutureCooperativeRunnable : public cIUnknownImpl<iFuture,eIUnknownImplFl
 //  ExecutorCooperative
 //
 //===========================================================================
-struct ExecutorCooperative : public cIUnknownImpl<iExecutor> {
+struct ExecutorCooperative : public ImplRC<iExecutor> {
   ni::SyncCounter    _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
   Ptr<RunnableQueue> _queue;
   tBool              _interruptedUpdate = eFalse;
@@ -641,7 +641,7 @@ tBool __stdcall sFutureCooperativeRunnable::Wait(tU32 anMs) {
 //===========================================================================
 #if !defined niNoThreads
 
-struct sFutureRunnable : public cIUnknownImpl<iFuture,eIUnknownImplFlags_Default,iRunnable> {
+struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
   Var mRet;
   Ptr<iRunnable> mptrRunnable;
   mutable ThreadEvent meventRan;
@@ -699,7 +699,7 @@ niExportFunc(void) ConcurrentSetThreadStartEndCallbacks(tpfnConcurrentThreadCall
   _pfnConcurrentThreadEnd = apfnEnd;
 }
 
-struct ExecutorThreadPool : public cIUnknownImpl<iExecutor> {
+struct ExecutorThreadPool : public ImplRC<iExecutor> {
   tSyncInt         _doneCount;
   ni::SyncCounter  _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
   ThreadEvent      _event;
@@ -965,7 +965,7 @@ iExecutor* New_ExecutorThreadPool(tI32 anNumThreads) {
 //===========================================================================
 #if !defined niNoThreads
 
-struct sThreadRun : public cIUnknownImpl<iFuture> {
+struct sThreadRun : public ImplRC<iFuture> {
   Ptr<iThread> mThread;
   Ptr<iRunnable> mptrRunnable;
   ThreadEvent meventStarted;
@@ -1052,7 +1052,7 @@ struct sThreadRun : public cIUnknownImpl<iFuture> {
 //
 //===========================================================================
 
-struct sConcurrent : public cIUnknownImpl<iConcurrent> {
+struct sConcurrent : public ImplRC<iConcurrent> {
   const tU64 _mainThreadID;
   Ptr<iExecutor> _mainExecutor;
   __sync_mutex_(mqs);

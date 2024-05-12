@@ -10,7 +10,7 @@
 struct SQTable;
 struct SQObjectPtr;
 
-struct SQSharedState : public ni::cIUnknownImpl<ni::iUnknown>
+struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 {
  public:
   SQSharedState();

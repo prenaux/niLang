@@ -76,7 +76,7 @@ class WrapperGenerator {
         final String namespaceName = cls.getAnnotation(Namespace.class).value();
         final String interfaceName = cls.getAnnotation(Name.class).value();
         outln("// Implement JNI Wrapper for " + namespaceName + "::" + interfaceName);
-        outln("struct JNI_" + namespaceName + "_" + interfaceName + " : public ni::cIUnknownImpl<" + interfaceName + "> {");
+        outln("struct JNI_" + namespaceName + "_" + interfaceName + " : public ni::ImplRC<" + interfaceName + "> {");
         outln("  jclass mClass;");
         outln("  jobject mObject;");
         final Method[] methods = Builder.getSortedDeclaredMethods(cls);

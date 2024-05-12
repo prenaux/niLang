@@ -832,7 +832,7 @@ selectedRange:(NSRange) selRange
 /// cOSXWindow implementation
 ///
 ///--------------------------------------------------------------------------------------------
-class cOSXWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default,ni::iOSWindowOSX> {
+class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowOSX> {
   niBeginClass(cOSXWindow);
 
  public:

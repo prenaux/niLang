@@ -401,7 +401,7 @@ class cOSCurrentProcess : public ImplLocal<ni::iOSProcess> {
 //
 //--------------------------------------------------------------------------------------------
 #if !defined niNoProcess
-class cOSProcess : public cIUnknownImpl<ni::iOSProcess> {
+class cOSProcess : public ImplRC<ni::iOSProcess> {
   niBeginClass(cOSProcess);
  public:
   cOSProcess(base::Process* aProc,

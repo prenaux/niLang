@@ -481,7 +481,7 @@ typedef cAABB<tF32> cAABBf;
 typedef cAABB<tF64> cAABBd;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cBoundingVolumeAABB : public cIUnknownImpl<iBoundingVolume>, public cAABBf
+class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf
 {
  public:
   cBoundingVolumeAABB() {

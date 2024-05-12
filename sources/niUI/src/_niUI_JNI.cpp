@@ -1268,7 +1268,7 @@ JNIEXPORT jobject JNICALL Java_ni_niUI_IBitmapLoader_query__Lni_types_IUnknown_2
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IBitmapLoaderImpl
 // Implement JNI Wrapper for ni::iBitmapLoader
-struct JNI_ni_iBitmapLoader : public ni::cIUnknownImpl<iBitmapLoader> {
+struct JNI_ni_iBitmapLoader : public ni::ImplRC<iBitmapLoader> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmLoadBitmap;
@@ -1373,7 +1373,7 @@ JNIEXPORT jboolean JNICALL Java_ni_niUI_IBitmapSaver_saveBitmap(JNIEnv *e, jobje
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IBitmapSaverImpl
 // Implement JNI Wrapper for ni::iBitmapSaver
-struct JNI_ni_iBitmapSaver : public ni::cIUnknownImpl<iBitmapSaver> {
+struct JNI_ni_iBitmapSaver : public ni::ImplRC<iBitmapSaver> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmSaveBitmap;
@@ -14753,7 +14753,7 @@ JNIEXPORT jobject JNICALL Java_ni_niUI_IMaterialLibrarySink_query__Lni_types_IUn
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IMaterialLibrarySinkImpl
 // Implement JNI Wrapper for ni::iMaterialLibrarySink
-struct JNI_ni_iMaterialLibrarySink : public ni::cIUnknownImpl<iMaterialLibrarySink> {
+struct JNI_ni_iMaterialLibrarySink : public ni::ImplRC<iMaterialLibrarySink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnMaterialLibrarySink_MaterialAdded;
@@ -16510,7 +16510,7 @@ JNIEXPORT jobject JNICALL Java_ni_niUI_ISearchable_query__Lni_types_IUnknown_2(J
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.ISearchableImpl
 // Implement JNI Wrapper for ni::iSearchable
-struct JNI_ni_iSearchable : public ni::cIUnknownImpl<iSearchable> {
+struct JNI_ni_iSearchable : public ni::ImplRC<iSearchable> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetCorpus;
@@ -21690,7 +21690,7 @@ JNIEXPORT jobject JNICALL Java_ni_niUI_IVGPathTesselatedRenderer_query__Lni_type
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IVGPathTesselatedRendererImpl
 // Implement JNI Wrapper for ni::iVGPathTesselatedRenderer
-struct JNI_ni_iVGPathTesselatedRenderer : public ni::cIUnknownImpl<iVGPathTesselatedRenderer> {
+struct JNI_ni_iVGPathTesselatedRenderer : public ni::ImplRC<iVGPathTesselatedRenderer> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmAddPathPolygons;
@@ -28561,7 +28561,7 @@ JNIEXPORT void JNICALL Java_ni_niUI_IWidgetPropertyBox_setDataTable(JNIEnv *e, j
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IWidgetPropertyBoxImpl
 // Implement JNI Wrapper for ni::iWidgetPropertyBox
-struct JNI_ni_iWidgetPropertyBox : public ni::cIUnknownImpl<iWidgetPropertyBox> {
+struct JNI_ni_iWidgetPropertyBox : public ni::ImplRC<iWidgetPropertyBox> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetDataTable;
@@ -28865,7 +28865,7 @@ JNIEXPORT jobject JNICALL Java_ni_niUI_IWidgetSink_query__Lni_types_IUnknown_2(J
 
 // JNI Wrapper Implementation for Java Class : ni.niUI.IWidgetSinkImpl
 // Implement JNI Wrapper for ni::iWidgetSink
-struct JNI_ni_iWidgetSink : public ni::cIUnknownImpl<iWidgetSink> {
+struct JNI_ni_iWidgetSink : public ni::ImplRC<iWidgetSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnWidgetSink;

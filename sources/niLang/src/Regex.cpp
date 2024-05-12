@@ -490,7 +490,7 @@ static unsigned int _GetPcreOptions(const tPCREString& opts) {
 // PCRE implementation
 //
 //---------------------------------------------------------------------------
-class cPCRE : public ni::cIUnknownImpl<ni::iPCRE,ni::eIUnknownImplFlags_DontInherit1,ni::iRegex>
+class cPCRE : public ni::ImplRC<ni::iPCRE,ni::eImplFlags_DontInherit1,ni::iRegex>
 {
   niBeginClass(cPCRE);
 

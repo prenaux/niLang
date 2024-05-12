@@ -35,7 +35,7 @@ enum eOSWinFileFlags
 typedef tU32 tOSWinFileFlags;
 
 //! iFileBase implementation wrapping Windows File Handles.
-class cOSWinFile : public cIUnknownImpl<iFileBase>
+class cOSWinFile : public ImplRC<iFileBase>
 {
   niBeginClass(cOSWinFile);
 

@@ -26,7 +26,7 @@
 #define IS_COMPATIBLE_PXF(PXF) true //(PXF->GetBytesPerPixel() == 4 || PXF->GetBytesPerPixel() == 1)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cVGImage : public cIUnknownImpl<iVGImage>
+class cVGImage : public ImplRC<iVGImage>
 {
  public:
   cVGImage(iGraphics* apGraphics, iBitmap2D* apBmp)

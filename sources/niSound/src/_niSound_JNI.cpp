@@ -747,7 +747,7 @@ JNIEXPORT jobject JNICALL Java_ni_niSound_ISoundDriverBufferDataSink_query__Lni_
 
 // JNI Wrapper Implementation for Java Class : ni.niSound.ISoundDriverBufferDataSinkImpl
 // Implement JNI Wrapper for ni::iSoundDriverBufferDataSink
-struct JNI_ni_iSoundDriverBufferDataSink : public ni::cIUnknownImpl<iSoundDriverBufferDataSink> {
+struct JNI_ni_iSoundDriverBufferDataSink : public ni::ImplRC<iSoundDriverBufferDataSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnSoundDriverBufferDataSink;

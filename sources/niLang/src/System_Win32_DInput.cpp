@@ -107,7 +107,7 @@ iGameCtrl* __stdcall DInputGameCtrls_GetGameCtrl(tU32 anIndex) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 #define GAMEPAD_DEADZONENORM  ((SHORT)(0.0 * 10000.0f))
 
-class cDInputGameCtrl : public cIUnknownImpl<iGameCtrl>
+class cDInputGameCtrl : public ImplRC<iGameCtrl>
 {
   typedef astl::vector<DIDEVICEOBJECTINSTANCE> tDevObjVec;
   typedef tDevObjVec::iterator        tDevObjVecIt;

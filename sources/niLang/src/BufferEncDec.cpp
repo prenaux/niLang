@@ -9,7 +9,7 @@
 using namespace ni;
 
 //! File wrapper around a buffer encoder.
-struct FileBufferEncoder : public cIUnknownImpl<iFileBase>
+struct FileBufferEncoder : public ImplRC<iFileBase>
 {
   FileBufferEncoder(iFileBase* apFile, iBufferEncoder* apEncoder, tSize anBufferSize) {
     niAssert(niIsOK(apFile));
@@ -123,7 +123,7 @@ struct FileBufferEncoder : public cIUnknownImpl<iFileBase>
 };
 
 //! File wrapper around a buffer decoder.
-struct FileBufferDecoder : public cIUnknownImpl<iFileBase>
+struct FileBufferDecoder : public ImplRC<iFileBase>
 {
   static const tU32 MAX_VALID_PACKED_SIZE = 1024*1024*16;
   static const tU32 MAX_VALID_UNPACKED_SIZE = 1024*1024*256;

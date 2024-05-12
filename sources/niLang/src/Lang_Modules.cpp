@@ -31,7 +31,7 @@ static const sInterfaceDef IDef_iDispatch = {
   NULL
 };
 
-struct sObjectTypeDefCallback : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+struct sObjectTypeDefCallback : public ni::ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
   Ptr<iObjectTypeDef> _odef;
   sObjectTypeDefCallback(const iObjectTypeDef* aObjectTypeDef) : _odef(aObjectTypeDef) {}
   virtual Var __stdcall Run() { return RunCallback(niVarNull, niVarNull); }

@@ -15,7 +15,7 @@ typedef tU32 tSoundSourceFlags;
 // cSoundSource declaration.
 
 //! Sound source implementation.
-class cSoundSource : public cIUnknownImpl<iSoundSource>
+class cSoundSource : public ImplRC<iSoundSource>
 {
   niBeginClass(cSoundSource);
 

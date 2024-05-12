@@ -16,7 +16,7 @@ namespace ni {
  */
 
 template <typename T>
-struct SinkList : public cIUnknownImpl<iSinkList,eIUnknownImplFlags_DontInherit1,iCollection>
+struct SinkList : public ImplRC<iSinkList,eImplFlags_DontInherit1,iCollection>
 {
   niClassNoCopyAssign(SinkList);
 

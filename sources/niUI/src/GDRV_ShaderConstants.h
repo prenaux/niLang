@@ -15,7 +15,7 @@ namespace ni {
 //
 //--------------------------------------------------------------------------------------------
 class cShaderConstants :
-    public cIUnknownImpl<iShaderConstants,eIUnknownImplFlags_DontInherit1,iSerializable>,
+    public ImplRC<iShaderConstants,eImplFlags_DontInherit1,iSerializable>,
     public sShaderConstantsDesc
 {
   niBeginClass(cShaderConstants);

@@ -18,7 +18,7 @@ namespace ni {
 struct FOSXWindow {
 };
 
-struct sTestOSXWindowSink : public cIUnknownImpl<iMessageHandler> {
+struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
   iOSWindow* w;
   sTestOSXWindowSink(iOSWindow* _w) : w(_w) {}
 
@@ -152,7 +152,7 @@ TEST_FIXTURE(FOSXWindow,OpenGL) {
   osxglMakeContextCurrent(wnd);
   CHECK(osxglGetCurrentContext() == wnd);
 
-  struct sOpenGLWindowSink : public cIUnknownImpl<iMessageHandler> {
+  struct sOpenGLWindowSink : public ImplRC<iMessageHandler> {
     const tU32 _threadId;
     WeakPtr<iOSWindow> _wnd;
 
@@ -240,7 +240,7 @@ TEST_FIXTURE(FOSXWindow,Metal) {
   Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
   wnd->GetMessageHandlers()->AddSink(sink.ptr());
 
-  struct sMetalWindowSink : public cIUnknownImpl<iMessageHandler> {
+  struct sMetalWindowSink : public ImplRC<iMessageHandler> {
     const tU32 _threadId;
     Ptr<iOSXMetalAPI> metalAPI;
     id<MTLCommandQueue> commandQueue;

@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetMenuItem declaration.
-class cWidgetMenuItem : public ni::cIUnknownImpl<ni::iWidgetMenuItem,ni::eIUnknownImplFlags_Default>
+class cWidgetMenuItem : public ni::ImplRC<ni::iWidgetMenuItem,ni::eImplFlags_Default>
 {
   niBeginClass(cWidgetMenuItem);
 

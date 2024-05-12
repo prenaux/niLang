@@ -6,7 +6,7 @@
 #include "API/niUI/IVideoDecoder.h"
 
 struct sVideoDecoderTexture : public ImplAggregate<iTexture,
-                                                   eIUnknownImplFlags_DontInherit1,
+                                                   eImplFlags_DontInherit1,
                                                    ni::iDeviceResource>
 {
   iGraphics*  mpGraphics;

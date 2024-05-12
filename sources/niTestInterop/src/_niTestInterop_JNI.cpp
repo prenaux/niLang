@@ -1908,7 +1908,7 @@ JNIEXPORT jobject JNICALL Java_ni_niTestInterop_ITestInteropSink_query__Lni_type
 
 // JNI Wrapper Implementation for Java Class : ni.niTestInterop.ITestInteropSinkImpl
 // Implement JNI Wrapper for ni::iTestInteropSink
-struct JNI_ni_iTestInteropSink : public ni::cIUnknownImpl<iTestInteropSink> {
+struct JNI_ni_iTestInteropSink : public ni::ImplRC<iTestInteropSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnTestInteropSink_Object_CObject;

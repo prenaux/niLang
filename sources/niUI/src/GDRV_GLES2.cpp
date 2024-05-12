@@ -86,7 +86,7 @@ struct sGLCache : public sStateCache {
 //  Context
 //
 //--------------------------------------------------------------------------------------------
-struct sGLContext : public sGraphicsContext<1,cIUnknownImpl<iGraphicsContextRT,eIUnknownImplFlags_DontInherit1,iGraphicsContext> > {
+struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> > {
   sGLContext(iGraphics* apGraphics)
       : tGraphicsContextBase(apGraphics)
   {
@@ -1306,9 +1306,9 @@ class cMojoShaderBase : public T, public sShaderDesc
 
 // Vertex program
 class cMojoShaderVertex : public cMojoShaderBase<
-  cIUnknownImpl<iMojoShader,
-                eIUnknownImplFlags_DontInherit1|
-                eIUnknownImplFlags_DontInherit2,
+  ImplRC<iMojoShader,
+                eImplFlags_DontInherit1|
+                eImplFlags_DontInherit2,
                 iShader,iDeviceResource> >
 {
  public:
@@ -1325,9 +1325,9 @@ class cMojoShaderVertex : public cMojoShaderBase<
 
 // Pixel program
 class cMojoShaderPixel : public cMojoShaderBase<
-  cIUnknownImpl<iMojoShader,
-                eIUnknownImplFlags_DontInherit1|
-                eIUnknownImplFlags_DontInherit2,
+  ImplRC<iMojoShader,
+                eImplFlags_DontInherit1|
+                eImplFlags_DontInherit2,
                 iShader,iDeviceResource> >
 {
  public:
@@ -1975,7 +1975,7 @@ struct sGL2TextureFormat
 };
 
 ///////////////////////////////////////////////
-struct sGL2TextureBase : public cIUnknownImpl<iGLTexture,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iTexture,iDeviceResource> {
+struct sGL2TextureBase : public ImplRC<iGLTexture,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iTexture,iDeviceResource> {
   iGraphicsDriver*  mpDriver;
   tHStringPtr       mhspName;
   sGL2TextureFormat mFormat;
@@ -2766,7 +2766,7 @@ struct sGL2TextureCube : public sGL2TextureBase
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cGL2OcclusionQuery declaration.
-class cGL2OcclusionQuery : public ni::cIUnknownImpl<ni::iOcclusionQuery>
+class cGL2OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
 {
   niBeginClass(cGL2OcclusionQuery);
 
@@ -2879,7 +2879,7 @@ class cGL2OcclusionQuery : public ni::cIUnknownImpl<ni::iOcclusionQuery>
 //  OpenGL Buffer
 //
 //--------------------------------------------------------------------------------------------
-struct sGLVertexArrayData : public cIUnknownImpl<iVertexArray,eIUnknownImplFlags_DontInherit1,iDeviceResource> {
+struct sGLVertexArrayData : public ImplRC<iVertexArray,eImplFlags_DontInherit1,iDeviceResource> {
   __forceinline const GLenum GetBufferTarget() const { return GL_ARRAY_BUFFER; }
   __forceinline const tPtr GetBufferData() const { return (tPtr)mVertices.data(); }
   __forceinline const tU32 GetBufferDataSize() const { return (tU32)mVertices.size(); }
@@ -2890,7 +2890,7 @@ struct sGLVertexArrayData : public cIUnknownImpl<iVertexArray,eIUnknownImplFlags
   cFVFDescription   mFVF;
 };
 
-struct sGLIndexArray32Data : public cIUnknownImpl<iIndexArray,eIUnknownImplFlags_DontInherit1,iDeviceResource> {
+struct sGLIndexArray32Data : public ImplRC<iIndexArray,eImplFlags_DontInherit1,iDeviceResource> {
   __forceinline const GLenum GetBufferTarget() const { return GL_ELEMENT_ARRAY_BUFFER; }
   __forceinline const tPtr GetBufferData() const { return (tPtr)mIndices.data(); }
   __forceinline const tU32 GetBufferDataSize() const { return (tU32)mIndices.size() * sizeof(tU32); }
@@ -3658,7 +3658,7 @@ static tBool GL2_ApplyMaterialChannel(
 const achar* GL2Drv_GetName() { return _A("GL2"); }
 const achar* GL2Drv_GetDesc() { return _A("GL2 Graphics Driver"); }
 
-struct cGLES2GraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
+struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
 {
   iGraphics* mpGraphics;
   sGLCache   mCache;

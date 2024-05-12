@@ -154,7 +154,7 @@ static void rle_tga_read16(iFile *pFile, tU16 *b, tI32 w)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Interface implementation
-struct BitmapLoader_TGA : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_TGA : public ImplRC<iBitmapLoader> {
 
   ///////////////////////////////////////////////
   iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics, iFile* pFile)
@@ -341,7 +341,7 @@ struct BitmapLoader_TGA : public cIUnknownImpl<iBitmapLoader> {
   }
 };
 
-struct BitmapSaver_TGA : public cIUnknownImpl<iBitmapSaver> {
+struct BitmapSaver_TGA : public ImplRC<iBitmapSaver> {
   ///////////////////////////////////////////////
   tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pFile, iBitmapBase* pBmpBase, tU32 ulCompression)
   {

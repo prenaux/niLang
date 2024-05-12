@@ -16,7 +16,7 @@ namespace ni {
 #  endif
 #endif
 
-struct URLFileHandler_Manifest : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
  private:
   tBool mbManifsetInitialized;
   typedef astl::map<cString,cString> tManifestMap;

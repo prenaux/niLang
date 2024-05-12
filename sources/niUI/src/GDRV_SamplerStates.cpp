@@ -14,7 +14,7 @@
 
 template <tBool IS_RO>
 class cSamplerStates :
-    public cIUnknownImpl<iSamplerStates>,
+    public ImplRC<iSamplerStates>,
     public sSamplerStatesDesc
 {
   niBeginClass(cSamplerStates);

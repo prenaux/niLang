@@ -11,7 +11,7 @@
 //--------------------------------------------------------------------------------------------
 
 //! System memory vertex array.
-class cGenericVertexArray : public cIUnknownImpl<iVertexArray>
+class cGenericVertexArray : public ImplRC<iVertexArray>
 {
   niBeginClass(cGenericVertexArray);
 

@@ -15,7 +15,7 @@ struct iSearchEngine : public iUnknown
   virtual void __stdcall Search(const achar* aSearchTerm, astl::vector<tSearchItem>& avResult) = 0;
 };
 
-class cWidgetSearchBar : public cIUnknownImpl<iWidgetSink, eIUnknownImplFlags_Default, ni::iWidgetSearchBar>
+class cWidgetSearchBar : public ImplRC<iWidgetSink, eImplFlags_Default, ni::iWidgetSearchBar>
 {
   niBeginClass(cWidgetSearchBar);
 

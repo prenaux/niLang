@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetForm declaration.
 class cWidgetForm
-    : public ni::cIUnknownImpl<ni::iWidgetSink,
-                               ni::eIUnknownImplFlags_Default,
+    : public ni::ImplRC<ni::iWidgetSink,
+                               ni::eImplFlags_Default,
                                ni::iWidgetForm,iWidgetDockable>
 {
   niBeginClass(cWidgetForm);

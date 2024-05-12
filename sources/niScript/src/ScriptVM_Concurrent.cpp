@@ -18,7 +18,7 @@ using namespace ni;
 //  VMPool
 //
 //===========================================================================
-struct VMPool : public cIUnknownImpl<iUnknown>
+struct VMPool : public ImplRC<iUnknown>
 {
   __sync_mutex();
 
@@ -204,7 +204,7 @@ static int mt_GetConcurrent(HSQUIRRELVM v) {
 }
 #endif
 
-struct RunnableScript : public cIUnknownImpl<iRunnable> {
+struct RunnableScript : public ImplRC<iRunnable> {
   WeakPtr<SQSharedState> mSS;
   HSQOBJECT mClosure;
 
@@ -263,7 +263,7 @@ static int mt_RunnableFromFunction(HSQUIRRELVM v) {
   return 1;
 }
 
-struct CallbackScript : public cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+struct CallbackScript : public ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
   WeakPtr<SQSharedState> mSS;
   HSQOBJECT mClosure;
 

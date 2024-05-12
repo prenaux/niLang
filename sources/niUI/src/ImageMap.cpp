@@ -15,7 +15,7 @@ static const tBool _kbInsertFiltered = eFalse;
 ///
 /// cImageMap
 ///
-class cImageMap : public cIUnknownImpl<ni::iImageMap,eIUnknownImplFlags_Default>
+class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
 {
   niBeginClass(cImageMap);
 

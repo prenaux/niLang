@@ -588,7 +588,7 @@ iFile* __stdcall cZip::ZipOpen(iFileBase* apFile, tU32 aulCompressionMode)
 const tU32 kfccFileBufferZipMarker = niFourCC('E','Z','I','P');
 
 //! Zip buffer encoder.
-struct ZipBufferEncoder : public cIUnknownImpl<iBufferEncoder>
+struct ZipBufferEncoder : public ImplRC<iBufferEncoder>
 {
   ni::Ptr<iZip> _zip;
   const tU32           _level;
@@ -616,7 +616,7 @@ struct ZipBufferEncoder : public cIUnknownImpl<iBufferEncoder>
 };
 
 //! Zip buffer decoder.
-struct ZipBufferDecoder : public cIUnknownImpl<iBufferDecoder>
+struct ZipBufferDecoder : public ImplRC<iBufferDecoder>
 {
   ni::Ptr<iZip> _zip;
   ZipBufferDecoder(iZip* apZip) {
@@ -664,7 +664,7 @@ iFile* __stdcall cZip::CreateFileZipBufferDecoder(iFileBase* apBase, tSize aDecS
 const tU32 kfccFileBufferRawMarker = niFourCC('E','R','A','W');
 
 //! Raw buffer encoder.
-struct RawBufferEncoder : public cIUnknownImpl<iBufferEncoder>
+struct RawBufferEncoder : public ImplRC<iBufferEncoder>
 {
   RawBufferEncoder() {
   }
@@ -686,7 +686,7 @@ struct RawBufferEncoder : public cIUnknownImpl<iBufferEncoder>
 };
 
 //! Raw buffer decoder.
-struct RawBufferDecoder : public cIUnknownImpl<iBufferDecoder>
+struct RawBufferDecoder : public ImplRC<iBufferDecoder>
 {
   RawBufferDecoder() {
   }
@@ -725,7 +725,7 @@ iFile* __stdcall cZip::CreateFileRawBufferDecoder(iFileBase* apBase, tSize aDecS
 //
 //--------------------------------------------------------------------------------------------
 #if niMinFeatures(15) && !defined niEmbedded
-class cZipArchWrite : public ni::cIUnknownImpl<iZipArchWrite>
+class cZipArchWrite : public ni::ImplRC<iZipArchWrite>
 {
   niBeginClass(cZipArchWrite);
  public:

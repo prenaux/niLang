@@ -35,7 +35,7 @@ const sVec2f _kvAttrSize = {16.0f,16.0f};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetTreeNode declaration.
-class cWidgetTreeNode : public ni::cIUnknownImpl<ni::iWidgetTreeNode,ni::eIUnknownImplFlags_Default>
+class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Default>
 {
   niBeginClass(cWidgetTreeNode);
 

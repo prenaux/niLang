@@ -23,7 +23,7 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cImage : public cIUnknownImpl<iImage>
+class cImage : public ImplRC<iImage>
 {
  public:
   cImage(iGraphics* apGraphics, tU32 anWidth, tU32 anHeight, iBitmap2D* apBmp, iTexture* apTex, iTexture* apDepthStencil) {
@@ -418,7 +418,7 @@ iImage* __stdcall cGraphics::CreateImageFromResource(iHString* ahspRes) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-struct cImageGraphicsContext : public ni::cIUnknownImpl<iGraphicsContext>
+struct cImageGraphicsContext : public ni::ImplRC<iGraphicsContext>
 {
   Ptr<iImage> mptrImage;
   Ptr<iGraphicsContext> mptrGraphicsContext;

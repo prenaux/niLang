@@ -8,7 +8,7 @@
 ///
 /// cImagePacker
 ///
-class cImagePacker : public cIUnknownImpl<iUnknown>
+class cImagePacker : public ImplRC<iUnknown>
 {
   // The frames bitmap + rect class
   class cBitmapRect

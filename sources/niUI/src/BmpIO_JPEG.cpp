@@ -8,7 +8,7 @@
 static const tU8 _kAirplayHeader[] = { 0xFF, 0xD8, 0xFF, 0xDB, 0x00, 0x84 };
 
 ///////////////////////////////////////////////
-struct BitmapLoader_JPEG : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_JPEG : public ImplRC<iBitmapLoader> {
   iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics, iFile* pFile) niImpl
   {
     QPtr<iJpegReader> ptrReader = niCreateInstance(niUI,JpegReader,pFile,0);
@@ -21,7 +21,7 @@ struct BitmapLoader_JPEG : public cIUnknownImpl<iBitmapLoader> {
 };
 
 ///////////////////////////////////////////////
-struct BitmapSaver_JPEG : public cIUnknownImpl<iBitmapSaver> {
+struct BitmapSaver_JPEG : public ImplRC<iBitmapSaver> {
   tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pDest, iBitmapBase* pBmpBase, tU32 ulCompression) niImpl
   {
     QPtr<iJpegWriter> ptrWriter = niCreateInstance(niUI,JpegWriter,0,0);

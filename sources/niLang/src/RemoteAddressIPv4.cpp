@@ -45,7 +45,7 @@ using namespace ni;
 
 //! Remote address IPv4 template implementation.
 template <tIUnknownImplFlags FLAGS>
-class cRemoteAddressIPv4Tpl : public cIUnknownImpl<iRemoteAddressIPv4,FLAGS|eIUnknownImplFlags_DontInherit1,iRemoteAddress,iToString>
+class cRemoteAddressIPv4Tpl : public ImplRC<iRemoteAddressIPv4,FLAGS|eImplFlags_DontInherit1,iRemoteAddress,iToString>
 {
   niBeginClass(cRemoteAddressIPv4);
 
@@ -92,7 +92,7 @@ class cRemoteAddressIPv4Tpl : public cIUnknownImpl<iRemoteAddressIPv4,FLAGS|eIUn
 
   ///////////////////////////////////////////////
   virtual iRemoteAddress* __stdcall Clone() const {
-    cRemoteAddressIPv4Tpl<eIUnknownImplFlags_Default>* pNew = niNew cRemoteAddressIPv4Tpl<eIUnknownImplFlags_Default>();
+    cRemoteAddressIPv4Tpl<eImplFlags_Default>* pNew = niNew cRemoteAddressIPv4Tpl<eImplFlags_Default>();
     pNew->_addr = _addr;
     return pNew;
   }
@@ -287,8 +287,8 @@ class cRemoteAddressIPv4ROTpl : public cRemoteAddressIPv4Tpl<FLAGS>
   virtual void __stdcall SetPort(tU32 anPort) {}
 };
 
-typedef cRemoteAddressIPv4Tpl<eIUnknownImplFlags_Default> cRemoteAddressIPv4;
-typedef cRemoteAddressIPv4ROTpl<eIUnknownImplFlags_Default> cRemoteAddressIPv4RO;
+typedef cRemoteAddressIPv4Tpl<eImplFlags_Default> cRemoteAddressIPv4;
+typedef cRemoteAddressIPv4ROTpl<eImplFlags_Default> cRemoteAddressIPv4RO;
 
 niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(sockaddr_in* apSockAddrIn) {
   Ptr<cRemoteAddressIPv4> ip = niNew cRemoteAddressIPv4();

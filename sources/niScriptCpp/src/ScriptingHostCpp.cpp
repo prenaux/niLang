@@ -451,7 +451,7 @@ static cString _FindModulePath(const cString& strModuleFileName) {
   return AZEROSTR;
 }
 
-struct CppScriptingHost : public cIUnknownImpl<iScriptingHost> {
+struct CppScriptingHost : public ImplRC<iScriptingHost> {
   niBeginClass(CppScriptingHost);
 
   tScriptCppModuleMap _modules;

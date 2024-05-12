@@ -12,7 +12,7 @@ using namespace ni;
 niDeclareModuleTrace_(niLang,TraceDeviceResourceManager);
 #define DRM_TRACE(FMT) niModuleTrace_(niLang,TraceDeviceResourceManager,FMT);
 
-class cDeviceResourceManager : public cIUnknownImpl<iDeviceResourceManager>
+class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
 {
   niBeginClass(cDeviceResourceManager);
 

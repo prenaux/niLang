@@ -7,7 +7,7 @@
 #define SCROLL_UP   niBit(1)
 #define SCROLL_PAGE niBit(2)
 
-class cScrollBarWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetScrollBar>
+class cScrollBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetScrollBar>
 {
   niBeginClass(cScrollBarWidget);
  public:

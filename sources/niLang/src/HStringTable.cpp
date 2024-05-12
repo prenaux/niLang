@@ -21,7 +21,7 @@ niExportFunc(void*) ni_get_vtable_object_iHString() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cHStringCharIt declaration.
-class cHStringCharIt : public cIUnknownImpl<iHStringCharIt>
+class cHStringCharIt : public ImplRC<iHStringCharIt>
 {
   niBeginClass(cHStringCharIt);
 
@@ -111,7 +111,7 @@ class cHStringCharIt : public cIUnknownImpl<iHStringCharIt>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cHString implementation.
-class cHString :  public cIUnknownImpl<iHString,ni::eIUnknownImplFlags_Default>
+class cHString :  public ImplRC<iHString,ni::eImplFlags_Default>
 {
   niBeginClass(cHString);
 

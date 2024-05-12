@@ -16,7 +16,7 @@ struct FFlex {
 
 static void _FlexView_init(struct FlexView* apFlexView);
 
-struct FlexView : public ni::cIUnknownImpl<ni::iUnknown>, public css_node_t {
+struct FlexView : public ni::ImplRC<ni::iUnknown>, public css_node_t {
 
   FlexView() {
     _FlexView_init(this);

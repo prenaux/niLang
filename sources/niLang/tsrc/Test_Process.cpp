@@ -7,7 +7,7 @@
 
 using namespace ni;
 
-class cFilePosTracker : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFilePosTracker : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   cFilePosTracker(iFileBase* apBase)

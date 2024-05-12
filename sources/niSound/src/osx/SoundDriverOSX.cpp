@@ -485,7 +485,7 @@ static void MyCoreAudio_Destroy(MyCoreAudio* apCoreAudio)
 }
 
 //! Sound driver buffer osx implementation.
-class cSoundDriverBufferOSX : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownImplFlags_Default>
+class cSoundDriverBufferOSX : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
 {
   niBeginClass(cSoundDriverBufferOSX);
 
@@ -582,7 +582,7 @@ class cSoundDriverBufferOSX : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownI
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverOSX : public cIUnknownImpl<iSoundDriver>
+class cSoundDriverOSX : public ImplRC<iSoundDriver>
 {
   niBeginClass(cSoundDriverOSX);
 

@@ -11,7 +11,7 @@
 #include "EditorBuffer.h"
 #include "TextMetric.h"
 
-class cEditBoxWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetEditBox>
+class cEditBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetEditBox>
 {
   niBeginClass(cEditBoxWidget);
  public:

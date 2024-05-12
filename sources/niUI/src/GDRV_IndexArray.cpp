@@ -9,7 +9,7 @@
 //  Generic Index Array
 //
 //--------------------------------------------------------------------------------------------
-class cGenericIndexArray : public cIUnknownImpl<iIndexArray>
+class cGenericIndexArray : public ImplRC<iIndexArray>
 {
   niBeginClass(cGenericIndexArray);
 

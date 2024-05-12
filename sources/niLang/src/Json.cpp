@@ -58,7 +58,7 @@ niExportFunc(ni::tBool) JsonParseString(const ni::cString& aString, ni::iJsonPar
   return JsonParseFile(fp,apSink);
 }
 
-struct sJsonWriterSink : public cIUnknownImpl<sJsonWriter> {
+struct sJsonWriterSink : public ImplRC<sJsonWriter> {
   tBool _prettyPrint;
   tU32 _indent;
   Ptr<iJsonWriterSink> _sink;
@@ -100,7 +100,7 @@ struct sJsonWriterSink : public cIUnknownImpl<sJsonWriter> {
   }
 };
 
-struct sJsonWriterFile : public cIUnknownImpl<sJsonWriter> {
+struct sJsonWriterFile : public ImplRC<sJsonWriter> {
   tBool _prettyPrint;
   tU32 _indent;
   Ptr<iFile> _fp;

@@ -34,7 +34,7 @@ cGameCtrlAcc* __stdcall GetGenericGameCtrlAcc() {
 //  cOSWindowGeneric implementation
 //
 //--------------------------------------------------------------------------------------------
-class cOSWindowGeneric : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default,iOSWindowGeneric>
+class cOSWindowGeneric : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,iOSWindowGeneric>
 {
   niBeginClass(cOSWindowGeneric);
 

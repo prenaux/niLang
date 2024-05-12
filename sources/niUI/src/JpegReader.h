@@ -12,7 +12,7 @@ extern "C" {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cJpegReader declaration.
-class cJpegReader : public ni::cIUnknownImpl<ni::iJpegReader,ni::eIUnknownImplFlags_Default>
+class cJpegReader : public ni::ImplRC<ni::iJpegReader,ni::eImplFlags_Default>
 {
   niBeginClass(cJpegReader);
 

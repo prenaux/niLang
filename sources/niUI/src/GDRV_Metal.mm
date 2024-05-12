@@ -630,7 +630,7 @@ struct iMetalShader : public iShader {
 
 // Vertex program
 class cMetalShaderVertex :
-    public cMetalShaderBase<cIUnknownImpl<iMetalShader,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iShader,iDeviceResource> >
+    public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cMetalShaderVertex(iGraphics* apGraphics, LocalIDGenerator* apIDGenerator, iHString* ahspName, iDeviceResourceManager* apDevResMan, iHString* ahspProfile, id<MTLFunction> apShader, const astl::vector<tU8>& avData)
@@ -646,7 +646,7 @@ class cMetalShaderVertex :
 
 // Pixel program
 class cMetalShaderPixel :
-    public cMetalShaderBase<cIUnknownImpl<iMetalShader,eIUnknownImplFlags_DontInherit1|eIUnknownImplFlags_DontInherit2,iShader,iDeviceResource> >
+    public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cMetalShaderPixel(iGraphics* apGraphics, LocalIDGenerator* apIDGenerator, iHString* ahspName, iDeviceResourceManager* apDevResMan, iHString* ahspProfile, id<MTLFunction> apShader, const astl::vector<tU8>& avData)
@@ -820,7 +820,7 @@ struct sMetalBuffer {
   }
 };
 
-struct cMetalVertexArray : public ni::cIUnknownImpl<iVertexArray> {
+struct cMetalVertexArray : public ni::ImplRC<iVertexArray> {
   sMetalBuffer _buffer;
   tFVF _fvf;
   tU32 _fvfStride;
@@ -875,7 +875,7 @@ struct cMetalVertexArray : public ni::cIUnknownImpl<iVertexArray> {
   }
 };
 
-struct cMetalIndexArray : public ni::cIUnknownImpl<iIndexArray> {
+struct cMetalIndexArray : public ni::ImplRC<iIndexArray> {
   sMetalBuffer _buffer;
   eGraphicsPrimitiveType _primType;
 
@@ -938,7 +938,7 @@ struct cMetalIndexArray : public ni::cIUnknownImpl<iIndexArray> {
 // MetalTexture
 //
 //--------------------------------------------------------------------------------------------
-struct cMetalTexture : public ni::cIUnknownImpl<iTexture,eIUnknownImplFlags_DontInherit1,iDeviceResource>
+struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource>
 {
   iGraphics* mpGraphics;
   tHStringPtr mhspName;
@@ -1160,7 +1160,7 @@ static iGraphicsContextRT* New_MetalContextRT(
  iTexture* apRT,
   iTexture* apDS);
 
-struct cMetalGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
+struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
 {
   iGraphics* mpGraphics;
   id<MTLDevice> mMetalDevice;
@@ -1779,7 +1779,7 @@ struct sUniformsFixed {
 } niAligned(256);
 
 struct cMetalContextBase :
-    public sGraphicsContext<1, ni::cIUnknownImpl<iGraphicsContextRT,eIUnknownImplFlags_DontInherit1,iGraphicsContext,iRunnable> >
+    public sGraphicsContext<1, ni::ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext,iRunnable> >
 {
   cMetalGraphicsDriver* mpParent;
   MTLViewport mViewport;

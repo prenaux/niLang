@@ -414,7 +414,7 @@ static __forceinline void _GetCirclePointXY(sVec3f& aOut, const sVec3f& avCenter
 //--------------------------------------------------------------------------------------------
 #define VG_SS_DEFAULT_FILTER eCompiledStates_SS_PointClamp
 
-struct sCanvasVGPathTesselatedRenderer : public cIUnknownImpl<iVGPathTesselatedRenderer> {
+struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer> {
   iCanvas* _canvas; // raw pointer, owned by the Canvas
 
   Ptr<iVGStyle> mptrVGStyle;
@@ -649,7 +649,7 @@ struct sCanvasVGPathTesselatedRenderer : public cIUnknownImpl<iVGPathTesselatedR
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cCanvasGraphics : public cIUnknownImpl<iCanvas,eIUnknownImplFlags_Default>
+class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
 {
  public:
   cCanvasGraphics(iGraphics* apGraphics, iGraphicsContext* apContext, iMaterial* apResetMaterial)

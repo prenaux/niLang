@@ -29,7 +29,7 @@ enum eFixedVertexShader {
   eFixedVertexShader_ForceDWORD = 0xFFFFFFFF,
 };
 
-struct sFixedShaders : cIUnknownImpl<ni::iUnknown> {
+struct sFixedShaders : ImplRC<ni::iUnknown> {
   tBool _initialized;
   Ptr<iShader> _vertexShaders[eFixedVertexShader_Last];
   Ptr<iShader> _pixelShaders[e_fixed_ps_last];

@@ -848,7 +848,7 @@ void REPL(iScriptVM* apVM)
 //  URLFileHandler
 //
 //--------------------------------------------------------------------------------------------
-struct URLFileHandler_Zip_ScriptHandler : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Zip_ScriptHandler : public ImplRC<iURLFileHandler> {
   Ptr<iURLFileHandler> _zipURLFileHandler;
 
   URLFileHandler_Zip_ScriptHandler(iURLFileHandler* zipURLFileHandler) {
@@ -879,7 +879,7 @@ struct URLFileHandler_Zip_ScriptHandler : public cIUnknownImpl<iURLFileHandler> 
   }
 };
 
-struct URLFileHandler_Directory : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Directory : public ImplRC<iURLFileHandler> {
   astl::vector<cString> _dirs;
 
   URLFileHandler_Directory() {

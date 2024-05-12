@@ -53,7 +53,7 @@ class cUIContext;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidget declaration.
-class cWidget : public cIUnknownImpl<iWidget,ni::eIUnknownImplFlags_DontInherit1,iMessageHandler>
+class cWidget : public ImplRC<iWidget,ni::eImplFlags_DontInherit1,iMessageHandler>
 {
   niBeginClass(cWidget);
 

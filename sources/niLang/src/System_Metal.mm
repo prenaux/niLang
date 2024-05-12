@@ -34,7 +34,7 @@ niExportFunc(void*) osxMetalGetDevice() {
 //  Explicit MTKView
 //
 //--------------------------------------------------------------------------------------------
-struct sMetalAPIForMTKView : public cIUnknownImpl<iOSXMetalAPI> {
+struct sMetalAPIForMTKView : public ImplRC<iOSXMetalAPI> {
   id<MTLDevice>               _device;
   id<MTLCommandQueue>         _commandQueue;
   id<MTLCommandBuffer>        _commandBuffer;
@@ -111,7 +111,7 @@ struct sMetalAPIForWindow;
 - (id)initWithContext:(sMetalAPIForWindow*)apContext;
 @end
 
-struct sMetalAPIForWindow : public cIUnknownImpl<iOSXMetalAPI> {
+struct sMetalAPIForWindow : public ImplRC<iOSXMetalAPI> {
   id<MTLDevice>            _device;
   ni::WeakPtr<iOSWindow>   _window;
   MTKView*                 _mtkView;

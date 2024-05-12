@@ -6,7 +6,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Geometry subset.
-struct sGeometrySubset : public cIUnknownImpl<iGeometrySubset,eIUnknownImplFlags_Default>
+struct sGeometrySubset : public ImplRC<iGeometrySubset,eImplFlags_Default>
 {
   //! ID of the subset.
   tU32  ulID;
@@ -52,7 +52,7 @@ typedef astl::vector<tGeometrySubsetPtr> tGeometrySubsetVec;
 // cGeometryPolygonal declaration.
 
 //! Polygonal geometry implementation.
-class cGeometryPolygonal : public cIUnknownImpl<iGeometry>
+class cGeometryPolygonal : public ImplRC<iGeometry>
 {
   niBeginClass(cGeometryPolygonal);
 

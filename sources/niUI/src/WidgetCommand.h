@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetCommand declaration.
-class cWidgetCommand : public ni::cIUnknownImpl<ni::iWidgetCommand,ni::eIUnknownImplFlags_Default>
+class cWidgetCommand : public ni::ImplRC<ni::iWidgetCommand,ni::eImplFlags_Default>
 {
   niBeginClass(cWidgetCommand);
 

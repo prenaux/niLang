@@ -149,7 +149,7 @@ TEST_FIXTURE(FWeakPtr,Nonnull) {
   CHECK_EQUAL(1, wFile.weak_object_ptr()->GetNumRefs());
 }
 
-struct sMultiInherit : public cIUnknownImpl<iRunnable,eIUnknownImplFlags_Default,iMessageHandler> {
+struct sMultiInherit : public ImplRC<iRunnable,eImplFlags_Default,iMessageHandler> {
   virtual Var __stdcall Run() niImpl { return 456; }
   virtual tU64 __stdcall GetThreadID() const niImpl { return 123; }
   virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA, const Var& avarB) niImpl {}

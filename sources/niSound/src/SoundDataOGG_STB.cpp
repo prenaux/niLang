@@ -5,7 +5,7 @@
 #define STB_VORBIS_HEADER_ONLY
 #include "stb_vorbis.c"
 
-class cSoundDataOGG_STB : public cIUnknownImpl<iSoundData>
+class cSoundDataOGG_STB : public ImplRC<iSoundData>
 {
   niBeginClass(cSoundDataOGG_STB);
 
@@ -141,7 +141,7 @@ class cSoundDataOGG_STB : public cIUnknownImpl<iSoundData>
   niEndClass(cSoundDataOGG_STB);
 };
 
-class cSoundDataLoaderOGG_STB : public cIUnknownImpl<iSoundDataLoader>
+class cSoundDataLoaderOGG_STB : public ImplRC<iSoundDataLoader>
 {
   iSoundData* __stdcall LoadSoundData(iFile* apFile) {
     return niNew cSoundDataOGG_STB(apFile);

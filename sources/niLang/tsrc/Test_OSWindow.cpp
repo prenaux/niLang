@@ -12,7 +12,7 @@ namespace {
 struct FOSWindow {
 };
 
-struct sTestWindowSink : public cIUnknownImpl<iMessageHandler> {
+struct sTestWindowSink : public ImplRC<iMessageHandler> {
   iOSWindow* w;
   sTestWindowSink(iOSWindow* _w) : w(_w) {}
 

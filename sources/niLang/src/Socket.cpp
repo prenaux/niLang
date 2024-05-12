@@ -120,7 +120,7 @@ static const tU32 _knSocketBufferSize = niStackBufferSize;
 
 struct sockaddrAlias : public sockaddr {};
 
-class cSocket : public cIUnknownImpl<ni::iSocket>
+class cSocket : public ImplRC<ni::iSocket>
 {
   niBeginClass(cSocket);
 

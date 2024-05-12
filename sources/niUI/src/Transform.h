@@ -12,7 +12,7 @@ struct iTransform;
 
 //! iTransform is the interface for positionning and orienting.
 //! The user can work with local or world coordinnate system.
-class cTransform : public cIUnknownImpl<iTransform>, public sTransformDesc
+class cTransform : public ImplRC<iTransform>, public sTransformDesc
 {
  public:
   cTransform(iTransform* pParent = NULL);

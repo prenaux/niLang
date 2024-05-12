@@ -8,7 +8,7 @@ iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNu
 
 _HDecl(Silent);
 
-class cSoundDriverBufferSilent : public cIUnknownImpl<iSoundDriverBuffer,eIUnknownImplFlags_Default>
+class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
 {
   niBeginClass(cSoundDriverBufferSilent);
 
@@ -121,7 +121,7 @@ class cSoundDriverBufferSilent : public cIUnknownImpl<iSoundDriverBuffer,eIUnkno
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverSilent : public cIUnknownImpl<iSoundDriver>
+class cSoundDriverSilent : public ImplRC<iSoundDriver>
 {
   niBeginClass(cSoundDriverSilent);
 

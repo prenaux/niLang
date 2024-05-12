@@ -972,7 +972,7 @@ static void _UnstickWindows();
 //  Window implementation
 //
 //--------------------------------------------------------------------------------------------
-class cThreadedWindow : public ni::cIUnknownImpl<ni::iUnknown>
+class cThreadedWindow : public ni::ImplRC<ni::iUnknown>
 {
  public:
   cThreadedWindow(cOSWindowWindows* apOwner, HWND ahWndParent, tOSWindowStyleFlags aStyle) {
@@ -1074,8 +1074,8 @@ class cThreadedWindow : public ni::cIUnknownImpl<ni::iUnknown>
 // cOSWindowWindows declaration.
 
 //! Description
-class cOSWindowWindows : public ni::cIUnknownImpl<ni::iOSWindow,
-                                                  ni::eIUnknownImplFlags_Default,
+class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
+                                                  ni::eImplFlags_Default,
                                                   ni::iOSWindowWindows>
 {
   niBeginClass(cOSWindowWindows);

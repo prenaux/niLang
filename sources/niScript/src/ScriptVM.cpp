@@ -335,7 +335,7 @@ const ni::sMethodDef kFuncDecl_PrintDebugLn = {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Maintains a list of VM, needed to do garbage collection
-struct VMList : public cIUnknownImpl<iUnknown>
+struct VMList : public ImplRC<iUnknown>
 {
 #if 0
   VMList() {
@@ -437,7 +437,7 @@ static VMList* _GetVMList() {
 static Ptr<tInterfaceCVec<iFileSystem> > _ptrImportFileSystems;
 
 ///////////////////////////////////////////////
-struct URLFileHandler_Script : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Script : public ImplRC<iURLFileHandler> {
   virtual iFile* __stdcall URLOpen(const achar* aURL) {
     // niDebugFmt(("... SCRIPT: URLOPEN: %s", aURL));
 

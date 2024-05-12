@@ -38,7 +38,7 @@ struct iCommandSink : public iUnknown
 
 //! Macro to help to declare a command.
 #define niDeclareCommand(ParentType, Namespace, Name, Desc)             \
-  class cCommandSink_##Namespace##Name : public cIUnknownImpl<ni::iCommandSink> \
+  class cCommandSink_##Namespace##Name : public ImplRC<ni::iCommandSink> \
   {                                                                     \
  public:                                                                \
     cCommandSink_##Namespace##Name(ParentType* pParent) { mpParent = pParent; } \
@@ -54,7 +54,7 @@ struct iCommandSink : public iUnknown
 
 //! Macro to help to declare a command.
 #define niDeclareGlobalCommand(Name, Desc)                              \
-  class cCommandSink_##Name : public cIUnknownImpl<ni::iCommandSink>    \
+  class cCommandSink_##Name : public ImplRC<ni::iCommandSink>    \
   {                                                                     \
  public:                                                                \
     cCommandSink_##Name(ni::iConsole* pParent)  { mpParent = pParent; } \

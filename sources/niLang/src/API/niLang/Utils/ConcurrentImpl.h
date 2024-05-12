@@ -30,7 +30,7 @@ typedef Var (__ni_export_call_decl *tpfnCallback1)(const Var& avarA);
 typedef Var (__ni_export_call_decl *tpfnCallback2)(const Var& avarA, const Var& avarB);
 
 template <typename T>
-struct sRunnable : public ni::cIUnknownImpl<iRunnable> {
+struct sRunnable : public ni::ImplRC<iRunnable> {
   const T _lambda;
   sRunnable(const T& aLambda) : _lambda(aLambda) {}
   virtual Var __stdcall Run() { return _lambda(); }
@@ -42,7 +42,7 @@ Nonnull<iRunnable> Runnable(const T& aLambda) {
 
 
 template <typename T>
-struct sCallback0 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+struct sCallback0 : public ni::ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
   const T _lambda;
   sCallback0(const T& aLambda) : _lambda(aLambda) {}
   virtual Var __stdcall Run() { return _lambda(); }
@@ -56,7 +56,7 @@ Nonnull<iCallback> Callback0(const T& aLambda) {
 }
 
 template <typename T>
-struct sCallback1 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+struct sCallback1 : public ni::ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
   const T _lambda;
   sCallback1(const T& aLambda) : _lambda(aLambda) {}
   virtual Var __stdcall Run() { return _lambda(niVarCast(niVarNull)); }
@@ -70,7 +70,7 @@ Nonnull<iCallback> Callback1(const T& aLambda) {
 }
 
 template <typename T>
-struct sCallback2 : public ni::cIUnknownImpl<iCallback,eIUnknownImplFlags_DontInherit1,iRunnable> {
+struct sCallback2 : public ni::ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
   const T _lambda;
   sCallback2(const T& aLambda) : _lambda(aLambda) {}
   virtual Var __stdcall Run() { return _lambda(niVarNull, niVarNull); }
@@ -87,7 +87,7 @@ Nonnull<iCallback> Callback2(const T& aLambda) {
 typedef void (__ni_export_call_decl *tpfnMessageHandler)(tU32 anMsg, const Var& avarA, const Var& avarB);
 
 template <typename T>
-struct sMessageHandler : public ni::cIUnknownImpl<iMessageHandler> {
+struct sMessageHandler : public ni::ImplRC<iMessageHandler> {
   const tU64 _threadId;
   const T _lambda;
 

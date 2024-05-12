@@ -9,7 +9,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cDataTableWriteStack declaration.
-class cDataTableWriteStack : public ni::cIUnknownImpl<ni::iDataTableWriteStack,ni::eIUnknownImplFlags_Default>
+class cDataTableWriteStack : public ni::ImplRC<ni::iDataTableWriteStack,ni::eImplFlags_Default>
 {
   niBeginClass(cDataTableWriteStack);
 

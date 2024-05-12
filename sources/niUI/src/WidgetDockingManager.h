@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetDockingManager declaration.
-class cWidgetDockingManager : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetDockingManager>
+class cWidgetDockingManager : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetDockingManager>
 {
   niBeginClass(cWidgetDockingManager);
 
@@ -110,7 +110,7 @@ class cWidgetDockingManager : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnk
   };
   sDockButton mButtons[eDockButton_Last];
 
-  struct sOverlayWidgetSink : public cIUnknownImpl<iWidgetSink>
+  struct sOverlayWidgetSink : public ImplRC<iWidgetSink>
   {
     sOverlayWidgetSink(cWidgetDockingManager* apDockManager) : mpDockManager(apDockManager) {}
     tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA, const Var& aB);

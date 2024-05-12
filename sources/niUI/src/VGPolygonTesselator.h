@@ -18,7 +18,7 @@
 // far perfect shapes.
 // #define USE_GPC
 
-class cVGPolygonTesselator : public cIUnknownImpl<iVGPolygonTesselator>
+class cVGPolygonTesselator : public ImplRC<iVGPolygonTesselator>
 {
  public:
   //! ctor

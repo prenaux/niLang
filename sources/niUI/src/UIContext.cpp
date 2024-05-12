@@ -101,7 +101,7 @@ static inline tBool __stdcall _IsThisOrChild(iWidget* apWidget, iWidget* apToFin
   return eFalse;
 }
 
-struct sRootSink : public cIUnknownImpl<iWidgetSink> {
+struct sRootSink : public ImplRC<iWidgetSink> {
   tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varParam0, const Var& varParam1) {
     switch (nMsg) {
       case eUIMessage_SerializeWidget:
@@ -1616,7 +1616,7 @@ void __stdcall cUIContext::TimerTriggered(iMessageHandler* apHandler, tU32 anId,
 
 ///////////////////////////////////////////////
 
-struct UIProfDraw : public cIUnknownImpl<iProfDraw> {
+struct UIProfDraw : public ImplRC<iProfDraw> {
   Ptr<iCanvas> _canvas;
   Ptr<iFont> _font;
   tBool _translucent;

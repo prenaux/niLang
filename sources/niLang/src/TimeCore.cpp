@@ -814,7 +814,7 @@ static const char* StrParseTime(const char *s, const char *format, struct sFullT
   return (working?s:0);
 }
 
-class cTime : public cIUnknownImpl<iTime,eIUnknownImplFlags_Default,iToString>
+class cTime : public ImplRC<iTime,eImplFlags_Default,iToString>
 {
  public:
   cTime() {

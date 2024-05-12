@@ -7,7 +7,7 @@
 #include "VG.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cVGTransform : public cIUnknownImpl<iVGTransform>
+class cVGTransform : public ImplRC<iVGTransform>
 {
  public:
   cVGTransform() {

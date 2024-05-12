@@ -8,7 +8,7 @@
 
 namespace ni {
 
-struct URLFileHandler_Directories : public cIUnknownImpl<iURLFileHandler> {
+struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
   astl::vector<cString> _dirs;
 
   URLFileHandler_Directories(const achar* aAppDir, astl::vector<cString> aToolkits) {

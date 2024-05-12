@@ -139,7 +139,7 @@ TEST_FIXTURE(FSocket_TCP,QueryInterface) {
 }
 
 ///////////////////////////////////////////////
-struct SimpleTCPServer : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImplFlags_Default> {
+struct SimpleTCPServer : public ni::ImplRC<ni::iRunnable,ni::eImplFlags_Default> {
   SimpleTCPServer() : _error(_H("")) {}
 
   ni::Var __stdcall Run() override {
@@ -212,7 +212,7 @@ struct SimpleTCPServer : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImp
   ni::cString     _received;
 };
 
-struct SimpleTCPClient : public ni::cIUnknownImpl<ni::iRunnable,ni::eIUnknownImplFlags_Default> {
+struct SimpleTCPClient : public ni::ImplRC<ni::iRunnable,ni::eImplFlags_Default> {
   SimpleTCPClient() : _error(_H("")) {}
   ni::Var __stdcall Run() override {
     ni::Ptr<ni::iSocket>  socket = ni::GetLang()->CreateSocket(ni::eSocketProtocol_TCP,NULL);

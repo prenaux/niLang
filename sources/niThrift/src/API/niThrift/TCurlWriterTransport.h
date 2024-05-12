@@ -117,7 +117,7 @@ public:
     return "TCurlWriterTransport";
   }
 
-  struct sThriftFetchRequestSink : public cIUnknownImpl<iFetchSink> {
+  struct sThriftFetchRequestSink : public ImplRC<iFetchSink> {
     Nonnull<iFile> _postData;
     Nonnull<iMessageHandler> _msgHandler;
 

@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-class cButtonWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetButton>
+class cButtonWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetButton>
 {
   niBeginClass(cButtonWidget);
 

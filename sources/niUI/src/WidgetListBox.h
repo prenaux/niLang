@@ -8,7 +8,7 @@ static const tU32 knWidgetListBoxMinDefaultColumnWidth = 100;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetListBox declaration.
-class cWidgetListBox : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Default,ni::iWidgetListBox>
+class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetListBox>
 {
   niBeginClass(cWidgetListBox);
 

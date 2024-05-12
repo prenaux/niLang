@@ -14,7 +14,7 @@
 //--------------------------------------------------------------------------------------------
 
 //! Draw operation implementation.
-class cDrawOperation : public cIUnknownImpl<iDrawOperation>
+class cDrawOperation : public ImplRC<iDrawOperation>
 {
   niBeginClass(cDrawOperation);
 
@@ -326,7 +326,7 @@ typedef tDrawOperationLst::const_iterator    tDrawOperationLstCIt;
 // cDrawOperationSet declaration.
 
 //! Draw operation set implementation.
-class cDrawOperationSet : public cIUnknownImpl<iDrawOperationSet>
+class cDrawOperationSet : public ImplRC<iDrawOperationSet>
 {
   niBeginClass(cDrawOperationSet);
 

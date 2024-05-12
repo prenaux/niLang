@@ -7,7 +7,7 @@
 // cSoundBufferStream declaration.
 
 //! Sound buffer implementation.
-class cSoundBufferStream : public cIUnknownImpl<iSoundBuffer>
+class cSoundBufferStream : public ImplRC<iSoundBuffer>
 {
   niBeginClass(cSoundBufferStream);
 

@@ -5,9 +5,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmapCube declaration
-class cBitmapCube : public cIUnknownImpl<iBitmapCube,
-                                         eIUnknownImplFlags_DontInherit1|
-                                         eIUnknownImplFlags_DontInherit3,
+class cBitmapCube : public ImplRC<iBitmapCube,
+                                         eImplFlags_DontInherit1|
+                                         eImplFlags_DontInherit3,
                                          iBitmapBase,iTexture,iDeviceResource>
 {
  public:

@@ -29,7 +29,7 @@ class cFont;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cGraphics declaration
-class cGraphics : public cIUnknownImpl<iGraphics>
+class cGraphics : public ImplRC<iGraphics>
 {
  public:
   cGraphics();

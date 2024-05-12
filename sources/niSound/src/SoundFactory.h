@@ -11,7 +11,7 @@ class cSoundSource;
 // cSoundFactory declaration.
 
 //! Sound factory implementation.
-class cSoundFactory : public cIUnknownImpl<iSoundFactory>
+class cSoundFactory : public ImplRC<iSoundFactory>
 {
   niBeginClass(cSoundFactory);
 

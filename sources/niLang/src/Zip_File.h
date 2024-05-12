@@ -15,7 +15,7 @@ struct inflater_impl;
 namespace ni {
 
 ///////////////////////////////////////////////
-class cZipFile : public cIUnknownImpl<iFileBase>
+class cZipFile : public ImplRC<iFileBase>
 {
  public:
   cZipFile(iFileBase* apFile, tU32 aulCompressionMode);

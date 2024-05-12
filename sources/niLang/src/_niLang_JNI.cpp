@@ -623,7 +623,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_ICommandSink_query__Lni_types_IUnknown_
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.ICommandSinkImpl
 // Implement JNI Wrapper for ni::iCommandSink
-struct JNI_ni_iCommandSink : public ni::cIUnknownImpl<iCommandSink> {
+struct JNI_ni_iCommandSink : public ni::ImplRC<iCommandSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetDescription;
@@ -1398,7 +1398,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IConsoleSink_query__Lni_types_IUnknown_
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IConsoleSinkImpl
 // Implement JNI Wrapper for ni::iConsoleSink
-struct JNI_ni_iConsoleSink : public ni::cIUnknownImpl<iConsoleSink> {
+struct JNI_ni_iConsoleSink : public ni::ImplRC<iConsoleSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnConsoleSink_AfterRunCommand;
@@ -4399,7 +4399,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IDataTableSink_query__Lni_types_IUnknow
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IDataTableSinkImpl
 // Implement JNI Wrapper for ni::iDataTableSink
-struct JNI_ni_iDataTableSink : public ni::cIUnknownImpl<iDataTableSink> {
+struct JNI_ni_iDataTableSink : public ni::ImplRC<iDataTableSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnDataTableSink_AddChild;
@@ -5853,7 +5853,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IExpressionURLResolver_resolveURL(JNIEn
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IExpressionURLResolverImpl
 // Implement JNI Wrapper for ni::iExpressionURLResolver
-struct JNI_ni_iExpressionURLResolver : public ni::cIUnknownImpl<iExpressionURLResolver> {
+struct JNI_ni_iExpressionURLResolver : public ni::ImplRC<iExpressionURLResolver> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmResolveURL;
@@ -8127,7 +8127,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IFileEnumSink_query__Lni_types_IUnknown
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IFileEnumSinkImpl
 // Implement JNI Wrapper for ni::iFileEnumSink
-struct JNI_ni_iFileEnumSink : public ni::cIUnknownImpl<iFileEnumSink> {
+struct JNI_ni_iFileEnumSink : public ni::ImplRC<iFileEnumSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnFound;
@@ -9012,7 +9012,7 @@ JNIEXPORT void JNICALL Java_ni_niLang_IGameCtrl_vibrate(JNIEnv *e, jobject o, jo
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IGameCtrlImpl
 // Implement JNI Wrapper for ni::iGameCtrl
-struct JNI_ni_iGameCtrl : public ni::cIUnknownImpl<iGameCtrl> {
+struct JNI_ni_iGameCtrl : public ni::ImplRC<iGameCtrl> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetAxis;
@@ -9773,7 +9773,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IJsonParserSink_query__Lni_types_IUnkno
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IJsonParserSinkImpl
 // Implement JNI Wrapper for ni::iJsonParserSink
-struct JNI_ni_iJsonParserSink : public ni::cIUnknownImpl<iJsonParserSink> {
+struct JNI_ni_iJsonParserSink : public ni::ImplRC<iJsonParserSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnJsonParserSink_Error;
@@ -10135,7 +10135,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IJsonWriterSink_query__Lni_types_IUnkno
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IJsonWriterSinkImpl
 // Implement JNI Wrapper for ni::iJsonWriterSink
-struct JNI_ni_iJsonWriterSink : public ni::cIUnknownImpl<iJsonWriterSink> {
+struct JNI_ni_iJsonWriterSink : public ni::ImplRC<iJsonWriterSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnJsonWriterSink_Error;
@@ -16312,7 +16312,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IMessageHandler_query__Lni_types_IUnkno
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IMessageHandlerImpl
 // Implement JNI Wrapper for ni::iMessageHandler
-struct JNI_ni_iMessageHandler : public ni::cIUnknownImpl<iMessageHandler> {
+struct JNI_ni_iMessageHandler : public ni::ImplRC<iMessageHandler> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetThreadID;
@@ -17315,7 +17315,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IOSProcessEnumSink_query__Lni_types_IUn
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IOSProcessEnumSinkImpl
 // Implement JNI Wrapper for ni::iOSProcessEnumSink
-struct JNI_ni_iOSProcessEnumSink : public ni::cIUnknownImpl<iOSProcessEnumSink> {
+struct JNI_ni_iOSProcessEnumSink : public ni::ImplRC<iOSProcessEnumSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnOSProcessEnumSink;
@@ -19019,7 +19019,7 @@ JNIEXPORT void JNICALL Java_ni_niLang_IProfDraw_text(JNIEnv *e, jobject o, jfloa
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IProfDrawImpl
 // Implement JNI Wrapper for ni::iProfDraw
-struct JNI_ni_iProfDraw : public ni::cIUnknownImpl<iProfDraw> {
+struct JNI_ni_iProfDraw : public ni::ImplRC<iProfDraw> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmBeginDraw;
@@ -19473,7 +19473,7 @@ JNIEXPORT void JNICALL Java_ni_niLang_IScriptingHost_service(JNIEnv *e, jobject 
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IScriptingHostImpl
 // Implement JNI Wrapper for ni::iScriptingHost
-struct JNI_ni_iScriptingHost : public ni::cIUnknownImpl<iScriptingHost> {
+struct JNI_ni_iScriptingHost : public ni::ImplRC<iScriptingHost> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmCanEvalImpl;
@@ -19816,7 +19816,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IStringTokenizer_query__Lni_types_IUnkn
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IStringTokenizerImpl
 // Implement JNI Wrapper for ni::iStringTokenizer
-struct JNI_ni_iStringTokenizer : public ni::cIUnknownImpl<iStringTokenizer> {
+struct JNI_ni_iStringTokenizer : public ni::ImplRC<iStringTokenizer> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmGetCharType;
@@ -20363,7 +20363,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IURLFileHandler_urlopen(JNIEnv *e, jobj
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IURLFileHandlerImpl
 // Implement JNI Wrapper for ni::iURLFileHandler
-struct JNI_ni_iURLFileHandler : public ni::cIUnknownImpl<iURLFileHandler> {
+struct JNI_ni_iURLFileHandler : public ni::ImplRC<iURLFileHandler> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmURLExists;
@@ -20492,7 +20492,7 @@ JNIEXPORT jobject JNICALL Java_ni_niLang_IXmlParserSink_query__Lni_types_IUnknow
 
 // JNI Wrapper Implementation for Java Class : ni.niLang.IXmlParserSinkImpl
 // Implement JNI Wrapper for ni::iXmlParserSink
-struct JNI_ni_iXmlParserSink : public ni::cIUnknownImpl<iXmlParserSink> {
+struct JNI_ni_iXmlParserSink : public ni::ImplRC<iXmlParserSink> {
   jclass mClass;
   jobject mObject;
   mutable jmethodID mmOnXmlParserSink_Attribute;

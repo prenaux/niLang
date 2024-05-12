@@ -183,7 +183,7 @@ niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool 
 }
 
 ///////////////////////////////////////////////
-class cFileStdIO : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
+class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
 {
  public:
   ///////////////////////////////////////////////
@@ -645,7 +645,7 @@ class cFileStdIO : public cIUnknownImpl<iFileBase,eIUnknownImplFlags_Default>
 //
 //--------------------------------------------------------------------------------------------
 //! File system enumerator implementation
-class cFileSystemEnumerator : public ni::cIUnknownImpl<ni::iFileSystemEnumerator,ni::eIUnknownImplFlags_Default>
+class cFileSystemEnumerator : public ni::ImplRC<ni::iFileSystemEnumerator,ni::eImplFlags_Default>
 {
   niBeginClass(cFileSystemEnumerator);
 
@@ -1207,7 +1207,7 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
 //--------------------------------------------------------------------------------------------
 niConstValue achar* const kFileSystemHashedAlgo = "SHA1";
 
-struct FileSystemHashed : public cIUnknownImpl<ni::iFileSystem>
+struct FileSystemHashed : public ImplRC<ni::iFileSystem>
 {
   ///////////////////////////////////////////////
   FileSystemHashed(const iFileSystem* apFS)

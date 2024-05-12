@@ -362,7 +362,7 @@ static tSize DataTableSerialize_WriteXML(iFile* apFile, iDataTable* apTable, con
   return w;
 }
 
-struct  sXMLParserSinkDT : public cIUnknownImpl<iXmlParserSink>
+struct  sXMLParserSinkDT : public ImplRC<iXmlParserSink>
 {
   Ptr<iDataTable> _rootDT;
   astl::stack<Ptr<iDataTable> > _dt;
@@ -459,7 +459,7 @@ static tSize DataTableSerialize_ReadXML(iFile* apFile, iDataTable* apTable)
 //
 //--------------------------------------------------------------------------------------------
 
-struct sJsonParserSinkDT : public cIUnknownImpl<ni::iJsonParserSink> {
+struct sJsonParserSinkDT : public ImplRC<ni::iJsonParserSink> {
 
   sJsonParserSinkDT(astl::non_null<iDataTable*> apRootDT)
       : _rootDT(apRootDT)

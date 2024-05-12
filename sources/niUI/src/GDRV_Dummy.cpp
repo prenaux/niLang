@@ -13,7 +13,7 @@
 // DummyTexture
 //
 //--------------------------------------------------------------------------------------------
-struct cDummyTexture : public ni::cIUnknownImpl<iTexture,eIUnknownImplFlags_DontInherit1,iDeviceResource>
+struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource>
 {
   WeakPtr<iGraphics> mwGraphics;
   tHStringPtr mhspName;
@@ -128,7 +128,7 @@ struct cDummyTexture : public ni::cIUnknownImpl<iTexture,eIUnknownImplFlags_Dont
 //
 //--------------------------------------------------------------------------------------------
 struct cDummyGraphicsContext :
-    public sGraphicsContext<4,ni::cIUnknownImpl<iGraphicsContextRT,eIUnknownImplFlags_DontInherit1,iGraphicsContext> >
+    public sGraphicsContext<4,ni::ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> >
 {
   iGraphicsDriver* mpParent;
   Ptr<iOSWindow> mptrWindow;
@@ -246,7 +246,7 @@ struct cDummyGraphicsContext :
 //
 //--------------------------------------------------------------------------------------------
 
-struct cDummyGraphicsDriver : public cIUnknownImpl<iGraphicsDriver>
+struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
 {
   iGraphics* mpGraphics;
 

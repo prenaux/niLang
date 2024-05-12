@@ -37,7 +37,7 @@ enum eTextAlignment
 #define TA_COL_ID(TA) ((TA)>>8)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class sTextOccluder : public cIUnknownImpl<iTextOccluder>
+class sTextOccluder : public ImplRC<iTextOccluder>
 {
   niBeginClass(sTextOccluder);
 
@@ -84,7 +84,7 @@ class sTextOccluder : public cIUnknownImpl<iTextOccluder>
   Var                  mUserData;
 };
 
-class cTextObject : public cIUnknownImpl<iTextObject>
+class cTextObject : public ImplRC<iTextObject>
 {
   niBeginClass(cTextObject);
   struct sLine;
@@ -1425,7 +1425,7 @@ class cTextObject : public cIUnknownImpl<iTextObject>
     astl::vector<tF32>    mstackLineSpacing;
   } mFontManager;
 
-  struct sExpression : public cIUnknownImpl<iUnknown> {
+  struct sExpression : public ImplRC<iUnknown> {
     cString mstrExpr;
     Ptr<iExpression> mptrExpr;
     Ptr<iExpressionVariable> mptrResult;
@@ -1612,7 +1612,7 @@ class cTextObject : public cIUnknownImpl<iTextObject>
     eFontTagAttr_LineSpacing = niBit(4)
   };
 
-  struct sParseTagsXmlParserSink : public cIUnknownImpl<iXmlParserSink> {
+  struct sParseTagsXmlParserSink : public ImplRC<iXmlParserSink> {
     cTextObject* _this;
     cTextObject::tRawStrings& mapStrings; // tag-free string list
     astl::stack<eTagType> tagType;

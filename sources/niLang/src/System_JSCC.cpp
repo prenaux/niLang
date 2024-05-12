@@ -131,7 +131,7 @@ struct sJSCCMainLoopRefreshMode {
 };
 struct sJSCCMainLoopRefreshMode _jsccMainLoopRefreshMode;
 
-struct sJSCCWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default> {
+struct sJSCCWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default> {
   niBeginClass(sJSCCWindow);
 
   sJSCCWindow()

@@ -7,7 +7,7 @@
 #pragma niTodo("3D Sounds works only with mono sounds.")
 
 //! Sound buffer instance implementation.
-class cSoundBufferMemInstance : public cIUnknownImpl<iSoundBuffer>
+class cSoundBufferMemInstance : public ImplRC<iSoundBuffer>
 {
   niBeginClass(cSoundBufferMemInstance);
 

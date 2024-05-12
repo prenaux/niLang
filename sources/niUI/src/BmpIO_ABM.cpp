@@ -7,7 +7,7 @@
 #include <niLang/IZip.h>
 #include "BmpIO_ABM.h"
 
-struct BitmapLoader_ABM : public cIUnknownImpl<iBitmapLoader> {
+struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
 
   ///////////////////////////////////////////////
   tBool _ReadBitmap(iGraphics* apGraphics, iBitmap2D* apOut, iFile* apFile, iPixelFormat* apStoredFormat) {
@@ -306,7 +306,7 @@ struct BitmapLoader_ABM : public cIUnknownImpl<iBitmapLoader> {
   }
 };
 
-struct BitmapSaver_ABM : public cIUnknownImpl<iBitmapSaver> {
+struct BitmapSaver_ABM : public ImplRC<iBitmapSaver> {
 
   ///////////////////////////////////////////////
   tBool _WriteBitmap(iGraphics* apGraphics, iBitmap2D* apSrc, iFile* apFile, tU32 anCompression) {

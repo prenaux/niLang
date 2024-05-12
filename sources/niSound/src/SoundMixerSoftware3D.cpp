@@ -6,7 +6,7 @@
 #define Check3D(CHAN,RET) if (CHAN < mnFirst3DChannel || CHAN > mnLast3DChannel) return RET;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundMixerSoftware3D : public cIUnknownImpl<iSoundMixer3D,eIUnknownImplFlags_Default>
+class cSoundMixerSoftware3D : public ImplRC<iSoundMixer3D,eImplFlags_Default>
 {
   niBeginClass(cSoundMixerSoftware3D);
 

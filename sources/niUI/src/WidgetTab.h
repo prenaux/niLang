@@ -18,7 +18,7 @@ struct TabPage {
 typedef astl::vector<TabPage> tTabPageVec;
 typedef astl::vector<tTabPageVec> tTabPageVecVec;
 
-class cTabWidget : public cIUnknownImpl<iWidgetSink,eIUnknownImplFlags_Default,iWidgetTab>
+class cTabWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetTab>
 {
   niBeginClass(cTabWidget);
  public:

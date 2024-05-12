@@ -59,7 +59,7 @@ const cString& __stdcall cDataTablePathOp::GetValue() const
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-struct cDataTablePathParserTokenizer : public cIUnknownImpl<iStringTokenizer>
+struct cDataTablePathParserTokenizer : public ImplRC<iStringTokenizer>
 {
   cDataTablePathParserTokenizer() : mbFirstChar(eTrue) {}
 

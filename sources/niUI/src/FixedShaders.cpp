@@ -566,7 +566,7 @@ static void FPS_GET_DECL(fpsExprMatrix1)(GET_FPS_MAT4_PARAMS) {
   aOut = EVALEXPR(apMat,Matrix1,Matrix,sMatrixf::Identity());
 }
 
-struct sFixedShaderConstants : public cMemImpl {
+struct sFixedShaderConstants : public Impl_HeapAlloc {
   sFixedShaderConstants();
   ~sFixedShaderConstants();
   tBool InitializeShaderConstants(iShaderConstants* apBuffer) const;

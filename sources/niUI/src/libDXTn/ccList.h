@@ -31,7 +31,7 @@ class ccHashNode;
 #define LIST_MAGIC 0xABadCafe
 
 
-class ccMinNode : public ni::cMemImpl
+class ccMinNode : public ni::Impl_HeapAlloc
 {
  protected:
   ccMinNode *next, *prev;
@@ -74,7 +74,7 @@ class ccNode : public ccMinNode
 typedef BOOL (*NodeCheckFlipFunc)(ccMinNode *n, ccMinNode *nn);
 
 
-class ccMinList : public cMemImpl
+class ccMinList : public Impl_HeapAlloc
 {
  private:
   unsigned long numElements;

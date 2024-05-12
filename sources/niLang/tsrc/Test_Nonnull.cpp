@@ -84,14 +84,14 @@ struct sTestItem : public ImplRC<iUnknown> {
       ++_addRefReleaseCounter->_numAddRef;
     }
     DUMP_STACK("AddRef");
-    NI_UNKIMPL_ADDREF();
+    niImpl_AddRef();
   }
   virtual tI32 __stdcall Release() {
     if (_addRefReleaseCounter) {
       ++_addRefReleaseCounter->_numRelease;
     }
     DUMP_STACK("Release");
-    NI_UNKIMPL_RELEASE();
+    niImpl_Release();
   }
 
   ni::cString _name;

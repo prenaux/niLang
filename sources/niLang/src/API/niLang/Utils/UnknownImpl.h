@@ -83,23 +83,23 @@ template <typename BaseImpl, typename T, typename B> struct sQueryInterfaceInher
 
 #define niImpl_Inherit(MEM) Impl_Inherit<ni::Impl_##MEM,T0,FLAGS,T1,T2,T3,T4>
 
-#define niImpl_Base_DeleteThis()                    \
-  public:                                           \
-  virtual tBool __stdcall IsOK() const niOverride { \
-    return eTrue;                                   \
-  }                                                 \
-  virtual void __stdcall Invalidate() niOverride {  \
-  }                                                 \
-  virtual void __stdcall DeleteThis() niOverride {  \
-    niDelete this;                                  \
-  }                                                 \
+#define niImpl_Base_DeleteThis()                        \
+  public:                                               \
+  virtual ni::tBool __stdcall IsOK() const niOverride { \
+    return ni::eTrue;                                   \
+  }                                                     \
+  virtual void __stdcall Invalidate() niOverride {      \
+  }                                                     \
+  virtual void __stdcall DeleteThis() niOverride {      \
+    niDelete this;                                      \
+  }                                                     \
 
-#define niImpl_Base_EmptyDeleteThis()               \
-  public:                                           \
-  virtual tBool __stdcall IsOK() const niOverride { \
-    return eTrue;                                   \
-  }                                                 \
-  virtual void __stdcall Invalidate() niOverride {} \
+#define niImpl_Base_EmptyDeleteThis()                   \
+  public:                                               \
+  virtual ni::tBool __stdcall IsOK() const niOverride { \
+    return ni::eTrue;                                   \
+  }                                                     \
+  virtual void __stdcall Invalidate() niOverride {}     \
   virtual void __stdcall DeleteThis() niOverride {}
 
 #define niImpl_DefineBaseTypes(CLASS)                     \
@@ -133,6 +133,56 @@ template <typename BaseImpl, typename T, typename B> struct sQueryInterfaceInher
 
 #define niImpl_GetNumRefs() {                   \
     return SYNC_READ(&mprotected_nNumRefs);     \
+  }
+
+#define niImpl_RefCount()                                               \
+  SYNC_INT_TYPE mprotected_nNumRefs;                                    \
+  virtual ni::tI32 __stdcall AddRef() niOverride {                      \
+    niImpl_AddRef();                                                    \
+  }                                                                     \
+  virtual ni::tI32 __stdcall Release() niOverride {                     \
+    niImpl_Release();                                                   \
+  }                                                                     \
+  virtual ni::tI32 __stdcall SetNumRefs(ni::tI32 anNumRefs) niOverride { \
+    niImpl_SetNumRefs(anNumRefs);                                       \
+  }                                                                     \
+  virtual ni::tI32 __stdcall GetNumRefs() const niOverride {            \
+    niImpl_GetNumRefs();                                                \
+  }
+
+#define niImpl_NoRefCount()                                       \
+  virtual ni::tI32 __stdcall AddRef() niOverride {                \
+    return ni::eInvalidHandle;                                    \
+  }                                                               \
+  virtual tI32 __stdcall Release() niOverride {                   \
+    return ni::eInvalidHandle;                                    \
+  }                                                               \
+  virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niOverride {  \
+    niUnused(anNumRefs);                                          \
+    return ni::eInvalidHandle;                                    \
+  }                                                               \
+  virtual tI32 __stdcall GetNumRefs() const niOverride {          \
+    return ni::eInvalidHandle;                                    \
+  }
+
+#define niImpl_Aggregate()                                              \
+  ni::iUnknown* mprotected_pAggregateParent;                            \
+  virtual ni::tI32 __stdcall AddRef() niOverride {                      \
+    niAssert(mprotected_pAggregateParent != nullptr);                   \
+    return mprotected_pAggregateParent->AddRef();                       \
+  }                                                                     \
+  virtual ni::tI32 __stdcall Release() niOverride {                     \
+    niAssert(mprotected_pAggregateParent != nullptr);                   \
+    return mprotected_pAggregateParent->Release();                      \
+  }                                                                     \
+                                                                        \
+  virtual ni::tI32 __stdcall SetNumRefs(ni::tI32 anNumRefs) niOverride { \
+    niAssert(mprotected_pAggregateParent != nullptr);                   \
+    return mprotected_pAggregateParent->SetNumRefs(anNumRefs);          \
+  }                                                                     \
+  virtual ni::tI32 __stdcall GetNumRefs() const niOverride {            \
+    niAssert(mprotected_pAggregateParent != nullptr);                   \
+    return mprotected_pAggregateParent->GetNumRefs();                   \
   }
 
 };
@@ -220,30 +270,6 @@ protected:
   typedef T0 BaseType;
 };
 
-#define niImpl_AddRef() {                     \
-    return SYNC_INCREMENT(&mprotected_nNumRefs);  \
-  }
-
-#define niImpl_Release() {                                \
-    if (SYNC_DECREMENT(&mprotected_nNumRefs) == 0) {          \
-      this->DeleteThis();                                     \
-      return -1;                                              \
-    }                                                         \
-    /* you have a double free if this assert is triggered, */ \
-    /* you should figure out why and fix it */                \
-    niAssert(mprotected_nNumRefs > 0);                        \
-    return SYNC_READ(&mprotected_nNumRefs);                   \
-  }
-
-#define niImpl_SetNumRefs(anNumRefs) {      \
-    SYNC_WRITE(&mprotected_nNumRefs,anNumRefs); \
-    return SYNC_READ(&mprotected_nNumRefs);     \
-  }
-
-#define niImpl_GetNumRefs() {               \
-    return SYNC_READ(&mprotected_nNumRefs);     \
-  }
-
 #if niPragmaPack
 #pragma niPackPush(4)
 #endif
@@ -260,21 +286,7 @@ struct niEmptyBases ImplRC : public niImpl_Inherit(HeapAlloc)
   niImpl_DefineBaseTypes(ImplRC);
   niImpl_QueryInterface();
   niImpl_Base_DeleteThis();
-
-  virtual tI32 __stdcall AddRef() niOverride {
-    niImpl_AddRef();
-  }
-  virtual tI32 __stdcall Release() niOverride {
-    niImpl_Release();
-  }
-  virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niOverride {
-    niImpl_SetNumRefs(anNumRefs);
-  }
-  virtual tI32 __stdcall GetNumRefs() const niOverride {
-    niImpl_GetNumRefs();
-  }
-
-  SYNC_INT_TYPE mprotected_nNumRefs;
+  niImpl_RefCount();
 } niAligned(4) niPacked(4);
 static_assert(sizeof(ni::ImplRC<iUnknown>) == sizeof(void*)+sizeof(SYNC_INT_TYPE));
 
@@ -290,26 +302,7 @@ struct niEmptyBases ImplAggregate : public niImpl_Inherit(HeapAlloc)
   niImpl_DefineBaseTypes(ImplAggregate);
   niImpl_QueryInterface();
   niImpl_Base_DeleteThis();
-
-  virtual tI32 __stdcall AddRef() niOverride {
-    niAssert(mprotected_pAggregateParent != nullptr);
-    return mprotected_pAggregateParent->AddRef();
-  }
-  virtual tI32 __stdcall Release() niOverride {
-    niAssert(mprotected_pAggregateParent != nullptr);
-    return mprotected_pAggregateParent->Release();
-  }
-
-  virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niOverride {
-    niAssert(mprotected_pAggregateParent != nullptr);
-    return mprotected_pAggregateParent->SetNumRefs(anNumRefs);
-  }
-  virtual tI32 __stdcall GetNumRefs() const niOverride {
-    niAssert(mprotected_pAggregateParent != nullptr);
-    return mprotected_pAggregateParent->GetNumRefs();
-  }
-
-  iUnknown* mprotected_pAggregateParent;
+  niImpl_Aggregate();
 } niAligned(4) niPacked(4);
 static_assert(sizeof(ni::ImplAggregate<iUnknown>) == sizeof(void*)+sizeof(ni::iUnknown*));
 
@@ -325,21 +318,7 @@ struct niEmptyBases ImplLocal : public niImpl_Inherit(NoHeapAlloc)
   niImpl_DefineBaseTypes(ImplLocal);
   niImpl_QueryInterface();
   niImpl_Base_EmptyDeleteThis();
-
-  virtual tI32 __stdcall AddRef() niOverride {
-    return eInvalidHandle;
-  }
-  virtual tI32 __stdcall Release() niOverride {
-    return eInvalidHandle;
-  }
-
-  virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niOverride {
-    niUnused(anNumRefs);
-    return eInvalidHandle;
-  }
-  virtual tI32 __stdcall GetNumRefs() const niOverride {
-    return eInvalidHandle;
-  }
+  niImpl_NoRefCount();
 } niAligned(4) niPacked(4);
 static_assert(sizeof(ni::ImplLocal<iUnknown>) == sizeof(void*));
 

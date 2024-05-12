@@ -264,16 +264,16 @@ public:
   }
 
   virtual tI32 __stdcall AddRef() niOverride {
-    NI_UNKIMPL_ADDREF();
+    niImpl_AddRef();
   }
   virtual tI32 __stdcall Release() niOverride {
-    NI_UNKIMPL_RELEASE();
+    niImpl_Release();
   }
   virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niOverride {
-    NI_UNKIMPL_SETNUMREFS(anNumRefs);
+    niImpl_SetNumRefs(anNumRefs);
   }
   virtual tI32 __stdcall GetNumRefs() const niOverride {
-    NI_UNKIMPL_GETNUMREFS();
+    niImpl_GetNumRefs();
   }
   virtual void __stdcall DeleteThis() niOverride {
     delete this;

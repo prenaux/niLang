@@ -69,7 +69,7 @@ struct SQCallInfo {
 };
 SQ_VECTOR_TYPEDEF(SQCallInfo,SQCallInfoVec);
 
-struct SQVM : public SQCollectable, public cMemImpl
+struct SQVM : public SQCollectable, public Impl_HeapAlloc
 {
   virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
     return this->_DoQueryInterface(this,aIID);

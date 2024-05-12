@@ -10,7 +10,7 @@ struct sSQDeepCloneGuardSet {
 typedef sSQDeepCloneGuardSet tSQDeepCloneGuardSet;
 
 template <typename T>
-struct SQAllocator : ni::cMemImpl {};
+struct SQAllocator : ni::Impl_HeapAlloc {};
 
 #define SQ_ALLOCATOR(TYPE) SQAllocator<TYPE>
 

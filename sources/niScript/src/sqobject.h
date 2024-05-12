@@ -283,7 +283,7 @@ struct SQUserData : public SQCollectable
   SQObjectPtr mptrDelegate;
 };
 
-#define SQ_USERDATA_ALLOC(TYPE) ni::cMemImpl
+#define SQ_USERDATA_ALLOC(TYPE) ni::Impl_HeapAlloc
 #define SQ_USERDATA_BASE(TYPE) public SQUserData, public SQ_USERDATA_ALLOC(TYPE)
 
 /////////////////////////////////////////////////////////////////////////////////////

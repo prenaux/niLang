@@ -113,7 +113,7 @@ class cPixelFormatStd : public ImplRC<iPixelFormat>
   };
 #pragma pack(pop)
 
-  struct sBase : public ni::cMemImpl
+  struct sBase : public ni::Impl_HeapAlloc
   {
     virtual ~sBase() {}
     virtual tPtr BuildPixelul(tPtr pOut, tU32 r, tU32 g, tU32 b, tU32 a = 0) const = 0;

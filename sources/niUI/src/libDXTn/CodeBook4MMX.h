@@ -22,7 +22,7 @@ class fCodebook;
 class Color;
 
 
-class cbVector : public ni::cMemImpl
+class cbVector : public ni::Impl_HeapAlloc
 {
  private:
   BYTE  pData[CodeSize];

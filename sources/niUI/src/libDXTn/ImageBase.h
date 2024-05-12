@@ -47,7 +47,7 @@ class Color
 // ----------------------------------------------------------------------------
 // Base image class
 // ----------------------------------------------------------------------------
-class Image : public ni::cMemImpl
+class Image : public ni::Impl_HeapAlloc
 {
  private:
   long  XSize, YSize;

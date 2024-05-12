@@ -10,7 +10,7 @@
 class ccDoubleHeap;
 
 
-class ccDoubleHeapNode : public ni::cMemImpl
+class ccDoubleHeapNode : public ni::Impl_HeapAlloc
 {
  private:
   double  Key;

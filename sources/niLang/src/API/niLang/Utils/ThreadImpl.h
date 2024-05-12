@@ -18,7 +18,7 @@ namespace ni {
 static inline tU64 ThreadGetCurrentThreadID() {
   return 0xAAAADDDD;
 }
-struct ThreadMutex : public cMemImpl {
+struct ThreadMutex : public Impl_HeapAlloc {
   ThreadMutex() {}
   ~ThreadMutex() {}
   void __stdcall ThreadLock() const {}
@@ -30,7 +30,7 @@ struct AutoThreadLock {
   ~AutoThreadLock() {}
 };
 
-struct ThreadEvent : public cMemImpl {
+struct ThreadEvent : public Impl_HeapAlloc {
   ThreadEvent(tBool abManualReset = eFalse) {
     mIsSignaled = abManualReset;
   }
@@ -148,7 +148,7 @@ static inline tU64 ThreadGetCurrentThreadID() {
 //==========================================================================
 namespace ni {
 
-struct ThreadMutex : public cMemImpl {
+struct ThreadMutex : public Impl_HeapAlloc {
   ThreadMutex() {
 #ifdef niWin32
     InitializeCriticalSectionAndSpinCount((struct _RTL_CRITICAL_SECTION*)&mCS,4000);
@@ -218,7 +218,7 @@ struct AutoThreadLock {
 //==========================================================================
 namespace ni {
 
-struct ThreadEvent : public cMemImpl {
+struct ThreadEvent : public Impl_HeapAlloc {
   // create the event in non-signaled state
   ThreadEvent(tBool abManualReset = eFalse) {
 #ifdef niWin32
@@ -294,7 +294,7 @@ struct ThreadEvent : public cMemImpl {
 
 namespace ni {
 
-struct ThreadSem : public cMemImpl {
+struct ThreadSem : public Impl_HeapAlloc {
 #ifdef niWin32
   void* _winSem;
 #elif defined niOSX || defined niIOS

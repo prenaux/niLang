@@ -9,7 +9,7 @@
 
 class ccHeap;
 
-class ccHeapNode : public ni::cMemImpl
+class ccHeapNode : public ni::Impl_HeapAlloc
 {
  private:
   long  Key;

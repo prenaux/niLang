@@ -44,32 +44,31 @@ iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) {
 using namespace ni;
 
 //! Remote address IPv4 template implementation.
-template <tIUnknownImplFlags FLAGS>
-class cRemoteAddressIPv4Tpl : public ImplRC<iRemoteAddressIPv4,FLAGS|eImplFlags_DontInherit1,iRemoteAddress,iToString>
+class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInherit1,iRemoteAddress,iToString>
 {
   niBeginClass(cRemoteAddressIPv4);
 
  public:
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4Tpl() {
+  cRemoteAddressIPv4() {
     ZeroMembers();
   }
 
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4Tpl(const achar* aaszAddress) {
+  cRemoteAddressIPv4(const achar* aaszAddress) {
     ZeroMembers();
     SetAddressString(aaszAddress);
   }
 
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4Tpl(tU32 anIP, tU32 anPort) {
+  cRemoteAddressIPv4(tU32 anIP, tU32 anPort) {
     ZeroMembers();
     SetHost(anIP);
     SetPort(anPort);
   }
 
   ///////////////////////////////////////////////
-  ~cRemoteAddressIPv4Tpl() {
+  ~cRemoteAddressIPv4() {
     Invalidate();
   }
 
@@ -92,7 +91,7 @@ class cRemoteAddressIPv4Tpl : public ImplRC<iRemoteAddressIPv4,FLAGS|eImplFlags_
 
   ///////////////////////////////////////////////
   virtual iRemoteAddress* __stdcall Clone() const {
-    cRemoteAddressIPv4Tpl<eImplFlags_Default>* pNew = niNew cRemoteAddressIPv4Tpl<eImplFlags_Default>();
+    cRemoteAddressIPv4* pNew = niNew cRemoteAddressIPv4();
     pNew->_addr = _addr;
     return pNew;
   }
@@ -273,22 +272,18 @@ class cRemoteAddressIPv4Tpl : public ImplRC<iRemoteAddressIPv4,FLAGS|eImplFlags_
 };
 
 //! Read-only remote address IPv4 template implementation.
-template <tIUnknownImplFlags FLAGS>
-class cRemoteAddressIPv4ROTpl : public cRemoteAddressIPv4Tpl<FLAGS>
+class cRemoteAddressIPv4RO : public cRemoteAddressIPv4
 {
  public:
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4ROTpl(const achar* aaszAddress) : cRemoteAddressIPv4Tpl<FLAGS>(aaszAddress) {}
+  cRemoteAddressIPv4RO(const achar* aaszAddress) : cRemoteAddressIPv4(aaszAddress) {}
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4ROTpl(tU32 anIP, tU32 anPort) : cRemoteAddressIPv4Tpl<FLAGS>(anIP,anPort) {}
+  cRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) : cRemoteAddressIPv4(anIP,anPort) {}
 
   virtual tBool __stdcall SetAddressString(const achar* aaszAddress) { return eFalse; }
   virtual void __stdcall SetHost(tU32 anFourCC) {}
   virtual void __stdcall SetPort(tU32 anPort) {}
 };
-
-typedef cRemoteAddressIPv4Tpl<eImplFlags_Default> cRemoteAddressIPv4;
-typedef cRemoteAddressIPv4ROTpl<eImplFlags_Default> cRemoteAddressIPv4RO;
 
 niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(sockaddr_in* apSockAddrIn) {
   Ptr<cRemoteAddressIPv4> ip = niNew cRemoteAddressIPv4();

@@ -14,7 +14,7 @@ namespace ni {
  */
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cPolygon : public cMemImpl
+class cPolygon : public Impl_HeapAlloc
 {
  public:
   //! Constructor.

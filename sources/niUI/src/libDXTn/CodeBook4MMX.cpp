@@ -404,7 +404,7 @@ void ImgCodeBook::FromImageUnique(Image *pImg)
 }
 
 
-typedef struct : public ni::cMemImpl
+typedef struct : public ni::Impl_HeapAlloc
 {
   long  Key, OrigIndex;
 } SortKey;

@@ -2478,7 +2478,7 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 //  sOSXSystem implementation
 //
 //--------------------------------------------------------------------------------------------
-struct sOSXSystem : public cMemImpl {
+struct sOSXSystem : public Impl_HeapAlloc {
   astl::vector<cOSXWindow*> mvWindows;
   struct sMonitor {
     tIntPtr   mHandle;

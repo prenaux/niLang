@@ -194,10 +194,10 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   tU32 mnMaxNumItems;
 
   struct {
-    tBool bShouldUpdateLayout : 1;
-    tBool bShouldSortItems : 1;
-    tBool bShouldAutoScroll : 1;
-    tBool bInNotifySelChanged : 1;
+    tU8 bShouldUpdateLayout : 1;
+    tU8 bShouldSortItems : 1;
+    tU8 bShouldAutoScroll : 1;
+    tU8 bInNotifySelChanged : 1;
   } mInternalFlags;
 
   niEndClass(cWidgetListBox);

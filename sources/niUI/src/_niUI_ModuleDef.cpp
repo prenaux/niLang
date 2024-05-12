@@ -1341,7 +1341,7 @@ static const ni::sMethodDef* Methods_iBitmapLoader[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iBitmapLoader : public ni::cIUnknownImpl<ni::iBitmapLoader,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iBitmapLoader : public ni::ImplAggregate<ni::iBitmapLoader>
 {
 	DispatchWrapper_iBitmapLoader(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -1433,7 +1433,7 @@ static const ni::sMethodDef* Methods_iBitmapSaver[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iBitmapSaver : public ni::cIUnknownImpl<ni::iBitmapSaver,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iBitmapSaver : public ni::ImplAggregate<ni::iBitmapSaver>
 {
 	DispatchWrapper_iBitmapSaver(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -16319,7 +16319,7 @@ static const ni::sMethodDef* Methods_iMaterialLibrarySink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iMaterialLibrarySink : public ni::cIUnknownImpl<ni::iMaterialLibrarySink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iMaterialLibrarySink : public ni::ImplAggregate<ni::iMaterialLibrarySink>
 {
 	DispatchWrapper_iMaterialLibrarySink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -22773,7 +22773,7 @@ static const ni::sMethodDef* Methods_iVGPathTesselatedRenderer[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::cIUnknownImpl<ni::iVGPathTesselatedRenderer,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::ImplAggregate<ni::iVGPathTesselatedRenderer>
 {
 	DispatchWrapper_iVGPathTesselatedRenderer(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -26870,7 +26870,7 @@ static const ni::sMethodDef* Methods_iWidgetSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iWidgetSink : public ni::cIUnknownImpl<ni::iWidgetSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iWidgetSink : public ni::ImplAggregate<ni::iWidgetSink>
 {
 	DispatchWrapper_iWidgetSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -32300,7 +32300,7 @@ static const ni::sMethodDef* Methods_iWidgetPropertyBox[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iWidgetPropertyBox : public ni::cIUnknownImpl<ni::iWidgetPropertyBox,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iWidgetPropertyBox : public ni::ImplAggregate<ni::iWidgetPropertyBox>
 {
 	DispatchWrapper_iWidgetPropertyBox(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -32632,7 +32632,7 @@ static const ni::sMethodDef* Methods_iSearchable[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iSearchable : public ni::cIUnknownImpl<ni::iSearchable,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iSearchable : public ni::ImplAggregate<ni::iSearchable>
 {
 	DispatchWrapper_iSearchable(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

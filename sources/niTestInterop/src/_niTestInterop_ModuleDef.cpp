@@ -1760,7 +1760,7 @@ static const ni::sMethodDef* Methods_iTestInteropSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iTestInteropSink : public ni::cIUnknownImpl<ni::iTestInteropSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::iTestInteropSink>
 {
 	DispatchWrapper_iTestInteropSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

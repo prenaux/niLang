@@ -411,7 +411,7 @@ static const ni::sMethodDef* Methods_iScriptObjectEnumSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iScriptObjectEnumSink : public ni::cIUnknownImpl<ni::iScriptObjectEnumSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iScriptObjectEnumSink : public ni::ImplAggregate<ni::iScriptObjectEnumSink>
 {
 	DispatchWrapper_iScriptObjectEnumSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

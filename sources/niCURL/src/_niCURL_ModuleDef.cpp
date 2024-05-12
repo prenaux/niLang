@@ -528,7 +528,7 @@ static const ni::sMethodDef* Methods_iFetchSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iFetchSink : public ni::cIUnknownImpl<ni::iFetchSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iFetchSink : public ni::ImplAggregate<ni::iFetchSink>
 {
 	DispatchWrapper_iFetchSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

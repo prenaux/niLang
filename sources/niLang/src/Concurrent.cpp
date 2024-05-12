@@ -1304,10 +1304,7 @@ static const ni::sMethodDef* Methods_iMessageHandler[] = {
   &iMessageHandler_HandleMessage
 };
 
-struct niHidden iMessageHandler_DispatchWrapper :
-    public ni::cIUnknownImpl<
-  ni::iMessageHandler,
-  eIUnknownImplFlags_Aggregatable|eIUnknownImplFlags_NoRefCount>
+struct niHidden iMessageHandler_DispatchWrapper : public ImplAggregate<ni::iMessageHandler>
 {
   const tU64 _threadID;
 

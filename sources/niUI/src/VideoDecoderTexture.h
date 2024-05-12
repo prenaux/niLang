@@ -5,9 +5,7 @@
 
 #include "API/niUI/IVideoDecoder.h"
 
-struct sVideoDecoderTexture : public cIUnknownImpl<iTexture,
-                                                   eIUnknownImplFlags_Aggregatable|
-                                                   eIUnknownImplFlags_NoRefCount|
+struct sVideoDecoderTexture : public ImplAggregate<iTexture,
                                                    eIUnknownImplFlags_DontInherit1,
                                                    ni::iDeviceResource>
 {

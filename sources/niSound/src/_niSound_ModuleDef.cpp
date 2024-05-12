@@ -360,7 +360,7 @@ static const ni::sMethodDef* Methods_iSoundDriverBufferDataSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iSoundDriverBufferDataSink : public ni::cIUnknownImpl<ni::iSoundDriverBufferDataSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iSoundDriverBufferDataSink : public ni::ImplAggregate<ni::iSoundDriverBufferDataSink>
 {
 	DispatchWrapper_iSoundDriverBufferDataSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

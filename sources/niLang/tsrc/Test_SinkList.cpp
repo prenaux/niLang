@@ -13,7 +13,7 @@ typedef SinkList<iMySink> tMySinkList;
 
 template struct ni::SinkList<iMySink>;
 
-struct MySinkImpl : public cIUnknownImpl<iMySink>
+struct MySinkImpl : public ni::ImplRC<iMySink>
 {
   const achar* _name;
 	tU32 _counter;
@@ -27,10 +27,43 @@ struct MySinkImpl : public cIUnknownImpl<iMySink>
 	}
 };
 
+struct MySinkImplLocal : public ni::ImplLocal<iMySink>
+{
+  const achar* _name;
+	tU32 _counter;
+	MySinkImplLocal(const achar* aName = "NA") {
+    _name = aName;
+		_counter = 0;
+	}
+	tBool __stdcall OnMySink_Count(tU32 c) {
+		_counter += c;
+		return eTrue;
+	}
+};
+
+struct MySinkImplAggregate : public ni::ImplAggregate<iMySink>
+{
+  const achar* _name;
+	tU32 _counter;
+	MySinkImplAggregate(const achar* aName = "NA") {
+    _name = aName;
+		_counter = 0;
+	}
+	tBool __stdcall OnMySink_Count(tU32 c) {
+		_counter += c;
+		return eTrue;
+	}
+};
+
 struct FSinkList {
 };
 
 TEST_FIXTURE(FSinkList,Add) {
+  MySinkImpl onstack;
+  MySinkImplLocal onstack2;
+
+  //MySinkImplLocal* shouldntBeOnHeap = new MySinkImplLocal();
+
 	Ptr<MySinkImpl> a = niNew MySinkImpl();
 	Ptr<MySinkImpl> b = niNew MySinkImpl();
 	Ptr<MySinkImpl> c = niNew MySinkImpl();
@@ -173,7 +206,7 @@ TEST_FIXTURE(FSinkList,Remove2) {
     {
       Ptr<tMySinkList::sIterator> it = (tMySinkList::sIterator*)sinkLst->Find(a.ptr());
       niAssert(it.IsOK());
-      it = NULL;
+      it = nullptr;
       sinkLst->RemoveSink(a.ptr());
     }
   }

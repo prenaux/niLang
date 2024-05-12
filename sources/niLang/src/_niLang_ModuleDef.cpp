@@ -1784,7 +1784,7 @@ static const ni::sMethodDef* Methods_iCommandSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iCommandSink : public ni::cIUnknownImpl<ni::iCommandSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iCommandSink : public ni::ImplAggregate<ni::iCommandSink>
 {
 	DispatchWrapper_iCommandSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -1974,7 +1974,7 @@ static const ni::sMethodDef* Methods_iConsoleSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iConsoleSink : public ni::cIUnknownImpl<ni::iConsoleSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iConsoleSink : public ni::ImplAggregate<ni::iConsoleSink>
 {
 	DispatchWrapper_iConsoleSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -3187,7 +3187,7 @@ static const ni::sMethodDef* Methods_iDataTableSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iDataTableSink : public ni::cIUnknownImpl<ni::iDataTableSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iDataTableSink>
 {
 	DispatchWrapper_iDataTableSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -6712,7 +6712,7 @@ static const ni::sMethodDef* Methods_iExpressionURLResolver[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iExpressionURLResolver : public ni::cIUnknownImpl<ni::iExpressionURLResolver,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iExpressionURLResolver : public ni::ImplAggregate<ni::iExpressionURLResolver>
 {
 	DispatchWrapper_iExpressionURLResolver(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -7196,7 +7196,7 @@ static const ni::sMethodDef* Methods_iFileEnumSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iFileEnumSink : public ni::cIUnknownImpl<ni::iFileEnumSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iFileEnumSink : public ni::ImplAggregate<ni::iFileEnumSink>
 {
 	DispatchWrapper_iFileEnumSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -9698,7 +9698,7 @@ static const ni::sMethodDef* Methods_iURLFileHandler[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iURLFileHandler : public ni::cIUnknownImpl<ni::iURLFileHandler,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iURLFileHandler : public ni::ImplAggregate<ni::iURLFileHandler>
 {
 	DispatchWrapper_iURLFileHandler(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -10476,7 +10476,7 @@ static const ni::sMethodDef* Methods_iGameCtrl[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iGameCtrl : public ni::cIUnknownImpl<ni::iGameCtrl,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCtrl>
 {
 	DispatchWrapper_iGameCtrl(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -11154,7 +11154,7 @@ static const ni::sMethodDef* Methods_iJsonParserSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iJsonParserSink : public ni::cIUnknownImpl<ni::iJsonParserSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iJsonParserSink : public ni::ImplAggregate<ni::iJsonParserSink>
 {
 	DispatchWrapper_iJsonParserSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -11273,7 +11273,7 @@ static const ni::sMethodDef* Methods_iJsonWriterSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iJsonWriterSink : public ni::cIUnknownImpl<ni::iJsonWriterSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iJsonWriterSink : public ni::ImplAggregate<ni::iJsonWriterSink>
 {
 	DispatchWrapper_iJsonWriterSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -20295,7 +20295,7 @@ static const ni::sMethodDef* Methods_iOSProcessEnumSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iOSProcessEnumSink : public ni::cIUnknownImpl<ni::iOSProcessEnumSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iOSProcessEnumSink : public ni::ImplAggregate<ni::iOSProcessEnumSink>
 {
 	DispatchWrapper_iOSProcessEnumSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -21685,7 +21685,7 @@ static const ni::sMethodDef* Methods_iProfDraw[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iProfDraw : public ni::cIUnknownImpl<ni::iProfDraw,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDraw>
 {
 	DispatchWrapper_iProfDraw(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -22679,7 +22679,7 @@ static const ni::sMethodDef* Methods_iScriptingHost[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iScriptingHost : public ni::cIUnknownImpl<ni::iScriptingHost,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iScriptingHost : public ni::ImplAggregate<ni::iScriptingHost>
 {
 	DispatchWrapper_iScriptingHost(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -23704,7 +23704,7 @@ static const ni::sMethodDef* Methods_iStringTokenizer[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iStringTokenizer : public ni::cIUnknownImpl<ni::iStringTokenizer,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iStringTokenizer : public ni::ImplAggregate<ni::iStringTokenizer>
 {
 	DispatchWrapper_iStringTokenizer(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;
@@ -24276,7 +24276,7 @@ static const ni::sMethodDef* Methods_iXmlParserSink[] = {
 };
 
 //// Interface dispatch wrapper /////////////////////////////
-struct niHidden DispatchWrapper_iXmlParserSink : public ni::cIUnknownImpl<ni::iXmlParserSink,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount>
+struct niHidden DispatchWrapper_iXmlParserSink : public ni::ImplAggregate<ni::iXmlParserSink>
 {
 	DispatchWrapper_iXmlParserSink(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

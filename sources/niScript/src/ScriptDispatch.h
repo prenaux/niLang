@@ -8,7 +8,7 @@
 // cScriptDispatch declaration.
 
 //! Script engine iDispatch implementation.
-class cScriptDispatch : public cIUnknownImpl<iDispatch,eIUnknownImplFlags_Aggregatable|eIUnknownImplFlags_NoRefCount>
+class cScriptDispatch : public ImplAggregate<iDispatch>
 {
   niBeginClass(cScriptDispatch);
 

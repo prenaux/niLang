@@ -973,7 +973,7 @@ static const ni::sEnumDef Enum_</xsl:text><xsl:value-of select="@name"/><xsl:tex
 
 <!-- ************************************************************ -->
 	<xsl:template name="get_dispatch_wrapper">
-<xsl:text>struct niHidden DispatchWrapper_</xsl:text><xsl:value-of select="@name"/><xsl:text> : public ni::cIUnknownImpl&lt;</xsl:text><xsl:value-of select="../@name"/><xsl:text>::</xsl:text><xsl:value-of select="@name"/><xsl:text>,ni::eIUnknownImplFlags_Aggregatable|ni::eIUnknownImplFlags_NoRefCount&gt;
+<xsl:text>struct niHidden DispatchWrapper_</xsl:text><xsl:value-of select="@name"/><xsl:text> : public ni::ImplAggregate&lt;</xsl:text><xsl:value-of select="../@name"/><xsl:text>::</xsl:text><xsl:value-of select="@name"/><xsl:text>&gt;
 {
 	DispatchWrapper_</xsl:text><xsl:value-of select="@name"/><xsl:text>(ni::iDispatch* apDispatch) {
     mprotected_pAggregateParent = apDispatch;

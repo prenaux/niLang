@@ -81,7 +81,6 @@ enum eIUnknownImplFlags
 {
   eIUnknownImplFlags_NoMemoryAllocator = niBit(0),
   eIUnknownImplFlags_NoRefCount = niBit(1),
-  eIUnknownImplFlags_Aggregatable = niBit(2),
   eIUnknownImplFlags_DontInherit1 = niBit(3),
   eIUnknownImplFlags_DontInherit2 = niBit(4),
   eIUnknownImplFlags_DontInherit3 = niBit(5),
@@ -321,12 +320,8 @@ template <typename T0,
           typename T3 = cUnknown3,
           typename T4 = cUnknown4>
 class cIUnknownImpl : public niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_NoRefCount),
-                                          typename niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_Aggregatable),
-                                                                MetaImplementInherit(AggregateOnly),
-                                                                MetaImplementInherit(NoRefCount)),
-                                          typename niMetaSelect(niFlagIs(FLAGS,eIUnknownImplFlags_Aggregatable),
-                                                                MetaImplementInherit(Aggregatable),
-                                                                MetaImplementInherit(RefCount)))
+                                          MetaImplementInherit(NoRefCount),
+                                          MetaImplementInherit(RefCount))
 {
 public:
   typedef cIUnknownImpl<T0,FLAGS,T1,T2,T3,T4> BaseImpl;
@@ -423,31 +418,6 @@ void __stdcall cIUnknownImpl<T0,FLAGS,T1,T2,T3,T4>::ListInterfaces(iMutableColle
 /**@}*/
 } // end of ni
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Macro-based IUnknown implementation.
-namespace ni {
-
-//! Local, no ref count, no delete this
-#define niIUnknownImpl_Local(I0)                                        \
-  virtual tBool __stdcall IsOK() const niImpl { return ni::eTrue; }            \
-  virtual void __stdcall Invalidate() niImpl {}                         \
-  virtual tI32 __stdcall AddRef()  niImpl { return 0; }                \
-  virtual tI32 __stdcall Release() niImpl { return 0; }                \
-  virtual tI32 __stdcall SetNumRefs(tI32 anNumRefs) niImpl { niUnused(anNumRefs); return 0; } \
-  virtual tI32 __stdcall GetNumRefs() const niImpl { return 0; }        \
-  virtual void __stdcall DeleteThis() niImpl {}                         \
-  virtual void __stdcall ListInterfaces(ni::iMutableCollection* apLst, ni::tU32) const niImpl { \
-    apLst->Add(niGetInterfaceUUID(I0));                                 \
-    apLst->Add(niGetInterfaceUUID(ni::iUnknown));                       \
-  }                                                                     \
-  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) niImpl { \
-    if (aIID == niGetInterfaceUUID(I0)) return static_cast<I0*>(this);  \
-    if (aIID == niGetInterfaceUUID(ni::iUnknown)) return this;          \
-    return NULL;                                                        \
-  }
-
-} // end of ni
-
 //--------------------------------------------------------------------------------------------
 //
 //  iUnknown Impl
@@ -460,28 +430,6 @@ namespace ni {
 /** \addtogroup niLang_Utils
  * @{
  */
-
-//
-// cf: https://stackoverflow.com/questions/12701469/why-is-the-empty-base-class-optimization-ebo-is-not-working-in-msvc
-//
-// This is a longstanding bug in the Visual C++ compiler. When a class derives
-// from multiple empty base classes, only the initial empty base class will be
-// optimized using the empty base optimization (EBO).
-//
-// cf: https://devblogs.microsoft.com/cppblog/optimizing-the-layout-of-empty-base-classes-in-vs2015-update-2-3/
-//
-// There is a fix since VS2015 Update 2. We check for VS 2017 (_MSC_VER ==
-// 1910) because VS2015 Update 2 uses the same _MSC_VER (1900) as the base
-// VS2015 RTM release that doesnt have the fix. That and they are additional
-// caveats until VS2015 Update 3.
-//
-#if (defined(_MSC_VER) && _MSC_VER >= 1910)
-#define niEmptyBases __declspec(empty_bases)
-#else
-#define niEmptyBases
-#endif
-
-niExportFunc(tIntPtr) ni_object_get_thread_last_allocated_ptr();
 
 struct  iHString;
 struct  iUnknown;
@@ -724,9 +672,9 @@ template <typename T0,
           typename T2 = cUnknown2,
           typename T3 = cUnknown3,
           typename T4 = cUnknown4>
-struct niEmptyBases ImplRefCounted : public niImpl_Inherit(HeapAlloc)
+struct niEmptyBases ImplRC : public niImpl_Inherit(HeapAlloc)
 {
-  niImpl_DefineBaseTypes(ImplRefCounted);
+  niImpl_DefineBaseTypes(ImplRC);
   niImpl_QueryInterface();
   niImpl_Base_DeleteThis();
 
@@ -745,7 +693,7 @@ struct niEmptyBases ImplRefCounted : public niImpl_Inherit(HeapAlloc)
 
   SYNC_INT_TYPE mprotected_nNumRefs;
 } niAligned(4) niPacked(4);
-static_assert(sizeof(ni::ImplRefCounted<iUnknown>) == sizeof(void*)+sizeof(SYNC_INT_TYPE));
+static_assert(sizeof(ni::ImplRC<iUnknown>) == sizeof(void*)+sizeof(SYNC_INT_TYPE));
 
 //! Implements aggregation policy.
 template <typename T0,

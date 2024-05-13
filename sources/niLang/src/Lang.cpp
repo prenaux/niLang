@@ -296,8 +296,16 @@ tI32 __stdcall cLang::StartPath(const achar* aaszURL)
       }
     }
     cPath path(strURL.Chars());
-    tIntPtr ret = (tIntPtr)ShellExecute(NULL,"open",path.GetPath().Chars(),NULL,
-                                        bIsURL?NULL:path.GetDirectory().Chars(),SW_SHOWNORMAL);
+    ni::Windows::UTF16Buffer wPath, wDir;
+    niWin32_UTF8ToUTF16(wPath,path.GetPath().Chars());
+    niWin32_UTF8ToUTF16(wDir,path.GetDirectory().Chars());
+
+    tIntPtr ret = (tIntPtr)ShellExecuteW(NULL,
+                                         L"open",
+                                         wPath.begin(),
+                                         NULL,
+                                         bIsURL?NULL:wDir.begin(),
+                                         SW_SHOWNORMAL);
     switch (ret) {
       case 0: niError(niFmt("Start[%s]\nThe operating system is out of memory or resources.",path.GetPath().Chars())); return -1;
       case ERROR_FILE_NOT_FOUND: niError(niFmt("Start[%s]\nThe specified file was not found.",path.GetPath().Chars())); return -1;

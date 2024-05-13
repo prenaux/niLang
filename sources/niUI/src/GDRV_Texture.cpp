@@ -174,6 +174,8 @@ iTexture* __stdcall cGraphics::CreateTextureFromBitmap(iHString* ahspName, iBitm
 
 ///////////////////////////////////////////////
 iTexture* __stdcall cGraphics::CreateTextureFromRes(iHString* ahspRes, iHString* ahspBasePath, tTextureFlags aFlags) {
+  if (HStringIsEmpty(ahspRes)) return NULL;
+
   Ptr<iFile> ptrFP;
 
   Ptr<iTexture> ptrTex = GetTextureFromName(ahspRes);

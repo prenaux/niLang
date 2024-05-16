@@ -5504,6 +5504,169 @@ tBool DoEvaluate(iExpressionContext* apContext)
 EndOp()
 
 
+static inline tU32 __getDaysInMonth(tU32 month, tU32 year) {
+  switch (month) {
+    case 1:  // January
+    case 3:  // March
+    case 5:  // May
+    case 7:  // July
+    case 8:  // August
+    case 10: // October
+    case 12: // December
+      return 31;
+    case 4:  // April
+    case 6:  // June
+    case 9:  // September
+    case 11: // November
+      return 30;
+    case 2: // February
+      // Check for leap year
+      if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        return 29; // Leap year
+      } else {
+        return 28; // Non-leap year
+      }
+    default:
+      return eInvalidHandle; // Invalid month
+  }
+}
+
+BeginOpVF(ArrRangeI, 3)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  tI32 start = mvOperands[0].GetVariable()->GetFloat();
+  tI32 end = mvOperands[1].GetVariable()->GetFloat();
+  tI32 step = mvOperands[2].GetVariable()->GetFloat();
+
+  if (start > end) std::swap(start, end);
+
+  Ptr<iDataTable> dt = CreateDataTable("array");
+  dt->SetBool("__isArray", true);
+  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+  tU32 count = 0;
+  for (tI32 f = start; f <= end; f += step) {
+    if (count >= 100) {
+      break;
+    }
+    stack->PushNew("jnum");
+    stack->SetFloat("v", f);
+    stack->Pop();
+
+    ++count;
+  }
+
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
+
+BeginOpVF(ArrMonthDays,eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  Ptr<iTime> t = ni::GetLang()->GetCurrentTime()->Clone();
+  tU32 month = t->GetMonth();
+  tU32 year = t->GetYear();
+  if (mvOperands.size() > 0) month = mvOperands[0].GetVariable()->GetFloat();
+  if (mvOperands.size() > 1) year = mvOperands[1].GetVariable()->GetFloat();
+
+  tU32 num = __getDaysInMonth(month,year);
+
+  Ptr<iDataTable> dt = CreateDataTable("month");
+  dt->SetBool("__isArray", true);
+  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+  for (tU32 i = 1; i <= num; ++i) {
+    stack->PushNew("jnum");
+    stack->SetFloat("v", i);
+    stack->Pop();
+  }
+
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
+static const ni::achar* _kaszWeekdays[][7] = {
+  {"Su","Mo","Tu","We","Th","Fr","Sa"},
+  {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"},
+  {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"},
+  {"日","一","二","三","四","五","六"},
+  {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"}
+};
+
+BeginOpVF(ArrWeekDays, eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  tU32 type = 0;
+  if (mvOperands.size() > 0) type = mvOperands[0].GetVariable()->GetFloat();
+  type = type > 4 ? 0 : type;
+
+  Ptr<iDataTable> dt = CreateDataTable("weekdays");
+  dt->SetBool("__isArray", true);
+  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+  for (tU32 i = 0; i < 7; ++i) {
+    stack->PushNew("jstr");
+    stack->SetString("v", _kaszWeekdays[type][i]);
+    stack->Pop();
+  }
+
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
+static const ni::achar* _kaszMonth[][12] = {
+  {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
+  {"January","February","March","April","May","June","July","August","September","October","November","December"},
+  {"一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"},
+};
+
+BeginOpVF(ArrMonths, eInvalidHandle)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  tU32 type = 0;
+  if (mvOperands.size() > 0) type = mvOperands[0].GetVariable()->GetFloat();
+  type = type > 4 ? 0 : type;
+
+  Ptr<iDataTable> dt = CreateDataTable("months");
+  dt->SetBool("__isArray", true);
+  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+  for (tU32 i = 0; i < 7; ++i) {
+    stack->PushNew("jstr");
+    stack->SetString("v", _kaszMonth[type][i]);
+    stack->Pop();
+  }
+
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
+
 #undef DoSwitch
 #undef DoSwitch1
 #undef DoSwitch2
@@ -5985,6 +6148,13 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(DTToJson);
   AddOp(DTFromJson);
   AddOp(DTFromPath);
+
+  AddOp(ArrRangeI);
+  AddOp(ArrMonthDays);
+  AddOp(ArrWeekDays);
+  AddOp(ArrMonths);
+
+
 
   return eTrue;
 }

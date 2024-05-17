@@ -5583,17 +5583,18 @@ tBool DoEvaluate(iExpressionContext*)
   if (mvOperands.size() > 1) year = mvOperands[1].GetVariable()->GetFloat();
 
   tU32 num = __getDaysInMonth(month,year);
-
-  Ptr<iDataTable> dt = CreateDataTable("month");
-  dt->SetBool("__isArray", true);
-  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
-  for (tU32 i = 1; i <= num; ++i) {
-    stack->PushNew("jnum");
-    stack->SetFloat("v", i);
-    stack->Pop();
+  if (num != eInvalidHandle) {
+    Ptr<iDataTable> dt = CreateDataTable("month");
+    dt->SetBool("__isArray", true);
+    Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+    for (tU32 i = 1; i <= num; ++i) {
+      stack->PushNew("jnum");
+      stack->SetFloat("v", i);
+      stack->Pop();
+    }
+    mptrResult->SetIUnknown(dt);
   }
 
-  mptrResult->SetIUnknown(dt);
   return eTrue;
 }
 EndOp()
@@ -5650,12 +5651,12 @@ tBool DoEvaluate(iExpressionContext*)
 {
   tU32 type = 0;
   if (mvOperands.size() > 0) type = mvOperands[0].GetVariable()->GetFloat();
-  type = type > 4 ? 0 : type;
+  type = type > 2 ? 0 : type;
 
   Ptr<iDataTable> dt = CreateDataTable("months");
   dt->SetBool("__isArray", true);
   Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
-  for (tU32 i = 0; i < 7; ++i) {
+  for (tU32 i = 0; i < 12; ++i) {
     stack->PushNew("jstr");
     stack->SetString("v", _kaszMonth[type][i]);
     stack->Pop();

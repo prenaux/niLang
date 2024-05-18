@@ -19,6 +19,7 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   struct sColumn {
     tHStringPtr hspName;
     tHStringPtr hspKey;
+    tHStringPtr hspWidgetExpr;
     tU32        nSetSize;
     Ptr<iFont>  ptrFont = NULL;
   };
@@ -174,6 +175,9 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   tF32 mfItemHeight;
   tU32 mnInputSelected;
   cString mstrItemsExpr;
+  tI32 mnAutoScroll;
+
+  Ptr<ni::iDampedSpringPosition1> mpSpringScroll;
 
   void InitSkin();
   struct sSkin {

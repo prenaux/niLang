@@ -49,6 +49,11 @@ cWidgetListBox::cWidgetListBox(iWidget *apWidget)
 {
   ZeroMembers();
   mpWidget = apWidget;
+  mpSpringScroll = mpWidget->GetGraphics()->CreateDampedSpringPosition1(100, 0);
+  mpSpringScroll->SetKs(500);
+  mpSpringScroll->SetDampingRatio(1);
+  mpSpringScroll->SetEndThreshold(0.01);
+
   // vertical scroll bar
   mptrVtScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_DontSerialize|eWidgetStyle_NCRelative);
   QPtr<iWidgetScrollBar>(mptrVtScroll)->SetScrollPosition(0);
@@ -525,6 +530,10 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       UpdateLayout();
       return eFalse;
 
+    case eUIMessage_SinkDetached:
+      mpWidget->SetTimer(mnAutoScroll,-1);
+      return eFalse;
+
     case eUIMessage_NCSize:
       DoUpdateLayout(eTrue);
       break;
@@ -662,6 +671,32 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       }
       break;
 
+    case eUIMessage_Timer:  {
+      tU32 id = varParam0.mU32;
+      if (id == mnAutoScroll && !mpWidget->GetAbsoluteRect().Intersect(mpWidget->GetUIContext()->GetCursorPosition())) {
+        QPtr<iWidgetScrollBar> ptrVSB = mptrVtScroll.ptr();
+        if (ptrVSB.IsOK() && mptrVtScroll->GetVisible()) {
+          tF32 scrollpos = Floor(ptrVSB->GetScrollPosition());
+          tF32 pagesize = ptrVSB->GetPageSize();
+          tU32 itemSize  = mvItems.size();
+
+          if (itemSize <= pagesize) {
+            break;
+          }
+
+          tF32 k = Ceil(pagesize) - pagesize;
+          scrollpos += k;
+
+          ++scrollpos;
+          if (scrollpos > ptrVSB->GetScrollRange().y) {
+            scrollpos = 0;
+          }
+          mpSpringScroll->SetIdealPosition(scrollpos);
+        }
+      }
+      break;
+    }
+
     case eUIMessage_ExpressionUpdate: {
       QPtr<iExpressionContext> ctx(varParam0);
       if (!ctx.IsOK()) return eTrue;
@@ -675,28 +710,72 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         QPtr<iDataTable> dt = v->GetIUnknown();
         if (!dt.IsOK()) return eFalse;
 
+        Ptr<iExpressionVariable> ItemText = ctx->CreateVariable("ItemText",eExpressionVariableType_Float,0);
+        ctx->AddVariable(ItemText);
+
+        Ptr<iExpressionVariable> ItemColumn = ctx->CreateVariable("ItemColumn",eExpressionVariableType_Float,0);
+        ctx->AddVariable(ItemColumn);
+
+        Ptr<iExpressionVariable> ItemRow = ctx->CreateVariable("ItemRow",eExpressionVariableType_Float,0);
+        ctx->AddVariable(ItemRow);
 
         tU32 numColumns = GetNumColumns();
         niLoop(i, dt->GetNumChildren()) {
           Ptr<iDataTable> item = dt->GetChildFromIndex(i);
           tU32 itemId = AddItem(item->GetName());
-          tBool isArray = item->GetBoolDefault("__isArray", false);
+          ItemRow->SetFloat(itemId);
 
+          tBool isArray = item->GetBoolDefault("__isArray", false);
           niLoop(j, numColumns) {
+            ItemColumn->SetFloat(j);
+
+            cString text;
             if (isArray) {
               Ptr<iDataTable> itemVar = item->GetChildFromIndex(j);
               if (itemVar.IsOK()) {
-                SetItemText(j, itemId, itemVar->GetString("v").Chars());
+                text = itemVar->GetString("v").Chars();
               }
             }
             else {
-              cString text = item->GetString(HStringGetStringEmpty(mvColumns[j].hspKey));
+              text = item->GetString(HStringGetStringEmpty(mvColumns[j].hspKey));
+            }
+            ItemText->SetString(text);
+
+            tHStringPtr widgetExpr = mvColumns[j].hspWidgetExpr;
+            if (!HStringIsEmpty(widgetExpr)) {
+              Ptr<iExpressionVariable> vw = ctx->Eval(HStringGetStringEmpty(widgetExpr));
+              if (vw.IsOK() && vw->GetString().IsNotEmpty()) {
+                Ptr<iWidget> tmpWidget = mpWidget->FindWidget(_H(vw->GetString()));
+                if (tmpWidget.IsOK()) {
+                  Ptr<iDataTable> wDT = CreateDataTable("Widget");
+                  mpWidget->GetUIContext()->SerializeWidget(
+                    tmpWidget,
+                    wDT,
+                    eWidgetSerializeFlags_Write|ni::eWidgetSerializeFlags_Children,
+                    NULL);
+
+                  Ptr<iWidget> itemWidget = mpWidget->GetUIContext()->CreateWidgetFromDataTable(
+                    wDT,mpWidget,_H(niFmt("%s_%d_%d",mpWidget->GetID(), j, itemId)), NULL);
+                  itemWidget->SetStyle(itemWidget->GetStyle() | eWidgetStyle_ItemOwned | eWidgetStyle_DontSerialize);
+
+                  Ptr<iWidget> w = mvItems[itemId]->vData[j].ptrWidget;
+                  if (w.IsOK()) {
+                    w->Invalidate();
+                  }
+                  mvItems[itemId]->vData[j].ptrWidget = itemWidget;
+
+                  itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, varParam0);
+                  SetItemWidget(j, itemId, itemWidget);
+                }
+              }
+            }
+            else {
               SetItemText(j, itemId, text.Chars());
             }
           }
         }
       }
-      break;
+      return eTrue;
     }
 
     case eUIMessage_SerializeWidget: {
@@ -707,6 +786,10 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       if (nFlags & eWidgetSerializeFlags_Read) {
         mfItemHeight = ptrDT->GetFloatDefault("item_height", mfItemHeight);
         mstrItemsExpr = ptrDT->GetString("item_expr");
+
+        mpWidget->SetTimer(mnAutoScroll,-1);
+        mnAutoScroll = ptrDT->GetIntDefault("auto_scroll", -1);
+        mpWidget->SetTimer(mnAutoScroll, mnAutoScroll);
 
         Ptr<iDataTable> columns = ptrDT->GetChild("Columns");
         if (columns.IsOK()) {
@@ -722,7 +805,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
           niLoop(i, num) {
             Ptr<iDataTable> column = columns->GetChildFromIndex(i);
             SetColumn(i, column->GetString("header").Chars(), column->GetInt("width"));
-
+            mvColumns[i].hspWidgetExpr = column->GetHString("widget_expr");
             mvColumns[i].hspKey = column->GetHString("key");
             Ptr<iDataTable> f = column->GetChild("Font");
             if (f.IsOK()) {
@@ -735,8 +818,11 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         tBool hasMetadata = niFlagIs(nFlags,eWidgetSerializeFlags_PropertyBox);
         ptrDT->SetFloat("item_height", GetItemHeight());
         ptrDT->SetString("item_expr", mstrItemsExpr.Chars());
+        ptrDT->SetInt("auto_scroll", mnAutoScroll);
         if (hasMetadata) {
           ptrDT->SetMetadata("item_height", _H("range[min=0,max=10000,step=1]"));
+          ptrDT->SetMetadata("item_expr", _H("expr"));
+          ptrDT->SetMetadata("auto_scroll", _H("int"));
         }
 
         Ptr<iDataTable> columns = CreateDataTable("Columns");
@@ -746,9 +832,11 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
           column->SetString("header", GetColumnName(i));
           column->SetHString("key", mvColumns[i].hspKey);
           column->SetInt("width", GetColumnWidth(i));
+          column->SetHString("widget_expr", mvColumns[i].hspWidgetExpr);
 
           if (hasMetadata) {
             column->SetMetadata(_A("width"),_H("range[min=4,max=10000,step=1]"));
+            column->SetMetadata("widget_expr", _H("expr"));
           }
 
           Ptr<iFont> font = mvColumns[i].ptrFont;
@@ -797,26 +885,38 @@ void cWidgetListBox::DoUpdateLayout(tBool abForce)
     mInternalFlags.bShouldUpdateLayout = eFalse;
   }
 
+  QPtr<iWidgetScrollBar> ptrVSB = mptrVtScroll.ptr();
+  if (ptrVSB.IsOK() && mptrVtScroll->GetVisible()) {
+    if (mnAutoScroll > 0 && !mpWidget->GetAbsoluteRect().Intersect(mpWidget->GetUIContext()->GetCursorPosition())) {
+      mpSpringScroll->UpdatePosition(GetLang()->GetFrameTime());
+      ptrVSB->SetScrollPosition(mpSpringScroll->GetCurrentPosition());
+    }
+    else {
+      mpSpringScroll->SetCurrentPosition(ptrVSB->GetScrollPosition());
+      mpSpringScroll->SetIdealPosition(ptrVSB->GetScrollPosition());
+    }
+  }
+
   if (mInternalFlags.bShouldAutoScroll) {
     QPtr<iWidgetScrollBar> ptrVSB = mptrVtScroll.ptr();
     if (ptrVSB.IsOK() && mptrVtScroll->GetVisible()) {
       tU32 scrollpos = (tU32)ptrVSB->GetScrollPosition();
       tU32 pagesize = (tU32)ptrVSB->GetPageSize();
-      tU32 destPos = mvSelection.empty() ? mvItems.size()-1 : mvSelection.back();
       // niDebugFmt(("... scrollpos: %g, pagesize: %g, destPos: %g, items: %g",
                   // scrollpos, pagesize, destPos, mvItems.size()));
-      if (pagesize <= 1) {
-        ptrVSB->SetScrollPosition(destPos);
-        // niDebugFmt(("... smallpage"));
-      }
-      else if (destPos >= scrollpos &&
-               destPos < (scrollpos+pagesize-1)) {
-        // niDebugFmt(("... inview"));
+
+      if (mvSelection.empty()) {
+        ptrVSB->SetScrollPosition(ptrVSB->GetScrollRange().y);
       }
       else {
-        niDebugFmt(("... tomiddle"));
-        const tI32 midPageOffset = ni::Max(0,(pagesize/2) - 1);
-        ptrVSB->SetScrollPosition((tF32)destPos - midPageOffset);
+        tU32 dest = mvSelection.back();
+        if (scrollpos < dest && scrollpos + pagesize > dest + 1) {
+          // already inside;
+        }
+        else  {
+          const tI32 midPageOffset = ni::Max(0,(pagesize/2) - 1);
+          ptrVSB->SetScrollPosition((tF32)dest - midPageOffset);
+        }
       }
     }
     QPtr<iWidgetScrollBar> ptrHSB = mptrHzScroll.ptr();
@@ -1067,9 +1167,10 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
     mfRealW -= vtScrollBarW;
     mptrVtScroll->SetVisible(eTrue);
     mptrVtScroll->SetEnabled(eTrue);
-    auto nItemsPerPage = _ComputeItemsPerPage();
-    ptrVSB->SetPageSize((tF32)nItemsPerPage);
-    ptrVSB->SetScrollRange(Vec2<tF32>(0,(tF32)(1+mvItems.size()-nItemsPerPage)));
+
+    const tF32 pageSize = mfRealH/GetItemHeight();
+    ptrVSB->SetPageSize(pageSize);
+    ptrVSB->SetScrollRange(Vec2<tF32>(0,(tF32)mvItems.size() - pageSize));
     tF32 vertY = borders.y;
     if (GetNumColumns() && (mpWidget->GetStyle()&eWidgetListBoxStyle_HasHeader)) {
       vertY += mrectHeader.GetBottom();
@@ -1219,7 +1320,7 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
         apCanvas->BlitText(
           pFont, textRect,
           ((numCols > 1) ? eFontFormatFlags_ClipH : 0)|
-          eFontFormatFlags_CenterV, text);
+          eFontFormatFlags_CenterV|eFontFormatFlags_NoUnitSnap, text);
       }
 
       pFont->SetColor(wasFontColor);

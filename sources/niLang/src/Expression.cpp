@@ -5487,15 +5487,15 @@ tBool SetupEvaluation(iExpressionContext* apContext)
 tBool DoEvaluate(iExpressionContext* apContext)
 {
   cPath path = mvOperands[0].GetVariable()->GetString();
-  Ptr<iFile> fp = ni::GetLang()->URLOpen(path.Chars());
+  Ptr<iFile> fp = ni::GetLang()->URLOpen(path.GetPath().Chars());
   if (!fp.IsOK()) {
-    EXPRESSION_TRACE("DTFromPath(): operation, path not found.");
+    EXPRESSION_TRACE(niFmt("DTFromPath(): operation, path [%s] not found.", path.GetPath()));
     return eFalse;
   }
 
   Ptr<iDataTable> dt = CreateDataTable();
   if (!ni::GetLang()->SerializeDataTable(path.GetExtension().Chars(),eSerializeMode_Read,dt,fp)) {
-    EXPRESSION_TRACE("DTFromPath(): operation, path is not a valid datatable.");
+    EXPRESSION_TRACE(niFmt("DTFromPath(): operation, path [%s] is not a valid datatable.", path.GetPath()));
     return eFalse;
   }
   mptrResult->SetIUnknown(dt);
@@ -5503,33 +5503,89 @@ tBool DoEvaluate(iExpressionContext* apContext)
 }
 EndOp()
 
-
-static inline tU32 __getDaysInMonth(tU32 month, tU32 year) {
-  switch (month) {
-    case 1:  // January
-    case 3:  // March
-    case 5:  // May
-    case 7:  // July
-    case 8:  // August
-    case 10: // October
-    case 12: // December
-      return 31;
-    case 4:  // April
-    case 6:  // June
-    case 9:  // September
-    case 11: // November
-      return 30;
-    case 2: // February
-      // Check for leap year
-      if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
-        return 29; // Leap year
-      } else {
-        return 28; // Non-leap year
-      }
-    default:
-      return eInvalidHandle; // Invalid month
-  }
+BeginOpVF(ArrSum, 1)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
 }
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK() && dt->GetNumChildren() > 0) {
+    tF64 ret = 0;
+    niLoop(i, dt->GetNumChildren()) {
+      ret += dt->GetChildFromIndex(i)->GetFloat("v");
+    }
+    mptrResult->SetFloat(ret);
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrAvg, 1)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK() && dt->GetNumChildren() > 0) {
+    tF64 ret = 0;
+    niLoop(i, dt->GetNumChildren()) {
+      ret += dt->GetChildFromIndex(i)->GetFloat("v");
+    }
+    mptrResult->SetFloat(ret / dt->GetNumChildren());
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrMax, 1)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK() && dt->GetNumChildren() > 0) {
+    tF64 ret = dt->GetChildFromIndex(0)->GetFloat("v");
+    niLoop(i, dt->GetNumChildren()) {
+      ret = Max(dt->GetChildFromIndex(i)->GetFloat("v"), ret);
+    }
+    mptrResult->SetFloat(ret);
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrMin, 1)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_Float);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK() && dt->GetNumChildren() > 0) {
+    tF64 ret = dt->GetChildFromIndex(0)->GetFloat("v");
+    niLoop(i, dt->GetNumChildren()) {
+      ret = Min(dt->GetChildFromIndex(i)->GetFloat("v"), ret);
+    }
+    mptrResult->SetFloat(ret);
+  }
+  return eTrue;
+}
+EndOp()
 
 BeginOpVF(ArrRangeI, 3)
 tBool SetupEvaluation(iExpressionContext*)
@@ -5566,6 +5622,32 @@ tBool DoEvaluate(iExpressionContext*)
 }
 EndOp()
 
+static inline tU32 __getDaysInMonth(tU32 month, tU32 year) {
+  switch (month) {
+    case 1:  // January
+    case 3:  // March
+    case 5:  // May
+    case 7:  // July
+    case 8:  // August
+    case 10: // October
+    case 12: // December
+      return 31;
+    case 4:  // April
+    case 6:  // June
+    case 9:  // September
+    case 11: // November
+      return 30;
+    case 2: // February
+      // Check for leap year
+      if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        return 29; // Leap year
+      } else {
+        return 28; // Non-leap year
+      }
+    default:
+      return eInvalidHandle; // Invalid month
+  }
+}
 
 BeginOpVF(ArrMonthDays,eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext*)
@@ -6154,8 +6236,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(ArrMonthDays);
   AddOp(ArrWeekDays);
   AddOp(ArrMonths);
-
-
+  AddOp(ArrSum);
+  AddOp(ArrAvg);
+  AddOp(ArrMax);
+  AddOp(ArrMin);
 
   return eTrue;
 }

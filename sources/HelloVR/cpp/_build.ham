@@ -1,0 +1,21 @@
+if [ SubDirOnce TOP HelloVR cpp ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTool HelloVR_cpp : 1.0.0 ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+hamToolsetLibs openxr_cppm : ham ;
+
+if $(WINDOWS) = 1 {
+  TargetLinkLibs $(PKGTARGET) : advapi32.lib ;
+}
+
+if ! $(EMBEDDED) =  1 {
+  niImportModuleDll niScript ;
+}
+niImportModuleLibs niAppLib ;
+
+SRC = [ tkPkgSrc ] ;
+
+runInDir HelloVR_cpp ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : data : $(CHK_SOURCES) ] ;

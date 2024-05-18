@@ -358,11 +358,13 @@ tBool cButtonWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varPa
           nIndex = ptrDT->GetPropertyIndex(_A("icon_path"));
           if (nIndex != eInvalidHandle) {
             tHStringPtr path = _H(ptrDT->GetStringFromIndex(nIndex));
-            Ptr<iOverlay> o = mpWidget->GetUIContext()->GetGraphics()->CreateOverlayResource(path);
-            if (o.IsOK()) {
-              o->SetBlendMode(eBlendMode_Translucent);
-              o->SetFiltering(eTrue);
-              this->SetIcon(o);
+            if (!HStringIsEmpty(path)) {
+              Ptr<iOverlay> o = mpWidget->GetUIContext()->GetGraphics()->CreateOverlayResource(path);
+              if (o.IsOK()) {
+                o->SetBlendMode(eBlendMode_Translucent);
+                o->SetFiltering(eTrue);
+                this->SetIcon(o);
+              }
             }
             mhspIconPath = path;
           }

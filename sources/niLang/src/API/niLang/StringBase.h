@@ -47,7 +47,7 @@ class cString
     clear();
   }
   cString(const cString& str) STR_INIT  { *this = str; }
-  cString(const char* aszStr, int aLen) STR_INIT {
+  cString(const char* aszStr, tSize aLen) STR_INIT {
     if (aLen < 0) {
       Set(aszStr);
     }
@@ -64,9 +64,9 @@ class cString
   cString(const StrCharIt& aIt) STR_INIT { Set(aIt); }
   explicit cString(const tUUID& obj) STR_INIT { Set(obj); }
   explicit cString(const iToString* obj) STR_INIT { Set(obj); }
-  explicit cString(const tF64* pSrc, int nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
-  explicit cString(const tF32* pSrc, int nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
-  explicit cString(const tI32* pSrc, int nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
+  explicit cString(const tF64* pSrc, tSize nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
+  explicit cString(const tF32* pSrc, tSize nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
+  explicit cString(const tI32* pSrc, tSize nNum, const achar* uszSep) STR_INIT { Set(pSrc,nNum,uszSep); }
   template<typename TF> explicit
   cString(const sVec2<TF>& obj, const achar* aszPrefix = NULL) STR_INIT { Set(obj,aszPrefix); }
   template<typename TF> explicit
@@ -726,9 +726,9 @@ class cString
   tI64  LongLong()          const;  // return the long long in the string
   tU64  ULongLong()         const;  // return the unsigned long long in the string
   tBool Bool(tBool bDefault = eFalse) const;  // return a tBool (1/0 or eTrue/eFalse) in the string
-  tI32  NumberArray(tF64* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
-  tI32  NumberArray(tF32* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
-  tI32  NumberArray(tI32* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
+  tI32  NumberArray(tF64* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
+  tI32  NumberArray(tF32* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
+  tI32  NumberArray(tI32* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const;
   tU32  FourCC()              const;
   tU32  Color()           const;
   tUUID UUID()                        const;
@@ -771,15 +771,15 @@ class cString
   const achar* Set(tF32 dValue);
   const achar* Set(tF64 dValue);
   const achar* Set(tBool bValue);
-  const achar* Set(const tF64* pSrc, int nNum, const achar* uszSeparator);
-  const achar* Set(const tF32* pSrc, int nNum, const achar* uszSeparator);
-  const achar* Set(const tI32* pSrc, int nNum, const achar* uszSeparator);
+  const achar* Set(const tF64* pSrc, tSize nNum, const achar* uszSeparator);
+  const achar* Set(const tF32* pSrc, tSize nNum, const achar* uszSeparator);
+  const achar* Set(const tI32* pSrc, tSize nNum, const achar* uszSeparator);
   const achar* Set(const cchar* pBegin, const cchar* pEnd);
   const achar* Set(const gchar* pBegin, const gchar* pEnd);
   const achar* Set(const xchar* pBegin, const xchar* pEnd);
-  const achar* Set(const cchar* pBegin, tU32 anCPCount) { return Set(pBegin,pBegin+anCPCount); }
-  const achar* Set(const gchar* pBegin, tU32 anCPCount) { return Set(pBegin,pBegin+anCPCount); }
-  const achar* Set(const xchar* pBegin, tU32 anCPCount) { return Set(pBegin,pBegin+anCPCount); }
+  const achar* Set(const cchar* pBegin, tSize anCPCount) { return Set(pBegin,pBegin+anCPCount); }
+  const achar* Set(const gchar* pBegin, tSize anCPCount) { return Set(pBegin,pBegin+anCPCount); }
+  const achar* Set(const xchar* pBegin, tSize anCPCount) { return Set(pBegin,pBegin+anCPCount); }
   const achar* Set(const cchar* pBegin) { return Set(pBegin,(tU32)StrCCPCount(pBegin)); }
   const achar* Set(const gchar* pBegin) { return Set(pBegin,(tU32)StrGCPCount(pBegin)); }
   const achar* Set(const xchar* pBegin) { return Set(pBegin,(tU32)StrXCPCount(pBegin)); }
@@ -1201,8 +1201,8 @@ inline const achar* cString::TrimRightEx(const achar* pszTargets)
 
   if (pszLast != NULL) {
     // truncate at left-most matching character
-    int iLast = int(pszLast-Chars());
-    *this = this->substr(0,iLast);
+    tSize iLast = pszLast-Chars();
+    *this = this->substr(0,(tU32)iLast); // TODO: Fix unsafe type truncation (tU32)iLast
   }
 
   return Chars();
@@ -1227,8 +1227,8 @@ inline const achar* cString::TrimLeftEx(const achar* pszTargets)
 
   if (psz != Chars()) {
     // fix up data and length
-    int iFirst = int(psz-Chars());
-    *this = this->substr(iFirst);
+    tSize iFirst = psz-Chars();
+    *this = this->substr((tI32)iFirst); // TODO: Fix unsafe type truncation (tI32)iFirst
   }
 
   return Chars();
@@ -1318,9 +1318,9 @@ inline tBool cString::Bool(tBool abDefault) const
 }
 
 ///////////////////////////////////////////////
-inline tI32 cString::NumberArray(tF64* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
+inline tI32 cString::NumberArray(tF64* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
 {
-  int dim = 0;
+  tSize dim = 0;
   cString current;
   const achar* p = Chars();
 
@@ -1354,9 +1354,9 @@ inline tI32 cString::NumberArray(tF64* pDest, int nNum, tBool bDotIsNumber, cons
 }
 
 ///////////////////////////////////////////////
-inline tI32 cString::NumberArray(tF32* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
+inline tI32 cString::NumberArray(tF32* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
 {
-  int dim = 0;
+  tSize dim = 0;
   cString current;
   const achar* p = Chars();
 
@@ -1387,9 +1387,9 @@ inline tI32 cString::NumberArray(tF32* pDest, int nNum, tBool bDotIsNumber, cons
 
 
 ///////////////////////////////////////////////
-inline tI32 cString::NumberArray(tI32* pDest, int nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
+inline tI32 cString::NumberArray(tI32* pDest, tSize nNum, tBool bDotIsNumber, const achar* aaszSkipToFirst) const
 {
-  int dim = 0;
+  tSize dim = 0;
   cString current;
   const achar* p = Chars();
 
@@ -1473,30 +1473,30 @@ inline const achar* cString::Set(tBool bValue) {
 }
 
 ///////////////////////////////////////////////
-inline const achar* cString::Set(const tF64* pSrc, int nNum, const achar* uszSeparator) {
+inline const achar* cString::Set(const tF64* pSrc, tSize nNum, const achar* uszSeparator) {
   cString buffer;
   Clear(nNum+nNum*4);
-  for (int i = 0; i < nNum; ++i) {
+  for (tSize i = 0; i < nNum; ++i) {
     *this += buffer.Set(pSrc[i]);
     if (uszSeparator && i < nNum-1)
       *this += uszSeparator;
   }
   return Chars();
 }
-inline const achar* cString::Set(const tF32* pSrc, int nNum, const achar* uszSeparator) {
+inline const achar* cString::Set(const tF32* pSrc, tSize nNum, const achar* uszSeparator) {
   cString buffer;
   Clear(nNum+nNum*4);
-  for (int i = 0; i < nNum; ++i) {
+  for (tSize i = 0; i < nNum; ++i) {
     *this += buffer.Set(pSrc[i]);
     if (uszSeparator && i < nNum-1)
       *this += uszSeparator;
   }
   return Chars();
 }
-inline const achar* cString::Set(const tI32* pSrc, int nNum, const achar* uszSeparator) {
+inline const achar* cString::Set(const tI32* pSrc, tSize nNum, const achar* uszSeparator) {
   cString buffer;
   Clear(nNum+nNum*4);
-  for (int i = 0; i < nNum; ++i) {
+  for (tSize i = 0; i < nNum; ++i) {
     *this += buffer.Set(pSrc[i]);
     if (uszSeparator && i < nNum-1)
       *this += uszSeparator;

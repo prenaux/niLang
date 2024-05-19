@@ -67,12 +67,12 @@ NI_DA_CMD = $(NI_DA_EXE) -e ;
 if $(DEBUG_TOOLS) = 1 {
   NI_CMD = $(NI_DA_CMD) ;
   NI_EXE = $(NI_DA_EXE) ;
-  NICGC_EXE = $(NICGC_DA_EXE) ;
+  NICGC_EXE ?= $(NICGC_DA_EXE) ;
 }
 else {
   NI_CMD = $(NI_RA_CMD) ;
   NI_EXE = $(NI_RA_EXE) ;
-  NICGC_EXE = $(NICGC_RA_EXE) ;
+  NICGC_EXE ?= $(NICGC_RA_EXE) ;
 }
 
 if $(DEBUG_TOOLS) = 1 {

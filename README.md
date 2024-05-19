@@ -61,6 +61,38 @@ simple-http-server
 open http://localhost:8123/niLang/bin/web-js/Test_niLang_ra.html
 ```
 
+# Build & edit shaders
+
+All shaders are precompiled in .cgo files which are binary dependencies of the libraries. Building shaders is an explicit build step because its really its own thing and most will not need to touch them. A lot of shaders can also take a long time to build.
+
+On Windows the shader compiler is enabled by default. On Linux & macOS it is disabled by default because it needs Wine to run which is a fairly big dependency.
+
+To enable the shader compiler set the envvar `SHADER_COMPILE=1` before importing the toolset. For example:
+```
+cd niLang ; export SHADER_COMPILE=1 ; . hat
+```
+
+To build the shaders build the shader target:
+```
+ham shaders
+````
+
+You can add the shader target before other targets to build the shaders first:
+```
+hamx :niLang shaders Run_HelloUI_cpp
+```
+
+You can build single shaders while iterating:
+```
+# Build all the texture sampling shaders
+ham niUI_shader_fixed_ps_base niUI_shader_fixed_ps_base_translucent Run_HelloUI_cpp
+```
+
+You can list the shader targets with:
+```
+ham-ls-targets | grep shader
+```
+
 # Tips
 
 ## Working on a UI testcase script

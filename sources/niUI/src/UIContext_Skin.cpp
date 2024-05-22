@@ -211,6 +211,7 @@ iFont* __stdcall cUIContext::FindSkinFont(iHString* ahspSkin, iHString* ahspClas
 
   if (!font.IsOK()) {
     font = mptrGraphics->LoadFont(ahspName);
+    font->SetSizeAndResolution(Vec2f(22,22), 64, GetContentsScale());
   }
 
   if (!font.IsOK()) {

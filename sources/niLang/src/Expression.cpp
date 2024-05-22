@@ -5524,6 +5524,44 @@ tBool DoEvaluate(iExpressionContext*)
 }
 EndOp()
 
+BeginOpVF(ArrAdd, 2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt0 = mvOperands[0].GetVariable()->GetIUnknown();
+  QPtr<iDataTable> dt1 = mvOperands[1].GetVariable()->GetIUnknown();
+  if (!dt0.IsOK() && !dt1.IsOK()) {
+    // return eTrue;
+  } else if (dt0.IsOK() && !dt1.IsOK()) {
+    mptrResult->SetIUnknown(dt0);
+  } else if (!dt0.IsOK() && dt1.IsOK()) {
+    mptrResult->SetIUnknown(dt1);
+  } else if (dt0.IsOK() && dt1.IsOK())  {
+    Ptr<iDataTable> dt = CreateDataTable("sum");
+    dt->SetBool("__isArray", true);
+    Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
+    tU32 n0 = dt0->GetNumChildren();
+    tU32 n1 = dt1->GetNumChildren();
+    tU32 num = Max(n0, n1);
+    niLoop(i, num) {
+      tF64 f0 = n0 > i ? dt0->GetChildFromIndex(i)->GetFloat("v") : 0;
+      tF64 f1 = n1 > i ? dt1->GetChildFromIndex(i)->GetFloat("v") : 0;
+      stack->PushNew("jnum");
+      stack->SetFloat("v", f0 + f1);
+      stack->Pop();
+    }
+    mptrResult->SetIUnknown(dt);
+  }
+  return eTrue;
+}
+EndOp()
+
+
 BeginOpVF(ArrAvg, 1)
 tBool SetupEvaluation(iExpressionContext*)
 {
@@ -6240,6 +6278,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(ArrAvg);
   AddOp(ArrMax);
   AddOp(ArrMin);
+  AddOp(ArrAdd);
 
   return eTrue;
 }

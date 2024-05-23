@@ -1255,7 +1255,13 @@ tBool cWidgetListBox::SelectItemByPos(const sVec2f& avAbsPos)
 ///////////////////////////////////////////////
 void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
 {
-  if (mvItems.empty()) return;
+  if (mvItems.empty()) {
+    Ptr<iOverlay> eImg = skin.emptyImage;
+    if (eImg.IsOK() && eImg != mpWidget->GetUIContext()->GetErrorOverlay()) {
+      apCanvas->BlitOverlay(mpWidget->GetClientRect(), eImg);
+    }
+    return;
+  }
   iFont *font = mpWidget->GetFont();
   const tF32 fh = (tF32)GetItemHeight();
   const tU32 numCols = mvColumns.size();
@@ -1467,6 +1473,7 @@ void cWidgetListBox::InitSkin()
   skin.arrowUp = mpWidget->FindSkinElement(NULL,NULL,_H("ArrowUp"));
   skin.arrow = skin.arrowDown;
   skin.headerFont = mpWidget->FindSkinFont(NULL,NULL,_H("Header"));
+  skin.emptyImage = mpWidget->FindSkinElement(NULL,NULL,_H("EmptyImage"));
   skin.ulcolBg = ULColorBuild(
     mpWidget->FindSkinColor(sVec4f::Zero(),NULL,NULL,_H("Background")));
 }

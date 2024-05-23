@@ -191,6 +191,7 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
     Ptr<iOverlay> arrow;
     Ptr<iOverlay> arrowUp;
     Ptr<iOverlay> arrowDown;
+    Ptr<iOverlay> emptyImage;
     tU32          ulcolBg;
   } skin;
 

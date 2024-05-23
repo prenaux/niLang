@@ -765,7 +765,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
                 }
                 mvItems[itemId]->vData[j].ptrWidget = itemWidget;
 
-                itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, varParam0);
+                itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, ctx);
                 SetItemWidget(j, itemId, itemWidget);
               }
             }

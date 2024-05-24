@@ -51,7 +51,7 @@ mCanvasSink <- ::delegate(::gui.baseWidgetSink, {
     // draw the bubble
     {
       local font = w.font.CreateFontInstance(null);
-      font.SetSizeAndResolution(::Vec2(20,20),20);
+      font.SetSizeAndResolution(::Vec2(20,20),20,w.GetUIContext().GetContentsScale());
       font.color = 0xFF000000;
 
       local text = "Hello Paul!\nWelcome to niLang, a new journey begin!\nPress [Enter] to continue.";

@@ -60,7 +60,7 @@
     return (aA || 1000) + (aB || 2000)
   })
   ::CHECK_EQUAL(3000,callback.Run())
-  ::CHECK_EQUAL(2100,callback.RunCallback(100))
+  ::CHECK_EQUAL(2100,callback.RunCallback(100,0))
   ::CHECK_EQUAL(300,callback.RunCallback(100,200))
 })
 
@@ -72,7 +72,7 @@
     }
   })
   ::CHECK_EQUAL(123+3000,callback.Run())
-  ::CHECK_EQUAL(123+2100,callback.RunCallback(100))
+  ::CHECK_EQUAL(123+2100,callback.RunCallback(100,0))
   ::CHECK_EQUAL(123+300,callback.RunCallback(100,200))
 })
 

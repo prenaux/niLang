@@ -381,6 +381,11 @@ struct sVMCallWrapper
     if (_meth->mnNumParameters >= 16) {
       return eVMRet_OutOfMemory;
     }
+    if (numPassed != _meth->mnNumParameters) {
+      return WriteError(niFmt("Invalid number of parameters, expected '%s' but got '%s'.",
+                              _meth->mnNumParameters,
+                              numPassed));
+    }
     const ni::tU32 numParams = ni::Min(numPassed,_meth->mnNumParameters);
     if (_meth->mpParameters) {
       niLoop(i,numParams) {

@@ -997,8 +997,8 @@ void __stdcall cUIContext::InputGameCtrl(iGameCtrl* apGameController) {
   QPtr<cWidget> target(GetInputMessageTarget());
   if (target.IsOK()) {
     _UIInputSendMsg(target,eUIMessage_GameCtrl,apGameController,niVarNull);
-    astl::map<tU32,tU32>::iterator it = mmapGameCtrlInputCount.find(apGameController->GetIndex());
-    if (it == mmapGameCtrlInputCount.end()) {
+    astl::map<tU32,tU32>::iterator it = mmapGameCtrlInputMasks.find(apGameController->GetIndex());
+    if (it == mmapGameCtrlInputMasks.end()) {
       // First time we've seen it only send the down messages....
       tU32 mask = 0;
       niLoop(i,ni::Min(apGameController->GetNumButtons(),32)) {
@@ -1009,10 +1009,10 @@ void __stdcall cUIContext::InputGameCtrl(iGameCtrl* apGameController) {
           _UIInputSendMsg(target,eUIMessage_GameCtrlButtonDown,apGameController,i);
         }
       }
-      it = astl::upsert(mmapGameCtrlInputCount,apGameController->GetIndex(),1);
+      it = astl::upsert(mmapGameCtrlInputMasks,apGameController->GetIndex(),mask);
     }
     else {
-      tU32 wasMask = it->second;
+      const tU32 wasMask = it->second;
       tU32 mask = 0;
       niLoop(i,ni::Min(apGameController->GetNumButtons(),32)) {
         const tF32 v = apGameController->GetButton(i);

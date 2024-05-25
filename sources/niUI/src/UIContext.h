@@ -446,7 +446,7 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   tU32 mnRelayoutCount;
 
   // Game controller
-  astl::map<tU32,tU32> mmapGameCtrlInputCount;
+  astl::map<tU32,tU32> mmapGameCtrlInputMasks;
 
   /// Skins ///
   Ptr<iOverlay> mptrErrorOverlay;

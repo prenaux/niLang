@@ -24,7 +24,7 @@ enum eNUSplineType
   //! Timed non-uniform spline.
   eNUSplineType_Timed = 3,
   //! \internal
-  eNUSplineType_Last = 4,
+  eNUSplineType_Last niMaybeUnused = 4,
   //! \internal
   eNUSplineType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

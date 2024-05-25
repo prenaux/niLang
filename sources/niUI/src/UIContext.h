@@ -73,7 +73,7 @@ enum eUIStandardCursor {
   eUIStandardCursor_DraggingCopy = 4,
   eUIStandardCursor_DraggingInvalid = 5,
   //! \internal
-  eUIStandardCursor_Last = 6
+  eUIStandardCursor_Last niMaybeUnused = 6
 };
 
 class cWidget;

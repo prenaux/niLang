@@ -55,7 +55,7 @@ enum eGraphicsCaps
   //! Whether we can blit the backbuffer to a texture with BlitTextureToTexture.
   eGraphicsCaps_BlitBackBuffer          = 17,
   //! \internal
-  eGraphicsCaps_Last                    = 18,
+  eGraphicsCaps_Last niMaybeUnused = 18,
   //! \internal
   eGraphicsCaps_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -213,7 +213,7 @@ enum eGraphicsPrimitiveType
   //!     be used to pack several pages of textures.
   eGraphicsPrimitiveType_BlitList = 9,
   //! \internal
-  eGraphicsPrimitiveType_Last = 10,
+  eGraphicsPrimitiveType_Last niMaybeUnused = 10,
   //! \internal
   eGraphicsPrimitiveType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -253,7 +253,7 @@ enum eSamplerFilter {
   //! Sharper point filtering. Anisotropic filtering and/or a negative lod bias.
   eSamplerFilter_SharpPoint = 3,
   //! \internal
-  eSamplerFilter_Last = 4,
+  eSamplerFilter_Last niMaybeUnused = 4,
   //! \internal
   eSamplerFilter_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -274,7 +274,7 @@ enum eSamplerWrap
   //! Border mode, the border color is used when outside of 0,1 range.
   eSamplerWrap_Border = 3,
   //! \internal
-  eSamplerWrap_Last = 4,
+  eSamplerWrap_Last niMaybeUnused = 4,
   //! \internal
   eSamplerWrap_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -299,7 +299,7 @@ enum eGraphicsCompare
   //! Always pass the test.
   eGraphicsCompare_Always = 7,
   //! \internal
-  eGraphicsCompare_Last = 8,
+  eGraphicsCompare_Last niMaybeUnused = 8,
   //! \internal
   eGraphicsCompare_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -315,7 +315,7 @@ enum eStencilMode
   //! \remark Will fail if the renderer doesn't support two sided stencil. \see eRendererCaps
   eStencilMode_TwoSided = 2,
   //! \internal
-  eStencilMode_Last = 3,
+  eStencilMode_Last niMaybeUnused = 3,
   //! \internal
   eStencilMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -340,7 +340,7 @@ enum eStencilOp
   //! Invert the bits in the stencil-buffer entry.
   eStencilOp_Invert = 7,
   //! \internal
-  eStencilOp_Last = 8,
+  eStencilOp_Last niMaybeUnused = 8,
   //! \internal
   eStencilOp_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -384,7 +384,7 @@ enum eBlendMode
   //! \remark Final.RGB = (Src*Dest + Dest*Src), Final.Alpha = Channel.Alpha
   eBlendMode_Modulate2xReplaceAlpha = 10,
   //! \internal
-  eBlendMode_Last = 11,
+  eBlendMode_Last niMaybeUnused = 11,
   //! \internal
   eBlendMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -399,7 +399,7 @@ enum eCullingMode
   //! Cull back faces with counter clockwise vertices (default).
   eCullingMode_CCW = 2,
   //! \internal
-  eCullingMode_Last = 3,
+  eCullingMode_Last niMaybeUnused = 3,
   //! \internal
   eCullingMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

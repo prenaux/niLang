@@ -61,7 +61,7 @@ enum eVGImageFilter
   //! Blackman filter.
   eVGImageFilter_Blackman = 16,
   //! \internal
-  eVGImageFilter_Last = 17,
+  eVGImageFilter_Last niMaybeUnused = 17,
   //! \internal
   eVGImageFilter_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

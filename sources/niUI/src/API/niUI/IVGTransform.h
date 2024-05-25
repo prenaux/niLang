@@ -21,7 +21,7 @@ enum eVGTransform
   //! Stroke paint to user transform.
   eVGTransform_StrokePaint = 3,
   //! \internal
-  eVGTransform_Last = 4,
+  eVGTransform_Last niMaybeUnused = 4,
   //! \internal
   eVGTransform_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

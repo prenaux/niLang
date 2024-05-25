@@ -24,7 +24,7 @@ enum eShaderUnit
   //! Native driver dependent shader.
   eShaderUnit_Native = 2,
   //! \internal.
-  eShaderUnit_Last = 3,
+  eShaderUnit_Last niMaybeUnused = 3,
   //! \internal
   eShaderUnit_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -55,7 +55,7 @@ enum eShaderRegisterType
   //! Predicate register.
   eShaderRegisterType_Predicate = 10,
   //! \internal
-  eShaderRegisterType_Last = 11,
+  eShaderRegisterType_Last niMaybeUnused = 11,
 };
 
 //! Shader constants buffer description structure.

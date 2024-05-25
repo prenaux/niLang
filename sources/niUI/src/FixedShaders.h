@@ -25,7 +25,7 @@ enum eFixedVertexShader {
   eFixedVertexShader_PNAT2 = 7,
   eFixedVertexShader_PB4INT1 = 8,
   eFixedVertexShader_PB4INAT1 = 9,
-  eFixedVertexShader_Last = 10,
+  eFixedVertexShader_Last niMaybeUnused = 10,
   eFixedVertexShader_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 

@@ -138,7 +138,7 @@ enum eMaterialChannel
   eMaterialChannel_T7 = 15,
   //! \internal
   //! Default Blend mode : NoBlending
-  eMaterialChannel_Last = 16,
+  eMaterialChannel_Last niMaybeUnused = 16,
   //! \internal
   eMaterialChannel_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -158,7 +158,7 @@ enum eMaterialExpression {
   //! \remark The usage depends on the shader / render path actually used.
   eMaterialExpression_Matrix1 = 3,
   //! \internal
-  eMaterialExpression_Last = 4
+  eMaterialExpression_Last niMaybeUnused = 4
 };
 
 //! Material channel

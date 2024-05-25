@@ -165,7 +165,7 @@ enum eFPSMatrix
   eFPSMatrix_InvWorld = 15,
   eFPSMatrix_InvView = 16,
   eFPSMatrix_InvProj = 17,
-  eFPSMatrix_Last = 18
+  eFPSMatrix_Last niMaybeUnused = 18
 };
 
 #define FIXEDSTATE(STATE) apFixedStates->m##STATE

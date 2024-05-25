@@ -44,7 +44,7 @@ enum eColorSpace {
   //! YCoCg color space (H264 & AVT).
   eColorSpace_YCoCg = 15,
   //! \internal
-  eColorSpace_Last = 16,
+  eColorSpace_Last niMaybeUnused = 16,
   //! \internal
   eColorSpace_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

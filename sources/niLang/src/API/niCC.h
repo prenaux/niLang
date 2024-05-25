@@ -30,13 +30,18 @@
 EA_DISABLE_GCC_WARNING(-Wignored-attributes);
 EA_DISABLE_CLANG_WARNING(-Wignored-attributes);
 
+#if !defined niCCNoStrictWarnings
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wc++11-narrowing);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wconversion-null);
-EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wfloat-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-fallthrough);
+#if !defined niCCNoStrictImplicitConversionWarnings
+EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wfloat-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-float-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-int-conversion);
+#endif
+#if !defined niCCNoStrictOverrideWarnings
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Winconsistent-missing-override);
+#endif
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wswitch);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wuninitialized);
 // EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-member-function)
@@ -49,6 +54,7 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wuninitialized);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wreturn-type);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-but-set-variable);
 // clang-format on
+#endif
 
 #ifdef __cplusplus
   #if __cplusplus == 199711L

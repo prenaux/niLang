@@ -26,7 +26,7 @@ enum eNUSplineType
   //! \internal
   eNUSplineType_Last = 4,
   //! \internal
-  eNUSplineType_ForceDWORD = 0xFFFFFFFF
+  eNUSplineType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Non-uniform spline interface.

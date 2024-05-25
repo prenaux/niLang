@@ -208,7 +208,7 @@ enum eRenderPipelineColorFormat {
   eRenderPipelineColorFormat_R16F = 4,
   eRenderPipelineColorFormat_R32F = 5,
   eRenderPipelineColorFormat_Last = 6,
-  eRenderPipelineColorFormat_ForceDWORD = 0xFFFFFFFF
+  eRenderPipelineColorFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 niCAssert(eRenderPipelineColorFormat_Last <= 8);
 
@@ -303,7 +303,7 @@ enum eRenderPipelineDepthFormat {
   eRenderPipelineDepthFormat_D24S8 = 3,
   eRenderPipelineDepthFormat_Last = 4,
 #endif
-  eRenderPipelineDepthFormat_ForceDWORD = 0xFFFFFFFF
+  eRenderPipelineDepthFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 #if defined METAL_IOS
 niCAssert(eRenderPipelineDepthFormat_Last == 2);

@@ -57,16 +57,16 @@ enum eGraphicsCaps
   //! \internal
   eGraphicsCaps_Last                    = 18,
   //! \internal
-  eGraphicsCaps_ForceDWORD              = 0xFFFFFFFF
+  eGraphicsCaps_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Buffer clearing flags.
 enum eClearBuffersFlags
 {
   //! Clear color buffer.
-  eClearBuffersFlags_Color   = 0x1,
+  eClearBuffersFlags_Color = 0x1,
   //! Clear depth buffer.
-  eClearBuffersFlags_Depth   = 0x2,
+  eClearBuffersFlags_Depth = 0x2,
   //! Clear stencil buffer.
   eClearBuffersFlags_Stencil = 0x4,
   //! Clear the color and depth buffers.
@@ -78,7 +78,7 @@ enum eClearBuffersFlags
   //! Clear the color, depth and stencil buffers.
   eClearBuffersFlags_ColorDepthStencil = eClearBuffersFlags_Color|eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil,
   //! \internal
-  eClearBuffersFlags_ForceDWORD = 0xFFFFFFFF
+  eClearBuffersFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Buffer clearing flags type.
@@ -88,15 +88,15 @@ typedef tU32 tClearBuffersFlags;
 enum eArrayUsage
 {
   //! Dynamic array, write only.
-  eArrayUsage_Dynamic       = 0,
+  eArrayUsage_Dynamic = 0,
   //! Dynamic array, Read/Write.
-  eArrayUsage_DynamicReadWrite  = 1,
+  eArrayUsage_DynamicReadWrite = 1,
   //! Static array, write only.
-  eArrayUsage_Static        = 2,
+  eArrayUsage_Static = 2,
   //! System memory array.
-  eArrayUsage_SystemMemory    = 3,
+  eArrayUsage_SystemMemory = 3,
   //! \internal
-  eArrayUsage_ForceDWORD      = 0xFFFFFFFF
+  eArrayUsage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Lock.
@@ -126,7 +126,7 @@ enum eLock
   //! \remark This is meaningfull only for vertex arrays.
   eLock_ReadOnlyPosition = eLock_ReadOnly|niBit(3),
   //! \internal
-  eLock_ForceDWORD = 0xFFFFFFFF
+  eLock_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Lock flags type.
@@ -172,7 +172,7 @@ enum eShaderCompilerFlags
   //! compiling.
   eShaderCompilerFlags_DebugLog = niBit(10),
   //! \internal
-  eShaderCompilerFlags_ForceDWORD = 0xFFFFFFFF
+  eShaderCompilerFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Shader compiler flags type.
@@ -215,7 +215,7 @@ enum eGraphicsPrimitiveType
   //! \internal
   eGraphicsPrimitiveType_Last = 10,
   //! \internal
-  eGraphicsPrimitiveType_ForceDWORD = 0xFFFFFFFF
+  eGraphicsPrimitiveType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics driver implementation details.
@@ -235,7 +235,7 @@ enum eGraphicsDriverImplFlags {
   //! Compile rasterizer states.
   eGraphicsDriverImplFlags_CompileRasterizerStates = niBit(6),
   //! \internal
-  eGraphicsDriverImplFlags_ForceDWORD = 0xFFFFFFFF
+  eGraphicsDriverImplFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics driver implementation details.
@@ -255,7 +255,7 @@ enum eSamplerFilter {
   //! \internal
   eSamplerFilter_Last = 4,
   //! \internal
-  eSamplerFilter_ForceDWORD = 0xFFFFFFFF
+  eSamplerFilter_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Texture wrapping modes.
@@ -276,7 +276,7 @@ enum eSamplerWrap
   //! \internal
   eSamplerWrap_Last = 4,
   //! \internal
-  eSamplerWrap_ForceDWORD = 0xFFFFFFFF
+  eSamplerWrap_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics compare functions.
@@ -301,7 +301,7 @@ enum eGraphicsCompare
   //! \internal
   eGraphicsCompare_Last = 8,
   //! \internal
-  eGraphicsCompare_ForceDWORD = 0xFFFFFFFF
+  eGraphicsCompare_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Stencil mode.
@@ -317,7 +317,7 @@ enum eStencilMode
   //! \internal
   eStencilMode_Last = 3,
   //! \internal
-  eStencilMode_ForceDWORD = 0xFFFFFFFF
+  eStencilMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Stencil operations.
@@ -342,7 +342,7 @@ enum eStencilOp
   //! \internal
   eStencilOp_Last = 8,
   //! \internal
-  eStencilOp_ForceDWORD = 0xFFFFFFFF
+  eStencilOp_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Blending mode
@@ -386,7 +386,7 @@ enum eBlendMode
   //! \internal
   eBlendMode_Last = 11,
   //! \internal
-  eBlendMode_ForceDWORD = 0xFFFFFFFF
+  eBlendMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Culling mode
@@ -401,7 +401,7 @@ enum eCullingMode
   //! \internal
   eCullingMode_Last = 3,
   //! \internal
-  eCullingMode_ForceDWORD = 0xFFFFFFFF
+  eCullingMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Color write mask.
@@ -422,7 +422,7 @@ enum eColorWriteMask
   //! Normal, write in all channels.
   eColorWriteMask_All = eColorWriteMask_RGB|eColorWriteMask_Alpha,
   //! \internal
-  eColorWriteMask_ForceDWORD = 0xFFFFFFFF
+  eColorWriteMask_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics display flags
@@ -435,7 +435,7 @@ enum eGraphicsDisplayFlags
   eGraphicsDisplayFlags_Transparent = niBit(3),
   eGraphicsDisplayFlags_Translucent = niBit(4),
   //! \internal
-  eGraphicsDisplayFlags_ForceDWORD = 0xFFFFFFFF
+  eGraphicsDisplayFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics display flags type. \see ni::eGraphicsDisplayFlags
@@ -482,7 +482,7 @@ enum eCompiledStates {
   //! Driver compiled
   eCompiledStates_Driver = 1000,
   //! \internal
-  eCompiledStates_ForceDWORD = 0xFFFFFFFF
+  eCompiledStates_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

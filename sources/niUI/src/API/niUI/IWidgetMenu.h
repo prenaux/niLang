@@ -32,7 +32,7 @@ enum eWidgetMenuItemFlags
   //! Sort when adding the item.
   eWidgetMenuItemFlags_SortAdd = niBit(8),
   //! \internal
-  eWidgetMenuItemFlags_ForceDWORD = 0xFFFFFFFF
+  eWidgetMenuItemFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Menu notify message
@@ -65,7 +65,7 @@ enum eWidgetMenuCmd
   //! \param B: previously selected iWidgetMenuItem if any
   eWidgetMenuCmd_FocusedItem = 6,
   //! \internal
-  eWidgetMenuCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetMenuCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Menu style.
@@ -86,7 +86,7 @@ enum eWidgetMenuStyle
   //! Dont close the menu on group or check change.
   eWidgetMenuStyle_NoCloseOnGroupOrCheckChange = eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange,
   //! \internal
-  eWidgetMenuStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetMenuStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Menu item flags type.

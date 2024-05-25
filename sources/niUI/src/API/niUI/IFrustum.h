@@ -22,7 +22,7 @@ enum eFrustumPlane
   //! Far frustum plane.
   eFrustumPlane_Far   = 5,
   //! \internal
-  eFrustumPlane_ForceDWORD = 0xFFFFFFFF
+  eFrustumPlane_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Value return by the culling functions.

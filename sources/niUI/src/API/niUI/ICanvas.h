@@ -23,7 +23,7 @@ enum eBillboardModeFlags
   //! Anchor at the center (default if anchor not specified).
   eBillboardModeFlags_AnchorCenter = niBit(1),
   //! \internal
-  eBillboardModeFlags_ForceDWORD = 0xFFFFFFFF
+  eBillboardModeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Billboard mode flags. \see ni::eBillboardModeFlags

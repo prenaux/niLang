@@ -25,7 +25,7 @@ enum eWidgetCanvasStyle
   //! The vertical scroll bar will never be set visible.
   eWidgetCanvasStyle_HideScrollV = niBit(eWidgetStyle_MaxBit+3),
   //! \internal
-  eWidgetCanvasStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetCanvasStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Canvas widget interface.

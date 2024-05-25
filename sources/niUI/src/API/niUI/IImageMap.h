@@ -14,7 +14,7 @@ enum eImageMapSerializeFlags {
   //! Serialize read
   eImageMapSerializeFlags_Read = niBit(1),
   //! \internal
-  eImageMapSerializeFlags_ForceDWORD = 0xFFFFFFFF
+  eImageMapSerializeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Image map serialization flags type. \see ni::eImageMapSerializeFlags

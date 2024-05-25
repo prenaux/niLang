@@ -64,7 +64,7 @@ enum eMaterialFlags
   //! Using polygon offset in this material
   eMaterialFlags_PolygonOffset = niBit(17),
   //! \internal
-  eMaterialFlags_ForceDWORD = 0xFFFFFFFF
+  eMaterialFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Material flags type.
@@ -140,7 +140,7 @@ enum eMaterialChannel
   //! Default Blend mode : NoBlending
   eMaterialChannel_Last = 16,
   //! \internal
-  eMaterialChannel_ForceDWORD = 0xFFFFFFFF
+  eMaterialChannel_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Material expressions

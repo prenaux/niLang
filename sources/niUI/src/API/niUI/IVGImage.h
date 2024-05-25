@@ -20,7 +20,7 @@ enum eVGWrapType
   //! \remark Not supported by gradients.
   eVGWrapType_Pad = 3,
   //! \internal
-  eVGWrapType_ForceDWORD = 0xFFFFFFFF
+  eVGWrapType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG Image filter.
@@ -63,7 +63,7 @@ enum eVGImageFilter
   //! \internal
   eVGImageFilter_Last = 17,
   //! \internal
-  eVGImageFilter_ForceDWORD = 0xFFFFFFFF
+  eVGImageFilter_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VGImage usage.
@@ -80,7 +80,7 @@ enum eVGImageUsage
   //! For GetTexture only, grabs the depth stencil for rendering.
   eVGImageUsage_DepthStencil = 2,
   //! \internal
-  eVGImageUsage_ForceDWORD = 0xFFFFFFFF
+  eVGImageUsage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VGImage interface.

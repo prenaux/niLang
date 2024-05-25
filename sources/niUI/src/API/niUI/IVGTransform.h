@@ -23,7 +23,7 @@ enum eVGTransform
   //! \internal
   eVGTransform_Last = 4,
   //! \internal
-  eVGTransform_ForceDWORD = 0xFFFFFFFF
+  eVGTransform_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG transform value.
@@ -42,7 +42,7 @@ enum eVGTransformValue
   //! RotationSkew1 (m5) component.
   eVGTransformValue_TranslateY = 5,
   //! \internal
-  eVGTransformValue_ForceDWORD = 0xFFFFFFFF
+  eVGTransformValue_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG transform interface.

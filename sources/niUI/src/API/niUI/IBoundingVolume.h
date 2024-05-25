@@ -30,7 +30,7 @@ enum eBoundingVolumeType
   //! User volume type
   eBoundingVolumeType_User = 2,
   //! \internal
-  eBoundingVolumeType_ForceDWORD = 0xFFFFFFF
+  eBoundingVolumeType_ForceDWORD niMaybeUnused = 0xFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

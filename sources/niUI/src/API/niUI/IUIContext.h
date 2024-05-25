@@ -38,7 +38,7 @@ enum eUIInputModifier
   //! KeyDown is repeating.
   eUIInputModifier_KeyDownRepeat = niBit(31),
   //! \internal
-  eUIInputModifier_ForceDWORD = 0xFFFFFFFF
+  eUIInputModifier_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! UI input submit.
@@ -74,7 +74,7 @@ enum eUIInputSubmitFlags
   //! UI Context default input submit flags default.
   eUIInputSubmitFlags_Default = eUIInputSubmitFlags_Disabled,
   //! \internal
-  eUIInputSubmitFlags_ForceDWORD = 0xFFFFFFFF
+  eUIInputSubmitFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! UI Input submit flags type. \see ni::eUIInputSubmitFlags

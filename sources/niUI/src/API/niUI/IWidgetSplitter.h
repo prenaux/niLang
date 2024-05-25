@@ -18,7 +18,7 @@ enum eWidgetSplitterStyle
   //! \remark By default the splitter is created with one splitter.
   eWidgetSplitterStyle_Empty = niBit(eWidgetStyle_MaxBit+2),
   //! \internal
-  eWidgetSplitterStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetSplitterStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Splitter folding mode.
@@ -31,7 +31,7 @@ enum eWidgetSplitterFoldMode
   //! Fold left/top & right/bottom regardless of the resizable borders.
   eWidgetSplitterFoldMode_All = 2,
   //! \internal
-  eWidgetSplitterFoldMode_ForceDWORD = 0xFFFFFFFF
+  eWidgetSplitterFoldMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Splitter widget interface.

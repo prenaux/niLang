@@ -26,7 +26,7 @@ enum eShaderUnit
   //! \internal.
   eShaderUnit_Last = 3,
   //! \internal
-  eShaderUnit_ForceDWORD = 0xFFFFFFFF
+  eShaderUnit_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Shader input register type.

@@ -26,7 +26,7 @@ enum eFixedVertexShader {
   eFixedVertexShader_PB4INT1 = 8,
   eFixedVertexShader_PB4INAT1 = 9,
   eFixedVertexShader_Last = 10,
-  eFixedVertexShader_ForceDWORD = 0xFFFFFFFF,
+  eFixedVertexShader_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 
 struct sFixedShaders : ImplRC<ni::iUnknown> {

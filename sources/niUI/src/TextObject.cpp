@@ -19,17 +19,17 @@
 enum eTextAlignment
 {
   //! Text will be drawn left aligned.
-  eTextAlignment_Left   = 0,
+  eTextAlignment_Left = 0,
   //! Text will be drawn right aligned.
-  eTextAlignment_Right    = 1,
+  eTextAlignment_Right = 1,
   //! Text will be drawn centered.
-  eTextAlignment_Center   = 2,
+  eTextAlignment_Center = 2,
   //! Text will be drawn justified, except the last line.
-  eTextAlignment_Justify    = 3,
+  eTextAlignment_Justify = 3,
   //! Text will be drawn justified.
   eTextAlignment_JustifyAll = 4,
   //! \internal
-  eTextAlignment_ForceDWORD   = 0xFFFFFFFF
+  eTextAlignment_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 #define TA_BUILD(ALIGN,COL) ((ALIGN&0xFF)|((COL)<<8))

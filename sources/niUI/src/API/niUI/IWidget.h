@@ -64,7 +64,7 @@ enum eWidgetStyle
   //! Max bit, user styles should use the bits above this.
   eWidgetStyle_MaxBit = 16,
   //! \internal
-  eWidgetStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget style flags type.
@@ -138,7 +138,7 @@ enum eWidgetDockStyle
   //! Place the widget in a grid.
   eWidgetDockStyle_Grid = 24,
   //! \internal
-  eWidgetDockStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetDockStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget ZOrder.
@@ -164,7 +164,7 @@ enum eWidgetZOrder
   //! Overlay widget.
   eWidgetZOrder_Overlay = 7,
   //! \internal
-  eWidgetZOrder_ForceDWORD = 0xFFFFFFFF
+  eWidgetZOrder_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget serialize flags.
@@ -189,7 +189,7 @@ enum eWidgetSerializeFlags
   //! \remark This is intentionally the same as ni::eSerializeFlags_TypeInfoMetadata.
   eWidgetSerializeFlags_PropertyBox = niBit(10),
   //! \internal
-  eWidgetSerializeFlags_ForceDWORD = 0xFFFFFFFF
+  eWidgetSerializeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 niCAssert((ni::tU32)eWidgetSerializeFlags_Write == (ni::tU32)eSerializeFlags_Write);
@@ -209,7 +209,7 @@ enum eWidgetAutoLayoutFlags
   //! Compute the size to fit the children.
   eWidgetAutoLayoutFlags_Size = niBit(2),
   //! \internal
-  eWidgetAutoLayoutFlags_ForceDWORD = 0xFFFFFFFF,
+  eWidgetAutoLayoutFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 
 //! Widget serialize flags type. \see ni::eWidgetAutoLayoutFlags
@@ -272,7 +272,7 @@ enum eWidgetSystemTimer
   //! Right doubleclick timer.
   eWidgetSystemTimer_RightDoubleClick = eWidgetSystemTimer_First+3,
   //! \internal
-  eWidgetSystemTimer_ForceDWORD = 0xFFFFFFFF
+  eWidgetSystemTimer_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget interface.

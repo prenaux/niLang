@@ -537,12 +537,12 @@ typedef SYNC_INT_TYPE tSyncInt;
 // Exceptions
 #ifdef niNoExceptions
 #  define niTry
-#  define niCatch(T,EXC) if(EA_MAYBE_UNUSED const T EXC = {}; 0)
+#  define niCatch(T,EXC) if(niMaybeUnused const T EXC = {}; 0)
 #  define niCatchAll()   if(0)
 #  define niThrow(X) ;
 #  define niThrowSpec()
 #else
-#  define niCatch(T,EXC) catch(EA_MAYBE_UNUSED const T& EXC)
+#  define niCatch(T,EXC) catch(niMaybeUnused const T& EXC)
 #  define niCatchAll()   catch(...)
 #  define niThrow(X)     throw X
 #  define niTry          try
@@ -770,6 +770,10 @@ template <> struct sTAssert<true> { static void TAssert() {}; };
 #  endif
 #endif
 
+#define niFallthrough EA_FALLTHROUGH
+#define niMaybeUnused EA_MAYBE_UNUSED
+#define niConstExpr EA_CONSTEXPR
+
 #ifndef niTypename
 #  define niTypename
 #endif
@@ -929,8 +933,6 @@ __forceinline bool IsNullPtr(const T* p) {
 #define AZEROSTR _A("\0\0\0")
 #define AEOL     _A("\n")
 #define ASPACE   ((achar)(32))
-
-#define niConstExpr EA_CONSTEXPR
 
 #ifndef niConst
 #  define niConst const

@@ -27,7 +27,7 @@ enum eVGGradientType
   //! Diamond gradient.
   eVGGradientType_Diamond = 5,
   //! \internal
-  eVGGradientType_ForceDWORD = 0xFFFFFFFF
+  eVGGradientType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Gradient table.

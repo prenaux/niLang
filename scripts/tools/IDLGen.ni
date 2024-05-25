@@ -1055,16 +1055,33 @@
           local n = "", v = ""
           // read the name
           n = tokens[0];
-          if (tokens.len() <= 1 || (tokens.len() >= 2 && tokens[1] != "=" && tokens[1] != ","))
+
+          local eqIdx = null, isValid = false
+          if (tokens.len() > 1) {
+            if (tokens[1] == "niMaybeUnused") {
+              if (tokens.len() >= 3 && (tokens[2] == "=" || tokens[2] == ",")) {
+                eqIdx = 2;
+                isValid = true;
+              }
+            } else {
+              if (tokens[1] == "=" || tokens[1] == ",") {
+                eqIdx = 1;
+                isValid = true;
+              }
+            }
+          }
+
+          if (!isValid)
             parserError(mLineCount,"Invalid enum value declaration inside enum '"+name+"', no value or missing colon.")
 
-          if (tokens[1] == "=") {
-            if (tokens.len() < 3) {
+          if (eqIdx) {
+            if ((tokens.len()-eqIdx) < 2) {
               parserError(mLineCount,"Invalid assigned enum value declaration inside enum '"+name+"'.")
             }
-            for (local i = 2; i < tokens.len(); ++i) {
+            for (local i = eqIdx+1; i < tokens.len(); ++i) {
               v += tokens[i];
-              if (i+1 != tokens.len()) v += " ";
+              if (i+1 != tokens.len())
+                v += " ";
             }
             if (v.endswith(",")) {
               v = v.slice(0,-1)

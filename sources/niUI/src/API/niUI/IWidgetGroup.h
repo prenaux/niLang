@@ -12,7 +12,7 @@ enum eWidgetGroupStyle {
   //! Toggle the folded state when double clicking on the title.
   eWidgetGroupStyle_Fold = niBit(eWidgetStyle_MaxBit+1),
   //! \internal
-  eWidgetGroupStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetGroupStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Group widget interface.

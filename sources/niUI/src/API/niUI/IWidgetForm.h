@@ -55,7 +55,7 @@ enum eWidgetFormStyle
   //! Default form flags with close and form manager buttons.
   eWidgetFormStyle_DefaultManagerButtons = eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move,
   //! \internal
-  eWidgetFormStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetFormStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

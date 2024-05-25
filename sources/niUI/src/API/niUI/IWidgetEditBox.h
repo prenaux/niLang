@@ -33,7 +33,7 @@ enum eWidgetEditBoxStyle {
   //! Can insert tabs, but capture the MoveFocus message.
   eWidgetEditBoxStyle_CanInsertTabs = niBit(eWidgetStyle_MaxBit+10),
   //! \internal
-  eWidgetEditBoxStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetEditBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Simple edit box notification messages.
@@ -45,7 +45,7 @@ enum eWidgetEditBoxCmd {
   //! Sent when the edit box has lost focus.
   eWidgetEditBoxCmd_LostFocus = 2,
   //! \internal
-  eWidgetEditBoxCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetEditBoxCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Simple editbox widget interface.

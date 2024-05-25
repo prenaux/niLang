@@ -23,7 +23,7 @@ enum eImageUsage
   //! previous content is made.
   eImageUsage_TargetDiscard = 3,
   //! \internal
-  eImageUsage_ForceDWORD = 0xFFFFFFFF
+  eImageUsage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Image interface.

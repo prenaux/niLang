@@ -29,7 +29,7 @@ enum eCameraMoveType
   //! The camera view is set through SetViewMatrix directly.
   eCameraMoveType_SetMatrix = 4,
   //! \internal
-  eCameraMoveType_ForceDWORD = 0xFFFFFFFF
+  eCameraMoveType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Camera projection type.
@@ -42,7 +42,7 @@ enum eCameraProjectionType
   //! The camera projection is set through SetProjectionMatrix directly.
   eCameraProjectionType_SetMatrix = 2,
   //! \internal
-  eCameraProjectionType_ForceDWORD = 0xFFFFFFFF
+  eCameraProjectionType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Camera interface

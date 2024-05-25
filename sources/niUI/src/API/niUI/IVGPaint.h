@@ -22,7 +22,7 @@ enum eVGPaintType
   //! Gradient paint type.
   eVGPaintType_Gradient = 2,
   //! \internal
-  eVGPaintType_ForceDWORD = 0xFFFFFFFF
+  eVGPaintType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG paint units.
@@ -35,7 +35,7 @@ enum eVGPaintUnits
   //! Units relative to the current coordinate system.
   eVGPaintUnits_UserSpaceOnUse = 2,
   //! \internal
-  eVGPaintUnits_ForceDWORD = 0xFFFFFFFF
+  eVGPaintUnits_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG paint interface.

@@ -18,7 +18,7 @@ enum eVGLineCap
   eVGLineCap_Square = 1,
   eVGLineCap_Round = 2,
   //! \internal
-  eVGLineCap_ForceDWORD = 0xFFFFFFFF
+  eVGLineCap_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG Line join.
@@ -30,7 +30,7 @@ enum eVGLineJoin
   eVGLineJoin_Round = 3,
   eVGLineJoin_Bevel = 4,
   //! \internal
-  eVGLineJoin_ForceDWORD = 0xFFFFFFFF
+  eVGLineJoin_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VG Inner join.
@@ -41,7 +41,7 @@ enum eVGInnerJoin
   eVGInnerJoin_Jag = 2,
   eVGInnerJoin_Round = 3,
   //! \internal
-  eVGInnerJoin_ForceDWORD = 0xFFFFFFFF
+  eVGInnerJoin_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VGStyle inteface.

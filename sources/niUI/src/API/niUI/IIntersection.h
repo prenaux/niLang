@@ -18,7 +18,7 @@ enum eIntersectionResult
   //! Intersect the bounding volume.
   eIntersectionResult_Intersect = 2,
   //! \internal
-  eIntersectionResult_ForceDWORD = 0xFFFFFFFF
+  eIntersectionResult_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Intersection result interface.

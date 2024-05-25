@@ -56,7 +56,7 @@ enum eWidgetButtonStyle {
   //! Icon button, same as bitmap button excepted that the text is drawn below the icon.
   eWidgetButtonStyle_IconButton = eWidgetButtonStyle_IconTop,
   //! \internal
-  eWidgetButtonStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetButtonStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Button notification messages.

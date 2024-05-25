@@ -46,7 +46,7 @@ enum eColorSpace {
   //! \internal
   eColorSpace_Last = 16,
   //! \internal
-  eColorSpace_ForceDWORD = 0xFFFFFFFF
+  eColorSpace_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 enum eColor {
@@ -200,7 +200,7 @@ enum eColor {
   eColor_zzzzzzzzzzz = niBuildColor(0,0,0,0),
   eColor_zzzz = niBuildColor(0,0,0,0),
   //! \internal
-  eColor_ForceDWORD = 0xFFFFFFFF
+  eColor_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 

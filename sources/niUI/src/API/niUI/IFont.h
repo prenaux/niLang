@@ -41,7 +41,7 @@ enum eFontFormatFlags
   //!         care of the snapping yourself.
   eFontFormatFlags_NoUnitSnap = niBit(8),
   //! \internal
-  eFontFormatFlags_ForceDWORD = 0xFFFFFFFF
+  eFontFormatFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Font format flags type. \see ni::eFontFormatFlags
@@ -67,7 +67,7 @@ enum eFontLoadFlags
   //! Default flags.
   eFontLoadFlags_Default = eFontLoadFlags_Registered|eFontLoadFlags_SystemLast|eFontLoadFlags_ClosestMatch,
   //! \internal
-  eFontLoadFlags_ForceDWORD = 0xFFFFFFFF
+  eFontLoadFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Get font flags type.

@@ -60,7 +60,7 @@ enum eTextureFlags
   //!         pipeline does the flipping automatically.
   eTextureFlags_RTFlipped = niBit(15),
   //! \internal
-  eTextureFlags_ForceDWORD = 0xFFFFFFFF
+  eTextureFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Texture flags. \see ni::eTextureFlags
@@ -77,7 +77,7 @@ enum eTextureBlitFlags
   //! \remark The flag is used as an hint for the implementation to cache some data.
   eTextureBlitFlags_Frequent = niBit(1),
   //! \internal
-  eTextureBlitFlags_ForceDWORD = 0xFFFFFFFF
+  eTextureBlitFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Texture blit flags. \see ni::eTextureBlitFlags

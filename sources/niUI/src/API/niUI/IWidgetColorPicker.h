@@ -12,7 +12,7 @@ enum eWidgetColorPickerCmd {
   //! Sent when the color changed.
   eWidgetColorPickerCmd_ColorChanged = 0,
   //! \internal
-  eWidgetColorPickerCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetColorPickerCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Color picker style.
@@ -21,7 +21,7 @@ enum eWidgetColorPickerStyle
   //! Show the brightness control.
   eWidgetColorPickerStyle_Brightness = niBit(eWidgetStyle_MaxBit+0),
   //! \internal
-  eWidgetColorPickerStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetColorPickerStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

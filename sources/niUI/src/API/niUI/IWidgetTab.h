@@ -17,7 +17,7 @@ enum eWidgetTabCmd
   //! A page has been removed.
   eWidgetTabCmd_RemovePage = 2,
   //! \internal
-  eWidgetTabCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetTabCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Tab widget.

@@ -41,7 +41,7 @@ enum eVGPathCommand
   //! Command mask.
   eVGPathCommand_Mask   = 0x0F,
   //! \internal
-  eVGPathCommand_ForceDWORD = 0xFFFFFFFF
+  eVGPathCommand_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VGPathTesselatedRenderer interface.

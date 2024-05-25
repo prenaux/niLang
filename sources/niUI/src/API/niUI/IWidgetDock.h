@@ -19,7 +19,7 @@ enum eWidgetDockingManagerMessage
   //! \param A is the absolute cursor position.
   eWidgetDockingManagerMessage_Move = niMessageID('_','W','D','N','m'),
   //! \internal
-  eWidgetDockingManagerMessage_ForceDWORD = 0xFFFFFFFF
+  eWidgetDockingManagerMessage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Dockable widget interface.
@@ -64,7 +64,7 @@ enum eWidgetDockingManagerFlags
   //! Default manager flags.
   eWidgetDockingManagerFlags_Default = eWidgetDockingManagerFlags_DockAll|eWidgetDockingManagerFlags_Navigator,
   //! \internal
-  eWidgetDockingManagerFlags_ForceDWORD = 0xFFFFFFFF
+  eWidgetDockingManagerFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Docking manager flags type.

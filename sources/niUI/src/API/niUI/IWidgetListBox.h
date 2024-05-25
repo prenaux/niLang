@@ -13,7 +13,7 @@ enum eWidgetListBoxCmd
   //! Sent when the selection has changed
   eWidgetListBoxCmd_SelectionChanged = 0,
   //! \internal
-  eWidgetListBoxCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetListBoxCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Listbox style
@@ -30,7 +30,7 @@ enum eWidgetListBoxStyle
   //! Click down add selection, Ctrl+Click set selection. (This is the opposite of the default)
   eWidgetListBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit+4),
   //! \internal
-  eWidgetListBoxStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetListBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Listbox widget interface.

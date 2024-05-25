@@ -30,7 +30,7 @@ enum eTransformFlags
   //! Inherit all.
   eTransformFlags_InheritAll = eTransformFlags_InheritPositionRotation|eTransformFlags_InheritScale,
   //! \internal
-  eTransformFlags_ForceDWORD = 0xFFFFFFFF
+  eTransformFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Transform internal flags.
@@ -41,7 +41,7 @@ enum eTransformInternalFlags
   //! The transform uses a scaling factor.
   eTransformInternalFlags_UseScale = niBit(9),
   //! \internal
-  eTransformInternalFlags_ForceDWORD    = 0xFFFFFFFF
+  eTransformInternalFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Transform description structure.

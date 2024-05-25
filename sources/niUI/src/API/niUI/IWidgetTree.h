@@ -22,7 +22,7 @@ enum eWidgetTreeNodeDropMode {
   //! Invalid drop area.
   eWidgetTreeNodeDropMode_Invalid = 3,
   //! \internal
-  eWidgetTreeNodeDropMode_ForceDWORD = 0xFFFFFFFF
+  eWidgetTreeNodeDropMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget tree style.
@@ -46,7 +46,7 @@ enum eWidgetTreeStyle
   //! Single selection only.
   eWidgetTreeStyle_SingleSelection = niBit(eWidgetStyle_MaxBit+7),
   //! \internal
-  eWidgetTreeStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetTreeStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget tree notify message
@@ -81,7 +81,7 @@ enum eWidgetTreeCmd
   //! \param B the previous attributes
   eWidgetTreeCmd_SetName = 7,
   //! \internal
-  eWidgetTreeCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetTreeCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget tree node flags.
@@ -112,7 +112,7 @@ enum eWidgetTreeNodeFlags
   //! Default tree node flags.
   eWidgetTreeNodeFlags_Default = eWidgetTreeNodeFlags_WidgetPlace|eWidgetTreeNodeFlags_Visible,
   //! \internal
-  eWidgetTreeNodeFlags_ForceDWORD = 0xFFFFFFFF
+  eWidgetTreeNodeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget tree node flags type. \see eWidgetTreeNodeFlags

@@ -21,7 +21,7 @@ enum eOcclusionQueryStatus
   //! The query failed.
   eOcclusionQueryStatus_Failed = 4,
   //! \internal
-  eOcclusionQueryStatus_ForceDWORD = 0xFFFFFFFF
+  eOcclusionQueryStatus_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Occlusion query object.

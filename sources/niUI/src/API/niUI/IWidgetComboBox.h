@@ -20,7 +20,7 @@ enum eWidgetComboBoxStyle {
   //! For defautl dropped list box, click down add selection, ctrl+click set selection. (This is the opposite of the default)
   eWidgetComboBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit+4),
   //! \internal
-  eWidgetComboBoxStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetComboBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Combo box widget notify messages.
@@ -36,7 +36,7 @@ enum eWidgetComboBoxCmd {
   //! The drop is going to be hidden.
   eWidgetComboBoxCmd_DropHidden = 4,
   //! \internal
-  eWidgetComboBoxCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetComboBoxCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Combo box widget interface.

@@ -33,7 +33,7 @@ enum ePixelFormatBlit
   //! Diagonal mirror. Equivalent to a Pi rad rotation.
   ePixelFormatBlit_MirrorDiagonal = ePixelFormatBlit_MirrorLeftRight|ePixelFormatBlit_MirrorUpDown,
   //! \internal
-  ePixelFormatBlit_ForceDWORD   = 0xFFFFFFFF
+  ePixelFormatBlit_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,38 +41,38 @@ enum ePixelFormatBlit
 enum ePixelFormatCaps
 {
   //! Support the build pixel methods.
-  ePixelFormatCaps_BuildPixel       = niBit(0),
+  ePixelFormatCaps_BuildPixel = niBit(0),
   //! Support pixel unpacking.
-  ePixelFormatCaps_UnpackPixel      = niBit(1),
+  ePixelFormatCaps_UnpackPixel = niBit(1),
   //! Support standard blitting.
-  ePixelFormatCaps_Blit         = niBit(2),
+  ePixelFormatCaps_Blit = niBit(2),
   //! Support mirrored left right blitting.
-  ePixelFormatCaps_BlitMirrorLeftRight  = niBit(3),
+  ePixelFormatCaps_BlitMirrorLeftRight = niBit(3),
   //! Support mirrored up down blitting.
-  ePixelFormatCaps_BlitMirrorUpDown   = niBit(4),
+  ePixelFormatCaps_BlitMirrorUpDown = niBit(4),
   //! Support stretched blitting.
-  ePixelFormatCaps_BlitStretch      = niBit(5),
+  ePixelFormatCaps_BlitStretch = niBit(5),
   //! Support stretched blitting of half size only (for mipmaps generation).
-  ePixelFormatCaps_BlitStretchHalf    = niBit(6),
+  ePixelFormatCaps_BlitStretchHalf = niBit(6),
   //! Is a signed pixel format.
-  ePixelFormatCaps_Signed         = niBit(7),
+  ePixelFormatCaps_Signed = niBit(7),
   //! Support standard alpha blended blitting.
-  ePixelFormatCaps_BlitAlpha        = niBit(8),
+  ePixelFormatCaps_BlitAlpha = niBit(8),
   //! Support mirrored left right alpha blended blitting.
   ePixelFormatCaps_BlitAlphaMirrorLeftRight = niBit(9),
   //! Support mirrored up down alpha blended blitting.
-  ePixelFormatCaps_BlitAlphaMirrorUpDown  = niBit(10),
+  ePixelFormatCaps_BlitAlphaMirrorUpDown = niBit(10),
   //! Support stretched alpha blended blitting.
-  ePixelFormatCaps_BlitAlphaStretch   = niBit(11),
+  ePixelFormatCaps_BlitAlphaStretch = niBit(11),
   //! Support stretched alpha blended blitting of half size only (for mipmaps generation).
   ePixelFormatCaps_BlitAlphaStretchHalf = niBit(12),
   //! Support a specialize clear method.
-  ePixelFormatCaps_Clear          = niBit(13),
+  ePixelFormatCaps_Clear = niBit(13),
   //! Block compressed format.
   //! \remark This includes format such as DXT formats (DX9/GL) and ASTC (GL/iOS/Android).
-  ePixelFormatCaps_BlockCompressed    = niBit(14),
+  ePixelFormatCaps_BlockCompressed = niBit(14),
   //! \internal
-  ePixelFormatCaps_ForceDWORD       = 0xFFFFFFFF
+  ePixelFormatCaps_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

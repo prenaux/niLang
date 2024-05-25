@@ -16,13 +16,13 @@ struct iGraphics;
 enum eBitmapType
 {
   //! 2D Bitmap.
-  eBitmapType_2D      = 0,
+  eBitmapType_2D = 0,
   //! Cube Bitmap. Six 2D Bitmaps.
-  eBitmapType_Cube    = 1,
+  eBitmapType_Cube = 1,
   //! 3D Bitmap.
-  eBitmapType_3D      = 2,
+  eBitmapType_3D = 2,
   //! \internal
-  eBitmapType_ForceDWORD  = 0xFFFFFFFF
+  eBitmapType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Bitmap format interface.

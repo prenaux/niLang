@@ -39,7 +39,7 @@ enum eD3D9ResourceType
   //! Index array/buffer type.
   eD3D9ResourceType_IndexArray = 7,
   //! \internal
-  eD3D9ResourceType_ForceDWORD = 0xFFFFFFFF
+  eD3D9ResourceType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! D3D9 texture.

@@ -49,7 +49,7 @@ enum eGraphicsCaptureFlags
   //! Breakpoint on StopAt end drawop.
   eGraphicsCaptureFlags_BreakOnStopAtEnd = niBit(7),
   //! \internal
-  eGraphicsCaptureFlags_ForceDWORD = 0xFFFFFFFF
+  eGraphicsCaptureFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics capture flag type. \see ni::eGraphicsCapture

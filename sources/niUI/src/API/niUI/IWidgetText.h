@@ -16,7 +16,7 @@ enum eWidgetTextStyle {
   //! Allow text selection with the mouse
   eWidgetTextStyle_MouseSelect = niBit(eWidgetStyle_MaxBit+1),
   //! \internal
-  eWidgetTextStyle_ForceDWORD = 0xFFFFFFFF
+  eWidgetTextStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! iWidgetText interface

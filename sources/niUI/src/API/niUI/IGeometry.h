@@ -25,7 +25,7 @@ enum eGeometryGenerate
   //! Generate the normals (overrirde flat normals computation).
   eGeometryGenerate_Normals = niBit(2),
   //! \internal
-  eGeometryGenerate_ForceDWORD  = 0xFFFFFFFF
+  eGeometryGenerate_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Geometry types.
@@ -38,7 +38,7 @@ enum eGeometryType
   //! Progressive geometry.
   eGeometryType_Progressive = 2,
   //! \internal
-  eGeometryType_ForceDWORD = 0xFFFFFFFF
+  eGeometryType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Geometry creation flags.
@@ -69,7 +69,7 @@ enum eGeometryCreateFlags
   //! The vertex array and index array usage is system memory.
   eGeometryCreateFlags_SystemMemory = eGeometryCreateFlags_VASystemMemory|eGeometryCreateFlags_IASystemMemory,
   //! \internal
-  eGeometryCreateFlags_ForceDWORD = 0xFFFFFFFF
+  eGeometryCreateFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Geometry creation flags type.
@@ -89,7 +89,7 @@ enum eGeometryOptimizeFlags
   //! Default.
   eGeometryOptimizeFlags_All = eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices|eGeometryOptimizeFlags_RemoveDuplicateVertices,
   //! Force DWORD.
-  eGeometryOptimizeFlags_ForceDWORD = 0xFFFFFFFF
+  eGeometryOptimizeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Optimize the geometry. \see ni::eGeometryOptimizeFlags

@@ -24,7 +24,7 @@ enum eBitmapCubeFace
   eBitmapCubeFace_PositiveZ = 4,
   eBitmapCubeFace_NegativeZ = 5,
   //! \internal
-  eBitmapCubeFace_ForceDWORD = 0xFFFFFFFF
+  eBitmapCubeFace_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -15,13 +15,13 @@ struct iTextObject;
 enum eTextTruncation
 {
   //! The words will be truncated on the left if bigger than the text block.
-  eTextTruncation_Left    = 0,
+  eTextTruncation_Left = 0,
   //! The words will be truncated on the right if bigger than the text block.
-  eTextTruncation_Right   = 1,
+  eTextTruncation_Right = 1,
   //! The words won't be truncated.
-  eTextTruncation_None    = 2,
+  eTextTruncation_None = 2,
   //! \internal
-  eTextTruncation_ForceDWORD   = 0xFFFFFFFF
+  eTextTruncation_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Text occluder interface

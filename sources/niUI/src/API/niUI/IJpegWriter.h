@@ -17,7 +17,7 @@ enum eJpegWriteFlags
   //! Has an alpha channel, implies the use of the YCoCg(A) colorspace.
   eJpegWriteFlags_Alpha = niBit(1),
   //! \internal
-  eJpegWriteFlags_ForceDWORD = 0xFFFFFFFF
+  eJpegWriteFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Jpeg write flags type. \see ni::eJpegWriteFlags

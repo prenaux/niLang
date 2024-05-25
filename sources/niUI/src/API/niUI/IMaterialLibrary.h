@@ -40,7 +40,7 @@ enum eMaterialSerializeFlags
   //! Texture compression value higher bit. (7 bits value)
   eMaterialSerializeFlags_TextureCompressionHi = niBit(31),
   //! \internal
-  eMaterialSerializeFlags_ForceDWORD = 0xFFFFFFFF
+  eMaterialSerializeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Material Serialization flags type.

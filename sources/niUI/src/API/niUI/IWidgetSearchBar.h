@@ -18,7 +18,7 @@ enum eWidgetSearchBarCmd
   //! This is a good time to destroy or hide the search bar
   eWidgetSearchBarCmd_End = 2,
   //! \internal
-  eWidgetSearchBarCmd_ForceDWORD = 0xFFFFFFFF
+  eWidgetSearchBarCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Search container

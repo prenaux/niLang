@@ -18,7 +18,7 @@ enum eVideoDecoderFlags
   //! If available decode and sync sound stream with the video.
   eVideoDecoderFlags_Sound = niBit(2),
   //! \internal
-  eVideoDecoderFlags_ForceDWORD = 0xFFFFFFFF
+  eVideoDecoderFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Video decoder flags type. \see ni::eVideoDecoderFlags

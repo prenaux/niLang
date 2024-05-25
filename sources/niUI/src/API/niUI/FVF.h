@@ -72,7 +72,7 @@ enum eFVF
   eFVF_Indices  = 0x00001000,
 
   //! \internal
-  eFVF_ForceDWORD = 0xFFFFFFFF
+  eFVF_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! FVF type.
@@ -1023,7 +1023,7 @@ enum eVertexFormat {
   eVertexFormat_PB4INT1 = eFVF_PositionB4|eFVF_Indices|eFVF_Normal|eFVF_Tex1,
   eVertexFormat_PB4INAT1 = eFVF_PositionB4|eFVF_Indices|eFVF_Normal|eFVF_ColorA|eFVF_Tex1,
   //! \internal
-  eVertexFormat_ForceDWORD = 0xFFFFFFFF
+  eVertexFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 struct sVertexP {

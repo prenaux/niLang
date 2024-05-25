@@ -626,7 +626,7 @@ enum eUIMessage
   //! @}
 
   //! \internal
-  eUIMessage_ForceDWORD = 0xFFFFFFFF
+  eUIMessage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

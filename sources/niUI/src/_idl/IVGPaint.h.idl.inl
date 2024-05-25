@@ -424,6 +424,16 @@ IDLC_METH_BEGIN(ni,iVGPaintGradient,GetGradientTable,0)
 IDLC_METH_END(ni,iVGPaintGradient,GetGradientTable,0)
 #endif // niMinFeatures(20)
 
+/** ni -> iVGPaintGradient::GetGradientImage/0 -> MIN FEATURES '20' **/
+#if niMinFeatures(20)
+/** ni -> iVGPaintGradient::GetGradientImage/0 **/
+IDLC_METH_BEGIN(ni,iVGPaintGradient,GetGradientImage,0)
+	IDLC_DECL_RETVAR(iVGImage*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iVGPaintGradient,GetGradientImage,0,())
+	IDLC_RET_FROM_INTF(iVGImage,_Ret)
+IDLC_METH_END(ni,iVGPaintGradient,GetGradientImage,0)
+#endif // niMinFeatures(20)
+
 IDLC_END_INTF(ni,iVGPaintGradient)
 
 #endif // if niMinFeatures(20)

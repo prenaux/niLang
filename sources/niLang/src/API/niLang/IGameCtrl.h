@@ -23,7 +23,7 @@ enum eGameCtrlAxis
   //! \internal
   eGameCtrlAxis_Last = 6,
   //! \internal
-  eGameCtrlAxis_ForceDWORD = 0xFFFFFFFF
+  eGameCtrlAxis_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Game controller buttons.
@@ -65,7 +65,7 @@ enum eGameCtrlButton
   eGameCtrlButton_DPadRight = 15,
 
   //! \internal
-  eGameCtrlButton_ForceDWORD = 0xFFFFFFFF
+  eGameCtrlButton_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Game controller interface.

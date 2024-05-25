@@ -51,7 +51,7 @@ enum eSerializeFlags
   //! \remark This is relevant for file/stream serialization.
   eSerializeFlags_Raw = niBit(11),
   //! \internal
-  eSerializeFlags_ForceDWORD = 0xFFFFFFFF
+  eSerializeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Serialization mode
@@ -68,7 +68,7 @@ enum eSerializeMode
   //! \remark Means that no object header will be checked for.
   eSerializeMode_ReadRaw = eSerializeFlags_Read|eSerializeFlags_Raw,
   //! \internal
-  eSerializeMode_ForceDWORD = 0xFFFFFFFF
+  eSerializeMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Serialization flags type.

@@ -24,7 +24,7 @@ enum eRemoteAddressType
   //! IPC (inter-process communication) address.
   eRemoteAddressType_IPC = 3,
   //! \internal
-  eRemoteAddressType_ForceDWORD = 0xFFFFFFFF
+  eRemoteAddressType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Remote address base interface.
@@ -74,7 +74,7 @@ enum eRemoteAddressIPv4Reserved
   //! Address used to broadcast a packet.
   eRemoteAddressIPv4Reserved_Broadcast = 0xFFFFFFFF,
   //! \internal
-  eRemoteAddressIPv4Reserved_ForceDWORD = 0xFFFFFFFF
+  eRemoteAddressIPv4Reserved_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! IPv4 remote address interface.
@@ -116,7 +116,7 @@ enum eSocketProtocol
   //! TCP protocol
   eSocketProtocol_TCP = 2,
   //! \internal
-  eSocketProtocol_ForceDWORD = 0xFFFFFFFF
+  eSocketProtocol_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Socket wait flags.
@@ -131,7 +131,7 @@ enum eSocketWaitFlags
   //! Wait error
   eSocketWaitFlags_Error = 0xFFFFFFFF,
   //! \internal
-  eSocketWaitFlags_ForceDWORD = 0xFFFFFFFF
+  eSocketWaitFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Socket Error codes
@@ -217,7 +217,7 @@ enum eSocketErrno
   //! \remark Currently, this can be set by ReceiveBuffers only.
   eSocketErrno_MessagePartial = 24,
   //! \internal
-  eSocketErrno_ForceDWORD = 0xFFFFFFFF
+  eSocketErrno_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Socket buffer structure

@@ -27,7 +27,7 @@ enum eStringTokenizerCharType
   //! The char mark a split and is a token.
   eStringTokenizerCharType_SplitterAndToken = 5,
   //! To force the compiler to put the enum in a DWORD
-  eStringTokenizerCharType_ForceDWORD = 0xFFFFFFFF
+  eStringTokenizerCharType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! iStringTokenizer interface

@@ -166,7 +166,7 @@ enum eKey
   eKey_MediaSelect  = 0xED,             //! Media Select
   eKey_Last         = 0xFF,             //! \internal
   //! \internal
-  eKey_ForceDWORD   = 0xFFFFFFFF
+  eKey_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Key modifier
@@ -181,7 +181,7 @@ enum eKeyMod
   eKeyMod_CapsLock   = niBit(21),
   eKeyMod_ScrollLock = niBit(22),
   //! \internal
-  eKeyMod_ForceDWORD = 0xFFFFFFFF
+  eKeyMod_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Pointer buttons
@@ -202,7 +202,7 @@ enum ePointerButton
   ePointerButton_Middle = ePointerButton_Bt2,
 
   //! \internal
-  ePointerButton_ForceDWORD = 0xFFFFFFFF
+  ePointerButton_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Pointer axis
@@ -219,7 +219,7 @@ enum ePointerAxis
   //! \internal
   ePointerAxis_Last       = 4,
   //! \internal
-  ePointerAxis_ForceDWORD = 0xFFFFFFFF
+  ePointerAxis_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Gesture states
@@ -235,7 +235,7 @@ enum eGestureState {
   //! The gesture was cancelled.
   eGestureState_Cancelled = 4,
   //! \internal
-  eGestureState_ForceDWORD = 0xFFFFFFFF
+  eGestureState_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Window messages.
@@ -340,7 +340,7 @@ enum eOSWindowMessage {
   eOSWindowMessage_Pinch = niMessageID('_','O','W','G','p'),
 
   //! \internal
-  eOSWindowMessage_ForceDWORD = 0xFFFFFFFF
+  eOSWindowMessage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Window style.
@@ -366,7 +366,7 @@ enum eOSWindowStyleFlags
   //! Fullscreen window, non-resizable overlay, doesn't appear in the taskbar.
   eOSWindowStyleFlags_FullScreenNoTaskBar = eOSWindowStyleFlags_Toolbox|eOSWindowStyleFlags_FixedSize|eOSWindowStyleFlags_NoTitle,
   //! \internal
-  eOSWindowStyleFlags_ForceDWORD = 0xFFFFFFFF
+  eOSWindowStyleFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! OS Window style flags type. \see ni::eOSWindowStyleFlags
 typedef tU32 tOSWindowStyleFlags;
@@ -381,7 +381,7 @@ enum eOSWindowCreateFlags
   //! For CreateWindowEx, set our window proc as the window's message handler.
   eOSWindowCreateFlags_SetWindowProc = niBit(2),
   //! \internal
-  eOSWindowCreateFlags_ForceDWORD = 0xFFFFFFFF
+  eOSWindowCreateFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! OS Window create flags type. \see ni::eOSWindowCreateFlags
 typedef tU32 tOSWindowCreateFlags;
@@ -402,7 +402,7 @@ enum eOSWindowShowFlags
   //! Restore the window to it's original size (after being minimized).
   eOSWindowShowFlags_Restore = niBit(5),
   //! \internal
-  eOSWindowShowFlags_ForceDWORD = 0xFFFFFFFF
+  eOSWindowShowFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! OS Window show flags type. \see ni::eOSWindowShowFlags
 typedef tU32 tOSWindowShowFlags;
@@ -417,7 +417,7 @@ enum eOSWindowZOrder
   //! Put the window on top of all others.
   eOSWindowZOrder_TopMost = 2,
   //! \internal
-  eOSWindowZOrder_ForceDWORD = 0xFFFFFFF
+  eOSWindowZOrder_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Cursor
@@ -444,7 +444,7 @@ enum eOSCursor
   //! Use the custom cursor \see ni::iOSWindow::InitCustomCursor.
   eOSCursor_Custom = 100,
   //! \internal
-  eOSCursor_ForceDWORD = 0xFFFFFFFF,
+  eOSCursor_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 
 //! OS Monitor flags.
@@ -453,7 +453,7 @@ enum eOSMonitorFlags
   //! Primary monitor.
   eOSMonitorFlags_Primary = niBit(0),
   //! \internal
-  eOSMonitorFlags_ForceDWORD = 0xFFFFFFFF
+  eOSMonitorFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! OS Monitor flags type. \see ni::eOSMonitorFlags
 typedef tU32 tOSMonitorFlags;
@@ -485,7 +485,7 @@ enum eOSMessageBoxFlags
   //! \remark Force display of a top most UI message box.
   eOSMessageBoxFlags_FatalError = niBit(10),
   //! \internal
-  eOSMessageBoxFlags_ForceDWORD = 0xFFFFFFFF,
+  eOSMessageBoxFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 //! OS Message box flags typedef. \see ni::eOSMessageBoxFlags
 typedef tU32 tOSMessageBoxFlags;
@@ -504,7 +504,7 @@ enum eOSMessageBoxReturn
   //! No/Cancel button pressed.
   eOSMessageBoxReturn_Cancel = 2,
   //! \internal
-  eOSMessageBoxReturn_ForceDWORD = 0xFFFFFFFF
+  eOSMessageBoxReturn_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Window switch reason.
@@ -519,7 +519,7 @@ enum eOSWindowSwitchReason
   eOSWindowSwitchReason_Minimized = 'z',
   eOSWindowSwitchReason_User = 256,
   //! \internal
-  eOSWindowSwitchReason_ForceDWORD = 0xFFFFFFFF
+  eOSWindowSwitchReason_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! A graphics API.

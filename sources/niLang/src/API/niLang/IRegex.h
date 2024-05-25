@@ -94,7 +94,7 @@ enum ePCREOptionsFlags {
   //! Optimize the regular expression.
   ePCREOptionsFlags_Optimize            = niBit(31),
   //! \internal
-  ePCREOptionsFlags_ForceDWORD          = 0xFFFFFFFF
+  ePCREOptionsFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! PCRE option flags type. \see ni::ePCREOptionsFlags
@@ -129,7 +129,7 @@ enum ePCREError {
   ePCREError_LoopLimit      = (tU32)(-24),
   ePCREError_BadRegexString = (tU32)(-1000),
   //! \internal
-  ePCREError_ForceDWORD = 0xFFFFFFFF
+  ePCREError_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 #endif

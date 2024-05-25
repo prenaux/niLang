@@ -28,7 +28,7 @@ enum eOSWinFileFlags
   //! read or write.
   eOSWinFileFlags_ConnectNamedPipe = niBit(5)|eOSWinFileFlags_Pipe,
   //! \internal
-  eOSWinFileFlags_ForceDWORD = 0xFFFFFFFF
+  eOSWinFileFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Windows file handle flags type. \see ni::eOSWinFileFlags

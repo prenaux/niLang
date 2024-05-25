@@ -37,7 +37,7 @@ enum eProfilerReportMode
   eProfilerReportMode_CallGraph = 2,
   eProfilerReportMode_Last = 3,
   //! \internal
-  eProfilerReportMode_ForceDWORD = 0xFFFFFFFF
+  eProfilerReportMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! {DispatchWrapper}

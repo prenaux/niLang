@@ -1927,7 +1927,7 @@ typedef enum eTypeFlags {
   eTypeFlags_MethodSetter     = 0x00100000,
   eTypeFlags_MethodGetter     = 0x00200000,
   eTypeFlags_MethodStatic     = 0x00400000,
-  eTypeFlags_ForceDWORD       = 0xFFFFFFFF
+  eTypeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eTypeFlags;
 
 //! Base types enumeration.
@@ -2004,7 +2004,7 @@ typedef enum eType
   eType_ASZ = eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer,
   eType_IUnknownPtr = eType_IUnknown|eTypeFlags_Pointer,
 
-  eType_ForceDWORD = 0xFFFFFFFF
+  eType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eType;
 
 typedef tU32  tType;
@@ -2168,7 +2168,7 @@ enum eLogFlags
   //! Do not prefix with the log type.
   eLogFlags_NoLogTypePrefix = niBit(21),
   //! \internal
-  eLogFlags_ForceDWORD = 0xFFFFFFFF
+  eLogFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Log flags type.
@@ -3773,7 +3773,7 @@ typedef enum eRectCorners
   //! All rectangle corners.
   eRectCorners_All = eRectCorners_TopLeft|eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft,
   //! To force the compiler to put the enumeration in DWORD.
-  eRectCorners_ForceDWORD = 0xFFFFFFFF
+  eRectCorners_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eRectCorners;
 
 //! Rect edges.
@@ -3794,7 +3794,7 @@ typedef enum eRectEdges
   //! All rectangle edges.
   eRectEdges_All = eRectEdges_Vertical|eRectEdges_Horizontal,
   //! \internal
-  eRectEdges_ForceDWORD = 0xFFFFFFFF
+  eRectEdges_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eRectEdges;
 
 //! Rect edges flags.
@@ -3839,7 +3839,7 @@ enum eRectFrameFlags
   //! \remark Zero mean the all frame aswell
   eRectFrameFlags_All = eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides|eRectFrameFlags_Center,
   //! \internal
-  eRectFrameFlags_ForceDWORD = 0xFFFFFFFF
+  eRectFrameFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Rect frame flags. \see ni::eRectFrameFlags
@@ -4551,7 +4551,7 @@ enum eListInterfacesFlags
   //! \remark This needs to be implemented only for objects that do have dynamic interfaces.
   eListInterfacesFlags_DynamicOnly = niBit(2),
   //! \internal
-  eListInterfacesFlags_ForceDWORD = 0xFFFFFFFF
+  eListInterfacesFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! iUnknown interface
@@ -4812,7 +4812,7 @@ typedef enum eFileAttrFlags
   //! All directories.
   eFileAttrFlags_AllDirectories = eFileAttrFlags_Directory,
   //! \internal
-  eFileAttrFlags_ForceDWORD = 0xFFFFFFFF
+  eFileAttrFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eFileAttrFlags;
 
 //! File time.
@@ -4825,7 +4825,7 @@ typedef enum eFileTime
   //! Last write file time.
   eFileTime_LastWrite = 2,
   //! \internal
-  eFileTime_ForceDWORD = 0xFFFFFFFF
+  eFileTime_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eFileTime;
 
 //! File open mode.
@@ -4840,7 +4840,7 @@ typedef enum eFileOpenMode
   //! Optimized form random access.
   eFileOpenMode_Random = niBit(3),
   //! \internal
-  eFileOpenMode_ForceDWORD = 0xFFFFFFFF
+  eFileOpenMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eFileOpenMode;
 
 //! File attributes flags type. \see ni::eFileAttrFlags

@@ -23,7 +23,7 @@ enum eFPUPrecision {
   eFPUPrecision_Mask = 512|256,
   eFPUPrecision_Lowest = eFPUPrecision_24,
   eFPUPrecision_Highest = eFPUPrecision_53,
-  eFPUPrecision_ForceDWORD = 0xFFFFFFFF
+  eFPUPrecision_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! FPU rounding
@@ -33,7 +33,7 @@ enum eFPURounding {
   eFPURounding_Up = 2048,
   eFPURounding_Truncate = 2048|1024,
   eFPURounding_Mask = 2048|1024,
-  eFPURounding_ForceDWORD = 0xFFFFFFFF
+  eFPURounding_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Utility call to control the x87 FPU modes

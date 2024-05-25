@@ -26,7 +26,7 @@ enum eXmlParserNodeType {
   //! An xml cdata section like &lt;![CDATA[ this is some CDATA ]]&gt;
   eXmlParserNodeType_CDATA = 5,
   //! \internal
-  eXmlParserNodeType_ForceDWORD = 0xFFFFFFFF
+  eXmlParserNodeType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Xml parser sink interface.

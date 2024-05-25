@@ -37,7 +37,7 @@ enum eOSProcessSpawnFlags
   //! \remark This is needed to launch other applications independantly, such as in the case of a launcher starting another app.
   eOSProcessSpawnFlags_Detached = niBit(3),
   //! \internal
-  eOSProcessSpawnFlags_ForceDWORD = 0xFFFFFFFF
+  eOSProcessSpawnFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Process spawning flags type. \see ni::eOSProcessSpawnFlags
@@ -55,7 +55,7 @@ enum eOSProcessFile
   //! \internal
   eOSProcessFile_Last = 3,
   //! \internal
-  eOSProcessFile_ForceDWORD = 0xFFFFFFFF
+  eOSProcessFile_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! OS Process object interface.

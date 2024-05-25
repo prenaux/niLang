@@ -56,7 +56,7 @@ enum eTextEncodingFormat
   //! Native encoding.
   eTextEncodingFormat_Native = eTextEncodingFormat_UTF8,
   //! \internal
-  eTextEncodingFormat_ForceDWORD = 0xFFFFFFFF
+  eTextEncodingFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Callback interface used by the FileEnum() method of the iLang interface.
@@ -103,7 +103,7 @@ enum eFileFlags
   //!         supported for streams.
   eFileFlags_Stream = niBit(21),
   //! \internal
-  eFileFlags_ForceDWORD = 0xFFFFFFFF
+  eFileFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! File flags.
 typedef tU32  tFileFlags;

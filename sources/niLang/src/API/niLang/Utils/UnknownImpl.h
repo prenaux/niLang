@@ -194,7 +194,7 @@ enum eImplFlags {
   eImplFlags_DontInherit3 = niBit(5),
   eImplFlags_DontInherit4 = niBit(6),
   eImplFlags_Default = 0,
-  eImplFlags_ForceDWORD = 0xFFFFFFFF
+  eImplFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 typedef tU32 tImplFlags;

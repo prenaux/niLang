@@ -15,7 +15,7 @@ enum eRawToStringEncoding {
   eRawToStringEncoding_Base64 = 1,
   eRawToStringEncoding_Base32 = 2,
   //! \internal
-  eRawToStringEncoding_ForceDWORD = 0xFFFFFFFF
+  eRawToStringEncoding_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 niExportFunc(tInt) Base32EncodeOutputSize(tInt slen);

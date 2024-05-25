@@ -35,7 +35,7 @@ enum eExpressionVariableType
   //! Constructors: "string", 'string'
   eExpressionVariableType_String = 5,
   //! \internal
-  eExpressionVariableType_ForceDWORD = 0xFFFFFFFF
+  eExpressionVariableType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Expression variables flags.
@@ -53,7 +53,7 @@ enum eExpressionVariableFlags
   //! Variable is the result of a quaternion function.
   eExpressionVariableFlags_Quat = niBit(3),
   //! \internal
-  eExpressionVariableFlags_ForceDWORD = 0xFFFFFFFF,
+  eExpressionVariableFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
 };
 
 //! Expression variables flags type. \see ni::eExpressionVariableFlags

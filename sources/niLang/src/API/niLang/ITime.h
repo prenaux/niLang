@@ -154,7 +154,7 @@ enum eTimeZone
   //! Zulu Time Zone  Military  UTC
   eTimeZone_Z = (tU32)0,
   //! \internal
-  eTimeZone_ForceDWORD = 0xFFFFFFFF
+  eTimeZone_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Minimum/Maximum year that the time object can hold. (+/- ~2.1 billion years)

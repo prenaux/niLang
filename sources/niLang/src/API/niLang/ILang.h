@@ -47,7 +47,7 @@ enum eEnumToStringFlags {
   //! Search all registered enumerations if the specified fully qualified enumeration can't be found.
   eEnumToStringFlags_GlobalSearch = niBit(2),
   //! \internal
-  eEnumToStringFlags_ForceDWORD = 0xFFFFFFFF
+  eEnumToStringFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! \see ni::eEnumToStringFlags
@@ -76,7 +76,7 @@ enum eSystemMessage
   //! \param B: unused
   eSystemMessage_OpenFile = niMessageID('_','S','Y','S','O'),
   //! \internal
-  eSystemMessage_ForceDWORD = 0xFFFFFFFF
+  eSystemMessage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Clipboard types
@@ -107,7 +107,7 @@ enum eClipboardType
   //! \internal
   eClipboardType_Last = 11,
   //! \internal
-  eClipboardType_ForceDWORD = 0xFFFFFFFF
+  eClipboardType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -41,7 +41,7 @@ enum eFileSystemRightsFlags
   //! All rights
   eFileSystemRightsFlags_All = eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete|eFileSystemRightsFlags_Execute,
   //! \internal
-  eFileSystemRightsFlags_ForceDWORD = 0xFFFFFFFF
+  eFileSystemRightsFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! File system rights flags type. \see ni::eFileSystemRightsFlags

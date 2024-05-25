@@ -36,7 +36,7 @@ enum eJsonType {
   //! Array end
   eJsonType_ArrayEnd = 10,
   //! \internal
-  eJsonType_ForceDWORD = 0xFFFFFFFF
+  eJsonType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Json parser sink interface.

@@ -62,7 +62,7 @@ enum eDataTableCopyFlags
   //! Clone all appended children tables.
   eDataTableCopyFlags_Clone = niBit(4),
   //! \internal
-  eDataTableCopyFlags_ForceDWORD = 0xFFFFFFF
+  eDataTableCopyFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Data table copy flags.

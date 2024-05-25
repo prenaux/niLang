@@ -108,6 +108,10 @@ void ImageDXTC::FromImage32(Image *pSrc, DXTCMethod Mth)
     case DC_DXT3:
       CompressDXT3(pSrc);
       break;
+
+    case DC_DXT5:
+      niError("DC_DXT5 not supported.");
+      break;
   }
 }
 
@@ -256,9 +260,14 @@ void ImageDXTC::ToImage32(Image *pDest)
     case DC_DXT1:
       DXT1to32(pDest);
       break;
-
     case DC_DXT3:
       DXT3to32(pDest);
+      break;
+    case DC_None:
+      niError("DC_None not supported.");
+      break;
+    case DC_DXT5:
+      niError("DC_DXT5 not supported.");
       break;
   }
 }

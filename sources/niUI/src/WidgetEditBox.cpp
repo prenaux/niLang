@@ -124,10 +124,10 @@ void cEditBoxWidget::AutoScroll(tBool abForceRefresh)
     Position cur = mbufText.GetCursor();
     tF32 scrollpos = mpsbScrollBarLeft->GetScrollPosition();
     tF32 pagesize = mpsbScrollBarLeft->GetPageSize();
-    if (cur._line > (scrollpos+pagesize-1)) {
-      mpsbScrollBarLeft->SetScrollPosition(cur._line - pagesize + 1);
+    if ((tF32)cur._line > (scrollpos+pagesize-1)) {
+      mpsbScrollBarLeft->SetScrollPosition((tF32)cur._line - pagesize + 1);
     }
-    else if (cur._line < scrollpos) {
+    else if ((tF32)cur._line < scrollpos) {
       mpsbScrollBarLeft->SetScrollPosition((tF32)cur._line);
     }
   }
@@ -552,10 +552,10 @@ Position cEditBoxWidget::TranslateMousePos(tF32 x,tF32 y)
     }
     const tF32 cw = pFont->GetAdvance(c);
     simlen += nchar;
-    if ((totalx+cw*nchar) > x) {
+    if ((totalx+cw*(tF32)nchar) > x) {
       break;
     }
-    totalx += cw*nchar;
+    totalx += cw*(tF32)nchar;
     colidx++;
   }
   return Position(lineidx,colidx);

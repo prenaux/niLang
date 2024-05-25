@@ -883,8 +883,8 @@ static inline GLenum GL_Primitive(eGraphicsPrimitiveType prim)
     case eGraphicsPrimitiveType_LineStrip:    return GL_LINE_STRIP;
     case eGraphicsPrimitiveType_TriangleList: return GL_TRIANGLES;
     case eGraphicsPrimitiveType_TriangleStrip:  return GL_TRIANGLE_STRIP;
+    default: return 0;
   }
-  return 0;
 }
 
 ///////////////////////////////////////////////
@@ -3818,8 +3818,9 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
 #endif
       case eGraphicsCaps_BlitBackBuffer:
         return eFalse; // This works, but glCopyTexSubImage2D is just too slow, especially on Mobile
+      default:
+        return 0;
     }
-    return 0;
   }
 
   /////////////////////////////////////////////

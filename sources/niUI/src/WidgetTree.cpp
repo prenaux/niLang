@@ -1253,6 +1253,7 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
       if (mpSecondarySel && (mpSecondarySel->GetTreeIndex() == (tU32)mnHoverTreeNodeIndex)) {
         _DoSelect(mpSecondarySel,apWidget->GetUIContext()->GetInputModifiers(),eTrue);
       }
+      niFallthrough;
     case eUIMessage_NCLeftClickUp:
       SetSecondarySelection(NULL);
       apWidget->SetCapture(eFalse);

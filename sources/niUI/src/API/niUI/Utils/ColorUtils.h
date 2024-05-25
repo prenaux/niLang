@@ -1365,6 +1365,7 @@ sVec4<T> __stdcall ColorConvert(eColorSpace aSource, eColorSpace aDest, const sV
             xyzColor = ColorConvert_RGB_XYZ(aColor,aXYZRef);
             break;
         }
+        break;
       }
     case eColorSpace_CMY:
       {

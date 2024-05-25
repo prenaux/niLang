@@ -473,7 +473,7 @@ void ImgCodeBook::GenerateDistanceTables(void)
 
 long ImgCodeBook::FindVector(cbVector &Vect)
 {
-  long  i, Count, Tested = 0, Closest, ClosestIndex, TestMag;
+  long  i, Count, Closest, ClosestIndex, TestMag;
   ni::tU32  Dist, InvDist, Root;
   long  OriginMin, OriginMax, AntiMin, AntiMax, Bright, bDiff, Scope;
   DualDist  *pDist;
@@ -517,7 +517,6 @@ long ImgCodeBook::FindVector(cbVector &Vect)
     if( pDist->AntiOrigin >= AntiMin && pDist->AntiOrigin <= AntiMax &&
         pDist->Origin >= OriginMin && pDist->Origin <= OriginMax )
     {
-      Tested++;
       Diff.Diff(Vect, VectList[i]);
       TestMag = Diff.Mag();
       if(TestMag < Closest)

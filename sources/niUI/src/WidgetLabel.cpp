@@ -40,10 +40,10 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
     switch (nMsg) {
       case eUIMessage_SkinChanged: {
         apWidget->SetFont(NULL);
-        // fall through to update auto layout
+        niFallthrough;
       }
       case eUIMessage_TextChanged: {
-        // fall through to update auto layout
+        niFallthrough;
       }
       case eUIMessage_Layout: {
         if (niFlagIs(aA.mU32,eWidgetAutoLayoutFlags_Size)) {
@@ -65,6 +65,7 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
               canComputeW = eFalse;
               canComputeH = eFalse;
               break;
+            default: break;
           }
           sRectf rect(0,0,0,0);
           rect = apWidget->GetFont()->ComputeTextSize(

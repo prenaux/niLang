@@ -24,9 +24,10 @@ inline const achar *_GetEOL(eNewLine aNewLine)
 #else
       return _A("\n");
 #endif
+    default:
+      niPanicUnreachable("Invalid EOL.");
+      return nullptr;
   }
-  niAssert(0 && "Unreachable.");
-  return NULL;
 }
 
 class Line

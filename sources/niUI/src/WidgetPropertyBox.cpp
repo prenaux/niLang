@@ -585,6 +585,9 @@ iWidget* cWidgetPropertyBox::CreateWidgetEditBox(ePropertyEditBoxType aType, iHS
         pEB->SetSkinClass(_H("PropertyBoxButton"));
         break;
       }
+    case ePropertyEditBoxType_Hidden:
+    case ePropertyEditBoxType_Unknown:
+      break;
   }
   if (niIsOK(pEB)) {
     pEB->SetDockStyle(eWidgetDockStyle_DockFillWidth);
@@ -845,6 +848,9 @@ iWidget* cWidgetPropertyBox::SetEditBox(iWidgetTreeNode* apTreeNode, iDataTable*
         QPtr<iWidgetButton>(pEB)->SetCheck(b?eTrue:eFalse);
         break;
       }
+    case ePropertyEditBoxType_Hidden:
+    case ePropertyEditBoxType_Unknown:
+      break;
   }
 
   return pEB;
@@ -893,6 +899,9 @@ void cWidgetPropertyBox::SetEditBoxInDataTable(iWidgetTreeNode* apNode, iDataTab
         strNewVal.Set(QPtr<iWidgetButton>(apNode->GetWidget())->GetCheck());
         break;
       }
+    case ePropertyEditBoxType_Hidden:
+    case ePropertyEditBoxType_Unknown:
+      break;
   }
 
   if (strNewVal != strCurVal) {

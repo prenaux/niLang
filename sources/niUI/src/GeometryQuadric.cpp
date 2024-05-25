@@ -193,9 +193,9 @@ QuadricCylinder(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
   tF32 z, nz;
   tI32 i, j;
 
-  da = 2.0f * niPif / slices;
-  dr = (topRadius - baseRadius) / stacks;
-  dz = height / stacks;
+  da = 2.0f * niPif / (tF32)slices;
+  dr = (topRadius - baseRadius) / (tF32)stacks;
+  dz = height / (tF32)stacks;
   nz = (baseRadius - topRadius) / height; /* Z component of normal vectors */
 
   tF32 heightOffset = abCentered ? -(height*0.5f) : 0.0f;
@@ -204,8 +204,8 @@ QuadricCylinder(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
 
   tU32 nNumTris = 0;
   tU32 nNumVerts = 0;
-  tF32 ds = 1.0f / slices;
-  tF32 dt = 1.0f / stacks;
+  tF32 ds = 1.0f / (tF32)slices;
+  tF32 dt = 1.0f / (tF32)stacks;
   tF32 t = 0.0f;
   z = 0.0f;
   r = baseRadius;
@@ -222,18 +222,18 @@ QuadricCylinder(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
         y = cosf(0.0f);
       }
       else {
-        x = sinf(i * da);
-        y = cosf(i * da);
+        x = ni::Sin((tF32)i * da);
+        y = ni::Cos((tF32)i * da);
       }
 
       strip.Color(aulColor);
       strip.Normal(x, y, nz);
-      strip.TexCoo(s, -t);      //EDMOND
+      strip.TexCoo(s, -t);
       strip.Position(x * r, y * r, z + heightOffset);
 
       strip.Color(aulColor);
       strip.Normal(x, y, nz);
-      strip.TexCoo(s, -(t + dt));   //EDMOND
+      strip.TexCoo(s, -(t + dt));
       strip.Position(x * (r + dr), y * (r + dr), z + dz + heightOffset);
 
       s += ds;
@@ -280,8 +280,8 @@ QuadricSphere(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
   // t goes from -1.0/+1.0 at z = -radius/+radius (linear along longitudes)
   // cannot use triangle fan on texturing (s coord. at top/bottom tip varies)
 
-  ds = 1.0f / slices;
-  dt = 1.0f / stacks;
+  ds = 1.0f / (tF32)slices;
+  dt = 1.0f / (tF32)stacks;
   t = 1.0f;     // because loop now runs from 0
   imin = 0;
   imax = stacks;
@@ -291,25 +291,25 @@ QuadricSphere(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
   tU32 nNumVerts = 0;
   // draw intermediate stacks as quad strips
   for (i = imin; i < imax; i++) {
-    rho = i * drho;
+    rho = (tF32)i * drho;
     vQuads.push_back(sQuadStrip());
     sQuadStrip& strip = vQuads.back();
     s = 0.0;
     for (j = 0; j <= slices; j++) {
-      theta = (j == slices) ? 0.0f : j * dtheta;
+      theta = (j == slices) ? 0.0f : (tF32)j * dtheta;
       x = -sin(theta) * sin(rho);
       y = cos(theta) * sin(rho);
       z = cos(rho);
       strip.Color(aulColor);
       strip.Normal(x, y, z);
-      strip.TexCoo(s, -t);    // EDMOND
+      strip.TexCoo(s, -t);
       strip.Position(x * radius, y * radius, z * radius);
       x = -sin(theta) * sin(rho + drho);
       y = cos(theta) * sin(rho + drho);
       z = cos(rho + drho);
       strip.Color(aulColor);
       strip.Normal(x, y, z);
-      strip.TexCoo(s, dt - t);  // EDMOND
+      strip.TexCoo(s, dt - t);
       s += ds;
       strip.Position(x * radius, y * radius, z * radius);
     }
@@ -334,8 +334,8 @@ void QuadricDiskSweepQuads(tQuadStripVec& vQuads, tF32 innerRadius, tF32 outerRa
   tI32 loop, slice;
   tF32 radius, delta_radius;
   tF32 angle, delta_angle, x, y;
-  delta_radius = (outerRadius - innerRadius) / loops;
-  delta_angle = (sweepAngle / slices);
+  delta_radius = (outerRadius - innerRadius) / (tF32)loops;
+  delta_angle = (sweepAngle / (tF32)slices);
   radius = innerRadius;
   for (loop = 0; loop < loops; loop++)
   {
@@ -407,8 +407,8 @@ QuadricDiskSweepEx(iGeometry* apGeom,
   tI32 loop, slice;
   tF32 radius, delta_radius;
   tF32 angle, delta_angle;
-  delta_radius = (outerRadius - innerRadius) / loops;
-  delta_angle = (sweepAngle / slices);
+  delta_radius = (outerRadius - innerRadius) / (tF32)loops;
+  delta_angle = (sweepAngle / (tF32)slices);
   radius = innerRadius;
   for (loop = 0; loop < loops; loop++)
   {
@@ -552,8 +552,8 @@ void SphericalInterpolate (Mesh& amesh, int v1, int v2, int *current, int num)
   sn = ni::Sin (theta);
 
   for (i=1; i<num; i++) {
-    theta1 = (theta*i)/num;
-    theta2 = (theta*(num-i))/num;
+    theta1 = (theta*(tF32)i)/(tF32)num;
+    theta2 = (theta*(tF32)(num-i))/(tF32)num;
     c = (a*ni::Sin(theta2) + b*ni::Sin(theta1))/sn;
     amesh.setVert ((*current)++, c);
   }
@@ -971,12 +971,12 @@ void Geosphere_Build(Mesh& mesh, int basetype, float radius, int segs, int hemi,
       subz = Sqrt (.2f) * radius;
       subrad = 2*subz;
       for (face=0; face<5; face++) {
-        theta = 2*niPif*face/5;
+        theta = 2*niPif*(tF32)face/5;
         SinCos (theta, &sn, &cs);
         mesh.setVert (nv++, subrad*cs, subrad*sn, subz);
       }
       for (face=0; face<5; face++) {
-        theta = niPif*(2*face+1)/5;
+        theta = niPif*(tF32)(2*face+1)/5.0f;
         SinCos (theta, &sn, &cs);
         mesh.setVert (nv++, subrad*cs, subrad*sn, -subz);
       }
@@ -1019,7 +1019,7 @@ void Geosphere_Build(Mesh& mesh, int basetype, float radius, int segs, int hemi,
       subz = Sqrt (.2f) * radius;
       subrad = 2*subz;
       for (face=0; face<5; face++) {
-        theta = 2*niPif*face/5.0f;
+        theta = 2*niPif*(tF32)face/5.0f;
         SinCos (theta, &sn, &cs);
         mesh.setVert (face+6, subrad*cs, subrad*sn, subz);
         SphericalInterpolate (mesh, 0, face+6, &nv, 2);
@@ -1027,7 +1027,7 @@ void Geosphere_Build(Mesh& mesh, int basetype, float radius, int segs, int hemi,
       nv += 5;
       for (face=0; face<5; face++) SphericalInterpolate (mesh, face+6, (face+1)%5+6, &nv, 2);
       for (face=0; face<10; face++) {
-        theta = 2*niPif*face/10.0f + niPif/10.0f;
+        theta = 2.0f*niPif*(tF32)face/10.0f + (niPif/10.0f);
         SinCos (theta, &sn, &cs);
         mesh.setVert (nv++, radius*cs, radius*sn, 0.0f);
       }

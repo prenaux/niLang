@@ -98,6 +98,7 @@ unsigned conv_adaptor_vcgen<VertexSource, Generator, Markers>::vertex(agg_real* 
         m_markers.remove_all();
         m_last_cmd = m_source->vertex(&m_start_x, &m_start_y);
         m_status = accumulate;
+        niFallthrough;
 
       case accumulate:
         if(is_stop(m_last_cmd)) return path_cmd_stop;
@@ -137,6 +138,7 @@ unsigned conv_adaptor_vcgen<VertexSource, Generator, Markers>::vertex(agg_real* 
         }
         m_generator.rewind(0);
         m_status = generate;
+        niFallthrough;
 
       case generate:
         cmd = m_generator.vertex(x, y);

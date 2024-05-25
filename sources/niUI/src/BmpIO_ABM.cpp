@@ -248,6 +248,10 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
           maxTexSize = apGraphics->GetDriverCaps(eGraphicsCaps_Texture2DMaxSize);
           break;
         }
+        case eBitmapType_3D: {
+          maxTexSize = apGraphics->GetDriverCaps(eGraphicsCaps_Texture3DMaxSize);
+          break;
+        }
         case eBitmapType_Cube: {
           maxTexSize = apGraphics->GetDriverCaps(eGraphicsCaps_TextureCubeMaxSize);
           break;

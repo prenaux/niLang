@@ -371,10 +371,10 @@ struct rgba8
       }
       else
       {
-        cr = r + c.r; r = (cr > calc_type(base_mask)) ? calc_type(base_mask) : cr;
-        cg = g + c.g; g = (cg > calc_type(base_mask)) ? calc_type(base_mask) : cg;
-        cb = b + c.b; b = (cb > calc_type(base_mask)) ? calc_type(base_mask) : cb;
-        ca = a + c.a; a = (ca > calc_type(base_mask)) ? calc_type(base_mask) : ca;
+        cr = r + c.r; r = value_type((cr > calc_type(base_mask)) ? calc_type(base_mask) : cr);
+        cg = g + c.g; g = value_type((cg > calc_type(base_mask)) ? calc_type(base_mask) : cg);
+        cb = b + c.b; b = value_type((cb > calc_type(base_mask)) ? calc_type(base_mask) : cb);
+        ca = a + c.a; a = value_type((ca > calc_type(base_mask)) ? calc_type(base_mask) : ca);
       }
     }
     else
@@ -383,10 +383,10 @@ struct rgba8
       cg = g + ((c.g * cover + cover_mask/2) >> cover_shift);
       cb = b + ((c.b * cover + cover_mask/2) >> cover_shift);
       ca = a + ((c.a * cover + cover_mask/2) >> cover_shift);
-      r = (cr > calc_type(base_mask)) ? calc_type(base_mask) : cr;
-      g = (cg > calc_type(base_mask)) ? calc_type(base_mask) : cg;
-      b = (cb > calc_type(base_mask)) ? calc_type(base_mask) : cb;
-      a = (ca > calc_type(base_mask)) ? calc_type(base_mask) : ca;
+      r = value_type((cr > calc_type(base_mask)) ? calc_type(base_mask) : cr);
+      g = value_type((cg > calc_type(base_mask)) ? calc_type(base_mask) : cg);
+      b = value_type((cb > calc_type(base_mask)) ? calc_type(base_mask) : cb);
+      a = value_type((ca > calc_type(base_mask)) ? calc_type(base_mask) : ca);
     }
   }
 
@@ -633,10 +633,10 @@ struct rgba16
       }
       else
       {
-        cr = r + c.r; r = (cr > calc_type(base_mask)) ? calc_type(base_mask) : cr;
-        cg = g + c.g; g = (cg > calc_type(base_mask)) ? calc_type(base_mask) : cg;
-        cb = b + c.b; b = (cb > calc_type(base_mask)) ? calc_type(base_mask) : cb;
-        ca = a + c.a; a = (ca > calc_type(base_mask)) ? calc_type(base_mask) : ca;
+        cr = r + c.r; r = value_type((cr > calc_type(base_mask)) ? calc_type(base_mask) : cr);
+        cg = g + c.g; g = value_type((cg > calc_type(base_mask)) ? calc_type(base_mask) : cg);
+        cb = b + c.b; b = value_type((cb > calc_type(base_mask)) ? calc_type(base_mask) : cb);
+        ca = a + c.a; a = value_type((ca > calc_type(base_mask)) ? calc_type(base_mask) : ca);
       }
     }
     else
@@ -645,10 +645,10 @@ struct rgba16
       cg = g + ((c.g * cover + cover_mask) >> cover_shift);
       cb = b + ((c.b * cover + cover_mask) >> cover_shift);
       ca = a + ((c.a * cover + cover_mask) >> cover_shift);
-      r = (cr > calc_type(base_mask)) ? calc_type(base_mask) : cr;
-      g = (cg > calc_type(base_mask)) ? calc_type(base_mask) : cg;
-      b = (cb > calc_type(base_mask)) ? calc_type(base_mask) : cb;
-      a = (ca > calc_type(base_mask)) ? calc_type(base_mask) : ca;
+      r = value_type((cr > calc_type(base_mask)) ? calc_type(base_mask) : cr);
+      g = value_type((cg > calc_type(base_mask)) ? calc_type(base_mask) : cg);
+      b = value_type((cb > calc_type(base_mask)) ? calc_type(base_mask) : cb);
+      a = value_type((ca > calc_type(base_mask)) ? calc_type(base_mask) : ca);
     }
   }
 

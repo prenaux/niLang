@@ -383,7 +383,7 @@ void DecompressBlockDXT5_(unsigned long x, unsigned long y, unsigned long width,
 
       unsigned char colorCode = (code >> 2*(4*j+i)) & 0x03;
 
-      unsigned long finalColor;
+      unsigned long finalColor = 0;
       switch (colorCode) {
         case 0:
           finalColor = ULColorBuild_(r0, g0, b0, finalAlpha);

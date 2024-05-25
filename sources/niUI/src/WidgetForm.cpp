@@ -294,6 +294,7 @@ tBool __stdcall cWidgetForm::OnWidgetSink(iWidget* apWidget, tU32 anMsg, const V
       {
         if (!mnDrag)
           return eFalse;
+        niFallthrough;
       }
     case eUIMessage_NCLeftClickUp:
       {
@@ -344,6 +345,10 @@ tBool __stdcall cWidgetForm::OnWidgetSink(iWidget* apWidget, tU32 anMsg, const V
                 break;
               case eResizeArea_Bottom:
                 absRect.SetBottom(mousepos.y);
+                break;
+              case eResizeArea_Title:
+              case eResizeArea_None:
+                // Do nothing
                 break;
             }
             absRect.SetLeft(ni::Min(absRect.x,mBeforeDock.mRect.z-mpWidget->GetMinimumSize().x));

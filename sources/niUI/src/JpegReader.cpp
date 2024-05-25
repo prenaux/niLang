@@ -310,6 +310,8 @@ eColorSpace __stdcall cJpegReader::GetColorSpace() const
       return eColorSpace_CMYK;
     case JCS_YCbCr:
       return eColorSpace_YCbCr;
+    default:
+      break;
   }
   return eColorSpace_RGB;
 }
@@ -364,6 +366,8 @@ iBitmap2D * cJpegReader::ReadBitmap(iGraphics *apGraphics)
         return NULL;
       }
       aszFormat =  GetNumComponents()==3?_A("R8G8B8"):_A("R8G8B8A8");
+      break;
+    default:
       break;
   }
   if (!aszFormat) {

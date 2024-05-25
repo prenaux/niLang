@@ -272,7 +272,7 @@ tBool __stdcall cWidgetMenu::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
         mbClickDown = eTrue;
         return eTrue;
       }
-      // fall-through
+      niFallthrough;
     }
     case eUIMessage_NCRightClickDown: {
       this->Close();

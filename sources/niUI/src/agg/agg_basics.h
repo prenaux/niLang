@@ -94,9 +94,8 @@ template<class T> struct obj_allocator
 #define AGG_INT64U ni::tU64
 #endif
 
-#ifndef agg_real
-#define agg_real ni::tF32
-#endif
+typedef ni::tF32 agg_real;
+//typedef ni::tF64 agg_real;
 
 //------------------------------------------------ Some fixes for MS Visual C++
 #if defined(_MSC_VER)

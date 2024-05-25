@@ -54,25 +54,33 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
     tBool bBottom = eFalse;
     tU32 nMap = 0;
     switch (aZOrder) {
-      case eWidgetZOrder_BackgroundBottom: bBottom = eTrue;
+      case eWidgetZOrder_BackgroundBottom:
+        bBottom = eTrue;
+        niFallthrough;
       case eWidgetZOrder_Background:
         {
           nMap = 3;
           break;
         }
-      case eWidgetZOrder_Bottom: bBottom = eTrue;
+      case eWidgetZOrder_Bottom:
+        bBottom = eTrue;
+        niFallthrough;
       case eWidgetZOrder_Top:
         {
           nMap = 2;
           break;
         }
-      case eWidgetZOrder_TopMostBottom: bBottom = eTrue;
+      case eWidgetZOrder_TopMostBottom:
+        bBottom = eTrue;
+        niFallthrough;
       case eWidgetZOrder_TopMost:
         {
           nMap = 1;
           break;
         }
-      case eWidgetZOrder_OverlayBottom: bBottom = eTrue;
+      case eWidgetZOrder_OverlayBottom:
+        bBottom = eTrue;
+        niFallthrough;
       case eWidgetZOrder_Overlay:
         {
           nMap = 0;

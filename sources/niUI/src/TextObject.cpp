@@ -508,7 +508,7 @@ class cTextObject : public ImplRC<iTextObject>
     }
 
     const tF32 fWdgWidth = mvSize.x;
-    tU32 nWordIndex = 0;
+    tU32 nWordIndex niMaybeUnused = 0;
     sLine line;
 
     tU32 nCurrentSegment = 0;
@@ -608,6 +608,9 @@ class cTextObject : public ImplRC<iTextObject>
               break;
             case eTextTruncation_Right:
               strTmpWord.append(mstrTrunc.Chars());
+              break;
+            case eTextTruncation_None:
+              // nothing to do
               break;
           }
 
@@ -1721,7 +1724,7 @@ class cTextObject : public ImplRC<iTextObject>
           break;
         case eXmlParserNodeType_EmptyText:
           TRACE_TEXT_OBJECT(("... EMPTY TEXT: |%d| %s", ni::StrLen(aName), aName));
-          // break;
+          niFallthrough;
         case eXmlParserNodeType_Text: {
           TRACE_TEXT_OBJECT(("... TEXT: |%d| %s", ni::StrLen(aName), aName));
           sRawString s(_this->mFontManager.mstackAlignment.empty() ?
@@ -1765,6 +1768,9 @@ class cTextObject : public ImplRC<iTextObject>
     {
       TRACE_TEXT_OBJECT((".... OnXmlParserSink_Attribute: %d: '%s' = '%s'", tagType.top(), aName, aValue));
       switch (tagType.top()) {
+        case eTagType_Unknown:
+        case eTagType_Col:
+          break;
         case eTagType_Font: {
           if (StrIEq(aName,"name")) {
             _this->mFontManager.BeginTag(niFmt("f=%s",aValue));

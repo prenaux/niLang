@@ -1636,6 +1636,7 @@ void cWidget::HandleMessage(const tU32 msg, const Var& A, const Var& B) {
             key == eKey_LAlt ||
             key == eKey_RAlt)
           break;
+        niFallthrough;
       }
       case eUIMessage_FingerDown:
       case eUIMessage_RightClickDown:
@@ -2318,6 +2319,8 @@ void cWidget::ComputeAutoLayout(tWidgetAutoLayoutFlags aFlags)
       case eWidgetDockStyle_DockFillOverlay:
         canComputeW = eFalse;
         canComputeH = eFalse;
+        break;
+      default:
         break;
     }
     if (canComputeH || canComputeW) {

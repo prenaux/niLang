@@ -113,7 +113,7 @@ class cWidgetText : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetText>
 
       case eUIMessage_SkinChanged: {
         apWidget->SetFont(NULL);
-        // fall through
+        niFallthrough;
       }
       case eUIMessage_FontChanged: {
         if (mptrTextObject.IsOK()) {

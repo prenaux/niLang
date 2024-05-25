@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "JpegWriter.h"
+#include <niUI_ModuleDef.h>
 
 // Disables "interaction between '_setjmp' and C++ object destruction is non-portable"
 #ifdef _MSC_VER
@@ -192,6 +193,9 @@ tBool cJpegWriter::BeginWrite(iFile *apDest,
     case eColorSpace_CMYK:
       mInfo.in_color_space = JCS_CMYK;
       break;
+    default:
+      niError(niFmt("Unsupported color space '%s'.", niEnumToChars(eColorSpace,aInCS)));
+      return eFalse;
   }
 
   JPEG_CATCH(eFalse,1);

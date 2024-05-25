@@ -631,8 +631,8 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         for (tVec2fCVec::const_iterator it = pVerts->begin(); it != pVerts->end(); ++it) {
           const tF32 x = it->x;
           const tF32 y = it->y;
-          tF32 tx = x;
-          tF32 ty = y;
+          agg_real tx = x;
+          agg_real ty = y;
           paintTrans.transform(&tx,&ty);
           tx = tx * mvAddPathPolygons_TexGen_Scale.x + mvAddPathPolygons_TexGen_Translation.x;
           ty = ty * mvAddPathPolygons_TexGen_Scale.y + mvAddPathPolygons_TexGen_Translation.y;

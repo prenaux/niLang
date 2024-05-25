@@ -1320,8 +1320,16 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
         return 0;
       case eGraphicsCaps_MaxVertexIndex:
         return 0xFFFFFFFF;
+      case eGraphicsCaps_DepthStencilTexture:
+      case eGraphicsCaps_StencilTwoSideded:
+      case eGraphicsCaps_StencilWrap:
+      case eGraphicsCaps_OcclusionQueries:
+      case eGraphicsCaps_MaxPointSize:
+      case eGraphicsCaps_HardwareInstancing:
+      case eGraphicsCaps_OrthoProjectionOffset:
+      case eGraphicsCaps_BlitBackBuffer:
+        return 0;
     }
-    return 0;
   }
 
 

@@ -845,6 +845,8 @@ void __stdcall cUIContext::SendWindowMessage(eOSWindowMessage aMsg, const Var& a
       mnInputModifiers = avarB.mU32;
       break;
     }
+    default:
+      break;
   }
 }
 
@@ -984,6 +986,7 @@ void __stdcall cUIContext::InputDoubleClick(ePointerButton aPointer) {
     case ePointerButton_Right:
       _RightDblClick(eTrue);
       break;
+    default: break;
   }
 }
 void __stdcall cUIContext::InputRelativeMouseMove(const sVec2f& avRelMove) {

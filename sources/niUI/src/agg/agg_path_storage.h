@@ -260,7 +260,7 @@ class path_storage
     return m_cmd_blocks[idx >> block_shift][idx & block_mask];
   }
   void set_command(unsigned idx, unsigned cmd) {
-    m_cmd_blocks[idx >> block_shift][idx & block_mask] = cmd;
+    m_cmd_blocks[idx >> block_shift][idx & block_mask] = (unsigned char)cmd;
   }
 
   void     rewind(unsigned path_id);

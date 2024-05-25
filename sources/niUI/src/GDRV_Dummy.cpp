@@ -328,8 +328,9 @@ struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
         return 0;
       case eGraphicsCaps_MaxVertexIndex:
         return 0xFFFFFFFF;
+      default:
+        return 0;
     }
-    return 0;
   }
 
   /////////////////////////////////////////////

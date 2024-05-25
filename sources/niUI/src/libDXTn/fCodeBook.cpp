@@ -38,7 +38,7 @@ long fCodebook::CalcCenter(cfVector &Vect)
 
 long fCodebook::ClosestIndex(cfVector &Vect)
 {
-  long    i, Result, Tested = 0;
+  long    i, Result;
   float   CloseDist, TempDist;
   cfVector  DistVect;
   fVectNode *pNode;
@@ -57,7 +57,6 @@ long fCodebook::ClosestIndex(cfVector &Vect)
   {
     DistVect.Diff(Vect, pNode->V);
     TempDist = DistVect.Mag();
-    Tested++;
     if(TempDist < CloseDist)
     {
       CloseDist = TempDist;

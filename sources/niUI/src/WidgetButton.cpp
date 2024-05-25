@@ -265,8 +265,8 @@ tBool cButtonWidget::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varPa
 {
   niGuardObject((iWidgetSink*)this);
   switch(nMsg) {
-    case eUIMessage_NCSize: {
-    }
+    case eUIMessage_NCSize:
+      niFallthrough;
     case eUIMessage_Paint:{
       iCanvas* c = VarQueryInterface<iCanvas>(varParam1);
       if (c) {

@@ -130,32 +130,17 @@ using u64 = ni::tU64;
 typedef tF32 f32;
 typedef tF64 f64;
 
-template <typename T>
-using vec2 = sVec2<T>;
-template <typename T>
-using vec3 = sVec3<T>;
-template <typename T>
-using vec4 = sVec4<T>;
-template <typename T>
-using quat = sQuat<T>;
-template <typename T>
-using matrix = sMatrix<T>;
-template <typename T>
-using rect = sRect<T>;
-
-typedef vec2<f32> vec2f;
-typedef vec3<f32> vec3f;
-typedef vec4<f32> vec4f;
-typedef quat<f32> quatf;
-typedef rect<f32> rectf;
-typedef vec2<i32> vec2i;
-typedef vec3<i32> vec3i;
-typedef vec4<i32> vec4i;
-typedef rect<i32> recti;
-typedef matrix<f32> matrixf;
-typedef matrix<f64> matrix64;
-
-using str = ni::cString;
+typedef sVec2<f32> vec2f;
+typedef sVec3<f32> vec3f;
+typedef sVec4<f32> vec4f;
+typedef sQuat<f32> quatf;
+typedef sRect<f32> rectf;
+typedef sVec2<i32> vec2i;
+typedef sVec3<i32> vec3i;
+typedef sVec4<i32> vec4i;
+typedef sRect<i32> recti;
+typedef sMatrix<f32> matrixf;
+typedef sMatrix<f64> matrix64;
 
 // <experimental>
 template <typename T, typename... Args>

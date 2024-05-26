@@ -106,23 +106,27 @@ struct Var : public VarData
 
   Var() {
     mType = eType_Null;
-    mpPointer = NULL;
+    mpPointer = nullptr;
   }
 #if defined niTypeIntIsOtherType
   Var(int n)  {
     mType = eType_Null;
-    mpPointer = NULL;
+    mpPointer = nullptr;
     SetInt(n);
   }
   Var(unsigned int n) {
     mType = eType_Null;
-    mpPointer = NULL;
+    mpPointer = nullptr;
     SetUInt(n);
   }
 #endif
+  Var(std::nullptr_t)  {
+    mType = eType_Null;
+    mpPointer = nullptr;
+  }
   Var(const void* n)  {
     mType = eType_Null;
-    mpPointer = NULL;
+    mpPointer = nullptr;
     SetUIntPtr((tUIntPtr)n);
   }
 
@@ -233,7 +237,7 @@ struct Var : public VarData
     VarDestruct(this);
     switch (niType(aV.mType)) {
       case eType_Null: {
-        mpPointer = NULL;
+        mpPointer = nullptr;
         break;
       }
       case eType_Matrixf: {
@@ -271,13 +275,13 @@ struct Var : public VarData
 
  public:
   void SetNull() {
-    Set(eType_Null,NULL,0);
+    Set(eType_Null,nullptr,0);
   }
   tBool IsNull() const {
     return niType(mType)==eType_Null;
   }
   tBool IsNullPointer() const {
-    return IsNull() || !niFlagTest(mType,eTypeFlags_Pointer) || mpIUnknown == NULL;
+    return IsNull() || !niFlagTest(mType,eTypeFlags_Pointer) || mpIUnknown == nullptr;
   }
 
   tType GetType() const { return mType; }
@@ -319,7 +323,7 @@ struct Var : public VarData
   inline const achar* GetChars() const {
     if (IsString())           return GetString().Chars();
     if (IsACharConstPointer())  return GetACharConstPointer();
-    return NULL;
+    return nullptr;
   }
 
   Var(const tHStringPtr& v) { mType = eType_Null; SetIUnknownPointer(v.ptr());  }
@@ -392,13 +396,13 @@ struct Var : public VarData
   }
   inline iUnknown* QueryInterface(const tUUID& aIID) const {
     if (niType(mType) != eType_IUnknown || !niFlagTest(mType,eTypeFlags_Pointer) || IsNullPointer())
-      return NULL;
+      return nullptr;
     return mpIUnknown->QueryInterface(aIID);
   }
   inline iUnknown* GetRawIUnknownPointerAndSetNull() {
     niAssert(niType(mType) == eType_IUnknown && niFlagTest(mType,eTypeFlags_Pointer));
     iUnknown* rawPtr = mpIUnknown;
-    if (!rawPtr) return NULL;
+    if (!rawPtr) return nullptr;
     rawPtr->SetNumRefs(rawPtr->GetNumRefs()+1000);
     this->SetNull();
     rawPtr->SetNumRefs(rawPtr->GetNumRefs()-1000);
@@ -769,7 +773,7 @@ template <typename T>
 inline T* VarQueryInterface(const Var& aVar)
 {
   if (niType(aVar.mType) != eType_IUnknown || niFlagIsNot(aVar.mType,eTypeFlags_Pointer))
-    return NULL;
+    return nullptr;
   return QueryInterface<T>(const_cast<iUnknown*>(aVar.mpIUnknown));
 }
 

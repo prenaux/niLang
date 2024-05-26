@@ -284,8 +284,8 @@ iDepthStencilStates* __stdcall cGraphics::CreateDepthStencilStates() {
 
 ///////////////////////////////////////////////
 tIntPtr __stdcall cGraphics::CompileDepthStencilStates(iDepthStencilStates* apStates) {
-  CHECKDRIVER(NULL);
-  niCheckIsOK(apStates,NULL);
+  CHECKDRIVER(0);
+  niCheckIsOK(apStates,0);
 
   const sDepthStencilStatesDesc& desc = *(sDepthStencilStatesDesc*)apStates->GetDescStructPtr();
   niLoopit(tDSMap::iterator,it,mmapDepthStencilStates) {
@@ -293,7 +293,7 @@ tIntPtr __stdcall cGraphics::CompileDepthStencilStates(iDepthStencilStates* apSt
       return it->first;
   }
 
-  tIntPtr handle = NULL;
+  tIntPtr handle = 0;
   if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileDepthStencilStates)) {
     handle = mptrDrv->CompileDepthStencilStates(apStates);
     if (!handle) {

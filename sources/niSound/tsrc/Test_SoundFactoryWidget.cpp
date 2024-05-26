@@ -18,7 +18,7 @@ struct ClickWAV : public ni::cWidgetSinkImpl<> {
 
   tBool __stdcall OnSinkAttached() niImpl {
     mptrSoundFactory = niCreateInstance(niSound,SoundFactory,niVarNull,niVarNull);
-    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,NULL));
+    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
 
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://click.wav");
     CHECK(mptrSoundFactory.IsOK());
@@ -74,7 +74,7 @@ struct AtmoWAV : public ni::cWidgetSinkImpl<> {
 
   tBool __stdcall OnSinkAttached() niImpl {
     mptrSoundFactory = niCreateInstance(niSound,SoundFactory,niVarNull,niVarNull);
-    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,NULL));
+    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
 
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.wav");
     CHECK(mptrSoundFactory.IsOK());
@@ -123,7 +123,7 @@ struct AtmoOGG : public ni::cWidgetSinkImpl<> {
 
   tBool __stdcall OnSinkAttached() niImpl {
     mptrSoundFactory = niCreateInstance(niSound,SoundFactory,niVarNull,niVarNull);
-    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,NULL));
+    CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
 
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.ogg");
     CHECK(mptrSoundFactory.IsOK());

@@ -375,7 +375,7 @@ iBitmapBase* __stdcall cGraphics::LoadBitmapFromRes(iHString* ahspRes, iHString*
 ///////////////////////////////////////////////
 tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp, tU32 ulCompression)
 {
-  niCheckIsOK(pBmp,NULL);
+  niCheckIsOK(pBmp,eFalse);
 
   const cString ext = _ASTR(aszFilename).RAfter(".").ToLower();
 
@@ -397,8 +397,8 @@ tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp, tU32 ul
 ///////////////////////////////////////////////
 tBool __stdcall cGraphics::SaveBitmapEx(const achar* aaszFormat, iFile* apFile, iBitmapBase* apBmp, tU32 anCompression)
 {
-  niCheckIsOK(apBmp,NULL);
-  niCheckIsOK(apFile,NULL);
+  niCheckIsOK(apBmp,eFalse);
+  niCheckIsOK(apFile,eFalse);
 
   QPtr<iBitmapSaver> ptrSaver = ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s",aaszFormat));
   if (!ptrSaver.IsOK()) {

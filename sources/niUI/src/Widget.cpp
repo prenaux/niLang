@@ -1351,7 +1351,7 @@ iWidget* __stdcall cWidget::FindWidget(iHString* ahspID) const
 ///////////////////////////////////////////////
 iWidget* __stdcall cWidget::FindWidgetByPos(const sVec2f& avPos) const
 {
-  return GetMessageTargetByPos(avPos,Callback_ExcludeWidget_IgnoreInput,NULL);
+  return GetMessageTargetByPos(avPos,Callback_ExcludeWidget_IgnoreInput,0);
 }
 
 ///////////////////////////////////////////////

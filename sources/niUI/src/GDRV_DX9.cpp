@@ -4150,15 +4150,15 @@ class cD3D9 : public ImplRC<iGraphicsDriver,eImplFlags_Default,iD3D9Graphics>
   }
   virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) {
     niAssertUnreachable("Not implemented.");
-    return NULL;
+    return 0;
   }
   virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
     niAssertUnreachable("Not implemented.");
-    return NULL;
+    return 0;
   }
   virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) {
     niAssertUnreachable("Not implemented.");
-    return NULL;
+    return 0;
   }
 
   ///////////////////////////////////////////////

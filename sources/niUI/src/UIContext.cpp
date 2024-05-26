@@ -1118,7 +1118,7 @@ cWidget *cUIContext::GetMessageTargetByPos(const sVec2f &pos)
       pos,Callback_ExcludeWidget_UserDataAndIgnoreInput,(tIntPtr)ptrTopWidget.ptr());
   if (!target.IsOK() && ptrTopWidget.IsOK()) {
     target = ptrTopWidget->GetMessageTargetByPos(
-        pos,Callback_ExcludeWidget_IgnoreInput,NULL);
+        pos,Callback_ExcludeWidget_IgnoreInput,0);
   }
   return target.IsOK()?target.ptr():ptrTopWidget.ptr();
 }
@@ -1126,7 +1126,7 @@ cWidget *cUIContext::GetMessageTargetByPos(const sVec2f &pos)
 ///////////////////////////////////////////////
 cWidget *cUIContext::GetDragDestinationByPos(const sVec2f &pos)
 {
-  cWidget* pW = mpwRootWidget->GetMessageTargetByPos(pos,Callback_ExcludeWidget_IgnoreInputNotDragDest,NULL);
+  cWidget* pW = mpwRootWidget->GetMessageTargetByPos(pos,Callback_ExcludeWidget_IgnoreInputNotDragDest,0);
   while (pW && niFlagIsNot(pW->GetStyle(),eWidgetStyle_DragDestination)) {
     pW = (cWidget*)pW->GetParent();
   }

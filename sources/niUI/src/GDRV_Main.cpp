@@ -220,7 +220,7 @@ iGraphicsContextRT* __stdcall cGraphics::CreateContextForRenderTargets(
 
 ///////////////////////////////////////////////
 tInt __stdcall cGraphics::GetDriverCaps(eGraphicsCaps aCaps) const {
-  CHECKDRIVER(NULL);
+  CHECKDRIVER(0);
   return mptrDrv->GetCaps(aCaps);
 }
 

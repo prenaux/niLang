@@ -187,8 +187,8 @@ iSamplerStates* __stdcall cGraphics::CreateSamplerStates() {
 
 ///////////////////////////////////////////////
 tIntPtr __stdcall cGraphics::CompileSamplerStates(iSamplerStates* apStates) {
-  CHECKDRIVER(NULL);
-  niCheckIsOK(apStates,NULL);
+  CHECKDRIVER(0);
+  niCheckIsOK(apStates,0);
 
   const sSamplerStatesDesc& desc = *(sSamplerStatesDesc*)apStates->GetDescStructPtr();
   niLoopit(tSSMap::iterator,it,mmapSamplerStates) {
@@ -196,7 +196,7 @@ tIntPtr __stdcall cGraphics::CompileSamplerStates(iSamplerStates* apStates) {
       return it->first;
   }
 
-  tIntPtr handle = NULL;
+  tIntPtr handle = 0;
   if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileSamplerStates)) {
     handle = mptrDrv->CompileSamplerStates(apStates);
     if (!handle) {

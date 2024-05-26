@@ -241,8 +241,8 @@ iRasterizerStates* __stdcall cGraphics::CreateRasterizerStates() {
 
 ///////////////////////////////////////////////
 tIntPtr __stdcall cGraphics::CompileRasterizerStates(iRasterizerStates* apStates) {
-  CHECKDRIVER(NULL);
-  niCheckIsOK(apStates,NULL);
+  CHECKDRIVER(0);
+  niCheckIsOK(apStates,0);
 
   const sRasterizerStatesDesc& desc = *(sRasterizerStatesDesc*)apStates->GetDescStructPtr();
   niLoopit(tRSMap::iterator,it,mmapRasterizerStates) {
@@ -250,7 +250,7 @@ tIntPtr __stdcall cGraphics::CompileRasterizerStates(iRasterizerStates* apStates
       return it->first;
   }
 
-  tIntPtr handle = NULL;
+  tIntPtr handle = 0;
   if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileRasterizerStates)) {
     handle = mptrDrv->CompileRasterizerStates(apStates);
     if (!handle) {

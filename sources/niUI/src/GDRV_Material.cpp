@@ -308,7 +308,7 @@ tBool __stdcall cMaterial::SetChannelSamplerStates(eMaterialChannel aChannel, tI
 ///////////////////////////////////////////////
 tIntPtr __stdcall cMaterial::GetChannelSamplerStates(eMaterialChannel aChannel) const
 {
-  if (aChannel >= eMaterialChannel_Last) return NULL;
+  if (aChannel >= eMaterialChannel_Last) return 0;
   return mChannels[aChannel].mhSS;
 }
 

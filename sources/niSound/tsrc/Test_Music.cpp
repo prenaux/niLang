@@ -67,7 +67,7 @@ struct FMusic {
 #if !defined NO_CONSOLE_AUDIO
 TEST_FIXTURE(FMusic,Music1) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,NULL));
+  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://music_punch.ogg");
@@ -88,7 +88,7 @@ TEST_FIXTURE(FMusic,Music1) {
 
 TEST_FIXTURE(FMusic,Music2) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,NULL));
+  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://music_punch.ogg");

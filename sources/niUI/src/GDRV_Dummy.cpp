@@ -458,13 +458,13 @@ struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
     return NULL;
   }
   virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) {
-    return NULL;
+    return 0;
   }
   virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
-    return NULL;
+    return 0;
   }
   virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) {
-    return NULL;
+    return 0;
   }
 
   /////////////////////////////////////////////

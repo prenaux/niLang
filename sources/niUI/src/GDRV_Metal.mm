@@ -1580,7 +1580,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
 
   /////////////////////////////////////////////
   virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
-    return NULL;
+    return 0;
   }
 
   /////////////////////////////////////////////

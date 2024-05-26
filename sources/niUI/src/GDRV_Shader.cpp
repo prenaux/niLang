@@ -173,7 +173,7 @@ iDeviceResourceManager* __stdcall cGraphics::GetShaderDeviceResourceManager() co
 
 ///////////////////////////////////////////////
 tU32 __stdcall cGraphics::GetNumShaders() const {
-  CHECKDRIVER(NULL);
+  CHECKDRIVER(0);
   return mptrDRMShaders->GetSize();
 }
 

@@ -43,7 +43,7 @@ iDeviceResourceManager* __stdcall cGraphics::GetTextureDeviceResourceManager() c
 
 ///////////////////////////////////////////////
 tU32 __stdcall cGraphics::GetNumTextures() const {
-  CHECKDRIVER(NULL);
+  CHECKDRIVER(0);
   return mptrDRMTextures->GetSize();
 }
 

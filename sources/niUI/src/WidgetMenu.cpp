@@ -935,7 +935,7 @@ tBool __stdcall cWidgetMenu::Close()
   mpWidget->SetEnabled(eFalse);
   Ptr<iWidgetMenuItem> ptrWasSelectedItem = (mnSelectedItem < mvItems.size()) ? mvItems[mnSelectedItem].ptr() : NULL;
   if (ptrWasSelectedItem.IsOK()) {
-    mpWidget->SendCommand(mpWidget->GetParent(),eWidgetMenuCmd_FocusedItem,NULL,ptrWasSelectedItem.ptr());
+    mpWidget->SendCommand(mpWidget->GetParent(),eWidgetMenuCmd_FocusedItem,0,ptrWasSelectedItem.ptr());
   }
   mpWidget->SendCommand(mpWidget->GetParent(),eWidgetMenuCmd_Closed,mpWidget);
   SelectItem(eInvalidHandle);

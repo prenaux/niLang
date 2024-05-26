@@ -226,7 +226,7 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   ///////////////////////////////////////////////
   tBool __stdcall RemoveChildNode(ni::iWidgetTreeNode *apNode) {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
+    if (!ptrParentWidget.IsOK()) return eFalse;
     tU32 index = GetChildNodeIndex(apNode);
     if (index != eInvalidHandle) {
       apNode->Invalidate();

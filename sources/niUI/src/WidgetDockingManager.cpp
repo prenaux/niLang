@@ -803,9 +803,9 @@ tU32 cWidgetDockingManager::AddDockArea(tU32 anParent, tU32 aPos, sRectf aRect, 
   }
   else {
     iWidget* pInsertWidget = GetDockArea(anParent);
-    if (!pInsertWidget) return NULL;
+    if (!pInsertWidget) return eInvalidHandle;
     iWidget* pSplitterWidget = pInsertWidget->GetParent();
-    if (!pSplitterWidget) return NULL;
+    if (!pSplitterWidget) return eInvalidHandle;
     QPtr<iWidgetSplitter> pwSplitter = pSplitterWidget;
     niAssert(pwSplitter.IsOK());
 

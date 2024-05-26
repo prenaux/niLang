@@ -1333,7 +1333,7 @@ tBool __stdcall cUIContext::SerializeWidget(iWidget* apWidget, iDataTable* apDT,
       ptrSink = this->CreateWidgetSinkFromScript(_H(strScriptPath));
       if (!ptrSink.IsOK()) {
         niError(niFmt(_A("Can't create the widget sink from code file '%s'."),strScriptPath.Chars()));
-        return NULL;
+        return eFalse;
       }
 #else
       niWarning(niFmt("Scripting Host not available to load code file '%s'.",strScriptPath));

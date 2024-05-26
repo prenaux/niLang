@@ -146,7 +146,7 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
     QPtr<iBitmap2D> bmp2d = bmp;
     if (!bmp2d.IsOK()) {
       niError(_A("Can't get the 2d bitmap interface."));
-      return NULL;
+      return eFalse;
     }
 
     const tU32 skipLevels = numLevels - loadLevels;
@@ -154,18 +154,18 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
     for (; i < skipLevels; ++i) {
       if (!_ReadBitmap(apGraphics,NULL,apFile,apStoredFormat)) {
         niError(niFmt(_A("Can't read level '%d'."),i));
-        return NULL;
+        return eFalse;
       }
     }
     for (; i < numLevels; ++i) {
       iBitmap2D* pLevel = bmp2d->GetLevel(i-skipLevels);
       if (!pLevel) {
         niError(niFmt(_A("Can't get level '%d'."),i));
-        return NULL;
+        return eFalse;
       }
       if (!_ReadBitmap(apGraphics,pLevel,apFile,apStoredFormat)) {
         niError(niFmt(_A("Can't read level '%d'."),i));
-        return NULL;
+        return eFalse;
       }
     }
     _GenMissingLevels(bmp2d,numLevels,apStoredFormat);
@@ -178,13 +178,13 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
     QPtr<iBitmapCube> bmpCube = bmp;
     if (!bmpCube.IsOK()) {
       niError(_A("Can't get the cube bitmap interface."));
-      return NULL;
+      return eFalse;
     }
     niLoop(j,6) {
       iBitmap2D* bmp2d = bmpCube->GetFace(eBitmapCubeFace(j));
       if (!bmp2d) {
         niError(niFmt(_A("Can't get face '%d'."),j));
-        return NULL;
+        return eFalse;
       }
 
       const tU32 skipLevels = numLevels - loadLevels;
@@ -192,18 +192,18 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
       for (; i < skipLevels; ++i) {
         if (!_ReadBitmap(apGraphics,NULL,apFile,apStoredFormat)) {
           niError(niFmt(_A("Can't read level '%d'."),i));
-          return NULL;
+          return eFalse;
         }
       }
       for (; i < numLevels; ++i) {
         iBitmap2D* pLevel = bmp2d->GetLevel(i-skipLevels);
         if (!pLevel) {
           niError(niFmt(_A("Can't get level '%d'."),i));
-          return NULL;
+          return eFalse;
         }
         if (!_ReadBitmap(apGraphics,pLevel,apFile,apStoredFormat)) {
           niError(niFmt(_A("Can't read level '%d'."),i));
-          return NULL;
+          return eFalse;
         }
       }
       _GenMissingLevels(bmp2d,numLevels,apStoredFormat);
@@ -481,11 +481,11 @@ struct BitmapSaver_ABM : public ImplRC<iBitmapSaver> {
 
     if (apBmp->GetType() == eBitmapType_2D) {
       if (!_Save2D(apGraphics,apBmp,apFile,anCompression))
-        return NULL;
+        return eFalse;
     }
     else if (apBmp->GetType() == eBitmapType_Cube) {
       if (!_SaveCube(apGraphics,apBmp,apFile,anCompression))
-        return NULL;
+        return eFalse;
     }
     else {
       niAssertUnreachable("Invalid bitmap type");

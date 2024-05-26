@@ -382,7 +382,7 @@ tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp, tU32 ul
   QPtr<iBitmapSaver> ptrSaver = ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s",ext));
   if (!ptrSaver.IsOK()) {
     niError(niFmt("Can't find a bitmap saver for file type '%s'.",ext));
-    return NULL;
+    return eFalse;
   }
 
   Ptr<iFile> ptrFile = GetRootFS()->FileOpen(aszFilename, eFileOpenMode_Write);
@@ -403,7 +403,7 @@ tBool __stdcall cGraphics::SaveBitmapEx(const achar* aaszFormat, iFile* apFile, 
   QPtr<iBitmapSaver> ptrSaver = ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s",aaszFormat));
   if (!ptrSaver.IsOK()) {
     niError(niFmt("Can't find a bitmap saver for file type '%s'.",aaszFormat));
-    return NULL;
+    return eFalse;
   }
 
   return ptrSaver->SaveBitmap(this,apFile,apBmp,anCompression);

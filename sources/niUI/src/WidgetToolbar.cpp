@@ -450,7 +450,7 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
     if (nPageIndex != eInvalidHandle) {
       return mvPages[nPageIndex].IsEnabled();
     }
-    return NULL;
+    return eFalse;
   }
 
   ///////////////////////////////////////////////

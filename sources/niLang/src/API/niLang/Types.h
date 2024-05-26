@@ -3951,7 +3951,7 @@ namespace ni {
 #define niCall5(ERRRET,A,B,C,D,E) (A ? (A->B ? (A->B->C ? (A->B->C->D ? A->B->C->D->E : ERRRET) : ERRRET) : ERRRET) : ERRRET)
 
 #define niEnumDef(ENUM)       GetEnumDef_##ENUM()
-#define niEnumName(ENUM)      ((ENUM)0,_A(#ENUM))
+#define niEnumName(ENUM)      ((void)(ENUM)0,_A(#ENUM))
 #define niEnumExpr(ENUM)      niEnumDef(ENUM), 0
 #define niEnumExprFull(ENUM)  niEnumDef(ENUM), ni::eEnumToStringFlags_Full
 #define niFlagsExpr(ENUM)     niEnumDef(ENUM), ni::eEnumToStringFlags_Flags

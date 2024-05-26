@@ -896,7 +896,7 @@ class cD3D9VertexDeclarations
     if (!mpCurrentDecl || mpCurrentDecl->nFVFIA != nFVFIA) {
       sVertexDeclaration* pVertexDeclaration = GetVertexDeclaration(apDevice, nFVFIA);
       niAssert(pVertexDeclaration != NULL);
-      apDevice->SetFVF(NULL);
+      apDevice->SetFVF(0);
       apDevice->SetVertexDeclaration(pVertexDeclaration->pVertexDeclaration9);
       mpCurrentDecl = pVertexDeclaration;
     }
@@ -5320,7 +5320,7 @@ inline tBool cD3D9::DoDrawOp(iDrawOperation* apDrawOp,
       niProfileBlock(renD3D9_DoDrawOp_VidMem_NotIndexed);
       {
         tBool bShouldUpdate = eFalse;
-        mCache.ShouldUpdate(&bShouldUpdate,eD3D9Cache_IndexArray,NULL);
+        mCache.ShouldUpdate(&bShouldUpdate,eD3D9Cache_IndexArray,0);
         if (bShouldUpdate) {
           mpD3D9Device->SetIndices(NULL);
         }

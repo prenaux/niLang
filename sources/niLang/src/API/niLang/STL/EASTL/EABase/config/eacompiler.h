@@ -1290,7 +1290,7 @@
 	#if !defined(EA_COMPILER_NO_MAYBE_UNUSED)
 		#if defined(EA_COMPILER_CPP17_ENABLED)
 			// supported.
-		#elif defined(EA_COMPILER_MSVC) && (EA_COMPILER_VERSION >= 1912) // VS2017 15.3+
+		#elif defined(EA_COMPILER_MSVC) && defined(__cplusplus) && (EA_COMPILER_VERSION >= 1912) // VS2017 15.3+
 			// supported.
 		#else
 			#define EA_COMPILER_NO_MAYBE_UNUSED 1

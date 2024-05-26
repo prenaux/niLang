@@ -246,7 +246,7 @@ struct BitmapSaver_PNG : public ImplRC<iBitmapSaver> {
     if (setjmp(ni_png_jmpbuf(ni_png_ptr))) {
       niError(_A("PNG Write error."));
       ni_png_destroy_write_struct(&ni_png_ptr, &info_ptr);
-      return NULL;
+      return eFalse;
     }
 
     ni_png_set_write_fn(ni_png_ptr, (void*)pFile, my_png_write_data, my_png_flush_data);

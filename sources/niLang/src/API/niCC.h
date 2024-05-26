@@ -76,6 +76,11 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-but-set-variable);
   #error "niCC.h requires C++20 or above."
 #endif
 
+#ifdef NULL
+#undef NULL
+#endif
+#define NULL nullptr
+
 namespace astl {
 
 template <bool B, typename T, typename F>

@@ -345,7 +345,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::sPanicException,e) {
+  TEST_CATCH(ni::iPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -385,7 +385,7 @@ bool Test::Run(TestResults& testResults) const
 #endif
   }
 #ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::sPanicException,e) {
+  TEST_CATCH(ni::iPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -428,7 +428,7 @@ bool Test::AfterRun(TestResults& testResults) const
     }
   }
 #ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::sPanicException,e) {
+  TEST_CATCH(ni::iPanicException,e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.what();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());

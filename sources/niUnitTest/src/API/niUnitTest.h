@@ -132,10 +132,10 @@ namespace UnitTest {
 
 #ifdef TEST_NITHROWASSERT
 #  define TEST_CATCH_ASSERT_EXCEPTION(MSG)              \
-  niCatch(ni::sPanicException,e) {                      \
+  niCatch(ni::iPanicException,e) {                      \
     testResults_.OnTestFailure(                         \
       __FILE__, __LINE__, m_testName,                   \
-      niFmt("sPanicException: %s: %s", MSG, e.what())); \
+      niFmt("iPanicException: %s: %s", MSG, e.what())); \
   }
 #else
 #  define TEST_CATCH_ASSERT_EXCEPTION(MSG)
@@ -554,7 +554,7 @@ struct UnitTestMemDelta {
 
 #ifdef TEST_NITHROWASSERT
 #  define CHECK_THROW_ASSERT(expression)                \
-  CHECK_THROW(expression, const ni::sPanicException);
+  CHECK_THROW(expression, const ni::iPanicException);
 #else
 #  define CHECK_THROW_ASSERT(expression)
 #endif

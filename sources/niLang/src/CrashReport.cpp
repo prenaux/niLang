@@ -41,41 +41,38 @@ niExportFunc(int) ni_get_show_fatal_error_message_box() {
   return _bShowFatalErrorMessageBox;
 }
 
-sPanicException::sPanicException(sPanicException&& aRight) noexcept
-    : _kind(aRight._kind)
-{
-  aRight._kind = nullptr;
-}
-
-sPanicException::sPanicException(const sPanicException& aRight) noexcept
-    : sPanicException(aRight._kind)
-{
-}
-
-sPanicException::sPanicException() noexcept
-    : sPanicException(_HSymGet(not_initialized))
-{
-}
-
-sPanicException::sPanicException(const iHString* aKind) noexcept
-    : _kind(aKind)
-{
-  const_cast<iHString*>(_kind)->AddRef();
-}
-
-sPanicException::~sPanicException() {
-  if (_kind) {
-    const_cast<iHString*>(_kind)->Release();
+struct __ni_module_export sPanicException : public iPanicException {
+  sPanicException(const iHString* aKind, const cString&& aDesc) noexcept
+      : _kind(aKind), _desc(astl::move(aDesc))
+  {
+    const_cast<iHString*>(_kind)->AddRef();
   }
-}
+  virtual ~sPanicException() {
+    if (_kind) {
+      const_cast<iHString*>(_kind)->Release();
+    }
+  }
 
-const char* sPanicException::what() const noexcept {
-  return niHStr(_kind);
-}
+  const char* what() const noexcept niImpl {
+    return _desc.c_str();
+  }
 
-const iHString* __stdcall sPanicException::GetKind() const noexcept {
-  return _kind;
-}
+  const iHString* __stdcall GetKind() const noexcept niImpl {
+    return _kind;
+  }
+
+  virtual const cString& GetDesc() const noexcept niImpl {
+    return _desc;
+  }
+
+private:
+  const iHString* _kind;
+  const cString _desc;
+
+  sPanicException(const sPanicException& aRight) noexcept = delete;
+  sPanicException(sPanicException&& aRight) noexcept = delete;
+  sPanicException() noexcept = delete;
+};
 
 static void _FormatThrowMessage(
   cString& fmt,
@@ -128,7 +125,7 @@ niExportFuncCPP(void) ni_throw_panic(
   _FormatThrowMessage(
     fmt,
     file, line, func,
-    "EXC",
+    "EXC PANIC",
     aKind,
     msg);
   fmt.append("================================\n");
@@ -137,7 +134,7 @@ niExportFuncCPP(void) ni_throw_panic(
   #else
   niError(fmt.Chars());
   #endif
-  throw sPanicException{aKind};
+  throw sPanicException{aKind,std::move(fmt)};
 #endif
 }
 

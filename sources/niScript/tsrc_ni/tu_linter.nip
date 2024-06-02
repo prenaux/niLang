@@ -1,3 +1,9 @@
+//
+// # Run all the tests
+// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4
+// # Run the tests matching the specified regex
+// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4
+//
 ::Import("unittest.ni")
 ::Import("lang.ni")
 ::REGEX <- ::ImportModule("regex.ni")
@@ -105,7 +111,16 @@ function main() {
     })
 
   testLinter.check(
-    "linter_this_set_key_notfound.ni",
+    "linter_2_this_and_roottable.ni",
+    function(aLogs) {
+      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
+    })
+
+  testLinter.check(
+    "linter_3_this_set_key_notfound.ni",
     function(aLogs) {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
@@ -114,12 +129,12 @@ function main() {
     })
 
   testLinter.check(
-    "linter_2_this_and_roottable.ni",
+    "linter_4_function_call.ni",
     function(aLogs) {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
+        {[Lint: Error: this_set_key_notfound: "_unknownkey"]})
     })
 
   // Output failed tests

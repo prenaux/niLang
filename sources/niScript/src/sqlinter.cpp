@@ -1,6 +1,3 @@
-/*
-  see copyright notice in squirrel.h
-*/
 #include "stdafx.h"
 
 #include <niLang/Utils/Trace.h>
@@ -242,6 +239,18 @@ static SQObjectPtr _GetKeyFromArg(const SQObjectPtr& _literals, int arg) {
   return key;
 }
 
+static cString _FuncProtoToString(const SQFunctionProto& func) {
+  const int outerssize = (int)func._outervalues.size();
+  const int paramssize = (int)(func._parameters.size() - outerssize);
+  const int arity = paramssize-1; // number of paramerter - 1 for the implicit 'this' argument
+  return niFmt("%s/%d(%d)[%s:%d]",
+               func.GetName(),
+               arity,
+               outerssize,
+               func.GetSourceName(),
+               func._sourceline);
+}
+
 enum eLintFlags {
   eLintFlags_None = 0,
   eLintFlags_IsError = niBit(31),
@@ -250,6 +259,8 @@ enum eLintFlags {
   eLintFlags_IsInternal = niBit(28),
   eLintFlags_IsPedantic = niBit(27),
   eLintFlags_IsExperimental = niBit(26),
+  // The lint is disabled unless explicitly enabled, even 'all' won't implicitly enable it
+  eLintFlags_IsExplicit = niBit(25),
 };
 
 struct sLint {
@@ -297,6 +308,8 @@ _DEF_LINT(key_notfound_getk,IsError,IsExperimental);
 _DEF_LINT(key_notfound_callk,IsError,IsExperimental);
 _DEF_LINT(this_set_key_notfound,IsError,None);
 _DEF_LINT(set_key_notfound,IsError,IsExperimental);
+_DEF_LINT(call_warning,IsWarning,IsExplicit);
+_DEF_LINT(call_num_args,IsError,None);
 
 #undef _DEF_LINT
 
@@ -316,7 +329,8 @@ struct sLinter {
 
 #define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),  \
     niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) &&           \
-    niFlagIsNot(_LKEY(KIND),eLintFlags_IsExperimental))
+    niFlagIsNot(_LKEY(KIND),eLintFlags_IsExperimental) &&       \
+    niFlagIsNot(_LKEY(KIND),eLintFlags_IsExplicit))
 
   sLinter() {
     _vmroot = SQTable::Create();
@@ -334,6 +348,8 @@ struct sLinter {
     _REG_LINT(key_notfound_callk);
     _REG_LINT(this_set_key_notfound);
     _REG_LINT(set_key_notfound);
+    _REG_LINT(call_warning);
+    _REG_LINT(call_num_args);
   }
 #undef _REG_LINT
 
@@ -373,7 +389,9 @@ struct sLinter {
     if (aName == _HC(_all)) {
       niLoopit(tLintKindMap::iterator, it, _lintEnabled) {
         const tU32 lint = it->first;
-        it->second = aValue;
+        if (!niFlagIs(lint,eLintFlags_IsExplicit)) {
+          it->second = aValue;
+        }
       }
     }
     // applies to all the pedantic lints
@@ -403,6 +421,8 @@ struct sLinter {
     _E(key_notfound_getk)
     _E(this_set_key_notfound)
     _E(set_key_notfound)
+    _E(call_warning)
+    _E(call_num_args)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -441,10 +461,19 @@ struct sLinter {
     else if (niFlagIs(aLint,eLintFlags_IsInfo)) {
       o << "Info: ";
     }
+
+    if (niFlagIs(aLint,eLintFlags_IsExperimental)) {
+      o << "Experimental: ";
+    }
+    if (niFlagIs(aLint,eLintFlags_IsExplicit)) {
+      o << "Explicit: ";
+    }
+
     // if (aLintName != NULL) {
       o << niHStr(aLintName) << ": ";
     // }
     o << aMsg;
+
     if (aLineCol.x == aProto._sourceline) {
       o << niFmt(" (in %s)", aProto.GetName());
     }
@@ -501,8 +530,7 @@ void SQFuncState::LintDump()
   SQFunctionProto *func=_funcproto(_func);
   cString o;
   o << niFmt(_A("--------------------------------------------------------------------\n"));
-  o << niFmt(_A("-----FUNCTION: %s (%s:%s:%s)\n"),
-             func->GetName(), func->GetSourceName(),func->_sourceline,func->_sourcecol);
+  o << niFmt(_A("-----FUNCTION: %s\n"), _FuncProtoToString(*func));
   {
     o << niFmt(_A("-----INFO\n"));
     o << niFmt(_A("stack size = %d\n"),func->_stacksize);
@@ -725,14 +753,10 @@ void SQFunctionProto::LintTrace(
 #define IARG3 inst._arg3
 #define IEXT inst._ext
 
-  const tBool shouldLintTrace = niModuleShouldTrace_(niScript,LintTrace);
+  const tBool shouldLintTrace = niModuleTraceObject_(niScript,LintTrace).get(eTrue);
   const SQFunctionProto* thisfunc = this;
   _LTRACE(("--- TRACE FUNCTION ------------------------------------\n"));
-  _LTRACE(("... func: %s [%s:%s:%s]\n",
-           thisfunc->GetName(),
-           thisfunc->GetSourceName(),
-           thisfunc->_sourceline,
-           thisfunc->_sourcecol));
+  _LTRACE(("... func: %s\n", _FuncProtoToString(*thisfunc)));
 
   auto getlinecol = [&](const SQInstruction& inst) -> sVec2i {
     return SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
@@ -775,7 +799,7 @@ void SQFunctionProto::LintTrace(
              _PtrToString((tIntPtr)this)));
   }
 
-  auto islocal = [&](unsigned int stkpos) -> bool {
+  auto islocal = [&](int stkpos) -> bool {
     if (stkpos>=nlocals)
       return false;
     else if(_sqtype(stack[stkpos]._name)!=OT_NULL)
@@ -839,19 +863,23 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("op_newtable: %s, size: %d -> %s", sstr(IARG0), IARG1, _ObjToString(table)));
     sset(IARG0, table);
   };
+
   auto op_load = [&](const SQInstruction& inst) {
     SQObjectPtr v = lget(IARG1);
     _LTRACE(("op_load: %s -> %s", _ObjToString(v), sstr(IARG0)));
     sset(IARG0, v);
   };
+
   auto op_loadnull = [&](const SQInstruction& inst) {
     _LTRACE(("op_loadnull: %s", sstr(IARG0)));
     sset(IARG0, _null_);
   };
+
   auto op_loadroottable = [&](const SQInstruction& inst) {
     _LTRACE(("op_loadroottable: %s", sstr(IARG0)));
     sset(IARG0, aClosure._root);
   };
+
   auto op_closure = [&](const SQInstruction& inst) {
     const SQObjectPtr& func = fnget(IARG1);
     if (func.IsNull()) {
@@ -917,6 +945,7 @@ void SQFunctionProto::LintTrace(
 
     sset(IARG0, func);
   };
+
   auto op_newslot = [&](const SQInstruction& inst) {
     SQObjectPtr table = sget(IARG1);
     SQObjectPtr k = sget(IARG2);
@@ -1085,6 +1114,67 @@ void SQFunctionProto::LintTrace(
              _ObjToString(v), sstr(IARG0)));
   };
 
+  auto op_call = [&](const SQInstruction& inst) {
+    SQObjectPtr tocall = sget(IARG1);
+    const int nargs = IARG3;
+    const int stackbase = IARG2;
+    _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d", _ObjToString(tocall), nargs, stackbase));
+
+    auto call_func = [&](const SQFunctionProto& func) {
+      const int outerssize = (int)func._outervalues.size();
+      const int paramssize = (int)(func._parameters.size() - outerssize);
+      const int arity = paramssize-1; // number of paramerter - 1 for the implicit 'this' argument
+
+      _LTRACE(("call_func: %s",
+               _ObjToString(tocall),
+               func.GetName(),
+               paramssize,
+               outerssize,
+               func._sourceline
+              ));
+
+      if (_LENABLED(call_num_args) && (paramssize != nargs)) {
+        _LINT(call_num_args,
+              niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
+                    arity, nargs-1, _FuncProtoToString(func)));
+      }
+    };
+
+    switch (_sqtype(tocall)) {
+      case OT_NULL: {
+        if (_LENABLED(call_warning)) {
+          _LINT(call_warning, "Attempting to call Null.");
+        }
+        sset(IARG0, _null_);
+        break;
+      }
+      case OT_CLOSURE: {
+        SQClosure* closure = _closure(tocall);
+        SQFunctionProto* func = _funcproto(closure->_function);
+        if (!func) {
+          _LINT(internal_error, niFmt("Invalid closure object, no function prototype. Calling '%s'.", _ObjToString(tocall)));
+        }
+        else {
+          call_func(*func);
+        }
+        break;
+      }
+      case OT_FUNCPROTO: {
+        SQFunctionProto* func = _funcproto(tocall);
+        call_func(*func);
+        break;
+      }
+      default: {
+        if (_LENABLED(call_warning)) {
+          _LINT(call_warning, niFmt("Attempting to call '%s' (%s).",
+                                    _ObjToString(tocall), aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
+        }
+        sset(IARG0, _null_);
+        break;
+      }
+    }
+  };
+
   const int localThis = localindex(SQObjectPtr(_HC(this)));
   if (localThis < 0) {
     _LINTERNAL_ERROR("Function doesn't have a local 'this'.");
@@ -1109,6 +1199,7 @@ void SQFunctionProto::LintTrace(
       case _OP_GETK: op_getk(inst); break;
       case _OP_PREPCALLK: op_precallk(inst); break;
       case _OP_SET: op_set(inst); break;
+      case _OP_CALL: op_call(inst); break;
       default: {
         break;
       }

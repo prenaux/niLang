@@ -1,10 +1,15 @@
+//
+// TODO:
+// - [x] Check whether simple functions are called with the correct number of arguments
+// - [ ] Check whether functions in a table are called with the correct number of arguments
+// - [ ] Check whether simple native functions are called with correct number of arguments
+// - [ ] Check whether iUnknown methods are called with the correct number of arguments
+//
+local __lint = {
+  call_warning = 1
+}
+
 function f0() {
-}
-
-function f1(a) {
-}
-
-function f2(a,b) {
 }
 
 function f3(a,b,c) {
@@ -13,23 +18,12 @@ function f3(a,b,c) {
 function main() {
   ::println("... thistable:" + this.__debug_name);
 
-  // Should be fine
   f0();
-  f1(1);
-  f2(1,2);
-  f3(1,2,3);
+  f0(1);
+  f0(1,2);
 
-  // Not enough arguments
-  f1();
-  f2();
   f3();
+  f3(1,2);
 
-  // too many arguments
-  f0(1,2,3,4);
-  f1(1,2,3,4);
-  f2(1,2,3,4);
   f3(1,2,3,4);
-
-  // key not found
-  f_unknown();
 }

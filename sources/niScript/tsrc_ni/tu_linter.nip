@@ -1,8 +1,8 @@
 //
 // # Run all the tests
-// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4
-// # Run the tests matching the specified regex
-// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4
+// ham Run_Test_niScript_tu_linter
+// # Run the tests matching the specified regex with lint tracing for that test
+// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4 A1=-DlintTrace=1
 //
 ::Import("unittest.ni")
 ::Import("lang.ni")
@@ -67,6 +67,11 @@ testLinter <- {
     try {
       // This has for side effect to lint the file for now.
       // TODO: Move that in a cleaner more explicit API.
+      local lintTrace = ::lang.toBool(::lang.getProperty("lintTrace"),false)
+      ::log("lintTrace:" lintTrace)
+      if (lintTrace) {
+        ::gLang.property["niScript.LintTrace"] = "1"
+      }
       ::Import(aName)
       afnTest.call(::getroottable(),mLogs,this)
     }
@@ -79,6 +84,7 @@ testLinter <- {
       mSucceededChecks.push(aName)
       ::log(::format("SUCCEEDED: %s, %d log(s)", aName, mLogs.size()));
     }
+    ::gLang.property["niScript.LintTrace"] = "0"
     unregister()
   }
 }
@@ -116,7 +122,7 @@ function main() {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
+        {[Lint: Error: Experimental: key_notfound_callk: "functionNotInRoot"]})
     })
 
   testLinter.check(
@@ -131,10 +137,22 @@ function main() {
   testLinter.check(
     "linter_4_function_call.ni",
     function(aLogs) {
-      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
+      ::CHECK_EQUAL(6,aLogs.size(),"Lints count.");
+      EXPECTED_LINT(
+        aLogs, 5,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed]})
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: this_set_key_notfound: "_unknownkey"]})
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 0 but got 1. Calling f0]})
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 0 but got 2. Calling f0]})
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 3 but got 4. Calling f3]})
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 3 but got 2. Calling f3]})
     })
 
   // Output failed tests

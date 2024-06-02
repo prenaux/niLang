@@ -521,7 +521,7 @@ tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
               }
               Ptr<iMaterial> ptrMaterial;
               const tU32 nFontMaterialIdx = dt->GetTop()->GetPropertyIndex("material");
-              if (nFontMaterialIdx != eInvalidHandle) {
+              if (ptrMatLib.IsOK() && nFontMaterialIdx != eInvalidHandle) {
                 Ptr<iHString> hspFontMaterial = dt->GetTop()->GetHStringFromIndex(nFontMaterialIdx);
                 if (!HStringIsEmpty(hspFontMaterial)) {
                   ptrMaterial = ptrMatLib->GetMaterialFromName(hspFontMaterial);

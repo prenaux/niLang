@@ -209,6 +209,12 @@ class cWidgetText : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetText>
             ptrDT->SetBool("kerning",mptrTextObject->GetKerning());
             ptrDT->SetEnum("truncation",niEnumExpr(eTextTruncation),mptrTextObject->GetTruncation());
             ptrDT->SetString("truncation_text",mptrTextObject->GetTruncationText());
+
+            if (niFlagIs(nFlags,eWidgetSerializeFlags_PropertyBox)) {
+              ptrDT->SetMetadata("trim_leading_spaces", _H("bool"));
+              ptrDT->SetMetadata("kerning", _H("bool"));
+              ptrDT->SetMetadata("truncation", _H("enum[*eTextTruncation]"));
+            }
           }
           else if (nFlags & eWidgetSerializeFlags_Read) {
             if (ptrDT->HasProperty("_data")) {

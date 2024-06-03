@@ -888,7 +888,7 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
     case eKey_Delete:
       {
         if (!niFlagIs(mpWidget->GetStyle(),eWidgetEditBoxStyle_ReadOnly)) {
-          if (niFlagIs(mod,eKeyMod_Control)) {
+          if (niFlagIs(mod,eKeyMod_Control) || niFlagIs(mod,eKeyMod_Alt)) {
             mbDragging = eTrue;
             MoveCursorWordDelta(1);
             mbDragging = eFalse;
@@ -938,7 +938,7 @@ bool cEditBoxWidget::OnKeyDown(tU32 key,tU32 mod,tU32 c)
     case eKey_BackSpace:
       {
         if (!niFlagIs(mpWidget->GetStyle(),eWidgetEditBoxStyle_ReadOnly)) {
-          if (niFlagIs(mod,eKeyMod_Control)) {
+          if (niFlagIs(mod,eKeyMod_Control) || niFlagIs(mod,eKeyMod_Alt)) {
             mbDragging = eTrue;
             MoveCursorWordDelta(-1);
             mbDragging = eFalse;

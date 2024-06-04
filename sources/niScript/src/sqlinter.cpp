@@ -638,7 +638,8 @@ void SQFuncState::LintDump()
 
 void SQFuncState::LintCompileTime()
 {
-  if (niModuleShouldTrace_(niScript,LintDump)) {
+  const tBool shouldLintDump = niModuleTraceObject_(niScript,LintDump).get(eTrue);
+  if (shouldLintDump) {
     this->LintDump();
   }
 }

@@ -5625,6 +5625,76 @@ tBool DoEvaluate(iExpressionContext*)
 }
 EndOp()
 
+BeginOpVF(ArrValues, 2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  cString key = mvOperands[1].GetVariable()->GetString();
+  if (!dt.IsOK() || dt->GetNumChildren() == 0 || key.IsEmpty()) return eTrue;
+
+  Ptr<iDataTable> ret = CreateDataTable("Values");
+  ret->SetBool("__isArray", true);
+  Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(ret);
+  niLoop(i, dt->GetNumChildren()) {
+    Ptr<iDataTable> child = dt->GetChildFromIndex(i);
+    if (!child->HasProperty(key.Chars())) continue;
+
+    eDataTablePropertyType type = child->GetPropertyType(key.Chars());
+    switch (type) {
+      case eDataTablePropertyType_Bool: {
+        stack->PushNew("jbool");
+        stack->SetBool("v", child->GetBool(key.Chars()));
+        stack->Pop();
+        break;
+      }
+
+      case eDataTablePropertyType_Int32:
+      case eDataTablePropertyType_Int64:
+      case eDataTablePropertyType_Float32:
+      case eDataTablePropertyType_Float64: {
+        stack->PushNew("jnum");
+        stack->SetFloat("v", child->GetFloat(key.Chars()));
+        stack->Pop();
+        break;
+      }
+
+      case eDataTablePropertyType_String:
+      case eDataTablePropertyType_Vec2:
+      case eDataTablePropertyType_Vec3:
+      case eDataTablePropertyType_Vec4:
+      case eDataTablePropertyType_Matrix: {
+        stack->PushNew("jstr");
+        stack->SetString("v", child->GetString(key.Chars()).Chars());
+        stack->Pop();
+        break;
+      }
+
+      case eDataTablePropertyType_IUnknown: {
+        stack->PushNew("jobj");
+        stack->SetIUnknown("v", child->GetIUnknown(key.Chars()));
+        stack->Pop();
+        break;
+      }
+
+      case eDataTablePropertyType_Unknown:
+        stack->PushNew("jnull");
+        stack->SetIUnknown("v", NULL);
+        stack->Pop();
+        break;
+    }
+  }
+  mptrResult->SetIUnknown(ret);
+  return eTrue;
+}
+EndOp()
+
+
 BeginOpVF(ArrRangeI, 3)
 tBool SetupEvaluation(iExpressionContext*)
 {
@@ -6279,6 +6349,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(ArrMax);
   AddOp(ArrMin);
   AddOp(ArrAdd);
+  AddOp(ArrValues);
 
   return eTrue;
 }

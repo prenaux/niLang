@@ -1929,7 +1929,7 @@ typedef enum eType
   eType_Null = 0,
   eType_IUnknown = 1,
 
-  eType_FirstGroup4 = 0x10,
+  eType_FirstGroup4 niMaybeUnused = 0x10,
   eType_I8 = eType_FirstGroup4+0,
   eType_U8 = eType_FirstGroup4+1,
   eType_I16 = eType_FirstGroup4+2,
@@ -1938,32 +1938,32 @@ typedef enum eType
   eType_U32 = eType_FirstGroup4+5,
   eType_F32 = eType_FirstGroup4+6,
   eType_AChar = eType_FirstGroup4+7,
-  eType_LastGroup4 = 0x1F,
+  eType_LastGroup4 niMaybeUnused = 0x1F,
 
-  eType_FirstGroup8 = 0x20,
+  eType_FirstGroup8 niMaybeUnused = 0x20,
   eType_I64 = eType_FirstGroup8+0,
   eType_U64 = eType_FirstGroup8+1,
   eType_F64 = eType_FirstGroup8+2,
   eType_Vec2f = eType_FirstGroup8+3,
   eType_Vec2i = eType_FirstGroup8+4,
-  eType_LastGroup8 = 0x2F,
+  eType_LastGroup8 niMaybeUnused = 0x2F,
 
-  eType_FirstGroup12 = 0x30,
+  eType_FirstGroup12 niMaybeUnused = 0x30,
   eType_Vec3f = eType_FirstGroup12+0,
   eType_Vec3i = eType_FirstGroup12+1,
   eType_String = eType_FirstGroup12+2,
-  eType_LastGroup12 = 0x3F,
+  eType_LastGroup12 niMaybeUnused = 0x3F,
 
-  eType_FirstGroup16 = 0x40,
+  eType_FirstGroup16 niMaybeUnused = 0x40,
   eType_Vec4f = eType_FirstGroup16+0,
   eType_Vec4i = eType_FirstGroup16+1,
   eType_UUID = eType_FirstGroup16+2,
-  eType_LastGroup16 = 0x4F,
+  eType_LastGroup16 niMaybeUnused = 0x4F,
 
-  eType_FirstExtended = 0x50,
+  eType_FirstExtended niMaybeUnused = 0x50,
   eType_Matrixf = eType_FirstExtended+0,
   eType_Variant = eType_FirstExtended+1,
-  eType_LastExtended = 0x7F,
+  eType_LastExtended niMaybeUnused = 0x7F,
 
   eType_Enum = eType_U32,
 
@@ -1994,8 +1994,8 @@ typedef enum eType
 #    error "No valid tInt size defined"
 #  endif
 
-  eType_ASZ = eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer,
-  eType_IUnknownPtr = eType_IUnknown|eTypeFlags_Pointer,
+  eType_ASZ niMaybeUnused = eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer,
+  eType_IUnknownPtr niMaybeUnused = eType_IUnknown|eTypeFlags_Pointer,
 
   eType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eType;

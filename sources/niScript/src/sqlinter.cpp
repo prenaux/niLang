@@ -15,8 +15,26 @@
 
 #define SQLINTER_LOG_INLINE
 
-niDeclareModuleTrace_(niScript,LintDump);
-niDeclareModuleTrace_(niScript,LintTrace);
+static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName) {
+  if (aFilter && *aFilter) {
+    if (ni::StrCmp(aFilter,"*") == 0 ||
+        ni::StrCmp(aFilter,"1") == 0 ||
+        ni::StrICmp(aFilter,"all") == 0 ||
+        ni::StrICmp(aName,aFilter) == 0) {
+      return true;
+    }
+
+    if (ni::StrCmp(aFilter,"0") == 0 ||
+        ni::StrICmp(aFilter,"none") == 0)
+    {
+      return false;
+    }
+
+    return ni::afilepattern_match(aFilter, aName) > 0;
+  }
+
+  return false;
+}
 
 static const char* const _InstrDesc[]={
   "_OP_LINE",
@@ -649,10 +667,11 @@ void SQFuncState::LintDump()
 
 void SQFuncState::LintCompileTime()
 {
-  const tBool shouldLintDump = niModuleTraceObject_(niScript,LintDump).get(eTrue);
-  if (shouldLintDump) {
-    this->LintDump();
-  }
+  // const tBool shouldLintDump = _ShouldKeepName(ni::GetProperty("niScript.LintDump").c_str(),
+  //                                              niHStr(_funcproto(_func)->GetName()));
+  // if (shouldLintDump) {
+  //   this->LintDump();
+  // }
 }
 
 struct sLintStackEntry {
@@ -767,8 +786,10 @@ void SQFunctionProto::LintTrace(
 #define IARG3 inst._arg3
 #define IEXT inst._ext
 
-  const tBool shouldLintTrace = niModuleTraceObject_(niScript,LintTrace).get(eTrue);
   const SQFunctionProto* thisfunc = this;
+  const tBool shouldLintTrace = _ShouldKeepName(ni::GetProperty("niScript.LintTrace").c_str(),
+                                               niHStr(thisfunc->GetName()));
+
   const int thisfunc_outerssize = (int)thisfunc->_outervalues.size();
   const int thisfunc_paramssize = (int)(thisfunc->_parameters.size() -
                                         thisfunc_outerssize);
@@ -1291,6 +1312,9 @@ void SQFunctionProto::LintTrace(
   );
 
   _LTRACE(("--- FUNCS ---------------------------------------------\n"));
+  if (_functions.empty()) {
+    _LTRACE(("... No functions."));
+  } else
   niLoop(i,_functions.size()) {
     const SQObjectPtr& cf = _functions[i];
     const SQFunctionProto* cfproto = _funcproto(cf);
@@ -1309,6 +1333,8 @@ void SQFunctionProto::LintTrace(
       aLinter._lintEnabled = wasLintEnabled;
     }
   }
+
+  _LTRACE(("--- END FUNCTION TRACE --------------------------------\n"));
 
 #undef IARG0
 #undef IARG1

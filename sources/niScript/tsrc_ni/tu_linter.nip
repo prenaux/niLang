@@ -70,15 +70,19 @@ testLinter <- {
     register()
     local exc
     try {
-      local lintTrace = ::lang.toBool(::lang.getProperty("lintTrace"),false)
-      ::log("lintTrace:" lintTrace)
-      if (lintTrace) {
-        ::gLang.property["niScript.LintTrace"] = "1"
+      {
+        local lintTrace = ::lang.getProperty("lintTrace")
+        ::log("lintTrace:" lintTrace)
+        if (lintTrace) {
+          ::gLang.property["niScript.LintTrace"] = lintTrace;
+        }
       }
-      local lintDump = ::lang.toBool(::lang.getProperty("lintDump"),false)
-      ::log("lintDump:" lintDump)
-      if (lintDump) {
-        ::gLang.property["niScript.LintDump"] = "1"
+      {
+        local lintDump = ::lang.getProperty("lintDump")
+        ::log("lintDump:" lintDump)
+        if (lintDump) {
+          ::gLang.property["niScript.LintDump"] = lintDump;
+        }
       }
       // This has for side effect to lint the file for now.
       // TODO: Move that in a cleaner more explicit API.

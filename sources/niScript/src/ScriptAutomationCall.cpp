@@ -271,7 +271,7 @@ niExportFunc(int) sqa_getvar_astype(HSQUIRRELVM v, int idx, Var* apVar, const tT
     }
   }
 
-  niSQThrowError(niFmt(_A("Invalid type %s."),sqa_gettypestring(type)));
+  niSQThrowError(niFmt(_A("Unhandled type %s."),sqa_gettypestring(type)));
 }
 
 ///////////////////////////////////////////////

@@ -699,6 +699,13 @@ bool SQVM::Clone(const SQObjectPtr &self,SQObjectPtr &target, tSQDeepCloneGuardS
 
 bool SQVM::NewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
 {
+  niLet noNewSlot = [&]() -> bool {
+    if (opExt & _OPEXT_GET_SAFE) {
+      return true;
+    }
+    VM_ERRORB(niFmt(_A("newslot indexing %s with %s"),_ss->GetTypeNameStr(self),_ss->GetTypeNameStr(key)));
+  };
+
   switch(_sqtype(self)){
     case OT_TABLE: {
       if (_sqtype(key) == OT_NULL) {
@@ -720,20 +727,20 @@ bool SQVM::NewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObject
           return CallMetaMethod(_userdata(self)->GetDelegate(),MT_USERDATA_NEWSLOT,3,res);
         }
       }
+      return noNewSlot();
     }
     case OT_IUNKNOWN: {
+      // TODO: Review. What's going on here is unclear.
       SQObjectPtr t;
       Push(self); Push(key); Push(val); Push(opExt);
       if (!CallIUnknownMetaMethod(_iunknown(self),MT_USERDATA_NEWSLOT,4,t)) {
         return Set(self,key,val,opExt);
       }
+      return noNewSlot();
     }
-    default:
-      if (opExt & _OPEXT_GET_SAFE) {
-        return true;
-      }
-      VM_ERRORB(niFmt(_A("newslot indexing %s with %s"),_ss->GetTypeNameStr(self),_ss->GetTypeNameStr(key)));
-      break;
+    default: {
+      return noNewSlot();
+    }
   }
   return true;
 }

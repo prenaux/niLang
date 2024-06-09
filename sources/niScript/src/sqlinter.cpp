@@ -774,8 +774,8 @@ void SQFunctionProto::LintTrace(
                                         thisfunc_outerssize);
   const int thisfunc_stacksize = thisfunc->_stacksize;
 
-  _LTRACE(("--- TRACE FUNCTION ------------------------------------\n"));
-  _LTRACE(("... func: %s\n", _FuncProtoToString(*thisfunc)));
+  _LTRACE(("-------------------------------------------------------\n"));
+  _LTRACE(("--- FUNCTION TRACE: %s\n", _FuncProtoToString(*thisfunc)));
   _LTRACE(("stacksize: %s\n", thisfunc_stacksize));
   _LTRACE(("outersize: %s\n", thisfunc_outerssize));
   _LTRACE(("paramssize: %s\n", thisfunc_paramssize));
@@ -841,11 +841,12 @@ void SQFunctionProto::LintTrace(
   _LTRACE(("--- OUTERS --------------------------------------------\n"));
   LintClosure* thisclosure = aLinter.GetClosure(thisfunc);
   if (thisclosure) {
-    _LTRACE(("... Has closure with %d outer variables",
-             thisclosure->_outervalues.size()));
+    const tSize nouters = thisclosure->_outervalues.size();
+    _LTRACE(("... %s outer variables",
+             nouters>0 ? Var(nouters) : Var("No")));
 
     const int outerbase = thisfunc_paramssize;
-    niLoop(oi,thisclosure->_outervalues.size()) {
+    niLoop(oi,nouters) {
       const SQObjectPtr& outer = thisclosure->_outervalues[oi];
       const int si = oi + outerbase;
       if (si >= stack.size()) {
@@ -868,8 +869,7 @@ void SQFunctionProto::LintTrace(
     }
   }
   else {
-    _LTRACE(("... No closure found for %s",
-             _PtrToString((tIntPtr)this)));
+    _LTRACE(("... No closure found for %s",_PtrToString((tIntPtr)this)));
   }
 
   auto islocal = [&](int stkpos) -> bool {
@@ -1249,7 +1249,6 @@ void SQFunctionProto::LintTrace(
     _LINTERNAL_ERROR("Function doesn't have a local 'this'.");
     return;
   }
-  _LTRACE(("... localthis: %d", localThis));
   sset(localThis,aClosure._this);
 
   _LTRACE(("--- INST ----------------------------------------------\n"));

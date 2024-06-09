@@ -627,8 +627,9 @@ static cString GetObjectString(const SQSharedState& aSS,
 niExportFunc(SQRESULT) sq_get(HSQUIRRELVM v,int idx)
 {
   SQObjectPtr &self=stack_get(v,idx);
-  if(v->Get(self,v->GetUp(-1),v->GetUp(-1),NULL,NULL))
+  if (v->Get(self,v->GetUp(-1),v->GetUp(-1),nullptr,0)) {
     return SQ_OK;
+  }
   v->Pop(1);
   //return sq_throwerror(v,niFmt(_A("sq_get (%d), the index '%s' doesn't exist"),counter++,GetObjectString(self).Chars()));
   return SQ_ERROR;

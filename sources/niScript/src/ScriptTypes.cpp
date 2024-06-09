@@ -34,8 +34,8 @@ static inline tBool sqa_getVecElementFromChar(HSQUIRRELVM v, achar c, const tF32
   switch (c) {
     case 'r': case 'x': afRet = apV[0]; return eTrue;
     case 'g': case 'y': afRet = apV[1]; return eTrue;
-    case 'b': case 'z': if (anSize >= 3) { afRet = apV[2];  return eTrue; }
-    case 'a': case 'w': if (anSize >= 4) { afRet = apV[3];  return eTrue; }
+    case 'b': case 'z': if (anSize >= 3) { afRet = apV[2];  return eTrue; } break;
+    case 'a': case 'w': if (anSize >= 4) { afRet = apV[3];  return eTrue; } break;
   }
   return eFalse;
 }
@@ -47,8 +47,8 @@ static inline tBool sqa_setVecElementFromChar(HSQUIRRELVM v, achar c, tF32* apV,
   switch (c) {
     case 'r': case 'x': apV[0] = afVal; return eTrue;
     case 'g': case 'y': apV[1] = afVal; return eTrue;
-    case 'b': case 'z': if (anSize >= 3) { apV[2] = afVal;  return eTrue; }
-    case 'a': case 'w': if (anSize >= 4) { apV[3] = afVal;  return eTrue; }
+    case 'b': case 'z': if (anSize >= 3) { apV[2] = afVal;  return eTrue; } break;
+    case 'a': case 'w': if (anSize >= 4) { apV[3] = afVal;  return eTrue; } break;
   }
   return eFalse;
 }

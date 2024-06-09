@@ -1115,11 +1115,12 @@ void SQFunctionProto::LintTrace(
              _ObjToString(v), sstr(IARG0)));
   };
 
-  auto op_call = [&](const SQInstruction& inst) {
+  auto op_call = [&](const SQInstruction& inst, const tBool abIsTailCall) {
     SQObjectPtr tocall = sget(IARG1);
     const int nargs = IARG3;
     const int stackbase = IARG2;
-    _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d", _ObjToString(tocall), nargs, stackbase));
+    _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",
+             _ObjToString(tocall), nargs, stackbase, abIsTailCall?"yes":"no"));
 
     auto call_func = [&](const SQFunctionProto& func) {
       const int outerssize = (int)func._outervalues.size();
@@ -1200,7 +1201,8 @@ void SQFunctionProto::LintTrace(
       case _OP_GETK: op_getk(inst); break;
       case _OP_PREPCALLK: op_precallk(inst); break;
       case _OP_SET: op_set(inst); break;
-      case _OP_CALL: op_call(inst); break;
+      case _OP_CALL: op_call(inst,eFalse); break;
+      case _OP_TAILCALL: op_call(inst,eTrue); break;
       default: {
         break;
       }

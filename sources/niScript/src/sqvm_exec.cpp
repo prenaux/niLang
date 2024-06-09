@@ -161,7 +161,7 @@ inline void my_sq_throw() {
 #define EX_SWITCH()    switch(_i_->op)
 #define EX_BEGIN(NAME) case NAME:
 #define EX_END_CONTINUE()  continue;
-#define EX_END_FALLTHROUGH(NEXT)  // this replace a fallthrough case statement (a case statement without break or continue at the end)
+#define EX_END_FALLTHROUGH() niFallthrough;
 
 ///////////////////////////////////////////////
 bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stackbase,SQObjectPtr &outres)
@@ -179,7 +179,6 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
     SQObjectPtr temp_reg = _null_;
     int ct_target;
     bool ct_tailcall;
-    int ct_stackbase;
 
     {
       if(!StartCall(_closure(aClosure), _top - nargs, nargs, stackbase, false)) {
@@ -651,14 +650,13 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
               ct_target = _ci->_target;
               goto common_call;
             }
-          } EX_END_FALLTHROUGH(_OP_CALL);
+          } EX_END_FALLTHROUGH();
 
           //----------------------------------- _OP_CALL
           EX_BEGIN(_OP_CALL) {
             ct_tailcall = false;
             ct_target = arg0;
             temp_reg = STK(arg1);
-            ct_stackbase = _stackbase+arg2;
          common_call:
             switch (_sqtype(temp_reg)) {
               case OT_NULL: {
@@ -964,7 +962,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                   SQOuterVar &v = func->_outervalues[i];
                   if(!v._blocal) {//environment object
                     closure->_outervalues.push_back(_null_);
-                    if (!Get(STK(0), v._src, closure->_outervalues.back(), NULL, NULL)) {
+                    if (!Get(STK(0), v._src, closure->_outervalues.back(), nullptr, 0)) {
                       Raise_IdxError(v._src);
                       SQ_THROW();
                     }
@@ -1086,12 +1084,13 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
                     oRefPos = oKey = itr;
                     if (_sqtype(itr) == OT_NULL)
                       break;
-                    if (!Get(oThis, itr, oVal, NULL, NULL)) {
+                    if (!Get(oThis, itr, oVal, nullptr, 0)) {
                       VM_ERRORT(niFmt(_A("_nexti returned an invalid idx")));
                     }
                     EX_END_CONTINUE();
                   }
                 }
+                niFallthrough;
               default:
                 VM_ERRORT(niFmt(_A("cannot iterate %s"), _ss->GetTypeNameStr(STK(arg0))));
             }

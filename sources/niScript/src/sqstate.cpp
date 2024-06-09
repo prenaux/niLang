@@ -15,7 +15,7 @@
 #pragma niNote("USING GARBAGE COLLECTOR")
 #endif
 
-#define DEBUG_VM_ROOT //niDebugFmt
+#define DEBUG_VM_ROOT(FMT) //niDebugFmt
 
 static __noinline SQTable* _CreateDefaultDelegate(SQSharedState *ss,SQRegFunction *funcz)
 {

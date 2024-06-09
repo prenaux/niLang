@@ -156,6 +156,17 @@ static cString _PtrToString(const tIntPtr aPtr) {
   return _PtrToString(r,aPtr);
 }
 
+static const achar* _ObjCharsOrZeroStr(const SQObjectPtr& obj) {
+  switch (_sqtype(obj)) {
+    case OT_STRING: {
+      return _stringval(obj);
+    }
+    default: {
+      return AZEROSTR;
+    }
+  }
+}
+
 static cString _ObjToString(const SQObjectPtr& obj) {
   switch (_sqtype(obj)) {
     case OT_STRING: {
@@ -530,7 +541,7 @@ void SQFuncState::LintDump()
   SQFunctionProto *func=_funcproto(_func);
   cString o;
   o << niFmt(_A("--------------------------------------------------------------------\n"));
-  o << niFmt(_A("-----FUNCTION: %s\n"), _FuncProtoToString(*func));
+  o << niFmt(_A("-----FUNCTION DUMP: %s\n"), _FuncProtoToString(*func));
   {
     o << niFmt(_A("-----INFO\n"));
     o << niFmt(_A("stack size = %d\n"),func->_stacksize);
@@ -645,8 +656,10 @@ void SQFuncState::LintCompileTime()
 }
 
 struct sLintStackEntry {
-  SQObjectPtr _name;
-  SQObjectPtr _value;
+  SQObjectPtr _name = _null_;
+  SQObjectPtr _value = _null_;
+  SQObjectPtr _provenance = _null_;
+  SQObjectPtr _type = _null_;
 };
 
 bool _LintGet(const sLinter& aLinter, const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
@@ -756,8 +769,16 @@ void SQFunctionProto::LintTrace(
 
   const tBool shouldLintTrace = niModuleTraceObject_(niScript,LintTrace).get(eTrue);
   const SQFunctionProto* thisfunc = this;
+  const int thisfunc_outerssize = (int)thisfunc->_outervalues.size();
+  const int thisfunc_paramssize = (int)(thisfunc->_parameters.size() -
+                                        thisfunc_outerssize);
+  const int thisfunc_stacksize = thisfunc->_stacksize;
+
   _LTRACE(("--- TRACE FUNCTION ------------------------------------\n"));
   _LTRACE(("... func: %s\n", _FuncProtoToString(*thisfunc)));
+  _LTRACE(("stacksize: %s\n", thisfunc_stacksize));
+  _LTRACE(("outersize: %s\n", thisfunc_outerssize));
+  _LTRACE(("paramssize: %s\n", thisfunc_paramssize));
 
   auto getlinecol = [&](const SQInstruction& inst) -> sVec2i {
     return SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
@@ -765,9 +786,8 @@ void SQFunctionProto::LintTrace(
 
   // Build the symbol tables & functions list
   int nlocals = 0;
-  const int stacksize = thisfunc->_stacksize;
   astl::vector<sLintStackEntry> stack;
-  stack.resize(stacksize);
+  stack.resize(thisfunc_stacksize);
 
   // Set the names to the local variable names
   _LTRACE(("--- LOCALS --------------------------------------------\n"));
@@ -777,7 +797,43 @@ void SQFunctionProto::LintTrace(
       const int si = vi._pos;
       stack[si]._name = vi._name;
       nlocals = ni::Max(nlocals,si+1);
-      _LTRACE(("... local[%d]: %s at s[%d]", i, _ObjToString(stack[si]._name),si));
+      _LTRACE(("... local[%d]: %s at s[%d] = %s",
+               i, _ObjToString(stack[si]._name),
+               si, _ObjToString(stack[si]._value)));
+    }
+  }
+
+  // Set the parameters in the stack
+  _LTRACE(("--- PARAMS --------------------------------------------\n"));
+  {
+    niLoop(pi,_parameters.size()) {
+      const SQFunctionParameter& param = _parameters[pi];
+      _LTRACE(("... param[%d]: %s, type: %s",
+               pi,
+               _ObjToString(param._name),
+               _ObjToString(param._type)));
+
+      const int si = pi;
+      if (si >= stack.size()) {
+        _LINTERNAL_ERROR(niFmt("Lint: stack position overflow '%d' for parameter '%d', stack size: %d.",
+                               si, pi, stack.size()));
+        return;
+      }
+
+      if (param._name != stack[si]._name) {
+        _LINTERNAL_ERROR(niFmt("Lint: stack[%d].name '%s' doesn't match the parameter[%d] name '%s'.",
+                               si, _ObjToString(stack[si]._name),
+                               pi, _ObjToString(param._name)));
+        return;
+      }
+
+      if (stack[si]._provenance != _null_) {
+        _LINTERNAL_ERROR(niFmt("Lint: stack position '%d' for parameter '%d' unexpectedly already has a provenance '%s'.",
+                               si, pi, _ObjToString(stack[si]._provenance)));
+        return;
+      }
+
+      stack[si]._provenance = _H(niFmt("__param%d__",pi));
     }
   }
 
@@ -787,12 +843,28 @@ void SQFunctionProto::LintTrace(
   if (thisclosure) {
     _LTRACE(("... Has closure with %d outer variables",
              thisclosure->_outervalues.size()));
-    niLoop(i,thisclosure->_outervalues.size()) {
-      const int si = i + 1; // +1 because `this` is at position 0
-      const SQObjectPtr& v = thisclosure->_outervalues[i];
-      _LTRACE(("... outer[%d]: s[%s] = %s", i, si, _ObjToString(v)));
-      stack[si]._name = _H(niFmt("__outer%d__",i));
-      stack[si]._value = v;
+
+    const int outerbase = thisfunc_paramssize;
+    niLoop(oi,thisclosure->_outervalues.size()) {
+      const SQObjectPtr& outer = thisclosure->_outervalues[oi];
+      const int si = oi + outerbase;
+      if (si >= stack.size()) {
+        _LINTERNAL_ERROR(niFmt("Lint: stack position overflow '%d' for outer '%d', stack size: %d.",
+                               si, oi, stack.size()));
+        return;
+      }
+
+      SQObjectPtr expectedProvenance = _H(niFmt("__param%d__",thisfunc_paramssize+oi));
+      if (stack[si]._provenance != expectedProvenance) {
+        _LINTERNAL_ERROR(niFmt("Lint: stack position '%d' for outer '%d' unexpected provenance expected '%s' but got '%s'.",
+                               si, oi,
+                               _ObjToString(expectedProvenance),
+                               _ObjToString(stack[si]._provenance)));
+        return;
+      }
+
+      stack[si]._provenance = _H(niFmt("__outer%d__",oi));
+      stack[si]._value = outer;
     }
   }
   else {
@@ -822,14 +894,14 @@ void SQFunctionProto::LintTrace(
   };
 
   auto sset = [&](const int i, const SQObjectPtr& v) {
-    if (i >= stacksize) {
+    if (i >= thisfunc_stacksize) {
       _LINTERNAL_ERROR(niFmt("Lint: sset: Invalid stack position '%d'",i));
       return;
     }
     stack[i]._value = v;
   };
   auto sget = [&](const int i) -> const SQObjectPtr& {
-    if (i >= stacksize) {
+    if (i >= thisfunc_stacksize) {
       _LINTERNAL_ERROR(niFmt("Lint: sset: Invalid stack position '%d'",i));
       return _null_;
     }
@@ -896,9 +968,10 @@ void SQFunctionProto::LintTrace(
       return;
     }
 
-    _LTRACE(("op_closure: %s = %s, this: %s, root: %s",
+    _LTRACE(("op_closure: %s = %s, this: [localindex: %d] %s, root: %s",
              sstr(IARG0),
              _ObjToString(func),
+             localthisindex,
              _ObjToString(localthis),
              _ObjToString(aClosure._root)));
 
@@ -1125,15 +1198,9 @@ void SQFunctionProto::LintTrace(
     auto call_func = [&](const SQFunctionProto& func) {
       const int outerssize = (int)func._outervalues.size();
       const int paramssize = (int)(func._parameters.size() - outerssize);
-      const int arity = paramssize-1; // number of paramerter - 1 for the implicit 'this' argument
+      const int arity = paramssize-1; // number of paramerter - 1 for the implicit
 
-      _LTRACE(("call_func: %s",
-               _ObjToString(tocall),
-               func.GetName(),
-               paramssize,
-               outerssize,
-               func._sourceline
-              ));
+      _LTRACE(("call_func: %s", _FuncProtoToString(func)));
 
       if (_LENABLED(call_num_args) && (paramssize != nargs)) {
         _LINT(call_num_args,
@@ -1212,10 +1279,12 @@ void SQFunctionProto::LintTrace(
   _LTRACE(("--- LOCALS AFTER --------------------------------------\n"));
   niLoop(i,_localvarinfos.size()) {
     const int stackpos = _localvarinfos[i]._pos;
-    _LTRACE(("... local[%d]: s[%d]: %s = %s",
+    _LTRACE(("... local[%d]: s[%d]: %s = %s, type: %s, provenance: %s",
              i, stackpos,
              _ObjToString(localname(stackpos)),
-             _RootObjToRecString(sget(stackpos))));
+             _RootObjToRecString(sget(stackpos)),
+             _ObjToString(stack[stackpos]._type),
+             _ObjToString(stack[stackpos]._provenance)));
   }
   _LTRACE(("... root table: %s",
            _ObjToString(aClosure._root))

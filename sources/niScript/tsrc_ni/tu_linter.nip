@@ -83,6 +83,7 @@ testLinter <- {
       // This has for side effect to lint the file for now.
       // TODO: Move that in a cleaner more explicit API.
       ::Import(aName)
+      ::EXPECT_LINT_OK(mLogs);
       afnTest.call(::getroottable(),mLogs,this)
     }
     catch (e) {
@@ -112,6 +113,11 @@ function ::EXPECTED_LINT(aLogs,aExpectedCount,aMsg) {
   ::CHECK_EQUAL(aExpectedCount,found,"Expected lint: '" + aMsg + "'")
 }
 
+function ::EXPECT_LINT_OK(aLogs) {
+  ::EXPECTED_LINT(aLogs, 0, "Lint: Error: internal_");
+  ::EXPECTED_LINT(aLogs, 0, "Lint: Warning: internal_");
+}
+
 function main() {
   local testProperty = ::lang.getProperty("test")
   if (testProperty) {
@@ -121,6 +127,7 @@ function main() {
   testLinter.check(
     "linter_1.ni",
     function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
       ::CHECK_EQUAL(13,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(8,aLintResults.mLogsWarning,

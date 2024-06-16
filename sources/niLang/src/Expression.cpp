@@ -5141,7 +5141,7 @@ tBool DoEvaluate(iExpressionContext* apContext)
 EndOp()
 
 // DataTable function
-BeginOpF(DTGetChild,2)
+BeginOpF(DTGetChild, eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
   mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
@@ -5152,20 +5152,24 @@ tBool DoEvaluate(iExpressionContext* apContext)
 {
   QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
   if (!dt.IsOK()) {
-    EXPRESSION_TRACE("DTGet(): operation, input is not a valid datatable.");
-    return eFalse;
+    return eTrue;
   }
 
-  auto var = mvOperands[1].GetVariable();
-  if (var->GetType() == ni::eExpressionVariableType_Float) {
-    mptrResult->SetIUnknown(dt->GetChildFromIndex(var->GetFloat()));
+  Ptr<iDataTable> d = dt.ptr();
+  for (tU32 i = 1; i < mvOperands.size(); ++i) {
+    Ptr<iExpressionVariable> var = mvOperands[i].GetVariable();
+    if (var->GetType() == ni::eExpressionVariableType_Float) {
+      d = d->GetChildFromIndex(var->GetFloat());
+    }
+    else if (var->GetType() == ni::eExpressionVariableType_String) {
+      d = d->GetChild(var->GetString().Chars());
+    }
+    else {
+      return eTrue;
+    }
   }
-  else if (var->GetType() == ni::eExpressionVariableType_String) {
-    mptrResult->SetIUnknown(dt->GetChild(var->GetString().Chars()));
-  }
-  else {
-    return eFalse;
-  }
+
+  mptrResult->SetIUnknown(d);
   return eTrue;
 }
 EndOp()
@@ -5635,17 +5639,41 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
-  cString key = mvOperands[1].GetVariable()->GetString();
-  if (!dt.IsOK() || dt->GetNumChildren() == 0 || key.IsEmpty()) return eTrue;
+
+  if (!dt.IsOK() || dt->GetNumChildren() == 0) return eTrue;
+
+  auto type = mvOperands[1].GetVariable()->GetType();
+  cString key = "v";
+  tU32 index = eInvalidHandle;
+  tBool useIndex;
+  if (type == eExpressionVariableType_String) {
+    useIndex = eFalse;
+    key = mvOperands[1].GetVariable()->GetString();
+  }
+  else if (type == eExpressionVariableType_Float) {
+    useIndex = eTrue;
+    index = mvOperands[1].GetVariable()->GetFloat();
+  }
+  else {
+    return eTrue;
+  }
 
   Ptr<iDataTable> ret = CreateDataTable("Values");
   ret->SetBool("__isArray", true);
   Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(ret);
   niLoop(i, dt->GetNumChildren()) {
     Ptr<iDataTable> child = dt->GetChildFromIndex(i);
-    if (!child->HasProperty(key.Chars())) continue;
+    eDataTablePropertyType type = ni::eDataTablePropertyType_Unknown;
+    if (useIndex) {
+      child = child->GetChildFromIndex(index);
+      if (child.IsOK()) {
+        type = child->GetPropertyType(key.Chars());
+      }
+    }
+    else {
+      type = child->GetPropertyType(key.Chars());
+    }
 
-    eDataTablePropertyType type = child->GetPropertyType(key.Chars());
     switch (type) {
       case eDataTablePropertyType_Bool: {
         stack->PushNew("jbool");

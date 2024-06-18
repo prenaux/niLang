@@ -357,6 +357,14 @@ static Ptr<iOverlay> _ReadOverlayDT(
     }
   }
 
+  idx = dt->GetPropertyIndex(_A("path"));
+  if (idx != eInvalidHandle) {
+    tHStringPtr overlayPath = dt->GetHStringFromIndex(idx);
+    if (!ptrOvr.IsOK() && HStringIsNotEmpty(overlayPath)) {
+      ptrOvr = apGraphics->CreateOverlayResource(overlayPath);
+    }
+  }
+
   idx = dt->GetPropertyIndex(_A("mapping"));
   if (idx != eInvalidHandle) {
     if (!ptrOvr.IsOK() && HStringIsNotEmpty(aTopSource.hspPath)) {

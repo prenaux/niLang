@@ -5856,6 +5856,7 @@ static const ni::achar* _kaszMonth[][12] = {
   {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
   {"January","February","March","April","May","June","July","August","September","October","November","December"},
   {"一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"},
+  {"1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"},
 };
 
 BeginOpVF(ArrMonths, eInvalidHandle)
@@ -5869,7 +5870,7 @@ tBool DoEvaluate(iExpressionContext*)
 {
   tU32 type = 0;
   if (mvOperands.size() > 0) type = mvOperands[0].GetVariable()->GetFloat();
-  type = type > 2 ? 0 : type;
+  type = type > 3 ? 0 : type;
 
   Ptr<iDataTable> dt = CreateDataTable("months");
   dt->SetBool("__isArray", true);

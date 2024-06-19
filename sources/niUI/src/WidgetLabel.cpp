@@ -10,10 +10,13 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
 
   tU32 mFontFormatFlags;
   tHStringPtr mhspExpr;
+  Ptr<iExpressionContext> mpExpressionContext;
+  tBool mbUpdateExpr;
 
   ///////////////////////////////////////////////
   cWidgetLabel() {
     mFontFormatFlags = eFontFormatFlags_CenterV;
+    mbUpdateExpr = eFalse;
   }
 
   ///////////////////////////////////////////////
@@ -86,6 +89,16 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
       }
 
       case eUIMessage_Paint: {
+        if (mbUpdateExpr) {
+          if (mpExpressionContext.IsOK() && HStringIsNotEmpty(mhspExpr)) {
+            Ptr<iExpressionVariable> v = mpExpressionContext->Eval(HStringGetStringEmpty(mhspExpr));
+            if (v.IsOK()) {
+              apWidget->SetText(_H(v->GetString()));
+            }
+          }
+          mbUpdateExpr = eFalse;
+        }
+
         iCanvas* c = VarQueryInterface<iCanvas>(aB);
         if (c) {
           iFont* font = apWidget->GetFont();
@@ -124,13 +137,8 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
       }
 
       case eUIMessage_ExpressionUpdate: {
-        QPtr<iExpressionContext> ctx(aA);
-        if (ctx.IsOK() && HStringIsNotEmpty(mhspExpr)) {
-          Ptr<iExpressionVariable> v = ctx->Eval(HStringGetStringEmpty(mhspExpr));
-          if (v.IsOK()) {
-            apWidget->SetText(_H(v->GetString()));
-          }
-        }
+        mpExpressionContext = QPtr<iExpressionContext>(aA);
+        mbUpdateExpr = eTrue;
       }
     }
     return eFalse;

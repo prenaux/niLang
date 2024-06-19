@@ -152,6 +152,7 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   void SetSelectionFromText();
   void SetTextFromSelection();
   void UpdateSelectOnMove();
+  void UpdateExpression();
 
  private:
   iWidget*      mpWidget;
@@ -177,6 +178,8 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
   cString mstrItemsExpr;
   tI32 mnAutoScroll;
 
+  tBool mbUpdateExpr;
+  Ptr<iExpressionContext> mpExpressionContext;
   Ptr<ni::iDampedSpringPosition1> mpSpringScroll;
 
   void InitSkin();

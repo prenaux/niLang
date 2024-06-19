@@ -93,6 +93,7 @@ void cWidgetListBox::ZeroMembers()
   mnInputSelected = eInvalidHandle;
   mbSortType = eTrue;
   mnMaxNumItems = 0;
+  mbUpdateExpr = eFalse;
   ni::MemZero((tPtr)&mInternalFlags,sizeof(mInternalFlags));
 }
 
@@ -538,6 +539,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       DoUpdateLayout(eTrue);
       break;
     case eUIMessage_NCPaint: {
+      UpdateExpression();
       DoUpdateLayout(eFalse);
       iCanvas* c = VarQueryInterface<iCanvas>(varParam1);
       if (c) {
@@ -698,83 +700,8 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
     }
 
     case eUIMessage_ExpressionUpdate: {
-      QPtr<iExpressionContext> _ctx(varParam0);
-      if (!_ctx.IsOK()) return eTrue;
-
-      if (mstrItemsExpr.IsEmpty()) return eTrue;
-      Ptr<iExpressionContext> ctx = _ctx->CreateContext();
-
-      ClearItems();
-      Ptr<iExpressionVariable> v = ctx->Eval(mstrItemsExpr.Chars());
-      if (!v.IsOK()) return eFalse;
-
-      QPtr<iDataTable> dt = v->GetIUnknown();
-      if (!dt.IsOK()) return eFalse;
-
-      Ptr<iExpressionVariable> ItemText = ctx->CreateVariable("ItemText",eExpressionVariableType_String,0);
-      ctx->AddVariable(ItemText);
-
-      Ptr<iExpressionVariable> ItemColumn = ctx->CreateVariable("ItemColumn",eExpressionVariableType_Float,0);
-      ctx->AddVariable(ItemColumn);
-
-      Ptr<iExpressionVariable> ItemRow = ctx->CreateVariable("ItemRow",eExpressionVariableType_Float,0);
-      ctx->AddVariable(ItemRow);
-
-      tU32 numColumns = GetNumColumns();
-      niLoop(i, dt->GetNumChildren()) {
-        Ptr<iDataTable> item = dt->GetChildFromIndex(i);
-        tU32 itemId = AddItem(item->GetName());
-        ItemRow->SetFloat(itemId);
-
-        tBool isArray = item->GetBoolDefault("__isArray", false);
-        niLoop(j, numColumns) {
-          ItemColumn->SetFloat(j);
-
-          cString text;
-          if (isArray) {
-            Ptr<iDataTable> itemVar = item->GetChildFromIndex(j);
-            if (itemVar.IsOK()) {
-              text = itemVar->GetString("v").Chars();
-            }
-          }
-          else {
-            text = item->GetString(HStringGetStringEmpty(mvColumns[j].hspKey));
-          }
-          ItemText->SetString(text);
-
-          tHStringPtr widgetExpr = mvColumns[j].hspWidgetExpr;
-          if (!HStringIsEmpty(widgetExpr)) {
-            Ptr<iExpressionVariable> vw = ctx->Eval(HStringGetStringEmpty(widgetExpr));
-            if (vw.IsOK() && vw->GetString().IsNotEmpty()) {
-              Ptr<iWidget> tmpWidget = mpWidget->FindWidget(_H(vw->GetString()));
-              if (tmpWidget.IsOK()) {
-                Ptr<iDataTable> wDT = CreateDataTable("Widget");
-                mpWidget->GetUIContext()->SerializeWidget(
-                  tmpWidget,
-                  wDT,
-                  eWidgetSerializeFlags_Write|ni::eWidgetSerializeFlags_Children,
-                  NULL);
-
-                Ptr<iWidget> itemWidget = mpWidget->GetUIContext()->CreateWidgetFromDataTable(
-                  wDT,mpWidget,_H(niFmt("%s_%d_%d",mpWidget->GetID(), j, itemId)), NULL);
-                itemWidget->SetStyle(itemWidget->GetStyle() | eWidgetStyle_ItemOwned | eWidgetStyle_DontSerialize);
-
-                Ptr<iWidget> w = mvItems[itemId]->vData[j].ptrWidget;
-                if (w.IsOK()) {
-                  w->Invalidate();
-                }
-                mvItems[itemId]->vData[j].ptrWidget = itemWidget;
-
-                itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, ctx);
-                SetItemWidget(j, itemId, itemWidget);
-              }
-            }
-          }
-          else {
-            SetItemText(j, itemId, text.Chars());
-          }
-        }
-      }
+      mpExpressionContext = QPtr<iExpressionContext>(varParam0);
+      mbUpdateExpr = eTrue;
       return eTrue;
     }
 
@@ -858,6 +785,90 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       return eFalse;
   }
   return eTrue;
+}
+
+///////////////////////////////////////////////
+void cWidgetListBox::UpdateExpression() {
+  if (!mbUpdateExpr) return;
+  mbUpdateExpr = eFalse;
+
+  Ptr<iExpressionContext> _ctx = mpExpressionContext;
+  if (!_ctx.IsOK()) return;
+
+  if (mstrItemsExpr.IsEmpty()) return;
+  Ptr<iExpressionContext> ctx = _ctx->CreateContext();
+
+  ClearItems();
+  Ptr<iExpressionVariable> v = ctx->Eval(mstrItemsExpr.Chars());
+  if (!v.IsOK()) return;
+
+  QPtr<iDataTable> dt = v->GetIUnknown();
+  if (!dt.IsOK()) return;
+
+  Ptr<iExpressionVariable> ItemText = ctx->CreateVariable("ItemText",eExpressionVariableType_String,0);
+  ctx->AddVariable(ItemText);
+
+  Ptr<iExpressionVariable> ItemColumn = ctx->CreateVariable("ItemColumn",eExpressionVariableType_Float,0);
+  ctx->AddVariable(ItemColumn);
+
+  Ptr<iExpressionVariable> ItemRow = ctx->CreateVariable("ItemRow",eExpressionVariableType_Float,0);
+  ctx->AddVariable(ItemRow);
+
+  tU32 numColumns = GetNumColumns();
+  niLoop(i, dt->GetNumChildren()) {
+    Ptr<iDataTable> item = dt->GetChildFromIndex(i);
+    tU32 itemId = AddItem(item->GetName());
+    ItemRow->SetFloat(itemId);
+
+    tBool isArray = item->GetBoolDefault("__isArray", false);
+    niLoop(j, numColumns) {
+      ItemColumn->SetFloat(j);
+
+      cString text;
+      if (isArray) {
+        Ptr<iDataTable> itemVar = item->GetChildFromIndex(j);
+        if (itemVar.IsOK()) {
+          text = itemVar->GetString("v").Chars();
+        }
+      }
+      else {
+        text = item->GetString(HStringGetStringEmpty(mvColumns[j].hspKey));
+      }
+      ItemText->SetString(text);
+
+      tHStringPtr widgetExpr = mvColumns[j].hspWidgetExpr;
+      if (!HStringIsEmpty(widgetExpr)) {
+        Ptr<iExpressionVariable> vw = ctx->Eval(HStringGetStringEmpty(widgetExpr));
+        if (vw.IsOK() && vw->GetString().IsNotEmpty()) {
+          Ptr<iWidget> tmpWidget = mpWidget->FindWidget(_H(vw->GetString()));
+          if (tmpWidget.IsOK()) {
+            Ptr<iDataTable> wDT = CreateDataTable("Widget");
+            mpWidget->GetUIContext()->SerializeWidget(
+              tmpWidget,
+              wDT,
+              eWidgetSerializeFlags_Write|ni::eWidgetSerializeFlags_Children,
+              NULL);
+
+            Ptr<iWidget> itemWidget = mpWidget->GetUIContext()->CreateWidgetFromDataTable(
+              wDT,mpWidget,_H(niFmt("%s_%d_%d",mpWidget->GetID(), j, itemId)), NULL);
+            itemWidget->SetStyle(itemWidget->GetStyle() | eWidgetStyle_ItemOwned | eWidgetStyle_DontSerialize);
+
+            Ptr<iWidget> w = mvItems[itemId]->vData[j].ptrWidget;
+            if (w.IsOK()) {
+              w->Invalidate();
+            }
+            mvItems[itemId]->vData[j].ptrWidget = itemWidget;
+
+            itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, ctx);
+            SetItemWidget(j, itemId, itemWidget);
+          }
+        }
+      }
+      else {
+        SetItemText(j, itemId, text.Chars());
+      }
+    }
+  }
 }
 
 ///////////////////////////////////////////////

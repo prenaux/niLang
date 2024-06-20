@@ -318,7 +318,11 @@ cUIContext::cUIContext(iGraphicsContext* apGraphicsContext, iHString* ahspDefaul
   // Register all enumerations so that the expression parser for the "style"
   // property with GlobalSearch can find the enumerations for
   // eWidgetButtonStyle, etc...
-  GetLang()->RegisterModuleDef(GetModuleDef_niUI());
+  static bool wasExecuted = false;
+  if (!wasExecuted) {
+    GetLang()->RegisterModuleDef(GetModuleDef_niUI());
+  }
+  wasExecuted = true;
 
   if (!niIsOK(apGraphicsContext)) {
     niError(_A("Invalid graphics context."));

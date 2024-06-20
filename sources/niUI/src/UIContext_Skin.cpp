@@ -320,11 +320,10 @@ typedef astl::hstring_map_cmp<Ptr<iImage> > tLoadedImageMap;
 ///////////////////////////////////////////////
 static Ptr<iOverlay> _ReadOverlayDT(
     iGraphics* apGraphics,
-    const sOverlaySource& aTopSource,
     iDataTable* dt,
     iMaterialLibrary* apMatLib,
     iHString* ahspClassMaterial,
-    tLoadedImageMap& mapImages)
+    iOverlay* apOverlayDefault)
 {
   tU32 idx;
   Ptr<iOverlay> ptrOvr;
@@ -367,19 +366,8 @@ static Ptr<iOverlay> _ReadOverlayDT(
 
   idx = dt->GetPropertyIndex(_A("mapping"));
   if (idx != eInvalidHandle) {
-    if (!ptrOvr.IsOK() && HStringIsNotEmpty(aTopSource.hspPath)) {
-      Ptr<iImage> img;
-      tLoadedImageMap::iterator it = mapImages.find(aTopSource.hspPath);
-      if (it == mapImages.end()) {
-        // niDebugFmt(("... UISkin: CreateOverlayImage: Load: %s", aTopSource.hspPath));
-        img = apGraphics->CreateImageFromResource(aTopSource.hspPath);
-        astl::upsert(mapImages,aTopSource.hspPath,img);
-      }
-      else {
-        img = it->second.ptr();
-      }
-      // niDebugFmt(("... UISkin: CreateOverlayImage: %s", aTopSource.hspPath));
-      ptrOvr = apGraphics->CreateOverlayImage(img);
+    if (!ptrOvr.IsOK() && apOverlayDefault) {
+      ptrOvr = apOverlayDefault->Clone();
     }
     // mapping and frames make sense only if there's already an overlay...
     if (ptrOvr.IsOK()) {
@@ -445,19 +433,11 @@ static Ptr<iOverlay> _ReadOverlayDT(
 tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
 {
   Ptr<iDataTableReadStack> dt = ni::CreateDataTableReadStack(apDT);
-
-  // parse and initialize the datatable
-  astl::stack<sOverlaySource,astl::list<sOverlaySource> > stkOverlay;
-  tLoadedImageMap mapImages;
-
   // Load the main bitmap overlay
   {
-    sOverlaySource source;
-    source.nType = OVERLAYSOURCE_BITMAP;
     if (apDT->GetPropertyIndex(_A("bitmap")) != eInvalidHandle) {
-      source.hspPath = _H(apDT->GetString(_A("bitmap")));
+      mptrDefaultSkinOverlay = mptrGraphics->CreateOverlayResource(apDT->GetHString(_A("bitmap")));
     }
-    stkOverlay.push(source);
   }
 
   // Load the material library
@@ -505,7 +485,7 @@ tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
         for (tU32 j = 0; j < dt->GetNumChildren(); ++j) {
           dt->PushChild(j);
           Ptr<iOverlay> ptrOvr = _ReadOverlayDT(
-              mptrGraphics,stkOverlay.top(),dt->GetTop(),ptrMatLib,hspClassMaterial,mapImages);
+            mptrGraphics,dt->GetTop(),ptrMatLib,hspClassMaterial, mptrDefaultSkinOverlay);
           dt->GetTop()->SetIUnknown(_A("_overlay"),ptrOvr);
           _UISkinTrace(niFmt(_A("Added cursor '%s'."), ni::GetLang()->GetAbsoluteDataTablePath(dt->GetTop(),eInvalidHandle)));
           dt->Pop();
@@ -575,7 +555,7 @@ tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
           // --- Element ---
           else {
             Ptr<iOverlay> ptrOvr = _ReadOverlayDT(
-                mptrGraphics,stkOverlay.top(),dt->GetTop(),ptrMatLib,hspClassMaterial,mapImages);
+              mptrGraphics,dt->GetTop(),ptrMatLib,hspClassMaterial, mptrDefaultSkinOverlay);
             dt->GetTop()->SetIUnknown(_A("_overlay"),ptrOvr);
             _UISkinTrace(niFmt(_A("Added element '%s'."),ni::GetLang()->GetAbsoluteDataTablePath(dt->GetTop(),eInvalidHandle)));
           }

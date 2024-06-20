@@ -451,6 +451,7 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   /// Skins ///
   Ptr<iOverlay> mptrErrorOverlay;
   Ptr<iDataTable> mptrErrorSkin;
+  Ptr<iOverlay> mptrDefaultSkinOverlay;
   tBool _InitializeSkinDataTable(iDataTable* apDT);
   tHStringPtr mhspDefaultSkin;
   typedef astl::hstring_hash_map<Ptr<iDataTable> > tSkinMap;

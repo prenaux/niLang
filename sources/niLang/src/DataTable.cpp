@@ -551,6 +551,7 @@ ni::iDataTable * cDataTable::GetChildFromIndex(tU32 anIndex) const
   if (anIndex >= GetNumChildren()) return NULL;
   return mvChildren[anIndex];
 }
+
 ///////////////////////////////////////////////
 tBool cDataTable::Copy(const ni::iDataTable *apSource, ni::tDataTableCopyFlags aMode)
 {

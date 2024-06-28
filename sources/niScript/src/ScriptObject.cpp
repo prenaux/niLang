@@ -224,6 +224,10 @@ tBool __stdcall cScriptObject::Get(int idx, int numpop)
       mType = eScriptObjectType_UUID;
       break;
     }
+    default: {
+      niError(niFmt("Unhandled script type '%s'.", mType));
+      return eFalse;
+    }
   }
 
   if (mbHoldRef) {

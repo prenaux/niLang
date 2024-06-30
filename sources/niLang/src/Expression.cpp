@@ -104,6 +104,50 @@ inline Var _ToVar(const iExpressionVariable* apExprVar) {
   return niVarNull;
 }
 
+inline Ptr<iDataTable> _ToArrVar(const iExpressionVariable* apExprVar) {
+  if (!niIsOK(apExprVar)) return NULL;
+  // niAssert(niIsOK(apExprVar));
+  Ptr<iDataTable> ret = CreateDataTable();
+  switch (apExprVar->GetType()) {
+    case eExpressionVariableType_Float: {
+      ret->SetName("jnum");
+      ret->SetFloat("v", apExprVar->GetFloat());
+      break;
+    }
+    case eExpressionVariableType_Vec2:{
+      ret->SetName("jstr");
+      ret->SetVec2("v", apExprVar->GetVec2());
+      break;
+    }
+    case eExpressionVariableType_Vec3:{
+      ret->SetName("jstr");
+      ret->SetVec3("v", apExprVar->GetVec3());
+      break;
+    }
+    case eExpressionVariableType_Vec4:{
+      ret->SetName("jstr");
+      ret->SetVec4("v", apExprVar->GetVec4());
+      break;
+    }
+    case eExpressionVariableType_Matrix:{
+      ret->SetName("jstr");
+      ret->SetMatrix("v", apExprVar->GetMatrix());
+      break;
+    }
+    case eExpressionVariableType_String:{
+      ret->SetName("jstr");
+      ret->SetString("v", apExprVar->GetString().Chars());
+      break;
+    }
+    case eExpressionVariableType_IUnknown:
+      ret->SetName("jptr");
+      ret->SetIUnknown("v", apExprVar->GetIUnknown());
+      break;
+  }
+  return ret;
+}
+
+
 ///////////////////////////////////////////////
 struct ExprVar : public ImplRC<iExpressionVariable>
 {
@@ -5335,9 +5379,9 @@ tBool SetupEvaluation(iExpressionContext* apContext)
 
 tBool DoEvaluate(iExpressionContext* apContext)
 {
+  Ptr<iDataTable> dt = ni::CreateDataTable();
+  dt->SetBool("__isArray", true);
   if (mvOperands.size() > 0) {
-    Ptr<iDataTable> dt = ni::CreateDataTable();
-    dt->SetBool("__isArray", true);
     Ptr<iDataTableWriteStack> stack = ni::CreateDataTableWriteStack(dt);
     for (auto const& v: mvOperands) {
       Ptr<iExpressionVariable> val = v.GetVariable();
@@ -5373,9 +5417,8 @@ tBool DoEvaluate(iExpressionContext* apContext)
         }
       }
     }
-
-    mptrResult->SetIUnknown(dt);
   }
+  mptrResult->SetIUnknown(dt);
   return eTrue;
 }
 EndOp()
@@ -5393,8 +5436,8 @@ tBool SetupEvaluation(iExpressionContext* apContext)
 
 tBool DoEvaluate(iExpressionContext* apContext)
 {
+  Ptr<iDataTable> dt = ni::CreateDataTable();
   if (mvOperands.size() > 0) {
-    Ptr<iDataTable> dt = ni::CreateDataTable();
     for (tU32 i = 0; i < mvOperands.size(); i += 2) {
       Ptr<iExpressionVariable> key = mvOperands[i].GetVariable();
       if (key->GetType() != ni::eExpressionVariableType_String) {
@@ -5432,8 +5475,8 @@ tBool DoEvaluate(iExpressionContext* apContext)
 
       }
     }
-    mptrResult->SetIUnknown(dt);
   }
+  mptrResult->SetIUnknown(dt);
   return eTrue;
 }
 EndOp()
@@ -5718,6 +5761,82 @@ tBool DoEvaluate(iExpressionContext*)
     }
   }
   mptrResult->SetIUnknown(ret);
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrPush, 2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK()) {
+    Ptr<iDataTable> val = _ToArrVar(mvOperands[1].GetVariable());
+    if (val.IsOK()) {
+      dt->AddChild(val);
+    }
+
+    mptrResult->SetIUnknown(dt);
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrInsert, 3)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK()) {
+    mptrResult->SetIUnknown(dt);
+
+    tU32 index = mvOperands[2].GetVariable()->GetFloat();
+    if (index >= dt->GetNumChildren()) return eTrue;
+
+    Ptr<iDataTable> val = _ToArrVar(mvOperands[1].GetVariable());
+    if (val.IsOK()) {
+      Ptr<iDataTable> tmp = CreateDataTable();
+      niLoop(i, dt->GetNumChildren()) {
+        if (i == index) {
+          tmp->AddChild(val);
+        }
+        tmp->AddChild(dt->GetChildFromIndex(i));
+      }
+
+      niLoop(i, tmp->GetNumChildren()) {
+        dt->AddChild(tmp->GetChildFromIndex(i));
+      }
+    }
+  }
+  return eTrue;
+}
+EndOp()
+
+BeginOpVF(ArrRemove, 2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext*)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (dt.IsOK()) {
+    tU32 index = mvOperands[1].GetVariable()->GetFloat();
+    dt->RemoveChild(index);
+    mptrResult->SetIUnknown(dt);
+  }
   return eTrue;
 }
 EndOp()
@@ -6379,6 +6498,9 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(ArrMin);
   AddOp(ArrAdd);
   AddOp(ArrValues);
+  AddOp(ArrPush);
+  AddOp(ArrInsert);
+  AddOp(ArrRemove);
 
   return eTrue;
 }

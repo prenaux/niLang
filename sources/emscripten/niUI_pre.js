@@ -53,5 +53,6 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
     "shaders/fixed_vs_pnt2.cgo",
     "skins/UIDark.png",
     "skins/default.uiskin.xml",
+    "fonts/Roboto-Regular.ttf",
   ]);
 };

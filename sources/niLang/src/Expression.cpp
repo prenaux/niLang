@@ -140,8 +140,10 @@ inline Ptr<iDataTable> _ToArrVar(const iExpressionVariable* apExprVar) {
       break;
     }
     case eExpressionVariableType_IUnknown:
-      ret->SetName("jptr");
-      ret->SetIUnknown("v", apExprVar->GetIUnknown());
+      QPtr<iDataTable> dt = apExprVar->GetIUnknown();
+      if (dt.IsOK()) {
+        return dt.ptr();
+      }
       break;
   }
   return ret;
@@ -5185,6 +5187,33 @@ tBool DoEvaluate(iExpressionContext* apContext)
 EndOp()
 
 // DataTable function
+BeginOpF(DTSet,3)
+tBool SetupEvaluation(iExpressionContext* apContext)
+{
+  mptrResult = _CreateVariable(NULL,ni::eExpressionVariableType_IUnknown);
+  return eTrue;
+}
+
+tBool DoEvaluate(iExpressionContext* apContext)
+{
+  QPtr<iDataTable> dt = mvOperands[0].GetVariable()->GetIUnknown();
+  if (!dt.IsOK()) {
+    EXPRESSION_TRACE("DTSet(): operation, input is not a valid datatable.");
+    return eFalse;
+  }
+
+  cString path = mvOperands[1].GetVariable()->GetString();
+  if (path.IsNotEmpty()) {
+    dt->SetVarFromPath(path.Chars(), _ToVar(mvOperands[2].GetVariable()));
+  }
+
+  mptrResult->SetIUnknown(dt);
+  return eTrue;
+}
+EndOp()
+
+
+// DataTable function
 BeginOpF(DTGetChild, eInvalidHandle)
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
@@ -6475,6 +6504,7 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(Global);
 
   AddOp(DTGet);
+  AddOp(DTSet);
   AddOp(DTGetChild);
   AddOp(DTFindChild);
   AddOp(DTCopyMatch);

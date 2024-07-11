@@ -13,7 +13,10 @@ namespace ni {
  * @{
  */
 
+niExportFunc(int) ni_is_debugger_present();
 niExportFuncCPP(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp, int skip);
+
+#define niBreakInDebugger() if (ni::ni_is_debugger_present()) { ni_debug_break(); }
 
 #if !defined __cplusplus
 

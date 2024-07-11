@@ -14,6 +14,15 @@
 #include <emscripten.h>
 #endif
 
+#ifdef niLinux
+#include <unistd.h>
+#include <sys/types.h>
+#endif
+
+#ifdef niOSX
+#include <sys/sysctl.h>
+#endif
+
 namespace ni {
 
 _HSymImpl(not_initialized);
@@ -110,6 +119,44 @@ void JSCC_ConsoleError(const char* message) {
 #endif
 
 ///////////////////////////////////////////////
+niExportFunc(int) ni_is_debugger_present() {
+#ifdef _WIN32
+  return ::IsDebuggerPresent();
+#elif defined(__APPLE__)
+  int mib[4];
+  kinfo_proc info;
+  size_t size;
+
+  mib[0] = CTL_KERN;
+  mib[1] = KERN_PROC;
+  mib[2] = KERN_PROC_PID;
+  mib[3] = getpid();
+
+  size = sizeof(info);
+  info.kp_proc.p_flag = 0;
+
+  if (sysctl(mib, 4, &info, &size, NULL, 0) == 0) {
+    return (info.kp_proc.p_flag & P_TRACED) != 0;
+  }
+  return 0;
+#else // Linux
+  FILE* fp = fopen("/proc/self/status", "r");
+  if (fp) {
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), fp)) {
+      if (strncmp(buffer, "TracerPid:", 10) == 0) {
+        fclose(fp);
+        int tracer_pid = atoi(buffer + 10);
+        return tracer_pid != 0;
+      }
+    }
+    fclose(fp);
+  }
+  return 0;
+#endif
+}
+
+///////////////////////////////////////////////
 niExportFuncCPP(void) ni_throw_panic(
   niConst struct iHString* aKind,
   const char* msg,
@@ -117,6 +164,7 @@ niExportFuncCPP(void) ni_throw_panic(
   int line,
   const char* func)
 {
+  niBreakInDebugger();
 #if defined niNoExceptions
   ni_harakiri(aKind,msg,nullptr,file,line,func);
 #else

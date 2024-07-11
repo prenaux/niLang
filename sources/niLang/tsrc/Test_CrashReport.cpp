@@ -8,7 +8,11 @@ using namespace ni;
 
 struct FCrashReport {};
 
+niExportFunc(int) ni_is_debugger_present();
+
 TEST_FIXTURE(FCrashReport,StackGetCurrent) {
+  niBreakInDebugger();
+
 #ifdef niLinux
   // TODO: Of course it couldn't just work on Linux, I tried a few things but I
   // couldn't get it working in the allocated timebox. ni_stack_get_current()

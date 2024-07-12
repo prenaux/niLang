@@ -8,16 +8,19 @@ using namespace ni;
 
 struct FCrashReport {};
 
+/*
+
+  Note that for Linux to get a stack trace with the function names we need to
+  make sure we preserve the symbols by using -fvisibility=default
+  (-fvisibility=hidden doesn't work) and we need to add the -rdynamic linker
+  flag.
+
+ */
+
 TEST_FIXTURE(FCrashReport,StackGetCurrent) {
-#ifdef niLinux
-  // TODO: Of course it couldn't just work on Linux, I tried a few things but I
-  // couldn't get it working in the allocated timebox. ni_stack_get_current()
-  // can't retrieve the symbols.
-  AUTO_WARNING_MODE();
-#endif
   ni::cString stack;
   ni_stack_get_current(stack,NULL,0);
-  niDebugFmt(("... stack: %s", stack));
+  niDebugFmt(("... stack:\n%s", stack));
   CHECK(stack.contains("FCrashReportStackGetCurrentHelper::RunTest"));
 }
 

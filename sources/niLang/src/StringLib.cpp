@@ -3372,7 +3372,7 @@ niExportFuncCPP(cString&) StringAppendCsvValue(
 }
 
 __forceinline tBool _StringDecodeCsvShouldUnquote(const char *str, const tU32 aQuote) {
-  return str && (ni::utf8::raw_peek(str) == aQuote);
+  return niStringIsOK(str) && (ni::utf8::raw_peek(str) == aQuote);
 }
 
 // A valid quoted field starts with a quote, trailing spaces are not allowed.
@@ -3384,7 +3384,7 @@ niExportFuncCPP(cString&) StringDecodeCsvUnquote(
   cString& o, const tU32 aQuote, const char *str, tI32 strLen)
 {
   // The input and output can't be the same buffer.
-  niAssert(o.Chars() != str);
+  niAssert(!niStringIsOK(str) || (o.Chars() != str));
   if (!_StringDecodeCsvShouldUnquote(str,aQuote)) {
     // doesn't start with a quote, so its not quoted and we just append as-is
     o.appendEx(str,strLen);

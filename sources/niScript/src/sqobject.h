@@ -198,6 +198,16 @@ struct SQObjectPtr : public SQObject
   __forceinline bool operator != (const SQObject& obj) const {
     return !(*this == obj);
   }
+
+  // Some old C++ compilers are brain damaged and need this to not complain
+  // about ambiguous conversions.
+  __forceinline bool operator == (const SQObjectPtr& obj) const {
+    return (*this == static_cast<const SQObject&>(obj));
+  }
+  __forceinline bool operator != (const SQObjectPtr& obj) const {
+    return (*this != static_cast<const SQObject&>(obj));
+  }
+
   __forceinline bool IsNull() const {
     return niType(_var.mType) == eType_Null;
   }

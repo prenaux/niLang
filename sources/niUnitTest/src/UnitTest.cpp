@@ -32,6 +32,35 @@ niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty);
 }
 #endif
 
+#ifdef niLinux
+//
+// The LeakDetector on Linux (somehow its not an issue on macOS?) detects some
+// allocations in global variables as leak. Imo that's incorrect but possibly
+// I missed something... Still it makes it unusable and there's no way to
+// "fix" those leaks since they are allocated in global variables only once.
+// Its a significant problem in UnitTest since they'll fail so I put this here
+// for now.
+//
+/*
+See https://stackoverflow.com/a/51061314
+
+You can run with export ASAN_OPTIONS=detect_leaks=0 or add a function to your application:
+```
+#ifdef __cplusplus
+extern "C"
+#endif
+const char* __asan_default_options() { return "detect_leaks=0"; }
+```
+
+See [Asan flags wiki](https://github.com/google/sanitizers/wiki/AddressSanitizerFlags) and [common sanitizer flags](https://github.com/google/sanitizers/wiki/SanitizerCommonFlags) wiki for more details.
+
+*/
+#ifdef __cplusplus
+extern "C"
+#endif
+const char* __asan_default_options() { return "detect_leaks=0"; }
+#endif
+
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
 #error "USE_SIGNALS should only be used with TEST_NICATCHALL"
 #endif

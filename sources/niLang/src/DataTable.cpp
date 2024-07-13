@@ -1493,29 +1493,8 @@ tBool __stdcall cDataTable::_FindChildDataTable(iDataTable* apThis, iDataTable* 
 cString __stdcall cLang::GetAbsoluteDataTablePath(iDataTable* apDT, tU32 anPropIndex)
 {
   niCheck(niIsOK(apDT),AZEROSTR);
-
-  cString ret;
-  if (anPropIndex != eInvalidHandle) {
-    ret += _A("@");
-    ret += apDT->GetPropertyName(anPropIndex);
-    niCheck(ret != _A("@"),AZEROSTR);
-  }
-
-  if  (apDT->GetParent()) {
-    while (apDT->GetParent()) {
-      cString cur;
-      cur = _A("/");
-      cur += apDT->GetName();
-      cur += ret;
-      ret = cur;
-      apDT = apDT->GetParent();
-    }
-  }
-  else {
-    ret = cString(_A("/")) + ret;
-  }
-
-  return ret;
+  cDataTablePath path(nullptr);
+  return path.GetRootPathToDataTable(apDT, anPropIndex);
 }
 
 static tBool _GetPathProperty(iDataTable* apDT, const achar* aPath, Ptr<iDataTable>& resDT, tU32& resIndex, tBool abCreate) {

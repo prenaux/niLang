@@ -15,7 +15,7 @@
 
 #define SQLINTER_LOG_INLINE
 
-static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName) {
+static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName, ain<bool> aDefault) {
   if (aFilter && *aFilter) {
     if (ni::StrCmp(aFilter,"*") == 0 ||
         ni::StrCmp(aFilter,"1") == 0 ||
@@ -33,7 +33,7 @@ static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName) {
     return ni::afilepattern_match(aFilter, aName) > 0;
   }
 
-  return false;
+  return aDefault;
 }
 
 static const char* const _InstrDesc[]={
@@ -668,7 +668,7 @@ void SQFuncState::LintDump()
 void SQFuncState::LintCompileTime()
 {
   // const tBool shouldLintDump = _ShouldKeepName(ni::GetProperty("niScript.LintDump").c_str(),
-  //                                              niHStr(_funcproto(_func)->GetName()));
+  //                                              niHStr(_funcproto(_func)->GetName()), false);
   // if (shouldLintDump) {
   //   this->LintDump();
   // }
@@ -787,8 +787,9 @@ void SQFunctionProto::LintTrace(
 #define IEXT inst._ext
 
   const SQFunctionProto* thisfunc = this;
-  const tBool shouldLintTrace = _ShouldKeepName(ni::GetProperty("niScript.LintTrace").c_str(),
-                                               niHStr(thisfunc->GetName()));
+  const tBool shouldLintTrace = _ShouldKeepName(
+    ni::GetProperty("niScript.LintTrace").c_str(),
+    niHStr(thisfunc->GetName()), false);
 
   const int thisfunc_outerssize = (int)thisfunc->_outervalues.size();
   const int thisfunc_paramssize = (int)(thisfunc->_parameters.size() -
@@ -1334,7 +1335,7 @@ void SQFunctionProto::LintTrace(
     }
   }
 
-  _LTRACE(("--- END FUNCTION TRACE --------------------------------\n"));
+  _LTRACE(("--- END FUNCTION TRACE: %s --------------------------------\n", thisfunc->GetName()));
 
 #undef IARG0
 #undef IARG1

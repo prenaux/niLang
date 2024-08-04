@@ -682,7 +682,7 @@ eCompileResult SQLexer::LexSExp(sCompileErrors& aErrors, int* apTok, const int a
           _prevSExpKind = "string";
           RETURN_TOKEN(TK_STRING_LITERAL);
         }
-        // fallthrought...
+        niFallthrough;
       case _A('}'):
       case _A('['):
       case _A(']'):
@@ -1041,6 +1041,7 @@ eCompileResult SQLexer::ReadString(sCompileErrors& aErrors, int* apTok, tU32 nde
             LEXER_ERROR("newline in a regular string constant file");
             break;
           }
+          niFallthrough;
         case _A('\\'):
           if (abFormat) {
             NEXT();
@@ -1063,6 +1064,7 @@ eCompileResult SQLexer::ReadString(sCompileErrors& aErrors, int* apTok, tU32 nde
             }
             break;
           }
+          niFallthrough;
         default:
           APPEND_CHAR(CUR_CHAR);
           NEXT();

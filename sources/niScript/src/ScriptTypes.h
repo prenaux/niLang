@@ -404,7 +404,7 @@ int sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptType
 int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
 
 int sqa_pushEnumDef(HSQUIRRELVM v, const sEnumDef* apEnumDef);
-int sqa_getEnumDef(HSQUIRRELVM v, int idex, const sEnumDef** appEnumDef);
+int sqa_getEnumDef(HSQUIRRELVM v, int idx, const sEnumDef** appEnumDef);
 
 int sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
 int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);

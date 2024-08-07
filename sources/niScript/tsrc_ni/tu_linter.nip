@@ -180,7 +180,7 @@ function main() {
   testLinter.check(
     "linter_5_funcall_native.ni",
     function(aLogs) {
-      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
+      ::CHECK_EQUAL(2,aLogs.size(),"Lints count.");
     })
 
   // Output failed tests

@@ -351,6 +351,7 @@ struct sLinter {
   tLintKindMap _lintEnabled;
   SQSharedState _ss;
   SQObjectPtr _vmroot;
+  SQObjectPtr _typedefs;
 
 #if !defined SQLINTER_LOG_INLINE
   astl::vector<cString> _logs;
@@ -365,6 +366,9 @@ struct sLinter {
     _vmroot = SQTable::Create();
     _table(_vmroot)->SetDebugName("__vmroot__");
     this->RegisterBuiltinFuncs(_table(_vmroot));
+
+    _typedefs = SQTable::Create();
+    _table(_vmroot)->SetDebugName("__typedefs__");
 
     _REG_LINT(internal_error);
     _REG_LINT(internal_warning);
@@ -382,7 +386,7 @@ struct sLinter {
   }
 #undef _REG_LINT
 
-  tBool EnableFromSlot(const SQFunctionProto* thisfunc, SQObjectPtr table, SQObjectPtr k, SQObjectPtr v) {
+  tBool EnableFromSlot(const SQFunctionProto* thisfunc, ain<SQObjectPtr> table, ain<SQObjectPtr> k, ain<SQObjectPtr> v) {
     sLinter& aLinter = *this;
     if (sq_type(table) != OT_TABLE) {
       _LINTERNAL_WARNING("__lint table is not a table.");
@@ -551,6 +555,112 @@ struct sLinter {
     RegisterFuncs(table, SQSharedState::_base_funcs);
     RegisterFuncs(table, SQSharedState::_concurrent_funcs);
   }
+
+  SQObjectPtr GetTypeDef(const SQObjectPtr& aType) {
+    SQObjectPtr typeDef;
+    if (LintGet(_typedefs,aType,typeDef,0)) {
+      return typeDef;
+    }
+
+    if (sq_type(aType) != OT_STRING) {
+      return _null_;
+    }
+
+    return _null_;
+  }
+
+  bool LintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
+  {
+    const SQSharedState& ss = this->_ss;
+    switch(_sqtype(self)){
+      case OT_TABLE:
+        {
+          if (_table(self)->Get(key,dest))
+            return true;
+          // delegation
+          if (_table(self)->GetDelegate()) {
+            return LintGet(SQObjectPtr(_table(self)->GetDelegate()),key,dest,opExt);
+          }
+          if (opExt & _OPEXT_GET_RAW) {
+            return false;
+          }
+          // niDebugFmt(("... _table_ddel: %s", _TableToString(_table_ddel,"")));
+          return _ddel(ss,table)->Get(key,dest);
+        }
+        // TODO: Ideally we'd lookup the methods in the interface, etc...
+      case OT_IUNKNOWN:
+        return false;
+      case OT_ARRAY:
+        if (sq_isnumeric(key)) {
+          return _array(self)->Get(toint(key),dest);
+        }
+        else {
+          return _ddel(ss,array)->Get(key,dest);
+        }
+      case OT_STRING:
+        if(sq_isnumeric(key)){
+          SQInt n=toint(key);
+          if (abs(n) < (int)_stringlen(self)) {
+            if(n<0)n=_stringlen(self)-n;
+            dest=SQInt(_stringval(self)[n]);
+            return true;
+          }
+          return false;
+        }
+        else return _ddel(ss,string)->Get(key,dest);
+        break;
+      case OT_USERDATA:
+        {
+          bool getRetVal = false;
+          if (_userdata(self)->GetDelegate()) {
+            getRetVal = LintGet(
+              SQObjectPtr(_userdata(self)->GetDelegate()),
+              key,dest,opExt|_OPEXT_GET_RAW);
+            if (!getRetVal) {
+              if (opExt & _OPEXT_GET_RAW)
+                return false;
+              // TODO: Lint call _get metamethod? Probably overkill.
+              return false;
+            }
+          }
+          return getRetVal;
+        }
+        break;
+      case OT_INTEGER:case OT_FLOAT:
+        return _ddel(ss,number)->Get(key,dest);
+      case OT_CLOSURE: case OT_NATIVECLOSURE:
+        return _ddel(ss,closure)->Get(key,dest);
+      default:
+        return false;
+    }
+  }
+
+  bool LintSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
+  {
+    switch(_sqtype(self)) {
+      case OT_TABLE: {
+        SQObjectPtr v;
+        // niDebugFmt(("... _LintSet: '%s' in %s", _ObjToString(key), _ExpandedObjToString(self)));
+        if (!LintGet(self,key,v,0)) {
+          return false;
+        }
+        return _table(self)->Set(key,val);
+      }
+      case OT_IUNKNOWN:
+        // TODO: Ideally we'd lookup the methods in the interface, etc...
+        return false;
+      case OT_ARRAY:
+        if (!sq_isnumeric(key)) {
+          return false;
+        }
+        return _array(self)->Set(toint(key),val);
+      case OT_USERDATA:
+        // TODO: We could get the delegate and somehow have it tell us whether
+        // we can set what's asked...
+        return false;
+    }
+    return false;
+  }
 };
 
 void SQFuncState::LintDump()
@@ -681,101 +791,6 @@ struct sLintStackEntry {
   SQObjectPtr _type = _null_;
 };
 
-bool _LintGet(const sLinter& aLinter, const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
-{
-  const SQSharedState& ss = aLinter._ss;
-  switch(_sqtype(self)){
-    case OT_TABLE:
-      {
-        if (_table(self)->Get(key,dest))
-          return true;
-        // delegation
-        if (_table(self)->GetDelegate()) {
-          return _LintGet(
-            aLinter,SQObjectPtr(_table(self)->GetDelegate()),key,dest,opExt);
-        }
-        if (opExt & _OPEXT_GET_RAW) {
-          return false;
-        }
-        // niDebugFmt(("... _table_ddel: %s", _TableToString(_table_ddel,"")));
-        return _ddel(ss,table)->Get(key,dest);
-      }
-      // TODO: Ideally we'd lookup the methods in the interface, etc...
-    case OT_IUNKNOWN:
-      return false;
-    case OT_ARRAY:
-      if (sq_isnumeric(key)) {
-        return _array(self)->Get(toint(key),dest);
-      }
-      else {
-        return _ddel(ss,array)->Get(key,dest);
-      }
-    case OT_STRING:
-      if(sq_isnumeric(key)){
-        SQInt n=toint(key);
-        if (abs(n) < (int)_stringlen(self)) {
-          if(n<0)n=_stringlen(self)-n;
-          dest=SQInt(_stringval(self)[n]);
-          return true;
-        }
-        return false;
-      }
-      else return _ddel(ss,string)->Get(key,dest);
-      break;
-    case OT_USERDATA:
-      {
-        bool getRetVal = false;
-        if (_userdata(self)->GetDelegate()) {
-          getRetVal = _LintGet(
-            aLinter,
-            SQObjectPtr(_userdata(self)->GetDelegate()),
-            key,dest,opExt|_OPEXT_GET_RAW);
-          if (!getRetVal) {
-            if (opExt & _OPEXT_GET_RAW)
-              return false;
-            // TODO: Lint call _get metamethod? Probably overkill.
-            return false;
-          }
-        }
-        return getRetVal;
-      }
-      break;
-    case OT_INTEGER:case OT_FLOAT:
-      return _ddel(ss,number)->Get(key,dest);
-    case OT_CLOSURE: case OT_NATIVECLOSURE:
-      return _ddel(ss,closure)->Get(key,dest);
-    default:
-      return false;
-  }
-}
-
-bool _LintSet(const sLinter& aLinter, const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
-{
-  switch(_sqtype(self)) {
-    case OT_TABLE: {
-      SQObjectPtr v;
-      // niDebugFmt(("... _LintSet: '%s' in %s", _ObjToString(key), _ExpandedObjToString(self)));
-      if (!_LintGet(aLinter,self,key,v,0)) {
-        return false;
-      }
-      return _table(self)->Set(key,val);
-    }
-    case OT_IUNKNOWN:
-      // TODO: Ideally we'd lookup the methods in the interface, etc...
-      return false;
-    case OT_ARRAY:
-      if (!sq_isnumeric(key)) {
-        return false;
-      }
-      return _array(self)->Set(toint(key),val);
-    case OT_USERDATA:
-      // TODO: We could get the delegate and somehow have it tell us whether
-      // we can set what's asked...
-      return false;
-  }
-  return false;
-}
-
 void SQFunctionProto::LintTrace(
   sLinter& aLinter,
   const LintClosure& aClosure) const
@@ -856,6 +871,7 @@ void SQFunctionProto::LintTrace(
       }
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
+      stack[si]._type = param._type;
     }
   }
 
@@ -924,10 +940,17 @@ void SQFunctionProto::LintTrace(
   };
   auto sget = [&](const int i) -> const SQObjectPtr& {
     if (i >= thisfunc_stacksize) {
-      _LINTERNAL_ERROR(niFmt("Lint: sset: Invalid stack position '%d'",i));
+      _LINTERNAL_ERROR(niFmt("Lint: sget: Invalid stack position '%d'",i));
       return _null_;
     }
     return stack[i]._value;
+  };
+  auto sgettype = [&](const int i) -> const SQObjectPtr& {
+    if (i >= thisfunc_stacksize) {
+      _LINTERNAL_ERROR(niFmt("Lint: sgettype: Invalid stack position '%d'",i));
+      return _null_;
+    }
+    return stack[i]._type;
   };
   auto sstr = [&](const int arg) -> cString {
     return islocal(arg) ?
@@ -936,7 +959,7 @@ void SQFunctionProto::LintTrace(
   };
   auto lget = [&](const int i) -> const SQObjectPtr& {
     if (i >= _literals.size()) {
-      _LINTERNAL_ERROR(niFmt("Lint: sset: Invalid literal index '%d'",i));
+      _LINTERNAL_ERROR(niFmt("Lint: lget: Invalid literal index '%d'",i));
       return _null_;
     }
     return _literals[i];
@@ -1008,8 +1031,7 @@ void SQFunctionProto::LintTrace(
           const SQOuterVar &v = funcproto->_outervalues[i];
           if (!v._blocal) { // environment object
             lintClosure->_outervalues.push_back(_null_);
-            if (!_LintGet(
-                  aLinter,
+            if (!aLinter.LintGet(
                   localthis,v._src,
                   lintClosure->_outervalues.back(),0))
             {
@@ -1101,7 +1123,7 @@ void SQFunctionProto::LintTrace(
   {
     return (aLinter.IsEnabled(aLint.key) &&
             is_this_table(aTableArg) && // is this call
-            !_LintGet(aLinter,t,k,v,inst._ext));
+            !aLinter.LintGet(t,k,v,inst._ext));
   };
 
   auto is_key_notfound = [&](const sLint& aLint,
@@ -1112,7 +1134,7 @@ void SQFunctionProto::LintTrace(
       -> tBool
   {
     return (aLinter.IsEnabled(aLint.key) &&
-            !_LintGet(aLinter,t,k,v,inst._ext));
+            !aLinter.LintGet(t,k,v,inst._ext));
   };
 
   auto op_getk = [&](const SQInstruction& inst) {
@@ -1140,6 +1162,7 @@ void SQFunctionProto::LintTrace(
 
   auto op_precallk = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG2);
+    SQObjectPtr ttype = sgettype(IARG2);
     SQObjectPtr k = lget(IARG1);
     SQObjectPtr v;
     if (is_implicit_this(_LOBJ(implicit_this_callk),inst,inst._arg2)) {
@@ -1158,8 +1181,8 @@ void SQFunctionProto::LintTrace(
     }
     sset(IARG3, t);
     sset(IARG0, v);
-    _LTRACE(("op_precallk: %s[%s] in %s & table in %s",
-             _ObjToString(t), _ObjToString(k), sstr(IARG0), sstr(IARG3)));
+    _LTRACE(("op_precallk: %s<%s>[%s] in %s & table in %s",
+             _ObjToString(t), _ObjToString(ttype), _ObjToString(k), sstr(IARG0), sstr(IARG3)));
   };
 
   auto is_this_set_key_notfound = [&](const sLint& aLint,
@@ -1172,7 +1195,7 @@ void SQFunctionProto::LintTrace(
   {
     return (aLinter.IsEnabled(aLint.key) &&
             is_this_table(aThisArg) &&
-            !_LintSet(aLinter,t,k,v,inst._ext));
+            !aLinter.LintSet(t,k,v,inst._ext));
   };
 
   auto is_set_key_notfound = [&](const sLint& aLint,
@@ -1183,7 +1206,7 @@ void SQFunctionProto::LintTrace(
       -> tBool
   {
     return (aLinter.IsEnabled(aLint.key) &&
-            !_LintSet(aLinter,t,k,v,inst._ext));
+            !aLinter.LintSet(t,k,v,inst._ext));
   };
 
   auto op_set = [&](const SQInstruction& inst) {
@@ -1212,6 +1235,7 @@ void SQFunctionProto::LintTrace(
 
   auto op_call = [&](const SQInstruction& inst, const tBool abIsTailCall) {
     SQObjectPtr tocall = sget(IARG1);
+    SQObjectPtr tocalltype = sgettype(IARG1);
     const int nargs = IARG3;
     const int stackbase = IARG2;
     _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",

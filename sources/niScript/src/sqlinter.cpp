@@ -323,7 +323,7 @@ typedef astl::hash_map<const SQFunctionProto*,Ptr<LintClosure> > tFuncClosureMap
 #define _LINT(KIND,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, getlinecol(inst), MSG)
 
 static tU32 _lintKeyGen = 0;
-#define _DEF_LINT(NAME,CAT1,CAT2) \
+#define _DEF_LINT(NAME,CAT1,CAT2)                                       \
   static const sLint kLint_##NAME = { ++_lintKeyGen | eLintFlags_##CAT1 | eLintFlags_##CAT2, _H(#NAME) };
 
 _DEF_LINT(internal_error,IsError,IsInternal);
@@ -357,10 +357,10 @@ struct sLinter {
   astl::vector<cString> _logs;
 #endif
 
-#define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),  \
-    niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) &&           \
-    niFlagIsNot(_LKEY(KIND),eLintFlags_IsExperimental) &&       \
-    niFlagIsNot(_LKEY(KIND),eLintFlags_IsExplicit))
+#define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),          \
+                                     niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) && \
+                                     niFlagIsNot(_LKEY(KIND),eLintFlags_IsExperimental) && \
+                                     niFlagIsNot(_LKEY(KIND),eLintFlags_IsExplicit))
 
   sLinter() {
     _vmroot = SQTable::Create();
@@ -446,16 +446,16 @@ struct sLinter {
       }
     }
     _E(implicit_this_getk)
-    _E(implicit_this_callk)
-    _E(this_key_notfound_getk)
-    _E(this_key_notfound_callk)
-    _E(this_key_notfound_outer)
-    _E(key_notfound_callk)
-    _E(key_notfound_getk)
-    _E(this_set_key_notfound)
-    _E(set_key_notfound)
-    _E(call_warning)
-    _E(call_num_args)
+        _E(implicit_this_callk)
+        _E(this_key_notfound_getk)
+        _E(this_key_notfound_callk)
+        _E(this_key_notfound_outer)
+        _E(key_notfound_callk)
+        _E(key_notfound_getk)
+        _E(this_set_key_notfound)
+        _E(set_key_notfound)
+        _E(call_warning)
+        _E(call_num_args)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -503,7 +503,7 @@ struct sLinter {
     }
 
     // if (aLintName != NULL) {
-      o << niHStr(aLintName) << ": ";
+    o << niHStr(aLintName) << ": ";
     // }
     o << aMsg;
 
@@ -827,16 +827,16 @@ void SQFunctionProto::LintTrace(
   stack.resize(thisfunc_stacksize);
 
   // Set the names to the local variable names
-  _LTRACE(("--- LOCALS --------------------------------------------\n"));
+  // _LTRACE(("--- LOCALS INIT ---------------------------------------\n"));
   {
     niLoop(i,_localvarinfos.size()) {
       const SQLocalVarInfo& vi = _localvarinfos[i];
       const int si = vi._pos;
       stack[si]._name = vi._name;
       nlocals = ni::Max(nlocals,si+1);
-      _LTRACE(("... local[%d]: %s at s[%d] = %s",
-               i, _ObjToString(stack[si]._name),
-               si, _ObjToString(stack[si]._value)));
+      // _LTRACE(("... local[%d]: %s at s[%d] = %s",
+      // i, _ObjToString(stack[si]._name),
+      // si, _ObjToString(stack[si]._value)));
     }
   }
 
@@ -852,20 +852,20 @@ void SQFunctionProto::LintTrace(
 
       const int si = pi;
       if (si >= stack.size()) {
-        _LINTERNAL_ERROR(niFmt("Lint: stack position overflow '%d' for parameter '%d', stack size: %d.",
+        _LINTERNAL_ERROR(niFmt("stack position overflow '%d' for parameter '%d', stack size: %d.",
                                si, pi, stack.size()));
         return;
       }
 
       if (param._name != stack[si]._name) {
-        _LINTERNAL_ERROR(niFmt("Lint: stack[%d].name '%s' doesn't match the parameter[%d] name '%s'.",
+        _LINTERNAL_ERROR(niFmt("stack[%d].name '%s' doesn't match the parameter[%d] name '%s'.",
                                si, _ObjToString(stack[si]._name),
                                pi, _ObjToString(param._name)));
         return;
       }
 
       if (stack[si]._provenance != _null_) {
-        _LINTERNAL_ERROR(niFmt("Lint: stack position '%d' for parameter '%d' unexpectedly already has a provenance '%s'.",
+        _LINTERNAL_ERROR(niFmt("stack position '%d' for parameter '%d' unexpectedly already has a provenance '%s'.",
                                si, pi, _ObjToString(stack[si]._provenance)));
         return;
       }
@@ -876,38 +876,40 @@ void SQFunctionProto::LintTrace(
   }
 
   // Push the outer variables on the stack
-  _LTRACE(("--- OUTERS --------------------------------------------\n"));
-  LintClosure* thisclosure = aLinter.GetClosure(thisfunc);
-  if (thisclosure) {
-    const tSize nouters = thisclosure->_outervalues.size();
-    _LTRACE(("... %s outer variables",
-             nouters>0 ? Var(nouters) : Var("No")));
+  // _LTRACE(("--- OUTERS --------------------------------------------\n"));
+  {
+    LintClosure* thisclosure = aLinter.GetClosure(thisfunc);
+    if (thisclosure) {
+      const tSize nouters = thisclosure->_outervalues.size();
+      // _LTRACE(("... %s outer variables", nouters>0 ? Var(nouters) : Var("No")));
 
-    const int outerbase = thisfunc_paramssize;
-    niLoop(oi,nouters) {
-      const SQObjectPtr& outer = thisclosure->_outervalues[oi];
-      const int si = oi + outerbase;
-      if (si >= stack.size()) {
-        _LINTERNAL_ERROR(niFmt("Lint: stack position overflow '%d' for outer '%d', stack size: %d.",
-                               si, oi, stack.size()));
-        return;
+      const int outerbase = thisfunc_paramssize;
+      niLoop(oi,nouters) {
+        const SQObjectPtr& outer = thisclosure->_outervalues[oi];
+        const int si = oi + outerbase;
+        if (si >= stack.size()) {
+          _LINTERNAL_ERROR(niFmt("stack position overflow '%d' for outer '%d', stack size: %d.",
+                                 si, oi, stack.size()));
+          return;
+        }
+
+        SQObjectPtr expectedProvenance = _H(niFmt("__param%d__",thisfunc_paramssize+oi));
+        if (stack[si]._provenance != expectedProvenance) {
+          _LINTERNAL_ERROR(niFmt("stack position '%d' for outer '%d' unexpected provenance expected '%s' but got '%s'.",
+                                 si, oi,
+                                 _ObjToString(expectedProvenance),
+                                 _ObjToString(stack[si]._provenance)));
+          return;
+        }
+
+        stack[si]._provenance = _H(niFmt("__outer%d__",oi));
+        stack[si]._value = outer;
       }
-
-      SQObjectPtr expectedProvenance = _H(niFmt("__param%d__",thisfunc_paramssize+oi));
-      if (stack[si]._provenance != expectedProvenance) {
-        _LINTERNAL_ERROR(niFmt("Lint: stack position '%d' for outer '%d' unexpected provenance expected '%s' but got '%s'.",
-                               si, oi,
-                               _ObjToString(expectedProvenance),
-                               _ObjToString(stack[si]._provenance)));
-        return;
-      }
-
-      stack[si]._provenance = _H(niFmt("__outer%d__",oi));
-      stack[si]._value = outer;
     }
-  }
-  else {
-    _LTRACE(("... No closure found for %s",_PtrToString((tIntPtr)this)));
+    else if (thisfunc_outerssize > 0) {
+      _LINTERNAL_ERROR(niFmt("outers: No closure found for function '%s' (%s).", thisfunc->GetName(), _PtrToString((tIntPtr)this)));
+      return;
+    }
   }
 
   auto islocal = [&](int stkpos) -> bool {
@@ -933,21 +935,21 @@ void SQFunctionProto::LintTrace(
 
   auto sset = [&](const int i, const SQObjectPtr& v) {
     if (i >= thisfunc_stacksize) {
-      _LINTERNAL_ERROR(niFmt("Lint: sset: Invalid stack position '%d'",i));
+      _LINTERNAL_ERROR(niFmt("sset: Invalid stack position '%d'",i));
       return;
     }
     stack[i]._value = v;
   };
   auto sget = [&](const int i) -> const SQObjectPtr& {
     if (i >= thisfunc_stacksize) {
-      _LINTERNAL_ERROR(niFmt("Lint: sget: Invalid stack position '%d'",i));
+      _LINTERNAL_ERROR(niFmt("sget: Invalid stack position '%d'",i));
       return _null_;
     }
     return stack[i]._value;
   };
   auto sgettype = [&](const int i) -> const SQObjectPtr& {
     if (i >= thisfunc_stacksize) {
-      _LINTERNAL_ERROR(niFmt("Lint: sgettype: Invalid stack position '%d'",i));
+      _LINTERNAL_ERROR(niFmt("sgettype: Invalid stack position '%d'",i));
       return _null_;
     }
     return stack[i]._type;
@@ -959,14 +961,14 @@ void SQFunctionProto::LintTrace(
   };
   auto lget = [&](const int i) -> const SQObjectPtr& {
     if (i >= _literals.size()) {
-      _LINTERNAL_ERROR(niFmt("Lint: lget: Invalid literal index '%d'",i));
+      _LINTERNAL_ERROR(niFmt("lget: Invalid literal index '%d'",i));
       return _null_;
     }
     return _literals[i];
   };
   auto fnget = [&](const int i) -> const SQObjectPtr& {
     if (i >= _functions.size()) {
-      _LINTERNAL_ERROR(niFmt("Lint: fnget: Invalid function index '%d'",i));
+      _LINTERNAL_ERROR(niFmt("fnget: Invalid function index '%d'",i));
       return _null_;
     }
     return _functions[i];
@@ -1098,7 +1100,7 @@ void SQFunctionProto::LintTrace(
       SQObjectPtr r = sget(IARG3);
       sset(IARG0, r);
       _LTRACE(("... op_newslot: IARG0 != IARG3, %d != %d. Set s[%d] to %s",
-              IARG0, IARG3, IARG0, _ObjToString(r)));
+               IARG0, IARG3, IARG0, _ObjToString(r)));
     }
   };
 
@@ -1297,6 +1299,23 @@ void SQFunctionProto::LintTrace(
   }
   sset(localThis,aClosure._this);
 
+  if (shouldLintTrace) {
+    _LTRACE(("--- LOCALS BEGIN --------------------------------------\n"));
+    niLoop(i,_localvarinfos.size()) {
+      const int stackpos = _localvarinfos[i]._pos;
+      _LTRACE(("... local[%d]: s[%d]: %s = %s, type: %s, provenance: %s",
+               i, stackpos,
+               _ObjToString(localname(stackpos)),
+               _ObjToString(sget(stackpos)),
+               _ObjToString(stack[stackpos]._type),
+               _ObjToString(stack[stackpos]._provenance)));
+    }
+    _LTRACE(("... root table: %s",
+             _ObjToString(aClosure._root))
+            // _ExpandedObjToString(aClosure._root))
+    );
+  }
+
   _LTRACE(("--- INST ----------------------------------------------\n"));
   niLoop(i, _instructions.size()) {
     const SQInstruction &inst=_instructions[i];
@@ -1327,37 +1346,37 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("... local[%d]: s[%d]: %s = %s, type: %s, provenance: %s",
              i, stackpos,
              _ObjToString(localname(stackpos)),
-             _RootObjToRecString(sget(stackpos)),
+             _ObjToString(sget(stackpos)),
              _ObjToString(stack[stackpos]._type),
              _ObjToString(stack[stackpos]._provenance)));
   }
   _LTRACE(("... root table: %s",
            _ObjToString(aClosure._root))
-           // _ExpandedObjToString(aClosure._root))
+          // _ExpandedObjToString(aClosure._root))
   );
 
   _LTRACE(("--- FUNCS ---------------------------------------------\n"));
   if (_functions.empty()) {
     _LTRACE(("... No functions."));
   } else
-  niLoop(i,_functions.size()) {
-    const SQObjectPtr& cf = _functions[i];
-    const SQFunctionProto* cfproto = _funcproto(cf);
-    const LintClosure* cfclosure = aLinter.GetClosure(cfproto);
-    if (!cfclosure) {
-      _LINTERNAL_ERROR(niFmt("Can't get closure for func[%d]: %s",
-                             i, _ObjToString(cf)));
+    niLoop(i,_functions.size()) {
+      const SQObjectPtr& cf = _functions[i];
+      const SQFunctionProto* cfproto = _funcproto(cf);
+      const LintClosure* cfclosure = aLinter.GetClosure(cfproto);
+      if (!cfclosure) {
+        _LINTERNAL_ERROR(niFmt("Can't get closure for func[%d]: %s",
+                               i, _ObjToString(cf)));
+      }
+      else {
+        _LTRACE(("... func[%d]: %s, this: %s",
+                 i,
+                 _ObjToString(cfproto->_name),
+                 _ObjToString(cfclosure->_this)));
+        sLinter::tLintKindMap wasLintEnabled = aLinter._lintEnabled;
+        cfproto->LintTrace(aLinter,*cfclosure);
+        aLinter._lintEnabled = wasLintEnabled;
+      }
     }
-    else {
-      _LTRACE(("... func[%d]: %s, this: %s",
-               i,
-               _ObjToString(cfproto->_name),
-               _ObjToString(cfclosure->_this)));
-      sLinter::tLintKindMap wasLintEnabled = aLinter._lintEnabled;
-      cfproto->LintTrace(aLinter,*cfclosure);
-      aLinter._lintEnabled = wasLintEnabled;
-    }
-  }
 
   _LTRACE(("--- END FUNCTION TRACE: %s --------------------------------\n", thisfunc->GetName()));
 

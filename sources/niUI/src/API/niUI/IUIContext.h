@@ -80,6 +80,70 @@ enum eUIInputSubmitFlags
 //! UI Input submit flags type. \see ni::eUIInputSubmitFlags
 typedef tU32 tUIInputSubmitFlags;
 
+//! UI Context Skin interface.
+struct iUISkin : public iUnknown
+{
+  niDeclareInterfaceUUID(iUISkin,0x22caeae6,0xdcac,0xf94a,0xa0,0x63,0x87,0xfb,0x2a,0x73,0xb7,0xd3)
+
+  //########################################################################################
+  //! \name Skins
+  //########################################################################################
+  //! @{
+  //! Get the error overlay.
+  //! {Property}
+  virtual tBool __stdcall SetErrorOverlay(iOverlay* apOverlay) = 0;
+  //! Get the error overlay.
+  //! {Property}
+  virtual iOverlay* __stdcall GetErrorOverlay() const = 0;
+  //! Set the context's image map.
+  //! {Property}
+  virtual void __stdcall SetImageMap(iImageMap* apImageMap) = 0;
+  //! Get the context's image map.
+  //! {Property}
+  virtual iImageMap* __stdcall GetImageMap() const = 0;
+  //! Remove all skins loaded.
+  //! \remark The default skin will remain.
+  //! \remark A SkinChanged message will be broadcasted to all widgets when the skins are cleared.
+  virtual void __stdcall ClearSkins() = 0;
+
+  //! Add a new skin.
+  //! \remark If a skin with the specified name has already been loaded the method will fail.
+  virtual tBool __stdcall AddSkin(iDataTable* apDT) = 0;
+  //! Add a new skin from the specified resource.
+  virtual tBool __stdcall AddSkinFromRes(iHString* ahspRes) = 0;
+  //! Unload a skin.
+  //! \remark The default skin cannot be removed
+  virtual tBool __stdcall RemoveSkin(iHString* ahspSkin) = 0;
+
+  //! Set the default skin.
+  //! {Property}
+  virtual tBool __stdcall SetDefaultSkin(iHString* ahspName) = 0;
+  //! Get the default skin.
+  //! {Property}
+  virtual iHString* __stdcall GetDefaultSkin() const = 0;
+
+  //! Get the number of skins.
+  //! {Property}
+  virtual tU32 __stdcall GetNumSkins() const = 0;
+  //! Get the name of the skin at the specified index.
+  //! {Property}
+  virtual iHString* __stdcall GetSkinName(tU32 anIndex) const = 0;
+  //! Get the index of the skin with the specified name.
+  //! \remark Return eInvalidHandle if the skin does not exist.
+  //! {Property}
+  virtual tU32 __stdcall GetSkinIndex(iHString* ahspName) const = 0;
+  //! Get the data table associated with the specified skin.
+  //! {Property}
+  virtual iDataTable* __stdcall GetSkinDataTable(iHString* ahspSkin) const = 0;
+  //! Get the data table associated with the error skin.
+  //! {Property}
+  virtual iDataTable* __stdcall GetErrorSkinDataTable() const = 0;
+  //! @}
+
+};
+
+niExportFunc(iUnknown*) New_niUI_UISkin(const Var& aGraphicsContext, const Var&);
+
 //! UI Context interface.
 struct iUIContext : public iUnknown
 {
@@ -138,6 +202,13 @@ struct iUIContext : public iUnknown
   //! \name Skins
   //########################################################################################
   //! @{
+  //! Get the UISkin object
+  //! {Property}
+  virtual iUISkin* __stdcall GetUISkin() const = 0;
+  //! Set the UISkin object
+  virtual void __stdcall SetUISkin(iUISkin* apUISkin) = 0;
+  //! Set the UISkin from given path
+  virtual void __stdcall SetUISkinFromPath(iHString* ahspSkinPath) = 0;
 
   //! Set the context's image map.
   //! {Property}
@@ -448,6 +519,9 @@ struct iUIContext : public iUnknown
 };
 
 niExportFunc(iUnknown*) New_niUI_UIContext(const Var& aGraphicsContext, const Var&);
+
+niExportFunc(ni::iUIContext*) CreateUIContext(iGraphicsContext* apGraphicsContext, iUISkin* apSkin, tF32 afContentsScale);
+niExportFunc(ni::iUISkin*) CreateUISkin(iGraphicsContext* apGraphicsContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

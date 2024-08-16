@@ -15,6 +15,7 @@
   <objecttype  name='Camera' desc='Camera' type='ni::iCamera'  />
   <objecttype  name='NUSpline' desc='Non-uniform spline' type='ni::iNUSpline'  />
   <objecttype  name='UIContext'  />
+  <objecttype  name='UISkin'  />
   <objecttype  category='BitmapLoader' name='bmp' type='ni::iBitmapLoader'  />
   <objecttype  category='BitmapSaver' name='bmp' type='ni::iBitmapSaver'  />
   <objecttype  category='BitmapLoader' name='jpeg' type='ni::iBitmapLoader'  />

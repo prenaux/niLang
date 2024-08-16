@@ -89,13 +89,53 @@ const sVec2f _kvMaxSize = {100000,100000};
 const tU32 knDrawOpCaptureToggleKey = eKeyMod_Alt|eKey_Tilde;
 const tU32 knTerminalToggleKey = eKeyMod_Control|eKey_Tilde;
 
+class cUISkin : public ImplRC<iUISkin>
+{
+  niBeginClass(cUISkin);
+public :
+  //! Constructor.
+  cUISkin(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath, tF32 afContentScale);
+
+  void __stdcall SetImageMap(iImageMap*) niImpl;
+  iImageMap* __stdcall GetImageMap() const niImpl;
+  tBool __stdcall SetErrorOverlay(iOverlay* apOverlay) niImpl;
+  iOverlay* __stdcall GetErrorOverlay() const niImpl;
+  void __stdcall ClearSkins() niImpl;
+  tBool __stdcall AddSkin(iDataTable* apDT) niImpl;
+  tBool __stdcall AddSkinFromRes(iHString* ahspRes) niImpl;
+  tBool __stdcall RemoveSkin(iHString* ahspSkin) niImpl;
+  tBool __stdcall SetDefaultSkin(iHString* ahspName) niImpl;
+  iHString* __stdcall GetDefaultSkin() const niImpl;
+
+  tU32 __stdcall GetNumSkins() const niImpl;
+  iHString* __stdcall GetSkinName(tU32 anIndex) const niImpl;
+  tU32 __stdcall GetSkinIndex(iHString* ahspName) const niImpl;
+  iDataTable* __stdcall GetSkinDataTable(iHString* ahspSkin) const niImpl;
+  iDataTable* __stdcall GetErrorSkinDataTable() const niImpl;
+
+  /// Skins ///
+  Ptr<iOverlay> mptrErrorOverlay;
+  Ptr<iDataTable> mptrErrorSkin;
+  Ptr<iOverlay> mptrDefaultSkinOverlay;
+  tBool _InitializeSkinDataTable(iDataTable* apDT);
+  tHStringPtr mhspDefaultSkin;
+  typedef astl::hstring_hash_map<Ptr<iDataTable> > tSkinMap;
+  tSkinMap mmapSkins;
+
+  Ptr<iGraphics>  mptrGraphics;
+  Ptr<iImageMap>  mptrImageMap;
+  tF32 mfContentScale;
+
+  niEndClass(cUISkin);
+};
+
 class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerManager
 {
   niBeginClass(cUIContext);
 
  public:
   //! Constructor.
-  cUIContext(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale);
+  cUIContext(iGraphicsContext* apContext, iUISkin* apSkin, tF32 afContentsScale);
   //! Destructor.
   ~cUIContext();
 
@@ -122,6 +162,9 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   iImageMap* __stdcall GetImageMap() const niImpl;
 
   tBool __stdcall SetErrorOverlay(iOverlay* apOverlay) niImpl;
+  void __stdcall SetUISkin(iUISkin* apUISkin) niImpl;
+  void __stdcall SetUISkinFromPath(iHString* ahspSkinPath) niImpl;
+  iUISkin* __stdcall GetUISkin() const niImpl;
   iOverlay* __stdcall GetErrorOverlay() const niImpl;
   void __stdcall ClearSkins() niImpl;
   tBool __stdcall AddSkin(iDataTable* apDT) niImpl;
@@ -445,19 +488,10 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   // Layout...
   tU32 mnRelayoutCount;
 
+  Ptr<iUISkin> mptrSkin;
+
   // Game controller
   astl::map<tU32,tU32> mmapGameCtrlInputMasks;
-
-  /// Skins ///
-  Ptr<iOverlay> mptrErrorOverlay;
-  Ptr<iDataTable> mptrErrorSkin;
-  Ptr<iOverlay> mptrDefaultSkinOverlay;
-  tBool _InitializeSkinDataTable(iDataTable* apDT);
-  tHStringPtr mhspDefaultSkin;
-  typedef astl::hstring_hash_map<Ptr<iDataTable> > tSkinMap;
-  tSkinMap mmapSkins;
-
-  Ptr<iImageMap>  mptrImageMap;
 
   tBool _CanHover() const;
   tF32 mfHoverDelay;

@@ -201,6 +201,7 @@ niModule_OT name='"Intersection"' desc='"Intersection result"' type='"ni::iInter
 niModule_OT name='"Camera"' desc='"Camera"' type='"ni::iCamera"' ;
 niModule_OT name='"NUSpline"' desc='"Non-uniform spline"' type='"ni::iNUSpline"' ;
 niModule_OT name='"UIContext"' ;
+niModule_OT name='"UISkin"' ;
 niModule_OT category='"BitmapLoader"' name='"bmp"' type='"ni::iBitmapLoader"' ;
 niModule_OT category='"BitmapSaver"' name='"bmp"' type='"ni::iBitmapSaver"' ;
 niModule_OT category='"BitmapLoader"' name='"jpeg"' type='"ni::iBitmapLoader"' ;

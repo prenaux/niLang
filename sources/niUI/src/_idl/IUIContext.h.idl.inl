@@ -14,6 +14,129 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** interface : iUISkin **/
+IDLC_BEGIN_INTF(ni,iUISkin)
+/** ni -> iUISkin::SetErrorOverlay/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,SetErrorOverlay,1)
+	IDLC_DECL_VAR(iOverlay*,apOverlay)
+	IDLC_BUF_TO_INTF(iOverlay,apOverlay)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,SetErrorOverlay,1,(apOverlay))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,SetErrorOverlay,1)
+
+/** ni -> iUISkin::GetErrorOverlay/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetErrorOverlay,0)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetErrorOverlay,0,())
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iUISkin,GetErrorOverlay,0)
+
+/** ni -> iUISkin::SetImageMap/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,SetImageMap,1)
+	IDLC_DECL_VAR(iImageMap*,apImageMap)
+	IDLC_BUF_TO_INTF(iImageMap,apImageMap)
+	IDLC_METH_CALL_VOID(ni,iUISkin,SetImageMap,1,(apImageMap))
+IDLC_METH_END(ni,iUISkin,SetImageMap,1)
+
+/** ni -> iUISkin::GetImageMap/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetImageMap,0)
+	IDLC_DECL_RETVAR(iImageMap*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetImageMap,0,())
+	IDLC_RET_FROM_INTF(iImageMap,_Ret)
+IDLC_METH_END(ni,iUISkin,GetImageMap,0)
+
+/** ni -> iUISkin::ClearSkins/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,ClearSkins,0)
+	IDLC_METH_CALL_VOID(ni,iUISkin,ClearSkins,0,())
+IDLC_METH_END(ni,iUISkin,ClearSkins,0)
+
+/** ni -> iUISkin::AddSkin/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,AddSkin,1)
+	IDLC_DECL_VAR(iDataTable*,apDT)
+	IDLC_BUF_TO_INTF(iDataTable,apDT)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,AddSkin,1,(apDT))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,AddSkin,1)
+
+/** ni -> iUISkin::AddSkinFromRes/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,AddSkinFromRes,1)
+	IDLC_DECL_VAR(iHString*,ahspRes)
+	IDLC_BUF_TO_INTF(iHString,ahspRes)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,AddSkinFromRes,1,(ahspRes))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,AddSkinFromRes,1)
+
+/** ni -> iUISkin::RemoveSkin/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,RemoveSkin,1)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,RemoveSkin,1,(ahspSkin))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,RemoveSkin,1)
+
+/** ni -> iUISkin::SetDefaultSkin/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,SetDefaultSkin,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,SetDefaultSkin,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,SetDefaultSkin,1)
+
+/** ni -> iUISkin::GetDefaultSkin/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetDefaultSkin,0)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetDefaultSkin,0,())
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iUISkin,GetDefaultSkin,0)
+
+/** ni -> iUISkin::GetNumSkins/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetNumSkins,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetNumSkins,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUISkin,GetNumSkins,0)
+
+/** ni -> iUISkin::GetSkinName/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetSkinName,1)
+	IDLC_DECL_VAR(tU32,anIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anIndex)
+	IDLC_DECL_RETVAR(iHString*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetSkinName,1,(anIndex))
+	IDLC_RET_FROM_INTF(iHString,_Ret)
+IDLC_METH_END(ni,iUISkin,GetSkinName,1)
+
+/** ni -> iUISkin::GetSkinIndex/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetSkinIndex,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetSkinIndex,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iUISkin,GetSkinIndex,1)
+
+/** ni -> iUISkin::GetSkinDataTable/1 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetSkinDataTable,1)
+	IDLC_DECL_VAR(iHString*,ahspSkin)
+	IDLC_BUF_TO_INTF(iHString,ahspSkin)
+	IDLC_DECL_RETVAR(iDataTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetSkinDataTable,1,(ahspSkin))
+	IDLC_RET_FROM_INTF(iDataTable,_Ret)
+IDLC_METH_END(ni,iUISkin,GetSkinDataTable,1)
+
+/** ni -> iUISkin::GetErrorSkinDataTable/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetErrorSkinDataTable,0)
+	IDLC_DECL_RETVAR(iDataTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetErrorSkinDataTable,0,())
+	IDLC_RET_FROM_INTF(iDataTable,_Ret)
+IDLC_METH_END(ni,iUISkin,GetErrorSkinDataTable,0)
+
+IDLC_END_INTF(ni,iUISkin)
+
 /** interface : iUIContext **/
 IDLC_BEGIN_INTF(ni,iUIContext)
 /** ni -> iUIContext::GetGraphics/0 **/
@@ -96,6 +219,27 @@ IDLC_METH_BEGIN(ni,iUIContext,GetHoverInputModifiers,0)
 	IDLC_METH_CALL(_Ret,ni,iUIContext,GetHoverInputModifiers,0,())
 	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
 IDLC_METH_END(ni,iUIContext,GetHoverInputModifiers,0)
+
+/** ni -> iUIContext::GetUISkin/0 **/
+IDLC_METH_BEGIN(ni,iUIContext,GetUISkin,0)
+	IDLC_DECL_RETVAR(iUISkin*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,GetUISkin,0,())
+	IDLC_RET_FROM_INTF(iUISkin,_Ret)
+IDLC_METH_END(ni,iUIContext,GetUISkin,0)
+
+/** ni -> iUIContext::SetUISkin/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetUISkin,1)
+	IDLC_DECL_VAR(iUISkin*,apUISkin)
+	IDLC_BUF_TO_INTF(iUISkin,apUISkin)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetUISkin,1,(apUISkin))
+IDLC_METH_END(ni,iUIContext,SetUISkin,1)
+
+/** ni -> iUIContext::SetUISkinFromPath/1 **/
+IDLC_METH_BEGIN(ni,iUIContext,SetUISkinFromPath,1)
+	IDLC_DECL_VAR(iHString*,ahspSkinPath)
+	IDLC_BUF_TO_INTF(iHString,ahspSkinPath)
+	IDLC_METH_CALL_VOID(ni,iUIContext,SetUISkinFromPath,1,(ahspSkinPath))
+IDLC_METH_END(ni,iUIContext,SetUISkinFromPath,1)
 
 /** ni -> iUIContext::SetImageMap/1 **/
 IDLC_METH_BEGIN(ni,iUIContext,SetImageMap,1)

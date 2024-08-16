@@ -19949,6 +19949,257 @@ static const ni::sInterfaceDef InterfaceDef_iTransform = {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// iUISkin wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iUISkin() {
+
+// Method: SetErrorOverlay
+static const ni::sParameterDef iUISkin_SetErrorOverlay_Parameters[1] = { 
+  { "apOverlay", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
+}; 
+static const ni::sMethodDef iUISkin_SetErrorOverlay = {
+  "SetErrorOverlay",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "tBool",
+  1, iUISkin_SetErrorOverlay_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_SetErrorOverlay)
+#else
+  NULL
+#endif
+};
+
+// Method: GetErrorOverlay
+static const ni::sMethodDef iUISkin_GetErrorOverlay = {
+  "GetErrorOverlay",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetErrorOverlay)
+#else
+  NULL
+#endif
+};
+
+// Method: SetImageMap
+static const ni::sParameterDef iUISkin_SetImageMap_Parameters[1] = { 
+  { "apImageMap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "iImageMap*" }
+}; 
+static const ni::sMethodDef iUISkin_SetImageMap = {
+  "SetImageMap",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "void",
+  1, iUISkin_SetImageMap_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_SetImageMap)
+#else
+  NULL
+#endif
+};
+
+// Method: GetImageMap
+static const ni::sMethodDef iUISkin_GetImageMap = {
+  "GetImageMap",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "iImageMap*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetImageMap)
+#else
+  NULL
+#endif
+};
+
+// Method: ClearSkins
+static const ni::sMethodDef iUISkin_ClearSkins = {
+  "ClearSkins",
+  0|ni::eType_Null, NULL, "void",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_ClearSkins)
+#else
+  NULL
+#endif
+};
+
+// Method: AddSkin
+static const ni::sParameterDef iUISkin_AddSkin_Parameters[1] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
+}; 
+static const ni::sMethodDef iUISkin_AddSkin = {
+  "AddSkin",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iUISkin_AddSkin_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_AddSkin)
+#else
+  NULL
+#endif
+};
+
+// Method: AddSkinFromRes
+static const ni::sParameterDef iUISkin_AddSkinFromRes_Parameters[1] = { 
+  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUISkin_AddSkinFromRes = {
+  "AddSkinFromRes",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iUISkin_AddSkinFromRes_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_AddSkinFromRes)
+#else
+  NULL
+#endif
+};
+
+// Method: RemoveSkin
+static const ni::sParameterDef iUISkin_RemoveSkin_Parameters[1] = { 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUISkin_RemoveSkin = {
+  "RemoveSkin",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iUISkin_RemoveSkin_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_RemoveSkin)
+#else
+  NULL
+#endif
+};
+
+// Method: SetDefaultSkin
+static const ni::sParameterDef iUISkin_SetDefaultSkin_Parameters[1] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUISkin_SetDefaultSkin = {
+  "SetDefaultSkin",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
+  1, iUISkin_SetDefaultSkin_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_SetDefaultSkin)
+#else
+  NULL
+#endif
+};
+
+// Method: GetDefaultSkin
+static const ni::sMethodDef iUISkin_GetDefaultSkin = {
+  "GetDefaultSkin",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetDefaultSkin)
+#else
+  NULL
+#endif
+};
+
+// Method: GetNumSkins
+static const ni::sMethodDef iUISkin_GetNumSkins = {
+  "GetNumSkins",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetNumSkins)
+#else
+  NULL
+#endif
+};
+
+// Method: GetSkinName
+static const ni::sParameterDef iUISkin_GetSkinName_Parameters[1] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iUISkin_GetSkinName = {
+  "GetSkinName",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
+  1, iUISkin_GetSkinName_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetSkinName)
+#else
+  NULL
+#endif
+};
+
+// Method: GetSkinIndex
+static const ni::sParameterDef iUISkin_GetSkinIndex_Parameters[1] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUISkin_GetSkinIndex = {
+  "GetSkinIndex",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  1, iUISkin_GetSkinIndex_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetSkinIndex)
+#else
+  NULL
+#endif
+};
+
+// Method: GetSkinDataTable
+static const ni::sParameterDef iUISkin_GetSkinDataTable_Parameters[1] = { 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUISkin_GetSkinDataTable = {
+  "GetSkinDataTable",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*",
+  1, iUISkin_GetSkinDataTable_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetSkinDataTable)
+#else
+  NULL
+#endif
+};
+
+// Method: GetErrorSkinDataTable
+static const ni::sMethodDef iUISkin_GetErrorSkinDataTable = {
+  "GetErrorSkinDataTable",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetErrorSkinDataTable)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iUISkin[] = {
+	&iUISkin_SetErrorOverlay,
+	&iUISkin_GetErrorOverlay,
+	&iUISkin_SetImageMap,
+	&iUISkin_GetImageMap,
+	&iUISkin_ClearSkins,
+	&iUISkin_AddSkin,
+	&iUISkin_AddSkinFromRes,
+	&iUISkin_RemoveSkin,
+	&iUISkin_SetDefaultSkin,
+	&iUISkin_GetDefaultSkin,
+	&iUISkin_GetNumSkins,
+	&iUISkin_GetSkinName,
+	&iUISkin_GetSkinIndex,
+	&iUISkin_GetSkinDataTable,
+	&iUISkin_GetErrorSkinDataTable,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iUISkin[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iUISkin = {
+  niGetInterfaceID(iUISkin),
+  &niGetInterfaceUUID(iUISkin),
+  1,
+  Parents_iUISkin,
+  niCountOf(Methods_iUISkin),Methods_iUISkin,
+  NULL
+};
+
+	return &InterfaceDef_iUISkin;
+}
+
+// End of iUISkin wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 // iUIContext wrapper
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iUIContext() {
@@ -20097,6 +20348,48 @@ static const ni::sMethodDef iUIContext_GetHoverInputModifiers = {
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iUIContext_GetHoverInputModifiers)
+#else
+  NULL
+#endif
+};
+
+// Method: GetUISkin
+static const ni::sMethodDef iUIContext_GetUISkin = {
+  "GetUISkin",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUISkin), "iUISkin*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_GetUISkin)
+#else
+  NULL
+#endif
+};
+
+// Method: SetUISkin
+static const ni::sParameterDef iUIContext_SetUISkin_Parameters[1] = { 
+  { "apUISkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUISkin), "iUISkin*" }
+}; 
+static const ni::sMethodDef iUIContext_SetUISkin = {
+  "SetUISkin",
+  0|ni::eType_Null, NULL, "void",
+  1, iUIContext_SetUISkin_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_SetUISkin)
+#else
+  NULL
+#endif
+};
+
+// Method: SetUISkinFromPath
+static const ni::sParameterDef iUIContext_SetUISkinFromPath_Parameters[1] = { 
+  { "ahspSkinPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iUIContext_SetUISkinFromPath = {
+  "SetUISkinFromPath",
+  0|ni::eType_Null, NULL, "void",
+  1, iUIContext_SetUISkinFromPath_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_SetUISkinFromPath)
 #else
   NULL
 #endif
@@ -21247,6 +21540,9 @@ static const ni::sMethodDef* Methods_iUIContext[] = {
 	&iUIContext_GetHoverDelay,
 	&iUIContext_SetHoverInputModifiers,
 	&iUIContext_GetHoverInputModifiers,
+	&iUIContext_GetUISkin,
+	&iUIContext_SetUISkin,
+	&iUIContext_SetUISkinFromPath,
 	&iUIContext_SetImageMap,
 	&iUIContext_GetImageMap,
 	&iUIContext_SetErrorOverlay,
@@ -38353,6 +38649,7 @@ static const ni::sObjectTypeDef ObjectType__Intersection("niUI.Intersection",New
 static const ni::sObjectTypeDef ObjectType__Camera("niUI.Camera",New_niUI_Camera);
 static const ni::sObjectTypeDef ObjectType__NUSpline("niUI.NUSpline",New_niUI_NUSpline);
 static const ni::sObjectTypeDef ObjectType__UIContext("niUI.UIContext",New_niUI_UIContext);
+static const ni::sObjectTypeDef ObjectType__UISkin("niUI.UISkin",New_niUI_UISkin);
 static const ni::sObjectTypeDef ObjectType_BitmapLoader_bmp("BitmapLoader.bmp",New_BitmapLoader_bmp);
 static const ni::sObjectTypeDef ObjectType_BitmapSaver_bmp("BitmapSaver.bmp",New_BitmapSaver_bmp);
 static const ni::sObjectTypeDef ObjectType_BitmapLoader_jpeg("BitmapLoader.jpeg",New_BitmapLoader_jpeg);
@@ -38378,6 +38675,7 @@ static const ni::sObjectTypeDef* ObjectTypes[] = {
   &ObjectType__Camera,
   &ObjectType__NUSpline,
   &ObjectType__UIContext,
+  &ObjectType__UISkin,
   &ObjectType_BitmapLoader_bmp,
   &ObjectType_BitmapSaver_bmp,
   &ObjectType_BitmapLoader_jpeg,
@@ -38446,6 +38744,7 @@ static const ni::sInterfaceDef* Interfaces[] = {
   GetInterfaceDef_iTexture(),
   GetInterfaceDef_iGLTexture(),
   GetInterfaceDef_iTransform(),
+  GetInterfaceDef_iUISkin(),
   GetInterfaceDef_iUIContext(),
   GetInterfaceDef_iVertexArray(),
 #if niMinFeatures(20)

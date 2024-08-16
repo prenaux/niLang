@@ -21,6 +21,7 @@ niExportFunc(ni::iUnknown*) New_niUI_Intersection(const ni::Var&, const ni::Var&
 niExportFunc(ni::iUnknown*) New_niUI_Camera(const ni::Var&, const ni::Var&);
 niExportFunc(ni::iUnknown*) New_niUI_NUSpline(const ni::Var&, const ni::Var&);
 niExportFunc(ni::iUnknown*) New_niUI_UIContext(const ni::Var&, const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niUI_UISkin(const ni::Var&, const ni::Var&);
 niExportFunc(ni::iUnknown*) New_BitmapLoader_bmp(const ni::Var&, const ni::Var&);
 niExportFunc(ni::iUnknown*) New_BitmapSaver_bmp(const ni::Var&, const ni::Var&);
 niExportFunc(ni::iUnknown*) New_BitmapLoader_jpeg(const ni::Var&, const ni::Var&);
@@ -86,6 +87,7 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iTextObject();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iTexture();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGLTexture();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iTransform();
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iUISkin();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iUIContext();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVertexArray();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGGradientTable();

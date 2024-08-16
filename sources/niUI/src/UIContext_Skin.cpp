@@ -5,8 +5,48 @@
 #include "UIContext.h"
 #include "API/niUI_ModuleDef.h"
 
+cUISkin::cUISkin(iGraphicsContext* apGraphicsContext, iHString* ahspDefaultSkinPath, tF32 afContentScale) {
+  mptrGraphics = apGraphicsContext->GetGraphics();
+  mptrErrorSkin = ni::CreateDataTable(_A("UISkin"));
+  mfContentScale = afContentScale;
+  SetErrorOverlay(NULL);
+
+  if (GetSkinIndex(_H("Default")) != eInvalidHandle) {
+    mhspDefaultSkin = _H("Default");
+  }
+  else if (HStringIsNotEmpty(ahspDefaultSkinPath) && AddSkinFromRes(ahspDefaultSkinPath)) {
+    // initialized the skin, nothing else to do
+  }
+  else if (!AddSkinFromRes(_H("niUI://skins/default.uiskin.xml"))) {
+    niError("Can't add the default skin.");
+  }
+  mhspDefaultSkin = _H(GetSkinDataTable(GetSkinName(0))->GetString(_A("name")));
+}
+
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::SetErrorOverlay(iOverlay* apOverlay) {
+void __stdcall cUISkin::SetImageMap(iImageMap* apImageMap) {
+  mptrImageMap = niGetIfOK(apImageMap);
+}
+
+///////////////////////////////////////////////
+iImageMap* __stdcall cUISkin::GetImageMap() const
+{
+  if (!mptrImageMap.IsOK()) {
+    niThis(cUISkin)->mptrImageMap = mptrGraphics->CreateImageMap(
+        niFmt("UIContext_%p",this),NULL);
+    niThis(cUISkin)->mptrImageMap->SetDefaultImageFilter(eFalse);
+    niThis(cUISkin)->mptrImageMap->SetDefaultImageBlendMode(eBlendMode_Translucent);
+  }
+  return mptrImageMap;
+}
+
+
+iDataTable* __stdcall cUISkin::GetErrorSkinDataTable() const {
+  return mptrErrorSkin;
+};
+
+///////////////////////////////////////////////
+tBool __stdcall cUISkin::SetErrorOverlay(iOverlay* apOverlay) {
   if (niIsOK(apOverlay)) {
     mptrErrorOverlay = apOverlay;
   }
@@ -18,18 +58,18 @@ tBool __stdcall cUIContext::SetErrorOverlay(iOverlay* apOverlay) {
 }
 
 ///////////////////////////////////////////////
-iOverlay* __stdcall cUIContext::GetErrorOverlay() const {
+iOverlay* __stdcall cUISkin::GetErrorOverlay() const {
   return mptrErrorOverlay;
 }
 
 ///////////////////////////////////////////////
-void __stdcall cUIContext::ClearSkins()
+void __stdcall cUISkin::ClearSkins()
 {
   mmapSkins.clear();
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::AddSkin(iDataTable* apDT)
+tBool __stdcall cUISkin::AddSkin(iDataTable* apDT)
 {
   if (!niIsOK(apDT)) {
     niError(_A("Invalid datatable."));
@@ -58,7 +98,7 @@ tBool __stdcall cUIContext::AddSkin(iDataTable* apDT)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::AddSkinFromRes(iHString* ahspRes)
+tBool __stdcall cUISkin::AddSkinFromRes(iHString* ahspRes)
 {
   Ptr<iFile> fp = ni::GetLang()->URLOpen(niHStr(ahspRes));
   if (!fp.IsOK()) {
@@ -82,7 +122,7 @@ tBool __stdcall cUIContext::AddSkinFromRes(iHString* ahspRes)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::RemoveSkin(iHString* ahspSkin)
+tBool __stdcall cUISkin::RemoveSkin(iHString* ahspSkin)
 {
   tSkinMap::iterator it = mmapSkins.find(ahspSkin);
   if (it == mmapSkins.end()) return eFalse;
@@ -91,7 +131,7 @@ tBool __stdcall cUIContext::RemoveSkin(iHString* ahspSkin)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cUIContext::SetDefaultSkin(iHString* ahspName)
+tBool __stdcall cUISkin::SetDefaultSkin(iHString* ahspName)
 {
   tU32 nSkinIndex = GetSkinIndex(ahspName);
   if (nSkinIndex == eInvalidHandle) {
@@ -100,6 +140,71 @@ tBool __stdcall cUIContext::SetDefaultSkin(iHString* ahspName)
   }
   mhspDefaultSkin = ahspName;
   return eTrue;
+}
+
+///////////////////////////////////////////////
+iHString* __stdcall cUISkin::GetDefaultSkin() const
+{
+  return mhspDefaultSkin;
+}
+
+///////////////////////////////////////////////
+tU32 __stdcall cUISkin::GetNumSkins() const
+{
+  return (tU32)mmapSkins.size();
+}
+
+///////////////////////////////////////////////
+iHString* __stdcall cUISkin::GetSkinName(tU32 anIndex) const
+{
+  tU32 nCount = 0;
+  for (tSkinMap::const_iterator it = mmapSkins.begin(); it != mmapSkins.end(); ++it, ++nCount) {
+    if (anIndex == nCount)
+      return it->first;
+  }
+  return NULL;
+}
+
+///////////////////////////////////////////////
+tU32 __stdcall cUISkin::GetSkinIndex(iHString* ahspName) const{
+  tU32 nCount = 0;
+  for (tSkinMap::const_iterator it = mmapSkins.begin(); it != mmapSkins.end(); ++it, ++nCount) {
+    if (it->first == ahspName)
+      return nCount;
+  }
+  return eInvalidHandle;
+}
+
+///////////////////////////////////////////////
+iDataTable* __stdcall cUISkin::GetSkinDataTable(iHString* ahspSkin) const
+{
+  tSkinMap::const_iterator it = mmapSkins.find(ahspSkin);
+  if (it == mmapSkins.end()) {
+    // try the default skin
+    it = mmapSkins.find(mhspDefaultSkin);
+    if (it == mmapSkins.end()) {
+      return mptrErrorSkin;
+    }
+  }
+  return it->second;
+}
+
+void __stdcall cUIContext::SetUISkin(iUISkin* apUISkin) {
+  if (!apUISkin) {
+    mptrSkin = (iUISkin*)niCreateInstance(niUI, UISkin, GetGraphicsContext(), niVarNull);
+  }
+  else {
+    mptrSkin = apUISkin;
+  }
+
+  mpwRootWidget->SetSkin(mptrSkin->GetDefaultSkin());
+  mpwRootWidget->SetFont(mpwRootWidget->FindSkinFont(NULL,NULL,_H("Default")));
+}
+
+void __stdcall cUIContext::SetUISkinFromPath(iHString* ahspSkinPath) {
+  // create the default skin
+  Ptr<iUISkin> skin = (iUISkin*)niCreateInstance(niUI, UISkin, GetGraphicsContext(), ahspSkinPath);
+  SetUISkin(skin);
 }
 
 ///////////////////////////////////////////////
@@ -113,7 +218,7 @@ tBool __stdcall cUIContext::ApplySkin(iWidget* apWidget, iHString* ahspName)
 {
   niCheckIsOK(apWidget,eFalse);
 
-  tU32 nSkinIndex = GetSkinIndex(ahspName);
+  tU32 nSkinIndex = mptrSkin->GetSkinIndex(ahspName);
   if (nSkinIndex == eInvalidHandle) {
     niError(niFmt(_A("Can't find skin '%s'."),niHStr(ahspName)));
     return eFalse;
@@ -123,52 +228,6 @@ tBool __stdcall cUIContext::ApplySkin(iWidget* apWidget, iHString* ahspName)
   return eTrue;
 }
 
-///////////////////////////////////////////////
-iHString* __stdcall cUIContext::GetDefaultSkin() const
-{
-  return mhspDefaultSkin;
-}
-
-///////////////////////////////////////////////
-tU32 __stdcall cUIContext::GetNumSkins() const
-{
-  return (tU32)mmapSkins.size();
-}
-
-///////////////////////////////////////////////
-iHString* __stdcall cUIContext::GetSkinName(tU32 anIndex) const
-{
-  tU32 nCount = 0;
-  for (tSkinMap::const_iterator it = mmapSkins.begin(); it != mmapSkins.end(); ++it, ++nCount) {
-    if (anIndex == nCount)
-      return it->first;
-  }
-  return NULL;
-}
-
-///////////////////////////////////////////////
-tU32 __stdcall cUIContext::GetSkinIndex(iHString* ahspName) const{
-  tU32 nCount = 0;
-  for (tSkinMap::const_iterator it = mmapSkins.begin(); it != mmapSkins.end(); ++it, ++nCount) {
-    if (it->first == ahspName)
-      return nCount;
-  }
-  return eInvalidHandle;
-}
-
-///////////////////////////////////////////////
-iDataTable* __stdcall cUIContext::GetSkinDataTable(iHString* ahspSkin) const
-{
-  tSkinMap::const_iterator it = mmapSkins.find(ahspSkin);
-  if (it == mmapSkins.end()) {
-    // try the default skin
-    it = mmapSkins.find(mhspDefaultSkin);
-    if (it == mmapSkins.end()) {
-      return mptrErrorSkin;
-    }
-  }
-  return it->second;
-}
 
 ///////////////////////////////////////////////
 cString _GetSkinFontPath(const iHString* ahspClass, const iHString* ahspState, const iHString* ahspName)
@@ -186,8 +245,8 @@ cString _GetSkinFontPath(const iHString* ahspClass, const iHString* ahspState, c
 iFont* __stdcall cUIContext::FindSkinFont(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const
 {
   QPtr<iFont> font;
-  Ptr<iDataTable> ptrDT = GetSkinDataTable(ahspSkin);
-  if (ptrDT.IsOK() && ptrDT != mptrErrorSkin) {
+  Ptr<iDataTable> ptrDT = mptrSkin->GetSkinDataTable(ahspSkin);
+  if (ptrDT.IsOK() && ptrDT != mptrSkin->GetErrorSkinDataTable()) {
     // Class/State/"Fonts"/Name
     if (!font.IsOK()) {
       font = ptrDT->GetVarFromPath(_GetSkinFontPath(ahspClass,ahspState,ahspName).Chars(),niVarNull);
@@ -235,8 +294,8 @@ cString _GetSkinCursorPath(const iHString* ahspClass, const iHString* ahspName)
 }
 iOverlay* __stdcall cUIContext::FindSkinCursor(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const
 {
-  Ptr<iDataTable> ptrDT = GetSkinDataTable(ahspSkin);
-  if (ptrDT.IsOK() && ptrDT != mptrErrorSkin) {
+  Ptr<iDataTable> ptrDT = mptrSkin->GetSkinDataTable(ahspSkin);
+  if (ptrDT.IsOK() && ptrDT != mptrSkin->GetErrorSkinDataTable()) {
     cString wa;
 
     QPtr<iOverlay> overlay;
@@ -251,7 +310,7 @@ iOverlay* __stdcall cUIContext::FindSkinCursor(iHString* ahspSkin, iHString* ahs
     if (overlay.IsOK())
       return overlay;
   }
-  return mptrErrorOverlay;
+  return mptrSkin->GetErrorOverlay();
 }
 
 ///////////////////////////////////////////////
@@ -268,8 +327,8 @@ cString _GetSkinElementPath(const iHString* ahspClass, const iHString* ahspState
   return r;
 }
 iOverlay* __stdcall cUIContext::FindSkinElement(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const {
-  Ptr<iDataTable> ptrDT = GetSkinDataTable(ahspSkin);
-  if (ptrDT.IsOK() && ptrDT != mptrErrorSkin) {
+  Ptr<iDataTable> ptrDT = mptrSkin->GetSkinDataTable(ahspSkin);
+  if (ptrDT.IsOK() && ptrDT != mptrSkin->GetErrorSkinDataTable()) {
     QPtr<iOverlay> overlay;
 
     // Class/State/Name
@@ -293,14 +352,31 @@ iOverlay* __stdcall cUIContext::FindSkinElement(iHString* ahspSkin, iHString* ah
       return overlay;
   }
 
-  return mptrErrorOverlay;
+  return mptrSkin->GetErrorOverlay();
 }
+
+iUISkin* __stdcall cUIContext::GetUISkin() const {return mptrSkin;}
+iOverlay* __stdcall cUIContext::GetErrorOverlay() const {return mptrSkin->GetErrorOverlay();}
+tBool __stdcall cUIContext::SetErrorOverlay(iOverlay* apOverlay) {return mptrSkin->SetErrorOverlay(apOverlay);}
+void __stdcall cUIContext::SetImageMap(iImageMap* apImageMap) {return mptrSkin->SetImageMap(apImageMap);}
+iImageMap* __stdcall cUIContext::GetImageMap() const {return mptrSkin->GetImageMap();}
+void __stdcall cUIContext::ClearSkins() {return mptrSkin->ClearSkins();}
+tBool __stdcall cUIContext::AddSkin(iDataTable* apDT) {return mptrSkin->AddSkin(apDT);}
+tBool __stdcall cUIContext::AddSkinFromRes(iHString* ahspRes) {return mptrSkin->AddSkinFromRes(ahspRes);}
+tBool __stdcall cUIContext::RemoveSkin(iHString* ahspSkin) {return mptrSkin->RemoveSkin(ahspSkin);}
+tBool __stdcall cUIContext::SetDefaultSkin(iHString* ahspName) {return mptrSkin->SetDefaultSkin(ahspName);}
+iHString* __stdcall cUIContext::GetDefaultSkin() const {return mptrSkin->GetDefaultSkin();}
+
+tU32 __stdcall cUIContext::GetNumSkins() const {return mptrSkin->GetNumSkins();}
+iHString* __stdcall cUIContext::GetSkinName(tU32 anIndex) const {return mptrSkin->GetSkinName(anIndex);}
+tU32 __stdcall cUIContext::GetSkinIndex(iHString* ahspName) const {return mptrSkin->GetSkinIndex(ahspName);}
+iDataTable* __stdcall cUIContext::GetSkinDataTable(iHString* ahspSkin) const {return mptrSkin->GetSkinDataTable(ahspSkin);}
 
 ///////////////////////////////////////////////
 sColor4f __stdcall cUIContext::FindSkinColor(const sColor4f& aDefault, iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const
 {
   iOverlay* pOvr = FindSkinElement(ahspSkin,ahspClass,ahspState,ahspName);
-  if (!pOvr || pOvr == mptrErrorOverlay)
+  if (!pOvr || pOvr == mptrSkin->GetErrorOverlay())
     return aDefault;
   return pOvr->GetColor();
 }
@@ -430,7 +506,7 @@ static Ptr<iOverlay> _ReadOverlayDT(
 }
 
 ///////////////////////////////////////////////
-tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
+tBool cUISkin::_InitializeSkinDataTable(iDataTable* apDT)
 {
   Ptr<iDataTableReadStack> dt = ni::CreateDataTableReadStack(apDT);
   // Load the main bitmap overlay
@@ -568,4 +644,20 @@ tBool cUIContext::_InitializeSkinDataTable(iDataTable* apDT)
   }
 
   return eTrue;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(iUnknown*) New_niUI_UISkin(const Var& avarA, const Var& avarB)
+{
+  QPtr<iGraphicsContext> ptrGraphicsContext = avarA;
+  if (!ptrGraphicsContext.IsOK()) {
+    niError(niFmt("Can't get the graphics context object."));
+    return NULL;
+  }
+  return niNew cUISkin(ptrGraphicsContext,VarGetHString(avarB), 1.0);
+}
+
+/////////////////////////////////////////////////////////////////
+niExportFunc(ni::iUISkin*) CreateUISkin(iGraphicsContext* apGraphicsContext, iHString* apSkinPath, tF32 afContentsScale) {
+  return niNew cUISkin(apGraphicsContext, apSkinPath, afContentsScale);
 }

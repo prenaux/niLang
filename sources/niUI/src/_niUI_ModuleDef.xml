@@ -17,6 +17,7 @@
 		<objecttype desc="Camera" name="Camera" type="ni::iCamera"/>
 		<objecttype desc="Non-uniform spline" name="NUSpline" type="ni::iNUSpline"/>
 		<objecttype name="UIContext"/>
+		<objecttype name="UISkin"/>
 		<objecttype category="BitmapLoader" name="bmp" type="ni::iBitmapLoader"/>
 		<objecttype category="BitmapSaver" name="bmp" type="ni::iBitmapSaver"/>
 		<objecttype category="BitmapLoader" name="jpeg" type="ni::iBitmapLoader"/>
@@ -21275,6 +21276,209 @@
 				<comments desc="UI Context default input submit flags default. "/>
 			</value>
 		</enum>
+		<interface name="iUISkin" uuid1="22CAEAE6-DCAC-F94A-A063-87FB2A73B7D3" uuid2="0x22caeae6,0xdcac,0xf94a,0xa0,0x63,0x87,0xfb,0x2a,0x73,0xb7,0xd3">
+			<comments desc="UI Context Skin interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setErrorOverlay"
+				name="SetErrorOverlay"
+				num_parameters="1"
+				property="set"
+				property_name2="errorOverlay"
+				property_name="error_overlay">
+				<comments desc="\name Skins @{ Get the error overlay. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apOverlay"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getErrorOverlay"
+				name="GetErrorOverlay"
+				num_parameters="0"
+				property="get"
+				property_name2="errorOverlay"
+				property_name="error_overlay">
+				<comments desc="Get the error overlay. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setImageMap"
+				name="SetImageMap"
+				num_parameters="1"
+				property="set"
+				property_name2="imageMap"
+				property_name="image_map">
+				<comments desc="Set the context&apos;s image map. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apImageMap"
+					type="iImageMap *"
+					typec="iImageMap*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getImageMap"
+				name="GetImageMap"
+				num_parameters="0"
+				property="get"
+				property_name2="imageMap"
+				property_name="image_map">
+				<comments desc="Get the context&apos;s image map. "/>
+				<return type="iImageMap *" typec="iImageMap*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearSkins" name="ClearSkins" num_parameters="0">
+				<comments desc="Remove all skins loaded. ">
+					<remark text="The default skin will remain. "/>
+					<remark text="A SkinChanged message will be broadcasted to all widgets when the skins are cleared. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addSkin" name="AddSkin" num_parameters="1">
+				<comments desc="Add a new skin. ">
+					<remark text="If a skin with the specified name has already been loaded the method will fail. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addSkinFromRes" name="AddSkinFromRes" num_parameters="1">
+				<comments desc="Add a new skin from the specified resource. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspRes"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeSkin" name="RemoveSkin" num_parameters="1">
+				<comments desc="Unload a skin. ">
+					<remark text="The default skin cannot be removed "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setDefaultSkin"
+				name="SetDefaultSkin"
+				num_parameters="1"
+				property="set"
+				property_name2="defaultSkin"
+				property_name="default_skin">
+				<comments desc="Set the default skin. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDefaultSkin"
+				name="GetDefaultSkin"
+				num_parameters="0"
+				property="get"
+				property_name2="defaultSkin"
+				property_name="default_skin">
+				<comments desc="Get the default skin. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSkins"
+				name="GetNumSkins"
+				num_parameters="0"
+				property="get"
+				property_name2="numSkins"
+				property_name="num_skins">
+				<comments desc="Get the number of skins. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinName"
+				name="GetSkinName"
+				num_parameters="1"
+				property="get"
+				property_name2="skinName"
+				property_name="skin_name">
+				<comments desc="Get the name of the skin at the specified index. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinIndex"
+				name="GetSkinIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="skinIndex"
+				property_name="skin_index">
+				<comments desc="Get the index of the skin with the specified name. ">
+					<remark text="Return eInvalidHandle if the skin does not exist. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSkinDataTable"
+				name="GetSkinDataTable"
+				num_parameters="1"
+				property="get"
+				property_name2="skinDataTable"
+				property_name="skin_data_table">
+				<comments desc="Get the data table associated with the specified skin. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspSkin"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getErrorSkinDataTable"
+				name="GetErrorSkinDataTable"
+				num_parameters="0"
+				property="get"
+				property_name2="errorSkinDataTable"
+				property_name="error_skin_data_table">
+				<comments desc="Get the data table associated with the error skin. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
 		<interface name="iUIContext" uuid1="2C6B89CB-0E9E-41FC-92BB-AE6AA3EE442C" uuid2="0x2c6b89cb,0x0e9e,0x41fc,0x92,0xbb,0xae,0x6a,0xa3,0xee,0x44,0x2c">
 			<comments desc="UI Context interface. "/>
 			<parents>
@@ -21433,6 +21637,37 @@
 				property_name="hover_input_modifiers">
 				<comments desc="Get the input modifier required to enable the hover. \see ni::eUIInputModifier "/>
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUISkin"
+				name="GetUISkin"
+				num_parameters="0"
+				property="get"
+				property_name2="uiskin"
+				property_name="uiskin">
+				<comments desc="\name Skins @{ Get the UISkin object "/>
+				<return type="iUISkin *" typec="iUISkin*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setUISkin" name="SetUISkin" num_parameters="1">
+				<comments desc="Set the UISkin object "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apUISkin"
+					type="iUISkin *"
+					typec="iUISkin*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setUISkinFromPath" name="SetUISkinFromPath" num_parameters="1">
+				<comments desc="Set the UISkin from given path "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="ahspSkinPath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				java_name="setImageMap"

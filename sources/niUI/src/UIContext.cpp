@@ -311,7 +311,7 @@ struct sRootSink : public ImplRC<iWidgetSink> {
 void _RegisterStandardWidgets();
 
 ///////////////////////////////////////////////
-cUIContext::cUIContext(iGraphicsContext* apGraphicsContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale)
+cUIContext::cUIContext(iGraphicsContext* apGraphicsContext, iUISkin* apSkin, tF32 afContentsScale)
 {
   niGuardConstructor(cUIContext);
 
@@ -348,28 +348,19 @@ cUIContext::cUIContext(iGraphicsContext* apGraphicsContext, iHString* ahspDefaul
   mptrGraphics = apGraphicsContext->GetGraphics();
 
   // create the default skin
-  {
-    mptrErrorSkin = ni::CreateDataTable(_A("UISkin"));
-    SetErrorOverlay(NULL);
-
-    if (GetSkinIndex(_H("Default")) != eInvalidHandle) {
-      mhspDefaultSkin = _H("Default");
-    }
-    else if (HStringIsNotEmpty(ahspDefaultSkinPath) && AddSkinFromRes(ahspDefaultSkinPath)) {
-      // initialized the skin, nothing else to do
-    }
-    else if (!AddSkinFromRes(_H("niUI://skins/default.uiskin.xml"))) {
-      niError("Can't add the default skin.");
-    }
-    mhspDefaultSkin = _H(GetSkinDataTable(GetSkinName(0))->GetString(_A("name")));
-  }
+  // if (!apSkin) {
+    // mptrSkin = ni::CreateUISkin(apGraphicsContext, NULL, afContentsScale);
+  // }
+  // else {
+  mptrSkin = apSkin;
+  // }
 
   _RegisterStandardWidgets();
 
   mpwRootWidget = niNew cWidget(this,_H("RootWidget"),NULL,sRectf(0,0,100,100),
                                 0,_H("ID_RootWidget"),NULL,NULL);
   mpwRootWidget->AddSink(niNew sRootSink());
-  mpwRootWidget->SetSkin(this->mhspDefaultSkin);
+  mpwRootWidget->SetSkin(mptrSkin->GetDefaultSkin());
   mpwRootWidget->SetFont(mpwRootWidget->FindSkinFont(NULL,NULL,_H("Default")));
   {
     Ptr<iCanvas> ptrCanvas = mptrGraphics->CreateCanvas(mptrGraphicsContext.ptr(),NULL);
@@ -1708,23 +1699,6 @@ iProfDraw* __stdcall cUIContext::CreateProfDraw(iCanvas* apCanvas, iFont* apFont
 }
 
 ///////////////////////////////////////////////
-void __stdcall cUIContext::SetImageMap(iImageMap* apImageMap) {
-  mptrImageMap = niGetIfOK(apImageMap);
-}
-
-///////////////////////////////////////////////
-iImageMap* __stdcall cUIContext::GetImageMap() const
-{
-  if (!mptrImageMap.IsOK()) {
-    niThis(cUIContext)->mptrImageMap = mptrGraphics->CreateImageMap(
-        niFmt("UIContext_%p",this),NULL);
-    niThis(cUIContext)->mptrImageMap->SetDefaultImageFilter(eFalse);
-    niThis(cUIContext)->mptrImageMap->SetDefaultImageBlendMode(eBlendMode_Translucent);
-  }
-  return mptrImageMap;
-}
-
-///////////////////////////////////////////////
 tBool __stdcall cUIContext::HasWidgetSinkClass(const achar *aszClassName) const
 {
   Ptr<tCreateInstanceCMap> map = ni::GetLang()->GetCreateInstanceMap();
@@ -1780,5 +1754,12 @@ niExportFunc(iUnknown*) New_niUI_UIContext(const Var& avarA, const Var& avarB)
     hspDefaultSkinPath = VarGetHString(avarB);
   }
 
-  return niNew cUIContext(ptrGraphicsContext,hspDefaultSkinPath,contentsScale);
+  Ptr<iUISkin> skin = ni::CreateUISkin(ptrGraphicsContext, hspDefaultSkinPath, contentsScale);
+
+  return niNew cUIContext(ptrGraphicsContext,skin,contentsScale);
+}
+
+/////////////////////////////////////////////////////////////////
+niExportFunc(ni::iUIContext*) CreateUIContext(iGraphicsContext* apGraphicsContext, iUISkin* apSkin, tF32 afContentsScale) {
+  return niNew cUIContext(apGraphicsContext, apSkin, afContentsScale);
 }

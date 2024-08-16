@@ -69,6 +69,7 @@ SQSharedState::SQSharedState() {
   _uuid_default_delegate=_CreateDefaultDelegate(this,_uuid_default_delegate_funcz);
   _enum_default_delegate=_CreateDefaultDelegate(this,_enum_default_delegate_funcz);
   _method_default_delegate=_CreateDefaultDelegate(this,_method_default_delegate_funcz);
+  _interface_default_delegate=_CreateDefaultDelegate(this,_interface_default_delegate_funcz);
 
   _typeStr_null = _H("null");
   _typeStr_int = _H("int");
@@ -346,6 +347,9 @@ const SQObjectPtr& SQSharedState::GetLangDelegate(HSQUIRRELVM v, const achar* de
   }
   else if (StrEq(delID,"method")) {
     return _method_default_delegate;
+  }
+  else if (StrEq(delID,"interface")) {
+    return _interface_default_delegate;
   }
   else if (StrStartsWith(delID,"enum:")) {
     cString enumID = delID + 5;

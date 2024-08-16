@@ -46,6 +46,7 @@ _HDecl(locals);
 _HDecl(Import);
 _HDecl(NewImport);
 _HDecl(method);
+_HDecl(interface);
 _HDecl(Vec2);
 _HDecl(Vec3);
 _HDecl(Vec4);

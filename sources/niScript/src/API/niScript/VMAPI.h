@@ -241,6 +241,7 @@ enum eScriptType
   eScriptType_Iterator = niFourCC('I','T','E','R'),
   eScriptType_IndexedProperty = niFourCC('I','D','X','P'),
   eScriptType_UUID = niFourCC('U','U','I','D'),
+  eScriptType_InterfaceDef = niFourCC('I','D','E','F'),
 };
 
 niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);
@@ -287,6 +288,9 @@ niExportFunc(int) sqa_getUUID(HSQUIRRELVM v, int idx, ni::tUUID* aV);
 
 niExportFunc(int) sqa_pushMethodDef(HSQUIRRELVM v, const ni::sInterfaceDef* apInterfaceDef, const ni::sMethodDef* apMethDef);
 niExportFunc(int) sqa_getMethodDef(HSQUIRRELVM v, int idx, const ni::sInterfaceDef** appInterfaceDef, const ni::sMethodDef** appMethDef);
+
+niExportFunc(int) sqa_pushInterfaceDef(HSQUIRRELVM v, const ni::sInterfaceDef* apInterfaceDef);
+niExportFunc(int) sqa_getInterfaceDef(HSQUIRRELVM v, int idx, const ni::sInterfaceDef** appInterfaceDef);
 
 niExportFunc(int) sqa_pushIUnknown(HSQUIRRELVM v, ni::iUnknown* apClass);
 niExportFunc(int) sqa_getIUnknown(HSQUIRRELVM v, int idx, ni::iUnknown** appIUnknown, const ni::tUUID& aIID);

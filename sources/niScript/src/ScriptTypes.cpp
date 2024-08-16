@@ -9,6 +9,7 @@
 #include <niLang/Math/MathVec4.h>
 #include <niLang/Math/MathMatrix.h>
 #include "API/niScript/IScriptVM.h"
+#include "API/niScript_ModuleDef.h"
 #include "ScriptVM.h"
 #include "ScriptTypes.h"
 #include "ScriptAutomation.h"
@@ -140,6 +141,58 @@ niExportFunc(void) sqa_setdebugname(HSQUIRRELVM v, int idx, const achar* aaszNam
   sq_pushstring(v, _HC(__debug_name));
   sq_pushstring(v, _H(aaszName));
   sq_createslot(v,idx-2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// sInterfaceDef
+
+static int interface_typeof(HSQUIRRELVM v) {
+  sq_pushstring(v, _HC(interface));
+  return 1;
+}
+
+static int interface_Name(HSQUIRRELVM v) {
+  sScriptTypeInterfaceDef* pV = sqa_getud<sScriptTypeInterfaceDef>(v,1);
+  if (!pV) return SQ_ERROR;
+  sq_pushstring(v,_H(pV->pInterfaceDef->maszName));
+  return 1;
+}
+
+static int interface_interfaceName(HSQUIRRELVM v) {
+  sScriptTypeInterfaceDef* pV = sqa_getud<sScriptTypeInterfaceDef>(v,1);
+  if (!pV) return SQ_ERROR;
+  if (pV->pInterfaceDef) {
+    sq_pushstring(v,_H(pV->pInterfaceDef->maszName));
+  }
+  else {
+    sq_pushnull(v);
+  }
+  return 1;
+}
+
+SQRegFunction SQSharedState::_interface_default_delegate_funcz[]={
+  {"_typeof", interface_typeof, 0, NULL},
+  {"GetName", interface_Name, 0, NULL},
+  {"GetInterfaceName", interface_interfaceName, 0, NULL},
+  {0,0}
+};
+
+niExportFunc(int) sqa_pushInterfaceDef(HSQUIRRELVM v, const sInterfaceDef* apInterfaceDef)
+{
+  niAssert(apInterfaceDef != NULL);
+  cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
+  //  niAssert(niIsOK(pVM));
+  sq_pushud(*pVM,niNew sScriptTypeInterfaceDef(
+    *v->_ss,apInterfaceDef));
+  return SQ_OK;
+}
+
+niExportFunc(int) sqa_getInterfaceDef(HSQUIRRELVM v, int idx, const sInterfaceDef** appInterfaceDef)
+{
+  sScriptTypeInterfaceDef* pV = sqa_getud<sScriptTypeInterfaceDef>(v,idx);
+  if (!pV)  return SQ_ERROR;
+  if (appInterfaceDef) *appInterfaceDef = pV->pInterfaceDef;
+  return SQ_OK;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

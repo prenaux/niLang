@@ -52,6 +52,8 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   static SQRegFunction _enum_default_delegate_funcz[];
   SQObjectPtr _method_default_delegate;
   static SQRegFunction _method_default_delegate_funcz[];
+  SQObjectPtr _interface_default_delegate;
+  static SQRegFunction _interface_default_delegate_funcz[];
 
   SQCOMPILERERROR _compilererrorhandler;
   bool _debuginfo;

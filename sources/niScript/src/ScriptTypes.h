@@ -13,6 +13,48 @@ typedef tScriptObjectPtrLst::iterator     tScriptObjectPtrLstIt;
 typedef tScriptObjectPtrLst::const_iterator tScriptObjectPtrLstCIt;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// sInterfaceDef type
+
+struct sScriptTypeInterfaceDef : SQ_USERDATA_BASE(sScriptTypeInterfaceDef)
+{
+  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
+    return this->_DoQueryInterface(this,aIID);
+  }
+
+  const sInterfaceDef*  pInterfaceDef;
+
+  sScriptTypeInterfaceDef(
+    const SQSharedState& aSS,
+    const sInterfaceDef* apInterfaceDef)
+      : pInterfaceDef(apInterfaceDef)
+  {
+    SetDelegate(_ddel(aSS,interface));
+  }
+  ~sScriptTypeInterfaceDef() {}
+
+  static int _GetType() { return eScriptType_InterfaceDef; }
+  virtual int __stdcall GetSize() const { return sizeof(sScriptTypeInterfaceDef); }
+  virtual int __stdcall GetType() const { return _GetType(); }
+  virtual size_t __stdcall Hash() const {
+    return (size_t)pInterfaceDef;
+  }
+  virtual bool __stdcall Eq(SQUserData* r) const {
+    if (CmpType(r) != 0) return false;
+    sScriptTypeInterfaceDef* b = (sScriptTypeInterfaceDef*)r;
+    return pInterfaceDef == b->pInterfaceDef;
+  }
+  virtual int __stdcall Cmp(SQUserData* r) const {
+    int res = CmpType(r);
+    if (res != 0) return res;
+    sScriptTypeInterfaceDef* b = (sScriptTypeInterfaceDef*)r;
+    return ni::CmpByVal(pInterfaceDef,b->pInterfaceDef);
+  }
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeInterfaceDef(aSS,pInterfaceDef);
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 // sMethodDef type
 
 struct sScriptTypeMethodDef : SQ_USERDATA_BASE(sScriptTypeMethodDef)

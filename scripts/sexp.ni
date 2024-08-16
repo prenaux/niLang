@@ -49,7 +49,7 @@
   }
 
   function toSymbolsString(S) {
-    return toString(toSymbols(S))
+    return toString(toSymbols(S), null)
   }
 })
 

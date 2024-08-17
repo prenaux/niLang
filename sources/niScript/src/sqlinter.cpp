@@ -185,6 +185,29 @@ static const achar* _ObjCharsOrZeroStr(const SQObjectPtr& obj) {
   }
 }
 
+static cString _ObjTypeString(const SQObjectPtr& obj)
+{
+  niLet type = _sqtype(obj);
+  switch (type) {
+    case _RT_NULL: return "Null";
+    case _RT_INTEGER: return "I32";
+    case _RT_FLOAT: return "F64";
+    case _RT_STRING: return "STRING";
+    case _RT_TABLE: return "TABLE";
+    case _RT_ARRAY: return "ARRAY";
+    case _RT_USERDATA: {
+      SQUserData* ud = _userdata(obj);
+      niLet udtype = ud->GetType();
+      return niFmt("UD_%s", niFourCCA(udtype),niFourCCB(udtype),niFourCCC(udtype),niFourCCD(udtype));
+    }
+    case _RT_CLOSURE: return "CLOSURE";
+    case _RT_NATIVECLOSURE: return "NATIVECLOSURE";
+    case _RT_FUNCPROTO: return "FUNCPROTO";
+    case _RT_IUNKNOWN: return "IUnknownPtr";
+    default: return ni::GetTypeString(type);
+  }
+}
+
 static cString _ObjToString(const SQObjectPtr& obj) {
   switch (_sqtype(obj)) {
     case OT_STRING: {
@@ -202,7 +225,7 @@ static cString _ObjToString(const SQObjectPtr& obj) {
                    _PtrToString((tIntPtr)_table(obj)));
     }
     default:
-      return niFmt("%s::%s",(Var&)obj._var,sqa_gettypestring(obj._var.mType));
+      return niFmt("%s::%s",(Var&)obj._var,_ObjTypeString(obj));
   }
 }
 

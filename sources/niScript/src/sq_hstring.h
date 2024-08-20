@@ -55,5 +55,6 @@ _HDecl(UUID);
 _HDecl(__imports);
 _HDecl_(NOT_ITOSTRING,"[not iToString]");
 _HDecl(e);
+_HDecl(unresolved_type);
 
 #endif // __sq_HSTRING_H__

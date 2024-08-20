@@ -82,18 +82,28 @@ void sqGetIndexDump(cString& strOut, HSQUIRRELVM v, int idx, int size)
       strOut << _A("]");
       break;
     }
+    case eScriptType_InterfaceDef: {
+      sScriptTypeInterfaceDef* pV = (sScriptTypeInterfaceDef*)_userdata(obj);
+      strOut << niFmt("idef:%s", pV->pInterfaceDef?pV->pInterfaceDef->maszName:AZEROSTR);
+      break;
+    }
     case eScriptType_MethodDef: {
       sScriptTypeMethodDef* pV = (sScriptTypeMethodDef*)_userdata(obj);
-      strOut << niFmt(_A("%s::%s"),
+      strOut << niFmt(_A("mdef:%s::%s"),
                       pV->pInterfaceDef?pV->pInterfaceDef->maszName:AZEROSTR,
                       pV->pMethodDef?pV->pMethodDef->maszName:AZEROSTR);
       break;
     }
     case eScriptType_PropertyDef: {
       sScriptTypePropertyDef* pV = (sScriptTypePropertyDef*)_userdata(obj);
-      strOut << niFmt(_A("%s::%s"),
+      strOut << niFmt(_A("pdef:%s::%s"),
                       pV->pInterfaceDef->maszName,
                       pV->GetName().Chars());
+      break;
+    }
+    case eScriptType_UnresolvedType: {
+      sScriptTypeUnresolvedType* pV = (sScriptTypeUnresolvedType*)_userdata(obj);
+      strOut << niFmt("utype:%s", pV->_hspUnresolvedType);
       break;
     }
     case eScriptType_EnumDef: {

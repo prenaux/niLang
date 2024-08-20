@@ -387,6 +387,43 @@ int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const s
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// sUnresolvedType
+
+static int unresolved_type_typeof(HSQUIRRELVM v) {
+  sq_pushstring(v, _HC(unresolved_type));
+  return 1;
+}
+
+static int unresolved_type_GetUnresolvedTypeName(HSQUIRRELVM v) {
+  sScriptTypeUnresolvedType* pV = sqa_getud<sScriptTypeUnresolvedType>(v,1);
+  if (!pV) return SQ_ERROR;
+  sq_pushstring(v,pV->_hspUnresolvedType);
+  return 1;
+}
+
+SQRegFunction SQSharedState::_unresolved_type_default_delegate_funcz[]={
+  {"_typeof", interface_typeof, 0, NULL},
+  {"GetUnresolvedTypeName", unresolved_type_GetUnresolvedTypeName, 0, NULL},
+  {0,0}
+};
+
+niExportFuncCPP(int) sqa_pushUnresolvedType(HSQUIRRELVM v, ain_nn<iHString> ahspType)
+{
+  cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
+  //  niAssert(niIsOK(pVM));
+  sq_pushud(*pVM,niNew sScriptTypeUnresolvedType(*v->_ss,ahspType));
+  return SQ_OK;
+}
+
+niExportFuncCPP(int) sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHStringPtr> ahspType)
+{
+  sScriptTypeUnresolvedType* pV = sqa_getud<sScriptTypeUnresolvedType>(v,idx);
+  if (!pV)  return SQ_ERROR;
+  ahspType = pV->_hspUnresolvedType.raw_ptr();
+  return SQ_OK;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
 static int enum_typeof(HSQUIRRELVM v)

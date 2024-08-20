@@ -12,6 +12,7 @@
 #include "sqfuncstate.h"
 #include "sq_hstring.h"
 #include "sqstate.h"
+#include <ScriptTypes.h>
 
 #define SQLINTER_LOG_INLINE
 
@@ -187,7 +188,7 @@ static const achar* _ObjCharsOrZeroStr(const SQObjectPtr& obj) {
 
 static cString _ObjTypeString(const SQObjectPtr& obj)
 {
-  niLet type = _sqtype(obj);
+  niLet type = _RAW_TYPE(_sqtype(obj));
   switch (type) {
     case _RT_NULL: return "Null";
     case _RT_INTEGER: return "I32";
@@ -197,8 +198,7 @@ static cString _ObjTypeString(const SQObjectPtr& obj)
     case _RT_ARRAY: return "ARRAY";
     case _RT_USERDATA: {
       SQUserData* ud = _userdata(obj);
-      niLet udtype = ud->GetType();
-      return niFmt("UD_%s", niFourCCA(udtype),niFourCCB(udtype),niFourCCC(udtype),niFourCCD(udtype));
+      return ud->GetTypeString();
     }
     case _RT_CLOSURE: return "CLOSURE";
     case _RT_NATIVECLOSURE: return "NATIVECLOSURE";
@@ -223,6 +223,9 @@ static cString _ObjToString(const SQObjectPtr& obj) {
       return niFmt("%s{%s}::TABLE",
                    _table(obj)->GetDebugName(),
                    _PtrToString((tIntPtr)_table(obj)));
+    }
+    case OT_USERDATA: {
+      return niFmt("%s", _userdata(obj)->GetTypeString());
     }
     default:
       return niFmt("%s::%s",(Var&)obj._var,_ObjTypeString(obj));
@@ -811,7 +814,6 @@ struct sLintStackEntry {
   SQObjectPtr _name = _null_;
   SQObjectPtr _value = _null_;
   SQObjectPtr _provenance = _null_;
-  SQObjectPtr _type = _null_;
 };
 
 void SQFunctionProto::LintTrace(
@@ -894,7 +896,10 @@ void SQFunctionProto::LintTrace(
       }
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
-      stack[si]._type = param._type;
+      if (sq_isstring(param._type)) {
+        stack[si]._value = niNew sScriptTypeUnresolvedType(
+          aLinter._ss, as_NN(_stringhval(param._type)));
+      }
     }
   }
 
@@ -969,13 +974,6 @@ void SQFunctionProto::LintTrace(
       return _null_;
     }
     return stack[i]._value;
-  };
-  auto sgettype = [&](const int i) -> const SQObjectPtr& {
-    if (i >= thisfunc_stacksize) {
-      _LINTERNAL_ERROR(niFmt("sgettype: Invalid stack position '%d'",i));
-      return _null_;
-    }
-    return stack[i]._type;
   };
   auto sstr = [&](const int arg) -> cString {
     return islocal(arg) ?
@@ -1187,7 +1185,6 @@ void SQFunctionProto::LintTrace(
 
   auto op_precallk = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG2);
-    SQObjectPtr ttype = sgettype(IARG2);
     SQObjectPtr k = lget(IARG1);
     SQObjectPtr v;
     if (is_implicit_this(_LOBJ(implicit_this_callk),inst,inst._arg2)) {
@@ -1206,8 +1203,8 @@ void SQFunctionProto::LintTrace(
     }
     sset(IARG3, t);
     sset(IARG0, v);
-    _LTRACE(("op_precallk: %s<%s>[%s] in %s & table in %s",
-             _ObjToString(t), _ObjToString(ttype), _ObjToString(k), sstr(IARG0), sstr(IARG3)));
+    _LTRACE(("op_precallk: %s[%s] in %s & table in %s",
+             _ObjToString(t), _ObjToString(k), sstr(IARG0), sstr(IARG3)));
   };
 
   auto is_this_set_key_notfound = [&](const sLint& aLint,
@@ -1260,7 +1257,6 @@ void SQFunctionProto::LintTrace(
 
   auto op_call = [&](const SQInstruction& inst, const tBool abIsTailCall) {
     SQObjectPtr tocall = sget(IARG1);
-    SQObjectPtr tocalltype = sgettype(IARG1);
     const int nargs = IARG3;
     const int stackbase = IARG2;
     _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",
@@ -1326,11 +1322,10 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("--- LOCALS BEGIN --------------------------------------\n"));
     niLoop(i,_localvarinfos.size()) {
       const int stackpos = _localvarinfos[i]._pos;
-      _LTRACE(("... local[%d]: s[%d]: %s = %s, type: %s, provenance: %s",
+      _LTRACE(("... local[%d]: s[%d]: %s = %s, provenance: %s",
                i, stackpos,
                _ObjToString(localname(stackpos)),
                _ObjToString(sget(stackpos)),
-               _ObjToString(stack[stackpos]._type),
                _ObjToString(stack[stackpos]._provenance)));
     }
     _LTRACE(("... root table: %s",
@@ -1366,11 +1361,10 @@ void SQFunctionProto::LintTrace(
   _LTRACE(("--- LOCALS AFTER --------------------------------------\n"));
   niLoop(i,_localvarinfos.size()) {
     const int stackpos = _localvarinfos[i]._pos;
-    _LTRACE(("... local[%d]: s[%d]: %s = %s, type: %s, provenance: %s",
+    _LTRACE(("... local[%d]: s[%d]: %s = %s, provenance: %s",
              i, stackpos,
              _ObjToString(localname(stackpos)),
              _ObjToString(sget(stackpos)),
-             _ObjToString(stack[stackpos]._type),
              _ObjToString(stack[stackpos]._provenance)));
   }
   _LTRACE(("... root table: %s",

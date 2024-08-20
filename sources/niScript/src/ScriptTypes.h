@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
+#include "stdafx.h"
 #include "sqobject.h"
 #include "sqvm.h"
 #include <niLang/Utils/Hash.h>
@@ -52,6 +53,9 @@ struct sScriptTypeInterfaceDef : SQ_USERDATA_BASE(sScriptTypeInterfaceDef)
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeInterfaceDef(aSS,pInterfaceDef);
   }
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("interface_def<%s>", pInterfaceDef ? pInterfaceDef->maszName : "NULL");
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +104,11 @@ struct sScriptTypeMethodDef : SQ_USERDATA_BASE(sScriptTypeMethodDef)
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeMethodDef(aSS,pInterfaceDef,pMethodDef);
+  }
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("method_def<%s>",
+                 pInterfaceDef ? pInterfaceDef->maszName : "NULL",
+                 pMethodDef ? pMethodDef->maszName : "NULL");
   }
 };
 
@@ -172,6 +181,12 @@ struct sScriptTypePropertyDef : SQ_USERDATA_BASE(sScriptTypePropertyDef)
     return niNew sScriptTypePropertyDef(pInterfaceDef,pSetMethodDef,pGetMethodDef);
   }
 
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("property_def<%s,set:%s,get:%s>",
+                 pInterfaceDef ? pInterfaceDef->maszName : "NULL",
+                 pSetMethodDef ? pSetMethodDef->maszName : "NULL",
+                 pGetMethodDef ? pGetMethodDef->maszName : "NULL");
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,6 +238,10 @@ struct sScriptTypeIndexedProperty : SQ_USERDATA_BASE(sScriptTypeIndexedProperty)
     return niNew sScriptTypeIndexedProperty(aSS,pObject,pProp);
   }
 
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("indexed_property<%s>",
+                 pProp.IsOK() ? pProp->GetTypeString() : "NULL");
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,6 +296,11 @@ public:
     sScriptTypeEnumDef* ed = niNew sScriptTypeEnumDef(aSS,pEnumDef);
     ed->objTable = this->objTable;
     return ed;
+  }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("enum_def<%s>",
+                 pEnumDef ? pEnumDef->maszName : "NULL");
   }
 
 #ifndef NO_GARBAGE_COLLECTOR
@@ -339,6 +363,10 @@ struct sScriptTypeVec2f :
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeVec2f(aSS,_val);
   }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("%s", _val);
+  }
 };
 
 struct sScriptTypeVec3f :
@@ -357,6 +385,10 @@ struct sScriptTypeVec3f :
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeVec3f(aSS,_val);
+  }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("%s", _val);
   }
 };
 
@@ -377,6 +409,10 @@ struct sScriptTypeVec4f :
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeVec4f(aSS,_val);
   }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("%s", _val);
+  }
 };
 
 struct sScriptTypeMatrixf :
@@ -395,6 +431,10 @@ struct sScriptTypeMatrixf :
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeMatrixf(aSS,_val);
+  }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("%s", _val);
   }
 };
 
@@ -434,6 +474,10 @@ struct sScriptTypeUUID : SQ_USERDATA_BASE(sScriptTypeUUID)
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeUUID(aSS,mUUID);
+  }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("UUID<%s>", cString(mUUID));
   }
 };
 
@@ -476,6 +520,10 @@ struct sScriptTypeUnresolvedType : SQ_USERDATA_BASE(sScriptTypeUnresolvedType)
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
     return niNew sScriptTypeUnresolvedType(aSS,_hspUnresolvedType);
+  }
+
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("unresolved_type<%s>", _hspUnresolvedType);
   }
 };
 

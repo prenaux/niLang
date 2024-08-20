@@ -283,6 +283,7 @@ struct SQUserData : public SQCollectable
   virtual bool __stdcall Eq(SQUserData* r) const = 0;
   virtual int __stdcall Cmp(SQUserData* r) const = 0;
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const = 0;
+  virtual cString __stdcall GetTypeString() const = 0;
 
  private:
 #ifndef NO_GARBAGE_COLLECTOR

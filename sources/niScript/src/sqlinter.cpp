@@ -1365,15 +1365,16 @@ void SQFunctionProto::LintTrace(
       }
     };
 
-    switch (_sqtype(tocall)) {
-      case OT_NULL: {
+    niLet tocalltype = sqa_getscripttype(tocall);
+    switch (tocalltype) {
+      case eScriptType_Null: {
         if (_LENABLED(call_warning)) {
           _LINT(call_warning, "Attempting to call Null.");
         }
         sset(IARG0, _null_);
         break;
       }
-      case OT_CLOSURE: {
+      case eScriptType_Closure: {
         SQClosure* closure = _closure(tocall);
         SQFunctionProto* func = _funcproto(closure->_function);
         if (!func) {
@@ -1384,7 +1385,7 @@ void SQFunctionProto::LintTrace(
         }
         break;
       }
-      case OT_FUNCPROTO: {
+      case eScriptType_FunctionProto: {
         SQFunctionProto* func = _funcproto(tocall);
         call_func(*func);
         break;

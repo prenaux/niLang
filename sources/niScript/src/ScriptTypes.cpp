@@ -84,6 +84,7 @@ eScriptType sqa_getscripttype(const SQObjectPtr& obj)
     case OT_ARRAY:      return (eScriptType)OT_ARRAY;
     case OT_CLOSURE:    return (eScriptType)OT_CLOSURE;
     case OT_NATIVECLOSURE:  return (eScriptType)OT_NATIVECLOSURE;
+    case OT_FUNCPROTO:  return (eScriptType)OT_FUNCPROTO;
     case OT_IUNKNOWN:       return (eScriptType)OT_IUNKNOWN;
     case OT_USERDATA: {
       SQUserData* ud = _userdata(obj);

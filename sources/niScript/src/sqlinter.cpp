@@ -472,16 +472,16 @@ struct sLinter {
       }
     }
     _E(implicit_this_getk)
-        _E(implicit_this_callk)
-        _E(this_key_notfound_getk)
-        _E(this_key_notfound_callk)
-        _E(this_key_notfound_outer)
-        _E(key_notfound_callk)
-        _E(key_notfound_getk)
-        _E(this_set_key_notfound)
-        _E(set_key_notfound)
-        _E(call_warning)
-        _E(call_num_args)
+    _E(implicit_this_callk)
+    _E(this_key_notfound_getk)
+    _E(this_key_notfound_callk)
+    _E(this_key_notfound_outer)
+    _E(key_notfound_callk)
+    _E(key_notfound_getk)
+    _E(this_set_key_notfound)
+    _E(set_key_notfound)
+    _E(call_warning)
+    _E(call_num_args)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -682,10 +682,43 @@ struct sLinter {
         break;
       case OT_USERDATA:
         {
+          niLet ud = _userdata(self);
+          switch (ud->GetType()) {
+            case eScriptType_InterfaceDef: {
+              niLet idef = ((sScriptTypeInterfaceDef*)ud)->pInterfaceDef;
+              if (!sq_isstring(key)) {
+                niWarning(niFmt(
+                  "LintGet InterfaceDef '%s' key '%s' isn't a string.",
+                  idef->maszName, _ObjToString(key)));
+                return false;
+              }
+
+              // TODO: The linear search and allocation is suboptimal. This
+              // whole thing should end up in its own function or maybe merged
+              // into sScriptTypeInterfaceDef.
+              niLet keyChars = _stringval(key);
+              niLoop(mi,idef->mnNumMethods) {
+                niLet mdef = idef->mpMethods[mi];
+                if (StrEq(keyChars, mdef->maszName)) {
+                  dest = niNew sScriptTypeMethodDef(_ss, idef, mdef);
+                  return true;
+                }
+              }
+
+              // TODO: This is a bit shit, we probalby need some kind of
+              // sScriptTypeError thing
+              dest = niNew sScriptTypeUnresolvedType(
+                _ss,
+                _H(niFmt("method_def<%s::%s>", idef->maszName, keyChars)),
+                _HC(unresolved_type_cant_find_method_def));
+              return true;
+            }
+          }
+
           bool getRetVal = false;
-          if (_userdata(self)->GetDelegate()) {
+          if (ud->GetDelegate()) {
             getRetVal = LintGet(
-              SQObjectPtr(_userdata(self)->GetDelegate()),
+              SQObjectPtr(ud->GetDelegate()),
               key,dest,opExt|_OPEXT_GET_RAW);
             if (!getRetVal) {
               if (opExt & _OPEXT_GET_RAW)

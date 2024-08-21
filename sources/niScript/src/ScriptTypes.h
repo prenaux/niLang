@@ -106,9 +106,10 @@ struct sScriptTypeMethodDef : SQ_USERDATA_BASE(sScriptTypeMethodDef)
     return niNew sScriptTypeMethodDef(aSS,pInterfaceDef,pMethodDef);
   }
   virtual cString __stdcall GetTypeString() const {
-    return niFmt("method_def<%s>",
+    return niFmt("method_def<%s,%s/%d>",
                  pInterfaceDef ? pInterfaceDef->maszName : "NULL",
-                 pMethodDef ? pMethodDef->maszName : "NULL");
+                 pMethodDef ? pMethodDef->maszName : "NULL",
+                 pMethodDef ? pMethodDef->mnNumParameters : 0);
   }
 };
 

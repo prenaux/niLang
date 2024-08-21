@@ -35,8 +35,6 @@ struct SQFuncState
   int TopTarget();
   bool IsLocal(unsigned int stkpos);
   void SetTopInstructionOpExt(int opExt);
-  void LintDump();
-  void LintCompileTime();
 
   void FinalizeFuncProto();
 

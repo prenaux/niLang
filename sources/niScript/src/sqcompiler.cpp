@@ -216,7 +216,6 @@ class SQCompiler
       _fs->SetStackSize(0);
       _fs->FinalizeFuncProto();
       o = _fs->_func;
-      _fs->LintCompileTime();
       _funcproto(o)->LintTraceRoot();
       return true;
     }
@@ -1611,7 +1610,6 @@ class SQCompiler
     funcstate.AddInstruction(_OP_RETURN, -1);
     funcstate.SetStackSize(0);
     funcstate.FinalizeFuncProto();
-    funcstate.LintCompileTime();
     _fs = currchunk;
     _fs->AddFunction(&funcstate);
 

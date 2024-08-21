@@ -5,8 +5,6 @@
 // ham Run_Test_niScript_tu_linter
 // # Run the tests matching the specified regex with lint tracing for that test
 // ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4 A1=-DlintTrace=1
-// # Also dump the function's general compilation info with -DlintDump=1
-// ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4 A1=-DlintTrace=1 A2=-DlintDump=1
 //
 //
 ::Import("unittest.ni")
@@ -79,13 +77,6 @@ testLinter <- {
           ::gLang.property["niScript.LintTrace"] = lintTrace;
         }
       }
-      {
-        local lintDump = ::lang.getProperty("lintDump")
-        ::log("lintDump:" lintDump)
-        if (lintDump) {
-          ::gLang.property["niScript.LintDump"] = lintDump;
-        }
-      }
       // This has for side effect to lint the file for now.
       // TODO: Move that in a cleaner more explicit API.
       ::Import(aName)
@@ -102,7 +93,6 @@ testLinter <- {
       ::log(::format("SUCCEEDED: %s, %d log(s)", aName, mLogs.size()));
     }
     ::gLang.property["niScript.LintTrace"] = "0"
-    ::gLang.property["niScript.LintDump"] = "0"
     unregister()
   }
 }

@@ -617,12 +617,11 @@ struct sLinter {
 
     niLet hspType = as_NN(_stringhval(aType));
     niLet strType = cString { hspType->GetChars(), hspType->GetLength() };
-    niDebugFmt(("... ResolveType: %s", hspType));
+    // niDebugFmt(("... ResolveType: %s", hspType));
     if (strType.contains(":")) {
       niLet moduleName = strType.Before(":");
       niLet interfaceName = strType.After(":");
-      niDebugFmt(("... ResolveType: moduleName: %s, interfaceName: %s",
-                  moduleName, interfaceName));
+      // niDebugFmt(("... ResolveType: moduleName: %s, interfaceName: %s", moduleName, interfaceName));
 
       niLet moduleDef = ni::GetLang()->LoadModuleDef(moduleName.c_str());
       if (!niIsOK(moduleDef)) {
@@ -798,127 +797,6 @@ struct sLinter {
   }
 
 };
-
-void SQFuncState::LintDump()
-{
-  // unsigned int n=0,i;
-  SQFunctionProto *func=_funcproto(_func);
-  cString o;
-  o << niFmt(_A("--------------------------------------------------------------------\n"));
-  o << niFmt(_A("-----FUNCTION DUMP: %s\n"), _FuncProtoToString(*func));
-  {
-    o << niFmt(_A("-----INFO\n"));
-    o << niFmt(_A("stack size = %d\n"),func->_stacksize);
-    o << niFmt(_A("SQInstruction sizeof %d\n"),sizeof(SQInstruction));
-    o << niFmt(_A("SQObject sizeof %d\n"),sizeof(SQObject));
-  }
-  {
-    o << niFmt(_A("-----PARAMS\n"));
-    for(int i=0;i<_parameters.size();i++){
-      o << niFmt(_A("[%d] "),i);
-      o << _ObjToString(_parameters[i]._name);
-      o << ", type: ";
-      o << _ObjToString(_parameters[i]._type);
-      o << niFmt(_A("\n"));
-    }
-    o << "returntype: ";
-    o << _ObjToString(_returntype);
-    o << niFmt(_A("\n"));
-  }
-  SQObjectPtrVec vLiterals;
-  {
-    o << niFmt(_A("-----LITERALS\n"));
-    vLiterals.resize(_nliterals);
-    {
-      SQObjectPtr refidx,key,val,itr;
-      while (_table(_literals)->Next(refidx,key,val,itr)) {
-        vLiterals[_int(val)] = key;
-        refidx = itr;
-      }
-      for(int i=0;i<vLiterals.size();i++){
-        o << niFmt(_A("[%d] "),i);
-        o << _ObjToString(vLiterals[i]);
-        o << niFmt(_A("\n"));
-      }
-    }
-  }
-  {
-    o << niFmt(_A("-----LOCALS\n"));
-    for(int i=0;i<func->_localvarinfos.size();i++){
-      SQLocalVarInfo lvi=func->_localvarinfos[i];
-      o << niFmt(_A("[%d] %s \t%d %d\n"),lvi._pos,_stringval(lvi._name),lvi._start_op,lvi._end_op);
-    }
-  }
-  {
-    o << niFmt(_A("-----LINE INFO\n"));
-    for(int i=0;i<_lineinfos.size();i++){
-      SQLineInfo li=_lineinfos[i];
-      o << niFmt(_A("op [%d] line [%d]\n"),li._op,li._line);
-    }
-  }
-  {
-    o << niFmt(_A("-----Instructions\n"));
-    for(int i=0;i<_instructions.size();i++){
-      SQInstruction &inst=_instructions[i];
-      const sVec2i linecol = SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
-      if (inst.op==_OP_LOAD ||
-          inst.op==_OP_PREPCALLK ||
-          inst.op==_OP_GETK ||
-          ((inst.op==_OP_ADD ||
-            inst.op==_OP_SUB ||
-            inst.op==_OP_MUL ||
-            inst.op==_OP_DIV) &&
-           inst._arg3==0xFF))
-      {
-        o << niFmt(_A("[%03d:L%03d:C%03d] %20s %d "), i, linecol.x, linecol.y,
-                   _GetOpDesc(inst.op), inst._arg0);
-        if (inst._arg1 == 0xFFFF) {
-          o << niFmt(_A("null"));
-        } else {
-          cString literalStr;
-          if (inst._arg1 < vLiterals.size()) {
-            literalStr = _ObjToString(vLiterals[inst._arg1]);
-          }
-          cString keyStr = _ObjToString(_GetKeyFromArg(_literals, inst._arg1));
-          o << inst._arg1
-            << "["
-            << ((!literalStr.Eq(keyStr)) ? "INVALID_ARG1, " : "")
-            << keyStr
-            << "]";
-        }
-        if (inst.op == _OP_GETK) {
-          if (inst._arg2 == 0) {
-            o << niFmt(_A(" this %d "),inst._arg3);
-          }
-          else {
-            o << niFmt(_A(" %d %d "),inst._arg2,inst._arg3);
-          }
-        }
-        else {
-          o << niFmt(_A(" %d %d "),inst._arg2,inst._arg3);
-        }
-      }
-      else {
-        o << niFmt(_A("[%03d:L%03d:C%03d] %20s %d %d %d %d "), i, linecol.x,
-                   linecol.y, _GetOpDesc(inst.op), inst._arg0, inst._arg1,
-                   inst._arg2, inst._arg3);
-      }
-      _AddOpExt(o,inst._ext);
-      o << "\n";
-    }
-  }
-  o << niFmt("--------------------------------------------------------------------\n\n");
-  niDebugFmt((o.Chars()));
-}
-
-void SQFuncState::LintCompileTime()
-{
-  // const tBool shouldLintDump = _ShouldKeepName(ni::GetProperty("niScript.LintDump").c_str(),
-  //                                              niHStr(_funcproto(_func)->GetName()), false);
-  // if (shouldLintDump) {
-  //   this->LintDump();
-  // }
-}
 
 struct sLintStackEntry {
   SQObjectPtr _name = _null_;

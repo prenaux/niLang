@@ -1,4 +1,5 @@
 ## Standard ##
+.gdb_history
 .clang_complete
 .externalToolBuilders/*
 .cache/*

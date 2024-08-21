@@ -711,7 +711,7 @@ struct sLinter {
                 _ss,
                 _H(niFmt("method_def<%s::%s>", idef->maszName, keyChars)),
                 _HC(unresolved_type_cant_find_method_def));
-              return true;
+              return false;
             }
           }
 
@@ -1351,7 +1351,7 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",
              _ObjToString(tocall), nargs, stackbase, abIsTailCall?"yes":"no"));
 
-    auto call_func = [&](const SQFunctionProto& func) {
+    auto call_func = [&](ain<SQFunctionProto> func) {
       const int outerssize = (int)func._outervalues.size();
       const int paramssize = (int)(func._parameters.size() - outerssize);
       const int arity = paramssize-1; // number of paramerter - 1 for the implicit
@@ -1362,6 +1362,19 @@ void SQFunctionProto::LintTrace(
         _LINT(call_num_args,
               niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, _FuncProtoToString(func)));
+      }
+    };
+
+    auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) {
+      const int paramssize = (int)aMeth.pMethodDef->mnNumParameters+1;
+      const int arity = paramssize-1; // number of paramerter - 1 for the implicit
+
+      _LTRACE(("call_method: %s", aMeth.GetTypeString()));
+
+      if (_LENABLED(call_num_args) && (paramssize != nargs)) {
+        _LINT(call_num_args,
+              niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
+                    arity, nargs-1, aMeth.GetTypeString()));
       }
     };
 
@@ -1388,6 +1401,11 @@ void SQFunctionProto::LintTrace(
       case eScriptType_FunctionProto: {
         SQFunctionProto* func = _funcproto(tocall);
         call_func(*func);
+        break;
+      }
+      case eScriptType_MethodDef: {
+        niLet mdef = (sScriptTypeMethodDef*)_userdata(tocall);
+        call_method(*mdef);
         break;
       }
       default: {

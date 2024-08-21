@@ -179,8 +179,12 @@ function main() {
 
   testLinter.check(
     "linter_5_funcall_native.ni",
-    function(aLogs) {
-      ::CHECK_EQUAL(2,aLogs.size(),"Lints count.");
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+      ::CHECK_EQUAL(3,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
     })
 
   // Output failed tests

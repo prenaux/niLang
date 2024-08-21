@@ -51,6 +51,8 @@ testLinter <- {
 
   function register() {
     mLogs = []
+    mLogsError = 0
+    mLogsWarning = 0
     ::gLang.system_message_handlers.AddSink(this)
   }
 

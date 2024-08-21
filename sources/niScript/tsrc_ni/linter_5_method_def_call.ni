@@ -13,6 +13,15 @@ function randHamster(niLang:iMath aMath,aMin,aMax) : (myout,myout2) {
   return aMath.RandIntRange(aMin+myout,aMax+hamster); // should be good
 }
 
+function writeHamster(niLang:iFileSystem aFS,aFileName) {
+  local hamster = "This is the story of a hamster";
+  local fp = aFS.FileOpen(aFileName,::eFileOpenMode.Write);
+  fp.WriteString(hamster);
+  fp.WriteString(); // Incorrect number of arguments
+  return fp.GetSize();
+}
+
 function main() {
   randHamster(null,100,300)
+  writeHamster(null,"test_write_hamster.txt")
 }

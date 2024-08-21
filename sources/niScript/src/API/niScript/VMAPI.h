@@ -244,6 +244,7 @@ enum eScriptType
   eScriptType_UUID = niFourCC('U','U','I','D'),
   eScriptType_InterfaceDef = niFourCC('I','D','E','F'),
   eScriptType_UnresolvedType = niFourCC('U','T','Y','P'),
+  eScriptType_ResolvedType = niFourCC('R','T','Y','P'),
 };
 
 niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);

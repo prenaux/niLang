@@ -532,26 +532,77 @@ struct sScriptTypeUnresolvedType : SQ_USERDATA_BASE(sScriptTypeUnresolvedType)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// sResolvedType type
 
-int sqa_pushPropertyDef(HSQUIRRELVM v, const ni::sInterfaceDef* apInterfaceDef, const ni::sMethodDef* apSetMethDef, const ni::sMethodDef* apGetMethDef);
-int sqa_getPropertyDef(HSQUIRRELVM v, int idx, const ni::sInterfaceDef** appInterfaceDef, const ni::sMethodDef** appSetMethDef, const ni::sMethodDef** appGetMethDef);
+struct sScriptTypeResolvedType : SQ_USERDATA_BASE(sScriptTypeResolvedType)
+{
+  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
+    return this->_DoQueryInterface(this,aIID);
+  }
 
-int sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
-int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
+  const tType _type;
 
-int sqa_pushEnumDef(HSQUIRRELVM v, const sEnumDef* apEnumDef);
-int sqa_getEnumDef(HSQUIRRELVM v, int idx, const sEnumDef** appEnumDef);
+  sScriptTypeResolvedType(
+    const SQSharedState& aSS,
+    const tType aType)
+      : _type(aType)
+  {
+    SetDelegate(_ddel(aSS,resolved_type));
+  }
+  ~sScriptTypeResolvedType() {}
 
-int sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
-int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
+  static int _GetType() { return eScriptType_ResolvedType; }
+  virtual int __stdcall GetSize() const { return sizeof(sScriptTypeResolvedType); }
+  virtual int __stdcall GetType() const { return _GetType(); }
+  virtual size_t __stdcall Hash() const {
+    return (size_t)_type;
+  }
+  virtual bool __stdcall Eq(SQUserData* r) const {
+    if (CmpType(r) != 0) return false;
+    sScriptTypeResolvedType* b = (sScriptTypeResolvedType*)r;
+    return _type == b->_type;
+  }
+  virtual int __stdcall Cmp(SQUserData* r) const {
+    int res = CmpType(r);
+    if (res != 0) return res;
+    sScriptTypeResolvedType* b = (sScriptTypeResolvedType*)r;
+    return ni::CmpByVal(_type,b->_type);
+  }
+  virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
+    return niNew sScriptTypeResolvedType(aSS,_type);
+  }
 
-int sqa_pushUnresolvedType(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason);
-int sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHStringPtr> ahspType);
+  virtual cString __stdcall GetTypeString() const {
+    return niFmt("resolved_type<%s>", ni::GetTypeString(_type));
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+niExportFunc(int) sqa_pushPropertyDef(HSQUIRRELVM v, const ni::sInterfaceDef* apInterfaceDef, const ni::sMethodDef* apSetMethDef, const ni::sMethodDef* apGetMethDef);
+niExportFunc(int) sqa_getPropertyDef(HSQUIRRELVM v, int idx, const ni::sInterfaceDef** appInterfaceDef, const ni::sMethodDef** appSetMethDef, const ni::sMethodDef** appGetMethDef);
+
+niExportFunc(int) sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
+niExportFunc(int) sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
+
+niExportFunc(int) sqa_pushEnumDef(HSQUIRRELVM v, const sEnumDef* apEnumDef);
+niExportFunc(int) sqa_getEnumDef(HSQUIRRELVM v, int idx, const sEnumDef** appEnumDef);
+
+niExportFunc(int) sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
+niExportFunc(int) sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
+
+niExportFunc(int) sqa_pushUnresolvedType(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason);
+niExportFunc(int) sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHStringPtr> ahspType);
+
+niExportFunc(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<tType> aType);
+niExportFunc(int) sqa_getResolvedType(HSQUIRRELVM v, int idx, aout<tType> aType);
 
 // int sqa_callmethod_closure(HSQUIRRELVM v);
 // int sqa_callmethod_delegate(HSQUIRRELVM v);
 
-eScriptType sqa_getscripttype(const SQObjectPtr& obj);
+niExportFunc(eScriptType) sqa_getscriptobjtype(const SQObjectPtr& obj);
+niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);
+niExportFunc(eScriptType) sqa_type2scripttype(const tType aType);
 
 bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval, SQObjectPtr &outitr);
 

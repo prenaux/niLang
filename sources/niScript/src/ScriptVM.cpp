@@ -84,31 +84,32 @@ void sqGetIndexDump(cString& strOut, HSQUIRRELVM v, int idx, int size)
     }
     case eScriptType_InterfaceDef: {
       sScriptTypeInterfaceDef* pV = (sScriptTypeInterfaceDef*)_userdata(obj);
-      strOut << niFmt("idef:%s", pV->pInterfaceDef?pV->pInterfaceDef->maszName:AZEROSTR);
+      strOut << pV->GetTypeString();
       break;
     }
     case eScriptType_MethodDef: {
       sScriptTypeMethodDef* pV = (sScriptTypeMethodDef*)_userdata(obj);
-      strOut << niFmt(_A("mdef:%s::%s"),
-                      pV->pInterfaceDef?pV->pInterfaceDef->maszName:AZEROSTR,
-                      pV->pMethodDef?pV->pMethodDef->maszName:AZEROSTR);
+      strOut << pV->GetTypeString();
       break;
     }
     case eScriptType_PropertyDef: {
       sScriptTypePropertyDef* pV = (sScriptTypePropertyDef*)_userdata(obj);
-      strOut << niFmt(_A("pdef:%s::%s"),
-                      pV->pInterfaceDef->maszName,
-                      pV->GetName().Chars());
+      strOut << pV->GetTypeString();
       break;
     }
     case eScriptType_UnresolvedType: {
       sScriptTypeUnresolvedType* pV = (sScriptTypeUnresolvedType*)_userdata(obj);
-      strOut << niFmt("utype:%s", pV->_hspUnresolvedType);
+      strOut << pV->GetTypeString();
+      break;
+    }
+    case eScriptType_ResolvedType: {
+      sScriptTypeResolvedType* pV = (sScriptTypeResolvedType*)_userdata(obj);
+      strOut << pV->GetTypeString();
       break;
     }
     case eScriptType_EnumDef: {
       sScriptTypeEnumDef* pV = (sScriptTypeEnumDef*)_userdata(obj);
-      strOut << pV->pEnumDef->maszName;
+      strOut << pV->GetTypeString();
       break;
     }
     case eScriptType_Table:

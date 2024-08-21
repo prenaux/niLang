@@ -181,7 +181,7 @@ function main() {
     "linter_5_method_def_call.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
-      ::CHECK_EQUAL(3,aLintResults.mLogsError,
+      ::CHECK_EQUAL(4,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
@@ -193,6 +193,10 @@ function main() {
       EXPECTED_LINT(
         aLogs, 1,
         {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 2 but got 1. Calling method_def<iMath,RandIntRange/2>.]});
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
     })
 
   // Output failed tests

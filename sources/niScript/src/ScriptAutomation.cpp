@@ -340,7 +340,7 @@ bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, S
     if (!pCollection.IsOK())
       return false;
 
-    eScriptType type = sqa_getscripttype(refpos);
+    eScriptType type = sqa_getscriptobjtype(refpos);
     if (type == eScriptType_Null) {
       it = pCollection->Iterator();
     }

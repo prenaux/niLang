@@ -60,5 +60,8 @@ _HDecl(unresolved_type_invalid_typedef);
 _HDecl(unresolved_type_cant_load_module_def);
 _HDecl(unresolved_type_cant_find_interface_def);
 _HDecl(unresolved_type_cant_find_method_def);
+_HDecl(unresolved_type_method_def_invalid_ret_type);
+_HDecl(unresolved_type_cant_find_type_uuid);
+_HDecl(resolved_type);
 
 #endif // __sq_HSTRING_H__

@@ -582,6 +582,24 @@ struct sLinter {
     RegisterFuncs(table, SQSharedState::_concurrent_funcs);
   }
 
+  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) {
+    // TODO: Cache returned values
+    niLoop(mi, ni::GetLang()->GetNumModuleDefs()) {
+      niLet mdef = ni::GetLang()->GetModuleDef(mi);
+      niLoop(ii, mdef->GetNumInterfaces()) {
+        niLet idef = mdef->GetInterface(ii);
+        if (*idef->mUUID == aTypeUUID) {
+          return niNew sScriptTypeInterfaceDef(
+            this->_ss, idef);
+        }
+      }
+    }
+    return niNew sScriptTypeUnresolvedType(
+      this->_ss,
+      _H(niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID)),
+      _HC(unresolved_type_cant_find_type_uuid));
+  }
+
   SQObjectPtr ResolveType(const SQObjectPtr& aType) {
     if (sq_isnull(aType))
       return _null_;
@@ -1351,7 +1369,7 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",
              _ObjToString(tocall), nargs, stackbase, abIsTailCall?"yes":"no"));
 
-    auto call_func = [&](ain<SQFunctionProto> func) {
+    auto call_func = [&](ain<SQFunctionProto> func) -> SQObjectPtr {
       const int outerssize = (int)func._outervalues.size();
       const int paramssize = (int)(func._parameters.size() - outerssize);
       const int arity = paramssize-1; // number of paramerter - 1 for the implicit
@@ -1362,10 +1380,13 @@ void SQFunctionProto::LintTrace(
         _LINT(call_num_args,
               niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, _FuncProtoToString(func)));
+        return _null_;
       }
+
+      return _null_;
     };
 
-    auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) {
+    auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) -> SQObjectPtr {
       const int paramssize = (int)aMeth.pMethodDef->mnNumParameters+1;
       const int arity = paramssize-1; // number of paramerter - 1 for the implicit
 
@@ -1375,10 +1396,80 @@ void SQFunctionProto::LintTrace(
         _LINT(call_num_args,
               niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, aMeth.GetTypeString()));
+        return _null_;
       }
+
+      SQObjectPtr retType;
+      niLet scriptType = sqa_type2scripttype(aMeth.pMethodDef->mReturnType);
+      switch (scriptType) {
+        case eScriptType_Null:
+        case eScriptType_Int:
+        case eScriptType_Float:
+        case eScriptType_Vec2:
+        case eScriptType_Vec3:
+        case eScriptType_Vec4:
+        case eScriptType_Matrix:
+        case eScriptType_String:
+        case eScriptType_UUID: {
+          retType = niNew sScriptTypeResolvedType(
+            aLinter._ss,
+            scriptType);
+          break;
+        }
+
+        case eScriptType_IUnknown: {
+          if (aMeth.pMethodDef->mReturnTypeUUID) {
+            retType = aLinter.ResolveTypeUUID(
+              aMeth.pMethodDef->mReturnTypeName,
+              *aMeth.pMethodDef->mReturnTypeUUID);
+          }
+          else {
+            retType = niNew sScriptTypeUnresolvedType(
+              aLinter._ss,
+              _H(niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
+                       aMeth.pInterfaceDef->maszName,
+                       aMeth.pMethodDef->maszName,
+                       GetTypeString(aMeth.pMethodDef->mReturnType),
+                       aMeth.pMethodDef->mReturnTypeName)),
+              _HC(unresolved_type_method_def_invalid_ret_type));
+          }
+          break;
+        }
+
+          // VM Internal types or invalid types that shouldn't be returned by the interop
+        case eScriptType_EnumDef:
+        case eScriptType_InterfaceDef:
+        case eScriptType_MethodDef:
+        case eScriptType_PropertyDef:
+        case eScriptType_IndexedProperty:
+        case eScriptType_Iterator:
+        case eScriptType_UnresolvedType:
+        case eScriptType_ResolvedType:
+        case eScriptType_Table:
+        case eScriptType_Array:
+        case eScriptType_UserData:
+        case eScriptType_Closure:
+        case eScriptType_NativeClosure:
+        case eScriptType_FunctionProto:
+        case eScriptType_Invalid: {
+          // TODO: This is a bit shit, we probalby need some kind of
+          // sScriptTypeError thing
+          retType = niNew sScriptTypeUnresolvedType(
+            aLinter._ss,
+            _H(niFmt("method_def<%s::%s, %s(%s)>",
+                     aMeth.pInterfaceDef->maszName,
+                     aMeth.pMethodDef->maszName,
+                     GetTypeString(aMeth.pMethodDef->mReturnType),
+                     aMeth.pMethodDef->mReturnTypeName)),
+            _HC(unresolved_type_method_def_invalid_ret_type));
+          break;
+        };
+      }
+
+      return retType;
     };
 
-    niLet tocalltype = sqa_getscripttype(tocall);
+    niLet tocalltype = sqa_getscriptobjtype(tocall);
     switch (tocalltype) {
       case eScriptType_Null: {
         if (_LENABLED(call_warning)) {
@@ -1394,18 +1485,21 @@ void SQFunctionProto::LintTrace(
           _LINT(internal_error, niFmt("Invalid closure object, no function prototype. Calling '%s'.", _ObjToString(tocall)));
         }
         else {
-          call_func(*func);
+          niLet ret = call_func(*func);
+          sset(IARG0, ret);
         }
         break;
       }
       case eScriptType_FunctionProto: {
         SQFunctionProto* func = _funcproto(tocall);
-        call_func(*func);
+        niLet ret = call_func(*func);
+        sset(IARG0, ret);
         break;
       }
       case eScriptType_MethodDef: {
         niLet mdef = (sScriptTypeMethodDef*)_userdata(tocall);
-        call_method(*mdef);
+        niLet ret = call_method(*mdef);
+        sset(IARG0, ret);
         break;
       }
       default: {

@@ -73,7 +73,7 @@ eScriptType sqa_getscripttype_(SQObjectType anType)
 }
 
 ///////////////////////////////////////////////
-eScriptType sqa_getscripttype(const SQObjectPtr& obj)
+niExportFunc(eScriptType) sqa_getscriptobjtype(const SQObjectPtr& obj)
 {
   switch (_sqtype(obj)) {
     case OT_NULL:     return (eScriptType)OT_NULL;
@@ -94,7 +94,64 @@ eScriptType sqa_getscripttype(const SQObjectPtr& obj)
   return eScriptType_Invalid;
 }
 niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx) {
-  return sqa_getscripttype(stack_get(v,idx));
+  return sqa_getscriptobjtype(stack_get(v,idx));
+}
+
+///////////////////////////////////////////////
+niExportFunc(eScriptType) sqa_type2scripttype(const tType aType)
+{
+  switch (niType(aType)) {
+    case eType_Null: {
+      return eScriptType_Null;
+    }
+    case eType_I8:
+    case eType_U8:
+    case eType_I16:
+    case eType_U16:
+    case eType_I32:
+    case eType_U32:
+    case eType_I64:
+    case eType_U64: {
+      return eScriptType_Int;
+    }
+    case eType_F32:
+    case eType_F64: {
+      return eScriptType_Float;
+    }
+    case eType_UUID: {
+      return eScriptType_UUID;
+    }
+    case eType_Vec2f:
+    case eType_Vec2i: {
+      return eScriptType_Vec2;
+    }
+    case eType_Vec3f:
+    case eType_Vec3i: {
+      return eScriptType_Vec3;
+    }
+    case eType_Vec4f:
+    case eType_Vec4i: {
+      return eScriptType_Vec4;
+    }
+    case eType_Matrixf: {
+      return eScriptType_Matrix;
+    }
+    case eType_IUnknown:  {
+      return eScriptType_IUnknown;
+    }
+    case eType_AChar: {
+      if (aType == eType_ASZ)
+        return eScriptType_String;
+      else
+        return eScriptType_Invalid;
+    }
+    case eType_String: {
+      return eScriptType_String;
+    }
+    default: {
+      return eScriptType_Invalid;
+    }
+  }
 }
 
 ///////////////////////////////////////////////
@@ -421,6 +478,43 @@ niExportFuncCPP(int) sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHString
   sScriptTypeUnresolvedType* pV = sqa_getud<sScriptTypeUnresolvedType>(v,idx);
   if (!pV)  return SQ_ERROR;
   ahspType = pV->_hspUnresolvedType.raw_ptr();
+  return SQ_OK;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// sResolvedType
+
+static int resolved_type_typeof(HSQUIRRELVM v) {
+  sq_pushstring(v, _HC(resolved_type));
+  return 1;
+}
+
+static int resolved_type_GetResolvedTypeName(HSQUIRRELVM v) {
+  sScriptTypeResolvedType* pV = sqa_getud<sScriptTypeResolvedType>(v,1);
+  if (!pV) return SQ_ERROR;
+  sq_pushstring(v,_H(pV->GetTypeString()));
+  return 1;
+}
+
+SQRegFunction SQSharedState::_resolved_type_default_delegate_funcz[]={
+  {"_typeof", interface_typeof, 0, NULL},
+  {"GetResolvedTypeName", resolved_type_GetResolvedTypeName, 0, NULL},
+  {0,0}
+};
+
+niExportFuncCPP(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<tType> aType)
+{
+  cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
+  //  niAssert(niIsOK(pVM));
+  sq_pushud(*pVM,niNew sScriptTypeResolvedType(*v->_ss,aType));
+  return SQ_OK;
+}
+
+niExportFuncCPP(int) sqa_getResolvedType(HSQUIRRELVM v, int idx, aout<tType> aType)
+{
+  sScriptTypeResolvedType* pV = sqa_getud<sScriptTypeResolvedType>(v,idx);
+  if (!pV)  return SQ_ERROR;
+  aType = pV->_type;
   return SQ_OK;
 }
 

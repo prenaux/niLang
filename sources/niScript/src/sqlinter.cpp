@@ -918,7 +918,7 @@ void SQFunctionProto::LintTrace(
       const int si = vi._pos;
       stack[si]._name = vi._name;
       nlocals = ni::Max(nlocals,si+1);
-      // _LTRACE(("... local[%d]: %s at s[%d] = %s",
+      // _LTRACE(("local[%d]: %s at s[%d] = %s",
       // i, _ObjToString(stack[si]._name),
       // si, _ObjToString(stack[si]._value)));
     }
@@ -929,7 +929,7 @@ void SQFunctionProto::LintTrace(
   {
     niLoop(pi,_parameters.size()) {
       const SQFunctionParameter& param = _parameters[pi];
-      _LTRACE(("... param[%d]: %s, type: %s",
+      _LTRACE(("param[%d]: %s, type: %s",
                pi,
                _ObjToString(param._name),
                _ObjToString(param._type)));
@@ -965,7 +965,7 @@ void SQFunctionProto::LintTrace(
     LintClosure* thisclosure = aLinter.GetClosure(thisfunc);
     if (thisclosure) {
       const tSize nouters = thisclosure->_outervalues.size();
-      // _LTRACE(("... %s outer variables", nouters>0 ? Var(nouters) : Var("No")));
+      // _LTRACE(("%s outer variables", nouters>0 ? Var(nouters) : Var("No")));
 
       const int outerbase = thisfunc_paramssize;
       niLoop(oi,nouters) {
@@ -1128,13 +1128,13 @@ void SQFunctionProto::LintTrace(
       }
     }
     if (aLinter.AddClosure(lintClosure)) {
-      _LTRACE(("... Added closure %s to %s (%s)",
+      _LTRACE(("Added closure %s to %s (%s)",
                _PtrToString((tIntPtr)lintClosure.ptr()),
                _ObjToString(funcproto),
                _PtrToString((tIntPtr)funcproto)));
     }
     else {
-      _LTRACE(("... Couldn't add closure %s to %s (%s)",
+      _LTRACE(("Couldn't add closure %s to %s (%s)",
                _PtrToString((tIntPtr)lintClosure.ptr()),
                _ObjToString(funcproto),
                _PtrToString((tIntPtr)funcproto)));
@@ -1176,7 +1176,7 @@ void SQFunctionProto::LintTrace(
     if (IARG0 != IARG3) {
       SQObjectPtr r = sget(IARG3);
       sset(IARG0, r);
-      _LTRACE(("... op_newslot: IARG0 != IARG3, %d != %d. Set s[%d] to %s",
+      _LTRACE(("op_newslot: IARG0 != IARG3, %d != %d. Set s[%d] to %s",
                IARG0, IARG3, IARG0, _ObjToString(r)));
     }
   };
@@ -1378,13 +1378,13 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("--- LOCALS BEGIN --------------------------------------\n"));
     niLoop(i,_localvarinfos.size()) {
       const int stackpos = _localvarinfos[i]._pos;
-      _LTRACE(("... local[%d]: s[%d]: %s = %s, provenance: %s",
+      _LTRACE(("local[%d]: s[%d]: %s = %s, provenance: %s",
                i, stackpos,
                _ObjToString(localname(stackpos)),
                _ObjToString(sget(stackpos)),
                _ObjToString(stack[stackpos]._provenance)));
     }
-    _LTRACE(("... root table: %s",
+    _LTRACE(("root table: %s",
              _ObjToString(aClosure._root))
             // _ExpandedObjToString(aClosure._root))
     );
@@ -1417,20 +1417,20 @@ void SQFunctionProto::LintTrace(
   _LTRACE(("--- LOCALS AFTER --------------------------------------\n"));
   niLoop(i,_localvarinfos.size()) {
     const int stackpos = _localvarinfos[i]._pos;
-    _LTRACE(("... local[%d]: s[%d]: %s = %s, provenance: %s",
+    _LTRACE(("local[%d]: s[%d]: %s = %s, provenance: %s",
              i, stackpos,
              _ObjToString(localname(stackpos)),
              _ObjToString(sget(stackpos)),
              _ObjToString(stack[stackpos]._provenance)));
   }
-  _LTRACE(("... root table: %s",
+  _LTRACE(("root table: %s",
            _ObjToString(aClosure._root))
           // _ExpandedObjToString(aClosure._root))
   );
 
   _LTRACE(("--- FUNCS ---------------------------------------------\n"));
   if (_functions.empty()) {
-    _LTRACE(("... No functions."));
+    _LTRACE(("No functions."));
   } else
     niLoop(i,_functions.size()) {
       const SQObjectPtr& cf = _functions[i];
@@ -1441,7 +1441,7 @@ void SQFunctionProto::LintTrace(
                                i, _ObjToString(cf)));
       }
       else {
-        _LTRACE(("... func[%d]: %s, this: %s",
+        _LTRACE(("func[%d]: %s, this: %s",
                  i,
                  _ObjToString(cfproto->_name),
                  _ObjToString(cfclosure->_this)));

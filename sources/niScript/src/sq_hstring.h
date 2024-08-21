@@ -56,5 +56,8 @@ _HDecl(__imports);
 _HDecl_(NOT_ITOSTRING,"[not iToString]");
 _HDecl(e);
 _HDecl(unresolved_type);
+_HDecl(unresolved_type_invalid_typedef);
+_HDecl(unresolved_type_cant_load_module_def);
+_HDecl(unresolved_type_cant_find_interface_def);
 
 #endif // __sq_HSTRING_H__

@@ -573,7 +573,7 @@ struct sLinter {
   }
 
   void RegisterBuiltinFuncs(SQTable* table) {
-    // Those are hardcode in ScriptVM.cpp, ideally it should be cleaned up
+    // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
     RegisterFunc(table, "print");
     RegisterFunc(table, "println");
     RegisterFunc(table, "printdebug");
@@ -582,17 +582,62 @@ struct sLinter {
     RegisterFuncs(table, SQSharedState::_concurrent_funcs);
   }
 
-  SQObjectPtr GetTypeDef(const SQObjectPtr& aType) {
+  SQObjectPtr ResolveType(const SQObjectPtr& aType) {
+    if (sq_isnull(aType))
+      return _null_;
+
     SQObjectPtr typeDef;
     if (LintGet(_typedefs,aType,typeDef,0)) {
       return typeDef;
     }
 
-    if (sq_type(aType) != OT_STRING) {
+    if (!sq_isstring(aType)) {
       return _null_;
     }
 
-    return _null_;
+    SQObjectPtr resolvedType = _null_;
+
+    niLet hspType = as_NN(_stringhval(aType));
+    niLet strType = cString { hspType->GetChars(), hspType->GetLength() };
+    niDebugFmt(("... ResolveType: %s", hspType));
+    if (strType.contains(":")) {
+      niLet moduleName = strType.Before(":");
+      niLet interfaceName = strType.After(":");
+      niDebugFmt(("... ResolveType: moduleName: %s, interfaceName: %s",
+                  moduleName, interfaceName));
+
+      niLet moduleDef = ni::GetLang()->LoadModuleDef(moduleName.c_str());
+      if (!niIsOK(moduleDef)) {
+        resolvedType = niNew sScriptTypeUnresolvedType(
+          this->_ss, hspType, _HC(unresolved_type_cant_load_module_def));
+      }
+      else {
+        niLetMut foundInterfaceDef = opt<sInterfaceDef>{};
+        niLoop(i, moduleDef->GetNumInterfaces()) {
+          niLet idef = moduleDef->GetInterface(i);
+          if (StrEq(interfaceName.c_str(), idef->maszName)) {
+            foundInterfaceDef = idef;
+            break;
+          }
+        }
+        if (!foundInterfaceDef.has_value()) {
+          resolvedType = niNew sScriptTypeUnresolvedType(
+            this->_ss, hspType, _HC(unresolved_type_cant_find_interface_def));
+        }
+        else {
+          resolvedType = niNew sScriptTypeInterfaceDef(
+            this->_ss, foundInterfaceDef.value());
+        }
+      }
+    }
+    else {
+      resolvedType = niNew sScriptTypeUnresolvedType(
+        this->_ss, hspType, _HC(unresolved_type_invalid_typedef));
+    }
+
+    niPanicAssert(resolvedType != _null_);
+    niPanicAssert(this->LintNewSlot(_typedefs,aType,resolvedType));
+    return resolvedType;
   }
 
   bool LintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
@@ -687,6 +732,20 @@ struct sLinter {
     }
     return false;
   }
+
+  bool LintNewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val)
+  {
+    switch(_sqtype(self)) {
+      case OT_TABLE: {
+        return _table(self)->NewSlot(key,val);
+      }
+      default: {
+        return false;
+      }
+    }
+    return false;
+  }
+
 };
 
 void SQFuncState::LintDump()
@@ -896,10 +955,7 @@ void SQFunctionProto::LintTrace(
       }
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
-      if (sq_isstring(param._type)) {
-        stack[si]._value = niNew sScriptTypeUnresolvedType(
-          aLinter._ss, as_NN(_stringhval(param._type)));
-      }
+      stack[si]._value = aLinter.ResolveType(param._type);
     }
   }
 

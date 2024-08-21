@@ -407,11 +407,11 @@ SQRegFunction SQSharedState::_unresolved_type_default_delegate_funcz[]={
   {0,0}
 };
 
-niExportFuncCPP(int) sqa_pushUnresolvedType(HSQUIRRELVM v, ain_nn<iHString> ahspType)
+niExportFuncCPP(int) sqa_pushUnresolvedType(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason)
 {
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   //  niAssert(niIsOK(pVM));
-  sq_pushud(*pVM,niNew sScriptTypeUnresolvedType(*v->_ss,ahspType));
+  sq_pushud(*pVM,niNew sScriptTypeUnresolvedType(*v->_ss,ahspType,ahspReason));
   return SQ_OK;
 }
 

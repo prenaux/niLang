@@ -590,6 +590,22 @@ struct sLinter {
     RegisterFunc(table, "vmprintdebugln");
     RegisterFuncs(table, SQSharedState::_base_funcs);
     RegisterFuncs(table, SQSharedState::_concurrent_funcs);
+    //
+    // TODO: This should register a callback that resolve the type or the
+    // return type itself. Maybe a sMethodDef without an interface? see ni.cpp
+    // kFuncDecl_GetArgs for an example. Or add a "fnResolveReturnType"
+    // callback to SQRegFunction?
+    //
+    // We could put a "return type" and add a eScriptType_LintTypeResolver
+    // userdata type that do the resolving for the few cases that need to be dynamic.
+    //
+    // If that return type field ends up ion SQRegFunction it can also be
+    // applied to standard library functions reasonably painlessly and
+    // eScriptType_LintTypeResolver can be used even for complex return type
+    // resolution - ones that depend on the input value.
+    //
+    RegisterFunc(table, "CreateInstance");
+    RegisterFunc(table, "CreateGlobalInstance");
   }
 
   SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) {

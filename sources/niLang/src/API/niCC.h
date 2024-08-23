@@ -422,6 +422,26 @@ snn_mut<T> make_snn(Args&&... args) {
   return snn_mut<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
 
+template <typename T, typename... Args>
+inline EA_CONSTEXPR ni::Nonnull<T> MakeNN(Args&&... args) {
+  return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
+}
+
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNN(T* p) {
+  return ni::Nonnull<T>{p};
+}
+
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNN(Ptr<T>&& p) {
+  return p.non_null();
+}
+
+template <typename T>
+inline EA_CONSTEXPR ni::Nonnull<T> AsNN(QPtr<T>&& p) {
+  return p.non_null();
+}
+
 typedef ni::cString tStr;
 typedef const achar* tChars;
 typedef achar* tMutChars;

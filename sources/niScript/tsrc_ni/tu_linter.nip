@@ -195,10 +195,24 @@ function main() {
     "linter_6_query_interface.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
-      ::CHECK_EQUAL(3,aLintResults.mLogsError,
+      ::CHECK_EQUAL(1,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(3,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_7_call_native_func.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+      ::CHECK_EQUAL(1,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 1 but got 2. Calling method_def<NULL,vmprintln/1>.]});
     })
 
   // Output failed tests

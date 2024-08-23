@@ -12,7 +12,8 @@
 #include "sqfuncstate.h"
 #include "sq_hstring.h"
 #include "sqstate.h"
-#include <ScriptTypes.h>
+#include "ScriptTypes.h"
+#include "ScriptVM.h"
 
 #define SQLINTER_LOG_INLINE
 
@@ -297,7 +298,7 @@ static SQObjectPtr _GetKeyFromArg(const SQObjectPtr& _literals, int arg) {
 static cString _FuncProtoToString(const SQFunctionProto& func) {
   const int outerssize = (int)func._outervalues.size();
   const int paramssize = (int)(func._parameters.size() - outerssize);
-  const int arity = paramssize-1; // number of paramerter - 1 for the implicit 'this' argument
+  const int arity = paramssize-1; // number of parameter - 1 for the implicit 'this' argument
   return niFmt("%s/%d(%d)[%s:%d]",
                func.GetName(),
                arity,
@@ -364,9 +365,21 @@ _DEF_LINT(key_notfound_callk,IsError,IsExperimental);
 _DEF_LINT(this_set_key_notfound,IsError,None);
 _DEF_LINT(set_key_notfound,IsError,IsExperimental);
 _DEF_LINT(call_warning,IsWarning,IsExplicit);
+_DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 
 #undef _DEF_LINT
+
+struct sLinter;
+
+struct iLintFuncCall : public iUnknown {
+  niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
+
+  virtual nn<iHString> __stdcall GetName() const = 0;
+  // return -1 for varargs
+  virtual tI32 __stdcall GetArity() const = 0;
+  virtual SQObjectPtr __stdcall LintCall(const sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
+};
 
 struct sLinter {
  private:
@@ -394,7 +407,7 @@ struct sLinter {
     this->RegisterBuiltinFuncs(_table(_vmroot));
 
     _typedefs = SQTable::Create();
-    _table(_vmroot)->SetDebugName("__typedefs__");
+    _table(_typedefs)->SetDebugName("__typedefs__");
 
     _REG_LINT(internal_error);
     _REG_LINT(internal_warning);
@@ -408,6 +421,7 @@ struct sLinter {
     _REG_LINT(this_set_key_notfound);
     _REG_LINT(set_key_notfound);
     _REG_LINT(call_warning);
+    _REG_LINT(call_error);
     _REG_LINT(call_num_args);
   }
 #undef _REG_LINT
@@ -491,6 +505,7 @@ struct sLinter {
     _E(this_set_key_notfound)
     _E(set_key_notfound)
     _E(call_warning)
+    _E(call_error)
     _E(call_num_args)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
@@ -569,44 +584,32 @@ struct sLinter {
     return it->second;
   }
 
-  void RegisterFunc(SQTable* table, const achar* name) {
+  void RegisterFuncNull(SQTable* table, const achar* name) {
     table->NewSlot(_H(name), _null_);
+  }
+
+  void RegisterFunc(SQTable* table, const achar* name, ain<SQObjectPtr> aLintFunc) {
+    table->NewSlot(_H(name), aLintFunc);
+  }
+
+  void RegisterFunc(SQTable* table, const iHString* ahspName, ain<SQObjectPtr> aLintFunc) {
+    table->NewSlot(ahspName, aLintFunc);
+  }
+
+  void RegisterLintFunc(SQTable* table, ain_nn_mut<iLintFuncCall> aLintFunc) {
+    table->NewSlot(aLintFunc->GetName().raw_ptr(), aLintFunc.raw_ptr());
   }
 
   int RegisterFuncs(SQTable* table, const SQRegFunction* regs) {
     int i = 0;
     while (regs[i].name != NULL) {
-      RegisterFunc(table, regs[i].name);
+      RegisterFuncNull(table, regs[i].name);
       ++i;
     }
     return i;
   }
 
-  void RegisterBuiltinFuncs(SQTable* table) {
-    // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
-    RegisterFunc(table, "vmprint");
-    RegisterFunc(table, "vmprintln");
-    RegisterFunc(table, "vmprintdebug");
-    RegisterFunc(table, "vmprintdebugln");
-    RegisterFuncs(table, SQSharedState::_base_funcs);
-    RegisterFuncs(table, SQSharedState::_concurrent_funcs);
-    //
-    // TODO: This should register a callback that resolve the type or the
-    // return type itself. Maybe a sMethodDef without an interface? see ni.cpp
-    // kFuncDecl_GetArgs for an example. Or add a "fnResolveReturnType"
-    // callback to SQRegFunction?
-    //
-    // We could put a "return type" and add a eScriptType_LintTypeResolver
-    // userdata type that do the resolving for the few cases that need to be dynamic.
-    //
-    // If that return type field ends up ion SQRegFunction it can also be
-    // applied to standard library functions reasonably painlessly and
-    // eScriptType_LintTypeResolver can be used even for complex return type
-    // resolution - ones that depend on the input value.
-    //
-    RegisterFunc(table, "CreateInstance");
-    RegisterFunc(table, "CreateGlobalInstance");
-  }
+  void RegisterBuiltinFuncs(SQTable* table);
 
   SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) {
     // TODO: Cache returned values
@@ -821,8 +824,80 @@ struct sLinter {
     }
     return false;
   }
-
 };
+
+static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
+  return niNew sScriptTypeUnresolvedType(
+    aLinter._ss,
+    _H(aMsg),
+    _HC(unresolved_type_lint_call_error));
+}
+
+static tHStringPtr _GetLintCallError(ain<SQObjectPtr> aRet) {
+  if (sqa_getscriptobjtype(aRet) == eScriptType_UnresolvedType) {
+    niLet unresolved = (sScriptTypeUnresolvedType*)_userdata(aRet);
+    if (unresolved->_hspReason == _HC(unresolved_type_lint_call_error)) {
+      return unresolved->_hspUnresolvedType;
+    }
+  }
+  return nullptr;
+}
+
+struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
+  NN<iHString> _name;
+
+  sLintFuncCallCreateInstance(const iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return -1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet numParams = aCallArgs.size() - 1;
+    if (numParams < 1) {
+      return _MakeLintCallError(aLinter,niFmt("not enough arguments '%d', expected at least 1", numParams));
+    }
+    if (numParams > 3) {
+      return _MakeLintCallError(aLinter,niFmt("too many arguments '%d', expected at most 3", numParams));
+    }
+    return _MakeLintCallError(aLinter,"LintFuncCallCreateInstance::NotImplemented");
+  }
+};
+
+void sLinter::RegisterBuiltinFuncs(SQTable* table) {
+  // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
+  RegisterFunc(table, "vmprint", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprint));
+  RegisterFunc(table, "vmprintln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintln));
+  RegisterFunc(table, "vmprintdebug", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebug));
+  RegisterFunc(table, "vmprintdebugln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebugln));
+  RegisterFuncs(table, SQSharedState::_base_funcs);
+  RegisterFuncs(table, SQSharedState::_concurrent_funcs);
+  //
+  // TODO: This should register a callback that resolve the type or the
+  // return type itself. Maybe a sMethodDef without an interface? see ni.cpp
+  // kFuncDecl_GetArgs for an example. Or add a "fnResolveReturnType"
+  // callback to SQRegFunction?
+  //
+  // We could put a "return type" and add a eScriptType_LintTypeResolver
+  // userdata type that do the resolving for the few cases that need to be dynamic.
+  //
+  // If that return type field ends up ion SQRegFunction it can also be
+  // applied to standard library functions reasonably painlessly and
+  // eScriptType_LintTypeResolver can be used even for complex return type
+  // resolution - ones that depend on the input value.
+  //
+  {
+    RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
+    RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
+  }
+}
 
 struct sLintStackEntry {
   SQObjectPtr _name = _null_;
@@ -1268,22 +1343,27 @@ void SQFunctionProto::LintTrace(
 
   auto op_call = [&](const SQInstruction& inst, const tBool abIsTailCall) {
     SQObjectPtr tocall = sget(IARG1);
-    const int nargs = IARG3;
-    const int stackbase = IARG2;
-    _LTRACE(("op_call: '%s', nargs: %s, stackbase: %d, tailcall: %s",
-             _ObjToString(tocall), nargs, stackbase, abIsTailCall?"yes":"no"));
+    niLet tocalltype = sqa_getscriptobjtype(tocall);
+    niLet nargs = IARG3;
+    niLet stackbase = IARG2;
+    _LTRACE(("op_call: '%s' (%s), nargs: %s, stackbase: %d, tailcall: %s",
+             _ObjToString(tocall),
+             ni::GetTypeString(tocalltype),
+             nargs,
+             stackbase,
+             abIsTailCall?"yes":"no"));
 
     auto call_func = [&](ain<SQFunctionProto> func) -> SQObjectPtr {
       const int outerssize = (int)func._outervalues.size();
       const int paramssize = (int)(func._parameters.size() - outerssize);
-      const int arity = paramssize-1; // number of paramerter - 1 for the implicit
+      const int arity = paramssize-1; // number of paramssize-1 for the implicit this
 
       _LTRACE(("call_func: %s", _FuncProtoToString(func)));
 
       if (_LENABLED(call_num_args) && (paramssize != nargs)) {
         _LINT(call_num_args,
-              niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
-                    arity, nargs-1, _FuncProtoToString(func)));
+              niFmt("call_func: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
+                    paramssize, nargs-1, _FuncProtoToString(func)));
         return _null_;
       }
 
@@ -1291,14 +1371,15 @@ void SQFunctionProto::LintTrace(
     };
 
     auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) -> SQObjectPtr {
-      const int paramssize = (int)aMeth.pMethodDef->mnNumParameters+1;
-      const int arity = paramssize-1; // number of paramerter - 1 for the implicit
+      const int paramssize = (int)aMeth.pMethodDef->mnNumParameters + 1;
+      // number of paramssize-1 for the implicit this
+      const int arity = paramssize-1;
 
       _LTRACE(("call_method: %s", aMeth.GetTypeString()));
 
       if (_LENABLED(call_num_args) && (paramssize != nargs)) {
         _LINT(call_num_args,
-              niFmt("Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
+              niFmt("call_method: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, aMeth.GetTypeString()));
         return _null_;
       }
@@ -1373,7 +1454,26 @@ void SQFunctionProto::LintTrace(
       return retType;
     };
 
-    niLet tocalltype = sqa_getscriptobjtype(tocall);
+    auto call_lint_func = [&](ain_nn_mut<iLintFuncCall> aLintFunc) -> SQObjectPtr {
+      niLet arity = aLintFunc->GetArity();
+      _LTRACE(("call_lint_func: %s/%d, nargs: %d", aLintFunc->GetName(), arity, nargs));
+
+      if (_LENABLED(call_num_args) && (arity >= 0) && (arity+1 != nargs)) {
+        _LINT(call_num_args,
+              niFmt("call_lint_func: Incorrect number of arguments passed, expected %d but got %d. Calling %s/%d.",
+                    arity, nargs-1, aLintFunc->GetName(), arity));
+        return _null_;
+      }
+
+      astl::vector<SQObjectPtr> vArgs;
+      vArgs.resize(nargs);
+      niLoop(pi, nargs) {
+        vArgs[pi] = sget(pi);
+        niDebugFmt(("... vArgs[%d]: %s", pi, _ObjToString(vArgs[pi])));
+      }
+      return aLintFunc->LintCall(aLinter, vArgs);
+    };
+
     switch (tocalltype) {
       case eScriptType_Null: {
         if (_LENABLED(call_warning)) {
@@ -1406,6 +1506,31 @@ void SQFunctionProto::LintTrace(
         sset(IARG0, ret);
         break;
       }
+      case eScriptType_IUnknown: {
+        QPtr<iLintFuncCall> lintFuncCall = _iunknown(tocall);
+        if (lintFuncCall.IsOK()) {
+          niLet ret = call_lint_func(as_NN(lintFuncCall));
+          niLet lintCallError = _GetLintCallError(ret);
+          if (!lintCallError.IsOK()) {
+            // no error
+            sset(IARG0, ret);
+          }
+          else {
+            if (_LENABLED(call_error)) {
+              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError));
+            }
+            sset(IARG0, ret);
+          }
+        }
+        else {
+          if (_LENABLED(call_warning)) {
+            _LINT(call_warning, niFmt("Attempting to call '%s' (%s).",
+                                      _ObjToString(tocall), aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
+          }
+          sset(IARG0, _null_);
+        }
+        break;
+      };
       default: {
         if (_LENABLED(call_warning)) {
           _LINT(call_warning, niFmt("Attempting to call '%s' (%s).",

@@ -228,6 +228,12 @@ struct Nonnull
     return const_cast<T*>(mRefPtr);
   }
 
+  // Conversion operator to non_null<U*> where U is a base of T
+  template <typename U, typename = eastl::enable_if_t<eastl::is_base_of<U, T>::value>>
+  operator astl::non_null<U*>() const {
+    return astl::non_null<U*>(mRefPtr);
+  }
+
   struct tUnsafeUncheckedInitializer {
     explicit tUnsafeUncheckedInitializer(T* aPointer)
         : _maybe_null_ptr(aPointer) {

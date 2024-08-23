@@ -444,7 +444,7 @@ struct sLinter {
       astl::upsert(_lintEnabled, _LKEY(NAME), aValue);  \
     }
 
-    // applies to all the lints
+    // applies to all the non explicit lints
     if (aName == _HC(_all)) {
       niLoopit(tLintKindMap::iterator, it, _lintEnabled) {
         const tU32 lint = it->first;
@@ -471,6 +471,16 @@ struct sLinter {
         }
       }
     }
+    // applies to all the explicit lints
+    else if (aName == _HC(_explicit)) {
+      niLoopit(tLintKindMap::iterator, it, _lintEnabled) {
+        const tU32 lint = it->first;
+        if (niFlagIs(lint,eLintFlags_IsExplicit)) {
+          it->second = aValue;
+        }
+      }
+    }
+
     _E(implicit_this_getk)
     _E(implicit_this_callk)
     _E(this_key_notfound_getk)

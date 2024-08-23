@@ -26,6 +26,7 @@
 _HDecl(_all);
 _HDecl(_pedantic);
 _HDecl(_experimental);
+_HDecl(_explicit);
 _HDecl(__debug_name);
 _HDecl(__lint);
 _HDecl(no_debug_name);

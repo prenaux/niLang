@@ -16,7 +16,7 @@ function f3(a,b,c) {
 }
 
 function main() {
-  ::println("... thistable:" + this.__debug_name);
+  ::vmprintln("... thistable:" + this.__debug_name);
 
   f0();
   f0(1);

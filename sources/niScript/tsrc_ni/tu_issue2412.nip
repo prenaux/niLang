@@ -18,7 +18,7 @@ function test() {
   ++x // FAILS
   // x++ // SUCCEEDS
 
-  ::print("NARF:" + withBlock.tostring() + "\n")
+  ::vmprint("NARF:" + withBlock.tostring() + "\n")
   if (withBlock.tostring() != "YEY")
     throw "OUCH."
 }
@@ -26,4 +26,3 @@ function test() {
 function main() {
   test()
 }
-

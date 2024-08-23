@@ -161,5 +161,10 @@ cString& sqGetCallstack(cString& astrOut, HSQUIRRELVM v, int aLevel);
 
 void sqFormatError(HSQUIRRELVM v, const achar* aszErr, cString& strErr, int level);
 
+extern const ni::sMethodDef kFuncDecl_vmprint;
+extern const ni::sMethodDef kFuncDecl_vmprintln;
+extern const ni::sMethodDef kFuncDecl_vmprintdebug;
+extern const ni::sMethodDef kFuncDecl_vmprintdebugln;
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __SCRIPTVM_2181373_H__

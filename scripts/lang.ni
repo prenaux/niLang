@@ -535,8 +535,6 @@ local __lint = {
 //--------------------------------------------------------------------------------------------
 ::lang <- {
 
-  _vmprint = ::print
-  _vmprintln = ::println
   _isEmbedded = null
 
   ///////////////////////////////////////////////
@@ -728,10 +726,10 @@ local __lint = {
 
   ///////////////////////////////////////////////
   function print(_args_) {
-    ::lang._vmprint(::lang.toPrintString(_args_))
+    ::vmprint(::lang.toPrintString(_args_))
   }
   function println(_args_) {
-    ::lang._vmprintln(::lang.toPrintString(_args_))
+    ::vmprintln(::lang.toPrintString(_args_))
   }
 
   ///////////////////////////////////////////////

@@ -288,60 +288,60 @@ struct sFile {
 // Default print functions
 
 ///////////////////////////////////////////////
-static void __stdcall _Print(const achar* aaszMsg) {
+static void __stdcall _builtin_vmprint(const achar* aaszMsg) {
   if (!niStringIsOK(aaszMsg)) return;
   niPrint(aaszMsg);
 }
-IDLC_STATIC_METH_BEGIN(ni,_Print,1) {
+IDLC_STATIC_METH_BEGIN(ni,vmprint,1) {
   IDLC_DECL_VAR(ni::achar*,anValue);
   IDLC_BUF_TO_BASE(ni::eType_ASZ,anValue);
-  IDLC_STATIC_METH_CALL_VOID((void),(void),_Print,1,(anValue));
-} IDLC_STATIC_METH_END(ni,_Print,1);
-const ni::sMethodDef kFuncDecl_Print = {
-  "_Print",eType_Null,NULL,"void",1,NULL,VMCall__Print
+  IDLC_STATIC_METH_CALL_VOID((void),(void),_builtin_vmprint,1,(anValue));
+} IDLC_STATIC_METH_END(ni,vmprint,1);
+const ni::sMethodDef kFuncDecl_vmprint = {
+  "vmprint",eType_Null,NULL,"void",1,NULL,VMCall_vmprint
 };
 
 ///////////////////////////////////////////////
-static void __stdcall _PrintLn(const achar* aaszMsg) {
+static void __stdcall _builtin_vmprintln(const achar* aaszMsg) {
   niPrintln(aaszMsg);
 }
-IDLC_STATIC_METH_BEGIN(ni,_PrintLn,1) {
+IDLC_STATIC_METH_BEGIN(ni,vmprintln,1) {
   IDLC_DECL_VAR(ni::achar*,anValue);
   IDLC_BUF_TO_BASE(ni::eType_ASZ,anValue);
-  IDLC_STATIC_METH_CALL_VOID((void),(void),_PrintLn,1,(anValue));
-} IDLC_STATIC_METH_END(ni,_PrintLn,1);
-const ni::sMethodDef kFuncDecl_PrintLn = {
-  "_PrintLn",eType_Null,NULL,"void",1,NULL,VMCall__PrintLn
+  IDLC_STATIC_METH_CALL_VOID((void),(void),_builtin_vmprintln,1,(anValue));
+} IDLC_STATIC_METH_END(ni,vmprintln,1);
+const ni::sMethodDef kFuncDecl_vmprintln = {
+  "vmprintln",eType_Null,NULL,"void",1,NULL,VMCall_vmprintln
 };
 
 ///////////////////////////////////////////////
-static void __stdcall _PrintDebug(const achar* aaszMsg) {
+static void __stdcall _builtin_vmprintdebug(const achar* aaszMsg) {
   if (!niStringIsOK(aaszMsg))
     return;
   niLog_(ni::eLogFlags_Debug|ni::eLogFlags_NoNewLine,aaszMsg);
 }
-IDLC_STATIC_METH_BEGIN(ni,_PrintDebug,1) {
+IDLC_STATIC_METH_BEGIN(ni,vmprintdebug,1) {
   IDLC_DECL_VAR(ni::achar*,anValue);
   IDLC_BUF_TO_BASE(ni::eType_ASZ,anValue);
-  IDLC_STATIC_METH_CALL_VOID((void),(void),_PrintDebug,1,(anValue));
-} IDLC_STATIC_METH_END(ni,_PrintDebug,1);
-const ni::sMethodDef kFuncDecl_PrintDebug = {
-  "_PrintDebug",eType_Null,NULL,"void",1,NULL,VMCall__PrintDebug
+  IDLC_STATIC_METH_CALL_VOID((void),(void),_builtin_vmprintdebug,1,(anValue));
+} IDLC_STATIC_METH_END(ni,vmprintdebug,1);
+const ni::sMethodDef kFuncDecl_vmprintdebug = {
+  "vmprintdebug",eType_Null,NULL,"void",1,NULL,VMCall_vmprintdebug
 };
 
 ///////////////////////////////////////////////
-static void __stdcall _PrintDebugLn(const achar* aaszMsg) {
+static void __stdcall _builtin_vmprintdebugln(const achar* aaszMsg) {
   if (!niStringIsOK(aaszMsg))
     return;
   niLog_(ni::eLogFlags_Debug,aaszMsg);
 }
-IDLC_STATIC_METH_BEGIN(ni,_PrintDebugLn,1) {
+IDLC_STATIC_METH_BEGIN(ni,vmprintdebugln,1) {
   IDLC_DECL_VAR(ni::achar*,anValue);
   IDLC_BUF_TO_BASE(ni::eType_ASZ,anValue);
-  IDLC_STATIC_METH_CALL_VOID((void),(void),_PrintDebugLn,1,(anValue));
-} IDLC_STATIC_METH_END(ni,_PrintDebugLn,1);
-const ni::sMethodDef kFuncDecl_PrintDebugLn = {
-  "_PrintDebugLn",eType_Null,NULL,"void",1,NULL,VMCall__PrintDebugLn
+  IDLC_STATIC_METH_CALL_VOID((void),(void),_builtin_vmprintdebugln,1,(anValue));
+} IDLC_STATIC_METH_END(ni,vmprintdebugln,1);
+const ni::sMethodDef kFuncDecl_vmprintdebugln = {
+  "vmprintdebugln",eType_Null,NULL,"void",1,NULL,VMCall_vmprintdebugln
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -612,10 +612,10 @@ cScriptVM::cScriptVM(cScriptVM* apParentVM)
       return;
     }
 
-    RegisterFunction(&kFuncDecl_PrintDebug,_A("printdebug"));
-    RegisterFunction(&kFuncDecl_PrintDebugLn,_A("printdebugln"));
-    RegisterFunction(&kFuncDecl_Print,_A("print"));
-    RegisterFunction(&kFuncDecl_PrintLn,_A("println"));
+    RegisterFunction(&kFuncDecl_vmprintdebug,_A("vmprintdebug"));
+    RegisterFunction(&kFuncDecl_vmprintdebugln,_A("vmprintdebugln"));
+    RegisterFunction(&kFuncDecl_vmprint,_A("vmprint"));
+    RegisterFunction(&kFuncDecl_vmprintln,_A("vmprintln"));
 
 #ifdef _DEBUG
     niDebugFmt(("ScriptVM[%p], root VM initialized.",(tIntPtr)this));

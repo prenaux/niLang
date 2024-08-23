@@ -112,9 +112,9 @@ function dostuff() : (localTable) {
   ::inRootLocalTable.one;
   ::inRootLocalTable.subTable.subOne;
   ::inRootLocalTable.subTable.subDoesntExist;
-  ::println("Linter 1")
+  ::vmprintln("Linter 1")
 }
 
 function main() {
-  ::println("Linter 1")
+  ::vmprintln("Linter 1")
 }

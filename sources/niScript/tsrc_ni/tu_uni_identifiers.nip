@@ -1,5 +1,5 @@
 √ <- "√"
-::println("ROOT: " + ::√ + " " + √)
+::vmprintln("ROOT: " + ::√ + " " + √)
 
 ::Import("unittest.ni")
 ::Import("algo.ni")

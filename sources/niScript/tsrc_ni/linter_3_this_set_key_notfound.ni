@@ -12,5 +12,5 @@ local localTable = {
 
 function main() : (localTable) {
   localTable._one = 456;
-  ::println("Linter test for this_set_key_notfound")
+  ::vmprintln("Linter test for this_set_key_notfound")
 }

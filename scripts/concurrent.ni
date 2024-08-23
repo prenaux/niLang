@@ -134,12 +134,8 @@
 ::__concurrent_child_vm_root <- {
   lang = {
     toString = ::lang.toString
-    _vmprint = ::lang._vmprint
-    _vmprintln = ::lang._vmprintln
     toPrintString = ::lang.toPrintString
   }
-  _vmprint = ::lang._vmprint
-  _vmprintln = ::lang._vmprintln
   eTextEncodingFormat = ::eTextEncodingFormat
 
   eLogFlags = ::eLogFlags
@@ -196,9 +192,9 @@
   Rect = ::Rect
   Matrix = ::Matrix
   function print(_args_) {
-    _vmprint(toPrintString(_args_))
+    ::vmprint(toPrintString(_args_))
   }
   function println(_args_) {
-    _vmprintln(toPrintString(_args_))
+    ::vmprintln(toPrintString(_args_))
   }
 }

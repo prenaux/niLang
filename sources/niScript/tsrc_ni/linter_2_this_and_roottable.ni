@@ -10,7 +10,7 @@ function ::functionInRoot() {
 
 function main() {
 
-  ::println("... thistable:" + this.__debug_name);
+  ::vmprintln("... thistable:" + this.__debug_name);
 
   someTable.foo
 

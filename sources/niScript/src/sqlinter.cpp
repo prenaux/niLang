@@ -584,10 +584,10 @@ struct sLinter {
 
   void RegisterBuiltinFuncs(SQTable* table) {
     // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
-    RegisterFunc(table, "print");
-    RegisterFunc(table, "println");
-    RegisterFunc(table, "printdebug");
-    RegisterFunc(table, "printdebugln");
+    RegisterFunc(table, "vmprint");
+    RegisterFunc(table, "vmprintln");
+    RegisterFunc(table, "vmprintdebug");
+    RegisterFunc(table, "vmprintdebugln");
     RegisterFuncs(table, SQSharedState::_base_funcs);
     RegisterFuncs(table, SQSharedState::_concurrent_funcs);
   }

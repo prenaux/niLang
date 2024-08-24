@@ -15,9 +15,9 @@
 #else
 
 #define _HDecl_(X,STRING)                       \
-  extern ni::tHStringPtr _hstr_##X
+  extern ni::tHStringNN _hstr_##X
 #define _HDecl(X)                               \
-  extern ni::tHStringPtr _hstr_##X
+  extern ni::tHStringNN _hstr_##X
 
 #endif
 

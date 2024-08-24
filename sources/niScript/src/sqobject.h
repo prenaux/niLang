@@ -126,6 +126,11 @@ struct SQObjectPtr : public SQObject
     _VarDataSetType(_var,OT_STRING);
     _VarDataSetAddRef(_var,(ni::iUnknown*)ahspString.ptr());
   }
+  __forceinline SQObjectPtr(const tHStringNN& ahspString)
+  {
+    _VarDataSetType(_var,OT_STRING);
+    _VarDataSetAddRef(_var,(ni::iUnknown*)ahspString.raw_ptr());
+  }
   __forceinline SQObjectPtr(const iHString* pString)
   {
     niAssert(pString != NULL);

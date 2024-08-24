@@ -496,7 +496,7 @@ struct sScriptTypeErrorCode : SQ_USERDATA_BASE(sScriptTypeErrorCode)
 
   sScriptTypeErrorCode(
     const SQSharedState& aSS,
-    const iHString* aKind,
+    ain_nn<iHString> aKind,
     ain<tChars> aDesc)
       : _hspKind(aKind)
       , _strDesc(aDesc)

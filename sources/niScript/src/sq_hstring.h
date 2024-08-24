@@ -56,14 +56,14 @@ _HDecl(UUID);
 _HDecl(__imports);
 _HDecl_(NOT_ITOSTRING,"[not iToString]");
 _HDecl(e);
-_HDecl(unresolved_type);
-_HDecl(unresolved_type_invalid_typedef);
-_HDecl(unresolved_type_cant_load_module_def);
-_HDecl(unresolved_type_cant_find_interface_def);
-_HDecl(unresolved_type_cant_find_method_def);
-_HDecl(unresolved_type_method_def_invalid_ret_type);
-_HDecl(unresolved_type_cant_find_type_uuid);
-_HDecl(unresolved_type_lint_call_error);
+_HDecl(error_code);
+_HDecl(error_code_invalid_typedef);
+_HDecl(error_code_cant_load_module_def);
+_HDecl(error_code_cant_find_interface_def);
+_HDecl(error_code_cant_find_method_def);
+_HDecl(error_code_method_def_invalid_ret_type);
+_HDecl(error_code_cant_find_type_uuid);
+_HDecl(error_code_lint_call_error);
 _HDecl(resolved_type);
 
 #endif // __sq_HSTRING_H__

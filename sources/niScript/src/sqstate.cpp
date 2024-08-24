@@ -70,7 +70,7 @@ SQSharedState::SQSharedState() {
   _enum_default_delegate=_CreateDefaultDelegate(this,_enum_default_delegate_funcz);
   _method_default_delegate=_CreateDefaultDelegate(this,_method_default_delegate_funcz);
   _interface_default_delegate=_CreateDefaultDelegate(this,_interface_default_delegate_funcz);
-  _unresolved_type_default_delegate=_CreateDefaultDelegate(this,_unresolved_type_default_delegate_funcz);
+  _error_code_default_delegate=_CreateDefaultDelegate(this,_error_code_default_delegate_funcz);
   _resolved_type_default_delegate=_CreateDefaultDelegate(this,_resolved_type_default_delegate_funcz);
 
   _typeStr_null = _H("null");

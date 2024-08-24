@@ -483,51 +483,56 @@ struct sScriptTypeUUID : SQ_USERDATA_BASE(sScriptTypeUUID)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// sUnresolvedType type
+// sErrorCode type
 
-struct sScriptTypeUnresolvedType : SQ_USERDATA_BASE(sScriptTypeUnresolvedType)
+struct sScriptTypeErrorCode : SQ_USERDATA_BASE(sScriptTypeErrorCode)
 {
   virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
     return this->_DoQueryInterface(this,aIID);
   }
 
-  tHStringPtr _hspUnresolvedType;
-  tHStringPtr _hspReason;
+  NN<iHString> _hspKind;
+  cString _strDesc;
 
-  sScriptTypeUnresolvedType(
+  sScriptTypeErrorCode(
     const SQSharedState& aSS,
-    iHString* aUnresolvedType,
-    iHString* aReason)
-      : _hspUnresolvedType(aUnresolvedType)
-      , _hspReason(aReason)
+    const iHString* aKind,
+    ain<tChars> aDesc)
+      : _hspKind(aKind)
+      , _strDesc(aDesc)
   {
-    SetDelegate(_ddel(aSS,unresolved_type));
+    SetDelegate(_ddel(aSS,error_code));
   }
-  ~sScriptTypeUnresolvedType() {}
+  ~sScriptTypeErrorCode() {}
 
-  static int _GetType() { return eScriptType_UnresolvedType; }
-  virtual int __stdcall GetSize() const { return sizeof(sScriptTypeUnresolvedType); }
+  static int _GetType() { return eScriptType_ErrorCode; }
+  virtual int __stdcall GetSize() const { return sizeof(sScriptTypeErrorCode); }
   virtual int __stdcall GetType() const { return _GetType(); }
   virtual size_t __stdcall Hash() const {
-    return (size_t)_hspUnresolvedType.raw_ptr();
+    return (size_t)_hspKind.raw_ptr();
   }
   virtual bool __stdcall Eq(SQUserData* r) const {
     if (CmpType(r) != 0) return false;
-    sScriptTypeUnresolvedType* b = (sScriptTypeUnresolvedType*)r;
-    return _hspUnresolvedType == b->_hspUnresolvedType;
+    sScriptTypeErrorCode* b = (sScriptTypeErrorCode*)r;
+    return _hspKind == b->_hspKind;
   }
   virtual int __stdcall Cmp(SQUserData* r) const {
     int res = CmpType(r);
     if (res != 0) return res;
-    sScriptTypeUnresolvedType* b = (sScriptTypeUnresolvedType*)r;
-    return ni::CmpByVal(_hspUnresolvedType,b->_hspUnresolvedType);
+    sScriptTypeErrorCode* b = (sScriptTypeErrorCode*)r;
+    return ni::CmpByVal(_hspKind,b->_hspKind);
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeUnresolvedType(aSS,_hspUnresolvedType,_hspReason);
+    return niNew sScriptTypeErrorCode(aSS,_hspKind,_strDesc.c_str());
   }
 
   virtual cString __stdcall GetTypeString() const {
-    return niFmt("unresolved_type<%s,%s>", _hspUnresolvedType, _hspReason);
+    if (_strDesc.IsEmpty()) {
+      return niFmt("error_code<%s>", _hspKind);
+    }
+    else {
+      return niFmt("error_code<%s,%s>", _hspKind, _strDesc);
+    }
   }
 };
 
@@ -591,8 +596,8 @@ niExportFunc(int) sqa_getEnumDef(HSQUIRRELVM v, int idx, const sEnumDef** appEnu
 niExportFunc(int) sqa_pushIndexedProperty(HSQUIRRELVM v, iUnknown* apObject, const sScriptTypePropertyDef* apProp);
 niExportFunc(int) sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const sScriptTypePropertyDef** appProp);
 
-niExportFunc(int) sqa_pushUnresolvedType(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason);
-niExportFunc(int) sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHStringPtr> ahspType);
+niExportFunc(int) sqa_pushErrorCode(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason);
+niExportFuncCPP(int) sqa_getErrorCode(HSQUIRRELVM v, int idx, aout<NN<sScriptTypeErrorCode>> aOut);
 
 niExportFunc(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<tType> aType);
 niExportFunc(int) sqa_getResolvedType(HSQUIRRELVM v, int idx, aout<tType> aType);

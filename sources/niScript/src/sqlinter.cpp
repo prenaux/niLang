@@ -623,10 +623,10 @@ struct sLinter {
         }
       }
     }
-    return niNew sScriptTypeUnresolvedType(
+    return niNew sScriptTypeErrorCode(
       this->_ss,
-      _H(niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID)),
-      _HC(unresolved_type_cant_find_type_uuid));
+      _HC(error_code_cant_find_type_uuid),
+      niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID));
   }
 
   SQObjectPtr ResolveType(const SQObjectPtr& aType) {
@@ -654,11 +654,11 @@ struct sLinter {
 
       niLet moduleDef = ni::GetLang()->LoadModuleDef(moduleName.c_str());
       if (!niIsOK(moduleDef)) {
-        resolvedType = niNew sScriptTypeUnresolvedType(
-          this->_ss, hspType, _HC(unresolved_type_cant_load_module_def));
+        resolvedType = niNew sScriptTypeErrorCode(
+          this->_ss, _HC(error_code_cant_load_module_def), niHStr(hspType));
       }
       else {
-        niLetMut foundInterfaceDef = opt<sInterfaceDef>{};
+        niLetMut foundInterfaceDef = opt<const sInterfaceDef>{};
         niLoop(i, moduleDef->GetNumInterfaces()) {
           niLet idef = moduleDef->GetInterface(i);
           if (StrEq(interfaceName.c_str(), idef->maszName)) {
@@ -667,8 +667,8 @@ struct sLinter {
           }
         }
         if (!foundInterfaceDef.has_value()) {
-          resolvedType = niNew sScriptTypeUnresolvedType(
-            this->_ss, hspType, _HC(unresolved_type_cant_find_interface_def));
+          resolvedType = niNew sScriptTypeErrorCode(
+            this->_ss, _HC(error_code_cant_find_interface_def), niHStr(hspType));
         }
         else {
           resolvedType = niNew sScriptTypeInterfaceDef(
@@ -677,8 +677,8 @@ struct sLinter {
       }
     }
     else {
-      resolvedType = niNew sScriptTypeUnresolvedType(
-        this->_ss, hspType, _HC(unresolved_type_invalid_typedef));
+      resolvedType = niNew sScriptTypeErrorCode(
+        this->_ss, _HC(error_code_invalid_typedef), niHStr(hspType));
     }
 
     niPanicAssert(resolvedType != _null_);
@@ -753,10 +753,10 @@ struct sLinter {
 
               // TODO: This is a bit shit, we probalby need some kind of
               // sScriptTypeError thing
-              dest = niNew sScriptTypeUnresolvedType(
+              dest = niNew sScriptTypeErrorCode(
                 _ss,
-                _H(niFmt("method_def<%s::%s>", idef->maszName, keyChars)),
-                _HC(unresolved_type_cant_find_method_def));
+                _HC(error_code_cant_find_method_def),
+                niFmt("method_def<%s::%s>", idef->maszName, keyChars));
               return false;
             }
           }
@@ -827,20 +827,20 @@ struct sLinter {
 };
 
 static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
-  return niNew sScriptTypeUnresolvedType(
+  return niNew sScriptTypeErrorCode(
     aLinter._ss,
-    _H(aMsg),
-    _HC(unresolved_type_lint_call_error));
+    _HC(error_code_lint_call_error),
+    aMsg);
 }
 
-static tHStringPtr _GetLintCallError(ain<SQObjectPtr> aRet) {
-  if (sqa_getscriptobjtype(aRet) == eScriptType_UnresolvedType) {
-    niLet unresolved = (sScriptTypeUnresolvedType*)_userdata(aRet);
-    if (unresolved->_hspReason == _HC(unresolved_type_lint_call_error)) {
-      return unresolved->_hspUnresolvedType;
+static astl::optional<cString> _GetLintCallError(ain<SQObjectPtr> aRet) {
+  if (sqa_getscriptobjtype(aRet) == eScriptType_ErrorCode) {
+    niLet unresolved = (sScriptTypeErrorCode*)_userdata(aRet);
+    if (unresolved->_hspKind == _HC(error_code_lint_call_error)) {
+      return unresolved->_strDesc;
     }
   }
-  return nullptr;
+  return astl::nullopt;
 }
 
 struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
@@ -862,10 +862,10 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
   {
     niLet numParams = aCallArgs.size() - 1;
     if (numParams < 1) {
-      return _MakeLintCallError(aLinter,niFmt("not enough arguments '%d', expected at least 1", numParams));
+      return _MakeLintCallError(aLinter,niFmt("not enough arguments '%d', expected at least 1.", numParams));
     }
     if (numParams > 3) {
-      return _MakeLintCallError(aLinter,niFmt("too many arguments '%d', expected at most 3", numParams));
+      return _MakeLintCallError(aLinter,niFmt("too many arguments '%d', expected at most 3.", numParams));
     }
     return _MakeLintCallError(aLinter,"LintFuncCallCreateInstance::NotImplemented");
   }
@@ -1409,14 +1409,14 @@ void SQFunctionProto::LintTrace(
               *aMeth.pMethodDef->mReturnTypeUUID);
           }
           else {
-            retType = niNew sScriptTypeUnresolvedType(
+            retType = niNew sScriptTypeErrorCode(
               aLinter._ss,
-              _H(niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
-                       aMeth.pInterfaceDef->maszName,
-                       aMeth.pMethodDef->maszName,
-                       GetTypeString(aMeth.pMethodDef->mReturnType),
-                       aMeth.pMethodDef->mReturnTypeName)),
-              _HC(unresolved_type_method_def_invalid_ret_type));
+              _HC(error_code_method_def_invalid_ret_type),
+              niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
+                    aMeth.pInterfaceDef->maszName,
+                    aMeth.pMethodDef->maszName,
+                    GetTypeString(aMeth.pMethodDef->mReturnType),
+                    aMeth.pMethodDef->mReturnTypeName));
           }
           break;
         }
@@ -1428,7 +1428,7 @@ void SQFunctionProto::LintTrace(
         case eScriptType_PropertyDef:
         case eScriptType_IndexedProperty:
         case eScriptType_Iterator:
-        case eScriptType_UnresolvedType:
+        case eScriptType_ErrorCode:
         case eScriptType_ResolvedType:
         case eScriptType_Table:
         case eScriptType_Array:
@@ -1439,14 +1439,14 @@ void SQFunctionProto::LintTrace(
         case eScriptType_Invalid: {
           // TODO: This is a bit shit, we probalby need some kind of
           // sScriptTypeError thing
-          retType = niNew sScriptTypeUnresolvedType(
+          retType = niNew sScriptTypeErrorCode(
             aLinter._ss,
-            _H(niFmt("method_def<%s::%s, %s(%s)>",
-                     aMeth.pInterfaceDef->maszName,
-                     aMeth.pMethodDef->maszName,
-                     GetTypeString(aMeth.pMethodDef->mReturnType),
-                     aMeth.pMethodDef->mReturnTypeName)),
-            _HC(unresolved_type_method_def_invalid_ret_type));
+            _HC(error_code_method_def_invalid_ret_type),
+            niFmt("method_def<%s::%s, %s(%s)>",
+                  aMeth.pInterfaceDef->maszName,
+                  aMeth.pMethodDef->maszName,
+                  GetTypeString(aMeth.pMethodDef->mReturnType),
+                  aMeth.pMethodDef->mReturnTypeName));
           break;
         };
       }
@@ -1511,13 +1511,13 @@ void SQFunctionProto::LintTrace(
         if (lintFuncCall.IsOK()) {
           niLet ret = call_lint_func(as_NN(lintFuncCall));
           niLet lintCallError = _GetLintCallError(ret);
-          if (!lintCallError.IsOK()) {
+          if (!lintCallError.has_value()) {
             // no error
             sset(IARG0, ret);
           }
           else {
             if (_LENABLED(call_error)) {
-              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError));
+              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError.value()));
             }
             sset(IARG0, ret);
           }

@@ -445,39 +445,47 @@ int sqa_getIndexedProperty(HSQUIRRELVM v, int idx, iUnknown** appObject, const s
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// sUnresolvedType
+// sErrorCode
 
-static int unresolved_type_typeof(HSQUIRRELVM v) {
-  sq_pushstring(v, _HC(unresolved_type));
+static int error_code_typeof(HSQUIRRELVM v) {
+  sq_pushstring(v, _HC(error_code));
   return 1;
 }
 
-static int unresolved_type_GetUnresolvedTypeName(HSQUIRRELVM v) {
-  sScriptTypeUnresolvedType* pV = sqa_getud<sScriptTypeUnresolvedType>(v,1);
+static int error_code_GetKind(HSQUIRRELVM v) {
+  sScriptTypeErrorCode* pV = sqa_getud<sScriptTypeErrorCode>(v,1);
   if (!pV) return SQ_ERROR;
-  sq_pushstring(v,pV->_hspUnresolvedType);
+  sq_pushstring(v,pV->_hspKind);
   return 1;
 }
 
-SQRegFunction SQSharedState::_unresolved_type_default_delegate_funcz[]={
+static int error_code_GetDesc(HSQUIRRELVM v) {
+  sScriptTypeErrorCode* pV = sqa_getud<sScriptTypeErrorCode>(v,1);
+  if (!pV) return SQ_ERROR;
+  sq_pushstring(v,pV->_hspKind);
+  return 1;
+}
+
+SQRegFunction SQSharedState::_error_code_default_delegate_funcz[]={
   {"_typeof", interface_typeof, 0, NULL},
-  {"GetUnresolvedTypeName", unresolved_type_GetUnresolvedTypeName, 0, NULL},
+  {"GetKind", error_code_GetKind, 0, NULL},
+  {"GetDesc", error_code_GetDesc, 0, NULL},
   {0,0}
 };
 
-niExportFuncCPP(int) sqa_pushUnresolvedType(HSQUIRRELVM v, iHString* ahspType, iHString* ahspReason)
+niExportFuncCPP(int) sqa_pushErrorCode(HSQUIRRELVM v, ain_nn<iHString> ahspKind, ain<tChars> aDesc)
 {
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   //  niAssert(niIsOK(pVM));
-  sq_pushud(*pVM,niNew sScriptTypeUnresolvedType(*v->_ss,ahspType,ahspReason));
+  sq_pushud(*pVM,niNew sScriptTypeErrorCode(*v->_ss,ahspKind,aDesc));
   return SQ_OK;
 }
 
-niExportFuncCPP(int) sqa_getUnresolvedType(HSQUIRRELVM v, int idx, aout<tHStringPtr> ahspType)
+niExportFuncCPP(int) sqa_getErrorCode(HSQUIRRELVM v, int idx, aout<NN<sScriptTypeErrorCode>> aOut)
 {
-  sScriptTypeUnresolvedType* pV = sqa_getud<sScriptTypeUnresolvedType>(v,idx);
+  sScriptTypeErrorCode* pV = sqa_getud<sScriptTypeErrorCode>(v,idx);
   if (!pV)  return SQ_ERROR;
-  ahspType = pV->_hspUnresolvedType.raw_ptr();
+  aOut = AsNN(pV);
   return SQ_OK;
 }
 

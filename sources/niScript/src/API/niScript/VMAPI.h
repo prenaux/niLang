@@ -243,7 +243,7 @@ enum eScriptType
   eScriptType_IndexedProperty = niFourCC('I','D','X','P'),
   eScriptType_UUID = niFourCC('U','U','I','D'),
   eScriptType_InterfaceDef = niFourCC('I','D','E','F'),
-  eScriptType_UnresolvedType = niFourCC('U','T','Y','P'),
+  eScriptType_ErrorCode = niFourCC('E','R','R','C'),
   eScriptType_ResolvedType = niFourCC('R','T','Y','P'),
 };
 

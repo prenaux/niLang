@@ -97,8 +97,8 @@ void sqGetIndexDump(cString& strOut, HSQUIRRELVM v, int idx, int size)
       strOut << pV->GetTypeString();
       break;
     }
-    case eScriptType_UnresolvedType: {
-      sScriptTypeUnresolvedType* pV = (sScriptTypeUnresolvedType*)_userdata(obj);
+    case eScriptType_ErrorCode: {
+      sScriptTypeErrorCode* pV = (sScriptTypeErrorCode*)_userdata(obj);
       strOut << pV->GetTypeString();
       break;
     }

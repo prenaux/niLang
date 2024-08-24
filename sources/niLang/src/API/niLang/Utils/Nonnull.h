@@ -365,6 +365,82 @@ template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Nonnull<U
   return a.raw_ptr() >= b.raw_ptr();
 }
 
+template<class T, class U> inline bool operator==(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() == b.raw_ptr();
+}
+template<class T, class U> inline bool operator!=(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() != b.raw_ptr();
+}
+template<class T, class U> inline bool operator<(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() < b.raw_ptr();
+}
+template<class T, class U> inline bool operator>(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() > b.raw_ptr();
+}
+template<class T, class U> inline bool operator<=(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() <= b.raw_ptr();
+}
+template<class T, class U> inline bool operator>=(Ptr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() >= b.raw_ptr();
+}
+
+template<class T, class U> inline bool operator==(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() == b.ptr();
+}
+template<class T, class U> inline bool operator!=(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() != b.ptr();
+}
+template<class T, class U> inline bool operator<(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() < b.ptr();
+}
+template<class T, class U> inline bool operator>(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() > b.ptr();
+}
+template<class T, class U> inline bool operator<=(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() <= b.ptr();
+}
+template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Ptr<U> const& b) {
+  return a.raw_ptr() >= b.ptr();
+}
+
+template<class T, class U> inline bool operator==(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() == b.raw_ptr();
+}
+template<class T, class U> inline bool operator!=(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() != b.raw_ptr();
+}
+template<class T, class U> inline bool operator<(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() < b.raw_ptr();
+}
+template<class T, class U> inline bool operator>(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() > b.raw_ptr();
+}
+template<class T, class U> inline bool operator<=(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() <= b.raw_ptr();
+}
+template<class T, class U> inline bool operator>=(QPtr<T> const& a, Nonnull<U> const& b) {
+  return a.ptr() >= b.raw_ptr();
+}
+
+template<class T, class U> inline bool operator==(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() == b.ptr();
+}
+template<class T, class U> inline bool operator!=(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() != b.ptr();
+}
+template<class T, class U> inline bool operator<(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() < b.ptr();
+}
+template<class T, class U> inline bool operator>(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() > b.ptr();
+}
+template<class T, class U> inline bool operator<=(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() <= b.ptr();
+}
+template<class T, class U> inline bool operator>=(Nonnull<T> const& a, QPtr<U> const& b) {
+  return a.raw_ptr() >= b.ptr();
+}
+
 template <typename T, typename... Args>
 inline EA_CONSTEXPR ni::Nonnull<T> MakeNonnull(Args&&... args) {
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));

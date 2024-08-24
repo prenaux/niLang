@@ -97,7 +97,7 @@ cWidget::cWidget(cUIContext* pUICtx, iHString* ahspClass, cWidget *pwParent, con
   mhspHoverText = _H("");
 
   mhspSkinClass = ahspSkinClass;
-  mhspText = ahspText?ahspText:_H("").ptr();
+  mhspText = ahspText?ahspText:_H("").raw_ptr();
   mhspClass = ahspClass;
   mnStyle = anStyle;
   mStatus = WDGSTATUS_ENABLED|WDGSTATUS_VISIBLE;

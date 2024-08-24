@@ -545,7 +545,9 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
         {
           niProfileBlock(cMaterial_SerializeRead_Channel_Texture);
           Ptr<iTexture> ptrTex = GetChannelTexture(c);
-          tHStringPtr hspTex = apDT->GetHStringDefault("texture",ptrTex.IsOK()?ptrTex->GetDeviceResourceName():_H("").ptr());
+          tHStringPtr hspTex = apDT->GetHStringDefault(
+            "texture",
+            ptrTex.IsOK()?ptrTex->GetDeviceResourceName():_H("").raw_ptr());
           if (!HStringIsEmpty(hspTex)) {
             ptrTex = mptrGraphics->CreateTextureFromRes(hspTex, ahspBasePath, eTextureFlags_Default);
             SetChannelTexture(c,ptrTex);
@@ -597,7 +599,9 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
       eShaderUnit u = (eShaderUnit)ni::GetLang()->StringToEnum(apDT->GetStringDefault("unit",NULL).Chars(), niEnumExpr(eShaderUnit));
       if (u < eShaderUnit_Last) {
         Ptr<iShader> ptrShader = mShaders[i];
-        tHStringPtr hspPath = apDT->GetHStringDefault("path",ptrShader.IsOK()?ptrShader->GetDeviceResourceName():_H("").ptr());
+        tHStringPtr hspPath = apDT->GetHStringDefault(
+          "path",
+          ptrShader.IsOK()?ptrShader->GetDeviceResourceName():_H("").raw_ptr());
         if (!HStringIsEmpty(hspPath)) {
           ptrShader = mptrGraphics->CreateShaderFromRes(hspPath);
           SetShader(u,ptrShader);

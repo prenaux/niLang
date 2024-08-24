@@ -611,7 +611,7 @@ struct sLinter {
 
   void RegisterBuiltinFuncs(SQTable* table);
 
-  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) {
+  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) const {
     // TODO: Cache returned values
     niLoop(mi, ni::GetLang()->GetNumModuleDefs()) {
       niLet mdef = ni::GetLang()->GetModuleDef(mi);
@@ -628,6 +628,21 @@ struct sLinter {
       _HC(error_code_cant_find_type_uuid),
       niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID));
   }
+
+  astl::optional<const iObjectTypeDef*> FindObjectTypeDef(const achar* aObjectTypeName) const {
+    // TODO: Cache returned values
+    niLoop(mi, ni::GetLang()->GetNumModuleDefs()) {
+      niLet mdef = ni::GetLang()->GetModuleDef(mi);
+      niLoop(oi,mdef->GetNumObjectTypes()) {
+        const iObjectTypeDef* odef = mdef->GetObjectType(oi);
+        if (StrEq(odef->GetName(), aObjectTypeName)) {
+          return odef;
+        }
+      }
+    }
+    return astl::nullopt;
+  }
+
 
   SQObjectPtr ResolveType(const SQObjectPtr& aType) {
     if (sq_isnull(aType))
@@ -867,7 +882,19 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
     if (numParams > 3) {
       return _MakeLintCallError(aLinter,niFmt("too many arguments '%d', expected at most 3.", numParams));
     }
-    return _MakeLintCallError(aLinter,"LintFuncCallCreateInstance::NotImplemented");
+
+    niLet objTypeName = aCallArgs[1];
+    niDebugFmt(("... LintCall: objTypeName: %s", _ObjToString(objTypeName)));
+    if (sqa_getscriptobjtype(objTypeName) == eScriptType_String) {
+      niLet objTypeDef = aLinter.FindObjectTypeDef(_stringval(objTypeName));
+      if (!objTypeDef.has_value()) {
+        return _MakeLintCallError(aLinter,niFmt("Can't find object type '%s'.", _stringhval(objTypeName)));
+      }
+    }
+
+    return niNew sScriptTypeInterfaceDef(
+      aLinter._ss,
+      ni::GetLang()->GetInterfaceDefFromUUID(niGetInterfaceUUID(ni::iUnknown)));
   }
 };
 
@@ -1456,7 +1483,8 @@ void SQFunctionProto::LintTrace(
 
     auto call_lint_func = [&](ain_nn_mut<iLintFuncCall> aLintFunc) -> SQObjectPtr {
       niLet arity = aLintFunc->GetArity();
-      _LTRACE(("call_lint_func: %s/%d, nargs: %d", aLintFunc->GetName(), arity, nargs));
+      _LTRACE(("call_lint_func: %s/%d, nargs: %d, stackbase: %d",
+               aLintFunc->GetName(), arity, nargs, stackbase));
 
       if (_LENABLED(call_num_args) && (arity >= 0) && (arity+1 != nargs)) {
         _LINT(call_num_args,
@@ -1468,7 +1496,7 @@ void SQFunctionProto::LintTrace(
       astl::vector<SQObjectPtr> vArgs;
       vArgs.resize(nargs);
       niLoop(pi, nargs) {
-        vArgs[pi] = sget(pi);
+        vArgs[pi] = sget(stackbase+pi);
         niDebugFmt(("... vArgs[%d]: %s", pi, _ObjToString(vArgs[pi])));
       }
       return aLintFunc->LintCall(aLinter, vArgs);

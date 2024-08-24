@@ -205,14 +205,33 @@ function main() {
     "linter_7_call_native_func.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
-      ::CHECK_EQUAL(1,aLintResults.mLogsError,
-                    "Expected lint errors.");
-      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
-                    "Expected lint warnings.");
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 1 but got 2. Calling method_def<NULL,vmprintln/1>.]});
+        "Lint: Error: call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 2. Calling method_def<NULL,vmprintln/1>.");
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        "Lint: Error: call_error: call_lint_func: CreateInstance/-1: too many arguments '4', expected at most 3.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        "Lint: Error: call_error: call_lint_func: CreateInstance/-1: not enough arguments '0', expected at least 1.");
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: too many arguments '4', expected at most 3.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: not enough arguments '0', expected at least 1.");
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: Can't find object type 'niLang.TheUnknownHamster'.");
+
+      ::CHECK_EQUAL(6,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
     })
 
   // Output failed tests

@@ -514,7 +514,7 @@ static int iunknown_invalidate(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
-const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUID& aIID)
+const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
 {
   niSqGuard(v);
 
@@ -523,32 +523,32 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUI
     SQObjectPtr objTable = _null_;
     if (aIID == niGetInterfaceUUID(iUnknown)) {
       objTable = SQTable::Create();
-      _table(objTable)->SetDebugName(ni::GetLang()->GetInterfaceName(niGetInterfaceUUID(iUnknown)));
-      v->Push(objTable);
-      sqa_registerfunction(v,_A("_tostring"),iunknown_tostring);
-      sqa_registerfunction(v,_A("GetImplementedInterfaces"),iunknown_getimplementedinterfaces);
-      sqa_registerfunction(v,_A("isvalid"),iunknown_isvalid);
-      sqa_registerfunction(v,_A("IsValid"),iunknown_isvalid);
-      sqa_registerfunction(v,_A("tointptr"),iunknown_tointptr);
-      sqa_registerfunction(v,_A("ToIntPtr"),iunknown_tointptr);
-      sqa_registerfunction(v,_A("GetNumRefs"),iunknown_GetNumRefs);
-      sqa_registerfunction(v,_A("QueryInterface"),iunknown_queryinterface);
-      sqa_registerfunction(v,_A("Invalidate"),iunknown_invalidate);
-      v->Pop(1);
+      niLetMut table = as_nn(_table(objTable));
+      table->SetDebugName(ni::GetLang()->GetInterfaceName(niGetInterfaceUUID(iUnknown)));
+      niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc) {
+        return RegisterSQRegFunction(table, SQRegFunction { .name = aName, .f = aFunc });
+      };
+      niPanicAssert(regFunc("_tostring", iunknown_tostring));
+      niPanicAssert(regFunc("GetImplementedInterfaces",iunknown_getimplementedinterfaces));
+      niPanicAssert(regFunc("isvalid",iunknown_isvalid));
+      niPanicAssert(regFunc("IsValid",iunknown_isvalid));
+      niPanicAssert(regFunc("tointptr",iunknown_tointptr));
+      niPanicAssert(regFunc("ToIntPtr",iunknown_tointptr));
+      niPanicAssert(regFunc("GetNumRefs",iunknown_GetNumRefs));
+      niPanicAssert(regFunc("QueryInterface",iunknown_queryinterface));
+      niPanicAssert(regFunc("Invalidate",iunknown_invalidate));
     }
     else {
       const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(aIID);
       objTable = SQTable::Create();
-      _table(objTable)->SetDebugName(ni::GetLang()->GetInterfaceName(aIID));
-      v->Push(objTable);
+      niLetMut table = _table(objTable);
+      table->SetDebugName(ni::GetLang()->GetInterfaceName(aIID));
       if (!pInterfaceDef)  {
         niWarning(niFmt(_A("Can't get definition of interface '%s' {%s}."),
                         niHStr(ni::GetLang()->GetInterfaceName(aIID)),
                         UUID_ASZ(aIID)));
       }
       else {
-        sqa_setdebugname(v, -1, niFmt(_A("delegate:%s"),pInterfaceDef->maszName));
-
         astl::map<cString,sPropertyMethods> mapProps;
         astl::map<cString,sPropertyMethods>::iterator itProp;
 
@@ -653,9 +653,9 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUI
           }
 
           {
-            sq_pushstring(v, _H(pMethodDef->maszName));
-            sqa_pushMethodDef(v, pInterfaceDef, pMethodDef);
-            sq_createslot(v,-3);
+            table->NewSlot(
+              _H(pMethodDef->maszName),
+              niNew sScriptTypeMethodDef(*this, pInterfaceDef, pMethodDef));
             if (SHOULD_TRACE_REGISTER_INTERFACE()) {
               cString str;
               str << pInterfaceDef->maszName << _A("::") << pMethodDef->maszName
@@ -665,21 +665,17 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(HSQUIRRELVM v, const tUUI
           }
         }
 
-        if (!mapProps.empty())
-        {
-          // sq_pushstring(v, _A("__properties"), -1);
-          // tScriptObjectPtr ptrPropsTable = mpVM->CreateTable(NULL,0);
-          // sqa_setdebugname(v, -1, niFmt(_A("__properties:%s"),pInterfaceDef->maszName));
-          for (itProp = mapProps.begin(); itProp != mapProps.end(); ++itProp)
-          {
-            sq_pushstring(v, _H(itProp->first));
-            sqa_pushPropertyDef(v, pInterfaceDef, itProp->second.pSet, itProp->second.pGet);
-            sq_createslot(v,-3);
+        if (!mapProps.empty()) {
+          for (itProp = mapProps.begin(); itProp != mapProps.end(); ++itProp) {
+            table->NewSlot(
+              _H(itProp->first),
+              niNew sScriptTypePropertyDef(
+                pInterfaceDef,
+                itProp->second.pSet,
+                itProp->second.pGet));
           }
-          // sq_createslot(v,-3);
         }
       }
-      v->Pop(1);
     }
 
     if (objTable == _null_) {
@@ -1036,7 +1032,7 @@ void cScriptAutomation::InitIntfDelegateLst(
     const tUUID& iid = uuidLst->at(i);
     if (iid == niGetInterfaceUUID(iUnknown))  continue;
     if (iid == niGetInterfaceUUID(iDispatch)) continue;
-    SQObjectPtr objTable = vm->_ss->GetInterfaceDelegate(vm,iid);
+    SQObjectPtr objTable = vm->_ss->GetInterfaceDelegate(iid);
     if (objTable == _null_) {
       niWarning(niFmt(_A("Can't get delegate of interface '%s' {%s}."),
                       niHStr(ni::GetLang()->GetInterfaceName(iid)),
@@ -1067,7 +1063,7 @@ void cScriptAutomation::InitIntfDelegateLst(
   }
 #endif
 
-  SQObjectPtr objBase = vm->_ss->GetInterfaceDelegate(vm,iidBaseInterface);
+  SQObjectPtr objBase = vm->_ss->GetInterfaceDelegate(iidBaseInterface);
   if (objBase == _null_) {
     niWarning(niFmt(_A("sqa_pushIUnknown, Can't get delegate of base interface '%s' {%s}."),
                     niHStr(ni::GetLang()->GetInterfaceName(iidBaseInterface)),

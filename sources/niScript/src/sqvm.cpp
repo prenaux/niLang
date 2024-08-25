@@ -601,8 +601,8 @@ bool SQVM::Init(bool abInitRootTable)
   _top = 0;
   if (abInitRootTable) {
     _roottable = SQTable::Create();
-    _ss->RegisterRoot(
-      this,
+    RegisterSQRegFunctions(
+      as_nn(_table(_roottable)),
       SQSharedState::_base_funcs);
   }
   else {

@@ -6,6 +6,8 @@
 // # Run the tests matching the specified regex with lint tracing for that test
 // ham Run_Test_niScript_tu_linter A0=-Dtest=linter_4 A1=-DlintTrace=1
 //
+// # Lint scripts/lang.ni
+// ni -c "$WORK/niLang/scripts/lang.ni"
 //
 ::Import("unittest.ni")
 ::Import("lang.ni")

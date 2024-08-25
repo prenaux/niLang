@@ -1551,8 +1551,8 @@ niExportFunc(ni::iUnknown*) New_niScript_ScriptVM(const ni::Var& avarA, const ni
         return NULL;
       }
       HSQUIRRELVM newvm = (HSQUIRRELVM)ptrNewVM->GetHandle();
-      newvm->_ss->RegisterRoot(
-        newvm,
+      RegisterSQRegFunctions(
+        as_nn(_table(newvm->_roottable)),
         SQSharedState::_concurrent_funcs);
 
 #ifdef niDebug

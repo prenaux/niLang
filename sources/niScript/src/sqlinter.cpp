@@ -601,7 +601,7 @@ struct sLinter {
     table->NewSlot(aLintFunc->GetName().raw_ptr(), aLintFunc.raw_ptr());
   }
 
-  int RegisterFuncs(SQTable* table, const SQRegFunction* regs) {
+  int RegisterSQRegFunctions(SQTable* table, const SQRegFunction* regs) {
     int i = 0;
     while (regs[i].name != NULL) {
       RegisterFuncNull(table, regs[i].name);
@@ -991,8 +991,8 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterFunc(table, "vmprintln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintln));
   RegisterFunc(table, "vmprintdebug", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebug));
   RegisterFunc(table, "vmprintdebugln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebugln));
-  RegisterFuncs(table, SQSharedState::_base_funcs);
-  RegisterFuncs(table, SQSharedState::_concurrent_funcs);
+  RegisterSQRegFunctions(table, SQSharedState::_base_funcs);
+  RegisterSQRegFunctions(table, SQSharedState::_concurrent_funcs);
 
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));

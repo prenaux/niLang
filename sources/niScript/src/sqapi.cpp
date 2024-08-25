@@ -248,25 +248,6 @@ niExportFunc(SQRESULT) sq_setnativeclosurename(HSQUIRRELVM v,int idx,const SQCha
   return sq_throwerror(v,_A("the object is not a nativeclosure"));
 }
 
-niExportFunc(SQRESULT) sq_setparamscheck(HSQUIRRELVM v,int nparamscheck,const SQChar *typemask)
-{
-  SQObjectPtr o = stack_get(v, -1);
-  if(!sq_isnativeclosure(o))
-    return sq_throwerror(v, _A("native closure expected"));
-  SQNativeClosure *nc = _nativeclosure(o);
-  nc->_nparamscheck = nparamscheck;
-  if(typemask) {
-    SQIntVec res;
-    if(!CompileTypemask(res, typemask))
-      return sq_throwerror(v, _A("invalid typemask"));
-    nc->_typecheck = res;
-  }
-  else {
-    nc->_typecheck.resize(0);
-  }
-  return SQ_OK;
-}
-
 niExportFunc(void) sq_pushroottable(HSQUIRRELVM v)
 {
   v->Push(v->_roottable);

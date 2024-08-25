@@ -98,7 +98,7 @@ static int base_GetLangDelegate(HSQUIRRELVM v)
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
   const SQChar *str=NULL;
   sq_getstring(v,-1,&str);
-  pVM->mptrVM->Push(v->_ss->GetLangDelegate(v,str));
+  pVM->mptrVM->Push(v->_ss->GetLangDelegate(str));
   return 1;
 }
 
@@ -2058,7 +2058,6 @@ static int string_parsemetadata(HSQUIRRELVM v) {
   return 1;
 }
 
-
 static int string_IsCIdentifier(HSQUIRRELVM v) {
   const SQChar *str;
   if (!SQ_SUCCEEDED(sq_getstring(v,1,&str)))
@@ -2562,16 +2561,3 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("SerializeWriteObject"), base_SerializeWriteObject, 3, _A("t..")},
   {0,0}
 };
-
-niExportFunc(int) sq_registerfuncs(HSQUIRRELVM v, const SQRegFunction* regs) {
-  int i = 0;
-  while (regs[i].name != NULL) {
-    sq_pushstring(v,_H(regs[i].name));
-    sq_newclosure(v,regs[i].f,0);
-    sq_setnativeclosurename(v,-1,regs[i].name);
-    sq_setparamscheck(v,regs[i].nparamscheck,NULL);
-    sq_createslot(v,-3);
-    ++i;
-  }
-  return i;
-}

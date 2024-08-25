@@ -10,6 +10,13 @@
 struct SQTable;
 struct SQObjectPtr;
 
+struct SQRegFunction {
+  const SQChar *name = AZEROSTR;
+  SQFUNCTION f = nullptr;
+  int nparamscheck = 0;
+  const SQChar *typemask = AZEROSTR;
+};
+
 struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 {
  public:
@@ -62,7 +69,7 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   SQCOMPILERERROR _compilererrorhandler;
   bool _debuginfo;
 
-  const SQObjectPtr& GetInterfaceDelegate(HSQUIRRELVM v, const tUUID& aID);
+  const SQObjectPtr& GetInterfaceDelegate(const tUUID& aID);
   typedef astl::hash_map<tUUID,SQObjectPtr> tDelegateMap;
   tDelegateMap  mmapDelegates;
 
@@ -90,10 +97,8 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   }
 
   tBool mbLangDelegatesLocked;
-  const SQObjectPtr& GetLangDelegate(HSQUIRRELVM v, const achar* delID);
+  const SQObjectPtr& GetLangDelegate(const achar* delID);
   void LockLangDelegates();
-
-  void RegisterRoot(HSQUIRRELVM v, const SQRegFunction* apFuncs);
 };
 
 #define _ddel(ss,basename) _table((ss)._##basename##_default_delegate)
@@ -104,7 +109,9 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 #define rsl(l) (l)
 #endif
 
-bool CompileTypemask(SQIntVec &res,const SQChar *typemask);
+Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc);
+tBool RegisterSQRegFunction(ain_nn_mut<SQTable> aTable, ain<SQRegFunction> aRegFunc);
+tBool RegisterSQRegFunctions(ain_nn_mut<SQTable> aTable, ain<SQRegFunction*> aRegFuncs);
 
 void *sq_vm_malloc(unsigned int size);
 void *sq_vm_realloc(void *p,unsigned int oldsize,unsigned int size);

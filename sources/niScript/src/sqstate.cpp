@@ -2,7 +2,6 @@
 
 #include "sqconfig.h"
 #include "sqopcodes.h"
-#include "sqvm.h"
 #include "sqstate.h"
 #include "sqfuncproto.h"
 #include "sqclosure.h"
@@ -15,23 +14,7 @@
 #pragma niNote("USING GARBAGE COLLECTOR")
 #endif
 
-#define DEBUG_VM_ROOT(FMT) //niDebugFmt
-
-static __noinline SQTable* _CreateDefaultDelegate(SQSharedState *ss,SQRegFunction *funcz)
-{
-  int i=0;
-  SQTable *t = SQTable::Create();
-  while (funcz[i].name!=0) {
-    Ptr<SQNativeClosure> nc = SQNativeClosure::Create(funcz[i].f);
-    nc->_nparamscheck = funcz[i].nparamscheck;
-    nc->_name = _H(funcz[i].name);
-    if (funcz[i].typemask && !CompileTypemask(nc->_typecheck,funcz[i].typemask))
-      return NULL;
-    t->NewSlot(_H(funcz[i].name),nc.ptr());
-    i++;
-  }
-  return t;
-}
+#define DEBUG_GC_ROOT(FMT) //niDebugFmt
 
 SQObjectPtr _null_=SQObjectPtr();
 SQObjectPtr _notnull_(1);
@@ -55,23 +38,29 @@ SQSharedState::SQSharedState() {
   newsysstring(_A("function"));
 #undef newsysstring
 
+  niLet createDelegate = [](SQSharedState *ss,SQRegFunction *funcz) -> SQObjectPtr {
+    NN_mut<SQTable> t { SQTable::Create() };
+    RegisterSQRegFunctions(t, funcz);
+    return t.raw_ptr();
+  };
+
   _refs_table = SQTable::Create();
-  _table_default_delegate=_CreateDefaultDelegate(this,_table_default_delegate_funcz);
-  _array_default_delegate=_CreateDefaultDelegate(this,_array_default_delegate_funcz);
-  _string_default_delegate=_CreateDefaultDelegate(this,_string_default_delegate_funcz);
-  _number_default_delegate=_CreateDefaultDelegate(this,_number_default_delegate_funcz);
-  _closure_default_delegate=_CreateDefaultDelegate(this,_closure_default_delegate_funcz);
-  _idxprop_default_delegate=_CreateDefaultDelegate(this,_idxprop_default_delegate_funcz);
-  _vec2f_default_delegate=_CreateDefaultDelegate(this,_vec2f_default_delegate_funcz);
-  _vec3f_default_delegate=_CreateDefaultDelegate(this,_vec3f_default_delegate_funcz);
-  _vec4f_default_delegate=_CreateDefaultDelegate(this,_vec4f_default_delegate_funcz);
-  _matrixf_default_delegate=_CreateDefaultDelegate(this,_matrixf_default_delegate_funcz);
-  _uuid_default_delegate=_CreateDefaultDelegate(this,_uuid_default_delegate_funcz);
-  _enum_default_delegate=_CreateDefaultDelegate(this,_enum_default_delegate_funcz);
-  _method_default_delegate=_CreateDefaultDelegate(this,_method_default_delegate_funcz);
-  _interface_default_delegate=_CreateDefaultDelegate(this,_interface_default_delegate_funcz);
-  _error_code_default_delegate=_CreateDefaultDelegate(this,_error_code_default_delegate_funcz);
-  _resolved_type_default_delegate=_CreateDefaultDelegate(this,_resolved_type_default_delegate_funcz);
+  _table_default_delegate = createDelegate(this,_table_default_delegate_funcz);
+  _array_default_delegate = createDelegate(this,_array_default_delegate_funcz);
+  _string_default_delegate = createDelegate(this,_string_default_delegate_funcz);
+  _number_default_delegate = createDelegate(this,_number_default_delegate_funcz);
+  _closure_default_delegate = createDelegate(this,_closure_default_delegate_funcz);
+  _idxprop_default_delegate = createDelegate(this,_idxprop_default_delegate_funcz);
+  _vec2f_default_delegate = createDelegate(this,_vec2f_default_delegate_funcz);
+  _vec3f_default_delegate = createDelegate(this,_vec3f_default_delegate_funcz);
+  _vec4f_default_delegate = createDelegate(this,_vec4f_default_delegate_funcz);
+  _matrixf_default_delegate = createDelegate(this,_matrixf_default_delegate_funcz);
+  _uuid_default_delegate = createDelegate(this,_uuid_default_delegate_funcz);
+  _enum_default_delegate = createDelegate(this,_enum_default_delegate_funcz);
+  _method_default_delegate = createDelegate(this,_method_default_delegate_funcz);
+  _interface_default_delegate = createDelegate(this,_interface_default_delegate_funcz);
+  _error_code_default_delegate = createDelegate(this,_error_code_default_delegate_funcz);
+  _resolved_type_default_delegate = createDelegate(this,_resolved_type_default_delegate_funcz);
 
   _typeStr_null = _H("null");
   _typeStr_int = _H("int");
@@ -119,7 +108,7 @@ const achar* SQSharedState::GetTypeNameStr(SQObjectType type) const {
   return _stringval(obj);
 }
 
-bool CompileTypemask(SQIntVec &res,const SQChar *typemask)
+static bool CompileTypemask(SQIntVec &res,const SQChar *typemask)
 {
   int i = 0;
 
@@ -152,6 +141,45 @@ bool CompileTypemask(SQIntVec &res,const SQChar *typemask)
 
   }
   return true;
+}
+
+Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc) {
+  niCheck(niStringIsOK(aRegFunc.name), nullptr);
+  niCheck(aRegFunc.f != nullptr, nullptr);
+
+  Ptr<SQNativeClosure> nc = SQNativeClosure::Create(aRegFunc.f);
+  nc->_nparamscheck = aRegFunc.nparamscheck;
+  nc->_name = _H(aRegFunc.name);
+  if (niStringIsOK(aRegFunc.typemask)) {
+    if (!CompileTypemask(nc->_typecheck,aRegFunc.typemask)) {
+      niError(niFmt("'%s' CompileTypemask '%s' failed.",
+                    aRegFunc.name,
+                    aRegFunc.typemask));
+      return nullptr;
+    }
+  }
+  return nc;
+}
+
+tBool RegisterSQRegFunction(ain_nn_mut<SQTable> aTable, ain<SQRegFunction> aRegFunc) {
+  Ptr<SQNativeClosure> nc = CreateSQNativeClosure(aRegFunc);
+  niCheckIsOK(nc,eFalse);
+  aTable->NewSlot(nc->_name, nc.ptr());
+  return eTrue;
+}
+
+tBool RegisterSQRegFunctions(ain_nn_mut<SQTable> aTable, ain<SQRegFunction*> aRegFuncs) {
+  tBool ret = eTrue;
+  int i = 0;
+  while (niStringIsOK(aRegFuncs[i].name)) {
+    niLet& reg = aRegFuncs[i];
+    if (!RegisterSQRegFunction(aTable, reg)) {
+      niError(niFmt("Can't register function '%s'.", reg.name));
+      ret = eFalse;
+    }
+    ++i;
+  }
+  return ret;
 }
 
 SQSharedState::~SQSharedState()
@@ -263,7 +291,7 @@ int SQGarbageCollector::AddRoot(const SQObjectPtr& o)
 
   ++_collectable(o)->mnRootRefs;
   if (_collectable(o)->mnRootRefs == 1) {
-    DEBUG_VM_ROOT(("V/vm_addRoot: %p",o._var.mIntPtr));
+    DEBUG_GC_ROOT(("SQGarbageCollector::AddRoot: %p",o._var.mIntPtr));
     _gc_roots.insert(o);
   }
   return _collectable(o)->mnRootRefs;
@@ -275,7 +303,7 @@ int SQGarbageCollector::RemoveRoot(const SQObjectPtr& o)
 
   --_collectable(o)->mnRootRefs;
   if (_collectable(o)->mnRootRefs == 0) {
-    DEBUG_VM_ROOT(("V/vm_removeRoot: %p",o._var.mIntPtr));
+    DEBUG_GC_ROOT(("SQGarbageCollector::RemoveRoot: %p",o._var.mIntPtr));
     _gc_roots.erase(o);
   }
 
@@ -305,13 +333,7 @@ tI32 Collectable_ReleaseRootRef(SQCollectable* o) {
 
 #endif
 
-void SQSharedState::RegisterRoot(HSQUIRRELVM v, const SQRegFunction* apFuncs) {
-  sq_pushroottable(v);
-  sq_registerfuncs(v,apFuncs);
-  sq_pop(v,1);
-}
-
-const SQObjectPtr& SQSharedState::GetLangDelegate(HSQUIRRELVM v, const achar* delID) {
+const SQObjectPtr& SQSharedState::GetLangDelegate(const achar* delID) {
   if (mbLangDelegatesLocked)
     return _null_;
   if (StrEq(delID,"table")) {
@@ -365,7 +387,7 @@ const SQObjectPtr& SQSharedState::GetLangDelegate(HSQUIRRELVM v, const achar* de
     const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(
         ni::GetLang()->GetInterfaceUUID(hsp));
     if (pInterfaceDef) {
-      return GetInterfaceDelegate(v,*pInterfaceDef->mUUID);
+      return GetInterfaceDelegate(*pInterfaceDef->mUUID);
     }
   }
   return _null_;

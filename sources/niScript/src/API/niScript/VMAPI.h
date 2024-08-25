@@ -99,15 +99,6 @@ typedef int (*SQREADFUNC)(ni::tPtr,ni::tPtr,int);
 
 typedef SQInt (*SQLEXREADFUNC)(ni::tPtr);
 
-typedef struct tagSQRegFunction{
-  const SQChar *name;
-  SQFUNCTION f;
-  int nparamscheck;
-  const SQChar *typemask;
-}SQRegFunction;
-
-niExportFunc(int) sq_registerfuncs(HSQUIRRELVM v, const SQRegFunction* funcs);
-
 /*vm*/
 niExportFunc(SQSharedState*) sq_getss();
 niExportFunc(void) sq_seterrorhandler(HSQUIRRELVM v);
@@ -136,7 +127,6 @@ niExportFunc(void) sq_pushud(HSQUIRRELVM v,SQUserData* ud);
 niExportFunc(void) sq_newtable(HSQUIRRELVM v);
 niExportFunc(void) sq_newarray(HSQUIRRELVM v,int size);
 niExportFunc(void) sq_newclosure(HSQUIRRELVM v,SQFUNCTION func,unsigned int nfreevars);
-niExportFunc(SQRESULT) sq_setparamscheck(HSQUIRRELVM v,int nparamscheck,const SQChar *typemask);
 niExportFunc(void) sq_pushstring(HSQUIRRELVM v,const ni::iHString *s);
 niExportFunc(void) sq_pushf32(HSQUIRRELVM v,ni::tF32 f);
 niExportFunc(void) sq_pushf64(HSQUIRRELVM v,ni::tF64 f);

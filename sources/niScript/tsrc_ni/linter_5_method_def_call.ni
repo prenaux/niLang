@@ -5,7 +5,7 @@ local __lint = {
 
 local myout = 789, myout2 = ""
 
-function randHamster(niLang:iMath aMath,aMin,aMax) : (myout,myout2) {
+function randHamster(iMath aMath,aMin,aMax) : (myout,myout2) {
   local hamster = 456;
   aMath.NotaMethod(aMin,aMax); // should key_notfound_callk
   aMath.RandIntRange(aMin,aMax,123); // too many arguments
@@ -13,7 +13,7 @@ function randHamster(niLang:iMath aMath,aMin,aMax) : (myout,myout2) {
   return aMath.RandIntRange(aMin+myout,aMax+hamster); // should be good
 }
 
-function writeHamster(niLang:iFileSystem aFS,aFileName) {
+function writeHamster(iFileSystem aFS,aFileName) {
   local hamster = "This is the story of a hamster";
   local fp = aFS.FileOpen(aFileName,::eFileOpenMode.Write);
   fp.WriteString(hamster);

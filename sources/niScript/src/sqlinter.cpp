@@ -391,6 +391,7 @@ struct sLinter {
   SQSharedState _ss;
   SQObjectPtr _vmroot;
   SQObjectPtr _typedefs;
+  SQObjectPtr _lintFuncCallQueryInterface;
 
 #if !defined SQLINTER_LOG_INLINE
   astl::vector<cString> _logs;
@@ -629,6 +630,19 @@ struct sLinter {
       niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID));
   }
 
+  astl::optional<const sInterfaceDef*> FindInterfaceDef(ain_nn_mut<iHString> aInterfaceName) const
+  {
+    niLet interfaceUUID = ni::GetLang()->GetInterfaceUUID(aInterfaceName);
+    if (interfaceUUID == kuuidZero)
+      return astl::nullopt;
+
+    niLet interfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(interfaceUUID);
+    if (interfaceDef == nullptr)
+      return astl::nullopt;
+
+    return interfaceDef;
+  }
+
   astl::optional<const iObjectTypeDef*> FindObjectTypeDef(const achar* aObjectTypeName) const {
     // TODO: Cache returned values
     niLoop(mi, ni::GetLang()->GetNumModuleDefs()) {
@@ -660,35 +674,18 @@ struct sLinter {
     SQObjectPtr resolvedType = _null_;
 
     niLet hspType = as_NN(_stringhval(aType));
-    niLet strType = cString { hspType->GetChars(), hspType->GetLength() };
+    niLet typeStrChars = hspType->GetChars();
+    niLet typeStrLen = hspType->GetLength();
     // niDebugFmt(("... ResolveType: %s", hspType));
-    if (strType.contains(":")) {
-      niLet moduleName = strType.Before(":");
-      niLet interfaceName = strType.After(":");
-      // niDebugFmt(("... ResolveType: moduleName: %s, interfaceName: %s", moduleName, interfaceName));
-
-      niLet moduleDef = ni::GetLang()->LoadModuleDef(moduleName.c_str());
-      if (!niIsOK(moduleDef)) {
+    if (typeStrLen >= 2 && typeStrChars[0] == 'i' && StrIsUpper(typeStrChars[1])) {
+      niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
+      if (!foundInterfaceDef.has_value()) {
         resolvedType = niNew sScriptTypeErrorCode(
-          this->_ss, _HC(error_code_cant_load_module_def), niHStr(hspType));
+          this->_ss, _HC(error_code_cant_find_interface_def), niHStr(hspType));
       }
       else {
-        niLetMut foundInterfaceDef = opt<const sInterfaceDef>{};
-        niLoop(i, moduleDef->GetNumInterfaces()) {
-          niLet idef = moduleDef->GetInterface(i);
-          if (StrEq(interfaceName.c_str(), idef->maszName)) {
-            foundInterfaceDef = idef;
-            break;
-          }
-        }
-        if (!foundInterfaceDef.has_value()) {
-          resolvedType = niNew sScriptTypeErrorCode(
-            this->_ss, _HC(error_code_cant_find_interface_def), niHStr(hspType));
-        }
-        else {
-          resolvedType = niNew sScriptTypeInterfaceDef(
-            this->_ss, foundInterfaceDef.value());
-        }
+        resolvedType = niNew sScriptTypeInterfaceDef(
+          this->_ss, foundInterfaceDef.value());
       }
     }
     else {
@@ -719,8 +716,8 @@ struct sLinter {
           // niDebugFmt(("... _table_ddel: %s", _TableToString(_table_ddel,"")));
           return _ddel(ss,table)->Get(key,dest);
         }
-        // TODO: Ideally we'd lookup the methods in the interface, etc...
       case OT_IUNKNOWN:
+        // TODO: This should not happen, it should be a sInterfaceDef
         return false;
       case OT_ARRAY:
         if (sq_isnumeric(key)) {
@@ -741,37 +738,43 @@ struct sLinter {
         }
         else return _ddel(ss,string)->Get(key,dest);
         break;
+
       case OT_USERDATA:
         {
           niLet ud = _userdata(self);
           switch (ud->GetType()) {
             case eScriptType_InterfaceDef: {
-              niLet idef = ((sScriptTypeInterfaceDef*)ud)->pInterfaceDef;
+              niLet idef = as_nn(((sScriptTypeInterfaceDef*)ud)->pInterfaceDef);
               if (!sq_isstring(key)) {
-                niWarning(niFmt(
-                  "LintGet InterfaceDef '%s' key '%s' isn't a string.",
-                  idef->maszName, _ObjToString(key)));
+                dest = niNew sScriptTypeErrorCode(
+                  _ss,
+                  _HC(error_code_cant_find_method_def),
+                  niFmt("Looking in interface_def '%s', key '%s' isn't a string.",
+                        idef->maszName, _ObjToString(key)));
                 return false;
               }
-
-              // TODO: The linear search and allocation is suboptimal. This
-              // whole thing should end up in its own function or maybe merged
-              // into sScriptTypeInterfaceDef.
-              niLet keyChars = _stringval(key);
-              niLoop(mi,idef->mnNumMethods) {
-                niLet mdef = idef->mpMethods[mi];
-                if (StrEq(keyChars, mdef->maszName)) {
-                  dest = niNew sScriptTypeMethodDef(_ss, idef, mdef);
-                  return true;
-                }
+              else if (_stringhval(key) == _HC(QueryInterface)) {
+                dest = _lintFuncCallQueryInterface;
+                return true;
               }
+              else {
+                // TODO: The linear search and allocation is suboptimal. This
+                // whole thing should end up in its own function or maybe merged
+                // into sScriptTypeInterfaceDef.
+                niLet keyChars = _stringval(key);
+                niLoop(mi,idef->mnNumMethods) {
+                  niLet mdef = idef->mpMethods[mi];
+                  if (StrEq(keyChars, mdef->maszName)) {
+                    dest = niNew sScriptTypeMethodDef(_ss, idef, mdef);
+                    return true;
+                  }
+                }
 
-              // TODO: This is a bit shit, we probalby need some kind of
-              // sScriptTypeError thing
-              dest = niNew sScriptTypeErrorCode(
-                _ss,
-                _HC(error_code_cant_find_method_def),
-                niFmt("method_def<%s::%s>", idef->maszName, keyChars));
+                dest = niNew sScriptTypeErrorCode(
+                  _ss,
+                  _HC(error_code_cant_find_method_def),
+                  niFmt("method_def<%s::%s>", idef->maszName, keyChars));
+              }
               return false;
             }
           }
@@ -785,12 +788,13 @@ struct sLinter {
               if (opExt & _OPEXT_GET_RAW)
                 return false;
               // TODO: Lint call _get metamethod? Probably overkill.
-              return false;
+             return false;
             }
           }
           return getRetVal;
         }
         break;
+
       case OT_INTEGER:case OT_FLOAT:
         return _ddel(ss,number)->Get(key,dest);
       case OT_CLOSURE: case OT_NATIVECLOSURE:
@@ -841,21 +845,22 @@ struct sLinter {
   }
 };
 
-static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
-  return niNew sScriptTypeErrorCode(
-    aLinter._ss,
-    _HC(error_code_lint_call_error),
-    aMsg);
+static SQObjectPtr _MakeScriptErrorCode(ain<sLinter> aLinter, ain_nn_mut<iHString> aKind, const achar* aMsg) {
+  return niNew sScriptTypeErrorCode(aLinter._ss, aKind, aMsg);
 }
 
-static astl::optional<cString> _GetLintCallError(ain<SQObjectPtr> aRet) {
+static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
+  return _MakeScriptErrorCode(aLinter, _HC(error_code_lint_call_error), aMsg);
+}
+
+static QPtr<sScriptTypeErrorCode> _GetScriptErrorCode(ain<SQObjectPtr> aRet) {
   if (sqa_getscriptobjtype(aRet) == eScriptType_ErrorCode) {
     niLet unresolved = (sScriptTypeErrorCode*)_userdata(aRet);
     if (unresolved->_hspKind == _HC(error_code_lint_call_error)) {
-      return unresolved->_strDesc;
+      return unresolved;
     }
   }
-  return astl::nullopt;
+  return nullptr;
 }
 
 struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
@@ -884,7 +889,7 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
     }
 
     niLet objTypeName = aCallArgs[1];
-    niDebugFmt(("... LintCall: objTypeName: %s", _ObjToString(objTypeName)));
+    // niDebugFmt(("... LintCall: objTypeName: %s", _ObjToString(objTypeName)));
     if (sqa_getscriptobjtype(objTypeName) == eScriptType_String) {
       niLet objTypeDef = aLinter.FindObjectTypeDef(_stringval(objTypeName));
       if (!objTypeDef.has_value()) {
@@ -898,6 +903,88 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
+  NN<iHString> _name;
+
+  sLintFuncCallLintAssertType(const iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 2;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& expectedTypeArg = aCallArgs[1];
+    niLet& actualObject = aCallArgs[2];
+
+    if (sqa_getscriptobjtype(expectedTypeArg) != eScriptType_String) {
+      return _MakeLintCallError(
+        aLinter,niFmt("First parameter should be the expected type name as a literal string but got '%s'.", _ObjToString(expectedTypeArg)));
+    }
+
+    niLet expectedType = _stringhval(expectedTypeArg);
+    niLet actualType = _ObjTypeString(actualObject);
+    if (!actualType.IEq(niHStr(expectedType))) {
+      return _MakeLintCallError(
+        aLinter,
+        niFmt("Expected type '%s' but got '%s'.",
+              expectedType, actualType));
+    }
+
+    return _one_;
+  }
+};
+
+struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
+  sLintFuncCallQueryInterface()
+  {}
+
+  virtual nn<iHString> __stdcall GetName() const {
+    return _HC(QueryInterface);
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& qiID = aCallArgs[1];
+    niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
+    tUUID qiUUID = kuuidZero;
+    switch(sqa_getscriptobjtype(qiID)) {
+      case eScriptType_String: {
+        qiUUID = ni::GetLang()->GetInterfaceUUID(_stringhval(qiID));
+        break;
+      }
+      default:
+        return _MakeLintCallError(
+          aLinter,niFmt("Invalid interface id type '%s'.", _ObjToString(qiID)));
+    }
+
+    niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
+    if (qiUUID == kuuidZero) {
+      return _MakeLintCallError(
+        aLinter,niFmt("Can't find interface uuid '%s'.", _ObjToString(qiID)));
+    }
+
+    niLet qiDef = ni::GetLang()->GetInterfaceDefFromUUID(qiUUID);
+    if (qiDef == nullptr) {
+      return _MakeLintCallError(
+        aLinter,niFmt("Can't find interface def '%s'.", _ObjToString(qiID)));
+    }
+
+    niDebugFmt(("... sLintFuncCallQueryInterface: qiDef: %s", qiDef->maszName));
+    return niNew sScriptTypeInterfaceDef(aLinter._ss, qiDef);
+  }
+};
+
 void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
   RegisterFunc(table, "vmprint", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprint));
@@ -906,24 +993,12 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterFunc(table, "vmprintdebugln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebugln));
   RegisterFuncs(table, SQSharedState::_base_funcs);
   RegisterFuncs(table, SQSharedState::_concurrent_funcs);
-  //
-  // TODO: This should register a callback that resolve the type or the
-  // return type itself. Maybe a sMethodDef without an interface? see ni.cpp
-  // kFuncDecl_GetArgs for an example. Or add a "fnResolveReturnType"
-  // callback to SQRegFunction?
-  //
-  // We could put a "return type" and add a eScriptType_LintTypeResolver
-  // userdata type that do the resolving for the few cases that need to be dynamic.
-  //
-  // If that return type field ends up ion SQRegFunction it can also be
-  // applied to standard library functions reasonably painlessly and
-  // eScriptType_LintTypeResolver can be used even for complex return type
-  // resolution - ones that depend on the input value.
-  //
-  {
-    RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
-    RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
-  }
+
+  RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
+
+  _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();
 }
 
 struct sLintStackEntry {
@@ -1132,6 +1207,12 @@ void SQFunctionProto::LintTrace(
   auto op_loadroottable = [&](const SQInstruction& inst) {
     _LTRACE(("op_loadroottable: %s", sstr(IARG0)));
     sset(IARG0, aClosure._root);
+  };
+
+  auto op_move = [&](const SQInstruction& inst) {
+    SQObjectPtr v = sget(IARG1);
+    _LTRACE(("op_move: %s -> %s", _ObjToString(v), sstr(IARG0)));
+    sset(IARG0, v);
   };
 
   auto op_closure = [&](const SQInstruction& inst) {
@@ -1390,7 +1471,7 @@ void SQFunctionProto::LintTrace(
       if (_LENABLED(call_num_args) && (paramssize != nargs)) {
         _LINT(call_num_args,
               niFmt("call_func: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
-                    paramssize, nargs-1, _FuncProtoToString(func)));
+                    arity, nargs-1, _FuncProtoToString(func)));
         return _null_;
       }
 
@@ -1497,7 +1578,7 @@ void SQFunctionProto::LintTrace(
       vArgs.resize(nargs);
       niLoop(pi, nargs) {
         vArgs[pi] = sget(stackbase+pi);
-        niDebugFmt(("... vArgs[%d]: %s", pi, _ObjToString(vArgs[pi])));
+        // niDebugFmt(("... vArgs[%d]: %s", pi, _ObjToString(vArgs[pi])));
       }
       return aLintFunc->LintCall(aLinter, vArgs);
     };
@@ -1538,33 +1619,38 @@ void SQFunctionProto::LintTrace(
         QPtr<iLintFuncCall> lintFuncCall = _iunknown(tocall);
         if (lintFuncCall.IsOK()) {
           niLet ret = call_lint_func(as_NN(lintFuncCall));
-          niLet lintCallError = _GetLintCallError(ret);
-          if (!lintCallError.has_value()) {
+          // niDebugFmt(("... call_lint_func(%s): ret: %s", lintFuncCall->GetName(), _ObjToString(ret)));
+          niLet lintCallError = _GetScriptErrorCode(ret);
+          if (!lintCallError.IsOK()) {
             // no error
             sset(IARG0, ret);
           }
           else {
             if (_LENABLED(call_error)) {
-              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError.value()));
+              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError->_strDesc));
             }
             sset(IARG0, ret);
           }
         }
         else {
           if (_LENABLED(call_warning)) {
-            _LINT(call_warning, niFmt("Attempting to call '%s' (%s).",
-                                      _ObjToString(tocall), aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
+            _LINT(call_warning,
+                  niFmt("Attempting to call iunknown '%s' (%s).",
+                        _ObjToString(tocall),
+                        aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
           }
-          sset(IARG0, _null_);
+          sset(IARG0, _MakeLintCallError(aLinter, _ObjToString(tocall).c_str()));
         }
         break;
       };
       default: {
         if (_LENABLED(call_warning)) {
-          _LINT(call_warning, niFmt("Attempting to call '%s' (%s).",
-                                    _ObjToString(tocall), aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
+          _LINT(call_warning,
+                niFmt("Attempting to call '%s' (%s).",
+                      _ObjToString(tocall),
+                      aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
         }
-        sset(IARG0, _null_);
+        sset(IARG0, _MakeLintCallError(aLinter, _ObjToString(tocall).c_str()));
         break;
       }
     }
@@ -1604,6 +1690,7 @@ void SQFunctionProto::LintTrace(
       case _OP_LOAD: op_load(inst); break;
       case _OP_LOADNULL: op_loadnull(inst); break;
       case _OP_LOADROOTTABLE: op_loadroottable(inst); break;
+      case _OP_MOVE: op_move(inst); break;
       case _OP_CLOSURE: op_closure(inst); break;
       case _OP_NEWSLOT: op_newslot(inst); break;
       case _OP_GETK: op_getk(inst); break;

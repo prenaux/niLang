@@ -154,19 +154,19 @@ function main() {
       ::CHECK_EQUAL(6,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 5,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed]})
+        {[call_num_args: call_func: Incorrect number of arguments passed]})
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 0 but got 1. Calling f0]})
+        {[call_num_args: call_func: Incorrect number of arguments passed, expected 0 but got 1. Calling f0]})
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 0 but got 2. Calling f0]})
+        {[call_num_args: call_func: Incorrect number of arguments passed, expected 0 but got 2. Calling f0]})
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 3 but got 4. Calling f3]})
+        {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 4. Calling f3]})
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 3 but got 2. Calling f3]})
+        {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 2. Calling f3]})
     })
 
   testLinter.check(
@@ -180,24 +180,33 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 2 but got 3. Calling method_def<iMath,RandIntRange/2>.]});
+        {[call_num_args: call_method: Incorrect number of arguments passed, expected 2 but got 3. Calling method_def<iMath,RandIntRange/2>.]});
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 2 but got 1. Calling method_def<iMath,RandIntRange/2>.]});
+        {[call_num_args: call_method: Incorrect number of arguments passed, expected 2 but got 1. Calling method_def<iMath,RandIntRange/2>.]});
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_num_args: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
+        {[call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
     })
 
   testLinter.check(
     "linter_6_query_interface.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        "call_warning: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iUnknown::RandIntRange>>");
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_callk: "RandIntRange" not found in interface_def<iUnknown>]});
+
       ::CHECK_EQUAL(1,aLintResults.mLogsError,
                     "Expected lint errors.");
-      ::CHECK_EQUAL(3,aLintResults.mLogsWarning,
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
     })
 
@@ -231,6 +240,21 @@ function main() {
       ::CHECK_EQUAL(6,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_8_lint_assert_type.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_callk: "Log" not found in interface_def<iUnknown>]});
+
+      ::CHECK_EQUAL(1,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
     })
 

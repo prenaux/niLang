@@ -177,19 +177,10 @@ niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const achar* aaszNa
 {
   sq_pushroottable(v);
   sq_pushstring(v,_H(aaszName));
-  sq_newclosure(v,func,0);
+  sq_newclosure(v,func);
   sq_setnativeclosurename(v,-1,aaszName);
   sq_createslot(v,-3);
   sq_pop(v,1);
-}
-
-///////////////////////////////////////////////
-niExportFunc(void) sqa_registerfunction(HSQUIRRELVM v, const achar* aaszName, SQFUNCTION func)
-{
-  sq_pushstring(v,_H(aaszName));
-  sq_newclosure(v,func,0);
-  sq_setnativeclosurename(v,-1,aaszName);
-  sq_createslot(v,-3);
 }
 
 ///////////////////////////////////////////////

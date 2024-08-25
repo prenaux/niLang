@@ -822,7 +822,7 @@ bool SQVM::CallNative(SQNativeClosure *nclosure, int nargs, int stackbase, SQObj
   if (((nparamscheck > 0) && (nparamscheck != nargs))
       || ((nparamscheck < 0) && (nargs < (-nparamscheck))))
   {
-    VM_ERRORB(niFmt(_A("wrong number of parameters, native closure '%s' (0x%x), expected %d, passed %d"),_stringval(nclosure->_name),nclosure,nparamscheck,nargs));
+    VM_ERRORB(niFmt("wrong number of parameters, native closure '%s' (0x%x), expected %d, passed %d",nclosure->_name,nclosure,nparamscheck,nargs));
   }
 
   int tcs = nclosure->_typecheck.size();
@@ -852,11 +852,6 @@ bool SQVM::CallNative(SQNativeClosure *nclosure, int nargs, int stackbase, SQObj
   _ci->_prevstkbase = stackbase - _stackbase;
   _ci->_ncalls = 1;
   _stackbase = stackbase;
-  // push outers
-  int outers = nclosure->_outervalues.size();
-  for (int i = 0; i < outers; i++) {
-    Push(nclosure->_outervalues[i]);
-  }
   _ci->_prevtop = (oldtop - oldstackbase);
   int ret = (nclosure->_function)(this);
   _nnativecalls--;

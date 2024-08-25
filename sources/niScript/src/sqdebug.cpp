@@ -33,8 +33,8 @@ cString sq_getcallinfo_string(HSQUIRRELVM v, int level)
         {
           strSource = _A("NATIVE");
           strFunc = _A("unknown");
-          if(_sqtype(_nativeclosure(ci._closurePtr)->_name) == OT_STRING)
-            strFunc = _stringval(_nativeclosure(ci._closurePtr)->_name);
+          if (HStringIsNotEmpty(_nativeclosure(ci._closurePtr)->_name))
+            strFunc = niHStr(_nativeclosure(ci._closurePtr)->_name);
           lineCol = {-1,-1};
           break;
         }
@@ -72,8 +72,8 @@ niExportFunc(SQRESULT) sq_stackinfos(HSQUIRRELVM v, int level, SQStackInfos *si)
         {
           si->source = _A("NATIVE");
           si->funcname = _A("unknown");
-          if(_sqtype(_nativeclosure(ci._closurePtr)->_name) == OT_STRING)
-            si->funcname = _stringval(_nativeclosure(ci._closurePtr)->_name);
+          if (HStringIsNotEmpty(_nativeclosure(ci._closurePtr)->_name))
+            si->funcname = niHStr(_nativeclosure(ci._closurePtr)->_name);
           si->lineCol = {-1,-1};
           break;
         }

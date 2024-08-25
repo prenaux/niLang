@@ -140,9 +140,8 @@ void sqGetIndexDump(cString& strOut, HSQUIRRELVM v, int idx, int size)
       {
         const achar* aszSource = _A("NATIVE");
         const achar* aszFuncName = _A("unknown");
-        if (_sqtype(_nativeclosure(obj)->_name) == OT_STRING)
-        {
-          aszFuncName = _stringval(_nativeclosure(obj)->_name);
+        if (HStringIsNotEmpty(_nativeclosure(obj)->_name)) {
+          aszFuncName = niHStr(_nativeclosure(obj)->_name);
         }
         strOut << aszFuncName << _A("[") << aszSource << _A("]");
         break;

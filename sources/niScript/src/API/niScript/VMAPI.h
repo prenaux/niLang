@@ -126,7 +126,7 @@ niExportFunc(void) sq_move(HSQUIRRELVM dest,HSQUIRRELVM src,int idx);
 niExportFunc(void) sq_pushud(HSQUIRRELVM v,SQUserData* ud);
 niExportFunc(void) sq_newtable(HSQUIRRELVM v);
 niExportFunc(void) sq_newarray(HSQUIRRELVM v,int size);
-niExportFunc(void) sq_newclosure(HSQUIRRELVM v,SQFUNCTION func,unsigned int nfreevars);
+niExportFunc(void) sq_newclosure(HSQUIRRELVM v,SQFUNCTION func);
 niExportFunc(void) sq_pushstring(HSQUIRRELVM v,const ni::iHString *s);
 niExportFunc(void) sq_pushf32(HSQUIRRELVM v,ni::tF32 f);
 niExportFunc(void) sq_pushf64(HSQUIRRELVM v,ni::tF64 f);
@@ -241,7 +241,6 @@ niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);
 
 niExportFunc(int) sqa_registernewtypes(HSQUIRRELVM v);
 niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const SQChar* aaszName, SQFUNCTION func);
-niExportFunc(void) sqa_registerfunction(HSQUIRRELVM v, const SQChar* aaszName, SQFUNCTION func);
 niExportFunc(void) sqa_setdebugname(HSQUIRRELVM v, int idx, const SQChar* aaszName);
 
 niExportFunc(void*) sqa_getud(HSQUIRRELVM v, int idx, int aType);

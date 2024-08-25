@@ -422,9 +422,6 @@ void SQClosure::Mark(SQCollectable **chain)
 void SQNativeClosure::Mark(SQCollectable **chain)
 {
   START_MARK();
-  for(tU32 i = 0; i < _outervalues.size(); i++) {
-    SQGarbageCollector::MarkObject(_outervalues[i], chain);
-  }
   END_MARK(chain);
 }
 

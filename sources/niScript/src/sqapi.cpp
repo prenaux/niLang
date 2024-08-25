@@ -213,14 +213,10 @@ niExportFunc(SQRESULT) sq_arrayreverse(HSQUIRRELVM v,int idx)
   return SQ_OK;
 }
 
-niExportFunc(void) sq_newclosure(HSQUIRRELVM v,SQFUNCTION func,unsigned int nfreevars)
+niExportFunc(void) sq_newclosure(HSQUIRRELVM v,SQFUNCTION func)
 {
   SQNativeClosure *nc = SQNativeClosure::Create(func);
   nc->_nparamscheck = 0;
-  for(unsigned int i = 0; i < nfreevars; i++) {
-    nc->_outervalues.push_back(v->Top());
-    v->Pop();
-  }
   v->Push(SQObjectPtr(nc));
 }
 
@@ -740,12 +736,6 @@ niExportFunc(SQRESULT) sq_setfreevariable(HSQUIRRELVM v,int idx,unsigned int nva
     case OT_CLOSURE:
       if(_closure(self)->_outervalues.size()>nval){
         _closure(self)->_outervalues[nval]=stack_get(v,-1);
-      }
-      else return sq_throwerror(v,_A("invalid free var index"));
-      break;
-    case OT_NATIVECLOSURE:
-      if(_nativeclosure(self)->_outervalues.size()>nval){
-        _nativeclosure(self)->_outervalues[nval]=stack_get(v,-1);
       }
       else return sq_throwerror(v,_A("invalid free var index"));
       break;

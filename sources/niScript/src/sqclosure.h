@@ -60,12 +60,11 @@ public:
 #ifndef NO_GARBAGE_COLLECTOR
   virtual void __stdcall Mark(SQCollectable **chain);
 #endif
-  virtual void __stdcall Invalidate(){_outervalues.resize(0);}
-  SQFUNCTION _function;
-  SQObjectPtr _name;
-  SQObjectPtrVec _outervalues;
+  virtual void __stdcall Invalidate() {}
+  SQFUNCTION _function = nullptr;
+  tHStringPtr _name;
   SQIntVec _typecheck;
-  int _nparamscheck;
+  int _nparamscheck = 0;
 };
 
 #endif //_SQCLOSURE_H_

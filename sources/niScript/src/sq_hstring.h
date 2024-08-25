@@ -66,5 +66,15 @@ _HDecl(error_code_cant_find_type_uuid);
 _HDecl(error_code_lint_call_error);
 _HDecl(resolved_type);
 _HDecl(QueryInterface);
+_HDecl_(typestr_null, "null");
+_HDecl_(typestr_int, "int");
+_HDecl_(typestr_float, "float");
+_HDecl_(typestr_string, "string");
+_HDecl_(typestr_table, "table");
+_HDecl_(typestr_array, "array");
+_HDecl_(typestr_function, "function");
+_HDecl_(typestr_userdata, "userdata");
+_HDecl_(typestr_vm, "vm");
+_HDecl_(typestr_iunknown, "iunknown");
 
 #endif // __sq_HSTRING_H__

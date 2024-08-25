@@ -7,6 +7,7 @@
 #include "sqclosure.h"
 #include "sqtable.h"
 #include "sqarray.h"
+#include "sq_hstring.h"
 
 #ifdef NO_GARBAGE_COLLECTOR
 #pragma niNote("NO GARBAGE COLLECTOR")
@@ -25,18 +26,6 @@ SQSharedState::SQSharedState() {
   _compilererrorhandler = NULL;
   _debuginfo = false;
   mbLangDelegatesLocked = eFalse;
-
-#define newsysstring(s)  _systemstrings.push_back(_H(s));
-  newsysstring(_A("null"));
-  newsysstring(_A("table"));
-  newsysstring(_A("array"));
-  newsysstring(_A("closure"));
-  newsysstring(_A("string"));
-  newsysstring(_A("userdata"));
-  newsysstring(_A("int"));
-  newsysstring(_A("float"));
-  newsysstring(_A("function"));
-#undef newsysstring
 
   niLet createDelegate = [](SQSharedState *ss,SQRegFunction *funcz) -> SQObjectPtr {
     NN_mut<SQTable> t { SQTable::Create() };
@@ -62,16 +51,16 @@ SQSharedState::SQSharedState() {
   _error_code_default_delegate = createDelegate(this,_error_code_default_delegate_funcz);
   _resolved_type_default_delegate = createDelegate(this,_resolved_type_default_delegate_funcz);
 
-  _typeStr_null = _H("null");
-  _typeStr_int = _H("int");
-  _typeStr_float = _H("float");
-  _typeStr_string = _H("string");
-  _typeStr_table = _H("table");
-  _typeStr_array = _H("array");
-  _typeStr_function = _H("function");
-  _typeStr_userdata = _H("userdata");
-  _typeStr_vm = _H("vm");
-  _typeStr_iunknown = _H("iunknown");
+  _typeStr_null = _HC(typestr_null);
+  _typeStr_int = _HC(typestr_int);
+  _typeStr_float = _HC(typestr_float);
+  _typeStr_string = _HC(typestr_string);
+  _typeStr_table = _HC(typestr_table);
+  _typeStr_array = _HC(typestr_array);
+  _typeStr_function = _HC(typestr_function);
+  _typeStr_userdata = _HC(typestr_userdata);
+  _typeStr_vm = _HC(typestr_vm);
+  _typeStr_iunknown = _HC(typestr_iunknown);
 }
 
 const SQObjectPtr& SQSharedState::GetTypeNameObj(SQObjectType type) const {
@@ -186,18 +175,11 @@ SQSharedState::~SQSharedState()
 {
   _table(_refs_table)->Invalidate();
   _refs_table = _null_;
-
-  while (!_systemstrings.empty()){
-    _systemstrings.back()=_null_;
-    _systemstrings.pop_back();
-  }
-
   _table_default_delegate=_null_;
   _array_default_delegate=_null_;
   _string_default_delegate=_null_;
   _number_default_delegate=_null_;
   _closure_default_delegate=_null_;
-  _systemstrings.clear();
 }
 
 #ifndef NO_GARBAGE_COLLECTOR

@@ -26,7 +26,6 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   virtual void __stdcall Mark(SQCollectable **chain);
 #endif
 
-  SQObjectPtrVec _systemstrings;
   SQObjectPtr _refs_table;
 
   static SQRegFunction _base_funcs[];

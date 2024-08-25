@@ -260,6 +260,44 @@ function main() {
                     "Expected lint warnings.");
     })
 
+  testLinter.check(
+    "linter_9_builtin_delegates.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<float>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<string>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<array>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<table>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<closure>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec2>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec3>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec4>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
+
+      EXPECTED_LINT(
+        aLogs, 11,
+        {[key_notfound_callk: "thehamster" not found in resolved_type]});
+
+      ::CHECK_EQUAL(11,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(11,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+    })
+
   // Output failed tests
   if (!testLinter.mFailedChecks.empty()) {
     ::logError(::format("Linter test failed: %d",

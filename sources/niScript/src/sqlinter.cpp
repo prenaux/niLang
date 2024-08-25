@@ -307,6 +307,12 @@ static cString _FuncProtoToString(const SQFunctionProto& func) {
                func._sourceline);
 }
 
+static cString _NativeClosureToString(const SQNativeClosure& func) {
+  const int paramssize = func._nparamscheck;
+  const int arity = paramssize-1; // number of parameter - 1 for the implicit 'this' argument
+  return niFmt("%s/%d", func._name, arity);
+}
+
 enum eLintFlags {
   eLintFlags_None = 0,
   eLintFlags_IsError = niBit(31),
@@ -677,6 +683,8 @@ struct sLinter {
     niLet typeStrChars = hspType->GetChars();
     niLet typeStrLen = hspType->GetLength();
     // niDebugFmt(("... ResolveType: %s", hspType));
+
+    // Interface types
     if (typeStrLen >= 2 && typeStrChars[0] == 'i' && StrIsUpper(typeStrChars[1])) {
       niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
       if (!foundInterfaceDef.has_value()) {
@@ -688,9 +696,68 @@ struct sLinter {
           this->_ss, foundInterfaceDef.value());
       }
     }
+
+    // Base types
+    else if (hspType == _ss._typeStr_string) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_String);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,string));
+    }
+    else if (hspType == _ss._typeStr_int) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Int);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
+    }
+    else if (hspType == _ss._typeStr_float) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Float);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
+    }
+    else if (hspType == _ss._typeStr_array) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Array);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,array));
+    }
+    else if (hspType == _ss._typeStr_table) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Table);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,table));
+    }
+    else if (hspType == _ss._typeStr_closure) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Closure);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
+    }
+
+    // Userdata based types
+    else if (hspType == _HC(Vec2)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Vec2);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec2f));
+    }
+    else if (hspType == _HC(Vec3)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Vec3);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec3f));
+    }
+    else if (hspType == _HC(Vec4)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Vec4);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec4f));
+    }
+    else if (hspType == _HC(Matrix)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Matrix);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,matrixf));
+    }
+    else if (hspType == _HC(UUID)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_UUID);
+      _userdata(resolvedType)->SetDelegate(_ddel(_ss,uuid));
+    }
     else {
       resolvedType = niNew sScriptTypeErrorCode(
-        this->_ss, _HC(error_code_invalid_typedef), niHStr(hspType));
+        this->_ss, _HC(error_code_unknown_typedef), niHStr(hspType));
     }
 
     niPanicAssert(resolvedType != _null_);
@@ -1478,6 +1545,22 @@ void SQFunctionProto::LintTrace(
       return _null_;
     };
 
+    auto call_nativeclosure = [&](ain<SQNativeClosure> func) -> SQObjectPtr {
+      const int paramssize = func._nparamscheck;
+      const int arity = paramssize-1; // number of paramssize-1 for the implicit this
+
+      _LTRACE(("call_func: %s", _NativeClosureToString(func)));
+
+      if (_LENABLED(call_num_args) && (paramssize != nargs)) {
+        _LINT(call_num_args,
+              niFmt("call_nativeclosure: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
+                    arity, nargs-1, _NativeClosureToString(func)));
+        return _null_;
+      }
+
+      return _null_;
+    };
+
     auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) -> SQObjectPtr {
       const int paramssize = (int)aMeth.pMethodDef->mnNumParameters + 1;
       // number of paramssize-1 for the implicit this
@@ -1606,6 +1689,12 @@ void SQFunctionProto::LintTrace(
       case eScriptType_FunctionProto: {
         SQFunctionProto* func = _funcproto(tocall);
         niLet ret = call_func(*func);
+        sset(IARG0, ret);
+        break;
+      }
+      case eScriptType_NativeClosure: {
+        SQNativeClosure* nativeclosure = _nativeclosure(tocall);
+        niLet ret = call_nativeclosure(*nativeclosure);
         sset(IARG0, ret);
         break;
       }

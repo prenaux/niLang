@@ -86,7 +86,9 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   SQObjectPtr _typeStr_userdata;
   SQObjectPtr _typeStr_vm;
   SQObjectPtr _typeStr_iunknown;
+  SQObjectPtr _typeStr_closure;
   const SQObjectPtr& GetTypeNameObj(SQObjectType type) const;
+  const iHString* GetTypeNameHStr(SQObjectType type) const;
   const achar* GetTypeNameStr(SQObjectType type) const;
   const SQObjectPtr& GetTypeNameObj(const SQObject& o) const {
     return GetTypeNameObj(_sqtype(o));

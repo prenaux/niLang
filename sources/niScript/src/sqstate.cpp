@@ -61,6 +61,7 @@ SQSharedState::SQSharedState() {
   _typeStr_userdata = _HC(typestr_userdata);
   _typeStr_vm = _HC(typestr_vm);
   _typeStr_iunknown = _HC(typestr_iunknown);
+  _typeStr_closure = _HC(typestr_closure);
 }
 
 const SQObjectPtr& SQSharedState::GetTypeNameObj(SQObjectType type) const {
@@ -95,6 +96,12 @@ const achar* SQSharedState::GetTypeNameStr(SQObjectType type) const {
   const SQObjectPtr& obj = GetTypeNameObj(type);
   if (obj == _null_) return NULL;
   return _stringval(obj);
+}
+
+const iHString* SQSharedState::GetTypeNameHStr(SQObjectType type) const {
+  const SQObjectPtr& obj = GetTypeNameObj(type);
+  if (obj == _null_) return NULL;
+  return _stringhval(obj);
 }
 
 static bool CompileTypemask(SQIntVec &res,const SQChar *typemask)

@@ -2138,87 +2138,162 @@ static int closure_athiscall(HSQUIRRELVM v)
 
 static int closure_GetNumParams(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
-  SQFunctionProto *proto = _funcproto(c->_function);
-  sq_pushint(v,(tU32)proto->_parameters.size());
+  niLet& that = stack_get(v,1);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    SQFunctionProto *proto = _funcproto(c->_function);
+    sq_pushint(v,(tU32)proto->_parameters.size());
+  }
+  else if (sq_isnativeclosure(that)) {
+    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
+    sq_pushint(v,c->_nparamscheck);
+    return 1;
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 
 static int closure_GetParamName(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
-  SQFunctionProto *proto = _funcproto(c->_function);
+  niLet& that = stack_get(v,1);
   SQInt index = _int(stack_get(v,2));
-  if ((tSize)index >= proto->_parameters.size()) {
-    return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    SQFunctionProto *proto = _funcproto(c->_function);
+    if ((tSize)index >= proto->_parameters.size()) {
+      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+    }
+    sq_pushobject(v,proto->_parameters[index]._name);
   }
-  sq_pushobject(v,proto->_parameters[index]._name);
+  else if (sq_isnativeclosure(that)) {
+    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
+    if (index >= c->_nparamscheck) {
+      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+    }
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 
 static int closure_GetParamType(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
-  SQFunctionProto *proto = _funcproto(c->_function);
+  niLet& that = stack_get(v,1);
   SQInt index = _int(stack_get(v,2));
-  if ((tSize)index >= proto->_parameters.size()) {
-    return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    SQFunctionProto *proto = _funcproto(c->_function);
+    if ((tSize)index >= proto->_parameters.size()) {
+      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+    }
+    sq_pushobject(v,proto->_parameters[index]._type);
   }
-  sq_pushobject(v,proto->_parameters[index]._type);
+  else if (sq_isnativeclosure(that)) {
+    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
+    if (index >= c->_nparamscheck) {
+      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+    }
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 
 static int closure_GetReturnType(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
-  SQFunctionProto *proto = _funcproto(c->_function);
-  sq_pushobject(v,proto->_returntype);
+  niLet& that = stack_get(v,1);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    SQFunctionProto *proto = _funcproto(c->_function);
+    sq_pushobject(v,proto->_returntype);
+  }
+  else if (sq_isnativeclosure(that)) {
+    SQNativeClosure* nc = _nativeclosure(that);
+    sq_pushobject(v,nc->_returntype);
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 
 static int closure_GetNumFreeVars(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
-  sq_pushint(v,(tU32)c->_outervalues.size());
+  niLet& that = stack_get(v,1);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    sq_pushint(v,(tU32)c->_outervalues.size());
+  }
+  else {
+    sq_pushint(v,0);
+  }
   return 1;
 }
 
 static int closure_GetFreeVar(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
+  niLet& that = stack_get(v,1);
   SQInt index = _int(stack_get(v,2));
-  if ((tSize)index >= c->_outervalues.size()) {
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    if ((tSize)index >= c->_outervalues.size()) {
+      return sq_throwerror(v,niFmt("invalid free variable index '%d'.",index));
+    }
+    sq_pushobject(v,c->_outervalues[index]);
+  }
+  else {
     return sq_throwerror(v,niFmt("invalid free variable index '%d'.",index));
   }
-  sq_pushobject(v,c->_outervalues[index]);
   return 1;
 }
 
 static int closure_SafeGetFreeVar(HSQUIRRELVM v)
 {
-  SQClosure *c = _closure(stack_get(v,1));
+  niLet& that = stack_get(v,1);
   SQInt index = _int(stack_get(v,2));
-  if ((tSize)index >= c->_outervalues.size()) {
-    sq_pushnull(v);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    if ((tSize)index >= c->_outervalues.size()) {
+      sq_pushnull(v);
+    }
+    else {
+      sq_pushobject(v,c->_outervalues[index]);
+    }
   }
   else {
-    sq_pushobject(v,c->_outervalues[index]);
+    sq_pushnull(v);
   }
   return 1;
 }
 
 static int closure_GetRoot(HSQUIRRELVM v) {
-  SQClosure *c = _closure(stack_get(v,1));
-  QPtr<SQTable> t = c->_root;
-  sq_pushobject(v, t.IsOK() ? SQObjectPtr(t.ptr()) : _null_);
+  niLet& that = stack_get(v,1);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    QPtr<SQTable> t = c->_root;
+    sq_pushobject(v, t.IsOK() ? SQObjectPtr(t.ptr()) : _null_);
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 
 static int closure_SetRoot(HSQUIRRELVM v) {
-  SQClosure *c = _closure(stack_get(v,1));
-  SQTable *t = _table(stack_get(v,2));
-  c->_root = t;
-  sq_pushobject(v, t ? SQObjectPtr(t) : _null_);
+  niLet& that = stack_get(v,1);
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    SQTable *t = _table(stack_get(v,2));
+    c->_root = t;
+    sq_pushobject(v, t ? SQObjectPtr(t) : _null_);
+  }
+  else {
+    sq_pushnull(v);
+  }
   return 1;
 }
 

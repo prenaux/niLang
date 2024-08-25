@@ -65,6 +65,7 @@ public:
   tHStringPtr _name;
   SQIntVec _typecheck;
   int _nparamscheck = 0;
+  SQObjectPtr _returntype;
 };
 
 #endif //_SQCLOSURE_H_

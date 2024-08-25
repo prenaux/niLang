@@ -2959,7 +2959,7 @@ niExportFunc(const achar*) GetTypeString(achar* aStr, tType aType)
     StrCat(aStr,"TABLE");
   }
   else if (niFlagIs(aType,ni::eTypeFlags_ARRAY)) {
-    StrCat(aStr,"ARRAYS");
+    StrCat(aStr,"ARRAY");
   }
   else if (niFlagIs(aType,ni::eTypeFlags_USERDATA)) {
     StrCat(aStr,"USERDATA");

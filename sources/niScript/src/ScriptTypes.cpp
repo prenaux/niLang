@@ -155,6 +155,38 @@ niExportFunc(eScriptType) sqa_type2scripttype(const tType aType)
 }
 
 ///////////////////////////////////////////////
+niExportFunc(iHString*) sqa_getscripttypename(eScriptType aType) {
+  switch (aType) {
+    case eScriptType_Null: return _HC(typestr_null);
+    case eScriptType_Int: return _HC(typestr_int);
+    case eScriptType_Float: return _HC(typestr_float);
+    case eScriptType_String: return _HC(typestr_string);
+    case eScriptType_Table: return _HC(typestr_table);
+    case eScriptType_Array: return _HC(typestr_array);
+    case eScriptType_UserData: return _HC(typestr_userdata);
+    case eScriptType_Closure: return _HC(typestr_closure);
+    case eScriptType_NativeClosure: return _HC(typestr_nativeclosure);
+    case eScriptType_FunctionProto: return _HC(typestr_functionproto);
+    case eScriptType_IUnknown: return _HC(typestr_iunknown);
+    case eScriptType_Vec2: return _HC(Vec2);
+    case eScriptType_Vec3: return _HC(Vec3);
+    case eScriptType_Vec4: return _HC(Vec4);
+    case eScriptType_Matrix: return _HC(Matrix);
+    case eScriptType_MethodDef: return _HC(method);
+    case eScriptType_PropertyDef: return _HC(typestr_property);
+    case eScriptType_EnumDef: return _HC(typestr_enum);
+    case eScriptType_Iterator: return _HC(typestr_iterator);
+    case eScriptType_IndexedProperty: return _HC(typestr_indexed_property);
+    case eScriptType_UUID: return _HC(UUID);
+    case eScriptType_InterfaceDef: return _HC(interface);
+    case eScriptType_ErrorCode: return _HC(error_code);
+    case eScriptType_ResolvedType: return _HC(resolved_type);
+    case eScriptType_Invalid: return _HC(typestr_invalid);
+  }
+  return nullptr;
+}
+
+///////////////////////////////////////////////
 niExportFuncCPP(cString) sqa_gettypestring(int type) {
   switch (_RAW_TYPE(type)) {
     case _RT_NULL: return "Null";
@@ -483,6 +515,13 @@ niExportFuncCPP(int) sqa_getErrorCode(HSQUIRRELVM v, int idx, aout<NN<sScriptTyp
 //////////////////////////////////////////////////////////////////////////////////////////////
 // sResolvedType
 
+cString __stdcall sScriptTypeResolvedType::GetTypeString() const {
+  cString ret = "resolved_type<";
+  ret << niHStr(sqa_getscripttypename(_scriptType));
+  ret << ">";
+  return ret;
+}
+
 static int resolved_type_typeof(HSQUIRRELVM v) {
   sq_pushstring(v, _HC(resolved_type));
   return 1;
@@ -501,7 +540,7 @@ SQRegFunction SQSharedState::_resolved_type_default_delegate_funcz[]={
   {0,0}
 };
 
-niExportFuncCPP(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<tType> aType)
+niExportFuncCPP(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<eScriptType> aType)
 {
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   //  niAssert(niIsOK(pVM));
@@ -509,11 +548,11 @@ niExportFuncCPP(int) sqa_pushResolvedType(HSQUIRRELVM v, ain<tType> aType)
   return SQ_OK;
 }
 
-niExportFuncCPP(int) sqa_getResolvedType(HSQUIRRELVM v, int idx, aout<tType> aType)
+niExportFuncCPP(int) sqa_getResolvedType(HSQUIRRELVM v, int idx, aout<eScriptType> aType)
 {
   sScriptTypeResolvedType* pV = sqa_getud<sScriptTypeResolvedType>(v,idx);
   if (!pV)  return SQ_ERROR;
-  aType = pV->_type;
+  aType = pV->_scriptType;
   return SQ_OK;
 }
 
@@ -983,8 +1022,8 @@ int __cdecl vecop_normalize(HSQUIRRELVM v)
 template <typename T>
 int __cdecl vecop_isnormal(HSQUIRRELVM v)
 {
-  VECOP_VARS1(vecop_normalize)
-      sq_pushint(v,VecIsNormal(*pThis));
+  VECOP_VARS1(vecop_normalize);
+  sq_pushint(v,VecIsNormal(*pThis));
   return 1;
 }
 
@@ -2458,173 +2497,173 @@ SQRegFunction SQSharedState::_enum_default_delegate_funcz[]={
 };
 
 SQRegFunction SQSharedState::_vec2f_default_delegate_funcz[]={
-  {"_tostring",         vec2f_tostring,                   0, NULL},
-  {"_typeof",           vec2f_typeof,                     0, NULL},
-  {"_set",              vec2f_set,                        0, NULL},
-  {"_get",              vec2f_get,                        0, NULL},
-  {"_add",              mathop_binary<mathop_Add>,          0, NULL},
-  {"_sub",              mathop_binary<mathop_Sub>,          0, NULL},
-  {"_mul",              mathop_binary<mathop_Mul>,          0, NULL},
-  {"_div",              mathop_binary<mathop_Div>,          0, NULL},
-  {"normalize",         vecop_normalize<sVec2f>,         0, NULL},
-  {"Normalize",         vecop_normalize<sVec2f>,         0, NULL},
-  {"isnormal",          vecop_isnormal<sVec2f>,          0, NULL},
-  {"IsNormal",          vecop_isnormal<sVec2f>,          0, NULL},
-  {"dot",               vecop_dot<sVec2f>,               0, NULL},
-  {"Dot",               vecop_dot<sVec2f>,               0, NULL},
-  {"length",            vecop_length<sVec2f>,            0, NULL},
-  {"Length",            vecop_length<sVec2f>,            0, NULL},
-  {"lengthsq",          vecop_lengthsq<sVec2f>,          0, NULL},
-  {"LengthSq",          vecop_lengthsq<sVec2f>,          0, NULL},
-  {"cross",             vecop_cross<sVec2f>,             0, NULL},
-  {"Cross",             vecop_cross<sVec2f>,             0, NULL},
-  {"abs",               vecop_abs<sVec2f>,               0, NULL},
-  {"Abs",               vecop_abs<sVec2f>,               0, NULL},
-  {"min",               vecop_min<sVec2f>,               0, NULL},
-  {"Min",               vecop_min<sVec2f>,               0, NULL},
-  {"max",               vecop_max<sVec2f>,               0, NULL},
-  {"Max",               vecop_max<sVec2f>,               0, NULL},
-  {"transform",         vecop_transform<sVec2f>,         0, NULL},
-  {"Transform",         vecop_transform<sVec2f>,         0, NULL},
-  {"transform_coord",   vecop_transform_coord<sVec2f>,   0, NULL},
-  {"TransformCoord",   vecop_transform_coord<sVec2f>,   0, NULL},
-  {"transform_normal",  vecop_transform_normal<sVec2f>,  0, NULL},
-  {"TransformNormal",  vecop_transform_normal<sVec2f>,  0, NULL},
-  {"_modulo",           mathop_binary<mathop_Mod>,          0, NULL},
-  {"_unm",              mathop_unary<mathop_Neg>,           0, NULL},
+  {"_tostring",         vec2f_tostring,                  1, NULL},
+  {"_typeof",           vec2f_typeof,                    1, NULL},
+  {"_set",              vec2f_set,                       3, NULL},
+  {"_get",              vec2f_get,                       2, NULL},
+  {"_add",              mathop_binary<mathop_Add>,       2, NULL},
+  {"_sub",              mathop_binary<mathop_Sub>,       2, NULL},
+  {"_mul",              mathop_binary<mathop_Mul>,       2, NULL},
+  {"_div",              mathop_binary<mathop_Div>,       2, NULL},
+  {"normalize",         vecop_normalize<sVec2f>,         1, NULL},
+  {"Normalize",         vecop_normalize<sVec2f>,         1, NULL},
+  {"isnormal",          vecop_isnormal<sVec2f>,          1, NULL},
+  {"IsNormal",          vecop_isnormal<sVec2f>,          1, NULL},
+  {"dot",               vecop_dot<sVec2f>,               2, NULL},
+  {"Dot",               vecop_dot<sVec2f>,               2, NULL},
+  {"length",            vecop_length<sVec2f>,            1, NULL},
+  {"Length",            vecop_length<sVec2f>,            1, NULL},
+  {"lengthsq",          vecop_lengthsq<sVec2f>,          1, NULL},
+  {"LengthSq",          vecop_lengthsq<sVec2f>,          1, NULL},
+  {"cross",             vecop_cross<sVec2f>,             2, NULL},
+  {"Cross",             vecop_cross<sVec2f>,             2, NULL},
+  {"abs",               vecop_abs<sVec2f>,               1, NULL},
+  {"Abs",               vecop_abs<sVec2f>,               1, NULL},
+  {"min",               vecop_min<sVec2f>,               2, NULL},
+  {"Min",               vecop_min<sVec2f>,               2, NULL},
+  {"max",               vecop_max<sVec2f>,               2, NULL},
+  {"Max",               vecop_max<sVec2f>,               2, NULL},
+  {"transform",         vecop_transform<sVec2f>,         2, NULL},
+  {"Transform",         vecop_transform<sVec2f>,         2, NULL},
+  {"transform_coord",   vecop_transform_coord<sVec2f>,   2, NULL},
+  {"TransformCoord",    vecop_transform_coord<sVec2f>,   2, NULL},
+  {"transform_normal",  vecop_transform_normal<sVec2f>,  2, NULL},
+  {"TransformNormal",   vecop_transform_normal<sVec2f>,  2, NULL},
+  {"_modulo",           mathop_binary<mathop_Mod>,       1, NULL},
+  {"_unm",              mathop_unary<mathop_Neg>,        1, NULL},
   {0,0}
 };
 
 SQRegFunction SQSharedState::_vec3f_default_delegate_funcz[]={
-  {"_tostring",         vec3f_tostring,                   0, NULL},
-  {"_typeof",           vec3f_typeof,                     0, NULL},
-  {"_set",              vec3f_set,                        0, NULL},
-  {"_get",              vec3f_get,                        0, NULL},
-  {"_add",              mathop_binary<mathop_Add>,          0, NULL},
-  {"_sub",              mathop_binary<mathop_Sub>,          0, NULL},
-  {"_mul",              mathop_binary<mathop_Mul>,          0, NULL},
-  {"_div",              mathop_binary<mathop_Div>,          0, NULL},
-  {"normalize",         vecop_normalize<sVec3f>,         0, NULL},
-  {"Normalize",         vecop_normalize<sVec3f>,         0, NULL},
-  {"isnormal",          vecop_isnormal<sVec3f>,          0, NULL},
-  {"IsNormal",          vecop_isnormal<sVec3f>,          0, NULL},
-  {"dot",               vecop_dot<sVec3f>,               0, NULL},
-  {"Dot",               vecop_dot<sVec3f>,               0, NULL},
-  {"length",            vecop_length<sVec3f>,            0, NULL},
-  {"Length",            vecop_length<sVec3f>,            0, NULL},
-  {"lengthsq",          vecop_lengthsq<sVec3f>,          0, NULL},
-  {"LengthSq",          vecop_lengthsq<sVec3f>,          0, NULL},
-  {"cross",             vecop_cross<sVec3f>,             0, NULL},
-  {"Cross",             vecop_cross<sVec3f>,             0, NULL},
-  {"abs",               vecop_abs<sVec3f>,               0, NULL},
-  {"Abs",               vecop_abs<sVec3f>,               0, NULL},
-  {"min",               vecop_min<sVec3f>,               0, NULL},
-  {"Min",               vecop_min<sVec3f>,               0, NULL},
-  {"max",               vecop_max<sVec3f>,               0, NULL},
-  {"Max",               vecop_max<sVec3f>,               0, NULL},
-  {"transform",         vecop_transform<sVec3f>,         0, NULL},
-  {"Transform",         vecop_transform<sVec3f>,         0, NULL},
-  {"transform_coord",   vecop_transform_coord<sVec3f>,   0, NULL},
-  {"TransformCoord",   vecop_transform_coord<sVec3f>,   0, NULL},
-  {"transform_normal",  vecop_transform_normal<sVec3f>,  0, NULL},
-  {"TransformNormal",  vecop_transform_normal<sVec3f>,  0, NULL},
-  {"_modulo",           mathop_binary<mathop_Mod>,          0, NULL},
-  {"_unm",              mathop_unary<mathop_Neg>,           0, NULL},
-  {"toint",         vec3f_toint,                  0, NULL},
-  {"ToInt",         vec3f_toint,                  0, NULL},
+  {"_tostring",         vec3f_tostring,                  1, NULL},
+  {"_typeof",           vec3f_typeof,                    1, NULL},
+  {"_set",              vec3f_set,                       3, NULL},
+  {"_get",              vec3f_get,                       2, NULL},
+  {"_add",              mathop_binary<mathop_Add>,       2, NULL},
+  {"_sub",              mathop_binary<mathop_Sub>,       2, NULL},
+  {"_mul",              mathop_binary<mathop_Mul>,       2, NULL},
+  {"_div",              mathop_binary<mathop_Div>,       2, NULL},
+  {"normalize",         vecop_normalize<sVec3f>,         1, NULL},
+  {"Normalize",         vecop_normalize<sVec3f>,         1, NULL},
+  {"isnormal",          vecop_isnormal<sVec3f>,          1, NULL},
+  {"IsNormal",          vecop_isnormal<sVec3f>,          1, NULL},
+  {"dot",               vecop_dot<sVec3f>,               2, NULL},
+  {"Dot",               vecop_dot<sVec3f>,               2, NULL},
+  {"length",            vecop_length<sVec3f>,            1, NULL},
+  {"Length",            vecop_length<sVec3f>,            1, NULL},
+  {"lengthsq",          vecop_lengthsq<sVec3f>,          1, NULL},
+  {"LengthSq",          vecop_lengthsq<sVec3f>,          1, NULL},
+  {"cross",             vecop_cross<sVec3f>,             2, NULL},
+  {"Cross",             vecop_cross<sVec3f>,             2, NULL},
+  {"abs",               vecop_abs<sVec3f>,               1, NULL},
+  {"Abs",               vecop_abs<sVec3f>,               1, NULL},
+  {"min",               vecop_min<sVec3f>,               2, NULL},
+  {"Min",               vecop_min<sVec3f>,               2, NULL},
+  {"max",               vecop_max<sVec3f>,               2, NULL},
+  {"Max",               vecop_max<sVec3f>,               2, NULL},
+  {"transform",         vecop_transform<sVec3f>,         2, NULL},
+  {"Transform",         vecop_transform<sVec3f>,         2, NULL},
+  {"transform_coord",   vecop_transform_coord<sVec3f>,   2, NULL},
+  {"TransformCoord",    vecop_transform_coord<sVec3f>,   2, NULL},
+  {"transform_normal",  vecop_transform_normal<sVec3f>,  2, NULL},
+  {"TransformNormal",   vecop_transform_normal<sVec3f>,  2, NULL},
+  {"_modulo",           mathop_binary<mathop_Mod>,       1, NULL},
+  {"_unm",              mathop_unary<mathop_Neg>,        1, NULL},
+  {"toint",             vec3f_toint,                     1, NULL},
+  {"ToInt",             vec3f_toint,                     1, NULL},
   {0,0}
 };
 
 SQRegFunction SQSharedState::_vec4f_default_delegate_funcz[]={
-  {"_tostring",            vec4f_tostring,                   0,  NULL},
-  {"_typeof",              vec4f_typeof,                     0,  NULL},
-  {"_set",                 vec4f_set,                        0,  NULL},
-  {"_get",                 vec4f_get,                        0,  NULL},
-  {"_add",                 mathop_binary<mathop_Add>,          0,  NULL},
-  {"_sub",                 mathop_binary<mathop_Sub>,          0,  NULL},
-  {"_mul",                 mathop_binary<mathop_Mul>,          0,  NULL},
-  {"_div",                 mathop_binary<mathop_Div>,          0,  NULL},
-  {"Normalize",            vecop_normalize<sVec4f>,         0,  NULL},
-  {"normalize",            vecop_normalize<sVec4f>,         0,  NULL},
-  {"isnormal",             vecop_isnormal<sVec4f>,          0,  NULL},
-  {"IsNormal",             vecop_isnormal<sVec4f>,          0,  NULL},
-  {"dot",                  vecop_dot<sVec4f>,               0,  NULL},
-  {"Dot",                  vecop_dot<sVec4f>,               0,  NULL},
-  {"length",               vecop_length<sVec4f>,            0,  NULL},
-  {"Length",               vecop_length<sVec4f>,            0,  NULL},
-  {"lengthsq",             vecop_lengthsq<sVec4f>,          0,  NULL},
-  {"LengthSq",             vecop_lengthsq<sVec4f>,          0,  NULL},
-  {"cross",                vecop_cross<sVec4f>,             0,  NULL},
-  {"Cross",                vecop_cross<sVec4f>,             0,  NULL},
-  {"abs",                  vecop_abs<sVec4f>,               0,  NULL},
-  {"Abs",                  vecop_abs<sVec4f>,               0,  NULL},
-  {"min",                  vecop_min<sVec4f>,               0,  NULL},
-  {"Min",                  vecop_min<sVec4f>,               0,  NULL},
-  {"max",                  vecop_max<sVec4f>,               0,  NULL},
-  {"Max",                  vecop_max<sVec4f>,               0,  NULL},
-  {"transform",            vecop_transform<sVec4f>,         0,  NULL},
-  {"Transform",            vecop_transform<sVec4f>,         0,  NULL},
-  {"transform_coord",      vecop_transform_coord<sVec4f>,   0,  NULL},
-  {"TransformCoord",      vecop_transform_coord<sVec4f>,   0,  NULL},
-  {"transform_normal",     vecop_transform_normal<sVec4f>,  0,  NULL},
-  {"TransformNormal",     vecop_transform_normal<sVec4f>,  0,  NULL},
-  {"_modulo",              mathop_binary<mathop_Mod>,          0,  NULL},
-  {"_unm",                 mathop_unary<mathop_Neg>,           0,  NULL},
-  {"toint",            vec4f_toint,                  0,  NULL},
-  {"ToInt",            vec4f_toint,                  0,  NULL},
-  {"intersect",            rect_intersect,                     0,  NULL},
-  {"Intersect",            rect_intersect,                     0,  NULL},
-  {"frame_center",         rect_frameCenter,                   0,  NULL},
-  {"ComputeFrameCenter",         rect_frameCenter,                   0,  NULL},
-  {"frame_left_border",    rect_frameLeftBorder,               0,  NULL},
-  {"GetFrameLeftBorder",    rect_frameLeftBorder,               0,  NULL},
-  {"frame_right_border",   rect_frameRightBorder,              0,  NULL},
-  {"GetFrameRightBorder",   rect_frameRightBorder,              0,  NULL},
-  {"frame_top_border",     rect_frameTopBorder,                0,  NULL},
-  {"GetFrameTopBorder",     rect_frameTopBorder,                0,  NULL},
-  {"frame_bottom_border",  rect_frameBottomBorder,             0,  NULL},
-  {"GetFrameBottomBorder",  rect_frameBottomBorder,             0,  NULL},
-  {"frame_border",         rect_frameBorder,                   0,  NULL},
-  {"GetFrameBorder",         rect_frameBorder,                   0,  NULL},
+  {"_tostring",            vec4f_tostring,                  1,  NULL},
+  {"_typeof",              vec4f_typeof,                    1,  NULL},
+  {"_set",                 vec4f_set,                       3,  NULL},
+  {"_get",                 vec4f_get,                       2,  NULL},
+  {"_add",                 mathop_binary<mathop_Add>,       2,  NULL},
+  {"_sub",                 mathop_binary<mathop_Sub>,       2,  NULL},
+  {"_mul",                 mathop_binary<mathop_Mul>,       2,  NULL},
+  {"_div",                 mathop_binary<mathop_Div>,       2,  NULL},
+  {"Normalize",            vecop_normalize<sVec4f>,         1,  NULL},
+  {"normalize",            vecop_normalize<sVec4f>,         1,  NULL},
+  {"isnormal",             vecop_isnormal<sVec4f>,          1,  NULL},
+  {"IsNormal",             vecop_isnormal<sVec4f>,          1,  NULL},
+  {"dot",                  vecop_dot<sVec4f>,               2,  NULL},
+  {"Dot",                  vecop_dot<sVec4f>,               2,  NULL},
+  {"length",               vecop_length<sVec4f>,            1,  NULL},
+  {"Length",               vecop_length<sVec4f>,            1,  NULL},
+  {"lengthsq",             vecop_lengthsq<sVec4f>,          1,  NULL},
+  {"LengthSq",             vecop_lengthsq<sVec4f>,          1,  NULL},
+  {"cross",                vecop_cross<sVec4f>,             2,  NULL},
+  {"Cross",                vecop_cross<sVec4f>,             2,  NULL},
+  {"abs",                  vecop_abs<sVec4f>,               1,  NULL},
+  {"Abs",                  vecop_abs<sVec4f>,               1,  NULL},
+  {"min",                  vecop_min<sVec4f>,               2,  NULL},
+  {"Min",                  vecop_min<sVec4f>,               2,  NULL},
+  {"max",                  vecop_max<sVec4f>,               2,  NULL},
+  {"Max",                  vecop_max<sVec4f>,               2,  NULL},
+  {"transform",            vecop_transform<sVec4f>,         2,  NULL},
+  {"Transform",            vecop_transform<sVec4f>,         2,  NULL},
+  {"transform_coord",      vecop_transform_coord<sVec4f>,   2,  NULL},
+  {"TransformCoord",       vecop_transform_coord<sVec4f>,   2,  NULL},
+  {"transform_normal",     vecop_transform_normal<sVec4f>,  2,  NULL},
+  {"TransformNormal",      vecop_transform_normal<sVec4f>,  2,  NULL},
+  {"_modulo",              mathop_binary<mathop_Mod>,       1,  NULL},
+  {"_unm",                 mathop_unary<mathop_Neg>,        1,  NULL},
+  {"toint",                vec4f_toint,                     1,  NULL},
+  {"ToInt",                vec4f_toint,                     1,  NULL},
+  {"intersect",            rect_intersect,                  2,  NULL},
+  {"Intersect",            rect_intersect,                  2,  NULL},
+  {"frame_center",         rect_frameCenter,                5,  NULL},
+  {"ComputeFrameCenter",   rect_frameCenter,                5,  NULL},
+  {"frame_left_border",    rect_frameLeftBorder,            2,  NULL},
+  {"GetFrameLeftBorder",   rect_frameLeftBorder,            2,  NULL},
+  {"frame_right_border",   rect_frameRightBorder,           2,  NULL},
+  {"GetFrameRightBorder",  rect_frameRightBorder,           2,  NULL},
+  {"frame_top_border",     rect_frameTopBorder,             2,  NULL},
+  {"GetFrameTopBorder",    rect_frameTopBorder,             2,  NULL},
+  {"frame_bottom_border",  rect_frameBottomBorder,          2,  NULL},
+  {"GetFrameBottomBorder", rect_frameBottomBorder,          2,  NULL},
+  {"frame_border",         rect_frameBorder,                2,  NULL},
+  {"GetFrameBorder",       rect_frameBorder,                2,  NULL},
   {0,0}
 };
 
 SQRegFunction SQSharedState::_matrixf_default_delegate_funcz[] = {
-  {"_tostring",          matrixf_tostring,            0,  NULL},
-  {"_typeof",            matrixf_typeof,              0,  NULL},
-  {"_set",               matrixf_set,                 0,  NULL},
-  {"_get",               matrixf_get,                 0,  NULL},
-  {"_add",               mathop_binary<mathop_Add>,  0,  NULL},
-  {"_sub",               mathop_binary<mathop_Sub>,  0,  NULL},
-  {"_mul",               matrixf_multiply,            0,  NULL},
-  {"_modulo",            mathop_binary<mathop_Mod>,  0,  NULL},
-  {"isidentity",         matrixf_isidentity,          0,  NULL},
-  {"IsIdentity",         matrixf_isidentity,          0,  NULL},
-  {"isnormal",           matrixf_isnormal,            0,  NULL},
-  {"IsNormal",           matrixf_isnormal,            0,  NULL},
-  {"isorthonormal",      matrixf_isorthonormal,       0,  NULL},
-  {"IsOrthonormal",      matrixf_isorthonormal,       0,  NULL},
-  {"isorthogonal",       matrixf_isorthogonal,        0,  NULL},
-  {"IsOrthogonal",       matrixf_isorthogonal,        0,  NULL},
-  {"determinant",        matrixf_determinant,         0,  NULL},
-  {"Determinant",        matrixf_determinant,         0,  NULL},
-  {"inverse",            matrixf_inverse,             0,  NULL},
-  {"Inverse",            matrixf_inverse,             0,  NULL},
-  {"transform_inverse",  matrixf_transform_inverse,   0,  NULL},
-  {"TransformInverse",  matrixf_transform_inverse,   0,  NULL},
-  {"transpose",          matrixf_transpose,           0,  NULL},
-  {"Transpose",          matrixf_transpose,           0,  NULL},
-  {"transposerot",       matrixf_transposerot,        0,  NULL},
-  {"TransposeRot",       matrixf_transposerot,        0,  NULL},
-  {"multiply",           matrixf_multiply,            0,  NULL},
-  {"Multiply",           matrixf_multiply,            0,  NULL},
-  {"_unm",               mathop_unary<mathop_Neg>,   0,  NULL},
+  {"_tostring",          matrixf_tostring,            1,  NULL},
+  {"_typeof",            matrixf_typeof,              1,  NULL},
+  {"_set",               matrixf_set,                 3,  NULL},
+  {"_get",               matrixf_get,                 2,  NULL},
+  {"_add",               mathop_binary<mathop_Add>,   2,  NULL},
+  {"_sub",               mathop_binary<mathop_Sub>,   2,  NULL},
+  {"_mul",               matrixf_multiply,            2,  NULL},
+  {"_modulo",            mathop_binary<mathop_Mod>,   2,  NULL},
+  {"isidentity",         matrixf_isidentity,          1,  NULL},
+  {"IsIdentity",         matrixf_isidentity,          1,  NULL},
+  {"isnormal",           matrixf_isnormal,            1,  NULL},
+  {"IsNormal",           matrixf_isnormal,            1,  NULL},
+  {"isorthonormal",      matrixf_isorthonormal,       1,  NULL},
+  {"IsOrthonormal",      matrixf_isorthonormal,       1,  NULL},
+  {"isorthogonal",       matrixf_isorthogonal,        1,  NULL},
+  {"IsOrthogonal",       matrixf_isorthogonal,        1,  NULL},
+  {"determinant",        matrixf_determinant,         1,  NULL},
+  {"Determinant",        matrixf_determinant,         1,  NULL},
+  {"inverse",            matrixf_inverse,             1,  NULL},
+  {"Inverse",            matrixf_inverse,             1,  NULL},
+  {"transform_inverse",  matrixf_transform_inverse,   1,  NULL},
+  {"TransformInverse",   matrixf_transform_inverse,   1,  NULL},
+  {"transpose",          matrixf_transpose,           1,  NULL},
+  {"Transpose",          matrixf_transpose,           1,  NULL},
+  {"transposerot",       matrixf_transposerot,        1,  NULL},
+  {"TransposeRot",       matrixf_transposerot,        1,  NULL},
+  {"multiply",           matrixf_multiply,            2,  NULL},
+  {"Multiply",           matrixf_multiply,            2,  NULL},
+  {"_unm",               mathop_unary<mathop_Neg>,    1,  NULL},
   {0,0}
 };
 
 SQRegFunction SQSharedState::_uuid_default_delegate_funcz[]={
-  {"_tostring", uuid_tostring, 0, NULL},
-  {"_typeof", uuid_typeof, 0, NULL},
+  {"_tostring", uuid_tostring, 1, NULL},
+  {"_typeof", uuid_typeof, 1, NULL},
   {0,0}
 };
 

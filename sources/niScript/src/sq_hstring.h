@@ -57,7 +57,7 @@ _HDecl(__imports);
 _HDecl_(NOT_ITOSTRING,"[not iToString]");
 _HDecl(e);
 _HDecl(error_code);
-_HDecl(error_code_invalid_typedef);
+_HDecl(error_code_unknown_typedef);
 _HDecl(error_code_cant_load_module_def);
 _HDecl(error_code_cant_find_interface_def);
 _HDecl(error_code_cant_find_method_def);
@@ -76,5 +76,13 @@ _HDecl_(typestr_function, "function");
 _HDecl_(typestr_userdata, "userdata");
 _HDecl_(typestr_vm, "vm");
 _HDecl_(typestr_iunknown, "iunknown");
+_HDecl_(typestr_closure, "closure");
+_HDecl_(typestr_nativeclosure, "nativeclosure");
+_HDecl_(typestr_functionproto, "functionproto");
+_HDecl_(typestr_indexed_property, "indexed_property");
+_HDecl_(typestr_iterator, "iterator");
+_HDecl_(typestr_enum, "enum");
+_HDecl_(typestr_property, "property");
+_HDecl_(typestr_invalid, "invalid");
 
 #endif // __sq_HSTRING_H__

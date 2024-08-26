@@ -837,22 +837,25 @@ struct sLinter {
                 return true;
               }
               else {
-                // TODO: The linear search and allocation is suboptimal. This
-                // whole thing should end up in its own function or maybe merged
-                // into sScriptTypeInterfaceDef.
-                niLet keyChars = _stringval(key);
-                niLoop(mi,idef->mnNumMethods) {
-                  niLet mdef = idef->mpMethods[mi];
-                  if (StrEq(keyChars, mdef->maszName)) {
-                    dest = niNew sScriptTypeMethodDef(_ss, idef, mdef);
+                niLet intfDel = _ss.GetInterfaceDelegate(*idef->mUUID);
+                if (intfDel == _null_) {
+                  dest = niNew sScriptTypeErrorCode(
+                    _ss,
+                    _HC(error_code_cant_find_method_def),
+                    niFmt("Cant find delegate for interface_def '%s'.",
+                          idef->maszName));
+                }
+                else {
+                  if (_table(intfDel)->Get(key,dest)) {
                     return true;
                   }
+                  else {
+                    dest = niNew sScriptTypeErrorCode(
+                      _ss,
+                      _HC(error_code_cant_find_method_def),
+                      niFmt("method_def<%s::%s>", idef->maszName, _stringhval(key)));
+                  }
                 }
-
-                dest = niNew sScriptTypeErrorCode(
-                  _ss,
-                  _HC(error_code_cant_find_method_def),
-                  niFmt("method_def<%s::%s>", idef->maszName, keyChars));
               }
               return false;
             }
@@ -993,7 +996,7 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
     if (sqa_getscriptobjtype(objTypeName) == eScriptType_String) {
       niLet objTypeDef = aLinter.FindObjectTypeDef(_stringval(objTypeName));
       if (!objTypeDef.has_value()) {
-        return _MakeLintCallError(aLinter,niFmt("Can't find object type '%s'.", _stringhval(objTypeName)));
+        return _MakeLintCallError(aLinter,niFmt("Cant find object type '%s'.", _stringhval(objTypeName)));
       }
     }
 
@@ -1071,13 +1074,13 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
     // niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
     if (qiUUID == kuuidZero) {
       return _MakeLintCallError(
-        aLinter,niFmt("Can't find interface uuid '%s'.", _ObjToString(qiID)));
+        aLinter,niFmt("Cant find interface uuid '%s'.", _ObjToString(qiID)));
     }
 
     niLet qiDef = ni::GetLang()->GetInterfaceDefFromUUID(qiUUID);
     if (qiDef == nullptr) {
       return _MakeLintCallError(
-        aLinter,niFmt("Can't find interface def '%s'.", _ObjToString(qiID)));
+        aLinter,niFmt("Cant find interface def '%s'.", _ObjToString(qiID)));
     }
 
     // niDebugFmt(("... sLintFuncCallQueryInterface: qiDef: %s", qiDef->maszName));
@@ -1328,7 +1331,7 @@ void SQFunctionProto::LintTrace(
       else if (!aLinter.LintTypeObjCanAssign(rval, thisfunc_resolvedrettype)) {
         if (_LENABLED(ret_type_cant_assign)) {
           _LINT(ret_type_cant_assign, niFmt(
-            "Can't assign type '%s' to return type '%s' (%s -> %s).",
+            "Cant assign type '%s' to return type '%s'. %s -> %s.",
             sqa_getscripttypename(aLinter._GetResolvedObjType(rval)),
             sqa_getscripttypename(aLinter._GetResolvedObjType(thisfunc_resolvedrettype)),
             _ObjToString(rval),
@@ -1344,7 +1347,7 @@ void SQFunctionProto::LintTrace(
   auto op_closure = [&](const SQInstruction& inst) {
     const SQObjectPtr& func = fnget(IARG1);
     if (func.IsNull()) {
-      _LINTERNAL_ERROR(niFmt("Can't get function '%d'.", IARG1));
+      _LINTERNAL_ERROR(niFmt("Cant get function '%d'.", IARG1));
       return;
     }
 
@@ -1352,7 +1355,7 @@ void SQFunctionProto::LintTrace(
     const int localthisindex = localindex(SQObjectPtr(_HC(this)));
     const SQObjectPtr& localthis = sget(localthisindex);
     if (localthis.IsNull()) {
-      _LINTERNAL_ERROR(niFmt("Can't get local this in function '%d'.", IARG1));
+      _LINTERNAL_ERROR(niFmt("Cant get local this in function '%d'.", IARG1));
       return;
     }
 
@@ -1425,7 +1428,7 @@ void SQFunctionProto::LintTrace(
           closure->_this = table;
         }
         else {
-          _LINTERNAL_ERROR(niFmt("Can't find closure associated with '%s'",
+          _LINTERNAL_ERROR(niFmt("Cant find closure associated with '%s'",
                                  _ObjToString(v)));
         }
         _LTRACE(("op_newslot: %s has new this %s",
@@ -1603,7 +1606,8 @@ void SQFunctionProto::LintTrace(
                     arity, nargs-1, _FuncProtoToString(func)));
       }
 
-      return func._returntype;
+      niLet rettype = aLinter.ResolveType(func._returntype);
+      return rettype;
     };
 
     auto call_nativeclosure = [&](ain<SQNativeClosure> func) -> SQObjectPtr {
@@ -1618,7 +1622,8 @@ void SQFunctionProto::LintTrace(
                     arity, nargs-1, _NativeClosureToString(func)));
       }
 
-      return func._returntype;
+      niLet rettype = aLinter.ResolveType(func._returntype);
+      return rettype;
     };
 
     auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) -> SQObjectPtr {
@@ -1896,7 +1901,7 @@ void SQFunctionProto::LintTrace(
       const SQFunctionProto* cfproto = _funcproto(cf);
       const LintClosure* cfclosure = aLinter.GetClosure(cfproto);
       if (!cfclosure) {
-        _LINTERNAL_ERROR(niFmt("Can't get closure for func[%d]: %s",
+        _LINTERNAL_ERROR(niFmt("Cant get closure for func[%d]: %s",
                                i, _ObjToString(cf)));
       }
       else {

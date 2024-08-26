@@ -239,7 +239,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: Can't find object type 'niLang.TheUnknownHamster'.");
+        "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: Cant find object type 'niLang.TheUnknownHamster'.");
 
       ::CHECK_EQUAL(6,aLintResults.mLogsError,
                     "Expected lint errors.");
@@ -304,10 +304,10 @@ function main() {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
-                    "ret_type_cant_assign: Can't assign type 'int' to return type 'string'");
+                    "ret_type_cant_assign: Cant assign type 'int' to return type 'string'");
 
       EXPECTED_LINT(aLogs, 1,
-                    "ret_type_cant_assign: Can't assign type 'string' to return type 'int'");
+                    "ret_type_cant_assign: Cant assign type 'string' to return type 'int'");
 
       ::CHECK_EQUAL(2, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");

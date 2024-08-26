@@ -21,7 +21,14 @@ function writeHamster(iFileSystem aFS,aFileName) {
   return fp.GetSize();
 }
 
+// TODO
+// function propertyHamster(iLang lang, string aName) string {
+//   return lang.property[aName];
+// }
+
 function main() {
   randHamster(null,100,300)
   writeHamster(null,"test_write_hamster.txt")
+  // TODO
+  // propertyHamster(null,"test_property_hamster")
 }

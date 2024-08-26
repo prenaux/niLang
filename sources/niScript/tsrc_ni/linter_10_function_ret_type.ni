@@ -9,7 +9,7 @@ function ret_string() string {
 }
 
 function ret_string_nopes() string {
-  return 123
+  return 123; // mismatched type
 }
 
 function ret_string_property() string {
@@ -19,7 +19,11 @@ function ret_string_property() string {
 
 function ret_string_property_nopes() int {
   local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
-  return lang.GetProperty("foo")
+  return lang.GetProperty("foo") // mismatched type
+}
+
+function ret_int_after_call() int {
+  return ret_string_property_nopes();
 }
 
 // TODO
@@ -35,5 +39,5 @@ function ret_string_property_nopes() int {
 
 function main() void {
   local r = ret_string();
-  ::LintAssertType("string", r);
+  ::LintAssertType("resolved_type<string>", r);
 }

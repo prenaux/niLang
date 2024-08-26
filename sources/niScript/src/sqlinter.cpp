@@ -915,6 +915,16 @@ struct sLinter {
                 }
                 else {
                   if (_table(intfDel)->Get(key,dest)) {
+                    if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
+                      // "Dereference" the property
+                      niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
+                      niLet pdefGet = destUD->pGetMethodDef;
+                      if (pdefGet && pdefGet->mnNumParameters == 0) {
+                        dest = ResolveMethodRetType(
+                          *destUD->pInterfaceDef,
+                          *pdefGet);
+                      }
+                    }
                     return true;
                   }
                   else {

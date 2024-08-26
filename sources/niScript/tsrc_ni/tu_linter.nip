@@ -325,7 +325,10 @@ function main() {
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      ::CHECK_EQUAL(0, aLintResults.mLogsError, "Expected lint errors.");
+      EXPECTED_LINT(aLogs, 1,
+                    "Cant assign type 'interface' to return type 'int'. interface_def<iTime> -> resolved_type<int>");
+
+      ::CHECK_EQUAL(1, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

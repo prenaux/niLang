@@ -629,14 +629,11 @@ struct sLinter {
 
   SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) const {
     // TODO: Cache returned values
-    niLoop(mi, ni::GetLang()->GetNumModuleDefs()) {
-      niLet mdef = ni::GetLang()->GetModuleDef(mi);
-      niLoop(ii, mdef->GetNumInterfaces()) {
-        niLet idef = mdef->GetInterface(ii);
-        if (*idef->mUUID == aTypeUUID) {
-          return niNew sScriptTypeInterfaceDef(
-            this->_ss, idef);
-        }
+    {
+      niLet idef = ni::GetLang()->GetInterfaceDefFromUUID(aTypeUUID);
+      if (idef) {
+        return niNew sScriptTypeInterfaceDef(
+          this->_ss, idef);
       }
     }
     return niNew sScriptTypeErrorCode(

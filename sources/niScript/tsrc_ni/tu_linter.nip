@@ -123,7 +123,7 @@ function main() {
   }
 
   testLinter.check(
-    "linter_1.ni",
+    "linter_01.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
       ::CHECK_EQUAL(13,aLintResults.mLogsError,
@@ -133,7 +133,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_2_this_and_roottable.ni",
+    "linter_02_this_and_roottable.ni",
     function(aLogs) {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
@@ -142,7 +142,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_3_this_set_key_notfound.ni",
+    "linter_03_this_set_key_notfound.ni",
     function(aLogs) {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
@@ -151,7 +151,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_4_function_call.ni",
+    "linter_04_function_call.ni",
     function(aLogs) {
       ::CHECK_EQUAL(6,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
@@ -172,7 +172,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_5_method_def_call.ni",
+    "linter_05_method_def_call.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
       ::CHECK_EQUAL(4,aLintResults.mLogsError,
@@ -194,7 +194,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_6_query_interface.ni",
+    "linter_06_query_interface.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
@@ -213,7 +213,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_7_call_native_func.ni",
+    "linter_07_call_native_func.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
@@ -246,7 +246,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_8_lint_assert_type.ni",
+    "linter_08_lint_assert_type.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
@@ -261,7 +261,7 @@ function main() {
     })
 
   testLinter.check(
-    "linter_9_builtin_delegates.ni",
+    "linter_09_builtin_delegates.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 

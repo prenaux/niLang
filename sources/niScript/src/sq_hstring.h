@@ -86,5 +86,9 @@ _HDecl_(typestr_property, "property");
 _HDecl_(typestr_invalid, "invalid");
 _HDecl_(typestr_void, "void");
 _HDecl_(typestr_bool, "bool");
+_HDecl_(typestr_iHStringCharIt, "iHStringCharIt");
+_HDecl_(typestr_iMutableCollection, "iMutableCollection");
+_HDecl_(typestr_iCollection, "iCollection");
+_HDecl_(typestr_iScriptObject, "iScriptObject");
 
 #endif // __sq_HSTRING_H__

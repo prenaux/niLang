@@ -146,6 +146,9 @@ Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc) {
   Ptr<SQNativeClosure> nc = SQNativeClosure::Create(aRegFunc.f);
   nc->_nparamscheck = aRegFunc.nparamscheck;
   nc->_name = _H(aRegFunc.name);
+  if (HStringIsNotEmpty(aRegFunc.rettype)) {
+    nc->_returntype = aRegFunc.rettype;
+  }
   if (niStringIsOK(aRegFunc.typemask)) {
     if (!CompileTypemask(nc->_typecheck,aRegFunc.typemask)) {
       niError(niFmt("'%s' CompileTypemask '%s' failed.",

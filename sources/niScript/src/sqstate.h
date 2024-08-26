@@ -15,6 +15,7 @@ struct SQRegFunction {
   SQFUNCTION f = nullptr;
   int nparamscheck = 0;
   const SQChar *typemask = AZEROSTR;
+  tHStringPtr rettype;
 };
 
 struct SQSharedState : public ni::ImplRC<ni::iUnknown>

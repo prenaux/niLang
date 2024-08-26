@@ -32,10 +32,9 @@ function ret_int_after_call() int {
 //   return lang.property["foo"]
 // }
 
-// TODO
-// function ret_string2(string v) string {
-//   return v.split(":")
-// }
+function ret_string2(string v) string {
+  return v.normalize()
+}
 
 function main() void {
   local r = ret_string();

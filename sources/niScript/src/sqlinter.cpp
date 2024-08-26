@@ -669,7 +669,6 @@ struct sLinter {
     return astl::nullopt;
   }
 
-
   SQObjectPtr ResolveType(const SQObjectPtr& aType) {
     if (sq_isnull(aType))
       return _null_;
@@ -777,6 +776,75 @@ struct sLinter {
     return resolvedType;
   }
 
+  SQObjectPtr ResolveMethodRetType(ain<sInterfaceDef> aInterfaceDef, ain<sMethodDef> aMethodDef) {
+    SQObjectPtr retType;
+    niLet scriptType = sqa_type2scripttype(aMethodDef.mReturnType);
+    switch (scriptType) {
+      case eScriptType_Null:
+      case eScriptType_Int:
+      case eScriptType_Float:
+      case eScriptType_Vec2:
+      case eScriptType_Vec3:
+      case eScriptType_Vec4:
+      case eScriptType_Matrix:
+      case eScriptType_String:
+      case eScriptType_UUID: {
+        retType = niNew sScriptTypeResolvedType(_ss, scriptType);
+        break;
+      }
+
+      case eScriptType_IUnknown: {
+        if (aMethodDef.mReturnTypeUUID) {
+          retType = ResolveTypeUUID(
+            aMethodDef.mReturnTypeName,
+            *aMethodDef.mReturnTypeUUID);
+        }
+        else {
+          retType = niNew sScriptTypeErrorCode(
+            _ss,
+            _HC(error_code_method_def_invalid_ret_type),
+            niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
+                  aInterfaceDef.maszName,
+                  aMethodDef.maszName,
+                  GetTypeString(aMethodDef.mReturnType),
+                  aMethodDef.mReturnTypeName));
+        }
+        break;
+      }
+
+        // VM Internal types or invalid types that shouldn't be returned by the interop
+      case eScriptType_EnumDef:
+      case eScriptType_InterfaceDef:
+      case eScriptType_MethodDef:
+      case eScriptType_PropertyDef:
+      case eScriptType_IndexedProperty:
+      case eScriptType_Iterator:
+      case eScriptType_ErrorCode:
+      case eScriptType_ResolvedType:
+      case eScriptType_Table:
+      case eScriptType_Array:
+      case eScriptType_UserData:
+      case eScriptType_Closure:
+      case eScriptType_NativeClosure:
+      case eScriptType_FunctionProto:
+      case eScriptType_Invalid: {
+        // TODO: This is a bit shit, we probalby need some kind of
+        // sScriptTypeError thing
+        retType = niNew sScriptTypeErrorCode(
+          _ss,
+          _HC(error_code_method_def_invalid_ret_type),
+          niFmt("method_def<%s::%s, %s(%s)>",
+                aInterfaceDef.maszName,
+                aMethodDef.maszName,
+                GetTypeString(aMethodDef.mReturnType),
+                aMethodDef.mReturnTypeName));
+        break;
+      };
+    }
+
+    return retType;
+  }
+
   bool LintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
@@ -855,6 +923,19 @@ struct sLinter {
                       _HC(error_code_cant_find_method_def),
                       niFmt("method_def<%s::%s>", idef->maszName, _stringhval(key)));
                   }
+                }
+              }
+              return false;
+            }
+
+            case eScriptType_PropertyDef: {
+              niLet pdefGet = ((sScriptTypePropertyDef*)ud)->pGetMethodDef;
+              if (pdefGet) {
+                dest = ResolveMethodRetType(
+                  *((sScriptTypePropertyDef*)ud)->pInterfaceDef,
+                  *pdefGet);
+                if (!sq_isnull(dest)) {
+                  return true;
                 }
               }
               return false;
@@ -1652,74 +1733,7 @@ void SQFunctionProto::LintTrace(
         return _null_;
       }
 
-      SQObjectPtr retType;
-      niLet scriptType = sqa_type2scripttype(aMeth.pMethodDef->mReturnType);
-      switch (scriptType) {
-        case eScriptType_Null:
-        case eScriptType_Int:
-        case eScriptType_Float:
-        case eScriptType_Vec2:
-        case eScriptType_Vec3:
-        case eScriptType_Vec4:
-        case eScriptType_Matrix:
-        case eScriptType_String:
-        case eScriptType_UUID: {
-          retType = niNew sScriptTypeResolvedType(
-            aLinter._ss,
-            scriptType);
-          break;
-        }
-
-        case eScriptType_IUnknown: {
-          if (aMeth.pMethodDef->mReturnTypeUUID) {
-            retType = aLinter.ResolveTypeUUID(
-              aMeth.pMethodDef->mReturnTypeName,
-              *aMeth.pMethodDef->mReturnTypeUUID);
-          }
-          else {
-            retType = niNew sScriptTypeErrorCode(
-              aLinter._ss,
-              _HC(error_code_method_def_invalid_ret_type),
-              niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
-                    aMeth.pInterfaceDef->maszName,
-                    aMeth.pMethodDef->maszName,
-                    GetTypeString(aMeth.pMethodDef->mReturnType),
-                    aMeth.pMethodDef->mReturnTypeName));
-          }
-          break;
-        }
-
-          // VM Internal types or invalid types that shouldn't be returned by the interop
-        case eScriptType_EnumDef:
-        case eScriptType_InterfaceDef:
-        case eScriptType_MethodDef:
-        case eScriptType_PropertyDef:
-        case eScriptType_IndexedProperty:
-        case eScriptType_Iterator:
-        case eScriptType_ErrorCode:
-        case eScriptType_ResolvedType:
-        case eScriptType_Table:
-        case eScriptType_Array:
-        case eScriptType_UserData:
-        case eScriptType_Closure:
-        case eScriptType_NativeClosure:
-        case eScriptType_FunctionProto:
-        case eScriptType_Invalid: {
-          // TODO: This is a bit shit, we probalby need some kind of
-          // sScriptTypeError thing
-          retType = niNew sScriptTypeErrorCode(
-            aLinter._ss,
-            _HC(error_code_method_def_invalid_ret_type),
-            niFmt("method_def<%s::%s, %s(%s)>",
-                  aMeth.pInterfaceDef->maszName,
-                  aMeth.pMethodDef->maszName,
-                  GetTypeString(aMeth.pMethodDef->mReturnType),
-                  aMeth.pMethodDef->mReturnTypeName));
-          break;
-        };
-      }
-
-      return retType;
+      return aLinter.ResolveMethodRetType(*aMeth.pInterfaceDef, *aMeth.pMethodDef);
     };
 
     auto call_lint_func = [&](ain_nn_mut<iLintFuncCall> aLintFunc) -> SQObjectPtr {

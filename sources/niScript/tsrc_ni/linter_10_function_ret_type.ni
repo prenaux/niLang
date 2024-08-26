@@ -26,11 +26,10 @@ function ret_int_after_call() int {
   return ret_string_property_nopes();
 }
 
-// TODO
-// function ret_string_property2() string {
-//   local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
-//   return lang.property["foo"]
-// }
+local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
+function ret_string_property2():(lang) string {
+  return lang.property["foo"]
+}
 
 function ret_string2(string v) string {
   return v.normalize()

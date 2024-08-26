@@ -1621,15 +1621,20 @@ void SQFunctionProto::LintTrace(
     };
 
     auto call_nativeclosure = [&](ain<SQNativeClosure> func) -> SQObjectPtr {
-      const int paramssize = func._nparamscheck;
-      const int arity = paramssize-1; // number of paramssize-1 for the implicit this
+      niLet nparamscheck = func._nparamscheck;
+      _LTRACE(("call_func: %s, nparamscheck: %d", _NativeClosureToString(func), nparamscheck));
 
-      _LTRACE(("call_func: %s", _NativeClosureToString(func)));
-
-      if (_LENABLED(call_num_args) && (paramssize != nargs)) {
-        _LINT(call_num_args,
-              niFmt("call_nativeclosure: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
-                    arity, nargs-1, _NativeClosureToString(func)));
+      if (_LENABLED(call_num_args)) {
+        if ((nparamscheck < 0) && (nargs < (-nparamscheck))) {
+          _LINT(call_num_args,
+                niFmt("call_nativeclosure: Incorrect number of arguments, expected at least %d but got %d. Calling %s.",
+                      (-func._nparamscheck)-1, nargs-1, _NativeClosureToString(func)));
+        }
+        else if ((nparamscheck > 0) && (nparamscheck != nargs)) {
+          _LINT(call_num_args,
+                niFmt("call_nativeclosure: Incorrect number of arguments, expected %d but got %d. Calling %s.",
+                      func._nparamscheck-1, nargs-1, _NativeClosureToString(func)));
+        }
       }
 
       niLet rettype = aLinter.ResolveType(func._returntype);

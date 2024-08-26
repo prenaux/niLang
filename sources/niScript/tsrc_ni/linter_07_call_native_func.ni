@@ -4,6 +4,17 @@ local __lint = {
   _explicit = 1
 }
 
+function string_func(string v) string {
+  if (v.endswith(",")) {
+    v.endswith(",",":") // should fail
+    v = v.slice(0,v.len()-1)
+    local i = v.find(",")
+    i = v.find(); // should fail
+    v = v.slice(0,i-1)
+  }
+  return v
+}
+
 function main() void {
   ::vmprintln("Hello Linter!") // ok
   ::vmprintln("Hello Linter!", 123) // invalid number of arg

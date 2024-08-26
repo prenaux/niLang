@@ -371,6 +371,7 @@ _DEF_LINT(key_notfound_callk,IsError,IsExperimental);
 _DEF_LINT(this_set_key_notfound,IsError,None);
 _DEF_LINT(set_key_notfound,IsError,IsExperimental);
 _DEF_LINT(call_null,IsWarning,IsExplicit);
+_DEF_LINT(getk_null,IsWarning,IsExplicit);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
@@ -430,6 +431,7 @@ struct sLinter {
     _REG_LINT(this_set_key_notfound);
     _REG_LINT(set_key_notfound);
     _REG_LINT(call_null);
+    _REG_LINT(getk_null);
     _REG_LINT(call_error);
     _REG_LINT(call_num_args);
     _REG_LINT(ret_type_is_null);
@@ -516,6 +518,7 @@ struct sLinter {
     _E(this_set_key_notfound)
     _E(set_key_notfound)
     _E(call_null)
+    _E(getk_null)
     _E(call_error)
     _E(call_num_args)
     _E(ret_type_is_null)
@@ -1515,7 +1518,14 @@ void SQFunctionProto::LintTrace(
       _LINT(implicit_this_getk, niFmt(
         "implicit this access to %s", _ObjToString(k)));
     }
-    if (is_this_key_notfound(_LOBJ(this_key_notfound_callk),inst,inst._arg2,t,k,v)) {
+    if (sq_isnull(t)) {
+      if (_LENABLED(getk_null)) {
+        _LINT(this_key_notfound_callk, niFmt(
+          "%s not found in Null.",
+          _ObjToString(k)));
+      }
+    }
+    else if (is_this_key_notfound(_LOBJ(this_key_notfound_callk),inst,inst._arg2,t,k,v)) {
       _LINT(this_key_notfound_callk, niFmt(
         "%s not found in %s.",
         _ObjToString(k), _ObjToString(t)));

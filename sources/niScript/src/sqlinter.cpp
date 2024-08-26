@@ -370,9 +370,11 @@ _DEF_LINT(key_notfound_getk,IsError,IsExperimental);
 _DEF_LINT(key_notfound_callk,IsError,IsExperimental);
 _DEF_LINT(this_set_key_notfound,IsError,None);
 _DEF_LINT(set_key_notfound,IsError,IsExperimental);
-_DEF_LINT(call_warning,IsWarning,IsExplicit);
+_DEF_LINT(call_null,IsWarning,IsExplicit);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
+_DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
+_DEF_LINT(ret_type_cant_assign,IsError,None);
 
 #undef _DEF_LINT
 
@@ -427,9 +429,11 @@ struct sLinter {
     _REG_LINT(key_notfound_callk);
     _REG_LINT(this_set_key_notfound);
     _REG_LINT(set_key_notfound);
-    _REG_LINT(call_warning);
+    _REG_LINT(call_null);
     _REG_LINT(call_error);
     _REG_LINT(call_num_args);
+    _REG_LINT(ret_type_is_null);
+    _REG_LINT(ret_type_cant_assign);
   }
 #undef _REG_LINT
 
@@ -511,9 +515,11 @@ struct sLinter {
     _E(key_notfound_getk)
     _E(this_set_key_notfound)
     _E(set_key_notfound)
-    _E(call_warning)
+    _E(call_null)
     _E(call_error)
     _E(call_num_args)
+    _E(ret_type_is_null)
+    _E(ret_type_cant_assign)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -703,7 +709,9 @@ struct sLinter {
         this->_ss, eScriptType_String);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,string));
     }
-    else if (hspType == _ss._typeStr_int) {
+    else if (hspType == _ss._typeStr_int ||
+             hspType == _HC(typestr_bool))
+    {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Int);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
@@ -727,6 +735,10 @@ struct sLinter {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Closure);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
+    }
+    else if (hspType == _HC(typestr_void)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_Null);
     }
 
     // Userdata based types
@@ -910,6 +922,27 @@ struct sLinter {
     }
     return false;
   }
+
+  static bool _LintTypeCanAssign(ain<eScriptType> aFromType, ain<eScriptType> aToType) {
+    if (aFromType != aToType) {
+      return eFalse;
+    }
+    return eTrue;
+  }
+
+  static eScriptType _GetResolvedObjType(const SQObjectPtr& aObj) {
+    niLet type = sqa_getscriptobjtype(aObj);
+    if (type == eScriptType_ResolvedType) {
+      return ((sScriptTypeResolvedType*)_userdata(aObj))->_scriptType;
+    }
+    return type;
+  }
+
+  static bool LintTypeObjCanAssign(const SQObjectPtr& aFromTypeObj, const SQObjectPtr& aToTypeObj) {
+    niLetMut fromType = _GetResolvedObjType(aFromTypeObj);
+    niLet toType = _GetResolvedObjType(aToTypeObj);
+    return _LintTypeCanAssign(fromType, toType);
+  }
 };
 
 static SQObjectPtr _MakeScriptErrorCode(ain<sLinter> aLinter, ain_nn_mut<iHString> aKind, const achar* aMsg) {
@@ -1023,7 +1056,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& qiID = aCallArgs[1];
-    niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
+    // niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
     tUUID qiUUID = kuuidZero;
     switch(sqa_getscriptobjtype(qiID)) {
       case eScriptType_String: {
@@ -1035,7 +1068,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
           aLinter,niFmt("Invalid interface id type '%s'.", _ObjToString(qiID)));
     }
 
-    niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
+    // niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
     if (qiUUID == kuuidZero) {
       return _MakeLintCallError(
         aLinter,niFmt("Can't find interface uuid '%s'.", _ObjToString(qiID)));
@@ -1047,7 +1080,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
         aLinter,niFmt("Can't find interface def '%s'.", _ObjToString(qiID)));
     }
 
-    niDebugFmt(("... sLintFuncCallQueryInterface: qiDef: %s", qiDef->maszName));
+    // niDebugFmt(("... sLintFuncCallQueryInterface: qiDef: %s", qiDef->maszName));
     return niNew sScriptTypeInterfaceDef(aLinter._ss, qiDef);
   }
 };
@@ -1093,12 +1126,14 @@ void SQFunctionProto::LintTrace(
   const int thisfunc_paramssize = (int)(thisfunc->_parameters.size() -
                                         thisfunc_outerssize);
   const int thisfunc_stacksize = thisfunc->_stacksize;
+  niLet thisfunc_resolvedrettype = aLinter.ResolveType(thisfunc->_returntype);
 
   _LTRACE(("-------------------------------------------------------\n"));
   _LTRACE(("--- FUNCTION TRACE: %s\n", _FuncProtoToString(*thisfunc)));
   _LTRACE(("stacksize: %s\n", thisfunc_stacksize));
   _LTRACE(("outersize: %s\n", thisfunc_outerssize));
   _LTRACE(("paramssize: %s\n", thisfunc_paramssize));
+  _LTRACE(("rettype: %s\n", _ObjToString(thisfunc_resolvedrettype)));
 
   auto getlinecol = [&](const SQInstruction& inst) -> sVec2i {
     return SQFunctionProto::_GetLineCol(_instructions,&inst,_lineinfos);
@@ -1272,7 +1307,7 @@ void SQFunctionProto::LintTrace(
   };
 
   auto op_loadroottable = [&](const SQInstruction& inst) {
-    _LTRACE(("op_loadroottable: %s", sstr(IARG0)));
+    _LTRACE(("op_loadroottable: %s, %s", sstr(IARG0), _ObjToString(aClosure._root)));
     sset(IARG0, aClosure._root);
   };
 
@@ -1280,6 +1315,30 @@ void SQFunctionProto::LintTrace(
     SQObjectPtr v = sget(IARG1);
     _LTRACE(("op_move: %s -> %s", _ObjToString(v), sstr(IARG0)));
     sset(IARG0, v);
+  };
+
+  auto op_return = [&](const SQInstruction& inst) {
+    if (IARG0 != 0xFF) {
+      SQObjectPtr rval = sget(IARG1);
+      _LTRACE(("op_return: %s", _ObjToString(rval)));
+      if (sq_isnull(thisfunc->_returntype)) {
+        // We don't do type checking if the return type is null as this is
+        // essentially the "any" type.
+      }
+      else if (!aLinter.LintTypeObjCanAssign(rval, thisfunc_resolvedrettype)) {
+        if (_LENABLED(ret_type_cant_assign)) {
+          _LINT(ret_type_cant_assign, niFmt(
+            "Can't assign type '%s' to return type '%s' (%s -> %s).",
+            sqa_getscripttypename(aLinter._GetResolvedObjType(rval)),
+            sqa_getscripttypename(aLinter._GetResolvedObjType(thisfunc_resolvedrettype)),
+            _ObjToString(rval),
+            _ObjToString(thisfunc_resolvedrettype)));
+        }
+      }
+    }
+    else {
+      _LTRACE(("op_return: default"));
+    }
   };
 
   auto op_closure = [&](const SQInstruction& inst) {
@@ -1405,9 +1464,10 @@ void SQFunctionProto::LintTrace(
                                   SQObjectPtr& v)
       -> tBool
   {
+    niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
     return (aLinter.IsEnabled(aLint.key) &&
             is_this_table(aTableArg) && // is this call
-            !aLinter.LintGet(t,k,v,inst._ext));
+            !didGet);
   };
 
   auto is_key_notfound = [&](const sLint& aLint,
@@ -1417,8 +1477,8 @@ void SQFunctionProto::LintTrace(
                              SQObjectPtr& v)
       -> tBool
   {
-    return (aLinter.IsEnabled(aLint.key) &&
-            !aLinter.LintGet(t,k,v,inst._ext));
+    niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
+    return (aLinter.IsEnabled(aLint.key) && !didGet);
   };
 
   auto op_getk = [&](const SQInstruction& inst) {
@@ -1464,8 +1524,10 @@ void SQFunctionProto::LintTrace(
     }
     sset(IARG3, t);
     sset(IARG0, v);
-    _LTRACE(("op_precallk: %s[%s] in %s & table in %s",
-             _ObjToString(t), _ObjToString(k), sstr(IARG0), sstr(IARG3)));
+    _LTRACE(("op_precallk: f = %s (%s), t = %s (%s), k = %s",
+             _ObjToString(v), sstr(IARG0),
+             _ObjToString(t), sstr(IARG3),
+             _ObjToString(k)));
   };
 
   auto is_this_set_key_notfound = [&](const sLint& aLint,
@@ -1539,10 +1601,9 @@ void SQFunctionProto::LintTrace(
         _LINT(call_num_args,
               niFmt("call_func: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, _FuncProtoToString(func)));
-        return _null_;
       }
 
-      return _null_;
+      return func._returntype;
     };
 
     auto call_nativeclosure = [&](ain<SQNativeClosure> func) -> SQObjectPtr {
@@ -1555,10 +1616,9 @@ void SQFunctionProto::LintTrace(
         _LINT(call_num_args,
               niFmt("call_nativeclosure: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
                     arity, nargs-1, _NativeClosureToString(func)));
-        return _null_;
       }
 
-      return _null_;
+      return func._returntype;
     };
 
     auto call_method = [&](ain<sScriptTypeMethodDef> aMeth) -> SQObjectPtr {
@@ -1668,8 +1728,8 @@ void SQFunctionProto::LintTrace(
 
     switch (tocalltype) {
       case eScriptType_Null: {
-        if (_LENABLED(call_warning)) {
-          _LINT(call_warning, "Attempting to call Null.");
+        if (_LENABLED(call_null)) {
+          _LINT(call_null, "Attempting to call Null.");
         }
         sset(IARG0, _null_);
         break;
@@ -1722,8 +1782,8 @@ void SQFunctionProto::LintTrace(
           }
         }
         else {
-          if (_LENABLED(call_warning)) {
-            _LINT(call_warning,
+          if (_LENABLED(call_null)) {
+            _LINT(call_null,
                   niFmt("Attempting to call iunknown '%s' (%s).",
                         _ObjToString(tocall),
                         aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
@@ -1733,8 +1793,8 @@ void SQFunctionProto::LintTrace(
         break;
       };
       default: {
-        if (_LENABLED(call_warning)) {
-          _LINT(call_warning,
+        if (_LENABLED(call_null)) {
+          _LINT(call_null,
                 niFmt("Attempting to call '%s' (%s).",
                       _ObjToString(tocall),
                       aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
@@ -1769,6 +1829,25 @@ void SQFunctionProto::LintTrace(
   }
 
   _LTRACE(("--- INST ----------------------------------------------\n"));
+  // prologue checks
+  {
+    niLet retscripttype = sqa_getscriptobjtype(thisfunc_resolvedrettype);
+    if (retscripttype == eScriptType_Null && _LENABLED(ret_type_is_null)) {
+      niLet inst = 0; // placeholder
+      niLet getlinecol = [&](niLet _) {
+        return Vec2i(thisfunc->_sourceline, 0);
+      };
+      _LINT(ret_type_is_null, niFmt(
+        "Return type is Null, specify an explicit return type.",
+        _ObjToString(thisfunc->_returntype)));
+    }
+    else if (retscripttype == eScriptType_ErrorCode) {
+      _LINTERNAL_ERROR(niFmt("Invalid function return type '%s'.",
+                             _ObjToString(thisfunc_resolvedrettype)));
+    }
+  }
+
+  // instructioncs check
   niLoop(i, _instructions.size()) {
     const SQInstruction &inst=_instructions[i];
     _LTRACE(("%s %d %d %d %d",
@@ -1780,6 +1859,7 @@ void SQFunctionProto::LintTrace(
       case _OP_LOADNULL: op_loadnull(inst); break;
       case _OP_LOADROOTTABLE: op_loadroottable(inst); break;
       case _OP_MOVE: op_move(inst); break;
+      case _OP_RETURN: op_return(inst); break;
       case _OP_CLOSURE: op_closure(inst); break;
       case _OP_NEWSLOT: op_newslot(inst); break;
       case _OP_GETK: op_getk(inst); break;

@@ -607,6 +607,7 @@ niExportFunc(eScriptType) sqa_getscriptobjtype(const SQObjectPtr& obj);
 niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);
 niExportFunc(eScriptType) sqa_type2scripttype(const tType aType);
 niExportFunc(iHString*) sqa_getscripttypename(eScriptType aType);
+niExportFunc(iHString*) sqa_getscriptobjtypename(const SQObjectPtr& obj);
 
 bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval, SQObjectPtr &outitr);
 

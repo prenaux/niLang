@@ -1,5 +1,5 @@
 local __lint = {
-  call_warning = 1
+  call_null = 1
   key_notfound_callk = 1
 }
 

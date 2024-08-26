@@ -1,12 +1,5 @@
-//
-// TODO:
-// - [x] Check whether simple functions are called with the correct number of arguments
-// - [ ] Check whether functions in a table are called with the correct number of arguments
-// - [ ] Check whether simple native functions are called with correct number of arguments
-// - [ ] Check whether iUnknown methods are called with the correct number of arguments
-//
 local __lint = {
-  call_warning = 1
+  call_null = 1
 }
 
 function f0() {

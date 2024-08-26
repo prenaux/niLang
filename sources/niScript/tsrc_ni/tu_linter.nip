@@ -153,7 +153,6 @@ function main() {
   testLinter.check(
     "linter_04_function_call.ni",
     function(aLogs) {
-      ::CHECK_EQUAL(6,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 5,
         {[call_num_args: call_func: Incorrect number of arguments passed]})
@@ -169,16 +168,14 @@ function main() {
       EXPECTED_LINT(
         aLogs, 1,
         {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 2. Calling f3]})
+
+      ::CHECK_EQUAL(5,aLogs.size(),"Lints count.");
     })
 
   testLinter.check(
     "linter_05_method_def_call.ni",
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
-      ::CHECK_EQUAL(4,aLintResults.mLogsError,
-                    "Expected lint errors.");
-      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
-                    "Expected lint warnings.");
 
       EXPECTED_LINT(
         aLogs, 1,
@@ -191,6 +188,11 @@ function main() {
       EXPECTED_LINT(
         aLogs, 1,
         {[call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
+
+      ::CHECK_EQUAL(4,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
     })
 
   testLinter.check(
@@ -200,7 +202,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        "call_warning: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iUnknown::RandIntRange>>");
+        "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iUnknown::RandIntRange>>");
 
       EXPECTED_LINT(
         aLogs, 1,
@@ -292,10 +294,23 @@ function main() {
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
-      ::CHECK_EQUAL(11,aLintResults.mLogsError,
-                    "Expected lint errors.");
-      ::CHECK_EQUAL(11,aLintResults.mLogsWarning,
-                    "Expected lint warnings.");
+      ::CHECK_EQUAL(11, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(11, aLintResults.mLogsWarning, "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_10_function_ret_type.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(aLogs, 1,
+                    "ret_type_cant_assign: Can't assign type 'int' to return type 'string'");
+
+      EXPECTED_LINT(aLogs, 1,
+                    "ret_type_cant_assign: Can't assign type 'string' to return type 'int'");
+
+      ::CHECK_EQUAL(2, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 
   // Output failed tests

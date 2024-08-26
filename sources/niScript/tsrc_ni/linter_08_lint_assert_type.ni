@@ -4,7 +4,7 @@ local __lint = {
   _explicit = 1
 }
 
-function main() {
+function main() void {
   local lang = ::CreateInstance("niLang.Lang")
   ::LintAssertType("interface_def<iUnknown>", lang)
   lang.Log(0, "Hellow", "nofile", -1, "nofunc") // should fail

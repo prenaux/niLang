@@ -8,7 +8,7 @@ local __lint = {
 ::gMath1 <- ::CreateGlobalInstance("niLang.Math")
 ::gMath2 <- ::gMath1.QueryInterface("iMath")
 
-function main() {
+function main() void {
   ::gMath.RandIntRange(100,200) // should be ok
   ::gMath1.RandIntRange(100,200) // should fail, still iUnknown
   ::gMath2.RandIntRange(100,200) // should be ok

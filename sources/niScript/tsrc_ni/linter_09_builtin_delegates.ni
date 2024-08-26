@@ -2,6 +2,7 @@ local __lint = {
   _all = 1
   _pedantic = 1
   _explicit = 1
+  ret_type_is_null = 0
 }
 
 function del_string(string v) {

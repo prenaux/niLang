@@ -4,7 +4,7 @@ local __lint = {
   _explicit = 1
 }
 
-function main() {
+function main() void {
   ::vmprintln("Hello Linter!") // ok
   ::vmprintln("Hello Linter!", 123) // invalid number of arg
 

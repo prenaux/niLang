@@ -187,6 +187,11 @@ niExportFunc(iHString*) sqa_getscripttypename(eScriptType aType) {
 }
 
 ///////////////////////////////////////////////
+niExportFunc(iHString*) sqa_getscriptobjtypename(const SQObjectPtr& obj) {
+  return sqa_getscripttypename(sqa_getscriptobjtype(obj));
+}
+
+///////////////////////////////////////////////
 niExportFuncCPP(cString) sqa_gettypestring(int type) {
   switch (_RAW_TYPE(type)) {
     case _RT_NULL: return "Null";

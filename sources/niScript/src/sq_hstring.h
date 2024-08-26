@@ -84,5 +84,7 @@ _HDecl_(typestr_iterator, "iterator");
 _HDecl_(typestr_enum, "enum");
 _HDecl_(typestr_property, "property");
 _HDecl_(typestr_invalid, "invalid");
+_HDecl_(typestr_void, "void");
+_HDecl_(typestr_bool, "bool");
 
 #endif // __sq_HSTRING_H__

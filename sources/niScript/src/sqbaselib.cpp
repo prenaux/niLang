@@ -723,31 +723,6 @@ static int default_delegate_notempty(HSQUIRRELVM v)
   return 1;
 }
 
-static int default_delegate_tonumber(HSQUIRRELVM v)
-{
-  SQObjectPtr &o=stack_get(v,1);
-  switch(_sqtype(o)){
-    case OT_STRING:{
-      SQObjectPtr res;
-      if (str2num(_stringval(o),res)) {
-        v->Push(res);
-      }
-      else {
-        v->Push(_null_);
-      }
-      break;
-    }
-    case OT_INTEGER:
-    case OT_FLOAT:
-      v->Push(o);
-      break;
-    default:
-      v->Push(_null_);
-      break;
-  }
-  return 1;
-}
-
 static int default_delegate_tofloat(HSQUIRRELVM v)
 {
   SQObjectPtr &o=stack_get(v,1);
@@ -2389,8 +2364,6 @@ SQRegFunction SQSharedState::_string_default_delegate_funcz[]={
   {_A("ToFloat"),default_delegate_tofloat,1, _A("s")},
   {_A("tostring"),default_delegate_tostring,1, _A("s")},
   {_A("ToString"),default_delegate_tostring,1, _A("s")},
-  {_A("tonumber"),default_delegate_tonumber,1, _A("s")},
-  {_A("ToNumber"),default_delegate_tonumber,1, _A("s")},
   {_A("slice"),string_slice,-1, _A("snn")},
   {_A("Slice"),string_slice,-1, _A("snn")},
   {_A("split"),string_split,2, _A("ss")},
@@ -2533,8 +2506,6 @@ SQRegFunction SQSharedState::_number_default_delegate_funcz[]={
   {_A("ToInt"),default_delegate_toint,1, _A("n")},
   {_A("tofloat"),default_delegate_tofloat,1, _A("n")},
   {_A("ToFloat"),default_delegate_tofloat,1, _A("n")},
-  {_A("tonumber"),default_delegate_tonumber,1, _A("n")},
-  {_A("ToNumber"),default_delegate_tonumber,1, _A("n")},
   {_A("tostring"),default_delegate_tostring,1, _A("n")},
   {_A("ToString"),default_delegate_tostring,1, _A("n")},
   {_A("tochar"),number_delegate_tochar,1, _A("n")},

@@ -10,6 +10,15 @@ function del_string(string v) {
   return v.split(":")
 }
 
+local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
+
+function del_string_resolved():(lang) string {
+  local v = lang.GetProperty("bla");
+  if (!(v.?len()))
+    return "narf";
+  return v;
+}
+
 function del_int(int v) {
   v.thehamster(1,2,3)
   return v.ToFloat()
@@ -56,7 +65,7 @@ function del_matrix(Matrix v) {
   v.transpose()
 }
 
-function del_matrix(UUID v) {
+function del_uuid(UUID v) {
   v.thehamster(1,2,3)
   v._tostring()
 }

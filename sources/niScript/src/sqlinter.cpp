@@ -950,6 +950,35 @@ struct sLinter {
               }
               return false;
             }
+
+            case eScriptType_ResolvedType: {
+              switch (((sScriptTypeResolvedType*)ud)->_scriptType) {
+                case eScriptType_String:
+                  return _ddel(ss,string)->Get(key,dest);
+                case eScriptType_Int:
+                case eScriptType_Float:
+                  return _ddel(ss,number)->Get(key,dest);
+                case eScriptType_Vec2:
+                  return _ddel(ss,vec2f)->Get(key,dest);
+                case eScriptType_Vec3:
+                  return _ddel(ss,vec3f)->Get(key,dest);
+                case eScriptType_Vec4:
+                  return _ddel(ss,vec4f)->Get(key,dest);
+                case eScriptType_Matrix:
+                  return _ddel(ss,matrixf)->Get(key,dest);
+                case eScriptType_Array:
+                  return _ddel(ss,array)->Get(key,dest);
+                case eScriptType_Table:
+                  return _ddel(ss,table)->Get(key,dest);
+                case eScriptType_Closure:
+                case eScriptType_NativeClosure:
+                  return _ddel(ss,closure)->Get(key,dest);
+                case eScriptType_UUID:
+                  return _ddel(ss,uuid)->Get(key,dest);
+                default:
+                  return false;
+              }
+            }
           }
 
           bool getRetVal = false;

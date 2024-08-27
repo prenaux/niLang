@@ -362,11 +362,14 @@ static tU32 _lintKeyGen = 0;
 _DEF_LINT(internal_error,IsError,IsInternal);
 _DEF_LINT(internal_warning,IsWarning,IsInternal);
 _DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
+_DEF_LINT(implicit_this_get,IsWarning,IsPedantic);
 _DEF_LINT(implicit_this_callk,IsWarning,IsPedantic);
 _DEF_LINT(this_key_notfound_getk,IsError,None);
+_DEF_LINT(this_key_notfound_get,IsError,None);
 _DEF_LINT(this_key_notfound_callk,IsError,None);
 _DEF_LINT(this_key_notfound_outer,IsError,None);
 _DEF_LINT(key_notfound_getk,IsError,IsExperimental);
+_DEF_LINT(key_notfound_get,IsError,IsExperimental);
 _DEF_LINT(key_notfound_callk,IsError,IsExperimental);
 _DEF_LINT(this_set_key_notfound,IsError,None);
 _DEF_LINT(set_key_notfound,IsError,IsExperimental);
@@ -422,11 +425,14 @@ struct sLinter {
     _REG_LINT(internal_error);
     _REG_LINT(internal_warning);
     _REG_LINT(implicit_this_getk);
+    _REG_LINT(implicit_this_get);
     _REG_LINT(implicit_this_callk);
     _REG_LINT(this_key_notfound_getk);
+    _REG_LINT(this_key_notfound_get);
     _REG_LINT(this_key_notfound_callk);
     _REG_LINT(this_key_notfound_outer);
     _REG_LINT(key_notfound_getk);
+    _REG_LINT(key_notfound_get);
     _REG_LINT(key_notfound_callk);
     _REG_LINT(this_set_key_notfound);
     _REG_LINT(set_key_notfound);
@@ -509,12 +515,15 @@ struct sLinter {
     }
 
     _E(implicit_this_getk)
+    _E(implicit_this_get)
     _E(implicit_this_callk)
     _E(this_key_notfound_getk)
+    _E(this_key_notfound_get)
     _E(this_key_notfound_callk)
     _E(this_key_notfound_outer)
     _E(key_notfound_callk)
     _E(key_notfound_getk)
+    _E(key_notfound_get)
     _E(this_set_key_notfound)
     _E(set_key_notfound)
     _E(call_null)
@@ -1627,6 +1636,29 @@ void SQFunctionProto::LintTrace(
              _ObjToString(t), _ObjToString(k), sstr(IARG0)));
   };
 
+  auto op_get = [&](const SQInstruction& inst) {
+    SQObjectPtr t = sget(IARG1);
+    SQObjectPtr k = sget(IARG2);
+    SQObjectPtr v;
+    if (is_implicit_this(_LOBJ(implicit_this_getk),inst,inst._arg1)) {
+      _LINT(implicit_this_get, niFmt(
+        "implicit this access to %s", _ObjToString(k)));
+    }
+    if (is_this_key_notfound(_LOBJ(this_key_notfound_getk),inst,inst._arg1,t,k,v)) {
+      _LINT(this_key_notfound_get, niFmt(
+        "%s not found in %s.",
+        _ObjToString(k), _ObjToString(t)));
+    }
+    else if (is_key_notfound(_LOBJ(key_notfound_getk),inst,t,k,v)) {
+      _LINT(key_notfound_get, niFmt(
+        "%s not found in %s.",
+        _ObjToString(k), _ObjToString(t)));
+    }
+    sset(IARG0, v);
+    _LTRACE(("op_get: %s[%s] in %s",
+             _ObjToString(t), _ObjToString(k), sstr(IARG0)));
+  };
+
   auto op_precallk = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG2);
     SQObjectPtr k = lget(IARG1);
@@ -1933,6 +1965,7 @@ void SQFunctionProto::LintTrace(
       case _OP_CLOSURE: op_closure(inst); break;
       case _OP_NEWSLOT: op_newslot(inst); break;
       case _OP_GETK: op_getk(inst); break;
+      case _OP_GET: op_get(inst); break;
       case _OP_PREPCALLK: op_precallk(inst); break;
       case _OP_SET: op_set(inst); break;
       case _OP_CALL: op_call(inst,eFalse); break;

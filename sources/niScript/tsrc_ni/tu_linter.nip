@@ -189,7 +189,15 @@ function main() {
         aLogs, 1,
         {[call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
 
-      ::CHECK_EQUAL(4,aLintResults.mLogsError,
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[ret_type_cant_assign: Cant assign type 'interface' to return type 'string'. interface_def<iTime> -> resolved_type<string>.]})
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[call_null: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iMath::NotaMethod>>']})
+
+      ::CHECK_EQUAL(5,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
                     "Expected lint warnings.");

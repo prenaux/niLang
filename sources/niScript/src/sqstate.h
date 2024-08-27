@@ -30,6 +30,7 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   SQObjectPtr _refs_table;
 
   static SQRegFunction _base_funcs[];
+  static SQRegFunction _lint_funcs[]; // in sqlinter.cpp
   static SQRegFunction _concurrent_funcs[];
 
   SQObjectPtr _table_default_delegate;

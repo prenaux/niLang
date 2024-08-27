@@ -604,6 +604,9 @@ bool SQVM::Init(bool abInitRootTable)
     RegisterSQRegFunctions(
       as_nn(_table(_roottable)),
       SQSharedState::_base_funcs);
+    RegisterSQRegFunctions(
+      as_nn(_table(_roottable)),
+      SQSharedState::_lint_funcs);
   }
   else {
     _roottable = _null_;

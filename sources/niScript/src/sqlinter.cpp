@@ -1167,6 +1167,16 @@ struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
   }
 };
 
+static int lint_LintAssertType(HSQUIRRELVM v)
+{
+  // SQObjectPtr& expectedType = stack_get(v,2);
+  // niUnused(expectedType);
+  // SQObjectPtr& actualObj = stack_get(v,3);
+  // niUnused(actualObj);
+  v->Push(_one_);
+  return 1;
+}
+
 struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
   NN<iHString> _name;
 
@@ -1195,6 +1205,14 @@ struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
     return aLinter.ResolveType(expectedTypeArg);
   }
 };
+
+static int lint_LintAsType(HSQUIRRELVM v)
+{
+  //SQObjectPtr& type = stack_get(v,2);
+  SQObjectPtr& obj = stack_get(v,3);
+  v->Push(obj);
+  return 1;
+}
 
 struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   sLintFuncCallQueryInterface()
@@ -1240,6 +1258,12 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   }
 };
 
+// Registered in sqvm.cpp
+SQRegFunction SQSharedState::_lint_funcs[] = {
+  {"LintAsType", lint_LintAsType, 3, "ts.", _HC(typestr_bool)},
+  {"LintAssertType", lint_LintAssertType, 3, "ts."},
+};
+
 void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
   RegisterFunc(table, "vmprint", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprint));
@@ -1249,6 +1273,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterSQRegFunctions(table, SQSharedState::_base_funcs);
   RegisterSQRegFunctions(table, SQSharedState::_concurrent_funcs);
 
+  // Do this last so that we override the base functions
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));

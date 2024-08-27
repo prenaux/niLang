@@ -340,6 +340,25 @@ function main() {
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 
+  testLinter.check(
+    "linter_12_lint_as_type.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_callk: "Log" not found in interface_def<iUnknown>]});
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[call_lint_func: LintAsType/2::iLintFuncCall: error_code<error_code_cant_find_interface_def,iTheUnknownHamster>]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+    })
+
   // Output failed tests
   if (!testLinter.mFailedChecks.empty()) {
     ::logError(::format("Linter test failed: %d",

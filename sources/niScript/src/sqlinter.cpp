@@ -17,6 +17,17 @@
 
 #define SQLINTER_LOG_INLINE
 
+struct sLinter;
+
+struct iLintFuncCall : public iUnknown {
+  niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
+
+  virtual nn<iHString> __stdcall GetName() const = 0;
+  // return -1 for varargs
+  virtual tI32 __stdcall GetArity() const = 0;
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
+};
+
 static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName, ain<bool> aDefault) {
   if (aFilter && *aFilter) {
     if (ni::StrCmp(aFilter,"*") == 0 ||
@@ -215,10 +226,18 @@ static cString _ObjToString(const SQObjectPtr& obj) {
       return niFmt("\"%s\"",_stringval(obj));
     }
     case OT_IUNKNOWN: {
-      return niFmt("{%s}::IUnknown",_PtrToString((tIntPtr)_iunknown(obj)));
+      QPtr<iLintFuncCall> lintFuncCall = _iunknown(obj);
+      if (lintFuncCall.IsOK()) {
+        return niFmt("%s/%s::iLintFuncCall",
+                     lintFuncCall->GetName(),
+                     lintFuncCall->GetArity());
+      }
+      else {
+        return niFmt("{%s}::IUnknown",_PtrToString((tIntPtr)_iunknown(obj)));
+      }
     }
     case OT_FUNCPROTO: {
-      return niFmt("function %s",_ObjToString(_funcproto(obj)->_name));
+      return niFmt("funcproto %s",_ObjToString(_funcproto(obj)->_name));
     }
     case OT_TABLE: {
       return niFmt("%s{%s}::TABLE",
@@ -381,17 +400,6 @@ _DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
 
 #undef _DEF_LINT
-
-struct sLinter;
-
-struct iLintFuncCall : public iUnknown {
-  niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
-
-  virtual nn<iHString> __stdcall GetName() const = 0;
-  // return -1 for varargs
-  virtual tI32 __stdcall GetArity() const = 0;
-  virtual SQObjectPtr __stdcall LintCall(const sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
-};
 
 struct sLinter {
  private:
@@ -1077,22 +1085,8 @@ struct sLinter {
   }
 };
 
-static SQObjectPtr _MakeScriptErrorCode(ain<sLinter> aLinter, ain_nn_mut<iHString> aKind, const achar* aMsg) {
-  return niNew sScriptTypeErrorCode(aLinter._ss, aKind, aMsg);
-}
-
 static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
-  return _MakeScriptErrorCode(aLinter, _HC(error_code_lint_call_error), aMsg);
-}
-
-static QPtr<sScriptTypeErrorCode> _GetScriptErrorCode(ain<SQObjectPtr> aRet) {
-  if (sqa_getscriptobjtype(aRet) == eScriptType_ErrorCode) {
-    niLet unresolved = (sScriptTypeErrorCode*)_userdata(aRet);
-    if (unresolved->_hspKind == _HC(error_code_lint_call_error)) {
-      return unresolved;
-    }
-  }
-  return nullptr;
+  return niNew sScriptTypeErrorCode(aLinter._ss, _HC(error_code_lint_call_error), aMsg);
 }
 
 struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
@@ -1110,7 +1104,7 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
     return -1;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet numParams = aCallArgs.size() - 1;
     if (numParams < 1) {
@@ -1150,7 +1144,7 @@ struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
     return 2;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
     niLet& actualObject = aCallArgs[2];
@@ -1173,6 +1167,35 @@ struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
+  NN<iHString> _name;
+
+  sLintFuncCallLintAsType(const iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 2;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& expectedTypeArg = aCallArgs[1];
+    niLet& actualObject = aCallArgs[2];
+
+    if (sqa_getscriptobjtype(expectedTypeArg) != eScriptType_String) {
+      return _MakeLintCallError(
+        aLinter,niFmt("First parameter should be the expected type name as a literal string but got '%s'.", _ObjToString(expectedTypeArg)));
+    }
+
+    return aLinter.ResolveType(expectedTypeArg);
+  }
+};
+
 struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   sLintFuncCallQueryInterface()
   {}
@@ -1185,7 +1208,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
     return 1;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(ain<sLinter> aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& qiID = aCallArgs[1];
     // niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
@@ -1229,6 +1252,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();
 }
@@ -1828,6 +1852,18 @@ void SQFunctionProto::LintTrace(
       return aLintFunc->LintCall(aLinter, vArgs);
     };
 
+    auto set_call_ret = [&](ain<tChars> aKind, ain<SQObjectPtr> aRet) -> void {
+      if (sqa_getscriptobjtype(aRet) == eScriptType_ErrorCode) {
+        niLet errorCode = (sScriptTypeErrorCode*)_userdata(aRet);
+        if (_LENABLED(call_error)) {
+          _LINT(call_error, niFmt(
+            "%s: %s: %s",
+            aKind, _ObjToString(tocall), errorCode->GetTypeString()));
+        }
+      }
+      sset(IARG0, aRet);
+    };
+
     switch (tocalltype) {
       case eScriptType_Null: {
         if (_LENABLED(call_null)) {
@@ -1844,44 +1880,33 @@ void SQFunctionProto::LintTrace(
         }
         else {
           niLet ret = call_func(*func);
-          sset(IARG0, ret);
+          set_call_ret("call_closure", ret);
         }
         break;
       }
       case eScriptType_FunctionProto: {
         SQFunctionProto* func = _funcproto(tocall);
         niLet ret = call_func(*func);
-        sset(IARG0, ret);
+        set_call_ret("call_funcproto", ret);
         break;
       }
       case eScriptType_NativeClosure: {
         SQNativeClosure* nativeclosure = _nativeclosure(tocall);
         niLet ret = call_nativeclosure(*nativeclosure);
-        sset(IARG0, ret);
+        set_call_ret("call_nativeclosure", ret);
         break;
       }
       case eScriptType_MethodDef: {
         niLet mdef = (sScriptTypeMethodDef*)_userdata(tocall);
         niLet ret = call_method(*mdef);
-        sset(IARG0, ret);
+        set_call_ret("call_method", ret);
         break;
       }
       case eScriptType_IUnknown: {
         QPtr<iLintFuncCall> lintFuncCall = _iunknown(tocall);
         if (lintFuncCall.IsOK()) {
           niLet ret = call_lint_func(as_NN(lintFuncCall));
-          // niDebugFmt(("... call_lint_func(%s): ret: %s", lintFuncCall->GetName(), _ObjToString(ret)));
-          niLet lintCallError = _GetScriptErrorCode(ret);
-          if (!lintCallError.IsOK()) {
-            // no error
-            sset(IARG0, ret);
-          }
-          else {
-            if (_LENABLED(call_error)) {
-              _LINT(call_error, niFmt("call_lint_func: %s/%s: %s", lintFuncCall->GetName(), lintFuncCall->GetArity(), lintCallError->_strDesc));
-            }
-            sset(IARG0, ret);
-          }
+          set_call_ret("call_lint_func", ret);
         }
         else {
           if (_LENABLED(call_null)) {

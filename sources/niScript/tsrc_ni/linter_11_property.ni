@@ -15,8 +15,9 @@ function property_current_time_as_int():(lang) int {
 function property_char_it(string v) int {
   local it = v.CreateCharIt(0)
   ::LintAssertType("interface_def<iHStringCharIt>", it);
-  it.num_chars_hamster; // should fail
-  return it.num_chars;
+  // should fail. no semicolon to make sure lint error line is at the correct position.
+  it.num_chars_hamster
+  return it.num_chars
 }
 
 function main():(lang) void {

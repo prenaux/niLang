@@ -28,7 +28,7 @@ struct SQFuncState
   int GenerateCode();
   int GetStackSize();
   int CalcStackFrameSize();
-  void AddLineInfos(sVec2i aSourceLineCol,bool lineop,bool force=false);
+  void AddLineInfos(sVec2i aSourceLineCol, bool lineop, bool force);
   int AllocStackPos();
   int PushTarget(int n=-1);
   int PopTarget();

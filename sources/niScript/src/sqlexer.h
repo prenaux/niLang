@@ -47,9 +47,6 @@ struct SQLexer
   };
   astl::stack<sState> _stateStack;
   int _prevtoken;
-  int _currentline;
-  sVec2i _lasttokenlinecol;
-  int _currentcolumn;
   const SQChar *_svalue;
   SQInt _nvalue;
   SQFloat _fvalue;
@@ -63,6 +60,11 @@ struct SQLexer
   struct {
     int debug;
   } _compilerCommands;
+
+private:
+  int _currentline;
+  int _currentcolumn;
+  sVec2i _lasttokenlinecol;
 };
 
 #endif

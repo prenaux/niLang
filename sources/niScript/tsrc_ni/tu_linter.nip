@@ -337,7 +337,7 @@ function main() {
                     "Cant assign type 'interface' to return type 'int'. interface_def<iTime> -> resolved_type<int>");
 
       EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>]})
+                    {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:19:.*]})
 
       ::CHECK_EQUAL(2, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");

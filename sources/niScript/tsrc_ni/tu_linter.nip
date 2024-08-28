@@ -9,6 +9,15 @@
 // # Lint scripts/lang.ni
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
+// TODO:
+// - [ ] lang.ni fully lints with (this)_key_notfound_callk/getk
+// - [ ] Handle Import(script)
+// - [ ] Handle ImportModule(script)
+// - [ ] Hamdle Import(NativeModule)
+// - [ ] Handle LangDelegate(type)
+// - [ ] 'safe' .?somekey access should only be a pedantic warning
+// - [ ] 'safe' .?somefunc() access should only be a pedantic warning
+//
 ::Import("unittest.ni")
 ::Import("lang.ni")
 ::REGEX <- ::ImportModule("regex.ni")

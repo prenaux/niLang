@@ -645,7 +645,6 @@ struct sLinter {
   void RegisterBuiltinFuncs(SQTable* table);
 
   SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) const {
-    // TODO: Cache returned values
     {
       niLet idef = ni::GetLang()->GetInterfaceDefFromUUID(aTypeUUID);
       if (idef) {
@@ -845,8 +844,6 @@ struct sLinter {
       case eScriptType_NativeClosure:
       case eScriptType_FunctionProto:
       case eScriptType_Invalid: {
-        // TODO: This is a bit shit, we probalby need some kind of
-        // sScriptTypeError thing
         retType = niNew sScriptTypeErrorCode(
           _ss,
           _HC(error_code_method_def_invalid_ret_type),
@@ -881,7 +878,7 @@ struct sLinter {
           return _ddel(ss,table)->Get(key,dest);
         }
       case OT_IUNKNOWN:
-        // TODO: This should not happen, it should be a sInterfaceDef
+        // TODO: This should not happen, it should be a sInterfaceDef. Should we niPanicAssert here?
         return false;
       case OT_ARRAY:
         if (sq_isnumeric(key)) {
@@ -1006,7 +1003,8 @@ struct sLinter {
             if (!getRetVal) {
               if (opExt & _OPEXT_GET_RAW)
                 return false;
-              // TODO: Lint call _get metamethod? Probably overkill.
+              // TODO: Lint call _get metamethod? I don't think its necessary
+              // for practical linting as it's very uncommon.
              return false;
             }
           }
@@ -1035,7 +1033,7 @@ struct sLinter {
         return _table(self)->Set(key,val);
       }
       case OT_IUNKNOWN:
-        // TODO: Ideally we'd lookup the methods in the interface, etc...
+        // TODO: Ideally we'd lookup the methods in the interface, etc.
         return false;
       case OT_ARRAY:
         if (!sq_isnumeric(key)) {
@@ -1043,8 +1041,7 @@ struct sLinter {
         }
         return _array(self)->Set(toint(key),val);
       case OT_USERDATA:
-        // TODO: We could get the delegate and somehow have it tell us whether
-        // we can set what's asked...
+        // TODO: We could get the delegate and somehow have it tell us whether // we can set what's asked...
         return false;
     }
     return false;

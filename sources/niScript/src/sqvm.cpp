@@ -733,7 +733,6 @@ bool SQVM::NewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObject
       return noNewSlot();
     }
     case OT_IUNKNOWN: {
-      // TODO: Review. What's going on here is unclear.
       SQObjectPtr t;
       Push(self); Push(key); Push(val); Push(opExt);
       if (!CallIUnknownMetaMethod(_iunknown(self),MT_USERDATA_NEWSLOT,4,t)) {

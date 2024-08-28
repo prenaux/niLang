@@ -1,11 +1,3 @@
-//
-// TODO:
-// - [x] implicit_this: simple implict 'this' warning. `mX + mX`, implicit read access to mX.
-// - [x] this_key_notfound: member variables access to this. `this.mX` should check whether `this` table has a field mX.
-// - [ ] table_key_notfound: member variables access to a table. `table.mX` should check whether `table` has a field mX.
-// - [ ] this_implicit_assignment: implicit this assignment. `mX = 123`, 123 assigned to implicit 'this' access to mX.
-// - [ ] free/outer variables. `function() : (mX) { }`, check mX access when used in a free variable.
-//
 local __lint = {
   _all = 1
   // _pedantic = 0

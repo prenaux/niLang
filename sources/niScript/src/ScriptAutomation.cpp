@@ -507,8 +507,6 @@ static int iunknown_invalidate(HSQUIRRELVM v)
   if (!pV->pObject)
     return sq_throwerror(v,_A("iunknown_invalidate, [this] is an invalid iunknown."));
 
-  // TODO: Task test
-#pragma niNote("Use SafeInvalidate here instead ?")
   pV->pObject->Invalidate();
   return SQ_OK;
 }

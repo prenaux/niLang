@@ -119,6 +119,10 @@ static const char* const _InstrDesc[]={
   "_OP_MODULOEQ",
   "_OP_SPACESHIP",
   "_OP_THROW_SILENT",
+  "_OP_LINT_BEGIN_COND",
+  "_OP_LINT_END_COND",
+  "_OP_LINT_BEGIN_SCOPE",
+  "_OP_LINT_END_SCOPE",
 };
 niCAssert(niCountOf(_InstrDesc) == __OP_LAST);
 extern "C" const achar* _GetOpDesc(int op) {
@@ -1482,6 +1486,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("ImportNative")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("Import")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));

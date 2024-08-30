@@ -1156,18 +1156,28 @@ class SQCompiler
     int jmppos;
     bool haselse = false;
     COMPILE_CHECK(Lex(aErrors));
+
+    // Begin lint scope
+    _fs->AddInstruction(_OP_LINT_BEGIN_SCOPE);
+
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
+    // Begin lint cond
+    _fs->AddInstruction(_OP_LINT_BEGIN_COND);
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
+    // End lint cond
+    _fs->AddInstruction(_OP_LINT_END_COND);
     COMPILE_CHECK(Expect(aErrors,')',NULL));
     _fs->AddInstruction(_OP_JZ, _fs->PopTarget());
     int jnepos = _fs->GetCurrentPos();
     int stacksize = _fs->GetStackSize();
 
     COMPILE_CHECK(Statement(aErrors,apPos));
-
     if (_token != '}' && _token != TK_ELSE) {
       COMPILE_CHECK(OptionalSemicolon(aErrors));
     }
+
+    // End lint scope
+    _fs->AddInstruction(_OP_LINT_END_SCOPE);
 
     _fs->CleanStack(stacksize);
     int endifblock = _fs->GetCurrentPos();

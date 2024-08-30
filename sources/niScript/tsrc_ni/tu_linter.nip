@@ -16,6 +16,8 @@
 // - [ ] Missing 'safe' .?somekey access should only be an explicit warning
 // - [ ] Missing 'safe' .?somefunc() access should only be an explicit warning
 // - [ ] if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
+// - [ ] if (typeof(x) == "sometype") { scopeA; } should set the type of x to "sometype" for the duration of scopeA
+// - [ ] Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
 // - [x] (this)_key_notfound_(get|getk|callk): ::Null not found in X should only be an explicit warning
 // - [x] Handle ImportNative(NativeModule)
 // - [x] Handle GetLangDelegate(type)
@@ -390,6 +392,30 @@ function main() {
                     "Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_14_in_operator.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      // TODO
+      // ::CHECK_EQUAL(2,aLintResults.mLogsError,
+      //               "Expected lint errors.");
+      // ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
+      //               "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_15_typeof_operator.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      // TODO
+      // ::CHECK_EQUAL(2,aLintResults.mLogsError,
+      //               "Expected lint errors.");
+      // ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
+      //               "Expected lint warnings.");
     })
 
   // Output failed tests

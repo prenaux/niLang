@@ -25,7 +25,7 @@ struct iLintFuncCall : public iUnknown {
   virtual nn_mut<iHString> __stdcall GetName() const = 0;
   // return -1 for varargs
   virtual tI32 __stdcall GetArity() const = 0;
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
 };
 
 static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName, ain<bool> aDefault) {
@@ -292,6 +292,65 @@ static cString _ObjToRecString(const SQObjectPtr& obj, const cString& ind, tExpa
   }
   else {
     return _ObjToString(obj);
+  }
+}
+
+static SQObjectPtr _VarToObj(const SQSharedState& aSS, const Var& aVar)
+{
+  switch (niType(aVar.GetType())) {
+    case eType_Null: {  return _null_; }
+    case eType_I8:  { return (SQInt)aVar.GetI8(); }
+    case eType_U8:  { return (SQInt)aVar.GetU8(); }
+    case eType_I16: { return (SQInt)aVar.GetI16(); }
+    case eType_U16: { return (SQInt)aVar.GetU16(); }
+    case eType_I32: { return (SQInt)aVar.GetI32(); }
+    case eType_U32: { return (SQInt)aVar.GetU32(); }
+    case eType_I64: { return (SQInt)(aVar.GetI64()&0xFFFFFFFF); }
+    case eType_U64: { return (SQInt)(aVar.GetU64()&0xFFFFFFFF); }
+    case eType_F32: { return (SQFloat)aVar.GetF32(); }
+    case eType_F64: { return (SQFloat)aVar.GetF64(); }
+    case eType_UUID: {
+      return niNew sScriptTypeUUID(aSS, aVar.GetUUID());
+    }
+    case eType_Vec2f:  {
+      return niNew sScriptTypeVec2f(aSS, aVar.GetVec2f());
+    }
+    case eType_Vec2i:  {
+      return niNew sScriptTypeVec2f(aSS, Vec2f(aVar.GetVec2i()));
+    }
+    case eType_Vec3f:  {
+      return niNew sScriptTypeVec3f(aSS, aVar.GetVec3f());
+    }
+    case eType_Vec3i:  {
+      return niNew sScriptTypeVec3f(aSS, Vec3f(aVar.GetVec3i()));
+    }
+    case eType_Vec4f:  {
+      return niNew sScriptTypeVec4f(aSS, aVar.GetVec4f());
+    }
+    case eType_Vec4i:  {
+      return niNew sScriptTypeVec4f(aSS, Vec4f(aVar.GetVec4i()));
+    }
+    case eType_Matrixf:   {
+      return niNew sScriptTypeMatrixf(aSS, aVar.GetMatrixf());
+    }
+    case eType_IUnknown:  {
+      if (!aVar.IsIUnknownPointer()) {
+        return niNew sScriptTypeErrorCode(aSS, _HC(error_code), "var2obj: IUnknown variant not a pointer.");
+      }
+      return aVar.GetIUnknownPointer();
+    }
+    case eType_AChar:   {
+      if (!aVar.IsACharConstPointer()) {
+        return niNew sScriptTypeErrorCode(aSS, _HC(error_code), "var2obj: AChar not a constant pointer.");
+      }
+      return _H(aVar.GetACharConstPointer()?aVar.GetACharConstPointer():cString::ConstSharpNull());
+    }
+    case eType_String:  {
+      return _H(aVar.GetString());
+    }
+    default: {
+      return niNew sScriptTypeErrorCode(aSS, _HC(error_code), niFmt("var2obj: type '%d' is not handled.",niType(aVar.GetType())));
+    }
   }
 }
 
@@ -955,6 +1014,12 @@ struct sLinter {
               return false;
             }
 
+            case eScriptType_EnumDef: {
+              SQObjectPtr enumTable = ((sScriptTypeEnumDef*)ud)->_GetTable(const_cast<SQSharedState&>(ss));
+
+              return LintGet(enumTable, key, dest, opExt);
+            }
+
             case eScriptType_PropertyDef: {
               niLet pdefGet = ((sScriptTypePropertyDef*)ud)->pGetMethodDef;
               if (pdefGet) {
@@ -1083,6 +1148,79 @@ struct sLinter {
     niLet toType = _GetResolvedObjType(aToTypeObj);
     return _LintTypeCanAssign(fromType, toType);
   }
+
+  typedef astl::hash_map<cString,NN<iModuleDef>> tModuleMap;
+  typedef tModuleMap::iterator tModuleMapIt;
+  typedef tModuleMap::const_iterator tModuleMapCIt;
+  tModuleMap mmapModules;
+
+  SQObjectPtr ImportNative(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
+    SQObjectPtr roottable = aClosure._root;
+    niPanicAssert(sq_istable(roottable));
+
+    tModuleMapIt it = mmapModules.find(aModuleName);
+    if (it != mmapModules.end())  return eTrue;
+
+    niLet ptrModuleDef = niCheckNN(
+      ptrModuleDef,
+      ni::GetLang()->LoadModuleDef(aModuleName),
+      niNew sScriptTypeErrorCode(
+        _ss, _HC(error_code_lint_call_error),
+        niFmt("Can't load module '%s'.",aModuleName)));
+
+    niLoop(i, ptrModuleDef->GetNumEnums()) {
+      niLet pEnumDef = ptrModuleDef->GetEnum(i);
+      niLet enumName = niFun(&) -> tHStringNN {
+        if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
+          return _HC(e);
+        }
+        else {
+          return _H(pEnumDef->maszName);
+        }
+      }();
+      _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
+    }
+
+    cString moduleLoadingWarning;
+    astl::upsert(mmapModules, aModuleName, ptrModuleDef);
+
+    niLoop(i,ptrModuleDef->GetNumDependencies()) {
+      // check for invalid dependency
+      if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
+        moduleLoadingWarning = niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName());
+        niWarning(moduleLoadingWarning);
+        continue;
+      }
+
+      // import the dependency
+      niLet ret = ImportNative(aClosure, ptrModuleDef->GetDependency(i));
+      if (ret != _null_) {
+        moduleLoadingWarning = niFmt(
+          "Module '%s' loading, cant import the dependency '%s': %s.",
+          ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i),
+          _ObjToString(ret));
+        niWarning(moduleLoadingWarning);
+      }
+    }
+
+    niLoop(i, ptrModuleDef->GetNumConstants()) {
+      niLet constDef = ptrModuleDef->GetConstant(i);
+      niLet constName = _H(constDef->maszName);
+      niLet& constVal = constDef->mvarValue;
+      SQObjectPtr value = _VarToObj(this->_ss, constDef->mvarValue);
+      if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
+        moduleLoadingWarning = niFmt(
+          "Module '%s' loading, cant load constant '%s' = '%s'.",
+          ptrModuleDef->GetName(),
+          constName,
+          _ObjToString(value));
+        niWarning(moduleLoadingWarning);
+      }
+      _table(roottable)->NewSlot(constName, value);
+    }
+
+    return _null_;
+  }
 };
 
 static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
@@ -1104,7 +1242,7 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
     return -1;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet numParams = aCallArgs.size() - 1;
     if (numParams < 1) {
@@ -1129,6 +1267,34 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCallImportNative : public ImplRC<iLintFuncCall> {
+  NN_mut<iHString> _name;
+
+  sLintFuncCallImportNative(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet objModuleName = aCallArgs[1];
+    // niDebugFmt(("... LintCall: objModuleName: %s", _ObjToString(objModuleName)));
+    if (sqa_getscriptobjtype(objModuleName) != eScriptType_String) {
+      return _MakeLintCallError(
+        aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
+    }
+
+    return aLinter.ImportNative(aClosure, _stringval(objModuleName));
+  }
+};
+
 struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
@@ -1144,7 +1310,7 @@ struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
     return 2;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
     niLet& actualObject = aCallArgs[2];
@@ -1192,7 +1358,7 @@ struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
     return 2;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
     niLet& actualObject = aCallArgs[2];
@@ -1226,7 +1392,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
     return 1;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& qiID = aCallArgs[1];
     // niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
@@ -1276,6 +1442,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   // Do this last so that we override the base functions
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("ImportNative")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));
 
@@ -1874,7 +2041,7 @@ void SQFunctionProto::LintTrace(
         vArgs[pi] = sget(stackbase+pi);
         // niDebugFmt(("... vArgs[%d]: %s", pi, _ObjToString(vArgs[pi])));
       }
-      return aLintFunc->LintCall(aLinter, vArgs);
+      return aLintFunc->LintCall(aLinter, aClosure, vArgs);
     };
 
     auto set_call_ret = [&](ain<tChars> aKind, ain<SQObjectPtr> aRet) -> void {

@@ -1,5 +1,4 @@
 //
-//
 // cd $WORK/niLang && . hat
 // # Run all the tests
 // ham Run_Test_niScript_tu_linter
@@ -11,12 +10,13 @@
 //
 // TODO:
 // - [ ] lang.ni fully lints with (this)_key_notfound_callk/getk
-// - [ ] Handle Import(script)
+// - [x] Handle ImportNative(NativeModule)
+// - [ ] Handle ImportScript(script)
 // - [ ] Handle ImportModule(script)
-// - [ ] Hamdle Import(NativeModule)
+// - [ ] Handle Import(script or NativeModule)
 // - [ ] Handle LangDelegate(type)
-// - [ ] 'safe' .?somekey access should only be a pedantic warning
-// - [ ] 'safe' .?somefunc() access should only be a pedantic warning
+// - [ ] Missing 'safe' .?somekey access should only be an explicit warning
+// - [ ] Missing 'safe' .?somefunc() access should only be an explicit warning
 //
 ::Import("unittest.ni")
 ::Import("lang.ni")
@@ -368,6 +368,25 @@ function main() {
       ::CHECK_EQUAL(2,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(1,aLintResults.mLogsWarning,
+                    "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_13_import_native.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_getk: "StartedHamster" not found in enum_def<eCURLMessage>]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,
+                    "Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
     })
 

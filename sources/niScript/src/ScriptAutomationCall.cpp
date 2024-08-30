@@ -14,6 +14,7 @@
 #include "sqvm.h"
 #include "sqtable.h"
 #include "sqvm.h"
+#include "sq_hstring.h"
 
 #define niSQThrowError(ERR)                                           \
   return sq_throwerror(v, niFmt(_A("%s: %s"), __FUNCTION__, (ERR)));

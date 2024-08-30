@@ -1295,6 +1295,40 @@ struct sLintFuncCallImportNative : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCallGetLangDelegate : public ImplRC<iLintFuncCall> {
+  NN_mut<iHString> _name;
+
+  sLintFuncCallGetLangDelegate(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet objDelegateName = aCallArgs[1];
+    // niDebugFmt(("... LintCall: objDelegateName: %s", _ObjToString(objDelegateName)));
+    if (sqa_getscriptobjtype(objDelegateName) != eScriptType_String) {
+      return _MakeLintCallError(
+        aLinter,niFmt("First parameter should be the name of the builtin delegate as a literal string but got '%s'.", _ObjToString(objDelegateName)));
+    }
+
+    SQObjectPtr objDelegate = aLinter._ss.GetLangDelegate(_stringval(objDelegateName));
+    if (objDelegate == _null_) {
+      return _MakeLintCallError(
+        aLinter,niFmt("Cant get the builtin delegate '%s'.", _ObjToString(objDelegateName)));
+    }
+
+    return objDelegate;
+  }
+};
+
 struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
@@ -1443,6 +1477,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("ImportNative")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));
 

@@ -14,7 +14,7 @@
 // - [ ] Handle ImportScript(script)
 // - [ ] Handle ImportModule(script)
 // - [ ] Handle Import(script or NativeModule)
-// - [ ] Handle LangDelegate(type)
+// - [x] Handle GetLangDelegate(type)
 // - [ ] Missing 'safe' .?somekey access should only be an explicit warning
 // - [ ] Missing 'safe' .?somefunc() access should only be an explicit warning
 //

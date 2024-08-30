@@ -120,6 +120,13 @@ struct SQObjectPtr : public SQObject
     _VarDataSetType(_var,OT_NATIVECLOSURE);
     _VarDataSetAddRef(_var,(ni::iUnknown*)pNativeClosure);
   }
+  // Needed so that iHString* never gets coerced to a raw iUnknown*
+  __forceinline SQObjectPtr(const iHString* pString)
+  {
+    niAssert(pString != NULL);
+    _VarDataSetType(_var,OT_STRING);
+    _VarDataSetAddRef(_var,(ni::iUnknown*)pString);
+  }
   __forceinline SQObjectPtr(const tHStringPtr& ahspString)
   {
     niAssert(ahspString.IsOK());
@@ -131,11 +138,10 @@ struct SQObjectPtr : public SQObject
     _VarDataSetType(_var,OT_STRING);
     _VarDataSetAddRef(_var,(ni::iUnknown*)ahspString.raw_ptr());
   }
-  __forceinline SQObjectPtr(const iHString* pString)
+  __forceinline SQObjectPtr(ain_nn_mut<iHString> pString)
   {
-    niAssert(pString != NULL);
     _VarDataSetType(_var,OT_STRING);
-    _VarDataSetAddRef(_var,(ni::iUnknown*)pString);
+    _VarDataSetAddRef(_var,pString);
   }
   __forceinline SQObjectPtr(SQUserData *pUserData)
   {

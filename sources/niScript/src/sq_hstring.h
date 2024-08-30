@@ -1,27 +1,6 @@
-#if !defined __sq_HSTRING_H__ || defined __MODULE_HSTRING_TABLE_IMPL__
-#undef  __sq_HSTRING_H__
-#define __sq_HSTRING_H__
-
-#undef _HDecl_
-#undef _HDecl
-#undef _HC
-
-#if defined __MODULE_HSTRING_TABLE_IMPL__
-#pragma message("-- HString Table implementation --")
-
-#define _HDecl_(X,STRING) ni::tHStringPtr _hstr_##X = _H(STRING)
-#define _HDecl(X) _HDecl_(X,#X)
-
-#else
-
-#define _HDecl_(X,STRING)                       \
-  extern ni::tHStringNN _hstr_##X
-#define _HDecl(X)                               \
-  extern ni::tHStringNN _hstr_##X
-
-#endif
-
-#define _HC(X) _hstr_##X
+#pragma once
+#ifndef __SQ_HSTRING_H_A4DC9B91_9066_EF11_8442_711111AD5543__
+#define __SQ_HSTRING_H_A4DC9B91_9066_EF11_8442_711111AD5543__
 
 _HDecl(_all);
 _HDecl(_pedantic);
@@ -91,4 +70,4 @@ _HDecl_(typestr_iMutableCollection, "iMutableCollection");
 _HDecl_(typestr_iCollection, "iCollection");
 _HDecl_(typestr_iScriptObject, "iScriptObject");
 
-#endif // __sq_HSTRING_H__
+#endif // __SQ_HSTRING_H_A4DC9B91_9066_EF11_8442_711111AD5543__

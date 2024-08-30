@@ -22,7 +22,7 @@ struct sLinter;
 struct iLintFuncCall : public iUnknown {
   niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
 
-  virtual nn<iHString> __stdcall GetName() const = 0;
+  virtual nn_mut<iHString> __stdcall GetName() const = 0;
   // return -1 for varargs
   virtual tI32 __stdcall GetArity() const = 0;
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
@@ -625,12 +625,12 @@ struct sLinter {
     table->NewSlot(_H(name), aLintFunc);
   }
 
-  void RegisterFunc(SQTable* table, const iHString* ahspName, ain<SQObjectPtr> aLintFunc) {
+  void RegisterFunc(SQTable* table, iHString* ahspName, ain<SQObjectPtr> aLintFunc) {
     table->NewSlot(ahspName, aLintFunc);
   }
 
   void RegisterLintFunc(SQTable* table, ain_nn_mut<iLintFuncCall> aLintFunc) {
-    table->NewSlot(aLintFunc->GetName().raw_ptr(), aLintFunc.raw_ptr());
+    table->NewSlot(aLintFunc->GetName(), aLintFunc.raw_ptr());
   }
 
   int RegisterSQRegFunctions(SQTable* table, const SQRegFunction* regs) {
@@ -1087,13 +1087,13 @@ static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
 }
 
 struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
-  NN<iHString> _name;
+  NN_mut<iHString> _name;
 
-  sLintFuncCallCreateInstance(const iHString* aName)
+  sLintFuncCallCreateInstance(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn<iHString> __stdcall GetName() const {
+  virtual nn_mut<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -1127,13 +1127,13 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
-  NN<iHString> _name;
+  NN_mut<iHString> _name;
 
-  sLintFuncCallLintAssertType(const iHString* aName)
+  sLintFuncCallLintAssertType(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn<iHString> __stdcall GetName() const {
+  virtual nn_mut<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -1175,13 +1175,13 @@ static int lint_LintAssertType(HSQUIRRELVM v)
 }
 
 struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
-  NN<iHString> _name;
+  NN_mut<iHString> _name;
 
-  sLintFuncCallLintAsType(const iHString* aName)
+  sLintFuncCallLintAsType(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn<iHString> __stdcall GetName() const {
+  virtual nn_mut<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -1215,7 +1215,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   sLintFuncCallQueryInterface()
   {}
 
-  virtual nn<iHString> __stdcall GetName() const {
+  virtual nn_mut<iHString> __stdcall GetName() const {
     return _HC(QueryInterface);
   }
 

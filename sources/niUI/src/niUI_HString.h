@@ -1,21 +1,6 @@
-#if !defined __niUI_HSTRING_H__ || defined __MODULE_HSTRING_TABLE_IMPL__
-#undef  __niUI_HSTRING_H__
-#define __niUI_HSTRING_H__
-
-#undef _HDecl_
-#undef _HDecl
-#undef _HC
-
-#define _HC(X) _hstr_niUI_##X
-
-#if defined __MODULE_HSTRING_TABLE_IMPL__
-#pragma message("I/HString Table implementation")
-#define _HDecl_(X,STRING) ni::tHStringPtr _HC(X) = _H(STRING)
-#define _HDecl(X) _HDecl_(X,#X)
-#else
-#define _HDecl_(X,STRING) extern ni::tHStringPtr _HC(X)
-#define _HDecl(X) extern ni::tHStringPtr _HC(X)
-#endif
+#pragma once
+#ifndef __NIUI_HSTRING_H_2EECD346_9166_EF11_9A4A_592662D6F67A__
+#define __NIUI_HSTRING_H_2EECD346_9166_EF11_9A4A_592662D6F67A__
 
 _HDecl(ID_Desktop);
 
@@ -76,4 +61,4 @@ _HDecl(Button_FocusMarker);
 _HDecl(Fallback);
 _HDecl(Default);
 
-#endif // __niUI_HSTRING_H__
+#endif // __NIUI_HSTRING_H_2EECD346_9166_EF11_9A4A_592662D6F67A__

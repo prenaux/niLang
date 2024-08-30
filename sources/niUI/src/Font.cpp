@@ -8,9 +8,7 @@
 #include "GetFontFile.h"
 #include "Image.h"
 #include "TextMetric.h"
-
-_HDecl(Fallback);
-_HDecl(Default);
+#include "niUI_HString.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 

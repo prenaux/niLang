@@ -20,7 +20,6 @@
 #include "BmpIO_ABM.h"
 #include <niLang/Utils/URLFileHandler.h>
 
-#define __MODULE_HSTRING_TABLE_IMPL__
 #include "niUI_HString.h"
 
 iMaterialLibrary* __stdcall New_MaterialLibrary(iGraphics* apGraphics);

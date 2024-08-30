@@ -457,6 +457,9 @@ _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
+// "Null not found in X" is almost always the result of some computation, a
+// message for that is generally not helpful.
+_DEF_LINT(null_notfound,IsWarning,IsExplicit);
 
 #undef _DEF_LINT
 
@@ -509,6 +512,7 @@ struct sLinter {
     _REG_LINT(call_num_args);
     _REG_LINT(ret_type_is_null);
     _REG_LINT(ret_type_cant_assign);
+    _REG_LINT(null_notfound);
   }
 #undef _REG_LINT
 
@@ -599,6 +603,7 @@ struct sLinter {
     _E(call_num_args)
     _E(ret_type_is_null)
     _E(ret_type_cant_assign)
+    _E(null_notfound)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -1872,15 +1877,20 @@ void SQFunctionProto::LintTrace(
       _LINT(implicit_this_getk, niFmt(
         "implicit this access to %s", _ObjToString(k)));
     }
+
     if (is_this_key_notfound(_LOBJ(this_key_notfound_getk),inst,inst._arg2,t,k,v)) {
-      _LINT(this_key_notfound_getk, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(this_key_notfound_getk, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     else if (is_key_notfound(_LOBJ(key_notfound_getk),inst,t,k,v)) {
-      _LINT(key_notfound_getk, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(key_notfound_getk, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     sset(IARG0, v);
     _LTRACE(("op_getk: %s[%s] in %s",
@@ -1895,15 +1905,20 @@ void SQFunctionProto::LintTrace(
       _LINT(implicit_this_get, niFmt(
         "implicit this access to %s", _ObjToString(k)));
     }
+
     if (is_this_key_notfound(_LOBJ(this_key_notfound_getk),inst,inst._arg1,t,k,v)) {
-      _LINT(this_key_notfound_get, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(this_key_notfound_get, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     else if (is_key_notfound(_LOBJ(key_notfound_getk),inst,t,k,v)) {
-      _LINT(key_notfound_get, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(key_notfound_get, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     sset(IARG0, v);
     _LTRACE(("op_get: %s[%s] in %s",
@@ -1918,6 +1933,7 @@ void SQFunctionProto::LintTrace(
       _LINT(implicit_this_getk, niFmt(
         "implicit this access to %s", _ObjToString(k)));
     }
+
     if (sq_isnull(t)) {
       if (_LENABLED(getk_null)) {
         _LINT(this_key_notfound_callk, niFmt(
@@ -1926,14 +1942,18 @@ void SQFunctionProto::LintTrace(
       }
     }
     else if (is_this_key_notfound(_LOBJ(this_key_notfound_callk),inst,inst._arg2,t,k,v)) {
-      _LINT(this_key_notfound_callk, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(this_key_notfound_callk, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     else if (is_key_notfound(_LOBJ(key_notfound_callk),inst,t,k,v)) {
-      _LINT(key_notfound_callk, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(key_notfound_callk, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     sset(IARG3, t);
     sset(IARG0, v);
@@ -1974,14 +1994,18 @@ void SQFunctionProto::LintTrace(
 
     if (is_this_set_key_notfound(_LOBJ(this_set_key_notfound),inst,inst._arg1,t,k,v))
     {
-      _LINT(this_set_key_notfound, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(this_set_key_notfound, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
     else if (is_set_key_notfound(_LOBJ(set_key_notfound),inst,t,k,v)) {
-      _LINT(set_key_notfound, niFmt(
-        "%s not found in %s.",
-        _ObjToString(k), _ObjToString(t)));
+      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+        _LINT(set_key_notfound, niFmt(
+          "%s not found in %s.",
+          _ObjToString(k), _ObjToString(t)));
+      }
     }
 
     if (inst._arg0 != inst._arg3)

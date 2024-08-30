@@ -10,13 +10,15 @@
 //
 // TODO:
 // - [ ] lang.ni fully lints with (this)_key_notfound_callk/getk
-// - [x] Handle ImportNative(NativeModule)
 // - [ ] Handle ImportScript(script)
 // - [ ] Handle ImportModule(script)
 // - [ ] Handle Import(script or NativeModule)
-// - [x] Handle GetLangDelegate(type)
 // - [ ] Missing 'safe' .?somekey access should only be an explicit warning
 // - [ ] Missing 'safe' .?somefunc() access should only be an explicit warning
+// - [ ] if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
+// - [x] (this)_key_notfound_(get|getk|callk): ::Null not found in X should only be an explicit warning
+// - [x] Handle ImportNative(NativeModule)
+// - [x] Handle GetLangDelegate(type)
 //
 ::Import("unittest.ni")
 ::Import("lang.ni")

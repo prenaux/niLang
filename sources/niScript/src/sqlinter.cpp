@@ -228,7 +228,7 @@ static cString _ObjToString(const SQObjectPtr& obj) {
     case OT_IUNKNOWN: {
       QPtr<iLintFuncCall> lintFuncCall = _iunknown(obj);
       if (lintFuncCall.IsOK()) {
-        return niFmt("%s/%s::iLintFuncCall",
+        return niFmt("%s/%s",
                      lintFuncCall->GetName(),
                      lintFuncCall->GetArity());
       }
@@ -655,7 +655,7 @@ struct sLinter {
     return niNew sScriptTypeErrorCode(
       this->_ss,
       _HC(error_code_cant_find_type_uuid),
-      niFmt("type_uuid<%s,%s>",aTypeName,aTypeUUID));
+      niFmt("Cant find type uuid '%s' (%s).",aTypeName,aTypeUUID));
   }
 
   astl::optional<const sInterfaceDef*> FindInterfaceDef(ain_nn_mut<iHString> aInterfaceName) const
@@ -710,7 +710,8 @@ struct sLinter {
       niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
       if (!foundInterfaceDef.has_value()) {
         resolvedType = niNew sScriptTypeErrorCode(
-          this->_ss, _HC(error_code_cant_find_interface_def), niHStr(hspType));
+          this->_ss, _HC(error_code_cant_find_interface_def),
+          niFmt("Cant find interface definition '%s'.", hspType));
       }
       else {
         resolvedType = niNew sScriptTypeInterfaceDef(
@@ -784,7 +785,8 @@ struct sLinter {
     }
     else {
       resolvedType = niNew sScriptTypeErrorCode(
-        this->_ss, _HC(error_code_unknown_typedef), niHStr(hspType));
+        this->_ss, _HC(error_code_unknown_typedef),
+        niFmt("Unknown type definition '%s'.", hspType));
     }
 
     niPanicAssert(resolvedType != _null_);
@@ -819,7 +821,7 @@ struct sLinter {
           retType = niNew sScriptTypeErrorCode(
             _ss,
             _HC(error_code_method_def_invalid_ret_type),
-            niFmt("iunknown_not_type_uuid<%s::%s, %s(%s)>",
+            niFmt("Invalid method '%s::%s' return type '%s' (%s), expected a return type UUID.",
                   aInterfaceDef.maszName,
                   aMethodDef.maszName,
                   GetTypeString(aMethodDef.mReturnType),
@@ -847,7 +849,7 @@ struct sLinter {
         retType = niNew sScriptTypeErrorCode(
           _ss,
           _HC(error_code_method_def_invalid_ret_type),
-          niFmt("method_def<%s::%s, %s(%s)>",
+          niFmt("Unsupported method '%s::%s' return type '%s' (%s).",
                 aInterfaceDef.maszName,
                 aMethodDef.maszName,
                 GetTypeString(aMethodDef.mReturnType),
@@ -945,7 +947,8 @@ struct sLinter {
                     dest = niNew sScriptTypeErrorCode(
                       _ss,
                       _HC(error_code_cant_find_method_def),
-                      niFmt("method_def<%s::%s>", idef->maszName, _stringhval(key)));
+                      niFmt("Cant find method definition '%s::%s'",
+                            idef->maszName, _stringhval(key)));
                   }
                 }
               }
@@ -1880,7 +1883,7 @@ void SQFunctionProto::LintTrace(
         if (_LENABLED(call_error)) {
           _LINT(call_error, niFmt(
             "%s: %s: %s",
-            aKind, _ObjToString(tocall), errorCode->GetTypeString()));
+            aKind, _ObjToString(tocall), errorCode->_strDesc));
         }
       }
       sset(IARG0, aRet);

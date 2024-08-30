@@ -204,7 +204,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[call_null: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iMath::NotaMethod>>']})
+        "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,Cant find method definition 'iMath::NotaMethod'>'");
 
       ::CHECK_EQUAL(5,aLintResults.mLogsError,
                     "Expected lint errors.");
@@ -219,7 +219,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,method_def<iUnknown::RandIntRange>>");
+        "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,Cant find method definition 'iUnknown::RandIntRange'>'");
 
       EXPECTED_LINT(
         aLogs, 1,
@@ -363,7 +363,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[call_lint_func: LintAsType/2::iLintFuncCall: error_code<error_code_cant_find_interface_def,iTheUnknownHamster>]});
+        {[call_error: call_lint_func: LintAsType/2: Cant find interface definition 'iTheUnknownHamster']});
 
       ::CHECK_EQUAL(2,aLintResults.mLogsError,
                     "Expected lint errors.");

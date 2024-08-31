@@ -39,6 +39,7 @@ struct sLintTypeofInfo : public ImplRC<iUnknown> {
 
   SQObjectPtr _obj;
   cString _sstr;
+  int _iarg1 = -1;
 };
 
 
@@ -133,14 +134,21 @@ static const char* const _InstrDesc[]={
   "_OP_MODULOEQ",
   "_OP_SPACESHIP",
   "_OP_THROW_SILENT",
-  "_OP_LINT_BEGIN_COND",
-  "_OP_LINT_END_COND",
-  "_OP_LINT_BEGIN_SCOPE",
-  "_OP_LINT_END_SCOPE",
+  "_OP_LINT_HINT",
 };
 niCAssert(niCountOf(_InstrDesc) == __OP_LAST);
 extern "C" const achar* _GetOpDesc(int op) {
   return (op >= 0 && op < __OP_LAST) ? _InstrDesc[op] : "_OP_???";
+}
+
+extern "C" const char* _GetLintHintDesc(eSQLintHint hint) {
+  switch (hint) {
+    case eSQLintHint_Unknown: return "Unknown";
+    case eSQLintHint_SwitchBegin: return "SwitchBegin";
+    case eSQLintHint_SwitchEnd: return "SwitchEnd";
+    case eSQLintHint_SwitchDefault: return "SwitchDefault";
+  }
+  return "<InvalidLintHint>";
 }
 
 static cString& _AddOpExt(cString& o, int opExt) {
@@ -409,7 +417,7 @@ static cString _NativeClosureToString(const SQNativeClosure& func) {
   return niFmt("%s/%d", func._name, arity);
 }
 
-static Ptr<sScriptTypeResolvedType> _ToResolvedTyped(const SQObjectPtr& obj) {
+static Ptr<sScriptTypeResolvedType> _ObjToResolvedTyped(const SQObjectPtr& obj) {
   if (sqa_getscriptobjtype(obj) == eScriptType_ResolvedType) {
     return (sScriptTypeResolvedType*)_userdata(obj);
   }
@@ -2229,6 +2237,11 @@ void SQFunctionProto::LintTrace(
     }
   };
 
+  // TODO: Restore previous value when going out of scope
+  auto scoped_sset = [&](int targetArg, const SQObjectPtr& obj) {
+    sset(targetArg, obj);
+  };
+
   auto lint_typeof_eq = [&](ain<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
     niLet typeofObj = typeofInfo._obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral);
@@ -2248,16 +2261,31 @@ void SQFunctionProto::LintTrace(
           typeofInfo._sstr));
       }
     }
-    else if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
-      if (_LENABLED(typeof_usage)) {
-        _LINT_(
-          typeof_usage, lineCol,
-          niFmt("typeof_eq: Invalid typeof test type: %s.", _ObjToString(resolvedType)));
+    else {
+      if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
+        if (_LENABLED(typeof_usage)) {
+          _LINT_(
+            typeof_usage, lineCol,
+            niFmt("typeof_eq: Invalid typeof test type: %s.", _ObjToString(resolvedType)));
+        }
+      }
+      if (typeofInfo._iarg1 >= 0) {
+        // Update the type of the value what typeof checked.
+        // TODO: This is correct for typeof(localvariable or paramname). It
+        // doesnt work correctly for typeof(someexpr) since the stack position
+        // is temporary then...
+        sset(typeofInfo._iarg1, resolvedType);
       }
     }
+  };
 
-    // TODO: override the value of typeof'd stack position with the result of the type
-    // sset(IARG1, resolvedType);
+  auto lint_typeof_end = [&](ain<sLintTypeofInfo> typeofInfo, ain<tChars> aReason) {
+    niLet typeofObj = typeofInfo._obj;
+    if (typeofInfo._iarg1 >= 0) {
+      sset(typeofInfo._iarg1, niNew sScriptTypeErrorCode(
+        aLinter._ss, _HC(error_code_dangling_type),
+        aReason));
+    }
   };
 
   auto op_typeof = [&](const SQInstruction& inst) {
@@ -2268,6 +2296,7 @@ void SQFunctionProto::LintTrace(
     NN_mut<sLintTypeofInfo> typeofInfo = MakeNN<sLintTypeofInfo>();
     typeofInfo->_obj = typeofObj;
     typeofInfo->_sstr = sstr(IARG1);
+    typeofInfo->_iarg1 = IARG1;
 
     if (_LENABLED(typeof_usage)) {
       niLet typeofObjType = sqa_getscriptobjtype(typeofObj);
@@ -2290,7 +2319,7 @@ void SQFunctionProto::LintTrace(
              _ObjToString(eqRight), sstr(IARG1)));
 
     {
-      niLet resolvedTypeLeft = _ToResolvedTyped(eqLeft);
+      niLet resolvedTypeLeft = _ObjToResolvedTyped(eqLeft);
       if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
         NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
         lint_typeof_eq(*typeofInfo, eqRight, getlinecol(inst));
@@ -2298,7 +2327,7 @@ void SQFunctionProto::LintTrace(
     }
 
     {
-      niLet resolvedTypeRight = _ToResolvedTyped(eqRight);
+      niLet resolvedTypeRight = _ObjToResolvedTyped(eqRight);
       if (resolvedTypeRight.IsOK() && resolvedTypeRight->_opcode == _OP_TYPEOF) {
         NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
         lint_typeof_eq(*typeofInfo, eqLeft, getlinecol(inst));
@@ -2306,6 +2335,35 @@ void SQFunctionProto::LintTrace(
     }
 
     sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int, _OP_EQ, nullptr));
+  };
+
+  auto op_lint_hint = [&](const SQInstruction& inst) {
+    niLet hint = (eSQLintHint)inst._arg0;
+    SQObjectPtr arg1 = sget(IARG1);
+
+    _LTRACE(("op_lint_hint: hint: %s, arg1: %s (%s)",
+             _GetLintHintDesc(hint),
+             _ObjToString(arg1), sstr(IARG1)));
+
+    switch (hint) {
+      case eSQLintHint_Unknown: {
+        break;
+      }
+      case eSQLintHint_SwitchBegin: {
+        break;
+      }
+      case eSQLintHint_SwitchEnd:
+      case eSQLintHint_SwitchDefault: {
+        niLet resolvedType = _ObjToResolvedTyped(arg1);
+        if (resolvedType.IsOK() && resolvedType->_opcode == _OP_TYPEOF) {
+          NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedType->_opcodeInfo) };
+          lint_typeof_end(
+            *typeofInfo,
+            niFmt("typeof_end %s", _GetLintHintDesc(hint)));
+        }
+        break;
+      }
+    }
   };
 
   const int localThis = localindex(SQObjectPtr(_HC(this)));
@@ -2373,6 +2431,7 @@ void SQFunctionProto::LintTrace(
       case _OP_TAILCALL: op_call(inst,eTrue); break;
       case _OP_EQ: op_eq(inst); break;
       case _OP_TYPEOF: op_typeof(inst); break;
+      case _OP_LINT_HINT: op_lint_hint(inst); break;
       default: {
         break;
       }

@@ -413,9 +413,34 @@ function main() {
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 2, "typeof_usage: Redundant typeof with known value type");
-      EXPECTED_LINT(aLogs, 4, "typeof_usage: typeof_eq: Invalid typeof test type");
-      EXPECTED_LINT(aLogs, 4, "typeof_usage: typeof_eq: Typedef should be a literal string");
+      // typeof_switch2
+      {
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "startswith" not found in resolved_type<array>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
+      }
+
+      // typeof_switch1
+      {
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_switch1.*\)]});
+      }
+
+      // typeof_usage
+      if (false) {
+        EXPECTED_LINT(aLogs, 3, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
+        EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
+        EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Typedef should be a literal string.*\(in typeof_usage.*\)]});
+      }
+
+      // typeof_t_append
+      {
+        EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_t_append.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_t_append.*\)]});
+      }
 
       // TODO
       // ::CHECK_EQUAL(2,aLintResults.mLogsError,

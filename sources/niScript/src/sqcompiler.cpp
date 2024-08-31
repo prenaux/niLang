@@ -1157,15 +1157,8 @@ class SQCompiler
     bool haselse = false;
     COMPILE_CHECK(Lex(aErrors));
 
-    // Begin lint scope
-    _fs->AddInstruction(_OP_LINT_BEGIN_SCOPE);
-
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
-    // Begin lint cond
-    _fs->AddInstruction(_OP_LINT_BEGIN_COND);
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
-    // End lint cond
-    _fs->AddInstruction(_OP_LINT_END_COND);
     COMPILE_CHECK(Expect(aErrors,')',NULL));
     _fs->AddInstruction(_OP_JZ, _fs->PopTarget());
     int jnepos = _fs->GetCurrentPos();
@@ -1175,9 +1168,6 @@ class SQCompiler
     if (_token != '}' && _token != TK_ELSE) {
       COMPILE_CHECK(OptionalSemicolon(aErrors));
     }
-
-    // End lint scope
-    _fs->AddInstruction(_OP_LINT_END_SCOPE);
 
     _fs->CleanStack(stacksize);
     int endifblock = _fs->GetCurrentPos();
@@ -1345,8 +1335,8 @@ class SQCompiler
   eCompileResult SwitchStatement(sCompileErrors& aErrors, int* apPos)
   {
     COMPILE_CHECK(Lex(aErrors));
+    _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_SwitchBegin);
 
-    _fs->AddInstruction(_OP_LINT_BEGIN_SCOPE);
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
     COMPILE_CHECK(Expect(aErrors,')',NULL));
@@ -1385,13 +1375,14 @@ class SQCompiler
     if(_token == TK_DEFAULT) {
       COMPILE_CHECK(Lex(aErrors));
       COMPILE_CHECK(Expect(aErrors,':',NULL));
+      _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_SwitchDefault, expr);
       int stacksize = _fs->GetStackSize();
       COMPILE_CHECK(Statements(aErrors,apPos));
       _fs->SetStackSize(stacksize);
     }
     COMPILE_CHECK(Expect(aErrors,'}',NULL));
 
-    _fs->AddInstruction(_OP_LINT_END_SCOPE);
+    _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_SwitchEnd, expr);
 
     _fs->PopTarget();
     __nbreaks__ = _fs->GetUnresolvedBreaks()->size() - __nbreaks__;

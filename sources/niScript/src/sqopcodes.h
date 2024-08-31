@@ -72,11 +72,15 @@ enum SQOpcode
   _OP_MODULOEQ      = 66,
   _OP_SPACESHIP     = 67,
   _OP_THROW_SILENT  = 68, //<<target>>
-  _OP_LINT_BEGIN_COND  = 69, // helper for linting
-  _OP_LINT_END_COND    = 70, // helper for linting
-  _OP_LINT_BEGIN_SCOPE = 71, // helper for linting
-  _OP_LINT_END_SCOPE   = 72, // helper for linting
+  _OP_LINT_HINT     = 69, //<<eSQLintHint>> helper for linting
   __OP_LAST
+};
+
+enum eSQLintHint {
+  eSQLintHint_Unknown = 0,
+  eSQLintHint_SwitchBegin = 1,
+  eSQLintHint_SwitchEnd = 2,
+  eSQLintHint_SwitchDefault = 3,
 };
 
 #define _OPEXT_GET_RAW         niBit(0)

@@ -23,8 +23,8 @@ function typeof_usage() {
   if (typeof(hamster) == 123) { // typedef definition not a literal string
   }
 
-  if (typeof(hamster) == "SomeHamster" ||
-      "SomeHamster2" == typeof(hamster))
+  if (typeof(hamster) == "SomeHamster" || // invalid type
+      "SomeHamster2" == typeof(hamster)) // invalid type
   { // invalid type
   }
 
@@ -51,28 +51,47 @@ function typeof_usage() {
   }
 }
 
-// TODO
 function typeof_t_append(t) {
   if (typeof(t) == "array") {
     t.append(123); // should be ok
   }
 }
 
-// TODO
-function typeof_switch(t) {
+function typeof_switch1(t) {
   switch (typeof(t)) {
     case "array": {
       t.append(123); // should be ok
       break;
     }
+  }
+
+  t.append(123); // should fail, not an array
+}
+
+function typeof_switch2(t) {
+  switch (typeof(t)) {
+    case "array": {
+      t.append(123); // should be ok
+      t.startswith("weee"); // should fail, not a string
+      break;
+    }
     case "string": {
       t.startswith("weee"); // should be ok
+      t.append(123); // should fail, not an array
       break;
     }
     case "stringnarf": { // invalid typeof test type
+      t.startswith("weee"); // should fail, not a string
+      break;
+    }
+    default: {
+      t.startswith("weee"); // should fail, not a string
       break;
     }
   }
+
+  t.startswith("weee"); // should fail, not a string
+  t.append(123); // should fail, not an array
 }
 
 function typeof_if_string_eq_t() void {
@@ -80,12 +99,18 @@ function typeof_if_string_eq_t() void {
   if ("string" == typeof(t)) {
     t.startswith("bla"); // should be ok
   }
+  else {
+    t.startswith("bla"); // should fail
+  }
 }
 
 function typeof_if_t_eq_string() void {
   local t
   if (typeof(t) == "string") {
     t.startswith("bla"); // should be ok
+  }
+  else {
+    t.startswith("bla"); // should fail
   }
 }
 
@@ -109,9 +134,7 @@ function main() void {
 
   // TODO
   t.append(123); // should fail, using typeof(t) should tag 't' has "must have an explicit type"
+  t.startswith("bla"); // should fail, using typeof(t) should tag 't' has "must have an explicit type"
   // TODO
   u.append(123); // should fail, using typeof(t) should tag 'u' has "must have an explicit type"
-  // TODO
-  t.startswith("bla"); // should fail
-
 }

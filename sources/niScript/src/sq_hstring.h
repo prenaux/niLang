@@ -43,6 +43,7 @@ _HDecl(error_code_cant_find_method_def);
 _HDecl(error_code_method_def_invalid_ret_type);
 _HDecl(error_code_cant_find_type_uuid);
 _HDecl(error_code_lint_call_error);
+_HDecl(error_code_dangling_type);
 _HDecl(resolved_type);
 _HDecl(QueryInterface);
 _HDecl_(typestr_null, "null");

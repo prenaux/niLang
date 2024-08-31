@@ -523,6 +523,10 @@ niExportFuncCPP(int) sqa_getErrorCode(HSQUIRRELVM v, int idx, aout<NN<sScriptTyp
 cString __stdcall sScriptTypeResolvedType::GetTypeString() const {
   cString ret = "resolved_type<";
   ret << niHStr(sqa_getscripttypename(_scriptType));
+  if (_opcode != __OP_LAST) {
+    ret << ",";
+    ret << _GetOpDesc(_opcode);
+  }
   ret << ">";
   return ret;
 }

@@ -28,6 +28,20 @@ struct iLintFuncCall : public iUnknown {
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
 };
 
+struct sLintTypeofInfo : public ImplRC<iUnknown> {
+  niDeclareInterfaceUUID(sLintTypeofInfo,0x26ac90a9,0x8667,0xef11,0x9d,0x40,0x69,0xd2,0xf0,0xcb,0x27,0xfb);
+
+  iUnknown* __stdcall QueryInterface(const tUUID& aIID) {
+    if (aIID == niGetInterfaceUUID(sLintTypeofInfo))
+      return (iUnknown*)this;
+    return BaseImpl::QueryInterface(aIID);
+  }
+
+  SQObjectPtr _obj;
+  cString _sstr;
+};
+
+
 static bool _ShouldKeepName(ain<tChars> aFilter, ain<tChars> aName, ain<bool> aDefault) {
   if (aFilter && *aFilter) {
     if (ni::StrCmp(aFilter,"*") == 0 ||
@@ -395,6 +409,13 @@ static cString _NativeClosureToString(const SQNativeClosure& func) {
   return niFmt("%s/%d", func._name, arity);
 }
 
+static Ptr<sScriptTypeResolvedType> _ToResolvedTyped(const SQObjectPtr& obj) {
+  if (sqa_getscriptobjtype(obj) == eScriptType_ResolvedType) {
+    return (sScriptTypeResolvedType*)_userdata(obj);
+  }
+  return nullptr;
+}
+
 enum eLintFlags {
   eLintFlags_None = 0,
   eLintFlags_IsError = niBit(31),
@@ -435,7 +456,8 @@ typedef astl::hash_map<const SQFunctionProto*,Ptr<LintClosure> > tFuncClosureMap
 #define _LINTERNAL_ERROR(MSG) aLinter.Log(_LKEY(internal_error), _LNAME(internal_error), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
 #define _LINTERNAL_WARNING(MSG) aLinter.Log(_LKEY(internal_warning), _LNAME(internal_warning), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
 #define _LENABLED(KIND) aLinter.IsEnabled(_LKEY(KIND))
-#define _LINT(KIND,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, getlinecol(inst), MSG)
+#define _LINT_(KIND,LINECOL,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, LINECOL, MSG)
+#define _LINT(KIND,MSG) _LINT_(KIND, getlinecol(inst), MSG)
 
 static tU32 _lintKeyGen = 0;
 #define _DEF_LINT(NAME,CAT1,CAT2)                                       \
@@ -464,6 +486,7 @@ _DEF_LINT(ret_type_cant_assign,IsError,None);
 // "Null not found in X" is almost always the result of some computation, a
 // message for that is generally not helpful.
 _DEF_LINT(null_notfound,IsWarning,IsExplicit);
+_DEF_LINT(typeof_usage,IsWarning,IsExperimental);
 
 #undef _DEF_LINT
 
@@ -517,6 +540,7 @@ struct sLinter {
     _REG_LINT(ret_type_is_null);
     _REG_LINT(ret_type_cant_assign);
     _REG_LINT(null_notfound);
+    _REG_LINT(typeof_usage);
   }
 #undef _REG_LINT
 
@@ -608,6 +632,7 @@ struct sLinter {
     _E(ret_type_is_null)
     _E(ret_type_cant_assign)
     _E(null_notfound)
+    _E(typeof_usage)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -815,7 +840,7 @@ struct sLinter {
         this->_ss, eScriptType_Table);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,table));
     }
-    else if (hspType == _ss._typeStr_closure) {
+    else if (hspType == _ss._typeStr_closure || hspType == _ss._typeStr_function) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Closure);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
@@ -823,6 +848,10 @@ struct sLinter {
     else if (hspType == _HC(typestr_void)) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Null);
+    }
+    else if (hspType == _HC(typestr_iunknown)) {
+      resolvedType = niNew sScriptTypeResolvedType(
+        this->_ss, eScriptType_IUnknown);
     }
 
     // Userdata based types
@@ -1167,65 +1196,76 @@ struct sLinter {
     SQObjectPtr roottable = aClosure._root;
     niPanicAssert(sq_istable(roottable));
 
-    tModuleMapIt it = mmapModules.find(aModuleName);
-    if (it != mmapModules.end())  return eTrue;
-
-    niLet ptrModuleDef = niCheckNN(
-      ptrModuleDef,
-      ni::GetLang()->LoadModuleDef(aModuleName),
-      niNew sScriptTypeErrorCode(
-        _ss, _HC(error_code_lint_call_error),
-        niFmt("Can't load module '%s'.",aModuleName)));
-
-    niLoop(i, ptrModuleDef->GetNumEnums()) {
-      niLet pEnumDef = ptrModuleDef->GetEnum(i);
-      niLet enumName = niFun(&) -> tHStringNN {
-        if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
-          return _HC(e);
-        }
-        else {
-          return _H(pEnumDef->maszName);
-        }
-      }();
-      _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
+    niLet isScriptFile =
+        StrEndsWithI(aModuleName,".ni") ||
+        StrEndsWithI(aModuleName,".nim") ||
+        StrEndsWithI(aModuleName,".nio") ||
+        StrEndsWithI(aModuleName,".nip") ||
+        StrEndsWithI(aModuleName,".niw");
+    if (isScriptFile) {
+      // TODO: Import script files...
     }
+    else {
+      tModuleMapIt it = mmapModules.find(aModuleName);
+      if (it != mmapModules.end())  return eTrue;
 
-    cString moduleLoadingWarning;
-    astl::upsert(mmapModules, aModuleName, ptrModuleDef);
+      niLet ptrModuleDef = niCheckNN(
+        ptrModuleDef,
+        ni::GetLang()->LoadModuleDef(aModuleName),
+        niNew sScriptTypeErrorCode(
+          _ss, _HC(error_code_lint_call_error),
+          niFmt("Can't load module '%s'.",aModuleName)));
 
-    niLoop(i,ptrModuleDef->GetNumDependencies()) {
-      // check for invalid dependency
-      if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
-        moduleLoadingWarning = niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName());
-        niWarning(moduleLoadingWarning);
-        continue;
+      niLoop(i, ptrModuleDef->GetNumEnums()) {
+        niLet pEnumDef = ptrModuleDef->GetEnum(i);
+        niLet enumName = niFun(&) -> tHStringNN {
+          if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
+            return _HC(e);
+          }
+          else {
+            return _H(pEnumDef->maszName);
+          }
+        }();
+        _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
       }
 
-      // import the dependency
-      niLet ret = ImportNative(aClosure, ptrModuleDef->GetDependency(i));
-      if (ret != _null_) {
-        moduleLoadingWarning = niFmt(
-          "Module '%s' loading, cant import the dependency '%s': %s.",
-          ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i),
-          _ObjToString(ret));
-        niWarning(moduleLoadingWarning);
-      }
-    }
+      cString moduleLoadingWarning;
+      astl::upsert(mmapModules, aModuleName, ptrModuleDef);
 
-    niLoop(i, ptrModuleDef->GetNumConstants()) {
-      niLet constDef = ptrModuleDef->GetConstant(i);
-      niLet constName = _H(constDef->maszName);
-      niLet& constVal = constDef->mvarValue;
-      SQObjectPtr value = _VarToObj(this->_ss, constDef->mvarValue);
-      if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
-        moduleLoadingWarning = niFmt(
-          "Module '%s' loading, cant load constant '%s' = '%s'.",
-          ptrModuleDef->GetName(),
-          constName,
-          _ObjToString(value));
-        niWarning(moduleLoadingWarning);
+      niLoop(i,ptrModuleDef->GetNumDependencies()) {
+        // check for invalid dependency
+        if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
+          moduleLoadingWarning = niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName());
+          niWarning(moduleLoadingWarning);
+          continue;
+        }
+
+        // import the dependency
+        niLet ret = ImportNative(aClosure, ptrModuleDef->GetDependency(i));
+        if (ret != _null_) {
+          moduleLoadingWarning = niFmt(
+            "Module '%s' loading, cant import the dependency '%s': %s.",
+            ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i),
+            _ObjToString(ret));
+          niWarning(moduleLoadingWarning);
+        }
       }
-      _table(roottable)->NewSlot(constName, value);
+
+      niLoop(i, ptrModuleDef->GetNumConstants()) {
+        niLet constDef = ptrModuleDef->GetConstant(i);
+        niLet constName = _H(constDef->maszName);
+        niLet& constVal = constDef->mvarValue;
+        SQObjectPtr value = _VarToObj(this->_ss, constDef->mvarValue);
+        if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
+          moduleLoadingWarning = niFmt(
+            "Module '%s' loading, cant load constant '%s' = '%s'.",
+            ptrModuleDef->GetName(),
+            constName,
+            _ObjToString(value));
+          niWarning(moduleLoadingWarning);
+        }
+        _table(roottable)->NewSlot(constName, value);
+      }
     }
 
     return _null_;
@@ -1963,9 +2003,9 @@ void SQFunctionProto::LintTrace(
     }
     sset(IARG3, t);
     sset(IARG0, v);
-    _LTRACE(("op_precallk: f = %s (%s), t = %s (%s), k = %s",
+    _LTRACE(("op_precallk: f = %s (tgt: %s), t = %s (tgt: %s, from: %s), k = %s",
              _ObjToString(v), sstr(IARG0),
-             _ObjToString(t), sstr(IARG3),
+             _ObjToString(t), sstr(IARG3), sstr(IARG2),
              _ObjToString(k)));
   };
 
@@ -2189,6 +2229,85 @@ void SQFunctionProto::LintTrace(
     }
   };
 
+  auto lint_typeof_eq = [&](ain<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
+    niLet typeofObj = typeofInfo._obj;
+    niLet resolvedType = aLinter.ResolveType(eqLiteral);
+
+    _LTRACE(("lint_typeof_eq: typeofObj: %s (%s), eqLiteral: %s, resolvedType: %s",
+             _ObjToString(typeofInfo._obj),
+             typeofInfo._sstr,
+             _ObjToString(eqLiteral),
+             _ObjToString(resolvedType)));
+
+    if (!sq_isstring(eqLiteral)) {
+      if (_LENABLED(typeof_usage)) {
+        _LINT_(typeof_usage, lineCol, niFmt(
+          "typeof_eq: Typedef should be a literal string but got '%s', when checking type of '%s' (%s).",
+          _ObjToString(eqLiteral),
+          _ObjToString(typeofObj),
+          typeofInfo._sstr));
+      }
+    }
+    else if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
+      if (_LENABLED(typeof_usage)) {
+        _LINT_(
+          typeof_usage, lineCol,
+          niFmt("typeof_eq: Invalid typeof test type: %s.", _ObjToString(resolvedType)));
+      }
+    }
+
+    // TODO: override the value of typeof'd stack position with the result of the type
+    // sset(IARG1, resolvedType);
+  };
+
+  auto op_typeof = [&](const SQInstruction& inst) {
+    SQObjectPtr typeofObj = sget(IARG1);
+    _LTRACE(("op_typeof: typeofObj: %s (%s), target: %s",
+             _ObjToString(typeofObj), sstr(IARG1), sstr(IARG0)));
+
+    NN_mut<sLintTypeofInfo> typeofInfo = MakeNN<sLintTypeofInfo>();
+    typeofInfo->_obj = typeofObj;
+    typeofInfo->_sstr = sstr(IARG1);
+
+    if (_LENABLED(typeof_usage)) {
+      niLet typeofObjType = sqa_getscriptobjtype(typeofObj);
+      if (typeofObjType != eScriptType_Null && typeofObjType != eScriptType_ErrorCode) {
+        _LINT(typeof_usage, niFmt(
+          "Redundant typeof with known value type '%s' (%s).",
+          _ObjToString(typeofObj), sstr(IARG1)));
+      }
+    }
+
+    sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_String, _OP_TYPEOF, typeofInfo));
+  };
+
+  auto op_eq = [&](const SQInstruction& inst) {
+    SQObjectPtr eqLeft = sget(IARG2);
+    SQObjectPtr eqRight = (IARG3 != 0) ? lget(IARG1) : sget(IARG1);
+
+    _LTRACE(("op_eq: eqLeft: %s (%s), eqRight: %s (%s)",
+             _ObjToString(eqLeft), sstr(IARG2),
+             _ObjToString(eqRight), sstr(IARG1)));
+
+    {
+      niLet resolvedTypeLeft = _ToResolvedTyped(eqLeft);
+      if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
+        NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
+        lint_typeof_eq(*typeofInfo, eqRight, getlinecol(inst));
+      }
+    }
+
+    {
+      niLet resolvedTypeRight = _ToResolvedTyped(eqRight);
+      if (resolvedTypeRight.IsOK() && resolvedTypeRight->_opcode == _OP_TYPEOF) {
+        NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
+        lint_typeof_eq(*typeofInfo, eqLeft, getlinecol(inst));
+      }
+    }
+
+    sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int, _OP_EQ, nullptr));
+  };
+
   const int localThis = localindex(SQObjectPtr(_HC(this)));
   if (localThis < 0) {
     _LINTERNAL_ERROR("Function doesn't have a local 'this'.");
@@ -2252,6 +2371,8 @@ void SQFunctionProto::LintTrace(
       case _OP_SET: op_set(inst); break;
       case _OP_CALL: op_call(inst,eFalse); break;
       case _OP_TAILCALL: op_call(inst,eTrue); break;
+      case _OP_EQ: op_eq(inst); break;
+      case _OP_TYPEOF: op_typeof(inst); break;
       default: {
         break;
       }

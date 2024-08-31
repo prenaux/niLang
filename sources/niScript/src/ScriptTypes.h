@@ -546,11 +546,24 @@ struct sScriptTypeResolvedType : SQ_USERDATA_BASE(sScriptTypeResolvedType)
   }
 
   const eScriptType _scriptType;
+  const SQOpcode _opcode = __OP_LAST;
+  const Opt<iUnknown> _opcodeInfo = nullptr;
 
   sScriptTypeResolvedType(
     const SQSharedState& aSS,
     const eScriptType aType)
       : _scriptType(aType)
+  {
+    SetDelegate(_ddel(aSS,resolved_type));
+  }
+  sScriptTypeResolvedType(
+    const SQSharedState& aSS,
+    const eScriptType aType,
+    const SQOpcode aOpcode,
+    iUnknown* aOpcodeInfo)
+      : _scriptType(aType)
+      , _opcode(aOpcode)
+      , _opcodeInfo(aOpcodeInfo)
   {
     SetDelegate(_ddel(aSS,resolved_type));
   }

@@ -1345,6 +1345,8 @@ class SQCompiler
   eCompileResult SwitchStatement(sCompileErrors& aErrors, int* apPos)
   {
     COMPILE_CHECK(Lex(aErrors));
+
+    _fs->AddInstruction(_OP_LINT_BEGIN_SCOPE);
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
     COMPILE_CHECK(Expect(aErrors,')',NULL));
@@ -1388,6 +1390,9 @@ class SQCompiler
       _fs->SetStackSize(stacksize);
     }
     COMPILE_CHECK(Expect(aErrors,'}',NULL));
+
+    _fs->AddInstruction(_OP_LINT_END_SCOPE);
+
     _fs->PopTarget();
     __nbreaks__ = _fs->GetUnresolvedBreaks()->size() - __nbreaks__;
     if (__nbreaks__ > 0)

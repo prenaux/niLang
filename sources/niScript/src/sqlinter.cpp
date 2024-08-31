@@ -1471,6 +1471,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LintAsType", lint_LintAsType, 3, "ts.", _HC(typestr_bool)},
   {"LintAssertType", lint_LintAssertType, 3, "ts."},
+  {0,0}
 };
 
 void sLinter::RegisterBuiltinFuncs(SQTable* table) {

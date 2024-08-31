@@ -9,20 +9,22 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] lang.ni fully lints with (this)_key_notfound_callk/getk
-// - [ ] Handle ImportScript(script)
-// - [ ] Handle ImportModule(script)
-// - [ ] Handle Import(script or NativeModule)
-// - [ ] Missing 'safe' .?somekey access should only be an explicit warning
-// - [ ] Missing 'safe' .?somefunc() access should only be an explicit warning
-// - [ ] if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
-// - [ ] if (typeof(x) == "sometype") { scopeA; } should set the type of x to "sometype" for the duration of scopeA
-// - [ ] Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
-// - [ ] Implement basic operators for literal types for float, string & integers
-// - [ ] Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
-// - [x] (this)_key_notfound_(get|getk|callk): ::Null not found in X should only be an explicit warning
-// - [x] Handle ImportNative(NativeModule)
-// - [x] Handle GetLangDelegate(type)
+// - [ ] p0: Handle ImportScript(script)
+// - [ ] p0: Missing 'safe' .?somefunc() access should only be an explicit or pedantic warning
+// - [ ] p0: Missing 'safe' .?somekey access should only be an explicit or pedantic warning
+// - [ ] p1: Handle Import(script or NativeModule)
+// - [ ] p1: Handle ImportModule(script)
+// - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
+// - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
+// - [ ] p2: Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
+// - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
+// - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
+// - [ ] p2: Implement basic operators for literal types for float, string & integers
+// - [x] p0: (this)_key_notfound_(get|getk|callk): ::Null not found in X should only be an explicit warning
+// - [x] p0: Handle GetLangDelegate(type)
+// - [x] p0: Handle ImportNative(NativeModule)
+// - [x] p0: if (typeof(x) == "sometype") { scopeA; } should set the type of x to "sometype" for the duration of scopeA
+// - [x] p0: switch (typeof(x)) { case "sometype": scopeA; break; } should set the type of x to "sometype" for the duration of scopeA
 //
 ::Import("unittest.ni")
 ::Import("lang.ni")
@@ -413,26 +415,13 @@ function main() {
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      // typeof_switch2
-      {
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "startswith" not found in resolved_type<array>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
-      }
-
-      // typeof_switch1
-      {
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end.*>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_switch1.*\)]});
-      }
-
       // typeof_usage
-      if (false) {
-        EXPECTED_LINT(aLogs, 3, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
-        EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
+      {
+        EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_usage.*\)]});
+        EXPECTED_LINT(aLogs, 9, {[Lint: Warning:.*\(in typeof_usage.*\)]});
+
+        EXPECTED_LINT(aLogs, 2, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
+        EXPECTED_LINT(aLogs, 3, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
         EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Typedef should be a literal string.*\(in typeof_usage.*\)]});
       }
 
@@ -442,11 +431,64 @@ function main() {
         EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_t_append.*\)]});
       }
 
-      // TODO
-      // ::CHECK_EQUAL(2,aLintResults.mLogsError,
-      //               "Expected lint errors.");
-      // ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
-      //               "Expected lint warnings.");
+      // typeof_switch1
+      {
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+
+        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_switch1.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_switch1.*\)]});
+      }
+
+      // typeof_switch2
+      {
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "startswith" not found in resolved_type<array>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
+
+        EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
+      }
+
+      // typeof_if_string_eq_t
+      {
+        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_string_eq_t.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_string_eq_t.*\)]});
+
+        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_string_eq_t.*\)]});
+      }
+
+      // typeof_if_t_eq_string
+      {
+        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_t_eq_string.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_t_eq_string.*\)]});
+
+        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_t_eq_string.*\)]});
+      }
+
+      // typeof_if_n_eq_string
+      {
+        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_n_eq_string.*\)]});
+        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_if_n_eq_string.*\)]});
+      }
+
+      // typeof_table_member
+      {
+        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_table_member.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_table_member.*\)]});
+      }
+
+      // main
+      {
+        EXPECTED_LINT(aLogs, 4, {[Lint: Error:.*\(in main.*\)]});
+        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in main.*\)]});
+      }
+
+      // all
+      {
+        ::CHECK_EQUAL(18,aLintResults.mLogsError,"Expected lint errors.");
+        ::CHECK_EQUAL(11,aLintResults.mLogsWarning,"Expected lint warnings.");
+      }
     })
 
   // Output failed tests

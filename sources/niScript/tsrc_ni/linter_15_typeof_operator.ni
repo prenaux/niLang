@@ -100,8 +100,9 @@ function typeof_if_string_eq_t() void {
     t.startswith("bla"); // should be ok
   }
   else {
-    t.startswith("bla"); // should fail
+    t.startswith("qoo"); // should fail
   }
+  t.startswith("qee"); // should fail
 }
 
 function typeof_if_t_eq_string() void {
@@ -112,11 +113,32 @@ function typeof_if_t_eq_string() void {
   else {
     t.startswith("bla"); // should fail
   }
+  t.startswith("qee"); // should fail
+}
+
+function typeof_if_n_eq_string() void {
+  local n = 123
+  if (typeof(n) == "string") {
+    n.startswith("bla"); // should be ok
+  }
+  else {
+    n.startswith("bla"); // should fail
+  }
+  n.startswith("qeee"); // should fail
 }
 
 function typeof_table_member(table t) {
   local t = { pstr = null }
-  if (typeof(t.pstr) == "int") { // Prefer typeof local variable
+  // TODO: Should warn: Prefer typeof local variable. Note that the obvious
+  // trivial implementation of looking whether the stack position is a local
+  // variable isn't reliable since those stack positions will be reused if the
+  // local in question isnt used anymore.
+  if (typeof(t.pstr) == "string") {
+    // Should succeed? This one would require to intro some shadowing... which
+    // would be cool but just replacing this by fetching in a local variable
+    // first does the same without the significant increase in complexity in
+    // the linter.
+    t.pstr.startswith("foo");
   }
 }
 
@@ -126,6 +148,9 @@ function main() void {
     t.append(123); // should be ok
     if (typeof(u) == "array") {
       u.append(789); // should be ok
+    }
+    else {
+      u.startswith("nopes"); // should fail
     }
   }
   else if ("string" == typeof(t)) {

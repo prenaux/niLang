@@ -1156,9 +1156,12 @@ class SQCompiler
     int jmppos;
     bool haselse = false;
     COMPILE_CHECK(Lex(aErrors));
+    _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_IfBegin);
 
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
+    int startCondInst = _fs->_instructions.size();
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
+    SetTypeofArg2(startCondInst, 2);
     COMPILE_CHECK(Expect(aErrors,')',NULL));
     _fs->AddInstruction(_OP_JZ, _fs->PopTarget());
     int jnepos = _fs->GetCurrentPos();
@@ -1168,6 +1171,8 @@ class SQCompiler
     if (_token != '}' && _token != TK_ELSE) {
       COMPILE_CHECK(OptionalSemicolon(aErrors));
     }
+
+    _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_IfEnd);
 
     _fs->CleanStack(stacksize);
     int endifblock = _fs->GetCurrentPos();
@@ -1332,13 +1337,25 @@ class SQCompiler
     return eCompileResult_OK;
   }
 
+  void SetTypeofArg2(int aStartCondInst, int aArg2) {
+    const int numInsts = (int)_fs->_instructions.size();
+    for (int i = aStartCondInst; i < numInsts; ++i) {
+      niLetMut& inst = _fs->_instructions[i];
+      if (inst.op == _OP_TYPEOF) {
+        inst._arg2 = aArg2;
+      }
+    }
+  }
+
   eCompileResult SwitchStatement(sCompileErrors& aErrors, int* apPos)
   {
     COMPILE_CHECK(Lex(aErrors));
     _fs->AddInstruction(_OP_LINT_HINT, eSQLintHint_SwitchBegin);
 
     COMPILE_CHECK(Expect(aErrors,'(',NULL));
+    const int startCondInst = _fs->_instructions.size();
     COMPILE_CHECK(CommaExpr(aErrors,apPos));
+    SetTypeofArg2(startCondInst, 1);
     COMPILE_CHECK(Expect(aErrors,')',NULL));
     COMPILE_CHECK(Expect(aErrors,'{',NULL));
     int expr = _fs->TopTarget();

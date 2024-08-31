@@ -40,6 +40,7 @@ struct sLintTypeofInfo : public ImplRC<iUnknown> {
   SQObjectPtr _obj;
   cString _sstr;
   int _iarg1 = -1;
+  astl::optional<SQObjectPtr> _wasValue;
 };
 
 
@@ -147,6 +148,8 @@ extern "C" const char* _GetLintHintDesc(eSQLintHint hint) {
     case eSQLintHint_SwitchBegin: return "SwitchBegin";
     case eSQLintHint_SwitchEnd: return "SwitchEnd";
     case eSQLintHint_SwitchDefault: return "SwitchDefault";
+    case eSQLintHint_IfBegin: return "IfBegin";
+    case eSQLintHint_IfEnd: return "IfEnd";
   }
   return "<InvalidLintHint>";
 }
@@ -2237,28 +2240,27 @@ void SQFunctionProto::LintTrace(
     }
   };
 
-  // TODO: Restore previous value when going out of scope
-  auto scoped_sset = [&](int targetArg, const SQObjectPtr& obj) {
-    sset(targetArg, obj);
+  struct sLintScope {
+    astl::vector<NN<sLintTypeofInfo>> _typeofs;
   };
+  astl::stack<sLintScope> scopes;
 
-  auto lint_typeof_eq = [&](ain<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
-    niLet typeofObj = typeofInfo._obj;
+  auto lint_typeof_eq = [&](ain_nn_mut<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
+    niLet typeofObj = typeofInfo->_obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral);
 
     _LTRACE(("lint_typeof_eq: typeofObj: %s (%s), eqLiteral: %s, resolvedType: %s",
-             _ObjToString(typeofInfo._obj),
-             typeofInfo._sstr,
+             _ObjToString(typeofInfo->_obj),
+             typeofInfo->_sstr,
              _ObjToString(eqLiteral),
              _ObjToString(resolvedType)));
 
     if (!sq_isstring(eqLiteral)) {
       if (_LENABLED(typeof_usage)) {
         _LINT_(typeof_usage, lineCol, niFmt(
-          "typeof_eq: Typedef should be a literal string but got '%s', when checking type of '%s' (%s).",
+          "typeof_eq: Typedef should be a literal string but got '%s', when checking type of '%s'.",
           _ObjToString(eqLiteral),
-          _ObjToString(typeofObj),
-          typeofInfo._sstr));
+          typeofInfo->_sstr));
       }
     }
     else {
@@ -2269,22 +2271,54 @@ void SQFunctionProto::LintTrace(
             niFmt("typeof_eq: Invalid typeof test type: %s.", _ObjToString(resolvedType)));
         }
       }
-      if (typeofInfo._iarg1 >= 0) {
-        // Update the type of the value what typeof checked.
-        // TODO: This is correct for typeof(localvariable or paramname). It
-        // doesnt work correctly for typeof(someexpr) since the stack position
-        // is temporary then...
-        sset(typeofInfo._iarg1, resolvedType);
+      if (typeofInfo->_iarg1 >= 0) {
+        if (scopes.empty()) {
+          _LINTERNAL_ERROR("typeof_eq: Outside of a if/switch scope.");
+        }
+        else {
+          // Update the type of the value what typeof checked.
+          // TODO: This is correct for typeof(localvariable or paramname). It
+          // doesnt work correctly for typeof(someexpr) since the stack position
+          // is temporary then...
+          if (!typeofInfo->_wasValue.has_value()) {
+            typeofInfo->_wasValue = sget(typeofInfo->_iarg1);
+          }
+          sset(typeofInfo->_iarg1, resolvedType);
+          scopes.top()._typeofs.emplace_back(typeofInfo);
+        }
+      }
+      else {
+        _LINT_(typeof_usage, lineCol, "typeof_eq: Typeof == used outside of a switch condition prevents linting.");
       }
     }
   };
 
-  auto lint_typeof_end = [&](ain<sLintTypeofInfo> typeofInfo, ain<tChars> aReason) {
-    niLet typeofObj = typeofInfo._obj;
-    if (typeofInfo._iarg1 >= 0) {
-      sset(typeofInfo._iarg1, niNew sScriptTypeErrorCode(
-        aLinter._ss, _HC(error_code_dangling_type),
-        aReason));
+  auto lint_typeof_restore = [&](ain<tChars> aReason, tBool abClear) {
+    if (scopes.empty()) {
+      _LINTERNAL_ERROR(niFmt("lint_typeof_restore: Outside of a if/switch scope, '%s'.",aReason));
+    }
+    else {
+      niLetMut& typeofs = scopes.top()._typeofs;
+      niLoop(i,typeofs.size()) {
+        niLet typeof = typeofs[i];
+        niLet typeofObj = typeof->_obj;
+        if (typeof->_iarg1 >= 0) {
+          if (typeof->_wasValue.has_value() &&
+              sqa_getscriptobjtype(typeof->_wasValue.value()) != eScriptType_Null &&
+              sqa_getscriptobjtype(typeof->_wasValue.value()) != eScriptType_ErrorCode)
+          {
+            sset(typeof->_iarg1, typeof->_wasValue.value());
+          }
+          else {
+            sset(typeof->_iarg1, niNew sScriptTypeErrorCode(
+              aLinter._ss, _HC(error_code_dangling_type),
+              aReason));
+          }
+        }
+      }
+      if (abClear) {
+        typeofs.clear();
+      }
     }
   };
 
@@ -2296,7 +2330,6 @@ void SQFunctionProto::LintTrace(
     NN_mut<sLintTypeofInfo> typeofInfo = MakeNN<sLintTypeofInfo>();
     typeofInfo->_obj = typeofObj;
     typeofInfo->_sstr = sstr(IARG1);
-    typeofInfo->_iarg1 = IARG1;
 
     if (_LENABLED(typeof_usage)) {
       niLet typeofObjType = sqa_getscriptobjtype(typeofObj);
@@ -2305,6 +2338,13 @@ void SQFunctionProto::LintTrace(
           "Redundant typeof with known value type '%s' (%s).",
           _ObjToString(typeofObj), sstr(IARG1)));
       }
+    }
+
+    if (IARG2 == 0) {
+      typeofInfo->_iarg1 = -1;
+    }
+    else {
+      typeofInfo->_iarg1 = IARG1;
     }
 
     sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_String, _OP_TYPEOF, typeofInfo));
@@ -2321,16 +2361,16 @@ void SQFunctionProto::LintTrace(
     {
       niLet resolvedTypeLeft = _ObjToResolvedTyped(eqLeft);
       if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
-        NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
-        lint_typeof_eq(*typeofInfo, eqRight, getlinecol(inst));
+        NN_mut<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
+        lint_typeof_eq(typeofInfo, eqRight, getlinecol(inst));
       }
     }
 
     {
       niLet resolvedTypeRight = _ObjToResolvedTyped(eqRight);
       if (resolvedTypeRight.IsOK() && resolvedTypeRight->_opcode == _OP_TYPEOF) {
-        NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
-        lint_typeof_eq(*typeofInfo, eqLeft, getlinecol(inst));
+        NN_mut<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
+        lint_typeof_eq(typeofInfo, eqLeft, getlinecol(inst));
       }
     }
 
@@ -2349,18 +2389,24 @@ void SQFunctionProto::LintTrace(
       case eSQLintHint_Unknown: {
         break;
       }
+      case eSQLintHint_IfBegin:
       case eSQLintHint_SwitchBegin: {
+        scopes.push(sLintScope{});
         break;
       }
-      case eSQLintHint_SwitchEnd:
-      case eSQLintHint_SwitchDefault: {
-        niLet resolvedType = _ObjToResolvedTyped(arg1);
-        if (resolvedType.IsOK() && resolvedType->_opcode == _OP_TYPEOF) {
-          NN<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedType->_opcodeInfo) };
-          lint_typeof_end(
-            *typeofInfo,
-            niFmt("typeof_end %s", _GetLintHintDesc(hint)));
+      case eSQLintHint_IfEnd:
+      case eSQLintHint_SwitchEnd: {
+        if (scopes.empty()) {
+          _LINTERNAL_ERROR(niFmt("op_lint_hint: Outside of a if/switch scope, '%s'.", _GetLintHintDesc(hint)));
         }
+        else {
+          lint_typeof_restore(niFmt("typeof_end %s", _GetLintHintDesc(hint)), eTrue);
+          scopes.pop();
+        }
+        break;
+      }
+      case eSQLintHint_SwitchDefault: {
+        lint_typeof_restore(niFmt("typeof_end %s", _GetLintHintDesc(hint)), eFalse);
         break;
       }
     }

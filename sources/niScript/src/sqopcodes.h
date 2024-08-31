@@ -32,7 +32,7 @@ enum SQOpcode
   _OP_RETURN        = 26, //1(return) or -1(pushnull) <<retval>>
   _OP_CLOSURE       = 27, //<<target>> <<index>> <<if 1 is a generator>>
   _OP_FOREACH       = 28, //<<container>> <<first arg>> <<jmppos>>
-  _OP_TYPEOF        = 29, //<<target>> <<obj>>
+  _OP_TYPEOF        = 29, //<<target>> <<obj>> <<gte 1 if in a switch or if condition>>
   _OP_PUSHTRAP      = 30, //<<pos>>
   _OP_POPTRAP       = 31, //none
   _OP_THROW         = 32, //<<target>>
@@ -81,6 +81,8 @@ enum eSQLintHint {
   eSQLintHint_SwitchBegin = 1,
   eSQLintHint_SwitchEnd = 2,
   eSQLintHint_SwitchDefault = 3,
+  eSQLintHint_IfBegin = 10,
+  eSQLintHint_IfEnd = 11,
 };
 
 #define _OPEXT_GET_RAW         niBit(0)

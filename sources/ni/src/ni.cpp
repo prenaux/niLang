@@ -628,7 +628,8 @@ void REPL(iScriptVM* apVM)
     if (SQ_SUCCEEDED(sq_compilebuffer(
           v,
           aCodeToRun.Chars(),aCodeToRun.size(),
-          _A("REPL"),ni::eTrue)))
+          _A("REPL"),
+          eSQCompileFlags_Default)))
     {
       sq_pushroottable(v);
       int retval = 1;

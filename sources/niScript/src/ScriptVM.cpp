@@ -730,7 +730,12 @@ iScriptObject* __stdcall cScriptVM::Compile(iFile* apFile, const achar* aaszName
     }
 
     sFile file(apFile);
-    if (SQ_FAILED(sq_compile(mptrVM, sFile::sqReadChar, (ni::tPtr)&file, strName.Chars(), 1)))  {
+    if (SQ_FAILED(sq_compile(
+          mptrVM,
+          sFile::sqReadChar, (ni::tPtr)&file,
+          strName.Chars(),
+          eSQCompileFlags_Default)))
+    {
       niError(_A("Compilation failed."));
       return NULL;
     }
@@ -761,12 +766,14 @@ iScriptObject* __stdcall cScriptVM::CompileString(const achar* aaszCode, const a
 
   Ptr<iScriptObject> obj;
   sFile file(aaszCode);
-  if (SQ_FAILED(sq_compile(mptrVM, sFile::sqReadChar,
-                           (ni::tPtr)&file,
-                           niStringIsOK(aaszName)?
-                           aaszName :
-                           "[VM::CompileString]",
-                           1)))
+  if (SQ_FAILED(sq_compile(
+        mptrVM,
+        sFile::sqReadChar,
+        (ni::tPtr)&file,
+        (niStringIsOK(aaszName)?
+         aaszName :
+         "[VM::CompileString]"),
+        eSQCompileFlags_Default)))
   {
     niError(_A("Compilation failed."));
     return NULL;

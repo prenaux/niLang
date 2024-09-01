@@ -129,6 +129,6 @@ struct sCompileErrors {
   }
 };
 
-bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, bool raiseerror, bool lineinfo);
+bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, tSQCompileFlags aCompileFlags);
 
 #endif //_SQCOMPILER_H_

@@ -323,10 +323,18 @@ static int base_compilestring(HSQUIRRELVM v)
   if(nargs>2){
     sq_getstring(v,3,&name);
   }
-  if(SQ_SUCCEEDED(sq_compilebuffer(v,src,size,name,0)))
+  int flags=0;
+  if(nargs>3){
+    sq_getint(v,4,&flags);
+  }
+
+  if(SQ_SUCCEEDED(sq_compilebuffer(
+       v,src,size,name,flags))) {
     return 1;
-  else
+  }
+  else {
     return SQ_ERROR;
+  }
 }
 
 static int base_Array(HSQUIRRELVM v)

@@ -54,13 +54,18 @@ SQ_VECTOR_TYPEDEF(ExpState,ExpStateVec);
 class SQCompiler
 {
  public:
-  SQCompiler(SQVM *v, SQLEXREADFUNC rg, ni::tPtr up, const SQChar* sourcename, bool raiseerror, bool debugmode)
+  SQCompiler(
+    SQVM *v, SQLEXREADFUNC rg,
+    ni::tPtr up,
+    const SQChar* sourcename,
+    tSQCompileFlags aCompileFlags)
   {
     _vm=v;
     _lex.Init(sourcename, rg, up);
     _sourcename = _H(sourcename);
-    _debugmode = debugmode;
-    _raiseerror = raiseerror;
+    _debugmode = niFlagIs(aCompileFlags, eSQCompileFlags_DebugMode);
+    _raiseerror = niFlagIs(aCompileFlags, eSQCompileFlags_RaiseError);
+    _lint = niFlagIs(aCompileFlags, eSQCompileFlags_Lint);
   }
 
   eCompileResult Lex(sCompileErrors& aErrors) {
@@ -216,7 +221,9 @@ class SQCompiler
       _fs->SetStackSize(0);
       _fs->FinalizeFuncProto();
       o = _fs->_func;
-      _funcproto(o)->LintTraceRoot();
+      if (_lint) {
+        _funcproto(o)->LintTraceRoot();
+      }
       return true;
     }
 
@@ -1645,17 +1652,18 @@ class SQCompiler
   SQFuncState *_fs;
   SQObjectPtr _sourcename;
   SQLexer _lex;
-  bool _debugmode;
-  bool _raiseerror;
   ExpStateVec _expstates;
   SQVM *_vm;
+  bool _debugmode;
+  bool _raiseerror;
+  bool _lint;
 };
 
-bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, bool raiseerror, bool debugmode)
+bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, tSQCompileFlags aCompileFlags)
 {
   // niDebugFmt((_A("-- COMPILING: %s (%d)"),sourcename,debugmode));
   sCompileErrors errors;
-  SQCompiler p(vm, rg, up, sourcename, raiseerror, debugmode);
+  SQCompiler p(vm, rg, up, sourcename, aCompileFlags);
   bool r = p.Compile(errors,out,NULL);
   if (!r) {
     niAssert(errors.HasError());

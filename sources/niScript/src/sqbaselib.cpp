@@ -2268,6 +2268,26 @@ static int closure_SetRoot(HSQUIRRELVM v) {
   return 1;
 }
 
+static int closure_lint(HSQUIRRELVM v)
+{
+  niLet& that = stack_get(v,1);
+  SQInt index = _int(stack_get(v,2));
+  if (sq_isclosure(that)) {
+    SQClosure *c = _closure(that);
+    if (sq_isfuncproto(c->_function)) {
+       niLet numLintErrors = _funcproto(c->_function)->LintTraceRoot();
+       sq_pushint(v, (int)numLintErrors);
+       return 1;
+    }
+    else {
+      return sq_throwerror(v,"No vm bytecode function in vm closure.");
+    }
+  }
+  else {
+    return sq_throwerror(v,"Can only lint vm bytecode closures.");
+  }
+}
+
 SQRegFunction SQSharedState::_table_default_delegate_funcz[]={
   {_A("ToIntPtr"),default_to_intptr,1, _A("t"), _HC(typestr_int)},
   {_A("ShallowClone"),default_shallow_clone,1, _A("t"), _HC(typestr_table)},
@@ -2512,6 +2532,7 @@ SQRegFunction SQSharedState::_number_default_delegate_funcz[]={
   {0,0}
 };
 
+// TODO: Should we split that into two delegates? one for nativeclosures and one for vmclosures?
 SQRegFunction SQSharedState::_closure_default_delegate_funcz[]={
   {_A("ToIntPtr"),default_to_intptr,1, _A("c"), _HC(typestr_int)},
   {_A("call"),closure_call,-1, _A("c")},
@@ -2528,6 +2549,7 @@ SQRegFunction SQSharedState::_closure_default_delegate_funcz[]={
   {_A("SafeGetFreeVar"),closure_SafeGetFreeVar,2, _A("cn")},
   {_A("GetRoot"),closure_GetRoot,1, _A("c"), _HC(typestr_table)},
   {_A("SetRoot"),closure_SetRoot,2, _A("ct")},
+  {_A("lint"),closure_lint,1, _A("c"), _HC(typestr_int)},
   {0,0}
 };
 

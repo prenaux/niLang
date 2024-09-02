@@ -3,13 +3,21 @@
 #define __LINUXGL_H_6A10DB64_06C2_C441_A70B_1FB42BA690F4__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+
 #ifdef niLinuxDesktop
+
 #define GL_GLEXT_PROTOTYPES
-#include<X11/X.h>
-#include<X11/Xlib.h>
-#include<GL/gl.h>
-#include<GL/glx.h>
-#include<GL/glext.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <GL/glext.h>
+
+// Undef insanities in Xlib.h
+#undef Bool
+#undef Status
+#undef True
+#undef False
 
 namespace ni {
 /** \addtogroup niLang
@@ -72,30 +80,13 @@ struct sXWindowDesc {
     XDestroyWindow(mpDisplay, mpWindow);
     XCloseDisplay(mpDisplay);
   }
-
-  // iOSWindow* share;
 };
-
-// niExportFunc(tBool) osxglIsStarted();
-// niExportFunc(tBool) osxglStartup(void);
-// niExportFunc(void) osxglShutdown(void);
-// niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sXWindowDesc* nsglConfig);
-// niExportFunc(void) osxglDestroyContext(iOSWindow* apWindow);
-// niExportFunc(tBool) osxglHasContext(iOSWindow* apWindow);
-// niExportFunc(void) osxglMakeContextCurrent(iOSWindow* apWindow);
-// niExportFunc(iOSWindow*) osxglGetCurrentContext(void);
-// niExportFunc(void) osxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait);
-// niExportFunc(tPtr) osxglGetProcAddress(const char* procname);
-// niExportFunc(tIntPtr) osxglGetNSOpenGLContext(iOSWindow* apWindow);
-// niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
 } // namespace ni { namespace niOSX {
 
-#undef Bool
-
-#endif
+#endif // #ifdef niLinuxDesktop
 
 #endif // __LINUXGL_H_6A10DB64_06C2_C441_A70B_1FB42BA690F4__

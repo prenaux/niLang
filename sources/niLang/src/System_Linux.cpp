@@ -12,7 +12,7 @@
 
 using namespace ni;
 
-class cLinuxWindow : public ni::cIUnknownImpl<ni::iOSWindow,ni::eIUnknownImplFlags_Default,ni::iOSWindowLinux> {
+class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
 
   sXWindowDesc desc;

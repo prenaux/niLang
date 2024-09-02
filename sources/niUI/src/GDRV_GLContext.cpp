@@ -5,7 +5,7 @@
 #include "GDRV_GLContext.h"
 
 #ifdef _WIN32
-#include "GL/wglext.h"
+#include "GL/ni_wglext.h"
 
 static PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsStringARB = NULL;
 static PFNWGLCHOOSEPIXELFORMATARBPROC _wglChoosePixelFormatARB = NULL;

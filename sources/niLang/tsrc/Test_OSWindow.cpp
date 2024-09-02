@@ -2,10 +2,11 @@
 #include "../src/API/niLang_ModuleDef.h"
 #include "Test_String.h"
 
-// TODO: iOSWindow implementation for Linux
-#if !defined niLinux
-
 using namespace ni;
+
+//#define TRACE_PAINT
+#define TRACE_MOUSE_MOVE
+#define TRACE_RELATIVE_MOUSE_MOVE
 
 namespace {
 
@@ -33,7 +34,7 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
         niDebugFmt(("eOSWindowMessage_SwitchOut: %s\n", niEnumToChars(eOSWindowSwitchReason,a.mU32)));
         break;
       case eOSWindowMessage_Paint: {
-#if 1
+#ifdef TRACE_PAINT
         niDebugFmt((_A("eOSWindowMessage_Paint: \n")));
 #endif
         break;
@@ -109,17 +110,19 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
         break;
 
       case eOSWindowMessage_RelativeMouseMove:
-#if 1
+#ifdef TRACE_RELATIVE_MOUSE_MOVE
         niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
                     a.mV2L[0],a.mV2L[1]));
 #endif
         break;
 
       case eOSWindowMessage_MouseMove:
+#ifdef TRACE_RELATIVE_RELATIVER_MOVE
         niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
                     a.mV2L[0],a.mV2L[1],
                     b.mV2L[0],b.mV2L[1],
                     w->GetContentsScale()));
+#endif
         break;
     }
   }
@@ -335,4 +338,3 @@ TEST_FIXTURE(FOSWindow,PickDirectoryDialog) {
 }
 
 } // end of anonymous namespace
-#endif

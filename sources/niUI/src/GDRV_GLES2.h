@@ -278,7 +278,7 @@
 #undef __TSGL_NOCONTEXT__
 #include <niLang/Platforms/Win32/Win32_Redef.h>
 #include <GL/gl.h>
-#include "GL/glext.h"
+#include "GL/ni_glext.h"
 #define GL_APIENTRY APIENTRY
 // #undef GL_CLAMP_TO_EDGE
 // #define GL_CLAMP_TO_EDGE GL_CLAMP

@@ -491,6 +491,32 @@ function main() {
       }
     })
 
+  testLinter.check(
+    "linter_16_import_script.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
+
+      // TODO
+      ::CHECK_EQUAL(2,aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning, "Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_17_import_script_in_table.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      // TODO
+      // ::CHECK_EQUAL(2,aLintResults.mLogsError,
+      //               "Expected lint errors.");
+      // ::CHECK_EQUAL(0,aLintResults.mLogsWarning,
+      //               "Expected lint warnings.");
+    })
+
   // Output failed tests
   if (!testLinter.mFailedChecks.empty()) {
     ::logError(::format("Linter test failed: %d",

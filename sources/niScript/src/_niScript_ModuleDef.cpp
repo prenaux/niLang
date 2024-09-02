@@ -599,37 +599,6 @@ static const ni::sMethodDef iScriptVM_CollectGarbage = {
 #endif // niMinFeatures(15)
 
 #if niMinFeatures(15)
-// Method: EnableDebugInfos
-static const ni::sParameterDef iScriptVM_EnableDebugInfos_Parameters[1] = { 
-  { "abEnabled", ni::eType_I8, NULL, "tBool" }
-}; 
-static const ni::sMethodDef iScriptVM_EnableDebugInfos = {
-  "EnableDebugInfos",
-  0|ni::eType_Null, NULL, "void",
-  1, iScriptVM_EnableDebugInfos_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iScriptVM_EnableDebugInfos)
-#else
-  NULL
-#endif
-};
-#endif // niMinFeatures(15)
-
-#if niMinFeatures(15)
-// Method: AreDebugInfosEnabled
-static const ni::sMethodDef iScriptVM_AreDebugInfosEnabled = {
-  "AreDebugInfosEnabled",
-  0|ni::eType_I8, NULL, "tBool",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iScriptVM_AreDebugInfosEnabled)
-#else
-  NULL
-#endif
-};
-#endif // niMinFeatures(15)
-
-#if niMinFeatures(15)
 // Method: SetErrorLineOffset
 static const ni::sParameterDef iScriptVM_SetErrorLineOffset_Parameters[1] = { 
   { "anOffset", ni::eType_I32, NULL, "tI32" }
@@ -1224,12 +1193,6 @@ static const ni::sMethodDef* Methods_iScriptVM[] = {
 #endif // niMinFeatures(15)
 #if niMinFeatures(15)
 	&iScriptVM_CollectGarbage,
-#endif // niMinFeatures(15)
-#if niMinFeatures(15)
-	&iScriptVM_EnableDebugInfos,
-#endif // niMinFeatures(15)
-#if niMinFeatures(15)
-	&iScriptVM_AreDebugInfosEnabled,
 #endif // niMinFeatures(15)
 #if niMinFeatures(15)
 	&iScriptVM_SetErrorLineOffset,

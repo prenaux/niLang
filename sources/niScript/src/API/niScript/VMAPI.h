@@ -106,24 +106,8 @@ niExportFunc(void) sq_setforeignptr(HSQUIRRELVM v,ni::tPtr p);
 niExportFunc(ni::tPtr) sq_getforeignptr(HSQUIRRELVM v);
 
 /*compiler*/
-
-//! Script compiler flags
-enum eSQCompileFlags {
-  eSQCompileFlags_RaiseError = niBit(0),
-  eSQCompileFlags_Lint = niBit(1),
-  eSQCompileFlags_DebugMode = niBit(2),
-  eSQCompileFlags_Default = eSQCompileFlags_RaiseError|eSQCompileFlags_Lint,
-  //! \internal
-  eSQCompileFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF,
-};
-
-//! \see eSQCompileFlags
-typedef tU32 tSQCompileFlags;
-
-niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename,tSQCompileFlags aCompileFlags);
-niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename,tSQCompileFlags aCompileFlags);
-niExportFunc(void) sq_enabledebuginfos(HSQUIRRELVM v, int debuginfo);
-niExportFunc(bool) sq_aredebuginfosenabled(HSQUIRRELVM v);
+niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename);
+niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename);
 niExportFunc(void) sq_setcompilererrorhandler(HSQUIRRELVM v,SQCOMPILERERROR f);
 
 /*stack operations*/
@@ -204,7 +188,7 @@ niExportFunc(void) sq_setdebughook(HSQUIRRELVM v);
 #define sq_isnumeric(o) (sq_type(o)&SQOBJECT_NUMERIC)
 #define sq_istable(o) (sq_type(o)==OT_TABLE)
 #define sq_isarray(o) (sq_type(o)==OT_ARRAY)
-#define sq_isfunction(o) (sq_type(o)==OT_FUNCPROTO)
+#define sq_isfuncproto(o) (sq_type(o)==OT_FUNCPROTO)
 #define sq_isclosure(o) (sq_type(o)==OT_CLOSURE)
 #define sq_isnativeclosure(o) (sq_type(o)==OT_NATIVECLOSURE)
 #define sq_isstring(o) (sq_type(o)==OT_STRING)

@@ -733,8 +733,7 @@ iScriptObject* __stdcall cScriptVM::Compile(iFile* apFile, const achar* aaszName
     if (SQ_FAILED(sq_compile(
           mptrVM,
           sFile::sqReadChar, (ni::tPtr)&file,
-          strName.Chars(),
-          eSQCompileFlags_Default)))
+          strName.Chars())))
     {
       niError(_A("Compilation failed."));
       return NULL;
@@ -772,8 +771,7 @@ iScriptObject* __stdcall cScriptVM::CompileString(const achar* aaszCode, const a
         (ni::tPtr)&file,
         (niStringIsOK(aaszName)?
          aaszName :
-         "[VM::CompileString]"),
-        eSQCompileFlags_Default)))
+         "[VM::CompileString]"))))
   {
     niError(_A("Compilation failed."));
     return NULL;
@@ -848,20 +846,6 @@ iUnknown* __stdcall cScriptVM::CompileGetIUnknownObject(iScriptObject* apThisTab
   }
 
   return pI;
-}
-
-///////////////////////////////////////////////
-//! Enable debug informations in the compiled script.
-void __stdcall cScriptVM::EnableDebugInfos(tBool abEnabled)
-{
-  sq_enabledebuginfos(mptrVM,abEnabled);
-}
-
-///////////////////////////////////////////////
-//! Return eTrue if debug infos are enabled.
-tBool __stdcall cScriptVM::AreDebugInfosEnabled() const
-{
-  return sq_aredebuginfosenabled(mptrVM);
 }
 
 ///////////////////////////////////////////////

@@ -98,7 +98,8 @@ public:
   void LintTrace(
     sLinter& aLinter,
     const struct LintClosure& aClosure) const;
-  void LintTraceRoot();
+  // Return the number of lint errors
+  tU32 LintTraceRoot();
 
   SQObjectPtrVec _literals;
   SQObjectPtrVec _functions;

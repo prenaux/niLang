@@ -129,6 +129,12 @@ struct sCompileErrors {
   }
 };
 
-bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, tSQCompileFlags aCompileFlags);
+// Compile a script to a funcproto object.
+tBool CompileScript(
+  aout<sCompileErrors> aErrors,
+  ain<SQLEXREADFUNC> aReadFn,
+  ain<ni::tPtr> aReadUserPtr,
+  ain_nn_mut<iHString> ahspSourceName,
+  aout<SQObjectPtr> aOut);
 
 #endif //_SQCOMPILER_H_

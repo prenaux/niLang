@@ -107,12 +107,6 @@ struct iScriptVM : public iScriptingHost
   //########################################################################################
   //! @{
 
-  //! Enable debug informations in the compiled script.
-  //! \remark This will enable or disable debug infos for all scripts compiled after the call
-  //!     to the method.
-  virtual void __stdcall EnableDebugInfos(tBool abEnabled) = 0;
-  //! Return eTrue if debug infos are enabled.
-  virtual tBool __stdcall AreDebugInfosEnabled() const = 0;
   //! Set the line error reporting offset.
   //! {Property}
   virtual void __stdcall SetErrorLineOffset(tI32 anOffset) = 0;

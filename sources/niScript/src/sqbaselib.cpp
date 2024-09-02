@@ -148,13 +148,6 @@ static int base_setdebughook(HSQUIRRELVM v)
   return 0;
 }
 
-static int base_enabledebuginfos(HSQUIRRELVM v)
-{
-  SQObjectPtr &o=stack_get(v,2);
-  sq_enabledebuginfos(v,(_sqtype(o) != OT_NULL)?1:0);
-  return 0;
-}
-
 static int base_getbasestackinfos(HSQUIRRELVM v)
 {
   SQInt level;
@@ -323,13 +316,8 @@ static int base_compilestring(HSQUIRRELVM v)
   if(nargs>2){
     sq_getstring(v,3,&name);
   }
-  int flags=0;
-  if(nargs>3){
-    sq_getint(v,4,&flags);
-  }
 
-  if(SQ_SUCCEEDED(sq_compilebuffer(
-       v,src,size,name,flags))) {
+  if(SQ_SUCCEEDED(sq_compilebuffer(v,src,size,name))) {
     return 1;
   }
   else {
@@ -2561,8 +2549,6 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("GetRaiseErrorMode"),base_getraiseerrormode,1, _A("t"), _HC(typestr_int)},
   {_A("setdebughook"),base_setdebughook,2, _A("tc"), _HC(typestr_void)},
   {_A("SetDebugHook"),base_setdebughook,2, _A("tc"), _HC(typestr_void)},
-  {_A("enabledebuginfos"),base_enabledebuginfos,2, _A("t."), _HC(typestr_void)},
-  {_A("EnableDebugInfos"),base_enabledebuginfos,2, _A("t."), _HC(typestr_void)},
   {_A("getstackinfos"),base_getstackinfos,2, _A("tn"), _HC(typestr_table)},
   {_A("GetStackInfos"),base_getstackinfos,2, _A("tn"), _HC(typestr_table)},
   {_A("getbasestackinfos"),base_getbasestackinfos,2, _A("tn"), _HC(typestr_table)},

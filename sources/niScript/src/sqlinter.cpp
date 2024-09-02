@@ -516,6 +516,8 @@ struct sLinter {
 #if !defined SQLINTER_LOG_INLINE
   astl::vector<cString> _logs;
 #endif
+  tU32 _numLintErrors = 0;
+  tU32 _numLintWarnings = 0;
 
 #define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),          \
                                      niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) && \
@@ -675,9 +677,11 @@ struct sLinter {
     o << "Lint: ";
     if (niFlagIs(aLint,eLintFlags_IsError)) {
       o << "Error: ";
+      ++_numLintErrors;
     }
     else if (niFlagIs(aLint,eLintFlags_IsWarning)) {
       o << "Warning: ";
+      ++_numLintWarnings;
     }
     else if (niFlagIs(aLint,eLintFlags_IsInfo)) {
       o << "Info: ";
@@ -760,7 +764,7 @@ struct sLinter {
       this->_ss,
       _HC(error_code_cant_find_type_uuid),
       niFmt("Cant find type uuid '%s' (%s).",aTypeName,aTypeUUID));
-  }
+ }
 
   astl::optional<const sInterfaceDef*> FindInterfaceDef(ain_nn_mut<iHString> aInterfaceName) const
   {
@@ -1215,6 +1219,9 @@ struct sLinter {
         StrEndsWithI(aModuleName,".niw");
     if (isScriptFile) {
       // TODO: Import script files...
+      return niNew sScriptTypeErrorCode(
+        _ss, _HC(error_code_lint_call_error),
+        niFmt("Linting loading script file not implemented '%s'.",aModuleName));
     }
     else {
       tModuleMapIt it = mmapModules.find(aModuleName);
@@ -2530,7 +2537,7 @@ void SQFunctionProto::LintTrace(
 #undef IEXT
 }
 
-void SQFunctionProto::LintTraceRoot() {
+tU32 SQFunctionProto::LintTraceRoot() {
   sLinter linter;
 
   SQObjectPtr moduleRoot = SQTable::Create();
@@ -2545,4 +2552,6 @@ void SQFunctionProto::LintTraceRoot() {
     niPrintln(linter._logs[i]);
   }
 #endif
+
+  return linter._numLintErrors;
 }

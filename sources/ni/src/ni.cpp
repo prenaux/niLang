@@ -66,8 +66,6 @@ niConstValue char* _kaszREPLVersion = "v2.0";
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Options
 struct sOptions {
-  // Whether to include debug infos.
-  tBool _bDebugInfos;
   // Binary output.
   cString _strOutput;
   // Input script.
@@ -157,7 +155,6 @@ cString GetHelpString() {
       _A("Available options are:\n")
       _A("   -v             \t displays the version infos\n")
       _A("   -h             \t prints help\n")
-      _A("   -d             \t generates debug infos\n")
       _A("   -c             \t compiles only (no output by default)\n")
       _A("   -F logfilter   \t sets the logs to filter out\n")
       _A("   -o filename    \t specifies output file for the -c option\n")
@@ -304,10 +301,6 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
           ni::GetLang()->SetLogFilter(filter);
           break;
         }
-        case 'd':
-          // niDebugFmt(("debug infos"));
-          _GetOptions()->_bDebugInfos = ni::eTrue;
-          break;
         case 'c':
           // niDebugFmt(("compile only"));
           _GetOptions()->_bRun = ni::eFalse;
@@ -628,8 +621,7 @@ void REPL(iScriptVM* apVM)
     if (SQ_SUCCEEDED(sq_compilebuffer(
           v,
           aCodeToRun.Chars(),aCodeToRun.size(),
-          _A("REPL"),
-          eSQCompileFlags_Default)))
+          _A("REPL"))))
     {
       sq_pushroottable(v);
       int retval = 1;
@@ -1026,10 +1018,6 @@ ni_main
 #ifdef niWindows
     MsWin_ScriptRegister(_GetOptions()->_ptrScriptVM);
 #endif
-
-    if (_GetOptions()->_bDebugInfos) {
-      _GetOptions()->_ptrScriptVM->EnableDebugInfos(ni::eTrue);
-    }
   }
 
   // Add the library directories...

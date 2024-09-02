@@ -55,28 +55,6 @@ niExportFunc(void) sq_setdebughook(HSQUIRRELVM v)
   }
 }
 
-niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename,tSQCompileFlags aCompileFlags)
-{
-  SQObjectPtr o;
-
-  if (CompileScript(v, read, p, sourcename, o, aCompileFlags)) {
-    o = SQClosure::Create(_funcproto(o),_table(v->_roottable));
-    v->Push(o);
-    return SQ_OK;
-  }
-  return SQ_ERROR;
-}
-
-niExportFunc(void) sq_enabledebuginfos(HSQUIRRELVM v, int debuginfo)
-{
-  v->_ss->_debuginfo = debuginfo!=0?true:false;
-}
-
-niExportFunc(bool) sq_aredebuginfosenabled(HSQUIRRELVM v)
-{
-  return v->_ss->_debuginfo;
-}
-
 niExportFunc(int) sq_addref(SQSharedState& aSS,HSQOBJECT *po)
 {
   if (aSS._refs_table == _null_)
@@ -780,13 +758,13 @@ niExportFunc(SQRESULT) sq_next(HSQUIRRELVM v,int idx)
   return SQ_OK;
 }
 
-struct BufState{
+struct BufState {
   const SQChar *buf;
   int ptr;
   int size;
 };
 
-SQInt buf_lexfeed(ni::tPtr file)
+static SQInt buf_lexfeed(ni::tPtr file)
 {
   BufState *buf=(BufState*)file;
   if(buf->size<(buf->ptr+1))
@@ -794,12 +772,53 @@ SQInt buf_lexfeed(ni::tPtr file)
   return buf->buf[buf->ptr++];
 }
 
-niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename,tSQCompileFlags aCompileFlags) {
+niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename)
+{
+  SQObjectPtr o;
+  sCompileErrors errors;
+  tHStringNN hspSource = niStringIsOK(sourcename) ? _H(sourcename) : _H("nosourcename");
+  if (!CompileScript(errors,read,p,hspSource,o)) {
+    niAssert(errors.HasError());
+
+    if (v->_ss->_compilererrorhandler) {
+      SQObjectPtr ret;
+      v->_ss->_compilererrorhandler(
+        v,
+        errors.GetLastError().msg.Chars(),
+        niHStr(hspSource),
+        errors.GetLastError().line,
+        errors.GetLastError().col);
+    }
+
+    return sq_throwerror(v, niFmt(
+      "[%s:%d:%d] compile error: %s",
+      hspSource,
+      errors.GetLastError().line,
+      errors.GetLastError().col,
+      errors.GetLastError().msg));
+  }
+
+  // Lint the output funcproto
+  {
+    niPanicAssert(sq_isfuncproto(o));
+    _funcproto(o)->LintTraceRoot();
+  }
+
+  // Push the new closure
+  {
+    SQObjectPtr closure = SQClosure::Create(_funcproto(o),_table(v->_roottable));
+    v->Push(closure);
+  }
+
+  return SQ_OK;
+}
+
+niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename) {
   BufState buf;
   buf.buf = s;
   buf.size = size;
   buf.ptr = 0;
-  return sq_compile(v, buf_lexfeed, (tPtr)&buf, sourcename, aCompileFlags);
+  return sq_compile(v, buf_lexfeed, (tPtr)&buf, sourcename);
 }
 
 niExportFunc(void) sq_move(HSQUIRRELVM dest,HSQUIRRELVM src,int idx)

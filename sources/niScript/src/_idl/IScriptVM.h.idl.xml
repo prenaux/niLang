@@ -196,31 +196,6 @@
 				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
 			</method>
 			<method
-				java_name="enableDebugInfos"
-				min_features="15"
-				name="EnableDebugInfos"
-				num_parameters="1">
-				<comments desc="Enable debug informations in the compiled script. ">
-					<remark text="This will enable or disable debug infos for all scripts compiled after the call to the method. "/>
-				</comments>
-				<return type="void" typec="void" typei="ni::eType_Null"/>
-				<parameter
-					last="1"
-					name="abEnabled"
-					type="tBool"
-					typec="tBool"
-					typei="ni::eType_I8"/>
-			</method>
-			<method
-				const="yes"
-				java_name="areDebugInfosEnabled"
-				min_features="15"
-				name="AreDebugInfosEnabled"
-				num_parameters="0">
-				<comments desc="Return eTrue if debug infos are enabled. "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-			</method>
-			<method
 				java_name="setErrorLineOffset"
 				min_features="15"
 				name="SetErrorLineOffset"

@@ -73,8 +73,6 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
   iScriptObject* __stdcall Compile(iFile* apFile, const achar* aaszName = NULL);
   iScriptObject* __stdcall CompileString(const achar* aaszCode, const achar* aaszName = NULL);
   iUnknown* __stdcall CompileGetIUnknownObject(iScriptObject* apThisTable, iFile* apFile, const achar* aaszObjectName, const tUUID& aIID);
-  void __stdcall EnableDebugInfos(tBool abEnabled);
-  tBool __stdcall AreDebugInfosEnabled() const;
   void __stdcall SetErrorLineOffset(tI32 anOffset);
   tI32 __stdcall GetErrorLineOffset() const;
   eScriptRaiseErrorMode __stdcall SetRaiseErrorMode(eScriptRaiseErrorMode aMode);

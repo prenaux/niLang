@@ -131,26 +131,6 @@ IDLC_METH_BEGIN(ni,iScriptVM,CollectGarbage,0)
 IDLC_METH_END(ni,iScriptVM,CollectGarbage,0)
 #endif // niMinFeatures(15)
 
-/** ni -> iScriptVM::EnableDebugInfos/1 -> MIN FEATURES '15' **/
-#if niMinFeatures(15)
-/** ni -> iScriptVM::EnableDebugInfos/1 **/
-IDLC_METH_BEGIN(ni,iScriptVM,EnableDebugInfos,1)
-	IDLC_DECL_VAR(tBool,abEnabled)
-	IDLC_BUF_TO_BASE(ni::eType_I8,abEnabled)
-	IDLC_METH_CALL_VOID(ni,iScriptVM,EnableDebugInfos,1,(abEnabled))
-IDLC_METH_END(ni,iScriptVM,EnableDebugInfos,1)
-#endif // niMinFeatures(15)
-
-/** ni -> iScriptVM::AreDebugInfosEnabled/0 -> MIN FEATURES '15' **/
-#if niMinFeatures(15)
-/** ni -> iScriptVM::AreDebugInfosEnabled/0 **/
-IDLC_METH_BEGIN(ni,iScriptVM,AreDebugInfosEnabled,0)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,AreDebugInfosEnabled,0,())
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iScriptVM,AreDebugInfosEnabled,0)
-#endif // niMinFeatures(15)
-
 /** ni -> iScriptVM::SetErrorLineOffset/1 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
 /** ni -> iScriptVM::SetErrorLineOffset/1 **/

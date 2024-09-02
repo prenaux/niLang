@@ -51,21 +51,14 @@ SQ_VECTOR_TYPEDEF(ExpState,ExpStateVec);
 
 #define IS_TK_COMMA(TK) ((TK) == ',' || (TK) == TK_SEXP_START_COMMA)
 
-class SQCompiler
-{
- public:
+struct SQCompiler {
   SQCompiler(
-    SQVM *v, SQLEXREADFUNC rg,
+    SQLEXREADFUNC rg,
     ni::tPtr up,
-    const SQChar* sourcename,
-    tSQCompileFlags aCompileFlags)
+    iHString* sourcename)
   {
-    _vm=v;
-    _lex.Init(sourcename, rg, up);
-    _sourcename = _H(sourcename);
-    _debugmode = niFlagIs(aCompileFlags, eSQCompileFlags_DebugMode);
-    _raiseerror = niFlagIs(aCompileFlags, eSQCompileFlags_RaiseError);
-    _lint = niFlagIs(aCompileFlags, eSQCompileFlags_Lint);
+    _sourcename = sourcename;
+    _lex.Init(niHStr(_sourcename), rg, up);
   }
 
   eCompileResult Lex(sCompileErrors& aErrors) {
@@ -186,65 +179,44 @@ class SQCompiler
   }
 
   bool getGenerateLineInfo() {
-    return _debugmode && _lex._compilerCommands.debug;
+    // TODO: This used to be a vm parameter but the compiler is not
+    // separated. Generating line info is mainly useful to build an
+    // interactive debugger.
+    return _lex._compilerCommands.debug;
   }
 
-  bool Compile(sCompileErrors& aErrors, SQObjectPtr &o, int* apPos)
+  tBool Compile(sCompileErrors& aErrors, SQObjectPtr &o, int* apPos)
   {
     if (COMPILE_FAILED(Lex(aErrors))) {
-      goto _compileError;
+      return eFalse;
     }
 
-    {
-      SQFuncState funcstate(
-        SQFunctionProto::Create(), NULL,
-        _stringhval(_sourcename),
-        _lex.GetLastTokenLineCol());
-      _fs = &funcstate;
-      _fs->proto().SetName(_HC(compilecontext));
-      _fs->AddParameter(_HC(this),_null_);
-      int stacksize = _fs->GetStackSize();
-      while (_token > 0) {
-        if (COMPILE_FAILED(Statement(aErrors,apPos))) {
-          goto _compileError;
-        }
-        if (_lex._prevtoken != '}') {
-          if (COMPILE_FAILED(OptionalSemicolon(aErrors)))
-            goto _compileError;
-        }
+    SQFuncState funcstate(
+      SQFunctionProto::Create(), NULL,
+      _sourcename,
+      _lex.GetLastTokenLineCol());
+    _fs = &funcstate;
+    _fs->proto().SetName(_HC(compilecontext));
+    _fs->AddParameter(_HC(this),_null_);
+    int stacksize = _fs->GetStackSize();
+    while (_token > 0) {
+      if (COMPILE_FAILED(Statement(aErrors,apPos))) {
+        return eFalse;
       }
-      _fs->CleanStack(stacksize);
-      _fs->AddLineInfos(
-        _lex.GetLastTokenLineCol(),
-        getGenerateLineInfo(), true);
-      _fs->AddInstruction(_OP_RETURN, 0xFF);
-      _fs->SetStackSize(0);
-      _fs->FinalizeFuncProto();
-      o = _fs->_func;
-      if (_lint) {
-        _funcproto(o)->LintTraceRoot();
+      if (_lex._prevtoken != '}') {
+        if (COMPILE_FAILED(OptionalSemicolon(aErrors)))
+          return eFalse;
       }
-      return true;
     }
-
- _compileError:
-    if (_raiseerror && _vm->_ss->_compilererrorhandler) {
-      SQObjectPtr ret;
-      _vm->_ss->_compilererrorhandler(
-          _vm,
-          aErrors.GetLastError().msg.Chars(),
-          _sqtype(_sourcename) == OT_STRING ? _stringval(_sourcename):_A("unknown"),
-          aErrors.GetLastError().line,
-          aErrors.GetLastError().col);
-    }
-
-    _vm->Raise_MsgError(
-        niFmt("[%s:%d:%d] compile error: %s",
-              _sqtype(_sourcename) == OT_STRING ? _stringval(_sourcename):_A("unknown"),
-              aErrors.GetLastError().line,
-              aErrors.GetLastError().col,
-              aErrors.GetLastError().msg));
-    return false;
+    _fs->CleanStack(stacksize);
+    _fs->AddLineInfos(
+      _lex.GetLastTokenLineCol(),
+      getGenerateLineInfo(), true);
+    _fs->AddInstruction(_OP_RETURN, 0xFF);
+    _fs->SetStackSize(0);
+    _fs->FinalizeFuncProto();
+    o = _fs->_func;
+    return eTrue;
   }
 
   eCompileResult Statements(sCompileErrors& aErrors, int* apPos)
@@ -1577,7 +1549,7 @@ class SQCompiler
   {
     SQFuncState funcstate(
       SQFunctionProto::Create(), _fs,
-      sq_isstring(_sourcename) ? _stringhval(_sourcename) : NULL,
+      _sourcename,
       _lex.GetLastTokenLineCol());
     funcstate.proto().SetName(sq_isstring(name) ? _stringhval(name) : NULL);
     funcstate.AddParameter(_HC(this),_null_);
@@ -1647,36 +1619,21 @@ class SQCompiler
     return eCompileResult_OK;
   }
 
- private:
   int _token;
-  SQFuncState *_fs;
-  SQObjectPtr _sourcename;
+  SQFuncState* _fs;
+  tHStringPtr _sourcename;
   SQLexer _lex;
   ExpStateVec _expstates;
-  SQVM *_vm;
-  bool _debugmode;
-  bool _raiseerror;
-  bool _lint;
 };
 
-bool CompileScript(SQVM *vm, SQLEXREADFUNC rg, ni::tPtr up, const SQChar *sourcename, SQObjectPtr &out, tSQCompileFlags aCompileFlags)
+tBool CompileScript(
+  aout<sCompileErrors> aErrors,
+  ain<SQLEXREADFUNC> aReadFn,
+  ain<ni::tPtr> aReadUserPtr,
+  ain_nn_mut<iHString> ahspSourceName,
+  aout<SQObjectPtr> aOut)
 {
-  // niDebugFmt((_A("-- COMPILING: %s (%d)"),sourcename,debugmode));
-  sCompileErrors errors;
-  SQCompiler p(vm, rg, up, sourcename, aCompileFlags);
-  bool r = p.Compile(errors,out,NULL);
-  if (!r) {
-    niAssert(errors.HasError());
-#if 0
-    for (tU32 i = 1; i < errors._errors.size(); ++i) {
-      sCompileErrors::sError& e = errors._errors[i];
-      niDebugFmt(("%s(%d):%d: %s",
-                  sourcename,
-                  e.line,
-                  e.col,
-                  e.msg));
-    }
-#endif
-  }
-  return r;
+  niCheck(HStringIsNotEmpty(ahspSourceName), false);
+  SQCompiler compiler(aReadFn, aReadUserPtr, ahspSourceName);
+  return compiler.Compile(aErrors,aOut,nullptr);
 }

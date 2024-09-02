@@ -68,7 +68,6 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   static SQRegFunction _resolved_type_default_delegate_funcz[];
 
   SQCOMPILERERROR _compilererrorhandler;
-  bool _debuginfo;
 
   const SQObjectPtr& GetInterfaceDelegate(const tUUID& aID);
   typedef astl::hash_map<tUUID,SQObjectPtr> tDelegateMap;

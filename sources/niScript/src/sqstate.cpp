@@ -24,7 +24,6 @@ SQObjectPtr _minusone_(-1);
 
 SQSharedState::SQSharedState() {
   _compilererrorhandler = NULL;
-  _debuginfo = false;
   mbLangDelegatesLocked = eFalse;
 
   niLet createDelegate = [](SQSharedState *ss,SQRegFunction *funcz) -> SQObjectPtr {

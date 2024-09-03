@@ -618,11 +618,7 @@ void REPL(iScriptVM* apVM)
   auto runCode = [&v](const cString& aCodeToRun) -> tBool {
     SQInt oldtop = sq_gettop(v);
     sq_setcompilererrorhandler(v, REPL_CompilerErrorHandler);
-    if (SQ_SUCCEEDED(sq_compilebuffer(
-          v,
-          aCodeToRun.Chars(),aCodeToRun.size(),
-          _A("REPL"))))
-    {
+    if (SQ_SUCCEEDED(sq_compilestring(v,_H("REPL"),aCodeToRun.Chars()))) {
       sq_pushroottable(v);
       int retval = 1;
       if (SQ_SUCCEEDED(sq_call(v,1,retval)) && retval) {

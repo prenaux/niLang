@@ -14,6 +14,7 @@
 #include "sqstate.h"
 #include "ScriptTypes.h"
 #include "ScriptVM.h"
+#include "sqcompiler.h"
 
 #define SQLINTER_LOG_INLINE
 
@@ -1202,14 +1203,28 @@ struct sLinter {
     return _LintTypeCanAssign(fromType, toType);
   }
 
-  typedef astl::hash_map<cString,NN<iModuleDef>> tModuleMap;
-  typedef tModuleMap::iterator tModuleMapIt;
-  typedef tModuleMap::const_iterator tModuleMapCIt;
-  tModuleMap mmapModules;
+  typedef astl::hash_map<cString,SQObjectPtr> tImportMap;
+  typedef tImportMap::iterator tImportMapIt;
+  typedef tImportMap::const_iterator tImportMapCIt;
+  tImportMap mmapImports;
 
-  SQObjectPtr ImportNative(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
+  // TODO: Dedupe with implementation in cScriptVM::ImportFileOpen
+  Opt_mut<iFile> __stdcall ImportFileOpen(const achar* aaszFile) {
+    return ni::GetLang()->URLOpen(
+      (StrFindProtocol(aaszFile) < 0)
+      ? (niFmt("script://%s",aaszFile)) // use default 'script' protocol
+      : (aaszFile) // use the protocol specified in the URL
+    );
+  }
+
+  SQObjectPtr Import(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
     SQObjectPtr roottable = aClosure._root;
     niPanicAssert(sq_istable(roottable));
+
+    tImportMapIt it = mmapImports.find(aModuleName);
+    if (it != mmapImports.end()) {
+      return _null_;
+    }
 
     niLet isScriptFile =
         StrEndsWithI(aModuleName,".ni") ||
@@ -1218,15 +1233,30 @@ struct sLinter {
         StrEndsWithI(aModuleName,".nip") ||
         StrEndsWithI(aModuleName,".niw");
     if (isScriptFile) {
-      // TODO: Import script files...
-      return niNew sScriptTypeErrorCode(
-        _ss, _HC(error_code_lint_call_error),
-        niFmt("Linting loading script file not implemented '%s'.",aModuleName));
+      niLetMut fp = niCheckNN(
+        fp,
+        ImportFileOpen(aModuleName),
+        niNew sScriptTypeErrorCode(
+          _ss, _HC(error_code_lint_call_error),
+          niFmt("Import: Cant open script module file '%s'.",aModuleName)));
+
+      tHStringNN hspSourceName = _H(fp->GetSourcePath());
+      cString sourceCode = fp->ReadString();
+      SQObjectPtr o;
+      sCompileErrors errors;
+      if (!CompileString(hspSourceName,sourceCode.Chars(),errors,o)) {
+        o = niNew sScriptTypeErrorCode(
+          _ss, _HC(error_code_lint_call_error),
+          niFmt("Import: Linting compiler error: %s:%d:%d: %s",
+                aModuleName,
+                errors.GetLastError().line,
+                errors.GetLastError().col,
+                errors.GetLastError().msg));
+      }
+
+      astl::upsert(mmapImports, aModuleName, o);
     }
     else {
-      tModuleMapIt it = mmapModules.find(aModuleName);
-      if (it != mmapModules.end())  return eTrue;
-
       niLet ptrModuleDef = niCheckNN(
         ptrModuleDef,
         ni::GetLang()->LoadModuleDef(aModuleName),
@@ -1247,9 +1277,14 @@ struct sLinter {
         _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
       }
 
-      cString moduleLoadingWarning;
-      astl::upsert(mmapModules, aModuleName, ptrModuleDef);
+      // insert in the map here to make sure we don't re-import unnecessarly
+      // if there's any indirect circular dependency
+      {
+        SQObjectPtr o = (iUnknown*)ptrModuleDef.raw_ptr();
+        astl::upsert(mmapImports, aModuleName, o);
+      }
 
+      cString moduleLoadingWarning;
       niLoop(i,ptrModuleDef->GetNumDependencies()) {
         // check for invalid dependency
         if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
@@ -1259,7 +1294,7 @@ struct sLinter {
         }
 
         // import the dependency
-        niLet ret = ImportNative(aClosure, ptrModuleDef->GetDependency(i));
+        niLet ret = Import(aClosure, ptrModuleDef->GetDependency(i));
         if (ret != _null_) {
           moduleLoadingWarning = niFmt(
             "Module '%s' loading, cant import the dependency '%s': %s.",
@@ -1334,10 +1369,10 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
   }
 };
 
-struct sLintFuncCallImportNative : public ImplRC<iLintFuncCall> {
+struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
-  sLintFuncCallImportNative(iHString* aName)
+  sLintFuncCallImport(iHString* aName)
       : _name(aName)
   {}
 
@@ -1358,7 +1393,7 @@ struct sLintFuncCallImportNative : public ImplRC<iLintFuncCall> {
         aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
     }
 
-    return aLinter.ImportNative(aClosure, _stringval(objModuleName));
+    return aLinter.Import(aClosure, _stringval(objModuleName));
   }
 };
 
@@ -1544,8 +1579,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   // Do this last so that we override the base functions
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
-  RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("ImportNative")));
-  RegisterLintFunc(table, MakeNN<sLintFuncCallImportNative>(_H("Import")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("Import")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));

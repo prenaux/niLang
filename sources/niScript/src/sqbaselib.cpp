@@ -308,16 +308,15 @@ static int base_println(HSQUIRRELVM v) {
 
 static int base_compilestring(HSQUIRRELVM v)
 {
-  int nargs=sq_gettop(v);
-  const SQChar *src=NULL,*name=_A("unnamedbuffer");
-  SQInt size;
+  const int nargs = sq_gettop(v);
+  const SQChar* src = nullptr;
+  const SQChar* name = "unnamedbuffer";
   sq_getstring(v,2,&src);
-  size=sq_getsize(v,2);
-  if(nargs>2){
+  if (nargs > 2) {
     sq_getstring(v,3,&name);
   }
 
-  if(SQ_SUCCEEDED(sq_compilebuffer(v,src,size,name))) {
+  if (SQ_SUCCEEDED(sq_compilestring(v,_H(name),src))) {
     return 1;
   }
   else {

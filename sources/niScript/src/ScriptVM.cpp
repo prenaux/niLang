@@ -265,24 +265,6 @@ static int sqRead(ni::tPtr apFile, ni::tPtr apSrc, int size)
   return reinterpret_cast<iFile*>(apFile)->ReadRaw(apSrc, size);
 }
 
-struct sFile {
-  cString data;
-  const achar* it;
-  sFile(iFile* apFile) : it(NULL) {
-    data = apFile->ReadString();
-    it = data.Chars();
-  }
-  sFile(const achar* aaszFile)  : it(NULL) {
-    data = aaszFile;
-    it = data.Chars();
-  }
-  static SQInt sqReadChar(ni::tPtr apFile) {
-    sFile* pFile = reinterpret_cast<sFile*>(apFile);
-    SQInt c = StrGetNextX(&pFile->it);
-    return c;
-  }
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Default print functions
 
@@ -718,8 +700,11 @@ iScriptObject* __stdcall cScriptVM::Compile(iFile* apFile, const achar* aaszName
   else
   {
     apFile->SeekSet(apFile->Tell()-4);
-    cString strName = aaszName?aaszName:ni::GetRootFS()->GetAbsolutePath(apFile->GetSourcePath()).Chars();
-    if (strName.IsEmpty()) {
+    tHStringNN hspSourceName = _H(
+      niStringIsOK(aaszName)
+      ? aaszName
+      : ni::GetRootFS()->GetAbsolutePath(apFile->GetSourcePath()).Chars());
+    if (HStringIsEmpty(hspSourceName)) {
       niError(_A("No name specified nor file source path."));
       return NULL;
     }
@@ -729,12 +714,8 @@ iScriptObject* __stdcall cScriptVM::Compile(iFile* apFile, const achar* aaszName
       return NULL;
     }
 
-    sFile file(apFile);
-    if (SQ_FAILED(sq_compile(
-          mptrVM,
-          sFile::sqReadChar, (ni::tPtr)&file,
-          strName.Chars())))
-    {
+    cString sourceCode = apFile->ReadString();
+    if (SQ_FAILED(sq_compilestring(mptrVM, hspSourceName, sourceCode.Chars()))) {
       niError(_A("Compilation failed."));
       return NULL;
     }
@@ -763,15 +744,16 @@ iScriptObject* __stdcall cScriptVM::CompileString(const achar* aaszCode, const a
     return NULL;
   }
 
+  tHStringNN hspSourceName = _H(
+    niStringIsOK(aaszName)
+    ? aaszName
+    : "[VM::CompileString]");
+
   Ptr<iScriptObject> obj;
-  sFile file(aaszCode);
-  if (SQ_FAILED(sq_compile(
+  if (SQ_FAILED(sq_compilestring(
         mptrVM,
-        sFile::sqReadChar,
-        (ni::tPtr)&file,
-        (niStringIsOK(aaszName)?
-         aaszName :
-         "[VM::CompileString]"))))
+        hspSourceName,
+        aaszCode)))
   {
     niError(_A("Compilation failed."));
     return NULL;

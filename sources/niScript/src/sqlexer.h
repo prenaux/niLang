@@ -14,9 +14,9 @@ enum eReadRawStringMode {
 
 struct SQLexer
 {
-  SQLexer();
+  SQLexer(ain_nn_mut<iHString> ahspSourceName, ain<tChars> aaszSourceCode);
   ~SQLexer();
-  void Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up);
+
   SQObjectPtr Tok2Str(int tok);
   eCompileResult Lex(sCompileErrors& errors, int* apTok);
 
@@ -37,6 +37,8 @@ struct SQLexer
   void Next();
 
  public:
+  tHStringNN _sourceName;
+  const achar* _sourceIt;
   int _curtoken;
   SQTable *_keywords;
   struct sState {
@@ -47,12 +49,9 @@ struct SQLexer
   };
   astl::stack<sState> _stateStack;
   int _prevtoken;
-  const SQChar *_svalue;
+  const SQChar* _svalue;
   SQInt _nvalue;
   SQFloat _fvalue;
-  cString _fileName;
-  SQLEXREADFUNC _readf;
-  ni::tPtr _up;
   tU32 _prevdata;
   tU32 _currdata;
   ni::cString _longstr;
@@ -61,7 +60,7 @@ struct SQLexer
     int debug;
   } _compilerCommands;
 
-private:
+ private:
   int _currentline;
   int _currentcolumn;
   sVec2i _lasttokenlinecol;

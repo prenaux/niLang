@@ -3,13 +3,13 @@ local __lint = {
   _experimental = 1
 }
 
-::ImportNative("niLang")
+::Import("niLang")
 
 function main() void {
   local dtType1 = ::eDataTablePropertyType.Int;
   local dtType2 = ::eDataTablePropertyType.FluffyHamster; // should fail
 
-  ::ImportNative("niCURL")
+  ::Import("niCURL")
   local curl = ::CreateInstance("niCURL.CURL")
   local curlMsg = ::eCURLMessage
   local curlMsgYey = curlMsg.Started

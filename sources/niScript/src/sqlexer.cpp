@@ -134,17 +134,15 @@ static inline tBool _IsIdentifier(const tU32 c) {
   }
 }
 
-SQLexer::SQLexer() {
-}
 SQLexer::~SQLexer()
 {
   _keywords->_CollectableRelease();
 }
 
-void SQLexer::Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up)
+SQLexer::SQLexer(ain_nn_mut<iHString> ahspSourceName, ain<tChars> aaszSourceCode)
+    : _sourceName(ahspSourceName)
+    , _sourceIt(niStringIsOK(aaszSourceCode) ? aaszSourceCode : AZEROSTR)
 {
-  _fileName = aFileName;
-
   _keywords = SQTable::Create();
   _keywords->_CollectableAddRef();
 
@@ -180,8 +178,6 @@ void SQLexer::Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up)
   ADD_KEYWORD(typeof, TK_TYPEOF);
   ADD_KEYWORD(while, TK_WHILE);
 
-  _readf = rg;
-  _up = up;
   _currentline = 1;
   _currentcolumn = 0;
   _lasttokenlinecol = Vec2i(_currentline, _currentcolumn);
@@ -211,7 +207,7 @@ void SQLexer::Init(const achar* aFileName, SQLEXREADFUNC rg, ni::tPtr up)
 void SQLexer::Next()
 {
   _prevdata = _currdata;
-  SQInt t = _readf(_up);
+  SQInt t = (SQInt)StrGetNextX(&_sourceIt);
   if (t != 0) {
     // put the current line inc here, since we can make sur easily
     // that we'll process it once only here (much better than
@@ -1199,7 +1195,7 @@ int SQLexer::FinalizeSExpStringLiteral(const int aSExpType, const tU32 aSymbolPr
     _longstr = niFmt("%c%s[src=%s,line=%d,col=%d,kind=%s]",
                      aSymbolPrefix,
                      _longstr,
-                     _fileName,
+                     _sourceName,
                      GetLastTokenLineCol().x,
                      GetLastTokenLineCol().y,
                      kind);

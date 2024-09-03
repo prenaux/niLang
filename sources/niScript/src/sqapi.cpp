@@ -772,12 +772,12 @@ static SQInt buf_lexfeed(ni::tPtr file)
   return buf->buf[buf->ptr++];
 }
 
-niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename)
+niExportFunc(SQRESULT) sq_compilestring(HSQUIRRELVM v, iHString* ahspSourceName, const achar* aaszSourceCode)
 {
   SQObjectPtr o;
   sCompileErrors errors;
-  tHStringNN hspSource = niStringIsOK(sourcename) ? _H(sourcename) : _H("nosourcename");
-  if (!CompileScript(errors,read,p,hspSource,o)) {
+  tHStringNN hspSource = HStringIsEmpty(ahspSourceName) ? _H("nosourcename") : AsNN(ahspSourceName);
+  if (!CompileString(hspSource,aaszSourceCode,errors,o)) {
     niAssert(errors.HasError());
 
     if (v->_ss->_compilererrorhandler) {
@@ -813,15 +813,6 @@ niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,co
   return SQ_OK;
 }
 
-niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename) {
-  BufState buf;
-  buf.buf = s;
-  buf.size = size;
-  buf.ptr = 0;
-  return sq_compile(v, buf_lexfeed, (tPtr)&buf, sourcename);
-}
-
-niExportFunc(void) sq_move(HSQUIRRELVM dest,HSQUIRRELVM src,int idx)
-{
+niExportFunc(void) sq_move(HSQUIRRELVM dest,HSQUIRRELVM src,int idx) {
   dest->Push(stack_get(src,idx));
 }

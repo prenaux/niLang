@@ -52,13 +52,9 @@ SQ_VECTOR_TYPEDEF(ExpState,ExpStateVec);
 #define IS_TK_COMMA(TK) ((TK) == ',' || (TK) == TK_SEXP_START_COMMA)
 
 struct SQCompiler {
-  SQCompiler(
-    SQLEXREADFUNC rg,
-    ni::tPtr up,
-    iHString* sourcename)
+  SQCompiler(SQLexer& aLexer)
+      : _lex(aLexer)
   {
-    _sourcename = sourcename;
-    _lex.Init(niHStr(_sourcename), rg, up);
   }
 
   eCompileResult Lex(sCompileErrors& aErrors) {
@@ -193,7 +189,7 @@ struct SQCompiler {
 
     SQFuncState funcstate(
       SQFunctionProto::Create(), NULL,
-      _sourcename,
+      _lex._sourceName,
       _lex.GetLastTokenLineCol());
     _fs = &funcstate;
     _fs->proto().SetName(_HC(compilecontext));
@@ -1549,7 +1545,7 @@ struct SQCompiler {
   {
     SQFuncState funcstate(
       SQFunctionProto::Create(), _fs,
-      _sourcename,
+      _lex._sourceName,
       _lex.GetLastTokenLineCol());
     funcstate.proto().SetName(sq_isstring(name) ? _stringhval(name) : NULL);
     funcstate.AddParameter(_HC(this),_null_);
@@ -1619,21 +1615,21 @@ struct SQCompiler {
     return eCompileResult_OK;
   }
 
+ private:
+  SQLexer& _lex;
   int _token;
   SQFuncState* _fs;
-  tHStringPtr _sourcename;
-  SQLexer _lex;
   ExpStateVec _expstates;
 };
 
-tBool CompileScript(
-  aout<sCompileErrors> aErrors,
-  ain<SQLEXREADFUNC> aReadFn,
-  ain<ni::tPtr> aReadUserPtr,
+tBool CompileString(
   ain_nn_mut<iHString> ahspSourceName,
+  ain<tChars> aaszSourceCode,
+  aout<sCompileErrors> aErrors,
   aout<SQObjectPtr> aOut)
 {
   niCheck(HStringIsNotEmpty(ahspSourceName), false);
-  SQCompiler compiler(aReadFn, aReadUserPtr, ahspSourceName);
+  SQLexer lexer(ahspSourceName, aaszSourceCode);
+  SQCompiler compiler(lexer);
   return compiler.Compile(aErrors,aOut,nullptr);
 }

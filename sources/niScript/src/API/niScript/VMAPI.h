@@ -106,8 +106,7 @@ niExportFunc(void) sq_setforeignptr(HSQUIRRELVM v,ni::tPtr p);
 niExportFunc(ni::tPtr) sq_getforeignptr(HSQUIRRELVM v);
 
 /*compiler*/
-niExportFunc(SQRESULT) sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,ni::tPtr p,const SQChar *sourcename);
-niExportFunc(SQRESULT) sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,int size,const SQChar *sourcename);
+niExportFunc(SQRESULT) sq_compilestring(HSQUIRRELVM v, iHString* ahspSourceName, const achar* aaszSourceCode);
 niExportFunc(void) sq_setcompilererrorhandler(HSQUIRRELVM v,SQCOMPILERERROR f);
 
 /*stack operations*/

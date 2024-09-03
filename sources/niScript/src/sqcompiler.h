@@ -129,12 +129,11 @@ struct sCompileErrors {
   }
 };
 
-// Compile a script to a funcproto object.
-tBool CompileScript(
-  aout<sCompileErrors> aErrors,
-  ain<SQLEXREADFUNC> aReadFn,
-  ain<ni::tPtr> aReadUserPtr,
+// Compile a string to a funcproto object.
+tBool CompileString(
   ain_nn_mut<iHString> ahspSourceName,
+  ain<tChars> aaszSourceCode,
+  aout<sCompileErrors> aErrors,
   aout<SQObjectPtr> aOut);
 
 #endif //_SQCOMPILER_H_

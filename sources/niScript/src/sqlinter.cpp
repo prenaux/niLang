@@ -16,8 +16,6 @@
 #include "ScriptVM.h"
 #include "sqcompiler.h"
 
-#define SQLINTER_LOG_INLINE
-
 struct sLinter;
 
 struct iLintFuncCall : public iUnknown {
@@ -514,9 +512,8 @@ struct sLinter {
   SQObjectPtr _typedefs;
   SQObjectPtr _lintFuncCallQueryInterface;
 
-#if !defined SQLINTER_LOG_INLINE
+  tBool _printLogs = eTrue;
   astl::vector<cString> _logs;
-#endif
   tU32 _numLintErrors = 0;
   tU32 _numLintWarnings = 0;
 
@@ -670,11 +667,7 @@ struct sLinter {
     const sVec2i aLineCol,
     const cString& aMsg)
   {
-#if defined SQLINTER_LOG_INLINE
-    cString o;
-#else
     cString& o = _logs.push_back();
-#endif
     o << "Lint: ";
     if (niFlagIs(aLint,eLintFlags_IsError)) {
       o << "Error: ";
@@ -707,9 +700,10 @@ struct sLinter {
       o << niFmt(" (in %s:%s)", aProto.GetName(), aProto._sourceline);
     }
     o << niFmt(" [%s:%s:%s]\n", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
-#ifdef SQLINTER_LOG_INLINE
-    niPrintln(o);
-#endif
+
+    if (_printLogs) {
+      niPrintln(o);
+    }
   }
 
   tFuncClosureMap _funcClosureMap;
@@ -1265,9 +1259,15 @@ struct sLinter {
       SQObjectPtr moduleThis = SQTable::Create();
       _table(moduleThis)->SetDebugName(niFmt("__modulethis[%s]__",hspSourceName));
       LintClosure moduleClosure(_funcproto(o),_table(roottable),_table(moduleThis));
-      // TODO: We shouldn't log in this lint...
-      // Should this be its own linter but sharing the maps?
-      _funcproto(o)->LintTrace(*this,moduleClosure);
+      // TODO: Skipping the logs of the imported scripts for now, a bit jank
+      // way to do it but it'll do for now.  Should this be its own linter but
+      // sharing the maps?
+      {
+        const tBool wasPrintLogs = _printLogs;
+        _printLogs = eFalse;
+        _funcproto(o)->LintTrace(*this,moduleClosure);
+        _printLogs = wasPrintLogs;
+      }
     }
     else {
       // Native module import
@@ -2594,12 +2594,6 @@ tU32 SQFunctionProto::LintTraceRoot() {
 
   LintClosure rootClosure(this,_table(moduleRoot),_table(moduleRoot));
   this->LintTrace(linter,rootClosure);
-
-#if !defined SQLINTER_LOG_INLINE
-  niLoop(i, linter._logs.size()) {
-    niPrintln(linter._logs[i]);
-  }
-#endif
 
   return linter._numLintErrors;
 }

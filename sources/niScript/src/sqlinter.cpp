@@ -153,8 +153,9 @@ extern "C" const char* _GetLintHintDesc(eSQLintHint hint) {
   return "<InvalidLintHint>";
 }
 
-static cString& _AddOpExt(cString& o, int opExt) {
+static cString _GetOpExt(int opExt) {
   int added = 0;
+  cString o;
   o << "{";
   if (opExt) {
     if (opExt & _OPEXT_GET_RAW) {
@@ -968,7 +969,7 @@ struct sLinter {
     return retType;
   }
 
-  bool LintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
+  bool DoLintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
     switch(_sqtype(self)){
@@ -978,7 +979,7 @@ struct sLinter {
             return true;
           // delegation
           if (_table(self)->GetDelegate()) {
-            return LintGet(SQObjectPtr(_table(self)->GetDelegate()),key,dest,opExt);
+            return DoLintGet(SQObjectPtr(_table(self)->GetDelegate()),key,dest,opExt);
           }
           if (opExt & _OPEXT_GET_RAW) {
             return false;
@@ -1065,7 +1066,7 @@ struct sLinter {
             case eScriptType_EnumDef: {
               SQObjectPtr enumTable = ((sScriptTypeEnumDef*)ud)->_GetTable(const_cast<SQSharedState&>(ss));
 
-              return LintGet(enumTable, key, dest, opExt);
+              return DoLintGet(enumTable, key, dest, opExt);
             }
 
             case eScriptType_PropertyDef: {
@@ -1121,7 +1122,7 @@ struct sLinter {
 
           bool getRetVal = false;
           if (ud->GetDelegate()) {
-            getRetVal = LintGet(
+            getRetVal = DoLintGet(
               SQObjectPtr(ud->GetDelegate()),
               key,dest,opExt|_OPEXT_GET_RAW);
             if (!getRetVal) {
@@ -1129,7 +1130,7 @@ struct sLinter {
                 return false;
               // TODO: Lint call _get metamethod? I don't think its necessary
               // for practical linting as it's very uncommon.
-             return false;
+              return false;
             }
           }
           return getRetVal;
@@ -1145,13 +1146,26 @@ struct sLinter {
     }
   }
 
-  bool LintSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
+  bool LintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
+  {
+    bool r = DoLintGet(self,key,dest,opExt);
+    if (!r) {
+      if (opExt & _OPEXT_GET_SAFE) {
+        dest = _null_;
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  bool DoLintSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
   {
     switch(_sqtype(self)) {
       case OT_TABLE: {
         SQObjectPtr v;
         // niDebugFmt(("... _LintSet: '%s' in %s", _ObjToString(key), _ExpandedObjToString(self)));
-        if (!LintGet(self,key,v,0)) {
+        if (!DoLintGet(self,key,v,0)) {
           return false;
         }
         return _table(self)->Set(key,val);
@@ -1169,6 +1183,14 @@ struct sLinter {
         return false;
     }
     return false;
+  }
+
+  bool LintSet(const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt) {
+    bool r = DoLintSet(self,key,val,opExt);
+    if (!r && !(opExt & _OPEXT_GET_SAFE)) {
+      return false;
+    }
+    return true;
   }
 
   bool LintNewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val)
@@ -2522,9 +2544,10 @@ void SQFunctionProto::LintTrace(
   // instructioncs check
   niLoop(i, _instructions.size()) {
     const SQInstruction &inst=_instructions[i];
-    _LTRACE(("%s %d %d %d %d",
+    _LTRACE(("%s %d %d %d %d (%s)",
              _GetOpDesc(inst.op),
-             inst._arg0, inst._arg1, inst._arg2, inst._arg3));
+             inst._arg0, inst._arg1, inst._arg2, inst._arg3,
+             _GetOpExt(inst._ext)));
     switch (inst.op) {
       case _OP_NEWTABLE: op_newtable(inst); break;
       case _OP_LOAD: op_load(inst); break;

@@ -1,12 +1,16 @@
 local __lint = {
   _all = 1
-  _pedantic = 0
+  _pedantic = 1
   _explicit = 1
 }
 
 ::gMath <- ::CreateGlobalInstance("niLang.Math").?QueryInterface("iMath")
 ::gMath1 <- ::CreateGlobalInstance("niLang.Math")
 ::gMath2 <- ::gMath1.QueryInterface("iMath")
+
+function iunknown_QueryInterface(iunknown obj) iunknown {
+  return obj.QueryInterface("iMath");
+}
 
 function main() void {
   ::gMath.RandIntRange(100,200) // should be ok

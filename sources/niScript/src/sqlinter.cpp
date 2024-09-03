@@ -1105,6 +1105,14 @@ struct sLinter {
                   return _ddel(ss,closure)->Get(key,dest);
                 case eScriptType_UUID:
                   return _ddel(ss,uuid)->Get(key,dest);
+                case eScriptType_IUnknown: {
+                  niLet intfDel = _ss.GetInterfaceDelegate(niGetInterfaceUUID(iUnknown));
+                  if (intfDel != _null_) {
+                    niPanicAssert(sq_istable(intfDel));
+                    return _table(intfDel)->Get(key,dest);
+                  }
+                  return false;
+                }
                 default:
                   return false;
               }

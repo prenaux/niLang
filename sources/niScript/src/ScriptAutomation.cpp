@@ -523,18 +523,18 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
       objTable = SQTable::Create();
       niLetMut table = as_nn(_table(objTable));
       table->SetDebugName(ni::GetLang()->GetInterfaceName(niGetInterfaceUUID(iUnknown)));
-      niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc) {
-        return RegisterSQRegFunction(table, SQRegFunction { .name = aName, .f = aFunc });
+      niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc, ain_nn_mut<iHString> ahspRetType) {
+        return RegisterSQRegFunction(table, SQRegFunction { .name = aName, .f = aFunc, .rettype = ahspRetType });
       };
-      niPanicAssert(regFunc("_tostring", iunknown_tostring));
-      niPanicAssert(regFunc("GetImplementedInterfaces",iunknown_getimplementedinterfaces));
-      niPanicAssert(regFunc("isvalid",iunknown_isvalid));
-      niPanicAssert(regFunc("IsValid",iunknown_isvalid));
-      niPanicAssert(regFunc("tointptr",iunknown_tointptr));
-      niPanicAssert(regFunc("ToIntPtr",iunknown_tointptr));
-      niPanicAssert(regFunc("GetNumRefs",iunknown_GetNumRefs));
-      niPanicAssert(regFunc("QueryInterface",iunknown_queryinterface));
-      niPanicAssert(regFunc("Invalidate",iunknown_invalidate));
+      niPanicAssert(regFunc("_tostring", iunknown_tostring, _HC(typestr_string)));
+      niPanicAssert(regFunc("GetImplementedInterfaces",iunknown_getimplementedinterfaces, _HC(typestr_string)));
+      niPanicAssert(regFunc("isvalid",iunknown_isvalid,_HC(typestr_int)));
+      niPanicAssert(regFunc("IsValid",iunknown_isvalid,_HC(typestr_int)));
+      niPanicAssert(regFunc("tointptr",iunknown_tointptr,_HC(typestr_int)));
+      niPanicAssert(regFunc("ToIntPtr",iunknown_tointptr,_HC(typestr_int)));
+      niPanicAssert(regFunc("GetNumRefs",iunknown_GetNumRefs,_HC(typestr_int)));
+      niPanicAssert(regFunc("QueryInterface",iunknown_queryinterface,_HC(typestr_iunknown)));
+      niPanicAssert(regFunc("Invalidate",iunknown_invalidate,_HC(typestr_null)));
     }
     else {
       const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(aIID);

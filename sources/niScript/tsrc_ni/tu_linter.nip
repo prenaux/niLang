@@ -496,11 +496,11 @@ function main() {
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      // EXPECTED_LINT(
-      //   aLogs, 1,
-      //   {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
 
-      // // TODO
+      // TODO
       // ::CHECK_EQUAL(2,aLintResults.mLogsError, "Expected lint errors.");
       // ::CHECK_EQUAL(0,aLintResults.mLogsWarning, "Expected lint warnings.");
     })

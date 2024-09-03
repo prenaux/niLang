@@ -13,4 +13,5 @@ function import_native() {
 
 function main() void {
   // TODO: Import script tests
+  ::lang.getCurrentProcess();
 }

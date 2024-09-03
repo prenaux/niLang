@@ -1233,6 +1233,7 @@ struct sLinter {
         StrEndsWithI(aModuleName,".nip") ||
         StrEndsWithI(aModuleName,".niw");
     if (isScriptFile) {
+      // Script code import
       niLetMut fp = niCheckNN(
         fp,
         ImportFileOpen(aModuleName),
@@ -1252,17 +1253,37 @@ struct sLinter {
                 errors.GetLastError().line,
                 errors.GetLastError().col,
                 errors.GetLastError().msg));
+        astl::upsert(mmapImports, aModuleName, o);
+        return o;
+      }
+      else {
+        astl::upsert(mmapImports, aModuleName, o);
       }
 
-      astl::upsert(mmapImports, aModuleName, o);
+      niPanicAssert(sq_isfuncproto(o));
+
+      SQObjectPtr moduleThis = SQTable::Create();
+      _table(moduleThis)->SetDebugName(niFmt("__modulethis[%s]__",hspSourceName));
+      LintClosure moduleClosure(_funcproto(o),_table(roottable),_table(moduleThis));
+      // TODO: We shouldn't log in this lint...
+      // Should this be its own linter but sharing the maps?
+      _funcproto(o)->LintTrace(*this,moduleClosure);
     }
     else {
+      // Native module import
       niLet ptrModuleDef = niCheckNN(
         ptrModuleDef,
         ni::GetLang()->LoadModuleDef(aModuleName),
         niNew sScriptTypeErrorCode(
           _ss, _HC(error_code_lint_call_error),
           niFmt("Can't load module '%s'.",aModuleName)));
+
+      // insert in the map here to make sure we don't re-import unnecessarly
+      // if there's any indirect circular dependency
+      {
+        SQObjectPtr o = (iUnknown*)ptrModuleDef.raw_ptr();
+        astl::upsert(mmapImports, aModuleName, o);
+      }
 
       niLoop(i, ptrModuleDef->GetNumEnums()) {
         niLet pEnumDef = ptrModuleDef->GetEnum(i);
@@ -1275,13 +1296,6 @@ struct sLinter {
           }
         }();
         _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
-      }
-
-      // insert in the map here to make sure we don't re-import unnecessarly
-      // if there's any indirect circular dependency
-      {
-        SQObjectPtr o = (iUnknown*)ptrModuleDef.raw_ptr();
-        astl::upsert(mmapImports, aModuleName, o);
       }
 
       cString moduleLoadingWarning;

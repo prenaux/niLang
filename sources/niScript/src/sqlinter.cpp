@@ -2343,7 +2343,9 @@ void SQFunctionProto::LintTrace(
         }
       }
       else {
-        _LINT_(typeof_usage, lineCol, "typeof_eq: Typeof == used outside of a switch condition prevents linting.");
+        if (_LENABLED(typeof_usage)) {
+          _LINT_(typeof_usage, lineCol, "typeof_eq: Typeof == used outside of a switch condition prevents linting.");
+        }
       }
     }
   };

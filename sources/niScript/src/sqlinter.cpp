@@ -495,20 +495,16 @@ _DEF_LINT(internal_error,IsError,IsInternal);
 _DEF_LINT(internal_warning,IsWarning,IsInternal);
 
 // Default lints
-_DEF_LINT(this_key_notfound_getk,IsError,None);
-_DEF_LINT(this_key_notfound_get,IsError,None);
-_DEF_LINT(this_key_notfound_callk,IsError,None);
-_DEF_LINT(this_key_notfound_outer,IsError,None);
+_DEF_LINT(key_notfound_outer,IsError,None);
 _DEF_LINT(key_notfound_getk,IsError,None);
 _DEF_LINT(key_notfound_get,IsError,None);
 _DEF_LINT(key_notfound_callk,IsError,None);
-_DEF_LINT(this_set_key_notfound,IsError,None);
+_DEF_LINT(key_notfound_set,IsError,None);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
 _DEF_LINT(typeof_usage,IsWarning,None);
 _DEF_LINT(param_type,IsError,None);
-_DEF_LINT(set_key_notfound,IsError,None);
 
 // Pedantic lints
 _DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
@@ -517,7 +513,8 @@ _DEF_LINT(implicit_this_callk,IsWarning,IsPedantic);
 
 // Explicit lints
 _DEF_LINT(call_null,IsWarning,IsExplicit);
-_DEF_LINT(getk_null,IsWarning,IsExplicit);
+_DEF_LINT(getk_in_null,IsWarning,IsExplicit);
+_DEF_LINT(set_in_null,IsWarning,IsExplicit);
 _DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
 // "Null not found in X" is almost always the result of some computation, a
 // message for that is generally not helpful.
@@ -558,22 +555,22 @@ struct sLinter {
     _typedefs = SQTable::Create();
     _table(_typedefs)->SetDebugName("__typedefs__");
 
+    SetDefaultLintEnabled();
+  }
+
+  void SetDefaultLintEnabled() {
     _REG_LINT(internal_error);
     _REG_LINT(internal_warning);
     _REG_LINT(implicit_this_getk);
     _REG_LINT(implicit_this_get);
     _REG_LINT(implicit_this_callk);
-    _REG_LINT(this_key_notfound_getk);
-    _REG_LINT(this_key_notfound_get);
-    _REG_LINT(this_key_notfound_callk);
-    _REG_LINT(this_key_notfound_outer);
     _REG_LINT(key_notfound_getk);
     _REG_LINT(key_notfound_get);
     _REG_LINT(key_notfound_callk);
-    _REG_LINT(this_set_key_notfound);
-    _REG_LINT(set_key_notfound);
+    _REG_LINT(key_notfound_set);
     _REG_LINT(call_null);
-    _REG_LINT(getk_null);
+    _REG_LINT(getk_in_null);
+    _REG_LINT(set_in_null);
     _REG_LINT(call_error);
     _REG_LINT(call_num_args);
     _REG_LINT(ret_type_is_null);
@@ -656,17 +653,13 @@ struct sLinter {
     _E(implicit_this_getk)
     _E(implicit_this_get)
     _E(implicit_this_callk)
-    _E(this_key_notfound_getk)
-    _E(this_key_notfound_get)
-    _E(this_key_notfound_callk)
-    _E(this_key_notfound_outer)
     _E(key_notfound_callk)
     _E(key_notfound_getk)
     _E(key_notfound_get)
-    _E(this_set_key_notfound)
-    _E(set_key_notfound)
+    _E(key_notfound_set)
     _E(call_null)
-    _E(getk_null)
+    _E(getk_in_null)
+    _E(set_in_null)
     _E(call_error)
     _E(call_num_args)
     _E(ret_type_is_null)
@@ -952,34 +945,36 @@ struct sLinter {
     }
 
     // Base types
-    else if (hspType == _ss._typeStr_string) {
+    else if (hspType == _HC(typestr_string)) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_String);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,string));
     }
-    else if (hspType == _ss._typeStr_int ||
+    else if (hspType == _HC(typestr_int) ||
              hspType == _HC(typestr_bool))
     {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Int);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
     }
-    else if (hspType == _ss._typeStr_float) {
+    else if (hspType == _HC(typestr_float)) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Float);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
     }
-    else if (hspType == _ss._typeStr_array) {
+    else if (hspType == _HC(typestr_array)) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Array);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,array));
     }
-    else if (hspType == _ss._typeStr_table) {
+    else if (hspType == _HC(typestr_table)) {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Table);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,table));
     }
-    else if (hspType == _ss._typeStr_closure || hspType == _ss._typeStr_function) {
+    else if (hspType == _HC(typestr_closure) ||
+             hspType == _HC(typestr_function))
+    {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Closure);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
@@ -1164,6 +1159,7 @@ struct sLinter {
                     _HC(error_code_cant_find_method_def),
                     niFmt("Cant find delegate for interface_def '%s'.",
                           idef->maszName));
+                  return false;
                 }
                 else {
                   if (_table(intfDel)->Get(key,dest)) {
@@ -1185,6 +1181,7 @@ struct sLinter {
                       _HC(error_code_cant_find_method_def),
                       niFmt("Cant find method definition '%s::%s'",
                             idef->maszName, _stringhval(key)));
+                    return false;
                   }
                 }
               }
@@ -1235,10 +1232,16 @@ struct sLinter {
                 case eScriptType_UUID:
                   return _ddel(ss,uuid)->Get(key,dest);
                 case eScriptType_IUnknown: {
-                  niLet intfDel = _ss.GetInterfaceDelegate(niGetInterfaceUUID(iUnknown));
-                  if (intfDel != _null_) {
-                    niPanicAssert(sq_istable(intfDel));
-                    return _table(intfDel)->Get(key,dest);
+                  if (_stringhval(key) == _HC(QueryInterface)) {
+                    dest = _lintFuncCallQueryInterface;
+                    return true;
+                  }
+                  else {
+                    niLet intfDel = _ss.GetInterfaceDelegate(niGetInterfaceUUID(iUnknown));
+                    if (intfDel != _null_) {
+                      niPanicAssert(sq_istable(intfDel));
+                      return _table(intfDel)->Get(key,dest);
+                    }
                   }
                   return false;
                 }
@@ -1279,7 +1282,6 @@ struct sLinter {
     bool r = DoLintGet(self,key,dest,opExt);
     if (!r) {
       if (opExt & _OPEXT_GET_SAFE) {
-        dest = _null_;
         return true;
       }
       return false;
@@ -1420,9 +1422,12 @@ struct sLinter {
       // way to do it but it'll do for now.  Should this be its own linter but
       // sharing the maps?
       {
-        const tBool wasPrintLogs = _printLogs;
+        niLet wasPrintLogs = _printLogs;
+        niLet wasLintEnabled = _lintEnabled;
+        SetDefaultLintEnabled();
         _printLogs = eFalse;
         _funcproto(o)->LintTrace(*this,_table(roottable),_table(moduleThis));
+        _lintEnabled = wasLintEnabled;
         _printLogs = wasPrintLogs;
       }
     }
@@ -2058,8 +2063,8 @@ void SQFunctionProto::LintTrace(
                   localthis,v._src,
                   lintClosure->_outervalues.back(),0))
             {
-              if (_LENABLED(this_key_notfound_outer)) {
-                _LINT(this_key_notfound_outer, niFmt(
+              if (_LENABLED(key_notfound_outer)) {
+                _LINT(key_notfound_outer, niFmt(
                   "outer value %s not found in %s.",
                   _ObjToString(v._src), _ObjToString(localthis)));
               }
@@ -2145,31 +2150,6 @@ void SQFunctionProto::LintTrace(
             is_this_table(aTableArg));
   };
 
-  auto is_this_key_notfound = [&](const sLint& aLint,
-                                  const SQInstruction& inst,
-                                  const int aTableArg,
-                                  const SQObjectPtr& t,
-                                  const SQObjectPtr& k,
-                                  SQObjectPtr& v)
-      -> tBool
-  {
-    niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
-    return (aLinter.IsEnabled(aLint.key) &&
-            is_this_table(aTableArg) && // is this call
-            !didGet);
-  };
-
-  auto is_key_notfound = [&](const sLint& aLint,
-                             const SQInstruction& inst,
-                             const SQObjectPtr& t,
-                             const SQObjectPtr& k,
-                             SQObjectPtr& v)
-      -> tBool
-  {
-    niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
-    return (aLinter.IsEnabled(aLint.key) && !didGet);
-  };
-
   auto op_getk = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG2);
     SQObjectPtr k = lget(IARG1);
@@ -2179,23 +2159,30 @@ void SQFunctionProto::LintTrace(
         "implicit this access to %s", _ObjToString(k)));
     }
 
-    if (is_this_key_notfound(_LOBJ(this_key_notfound_getk),inst,inst._arg2,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(this_key_notfound_getk, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
-      }
-    }
-    else if (is_key_notfound(_LOBJ(key_notfound_getk),inst,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+    if (sq_isnull(t)) {
+      if (_LENABLED(getk_in_null)) {
         _LINT(key_notfound_getk, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
+          "%s not found in Null.",
+          _ObjToString(k)));
       }
     }
+    else {
+      niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
+      if (!didGet) {
+        if (_LENABLED(key_notfound_getk) &&
+            (!sq_isnull(k) || _LENABLED(null_notfound)))
+        {
+          _LINT(key_notfound_getk, niFmt(
+            "%s not found in %s.",
+            _ObjToString(k), _ObjToString(t)));
+        }
+      }
+    }
+
     sset(IARG0, v);
-    _LTRACE(("op_getk: %s[%s] in %s",
-             _ObjToString(t), _ObjToString(k), sstr(IARG0)));
+    _LTRACE(("op_getk: %s[%s] -> %s (%s)",
+             _ObjToString(t), _ObjToString(k),
+             _ObjToString(v), sstr(IARG0)));
   };
 
   auto op_get = [&](const SQInstruction& inst) {
@@ -2207,20 +2194,26 @@ void SQFunctionProto::LintTrace(
         "implicit this access to %s", _ObjToString(k)));
     }
 
-    if (is_this_key_notfound(_LOBJ(this_key_notfound_getk),inst,inst._arg1,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(this_key_notfound_get, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
-      }
-    }
-    else if (is_key_notfound(_LOBJ(key_notfound_getk),inst,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
+    if (sq_isnull(t)) {
+      if (_LENABLED(getk_in_null)) {
         _LINT(key_notfound_get, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
+          "%s not found in Null.",
+          _ObjToString(k)));
       }
     }
+    else {
+      niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
+      if (!didGet) {
+        if (_LENABLED(key_notfound_get) &&
+            (!sq_isnull(k) || _LENABLED(null_notfound)))
+        {
+          _LINT(key_notfound_get, niFmt(
+            "%s not found in %s.",
+            _ObjToString(k), _ObjToString(t)));
+        }
+      }
+    }
+
     sset(IARG0, v);
     _LTRACE(("op_get: %s[%s] in %s",
              _ObjToString(t), _ObjToString(k), sstr(IARG0)));
@@ -2236,26 +2229,25 @@ void SQFunctionProto::LintTrace(
     }
 
     if (sq_isnull(t)) {
-      if (_LENABLED(getk_null)) {
-        _LINT(this_key_notfound_callk, niFmt(
+      if (_LENABLED(getk_in_null)) {
+        _LINT(key_notfound_callk, niFmt(
           "%s not found in Null.",
           _ObjToString(k)));
       }
     }
-    else if (is_this_key_notfound(_LOBJ(this_key_notfound_callk),inst,inst._arg2,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(this_key_notfound_callk, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
+    else {
+      niLet didGet = aLinter.LintGet(t,k,v,inst._ext);
+      if (!didGet) {
+        if (_LENABLED(key_notfound_callk) &&
+            (!sq_isnull(k) || _LENABLED(null_notfound)))
+        {
+          _LINT(key_notfound_callk, niFmt(
+            "%s not found in %s.",
+            _ObjToString(k), _ObjToString(t)));
+        }
       }
     }
-    else if (is_key_notfound(_LOBJ(key_notfound_callk),inst,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(key_notfound_callk, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
-      }
-    }
+
     sset(IARG3, t);
     sset(IARG0, v);
     _LTRACE(("op_precallk: f = %s (tgt: %s), t = %s (tgt: %s, from: %s), k = %s",
@@ -2264,54 +2256,35 @@ void SQFunctionProto::LintTrace(
              _ObjToString(k)));
   };
 
-  auto is_this_set_key_notfound = [&](const sLint& aLint,
-                                      const SQInstruction& inst,
-                                      const int aThisArg,
-                                      const SQObjectPtr& t,
-                                      const SQObjectPtr& k,
-                                      const SQObjectPtr& v)
-      -> tBool
-  {
-    return (aLinter.IsEnabled(aLint.key) &&
-            is_this_table(aThisArg) &&
-            !aLinter.LintSet(t,k,v,inst._ext));
-  };
-
-  auto is_set_key_notfound = [&](const sLint& aLint,
-                                 const SQInstruction& inst,
-                                 const SQObjectPtr& t,
-                                 const SQObjectPtr& k,
-                                 const SQObjectPtr& v)
-      -> tBool
-  {
-    return (aLinter.IsEnabled(aLint.key) &&
-            !aLinter.LintSet(t,k,v,inst._ext));
-  };
-
   auto op_set = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG1);
     SQObjectPtr k = sget(IARG2);
     SQObjectPtr v = sget(IARG3);
 
-    if (is_this_set_key_notfound(_LOBJ(this_set_key_notfound),inst,inst._arg1,t,k,v))
-    {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(this_set_key_notfound, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
+    if (sq_isnull(t)) {
+      if (_LENABLED(set_in_null)) {
+        _LINT(key_notfound_callk, niFmt(
+          "%s not found in Null.",
+          _ObjToString(k)));
       }
     }
-    else if (is_set_key_notfound(_LOBJ(set_key_notfound),inst,t,k,v)) {
-      if (!sq_isnull(k) || _LENABLED(null_notfound)) {
-        _LINT(set_key_notfound, niFmt(
-          "%s not found in %s.",
-          _ObjToString(k), _ObjToString(t)));
+    else {
+      niLet didSet = aLinter.LintSet(t,k,v,inst._ext);
+      if (!didSet) {
+        if (_LENABLED(key_notfound_set) &&
+            (!sq_isnull(k) || _LENABLED(null_notfound)))
+        {
+          _LINT(key_notfound_set, niFmt(
+            "%s not found in %s.",
+            _ObjToString(k), _ObjToString(t)));
+        }
       }
     }
 
     if (inst._arg0 != inst._arg3)
       sset(IARG0, v);
-    _LTRACE(("op_setk: %s[%s] = %s in %s",
+
+    _LTRACE(("op_set: %s[%s] = %s in %s",
              _ObjToString(t), _ObjToString(k),
              _ObjToString(v), sstr(IARG0)));
   };
@@ -2607,7 +2580,7 @@ void SQFunctionProto::LintTrace(
     {
       niLet resolvedTypeLeft = _ObjToResolvedTyped(eqLeft);
       if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
-        NN_mut<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
+        NN_mut<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
         lint_typeof_eq(typeofInfo, eqRight, getlinecol(inst));
       }
     }
@@ -2615,7 +2588,7 @@ void SQFunctionProto::LintTrace(
     {
       niLet resolvedTypeRight = _ObjToResolvedTyped(eqRight);
       if (resolvedTypeRight.IsOK() && resolvedTypeRight->_opcode == _OP_TYPEOF) {
-        NN_mut<sLintTypeofInfo> typeofInfo { QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
+        NN_mut<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
         lint_typeof_eq(typeofInfo, eqLeft, getlinecol(inst));
       }
     }

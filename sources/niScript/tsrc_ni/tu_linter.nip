@@ -146,7 +146,25 @@ function main() {
     "linter_01.ni",
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
-      ::CHECK_EQUAL(13,aLintResults.mLogsError,
+
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_callk: "doesntExist" not found in "stuff".]})
+      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_callk: "t2" not found in TABLE{localTable]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{no_debug_name]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_set: "unkvar" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "t2"]})
+      EXPECTED_LINT(aLogs, 3, {[Lint: Warning: implicit_this_getk: implicit this access to "thisLocalTable"]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "two"]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "x"]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "y"]})
+
+      ::CHECK_EQUAL(12,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(8,aLintResults.mLogsWarning,
                     "Expected lint warnings.");
@@ -167,7 +185,7 @@ function main() {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: this_set_key_notfound: "_unknownkey"]})
+        {[Lint: Error: key_notfound_set: "_unknownkey"]})
     })
 
   testLinter.check(
@@ -530,11 +548,11 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Error: this_key_notfound_getk: "numfagiano" not found]});
+        {[Error: key_notfound_getk: "numfagiano" not found]});
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[this_key_notfound_callk: "cookfagiano" not found]});
+        {[key_notfound_callk: "cookfagiano" not found]});
 
       EXPECTED_LINT(
         aLogs, 1,

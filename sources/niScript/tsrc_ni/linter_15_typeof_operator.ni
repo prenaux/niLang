@@ -1,7 +1,7 @@
 local __lint = {
   _all = 1
   _experimental = 1
-  getk_null = 1
+  getk_in_null = 1
   typeof_usage = 1
 }
 

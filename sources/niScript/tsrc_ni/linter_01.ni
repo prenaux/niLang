@@ -85,7 +85,7 @@ function invalidAccessOuterVar() : (localTable) {
   }
 }
 
-function invalidAccessParameter(aLocalTable) {
+function invalidAccessParameter(table aLocalTable) {
   aLocalTable.four;
 }
 

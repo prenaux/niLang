@@ -74,6 +74,14 @@ tBool __stdcall cLang::RegisterModuleDef(const iModuleDef* apDef) {
   }
   sModuleDef mod;
   mod.mptrModuleDef = apDef;
+  TRACE_LOAD_MODULE((
+    "RegisterModuleDef: name: %s, numDeps: %s, numInterfaces: %s, numEnums: %s, numConsts: %s, numObjectTypes: %s",
+    mod.mptrModuleDef->GetName(),
+    mod.mptrModuleDef->GetNumDependencies(),
+    mod.mptrModuleDef->GetNumInterfaces(),
+    mod.mptrModuleDef->GetNumEnums(),
+    mod.mptrModuleDef->GetNumConstants(),
+    mod.mptrModuleDef->GetNumObjectTypes()));
   mvModuleDefs.push_back(mod);
   return _FinalizeRegisterModuleDef(mvModuleDefs.back());
 }
@@ -165,6 +173,14 @@ const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName, const achar
       return NULL;
     }
 
+    TRACE_LOAD_MODULE((
+      "LoadModuleDef: name: %s, numDeps: %s, numInterfaces: %s, numEnums: %s, numConsts: %s, numObjectTypes: %s",
+      mod.mptrModuleDef->GetName(),
+      mod.mptrModuleDef->GetNumDependencies(),
+      mod.mptrModuleDef->GetNumInterfaces(),
+      mod.mptrModuleDef->GetNumEnums(),
+      mod.mptrModuleDef->GetNumConstants(),
+      mod.mptrModuleDef->GetNumObjectTypes()));
     mvModuleDefs.push_back(mod);
     return mod.mptrModuleDef;
   }
@@ -225,7 +241,11 @@ iHString* cLang::GetInterfaceName(const tUUID& aUUID) const
       if (pDef) {
         niLoop(i,pDef->GetNumInterfaces()) {
           const sInterfaceDef* pIDef = pDef->GetInterface(i);
-          if (*pIDef->mUUID == aUUID) {
+          niPanicAssertMsg(
+            pIDef->mUUID != nullptr,
+            niFmt("Invalid interface def '%s' (%d) in module def '%s'.",
+                  pIDef->maszName, i, pDef->GetName()));
+          if (pIDef->mUUID && *pIDef->mUUID == aUUID) {
             tHStringPtr hspName = _H(pIDef->maszName);
             niThis(cLang)->mbmapUUIDNames.insert(aUUID,hspName);
             return hspName;
@@ -252,6 +272,11 @@ const tUUID& cLang::GetInterfaceUUID(iHString* ahspName) const
         if (pDef) {
           niLoop(i,pDef->GetNumInterfaces()) {
             const sInterfaceDef* pIDef = pDef->GetInterface(i);
+            niPanicAssertMsg(
+              pIDef->mUUID != nullptr,
+              niFmt("Invalid interface def '%s' (%d) in module def '%s'.",
+                    pIDef->maszName, i, pDef->GetName()));
+            niPanicAssert(pIDef->maszName != nullptr);
             if (ni::StrEq(niHStr(hspName),pIDef->maszName)) {
               niThis(cLang)->mbmapUUIDNames.insert(*pIDef->mUUID,hspName);
               return *pIDef->mUUID;
@@ -277,7 +302,11 @@ const sInterfaceDef* cLang::GetInterfaceDefFromUUID(const tUUID& aUUID) const
       if (pDef) {
         niLoop(i,pDef->GetNumInterfaces()) {
           const sInterfaceDef* pIDef = pDef->GetInterface(i);
-          if (*pIDef->mUUID == aUUID) {
+          niPanicAssertMsg(
+            pIDef->mUUID != nullptr,
+            niFmt("Invalid interface def '%s' (%d) in module def '%s'.",
+                  pIDef->maszName, i, pDef->GetName()));
+          if (pIDef->mUUID && *pIDef->mUUID == aUUID) {
             niThis(cLang)->mmapUUIDDef[aUUID] = pIDef;
             return pIDef;
           }

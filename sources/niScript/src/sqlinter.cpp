@@ -514,6 +514,7 @@ _DEF_LINT(ret_type_cant_assign,IsError,None);
 // message for that is generally not helpful.
 _DEF_LINT(null_notfound,IsWarning,IsExplicit);
 _DEF_LINT(typeof_usage,IsWarning,IsExperimental);
+_DEF_LINT(param_type,IsError,None);
 
 #undef _DEF_LINT
 
@@ -850,6 +851,7 @@ struct sLinter {
       while (*p) {
         if (*p == '.')
           return eTrue;
+        ++p;
       }
       return eFalse;
     }();
@@ -876,7 +878,7 @@ struct sLinter {
         if (!sq_istable(found)) {
           return niNew sScriptTypeErrorCode(
             this->_ss, _HC(error_code_cant_resolve_table_type_path),
-            niFmt("Table path element[%d] '%s' not found in '%s', got '%s'. Full type path '%s'.",
+            niFmt("Cant find table type '%s'. Path element[%d] '%s' not found in %s, got %s.",
                   i, pathElement, _ObjToString(curr), _ObjToString(found), ahspPath));
         }
         curr = found;
@@ -888,8 +890,8 @@ struct sLinter {
       if (!sq_istable(found)) {
         return niNew sScriptTypeErrorCode(
           this->_ss, _HC(error_code_cant_resolve_table_type_path),
-          niFmt("Single table path element '%s' not found in '%s', got '%s'. Full type path '%s'.",
-                pathCursor, _ObjToString(curr), _ObjToString(found), ahspPath));
+          niFmt("Cant find table type '%s'. Single path element '%s' not found in %s, got %s.",
+                ahspPath, pathCursor, _ObjToString(curr), _ObjToString(found)));
       }
       curr = found;
     }
@@ -1832,7 +1834,18 @@ void SQFunctionProto::LintTrace(
       }
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
-      stack[si]._value = aLinter.ResolveType(param._type, thisClosure);
+
+      SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure);
+      if (sqa_getscriptobjtype(resolvedParamType) == eScriptType_ErrorCode) {
+        if (_LENABLED(param_type)) {
+          _LINT_(param_type, thisfunc->GetSourceLineCol(), niFmt(
+            "Cant resolve type %s of parameter[%d] %s: %s",
+            _ObjToString(param._type),
+            pi-1, _ObjToString(param._name),
+            ((sScriptTypeErrorCode*)_userdata(resolvedParamType))->_strErrorDesc));
+        }
+      }
+      stack[si]._value = resolvedParamType;
     }
   }
 
@@ -2379,7 +2392,7 @@ void SQFunctionProto::LintTrace(
         if (_LENABLED(call_error)) {
           _LINT(call_error, niFmt(
             "%s: %s: %s",
-            aKind, _ObjToString(tocall), errorCode->_strDesc));
+            aKind, _ObjToString(tocall), errorCode->_strErrorDesc));
         }
       }
       sset(IARG0, aRet);

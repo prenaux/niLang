@@ -9,6 +9,9 @@ function table_generic(table t) {
   t.not_a_field; // should fail
 }
 
+function table_invalid_type(table:tNotAType t) {
+}
+
 tThisFagiano <- {
   name = "vongole"
   im_fagiano = 0

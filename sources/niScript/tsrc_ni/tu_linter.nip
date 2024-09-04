@@ -554,6 +554,7 @@ function main() {
     function(aLogs,aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
+      EXPECTED_LINT(aLogs, 1, {[Error: param_type: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
@@ -561,7 +562,7 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
 
-      ::CHECK_EQUAL(6,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(7,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

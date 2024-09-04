@@ -492,14 +492,14 @@ struct sScriptTypeErrorCode : SQ_USERDATA_BASE(sScriptTypeErrorCode)
   }
 
   NN<iHString> _hspKind;
-  cString _strDesc;
+  cString _strErrorDesc;
 
   sScriptTypeErrorCode(
     const SQSharedState& aSS,
     ain_nn<iHString> aKind,
     ain<tChars> aDesc)
       : _hspKind(aKind)
-      , _strDesc(aDesc)
+      , _strErrorDesc(aDesc)
   {
     SetDelegate(_ddel(aSS,error_code));
   }
@@ -523,15 +523,15 @@ struct sScriptTypeErrorCode : SQ_USERDATA_BASE(sScriptTypeErrorCode)
     return ni::CmpByVal(_hspKind,b->_hspKind);
   }
   virtual SQUserData* __stdcall CloneData(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) const {
-    return niNew sScriptTypeErrorCode(aSS,_hspKind,_strDesc.c_str());
+    return niNew sScriptTypeErrorCode(aSS,_hspKind,_strErrorDesc.c_str());
   }
 
   virtual cString __stdcall GetTypeString() const {
-    if (_strDesc.IsEmpty()) {
+    if (_strErrorDesc.IsEmpty()) {
       return niFmt("error_code<%s>", _hspKind);
     }
     else {
-      return niFmt("error_code<%s,%s>", _hspKind, _strDesc);
+      return niFmt("error_code<%s,%s>", _hspKind, _strErrorDesc);
     }
   }
 };

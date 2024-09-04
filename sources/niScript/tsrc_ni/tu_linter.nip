@@ -9,16 +9,16 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p0: Missing 'safe' .?somefunc() access should only be an explicit or pedantic warning
-// - [ ] p0: Missing 'safe' .?somekey access should only be an explicit or pedantic warning
 // - [ ] p1: Handle ImportModule(script)
 // - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
-// - [ ] p1: Full lint all tu_* test cases.
+// - [ ] p1: Fully lint all tu_* test cases.
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
 // - [ ] p2: Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
 // - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
 // - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
 // - [ ] p2: Implement basic operators for literal types for float, string & integers
+// - [x] p0: 'safe' .?somefunc() access should not warn/error
+// - [x] p0: 'safe' .?somekey access should not warn/error
 // - [x] p0: Handle ImportScript(script)
 // - [x] p1: Handle Import(script or NativeModule)
 // - [x] p0: (this)_key_notfound_(get|getk|callk): ::Null not found in X should only be an explicit warning

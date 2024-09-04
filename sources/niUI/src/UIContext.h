@@ -94,7 +94,7 @@ class cUISkin : public ImplRC<iUISkin>
   niBeginClass(cUISkin);
 public :
   //! Constructor.
-  cUISkin(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath, tF32 afContentScale);
+  cUISkin(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale);
 
   void __stdcall SetImageMap(iImageMap*) niImpl;
   iImageMap* __stdcall GetImageMap() const niImpl;
@@ -124,7 +124,7 @@ public :
 
   Ptr<iGraphics>  mptrGraphics;
   Ptr<iImageMap>  mptrImageMap;
-  tF32 mfContentScale;
+  tF32 mfContentsScale;
 
   niEndClass(cUISkin);
 };

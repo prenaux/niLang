@@ -5,10 +5,10 @@
 #include "UIContext.h"
 #include "API/niUI_ModuleDef.h"
 
-cUISkin::cUISkin(iGraphicsContext* apGraphicsContext, iHString* ahspDefaultSkinPath, tF32 afContentScale) {
+cUISkin::cUISkin(iGraphicsContext* apGraphicsContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale) {
   mptrGraphics = apGraphicsContext->GetGraphics();
   mptrErrorSkin = ni::CreateDataTable(_A("UISkin"));
-  mfContentScale = afContentScale;
+  mfContentsScale = afContentsScale;
   SetErrorOverlay(NULL);
 
   if (GetSkinIndex(_H("Default")) != eInvalidHandle) {

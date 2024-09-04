@@ -96,7 +96,7 @@ testLinter <- {
         local lintTrace = ::lang.getProperty("lintTrace")
         ::log("lintTrace:" lintTrace)
         if (lintTrace) {
-          ::gLang.property["niScript.LintTrace"] = lintTrace;
+          ::gLang.SetProperty("niScript.LintTrace", lintTrace);
         }
       }
       // This has for side effect to lint the file for now.
@@ -114,7 +114,7 @@ testLinter <- {
       mSucceededChecks.push(aName)
       ::log(::format("SUCCEEDED: %s, %d log(s)", aName, mLogs.size()));
     }
-    ::gLang.property["niScript.LintTrace"] = "0"
+    ::gLang.SetProperty("niScript.LintTrace", "0")
     unregister()
   }
 }
@@ -144,7 +144,7 @@ function main() {
 
   testLinter.check(
     "linter_01.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
       ::CHECK_EQUAL(13,aLintResults.mLogsError,
                     "Expected lint errors.");
@@ -194,7 +194,7 @@ function main() {
 
   testLinter.check(
     "linter_05_method_def_call.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -225,7 +225,7 @@ function main() {
 
   testLinter.check(
     "linter_06_query_interface.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -244,7 +244,7 @@ function main() {
 
   testLinter.check(
     "linter_07_call_native_func.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -284,7 +284,7 @@ function main() {
 
   testLinter.check(
     "linter_08_lint_assert_type.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -299,7 +299,7 @@ function main() {
 
   testLinter.check(
     "linter_09_builtin_delegates.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
@@ -335,7 +335,7 @@ function main() {
 
   testLinter.check(
     "linter_10_function_ret_type.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
@@ -350,7 +350,7 @@ function main() {
 
   testLinter.check(
     "linter_11_property.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
@@ -365,7 +365,7 @@ function main() {
 
   testLinter.check(
     "linter_12_lint_as_type.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -384,7 +384,7 @@ function main() {
 
   testLinter.check(
     "linter_13_import_native.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -403,7 +403,7 @@ function main() {
 
   testLinter.check(
     "linter_14_in_operator.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // TODO
@@ -415,7 +415,7 @@ function main() {
 
   testLinter.check(
     "linter_15_typeof_operator.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // typeof_usage
@@ -496,7 +496,7 @@ function main() {
 
   testLinter.check(
     "linter_16_import_script.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -510,7 +510,7 @@ function main() {
 
   testLinter.check(
     "linter_17_import_script_in_table.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // TODO
@@ -522,7 +522,7 @@ function main() {
 
   testLinter.check(
     "linter_18_safe_get.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(
@@ -551,7 +551,7 @@ function main() {
 
   testLinter.check(
     "linter_19_table_types.ni",
-    function(aLogs,aLintResults) {
+    function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1, {[Error: param_type: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot__]})

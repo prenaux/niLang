@@ -573,6 +573,7 @@ struct sLinter {
     _REG_LINT(ret_type_cant_assign);
     _REG_LINT(null_notfound);
     _REG_LINT(typeof_usage);
+    _REG_LINT(param_type);
   }
 #undef _REG_LINT
 
@@ -665,6 +666,7 @@ struct sLinter {
     _E(ret_type_cant_assign)
     _E(null_notfound)
     _E(typeof_usage)
+    _E(param_type)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;

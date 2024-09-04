@@ -476,10 +476,10 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
   niProfileBlock(cMaterial_SerializeRead);
 
   SetName(apDT->GetHStringDefault(_A("name"),GetName()));
-  SetClass(apDT->GetHStringDefault(_A("class"),GetClass()));
-  SetFlags(apDT->GetEnumDefault(_A("flags"),niFlagsExpr(eMaterialFlags),GetFlags()));
-  SetBlendMode((eBlendMode)apDT->GetEnumDefault(_A("blend_mode"),niEnumExpr(eBlendMode),GetBlendMode()));
-  SetPolygonOffset(apDT->GetVec2Default(_A("polygon_offset"), GetPolygonOffset()));
+  SetClass(apDT->GetHStringDefault(_A("class"),NULL));
+  SetFlags(apDT->GetEnumDefault(_A("flags"),niFlagsExpr(eMaterialFlags),0));
+  SetBlendMode((eBlendMode)apDT->GetEnumDefault(_A("blend_mode"),niEnumExpr(eBlendMode),eBlendMode_NoBlending));
+  SetPolygonOffset(apDT->GetVec2Default(_A("polygon_offset"), sVec2f::Zero()));
 
   // rasterizer states
   if (apDT->PushFail(_A("RasterizerStates"))) {

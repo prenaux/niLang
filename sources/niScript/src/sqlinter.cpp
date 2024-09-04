@@ -2110,6 +2110,15 @@ void SQFunctionProto::LintTrace(
              _ObjToString(v),
              _ObjToString(table),
              sstr(IARG0)));
+
+    // assign a function name if there isn't one this takes care of the
+    // `someslot <- function() {}` pattern
+    if (sq_isstring(k) && sq_isfuncproto(v)) {
+      if (_funcproto(v)->_name == _null_) {
+        _funcproto(v)->_name = k;
+      }
+    }
+
     if (IARG0 != IARG3) {
       SQObjectPtr r = sget(IARG3);
       sset(IARG0, r);

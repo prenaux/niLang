@@ -15,7 +15,7 @@ function randHamster(iMath aMath,aMin,aMax) : (myout,myout2) {
 
 function writeHamster(iFileSystem aFS,aFileName) {
   local hamster = "This is the story of a hamster";
-  local fp = aFS.FileOpen(aFileName,::eFileOpenMode.Write);
+  local fp = aFS.FileOpen(aFileName,1);
   fp.WriteString(hamster);
   fp.WriteString(); // Incorrect number of arguments
   return fp.GetSize();

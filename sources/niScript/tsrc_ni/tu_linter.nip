@@ -158,7 +158,7 @@ function main() {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: Experimental: key_notfound_callk: "functionNotInRoot"]})
+        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
     })
 
   testLinter.check(

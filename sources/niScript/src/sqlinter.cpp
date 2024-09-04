@@ -490,31 +490,38 @@ static tU32 _lintKeyGen = 0;
 #define _DEF_LINT(NAME,CAT1,CAT2)                                       \
   static const sLint kLint_##NAME = { ++_lintKeyGen | eLintFlags_##CAT1 | eLintFlags_##CAT2, _H(#NAME) };
 
+// Internal lints
 _DEF_LINT(internal_error,IsError,IsInternal);
 _DEF_LINT(internal_warning,IsWarning,IsInternal);
-_DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
-_DEF_LINT(implicit_this_get,IsWarning,IsPedantic);
-_DEF_LINT(implicit_this_callk,IsWarning,IsPedantic);
+
+// Default lints
 _DEF_LINT(this_key_notfound_getk,IsError,None);
 _DEF_LINT(this_key_notfound_get,IsError,None);
 _DEF_LINT(this_key_notfound_callk,IsError,None);
 _DEF_LINT(this_key_notfound_outer,IsError,None);
-_DEF_LINT(key_notfound_getk,IsError,IsExperimental);
-_DEF_LINT(key_notfound_get,IsError,IsExperimental);
-_DEF_LINT(key_notfound_callk,IsError,IsExperimental);
+_DEF_LINT(key_notfound_getk,IsError,None);
+_DEF_LINT(key_notfound_get,IsError,None);
+_DEF_LINT(key_notfound_callk,IsError,None);
 _DEF_LINT(this_set_key_notfound,IsError,None);
-_DEF_LINT(set_key_notfound,IsError,IsExperimental);
-_DEF_LINT(call_null,IsWarning,IsExplicit);
-_DEF_LINT(getk_null,IsWarning,IsExplicit);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
-_DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
+_DEF_LINT(typeof_usage,IsWarning,None);
+_DEF_LINT(param_type,IsError,None);
+_DEF_LINT(set_key_notfound,IsError,None);
+
+// Pedantic lints
+_DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
+_DEF_LINT(implicit_this_get,IsWarning,IsPedantic);
+_DEF_LINT(implicit_this_callk,IsWarning,IsPedantic);
+
+// Explicit lints
+_DEF_LINT(call_null,IsWarning,IsExplicit);
+_DEF_LINT(getk_null,IsWarning,IsExplicit);
+_DEF_LINT(ret_type_is_null,IsWarning,IsExplicit);
 // "Null not found in X" is almost always the result of some computation, a
 // message for that is generally not helpful.
 _DEF_LINT(null_notfound,IsWarning,IsExplicit);
-_DEF_LINT(typeof_usage,IsWarning,IsExperimental);
-_DEF_LINT(param_type,IsError,None);
 
 #undef _DEF_LINT
 

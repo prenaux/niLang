@@ -548,6 +548,7 @@ struct sScriptTypeResolvedType : SQ_USERDATA_BASE(sScriptTypeResolvedType)
   const eScriptType _scriptType;
   const SQOpcode _opcode = __OP_LAST;
   const Opt<iUnknown> _opcodeInfo = nullptr;
+  const cString _typeParameter = AZEROSTR;
 
   sScriptTypeResolvedType(
     const SQSharedState& aSS,
@@ -556,6 +557,17 @@ struct sScriptTypeResolvedType : SQ_USERDATA_BASE(sScriptTypeResolvedType)
   {
     SetDelegate(_ddel(aSS,resolved_type));
   }
+
+  sScriptTypeResolvedType(
+    const SQSharedState& aSS,
+    const eScriptType aType,
+    const achar* aTypeParameter)
+      : _scriptType(aType)
+      , _typeParameter(aTypeParameter)
+  {
+    SetDelegate(_ddel(aSS,resolved_type));
+  }
+
   sScriptTypeResolvedType(
     const SQSharedState& aSS,
     const eScriptType aType,

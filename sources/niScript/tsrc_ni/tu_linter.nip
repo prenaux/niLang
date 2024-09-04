@@ -12,6 +12,8 @@
 // - [ ] p1: Handle ImportModule(script)
 // - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
 // - [ ] p1: Fully lint all tu_* test cases.
+// - [ ] p2: Match types that are passed to function parameters, right now we only count the numbers of parameter passed
+// - [ ] p2: Match table types, not just base types
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
 // - [ ] p2: Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
 // - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
@@ -544,6 +546,22 @@ function main() {
         {[key_notfound_getk: I32{10} not found in ARRAY{size:3]});
 
       ::CHECK_EQUAL(5,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_19_table_types.ni",
+    function(aLogs,aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
+
+      ::CHECK_EQUAL(6,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

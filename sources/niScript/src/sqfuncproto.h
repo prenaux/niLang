@@ -95,9 +95,7 @@ public:
     return Vec2i(this->_sourceline,this->_sourcecol);
   }
 
-  void LintTrace(
-    sLinter& aLinter,
-    const struct LintClosure& aClosure) const;
+  void LintTrace(sLinter& aLinter, SQTable* rootTable, SQTable* thisTable) const;
   // Return the number of lint errors
   tU32 LintTraceRoot();
 

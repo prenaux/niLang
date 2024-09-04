@@ -1521,10 +1521,18 @@ struct SQCompiler {
     cString strType;
     SQObjectPtr o;
 
+    if (_token == TK_DOUBLE_COLON) {
+      if (abCanOnlyBeAType) {
+        *abCanOnlyBeAType = eTrue;
+      }
+      COMPILE_CHECK(Lex(aErrors));
+      strType += "::";
+    }
+
     COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
     strType += _stringval(o);
 
-    if (_token == ':' || _token == '|') {
+    if (_token == ':' || _token == '|' || _token == '.') {
       if (abCanOnlyBeAType) {
         *abCanOnlyBeAType = eTrue;
       }
@@ -1534,7 +1542,7 @@ struct SQCompiler {
         strType.appendChar(wasToken);
         COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
         strType += _stringval(o);
-      } while (_token == ':' || _token == '|');
+      } while (_token == ':' || _token == '|' || _token == '.');
     }
 
     aTypeDef = _H(strType);

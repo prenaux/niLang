@@ -252,6 +252,7 @@ bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stack
           //----------------------------------- _OP_NEWTABLE
           EX_BEGIN(_OP_NEWTABLE) {
             TARGET = SQTable::Create();
+            _table(TARGET)->Reserve(arg1);
           } EX_END_CONTINUE();
 
           //----------------------------------- _OP_NEWARRAY

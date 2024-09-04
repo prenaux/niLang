@@ -31,14 +31,12 @@ function foo_get() {
   foo.?byebye();
 }
 
-// TODO
-// function array_get() {
-//   local arr = [1,2,3];
-//   ::LintAssertType("array", arr);
-//   // TODO: Maybe this should pass but otoh the cases where we know the size of
-//   // the array at lint time is probably close to zero, so it probably doesnt
-//   // make sense?
-//   // arr[0];
-//   arr[10];
-//   arr[?10];
-// }
+function array_get() {
+  local arr = [1,2,3];
+  ::LintAssertType("array", arr);
+  arr[0]; // should be ok since we init with 3 values
+  arr[2]; // should be ok since we init with 3 values
+  arr[?2];
+  arr[10]; // should fail, we know its out of bound
+  arr[?10]; // should ok, safe get
+}

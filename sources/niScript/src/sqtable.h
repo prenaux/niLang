@@ -99,6 +99,7 @@ public:
   bool GetKey(const SQObjectPtr &val,SQObjectPtr &key) const;
   void Remove(const SQObjectPtr &key);
   void Clear();
+  void Reserve(int size);
   bool Set(const SQObjectPtr &key, const SQObjectPtr &val);
   //returns true if a new slot has been created, false if it was already present
   bool NewSlot(const SQObjectPtr &key,const SQObjectPtr &val);

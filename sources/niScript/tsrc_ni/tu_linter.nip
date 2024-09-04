@@ -13,6 +13,7 @@
 // - [ ] p0: Missing 'safe' .?somekey access should only be an explicit or pedantic warning
 // - [ ] p1: Handle ImportModule(script)
 // - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
+// - [ ] p1: Full lint all tu_* test cases.
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
 // - [ ] p2: Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
 // - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
@@ -122,7 +123,7 @@ function ::EXPECTED_LINT(aLogs,aExpectedCount,aMsg) {
   local pattern = ::REGEX.pcre(aMsg)
   local found = 0;
   foreach (l in aLogs) {
-    if (pattern.DoesMatch(l))
+    if (l.contains(aMsg) || pattern.DoesMatch(l))
       ++found
   }
   ::CHECK_EQUAL(aExpectedCount,found,"Expected lint: '" + aMsg + "'")
@@ -532,13 +533,17 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[key_notfound_getk: "hamster" not found in foo]});
+        {[key_notfound_getk: "hamster" not found in TABLE{foo]});
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[key_notfound_callk: "byebye" not found in foo]});
+        {[key_notfound_callk: "byebye" not found in TABLE{foo]});
 
-      ::CHECK_EQUAL(4,aLintResults.mLogsError,"Expected lint errors.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[key_notfound_getk: I32{10} not found in ARRAY{size:3]});
+
+      ::CHECK_EQUAL(5,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

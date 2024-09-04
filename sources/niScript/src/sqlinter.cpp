@@ -251,6 +251,9 @@ static cString _ObjTypeString(const SQObjectPtr& obj)
 
 static cString _ObjToString(const SQObjectPtr& obj) {
   switch (_sqtype(obj)) {
+    case OT_NULL: {
+      return _ObjTypeString(obj);
+    }
     case OT_STRING: {
       return niFmt("\"%s\"",_stringval(obj));
     }
@@ -262,22 +265,27 @@ static cString _ObjToString(const SQObjectPtr& obj) {
                      lintFuncCall->GetArity());
       }
       else {
-        return niFmt("{%s}::IUnknown",_PtrToString((tIntPtr)_iunknown(obj)));
+        return niFmt("IUnknown{%s}",_PtrToString((tIntPtr)_iunknown(obj)));
       }
     }
     case OT_FUNCPROTO: {
-      return niFmt("funcproto %s",_ObjToString(_funcproto(obj)->_name));
+      return niFmt("funcproto{name:%s}",_ObjToString(_funcproto(obj)->_name));
     }
     case OT_TABLE: {
-      return niFmt("%s{%s}::TABLE",
+      return niFmt("TABLE{%s,%s}",
                    _table(obj)->GetDebugName(),
                    _PtrToString((tIntPtr)_table(obj)));
+    }
+    case OT_ARRAY: {
+      return niFmt("ARRAY{size:%s,%s}",
+                   _array(obj)->Size(),
+                   _PtrToString((tIntPtr)_array(obj)));
     }
     case OT_USERDATA: {
       return niFmt("%s", _userdata(obj)->GetTypeString());
     }
     default:
-      return niFmt("%s::%s",(Var&)obj._var,_ObjTypeString(obj));
+      return niFmt("%s{%s}",_ObjTypeString(obj),(Var&)obj._var);
   }
 }
 
@@ -1821,8 +1829,31 @@ void SQFunctionProto::LintTrace(
     if (!lname.IsNull()) {
       _table(table)->SetDebugName(_stringhval(lname));
     }
-    _LTRACE(("op_newtable: %s, size: %d -> %s", sstr(IARG0), IARG1, _ObjToString(table)));
+    _table(table)->Reserve(IARG1);
+    _LTRACE(("op_newtable: %s, reserve: %s, lname: %s (%s)",
+             _ObjToString(table), IARG1, _ObjToString(lname), sstr(IARG0)));
     sset(IARG0, table);
+  };
+
+  auto op_newarray = [&](const SQInstruction& inst) {
+    SQObjectPtr array = SQArray::Create(0);
+    SQObjectPtr lname = localname(IARG0);
+    _array(array)->Reserve(IARG1);
+    _LTRACE(("op_newarray: %s, reserve: %s, lname: %s (%s)",
+             _ObjToString(array), IARG1, _ObjToString(lname), sstr(IARG0)));
+    sset(IARG0, array);
+  };
+
+  auto op_appendarray = [&](const SQInstruction& inst) {
+    SQObjectPtr target = sget(IARG0);
+    if (!sq_isarray(target)) {
+      _LINTERNAL_ERROR(niFmt("op_appendarray: target isn't an array '%s' (%s).",
+                             _ObjToString(target), sstr(IARG0)));
+    }
+    SQObjectPtr val = (IARG2 != 0xFF) ? sget(IARG1) : lget(IARG1);
+    _LTRACE(("op_appendarray: %s, val: %s (%s)",
+             _ObjToString(target), _ObjToString(val), sstr(IARG1)));
+    _array(target)->Append(val);
   };
 
   auto op_load = [&](const SQInstruction& inst) {
@@ -2550,6 +2581,8 @@ void SQFunctionProto::LintTrace(
              _GetOpExt(inst._ext)));
     switch (inst.op) {
       case _OP_NEWTABLE: op_newtable(inst); break;
+      case _OP_NEWARRAY: op_newarray(inst); break;
+      case _OP_APPENDARRAY: op_appendarray(inst); break;
       case _OP_LOAD: op_load(inst); break;
       case _OP_LOADNULL: op_loadnull(inst); break;
       case _OP_LOADROOTTABLE: op_loadroottable(inst); break;

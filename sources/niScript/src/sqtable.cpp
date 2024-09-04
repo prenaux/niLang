@@ -178,6 +178,16 @@ void SQTable::Clear()
   mhmap.clear();
 }
 
+void SQTable::Reserve(int size) {
+  // TODO: I'm really tempted to make mhmap a vector map again. They are slow
+  // inserts but tables are not meant fo this purpose they are mostly there to
+  // hold the language constructs. There's Vector(), Set() and Map() for
+  // "high performance" things and of course all the native modules...
+#if (SQ_TABLE_MAP_IMPL == SQ_TABLE_MAP_VECTOR_MAP)
+  mhmap.reserve(size);
+#endif
+}
+
 int SQTable::CountUsed()
 {
   return mhmap.size();

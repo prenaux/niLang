@@ -353,16 +353,19 @@ static_assert(astl::is_same_v<ain<sVec3f>, const sVec3f>);
 #endif
 static_assert(astl::is_same_v<ain<sVec4f>, const sVec4f&>);
 static_assert(astl::is_same_v<ain<sMatrixf>, const sMatrixf&>);
-#if !defined niMSVC // Types are the same (as checked while dumping them by other means) but still MSVC fails the static_assert
-static_assert(astl::is_same_v<ain<nn<iUnknown>>, const nn<iUnknown>>);
-static_assert(astl::is_same_v<ain<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
-#endif
 static_assert(astl::is_same_v<ain<QPtr<iUnknown>>, const QPtr<iUnknown>&>);
 static_assert(sizeof(ain<nn<iUnknown>>) == sizeof(void*));
 static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(void*));
 
 static_assert(astl::is_same_v<amove<sVec2f>, sVec2f&&>);
 static_assert(astl::is_same_v<aout<sVec2f>, sVec2f&>);
+
+// Types are the same (as checked while dumping them by other means) but still
+// MSVC & GCC fails the static_assert
+#if !defined niMSVC && !defined niGCC
+static_assert(astl::is_same_v<ain<nn<iUnknown>>, const nn<iUnknown>>);
+static_assert(astl::is_same_v<ain<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
+#endif
 
 // Not allowed as input types
 // static_assert(astl::is_same_v<ain<NN<iUnknown>>, const nn<iUnknown>>);

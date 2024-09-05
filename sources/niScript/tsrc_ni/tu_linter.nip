@@ -9,16 +9,36 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p1: Handle ImportModule(script)
+// - [ ] p0: Decide whether we keep modules at all, they are only partially
+//   used and could be removed reasonably easily. We could always create a new
+//   module system later but with the linter it actually probably doesn't
+//   solve any meaningful problem anymore. niScript doesn't create things in
+//   the global namespace anyway. Or we remove the namespace thing and have
+//   everything be modules? the linter could make that migration sane?
+//   huh... sounds like a lot more work
+// - [ ] p0: Handle ImportModule(script)
+// - [ ] p0: Move lang stuff to native version so that they can be properly linted: delegate, namespace, namespaceOrModule
+// - [ ] p0: Add all missing constructor utility functions to the linter, ::Vec2/3/4, ::Matrix, etc..
+// - [ ] p0: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
+// - [ ] p0: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
+// - [ ] p0: Handle varargs functions, function(_args_)
+// - [ ] p0: Lint messages should output in stderr not stdout.
+//
+// - [ ] p1: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
+// - [ ] p1: Add a var type - as in resolve it - which explicitly states that we accept any type
 // - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
 // - [ ] p1: Fully lint all tu_* test cases.
+//
+// - [ ] p2: All category_ = 1 in the __lint object should act on the specified class of lints. Make the trailing underscore require for this to work so that its less prone to unintentional change in categories.
+// - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
+// - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
 // - [ ] p2: Match types that are passed to function parameters, right now we only count the numbers of parameter passed
 // - [ ] p2: Match table types, not just base types
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
-// - [ ] p2: Handle table<mytable> & table<::some.namespace.table_name> to define the shape of a table type
-// - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
-// - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
 // - [ ] p2: Implement basic operators for literal types for float, string & integers
+// - [ ] p2: Some various lingering instances of incorrect line number being printed when no semicolon are present and also with arg counts when doing a multiline function call - frequent with ::namespace() for example.
+//
+// - [x] p2: Handle table:mytable & ::some.namespace.table_name to define the shape of a table type
 // - [x] p0: 'safe' .?somefunc() access should not warn/error
 // - [x] p0: 'safe' .?somekey access should not warn/error
 // - [x] p0: Handle ImportScript(script)

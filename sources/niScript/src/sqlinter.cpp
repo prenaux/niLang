@@ -499,7 +499,7 @@ _DEF_LINT(key_notfound_outer,IsError,None);
 _DEF_LINT(key_notfound_getk,IsError,None);
 _DEF_LINT(key_notfound_get,IsError,None);
 _DEF_LINT(key_notfound_callk,IsError,None);
-_DEF_LINT(key_notfound_set,IsError,None);
+_DEF_LINT(key_cant_set,IsError,None);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
@@ -567,7 +567,7 @@ struct sLinter {
     _REG_LINT(key_notfound_getk);
     _REG_LINT(key_notfound_get);
     _REG_LINT(key_notfound_callk);
-    _REG_LINT(key_notfound_set);
+    _REG_LINT(key_cant_set);
     _REG_LINT(call_null);
     _REG_LINT(getk_in_null);
     _REG_LINT(set_in_null);
@@ -656,7 +656,7 @@ struct sLinter {
     _E(key_notfound_callk)
     _E(key_notfound_getk)
     _E(key_notfound_get)
-    _E(key_notfound_set)
+    _E(key_cant_set)
     _E(call_null)
     _E(getk_in_null)
     _E(set_in_null)
@@ -1163,17 +1163,22 @@ struct sLinter {
                 }
                 else {
                   if (_table(intfDel)->Get(key,dest)) {
-                    if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
-                      // "Dereference" the property
-                      niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
-                      niLet pdefGet = destUD->pGetMethodDef;
-                      if (pdefGet && pdefGet->mnNumParameters == 0) {
-                        dest = ResolveMethodRetType(
-                          *destUD->pInterfaceDef,
-                          *pdefGet);
-                      }
+                    if (opExt & _OPEXT_LINT_DONT_DEREF_PROPERTY) {
+                      return true;
                     }
-                    return true;
+                    else {
+                      if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
+                        // "Dereference" the property
+                        niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
+                        niLet pdefGet = destUD->pGetMethodDef;
+                        if (pdefGet && pdefGet->mnNumParameters == 0) {
+                          dest = ResolveMethodRetType(
+                            *destUD->pInterfaceDef,
+                            *pdefGet);
+                        }
+                      }
+                      return true;
+                    }
                   }
                   else {
                     dest = niNew sScriptTypeErrorCode(
@@ -1289,34 +1294,72 @@ struct sLinter {
     return true;
   }
 
-  bool DoLintSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
+  bool DoLintSet(cString& errDesc, const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
   {
+    // niDebugFmt(("... DoLintSet: '%s' in %s", _ObjToString(key), _ObjToString(self)));
     switch(_sqtype(self)) {
       case OT_TABLE: {
         SQObjectPtr v;
-        // niDebugFmt(("... _LintSet: '%s' in %s", _ObjToString(key), _ExpandedObjToString(self)));
         if (!DoLintGet(self,key,v,0)) {
           return false;
         }
         return _table(self)->Set(key,val);
       }
-      case OT_IUNKNOWN:
-        // TODO: Ideally we'd lookup the methods in the interface, etc.
-        return false;
       case OT_ARRAY:
         if (!sq_isnumeric(key)) {
           return false;
         }
         return _array(self)->Set(toint(key),val);
-      case OT_USERDATA:
-        // TODO: We could get the delegate and somehow have it tell us whether // we can set what's asked...
+      case OT_IUNKNOWN:
+        // TODO: This should not happen, it should be a sInterfaceDef. Should we niPanicAssert here?
         return false;
+      default: {
+        if (sqa_getscriptobjtype(self) == eScriptType_PropertyDef) {
+          niLet selfUD = (sScriptTypePropertyDef*)_userdata(self);
+          niLet pdefSet = selfUD->pSetMethodDef;
+          if (!pdefSet) {
+            errDesc.Format("no setter for indexed property");
+            return false;
+          }
+          else if (pdefSet->mnNumParameters == 2) {
+            return true;
+          }
+          else {
+            errDesc.Format(niFmt("invalid number of parameters '%d' for indexed property", pdefSet->mnNumParameters));
+            return false;
+          }
+        }
+        else {
+          // niDebugFmt(("... DoLintSet: Try get %s[%s].", _ObjToString(self), _ObjToString(key)));
+          SQObjectPtr dest;
+          if (!DoLintGet(self,key,dest,_OPEXT_LINT_DONT_DEREF_PROPERTY)) {
+            return false;
+          }
+          // niDebugFmt(("... DoLintSet: didGet: %s[%s] = %s.", _ObjTypeString(self), _ObjToString(key), _ObjToString(dest)));
+          if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
+            niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
+            niLet pdefSet = destUD->pSetMethodDef;
+            if (!pdefSet) {
+              errDesc.Format("no setter");
+              return false;
+            }
+            else if (pdefSet->mnNumParameters != 1) {
+              errDesc.Format(niFmt("invalid number of parameters '%d' for property", pdefSet->mnNumParameters));
+              return false;
+            }
+            else {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
     }
     return false;
   }
 
-  bool LintSet(const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt) {
-    bool r = DoLintSet(self,key,val,opExt);
+  bool LintSet(cString& errDesc, const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt) {
+    bool r = DoLintSet(errDesc,self,key,val,opExt);
     if (!r && !(opExt & _OPEXT_GET_SAFE)) {
       return false;
     }
@@ -2269,14 +2312,16 @@ void SQFunctionProto::LintTrace(
       }
     }
     else {
-      niLet didSet = aLinter.LintSet(t,k,v,inst._ext);
+      cString errDesc;
+      niLet didSet = aLinter.LintSet(errDesc,t,k,v,inst._ext);
       if (!didSet) {
-        if (_LENABLED(key_notfound_set) &&
+        if (_LENABLED(key_cant_set) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
         {
-          _LINT(key_notfound_set, niFmt(
-            "%s not found in %s.",
-            _ObjToString(k), _ObjToString(t)));
+          _LINT(key_cant_set, niFmt(
+            "%s key cant be set in %s: %s.",
+            _ObjToString(k), _ObjToString(t),
+            errDesc.empty() ? "not found" : errDesc.Chars()));
         }
       }
     }

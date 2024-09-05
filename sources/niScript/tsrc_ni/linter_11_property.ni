@@ -9,7 +9,7 @@ function property_current_time():(lang) iTime {
 }
 
 function property_current_time_as_int():(lang) int {
-  return lang.current_time; // should fail linting
+  return lang.current_time; // should fail linting, non matching types
 }
 
 function property_char_it(string v) int {
@@ -18,6 +18,16 @@ function property_char_it(string v) int {
   // should fail. no semicolon to make sure lint error line is at the correct position.
   it.num_chars_hamster
   return it.num_chars
+}
+
+function property_set_value(string val):(lang) {
+  lang.default_locale = val;
+  lang.hamster = val; // should fail
+}
+
+function property_set_key(string val):(lang) {
+  lang.env["FOO"] = val;
+  lang.fagiano["FOO"] = val;
 }
 
 function main():(lang) void {

@@ -89,6 +89,8 @@ enum eSQLintHint {
 #define _OPEXT_GET_SAFE        niBit(1)
 // explicit this access, shouldn't produce any lint warning
 #define _OPEXT_EXPLICIT_THIS   niBit(2)
+// used by the linter internally
+#define _OPEXT_LINT_DONT_DEREF_PROPERTY   niBit(3)
 
 struct SQInstruction
 {

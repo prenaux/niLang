@@ -156,7 +156,7 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot__]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_set: "unkvar" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "t2"]})
       EXPECTED_LINT(aLogs, 3, {[Lint: Warning: implicit_this_getk: implicit this access to "thisLocalTable"]})
@@ -185,7 +185,7 @@ function main() {
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: key_notfound_set: "_unknownkey"]})
+        {[Lint: Error: key_cant_set: "_unknownkey"]})
     })
 
   testLinter.check(
@@ -380,7 +380,14 @@ function main() {
       EXPECTED_LINT(aLogs, 1,
                     {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:19:.*]})
 
-      ::CHECK_EQUAL(2, aLintResults.mLogsError, "Expected lint errors.");
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_cant_set: "hamster" key cant be set in interface_def<iLang>: not found.]})
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_notfound_getk: "fagiano" not found in interface_def<iLang>]})
+      EXPECTED_LINT(aLogs, 1,
+                    {[key_cant_set: "FOO" key cant be set in error_code<error_code_cant_find_method_def,Cant find method definition 'iLang::fagiano'>: not found]})
+
+      ::CHECK_EQUAL(5, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

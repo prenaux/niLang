@@ -33,7 +33,7 @@ function foo_get() {
 
 function array_get() {
   local arr = [1,2,3];
-  ::LintAssertType("array", arr);
+  ::LINT_CHECK_TYPE("array", arr);
   arr[0]; // should be ok since we init with 3 values
   arr[2]; // should be ok since we init with 3 values
   arr[?2];

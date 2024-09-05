@@ -1650,10 +1650,10 @@ struct sLintFuncCallGetLangDelegate : public ImplRC<iLintFuncCall> {
   }
 };
 
-struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
+struct sLintFuncCall_lint_check_type : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
-  sLintFuncCallLintAssertType(iHString* aName)
+  sLintFuncCall_lint_check_type(iHString* aName)
       : _name(aName)
   {}
 
@@ -1688,7 +1688,7 @@ struct sLintFuncCallLintAssertType : public ImplRC<iLintFuncCall> {
   }
 };
 
-static int lint_LintAssertType(HSQUIRRELVM v)
+static int lint_lint_check_type(HSQUIRRELVM v)
 {
   // SQObjectPtr& expectedType = stack_get(v,2);
   // niUnused(expectedType);
@@ -1698,10 +1698,10 @@ static int lint_LintAssertType(HSQUIRRELVM v)
   return 1;
 }
 
-struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
+struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
-  sLintFuncCallLintAsType(iHString* aName)
+  sLintFuncCall_lint_as_type(iHString* aName)
       : _name(aName)
   {}
 
@@ -1727,7 +1727,7 @@ struct sLintFuncCallLintAsType : public ImplRC<iLintFuncCall> {
   }
 };
 
-static int lint_LintAsType(HSQUIRRELVM v)
+static int lint_lint_as_type(HSQUIRRELVM v)
 {
   //SQObjectPtr& type = stack_get(v,2);
   SQObjectPtr& obj = stack_get(v,3);
@@ -1781,8 +1781,8 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
 
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
-  {"LintAsType", lint_LintAsType, 3, "ts.", _HC(typestr_bool)},
-  {"LintAssertType", lint_LintAssertType, 3, "ts."},
+  {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
+  {"LINT_CHECK_TYPE", lint_lint_check_type, 3, "ts.", _HC(typestr_bool)},
   {0,0}
 };
 
@@ -1800,8 +1800,8 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("Import")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
-  RegisterLintFunc(table, MakeNN<sLintFuncCallLintAssertType>(_H("LintAssertType")));
-  RegisterLintFunc(table, MakeNN<sLintFuncCallLintAsType>(_H("LintAsType")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_check_type>(_H("LINT_CHECK_TYPE")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_as_type>(_H("LINT_AS_TYPE")));
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();
 }

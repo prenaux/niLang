@@ -6,10 +6,10 @@ local __lint = {
 
 function main() void {
   local lang = ::CreateInstance("niLang.Lang")
-  ::LintAssertType("interface_def<iUnknown>", lang)
+  ::LINT_CHECK_TYPE("interface_def<iUnknown>", lang)
   lang.Log(0, "Hellow", "nofile", -1, "nofunc") // should fail
 
   lang = lang.QueryInterface("iLang")
-  ::LintAssertType("interface_def<iLang>", lang)
+  ::LINT_CHECK_TYPE("interface_def<iLang>", lang)
   lang.Log(0, "Hellow", "nofile", -1, "nofunc") // should be ok
 }

@@ -14,5 +14,5 @@ function main() void {
   local curlMsg = ::eCURLMessage
   local curlMsgYey = curlMsg.Started
   local curlMsgNey = curlMsg.StartedHamster // should fail
-  ::LintAssertType("enum_def<eCURLMessage>", curlMsg)
+  ::LINT_CHECK_TYPE("enum_def<eCURLMessage>", curlMsg)
 }

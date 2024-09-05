@@ -37,5 +37,5 @@ function ret_string2(string v) string {
 
 function main() void {
   local r = ret_string();
-  ::LintAssertType("resolved_type<string>", r);
+  ::LINT_CHECK_TYPE("resolved_type<string>", r);
 }

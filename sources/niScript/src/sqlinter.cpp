@@ -1399,7 +1399,25 @@ struct sLinter {
   static bool LintTypeObjCanAssign(const SQObjectPtr& aFromTypeObj, const SQObjectPtr& aToTypeObj) {
     niLetMut fromType = _GetResolvedObjType(aFromTypeObj);
     niLet toType = _GetResolvedObjType(aToTypeObj);
-    return _LintTypeCanAssign(fromType, toType);
+    if (_LintTypeCanAssign(fromType, toType)) {
+      if (fromType == eScriptType_InterfaceDef && toType == eScriptType_InterfaceDef) {
+        niLet fromIntf = ((sScriptTypeInterfaceDef*)_userdata(aFromTypeObj))->pInterfaceDef;
+        niLet toIntf = ((sScriptTypeInterfaceDef*)_userdata(aToTypeObj))->pInterfaceDef;
+        if (*fromIntf->mUUID == *toIntf->mUUID)
+          return eTrue;
+        if (*toIntf->mUUID == niGetInterfaceUUID(iUnknown))
+          return eTrue;
+        niLoop(i,fromIntf->mnNumBases) {
+          if (*fromIntf->mpBases[i] == *toIntf->mUUID)
+            return eTrue;
+        }
+        return eFalse;
+      }
+      else {
+        return eTrue;
+      }
+    }
+    return eFalse;
   }
 
   typedef astl::hash_map<cString,SQObjectPtr> tImportMap;
@@ -2076,11 +2094,9 @@ void SQFunctionProto::LintTrace(
       else if (!aLinter.LintTypeObjCanAssign(rval, thisfunc_resolvedrettype)) {
         if (_LENABLED(ret_type_cant_assign)) {
           _LINT(ret_type_cant_assign, niFmt(
-            "Cant assign type '%s' to return type '%s'. %s -> %s.",
-            sqa_getscripttypename(aLinter._GetResolvedObjType(rval)),
-            sqa_getscripttypename(aLinter._GetResolvedObjType(thisfunc_resolvedrettype)),
-            _ObjToString(rval),
-            _ObjToString(thisfunc_resolvedrettype)));
+            "Cant assign type '%s' to return type '%s'.",
+            _ObjTypeString(rval),
+            _ObjTypeString(thisfunc_resolvedrettype)));
         }
       }
     }

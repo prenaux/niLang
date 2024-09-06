@@ -35,6 +35,26 @@ function ret_string2(string v) string {
   return v.normalize()
 }
 
+function ret_iLang_to_iFile() iFile {
+  local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
+  return lang; // mismatched type
+}
+
+function ret_iLang_to_iUnknown() iUnknown {
+  local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")
+  return lang; // should work because all interfaces are assumed to be based on iUnknown
+}
+
+function ret_iFutureValue_to_iFuture() iFuture {
+  local v = ::LINT_AS_TYPE("iFutureValue",null)
+  return v; // should work because iFutureValue inherits of iFuture
+}
+
+function ret_iFile_to_iFuture() iFuture {
+  local v = ::LINT_AS_TYPE("iFile",null)
+  return v; // should fail
+}
+
 function main() void {
   local r = ret_string();
   ::LINT_CHECK_TYPE("resolved_type<string>", r);

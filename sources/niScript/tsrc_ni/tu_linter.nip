@@ -101,7 +101,7 @@ testLinter <- {
     ::gLang.system_message_handlers.RemoveSink(this)
   }
 
-  function check(aName,afnTest) {
+  function check(string aName, closure afnTest) {
     if (mTestFilter && !mTestFilter.DoesMatch(aName)) {
       ::log("FILTER SKIPPED TEST:" aName)
       return
@@ -251,7 +251,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[ret_type_cant_assign: Cant assign type 'interface' to return type 'string'. interface_def<iTime> -> resolved_type<string>.]})
+        {[ret_type_cant_assign: Cant assign type 'interface_def<iTime>' to return type 'resolved_type<string>'.]})
 
       EXPECTED_LINT(
         aLogs, 1,
@@ -379,12 +379,18 @@ function main() {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
-                    "ret_type_cant_assign: Cant assign type 'int' to return type 'string'");
+                    "ret_type_cant_assign: Cant assign type 'I32' to return type 'resolved_type<string>'");
 
       EXPECTED_LINT(aLogs, 1,
-                    "ret_type_cant_assign: Cant assign type 'string' to return type 'int'");
+                    "ret_type_cant_assign: Cant assign type 'resolved_type<string>' to return type 'resolved_type<int>'");
 
-      ::CHECK_EQUAL(2, aLintResults.mLogsError, "Expected lint errors.");
+      EXPECTED_LINT(aLogs, 1,
+                    "ret_type_cant_assign: Cant assign type 'interface_def<iLang>' to return type 'interface_def<iFile>'");
+
+      EXPECTED_LINT(aLogs, 1,
+                    "ret_type_cant_assign: Cant assign type 'interface_def<iFile>' to return type 'interface_def<iFuture>'");
+
+      ::CHECK_EQUAL(4, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(0, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 
@@ -394,7 +400,7 @@ function main() {
       ::EXPECT_LINT_OK(aLogs);
 
       EXPECTED_LINT(aLogs, 1,
-                    "Cant assign type 'interface' to return type 'int'. interface_def<iTime> -> resolved_type<int>");
+                    "Cant assign type 'interface_def<iTime>' to return type 'resolved_type<int>'.");
 
       EXPECTED_LINT(aLogs, 1,
                     {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:19:.*]})

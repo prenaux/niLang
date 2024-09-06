@@ -32,6 +32,7 @@
 ::Import("unittest.ni")
 ::Import("lang.ni")
 ::REGEX <- ::ImportModule("regex.ni")
+::LINT_CHECK_TYPE("null", ::?bar.?qoo) // should be ok
 
 testLinter <- {
   mTestFilter = null
@@ -591,6 +592,27 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
 
       ::CHECK_EQUAL(7,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_20_namespace.ni",
+    function(aLogs, table:testLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'TABLE'.*linter_20_namespace.ni:16:40]})
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: key_notfound_getk: "qoo" not found in TABLE.*linter_20_namespace.ni:19:12]});
+
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'TABLE'.*linter_20_namespace.ni:23:35]]});
+
+      ::CHECK_EQUAL(3,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

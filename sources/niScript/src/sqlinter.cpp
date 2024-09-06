@@ -725,7 +725,8 @@ struct sLinter {
     o << niFmt(" [%s:%s:%s]\n", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
 
     if (_printLogs) {
-      niPrintln(o);
+      // Raw goes to stderr when eLogFlags_Stdout isnt specified
+      ni_log(eLogFlags_Raw, o, niSourceLoc);
     }
   }
 

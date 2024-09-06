@@ -35,7 +35,7 @@
 */
 ::Import("lang.ni")
 
-::THROW <- function(aMsg,aDesc) {
+::THROW <- function(aMsg,_aDesc) {
   local src = "unknown"
   local func = "unknown"
   local line = -1
@@ -46,8 +46,8 @@
   else {
     msg += aMsg
   }
-  if (aDesc) {
-    msg += "\nE/  Desc: " + aDesc;
+  if (_aDesc) {
+    msg += "\nE/  Desc: " + _aDesc;
   }
 
   msg += "\nE/  Stack:\n"
@@ -72,13 +72,13 @@
   throw msg
 }
 
-::CHECK <- function(shouldBeTrue, aDesc) {
+::CHECK <- function(shouldBeTrue, _aDesc) {
   if (!shouldBeTrue) {
-    ::THROW("CHECK FAILED.",aDesc)
+    ::THROW("CHECK FAILED.",_aDesc)
   }
 }
 
-::CHECK_EQUAL <- function(a,b,aDesc) {
+::CHECK_EQUAL <- function(a,b,_aDesc) {
   local m
   local r
   try {
@@ -112,11 +112,11 @@
     }
   }
   if (!r) {
-    ::THROW("CHECK_EQUAL FAILED: " + m, aDesc)
+    ::THROW("CHECK_EQUAL FAILED: " + m, _aDesc)
   }
 }
 
-::CHECK_CLOSE <- function(a,b,tolerance,aDesc) {
+::CHECK_CLOSE <- function(a,b,tolerance,_aDesc) {
   local m
   local r
   try {
@@ -139,7 +139,7 @@
     }
   }
   if (!r) {
-    ::THROW("CHECK_CLOSE FAILED: " + m, aDesc)
+    ::THROW("CHECK_CLOSE FAILED: " + m, _aDesc)
   }
 }
 
@@ -156,13 +156,18 @@
   ::FIXTURES[aName].name <- aName
 }
 
-::TEST <- function(aFixture,aName,aMeth) {
+::TEST <- function(aFixture,aName,_aMeth) {
   // allow for function(aName,aMeth) --- no fixture...
-  if (!aMeth) {
-    aMeth = aName
+  local meth
+  if (_aMeth) {
+    meth = _aMeth;
+  }
+  else {
+    meth = aName
     aName = aFixture
     aFixture = "GLOBAL"
   }
+
   if (typeof(aFixture) == "string") {
     if (!(aFixture in ::FIXTURES))
       throw "No fixture '"+aFixture+"."
@@ -177,8 +182,8 @@
   ::TESTS.append({
     fixture = aFixture.name,
     name = aFixture.name + "-" + aName,
-    meth = aMeth
-  }.SetDelegate(aFixture.Clone()))
+    meth = meth
+  }.SetDelegate(aFixture.Clone()));
 }
 
 ::RUN_TESTS <- function(aName) {

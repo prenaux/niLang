@@ -51,11 +51,11 @@ local module = {
       _resume = false
       _fileStart = null
       _fp = ::lang.urlOpen(aFilePath)
-      function reset(aSeekTo) {
+      function reset(_aSeekTo) {
         _count = 0;
         if (_fp) {
-          if (aSeekTo != null) {
-            _fileStart = aSeekTo;
+          if (_aSeekTo != null) {
+            _fileStart = _aSeekTo;
           }
           else if (_fileStart == null) {
             // first time reset is called we initialize _fileStart to the current

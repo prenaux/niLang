@@ -3,7 +3,7 @@
 ::Import("lang.ni")
 ::Import("json.ni")
 
-::gConsole <- ::CreateGlobalInstance("niLang.Console")
+::gConsole <- ::CreateGlobalInstance("niLang.Console").QueryInterface("iConsole")
 
 ::console <- {
   //! Console sink
@@ -43,7 +43,7 @@
   _allCommands = {}
 
   //! Register the specified command
-  function registerCommand(ns,name,desc,func,key,icon) {
+  function registerCommand(ns,name,desc,func,key,_aIcon) {
     local cmdName = ns+"."+name;
 
     // Adding shortcut
@@ -54,13 +54,13 @@
       ::gUIContext.AddShortcut(key,cmdName)
     }
 
-    local s = commandSink.Clone()
+    local s = ::LINT_AS_TYPE("table:commandSink", commandSink.Clone())
     s._name = name
     s._ns = ns
     s._desc = desc
     s._func = func
     s._key = key
-    s._icon = icon
+    s._icon = _aIcon
     ::gConsole.AddCommand(s)
 
     _allCommands[cmdName] <- s;
@@ -103,9 +103,9 @@
     }
     ::gConsole.AddNamespace(aName)
     foreach (key,cmd in aFuncs) {
-      if (typeof(cmd) != "table") continue
-      local sc = ("_key" in cmd) ? cmd._key : null
-      this.registerCommand(aName,key,cmd.?_desc,cmd._func,sc)
+      if (typeof(cmd) == "table") {
+        this.registerCommand(aName,key,cmd.?_desc,cmd._func,cmd.?_key);
+      }
     }
   }
 

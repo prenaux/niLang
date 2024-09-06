@@ -65,14 +65,14 @@ local module = {
   ///////////////////////////////////////////////
   function createUTF16StringFile(string) {
     local f = ::gLang.CreateFileDynamicMemory(0,"--string--")
-    f.BeginTextFileWrite(::eTextEncodingFormat.UTF16,true)
+    f.BeginTextFileWrite(::eTextEncodingFormat.UTF16LE,true)
     f.WriteString(string)
     f.SeekSet(0)
     return f
   }
   function createUTF16StringFileEx(string,name) {
     local f = ::gLang.CreateFileDynamicMemory(0,name)
-    f.BeginTextFileWrite(::eTextEncodingFormat.UTF16,true)
+    f.BeginTextFileWrite(::eTextEncodingFormat.UTF16LE,true)
     f.WriteString(string)
     f.SeekSet(0)
     return f
@@ -81,14 +81,14 @@ local module = {
   ///////////////////////////////////////////////
   function createUTF32StringFile(string) {
     local f = ::gLang.CreateFileDynamicMemory(0,"--string--")
-    f.BeginTextFileWrite(::eTextEncodingFormat.UTF32,true)
+    f.BeginTextFileWrite(::eTextEncodingFormat.UTF32LE,true)
     f.WriteString(string)
     f.SeekSet(0)
     return f
   }
   function createUTF32StringFileEx(string,name) {
     local f = ::gLang.CreateFileDynamicMemory(0,name)
-    f.BeginTextFileWrite(::eTextEncodingFormat.UTF32,true)
+    f.BeginTextFileWrite(::eTextEncodingFormat.UTF32LE,true)
     f.WriteString(string)
     f.SeekSet(0)
     return f
@@ -157,13 +157,13 @@ local module = {
   }
 
   ///////////////////////////////////////////////
-  function homeFileOpenWrite(aAppName,aPath,aAppend) {
+  function homeFileOpenWrite(aAppName,aPath,_aAppend) {
     local path = "";
     path = path.adddirback(::gLang.property["ni.dirs.home"])
     path = path.adddirback(aAppName)
     ::gRootFS.FileMakeDir(path)
     path += aPath;
-    return fileOpenWrite(path,aAppend)
+    return fileOpenWrite(path,_aAppend)
   }
 
   ///////////////////////////////////////////////
@@ -174,7 +174,7 @@ local module = {
 
   ///////////////////////////////////////////////
   // Open a file in write mode
-  function fileOpenWrite(aPath,aAppend)
+  function fileOpenWrite(aPath,_aAppend)
   {
     if (typeof(aPath) == "iunknown") {
       local fp = aPath.QueryInterface("iFile")
@@ -184,7 +184,7 @@ local module = {
       return fp
     }
     else {
-      return ::gRootFS.FileOpen(aPath,::eFileOpenMode.Write|(aAppend?::eFileOpenMode.Append:0))
+      return ::gRootFS.FileOpen(aPath,::eFileOpenMode.Write|(_aAppend?::eFileOpenMode.Append:0))
     }
   }
 
@@ -235,9 +235,9 @@ local module = {
   }
 
   ///////////////////////////////////////////////
-  function writeString(aString,aPath,aAppend)
+  function writeString(aString,aPath,_aAppend)
   {
-    local fp = ::fs.fileOpenWrite(aPath,aAppend)
+    local fp = ::fs.fileOpenWrite(aPath,_aAppend)
     if (!fp) throw "Can't open file '"+aPath+"'."
     fp.WriteString(aString)
   }
@@ -253,7 +253,7 @@ local module = {
   ///////////////////////////////////////////////
   // Get the temporary directory
   function getTempDir() {
-    local env = ::getenv("TEMP")
+    local env = ::gLang.GetEnv("TEMP")
     local dir = "".setdir(env)
     return dir
   }
@@ -281,3 +281,4 @@ local module = {
 }
 
 ::namespaceOrModule(this, "fs", module);
+::fs <- module

@@ -1,7 +1,7 @@
 _ip <- {
   _value = {
     function exec() {
-      ::print("EXEC\n")
+      ::vmprint("EXEC\n")
     }
     function tostring() {
       return "YEY"

@@ -5,7 +5,8 @@
 ::Import("assert.ni")
 ::Import("fs.ni")
 
-::namespace("xml", {
+::LINT_CHECK_TYPE("null", ::?xml);
+::xml <- {
   _indent = "\t"
 
   tNode = ::delegate(::oo.base, {
@@ -194,4 +195,4 @@
     fp.SeekSet(0)
     return fp.ReadString()
   }
-})
+}

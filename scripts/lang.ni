@@ -4,35 +4,35 @@
 ::Import("niScript");
 
 local __lint = {
-  this_key_notfound_callk = 0
-  this_key_notfound_getk = 0
+  // this_key_notfound_callk = 0
+  // this_key_notfound_getk = 0
 };
 
 // Get the Lang instance.
-::gLang <- ::CreateInstance("niLang.Lang")
+::gLang <- ::CreateInstance("niLang.Lang").QueryInterface("iLang")
 
-::CreateGlobalInstance <- function(aObjID,avarA,avarB) {
-  local o = ::gLang.global_instance[aObjID];
-  if (o)
-    return o
-  o = ::CreateInstance(aObjID,avarA,avarB)
-  if (!o)
-    return null
-  ::gLang.global_instance[aObjID] = o
+::CreateGlobalInstance <- function(aObjID,_avarA,_avarB) iUnknown {
+  local o = ::gLang.GetGlobalInstance(aObjID);
+  if (o) {
+    return o;
+  }
+  o = ::CreateInstance(aObjID,_avarA,_avarB)
+  ::assert(!!o);
+  ::gLang.SetGlobalInstance(aObjID, o)
   return o
 }
 
 // Get the Math instance.
-::gMath <- ::CreateGlobalInstance("niLang.Math")
+::gMath <- ::CreateGlobalInstance("niLang.Math").QueryInterface("iMath")
 
 // Set the delegate on a table and then return it
-::delegate <- function(aTableToSetAsDelegate,aTable) {
+function ::delegate(aTableToSetAsDelegate,aTable) {
   aTable.SetDelegate(aTableToSetAsDelegate)
   return aTable
 }
 
 // Create a namespace and merge the specified table
-::namespace <- function(name,table,nsTable) {
+function ::namespace(name,table,nsTable) {
   nsTable = nsTable || ::getvmroottable()
   local toks = name.split(".")
   foreach (t in toks) {
@@ -49,7 +49,7 @@ local __lint = {
       initialize.call(nsTable)
     }
   }
-  return nsTable
+  return table
 }
 
 // Create a vector container, see ni::CreateContainerVector
@@ -121,7 +121,8 @@ local __lint = {
   local d = ::GetLangDelegate("string")
   if (!d) throw "Can't get 'string' LangDelegate."
   d.GetNumChars <- #() {
-    local it = this.CreateCharIt(0)
+    local that = ::LINT_AS_TYPE("string",this)
+    local it = that.CreateCharIt(0)
     return it.num_chars
   }
   d.quote <- function() {
@@ -129,7 +130,7 @@ local __lint = {
     return "\"" + str + "\""
   }
   d.unquote <- function() {
-    local str = this;
+    local str = ::LINT_AS_TYPE("string",this);
     if (str.startswith("\"")) {
       str = str.slice(1)
     }
@@ -140,7 +141,7 @@ local __lint = {
   }
   d.replace <- function(aSearchFor, aReplaceBy) {
     if (typeof aSearchFor == "table") {
-      local s = this;
+      local s = ::LINT_AS_TYPE("string",this);
       foreach (k,v in aSearchFor) {
         s = s.replace(k,v);
       }
@@ -230,15 +231,15 @@ local __lint = {
   // Join all elements of an array into a text, same as the regular join with
   // spaces but it takes into account punctuation to decide whether or not to
   // insert a space.
-  d.joinText <- function(aFirst,aLast,aToString) {
-    aFirst = aFirst || 0;
-    aLast = aLast || this.len();
-    aToString = aToString || ::lang.toString;
+  d.joinText <- function(_aFirst,_aLast,_aToString) {
+    _aFirst = _aFirst || 0;
+    _aLast = _aLast || this.len();
+    _aToString = _aToString || ::lang.toString;
     local r = "";
-    for (local i = aFirst; i < aLast; ++i) {
-      local v = aToString(this[i]);
+    for (local i = _aFirst; i < _aLast; ++i) {
+      local v = _aToString(this[?i]);
       local c = v[?0];
-      if (i != aFirst && c != ' ' && c != ',' && c != ':') {
+      if (i != _aFirst && c != ' ' && c != ',' && c != ':') {
         r += " ";
       }
       r += v;
@@ -290,6 +291,7 @@ local __lint = {
 {
   local d = ::GetLangDelegate("vec4f")
   if (!d) throw "Can't get 'vec4f' LangDelegate."
+
   d.ToRectString <- function() {
     return "Rect(" + x + "," + y + "," + width + "," + height + ")"
   }
@@ -303,24 +305,28 @@ local __lint = {
 {
   local doMergeInArray = function(aColl) {
     switch (typeof aColl) {
-      case "array":
-      this.extend(aColl)
-      break;
-      case "iunknown":
-      if (!aColl.QueryInterface("iCollection")) {
+      case "array": {
+        this.extend(aColl)
+        break;
+      }
+      case "iunknown": {
+        if (!aColl.QueryInterface("iCollection")) {
+          this.Add(aColl)
+          break;
+        }
+      }
+      // fallthrough to iteration
+      case "table": {
+        foreach (v in aColl) {
+          this.Add(v)
+        }
+        break;
+      }
+      // aColl is a value type...
+      default: {
         this.Add(aColl)
         break;
       }
-      // fallthrough to iteration
-      case "table":
-      foreach (v in aColl) {
-        this.Add(v)
-      }
-      break;
-      // aColl is a value type...
-      default:
-      this.Add(aColl)
-      break;
     }
     return this
   }
@@ -344,21 +350,24 @@ local __lint = {
     else {
       // collection is a vector, list or set
       switch (typeof aColl) {
-        case "iunknown":
-        if (!aColl.QueryInterface("iCollection")) {
-          this.Add(aColl);
-          break;
+        case "iunknown": {
+          if (!aColl.QueryInterface("iCollection")) {
+            this.Add(aColl);
+            break;
+          }
         }
         // fallthrough to iteration
         case "array":
-        case "table":
-        foreach (v in aColl) {
-          this.Add(v)
+        case "table": {
+          foreach (v in aColl) {
+            this.Add(v)
+          }
+          break;
         }
-        break;
-        default:
-        this.Add(aColl)
-        break;
+        default: {
+          this.Add(aColl)
+          break;
+        }
       }
     }
     return this
@@ -468,7 +477,7 @@ local __lint = {
       return ::lang.dataTableToString(this,aMode || "xml")
     }
 
-    local function dtGetStringPropertyToEnum(dt,pname,aEnumDef,aEnumToStringFlags,aDefaultValue) {
+    local function dtGetStringPropertyToEnum(iDataTable dt,pname,aEnumDef,aEnumToStringFlags,aDefaultValue) {
       local pindex = dt.property_index[pname]
       if (pindex == invalid)
         return aDefaultValue;
@@ -487,7 +496,7 @@ local __lint = {
       }
     }
 
-    local function dtSetEnumPropertyToString(dt,pname,aEnumDef,aEnumToStringFlags,aSetValue) {
+    local function dtSetEnumPropertyToString(iDataTable dt,pname,aEnumDef,aEnumToStringFlags,aSetValue) {
       if (aEnumDef) {
         dt.string[pname] = ::EnumToString(aSetValue,aEnumDef,aEnumToStringFlags)
       }
@@ -568,7 +577,7 @@ local __lint = {
 
   ///////////////////////////////////////////////
   function getLOA() string {
-    return ::gLang.property["ni.loa.os"] + "-" + ::gLang.property["ni.loa.arch"]
+    return ::gLang.GetProperty("ni.loa.os") + "-" + ::gLang.GetProperty("ni.loa.arch")
   }
 
   ///////////////////////////////////////////////
@@ -587,7 +596,7 @@ local __lint = {
 
   ///////////////////////////////////////////////
   function getHostOS() string {
-    return ::gLang.property["ni.loa.os"]
+    return ::gLang.GetProperty("ni.loa.os")
   }
 
   ///////////////////////////////////////////////
@@ -597,10 +606,10 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function getProperty(string aKey, string aDefault) string {
-    local v = ::gLang.property[aKey]
+  function getProperty(string aKey, string _aDefault) string {
+    local v = ::gLang.GetProperty(aKey)
     if (!(v.?len()))
-      return aDefault
+      return _aDefault;
     return v
   }
 
@@ -614,7 +623,7 @@ local __lint = {
 
   ///////////////////////////////////////////////
   function getPropertyBool(string aKey, bool aDefault) bool {
-    local v = ::gLang.property[aKey]
+    local v = ::gLang.GetProperty(aKey)
     if (!(v.?len()))
       return aDefault
     return ::lang.toBool(v)
@@ -640,26 +649,27 @@ local __lint = {
   ///////////////////////////////////////////////
   function implements(obj,interface) {
     switch (typeof(obj)) {
-      case "iunknown":
-      return obj.QueryInterface(interface);
+      case "iunknown": {
+        return obj.QueryInterface(interface);
+      }
     }
     return null
   }
 
   ///////////////////////////////////////////////
-  function toBool(v,aDefaultIfNull) {
+  function toBool(v, bool _aDefaultIfNull) bool {
     if (v == null) {
-      return aDefaultIfNull;
+      return _aDefaultIfNull;
     }
     if (typeof v == "string") {
       if (v.IEq("no") ||
           v.IEq("false") ||
           v.IEq("null") ||
           v.IEq("0"))
-        return null;
+        return false;
     }
     if (!v) {
-      return null;
+      return false;
     }
     return true;
   }
@@ -667,8 +677,9 @@ local __lint = {
   ///////////////////////////////////////////////
   function isValid(obj) {
     switch (typeof(obj)) {
-      case "iunknown":
-      return obj.isvalid();
+      case "iunknown": {
+        return obj.isvalid();
+      }
     }
     return false
   }
@@ -701,11 +712,6 @@ local __lint = {
   {
     local q = aObject.QueryInterface(aInterface);
     return (q != null)
-  }
-
-  ///////////////////////////////////////////////
-  function unboxArgs(aArgs) {
-    return (typeof(aArgs[?0]) == "array" && aArgs.len() == 1) ? aArgs[0] : aArgs;
   }
 
   ///////////////////////////////////////////////
@@ -801,12 +807,12 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function getCurrentProcess() {
-    return ::gLang.process_manager.current_process
+  function getCurrentProcess() iOSProcess {
+    return ::gLang.process_manager.current_process;
   }
 
   ///////////////////////////////////////////////
-  function toQuotedString(str) {
+  function toQuotedString(str) string {
     local theStr = str
     if (theStr.contains("\"") ||
         theStr.contains("\\") ||
@@ -820,15 +826,15 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function toValueString(v,aDefaultHandler,aRecursionGuard,aLimitToString) {
+  function toValueString(v,_aDefaultHandler,_aRecursionGuard,_aLimitToString) string {
     if (typeof v == "string") {
       return toQuotedString(v)
     }
-    return toString(v,aDefaultHandler,aRecursionGuard,aLimitToString)
+    return toString(v,_aDefaultHandler,_aRecursionGuard,_aLimitToString)
   }
 
   ///////////////////////////////////////////////
-  function toString(v,aDefaultHandler,aRecursionGuard,aLimitToString) {
+  function toString(v,_aDefaultHandler,_aRecursionGuard,_aLimitToString) string {
     local s = ""
     switch (typeof(v)) {
       case "function": {
@@ -840,27 +846,27 @@ local __lint = {
         break
       }
       case "array": {
-        aRecursionGuard = aRecursionGuard || {}
+        _aRecursionGuard = _aRecursionGuard || {}
         local guardId = v.ToIntPtr()
-        if (guardId in aRecursionGuard) {
+        if (guardId in _aRecursionGuard) {
           s += ::format("[:RECURSIVE:%d]", guardId)
         }
         else {
-          aRecursionGuard[guardId] <- true
+          _aRecursionGuard[guardId] <- true
           s += "["
           foreach (idx,a in v) {
-            if (aLimitToString && idx > 30) {
+            if (_aLimitToString && idx > 30) {
               s += "..."
               break
             }
             else if (idx != 0) {
               s += ","
             }
-            if (aLimitToString && s.len() > 150) {
+            if (_aLimitToString && s.len() > 150) {
               s += "...";
               break;
             }
-            s += ::lang.toValueString(a,aDefaultHandler,aRecursionGuard,aLimitToString)
+            s += ::lang.toValueString(a,_aDefaultHandler,_aRecursionGuard,_aLimitToString)
           }
           if (s.endswith(","))
             s = s.slice(0,s.len()-1)
@@ -869,34 +875,34 @@ local __lint = {
         break;
       }
       case "table": {
-        aRecursionGuard = aRecursionGuard || {}
+        _aRecursionGuard = _aRecursionGuard || {}
         local guardId = v.ToIntPtr()
-        if (guardId in aRecursionGuard) {
+        if (guardId in _aRecursionGuard) {
           s += ::format("{:RECURSIVE:%d}", guardId)
         }
         else {
-          aRecursionGuard[guardId] <- true
+          _aRecursionGuard[guardId] <- true
           s += "{"
           local idx = 0
           foreach (k,a in v) {
-            if (aLimitToString && idx > 30) {
+            if (_aLimitToString && idx > 30) {
               s += "..."
               break
             }
             else if (idx != 0)  {
               s += ","
             }
-            if (aLimitToString && s.len() > 150) {
+            if (_aLimitToString && s.len() > 150) {
               s += "...";
               break;
             }
-            s += ::lang.toString(k,aDefaultHandler,aRecursionGuard,aLimitToString)
+            s += ::lang.toString(k,_aDefaultHandler,_aRecursionGuard,_aLimitToString)
             s += "="
-            if (aLimitToString && s.len() > 150) {
+            if (_aLimitToString && s.len() > 150) {
               s += "...";
               break;
             }
-            s += ::lang.toValueString(a,aDefaultHandler,aRecursionGuard,aLimitToString)
+            s += ::lang.toValueString(a,_aDefaultHandler,_aRecursionGuard,_aLimitToString)
             ++idx
           }
           if (s.endswith(","))
@@ -907,17 +913,17 @@ local __lint = {
       }
       case "iunknown": {
         if (v.?ToString) {
-          s += v.ToString()
+          s += v.?ToString()
           break;
         }
       }
       default: {
-        if (aDefaultHandler) {
-          if (aLimitToString && s.len() > 150) {
+        if (_aDefaultHandler) {
+          if (_aLimitToString && s.len() > 150) {
             s += "...";
             break;
           }
-          s += aDefaultHandler(v)
+          s += _aDefaultHandler(v)
         }
         else {
           local rem = ::SetRaiseErrorMode(0)
@@ -925,7 +931,7 @@ local __lint = {
             s += v
           }
           catch (e) {
-            s += typeof v
+            s += (typeof v);
           }
           ::SetRaiseErrorMode(rem)
         }
@@ -1041,8 +1047,8 @@ local __lint = {
   // Thus child tables can be accessed by name using parentDT.CHILD_TABLE_NAME, or by index using parentDT.__tables[CHILD_TABLE_INDEX]
   // in case of conflict - property name overriding a table name or several copy of child tables with the same name - use
   // the tables array.
-  function convertDataTableToTable(aDT) {
-    function doConvert(aDT,aTable) {
+  function convertDataTableToTable(iDataTable aDT) {
+    function doConvert(iDataTable aDT, table aTable) {
       if (!aDT)
         return;
       if (aDT.num_children > 0) {
@@ -1085,7 +1091,7 @@ local __lint = {
   // If a __name property exists and aName is null sets that property's value as the datatable's name
   // If a __tables property exists serialize those first and makes sure those tables arent serialized twice
   //    rem for this to work the extra added tables need to have a name which is different of all tables in the array
-  function convertTableToDataTable(aTable,aName) {
+  function convertTableToDataTable(table aTable, string aName) iDataTable {
     if (!aName) {
       if ("__name" in aTable) {
         aName = aTable["__name"]
@@ -1182,12 +1188,12 @@ local __lint = {
   function urlExists(aURL) {
     return ::gLang.URLExists(aURL)
   }
-  function urlDecode(aURL) {
+  function urlDecode(string aURL) string {
     if (aURL.?startswith("url://")) {
-      aURL = aURL.after("url://")
-      aURL = aURL.DecodeUrl()
+      aURL = aURL.after("url://");
+      aURL = aURL.DecodeUrl();
     }
-    return aURL
+    return aURL;
   }
   function urlEncode(aURL) {
     if (aURL.startswith("url://")) {
@@ -1344,15 +1350,12 @@ tImportModule <- {
 ::NewImportModule <- ::lang.newClosure(tImportModule,tImportModule.newImport)
 ::ImportModule <- ::lang.newClosure(tImportModule,tImportModule.import)
 
-function ::isModule(aThis) {
-  ::assert(typeof aThis == "table" && aThis.?len());
+function ::isModule(table aThis) {
   local isModule = ("__module_path" in aThis)
   return isModule;
 }
 
-function ::namespaceOrModule(aThis, aNamespaceName, aModule) {
-  ::assert(typeof aNamespaceName == "string" && aNamespaceName.?len());
-  ::assert(typeof aModule == "table" && aModule.?len());
+function ::namespaceOrModule(aThis, string aNamespaceName, table aModule) {
   local isModule = ::isModule(aThis);
   if (!isModule) {
     if (aThis.?module) {

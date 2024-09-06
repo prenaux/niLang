@@ -5,14 +5,14 @@
 local module = {
   ///////////////////////////////////////////////
   // Create a new file pattern based regular expression
-  function filePattern(aStr) {
-    return ::CreateInstance("niLang.FilePatternRegex",aStr,"|,")
+  function filePattern(aStr) iRegex {
+    return ::CreateInstance("niLang.FilePatternRegex",aStr,"|,").QueryInterface("iRegex");
   }
 
   ///////////////////////////////////////////////
   // Create a new pcre regular expression
-  function pcre(aStr,aOptions) {
-    return ::CreateInstance("niLang.PCRE",aStr,aOptions);
+  function pcre(aStr,aOptions) iPCRE {
+    return ::CreateInstance("niLang.PCRE",aStr,aOptions).QueryInterface("iPCRE");
   }
 }
 ::namespaceOrModule(this, "regex", module);

@@ -5,7 +5,7 @@
 ::Import("regex.ni")
 ::Import("fs.ni")
 
-::gConcurrent <- ::Concurrent_Get()
+::gConcurrent <- ::LINT_AS_TYPE("iConcurrent",::Concurrent_Get())
 
 ::concurrent <- {
 
@@ -95,17 +95,17 @@
     throw "Invalid function type: " + typeof(aFunOrTable)
   }
 
-  function ioRun(aRunnable,aThis) {
+  function ioRun(aRunnable,aThis) iFuture {
     local r = ::concurrent.newRunnable(aRunnable,aThis)
     return ::gConcurrent.executor_io.Submit(r)
   }
 
-  function cpuRun(aRunnable,aThis) {
+  function cpuRun(aRunnable,aThis) iFuture {
     local r = ::concurrent.newRunnable(aRunnable,aThis)
     return ::gConcurrent.executor_cpu.Submit(r)
   }
 
-  function mainRun(aRunnable,aThis) {
+  function mainRun(aRunnable,aThis) iFuture {
     local r = ::concurrent.newRunnable(aRunnable,aThis)
     return ::gConcurrent.executor_main.Submit(r)
   }

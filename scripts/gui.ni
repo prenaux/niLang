@@ -4,7 +4,7 @@
 ::Import("lang.ni")
 ::Import("math.ni")
 
-::gUIContext <- ::gLang.global_instance["iUIContext"]
+::gUIContext <- ::gLang.global_instance["iUIContext"].QueryInterface("iUIContext")
 ::gGraphics <- ::gUIContext.?graphics
 ::gGraphicsContext <- ::gUIContext.?graphics_context
 
@@ -15,8 +15,9 @@
   //
   //--------------------------------------------------------------------------------------------
   function hideToolbarPopup() {
-    if (::gUIContext.toolbar.auto_hide)
-      ::gUIContext.toolbar.show_page = false
+    local tb = ::gUIContext.toolbar.?QueryInterface("iWidgetToolbar")
+    if (tb.auto_hide)
+      tb.show_page = false
   }
 
   //--------------------------------------------------------------------------------------------

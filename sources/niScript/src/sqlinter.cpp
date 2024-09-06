@@ -1233,6 +1233,7 @@ struct sLinter {
                   return _ddel(ss,table)->Get(key,dest);
                 case eScriptType_Closure:
                 case eScriptType_NativeClosure:
+                case eScriptType_FunctionProto:
                   return _ddel(ss,closure)->Get(key,dest);
                 case eScriptType_UUID:
                   return _ddel(ss,uuid)->Get(key,dest);
@@ -1275,7 +1276,7 @@ struct sLinter {
 
       case OT_INTEGER:case OT_FLOAT:
         return _ddel(ss,number)->Get(key,dest);
-      case OT_CLOSURE: case OT_NATIVECLOSURE:
+      case OT_CLOSURE: case OT_NATIVECLOSURE: case OT_FUNCPROTO:
         return _ddel(ss,closure)->Get(key,dest);
       default:
         return false;

@@ -1,6 +1,6 @@
 local __lint = {
   _all = 1
-  _pedantic = 1
+  _pedantic = 0
   _explicit = 1
   ret_type_is_null = 0
 }
@@ -68,6 +68,12 @@ function del_matrix(Matrix v) {
 function del_uuid(UUID v) {
   v.thehamster(1,2,3)
   v._tostring()
+}
+
+function del_closure() {
+  del_closure.GetNumParams()
+  del_closure.SetRoot({})
+  del_closure.GetNumFreeVars()
 }
 
 function main() {

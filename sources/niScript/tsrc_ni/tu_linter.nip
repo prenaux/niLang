@@ -632,7 +632,11 @@ function main() {
         aLogs, 1,
         {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'TABLE'.*linter_20_namespace.ni:23:35]]});
 
-      ::CHECK_EQUAL(3,aLintResults.mLogsError,"Expected lint errors.");
+      EXPECTED_LINT(
+        aLogs, 1,
+        {[Lint: Error: key_notfound_getk: "fluffy" not found in TABLE{bar.*linter_20_namespace.ni:29:41]});
+
+      ::CHECK_EQUAL(4,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

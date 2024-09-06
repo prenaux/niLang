@@ -2170,9 +2170,12 @@ void SQFunctionProto::LintTrace(
 
     // assign a function name if there isn't one this takes care of the
     // `someslot <- function() {}` pattern
-    if (sq_isstring(k) && sq_isfuncproto(v)) {
-      if (_funcproto(v)->_name == _null_) {
+    if (sq_isstring(k)) {
+      if (sq_isfuncproto(v) && _funcproto(v)->_name == _null_) {
         _funcproto(v)->_name = k;
+      }
+      else if (sq_istable(v) && _table(v)->GetDebugHName() == nullptr) {
+        _table(v)->SetDebugName(_stringhval(k));
       }
     }
 

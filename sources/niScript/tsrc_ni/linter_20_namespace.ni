@@ -23,4 +23,8 @@ function create_namespaces() {
   ::LINT_CHECK_TYPE("null", ::?foo) // should fail because we already declared foo
   ::foo <- {
   }
+
+  // this should say that fluffy doesnt exist, that's what we want, we should
+  // only ? for the leaf namespace we're creating
+  ::LINT_CHECK_TYPE("null", ::bar.fluffy.?hamster);
 }

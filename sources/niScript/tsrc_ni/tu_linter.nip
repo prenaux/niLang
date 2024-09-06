@@ -21,7 +21,8 @@
 // - [ ] p0: Add all missing constructor utility functions to the linter, ::Vec2/3/4, ::Matrix, etc..
 // - [ ] p0: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
 // - [ ] p0: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
-// - [ ] p0: Handle varargs functions, function(_args_)
+// - [ ] p0: correctly set the type of the foreach iterator variables
+// - [ ] p0: table.Clone() should forward the table type, or just do an actual clone
 //
 // - [ ] p1: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
 // - [ ] p1: Add a var type - as in resolve it - which explicitly states that we accept any type
@@ -36,7 +37,11 @@
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
 // - [ ] p2: Implement basic operators for literal types for float, string & integers
 // - [ ] p2: Some various lingering instances of incorrect line number being printed when no semicolon are present and also with arg counts when doing a multiline function call - frequent with ::namespace() for example.
+// - [ ] p2: unused_local_variable
+// - [ ] p2: unused_parameter / unused_outer_variable
 //
+// - [x] p0: Handle varargs functions, function(_args_)
+// - [x] p0: Handle optional parameters, all parameters starting with an underscore (_aSomeArg) could be considered optional.
 // - [x] p0: Lint messages should output in stderr not stdout.
 // - [x] p2: Handle table:mytable & ::some.namespace.table_name to define the shape of a table type
 // - [x] p0: 'safe' .?somefunc() access should not warn/error

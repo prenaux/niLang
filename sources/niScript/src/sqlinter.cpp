@@ -504,7 +504,7 @@ _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
 _DEF_LINT(typeof_usage,IsWarning,None);
-_DEF_LINT(param_type,IsError,None);
+_DEF_LINT(param_decl,IsError,None);
 
 // Pedantic lints
 _DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
@@ -577,7 +577,7 @@ struct sLinter {
     _REG_LINT(ret_type_cant_assign);
     _REG_LINT(null_notfound);
     _REG_LINT(typeof_usage);
-    _REG_LINT(param_type);
+    _REG_LINT(param_decl);
   }
 #undef _REG_LINT
 
@@ -666,7 +666,7 @@ struct sLinter {
     _E(ret_type_cant_assign)
     _E(null_notfound)
     _E(typeof_usage)
-    _E(param_type)
+    _E(param_decl)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -1865,6 +1865,8 @@ void SQFunctionProto::LintTrace(
   // Set the parameters in the stack
   _LTRACE(("--- PARAMS --------------------------------------------\n"));
   {
+    int firstOptional = -1;
+    SQObjectPtr firstOptionalName;
     niLoop(pi,_parameters.size()) {
       const SQFunctionParameter& param = _parameters[pi];
       _LTRACE(("param[%d]: %s, type: %s",
@@ -1892,12 +1894,28 @@ void SQFunctionProto::LintTrace(
         return;
       }
 
+      // check optional parameter declaration sanity
+      if (pi < thisfunc_paramssize) {
+        if (_stringval(param._name)[0] == '_') {
+          if (firstOptional < 0) {
+            firstOptional = pi;
+            firstOptionalName = param._name;
+          }
+        }
+        else if (firstOptional >= 0) {
+          _LINT_(param_decl, thisfunc->GetSourceLineCol(), niFmt(
+            "Non-optional parameter[%d] %s after optional parameter[%d] %s.",
+            pi-1, _ObjToString(param._name),
+            firstOptional, _ObjToString(firstOptionalName)));
+        }
+      }
+
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
 
       SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure);
       if (sqa_getscriptobjtype(resolvedParamType) == eScriptType_ErrorCode) {
-        if (_LENABLED(param_type)) {
-          _LINT_(param_type, thisfunc->GetSourceLineCol(), niFmt(
+        if (_LENABLED(param_decl)) {
+          _LINT_(param_decl, thisfunc->GetSourceLineCol(), niFmt(
             "Cant resolve type %s of parameter[%d] %s: %s",
             _ObjToString(param._type),
             pi-1, _ObjToString(param._name),
@@ -2358,10 +2376,41 @@ void SQFunctionProto::LintTrace(
 
       _LTRACE(("call_func: %s", _FuncProtoToString(func)));
 
-      if (_LENABLED(call_num_args) && (paramssize != nargs)) {
-        _LINT(call_num_args,
-              niFmt("call_func: Incorrect number of arguments passed, expected %d but got %d. Calling %s.",
-                    arity, nargs-1, _FuncProtoToString(func)));
+      if (paramssize != nargs) {
+        // is varargs?
+        if (arity == 1 && func._parameters[1]._name == _HC(_args_)) {
+          // any number of parameters is fine
+          niUnused(0);
+        }
+        // too many arguments is always wrong
+        else if (nargs > paramssize) {
+          if (_LENABLED(call_num_args)) {
+            _LINT(call_num_args,
+                  niFmt("call_func: Too many arguments passed, expected at most %d but got %d. Calling %s.",
+                        arity, nargs-1, _FuncProtoToString(func)));
+          }
+        }
+        else {
+          niLetMut optionalParams = 0;
+          niLoop(i, paramssize) {
+            niLet paramName = _stringval(func._parameters[i]._name);
+            if (paramName[0] == '_') {
+              // It's an optional parameter, everything afterward is
+              // effectively optional aswell. Validation of the parameter
+              // names is done when the closure is created.
+              optionalParams = paramssize-i;
+              break;
+            }
+          }
+
+          if (nargs < (paramssize-optionalParams)) {
+            if (_LENABLED(call_num_args)) {
+              _LINT(call_num_args,
+                    niFmt("call_func: Not enough arguments passed, expected at least %d but got %d. Calling %s.",
+                          arity-optionalParams, nargs-1, _FuncProtoToString(func)));
+            }
+          }
+        }
       }
 
       niLet rettype = aLinter.ResolveType(func._returntype, thisClosure);

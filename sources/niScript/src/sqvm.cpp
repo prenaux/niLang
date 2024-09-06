@@ -7,6 +7,7 @@
 #include "sqclosure.h"
 #include "sqtable.h"
 #include "sqarray.h"
+#include "sq_hstring.h"
 #include "ScriptVM.h"
 #include "ScriptTypes.h"
 #include "ScriptAutomation.h"
@@ -1054,7 +1055,6 @@ bool SQVM::DoSet(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPt
 
 }
 
-static _HDecl(_args_);
 bool SQVM::StartCall(SQClosure* closure, int target, int nargs, int stackbase, bool tailcall)
 {
   SQFunctionProto* func = _funcproto(closure->_function);
@@ -1072,6 +1072,13 @@ bool SQVM::StartCall(SQClosure* closure, int target, int nargs, int stackbase, b
     // niDebugFmt(("...VARARGS..."));
     const tU32 pbase = stackbase+paramssize-1;
     const tU32 numVarArgs = nargs-1;
+    // TODO: Maybe move that array in the closure so that we don't recreate it
+    //       at every call?
+    //
+    //       This does seem like an obvious optimization but for now I'm
+    //       leaving it as is as I think a proper optimization phase should be
+    //       done later on and accompanied by some benchmarks/tests to support
+    //       it.
     Ptr<SQArray> args = SQArray::Create(numVarArgs);
     niLoop(i,numVarArgs) {
       args->_values[i] = _stack[pbase+i];

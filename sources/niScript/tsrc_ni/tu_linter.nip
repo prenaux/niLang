@@ -173,7 +173,7 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__moduleroot__]})
-      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{no_debug_name]})
+      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{subTable]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot__]})
@@ -212,26 +212,24 @@ function main() {
   testLinter.check(
     "linter_04_function_call.ni",
     function(aLogs) {
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[call_num_args: call_func: Incorrect number of arguments passed, expected 0 but got 1. Calling f0/]})
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[call_num_args: call_func: Incorrect number of arguments passed, expected 0 but got 2. Calling f0/]})
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 4. Calling f3/]})
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 2. Calling f3/]})
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[call_num_args: call_func: Incorrect number of arguments passed, expected 3 but got 4. Calling f3b/]})
-      EXPECTED_LINT(
-        aLogs, 6,
-        {[call_num_args: call_func: Incorrect number of arguments passed]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_atleast2/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_atleast2/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_atleast2/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_borkedoptional/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_borkedoptional/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_borkedoptional/4(2)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 1. Calling f0/0(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 2. Calling f0/0(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 0. Calling f3/3(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 2. Calling f3/3(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3/3(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3b/3(0)]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: param_decl: Non-optional parameter[3] "d" after optional parameter[3] "_c". (in f_borkedoptional)]});
 
-      ::CHECK_EQUAL(6,aLogs.size(),"Lints count.");
+      EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Too many arguments passed]})
+      EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Not enough arguments passed]})
+
+      ::CHECK_EQUAL(13,aLogs.size(),"Lints count.");
     })
 
   testLinter.check(
@@ -603,7 +601,7 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Error: param_type: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot__]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})

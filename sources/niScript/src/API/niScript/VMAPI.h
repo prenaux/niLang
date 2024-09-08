@@ -236,8 +236,6 @@ enum eScriptType
 
 niExportFunc(eScriptType) sqa_getscripttype(HSQUIRRELVM v, int idx);
 
-niExportFunc(int) sqa_registernewtypes(HSQUIRRELVM v);
-niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const SQChar* aaszName, SQFUNCTION func);
 niExportFunc(void) sqa_setdebugname(HSQUIRRELVM v, int idx, const SQChar* aaszName);
 
 niExportFunc(void*) sqa_getud(HSQUIRRELVM v, int idx, int aType);

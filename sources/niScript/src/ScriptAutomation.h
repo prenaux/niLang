@@ -123,8 +123,6 @@ class cScriptAutomation : public ImplRC<iUnknown>
   bool Get(HSQUIRRELVM vm, iUnknown* apObj, const SQObjectPtr &key, SQObjectPtr &dest, int opExt);
   bool Set(HSQUIRRELVM vm, iUnknown* apObj,const SQObjectPtr &key,const SQObjectPtr &val, int opExt);
 
-  void RegisterAPI(HSQUIRRELVM vm);
-
   iFileSystem* _GetFS();
 
  private:

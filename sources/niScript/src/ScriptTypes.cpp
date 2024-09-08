@@ -21,12 +21,6 @@
 #include "sq_hstring.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-static int matrixf_constructor(HSQUIRRELVM v);
-static int vec2f_constructor(HSQUIRRELVM v);
-static int vec3f_constructor(HSQUIRRELVM v);
-static int vec4f_constructor(HSQUIRRELVM v);
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
 static inline tBool sqa_getVecElementFromChar(HSQUIRRELVM v, achar c, const tF32* apV, tU32 anSize, tF32& afRet)
@@ -207,17 +201,6 @@ niExportFuncCPP(cString) sqa_gettypestring(int type) {
     case _RT_IUNKNOWN: return "IUnknownPtr";
     default: return ni::GetTypeString(type);
   }
-}
-
-///////////////////////////////////////////////
-niExportFunc(void) sqa_registerglobalfunction(HSQUIRRELVM v, const achar* aaszName, SQFUNCTION func)
-{
-  sq_pushroottable(v);
-  sq_pushstring(v,_H(aaszName));
-  sq_newclosure(v,func);
-  sq_setnativeclosurename(v,-1,aaszName);
-  sq_createslot(v,-3);
-  sq_pop(v,1);
 }
 
 ///////////////////////////////////////////////
@@ -1391,7 +1374,7 @@ niExportFunc(int) sqa_getvec2i(HSQUIRRELVM v, int idx, sVec2i* aV)
 }
 
 ///////////////////////////////////////////////
-static int vec2f_constructor(HSQUIRRELVM v)
+int vec2f_constructor(HSQUIRRELVM v)
 {
   sVec2f val;
   int top = sq_gettop(v)-1;
@@ -1622,7 +1605,7 @@ niExportFunc(int) sqa_getvec3i(HSQUIRRELVM v, int idx, sVec3i* aV)
 }
 
 ///////////////////////////////////////////////
-static int vec3f_constructor(HSQUIRRELVM v)
+int vec3f_constructor(HSQUIRRELVM v)
 {
   sVec3f val;
   int top = sq_gettop(v)-1;
@@ -2078,7 +2061,7 @@ static int vector4base_constructor(HSQUIRRELVM v, sVec4f& val)
 }
 
 ///////////////////////////////////////////////
-static int vec4f_constructor(HSQUIRRELVM v)
+int vec4f_constructor(HSQUIRRELVM v)
 {
   sVec4f val;
   int r = vector4base_constructor(v,val);
@@ -2088,7 +2071,7 @@ static int vec4f_constructor(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
-static int rect_constructor(HSQUIRRELVM v)
+int rect_constructor(HSQUIRRELVM v)
 {
   sVec4f val;
   int r = vector4base_constructor(v,val);
@@ -2377,7 +2360,7 @@ niExportFunc(int) sqa_getmatrixf(HSQUIRRELVM v, int idx, sMatrixf* aV)
 }
 
 ///////////////////////////////////////////////
-static int matrixf_constructor(HSQUIRRELVM v)
+int matrixf_constructor(HSQUIRRELVM v)
 {
   sMatrixf val;
   int top = sq_gettop(v)-1;
@@ -2419,7 +2402,7 @@ static int uuid_typeof(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
-static int uuid_constructor(HSQUIRRELVM v)
+int uuid_constructor(HSQUIRRELVM v)
 {
   niCAssert(sizeof(tUUID) == sizeof(sUUID));
   tUUID val = kuuidZero;
@@ -2686,22 +2669,6 @@ niExportFunc(void*) sqa_getud(HSQUIRRELVM v, int idx, int type) {
   if (!SQ_SUCCEEDED(sq_getuserdata(v,idx,&ud))) return NULL;
   if (ud->GetType() != type) return NULL;
   return (void*)ud;
-}
-
-///////////////////////////////////////////////
-niExportFunc(int) sqa_registernewtypes(HSQUIRRELVM v)
-{
-  sqa_registerglobalfunction(v, _A("Vec2"),   vec2f_constructor);
-  sqa_registerglobalfunction(v, _A("Vec3"),   vec3f_constructor);
-  sqa_registerglobalfunction(v, _A("Vec4"),   vec4f_constructor);
-  sqa_registerglobalfunction(v, _A("RGB"),    vec3f_constructor);
-  sqa_registerglobalfunction(v, _A("RGBA"),   vec4f_constructor);
-  sqa_registerglobalfunction(v, _A("Quat"),   vec4f_constructor);
-  sqa_registerglobalfunction(v, _A("Plane"),  vec4f_constructor);
-  sqa_registerglobalfunction(v, _A("Rect"),   rect_constructor);
-  sqa_registerglobalfunction(v, _A("Matrix"), matrixf_constructor);
-  sqa_registerglobalfunction(v, _A("UUID"),   uuid_constructor);
-  return SQ_OK;
 }
 
 #endif // niMinFeatures

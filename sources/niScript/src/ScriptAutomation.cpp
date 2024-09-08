@@ -286,52 +286,6 @@ static int std_import(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
-static int std_getiunknown(HSQUIRRELVM v)
-{
-  iUnknown* pIUnk = NULL;
-  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pIUnk,kuuidZero)))
-    return sq_throwerror(v,_A("std_getiunknown, the parameter is not a valid iunknown."));
-  sqa_pushIUnknown(v,pIUnk);
-  return 1;
-}
-
-///////////////////////////////////////////////
-static int std_queryinterface(HSQUIRRELVM v)
-{
-  iUnknown* pIUnk = NULL;
-  tUUID uuid;
-  iHString* hspName = NULL;
-
-  switch (sqa_getscripttype(v,3)) {
-    case eScriptType_UUID:
-      if (!SQ_SUCCEEDED(sqa_getUUID(v,3,&uuid))) {
-        return sq_throwerror(v,"std_queryinterface, can't get interface uuid.");
-      }
-      break;
-    case eScriptType_IUnknown:
-    case eScriptType_String:
-      if (!SQ_SUCCEEDED(sq_gethstring(v,3,&hspName))) {
-        return sq_throwerror(v,"std_queryinterface, can't get interface string id.");
-      }
-      uuid = ni::GetLang()->GetInterfaceUUID(hspName);
-      if (uuid == kuuidZero) {
-        return sq_throwerror(v,niFmt("std_queryinterface, can't get uuid of interface '%s'.",hspName));
-      }
-      break;
-    default:
-      return sq_throwerror(v,"std_queryinterface, parameter 2 is not a valid interface id");
-  }
-
-  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pIUnk,uuid)))
-    return sq_throwerror(v,_A("std_queryinterface, the first parameter is not a valid iunknown."));
-  if (!SQ_SUCCEEDED(sqa_pushIUnknown(v,pIUnk)))
-    return sq_throwerror(v,niFmt("std_queryinterface, can't query interface '%s' (%s).",
-                                 uuid, hspName));
-
-  return 1;
-}
-
-///////////////////////////////////////////////
 bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval, SQObjectPtr &outitr) {
 
   Ptr<iIterator> it = ni::QueryInterface<iIterator>(apObj);
@@ -741,15 +695,6 @@ void cScriptAutomation::ZeroMembers()
 }
 
 ///////////////////////////////////////////////
-void cScriptAutomation::RegisterAPI(HSQUIRRELVM vm) {
-  sqa_registerglobalfunction(vm,_A("CreateInstance"),std_createinstance);
-  sqa_registerglobalfunction(vm,_A("Import"),std_import);
-  sqa_registerglobalfunction(vm,_A("NewImport"),std_newimport);
-  sqa_registerglobalfunction(vm,_A("GetIUnknown"),std_getiunknown);
-  sqa_registerglobalfunction(vm,_A("QueryInterface"),std_queryinterface);
-}
-
-///////////////////////////////////////////////
 void cScriptAutomation::Invalidate()
 {
   if (!IsValid())
@@ -1125,5 +1070,31 @@ cScriptAutomation::sIUnknownEntry* cScriptAutomation::GetIUnknownEntry(iUnknown*
   return e;
 }
 #endif
+
+// in ScriptTypes.cpp
+int vec2f_constructor(HSQUIRRELVM v);
+int vec3f_constructor(HSQUIRRELVM v);
+int vec4f_constructor(HSQUIRRELVM v);
+int vec4f_constructor(HSQUIRRELVM v);
+int rect_constructor(HSQUIRRELVM v);
+int matrixf_constructor(HSQUIRRELVM v);
+int uuid_constructor(HSQUIRRELVM v);
+
+SQRegFunction SQSharedState::_automation_funcs[] = {
+  {"CreateInstance", std_createinstance, -2, "ts", _HC(typestr_iunknown)},
+  {"Import", std_import, -2, "ts", nullptr},
+  {"NewImport", std_newimport, -2, "ts", nullptr},
+  {"Vec2", vec2f_constructor, -1, "t", _HC(Vec2)},
+  {"Vec3", vec3f_constructor, -1, "t", _HC(Vec3)},
+  {"RGB", vec3f_constructor, -1, "t", _HC(Vec3)},
+  {"Vec4", vec4f_constructor, -1, "t", _HC(Vec4)},
+  {"RGBA", vec4f_constructor, -1, "t", _HC(Vec4)},
+  {"Quat", vec4f_constructor, -1, "t", _HC(Vec4)},
+  {"Plane", vec4f_constructor, -1, "t", _HC(Vec4)},
+  {"Rect", rect_constructor, -1, "t", _HC(Vec4)},
+  {"Matrix", matrixf_constructor, -1, "t", _HC(Matrix)},
+  {"UUID", uuid_constructor, -1, "t", _HC(UUID)},
+  {0,0}
+};
 
 #endif // niMinFeatures

@@ -744,29 +744,12 @@ struct sLinter {
     return it->second;
   }
 
-  void RegisterFuncNull(SQTable* table, const achar* name) {
-    table->NewSlot(_H(name), _null_);
-  }
-
   void RegisterFunc(SQTable* table, const achar* name, ain<SQObjectPtr> aLintFunc) {
     table->NewSlot(_H(name), aLintFunc);
   }
 
-  void RegisterFunc(SQTable* table, iHString* ahspName, ain<SQObjectPtr> aLintFunc) {
-    table->NewSlot(ahspName, aLintFunc);
-  }
-
   void RegisterLintFunc(SQTable* table, ain_nn_mut<iLintFuncCall> aLintFunc) {
     table->NewSlot(aLintFunc->GetName(), aLintFunc.raw_ptr());
-  }
-
-  int RegisterSQRegFunctions(SQTable* table, const SQRegFunction* regs) {
-    int i = 0;
-    while (regs[i].name != NULL) {
-      RegisterFuncNull(table, regs[i].name);
-      ++i;
-    }
-    return i;
   }
 
   void RegisterBuiltinFuncs(SQTable* table);
@@ -1812,10 +1795,13 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterFunc(table, "vmprintln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintln));
   RegisterFunc(table, "vmprintdebug", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebug));
   RegisterFunc(table, "vmprintdebugln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintdebugln));
-  RegisterSQRegFunctions(table, SQSharedState::_base_funcs);
-  RegisterSQRegFunctions(table, SQSharedState::_concurrent_funcs);
 
-  // Do this last so that we override the base functions
+  // Register these first, the iLintFuncCall implementations will override some of them
+  RegisterSQRegFunctions(as_nn(table), SQSharedState::_base_funcs);
+  RegisterSQRegFunctions(as_nn(table), SQSharedState::_concurrent_funcs);
+  RegisterSQRegFunctions(as_nn(table), SQSharedState::_automation_funcs);
+
+  // Do this last so that we override the builtin functions
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("Import")));

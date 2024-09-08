@@ -1,3 +1,5 @@
+::Import("niLang")
+
 local __lint = {
   _all = 1
   _pedantic = 0
@@ -77,4 +79,43 @@ function del_closure() {
 }
 
 function main() {
+  {
+    local v2 = ::Vec2();
+    ::LINT_CHECK_TYPE("resolved_type<Vec2>", v2);
+  }
+
+  {
+    local v3 = ::Vec3();
+    ::LINT_CHECK_TYPE("resolved_type<Vec3>", v3);
+  }
+
+  {
+    local rgb = ::RGB();
+    ::LINT_CHECK_TYPE("resolved_type<Vec3>", rgb);
+  }
+
+  {
+    local v4 = ::Vec4();
+    ::LINT_CHECK_TYPE("resolved_type<Vec4>", v4);
+  }
+
+  {
+    local r = ::Rect();
+    ::LINT_CHECK_TYPE("resolved_type<Vec4>", r);
+  }
+
+  {
+    local p = ::Plane();
+    ::LINT_CHECK_TYPE("resolved_type<Vec4>", p);
+  }
+
+  {
+    local m = ::Matrix();
+    ::LINT_CHECK_TYPE("resolved_type<Matrix>", m);
+  }
+
+  {
+    local uuid = ::UUID();
+    ::LINT_CHECK_TYPE("resolved_type<UUID>", uuid);
+  }
 }

@@ -18,7 +18,6 @@
 //   huh... sounds like a lot more work
 // - [ ] p0: Handle ImportModule(script)
 // - [ ] p0: Move lang stuff to native version so that they can be properly linted: delegate, namespace, namespaceOrModule
-// - [ ] p0: Add all missing constructor utility functions to the linter, ::Vec2/3/4, ::Matrix, etc..
 // - [ ] p0: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
 // - [ ] p0: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
 // - [ ] p0: correctly set the type of the foreach iterator variables
@@ -40,6 +39,7 @@
 // - [ ] p2: unused_local_variable
 // - [ ] p2: unused_parameter / unused_outer_variable
 //
+// - [x] p0: Add all missing constructor utility functions to the linter, ::Vec2/3/4, ::Matrix, etc..
 // - [x] p0: Handle varargs functions, function(_args_)
 // - [x] p0: Handle optional parameters, all parameters starting with an underscore (_aSomeArg) could be considered optional.
 // - [x] p0: Lint messages should output in stderr not stdout.

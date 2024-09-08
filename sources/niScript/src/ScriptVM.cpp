@@ -582,17 +582,6 @@ cScriptVM::cScriptVM(cScriptVM* apParentVM)
       return;
     }
 
-    mptrScriptAutomation->RegisterAPI(mptrVM);
-    if (!mptrScriptAutomation->Import(mptrVM,_A("niLang"))) {
-      niError(_A("Can't import the niLang module."));
-      return;
-    }
-
-    if (!SQ_SUCCEEDED(sqa_registernewtypes(mptrVM))) {
-      niError(_A("Can't register new types."));
-      return;
-    }
-
     RegisterFunction(&kFuncDecl_vmprintdebug,_A("vmprintdebug"));
     RegisterFunction(&kFuncDecl_vmprintdebugln,_A("vmprintdebugln"));
     RegisterFunction(&kFuncDecl_vmprint,_A("vmprint"));

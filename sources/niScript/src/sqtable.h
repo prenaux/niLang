@@ -91,7 +91,7 @@ public:
 
   static SQTable* Create();
   virtual void __stdcall Invalidate();
-  SQTable* Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone);
+  SQTable* Clone(tSQDeepCloneGuardSet* apDeepClone);
 #ifndef NO_GARBAGE_COLLECTOR
   virtual void __stdcall Mark(SQCollectable **chain);
 #endif

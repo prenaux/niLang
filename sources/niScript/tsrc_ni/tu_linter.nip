@@ -620,7 +620,7 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
 
-      ::CHECK_EQUAL(7,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(8,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

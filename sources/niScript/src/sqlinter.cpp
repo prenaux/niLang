@@ -435,6 +435,16 @@ static Ptr<sScriptTypeResolvedType> _ObjToResolvedTyped(const SQObjectPtr& obj) 
   return nullptr;
 }
 
+// for iInterfaceName naming convention
+static tBool _IsInterfaceTypeNameByConvention(ain<tChars> aName) {
+  return aName[0] == 'i' && StrIsUpper(aName[1]);
+}
+
+// for tTableName naming convention
+static tBool _IsTableTypeNameByConvention(ain<tChars> aName) {
+  return aName[0] == 't' && StrIsUpper(aName[1]);
+}
+
 enum eLintFlags {
   eLintFlags_None = 0,
   eLintFlags_IsError = niBit(31),
@@ -752,6 +762,10 @@ struct sLinter {
     table->NewSlot(aLintFunc->GetName(), aLintFunc.raw_ptr());
   }
 
+  tBool OverrideDelegateFunc(SQTable* del, ain_nn_mut<iLintFuncCall> aLintFunc) {
+    return del->Set(aLintFunc->GetName(), aLintFunc.raw_ptr());
+  }
+
   void RegisterBuiltinFuncs(SQTable* table);
 
   SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) const {
@@ -823,6 +837,10 @@ struct sLinter {
       // niDebugFmt(("... ResolveTableTypePath prefixed: %s", pathCursor));
 
       // not starting at root, not a local variable, so we start at the this object
+      curr = aClosure._this;
+    }
+    else if (_IsTableTypeNameByConvention(pathCursor)) {
+      // tTableName always starts at the this object
       curr = aClosure._this;
     }
     else {
@@ -907,8 +925,8 @@ struct sLinter {
     niLet typeStrLen = hspType->GetLength();
     // niDebugFmt(("... ResolveType: %s", hspType));
 
-    // Interface types
-    if (typeStrLen >= 2 && typeStrChars[0] == 'i' && StrIsUpper(typeStrChars[1])) {
+    // Interface types, for iInterfaceName naming convention
+    if (_IsInterfaceTypeNameByConvention(typeStrChars)) {
       niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
       if (!foundInterfaceDef.has_value()) {
         resolvedType = niNew sScriptTypeErrorCode(
@@ -922,7 +940,8 @@ struct sLinter {
     }
 
     // Table types
-    else if (StrStartsWith(typeStrChars,"::") ||
+    else if (_IsTableTypeNameByConvention(typeStrChars) ||
+             StrStartsWith(typeStrChars,"::") ||
              StrStartsWith(typeStrChars,_typestr_prefix_table.c_str()))
     {
       resolvedType = ResolveTableTypePath(hspType, aClosure);
@@ -1782,6 +1801,39 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCall_table_clone : public ImplRC<iLintFuncCall> {
+  NN_mut<iHString> _name;
+
+  sLintFuncCall_table_clone(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 0;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet objTable = aCallArgs[0];
+    // niDebugFmt(("... sLintFuncCall_table_clone: objTable: %s", _ObjToString(objTable)));
+    if (sqa_getscriptobjtype(objTable) != eScriptType_Table) {
+      return _MakeLintCallError(
+        aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
+    }
+
+    // TODO: Do deep clone? Technically its more correct, if we deep clone the
+    // sub tables that get modified might get incorrectly linted. So for 100%
+    // correctness it'd be better, however its somewhat of an edge case so
+    // we'll leave it for now.
+    NN_mut<SQTable> clonedTable { _table(objTable)->Clone(nullptr) };
+    return clonedTable.raw_ptr();
+  }
+};
+
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
@@ -1808,6 +1860,15 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_check_type>(_H("LINT_CHECK_TYPE")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_as_type>(_H("LINT_AS_TYPE")));
+
+  // Some delegate methods to override
+  {
+    SQTable* del = _ddel(_ss,table);
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("DeepClone"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("ShallowClone"))));
+  }
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();
 }

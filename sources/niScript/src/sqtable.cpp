@@ -193,10 +193,7 @@ int SQTable::CountUsed()
   return mhmap.size();
 }
 
-__forceinline tBool _IsClonableType(const tU32 aType) {
-  return aType == OT_TABLE || aType == OT_ARRAY || aType == OT_STRING || aType == OT_USERDATA;
-}
-SQTable *SQTable::Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone)
+SQTable *SQTable::Clone(tSQDeepCloneGuardSet* apDeepClone)
 {
   SQTable* nt = niNew SQTable();
   nt->mpParent = NULL;

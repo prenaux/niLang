@@ -68,3 +68,15 @@ function table_local_type(table:tLocalHamster t) {
 }
 
 */
+
+tClone <- {
+  name = "vongole"
+  im_clone = 10000
+}
+
+function table_cloned(tClone t) {
+  local c = t.DeepClone()
+  c.name; // should
+  c.im_clone; // should be ok
+  c.not_a_field; // should fail
+}

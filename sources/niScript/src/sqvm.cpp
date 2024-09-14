@@ -638,7 +638,7 @@ bool SQVM::Clone(const SQObjectPtr &self,SQObjectPtr &target, tSQDeepCloneGuardS
   switch(_sqtype(self))
   {
     case OT_TABLE: {
-      target = _table(self)->Clone(this,apDeepClone);
+      target = _table(self)->Clone(apDeepClone);
       if (apDeepClone) {
         for (SQTable::tHMapIt it = _table(target)->GetHMap().begin();
              it != _table(target)->GetHMap().end(); ++it)

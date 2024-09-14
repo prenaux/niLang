@@ -235,7 +235,12 @@ int tsglCreateContext(
     TSGL_RETURN_ERROR(ALLOCCTX,"Can't allocate memory for TSGL context.");
   }
   TSGL_ZEROMEMORY(ctx,sizeof(*ctx));
-  ctx->mpWindowDesc = (sXWindowDesc*)apWindow->GetHandle();
+  ctx->mbInitialized = linuxglCreateContext(apWindow);
+  if (!ctx->mbInitialized) {
+    TSGL_RETURN_ERROR(ALLOCCTX,"Can't initialize linuxgl context.");
+  }
+  ctx->mpWindow = apWindow;
+
 #    endif
 
   *appCtx = ctx;
@@ -261,7 +266,11 @@ void tsglDestroyContext(tsglContext* apCtx)
     apCtx->mhDC = NULL;
   }
 #    elif defined niLinux
-  apCtx->mpWindowDesc = NULL;
+  if (apCtx->mpWindow) {
+    linuxglDestroyContext(apCtx->mpWindow);
+    apCtx->mbInitialized = eFalse;
+    apCtx->mpWindow = NULL;
+  }
 #    endif
   TSGL_FREE(apCtx,sizeof(*apCtx));
 }
@@ -457,9 +466,9 @@ void tsglMakeCurrent(tsglContext* apCtx) {
 #    elif defined _WIN32
   wglMakeCurrent(apCtx->mhDC,apCtx->mhGLRC);
 #    elif defined niLinux
-  glXMakeCurrent((Display*)apCtx->mpWindowDesc->mpDisplay,
-                 (Window)apCtx->mpWindowDesc->mpWindow,
-                 (GLXContext)apCtx->mpWindowDesc->mpGLX);
+  if (apCtx->mpWindow) {
+    linuxglMakeContextCurrent(apCtx->mpWindow);
+  }
 #    else
 #      error "tsglMakeCurrent - Unsupported platform."
 #    endif
@@ -486,7 +495,9 @@ void tsglSwapBuffers(tsglContext* apCtx, tBool abDoNotWait) {
   wglMakeCurrent(apCtx->mhDC,apCtx->mhGLRC);
   ::SwapBuffers(apCtx->mhDC);
 #    elif defined niLinux
-  glXSwapBuffers((Display*)apCtx->mpWindowDesc->mpDisplay,(Window)apCtx->mpWindowDesc->mpWindow);
+  if (apCtx->mpWindow) {
+    linuxglSwapBuffers(apCtx->mpWindow, abDoNotWait);
+  }
 #    else
 #      error "tsglSwapBuffers - Unsupported platform."
 #    endif

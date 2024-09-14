@@ -28,7 +28,17 @@
 //// niLinux /////////////////////////////////////////////////////////////////////////
 #elif defined niLinuxDesktop
 #include <niLang/Platforms/Linux/linuxgl.h>
+
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <GL/glext.h>
+
 #define TSGL_DESKTOP
+#undef Bool
+#undef Status
+#undef True
+#undef False
 
 //// niLinux /////////////////////////////////////////////////////////////////////////
 #else
@@ -96,11 +106,9 @@ typedef struct tsglContext_tag {
   HWND  mhWnd;
   HDC   mhDC;
   HGLRC mhGLRC;
-#  elif defined(__APPLE__)
+#  elif defined(__APPLE__) || defined niLinux
   ni::tBool mbInitialized;
   ni::iOSWindow* mpWindow;
-#  elif defined niLinux
-  sXWindowDesc* mpWindowDesc;
 #  else
 #    error "Unsupported platform."
 #  endif

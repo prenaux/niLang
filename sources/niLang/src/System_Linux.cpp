@@ -8,30 +8,394 @@
 #include <niLang/Utils/CollectionImpl.h>
 #include <niLang/Utils/TimerSleep.h>
 
-#include <niLang/Platforms/Linux/linuxgl.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/keysym.h>
+#include <X11/cursorfont.h> // default cursors defined here...
+#include <GL/glx.h>
 
 using namespace ni;
+
+static const int MOUSE_WARP_DELAY = 200;
+static const int knMinXwinWidth = 20;
+static const int knMinXwinHeight = 20;
+static const int knMaxXwinWidth = 50000;
+static const int knMaxXwinHeight = 50000;
+
+static struct
+{
+  KeySym keysym;
+  int scancode;
+} keysym_to_scancode[] =
+{
+  { XK_Escape, eKey_Escape },
+
+  { XK_F1, eKey_F1 },
+  { XK_F2, eKey_F2 },
+  { XK_F3, eKey_F3 },
+  { XK_F4, eKey_F4 },
+  { XK_F5, eKey_F5 },
+  { XK_F6, eKey_F6 },
+  { XK_F7, eKey_F7 },
+  { XK_F8, eKey_F8 },
+  { XK_F9, eKey_F9 },
+  { XK_F10, eKey_F10 },
+  { XK_F11, eKey_F11 },
+  { XK_F12, eKey_F12 },
+
+  { XK_Print, eKey_PrintScreen },
+  { XK_Scroll_Lock, eKey_Scroll },
+  { XK_Pause, eKey_Pause },
+
+  { XK_grave, eKey_Grave },
+  { XK_quoteleft, eKey_Grave },
+  { XK_asciitilde, eKey_Grave },
+  { XK_1, eKey_n1 },
+  { XK_2, eKey_n2 },
+  { XK_3, eKey_n3 },
+  { XK_4, eKey_n4 },
+  { XK_5, eKey_n5 },
+  { XK_6, eKey_n6 },
+  { XK_7, eKey_n7 },
+  { XK_8, eKey_n8 },
+  { XK_9, eKey_n9 },
+  { XK_0, eKey_n0 },
+  { XK_minus, eKey_Minus },
+  { XK_equal, eKey_Equals },
+  { XK_backslash, eKey_BackSlash },
+  { XK_BackSpace, eKey_BackSpace },
+
+  { XK_Tab, eKey_Tab },
+  { XK_q, eKey_Q },
+  { XK_w, eKey_W },
+  { XK_e, eKey_E },
+  { XK_r, eKey_R },
+  { XK_t, eKey_T },
+  { XK_y, eKey_Y },
+  { XK_u, eKey_U },
+  { XK_i, eKey_I },
+  { XK_o, eKey_O },
+  { XK_p, eKey_P },
+  { XK_bracketleft, eKey_LBracket },
+  { XK_bracketright, eKey_RBracket },
+  { XK_Return, eKey_Enter },
+
+  { XK_Caps_Lock, eKey_CapsLock },
+  { XK_a, eKey_A },
+  { XK_s, eKey_S },
+  { XK_d, eKey_D },
+  { XK_f, eKey_F },
+  { XK_g, eKey_G },
+  { XK_h, eKey_H },
+  { XK_j, eKey_J },
+  { XK_k, eKey_K },
+  { XK_l, eKey_L },
+  { XK_semicolon, eKey_Semicolon },
+  { XK_apostrophe, eKey_Apostrophe },
+
+  { XK_Shift_L, eKey_LShift },
+  { XK_z, eKey_Z },
+  { XK_x, eKey_X },
+  { XK_c, eKey_C },
+  { XK_v, eKey_V },
+  { XK_b, eKey_B },
+  { XK_n, eKey_N },
+  { XK_m, eKey_M },
+  { XK_comma, eKey_Comma },
+  { XK_period, eKey_Period },
+  { XK_slash, eKey_Slash },
+  { XK_Shift_R, eKey_RShift },
+
+  { XK_Control_L, eKey_LControl },
+  { XK_Meta_L, eKey_LAlt },
+  { XK_Alt_L, eKey_LAlt },
+  { XK_space, eKey_Space },
+  { XK_Alt_R, eKey_RAlt },
+  { XK_Meta_R, eKey_RAlt },
+  { XK_Control_R, eKey_RControl },
+
+  { XK_Menu, eKey_LWin },
+
+  { XK_Insert, eKey_Insert },
+  { XK_Home, eKey_Home },
+  { XK_Delete, eKey_Delete },
+  { XK_End, eKey_End },
+  { XK_Prior, eKey_PgUp },
+  { XK_Next, eKey_PgDn },
+
+  { XK_Up, eKey_Up },
+  { XK_Left, eKey_Left },
+  { XK_Down, eKey_Down },
+  { XK_Right, eKey_Right },
+
+  { XK_Num_Lock, eKey_NumLock },
+  { XK_KP_Divide, eKey_NumPadSlash },
+  { XK_KP_Multiply, eKey_NumPadSlash },
+  { XK_KP_Subtract, eKey_NumPadMinus },
+  { XK_KP_Add, eKey_NumPadPlus },
+
+  { XK_KP_Home, eKey_NumPad7 },
+  { XK_KP_Up, eKey_NumPad8 },
+  { XK_KP_Prior, eKey_NumPad9 },
+  { XK_KP_Left, eKey_NumPad4 },
+  { XK_KP_Begin, eKey_NumPad5 },
+  { XK_KP_Right, eKey_NumPad6 },
+  { XK_KP_End, eKey_NumPad1 },
+  { XK_KP_Down, eKey_NumPad2 },
+  { XK_KP_Next, eKey_NumPad3 },
+  { XK_KP_Enter, eKey_NumPadEnter },
+  { XK_KP_Insert, eKey_NumPad0 },
+  { XK_KP_Delete, eKey_NumPadPeriod },
+
+  { NoSymbol, 0 },
+};
+
+static Display* X11_OpenDisplay() {
+  cString displayName = ni::GetProperty("X11.Display", nullptr);
+  return XOpenDisplay(displayName.IsNotEmpty() ? displayName.data() : nullptr);
+}
+
+static void X11_SetHints(Display* disp, Window win, int screen,
+                         int x, int y, int w, int h, tU32 flags)
+{
+  XSizeHints *hints;
+
+  hints = XAllocSizeHints();
+  if (hints) {
+    if (flags & eOSWindowStyleFlags_FixedSize) {
+      hints->min_width = hints->max_width = w;
+      hints->min_height = hints->max_height = h;
+    }
+    else {
+      hints->min_width = knMinXwinWidth;
+      hints->min_height = knMinXwinHeight;
+      hints->max_width = knMaxXwinWidth;
+      hints->max_height = knMaxXwinHeight;
+    }
+    hints->flags = PMaxSize | PMinSize;
+    if (flags & eOSWindowStyleFlags_FullScreen) {
+      hints->x = 0;
+      hints->y = 0;
+      hints->flags |= USPosition;
+    }
+
+    XSetWMNormalHints(disp, win, hints);
+    XFree(hints);
+  }
+
+  // Respect the window caption style
+  if (flags & eOSWindowStyleFlags_Overlay) {
+    tBool set = eFalse;
+    Atom WM_HINTS;
+
+    // First try to set MWM hints
+    WM_HINTS = XInternAtom(disp, "_MOTIF_WM_HINTS", True);
+    if ( WM_HINTS != None ) {
+      // Hints used by Motif compliant window managers
+      struct {
+        unsigned long flags;
+        unsigned long functions;
+        unsigned long decorations;
+        long input_mode;
+        unsigned long status;
+      } MWMHints = { (1L << 1), 0, 0, 0, 0 };
+
+      XChangeProperty(disp, win,
+                      WM_HINTS, WM_HINTS, 32,
+                      PropModeReplace,
+                      (unsigned char *)&MWMHints,
+                      sizeof(MWMHints)/sizeof(long));
+      set = eTrue;
+    }
+    // Now try to set KWM hints
+    WM_HINTS = XInternAtom(disp, "KWM_WIN_DECORATION", True);
+    if ( WM_HINTS != None ) {
+      long KWMHints = 0;
+      XChangeProperty(disp, win,
+                      WM_HINTS, WM_HINTS, 32,
+                      PropModeReplace,
+                      (unsigned char *)&KWMHints,
+                      sizeof(KWMHints)/sizeof(long));
+      set = eTrue;
+    }
+    // Now try to set GNOME hints
+    WM_HINTS = XInternAtom(disp, "_WIN_HINTS", True);
+    if ( WM_HINTS != None ) {
+      long GNOMEHints = 0;
+      XChangeProperty(disp, win,
+                      WM_HINTS, WM_HINTS, 32,
+                      PropModeReplace,
+                      (unsigned char *)&GNOMEHints,
+                      sizeof(GNOMEHints)/sizeof(long));
+      set = eTrue;
+    }
+    // Finally set the transient hints if necessary
+    if (!set) {
+      XSetTransientForHint(disp, win, screen);
+    }
+  } else {
+    tBool set = eFalse;
+    Atom WM_HINTS;
+
+    // First try to unset MWM hints
+    WM_HINTS = XInternAtom(disp, "_MOTIF_WM_HINTS", True);
+    if ( WM_HINTS != None ) {
+      XDeleteProperty(disp, win, WM_HINTS);
+      set = eTrue;
+    }
+    // Now try to unset KWM hints
+    WM_HINTS = XInternAtom(disp, "KWM_WIN_DECORATION", True);
+    if ( WM_HINTS != None ) {
+      XDeleteProperty(disp, win, WM_HINTS);
+      set = eTrue;
+    }
+    // Now try to unset GNOME hints
+    WM_HINTS = XInternAtom(disp, "_WIN_HINTS", True);
+    if ( WM_HINTS != None ) {
+      XDeleteProperty(disp, win, WM_HINTS);
+      set = eTrue;
+    }
+    // Finally unset the transient hints if necessary
+    if (!set) {
+      // NOTE: Does this work ?
+      XSetTransientForHint(disp, win, None);
+    }
+  }
+}
 
 class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
 
-  sXWindowDesc desc;
-
-  public:
+ public:
   cLinuxWindow(sVec2i aSize)
   {
-    mCursor = eOSCursor_Arrow;
     mbRequestedClose = eFalse;
+    mnStyle = eOSWindowStyleFlags_Regular;
+    mRect.Set(5,5,105,105);
+    mbOwnedHandle = eFalse;
+    mbIsActive = eFalse;
     mbMouseOverClient = eFalse;
+    mbMouseCapture = eFalse;
+    mpDisplay = nullptr;
+    mpVisual = nullptr;
+    mnScreen = 0;
+    mHandle = 0;
+    mGC = nullptr;
+    mCursor = None;
+    mCursorNone = None;
+    mnCursorShape = 0;
+    mvPrevMousePos = sVec2i::Zero();
+    mvPrevMouseDelta = sVec2i::Zero();
     mbDropTarget = eFalse;
     mfRefreshTimer = -1;
-    mbIsActive = eFalse;
-
     mptrMT = tMessageHandlerSinkLst::Create();
-    SetCursor(eOSCursor_Arrow);
 
-    desc.Create(aSize);
-    mRect = Recti(0,0,aSize.x,aSize.y);
+    // Init XWindow display
+    {
+      mpDisplay = X11_OpenDisplay();
+      niCheck(mpDisplay != nullptr,;);
+      mnScreen = DefaultScreen(mpDisplay);
+      mpVisual = DefaultVisual(mpDisplay,mnScreen);
+    }
+
+    // Init custom protocol
+    {
+      // Look up some useful Atoms
+      WM_DELETE_WINDOW = XInternAtom(mpDisplay, "WM_DELETE_WINDOW", False);
+    }
+
+    // Create default window
+    {
+      // Get white and black reference colors
+      tU32 black = BlackPixel(mpDisplay,mnScreen);
+      tU32 white = WhitePixel(mpDisplay,mnScreen);
+
+      XSetWindowAttributes attr;
+      memset(&attr,0,sizeof(attr));
+      attr.override_redirect = True;
+      attr.border_pixel = black;
+      attr.background_pixel = white;
+      tU32 mask = CWBackPixel | CWBorderPixel /*| CWColormap*/;
+
+      // Create the window
+      mHandle = XCreateWindow(mpDisplay, DefaultRootWindow(mpDisplay),
+                              mRect.x,mRect.y,
+                              mRect.GetWidth(),
+                              mRect.GetHeight(),
+                              0,
+                              CopyFromParent,
+                              InputOutput,
+                              mpVisual,
+                              mask,
+                              &attr);
+      niCheck(mHandle != 0,;);
+
+      // Set the window's title
+      this->SetTitle("niApp");
+
+      // Set the wanted inputs
+      XSelectInput(mpDisplay, mHandle,
+                   KeyPressMask | KeyReleaseMask |
+                   EnterWindowMask | LeaveWindowMask |
+                   FocusChangeMask | ExposureMask |
+                   ButtonPressMask | ButtonReleaseMask |
+                   PointerMotionMask | PropertyChangeMask |
+                   StructureNotifyMask);
+
+      // Create the GC
+      mGC = XCreateGC(mpDisplay, mHandle, 0, 0);
+      niCheck(mGC != 0,;);
+
+      // Set foreground and background colors
+      XSetBackground(mpDisplay, mGC, white);
+      XSetForeground(mpDisplay, mGC, black);
+
+      // Create invisible X cursor
+      Pixmap pixmap = XCreatePixmap(mpDisplay,mHandle,1,1,1);
+      if (pixmap != None) {
+        tU32 gcmask = GCFunction | GCForeground | GCBackground;
+
+        XGCValues gcvalues;
+        gcvalues.function = GXcopy;
+        gcvalues.foreground = 0;
+        gcvalues.background = 0;
+
+        GC temp_gc = XCreateGC(mpDisplay, pixmap, gcmask, &gcvalues);
+        XDrawPoint(mpDisplay, pixmap, temp_gc, 0, 0);
+        XFreeGC(mpDisplay, temp_gc);
+
+        XColor color;
+        color.pixel = 0;
+        color.red = color.green = color.blue = 0;
+        color.flags = DoRed | DoGreen | DoBlue;
+
+        mCursorNone = XCreatePixmapCursor(mpDisplay, pixmap, pixmap,
+                                              &color, &color, 0, 0);
+        XFreePixmap(mpDisplay, pixmap);
+      }
+
+      SetCursor(eOSCursor_Arrow);
+
+      // Set the window size
+      this->SetSize(aSize);
+
+      // Clear the window and bring it to the top
+      XClearWindow(mpDisplay, mHandle);
+      XMapRaised(mpDisplay, mHandle);
+
+      // Wait for the first exposure event
+      XEvent event;
+      do {
+        XNextEvent(mpDisplay, &event);
+      } while((event.type != Expose) || (event.xexpose.count != 0));
+
+      XSetWMProtocols(mpDisplay, mHandle, &WM_DELETE_WINDOW, 1);
+
+      this->_UpdateStyle();
+    }
+
+    _InitKeyboard();
   }
 
   ~cLinuxWindow() {
@@ -39,19 +403,90 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   ///////////////////////////////////////////////
+  tBool __stdcall _GLCreateContext() {
+    niCheck(mpGLX == nullptr, eFalse);
+
+    GLint attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+    XVisualInfo* xvi = glXChooseVisual(mpDisplay, 0, attr);
+    if (!xvi) {
+      niError("glXChooseVisual failed.");
+      return eFalse;
+    }
+    niLog(Info, niFmt("glXChooseVisual: %p",(void*)xvi)); // same output as glxinfo
+
+    mpGLX = glXCreateContext(mpDisplay, xvi, NULL, GL_TRUE);
+    if (!mpGLX) {
+      niError("glXCreateContext failed.");
+      return eFalse;
+    }
+
+    glXMakeCurrent(mpDisplay, mHandle, mpGLX);
+    return eTrue;
+  }
+  tBool __stdcall _GLDestroyContext() {
+    if (!mpGLX) {
+      return eFalse;
+    }
+    glXMakeCurrent(mpDisplay, None, nullptr);
+    glXDestroyContext(mpDisplay, mpGLX);
+    return eTrue;
+  }
+  tBool __stdcall _GLMakeCurrentContext() {
+    if (!mpGLX) return eFalse;
+    glXMakeCurrent(mpDisplay, mHandle, mpGLX);
+    return eTrue;
+  }
+  tBool __stdcall _GLSwapBuffers(tBool abDoNotWait) {
+    niUnused(abDoNotWait);
+    if (!mpGLX) return eFalse;
+    glXSwapBuffers(mpDisplay,mHandle);
+    return eTrue;
+  }
+
+  ///////////////////////////////////////////////
   void __stdcall Invalidate() {
-    desc.Destory();
+    if (mCursor != None) {
+      XUndefineCursor(mpDisplay,mHandle);
+      if (mCursor != mCursorNone) {
+        XFreeCursor(mpDisplay,mCursor);
+      }
+      mCursor = None;
+    }
+    if (mCursorNone != None) {
+      XFreeCursor(mpDisplay,mCursorNone);
+      mCursorNone = None;
+    }
+    if (mGC) {
+      XFreeGC(mpDisplay,mGC);
+      mGC = nullptr;
+    }
+    if (mHandle) {
+      XDestroyWindow(mpDisplay,mHandle);
+      mHandle = 0;
+      mbOwnedHandle = eFalse;
+      mbIsActive = eFalse;
+    }
+    if (mpDisplay) {
+      mpVisual = nullptr;
+      mnScreen = 0;
+      XCloseDisplay(mpDisplay);
+      mpDisplay = nullptr;
+    }
+    if (mptrMT.IsOK()) {
+      mptrMT->Invalidate();
+      mptrMT = nullptr;
+    }
   }
 
   ///////////////////////////////////////////////
   ni::tBool __stdcall IsOK() const niImpl {
     niClassIsOK(cLinuxWindow);
-    return desc.IsOK();
+    return !!mHandle;
   }
 
   ///////////////////////////////////////////////
   iOSWindow* __stdcall GetParent() const niImpl {
-    return NULL;
+    return nullptr;
   }
 
   tIntPtr __stdcall GetPID() const niImpl {
@@ -59,15 +494,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   void* __stdcall GetScreenHandle() const {
-    return NULL;
+    return nullptr;
   }
 
-    ///////////////////////////////////////////////
+  ///////////////////////////////////////////////
   virtual tIntPtr __stdcall GetHandle() const niImpl {
-    return (tIntPtr)(&desc);
+    return (tIntPtr)mHandle;
   }
   virtual tBool __stdcall GetIsHandleOwned() const niImpl {
-    return eTrue;
+    return mbOwnedHandle;
   }
 
   ///////////////////////////////////////////////
@@ -79,16 +514,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall ActivateWindow() niImpl {
-  }
-
-  virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
-    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
-    return eTrue;
-  }
-
-  virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {
-    _SendMessage(eOSWindowMessage_SwitchOut,anReason);
-    return eTrue;
+    niCheckSilent(mHandle,;);
+    XMapRaised(mpDisplay, mHandle);
   }
 
   ///////////////////////////////////////////////
@@ -97,21 +524,45 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl {
+  virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
+    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
+    return eTrue;
   }
-  virtual const achar* __stdcall GetTitle() const niImpl {
-    return NULL;
+  virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {
+    _SendMessage(eOSWindowMessage_SwitchOut,anReason);
+    return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetStyle(tOSWindowStyleFlags aStyle) niImpl {
+  virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl {
+    niCheckSilent(mHandle,;);
+    mstrTitle = aaszTitle;
+    XStoreName(mpDisplay,mHandle,mstrTitle.Chars());
   }
-  virtual tOSWindowStyleFlags __stdcall GetStyle() const niImpl {
-    return 0;
+  virtual const achar* __stdcall GetTitle() const niImpl {
+    niCheckSilent(mHandle,nullptr);
+    return mstrTitle.Chars();
+  }
+
+  ///////////////////////////////////////////////
+  virtual void __stdcall SetStyle(tOSWindowStyleFlags aStyle) {
+    niCheckSilent(mHandle,;);
+    if (mnStyle == aStyle) return;
+    mnStyle = aStyle;
+    _UpdateStyle();
+  }
+  virtual tOSWindowStyleFlags __stdcall GetStyle() const {
+    return mnStyle;
+  }
+  virtual void __stdcall _UpdateStyle() {
+    X11_SetHints(mpDisplay,mHandle,mnScreen,
+                 mRect.x,mRect.y,mRect.GetWidth(),mRect.GetHeight(),
+                 mnStyle);
   }
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetShow(tOSWindowShowFlags aShow) niImpl {
+    // TODO: IMPLEMENT
   }
   virtual tOSWindowShowFlags __stdcall GetShow() const niImpl {
     return 0;
@@ -119,6 +570,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetZOrder(eOSWindowZOrder aZOrder) niImpl {
+    // TODO: IMPLEMENT
   }
   virtual eOSWindowZOrder __stdcall GetZOrder() const niImpl {
     return eOSWindowZOrder_Normal;
@@ -142,6 +594,21 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return sVec2i::Zero();
   }
   virtual void __stdcall SetRect(const sRecti& aRect) niImpl {
+    niCheckSilent(mHandle,;);
+
+    mRect = aRect;
+    if (mRect.GetWidth() <= knMinXwinWidth) {
+      mRect.SetWidth(knMinXwinWidth);
+    }
+    if (mRect.GetHeight() <= knMinXwinHeight) {
+      mRect.SetHeight(knMinXwinHeight);
+    }
+
+    XMoveResizeWindow(mpDisplay,mHandle,
+                      mRect.x,mRect.y,
+                      mRect.GetWidth(),mRect.GetHeight());
+
+    this->_UpdateStyle();
   }
   virtual sRecti __stdcall GetRect() const niImpl {
     return mRect;
@@ -149,9 +616,11 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl {
-    return SetSize(avSize);
+    // TODO: Implement correctly
+    SetSize(avSize);
   }
   virtual sVec2i __stdcall GetClientSize() const niImpl {
+    // TODO: Implement correctly
     return GetSize();
   }
 
@@ -162,6 +631,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall Clear() niImpl {
+    niCheckSilent(mHandle,;);
+    XClearWindow(mpDisplay,mHandle);
   }
 
   ///////////////////////////////////////////////
@@ -171,18 +642,46 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
-    // const tU32 numEvents = _PumpEvents();
-    this->_SendMessage(eOSWindowMessage_Paint);
-    // glXSwapBuffers(mpDisplay, mWindow);
-    return eFalse;
+    niCheckSilent(mHandle,eFalse);
+
+    // How many events are available in the queue.
+    XSync(mpDisplay, False);
+    int events = XEventsQueued(mpDisplay, QueuedAlready);
+    if (events > 0) {
+      // Limit amount of events we read at once
+      if (events > 5)
+        events = 5;
+      // Process events
+      while(events) {
+        _NextEvent();
+        events--;
+      }
+    }
+
+    if (!mbIsActive) {
+      return eFalse;
+    }
+
+    // TODO: IMPLEMENT
+    // sVector2l curPos;
+    // ::GetCursorPos((LPPOINT)&curPos);
+    // ::ScreenToClient(mHandle,(LPPOINT)&curPos);
+    // cRectanglel clientRect;
+    // ::GetClientRect(mHandle,(LPRECT)&clientRect);
+    // mbMouseOverClient = clientRect.Intersect(curPos);
+
+    _SendMessage(eOSWindowMessage_Paint);
+    return eTrue;
   }
 
   virtual tBool __stdcall RedrawWindow() niImpl {
+    // TODO: IMPLEMENT
     return eTrue;
   }
 
   ///////////////////////////////////////////////
   void __stdcall CenterWindow() niImpl {
+    // TODO: IMPLEMENT
   }
 
   ///////////////////////////////////////////////
@@ -195,50 +694,89 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetCursor(eOSCursor aCursor) niImpl {
-    if (mCursor == aCursor)
-      return;
-    mCursor = aCursor;
+    if (!mHandle) return;
+    if (GetCursor() == aCursor) return;
+    mnCursorShape = -1;
+    XUndefineCursor(mpDisplay,mHandle);
+    if (mCursor != None && mCursor != mCursorNone) {
+      XFreeCursor(mpDisplay,mCursor);
+      mCursor = None;
+    }
+    switch (aCursor) {
+      case eOSCursor_None:
+        mCursor = mCursorNone;
+        XDefineCursor(mpDisplay, mHandle, mCursor);
+        return;
+      case eOSCursor_Wait:
+        mnCursorShape = XC_watch;
+        break;
+      case eOSCursor_ResizeHz:
+        mnCursorShape = XC_sb_h_double_arrow;
+        break;
+      case eOSCursor_ResizeVt:
+        mnCursorShape = XC_sb_v_double_arrow;
+        break;
+      default:
+      case eOSCursor_Arrow:
+        mnCursorShape = XC_left_ptr;
+        break;
+    }
+    mCursor = XCreateFontCursor(mpDisplay, mnCursorShape);
+    XDefineCursor(mpDisplay, mHandle, mCursor);
   }
 
   virtual eOSCursor __stdcall GetCursor() const niImpl {
-    return mCursor;
+    if (!mHandle) {
+      return eOSCursor_Arrow;
+    }
+    if (mCursor == mCursorNone) {
+      return eOSCursor_None;
+    }
+    switch (mnCursorShape) {
+      case XC_watch: return eOSCursor_Wait;
+      case XC_sb_h_double_arrow: return eOSCursor_ResizeHz;
+      case XC_sb_v_double_arrow: return eOSCursor_ResizeVt;
+      case XC_left_ptr: return eOSCursor_Arrow;
+    }
+    return eOSCursor_Arrow;
   }
 
-  void _UpdateCursor(eOSCursor aCursor) {
+  virtual sVec2i __stdcall GetCursorPosition() const niImpl {
+    return mvPrevMousePos;
+  }
+  virtual tBool __stdcall GetIsCursorOverClient() const niImpl {
+    return mbMouseOverClient;
   }
 
+  ///////////////////////////////////////////////
   virtual tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth, tU32 anHeight, tU32 anPivotX, tU32 anPivotY, const tU32* apData) niImpl {
+    // TODO: IMPLEMENT
     return eTrue;
   }
   virtual tIntPtr __stdcall GetCustomCursorID() const niImpl {
+    // TODO: IMPLEMENT
     return 0;
   }
-
   virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl {
-  }
-  virtual sVec2i __stdcall GetCursorPosition() const niImpl {
-    return sVec2i::Zero();
+    // TODO: IMPLEMENT
   }
   virtual void __stdcall SetCursorCapture(tBool abCapture) niImpl {
+    // TODO: IMPLEMENT
   }
   virtual tBool __stdcall GetCursorCapture() const niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall GetIsCursorOverClient() const niImpl {
+    // TODO: IMPLEMENT
     return eFalse;
   }
 
   ///////////////////////////////////////////////
   virtual void __stdcall TryClose() niImpl {
+    SetRequestedClose(eTrue);
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetDropTarget(tBool abDropTarget) niImpl
-  {
+  virtual void __stdcall SetDropTarget(tBool abDropTarget) niImpl {
   }
-
-  virtual tBool __stdcall GetDropTarget() const niImpl
-  {
+  virtual tBool __stdcall GetDropTarget() const niImpl {
     return false;
   }
 
@@ -249,15 +787,19 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   tBool __stdcall SetFullScreen(tU32 anScreenId) niImpl {
+    // TODO: IMPLEMENT
     return eFalse;
   }
   tU32 __stdcall GetFullScreen() const niImpl {
+    // TODO: IMPLEMENT
     return 1;
   }
   tBool __stdcall GetIsMinimized() const niImpl {
+    // TODO: IMPLEMENT
     return eFalse;
   }
   tBool __stdcall GetIsMaximized() const niImpl {
+    // TODO: IMPLEMENT
     return eFalse;
   }
 
@@ -286,12 +828,11 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall AttachGraphicsAPI(iOSGraphicsAPI* apAPI) {
-    niCheckIsOK(apAPI,eFalse);
-
-    return eTrue;
+    mptrAttachedGraphicsAPI = apAPI;
+    return mptrAttachedGraphicsAPI.IsOK();
   }
   virtual iOSGraphicsAPI* __stdcall GetGraphicsAPI() const {
-    return mptrAPI;
+    return mptrAttachedGraphicsAPI;
   }
 
   ///////////////////////////////////////////////
@@ -299,29 +840,464 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return ni::SendMessages(mptrMT,aMsg,avarA,avarB);
   }
 
-  Ptr<tMessageHandlerSinkLst> mptrMT;
-  tBool                       mbRequestedClose;
-  tBool                       mbMouseOverClient;
-  tBool                       mbDropTarget;
-  tBool                       mbIsActive;
-  tF32                        mfRefreshTimer;
-  sRecti                      mRect;
+  ///////////////////////////////////////////////
+  void _NextEvent(void)
+  {
+    XEvent event; XEvent *e = &event;
+    XNextEvent(mpDisplay, e);
+    switch(e->type) {
+      case KeyPress:
+        _HandleKeyPressEvent(e);
+        break;
+      case KeyRelease:
+        _HandleKeyReleaseEvent(e);
+        break;
 
-  eOSCursor        mCursor;
-  Ptr<iOSGraphicsAPI> mptrAPI;
-  // screen_buffer_t screen_buf[2];
+      case FocusIn:
+        mbIsActive = eTrue;
+        _SendMessage(eOSWindowMessage_SwitchIn);
+        break;
+
+      case FocusOut:
+        mbIsActive = eFalse;
+        _SendMessage(eOSWindowMessage_SwitchOut);
+        break;
+
+      case ButtonPress:
+        if (e->xbutton.button == Button4) {
+          _HandleMouseWheel(1);
+        }
+        else if (e->xbutton.button == Button5) {
+          _HandleMouseWheel(-1);
+        }
+        else {
+          _HandleMouseButtonPress(e->xbutton.button);
+        }
+        break;
+
+      case ButtonRelease:
+        _HandleMouseButtonRelease(e->xbutton.button);
+        break;
+
+      case MotionNotify:
+        {
+          _HandleMouseMove(e->xmotion.x,e->xmotion.y);
+          break;
+        }
+
+      case EnterNotify:
+        {
+          mbMouseOverClient = eTrue;
+          niLoop(i,niCountOf(mDoubleClick)) {
+            mDoubleClick[i].Reset();
+          }
+          break;
+        }
+
+      case LeaveNotify:
+        {
+          niLoop(i,niCountOf(mDoubleClick)) {
+            mDoubleClick[i].Reset();
+          }
+          mbMouseOverClient = eFalse;
+          break;
+        }
+
+      case Expose:
+        // Request to redraw part of the window.
+        break;
+
+      case MappingNotify:
+        // Keyboard mapping changed.
+        _InitKeyboard();
+        break;
+
+      case ConfigureNotify:
+        {
+          sRecti oldRect = mRect;
+          mRect.x = e->xconfigure.x;
+          mRect.y = e->xconfigure.y;
+          mRect.SetWidth(e->xconfigure.width);
+          mRect.SetHeight(e->xconfigure.height);
+          if (mRect.GetTopLeft() != oldRect.GetTopLeft()) {
+            _SendMessage(eOSWindowMessage_Move);
+          }
+          if (mRect.GetSize() != oldRect.GetSize()) {
+            _SendMessage(eOSWindowMessage_Size);
+          }
+          break;
+        }
+
+      case ClientMessage: {
+        if ((e->xclient.format == 32) && (e->xclient.data.l[0] == WM_DELETE_WINDOW)) {
+          SetRequestedClose(eTrue);
+          _SendMessage(eOSWindowMessage_Close);
+        }
+        break;
+      }
+    }
+  }
+
+  void _HandleMouseMove(int x, int y) {
+    sVec2i vMousePos { x, y };
+    sVec2i vRelMove = vMousePos-mvPrevMousePos;
+    if (_SendMessage(eOSWindowMessage_MouseMove,vMousePos,vRelMove)) {
+      mvPrevMousePos = vMousePos;
+      return;
+    }
+    mvPrevMousePos = vMousePos;
+  }
+  void _HandleMouseWheel(int aDelta) {
+    tF32 v = (tF32)aDelta;
+    _SendMessage(eOSWindowMessage_MouseWheel,v);
+  }
+  void _HandleMouseButtonPress(int aBt) {
+    switch (aBt) {
+      case Button1:
+        _SendMessage(eOSWindowMessage_MouseButtonDown,
+                     (ni::tU32)ePointerButton_Left);
+        if (mDoubleClick[0].Test(eTrue)) {
+          _SendMessage(eOSWindowMessage_MouseButtonDoubleClick,
+                       (ni::tU32)ePointerButton_Left);
+        }
+        break;
+      case Button3:
+        _SendMessage(eOSWindowMessage_MouseButtonDown,
+                     (ni::tU32)ePointerButton_Right);
+        if (mDoubleClick[2].Test(eTrue)) {
+          _SendMessage(eOSWindowMessage_MouseButtonDoubleClick,
+                       (ni::tU32)ePointerButton_Right);
+        }
+        break;
+      case Button2:
+        _SendMessage(eOSWindowMessage_MouseButtonDown,
+                     (ni::tU32)ePointerButton_Middle);
+        if (mDoubleClick[1].Test(eTrue)) {
+          _SendMessage(eOSWindowMessage_MouseButtonDoubleClick,
+                       (ni::tU32)ePointerButton_Middle);
+        }
+        break;
+    }
+  }
+  void _HandleMouseButtonRelease(int aBt) {
+    switch (aBt) {
+      case Button1:
+        _SendMessage(eOSWindowMessage_MouseButtonUp,
+                     (ni::tU32)ePointerButton_Left);
+        mDoubleClick[0].Test(eFalse);
+        break;
+      case Button3:
+        _SendMessage(eOSWindowMessage_MouseButtonUp,
+                     (ni::tU32)ePointerButton_Right);
+        mDoubleClick[2].Test(eFalse);
+        break;
+      case Button2:
+        _SendMessage(eOSWindowMessage_MouseButtonUp,
+                     (ni::tU32)ePointerButton_Middle);
+        mDoubleClick[1].Test(eFalse);
+        break;
+    }
+  }
+
+  void _InitKeyboard() {
+    int i, j;
+    int min_keycode;
+    int max_keycode;
+    KeySym keysym;
+
+    for (i = 0; i < 256; i++) {
+      // Clear mappings
+      mKeyToScan[i] = -1;
+      // Clear pressed key flags
+      mKeyPressed[i] = eFalse;
+    }
+
+    // Get the number of keycodes
+    XDisplayKeycodes(mpDisplay, &min_keycode, &max_keycode);
+    if (min_keycode < 0)   min_keycode = 0;
+    if (max_keycode > 255) max_keycode = 255;
+
+    // Setup mappings
+    for (i = min_keycode; i <= max_keycode; i++) {
+      keysym = XKeycodeToKeysym(mpDisplay, i, 0);
+      if (keysym != NoSymbol) {
+        for (j = 0; keysym_to_scancode[j].keysym != NoSymbol; j++) {
+          if (keysym_to_scancode[j].keysym == keysym) {
+            mKeyToScan[i] = keysym_to_scancode[j].scancode;
+            break;
+          }
+        }
+      }
+    }
+  }
+  void _HandleKeyPressEvent(XEvent* e) {
+    int kcode = e->xkey.keycode, scode;
+    if ((kcode >= 0) && (kcode < 256) && (!mKeyPressed[kcode])) {
+      int scode = mKeyToScan[kcode];
+      if (scode > 0) {
+        mKeyPressed[kcode] = eTrue;
+        _SendMessage(eOSWindowMessage_KeyDown,(tU32)scode);
+      }
+    }
+  }
+  void _HandleKeyReleaseEvent(XEvent* e) {
+    int kcode = e->xkey.keycode, scode;
+    if ((kcode >= 0) && (kcode < 256) && (mKeyPressed[kcode])) {
+      int scode = mKeyToScan[kcode];
+      if (scode > 0) {
+        mKeyPressed[kcode] = eFalse;
+        _SendMessage(eOSWindowMessage_KeyUp,(tU32)scode);
+      }
+    }
+  }
+
+  inline Display* _GetDisplay() const { return (Display*)mpDisplay; }
+  inline Visual* _GetVisual() const { return (Visual*)mpVisual; }
+  inline int _GetScreen() const  { return  mnScreen; }
+  inline Window _GetWindow() const { return (Window)mHandle; }
+  inline GC _GetGC() const { return (GC)mGC; }
+
+  Ptr<iOSGraphicsAPI>  mptrAttachedGraphicsAPI;
+  tF32                 mfRefreshTimer;
+
+  cString              mstrTitle;
+  tBool                mbOwnedHandle;
+  Ptr<tMessageHandlerSinkLst> mptrMT;
+  tBool                mbIsActive;
+  sRecti               mRect;
+  sVec2i               mvPrevMousePos;
+  sVec2i               mvPrevMouseDelta;
+  tBool                mbRequestedClose;
+  tBool                mbMouseOverClient;
+  tBool                mbDropTarget;
+  tBool                mbMouseCapture;
+  tOSWindowStyleFlags  mnStyle;
+  Atom                 WM_DELETE_WINDOW; /* "close-window" protocol atom */
+
+  Display* mpDisplay;
+  Visual*  mpVisual;
+  int      mnScreen;
+  Window   mHandle;
+  GC       mGC;
+  Cursor   mCursor;
+  Cursor   mCursorNone;
+  int      mnCursorShape;
+
+  int   mKeyToScan[256];
+  tBool mKeyPressed[256];
+
+  GLXContext mpGLX = nullptr;
+
+  struct sDoubleClick {
+    enum {
+      NOT,
+      START,
+      RELEASE
+    };
+    tU32       status;
+    tF64       timer;
+    sDoubleClick() {
+      Reset();
+    }
+    void Reset() {
+      status = NOT;
+      timer = ni::TimerInSeconds();
+    }
+    tBool Test(tBool abPressed) {
+      tBool isDoubleClick = eFalse;
+      if (status == NOT) {
+        if (abPressed) {
+          status = START;
+        }
+      }
+      else if (status == START) {
+        if (!abPressed) {
+          // released for the first time
+          status = RELEASE;
+          timer = ni::TimerInSeconds();
+        }
+      }
+      else if (status == RELEASE) {
+        // 2nd click
+        if (abPressed) {
+          if ((ni::TimerInSeconds() - timer) < 0.3) {
+            status = NOT;
+            isDoubleClick = eTrue;
+          }
+          else {
+            status = START;
+          }
+        }
+        else {
+          status = NOT;
+        }
+      }
+      return isDoubleClick;
+    }
+  } mDoubleClick[3];
 
   niEndClass(cLinuxWindow);
 };
 
+niExportFunc(tBool) linuxglCreateContext(iOSWindow* apWindow) {
+  cLinuxWindow* w = (cLinuxWindow*)apWindow;
+  niPanicAssert(w != nullptr);
+  return w->_GLCreateContext();
+}
+niExportFunc(tBool) linuxglDestroyContext(iOSWindow* apWindow) {
+  cLinuxWindow* w = (cLinuxWindow*)apWindow;
+  niPanicAssert(w != nullptr);
+  return w->_GLDestroyContext();
+}
+niExportFunc(tBool) linuxglHasContext(iOSWindow* apWindow) {
+  cLinuxWindow* w = (cLinuxWindow*)apWindow;
+  niPanicAssert(w != nullptr);
+  return w->mpGLX != nullptr;
+}
+
+niExportFunc(tBool) linuxglMakeContextCurrent(iOSWindow* apWindow) {
+  cLinuxWindow* w = (cLinuxWindow*)apWindow;
+  niPanicAssert(w != nullptr);
+  return w->_GLMakeCurrentContext();
+}
+
+niExportFunc(tBool) linuxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait) {
+  cLinuxWindow* w = (cLinuxWindow*)apWindow;
+  niPanicAssert(w != nullptr);
+  return w->_GLSwapBuffers(abDoNotWait);
+}
+
 iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) {
-  niCheck(aRect.GetWidth() > 0,NULL);
-  niCheck(aRect.GetWidth() < 0xFFFF,NULL);
-  niCheck(aRect.GetHeight() > 0,NULL);
-  niCheck(aRect.GetHeight() < 0xFFFF,NULL);
+  niCheck(aRect.GetWidth() > 0,nullptr);
+  niCheck(aRect.GetWidth() < 0xFFFF,nullptr);
+  niCheck(aRect.GetHeight() > 0,nullptr);
+  niCheck(aRect.GetHeight() < 0xFFFF,nullptr);
 
   Ptr<cLinuxWindow> wnd = niNew cLinuxWindow(aRect.GetSize());
   return wnd.GetRawAndSetNull();
 }
 
+struct sX11System : public Impl_HeapAlloc {
+  struct sX11Monitor {
+    tIntPtr mHandle;
+    cString mstrName;
+    sRecti mRect;
+    tOSMonitorFlags mFlags;
+  };
+  astl::vector<sX11Monitor> mvMonitors;
+
+  sX11System() {
+    Display* display = X11_OpenDisplay();
+    if (display) {
+      int screenCount = XScreenCount(display);
+      niLog(Info, niFmt("XScreenCount found '%d' screens.", screenCount));
+      niLoop(i, screenCount) {
+        _AddMonitor(display, i);
+      }
+      XCloseDisplay(display);
+    }
+    else {
+      niLog(Info, "X11_OpenDisplay failed.");
+    }
+  }
+
+  void _AddMonitor(Display* display, int screen) {
+    sX11Monitor m;
+    m.mHandle = screen;
+    m.mstrName.Format(_A("Screen%d"), screen);
+
+    Screen* scr = ScreenOfDisplay(display, screen);
+    m.mRect = ni::sRecti(0, 0, scr->width, scr->height);
+
+    m.mFlags = 0;
+    if (screen == DefaultScreen(display)) {
+      m.mFlags |= eOSMonitorFlags_Primary;
+    }
+
+    mvMonitors.push_back(m);
+    niLog(Info, niFmt(
+      "... X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
+      mvMonitors.size()-1,
+      m.mHandle, m.mstrName.Chars(),
+      m.mRect,
+      m.mFlags));
+  }
+};
+
+///////////////////////////////////////////////
+static sX11System* _GetX11System() {
+  static sX11System* _system = niNew sX11System();
+  return _system;
+}
+
+///////////////////////////////////////////////
+tU32 cLang::GetNumMonitors() const {
+  sX11System* x11 = _GetX11System();
+  return (tU32)x11->mvMonitors.size();
+}
+tU32 cLang::GetMonitorIndex(tIntPtr aHandle) const {
+  sX11System* x11 = _GetX11System();
+  niLoop(i,x11->mvMonitors.size()) {
+    if (x11->mvMonitors[i].mHandle == aHandle)
+      return (tU32)i;
+  }
+  return eInvalidHandle;
+}
+tIntPtr cLang::GetMonitorHandle(tU32 anIndex) const {
+  sX11System* x11 = _GetX11System();
+  niCheckSilent(anIndex < x11->mvMonitors.size(),eInvalidHandle);
+  return x11->mvMonitors[anIndex].mHandle;
+}
+const achar* cLang::GetMonitorName(tU32 anIndex) const {
+  sX11System* x11 = _GetX11System();
+  niCheckSilent(anIndex < x11->mvMonitors.size(),NULL);
+  return x11->mvMonitors[anIndex].mstrName.Chars();
+}
+sRecti cLang::GetMonitorRect(tU32 anIndex) const {
+  sX11System* x11 = _GetX11System();
+  niCheckSilent(anIndex < x11->mvMonitors.size(),sRecti::Null());
+  return x11->mvMonitors[anIndex].mRect;
+}
+tOSMonitorFlags cLang::GetMonitorFlags(tU32 anIndex) const {
+  sX11System* x11 = _GetX11System();
+  niCheckSilent(anIndex < x11->mvMonitors.size(),0);
+  return x11->mvMonitors[anIndex].mFlags;
+}
+
+///////////////////////////////////////////////
+void cLang::_PlatformStartup() {
+}
+
+iOSWindow* __stdcall cLang::CreateWindowEx(tIntPtr aOSWindowHandle, tOSWindowCreateFlags aCreate) {
+  return NULL;
+}
+eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar* aaszTitle, const achar* aaszText, tOSMessageBoxFlags aFlags)
+{
+  cString strTitle = niIsStringOK(aaszTitle)?aaszTitle:"Message";
+  cString strText = niIsStringOK(aaszText)?aaszText:_A("");
+  niDebugFmt((_A("--- %s ---\n%s\n"),
+              strTitle.Chars(),
+              strText.Chars()));
+  return eOSMessageBoxReturn_Yes;
+}
+cString __stdcall cLang::OpenFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) {
+  niError("Not implemented");
+  return "<NOT IMPLEMENTED>";
+}
+cString __stdcall cLang::SaveFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) {
+  niError("Not implemented");
+  return "<NOT IMPLEMENTED>";
+}
+cString __stdcall cLang::PickDirectoryDialog(iOSWindow* aParent, const achar* aTitle, const achar* aInitDir) {
+  niError("Not implemented");
+  return "<NOT IMPLEMENTED>";
+}
+
+///////////////////////////////////////////////
+tU32 __stdcall cLang::GetNumGameCtrls() const {
+  return 0;
+}
+iGameCtrl* __stdcall cLang::GetGameCtrl(tU32 aulIdx) const {
+  return NULL;
+}
 #endif

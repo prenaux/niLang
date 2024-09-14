@@ -187,7 +187,7 @@ static bool hasTexFmtHalfFloat = false;
 static bool hasTexFmtFloat = false;
 static bool hasTexFmtDepth = false;
 
-#if defined niWindows || defined niOSX
+#if defined niWindows || defined niOSX || defined niLinux
 #define USE_GL_GET_TEX_IMAGE
 #endif
 
@@ -456,6 +456,14 @@ static tBool GL2_InitializeExt() {
     niDebugFmt((_A("GL_RENDERER: %s"),strRenderer));
     niDebugFmt((_A("GL_VERSION: %s"),strVersion));
     niDebugFmt((_A("GL_EXTENSIONS: %s"),strExt));
+  }
+
+  if (strRenderer.empty() || strVendor.empty() || strVersion.empty()) {
+    niError("Invalid OpenGL context.");
+    return eFalse;
+  }
+
+  if (_printedInfos) {
     niDebugFmt(("--- GL2_CAPS ---"));
   }
 
@@ -3227,8 +3235,10 @@ class cGL2ContextWindow : public sGLContext
       return;
 
     // ChangeWindow, setup the context size, etc...
-    if (!_DoResizeContext())
+    if (!_DoResizeContext()) {
+      Invalidate();
       return;
+    }
   }
   ~cGL2ContextWindow() {
     Invalidate();
@@ -3364,7 +3374,7 @@ class cGL2ContextWindow : public sGLContext
   }
 
   virtual tBool __stdcall IsOK() const {
-    return mptrWindow.IsOK();
+    return mpDrv != nullptr;
   }
 
   virtual void __stdcall Invalidate() {
@@ -3372,7 +3382,7 @@ class cGL2ContextWindow : public sGLContext
       GLES2_ResetContextDeviceResources(mpDrv);
       _DestroyContext();
       mpDrv = NULL;
-  }
+    }
   }
 
   virtual iGraphics* __stdcall GetGraphics() const {

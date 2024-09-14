@@ -148,6 +148,7 @@ TEST_FIXTURE(FOSWindow,Create) {
     while (!wnd->GetRequestedClose()) {
       wnd->UpdateWindow(eTrue);
     }
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -180,6 +181,7 @@ TEST_FIXTURE(FOSWindow,MessageBoxWarning) {
 
     eOSMessageBoxReturn r = ni::GetLang()->MessageBox(wnd,NULL,"Hello Warning !",eOSMessageBoxFlags_IconWarning);
     niDebugFmt(("... MessageBox Returned: %s", niEnumToChars(eOSMessageBoxReturn,r)));
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -197,6 +199,7 @@ TEST_FIXTURE(FOSWindow,MessageBoxInfoYesNo) {
     eOSMessageBoxReturn r = ni::GetLang()->MessageBox(
       wnd,NULL,"Hello Info !",eOSMessageBoxFlags_IconInfo|eOSMessageBoxFlags_YesNo);
     niDebugFmt(("... MessageBox Returned: %s", niEnumToChars(eOSMessageBoxReturn,r)));
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -221,6 +224,7 @@ TEST_FIXTURE(FOSWindow,MessageBoxLong) {
     eOSMessageBoxReturn r = ni::GetLang()->MessageBox(
       wnd,NULL,txt.Chars(),eOSMessageBoxFlags_IconInfo|eOSMessageBoxFlags_YesNo);
     niDebugFmt(("... MessageBox Returned: %s", niEnumToChars(eOSMessageBoxReturn,r)));
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -239,6 +243,7 @@ TEST_FIXTURE(FOSWindow,FatalError) {
     CHECK(wnd.IsOK());
 
     ni::GetLang()->FatalError("Test Fatal Error.");
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -263,6 +268,7 @@ TEST_FIXTURE(FOSWindow,FatalErrorLong) {
     txt << AEOL;
     txt << _MultiLineText;
     ni::GetLang()->FatalError(txt.Chars());
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -287,6 +293,7 @@ TEST_FIXTURE(FOSWindow,OpenFileDialog) {
     // contained "not implemented" (which would mean that dialog isnt
     // implemented on the platform).
     CHECK(r.IsNotEmpty() && !r.icontains("implemented"));
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 
@@ -334,6 +341,7 @@ TEST_FIXTURE(FOSWindow,PickDirectoryDialog) {
     // contained "not implemented" (which would mean that dialog isnt
     // implemented on the platform).
     CHECK(r.IsNotEmpty() && !r.icontains("implemented"));
+    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 

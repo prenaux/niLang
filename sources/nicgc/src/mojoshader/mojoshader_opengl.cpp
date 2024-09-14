@@ -60,6 +60,19 @@
 #  define SUPPORT_PROFILE_ARB1_NV 0
 #  define glGetInfoLogARB glGetShaderInfoLog
 
+#elif defined niLinux
+
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <GL/glext.h>
+
+#  define USE_GL_LIB
+#  define CTX_GL(FN) FN
+
+#  define SUPPORT_PROFILE_ARB1 0
+#  define SUPPORT_PROFILE_ARB1_NV 0
+
 #else
 
 #  define CTX_GL(FN) ctx->FN

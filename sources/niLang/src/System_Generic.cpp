@@ -398,7 +398,7 @@ niExportFunc(iUnknown*) New_niLang_OSWindowGeneric(const Var&, const Var&) {
 //  Generic system platform stuff
 //
 //--------------------------------------------------------------------------------------------
-#if defined niAndroid || defined niIOS || defined niJSCC || defined niLinux || defined niQNX
+#if defined niAndroid || defined niIOS || defined niJSCC || defined niQNX
 
 #include "Lang.h"
 
@@ -426,7 +426,7 @@ tOSMonitorFlags __stdcall cLang::GetMonitorFlags(tU32 anIndex) const {
   return 0;
 }
 
-#if !defined niQNX && !defined niJSCC && !defined niLinux
+#if !defined niQNX && !defined niJSCC
 ///////////////////////////////////////////////
 iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) {
   return 0;

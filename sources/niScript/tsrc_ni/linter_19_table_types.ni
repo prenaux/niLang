@@ -72,11 +72,35 @@ function table_local_type(table:tLocalHamster t) {
 tClone <- {
   name = "vongole"
   im_clone = 10000
+
 }
 
 function table_cloned(tClone t) {
   local c = t.DeepClone()
-  c.name; // should
+  c.name; // should be ok
   c.im_clone; // should be ok
   c.not_a_field; // should fail
+}
+
+tThis <- {
+  name = "vongole"
+  im_this = 10000
+
+  function wee() this {
+    return this.DeepClone()
+  }
+
+  function bla(this b) this {
+    b.name; // should be ok
+    b.im_this; // should be ok
+    b.not_a_field; // should fail
+  }
+}
+
+function table_this(tThis t) {
+  local r = t.wee()
+  ::LINT_CHECK_TYPE("table", r)
+  r.name; // should be ok
+  r.im_this; // should be ok
+  r.not_a_field; // should fail
 }

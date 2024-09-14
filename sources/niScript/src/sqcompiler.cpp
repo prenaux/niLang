@@ -1518,34 +1518,43 @@ struct SQCompiler {
       *abCanOnlyBeAType = eFalse;
     }
 
-    cString strType;
-    SQObjectPtr o;
-
-    if (_token == TK_DOUBLE_COLON) {
-      if (abCanOnlyBeAType) {
-        *abCanOnlyBeAType = eTrue;
-      }
+    if (_token == TK_THIS) {
       COMPILE_CHECK(Lex(aErrors));
-      strType += "::";
-    }
-
-    COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
-    strType += _stringval(o);
-
-    if (_token == ':' || _token == '|' || _token == '.') {
+      aTypeDef = _HC(this);
       if (abCanOnlyBeAType) {
         *abCanOnlyBeAType = eTrue;
       }
-      do {
-        const tU32 wasToken = _token;
+    }
+    else {
+      cString strType;
+
+      if (_token == TK_DOUBLE_COLON) {
+        if (abCanOnlyBeAType) {
+          *abCanOnlyBeAType = eTrue;
+        }
         COMPILE_CHECK(Lex(aErrors));
-        strType.appendChar(wasToken);
-        COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
-        strType += _stringval(o);
-      } while (_token == ':' || _token == '|' || _token == '.');
+        strType += "::";
+      }
+
+      SQObjectPtr o;
+      COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
+      strType += _stringval(o);
+
+      if (_token == ':' || _token == '|' || _token == '.') {
+        if (abCanOnlyBeAType) {
+          *abCanOnlyBeAType = eTrue;
+        }
+        do {
+          const tU32 wasToken = _token;
+          COMPILE_CHECK(Lex(aErrors));
+          strType.appendChar(wasToken);
+          COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&o));
+          strType += _stringval(o);
+        } while (_token == ':' || _token == '|' || _token == '.');
+      }
+      aTypeDef = _H(strType);
     }
 
-    aTypeDef = _H(strType);
     return eCompileResult_OK;
   }
 
@@ -1602,7 +1611,7 @@ struct SQCompiler {
       }
 
       // return type ?
-      if (_token == TK_IDENTIFIER) {
+      if (_token == TK_IDENTIFIER || _token == TK_THIS) {
         SQObjectPtr typeOrParamName;
         COMPILE_CHECK(ParseType(aErrors,funcstate._returntype,NULL));
       }

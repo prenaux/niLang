@@ -347,28 +347,17 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<float>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<string>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<array>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<table>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<closure>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec2>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec3>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<Vec4>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
-      EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<float>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<string>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<array>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<table>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<closure>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec2>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec3>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec4>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
 
       EXPECTED_LINT(
         aLogs, 11,
@@ -619,8 +608,10 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tClone]})
+      EXPECTED_LINT(aLogs, 2, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
 
-      ::CHECK_EQUAL(8,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(10,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

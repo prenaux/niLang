@@ -843,6 +843,13 @@ struct sLinter {
       // tTableName always starts at the this object
       curr = aClosure._this;
     }
+    else if (ahspPath == _HC(this)) {
+      // TODO: Maybe this should be a clone of this? Same issue as for
+      // ShallowClone/DeepClone we return the this table which might be
+      // modified afterward. Again though for the purpose of linting this
+      // should be good enough.
+      return aClosure._this;
+    }
     else {
       return niNew sScriptTypeErrorCode(
         this->_ss, _HC(error_code_cant_resolve_table_type_path),
@@ -941,10 +948,16 @@ struct sLinter {
 
     // Table types
     else if (_IsTableTypeNameByConvention(typeStrChars) ||
+             hspType == _HC(this) ||
              StrStartsWith(typeStrChars,"::") ||
              StrStartsWith(typeStrChars,_typestr_prefix_table.c_str()))
     {
       resolvedType = ResolveTableTypePath(hspType, aClosure);
+      if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
+        // we return without caching if there's an error because the type
+        // might become available later on or in another context
+        return resolvedType;
+      }
     }
 
     // Base types
@@ -1198,7 +1211,6 @@ struct sLinter {
 
             case eScriptType_EnumDef: {
               SQObjectPtr enumTable = ((sScriptTypeEnumDef*)ud)->_GetTable(const_cast<SQSharedState&>(ss));
-
               return DoLintGet(enumTable, key, dest, opExt);
             }
 
@@ -1820,17 +1832,24 @@ struct sLintFuncCall_table_clone : public ImplRC<iLintFuncCall> {
   {
     niLet objTable = aCallArgs[0];
     // niDebugFmt(("... sLintFuncCall_table_clone: objTable: %s", _ObjToString(objTable)));
-    if (sqa_getscriptobjtype(objTable) != eScriptType_Table) {
-      return _MakeLintCallError(
-        aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
+    niLet objTableType = sqa_getscriptobjtype(objTable);
+    if (objTableType == eScriptType_Table) {
+      // TODO: Do deep clone? Technically its more correct, if we deep clone the
+      // sub tables that get modified might get incorrectly linted. So for 100%
+      // correctness it'd be better, however its somewhat of an edge case so
+      // we'll leave it for now.
+      NN_mut<SQTable> clonedTable { _table(objTable)->Clone(nullptr) };
+      return clonedTable.raw_ptr();
+    }
+    else if (objTableType == eScriptType_ResolvedType) {
+      niLet resolvedType = _ObjToResolvedTyped(objTable);
+      if (resolvedType->_scriptType == eScriptType_Table) {
+        return objTable;
+      }
     }
 
-    // TODO: Do deep clone? Technically its more correct, if we deep clone the
-    // sub tables that get modified might get incorrectly linted. So for 100%
-    // correctness it'd be better, however its somewhat of an edge case so
-    // we'll leave it for now.
-    NN_mut<SQTable> clonedTable { _table(objTable)->Clone(nullptr) };
-    return clonedTable.raw_ptr();
+    return _MakeLintCallError(
+      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
   }
 };
 
@@ -2819,19 +2838,24 @@ void SQFunctionProto::LintTrace(
   _LTRACE(("--- INST ----------------------------------------------\n"));
   // prologue checks
   {
+    niLet inst = 0; // placeholder
+    niLet getlinecol = [&](niLet _) {
+      return Vec2i(thisfunc->_sourceline, 0);
+    };
     niLet retscripttype = sqa_getscriptobjtype(thisfunc_resolvedrettype);
     if (retscripttype == eScriptType_Null && _LENABLED(ret_type_is_null)) {
-      niLet inst = 0; // placeholder
-      niLet getlinecol = [&](niLet _) {
-        return Vec2i(thisfunc->_sourceline, 0);
-      };
-      _LINT(ret_type_is_null, niFmt(
-        "Return type is Null, specify an explicit return type.",
-        _ObjToString(thisfunc->_returntype)));
+      if (_LENABLED(ret_type_is_null)) {
+        _LINT(ret_type_is_null, niFmt(
+          "Return type is Null, specify an explicit return type.",
+          _ObjToString(thisfunc->_returntype)));
+      }
     }
     else if (retscripttype == eScriptType_ErrorCode) {
-      _LINTERNAL_ERROR(niFmt("Invalid function return type '%s'.",
-                             _ObjToString(thisfunc_resolvedrettype)));
+      if (_LENABLED(param_decl)) {
+        _LINT(param_decl, niFmt(
+          "Invalid function return type '%s'.",
+          _ObjToString(thisfunc_resolvedrettype)));
+      }
     }
   }
 

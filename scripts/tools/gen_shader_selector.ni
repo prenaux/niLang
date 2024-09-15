@@ -7,7 +7,7 @@
 ::Import("zip.ni");
 
 local tGenSelector = {
-  _out = ""
+  _out = ::LINT_AS_TYPE("iFile", null)
   _indentation = 0
   _indentString = ""
 
@@ -286,3 +286,6 @@ module <- {
     return tGenSelector.Clone().doit(aShadersDir,aName,aBuildLibrary);
   }
 }
+
+::LINT_CHECK_TYPE("null", ::?gen_shader_selector);
+::gen_shader_selector <- module;

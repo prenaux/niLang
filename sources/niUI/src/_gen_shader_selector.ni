@@ -4,7 +4,7 @@
 // This is meant to be called after you added & compiled new light shader types
 //
 ::Import("lang.ni");
-local genShaderSelector = ::ImportModule("tools/gen_shader_selector.ni").genShaderSelector;
+::Import("tools/gen_shader_selector.ni")
 
 local shadersDir = ::fs.getAbsolutePath("../../../data/niUI/shaders/");
-genShaderSelector(shadersDir, "fixed_ps");
+::gen_shader_selector.genShaderSelector(shadersDir, "fixed_ps", false);

@@ -5,11 +5,10 @@
 ::Import("assert.ni")
 ::Import("fs.ni")
 
-::LINT_CHECK_TYPE("null", ::?xml);
-::xml <- {
+module <- {
   _indent = "\t"
 
-  tNode = ::delegate(::oo.base, {
+  tNode = {
     _name = ""
     _text = ""
     _kind = "element"
@@ -19,8 +18,10 @@
     _top = null
     _stack = []
 
-    function _initialize(aName) {
-      this._name = aName || "XMLNode";
+    function new(aName) this {
+      local that = this.DeepClone()
+      that._name = aName || "XMLNode";
+      return that
     }
 
     function setAttribute(aName,aValue) {
@@ -28,10 +29,10 @@
       node._attributes[aName] <- ""+aValue
     }
 
-    function getAttribute(aName,aDefault) {
+    function getAttribute(aName,_aDefault) {
       local node = _top || this
       if (!(aName in node._attributes))
-        return aDefault;
+        return _aDefault;
       return node._attributes[aName];
     }
 
@@ -40,9 +41,11 @@
       node._children.push(aChildNode)
     }
 
-    function pushNew(aName,aKind) {
+    function pushNew(aName,_aKind) {
       local newNode = ::xml.tNode.new(aName);
-      if (aKind) newNode._kind = aKind;
+      if (_aKind) {
+        newNode._kind = _aKind;
+      }
       local node = _top || this
       node._children.push(newNode);
       _stack.push(newNode);
@@ -67,7 +70,7 @@
     function top() {
       return _top || this
     }
-  })
+  }
 
   function parseXml(aFileOrString) {
     local sink = {
@@ -75,17 +78,20 @@
       function OnXmlParserSink_Node(aType, aNameOrText) {
         // ::println("NODE:" ::eXmlParserNodeType.gettable().getkey(aType) ":" aNameOrText)
         switch (aType) {
-          case ::eXmlParserNodeType.ElementBegin:
-          _root.pushNew(aNameOrText)
-          break;
-          case ::eXmlParserNodeType.ElementEnd:
-          _root.pop()
-          break;
-          case ::eXmlParserNodeType.Text:
-          _root.pushNew("__innerText__","text")
-          _root.top()._text = aNameOrText.decodexml();
-          _root.pop()
-          break;
+          case ::eXmlParserNodeType.ElementBegin: {
+            _root.pushNew(aNameOrText,null)
+            break;
+          }
+          case ::eXmlParserNodeType.ElementEnd: {
+            _root.pop()
+            break;
+          }
+          case ::eXmlParserNodeType.Text: {
+            _root.pushNew("__innerText__","text")
+            _root.top()._text = aNameOrText.decodexml();
+            _root.pop()
+            break;
+          }
         }
         return true;
       }
@@ -108,7 +114,7 @@
     }
     if (sink._root._children.empty())
       throw "Empty Xml"
-    return sink._root._children[0];
+    return sink._root._children[?0];
   }
 
   function writeXmlIndent(fp,indent) {
@@ -196,3 +202,6 @@
     return fp.ReadString()
   }
 }
+
+::LINT_CHECK_TYPE("null", ::?xml);
+::xml <- module

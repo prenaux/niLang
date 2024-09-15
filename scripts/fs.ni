@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: MIT
 ::Import("lang.ni")
 
-// Get thre root file system instance.
-::gRootFS <- ::gLang.root_fs
+module <- {
+  _rootFS = ::gLang.GetRootFS()
 
-local module = {
   ///////////////////////////////////////////////
   function createStringFile(string)
   {
@@ -97,7 +96,7 @@ local module = {
   ///////////////////////////////////////////////
   // Returns an array of tables of the form :
   // { path = 'File path', attr = 'File attributes' }
-  function listFiles(aPath,aFilter,aAttr,aRecursive,aAppendBaseDir)
+  function listFiles(aPath,aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
   {
     aPath = "".setdir(aPath)
     local sink = {
@@ -108,6 +107,7 @@ local module = {
       mRecursive = false
       mResult = []
       mCurDir = [""]
+      mFS = _rootFS
       function OnFound(aPath,aAttr,aSize)
       {
         if ((aAttr & ::eFileAttrFlags.Directory) && (mAttr & ::eFileAttrFlags.Directory)) {
@@ -127,22 +127,22 @@ local module = {
         if (mRecursive && (aAttr & ::eFileAttrFlags.Directory)) {
           local newPath = mCurDir.top().adddirback(aPath)
           mCurDir.append(newPath)
-          ::gRootFS.FileEnum("".setdir(mBaseDir+mCurDir.top()).setfile(mFilter),
-                             mAttr|::eFileAttrFlags.Directory,this)
+          mFS.FileEnum("".setdir(mBaseDir+mCurDir.top()).setfile(mFilter),
+                       mAttr|::eFileAttrFlags.Directory,this)
           mCurDir.pop()
         }
         return true
       }
     }
-    sink.mAppendBaseDir = aAppendBaseDir;
+    sink.mAppendBaseDir = _aAppendBaseDir;
     sink.mBaseDir = aPath;
-    sink.mRecursive = aRecursive;
+    sink.mRecursive = _aRecursive;
     sink.mFilter = aFilter || "*.*";
-    sink.mAttr = (aAttr == null) ? ::eFileAttrFlags.AllFiles : aAttr;
+    sink.mAttr = (_aAttr == null) ? ::eFileAttrFlags.AllFiles : _aAttr;
 
-    ::gRootFS.FileEnum(
+    _rootFS.FileEnum(
       aPath.setfile(sink.mFilter),
-      sink.mAttr|(aRecursive?::eFileAttrFlags.Directory:0),
+      sink.mAttr|(_aRecursive?::eFileAttrFlags.Directory:0),
       sink)
     return sink.mResult
   }
@@ -161,7 +161,7 @@ local module = {
     local path = "";
     path = path.adddirback(::gLang.property["ni.dirs.home"])
     path = path.adddirback(aAppName)
-    ::gRootFS.FileMakeDir(path)
+    _rootFS.FileMakeDir(path)
     path += aPath;
     return fileOpenWrite(path,_aAppend)
   }
@@ -184,7 +184,7 @@ local module = {
       return fp
     }
     else {
-      return ::gRootFS.FileOpen(aPath,::eFileOpenMode.Write|(_aAppend?::eFileOpenMode.Append:0))
+      return _rootFS.FileOpen(aPath,::eFileOpenMode.Write|(_aAppend?::eFileOpenMode.Append:0))
     }
   }
 
@@ -199,20 +199,20 @@ local module = {
       return fp
     }
     else {
-      return ::gRootFS.FileOpen(aPath,::eFileOpenMode.Read)
+      return _rootFS.FileOpen(aPath,::eFileOpenMode.Read)
     }
   }
 
   ///////////////////////////////////////////////
   function getAbsolutePath(aPath) {
-    return ::gRootFS.GetAbsolutePath(aPath)
+    return _rootFS.GetAbsolutePath(aPath)
   }
 
   ///////////////////////////////////////////////
   // Get the size of the specified file
   function fileSize(aPath) {
     if (!aPath.?len()) return -1
-    return ::gRootFS.FileSize(aPath)
+    return _rootFS.FileSize(aPath)
   }
 
   ///////////////////////////////////////////////
@@ -220,18 +220,18 @@ local module = {
   function fileExists(aPath) {
     if (!aPath.?len())
       return false
-    return ::gRootFS.FileExists(aPath,::eFileAttrFlags.AllFiles)
+    return _rootFS.FileExists(aPath,::eFileAttrFlags.AllFiles)
   }
 
   ///////////////////////////////////////////////
   // Check if a directory exists
   function dirExists(aPath) {
-    return ::gRootFS.FileExists("".setdir(aPath),::eFileAttrFlags.AllDirectories)
+    return _rootFS.FileExists("".setdir(aPath),::eFileAttrFlags.AllDirectories)
   }
 
   ///////////////////////////////////////////////
   function makeDir(aPath) {
-    return ::gRootFS.FileMakeDir(aPath)
+    return _rootFS.FileMakeDir(aPath)
   }
 
   ///////////////////////////////////////////////
@@ -280,5 +280,7 @@ local module = {
   }
 }
 
-::namespaceOrModule(this, "fs", module);
+::LINT_CHECK_TYPE("null", ::?gRootFS);
+::gRootFS <- module._rootFS
+::LINT_CHECK_TYPE("null", ::?fs);
 ::fs <- module

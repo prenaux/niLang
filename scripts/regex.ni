@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 ::Import("lang.ni")
 
-local module = {
+module <- {
   ///////////////////////////////////////////////
   // Create a new file pattern based regular expression
   function filePattern(aStr) iRegex {
@@ -15,4 +15,5 @@ local module = {
     return ::CreateInstance("niLang.PCRE",aStr,aOptions).QueryInterface("iPCRE");
   }
 }
-::namespaceOrModule(this, "regex", module);
+
+::regex <- module

@@ -1,13 +1,13 @@
 ::Import("lang.ni")
+::Import("assert.ni")
 
-::namespace("serialize", {
+module <- {
 
   //========================================================================
   // Write
   //========================================================================
   function writeValue(fp,aValue,aRecursionGuard) {
-    local valType = typeof(aValue);
-    switch (valType) {
+    switch (typeof(aValue)) {
       case "null": {
         fp.WriteStringZ("nul")
         break;
@@ -37,7 +37,7 @@
         return writeFunction(fp,aValue,aRecursionGuard)
       }
       default: {
-        throw "writeValue: Can't serialize type '"+valType+"'."
+        throw "writeValue: Can't serialize type '"+typeof(aValue)+"'."
       }
     }
   }
@@ -90,8 +90,8 @@
   //========================================================================
   // Read
   //========================================================================
-  function readValue(fp,typeHdr) {
-    typeHdr = typeHdr || fp.ReadString();
+  function readValue(fp,_aTypeHdr) {
+    local typeHdr = _aTypeHdr || fp.ReadString();
     switch (typeHdr) {
       case "nul": {
         return null
@@ -158,4 +158,7 @@
 
     return ::IScriptObjectToObject(scriptObject)
   }
-})
+}
+
+::LINT_CHECK_TYPE("null", ::?serialize);
+::serialize <- module;

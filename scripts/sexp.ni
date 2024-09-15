@@ -3,7 +3,7 @@
 ::Import("lang.ni")
 ::Import("tostring.ni")
 
-::namespace("sexp", {
+module <- {
   function newToString() {
     local s = ::tToString.new()
     s._isIdentifier = #(v) => v[?0] != '`'
@@ -14,10 +14,10 @@
   }
 
   function toString(v,aSpace) {
-    return ::sexp.newToString().stringify(v,aSpace)
+    return newToString().stringify(v,aSpace)
   }
   function toIndentedString(v) {
-    return ::sexp.newToString().indented(v)
+    return newToString().indented(v)
   }
 
   function elementToSymbols(e) {
@@ -51,9 +51,9 @@
   function toSymbolsString(S) {
     return toString(toSymbols(S), null)
   }
-})
+}
 
-::namespace("sexp.utils", {
+module.utils <- {
   function getAfter(sexp,k,aDefault) {
     foreach (i,e in sexp) {
       if (e == k) {
@@ -92,4 +92,8 @@
       return v.slice(1)
     return v
   }
-})
+}
+
+::LINT_CHECK_TYPE("null", ::?seq);
+::LINT_CHECK_TYPE("null", ::?seq.?utils);
+::sexp <- module

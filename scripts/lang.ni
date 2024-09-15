@@ -588,7 +588,7 @@ function ::namespace(name,table,nsTable) {
       buildDesc += " Debug"
     }
     if (::?gGraphicsContext) {
-      buildDesc += " " + ::gGraphicsContext.driver.name
+      buildDesc += " " + ::?gGraphicsContext.driver.name
     }
     buildDesc += ")"
     return buildDesc
@@ -647,7 +647,7 @@ function ::namespace(name,table,nsTable) {
   }
 
   ///////////////////////////////////////////////
-  function implements(obj,interface) {
+  function implements(obj,string interface) {
     switch (typeof(obj)) {
       case "iunknown": {
         return obj.QueryInterface(interface);
@@ -1145,33 +1145,6 @@ function ::namespace(name,table,nsTable) {
       }
     }
     return dt
-  }
-
-  ///////////////////////////////////////////////
-  // Load a table from a datatable file
-  function loadTable(aType,aPath)
-  {
-    local fp = ::lang.urlOpen(aPath)
-    if (!fp) throw "Can't open file '"+aPath+"'."
-    local dt = ::gLang.CreateDataTable("")
-    if (!::gLang.SerializeDataTable(aType,::eSerializeMode.ReadRaw,dt,fp))
-      throw "Can't read data table from '"+aPath+"'."
-    return convertDataTableToTable(dt)
-  }
-
-  ///////////////////////////////////////////////
-  // Write a table in a datatable file
-  function writeTable(aType,aTable,aPath)
-  {
-    local fp = ::fs.fileOpenWrite(aPath)
-    if (!fp) throw "Can't open file '"+aPath+"'."
-
-    local dt = convertTableToDataTable(aTable,null)
-
-    if (!::gLang.SerializeDataTable(aType,::eSerializeMode.WriteRaw,dt,fp))
-      throw "Can't write data table to '"+aPath+"'."
-
-    return true
   }
 
   ///////////////////////////////////////////////

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 ::Import("lang.ni")
 
-local module = {
+module <- {
   // Create a sequence table between aBegin/aLast, if aFun isn't it will be
   // called with each index and the return value of the function will be the
   // value returned by the iterator.
@@ -158,4 +158,4 @@ local module = {
   }
 }
 
-::namespaceOrModule(this, "seq", module);
+::seq <- module

@@ -1,42 +1,44 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 ::Import("lang.ni")
-::Import("oo.ni")
 
-::tToString  <- ::delegate(::oo.base, {
-  function _initialize() {
-    _gap <- ""
-    _indent <- ""
-    _rep <- null
-    _isIdentifier <- null
-    _arrayOpen <- "["
-    _arrayClose <- "]"
-    _arraySeparator <- ","
-    _tableOpen <- "{"
-    _tableClose <- "}"
-    _tableKeyValSep <- " = "
-    _tableSeparator <- ","
-    _leftCol <- 0
-    _newLineColumn <- 80
-    _recursiveGuard <- {}
-    _throwRecursive <- true
-    _result <- ""
+::LINT_CHECK_TYPE("null", ::?tToString);
+::tToString <- {
+  _gap <- ""
+  _indent <- ""
+  _rep <- null
+  _isIdentifier <- null
+  _arrayOpen <- "["
+  _arrayClose <- "]"
+  _arraySeparator <- ","
+  _tableOpen <- "{"
+  _tableClose <- "}"
+  _tableKeyValSep <- " = "
+  _tableSeparator <- ","
+  _leftCol <- 0
+  _newLineColumn <- 80
+  _recursiveGuard <- {}
+  _throwRecursive <- true
+  _result <- ""
 
-    function stringify(aValue,aSpace) {
-      if (typeof aSpace == "int") {
-        foreach (i in aSpace) {
-          _indent += " "
-        }
+  function new() this {
+    return this.DeepClone()
+  }
+
+  function stringify(aValue,aSpace) {
+    if (typeof aSpace == "int") {
+      foreach (i in aSpace) {
+        _indent += " "
       }
-      else if (typeof aSpace == "string") {
-        _indent = aSpace
-      }
-      return str("_", { _ = aValue })
     }
+    else if (typeof aSpace == "string") {
+      _indent = aSpace
+    }
+    return str("_", { _ = aValue })
+  }
 
-    function indented(aValue) {
-      return stringify(aValue,2)
-    }
+  function indented(aValue) {
+    return stringify(aValue,2)
   }
 
   function quote(aStr) {
@@ -160,4 +162,4 @@
       }
     }
   }
-});
+}

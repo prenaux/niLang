@@ -5,6 +5,11 @@
 module <- {
   _rootFS = ::gLang.GetRootFS()
 
+  tFileEntry = {
+    path = "",
+    attr = 0 // ::eFileAttrFlags
+  }
+
   ///////////////////////////////////////////////
   function createStringFile(string)
   {
@@ -94,8 +99,7 @@ module <- {
   }
 
   ///////////////////////////////////////////////
-  // Returns an array of tables of the form :
-  // { path = 'File path', attr = 'File attributes' }
+  // Returns an array of tFileEntry
   function listFiles(aPath,aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
   {
     aPath = "".setdir(aPath)

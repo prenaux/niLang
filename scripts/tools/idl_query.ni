@@ -2,7 +2,7 @@
 ::Import("fs.ni")
 ::Import("seq.ni")
 
-args <- ::GetArgs()
+args <- ::?GetArgs()
 argIndexBase <- 1
 
 // Parse Command
@@ -47,10 +47,10 @@ function findAndLoadDataTables(aFilter) {
   }
 }
 
-function processDT(aMatchTable,aDT,aDTIndex,aSkipRoot) {
+function processDT(aMatchTable,aDT,aDTIndex,_aSkipRoot) {
   local dt = aDT.?dt || aDT
 
-  if (!aSkipRoot) {
+  if (!_aSkipRoot) {
     local handler = aMatchTable[?dt.name]
     if (handler) {
       if (handler.call(aMatchTable,dt,aDTIndex) == true)
@@ -178,7 +178,7 @@ tBuildCache <- {
 }
 
 function build_cache() {
-  findAndLoadDataTables()
+  findAndLoadDataTables(null)
 
   local cache = tBuildCache.Clone()
   ::gRootFS.FileMakeDir(cacheDir)
@@ -439,7 +439,7 @@ function doc() {
     else if (dataTables.len() > 1) {
       throw "More than one datatable matching '"+path+"'."
     }
-    dt = dataTables[0].dt
+    dt = dataTables[?0].dt
   }
   else {
     dt = ::lang.loadDataTable("xml",path)
@@ -451,7 +451,7 @@ function doc() {
   local printDoc = tPrintDoc.Clone()
   printDoc._parentName = parentName
   printDoc._nodeName = nodeName
-  ::println("Generated on" ::gLang.current_time.Format())
+  ::println("Generated on" ::gLang.current_time.Format(null))
   ::println("")
 
   ::println("- name:" dt.GetStringDefault("name","NA"))

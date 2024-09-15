@@ -38,6 +38,14 @@
   mMinFeatures = []
   mInMinFeaturesCount = 0
 
+  tInteropParam = {
+    name = ""
+    type = ""
+    typeval = ""
+    typei = ""
+    typec = ""
+  }
+
   ///////////////////////////////////////////////
   function reset()
   {
@@ -1697,6 +1705,7 @@
       else {
         outInl("IDLC_METH_BEGIN("+inlFmtMethodDecl+")")
         foreach (pi in interopParams) {
+          pi = ::LINT_AS_TYPE("tInteropParam", pi)
           local type = pi.typeval
           local baseType = type&::knTypeMask;
           local typeName = pi.typec
@@ -1743,6 +1752,7 @@
             typeName = typeName.after("const ");
           local inlFmtMethodParams = "(";
           foreach (i,pi in interopParams) {
+            pi = ::LINT_AS_TYPE("tInteropParam", pi)
             inlFmtMethodParams += pi.name
             if (i+1 < interopParams.len())
               inlFmtMethodParams += ","
@@ -1818,13 +1828,14 @@
     dtSet("typec",interopRetType.typec)
     dtPop()
     foreach (i,pi in interopParams) {
+      pi = ::LINT_AS_TYPE("tInteropParam", pi)
       dtPushNewName("parameter",pi.name)
       dtSet("type",pi.type)
       if (!hasNoAutomation)
         dtSet("typei",pi.typei)
       dtSet("typec",pi.typec)
       if ("default" in pi)
-        dtSet("default",pi["default"])
+        dtSet("default",pi[?"default"])
       if (i == interopParams.len()-1)
         dtSet("last","1")
       dtPop()

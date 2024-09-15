@@ -17,7 +17,7 @@
 }
 
 local strRootNode, desc, def
-local args = ::GetArgs();
+local args = ::?GetArgs();
 if (args.GetSize() == 4) {
   strRootNode = args[1]
   desc = args[2]

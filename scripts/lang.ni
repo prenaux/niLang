@@ -1006,13 +1006,13 @@ function ::namespace(name,table,nsTable) {
 
   ///////////////////////////////////////////////
   // Load a data table
-  function loadDataTable(aType,aPath,aDT)
+  function loadDataTable(aType,aPath,_aDT)
   {
     local fp = ::lang.urlOpen(aPath)
     if (!fp)
       throw "Can't open file '"+aPath+"'."
 
-    local dt = aDT ? aDT : ::gLang.CreateDataTable("")
+    local dt = _aDT ? _aDT : ::gLang.CreateDataTable("")
     if (!::gLang.SerializeDataTable(aType,::eSerializeMode.ReadRaw,dt,fp))
       throw "Can't read data table from '"+aPath+"'."
 

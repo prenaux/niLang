@@ -185,19 +185,19 @@ module <- {
     return w
   }
 
-  function toFile(aNode,fp,aIndent,aParent) {
+  function toFile(aNode,fp,_aIndent,_aParent) {
     if (typeof(fp) == "string") {
       local path = fp
       fp = ::fs.fileOpenWrite(fp)
       if (!fp)
         throw "Can't open output file:" + path
     }
-    return _writeXmlToFile(fp,aNode,(aIndent == null) ? -1 : aIndent,aParent)
+    return _writeXmlToFile(fp,aNode,(_aIndent == null) ? -1 : _aIndent,_aParent)
   }
 
-  function toString(aNode,aIndent,aParent) {
+  function toString(aNode,_aIndent,_aParent) {
     local fp = ::gLang.CreateFileDynamicMemory(0x1000,"--xmlstring--")
-    _writeXmlToFile(fp,aNode,aIndent,aParent)
+    _writeXmlToFile(fp,aNode,_aIndent,_aParent)
     fp.SeekSet(0)
     return fp.ReadString()
   }

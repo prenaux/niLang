@@ -23,32 +23,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
-static inline tBool sqa_getVecElementFromChar(HSQUIRRELVM v, achar c, const tF32* apV, tU32 anSize, tF32& afRet)
-{
-  niAssert(anSize >= 2);
-  switch (c) {
-    case 'r': case 'x': afRet = apV[0]; return eTrue;
-    case 'g': case 'y': afRet = apV[1]; return eTrue;
-    case 'b': case 'z': if (anSize >= 3) { afRet = apV[2];  return eTrue; } break;
-    case 'a': case 'w': if (anSize >= 4) { afRet = apV[3];  return eTrue; } break;
-  }
-  return eFalse;
-}
-
-///////////////////////////////////////////////
-static inline tBool sqa_setVecElementFromChar(HSQUIRRELVM v, achar c, tF32* apV, tU32 anSize, tF32 afVal)
-{
-  niAssert(anSize >= 2);
-  switch (c) {
-    case 'r': case 'x': apV[0] = afVal; return eTrue;
-    case 'g': case 'y': apV[1] = afVal; return eTrue;
-    case 'b': case 'z': if (anSize >= 3) { apV[2] = afVal;  return eTrue; } break;
-    case 'a': case 'w': if (anSize >= 4) { apV[3] = afVal;  return eTrue; } break;
-  }
-  return eFalse;
-}
-
-///////////////////////////////////////////////
 eScriptType sqa_getscripttype_(SQObjectType anType)
 {
   switch (anType) {
@@ -1311,7 +1285,7 @@ static int vec2f_get(HSQUIRRELVM v)
       case 1:
         {
           tF32 r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals,2,r)) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals,2,r)) {
             sq_pushf32(v,r);
             return 1;
           }
@@ -1320,8 +1294,8 @@ static int vec2f_get(HSQUIRRELVM v)
       case 2:
         {
           sVec2f r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals,2,r[0])) {
-            if (sqa_getVecElementFromChar(v,aaszStr[1],vals,2,r[1])) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals,2,r[0])) {
+            if (sqa_getVecElementFromChar(aaszStr[1],vals,2,r[1])) {
               sqa_pushvec2f(v,r);
               return 1;
             }
@@ -1529,7 +1503,7 @@ static int vec3f_get(HSQUIRRELVM v)
       case 1:
         {
           tF32 r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals,3,r)) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals,3,r)) {
             sq_pushf32(v,r);
             return 1;
           }
@@ -1538,8 +1512,8 @@ static int vec3f_get(HSQUIRRELVM v)
       case 2:
         {
           sVec2f r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals,3,r[0])) {
-            if (sqa_getVecElementFromChar(v,aaszStr[1],vals,3,r[1])) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals,3,r[0])) {
+            if (sqa_getVecElementFromChar(aaszStr[1],vals,3,r[1])) {
               sqa_pushvec2f(v,r);
               return 1;
             }
@@ -1549,9 +1523,9 @@ static int vec3f_get(HSQUIRRELVM v)
       case 3:
         {
           sVec3f r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals,3,r[0])) {
-            if (sqa_getVecElementFromChar(v,aaszStr[1],vals,3,r[1])) {
-              if (sqa_getVecElementFromChar(v,aaszStr[2],vals,3,r[2])) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals,3,r[0])) {
+            if (sqa_getVecElementFromChar(aaszStr[1],vals,3,r[1])) {
+              if (sqa_getVecElementFromChar(aaszStr[2],vals,3,r[2])) {
                 sqa_pushvec3f(v,r);
                 return 1;
               }
@@ -1836,7 +1810,7 @@ static int vec4f_get(HSQUIRRELVM v)
     {
       case 1: {
         tF32 r;
-        if (sqa_getVecElementFromChar(v,aaszStr[0],vals.ptr(),4,r)) {
+        if (sqa_getVecElementFromChar(aaszStr[0],vals.ptr(),4,r)) {
           sq_pushf32(v,r);
           return 1;
         }
@@ -1844,8 +1818,8 @@ static int vec4f_get(HSQUIRRELVM v)
       }
       case 2: {
         sVec2f r;
-        if (sqa_getVecElementFromChar(v,aaszStr[0],vals.ptr(),4,r[0])) {
-          if (sqa_getVecElementFromChar(v,aaszStr[1],vals.ptr(),4,r[1])) {
+        if (sqa_getVecElementFromChar(aaszStr[0],vals.ptr(),4,r[0])) {
+          if (sqa_getVecElementFromChar(aaszStr[1],vals.ptr(),4,r[1])) {
             sqa_pushvec2f(v,r);
             return 1;
           }
@@ -1855,9 +1829,9 @@ static int vec4f_get(HSQUIRRELVM v)
       case 3:
         {
           sVec3f r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals.ptr(),4,r[0])) {
-            if (sqa_getVecElementFromChar(v,aaszStr[1],vals.ptr(),4,r[1])) {
-              if (sqa_getVecElementFromChar(v,aaszStr[2],vals.ptr(),4,r[2])) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals.ptr(),4,r[0])) {
+            if (sqa_getVecElementFromChar(aaszStr[1],vals.ptr(),4,r[1])) {
+              if (sqa_getVecElementFromChar(aaszStr[2],vals.ptr(),4,r[2])) {
                 sqa_pushvec3f(v,r);
                 return 1;
               }
@@ -1868,10 +1842,10 @@ static int vec4f_get(HSQUIRRELVM v)
       case 4:
         {
           sVec4f r;
-          if (sqa_getVecElementFromChar(v,aaszStr[0],vals.ptr(),4,r[0])) {
-            if (sqa_getVecElementFromChar(v,aaszStr[1],vals.ptr(),4,r[1])) {
-              if (sqa_getVecElementFromChar(v,aaszStr[2],vals.ptr(),4,r[2])) {
-                if (sqa_getVecElementFromChar(v,aaszStr[3],vals.ptr(),4,r[3])) {
+          if (sqa_getVecElementFromChar(aaszStr[0],vals.ptr(),4,r[0])) {
+            if (sqa_getVecElementFromChar(aaszStr[1],vals.ptr(),4,r[1])) {
+              if (sqa_getVecElementFromChar(aaszStr[2],vals.ptr(),4,r[2])) {
+                if (sqa_getVecElementFromChar(aaszStr[3],vals.ptr(),4,r[3])) {
                   sqa_pushvec4f(v,r);
                   return 1;
                 }

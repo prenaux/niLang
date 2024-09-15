@@ -445,6 +445,22 @@ static tBool _IsTableTypeNameByConvention(ain<tChars> aName) {
   return aName[0] == 't' && StrIsUpper(aName[1]);
 }
 
+static cString _FmtKeyNotFoundMsg(ain<SQObjectPtr> aObj, ain<SQObjectPtr> aKey, ain<SQObjectPtr> aVal)
+{
+  if (sqa_getscriptobjtype(aVal) == eScriptType_ErrorCode) {
+    niLet errorCode = (sScriptTypeErrorCode*)_userdata(aVal);
+    return niFmt(
+      "%s not found in %s: %s.",
+      _ObjToString(aKey), _ObjToString(aObj),
+      errorCode->_strErrorDesc);
+  }
+  else {
+    return niFmt(
+      "%s not found in %s.",
+      _ObjToString(aKey), _ObjToString(aObj));
+  }
+}
+
 enum eLintFlags {
   eLintFlags_None = 0,
   eLintFlags_IsError = niBit(31),
@@ -1116,6 +1132,120 @@ struct sLinter {
     return retType;
   }
 
+  bool _VecGet(ain<tU32> anVecSize, ain<SQObjectPtr> aKey, aout<SQObjectPtr> aDest)
+  {
+    niPanicAssert(anVecSize <= 4);
+    switch (sqa_getscriptobjtype(aKey)) {
+      case eScriptType_Int: {
+        niLet idx = _int(aKey);
+        if (idx < 0 || idx >= anVecSize) {
+          aDest = niNew sScriptTypeErrorCode(
+            _ss, _HC(error_code_out_of_range),
+            niFmt("index out of range '%d'", idx));
+          return false;
+        }
+        aDest = niNew sScriptTypeResolvedType(
+          _ss, eScriptType_Float);
+        return true;
+      }
+      case eScriptType_String: {
+        niLet hspSwz = as_NN(_stringhval(aKey));
+        niLet swzChars = hspSwz->GetChars();
+        niLet swzLen = hspSwz->GetLength();
+
+        if (anVecSize == 4) {
+          if (ni::StrEq(swzChars,"width") ||
+              ni::StrEq(swzChars,"height") ||
+              ni::StrEq(swzChars,"left") ||
+              ni::StrEq(swzChars,"top") ||
+              ni::StrEq(swzChars,"right") ||
+              ni::StrEq(swzChars,"bottom"))
+          {
+            aDest = niNew sScriptTypeResolvedType(
+              _ss, eScriptType_Float);
+            return true;
+          }
+          else if (
+            ni::StrEq(swzChars,"size") ||
+            ni::StrEq(swzChars,"center") ||
+            ni::StrEq(swzChars,"top_left") ||
+            ni::StrEq(swzChars,"top_right") ||
+            ni::StrEq(swzChars,"bottom_left") ||
+            ni::StrEq(swzChars,"bottom_right"))
+          {
+            aDest = niNew sScriptTypeResolvedType(
+              _ss, eScriptType_Vec2);
+            return true;
+          }
+        }
+
+        if (swzLen > anVecSize) {
+          return false;
+        }
+        else {
+          static const tF32 _dummy[4] = {0,1,2,3};
+          switch (swzLen) {
+            case 1: {
+              tF32 r;
+              if (sqa_getVecElementFromChar(swzChars[0],_dummy,anVecSize,r)) {
+                aDest = niNew sScriptTypeResolvedType(_ss, eScriptType_Float);
+                return true;
+              }
+              break;
+            }
+            case 2: {
+              sVec2f r;
+              if (sqa_getVecElementFromChar(swzChars[0],_dummy,anVecSize,r[0])) {
+                if (sqa_getVecElementFromChar(swzChars[1],_dummy,anVecSize,r[1])) {
+                  aDest = niNew sScriptTypeResolvedType(_ss, eScriptType_Vec2);
+                  return true;
+                }
+              }
+              break;
+            }
+            case 3: {
+              sVec3f r;
+              if (sqa_getVecElementFromChar(swzChars[0],_dummy,anVecSize,r[0])) {
+                if (sqa_getVecElementFromChar(swzChars[1],_dummy,anVecSize,r[1])) {
+                  if (sqa_getVecElementFromChar(swzChars[2],_dummy,anVecSize,r[2])) {
+                    aDest = niNew sScriptTypeResolvedType(_ss, eScriptType_Vec3);
+                    return true;
+                  }
+                }
+              }
+              break;
+            }
+            case 4: {
+              sVec4f r;
+              if (sqa_getVecElementFromChar(swzChars[0],_dummy,anVecSize,r[0])) {
+                if (sqa_getVecElementFromChar(swzChars[1],_dummy,anVecSize,r[1])) {
+                  if (sqa_getVecElementFromChar(swzChars[2],_dummy,anVecSize,r[2])) {
+                    if (sqa_getVecElementFromChar(swzChars[3],_dummy,anVecSize,r[3])) {
+                      aDest = niNew sScriptTypeResolvedType(_ss, eScriptType_Vec4);
+                      return true;
+                    }
+                  }
+                }
+              }
+              break;
+            }
+          }
+
+        }
+        break;
+      }
+      case eScriptType_ResolvedType: {
+        if (((sScriptTypeResolvedType*)_userdata(aKey))->_scriptType == eScriptType_Int) {
+          aDest = niNew sScriptTypeResolvedType(
+            _ss, eScriptType_Float);
+          return true;
+        }
+        break;
+      }
+    }
+    return false;
+  }
+
   bool DoLintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
@@ -1242,12 +1372,24 @@ struct sLinter {
                 case eScriptType_Int:
                 case eScriptType_Float:
                   return _ddel(ss,number)->Get(key,dest);
-                case eScriptType_Vec2:
-                  return _ddel(ss,vec2f)->Get(key,dest);
-                case eScriptType_Vec3:
-                  return _ddel(ss,vec3f)->Get(key,dest);
-                case eScriptType_Vec4:
-                  return _ddel(ss,vec4f)->Get(key,dest);
+                case eScriptType_Vec2: {
+                  if (_ddel(ss,vec2f)->Get(key,dest)) {
+                    return true;
+                  }
+                  return _VecGet(2,key,dest);
+                }
+                case eScriptType_Vec3: {
+                  if (_ddel(ss,vec3f)->Get(key,dest)) {
+                    return true;
+                  }
+                  return _VecGet(3,key,dest);
+                }
+                case eScriptType_Vec4: {
+                  if (_ddel(ss,vec4f)->Get(key,dest)) {
+                    return true;
+                  }
+                  return _VecGet(4,key,dest);
+                }
                 case eScriptType_Matrix:
                   return _ddel(ss,matrixf)->Get(key,dest);
                 case eScriptType_Array:
@@ -2217,9 +2359,8 @@ void SQFunctionProto::LintTrace(
                   lintClosure->_outervalues.back(),0))
             {
               if (_LENABLED(key_notfound_outer)) {
-                _LINT(key_notfound_outer, niFmt(
-                  "outer value %s not found in %s.",
-                  _ObjToString(v._src), _ObjToString(localthis)));
+                _LINT(key_notfound_outer, _FmtKeyNotFoundMsg(
+                  localthis, v._src, _null_));
               }
             }
           }
@@ -2317,9 +2458,7 @@ void SQFunctionProto::LintTrace(
 
     if (sq_isnull(t)) {
       if (_LENABLED(getk_in_null)) {
-        _LINT(key_notfound_getk, niFmt(
-          "%s not found in Null.",
-          _ObjToString(k)));
+        _LINT(key_notfound_getk, _FmtKeyNotFoundMsg(_null_,k,_null_));
       }
     }
     else {
@@ -2328,9 +2467,7 @@ void SQFunctionProto::LintTrace(
         if (_LENABLED(key_notfound_getk) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
         {
-          _LINT(key_notfound_getk, niFmt(
-            "%s not found in %s.",
-            _ObjToString(k), _ObjToString(t)));
+          _LINT(key_notfound_getk, _FmtKeyNotFoundMsg(t,k,v));
         }
       }
     }
@@ -2352,9 +2489,7 @@ void SQFunctionProto::LintTrace(
 
     if (sq_isnull(t)) {
       if (_LENABLED(getk_in_null)) {
-        _LINT(key_notfound_get, niFmt(
-          "%s not found in Null.",
-          _ObjToString(k)));
+        _LINT(key_notfound_get, _FmtKeyNotFoundMsg(_null_, k, _null_));
       }
     }
     else {
@@ -2363,9 +2498,7 @@ void SQFunctionProto::LintTrace(
         if (_LENABLED(key_notfound_get) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
         {
-          _LINT(key_notfound_get, niFmt(
-            "%s not found in %s.",
-            _ObjToString(k), _ObjToString(t)));
+          _LINT(key_notfound_get, _FmtKeyNotFoundMsg(t,k,v));
         }
       }
     }
@@ -2386,9 +2519,7 @@ void SQFunctionProto::LintTrace(
 
     if (sq_isnull(t)) {
       if (_LENABLED(getk_in_null)) {
-        _LINT(key_notfound_callk, niFmt(
-          "%s not found in Null.",
-          _ObjToString(k)));
+        _LINT(key_notfound_callk, _FmtKeyNotFoundMsg(_null_, k, _null_));
       }
     }
     else {
@@ -2397,9 +2528,7 @@ void SQFunctionProto::LintTrace(
         if (_LENABLED(key_notfound_callk) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
         {
-          _LINT(key_notfound_callk, niFmt(
-            "%s not found in %s.",
-            _ObjToString(k), _ObjToString(t)));
+          _LINT(key_notfound_callk, _FmtKeyNotFoundMsg(t,k,v));
         }
       }
     }
@@ -2419,9 +2548,7 @@ void SQFunctionProto::LintTrace(
 
     if (sq_isnull(t)) {
       if (_LENABLED(set_in_null)) {
-        _LINT(key_notfound_callk, niFmt(
-          "%s not found in Null.",
-          _ObjToString(k)));
+        _LINT(key_cant_set, _FmtKeyNotFoundMsg(_null_, k, _null_));
       }
     }
     else {

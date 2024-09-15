@@ -189,7 +189,7 @@ function main() {
       EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{subTable]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot_linter_01]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot_linter_01]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot_linter_01]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: "someOuter" not found in TABLE{__moduleroot_linter_01]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "t2"]})
@@ -367,11 +367,18 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
       EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
 
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{2} not found in resolved_type<Vec2>: index out of range '2']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyz" not found in resolved_type<Vec2>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{3} not found in resolved_type<Vec3>: index out of range '3']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzw" not found in resolved_type<Vec3>]});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{4} not found in resolved_type<Vec4>: index out of range '4']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzww" not found in resolved_type<Vec4>]});
+
       EXPECTED_LINT(
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
-      ::CHECK_EQUAL(11, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(17, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(11, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

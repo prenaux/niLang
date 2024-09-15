@@ -645,5 +645,18 @@ struct sGetIUnknown {
   if (!SQ_SUCCEEDED(sq_getiunknown(v,INDEX,&get_##NAME.pObject))) \
     return SQ_ERROR;
 
+///////////////////////////////////////////////
+__forceinline tBool sqa_getVecElementFromChar(achar c, const tF32* apV, tU32 anSize, tF32& afRet)
+{
+  niAssert(anSize >= 2);
+  switch (c) {
+    case 'r': case 'x': afRet = apV[0]; return eTrue;
+    case 'g': case 'y': afRet = apV[1]; return eTrue;
+    case 'b': case 'z': if (anSize >= 3) { afRet = apV[2];  return eTrue; } break;
+    case 'a': case 'w': if (anSize >= 4) { afRet = apV[3];  return eTrue; } break;
+  }
+  return eFalse;
+}
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __SCRIPTTYPES_37182345_H__

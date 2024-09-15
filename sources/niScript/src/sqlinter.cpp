@@ -911,7 +911,7 @@ struct sLinter {
     return curr;
   }
 
-  SQObjectPtr ResolveType(const SQObjectPtr& aType, ain<LintClosure> aClosure)
+  SQObjectPtr ResolveType(const SQObjectPtr& aType, ain<LintClosure> aClosure, const SQObjectPtr& aThis)
   {
     if (sq_isnull(aType))
       return _null_;
@@ -928,6 +928,12 @@ struct sLinter {
     SQObjectPtr resolvedType = _null_;
 
     niLet hspType = as_NN(_stringhval(aType));
+
+    // Return the type of the 'this' object
+    if (hspType == _HC(this)) {
+      return aThis;
+    }
+
     niLet typeStrChars = hspType->GetChars();
     niLet typeStrLen = hspType->GetLength();
     // niDebugFmt(("... ResolveType: %s", hspType));
@@ -948,7 +954,6 @@ struct sLinter {
 
     // Table types
     else if (_IsTableTypeNameByConvention(typeStrChars) ||
-             hspType == _HC(this) ||
              StrStartsWith(typeStrChars,"::") ||
              StrStartsWith(typeStrChars,_typestr_prefix_table.c_str()))
     {
@@ -1757,7 +1762,7 @@ struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
         aLinter,niFmt("First parameter should be the expected type name as a literal string but got '%s'.", _ObjToString(expectedTypeArg)));
     }
 
-    return aLinter.ResolveType(expectedTypeArg, aClosure);
+    return aLinter.ResolveType(expectedTypeArg, aClosure, aClosure._this);
   }
 };
 
@@ -1916,7 +1921,7 @@ void SQFunctionProto::LintTrace(
   astl::vector<sLintStackEntry>& stack = thisClosure._stack;
   niLet thisfunc_stacksize = stack.size();
 
-  niLet thisfunc_resolvedrettype = aLinter.ResolveType(thisfunc->_returntype, thisClosure);
+  niLet thisfunc_resolvedrettype = aLinter.ResolveType(thisfunc->_returntype, thisClosure, thisClosure._this);
 
   _LTRACE(("-------------------------------------------------------\n"));
   _LTRACE(("--- FUNCTION TRACE: %s\n", _FuncProtoToString(*thisfunc)));
@@ -1996,7 +2001,7 @@ void SQFunctionProto::LintTrace(
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
 
-      SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure);
+      SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure, thisClosure._this);
       if (sqa_getscriptobjtype(resolvedParamType) == eScriptType_ErrorCode) {
         if (_LENABLED(param_decl)) {
           _LINT_(param_decl, thisfunc->GetSourceLineCol(), niFmt(
@@ -2444,12 +2449,14 @@ void SQFunctionProto::LintTrace(
     niLet tocalltype = sqa_getscriptobjtype(tocall);
     niLet nargs = IARG3;
     niLet stackbase = IARG2;
-    _LTRACE(("op_call: '%s' (%s), nargs: %s, stackbase: %d, tailcall: %s",
+    niLet thisobj = sget(IARG2);
+    _LTRACE(("op_call: '%s' (%s), nargs: %s, stackbase: %d, tailcall: %s, thisobj: %s",
              _ObjToString(tocall),
              ni::GetTypeString(tocalltype),
              nargs,
              stackbase,
-             abIsTailCall?"yes":"no"));
+             abIsTailCall?"yes":"no",
+             _ObjToString(thisobj)));
 
     auto call_func = [&](ain<SQFunctionProto> func) -> SQObjectPtr {
       const int outerssize = (int)func._outervalues.size();
@@ -2495,7 +2502,7 @@ void SQFunctionProto::LintTrace(
         }
       }
 
-      niLet rettype = aLinter.ResolveType(func._returntype, thisClosure);
+      niLet rettype = aLinter.ResolveType(func._returntype, thisClosure, thisobj);
       return rettype;
     };
 
@@ -2516,7 +2523,7 @@ void SQFunctionProto::LintTrace(
         }
       }
 
-      niLet rettype = aLinter.ResolveType(func._returntype, thisClosure);
+      niLet rettype = aLinter.ResolveType(func._returntype, thisClosure, thisobj);
       return rettype;
     };
 
@@ -2645,7 +2652,7 @@ void SQFunctionProto::LintTrace(
 
   auto lint_typeof_eq = [&](ain_nn_mut<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
     niLet typeofObj = typeofInfo->_obj;
-    niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure);
+    niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure, _null_);
 
     _LTRACE(("lint_typeof_eq: typeofObj: %s (%s), eqLiteral: %s, resolvedType: %s",
              _ObjToString(typeofInfo->_obj),

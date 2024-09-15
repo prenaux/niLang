@@ -867,9 +867,12 @@ static int table_invalidate(HSQUIRRELVM v)
 
 static SQInt table_setdelegate(HSQUIRRELVM v)
 {
-  if(SQ_FAILED(sq_setdelegate(v,-2)))
-    return SQ_ERROR;
-  sq_push(v,-1); // -1 because sq_setdelegate pops 1
+  SQObject& table = stack_get(v,1);
+  SQObject& del = stack_get(v,2);
+  if (!_table(table)->SetDelegate(_table(del))) {
+    return sq_throwerror(v, "cant set delegate");
+  }
+  v->Push(table);
   return 1;
 }
 
@@ -2307,8 +2310,8 @@ SQRegFunction SQSharedState::_table_default_delegate_funcz[]={
   {_A("RawDelete"),table_rawdelete,2, _A("t")},
   {_A("getkey"),table_getkey,2, _A("t")},
   {_A("GetKey"),table_getkey,2, _A("t")},
-  {_A("setdelegate"),table_setdelegate,2, _A(".t|o")},
-  {_A("SetDelegate"),table_setdelegate,2, _A(".t|o")},
+  {_A("setdelegate"),table_setdelegate,2, _A(".t"), _HC(this)},
+  {_A("SetDelegate"),table_setdelegate,2, _A(".t"), _HC(this)},
   {_A("getdelegate"),table_getdelegate,1, _A(".")},
   {_A("GetDelegate"),table_getdelegate,1, _A(".")},
   {_A("getparent"),table_getparent,1, _A(".")},

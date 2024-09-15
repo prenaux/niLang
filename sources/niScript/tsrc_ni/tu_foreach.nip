@@ -100,7 +100,7 @@ TEST("table-nexti", #() {
       t._last = aLast
       if (t._last < t._start)
         throw "Invalid range, begin > last"
-      local r = ::delegate(t, {})
+      local r = {}.SetDelegate(t)
       r.__SetCanCallMetaMethod(true)
       return r
     }

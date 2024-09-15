@@ -127,7 +127,7 @@
   // (begin exp0 ... expN)
   begin = #(a) {
     // ::println("... begin: " + ::lang.toString(a))
-    local c = ::delegate(this, {})
+    local c = {}.SetDelegate(this)
     local r = null
     local alen = a.len()
     for (local i = 1; i < alen; ++i) {
@@ -145,7 +145,7 @@
     if (typeof a[1] != "array")
       throw "sform 'let': Bindings must be an array."
 
-    local c = ::delegate(this,{})
+    local c = {}.SetDelegate(this)
     local toBind = a[1]
     if (!toBind.empty()) {
       if (typeof toBind[0] == "array") {
@@ -182,7 +182,7 @@
       // ::println("... params: " + ::lang.toString(params))
       // ::println("... exps: " + ::lang.toString(exps))
       // ::println("... baseContext: " + ::lang.toString(baseContext))
-      local c = ::delegate(this,{})
+      local c = {}.SetDelegate(this)
       if (!params.empty()) {
         if (!a) {
           foreach (p in params) {
@@ -284,7 +284,7 @@
 
     ::SetRaiseErrorMode(~0)
 
-    local c = ::delegate(this, { recur = ::sexp.sforms._recur })
+    local c = { recur = ::sexp.sforms._recur }.SetDelegate(this)
     local toBind = a[1]
     if (!toBind.empty()) {
       if (typeof toBind[0] == "array") {

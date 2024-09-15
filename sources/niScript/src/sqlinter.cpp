@@ -2090,6 +2090,51 @@ struct sLintFuncCall_table_clone : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
+  NN_mut<iHString> _name;
+
+  sLintFuncCall_table_setdelegate(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& objTable = aCallArgs[0];
+    niLet& delTable = aCallArgs[1];
+    // niDebugFmt(("... sLintFuncCall_table_setdelegate: objTable: %s, delTable", _ObjToString(objTable), _ObjToString(delTable)));
+
+    if (aLinter._GetResolvedObjType(delTable) != eScriptType_Table) {
+      return _MakeLintCallError(
+        aLinter,niFmt("Delegate expected a table but got '%s'.", _ObjToString(delTable)));
+    }
+
+    niLet objTableType = sqa_getscriptobjtype(objTable);
+    if (objTableType == eScriptType_Table) {
+      if (sq_istable(delTable)) {
+        _table(objTable)->SetDelegate(_table(delTable));
+      }
+      return objTable;
+    }
+    else if (objTableType == eScriptType_ResolvedType) {
+      niLet resolvedType = _ObjToResolvedTyped(objTable);
+      if (resolvedType->_scriptType == eScriptType_Table) {
+        return objTable;
+      }
+    }
+
+    return _MakeLintCallError(
+      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
+  }
+};
+
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
@@ -2124,6 +2169,10 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("DeepClone"))));
     niPanicAssert(
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("ShallowClone"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_setdelegate>(_H("SetDelegate"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_setdelegate>(_H("setdelegate"))));
   }
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();

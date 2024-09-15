@@ -9,10 +9,10 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p0: table.setdelegate() should return the this table and remove ::delegate
 // - [ ] p0: Remove ::ImportModule(script)
 // - [ ] p0: Remove ::namespace
 // - [ ] p0: Remove ::namespaceOrModule
+// - [ ] p0: Remove ::delegate
 //
 // - [ ] p1: lang.ni fully lints.
 // - [ ] p1: Fully lint all tu_* test cases.
@@ -37,6 +37,7 @@
 // - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
 // - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
 //
+// - [x] p0: table.setdelegate() should return the this table
 // - [x] p0: Vec2/3/4 & Matrix swizzling getters
 // - [x] p0: correctly set the type of the foreach iterator variables - we set null only as type for now
 // - [x] p0: Decide whether we keep modules at all, they are only partially
@@ -669,6 +670,18 @@ function main() {
 
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'resolved_type<float>'.]});
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'interface_def<iFile>'.]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_22_delegate.ni",
+    function(aLogs, table:testLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{tTheTable]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_error: call_lint_func: SetDelegate/1: Delegate expected a table but got 'I32{44719}'.]});
 
       ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");

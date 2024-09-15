@@ -5,7 +5,7 @@
 
 ::my <- {}
 
-::my.Vec3 <- ::delegate(::oo.base, {
+::my.Vec3 <- {
   _x = 0, _y = 0, _z = 0
   function _initialize(x,y,z) {
     ::println("... Vec3's initialized")
@@ -31,7 +31,7 @@
     if (_z != b._z) return b._z-_z;
     return 0;
   }
-})
+}.SetDelegate(::oo.base)
 
 ::TEST("oo","base",#() {
   local x = ::my.Vec3.new(1,2,3)

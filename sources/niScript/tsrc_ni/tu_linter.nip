@@ -9,14 +9,14 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p0: Vec2/3/4 & Matrix swizzling getters
 // - [ ] p0: table.setdelegate() should return the this table and remove ::delegate
 // - [ ] p0: Remove ::ImportModule(script)
 // - [ ] p0: Remove ::namespace
 // - [ ] p0: Remove ::namespaceOrModule
 //
-// - [ ] p1: lang.ni fully lints
+// - [ ] p1: lang.ni fully lints.
 // - [ ] p1: Fully lint all tu_* test cases.
+// - [ ] p1: Fully lint all scripts folder.
 //
 // - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
 // - [ ] p2: Add a var/any type - as in resolve it - which explicitly states that we accept any type
@@ -37,6 +37,7 @@
 // - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
 // - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
 //
+// - [x] p0: Vec2/3/4 & Matrix swizzling getters
 // - [x] p0: correctly set the type of the foreach iterator variables - we set null only as type for now
 // - [x] p0: Decide whether we keep modules at all, they are only partially
 //   used and could be removed reasonably easily. We could always create a new

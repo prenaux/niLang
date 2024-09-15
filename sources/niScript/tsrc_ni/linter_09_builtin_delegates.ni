@@ -75,8 +75,6 @@ function del_vec3(Vec3 v) {
 function del_vec4(Vec4 v) {
   v.thehamster(1,2,3)
   v.normalize()
-  v.xyzw;
-  v.rgba;
   ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.xy);
   ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.rg);
   ::LINT_CHECK_TYPE("resolved_type<Vec3>",v.xyz);
@@ -91,9 +89,29 @@ function del_vec4(Vec4 v) {
   v.xyzww;
 }
 
-function del_matrix(Matrix v) {
-  v.thehamster(1,2,3)
-  v.transpose()
+function del_matrix(Matrix m) {
+  m.thehamster(1,2,3)
+  m.transpose()
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.up);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.right);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.forward);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.translation);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._11);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._12);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._13);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._14);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._21);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._32);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._43);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m._44);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m[0]);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m[1]);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m[15]);
+  ::LINT_CHECK_TYPE("resolved_type<float>",m[0]);
+  m[16];
+  m._111;
+  m._01;
+  m._15;
 }
 
 function del_uuid(UUID v) {

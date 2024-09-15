@@ -374,11 +374,16 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{4} not found in resolved_type<Vec4>: index out of range '4']});
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzww" not found in resolved_type<Vec4>]});
 
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{16} not found in resolved_type<Matrix>: index out of range '16']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_111" not found in resolved_type<Matrix>: matrix invalid swizzle member '_111']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_01" not found in resolved_type<Matrix>: matrix invalid row in member '_01']});
+      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_15" not found in resolved_type<Matrix>: matrix invalid column in member '_15']});
+
       EXPECTED_LINT(
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
-      ::CHECK_EQUAL(17, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(21, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(11, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

@@ -1246,6 +1246,89 @@ struct sLinter {
     return false;
   }
 
+  bool _MatrixGet(ain<SQObjectPtr> aKey, aout<SQObjectPtr> aDest)
+  {
+    switch (sqa_getscriptobjtype(aKey)) {
+      case eScriptType_Int: {
+        niLet idx = _int(aKey);
+        if (idx < 0 || idx >= 16) {
+          aDest = niNew sScriptTypeErrorCode(
+            _ss, _HC(error_code_out_of_range),
+            niFmt("index out of range '%d'", idx));
+          return false;
+        }
+        aDest = niNew sScriptTypeResolvedType(
+          _ss, eScriptType_Float);
+        return true;
+      }
+      case eScriptType_String: {
+        niLet hspSwz = as_NN(_stringhval(aKey));
+        const achar* p = hspSwz->GetChars();
+        if (*p != '_') {
+          if (ni::StrEq(p,"right") ||
+              ni::StrEq(p,"up") ||
+              ni::StrEq(p,"forward") ||
+              ni::StrEq(p,"translation"))
+          {
+            aDest = niNew sScriptTypeResolvedType(
+              _ss, eScriptType_Vec3);
+            return true;
+          }
+        }
+        else {
+          int cidx = -1;
+          int ridx = -1;
+          ++p;
+          switch (*p) {
+            case '1': ridx = 0; break;
+            case '2': ridx = 1; break;
+            case '3': ridx = 2; break;
+            case '4': ridx = 3; break;
+            default: {
+              aDest = niNew sScriptTypeErrorCode(
+                _ss, _HC(error_code_out_of_range),
+                niFmt("matrix invalid row in member '%s'", hspSwz));
+              return false;
+            }
+          }
+          ++p;
+          switch (*p) {
+            case '1': cidx = 0; break;
+            case '2': cidx = 1; break;
+            case '3': cidx = 2; break;
+            case '4': cidx = 3; break;
+            default: {
+              aDest = niNew sScriptTypeErrorCode(
+                _ss, _HC(error_code_out_of_range),
+                niFmt("matrix invalid column in member '%s'", hspSwz));
+              return false;
+            }
+          }
+          ++p;
+          if (*p != 0) {
+            aDest = niNew sScriptTypeErrorCode(
+              _ss, _HC(error_code_out_of_range),
+              niFmt("matrix invalid swizzle member '%s'", hspSwz));
+            return false;
+          }
+          aDest = niNew sScriptTypeResolvedType(
+            _ss, eScriptType_Float);
+          return true;
+        }
+        break;
+      }
+      case eScriptType_ResolvedType: {
+        if (((sScriptTypeResolvedType*)_userdata(aKey))->_scriptType == eScriptType_Int) {
+          aDest = niNew sScriptTypeResolvedType(
+            _ss, eScriptType_Float);
+          return true;
+        }
+        break;
+      }
+    }
+    return false;
+  }
+
   bool DoLintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
@@ -1390,8 +1473,12 @@ struct sLinter {
                   }
                   return _VecGet(4,key,dest);
                 }
-                case eScriptType_Matrix:
-                  return _ddel(ss,matrixf)->Get(key,dest);
+                case eScriptType_Matrix: {
+                  if (_ddel(ss,matrixf)->Get(key,dest)) {
+                    return true;
+                  }
+                  return _MatrixGet(key,dest);
+                }
                 case eScriptType_Array:
                   return _ddel(ss,array)->Get(key,dest);
                 case eScriptType_Table:

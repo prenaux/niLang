@@ -515,6 +515,7 @@ _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
 _DEF_LINT(typeof_usage,IsWarning,None);
 _DEF_LINT(param_decl,IsError,None);
+_DEF_LINT(foreach_usage,IsError,None);
 
 // Pedantic lints
 _DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
@@ -588,6 +589,7 @@ struct sLinter {
     _REG_LINT(null_notfound);
     _REG_LINT(typeof_usage);
     _REG_LINT(param_decl);
+    _REG_LINT(foreach_usage);
   }
 #undef _REG_LINT
 
@@ -677,6 +679,7 @@ struct sLinter {
     _E(null_notfound)
     _E(typeof_usage)
     _E(param_decl)
+    _E(foreach_usage)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -2819,6 +2822,65 @@ void SQFunctionProto::LintTrace(
     }
   };
 
+  auto op_foreach = [&](const SQInstruction& inst) {
+    SQObjectPtr othis = sget(IARG0);
+    _LTRACE(("op_foreach: othis: %s, okey: %s, oval: %s, orefpos: %s",
+             _ObjToString(othis), sstr(IARG2), sstr(IARG2+1), sstr(IARG2+2)));
+
+    niLet othisType = aLinter._GetResolvedObjType(othis);
+    SQObjectPtr okey = _null_;
+    SQObjectPtr oval = _null_;
+    SQObjectPtr orefpos = _null_;
+    switch (othisType) {
+      case eScriptType_Null: {
+        // iterating null is a noop
+        break;
+      }
+      case eScriptType_Table: {
+        // the key is most of the time a string
+        okey = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_String);
+        // iterator is generally going to be a table itself...
+        orefpos = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Table);
+        // value type might be anything
+        oval = _null_;
+        break;
+      }
+      case eScriptType_Array: {
+        // the key is the iteration index
+        okey = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
+        // the iterator is the index aswell
+        orefpos = okey;
+        break;
+      }
+      case eScriptType_String: {
+        // key is the byte offset of the current codepoint
+        okey = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
+        // value is the code point
+        oval = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
+        // iterator is iHStringCharIt
+        orefpos = aLinter.ResolveTypeUUID(niGetInterfaceID(iHStringCharIt), niGetInterfaceUUID(iHStringCharIt));
+        break;
+      }
+      case eScriptType_Int: {
+        okey = oval = orefpos = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
+        break;
+      }
+      default: {
+        if (_LENABLED(foreach_usage)) {
+          _LINT(foreach_usage, niFmt("Cannot iterate '%s'.", _ObjToString(othis)));
+        }
+        break;
+      }
+    }
+
+    // output key
+    sset(IARG2, okey);
+    // output val
+    sset(IARG2+1, oval);
+    // output iterator
+    sset(IARG2+2, orefpos);
+  };
+
   const int localThis = aLinter.GetLocalIndex(*this,_HC(this));
   if (localThis < 0) {
     _LINTERNAL_ERROR("Function doesn't have a local 'this'.");
@@ -2893,6 +2955,7 @@ void SQFunctionProto::LintTrace(
       case _OP_EQ: op_eq(inst); break;
       case _OP_TYPEOF: op_typeof(inst); break;
       case _OP_LINT_HINT: op_lint_hint(inst); break;
+      case _OP_FOREACH: op_foreach(inst); break;
       default: {
         break;
       }

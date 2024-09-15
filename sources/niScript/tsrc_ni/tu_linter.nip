@@ -9,9 +9,8 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p0: correctly set the type of the foreach iterator variables
 // - [ ] p0: Vec2/3/4 & Matrix swizzling getters
-// - [ ] p0: table.setdelegate() should return the this table, and remove ::delegate
+// - [ ] p0: table.setdelegate() should return the this table and remove ::delegate
 // - [ ] p0: Remove ::ImportModule(script)
 // - [ ] p0: Remove ::namespace
 // - [ ] p0: Remove ::namespaceOrModule
@@ -32,8 +31,13 @@
 // - [ ] p2: Implement basic operators for literal types for float, string & integers
 // - [ ] p2: Some various lingering instances of incorrect line number being printed when no semicolon are present and also with arg counts when doing a multiline function call - frequent with ::namespace() for example.
 // - [ ] p2: unused_local_variable
-// - [ ] p2: unused_parameter / unused_outer_variable
+// - [ ] p2: unused_parameter
+// - [ ] p2: unused_outer_variable
+// - [ ] p2: foreach: infer the type of k,v of iCollection type
+// - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
+// - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
 //
+// - [x] p0: correctly set the type of the foreach iterator variables - we set null only as type for now
 // - [x] p0: Decide whether we keep modules at all, they are only partially
 //   used and could be removed reasonably easily. We could always create a new
 //   module system later but with the linter it actually probably doesn't
@@ -641,6 +645,19 @@ function main() {
         {[Lint: Error: key_notfound_getk: "fluffy" not found in TABLE{bar.*linter_20_namespace.ni:29:41]});
 
       ::CHECK_EQUAL(4,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+
+  testLinter.check(
+    "linter_21_foreach.ni",
+    function(aLogs, table:testLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'resolved_type<float>'.]});
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'interface_def<iFile>'.]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

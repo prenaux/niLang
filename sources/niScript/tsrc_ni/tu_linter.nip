@@ -36,6 +36,7 @@
 // - [ ] p2: foreach: infer the type of k,v of iCollection type
 // - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
 // - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
+// - [ ] p2: add a way to mark functions as deprecated, we'd like to mark all lowercase builtin as deprecated and encourage using the PascalCase functions instead
 //
 // - [x] p0: table.setdelegate() should return the this table
 // - [x] p0: Vec2/3/4 & Matrix swizzling getters

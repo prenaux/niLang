@@ -9,25 +9,20 @@
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
 // TODO:
-// - [ ] p0: Decide whether we keep modules at all, they are only partially
-//   used and could be removed reasonably easily. We could always create a new
-//   module system later but with the linter it actually probably doesn't
-//   solve any meaningful problem anymore. niScript doesn't create things in
-//   the global namespace anyway. Or we remove the namespace thing and have
-//   everything be modules? the linter could make that migration sane?
-//   huh... sounds like a lot more work
-// - [ ] p0: Handle ImportModule(script)
-// - [ ] p0: Move lang stuff to native version so that they can be properly linted: delegate, namespace, namespaceOrModule
-// - [ ] p0: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
-// - [ ] p0: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
 // - [ ] p0: correctly set the type of the foreach iterator variables
-// - [ ] p0: table.Clone() should forward the table type, or just do an actual clone
+// - [ ] p0: Vec2/3/4 & Matrix swizzling getters
+// - [ ] p0: table.setdelegate() should return the this table, and remove ::delegate
+// - [ ] p0: Remove ::ImportModule(script)
+// - [ ] p0: Remove ::namespace
+// - [ ] p0: Remove ::namespaceOrModule
 //
-// - [ ] p1: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
-// - [ ] p1: Add a var type - as in resolve it - which explicitly states that we accept any type
-// - [ ] p1: lang.ni fully lints with (this)_key_notfound_callk/getk
+// - [ ] p1: lang.ni fully lints
 // - [ ] p1: Fully lint all tu_* test cases.
 //
+// - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
+// - [ ] p2: Add a var/any type - as in resolve it - which explicitly states that we accept any type
+// - [ ] p2: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
+// - [ ] p2: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
 // - [ ] p2: All category_ = 1 in the __lint object should act on the specified class of lints. Make the trailing underscore require for this to work so that its less prone to unintentional change in categories.
 // - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
 // - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
@@ -39,6 +34,15 @@
 // - [ ] p2: unused_local_variable
 // - [ ] p2: unused_parameter / unused_outer_variable
 //
+// - [x] p0: Decide whether we keep modules at all, they are only partially
+//   used and could be removed reasonably easily. We could always create a new
+//   module system later but with the linter it actually probably doesn't
+//   solve any meaningful problem anymore. niScript doesn't create things in
+//   the global namespace anyway. Or we remove the namespace thing and have
+//   everything be modules? the linter could make that migration sane?
+//   huh... sounds like a lot more work.
+//   => We're going to get rid of all those and make things much simpler by having a single ::Import() call
+// - [x] p0: table.Clone() should forward the table type, or just do an actual clone
 // - [x] p0: Add all missing constructor utility functions to the linter, ::Vec2/3/4, ::Matrix, etc..
 // - [x] p0: Handle varargs functions, function(_args_)
 // - [x] p0: Handle optional parameters, all parameters starting with an underscore (_aSomeArg) could be considered optional.

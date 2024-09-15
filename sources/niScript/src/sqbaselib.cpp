@@ -2557,9 +2557,9 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("Array"),base_Array,-1, _A(".n"), _HC(typestr_array)},
   {_A("Table"),base_Table,-1, _A(".n"), _HC(typestr_table)},
   //generic
-  {_A("GetThisVM"),base_getthisvm,1, _A("t"), _HC(typestr_vm)},
-  {_A("ObjectToIScriptObject"),base_ObjectToIScriptObject,2, _A("t.")},
-  {_A("IScriptObjectToObject"),base_IScriptObjectToObject,2, _A("t."), _HC(typestr_iScriptObject)},
+  {_A("GetThisVM"),base_getthisvm,1, _A("t"), _HC(typestr_iScriptVM)},
+  {_A("ObjectToIScriptObject"),base_ObjectToIScriptObject,2, _A("t."),_HC(typestr_iScriptObject)},
+  {_A("IScriptObjectToObject"),base_IScriptObjectToObject,2, _A("t.")},
   {_A("LockLangDelegates"), base_LockLangDelegates, 1, _A("."), _HC(typestr_void)},
   {_A("GetLangDelegate"),base_GetLangDelegate, 2, _A(".s"), _HC(typestr_table)},
   {_A("seterrorhandler"),base_seterrorhandler,2, _A("tc"), _HC(typestr_void)},

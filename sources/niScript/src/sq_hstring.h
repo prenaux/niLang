@@ -55,7 +55,6 @@ _HDecl_(typestr_table, "table");
 _HDecl_(typestr_array, "array");
 _HDecl_(typestr_function, "function");
 _HDecl_(typestr_userdata, "userdata");
-_HDecl_(typestr_vm, "vm");
 _HDecl_(typestr_iunknown, "iunknown");
 _HDecl_(typestr_closure, "closure");
 _HDecl_(typestr_nativeclosure, "nativeclosure");
@@ -71,6 +70,7 @@ _HDecl_(typestr_iHStringCharIt, "iHStringCharIt");
 _HDecl_(typestr_iMutableCollection, "iMutableCollection");
 _HDecl_(typestr_iCollection, "iCollection");
 _HDecl_(typestr_iScriptObject, "iScriptObject");
+_HDecl_(typestr_iScriptVM, "iScriptVM");
 _HDecl(_args_);
 
 #endif // __SQ_HSTRING_H_A4DC9B91_9066_EF11_8442_711111AD5543__

@@ -58,7 +58,6 @@ SQSharedState::SQSharedState() {
   _typeStr_array = _HC(typestr_array);
   _typeStr_function = _HC(typestr_function);
   _typeStr_userdata = _HC(typestr_userdata);
-  _typeStr_vm = _HC(typestr_vm);
   _typeStr_iunknown = _HC(typestr_iunknown);
   _typeStr_closure = _HC(typestr_closure);
 }

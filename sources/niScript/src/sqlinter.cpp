@@ -2948,9 +2948,18 @@ void SQFunctionProto::LintTrace(
 tU32 SQFunctionProto::LintTraceRoot() {
   sLinter linter;
 
+
   SQObjectPtr moduleRoot = SQTable::Create();
-  _table(moduleRoot)->SetDebugName("__moduleroot__");
   _table(moduleRoot)->SetDelegate(_table(linter._vmroot));
+
+  tHStringPtr sourceName = this->GetSourceName();
+  if (HStringIsNotEmpty(sourceName)) {
+    cPath path(niHStr(sourceName));
+    _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%s__",path.GetFileNoExt()));
+  }
+  else {
+    _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%p__",_PtrToString((tIntPtr)this)));
+  }
 
   this->LintTrace(linter,_table(moduleRoot),_table(moduleRoot));
 

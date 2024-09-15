@@ -177,11 +177,11 @@ function main() {
       EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_callk: "t2" not found in TABLE{localTable]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__moduleroot_linter_01]})
       EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{subTable]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot__]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot__]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot_linter_01]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot_linter_01]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: outer value "someOuter" not found in TABLE{__moduleroot_linter_01]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "t2"]})
@@ -601,7 +601,7 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot__]})
+      EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot_linter_19]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})

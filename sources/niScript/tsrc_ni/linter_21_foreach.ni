@@ -22,7 +22,7 @@ function foreach_table() {
   }
 
   foreach (k,v in t) {
-    ::LINT_CHECK_TYPE("table", t);
+    ::LINT_CHECK_TYPE("table:t", t);
     ::LINT_CHECK_TYPE("resolved_type<string>", k);
     ::LINT_CHECK_TYPE("null", v);
   }

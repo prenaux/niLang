@@ -235,7 +235,9 @@ static cString _ObjTypeString(const SQObjectPtr& obj)
     case _RT_INTEGER: return "I32";
     case _RT_FLOAT: return "F64";
     case _RT_STRING: return "STRING";
-    case _RT_TABLE: return "TABLE";
+    case _RT_TABLE: {
+      return niFmt("table:%s", _table(obj)->GetDebugName());
+    }
     case _RT_ARRAY: return "ARRAY";
     case _RT_USERDATA: {
       SQUserData* ud = _userdata(obj);
@@ -1951,8 +1953,8 @@ struct sLintFuncCall_lint_check_type : public ImplRC<iLintFuncCall> {
     if (!actualType.IEq(niHStr(expectedType))) {
       return _MakeLintCallError(
         aLinter,
-        niFmt("Expected type '%s' but got '%s'.",
-              expectedType, actualType));
+        niFmt("Expected type '%s' but got '%s' for %s.",
+              expectedType, actualType, _ObjToString(actualObject)));
     }
 
     return _one_;
@@ -2135,6 +2137,41 @@ struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
+  NN_mut<iHString> _name;
+
+  sLintFuncCall_table_getdelegate(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 0;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& objTable = aCallArgs[0];
+
+    niLet objTableType = sqa_getscriptobjtype(objTable);
+    if (objTableType == eScriptType_Table) {
+      return _table(objTable)->GetDelegate();
+    }
+    else if (objTableType == eScriptType_ResolvedType) {
+      niLet resolvedType = _ObjToResolvedTyped(objTable);
+      if (resolvedType->_scriptType == eScriptType_Table) {
+        return niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Table);
+      }
+    }
+
+    return _MakeLintCallError(
+      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
+  }
+};
+
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
@@ -2173,6 +2210,10 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_setdelegate>(_H("SetDelegate"))));
     niPanicAssert(
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_setdelegate>(_H("setdelegate"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("GetDelegate"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("getdelegate"))));
   }
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();

@@ -99,7 +99,7 @@ tThis <- {
 
 function table_this(tThis t) {
   local r = t.wee()
-  ::LINT_CHECK_TYPE("table", r)
+  ::LINT_CHECK_TYPE("table:tThis", r)
   r.name; // should be ok
   r.im_this; // should be ok
   r.not_a_field; // should fail

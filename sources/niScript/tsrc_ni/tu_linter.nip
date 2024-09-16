@@ -645,7 +645,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'TABLE'.*linter_20_namespace.ni:16:40]})
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:bli'.*linter_20_namespace.ni:16:40]})
 
       EXPECTED_LINT(
         aLogs, 1,
@@ -653,7 +653,7 @@ function main() {
 
       EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'TABLE'.*linter_20_namespace.ni:23:35]]});
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:foo'.*linter_20_namespace.ni:23:35]]});
 
       EXPECTED_LINT(
         aLogs, 1,

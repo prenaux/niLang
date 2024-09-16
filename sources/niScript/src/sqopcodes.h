@@ -76,7 +76,7 @@ enum SQOpcode
   __OP_LAST
 };
 
-enum eSQLintHint {
+enum eSQLintHint : tU8 {
   eSQLintHint_Unknown = 0,
   eSQLintHint_SwitchBegin = 1,
   eSQLintHint_SwitchEnd = 2,
@@ -117,7 +117,9 @@ struct SQInstruction
 };
 niCAssert(sizeof(SQInstruction) == 8);
 
-extern "C" const achar* _GetOpDesc(int op);
+const achar* _GetOpDesc(int op);
+cString _GetOpExt(int opExt);
+cString SQInstructionToString(ain<SQInstruction> inst);
 
 #include "sqvector.h"
 SQ_VECTOR_TYPEDEF(SQInstruction,SQInstructionVec);

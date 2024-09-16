@@ -1,3 +1,5 @@
+::Import("niLang")
+
 local __lint = {
   _all = 1
   _experimental = 1
@@ -39,4 +41,9 @@ function array_get() {
   arr[?2];
   arr[10]; // should fail, we know its out of bound
   arr[?10]; // should ok, safe get
+}
+
+function safeget_setparam(string aType) {
+  aType = ::eType[?aType]
+  return aType
 }

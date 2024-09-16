@@ -137,11 +137,11 @@ static const char* const _InstrDesc[]={
   "_OP_LINT_HINT",
 };
 niCAssert(niCountOf(_InstrDesc) == __OP_LAST);
-extern "C" const achar* _GetOpDesc(int op) {
+const achar* _GetOpDesc(int op) {
   return (op >= 0 && op < __OP_LAST) ? _InstrDesc[op] : "_OP_???";
 }
 
-extern "C" const char* _GetLintHintDesc(eSQLintHint hint) {
+const char* _GetLintHintDesc(eSQLintHint hint) {
   switch (hint) {
     case eSQLintHint_Unknown: return "Unknown";
     case eSQLintHint_SwitchBegin: return "SwitchBegin";
@@ -153,10 +153,11 @@ extern "C" const char* _GetLintHintDesc(eSQLintHint hint) {
   return "<InvalidLintHint>";
 }
 
-static cString _GetOpExt(int opExt) {
+cString _GetOpExt(int opExt) {
   int added = 0;
   cString o;
-  o << "{";
+  o << opExt;
+  if (added++ > 0) { o << "|"; }
   if (opExt) {
     if (opExt & _OPEXT_GET_RAW) {
       if (added++ > 0) { o << "|"; }
@@ -171,7 +172,6 @@ static cString _GetOpExt(int opExt) {
       o << "EXPLICIT_THIS";
     }
   }
-  o << "}";
   return o;
 }
 
@@ -3313,7 +3313,7 @@ void SQFunctionProto::LintTrace(
 
   // instructioncs check
   niLoop(i, _instructions.size()) {
-    const SQInstruction &inst=_instructions[i];
+    niLet& inst = _instructions[i];
     _LTRACE(("%s %d %d %d %d (%s)",
              _GetOpDesc(inst.op),
              inst._arg0, inst._arg1, inst._arg2, inst._arg3,
@@ -3398,6 +3398,13 @@ void SQFunctionProto::LintTrace(
 #undef IARG2
 #undef IARG3
 #undef IEXT
+}
+
+cString SQInstructionToString(ain<SQInstruction> inst) {
+  return niFmt("%s %d %d %d %d (%s)",
+               _GetOpDesc(inst.op),
+               inst._arg0, inst._arg1, inst._arg2, inst._arg3,
+               _GetOpExt(inst._ext));
 }
 
 tU32 SQFunctionProto::LintTraceRoot() {

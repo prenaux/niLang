@@ -200,8 +200,9 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "two"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "x"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "y"]})
+      EXPECTED_LINT(aLogs, 1, {[Error: key_cant_newslot: newslot "bla" cant be created in resolved_type<string>.]})
 
-      ::CHECK_EQUAL(12,aLintResults.mLogsError,
+      ::CHECK_EQUAL(13,aLintResults.mLogsError,
                     "Expected lint errors.");
       ::CHECK_EQUAL(8,aLintResults.mLogsWarning,
                     "Expected lint warnings.");

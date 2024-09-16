@@ -125,6 +125,28 @@ function del_closure() {
   del_closure.GetNumFreeVars()
 }
 
+function del_intf_lang_delegate() {
+  local dr = ::GetLangDelegate("iunknown:iDataTableReadStack")
+  dr.GetEnumDefault = function() {
+    ::LINT_CHECK_TYPE("table:iDataTableReadStack", this);
+    return this.top;
+  }
+  dr.GetFlagsDefault <- function() {
+    ::LINT_CHECK_TYPE("table:iDataTableReadStack", this);
+    return this.top;
+  }
+
+  local dw = ::GetLangDelegate("iunknown:iDataTableWriteStack")
+  dw.SetEnum = function() {
+    ::LINT_CHECK_TYPE("table:iDataTableWriteStack", this);
+    return this.top;
+  }
+  dw.SetFlagsWhatever <- function() {
+    ::LINT_CHECK_TYPE("table:iDataTableWriteStack", this);
+    return this.top;
+  }
+}
+
 function main() {
   {
     local v2 = ::Vec2();

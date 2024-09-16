@@ -89,9 +89,10 @@ function invalidAccessParameter(table aLocalTable) {
   aLocalTable.four;
 }
 
-function stringmethods() {
+function stringmethods() string {
   "stuff".startswith("123");
   "stuff".doesntExist("123");
+  return "bla"
 }
 
 function dostuff() : (localTable) {
@@ -105,6 +106,20 @@ function dostuff() : (localTable) {
   ::inRootLocalTable.subTable.subOne;
   ::inRootLocalTable.subTable.subDoesntExist;
   ::vmprintln("Linter 1")
+}
+
+function someTable() table {
+}
+
+function newslot() {
+  local t = {}
+  t.foo <- 123
+
+  local rt = this.someTable()
+  ::LINT_CHECK_TYPE("resolved_type<table>", rt)
+  rt.wee <- 456
+
+  this.stringmethods().bla <- "weee" // should fail we cant create slots in anything but tables
 }
 
 function main() {

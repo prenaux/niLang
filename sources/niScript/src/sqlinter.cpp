@@ -437,6 +437,14 @@ static Ptr<sScriptTypeResolvedType> _ObjToResolvedTyped(const SQObjectPtr& obj) 
   return nullptr;
 }
 
+static eScriptType _GetResolvedObjType(const SQObjectPtr& aObj) {
+  niLet type = sqa_getscriptobjtype(aObj);
+  if (type == eScriptType_ResolvedType) {
+    return ((sScriptTypeResolvedType*)_userdata(aObj))->_scriptType;
+  }
+  return type;
+}
+
 // for iInterfaceName naming convention
 static tBool _IsInterfaceTypeNameByConvention(ain<tChars> aName) {
   return aName[0] == 'i' && StrIsUpper(aName[1]);
@@ -528,6 +536,7 @@ _DEF_LINT(key_notfound_getk,IsError,None);
 _DEF_LINT(key_notfound_get,IsError,None);
 _DEF_LINT(key_notfound_callk,IsError,None);
 _DEF_LINT(key_cant_set,IsError,None);
+_DEF_LINT(key_cant_newslot,IsError,None);
 _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
@@ -597,6 +606,7 @@ struct sLinter {
     _REG_LINT(key_notfound_get);
     _REG_LINT(key_notfound_callk);
     _REG_LINT(key_cant_set);
+    _REG_LINT(key_cant_newslot);
     _REG_LINT(call_null);
     _REG_LINT(getk_in_null);
     _REG_LINT(set_in_null);
@@ -611,13 +621,9 @@ struct sLinter {
   }
 #undef _REG_LINT
 
-  tBool EnableFromSlot(const SQFunctionProto* thisfunc, ain<SQObjectPtr> table, ain<SQObjectPtr> k, ain<SQObjectPtr> v) {
+  tBool MaybeEnableLintFromSlot(const SQFunctionProto* thisfunc, ain<SQTable> table, ain<SQObjectPtr> k, ain<SQObjectPtr> v) {
     sLinter& aLinter = *this;
-    if (sq_type(table) != OT_TABLE) {
-      _LINTERNAL_WARNING("__lint table is not a table.");
-      return eFalse;
-    }
-    tHStringPtr tableName = _table(table)->GetDebugHName();
+    tHStringPtr tableName = table.GetDebugHName();
     if (tableName == _HC(__lint)) {
       if (sq_type(k) != OT_STRING) {
         _LINTERNAL_WARNING("__lint key is not a string.");
@@ -687,6 +693,7 @@ struct sLinter {
     _E(key_notfound_getk)
     _E(key_notfound_get)
     _E(key_cant_set)
+    _E(key_cant_newslot)
     _E(call_null)
     _E(getk_in_null)
     _E(set_in_null)
@@ -1641,14 +1648,6 @@ struct sLinter {
     return eTrue;
   }
 
-  static eScriptType _GetResolvedObjType(const SQObjectPtr& aObj) {
-    niLet type = sqa_getscriptobjtype(aObj);
-    if (type == eScriptType_ResolvedType) {
-      return ((sScriptTypeResolvedType*)_userdata(aObj))->_scriptType;
-    }
-    return type;
-  }
-
   static bool LintTypeObjCanAssign(const SQObjectPtr& aFromTypeObj, const SQObjectPtr& aToTypeObj) {
     niLetMut fromType = _GetResolvedObjType(aFromTypeObj);
     niLet toType = _GetResolvedObjType(aToTypeObj);
@@ -2113,7 +2112,7 @@ struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
     niLet& delTable = aCallArgs[1];
     // niDebugFmt(("... sLintFuncCall_table_setdelegate: objTable: %s, delTable", _ObjToString(objTable), _ObjToString(delTable)));
 
-    if (aLinter._GetResolvedObjType(delTable) != eScriptType_Table) {
+    if (_GetResolvedObjType(delTable) != eScriptType_Table) {
       return _MakeLintCallError(
         aLinter,niFmt("Delegate expected a table but got '%s'.", _ObjToString(delTable)));
     }
@@ -2563,39 +2562,33 @@ void SQFunctionProto::LintTrace(
     sset(IARG0, func);
   };
 
-  auto op_newslot = [&](const SQInstruction& inst) {
-    SQObjectPtr table = sget(IARG1);
-    SQObjectPtr k = sget(IARG2);
-    SQObjectPtr v = sget(IARG3);
-    if (_sqtype(table) == OT_TABLE) {
-      if (aLinter.EnableFromSlot(thisfunc,table,k,v)) {
-        _LTRACE(("op_newslot: EnableFromSlot: __lint: %s = %s",
+  auto update_slot = [&](ain<SQObjectPtr> t, ain<SQObjectPtr> k, ain<SQObjectPtr> v) {
+    if (sq_istable(t)) {
+      niLet table = as_nn(_table(t));
+
+      if (aLinter.MaybeEnableLintFromSlot(thisfunc,*table,k,v)) {
+        _LTRACE(("update_slot: EnableFromSlot: __lint: %s = %s",
                  _ObjToString(k), _ObjToString(v)));
       }
-      _table(table)->NewSlot(k,v);
+
       // When we set a function as a new slot in a table, that table becomes
       // the default 'this' for the purpose of linting.
       if (sq_type(v) == OT_FUNCPROTO) {
         LintClosure* closure = aLinter.GetClosure(_funcproto(v));
         if (closure) {
-          closure->_this = table;
+          closure->_this = table.raw_ptr();
         }
         else {
           _LINTERNAL_ERROR(niFmt("Cant find closure associated with '%s'",
                                  _ObjToString(v)));
         }
-        _LTRACE(("op_newslot: %s has new this %s",
-                 _ObjToString(v), _ObjToString(table)));
+        _LTRACE(("update_slot: %s has new this %s",
+                 _ObjToString(v), _ObjToString(table.raw_ptr())));
       }
     }
-    _LTRACE(("op_newslot: %s = %s in %s -> %s",
-             _ObjToString(k),
-             _ObjToString(v),
-             _ObjToString(table),
-             sstr(IARG0)));
 
-    // assign a function name if there isn't one this takes care of the
-    // `someslot <- function() {}` pattern
+    // assign a function or debug name if there isn't one this takes care of
+    // the `someslot <- function() {}` pattern
     if (sq_isstring(k)) {
       if (sq_isfuncproto(v) && _funcproto(v)->_name == _null_) {
         _funcproto(v)->_name = k;
@@ -2603,7 +2596,66 @@ void SQFunctionProto::LintTrace(
       else if (sq_istable(v) && _table(v)->GetDebugHName() == nullptr) {
         _table(v)->SetDebugName(_stringhval(k));
       }
+      // TODO: Should we have a pendantic warning if we're assigning an
+      // already named object?
     }
+  };
+
+  auto op_set = [&](const SQInstruction& inst) {
+    SQObjectPtr t = sget(IARG1);
+    SQObjectPtr k = sget(IARG2);
+    SQObjectPtr v = sget(IARG3);
+
+    if (sq_isnull(t)) {
+      if (_LENABLED(set_in_null)) {
+        _LINT(key_cant_set, _FmtKeyNotFoundMsg(_null_, k, _null_));
+      }
+    }
+    else {
+      cString errDesc;
+      niLet didSet = aLinter.LintSet(errDesc,t,k,v,inst._ext);
+      if (!didSet) {
+        if (_LENABLED(key_cant_set) &&
+            (!sq_isnull(k) || _LENABLED(null_notfound)))
+        {
+          _LINT(key_cant_set, niFmt(
+            "%s key cant be set in %s: %s.",
+            _ObjToString(k), _ObjToString(t),
+            errDesc.empty() ? "not found" : errDesc.Chars()));
+        }
+      }
+    }
+
+    update_slot(t, k, v);
+    if (inst._arg0 != inst._arg3)
+      sset(IARG0, v);
+
+    _LTRACE(("op_set: %s[%s] = %s in %s",
+             _ObjToString(t), _ObjToString(k),
+             _ObjToString(v), sstr(IARG0)));
+  };
+
+  auto op_newslot = [&](const SQInstruction& inst) {
+    SQObjectPtr t = sget(IARG1);
+    SQObjectPtr k = sget(IARG2);
+    SQObjectPtr v = sget(IARG3);
+    _LTRACE(("op_newslot: %s = %s in %s -> %s",
+             _ObjToString(k), _ObjToString(v), _ObjToString(t), sstr(IARG0)));
+
+    if (_sqtype(t) == OT_TABLE) {
+      _table(t)->NewSlot(k,v);
+    }
+    else if ((_GetResolvedObjType(t) != eScriptType_Table)
+             && _LENABLED(key_cant_newslot)
+             && (!sq_isnull(k) || _LENABLED(null_notfound))
+             && (!sq_isnull(t) || _LENABLED(set_in_null)))
+    {
+      _LINT(key_cant_newslot, niFmt(
+        "newslot %s cant be created in %s.",
+        _ObjToString(k), _ObjToString(t)));
+    }
+
+    update_slot(t, k, v);
 
     if (IARG0 != IARG3) {
       SQObjectPtr r = sget(IARG3);
@@ -2716,39 +2768,6 @@ void SQFunctionProto::LintTrace(
              _ObjToString(v), sstr(IARG0),
              _ObjToString(t), sstr(IARG3), sstr(IARG2),
              _ObjToString(k)));
-  };
-
-  auto op_set = [&](const SQInstruction& inst) {
-    SQObjectPtr t = sget(IARG1);
-    SQObjectPtr k = sget(IARG2);
-    SQObjectPtr v = sget(IARG3);
-
-    if (sq_isnull(t)) {
-      if (_LENABLED(set_in_null)) {
-        _LINT(key_cant_set, _FmtKeyNotFoundMsg(_null_, k, _null_));
-      }
-    }
-    else {
-      cString errDesc;
-      niLet didSet = aLinter.LintSet(errDesc,t,k,v,inst._ext);
-      if (!didSet) {
-        if (_LENABLED(key_cant_set) &&
-            (!sq_isnull(k) || _LENABLED(null_notfound)))
-        {
-          _LINT(key_cant_set, niFmt(
-            "%s key cant be set in %s: %s.",
-            _ObjToString(k), _ObjToString(t),
-            errDesc.empty() ? "not found" : errDesc.Chars()));
-        }
-      }
-    }
-
-    if (inst._arg0 != inst._arg3)
-      sset(IARG0, v);
-
-    _LTRACE(("op_set: %s[%s] = %s in %s",
-             _ObjToString(t), _ObjToString(k),
-             _ObjToString(v), sstr(IARG0)));
   };
 
   auto op_call = [&](const SQInstruction& inst, const tBool abIsTailCall) {
@@ -3131,7 +3150,7 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("op_foreach: othis: %s, okey: %s, oval: %s, orefpos: %s",
              _ObjToString(othis), sstr(IARG2), sstr(IARG2+1), sstr(IARG2+2)));
 
-    niLet othisType = aLinter._GetResolvedObjType(othis);
+    niLet othisType = _GetResolvedObjType(othis);
     SQObjectPtr okey = _null_;
     SQObjectPtr oval = _null_;
     SQObjectPtr orefpos = _null_;

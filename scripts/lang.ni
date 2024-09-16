@@ -55,7 +55,7 @@ function ::namespace(name,table,nsTable) {
 // Create a vector container, see ni::CreateContainerVector
 ::Vector <- function(aType) {
   if (typeof(aType) == "string") {
-    aType = ::eType[aType]
+    aType = ::eType[?aType]
   }
   return ::CreateCollectionVector(aType)
 }
@@ -63,10 +63,10 @@ function ::namespace(name,table,nsTable) {
 // Create a map container, see ni::CreateContainerMap
 ::Map <- function(aKeyType,aValueType) {
   if (typeof(aKeyType) == "string") {
-    aKeyType = ::eType[aKeyType]
+    aKeyType = ::eType[?aKeyType]
   }
   if (typeof(aValueType) == "string") {
-    aValueType = ::eType[aValueType]
+    aValueType = ::eType[?aValueType]
   }
   return ::CreateCollectionMap(aKeyType,aValueType)
 }
@@ -293,7 +293,8 @@ function ::namespace(name,table,nsTable) {
   if (!d) throw "Can't get 'vec4f' LangDelegate."
 
   d.ToRectString <- function() {
-    return "Rect(" + x + "," + y + "," + width + "," + height + ")"
+    local that = ::LINT_AS_TYPE("Vec4", this);
+    return "Rect(" + that.x + "," + that.y + "," + that.width + "," + that.height + ")"
   }
 }
 
@@ -339,8 +340,8 @@ function ::namespace(name,table,nsTable) {
   }
 
   local doMergeInCollection = function(aColl) {
-    local isTable =
-      ((typeof aColl) == "table") || (aColl.?key_type);
+    local __lint = { typeof_usage = 0 }
+    local isTable = ((typeof aColl) == "table") || (aColl.?key_type);
     if (isTable) {
       // collection is some kind of map
       foreach (k,v in aColl) {
@@ -647,13 +648,13 @@ function ::namespace(name,table,nsTable) {
   }
 
   ///////////////////////////////////////////////
-  function implements(obj,string interface) {
+  function implements(obj,string interface) bool {
     switch (typeof(obj)) {
       case "iunknown": {
-        return obj.QueryInterface(interface);
+        return (obj.QueryInterface(interface) != null);
       }
     }
-    return null
+    return false
   }
 
   ///////////////////////////////////////////////
@@ -742,6 +743,8 @@ function ::namespace(name,table,nsTable) {
   // Log a message
   function logEx(aType,aMsg,aSILevel)
   {
+    // TODO: getbasestackinfos should return a type instead?
+    local __lint = { key_notfound_getk = 0 }
     local src = "unknown"
     local func = "unknown"
     local line = -1
@@ -775,6 +778,8 @@ function ::namespace(name,table,nsTable) {
   }
 
   function dbgs(_args_) {
+    // TODO: getbasestackinfos should return a type instead?
+    local __lint = { key_notfound_getk = 0 }
     local src = "unknown"
     local func = "unknown"
     local line = -1
@@ -992,7 +997,7 @@ function ::namespace(name,table,nsTable) {
   function createDataTableXML(aXMLString)
   {
     local dt = ::gLang.CreateDataTable("")
-    local fp = ::fs.createStringFile(aXMLString)
+    local fp = ::?fs.createStringFile(aXMLString)
     if (!::gLang.SerializeDataTable("xml",::eSerializeMode.Read,dt,fp))
       throw "Can't read the data table from the specified xml string.";
     return dt
@@ -1001,7 +1006,7 @@ function ::namespace(name,table,nsTable) {
   ///////////////////////////////////////////////
   function dataTableFromString(aString,aType) {
     aType = aType || "xml"
-    return ::lang.loadDataTable(aType,::fs.createStringFile(aString))
+    return ::lang.loadDataTable(aType,::?fs.createStringFile(aString))
   }
 
   ///////////////////////////////////////////////
@@ -1023,7 +1028,7 @@ function ::namespace(name,table,nsTable) {
   // Write a data table
   function writeDataTable(aType,aDT,aPath)
   {
-    local fp = ::fs.fileOpenWrite(aPath)
+    local fp = ::?fs.fileOpenWrite(aPath)
     if (!fp) throw "Can't open file '"+aPath+"'."
 
     if (!::gLang.SerializeDataTable(aType,::eSerializeMode.Write,aDT,fp))
@@ -1057,7 +1062,7 @@ function ::namespace(name,table,nsTable) {
         for (local i = 0; i < aDT.num_children; ++i) {
           local newTable = {}
           doConvert(aDT.child_from_index[i],newTable)
-          aTable.__tables.append(newTable)
+          aTable.?__tables.append(newTable)
           aTable[aDT.child_from_index[i].name] <- newTable
         }
       }
@@ -1094,7 +1099,7 @@ function ::namespace(name,table,nsTable) {
   function convertTableToDataTable(table aTable, string aName) iDataTable {
     if (!aName) {
       if ("__name" in aTable) {
-        aName = aTable["__name"]
+        aName = aTable[?"__name"]
       }
       else {
         aName = "Unnamed"
@@ -1104,7 +1109,7 @@ function ::namespace(name,table,nsTable) {
     local subTables = null
     if ("__tables" in aTable) {
       subTables = {}
-      foreach (t in aTable.__tables) {
+      foreach (t in aTable.?__tables) {
         local childDT = convertTableToDataTable(t,null)
         dt.AddChild(childDT)
         subTables[childDT.name] <- 1
@@ -1199,8 +1204,11 @@ if (!("main" in ::getroottable())) {
   ::main <- function() {}
 }
 
+::printdebugln <- ::vmprintdebugln
+::printdebug <- ::vmprintdebug
+
 ::interop <- {
-  function doEval(path,iid,defaultDelegateTable) {
+  function doEval(string path, iid, defaultDelegateTable) {
     local className = path.GetFileNoExt()
     local loadedTable = {}
     ::Import(path,loadedTable)
@@ -1211,7 +1219,7 @@ if (!("main" in ::getroottable())) {
       }
       implTable = loadedTable
     }
-    return ::QueryInterface(implTable,iid)
+    return ::?QueryInterface(implTable,iid)
   }
   function evalImpl(aContext,aPath,aIID) {
     if (!(aContext in ::interop))
@@ -1221,7 +1229,7 @@ if (!("main" in ::getroottable())) {
 }
 
 // Import a native module
-::ImportNative <- function(aName, aDir) {
+::ImportNative <- function(string aName, aDir) {
   local moduleDef = ::lang.loadModuleDef(aName,aDir);
   ::Import(aName);
   return moduleDef;
@@ -1312,7 +1320,7 @@ tImportModule <- {
       // ::log(::format("ImportModule '%s' from cache.", aPath))
     }
     else {
-      m = newImport(aPath)
+      m = newImport(aPath, null, null)
       _cache[aPath] <- m
       // ::log(::format("ImportModule '%s' newly imported.", aPath))
     }
@@ -1341,7 +1349,7 @@ function ::namespaceOrModule(aThis, string aNamespaceName, table aModule) {
   // ::log("..." aNamespaceName ": isModule:" isModule)
 
   if (!isModule) {
-    ::namespace(aNamespaceName, aModule);
+    ::namespace(aNamespaceName, aModule, null);
   }
   else {
     aThis.module = aModule

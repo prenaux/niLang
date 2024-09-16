@@ -36,6 +36,13 @@
 ::Import("lang.ni")
 
 ::THROW <- function(aMsg,_aDesc) {
+  local __lint = {
+    // TODO: GetStackInfos should return a type instead?
+    key_notfound_getk = 0
+    // typeof is used to print the types
+    typeof_usage = 0
+  }
+
   local src = "unknown"
   local func = "unknown"
   local line = -1
@@ -87,7 +94,7 @@
       r = len == b.GetSize();
       if (r) {
         for (local i = 0; i < len; ++i) {
-          r = a[i] == b[i]
+          r = (a[?i] == b[?i]);
           if (!r)
             break;
         }
@@ -157,6 +164,8 @@
 }
 
 ::TEST <- function(aFixture,aName,_aMeth) {
+  local __lint = { _all = 0 }
+
   // allow for function(aName,aMeth) --- no fixture...
   local meth
   if (_aMeth) {
@@ -188,8 +197,8 @@
 
 ::RUN_TESTS <- function(aName) {
   if (!aName) {
-    if (::GetArgs().GetSize() > 1) {
-      aName = ::GetArgs()[1]
+    if (::?GetArgs().GetSize() > 1) {
+      aName = ::?GetArgs()[1]
     }
   }
 

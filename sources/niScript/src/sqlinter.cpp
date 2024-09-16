@@ -548,6 +548,7 @@ _DEF_LINT(foreach_usage,IsError,None);
 _DEF_LINT(implicit_this_getk,IsWarning,IsPedantic);
 _DEF_LINT(implicit_this_get,IsWarning,IsPedantic);
 _DEF_LINT(implicit_this_callk,IsWarning,IsPedantic);
+_DEF_LINT(prepcall_dynamic,IsWarning,IsPedantic);
 
 // Explicit lints
 _DEF_LINT(call_null,IsWarning,IsExplicit);
@@ -602,6 +603,7 @@ struct sLinter {
     _REG_LINT(implicit_this_getk);
     _REG_LINT(implicit_this_get);
     _REG_LINT(implicit_this_callk);
+    _REG_LINT(prepcall_dynamic);
     _REG_LINT(key_notfound_getk);
     _REG_LINT(key_notfound_get);
     _REG_LINT(key_notfound_callk);
@@ -689,6 +691,7 @@ struct sLinter {
     _E(implicit_this_getk)
     _E(implicit_this_get)
     _E(implicit_this_callk)
+    _E(prepcall_dynamic)
     _E(key_notfound_callk)
     _E(key_notfound_getk)
     _E(key_notfound_get)
@@ -1872,17 +1875,26 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
   }
 
   virtual tI32 __stdcall GetArity() const {
-    return 1;
+    return -1;
   }
 
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet objModuleName = aCallArgs[1];
+    // TODO: We should validate the other parameters...
+
     // niDebugFmt(("... LintCall: objModuleName: %s", _ObjToString(objModuleName)));
+
     if (sqa_getscriptobjtype(objModuleName) != eScriptType_String) {
-      return _MakeLintCallError(
-        aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
+      if (_GetResolvedObjType(objModuleName) == eScriptType_String) {
+        return _null_;
+      }
+      else {
+        return _MakeLintCallError(
+          aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
+      }
     }
+
 
     return aLinter.Import(aClosure, _stringval(objModuleName));
   }
@@ -2029,9 +2041,20 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
         qiUUID = ni::GetLang()->GetInterfaceUUID(_stringhval(qiID));
         break;
       }
-      default:
-        return _MakeLintCallError(
-          aLinter,niFmt("Invalid interface id type '%s'.", _ObjToString(qiID)));
+      default: {
+        switch (_GetResolvedObjType(qiID)) {
+          case eScriptType_String:
+          case eScriptType_UUID: {
+            // we cant determine the interface type from a non-literal value so we assume iUnknown
+            qiUUID = niGetInterfaceUUID(iUnknown);
+            break;
+          }
+          default: {
+            return _MakeLintCallError(
+              aLinter,niFmt("Invalid interface id type '%s'.", _ObjToString(qiID)));
+          }
+        }
+      }
     }
 
     // niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
@@ -2112,7 +2135,10 @@ struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
     niLet& delTable = aCallArgs[1];
     // niDebugFmt(("... sLintFuncCall_table_setdelegate: objTable: %s, delTable", _ObjToString(objTable), _ObjToString(delTable)));
 
-    if (_GetResolvedObjType(delTable) != eScriptType_Table) {
+    niLet resolvedDelType = _GetResolvedObjType(delTable);
+    if (resolvedDelType != eScriptType_Null &&
+        resolvedDelType != eScriptType_Table)
+    {
       return _MakeLintCallError(
         aLinter,niFmt("Delegate expected a table but got '%s'.", _ObjToString(delTable)));
     }
@@ -2475,6 +2501,16 @@ void SQFunctionProto::LintTrace(
     sset(IARG0, v);
   };
 
+  auto op_dmove = [&](const SQInstruction& inst) {
+    SQObjectPtr a1 = sget(IARG1);
+    SQObjectPtr a3 = sget(IARG3);
+    _LTRACE(("op_dmove: %s -> %s, %s -> %s",
+             _ObjToString(a1), sstr(IARG0),
+             _ObjToString(a3), sstr(IARG2)));
+    sset(IARG0, a1);
+    sset(IARG2, a3);
+  };
+
   auto op_return = [&](const SQInstruction& inst) {
     if (IARG0 != 0xFF) {
       SQObjectPtr rval = sget(IARG1);
@@ -2737,12 +2773,30 @@ void SQFunctionProto::LintTrace(
              _ObjToString(t), _ObjToString(k), sstr(IARG0)));
   };
 
-  auto op_precallk = [&](const SQInstruction& inst) {
+  auto op_prepcall = [&](const SQInstruction& inst) {
+    SQObjectPtr t = sget(IARG2);
+    SQObjectPtr k = sget(IARG1);
+    if (_LENABLED(prepcall_dynamic) &&
+        (!sq_isnull(k) || _LENABLED(null_notfound)))
+    {
+      _LINT(prepcall_dynamic, niFmt(
+        "dynamic function call prevents linting, trying to call %s from %s",
+        _ObjToString(k), _ObjToString(t)));
+    }
+
+    sset(IARG3, t);
+    sset(IARG0, _null_); // TODO: should this return resolved_type<null> instead?
+    _LTRACE(("op_prepcall: t = %s (tgt: %s, from: %s), k = %s",
+             _ObjToString(t), sstr(IARG3), sstr(IARG2),
+             _ObjToString(k)));
+  };
+
+  auto op_prepcallk = [&](const SQInstruction& inst) {
     SQObjectPtr t = sget(IARG2);
     SQObjectPtr k = lget(IARG1);
     SQObjectPtr v;
     if (is_implicit_this(_LOBJ(implicit_this_callk),inst,inst._arg2)) {
-      _LINT(implicit_this_getk, niFmt(
+      _LINT(implicit_this_callk, niFmt(
         "implicit this access to %s", _ObjToString(k)));
     }
 
@@ -2764,7 +2818,7 @@ void SQFunctionProto::LintTrace(
 
     sset(IARG3, t);
     sset(IARG0, v);
-    _LTRACE(("op_precallk: f = %s (tgt: %s), t = %s (tgt: %s, from: %s), k = %s",
+    _LTRACE(("op_prepcallk: f = %s (tgt: %s), t = %s (tgt: %s, from: %s), k = %s",
              _ObjToString(v), sstr(IARG0),
              _ObjToString(t), sstr(IARG3), sstr(IARG2),
              _ObjToString(k)));
@@ -3110,6 +3164,12 @@ void SQFunctionProto::LintTrace(
     sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int, _OP_EQ, nullptr));
   };
 
+  auto op_cond = [&](const SQInstruction& inst, SQOpcode aOpcode) {
+    // TODO: We can probably do some static analysis like "I know for a fact
+    // this condition is always true", etc... But that's really low priority.
+    sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int, aOpcode, nullptr));
+  };
+
   auto op_lint_hint = [&](const SQInstruction& inst) {
     niLet hint = (eSQLintHint)inst._arg0;
     SQObjectPtr arg1 = sget(IARG1);
@@ -3266,16 +3326,25 @@ void SQFunctionProto::LintTrace(
       case _OP_LOADNULL: op_loadnull(inst); break;
       case _OP_LOADROOTTABLE: op_loadroottable(inst); break;
       case _OP_MOVE: op_move(inst); break;
+      case _OP_DMOVE: op_dmove(inst); break;
       case _OP_RETURN: op_return(inst); break;
       case _OP_CLOSURE: op_closure(inst); break;
       case _OP_NEWSLOT: op_newslot(inst); break;
       case _OP_GETK: op_getk(inst); break;
       case _OP_GET: op_get(inst); break;
-      case _OP_PREPCALLK: op_precallk(inst); break;
+      case _OP_PREPCALL: op_prepcall(inst); break;
+      case _OP_PREPCALLK: op_prepcallk(inst); break;
       case _OP_SET: op_set(inst); break;
       case _OP_CALL: op_call(inst,eFalse); break;
       case _OP_TAILCALL: op_call(inst,eTrue); break;
+      case _OP_SPACESHIP: op_cond(inst, _OP_SPACESHIP); break;
       case _OP_EQ: op_eq(inst); break;
+      case _OP_NE: op_cond(inst, _OP_NE); break;
+      case _OP_G: op_cond(inst, _OP_G); break;
+      case _OP_GE: op_cond(inst, _OP_GE); break;
+      case _OP_L: op_cond(inst, _OP_L); break;
+      case _OP_LE: op_cond(inst, _OP_LE); break;
+      case _OP_EXISTS: op_cond(inst, _OP_EXISTS); break;
       case _OP_TYPEOF: op_typeof(inst); break;
       case _OP_LINT_HINT: op_lint_hint(inst); break;
       case _OP_FOREACH: op_foreach(inst); break;

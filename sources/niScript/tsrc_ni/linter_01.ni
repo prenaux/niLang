@@ -122,6 +122,20 @@ function newslot() {
   this.stringmethods().bla <- "weee" // should fail we cant create slots in anything but tables
 }
 
+// this will generate a dmove opcode
+function dmove(string path) {
+  local className = path.GetFileNoExt()
+  local loadedTable = {}
+  ::Import(path,loadedTable)
+}
+
+// this will generate a dmove opcode
+function prepcall(string path) {
+  local className = path.GetFileNoExt()
+  local loadedTable = {}
+  this[this.stringmethods()](path,loadedTable)
+}
+
 function main() {
   ::vmprintln("Linter 1")
 }

@@ -195,17 +195,16 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: "someOuter" not found in TABLE{__moduleroot_linter_01]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "t2"]})
+      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_callk: implicit this access to "t2"]})
       EXPECTED_LINT(aLogs, 3, {[Lint: Warning: implicit_this_getk: implicit this access to "thisLocalTable"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "two"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "x"]})
       EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "y"]})
       EXPECTED_LINT(aLogs, 1, {[Error: key_cant_newslot: newslot "bla" cant be created in resolved_type<string>.]})
+      EXPECTED_LINT(aLogs, 1, {[Warning: prepcall_dynamic: dynamic function call prevents linting, trying to call resolved_type<string> from TABLE{__moduleroot_linter_01]})
 
-      ::CHECK_EQUAL(13,aLintResults.mLogsError,
-                    "Expected lint errors.");
-      ::CHECK_EQUAL(8,aLintResults.mLogsWarning,
-                    "Expected lint warnings.");
+      ::CHECK_EQUAL(13,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(9,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 
   testLinter.check(

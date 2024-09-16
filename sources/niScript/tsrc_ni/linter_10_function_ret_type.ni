@@ -55,6 +55,39 @@ function ret_iFile_to_iFuture() iFuture {
   return v; // should fail
 }
 
+function ret_cond_spaceship(iUnknown v) int {
+  return v <=> null;
+}
+function ret_cond_eq(iUnknown v) int {
+  return v == null;
+}
+function ret_cond_ne(iUnknown v) int {
+  return v != null;
+}
+function ret_cond_g(iUnknown v) int {
+  return v > null;
+}
+function ret_cond_ge(iUnknown v) int {
+  return v >= null;
+}
+function ret_cond_l(iUnknown v) int {
+  return v < null;
+}
+function ret_cond_le(iUnknown v) int {
+  return v <= null;
+}
+
+function ret_cond_in(table v) int {
+  return "foo" in v;
+}
+
+function ret_cond_or(iUnknown v) string {
+  return null || v || "string";
+}
+function ret_cond_and(iUnknown v) string {
+  return null && v && "string";
+}
+
 function main() void {
   local r = ret_string();
   ::LINT_CHECK_TYPE("resolved_type<string>", r);

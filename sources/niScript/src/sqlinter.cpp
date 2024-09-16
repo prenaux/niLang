@@ -1254,6 +1254,9 @@ struct sLinter {
         }
         break;
       }
+      default: {
+        break;
+      }
     }
     return false;
   }
@@ -1290,6 +1293,8 @@ struct sLinter {
         else {
           int cidx = -1;
           int ridx = -1;
+          niUnused(cidx);
+          niUnused(ridx);
           ++p;
           switch (*p) {
             case '1': ridx = 0; break;
@@ -1335,6 +1340,9 @@ struct sLinter {
             _ss, eScriptType_Float);
           return true;
         }
+        break;
+      }
+      default: {
         break;
       }
     }

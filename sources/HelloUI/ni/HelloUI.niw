@@ -20,7 +20,7 @@ local widgetSink = ::delegate(::gui.baseWidgetSink {
     w.text = "Type Here";
     w.dock_style = ::eWidgetDockStyle.SnapTopCenter;
 
-    _overlay <- ::gGraphics.CreateOverlayResource("icons/misc/placeholder.png")
+    _overlay <- ::gGraphics.CreateOverlayResource("test/tex/placeholder.png")
     if (_overlay) {
       _iconX <- 0
       _iconY <- 0

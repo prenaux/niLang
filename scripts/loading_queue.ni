@@ -4,6 +4,7 @@
 ::Import("lang.ni")
 ::Import("closure.ni")
 ::Import("concurrent.ni")
+::Import("niUI")
 
 ::loading_queue <- {
   mCanvas = null
@@ -101,7 +102,7 @@
     }
   }
 
-  function queue(aFunc,aThis) {
+  function queue(aFunc,_aThis) {
     if (typeof aFunc == "array") {
       foreach (f in aFunc) {
         queue(f)
@@ -140,7 +141,7 @@
           break;
         }
         default: {
-          ::concurrent.mainRun(aFunc,aThis)
+          ::concurrent.mainRun(aFunc,_aThis)
           break;
         }
       }
@@ -171,12 +172,12 @@
   function HandleMessage(aMsg,aA,aB) {
     if (aMsg != ::eSystemMessage.Log)
       return
-    if (mInLogSink || !::gWindow)
+    if (mInLogSink || !::?gWindow)
       return
     mInLogSink = true
     local curTime = ::gLang.TimerInSeconds()
     if ((curTime - this.mLastUpdate) > mLogUpdateTime) {
-      ::gWindow.RedrawWindow()
+      ::?gWindow.?RedrawWindow()
       this.mLastUpdate = curTime
     }
     mInLogSink = false

@@ -13,11 +13,11 @@
     return true
   }
 
-  function newRunnable(aFunOrTable,aThis) {
+  function newRunnable(aFunOrTable,_aThis) {
     switch (typeof aFunOrTable) {
       case "closure":
       case "function": {
-        local _this = aThis || this
+        local _this = _aThis || this
         return ::Concurrent_RunnableFromFunction(function() : (aFunOrTable,_this) {
           try {
             return aFunOrTable.call(_this);
@@ -33,7 +33,7 @@
         if (!("Run" in _this)) {
           throw "The specified table doesn't have a Run method."
         }
-        local theMethod = _this.Run
+        local theMethod = _this.?Run
         return ::Concurrent_RunnableFromFunction(#():(_this,theMethod) {
           try {
             return theMethod.call(_this);
@@ -76,7 +76,7 @@
             throw "The specified table doesn't have a RunCallback nor a Run method."
           }
         }
-        local theMethod = _this[runMethodName]
+        local theMethod = _this[?runMethodName]
         return ::Concurrent_CallbackFromFunction(#(aA,aB):(_this,theMethod) {
           try {
             return theMethod.call(_this,aA,aB);
@@ -95,18 +95,18 @@
     throw "Invalid function type: " + typeof(aFunOrTable)
   }
 
-  function ioRun(aRunnable,aThis) iFuture {
-    local r = ::concurrent.newRunnable(aRunnable,aThis)
+  function ioRun(aRunnable,_aThis) iFuture {
+    local r = ::concurrent.newRunnable(aRunnable,_aThis)
     return ::gConcurrent.executor_io.Submit(r)
   }
 
-  function cpuRun(aRunnable,aThis) iFuture {
-    local r = ::concurrent.newRunnable(aRunnable,aThis)
+  function cpuRun(aRunnable,_aThis) iFuture {
+    local r = ::concurrent.newRunnable(aRunnable,_aThis)
     return ::gConcurrent.executor_cpu.Submit(r)
   }
 
-  function mainRun(aRunnable,aThis) iFuture {
-    local r = ::concurrent.newRunnable(aRunnable,aThis)
+  function mainRun(aRunnable,_aThis) iFuture {
+    local r = ::concurrent.newRunnable(aRunnable,_aThis)
     return ::gConcurrent.executor_main.Submit(r)
   }
 

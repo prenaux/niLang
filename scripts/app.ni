@@ -6,17 +6,18 @@
 ::Import("console.ni")
 ::Import("loading_queue.ni")
 ::Import("sexp.ni")
+::Import("app_config.ni")
 
 if (!::gUIContext) {
   throw "No UIContext initialized before starting a hosted app."
 }
 
+::gConfig <- ::tAppConfig.Clone()
+
 ::app <- {
   mName = "niApp"
   mStarted = false
   mbExiting = false
-  mConfigFile = "app_config.ni"
-  mIsNullRenderer = true // by default no renderer...
   mMainWindow = null
   mDebugDumpedFPS = 0
 
@@ -83,8 +84,8 @@ if (!::gUIContext) {
       ::gLang.property["ni.app.name"] = formTitle
       ::app.setTitle(formTitle + ::lang.getTitleBuildDesc())
 
-      if ("gFormWidget" in ::getroottable()) {
-        ::gFormWidget.?Invalidate()
+      if (::?gFormWidget) {
+        ::?gFormWidget.?Invalidate()
       }
 
       // Create the form
@@ -138,9 +139,10 @@ if (!::gUIContext) {
       else {
         throw "Invalid aConfig parameter."
       }
+      ::gConfig <- ::LINT_AS_TYPE("::tAppConfig", ::gConfig)
 
       if (::?gResources && aDir && aDir.len()) {
-        ::gResources.AddSource(aDir)
+        ::?gResources.AddSource(aDir)
       }
 
       loadConfig();
@@ -229,7 +231,7 @@ if (!::gUIContext) {
 
   ///////////////////////////////////////////////
   function useLoadSaveImageMap() {
-    return (("load_save_image_map" in ::gConfig.misc) && ::gConfig.misc.load_save_image_map)
+    return ::gConfig.?misc.?load_save_image_map
   }
   function logMessage(astrMsg) {}
 
@@ -265,21 +267,10 @@ if (!::gUIContext) {
     ::printdebugln("--- APP STARTUP BEGIN: "+::lang.getHostOS()+
                    ", isEmbedded: "+::lang.isEmbedded()+" ---")
 
-    if (aConfig) mConfigFile = aConfig
-
-    // Load the configuration
-    if (typeof(mConfigFile) == "table") {
-      ::gConfig <- mConfigFile;
-    }
-    else {
-      ::gConfig <- {}
-      ::Import(mConfigFile,::gConfig)
-    }
-
     ::printdebugln("--- Get Existing Objects ---")
 
     /// Setup the window
-    mMainWindow = ::gLang.global_instance["iOSWindow"]
+    mMainWindow = ::gLang.global_instance["iOSWindow"].QueryInterface("iOSWindow")
     if (!mMainWindow)
       throw "Can't get existing iOSWindow."
 
@@ -290,9 +281,6 @@ if (!::gUIContext) {
         mMainWindow.drop_target = true
     }
     setWindowPositionAndSizeFromConfig();
-
-    // Check the type of renderer...
-    mIsNullRenderer = (::gGraphicsContext.driver.name == "NULL")
 
     // Initialize the root widget
     ::gUIContext.root_widget.AddSink(this)
@@ -411,20 +399,20 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
-  function queueLoading(aFunc,aThis) {
-    mLQ.queue(aFunc,aThis)
+  function queueLoading(aFunc,_aThis) {
+    mLQ.queue(aFunc,_aThis)
   }
-  function queueStartup(aFunc,aThis) {
+  function queueStartup(aFunc,_aThis) {
     if (mStartupQueue) {
-      if (aThis) {
-        mStartupQueue.append(::closure.new(aThis,aFunc))
+      if (_aThis) {
+        mStartupQueue.append(::closure.new(_aThis,aFunc))
       }
       else {
         mStartupQueue.append(aFunc)
       }
     }
     else {
-      queueLoading(aFunc,aThis)
+      queueLoading(aFunc,_aThis)
     }
   }
 

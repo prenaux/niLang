@@ -108,7 +108,7 @@ niExportFunc(eScriptType) sqa_type2scripttype(const tType aType)
       return eScriptType_IUnknown;
     }
     case eType_AChar: {
-      if (aType == eType_ASZ)
+      if (niFlagIs(aType,eTypeFlags_Pointer))
         return eScriptType_String;
       else
         return eScriptType_Invalid;

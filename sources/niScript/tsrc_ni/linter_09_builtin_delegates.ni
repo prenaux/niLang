@@ -145,6 +145,9 @@ function del_intf_lang_delegate() {
     ::LINT_CHECK_TYPE("table:iDataTableWriteStack", this);
     return this.top;
   }
+
+  local dt = ::LINT_AS_TYPE("iDataTable", null)
+  dt.SetName("123")
 }
 
 function main() {

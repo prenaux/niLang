@@ -3,6 +3,7 @@
 ::Import("niUI")
 ::Import("lang.ni")
 ::Import("math.ni")
+::Import("fs.ni")
 
 ::gUIContext <- ::gLang.global_instance["iUIContext"].QueryInterface("iUIContext")
 ::gGraphics <- ::gUIContext.?graphics
@@ -25,8 +26,8 @@
   //  Overlays
   //
   //--------------------------------------------------------------------------------------------
-  function loadOverlayEx(aName,aBlend,aFiltered,aForceReload) {
-    if (aForceReload) {
+  function loadOverlayEx(aName,aBlend,aFiltered,_aForceReload) {
+    if (_aForceReload) {
       local tex = ::gGraphics.GetTextureFromName(aName)
       if (tex) {
         local texResMan = ::gGraphics.GetTextureDeviceResourceManager();
@@ -38,23 +39,23 @@
     o.filtering = aFiltered
     return o
   }
-  function loadOverlayTranslucent(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,::eBlendMode.Translucent,false,aForceReload)
+  function loadOverlayTranslucent(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.Translucent,false,_aForceReload)
   }
-  function loadOverlayTranslucentF(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,::eBlendMode.Translucent,true,aForceReload)
+  function loadOverlayTranslucentF(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.Translucent,true,_aForceReload)
   }
-  function loadOverlaySolid(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,::eBlendMode.NoBlending,false,aForceReload)
+  function loadOverlaySolid(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.NoBlending,false,_aForceReload)
   }
-  function loadOverlaySolidF(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,::eBlendMode.NoBlending,true,aForceReload)
+  function loadOverlaySolidF(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.NoBlending,true,_aForceReload)
   }
-  function loadOverlayAdditive(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,::eBlendMode.Additive,false,aForceReload)
+  function loadOverlayAdditive(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.Additive,false,_aForceReload)
   }
-  function loadOverlayAdditiveF(aName,aForceReload) {
-    return ::gui.loadOverlayEx(aName,aForceReload,::eBlendMode.Additive,true,aForceReload)
+  function loadOverlayAdditiveF(aName,_aForceReload) {
+    return ::gui.loadOverlayEx(aName,::eBlendMode.Additive,true,_aForceReload)
   }
 
   function loadIcon(aW,id,name,max,min) {
@@ -140,7 +141,7 @@
     }
     else {
       // assume iFile
-      bmpBase = g.LoadBitmap(path,"");
+      bmpBase = g.LoadBitmap(path);
     }
     if (!bmpBase)
       return null
@@ -166,7 +167,7 @@
         {
           pxf = g.CreatePixelFormat("R8G8B8A8");
           // ::println("... CONVERTING PXF", bmpCube.pixel_format.format, "to", pxf.format)
-          bmpCube = bmpCube.CreateConvertedFormat(pxf);
+          bmpCube = bmpCube.CreateConvertedFormat(pxf).QueryInterface("iBitmapCube");
         }
         local bmp2d = g.CreateBitmap2DEx(bmpCube.width*4,bmpCube.width*3,bmpCube.pixel_format);
         bmp2d.Clearf(::Vec4(0,0,0,0));
@@ -402,7 +403,7 @@
 
   function createFoldableGroup(aCtx,aParent,aRect,aText,aID)
   {
-    local w = ::gui.createWidget(aCtx,"Group",aParent,aRect,aID,::eWidgetGroupStyle.Foldable)
+    local w = ::gui.createWidget(aCtx,"Group",aParent,aRect,aID,::eWidgetGroupStyle.Fold)
     w.text = aText
     return w
   }
@@ -414,11 +415,6 @@
       (abDrawRoot?0:(::eWidgetTreeStyle.DontDrawRoot))|
         ::eWidgetStyle.HoldFocus
     )
-  }
-
-  function createPropertyBox(aCtx,aParent,aRect,aID,abDefaultDataTable)
-  {
-    return ::gui.createWidget(aCtx,"PropertyBox",aParent,aRect,aID,(abDefaultDataTable?0:(::eWidgetTreeStyle.NoDefaultDataTable))|::eWidgetStyle.HoldFocus)
   }
 
   function createSliderH(aCtx,aParent,aRect,aID)
@@ -791,7 +787,7 @@
     {
       dummy = ::gui.createDummy(::gUIContext,form,::Rect(0,0,250,22))
       dummy.dock_style = ::eWidgetDockStyle.DockTop
-      w = ::gui.createLabel(::gUIContext,dummy,::Rect(0,0,65,22),"User:");
+      w = ::gui.createLabel(::gUIContext,dummy,::Rect(0,0,65,22),"User:",true,"");
       w.dock_style = ::eWidgetDockStyle.DockLeft
       w = ::gui.createEditBox(::gUIContext,dummy,::Rect(0,0,200,22),aDefaultUser,"ID_User");
       w.dock_style = ::eWidgetDockStyle.DockFill
@@ -801,7 +797,7 @@
     {
       dummy = ::gui.createDummy(::gUIContext,form,::Rect(0,0,250,22))
       dummy.dock_style = ::eWidgetDockStyle.DockTop
-      w = ::gui.createLabel(::gUIContext,dummy,::Rect(0,0,65,22),"Password:");
+      w = ::gui.createLabel(::gUIContext,dummy,::Rect(0,0,65,22),"Password:",true,"");
       w.dock_style = ::eWidgetDockStyle.DockLeft
       w = ::gui.createEditBox(::gUIContext,dummy,::Rect(0,0,200,22),"","ID_Pwd");
       w.replace_char = '*'
@@ -954,11 +950,11 @@
   }
 
   ///////////////////////////////////////////////
-  function reloadSkin(aContext) {
-    aContext = aContext || ::gUIContext
-    ::printdebugln("REMOVE SKIN :" + aContext.default_skin)
-    local skin = aContext.default_skin
-    local skinDT = aContext.GetSkinDataTable(skin)
+  function reloadSkin(_aContext) {
+    local ctx = _aContext || ::gUIContext
+    ::printdebugln("REMOVE SKIN :" + ctx.default_skin)
+    local skin = ctx.default_skin
+    local skinDT = ctx.GetSkinDataTable(skin)
     // ::println("... RELOAD skinDT:" ::lang.toString(skinDT))
     local skinResPath = skinDT.?string.?res_path
     if (!skinResPath) {
@@ -967,13 +963,13 @@
     if (!::gLang.URLExists(skinResPath)) {
       throw "Skin '"+skin+"' can't find res_path '"+skinResPath+"'."
     }
-    aContext.RemoveSkin(aContext.default_skin)
+    ctx.RemoveSkin(ctx.default_skin)
     if (!::gUIContext.AddSkinFromRes(skinResPath)) {
       throw "Skin '"+skin+"' can't be loaded from res_path '"+skinResPath+"'."
     }
-    aContext.default_skin = skin
-    aContext.root_widget.?BroadcastMessage(::eUIMessage.SkinChanged,null,null)
-    ::printdebugln("SKIN LOADED : " + aContext.default_skin)
+    ctx.default_skin = skin
+    ctx.root_widget.?BroadcastMessage(::eUIMessage.SkinChanged,null,null)
+    ::printdebugln("SKIN LOADED : " + ctx.default_skin)
   }
 
   ///////////////////////////////////////////////
@@ -1041,10 +1037,12 @@ if (::lang.getHostOS() == "osx") {
       // avoid confusion.
       case ::eKey.Q:
       case ::eKey.W:
-      case ::eKey.Space:
-          return ::FlagsToString(aKeyMod&~0xFF, ::eKeyMod).replace("Control","Ctrl")
-      default:
-          return ::FlagsToString(aKeyMod&~0xFF, ::eKeyMod).replace("Control","Cmd")
+      case ::eKey.Space: {
+        return ::FlagsToString(aKeyMod&~0xFF, ::eKeyMod).replace("Control","Ctrl")
+      }
+      default: {
+        return ::FlagsToString(aKeyMod&~0xFF, ::eKeyMod).replace("Control","Cmd")
+      }
     }
   }
 }
@@ -1104,15 +1102,35 @@ else {
   __debug_name = "baseWidgetSink"
   __jumptable = {}
 
+  function _initialize() {
+    local sink = this
+    //  ::printdebugln("SINK TABLE REGISTER")
+    local et = ::eUIMessage.gettable()
+    foreach (key,val in et) {
+      local v = "On"+key
+      sink.__jumptable[val] <- v
+      //sink[v] <- sink._Dummy
+    }
+    sink.__jumptable[::eUIMessage.Command] <- "__Command"
+    sink["OnCommand"] <- sink.__DummyCommand
+    sink["OnDefault"] <- sink.__DummyDefault
+    //  foreach (key,val in sink.__jumptable) {
+    //    ::printdebugln(::format("REG: %d - %s (%s)",key,val,et.getkey(key)))
+    //  }
+  }
+
   function __Dummy(aE,aA,aB) {
     return false
   }
+
   function __DummyCommand(aWidget,aPA) {
     return false
   }
+
   function __DummyDefault(aWidget,aMsg,aPA,aPB) {
     return false
   }
+
   function __Command(aWidget,aPA,aPB) {
     local ret = OnCommand(aWidget,aPA);
     if (ret == false) {
@@ -1168,22 +1186,7 @@ else {
 }
 
 // initialize the base widget sink
-function initBaseWidgetSinkTable(sink) {
-  //  ::printdebugln("SINK TABLE REGISTER")
-  local et = ::eUIMessage.gettable()
-  foreach (key,val in et) {
-    local v = "On"+key
-    sink.__jumptable[val] <- v
-    //sink[v] <- sink._Dummy
-  }
-  sink.__jumptable[::eUIMessage.Command] = "__Command"
-  sink["OnCommand"] <- sink.__DummyCommand
-  sink["OnDefault"] <- sink.__DummyDefault
-  //  foreach (key,val in sink.__jumptable) {
-  //    ::printdebugln(::format("REG: %d - %s (%s)",key,val,et.getkey(key)))
-  //  }
-}
-initBaseWidgetSinkTable(::gui.baseWidgetSink);
+::gui.baseWidgetSink._initialize();
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Interop

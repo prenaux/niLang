@@ -61,8 +61,8 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
-  function startFormApp(aFormPath,aDir,aConfig) {
-    local loadForm = function() : (aFormPath,aDir,aConfig,registerCppScriptingHost) {
+  function startFormApp(aFormPath,_aDir,_aConfig) {
+    local loadForm = function() : (aFormPath,_aDir,_aConfig,registerCppScriptingHost) {
       local loadingStart = ::clock()
       ::log("Loading form app '" + aFormPath + "'.")
 
@@ -122,27 +122,8 @@ if (!::gUIContext) {
 
     local reloadApp = mStarted;
     if (!reloadApp) {
-      //
-      // This is called once at startup
-      //
-      if (typeof(aConfig) == "string") {
-        ::gConfig <- {}
-        ::Import(aConfig,::gConfig)
-      }
-      else if (typeof(aConfig) == "table") {
-        ::gConfig <- aConfig
-      }
-      else if (aConfig == null) {
-        ::gConfig <- {}
-        ::Import("app_config.ni",::gConfig)
-      }
-      else {
-        throw "Invalid aConfig parameter."
-      }
-      ::gConfig <- ::LINT_AS_TYPE("::tAppConfig", ::gConfig)
-
-      if (::?gResources && aDir && aDir.len()) {
-        ::?gResources.AddSource(aDir)
+      if (::?gResources && _aDir.?len()) {
+        ::?gResources.AddSource(_aDir)
       }
 
       loadConfig();
@@ -153,7 +134,7 @@ if (!::gUIContext) {
         loadForm
       ])
       // Startup the application
-      ::app.startup(::gConfig)
+      ::app.startup()
     }
     else {
       loadConfig();
@@ -256,7 +237,7 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
-  function startup(aConfig) {
+  function startup() {
     if (mStarted)
       return true;
 
@@ -287,10 +268,10 @@ if (!::gUIContext) {
 
     // Initialize the loading queue
     if ("loading_screen" in ::gConfig.misc) {
-      mLQ.initialize(::gGraphicsContext,::gConfig.misc.loading_screen)
+      mLQ.initialize(::gGraphicsContext)
     }
     else {
-      mLQ.initialize(::gGraphicsContext,"niUI://loading.tga")
+      mLQ.initialize(::gGraphicsContext)
     }
     mLQ.queue("Loading")
     mLQ.mFont = ::gGraphics.font_from_name["Default"].CreateFontInstance(null)
@@ -340,7 +321,7 @@ if (!::gUIContext) {
       ::gGraphicsContext = null;
     }
     if (::?gResources) {
-      ::gResources = null
+      ::?gResources = null
     }
     ::gGraphics = null
     ::gUIContext = null
@@ -395,7 +376,7 @@ if (!::gUIContext) {
     ::gWindow.full_screen = abFullScreen ? ::gWindow.monitor : invalid
   }
   function toggleFullScreen() {
-    setFullScreen(!isFullScreen(),true)
+    setFullScreen(!isFullScreen())
   }
 
   ///////////////////////////////////////////////
@@ -436,7 +417,7 @@ if (!::gUIContext) {
   ///////////////////////////////////////////////
   function main() {
     // Load from startApp argument
-    local startApp = ::sexp.utils.getAfter(::GetArgs(),"-startApp","")
+    local startApp = ::sexp.utils.getAfter(::?GetArgs(),"-startApp","")
     if (!("reload" in ::getroottable()) && startApp.?len()) {
       local appType = startApp.getext().ToLower();
       switch (appType) {

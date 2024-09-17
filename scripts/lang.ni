@@ -434,11 +434,11 @@ function ::namespace(name,table,nsTable) {
 //
 //--------------------------------------------------------------------------------------------
 {
-  ::FlagsToString <- function (aValue, aEnum, aFlags) {
-    return ::EnumToString(aValue, aEnum, aFlags | 2)
+  ::FlagsToString <- function (aValue, aEnum, _aFlags) {
+    return ::EnumToString(aValue, aEnum, _aFlags | 2)
   }
-  ::StringToFlags <- function (aValue, aEnum, aFlags) {
-    return ::StringToEnum(aValue, aEnum, aFlags | 2)
+  ::StringToFlags <- function (aValue, aEnum, _aFlags) {
+    return ::StringToEnum(aValue, aEnum, _aFlags | 2)
   }
 
   local d = ::GetLangDelegate("enum")
@@ -1004,9 +1004,9 @@ function ::namespace(name,table,nsTable) {
   }
 
   ///////////////////////////////////////////////
-  function dataTableFromString(aString,aType) {
-    aType = aType || "xml"
-    return ::lang.loadDataTable(aType,::?fs.createStringFile(aString))
+  function dataTableFromString(aString,_aType) {
+    _aType = _aType || "xml"
+    return ::lang.loadDataTable(_aType,::?fs.createStringFile(aString))
   }
 
   ///////////////////////////////////////////////

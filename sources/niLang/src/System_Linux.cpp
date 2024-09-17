@@ -23,10 +23,12 @@ static const int knMinXwinHeight = 20;
 static const int knMaxXwinWidth = 50000;
 static const int knMaxXwinHeight = 50000;
 
+#define USE_X11_IM
+
 static struct
 {
   KeySym keysym;
-  int scancode;
+  eKey scancode;
 } keysym_to_scancode[] =
 {
   { XK_Escape, eKey_Escape },
@@ -148,7 +150,7 @@ static struct
   { XK_KP_Insert, eKey_NumPad0 },
   { XK_KP_Delete, eKey_NumPadPeriod },
 
-  { NoSymbol, 0 },
+  { NoSymbol, eKey_Unknown },
 };
 
 static Display* X11_OpenDisplay() {
@@ -299,6 +301,16 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       mpVisual = DefaultVisual(mpDisplay,mnScreen);
     }
 
+    // Init IM
+#ifdef USE_X11_IM
+    {
+      mIM = XOpenIM(mpDisplay, nullptr, nullptr, nullptr);
+      if (!mIM) {
+        niWarning("XIM: XOpenIM failed.");
+      }
+    }
+#endif
+
     // Init custom protocol
     {
       // Look up some useful Atoms
@@ -333,15 +345,6 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
       // Set the window's title
       this->SetTitle("niApp");
-
-      // Set the wanted inputs
-      XSelectInput(mpDisplay, mHandle,
-                   KeyPressMask | KeyReleaseMask |
-                   EnterWindowMask | LeaveWindowMask |
-                   FocusChangeMask | ExposureMask |
-                   ButtonPressMask | ButtonReleaseMask |
-                   PointerMotionMask | PropertyChangeMask |
-                   StructureNotifyMask);
 
       // Create the GC
       mGC = XCreateGC(mpDisplay, mHandle, 0, 0);
@@ -383,6 +386,38 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       // Clear the window and bring it to the top
       XClearWindow(mpDisplay, mHandle);
       XMapRaised(mpDisplay, mHandle);
+
+      tU32 selectInputMask =
+          KeyPressMask | KeyReleaseMask |
+          EnterWindowMask | LeaveWindowMask |
+          FocusChangeMask | ExposureMask |
+          ButtonPressMask | ButtonReleaseMask |
+          PointerMotionMask | PropertyChangeMask |
+          StructureNotifyMask;
+
+#ifdef USE_X11_IM
+      if (mIM) {
+        mIC = XCreateIC(mIM, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, mHandle, NULL);
+        if (mIC == nullptr) {
+          niWarning("XIM: Can't open IC.");
+        }
+        else {
+          tU32 mask = 0;
+          if (!XGetICValues(mIC, XNFilterEvents, &mask, NULL)) {
+            niLog(Info, niFmt("XIM: Got IM mask of %x.", mask));
+            selectInputMask |= mask;
+          }
+          else {
+            niLog(Warning, niFmt("XIM: Could not get an IM mask.", mask));
+          }
+          XSetICFocus(mIC);
+        }
+      }
+#endif
+
+      // Set the wanted inputs
+      XSelectInput(mpDisplay, mHandle, selectInputMask);
+
 
       // Wait for the first exposure event
       XEvent event;
@@ -843,14 +878,22 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   ///////////////////////////////////////////////
   void _NextEvent(void)
   {
-    XEvent event; XEvent *e = &event;
+    XEvent event;
+    XEvent *e = &event;
     XNextEvent(mpDisplay, e);
+
+    // filter events catches XIM events and sends them to the correct handler
+    // Key press/release events are filtered in _HandleKeyEvent()
+    if (e->type != KeyPress && e->type != KeyRelease) {
+      if (XFilterEvent(e, None)) {
+        return;
+      }
+    }
+
     switch(e->type) {
       case KeyPress:
-        _HandleKeyPressEvent(e);
-        break;
       case KeyRelease:
-        _HandleKeyReleaseEvent(e);
+        _HandleKeyEvent(e);
         break;
 
       case FocusIn:
@@ -1007,7 +1050,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
     for (i = 0; i < 256; i++) {
       // Clear mappings
-      mKeyToScan[i] = -1;
+      mXKeyToScan[i] = eKey_Unknown;
       // Clear pressed key flags
       mKeyPressed[i] = eFalse;
     }
@@ -1023,32 +1066,81 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       if (keysym != NoSymbol) {
         for (j = 0; keysym_to_scancode[j].keysym != NoSymbol; j++) {
           if (keysym_to_scancode[j].keysym == keysym) {
-            mKeyToScan[i] = keysym_to_scancode[j].scancode;
+            mXKeyToScan[i] = keysym_to_scancode[j].scancode;
             break;
           }
         }
       }
     }
   }
-  void _HandleKeyPressEvent(XEvent* e) {
-    int kcode = e->xkey.keycode, scode;
-    if ((kcode >= 0) && (kcode < 256) && (!mKeyPressed[kcode])) {
-      int scode = mKeyToScan[kcode];
-      if (scode > 0) {
-        mKeyPressed[kcode] = eTrue;
-        _SendMessage(eOSWindowMessage_KeyDown,(tU32)scode);
+
+  void _HandleKeyEvent(XEvent* e) {
+    const KeyCode xkeycode = e->xkey.keycode;
+    const eKey scode = ((xkeycode >= 0) && (xkeycode < 256)) ? mXKeyToScan[xkeycode] : eKey_Unknown;
+
+    auto sendKey = [&]() {
+      if (scode != eKey_Unknown) {
+        if (e->type == KeyPress) {
+          if (!mKeyPressed[scode]) {
+            mKeyPressed[scode] = eTrue;
+            _SendMessage(eOSWindowMessage_KeyDown,(tU32)scode);
+          }
+        }
+        else if (e->type == KeyRelease) {
+          if (mKeyPressed[scode]) {
+            mKeyPressed[scode] = eFalse;
+            _SendMessage(eOSWindowMessage_KeyUp,(tU32)scode);
+          }
+        }
+      }
+    };
+
+    if (XFilterEvent(e,None)) {
+      sendKey();
+      return;
+    }
+
+    // Text input
+    if (e->type == KeyPress &&
+        // Xutf8LookupString converts those to text and we dont want that...
+        (scode != eKey_Delete))
+    {
+      char text[64];
+      text[0] = 0;
+#ifdef USE_X11_IM
+      if (mIC) {
+        KeySym keysym;
+        Status status;
+        int numBytes = Xutf8LookupString(mIC, &e->xkey, text, sizeof(text)-1, &keysym, &status);
+        if (numBytes > 0 && (status == XLookupChars || status == XLookupBoth)) {
+          text[numBytes] = '\0';
+          StrCharIt itText(text);
+          while (!itText.is_end()) {
+            const tU32 ch = itText.next();
+            if (ch >= 32) {
+              _SendMessage(eOSWindowMessage_KeyChar, ch, (tU32)scode);
+            }
+          }
+        }
+      }
+      else
+#endif
+      {
+        KeySym keysym;
+        int numChars = XLookupString(&e->xkey, text, sizeof(text)-1, &keysym, nullptr);
+        if (numChars > 0) {
+          niLoop(i, numChars) {
+            // only allow ascii7 characters
+            const tU32 ch = text[i] > 0 ? (tU32)text[i] : 0;
+            if (ch >= 32) {
+              _SendMessage(eOSWindowMessage_KeyChar, ch, (tU32)scode);
+            }
+          }
+        }
       }
     }
-  }
-  void _HandleKeyReleaseEvent(XEvent* e) {
-    int kcode = e->xkey.keycode, scode;
-    if ((kcode >= 0) && (kcode < 256) && (mKeyPressed[kcode])) {
-      int scode = mKeyToScan[kcode];
-      if (scode > 0) {
-        mKeyPressed[kcode] = eFalse;
-        _SendMessage(eOSWindowMessage_KeyUp,(tU32)scode);
-      }
-    }
+
+    sendKey();
   }
 
   inline Display* _GetDisplay() const { return (Display*)mpDisplay; }
@@ -1083,7 +1175,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   Cursor   mCursorNone;
   int      mnCursorShape;
 
-  int   mKeyToScan[256];
+#ifdef USE_X11_IM
+  XIM mIM = nullptr;
+  XIC mIC = nullptr;
+#endif
+
+  eKey  mXKeyToScan[256];
   tBool mKeyPressed[256];
 
   GLXContext mpGLX = nullptr;

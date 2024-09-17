@@ -91,6 +91,7 @@ enum eSQLintHint : tU8 {
 #define _OPEXT_EXPLICIT_THIS   niBit(2)
 // used by the linter internally
 #define _OPEXT_LINT_DONT_DEREF_PROPERTY   niBit(3)
+#define _OPEXT_LINT_SETVALUE              niBit(4)
 
 struct SQInstruction
 {

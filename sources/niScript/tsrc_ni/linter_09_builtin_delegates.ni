@@ -56,6 +56,13 @@ function del_vec2(Vec2 v) {
   ::LINT_CHECK_TYPE("resolved_type<float>",v[1]);
   v[2];
   v.xyz;
+
+  // should succeed
+  v.x = 1;
+  v.y = 2;
+  // should fail
+  v.z = 3;
+  v.xy = 4;
 }
 
 function del_vec3(Vec3 v) {
@@ -70,6 +77,14 @@ function del_vec3(Vec3 v) {
   ::LINT_CHECK_TYPE("resolved_type<float>",v[2]);
   v[3];
   v.xyzw;
+
+  // should succeed
+  v.x = 1;
+  v.y = 2;
+  v.z = 3;
+  // should fail
+  v.w = 3;
+  v.xy = 4;
 }
 
 function del_vec4(Vec4 v) {
@@ -85,8 +100,42 @@ function del_vec4(Vec4 v) {
   ::LINT_CHECK_TYPE("resolved_type<float>",v[1]);
   ::LINT_CHECK_TYPE("resolved_type<float>",v[2]);
   ::LINT_CHECK_TYPE("resolved_type<float>",v[3]);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v[3]);
   v[4];
   v.xyzww;
+
+  // should succeed
+  v.x = 1;
+  v.y = 2;
+  v.z = 3;
+  v.w = 4;
+  v.width = 1;
+  v.height = 1;
+  v.size = Vec2(1);
+  v.center = Vec2(1);
+  v.top_left = Vec2(1);
+  v.top_right = Vec2(1);
+  v.bottom_left = Vec2(1);
+  v.bottom_right = Vec2(1);
+  v.top = 1;
+  v.bottom = 1;
+  v.left = 1;
+  v.right = 1;
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.width);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.height);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.size);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.center);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.top_left);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.top_right);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.bottom_left);
+  ::LINT_CHECK_TYPE("resolved_type<Vec2>",v.bottom_right);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.top);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.bottom);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.left);
+  ::LINT_CHECK_TYPE("resolved_type<float>",v.right);
+
+  // should fail
+  v.xy = 4;
 }
 
 function del_matrix(Matrix m) {
@@ -112,6 +161,19 @@ function del_matrix(Matrix m) {
   m._111;
   m._01;
   m._15;
+
+  // should succeed
+  m._11 = 1;
+  m._21 = 2;
+  m._44 = 3;
+  m.right = ::Vec3();
+  m.up = ::Vec3();
+  m.forward = ::Vec3();
+  m.translation = ::Vec3();
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.up);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.right);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.forward);
+  ::LINT_CHECK_TYPE("resolved_type<Vec3>",m.translation);
 }
 
 function del_uuid(UUID v) {

@@ -1144,9 +1144,10 @@ struct sLinter {
     return retType;
   }
 
-  bool _VecGet(ain<tU32> anVecSize, ain<SQObjectPtr> aKey, aout<SQObjectPtr> aDest)
+  bool _VecGet(ain<tU32> anVecSize, ain<SQObjectPtr> aKey, aout<SQObjectPtr> aDest, int opExt)
   {
     niPanicAssert(anVecSize <= 4);
+    niLet isSet = niFlagIs(opExt, _OPEXT_LINT_SETVALUE);
     switch (sqa_getscriptobjtype(aKey)) {
       case eScriptType_Int: {
         niLet idx = _int(aKey);
@@ -1191,7 +1192,9 @@ struct sLinter {
           }
         }
 
-        if (swzLen > anVecSize) {
+        if ((swzLen > anVecSize) ||
+            (isSet && swzLen != 1))
+        {
           return false;
         }
         else {
@@ -1349,6 +1352,67 @@ struct sLinter {
     return false;
   }
 
+  bool DoLintGetInDelegate(eScriptType aScriptType, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+    const SQSharedState& ss = this->_ss;
+    switch (aScriptType) {
+      case eScriptType_String:
+        return _ddel(ss,string)->Get(key,dest);
+      case eScriptType_Int:
+      case eScriptType_Float:
+        return _ddel(ss,number)->Get(key,dest);
+      case eScriptType_Vec2: {
+        if (_ddel(ss,vec2f)->Get(key,dest)) {
+          return true;
+        }
+        return _VecGet(2,key,dest,opExt);
+      }
+      case eScriptType_Vec3: {
+        if (_ddel(ss,vec3f)->Get(key,dest)) {
+          return true;
+        }
+        return _VecGet(3,key,dest,opExt);
+      }
+      case eScriptType_Vec4: {
+        if (_ddel(ss,vec4f)->Get(key,dest)) {
+          return true;
+        }
+        return _VecGet(4,key,dest,opExt);
+      }
+      case eScriptType_Matrix: {
+        if (_ddel(ss,matrixf)->Get(key,dest)) {
+          return true;
+        }
+        return _MatrixGet(key,dest);
+      }
+      case eScriptType_Array:
+        return _ddel(ss,array)->Get(key,dest);
+      case eScriptType_Table:
+        return _ddel(ss,table)->Get(key,dest);
+      case eScriptType_Closure:
+      case eScriptType_NativeClosure:
+      case eScriptType_FunctionProto:
+        return _ddel(ss,closure)->Get(key,dest);
+      case eScriptType_UUID:
+        return _ddel(ss,uuid)->Get(key,dest);
+      case eScriptType_IUnknown: {
+        if (_stringhval(key) == _HC(QueryInterface)) {
+          dest = _lintFuncCallQueryInterface;
+          return true;
+        }
+        else {
+          niLet intfDel = _ss.GetInterfaceDelegate(niGetInterfaceUUID(iUnknown));
+          if (intfDel != _null_) {
+            niPanicAssert(sq_istable(intfDel));
+            return _table(intfDel)->Get(key,dest);
+          }
+        }
+        return false;
+      }
+      default:
+        return false;
+    }
+  }
+
   bool DoLintGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
@@ -1469,63 +1533,7 @@ struct sLinter {
             }
 
             case eScriptType_ResolvedType: {
-              switch (((sScriptTypeResolvedType*)ud)->_scriptType) {
-                case eScriptType_String:
-                  return _ddel(ss,string)->Get(key,dest);
-                case eScriptType_Int:
-                case eScriptType_Float:
-                  return _ddel(ss,number)->Get(key,dest);
-                case eScriptType_Vec2: {
-                  if (_ddel(ss,vec2f)->Get(key,dest)) {
-                    return true;
-                  }
-                  return _VecGet(2,key,dest);
-                }
-                case eScriptType_Vec3: {
-                  if (_ddel(ss,vec3f)->Get(key,dest)) {
-                    return true;
-                  }
-                  return _VecGet(3,key,dest);
-                }
-                case eScriptType_Vec4: {
-                  if (_ddel(ss,vec4f)->Get(key,dest)) {
-                    return true;
-                  }
-                  return _VecGet(4,key,dest);
-                }
-                case eScriptType_Matrix: {
-                  if (_ddel(ss,matrixf)->Get(key,dest)) {
-                    return true;
-                  }
-                  return _MatrixGet(key,dest);
-                }
-                case eScriptType_Array:
-                  return _ddel(ss,array)->Get(key,dest);
-                case eScriptType_Table:
-                  return _ddel(ss,table)->Get(key,dest);
-                case eScriptType_Closure:
-                case eScriptType_NativeClosure:
-                case eScriptType_FunctionProto:
-                  return _ddel(ss,closure)->Get(key,dest);
-                case eScriptType_UUID:
-                  return _ddel(ss,uuid)->Get(key,dest);
-                case eScriptType_IUnknown: {
-                  if (_stringhval(key) == _HC(QueryInterface)) {
-                    dest = _lintFuncCallQueryInterface;
-                    return true;
-                  }
-                  else {
-                    niLet intfDel = _ss.GetInterfaceDelegate(niGetInterfaceUUID(iUnknown));
-                    if (intfDel != _null_) {
-                      niPanicAssert(sq_istable(intfDel));
-                      return _table(intfDel)->Get(key,dest);
-                    }
-                  }
-                  return false;
-                }
-                default:
-                  return false;
-              }
+              return DoLintGetInDelegate(((sScriptTypeResolvedType*)ud)->_scriptType, key, dest, opExt);
             }
           }
 
@@ -1546,7 +1554,7 @@ struct sLinter {
         }
         break;
 
-      case OT_INTEGER:case OT_FLOAT:
+      case OT_INTEGER: case OT_FLOAT:
         return _ddel(ss,number)->Get(key,dest);
       case OT_CLOSURE: case OT_NATIVECLOSURE: case OT_FUNCPROTO:
         return _ddel(ss,closure)->Get(key,dest);
@@ -1573,7 +1581,7 @@ struct sLinter {
     switch(_sqtype(self)) {
       case OT_TABLE: {
         SQObjectPtr v;
-        if (!DoLintGet(self,key,v,0)) {
+        if (!DoLintGet(self,key,v,_OPEXT_LINT_SETVALUE)) {
           return false;
         }
         return _table(self)->Set(key,val);
@@ -1587,48 +1595,56 @@ struct sLinter {
         // TODO: This should not happen, it should be a sInterfaceDef. Should we niPanicAssert here?
         return false;
       default: {
-        if (sqa_getscriptobjtype(self) == eScriptType_PropertyDef) {
-          niLet selfUD = (sScriptTypePropertyDef*)_userdata(self);
-          niLet pdefSet = selfUD->pSetMethodDef;
-          if (!pdefSet) {
-            errDesc.Format("no setter for indexed property");
-            return false;
-          }
-          else if (pdefSet->mnNumParameters == 2) {
-            return true;
-          }
-          else {
-            errDesc.Format(niFmt("invalid number of parameters '%d' for indexed property", pdefSet->mnNumParameters));
-            return false;
-          }
-        }
-        else {
-          // niDebugFmt(("... DoLintSet: Try get %s[%s].", _ObjToString(self), _ObjToString(key)));
-          SQObjectPtr dest;
-          if (!DoLintGet(self,key,dest,_OPEXT_LINT_DONT_DEREF_PROPERTY)) {
-            return false;
-          }
-          // niDebugFmt(("... DoLintSet: didGet: %s[%s] = %s.", _ObjTypeString(self), _ObjToString(key), _ObjToString(dest)));
-          if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
-            niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
-            niLet pdefSet = destUD->pSetMethodDef;
+        switch (sqa_getscriptobjtype(self)) {
+          case eScriptType_PropertyDef: {
+            niLet selfUD = (sScriptTypePropertyDef*)_userdata(self);
+            niLet pdefSet = selfUD->pSetMethodDef;
             if (!pdefSet) {
-              errDesc.Format("no setter");
+              errDesc.Format("no setter for indexed property");
               return false;
             }
-            else if (pdefSet->mnNumParameters != 1) {
-              errDesc.Format(niFmt("invalid number of parameters '%d' for property", pdefSet->mnNumParameters));
+            else if (pdefSet->mnNumParameters == 2) {
+              return true;
+            }
+            else {
+              errDesc.Format(niFmt("invalid number of parameters '%d' for indexed property", pdefSet->mnNumParameters));
               return false;
+            }
+            break;
+          }
+          default: {
+            // niDebugFmt(("... DoLintSet: Try get %s[%s].", _ObjToString(self), _ObjToString(key)));
+            SQObjectPtr dest;
+            if (!DoLintGet(self,key,dest,_OPEXT_LINT_SETVALUE|_OPEXT_LINT_DONT_DEREF_PROPERTY)) {
+              return false;
+            }
+
+            // niDebugFmt(("... DoLintSet: didGet: %s[%s] = %s.", _ObjTypeString(self), _ObjToString(key), _ObjToString(dest)));
+            if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
+              niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
+              niLet pdefSet = destUD->pSetMethodDef;
+              if (!pdefSet) {
+                errDesc.Format("no setter");
+                return false;
+              }
+              else if (pdefSet->mnNumParameters != 1) {
+                errDesc.Format(niFmt("invalid number of parameters '%d' for property", pdefSet->mnNumParameters));
+                return false;
+              }
+              else {
+                return true;
+              }
             }
             else {
               return true;
             }
+
+            break;
           }
         }
         return false;
       }
     }
-    return false;
   }
 
   bool LintSet(cString& errDesc, const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt) {

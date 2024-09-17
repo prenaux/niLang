@@ -381,12 +381,17 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_111" not found in resolved_type<Matrix>: matrix invalid swizzle member '_111']});
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_01" not found in resolved_type<Matrix>: matrix invalid row in member '_01']});
       EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_15" not found in resolved_type<Matrix>: matrix invalid column in member '_15']});
+      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "z" key cant be set in resolved_type<Vec2>: not found.]})
+      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec2>: not found.]})
+      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "w" key cant be set in resolved_type<Vec3>: not found.]})
+      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec3>: not found.]})
+      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec4>: not found.]})
 
       EXPECTED_LINT(
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
-      ::CHECK_EQUAL(21, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(26, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(11, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

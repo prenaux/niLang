@@ -1352,7 +1352,100 @@ struct sLinter {
     return false;
   }
 
-  bool DoLintGetInDelegate(eScriptType aScriptType, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+  bool _InterfaceGetInSingleDef(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+    niLet intfDel = _ss.GetInterfaceDelegate(*apIDef->mUUID);
+    if (intfDel == _null_) {
+      dest = niNew sScriptTypeErrorCode(
+        _ss,
+        _HC(error_code_cant_find_method_def),
+        niFmt("Cant find delegate for interface_def '%s'.", apIDef->maszName));
+      return false;
+    }
+
+    if (_table(intfDel)->Get(key,dest)) {
+      niLet destType = sqa_getscriptobjtype(dest);
+      if ((destType == eScriptType_PropertyDef) && niFlagIsNot(opExt,_OPEXT_LINT_DONT_DEREF_PROPERTY)) {
+        // "Dereference" the property
+        niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
+        niLet pdefGet = destUD->pGetMethodDef;
+        if (pdefGet && pdefGet->mnNumParameters == 0) {
+          dest = ResolveMethodRetType(
+            *destUD->pInterfaceDef,
+            *pdefGet);
+        }
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  bool _InterfaceGetInParents(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+    niLoop(i, apIDef->mnNumBases) {
+      niLet uuid = apIDef->mpBases[i];
+      niPanicAssert(uuid != nullptr);
+      if (*uuid == niGetInterfaceUUID(iUnknown)) {
+        // we skip iUnknown here since its the base of everything
+        return false;
+      }
+
+      niLet baseIDef = ni::GetLang()->GetInterfaceDefFromUUID(*uuid);
+      if (!baseIDef) {
+        dest = niNew sScriptTypeErrorCode(
+          _ss,
+          _HC(error_code_cant_find_method_def),
+          niFmt("Cant find interface def %s for base %d of %s.", *uuid, i, apIDef->maszName));
+        return false;
+      }
+
+      // look in the current base
+      if (_InterfaceGetInSingleDef(as_nn(baseIDef), key, dest, opExt)) {
+        return true;
+      }
+      if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
+        return false;
+      }
+
+      // go in the bases of the base...
+      if (_InterfaceGetInParents(as_nn(baseIDef), key, dest, opExt)) {
+        return true;
+      }
+      if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+  bool _InterfaceDefGet(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+    if (_stringhval(key) == _HC(QueryInterface)) {
+      dest = _lintFuncCallQueryInterface;
+      return true;
+    }
+    dest = _null_;
+
+    // look in the interface
+    if (_InterfaceGetInSingleDef(apIDef, key, dest, opExt)) {
+      return true;
+    }
+    if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
+      return false;
+    }
+
+    // go in the base interfaces...
+    if (_InterfaceGetInParents(apIDef, key, dest, opExt)) {
+      return true;
+    }
+    if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
+      return false;
+    }
+
+    // look in iUnknown
+    return _ScriptTypeDelegateGet(eScriptType_IUnknown, key, dest, opExt);
+  }
+
+  bool _ScriptTypeDelegateGet(eScriptType aScriptType, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
     const SQSharedState& ss = this->_ss;
     switch (aScriptType) {
       case eScriptType_String:
@@ -1408,6 +1501,8 @@ struct sLinter {
         }
         return false;
       }
+      case eScriptType_EnumDef:
+        return _ddel(ss,enum)->Get(key,dest);
       default:
         return false;
     }
@@ -1459,66 +1554,24 @@ struct sLinter {
           niLet ud = _userdata(self);
           switch (ud->GetType()) {
             case eScriptType_InterfaceDef: {
-              niLet idef = as_nn(((sScriptTypeInterfaceDef*)ud)->pInterfaceDef);
-              if (!sq_isstring(key)) {
-                dest = niNew sScriptTypeErrorCode(
-                  _ss,
-                  _HC(error_code_cant_find_method_def),
-                  niFmt("Looking in interface_def '%s', key '%s' isn't a string.",
-                        idef->maszName, _ObjToString(key)));
-                return false;
-              }
-              else if (_stringhval(key) == _HC(QueryInterface)) {
-                dest = _lintFuncCallQueryInterface;
-                return true;
-              }
-              else {
-                niLet intfDel = _ss.GetInterfaceDelegate(*idef->mUUID);
-                if (intfDel == _null_) {
-                  dest = niNew sScriptTypeErrorCode(
-                    _ss,
-                    _HC(error_code_cant_find_method_def),
-                    niFmt("Cant find delegate for interface_def '%s'.",
-                          idef->maszName));
-                  return false;
-                }
-                else {
-                  if (_table(intfDel)->Get(key,dest)) {
-                    if (opExt & _OPEXT_LINT_DONT_DEREF_PROPERTY) {
-                      return true;
-                    }
-                    else {
-                      if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
-                        // "Dereference" the property
-                        niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
-                        niLet pdefGet = destUD->pGetMethodDef;
-                        if (pdefGet && pdefGet->mnNumParameters == 0) {
-                          dest = ResolveMethodRetType(
-                            *destUD->pInterfaceDef,
-                            *pdefGet);
-                        }
-                      }
-                      return true;
-                    }
-                  }
-                  else {
-                    dest = niNew sScriptTypeErrorCode(
-                      _ss,
-                      _HC(error_code_cant_find_method_def),
-                      niFmt("Cant find method definition '%s::%s'",
-                            idef->maszName, _stringhval(key)));
-                    return false;
-                  }
-                }
-              }
+              niLet selfIDef = as_nn(((sScriptTypeInterfaceDef*)ud)->pInterfaceDef);
+              niLet r = _InterfaceDefGet(selfIDef,key,dest,opExt);
+              if (r || sqa_getscriptobjtype(dest) == eScriptType_ErrorCode)
+                return r;
+              dest = niNew sScriptTypeErrorCode(
+                _ss,
+                _HC(error_code_cant_find_method_def),
+                niFmt("Cant find method definition '%s::%s'",
+                      selfIDef->maszName, _stringhval(key)));
               return false;
             }
-
             case eScriptType_EnumDef: {
               SQObjectPtr enumTable = ((sScriptTypeEnumDef*)ud)->_GetTable(const_cast<SQSharedState&>(ss));
-              return DoLintGet(enumTable, key, dest, opExt);
+              niLet r = DoLintGet(enumTable, key, dest, opExt);
+              if (r || sqa_getscriptobjtype(dest) == eScriptType_ErrorCode)
+                return r;
+              break;
             }
-
             case eScriptType_PropertyDef: {
               niLet pdefGet = ((sScriptTypePropertyDef*)ud)->pGetMethodDef;
               if (pdefGet) {
@@ -1531,9 +1584,8 @@ struct sLinter {
               }
               return false;
             }
-
             case eScriptType_ResolvedType: {
-              return DoLintGetInDelegate(((sScriptTypeResolvedType*)ud)->_scriptType, key, dest, opExt);
+              return _ScriptTypeDelegateGet(((sScriptTypeResolvedType*)ud)->_scriptType, key, dest, opExt);
             }
           }
 
@@ -3143,7 +3195,7 @@ void SQFunctionProto::LintTrace(
     typeofInfo->_sstr = sstr(IARG1);
 
     if (_LENABLED(typeof_usage)) {
-      niLet typeofObjType = sqa_getscriptobjtype(typeofObj);
+      niLet typeofObjType = _GetResolvedObjType(typeofObj);
       if (typeofObjType != eScriptType_Null && typeofObjType != eScriptType_ErrorCode) {
         _LINT(typeof_usage, niFmt(
           "Redundant typeof with known value type '%s' (%s).",

@@ -387,11 +387,14 @@ function main() {
       EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec3>: not found.]})
       EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec4>: not found.]})
 
+      EXPECTED_LINT(aLogs, 1, {[call_num_args: call_nativeclosure: Incorrect number of arguments, expected 1 but got 2. Calling elementName/1]})
+      EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "HamsterText" not found in enum_def<eTextEncodingFormat>]})
+
       EXPECTED_LINT(
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
-      ::CHECK_EQUAL(26, aLintResults.mLogsError, "Expected lint errors.");
+      ::CHECK_EQUAL(28, aLintResults.mLogsError, "Expected lint errors.");
       ::CHECK_EQUAL(11, aLintResults.mLogsWarning, "Expected lint warnings.");
     })
 

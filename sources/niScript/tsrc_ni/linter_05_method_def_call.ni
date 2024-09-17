@@ -3,6 +3,8 @@ local __lint = {
   key_notfound_callk = 1
 }
 
+::Import("niLang")
+
 local myout = 789, myout2 = ""
 
 function randHamster(iMath aMath,aMin,aMax) : (myout,myout2) {

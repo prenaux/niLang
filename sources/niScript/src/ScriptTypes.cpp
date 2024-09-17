@@ -72,6 +72,10 @@ niExportFunc(eScriptType) sqa_type2scripttype(const tType aType)
     case eType_Null: {
       return eScriptType_Null;
     }
+    case eType_Variant: {
+      // TODO: This should eventually be the "any" type
+      return eScriptType_Null;
+    }
     case eType_I8:
     case eType_U8:
     case eType_I16:
@@ -2453,16 +2457,16 @@ SQRegFunction SQSharedState::_idxprop_default_delegate_funcz[]={
 };
 
 SQRegFunction SQSharedState::_enum_default_delegate_funcz[]={
-  {"_typeof", enum_typeof, 0, NULL},
+  {"_typeof", enum_typeof, 1, NULL},
   {"_set", enum_set, 0, NULL},
-  {"_get", enum_get, 0, NULL},
+  {"_get", enum_get, 2, NULL},
   {"_delslot", enum_delslot, 0, NULL},
   {"_newslot", enum_newslot, 0, NULL},
-  {"gettable", enum_gettable, 0, NULL},
-  {"enumName", enum_enumName, 0, NULL},
-  {"numElements", enum_numElements, 0, NULL},
-  {"elementName", enum_elementName, 0, NULL},
-  {"elementValue", enum_elementValue, 0, NULL},
+  {"gettable", enum_gettable, 1, NULL},
+  {"enumName", enum_enumName, 1, NULL},
+  {"numElements", enum_numElements, 1, NULL},
+  {"elementName", enum_elementName, 2, NULL},
+  {"elementValue", enum_elementValue, 2, NULL},
   {0,0}
 };
 

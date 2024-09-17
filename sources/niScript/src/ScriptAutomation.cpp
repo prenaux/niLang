@@ -488,7 +488,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
       niPanicAssert(regFunc("ToIntPtr",iunknown_tointptr,_HC(typestr_int)));
       niPanicAssert(regFunc("GetNumRefs",iunknown_GetNumRefs,_HC(typestr_int)));
       niPanicAssert(regFunc("QueryInterface",iunknown_queryinterface,_HC(typestr_iunknown)));
-      niPanicAssert(regFunc("Invalidate",iunknown_invalidate,_HC(typestr_null)));
+      niPanicAssert(regFunc("Invalidate",iunknown_invalidate,_HC(typestr_void)));
     }
     else {
       const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(aIID);

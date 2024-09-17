@@ -21,6 +21,12 @@ function del_string_resolved():(lang) string {
   return v;
 }
 
+function del_iunkown_inheritance(iCallback callback) {
+  callback.RunCallback(null,null) // from iCallback
+  callback.Run() // from iRunnable
+  callback.Invalidate() // from iUnknown
+}
+
 function del_int(int v) {
   v.thehamster(1,2,3)
   return v.ToFloat()
@@ -210,6 +216,14 @@ function del_intf_lang_delegate() {
 
   local dt = ::LINT_AS_TYPE("iDataTable", null)
   dt.SetName("123")
+}
+
+function del_enum() {
+  local ef = ::eTextEncodingFormat.gettable()
+  ::eTextEncodingFormat.elementName(0)
+  ::eTextEncodingFormat.UTF8
+  ::eTextEncodingFormat.elementName(0,123);
+  ::eTextEncodingFormat.HamsterText;
 }
 
 function main() {

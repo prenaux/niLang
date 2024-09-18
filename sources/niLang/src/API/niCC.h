@@ -28,6 +28,7 @@
 // This is because we want to allow [[nodiscard]] everywhere and I dont want
 // to care about the warning when returning void.
 EA_DISABLE_GCC_WARNING(-Wignored-attributes);
+EA_DISABLE_GCC_WARNING(-Wattributes);
 EA_DISABLE_CLANG_WARNING(-Wignored-attributes);
 
 #if !defined niCCNoStrictWarnings

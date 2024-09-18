@@ -22,6 +22,7 @@ niExportFunc(tBool) linuxglDestroyContext(iOSWindow* apWindow);
 niExportFunc(tBool) linuxglHasContext(iOSWindow* apWindow);
 niExportFunc(tBool) linuxglMakeContextCurrent(iOSWindow* apWindow);
 niExportFunc(tBool) linuxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait);
+niExportFunc(void*) linuxglGetProcAddress(const achar* name);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

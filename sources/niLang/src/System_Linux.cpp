@@ -1359,6 +1359,11 @@ niExportFunc(tBool) linuxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait) {
   return w->_GLSwapBuffers(abDoNotWait);
 }
 
+niExportFunc(void*) linuxglGetProcAddress(const achar* name) {
+  niCheckSilent(ni_dll_load_glx(), nullptr);
+  return dll_glXGetProcAddress(name);
+}
+
 iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) {
   niCheck(aRect.GetWidth() > 0,nullptr);
   niCheck(aRect.GetWidth() < 0xFFFF,nullptr);

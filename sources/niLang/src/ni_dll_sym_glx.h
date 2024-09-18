@@ -3,3 +3,4 @@ NI_DLL_PROC(Bool, __cdecl, glXMakeCurrent, (Display *dpy, GLXDrawable drawable, 
 NI_DLL_PROC(void, __cdecl, glXDestroyContext, (Display *dpy, GLXContext ctx));
 NI_DLL_PROC(XVisualInfo*, __cdecl, glXChooseVisual, (Display *dpy, int screen, int *attribList));
 NI_DLL_PROC(void, __cdecl, glXSwapBuffers, (Display *dpy, GLXDrawable drawable));
+NI_DLL_PROC(void*, __cdecl, glXGetProcAddress, (const char* name));

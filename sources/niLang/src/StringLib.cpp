@@ -40,6 +40,8 @@ static inline tU32 _PrevX(achar** s) {
   return c;
 }
 
+static _HDecl_(stringlib_FormatNoArg, "<MISSING_FMT_ARG>");
+
 #define STRLIB_GETC(s)      _GetC(s)
 #define STRLIB_GETX(s)      _GetX(s)
 #define STRLIB_GETXC(s)     _GetX(s)
@@ -2201,7 +2203,7 @@ struct sStringCatFormat
 
     void Fetch() {
       if (mnCurArg >= mnNumArgs) {
-        mcurArg = niVarNull;
+        mcurArg = _HC(stringlib_FormatNoArg);
       }
       else {
         mcurArg = *mppArgs[mnCurArg];

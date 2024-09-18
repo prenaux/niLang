@@ -1871,7 +1871,7 @@ niExportFunc(tI32) StrGetCommandPath(achar* dest, tU32 destMaxSize, const achar*
 
 ///////////////////////////////////////////////
 static achar* _StrValueToHexa(achar* d, tU64 val, tU32 anPrecision, tBool abUpperCase) {
-  char tmp[24];  // for 64-bit integers
+  char tmp[25];  // for 64-bit integers
   tI32 i = 0;
   char* table;
   if (abUpperCase)
@@ -1881,7 +1881,7 @@ static achar* _StrValueToHexa(achar* d, tU64 val, tU32 anPrecision, tBool abUppe
   do {
     tmp[i++] = table[(val & 15)];
     val >>= 4;
-  } while (val && i < niCountOf(tmp));
+  } while (val && i < (niCountOf(tmp)-1));
   tmp[i] = 0;
   if (anPrecision) {
     for (tI32 len = i; len < (tI32)anPrecision; ++len) {

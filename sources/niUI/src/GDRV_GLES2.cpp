@@ -94,7 +94,7 @@ struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFla
     mnSyncCounter = 0;
   }
 
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
   virtual tsglContext* __stdcall GetTSGLContext() const = 0;
 #endif
 
@@ -194,14 +194,10 @@ static bool hasTexFmtDepth = false;
 #if defined __GLES2__ && !defined USE_GLES3
 #define _glReadBuffer(X) // NOOP
 #else
-#define _glReadBuffer(X) glReadBuffer(X)
+#define _glReadBuffer(X) _glReadBuffer(X)
 #endif
-#define _glReadPixels glReadPixels
 
-// FBOs MUST be tested for each platform before being enabled
-#if defined niWindows || defined niJSCC || defined niAndroid || defined niOSX || defined niIOS || defined niQNX || defined niLinux
-#define USE_FBO
-#endif
+#define _glReadPixels _glReadPixels
 
 #if defined niIOS
 #define USE_FBO_MAINRT_IS_FBO
@@ -221,7 +217,7 @@ static bool hasBindSampler = false;
 
 #ifdef USE_FBO
 // "GL_EXT_framebuffer_object"
-static bool hasFBO = false;
+static const bool hasFBO = true; // NOTE: always true, it used to be optional
 #ifdef USE_FBO_MAINRT_IS_FBO
 static GLuint fboMainRTHandle = eInvalidHandle;
 static GLuint fboMainDSHandle = eInvalidHandle;
@@ -255,67 +251,14 @@ static void _CountBufferUploadedBytes(tU32 anNumBytes) {
 }
 #endif
 
-#if defined niWindows && defined __GL1__
-// GL_ARB_vertex_buffer_object, GL_ARB_pixel_buffer_object
-static PFNGLGENBUFFERSARBPROC       _glGenBuffers       = NULL;
-static PFNGLBINDBUFFERARBPROC       _glBindBuffer       = NULL;
-static PFNGLMAPBUFFERARBPROC        _glMapBuffer        = NULL;
-static PFNGLUNMAPBUFFERARBPROC      _glUnmapBuffer      = NULL;
-static PFNGLBUFFERDATAARBPROC       _glBufferData       = NULL;
-static PFNGLBUFFERSUBDATAARBPROC    _glBufferSubData    = NULL;
-static PFNGLDELETEBUFFERSARBPROC    _glDeleteBuffers    = NULL;
-static PFNGLGETBUFFERSUBDATAARBPROC _glGetBufferSubData = NULL;
-// GL_ARB_multitexture
-static PFNGLACTIVETEXTUREARBPROC       _glActiveTexture       = NULL;
-// GL_ARB_occlusion_query
-static PFNGLGENQUERIESARBPROC        _glGenQueries;
-static PFNGLDELETEQUERIESARBPROC     _glDeleteQueries;
-static PFNGLBEGINQUERYARBPROC        _glBeginQuery;
-static PFNGLENDQUERYARBPROC          _glEndQuery;
-static PFNGLGETQUERYIVARBPROC        _glGetQueryiv;
-static PFNGLGETQUERYOBJECTIVARBPROC  _glGetQueryObjectiv;
-static PFNGLGETQUERYOBJECTUIVARBPROC _glGetQueryObjectuiv;
-// GL_ARB_shading_language_100, GL_ARB_shader_objects, GL_ARB_fragment_shader, GL_ARB_vertex_shader
-static PFNGLCREATEPROGRAMOBJECTARBPROC       _glCreateProgramObject      = NULL;
-static PFNGLDELETEOBJECTARBPROC              _glDeleteObject             = NULL;
-static PFNGLUSEPROGRAMOBJECTARBPROC          _glUseProgramObject         = NULL;
-static PFNGLCREATESHADEROBJECTARBPROC        _glCreateShaderObject       = NULL;
-static PFNGLSHADERSOURCEARBPROC              _glShaderSource             = NULL;
-static PFNGLCOMPILESHADERARBPROC             _glCompileShader            = NULL;
-static PFNGLGETOBJECTPARAMETERIVARBPROC      _glGetObjectParameteriv     = NULL;
-static PFNGLATTACHOBJECTARBPROC              _glAttachObject             = NULL;
-static PFNGLGETINFOLOGARBPROC                _glGetInfoLog               = NULL;
-static PFNGLLINKPROGRAMARBPROC               _glLinkProgram              = NULL;
-static PFNGLGETUNIFORMLOCATIONARBPROC        _glGetUniformLocation       = NULL;
-static PFNGLUNIFORM1FARBPROC                 _glUniform1f                = NULL;
-static PFNGLUNIFORM2FARBPROC                 _glUniform2f                = NULL;
-static PFNGLUNIFORM3FARBPROC                 _glUniform3f                = NULL;
-static PFNGLUNIFORM4FARBPROC                 _glUniform4f                = NULL;
-static PFNGLUNIFORM1FVARBPROC                _glUniform1fv               = NULL;
-static PFNGLUNIFORM2FVARBPROC                _glUniform2fv               = NULL;
-static PFNGLUNIFORM3FVARBPROC                _glUniform3fv               = NULL;
-static PFNGLUNIFORM4FVARBPROC                _glUniform4fv               = NULL;
-static PFNGLUNIFORMMATRIX4FVARBPROC          _glUniformMatrix4fv         = NULL;
-static PFNGLUNIFORM1IARBPROC                 _glUniform1i                = NULL;
-static PFNGLBINDATTRIBLOCATIONARBPROC        _glBindAttribLocation       = NULL;
-static PFNGLGETACTIVEUNIFORMARBPROC          _glGetActiveUniform         = NULL;
-static PFNGLENABLEVERTEXATTRIBARRAYARBPROC   _glEnableVertexAttribArray   = NULL;
-static PFNGLDISABLEVERTEXATTRIBARRAYARBPROC  _glDisableVertexAttribArray  = NULL;
-static PFNGLVERTEXATTRIBPOINTERARBPROC       _glVertexAttribPointer       = NULL;
-static PFNGLGETSHADERINFOLOGPROC             _glGetShaderInfoLog          = NULL;
-static PFNGLGETPROGRAMIVPROC                 _glGetProgramiv = NULL;
-static PFNGLGETPROGRAMINFOLOGPROC            _glGetProgramInfoLog = NULL;
-
-#define _glCreateShader  _glCreateShaderObject
-#define _glDeleteShader  _glDeleteObject
+#if defined __GLDESKTOP__
+#define _glClearDepthf _glClearDepth
+#define _glCreateShader _glCreateShaderObject
+#define _glDeleteShader _glDeleteObject
 #define _glCreateProgram _glCreateProgramObject
-#define _glAttachShader  _glAttachObject
-#define _glUseProgram    _glUseProgramObject
+#define _glAttachShader _glAttachObject
+#define _glUseProgram _glUseProgramObject
 #define _glDeleteProgram _glDeleteObject
-
-static void *getprocaddress(const char *name) {
-  return wglGetProcAddress(name);
-}
 #endif
 
 static GLint kGL2_MaxTU = GLDRV_MAX_TEXTURE_UNIT;
@@ -348,57 +291,6 @@ static GLint kGL2_MaxPixelUniforms = 0;
 #endif
 #ifndef GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER
 #define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER 0x8CDC
-#endif
-
-#ifdef niWindows
-#define GL_FBOAPI WINAPI
-#else
-#define GL_FBOAPI
-#endif
-
-#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid || defined niLinux
-#define GL_FBO_DECLAPI(RET,NAME,PARAMS)         \
-  typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS; \
-  tpfn_##NAME _##NAME = NAME;
-#elif defined niQNX
-#define GL_FBO_DECLAPI(RET,NAME,PARAMS)                                 \
-  typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS __attribute__((pcs("aapcs"))); \
-  tpfn_##NAME _##NAME = NAME;
-#elif defined niWindows
-#define GL_FBO_DECLAPI(RET,NAME,PARAMS)         \
-  typedef RET (GL_FBOAPI * tpfn_##NAME) PARAMS; \
-  tpfn_##NAME _##NAME = NULL;
-#else
-#error "Unknown GL_FBO_DECLAPI for this platform."
-#endif
-
-GL_FBO_DECLAPI(GLboolean, glIsRenderbuffer, (GLuint renderbuffer));
-GL_FBO_DECLAPI(void, glBindRenderbuffer, (GLenum target, GLuint renderbuffer));
-GL_FBO_DECLAPI(void, glDeleteRenderbuffers, (GLsizei n, const GLuint *renderbuffers));
-GL_FBO_DECLAPI(void, glGenRenderbuffers, (GLsizei n, GLuint *renderbuffers));
-GL_FBO_DECLAPI(void, glRenderbufferStorage, (GLenum target, GLenum internalformat, GLsizei width, GLsizei height));
-GL_FBO_DECLAPI(void, glGetRenderbufferParameteriv, (GLenum target, GLenum pname, GLint *params));
-
-GL_FBO_DECLAPI(GLboolean, glIsFramebuffer, (GLuint framebuffer));
-GL_FBO_DECLAPI(void, glBindFramebuffer, (GLenum target, GLuint framebuffer));
-GL_FBO_DECLAPI(void, glDeleteFramebuffers, (GLsizei n, const GLuint *framebuffers));
-GL_FBO_DECLAPI(void, glGenFramebuffers, (GLsizei n, GLuint *framebuffers));
-GL_FBO_DECLAPI(GLenum, glCheckFramebufferStatus, (GLenum target));
-
-GL_FBO_DECLAPI(void, glFramebufferTexture2D, (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level));
-
-GL_FBO_DECLAPI(void, glFramebufferRenderbuffer, (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer));
-GL_FBO_DECLAPI(void, glGetFramebufferAttachmentParameteriv, (GLenum target, GLenum attachment, GLenum pname, GLint *params));
-GL_FBO_DECLAPI(void, glGenerateMipmap, (GLenum target));
-
-#if 0 // don't enable Desktop only extensions...
-#if !defined __GLES2__
-GL_FBO_DECLAPI(void, glBlitFramebuffer, (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter));
-GL_FBO_DECLAPI(void, glFramebufferTexture1D, (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level));
-GL_FBO_DECLAPI(void, glFramebufferTexture3D, (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset));
-GL_FBO_DECLAPI(void, glRenderbufferStorageMultisample, (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height));
-GL_FBO_DECLAPI(void, glFramebufferTextureLayer, (GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer));
-#endif
 #endif
 
 #ifdef CHECK_GLERR
@@ -597,19 +489,11 @@ static tBool GL2_InitializeExt() {
   }
 
 #ifdef USE_OQ
-  if (strExt.contains("GL_ARB_occlusion_query"))
-  {
+  if (strExt.contains("GL_ARB_occlusion_query")) {
     GLint bits;
-    _glGetQueryiv = (PFNGLGETQUERYIVARBPROC)getprocaddress("glGetQueryivARB");
     if (_glGetQueryiv) {
       _glGetQueryiv(GL_SAMPLES_PASSED_ARB, GL_QUERY_COUNTER_BITS_ARB, &bits);
       if (bits) {
-        _glGenQueries =        (PFNGLGENQUERIESARBPROC)       getprocaddress("glGenQueriesARB");
-        _glDeleteQueries =     (PFNGLDELETEQUERIESARBPROC)    getprocaddress("glDeleteQueriesARB");
-        _glBeginQuery =        (PFNGLBEGINQUERYARBPROC)       getprocaddress("glBeginQueryARB");
-        _glEndQuery =          (PFNGLENDQUERYARBPROC)         getprocaddress("glEndQueryARB");
-        _glGetQueryObjectiv =  (PFNGLGETQUERYOBJECTIVARBPROC) getprocaddress("glGetQueryObjectivARB");
-        _glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVARBPROC)getprocaddress("glGetQueryObjectuivARB");
         hasOQ = true;
       }
     }
@@ -633,108 +517,9 @@ static tBool GL2_InitializeExt() {
     samplerFilterAnisotropySharp = ni::Min(samplerFilterAnisotropySharp, maxAnisotropic);
   }
 
-#if !defined __GLES2__
-  {
-#define GET_REQUIRED_GL_PROC(PROTO,FUNC)                              \
-    _##FUNC = (PROTO)getprocaddress(#FUNC);                           \
-    if (!_##FUNC) {                                                   \
-      _##FUNC = (PROTO)getprocaddress(#FUNC "ARB");                   \
-      if (!_##FUNC) {                                                 \
-        niError(niFmt("Can't get required GL function '%s'",#FUNC));  \
-        return eFalse;                                                \
-      }                                                               \
-    }
-
-    // GL_ARB_vertex_buffer_object, GL_ARB_pixel_buffer_object
-    GET_REQUIRED_GL_PROC(PFNGLGENBUFFERSARBPROC,glGenBuffers);
-    GET_REQUIRED_GL_PROC(PFNGLBINDBUFFERARBPROC,glBindBuffer);
-    GET_REQUIRED_GL_PROC(PFNGLMAPBUFFERARBPROC,glMapBuffer);
-    GET_REQUIRED_GL_PROC(PFNGLUNMAPBUFFERARBPROC,glUnmapBuffer);
-    GET_REQUIRED_GL_PROC(PFNGLBUFFERDATAARBPROC,glBufferData);
-    GET_REQUIRED_GL_PROC(PFNGLBUFFERSUBDATAARBPROC,glBufferSubData);
-    GET_REQUIRED_GL_PROC(PFNGLDELETEBUFFERSARBPROC,glDeleteBuffers);
-    GET_REQUIRED_GL_PROC(PFNGLGETBUFFERSUBDATAARBPROC,glGetBufferSubData);
-
-    // GL_ARB_multitexture
-    GET_REQUIRED_GL_PROC(PFNGLACTIVETEXTUREARBPROC,glActiveTexture);
-
-    // GL_ARB_shading_language_100, GL_ARB_shader_objects,
-    // GL_ARB_fragment_shader, GL_ARB_vertex_shader
-    GET_REQUIRED_GL_PROC(PFNGLCREATEPROGRAMOBJECTARBPROC,glCreateProgramObject);
-    GET_REQUIRED_GL_PROC(PFNGLDELETEOBJECTARBPROC,glDeleteObject);
-    GET_REQUIRED_GL_PROC(PFNGLUSEPROGRAMOBJECTARBPROC,glUseProgramObject);
-    GET_REQUIRED_GL_PROC(PFNGLCREATESHADEROBJECTARBPROC,glCreateShaderObject);
-    GET_REQUIRED_GL_PROC(PFNGLSHADERSOURCEARBPROC,glShaderSource);
-    GET_REQUIRED_GL_PROC(PFNGLCOMPILESHADERARBPROC,glCompileShader);
-    GET_REQUIRED_GL_PROC(PFNGLGETOBJECTPARAMETERIVARBPROC,glGetObjectParameteriv);
-    GET_REQUIRED_GL_PROC(PFNGLATTACHOBJECTARBPROC,glAttachObject);
-    GET_REQUIRED_GL_PROC(PFNGLGETINFOLOGARBPROC,glGetInfoLog);
-    GET_REQUIRED_GL_PROC(PFNGLLINKPROGRAMARBPROC,glLinkProgram);
-    GET_REQUIRED_GL_PROC(PFNGLGETUNIFORMLOCATIONARBPROC,glGetUniformLocation);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM1FARBPROC,glUniform1f);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM2FARBPROC,glUniform2f);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM3FARBPROC,glUniform3f);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM4FARBPROC,glUniform4f);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM1FVARBPROC,glUniform1fv);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM2FVARBPROC,glUniform2fv);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM3FVARBPROC,glUniform3fv);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM4FVARBPROC,glUniform4fv);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORMMATRIX4FVARBPROC,glUniformMatrix4fv);
-    GET_REQUIRED_GL_PROC(PFNGLUNIFORM1IARBPROC,glUniform1i);
-    GET_REQUIRED_GL_PROC(PFNGLBINDATTRIBLOCATIONARBPROC,glBindAttribLocation);
-    GET_REQUIRED_GL_PROC(PFNGLGETACTIVEUNIFORMARBPROC,glGetActiveUniform);
-    GET_REQUIRED_GL_PROC(PFNGLENABLEVERTEXATTRIBARRAYARBPROC,glEnableVertexAttribArray);
-    GET_REQUIRED_GL_PROC(PFNGLDISABLEVERTEXATTRIBARRAYARBPROC,glDisableVertexAttribArray);
-    GET_REQUIRED_GL_PROC(PFNGLVERTEXATTRIBPOINTERARBPROC,glVertexAttribPointer);
-    GET_REQUIRED_GL_PROC(PFNGLGETSHADERINFOLOGPROC,glGetShaderInfoLog);
-    GET_REQUIRED_GL_PROC(PFNGLGETPROGRAMIVPROC,glGetProgramiv);
-    GET_REQUIRED_GL_PROC(PFNGLGETPROGRAMINFOLOGPROC,glGetProgramInfoLog);
-  }
-#endif
-
   if (ni::GetLang()->HasProperty("GL2.hasContextLost")) {
     hasContextLost = !!ni::GetLang()->GetProperty("GL2.hasContextLost").Bool(hasContextLost);
   }
-
-#ifdef USE_FBO
-  {
-#if defined niOSX || defined niIOS || defined niJSCC || defined niAndroid || defined niQNX || defined niLinux
-    hasFBO = true;
-#elif defined niWindows
-    hasFBO = false;
-#define LOAD_FBO_API(TYPE,NAME)                                         \
-    if (hasFBO) {                                                       \
-      _##NAME = (tpfn_##NAME)getprocaddress(#NAME #TYPE);               \
-      hasFBO = (_##NAME != NULL);                                       \
-      if (!hasFBO) { niWarning("Couldn't get FBO function: " #NAME); }  \
-    }
-
-    if (!hasFBO && strExt.contains("GL_EXT_framebuffer_object")) {
-      hasFBO = true;
-      LOAD_FBO_API(EXT,glIsRenderbuffer);
-      LOAD_FBO_API(EXT,glBindRenderbuffer);
-      LOAD_FBO_API(EXT,glDeleteRenderbuffers);
-      LOAD_FBO_API(EXT,glGenRenderbuffers);
-      LOAD_FBO_API(EXT,glRenderbufferStorage);
-      LOAD_FBO_API(EXT,glGetRenderbufferParameteriv);
-      LOAD_FBO_API(EXT,glIsFramebuffer);
-      LOAD_FBO_API(EXT,glBindFramebuffer);
-      LOAD_FBO_API(EXT,glDeleteFramebuffers);
-      LOAD_FBO_API(EXT,glGenFramebuffers);
-      LOAD_FBO_API(EXT,glCheckFramebufferStatus);
-      LOAD_FBO_API(EXT,glFramebufferTexture2D);
-      LOAD_FBO_API(EXT,glFramebufferRenderbuffer);
-      LOAD_FBO_API(EXT,glGetFramebufferAttachmentParameteriv);
-      LOAD_FBO_API(EXT,glGenerateMipmap);
-      if (_printedInfos) {
-        niDebugFmt(("GL_FBO: GL_EXT_framebuffer_object"));
-      }
-    }
-#else
-    #error "GL2 FBO not supported on this platform."
-#endif
-  }
-#endif
 
   if (_printedInfos) {
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
@@ -1122,83 +907,16 @@ struct iMojoShader : public iShader {
 
 #if !defined __JSCC__
 static void* mojo_getprocaddress(const char *name, void*) {
-#if defined niWindows
-  if (strcmp(name,"glGetString") == 0) return (void*)_glGetString;
-  if (strcmp(name,"glGetError") == 0) return (void*)_glGetError;
-  if (strcmp(name,"glGetIntegerv") == 0) return (void*)_glGetIntegerv;
-  if (strcmp(name,"glEnable") == 0) return (void*)_glEnable;
-  if (strcmp(name,"glDisable") == 0) return (void*)_glDisable;
-  if (strcmp(name,"glFlush") == 0) return (void*)_glFlush;
-
-  return (void*)getprocaddress(name);
-#elif defined NO_TSGL
-  if (strcmp(name,"glGetString") == 0) return (void*)_glGetString;
-  if (strcmp(name,"glGetError") == 0) return (void*)_glGetError;
-  if (strcmp(name,"glGetIntegerv") == 0) return (void*)_glGetIntegerv;
-  if (strcmp(name,"glEnable") == 0) return (void*)_glEnable;
-  if (strcmp(name,"glDisable") == 0) return (void*)_glDisable;
-  if (strcmp(name,"glFlush") == 0) return (void*)_glFlush;
-
-#if !defined NO_STENCIL_BUFFER
-  if (strcmp(name,"glStencilFunc") == 0) return (void*)_glStencilFunc;
-  if (strcmp(name,"glStencilOp") == 0) return (void*)_glStencilOp;
-  if (strcmp(name,"glClearStencil") == 0) return (void*)_glClearStencil;
-#endif
-
-  if (strcmp(name,"glFinish") == 0) return (void*)_glFinish;
-  if (strcmp(name,"glViewport") == 0) return (void*)_glViewport;
-  if (strcmp(name,"glScissor") == 0) return (void*)_glScissor;
-  if (strcmp(name,"glTexParameteri") == 0) return (void*)_glTexParameteri;
-  if (strcmp(name,"glBlendFunc") == 0) return (void*)_glBlendFunc;
-  if (strcmp(name,"glDepthMask") == 0) return (void*)_glDepthMask;
-  if (strcmp(name,"glDepthFunc") == 0) return (void*)_glDepthFunc;
-  if (strcmp(name,"glCullFace") == 0) return (void*)_glCullFace;
-  if (strcmp(name,"glFrontFace") == 0) return (void*)_glFrontFace;
-  if (strcmp(name,"glColorMask") == 0) return (void*)_glColorMask;
-  if (strcmp(name,"glClear") == 0) return (void*)_glClear;
-  if (strcmp(name,"glClearColor") == 0) return (void*)_glClearColor;
-  if (strcmp(name,"glClearDepthf") == 0) return (void*)_glClearDepthf;
-  if (strcmp(name,"glDeleteTextures") == 0) return (void*)_glDeleteTextures;
-  if (strcmp(name,"glGenTextures") == 0) return (void*)_glGenTextures;
-  if (strcmp(name,"glBindTexture") == 0) return (void*)_glBindTexture;
-  if (strcmp(name,"glTexImage2D") == 0) return (void*)_glTexImage2D;
-  if (strcmp(name,"glActiveTexture") == 0) return (void*)_glActiveTexture;
-  if (strcmp(name,"glBindAttribLocation") == 0) return (void*)_glBindAttribLocation;
-  if (strcmp(name,"glShaderSource") == 0) return (void*)_glShaderSource;
-  if (strcmp(name,"glCompileShader") == 0) return (void*)_glCompileShader;
-  if (strcmp(name,"glGetShaderInfoLog") == 0) return (void*)_glGetShaderInfoLog;
-  if (strcmp(name,"glLinkProgram") == 0) return (void*)_glLinkProgram;
-  if (strcmp(name,"glGetProgramiv") == 0) return (void*)_glGetProgramiv;
-  if (strcmp(name,"glGetProgramInfoLog") == 0) return (void*)_glGetProgramInfoLog;
-  if (strcmp(name,"glCreateShader") == 0) return (void*)_glCreateShader;
-  if (strcmp(name,"glDeleteShader") == 0) return (void*)_glDeleteShader;
-  if (strcmp(name,"glGetShaderiv") == 0) return (void*)_glGetShaderiv;
-  if (strcmp(name,"glUseProgram") == 0) return (void*)_glUseProgram;
-  if (strcmp(name,"glGetAttribLocation") == 0) return (void*)_glGetAttribLocation;
-  if (strcmp(name,"glGetUniformLocation") == 0) return (void*)_glGetUniformLocation;
-  if (strcmp(name,"glUniformMatrix4fv") == 0) return (void*)_glUniformMatrix4fv;
-  if (strcmp(name,"glUniform4fv") == 0) return (void*)_glUniform4fv;
-  if (strcmp(name,"glUniform1i") == 0) return (void*)_glUniform1i;
-  if (strcmp(name,"glUniform1iv") == 0) return (void*)_glUniform1i;
-  if (strcmp(name,"glUniform4iv") == 0) return (void*)_glUniform4iv;
-  if (strcmp(name,"glUniform1f") == 0) return (void*)_glUniform1f;
-  if (strcmp(name,"glCreateProgram") == 0) return (void*)_glCreateProgram;
-  if (strcmp(name,"glAttachShader") == 0) return (void*)_glAttachShader;
-  if (strcmp(name,"glDeleteProgram") == 0) return (void*)_glDeleteProgram;
-  if (strcmp(name,"glGenBuffers") == 0) return (void*)_glGenBuffers;
-  if (strcmp(name,"glBindBuffer") == 0) return (void*)_glBindBuffer;
-  if (strcmp(name,"glDeleteBuffers") == 0) return (void*)_glDeleteBuffers;
-  if (strcmp(name,"glBufferData") == 0) return (void*)_glBufferData;
-  if (strcmp(name,"glEnableVertexAttribArray") == 0) return (void*)_glEnableVertexAttribArray;
-  if (strcmp(name,"glDisableVertexAttribArray") == 0) return (void*)_glDisableVertexAttribArray;
-  if (strcmp(name,"glVertexAttribPointer") == 0) return (void*)_glVertexAttribPointer;
-  if (strcmp(name,"glDrawElements") == 0) return (void*)_glDrawElements;
-  if (strcmp(name,"glDrawArrays") == 0) return (void*)_glDrawArrays;
-  niDebugFmt(("# Can't find entry point '%s'", name));
-  return NULL;
-#else
-  return tsglGL2GetProc(name);
-#endif
+  {
+    void* addr = tsglGetCoreProcAddress(name);
+    if (addr) return addr;
+  }
+  {
+    void* addr = tsglGetExtProcAddress(name);
+    if (addr) return addr;
+  }
+  niError(niFmt("mojo_getprocaddress: Can't find entry point '%s'", name));
+  return nullptr;
 }
 #endif
 
@@ -3196,7 +2914,7 @@ class cGL2ContextWindow : public sGLContext
   tU32 mnSwapInterval;
   tTextureFlags mnBBFlags;
   Ptr<iPixelFormat> mptrBBPxf, mptrDSPxf;
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
   tsglContext* mpTSGLContext;
 #endif
 
@@ -3209,7 +2927,7 @@ class cGL2ContextWindow : public sGLContext
       tTextureFlags anBBFlags)
       : sGLContext(apParent->GetGraphics())
   {
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
     mpTSGLContext = NULL;
 #endif
     mpDrv = apParent;
@@ -3219,12 +2937,10 @@ class cGL2ContextWindow : public sGLContext
     mnBBFlags = anBBFlags;
     mnSyncCounter = 0;
 
-#ifndef NO_TSGL
-    if (tsglLoadLibrary(TSGL_LOAD_ALL) != TSGL_OK) {
-      niError(_A("Can't initialize TSGL."));
+    if (tsglLoadLibrary() != TSGL_OK) {
+      niError("Can't initialize TSGL.");
       return;
     }
-#endif
 
     mptrBBPxf = mpDrv->GetGraphics()->CreatePixelFormat(aaszBBPxf);
     if (!mptrBBPxf.IsOK())
@@ -3254,7 +2970,7 @@ class cGL2ContextWindow : public sGLContext
     BaseImpl::ListInterfaces(apLst,anFlags);
   }
 
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
   tsglContext* __stdcall GetTSGLContext() const {
     return mpTSGLContext;
   }
@@ -3278,12 +2994,12 @@ class cGL2ContextWindow : public sGLContext
 
     if (hasContextLost
         || !mptrRT[0].IsOK()
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
         || !mpTSGLContext
 #endif
         )
     {
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
       if (niFlagIsNot(mnBBFlags,eTextureFlags_Virtual)) {
         // Re-create the context, this is so that we mimic Android's behavior as closely as possible
         _DestroyContext();
@@ -3361,7 +3077,7 @@ class cGL2ContextWindow : public sGLContext
     return eTrue;
   }
   void _DestroyContext() {
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
     if (mpTSGLContext) {
       tsglDestroyContext(mpTSGLContext);
       mpTSGLContext = NULL;
@@ -3480,7 +3196,7 @@ class cGL2ContextRT : public sGLContext
 
   virtual void __stdcall _CheckResizeContext() {
   }
-#if !defined niAndroid && !defined __TSGL_NOCONTEXT__
+#ifdef TSGL_CONTEXT
   tsglContext* __stdcall GetTSGLContext() const {
     return NULL;
   }
@@ -4108,7 +3824,7 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
         GL_DEBUG_LOG(("- BlitTextureToBitmap: COPY FULL TEXTURE CONTENT"));
         if (apSrc->GetPixelFormat()->IsSamePixelFormat(apDest->GetPixelFormat())) {
           GL_DEBUG_LOG(("- BlitTextureToBitmap: SAME PIXEL FORMAT, READ DIRECTLY IN DEST"));
-          glGetTexImage(GL_TEXTURE_2D,anSrcLevel,src->mFormat.format,src->mFormat.type,apDest->GetData());
+          _glGetTexImage(GL_TEXTURE_2D,anSrcLevel,src->mFormat.format,src->mFormat.type,apDest->GetData());
           return eTrue;
         }
       }
@@ -4116,7 +3832,7 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
       GL_DEBUG_LOG(("- BlitTextureToBitmap: USE TEMP BITMAP"));
       niCheck(src->_BindAsTexture(),eFalse);
       Ptr<iBitmap2D> bmpTmp = src->_CreateMatchingBitmap(mpGraphics);
-      glGetTexImage(GL_TEXTURE_2D,anSrcLevel,src->mFormat.format,src->mFormat.type,bmpTmp->GetData());
+      _glGetTexImage(GL_TEXTURE_2D,anSrcLevel,src->mFormat.format,src->mFormat.type,bmpTmp->GetData());
       apDest->BlitStretch(
           bmpTmp,
           aSrcRect.Left(),aSrcRect.Top(),
@@ -4151,11 +3867,11 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
         !((yrel - 1.0 < -eps) || (yrel - 1.0 > eps)))
     {
       // Upside down copy without stretching is nice, one glCopyTexSubImage call will do
-      glCopyTexSubImage2D(target,
-                          level,
-                          srect.x1(), srect.y1(), /* xoffset, yoffset */
-                          drect.x1(), drect.y1(),
-                          drect.x2() - drect.x1(), drect.y2() - drect.y1());
+      _glCopyTexSubImage2D(target,
+                           level,
+                           srect.x1(), srect.y1(), /* xoffset, yoffset */
+                           drect.x1(), drect.y1(),
+                           drect.x2() - drect.x1(), drect.y2() - drect.y1());
     } else {
       //
       // Process this row by row to swap the image, otherwise it would be
@@ -4167,21 +3883,21 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
         niWarning("Doing a pixel by pixel render target -> texture copy, expect performance issues\n");
         for (tI32 row = drect.y1(); row < drect.y2(); row++) {
           for (tI32 col = drect.x1(); col < drect.x2(); col++) {
-            glCopyTexSubImage2D(target,
-                                level,
-                                drect.x1() + col, aDstHeight - row - 1,
-                                srect.x1() + col * xrel, aSrcHeight - srect.y2() + row * yrel,
-                                1, 1);
+            _glCopyTexSubImage2D(target,
+                                 level,
+                                 drect.x1() + col, aDstHeight - row - 1,
+                                 srect.x1() + col * xrel, aSrcHeight - srect.y2() + row * yrel,
+                                 1, 1);
           }
         }
       }
       else {
         for (tI32 row = drect.y1(), i = 0; row < drect.y2(); ++row, ++i) {
-          glCopyTexSubImage2D(target,
-                              level,
-                              drect.x1(), aDstHeight - i - (aDstHeight-drect.y2()),
-                              srect.x1(), aSrcHeight - srect.y2() + i,
-                              drect.x2()-drect.x1(), 1);
+          _glCopyTexSubImage2D(target,
+                               level,
+                               drect.x1(), aDstHeight - i - (aDstHeight-drect.y2()),
+                               srect.x1(), aSrcHeight - srect.y2() + i,
+                               drect.x2()-drect.x1(), 1);
         }
       }
     }
@@ -4649,20 +4365,20 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
       // Alpha to coverage
       if (anAA) {
         if (niFlagIs(pMatDesc->mFlags,eMaterialFlags_TransparentAA)) {
-          glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+          _glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         }
         else {
-          glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+          _glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         }
       }
 
       if (niFlagIs(pMatDesc->mFlags,eMaterialFlags_PolygonOffset)) {
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(pMatDesc->mvPolygonOffset.x,pMatDesc->mvPolygonOffset.y);
+        _glEnable(GL_POLYGON_OFFSET_FILL);
+        _glPolygonOffset(pMatDesc->mvPolygonOffset.x,pMatDesc->mvPolygonOffset.y);
       }
       else {
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(0,0);
+        _glDisable(GL_POLYGON_OFFSET_FILL);
+        _glPolygonOffset(0,0);
       }
 
       // Alpha blending
@@ -4860,7 +4576,7 @@ static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tB
     return eFalse;
   }
 
-#if !defined __TSGL_NOCONTEXT__ && !defined __JSCC__
+#ifdef TSGL_CONTEXT
   tsglContext* ctx = apContext->GetTSGLContext();
   if (ctx) {
     GLCALL_ERR(tsglSwapBuffers(ctx,abDoNotWait),eFalse);

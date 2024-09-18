@@ -75,6 +75,8 @@ tBool InitGLX() {
 
 */
 
+typedef void* (*tpfnDLLGetProcAddress)(const char* aName);
+
 struct sDLLLoader {
   const cString _dllName;
   const cString _fileName;
@@ -82,6 +84,8 @@ struct sDLLLoader {
   tIntPtr _dllHandle = 0;
   astl::vector<cString> _loadErrors;
   tBool _isLoaded = eFalse;
+  tU32 _numLoadedFromDLL = 0;
+  tU32 _numLoadedWith = 0;
 
   sDLLLoader(const achar* aName, const achar* aFileName)
       : _dllName(aName)
@@ -98,6 +102,10 @@ struct sDLLLoader {
 
   tBool _LoadHandle() {
     niPanicAssert(_dllHandle == 0);
+    if (_fileName.empty()) {
+      niLog(Info, niFmt("DLLLoader: %s: Using static methods.", _dllName, _fileName));
+      return eTrue;
+    }
     _dllHandle = ni_dll_load(_fileName.Chars());
     if (!_dllHandle) {
       _AddError(niFmt("DLLLoader: %s: ni_dll_load of '%s' failed.", _dllName, _fileName));
@@ -128,6 +136,8 @@ struct sDLLLoader {
   tBool BeginLoad() {
     _loadErrors.clear();
     _loadMutex.ThreadLock();
+    _numLoadedFromDLL = 0;
+    _numLoadedWith = 0;
     // once we begin loading we mark it as loaded, the mutex makes sure that
     // we dont have a race condition if this is called from multiple thread
     _isLoaded = eTrue;
@@ -139,22 +149,40 @@ struct sDLLLoader {
       for (auto& err : _loadErrors) {
         niError(err.Chars());
       }
-      niLog(Info, niFmt("DLLLoader: %s: Loading failed with %d errors.", _dllName, _loadErrors.size()));
+      niLog(Info, niFmt("DLLLoader: %s: Loading failed with %d errors (%d loaded from dll, %d loaded from custom).",
+                        _dllName, _loadErrors.size(),
+                        _numLoadedFromDLL, _numLoadedWith));
       _FreeHandle();
     }
     else {
-      niLog(Info, niFmt("DLLLoader: %s: Loaded successfully.", _dllName));
+      niLog(Info, niFmt("DLLLoader: %s: Loaded successfully (%d loaded from dll, %d loaded from custom).",
+                        _dllName, _numLoadedFromDLL, _numLoadedWith));
     }
     _loadMutex.ThreadUnlock();
     return !HasLoadError();
   }
 
-  void* LoadProc(const achar* aProcName) {
-    void* r = ni_dll_get_proc(_dllHandle, aProcName);
+  void* LoadProc(const achar* aProcName, tBool abOptional = eFalse) {
+    void* r = _dllHandle ? ni_dll_get_proc(_dllHandle, aProcName) : nullptr;
     if (!r) {
-      _AddError(niFmt("DLLLoader: %s: Can't load proc '%s'.", _dllName, aProcName));
+      if (!abOptional) {
+        _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' from handle '%p'.", _dllName, aProcName, (tIntPtr)_dllHandle));
+      }
       return nullptr;
     }
+    ++_numLoadedFromDLL;
+    return r;
+  }
+
+  void* LoadProcWith(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse) {
+    void* r = apfnLoadProc(aProcName);
+    if (!r) {
+      if (!abOptional) {
+        _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' with custom GetProcAddress.", _dllName, aProcName));
+      }
+      return nullptr;
+    }
+    ++_numLoadedWith;
     return r;
   }
 };

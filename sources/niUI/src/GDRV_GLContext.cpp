@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#if defined niOSX || defined niWindows || defined niLinux
-
+#define __TSGL_IMPLEMENT__
 #include "GDRV_GLContext.h"
+
+#if defined TSGL_CONTEXT
 
 #ifdef _WIN32
 #include "GL/ni_wglext.h"
@@ -35,7 +36,7 @@ struct AutoDestroyBSContext {
   }
 };
 
-#endif
+#endif // #ifdef _WIN32
 
 //===========================================================================
 //
@@ -54,7 +55,7 @@ int tsglCreateContext(
     tU32 anSwapInterval)
 {
 #    ifdef __APPLE__
-  tsglContext* ctx = (tsglContext*)TSGL_MALLOC(sizeof(tsglContext));
+  tsglContext* ctx = (tsglContext*)niMalloc(sizeof(tsglContext));
   if (!ctx) {
     TSGL_RETURN_ERROR(ALLOCCTX,"Can't allocate memory for TSGL context.");
   }
@@ -80,7 +81,7 @@ int tsglCreateContext(
   ctx->mpWindow = apWindow;
 
 #    elif defined _WIN32
-  tsglContext* ctx = (tsglContext*)TSGL_MALLOC(sizeof(tsglContext));
+  tsglContext* ctx = (tsglContext*)niMalloc(sizeof(tsglContext));
   if (!ctx) {
     TSGL_RETURN_ERROR(ALLOCCTX,"Can't allocate memory for TSGL context.");
   }
@@ -230,7 +231,7 @@ int tsglCreateContext(
   }
 
 #    elif defined niLinux
-  tsglContext* ctx = (tsglContext*)TSGL_MALLOC(sizeof(tsglContext));
+  tsglContext* ctx = (tsglContext*)niMalloc(sizeof(tsglContext));
   if (!ctx) {
     TSGL_RETURN_ERROR(ALLOCCTX,"Can't allocate memory for TSGL context.");
   }
@@ -300,7 +301,7 @@ int tsglCreateContext(
     TSGL_RETURN_ERROR(NOTLOADED,"TSGL not loaded.");
   }
 
-  tsglContext* ctx = (tsglContext*)TSGL_MALLOC(sizeof(tsglContext));
+  tsglContext* ctx = (tsglContext*)niMalloc(sizeof(tsglContext));
   if (!ctx) {
     TSGL_RETURN_ERROR(ALLOCCTX,"Can't allocate memory for TSGL context.");
   }
@@ -506,4 +507,67 @@ void tsglSwapBuffers(tsglContext* apCtx, tBool abDoNotWait) {
 #  endif
 }
 
+#endif // #if defined TSGL_CONTEXT
+
+//===========================================================================
+//
+//  API
+//
+//===========================================================================
+#include <niLang/Utils/DLLLoader.h>
+
+#ifdef __TSGL_STATIC_WRAPPER__
+#define TSGL_DLL_NAME ""
+#elif defined niLinux
+#define TSGL_DLL_NAME "libGL.so"
+#else
+#error "Dynamic OpenGL loader not supported on this platform."
 #endif
+
+#undef TSGL_CORE_PROC
+#undef TSGL_EXT_PROC
+#undef TSGL_OPT_EXT_PROC
+
+////////////////////////////////////////////////////////////////////////////
+// ni_dll_load_opengl
+NI_DLL_BEGIN_LOADER(opengl, TSGL_DLL_NAME);
+
+#ifdef __TSGL_STATIC_WRAPPER__
+#define TSGL_CORE_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC
+#else
+#define TSGL_CORE_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProc(#FUNC)
+#endif
+
+#define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcWith(#FUNC, tsglGetExtProcAddress, eFalse)
+#define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcWith(#FUNC, tsglGetExtProcAddress, eTrue)
+
+#ifdef __GLDESKTOP__
+#include "GDRV_GLContext_sym_core_desktop.h"
+#include "GDRV_GLContext_sym_ext_desktop.h"
+#endif
+#ifdef __GLES1__
+#include "GDRV_GLContext_sym_core_gles1.h"
+#endif
+#ifdef __GLES2__
+#include "GDRV_GLContext_sym_core_gles2.h"
+#endif
+
+NI_DLL_END_LOADER(opengl);
+
+niExportFunc(void*) tsglGetCoreProcAddress(const char *name) {
+  return nullptr;
+}
+
+niExportFunc(void*) tsglGetExtProcAddress(const char *name) {
+#ifdef niWindows
+  return wglGetProcAddress(name);
+#elif defined niLinux
+  return linuxglGetProcAddress(name);
+#else
+  return nullptr;
+#endif
+}
+
+niExportFunc(tBool) tsglLoadLibrary() {
+  return ni_dll_load_opengl() ? TSGL_OK : TSGL_ERROR;
+}

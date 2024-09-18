@@ -7,6 +7,8 @@
 #include "API/niLang/IOSWindow.h"
 #include <niLang/Utils/CollectionImpl.h>
 #include <niLang/Utils/TimerSleep.h>
+#include <niLang/STL/scope_guard.h>
+#include <niLang/Utils/DLLLoader.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -17,14 +19,39 @@
 
 using namespace ni;
 
+#define USE_X11_IM
+
 static const int MOUSE_WARP_DELAY = 200;
 static const int knMinXwinWidth = 20;
 static const int knMinXwinHeight = 20;
 static const int knMaxXwinWidth = 50000;
 static const int knMaxXwinHeight = 50000;
 
-#define USE_X11_IM
+////////////////////////////////////////////////////////////////////////////
+// ni_dll_load_glx
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS)
+#include "ni_dll_sym_glx.h"
+#undef NI_DLL_PROC
 
+NI_DLL_BEGIN_LOADER(glx, "libGL.so");
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS)
+#include "ni_dll_sym_glx.h"
+#undef NI_DLL_PROC
+NI_DLL_END_LOADER(glx);
+
+////////////////////////////////////////////////////////////////////////////
+// ni_dll_load_x11
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS)
+#include "ni_dll_sym_x11.h"
+#undef NI_DLL_PROC
+
+NI_DLL_BEGIN_LOADER(x11,"libX11.so");
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS)
+#include "ni_dll_sym_x11.h"
+#undef NI_DLL_PROC
+NI_DLL_END_LOADER(x11);
+
+////////////////////////////////////////////////////////////////////////////
 static struct
 {
   KeySym keysym;
@@ -153,118 +180,181 @@ static struct
   { NoSymbol, eKey_Unknown },
 };
 
-static Display* X11_OpenDisplay() {
-  cString displayName = ni::GetProperty("X11.Display", nullptr);
-  return XOpenDisplay(displayName.IsNotEmpty() ? displayName.data() : nullptr);
-}
 
-static void X11_SetHints(Display* disp, Window win, int screen,
-                         int x, int y, int w, int h, tU32 flags)
-{
-  XSizeHints *hints;
+struct sX11System : public Impl_HeapAlloc {
+  tBool mbIsLoaded;
+  struct sX11Monitor {
+    tIntPtr mHandle;
+    cString mstrName;
+    sRecti mRect;
+    tOSMonitorFlags mFlags;
+  };
+  astl::vector<sX11Monitor> mvMonitors;
 
-  hints = XAllocSizeHints();
-  if (hints) {
-    if (flags & eOSWindowStyleFlags_FixedSize) {
-      hints->min_width = hints->max_width = w;
-      hints->min_height = hints->max_height = h;
+  sX11System() {
+    mbIsLoaded = ni_dll_load_x11();
+    niCheck(mbIsLoaded, ;);
+
+    Display* display = this->OpenDisplay();
+    if (display) {
+      int screenCount = dll_XScreenCount(display);
+      niLog(Info, niFmt("XScreenCount found '%d' screens.", screenCount));
+      niLoop(i, screenCount) {
+        _AddMonitor(display, i);
+      }
+      dll_XCloseDisplay(display);
     }
     else {
-      hints->min_width = knMinXwinWidth;
-      hints->min_height = knMinXwinHeight;
-      hints->max_width = knMaxXwinWidth;
-      hints->max_height = knMaxXwinHeight;
-    }
-    hints->flags = PMaxSize | PMinSize;
-    if (flags & eOSWindowStyleFlags_FullScreen) {
-      hints->x = 0;
-      hints->y = 0;
-      hints->flags |= USPosition;
-    }
-
-    XSetWMNormalHints(disp, win, hints);
-    XFree(hints);
-  }
-
-  // Respect the window caption style
-  if (flags & eOSWindowStyleFlags_Overlay) {
-    tBool set = eFalse;
-    Atom WM_HINTS;
-
-    // First try to set MWM hints
-    WM_HINTS = XInternAtom(disp, "_MOTIF_WM_HINTS", True);
-    if ( WM_HINTS != None ) {
-      // Hints used by Motif compliant window managers
-      struct {
-        unsigned long flags;
-        unsigned long functions;
-        unsigned long decorations;
-        long input_mode;
-        unsigned long status;
-      } MWMHints = { (1L << 1), 0, 0, 0, 0 };
-
-      XChangeProperty(disp, win,
-                      WM_HINTS, WM_HINTS, 32,
-                      PropModeReplace,
-                      (unsigned char *)&MWMHints,
-                      sizeof(MWMHints)/sizeof(long));
-      set = eTrue;
-    }
-    // Now try to set KWM hints
-    WM_HINTS = XInternAtom(disp, "KWM_WIN_DECORATION", True);
-    if ( WM_HINTS != None ) {
-      long KWMHints = 0;
-      XChangeProperty(disp, win,
-                      WM_HINTS, WM_HINTS, 32,
-                      PropModeReplace,
-                      (unsigned char *)&KWMHints,
-                      sizeof(KWMHints)/sizeof(long));
-      set = eTrue;
-    }
-    // Now try to set GNOME hints
-    WM_HINTS = XInternAtom(disp, "_WIN_HINTS", True);
-    if ( WM_HINTS != None ) {
-      long GNOMEHints = 0;
-      XChangeProperty(disp, win,
-                      WM_HINTS, WM_HINTS, 32,
-                      PropModeReplace,
-                      (unsigned char *)&GNOMEHints,
-                      sizeof(GNOMEHints)/sizeof(long));
-      set = eTrue;
-    }
-    // Finally set the transient hints if necessary
-    if (!set) {
-      XSetTransientForHint(disp, win, screen);
-    }
-  } else {
-    tBool set = eFalse;
-    Atom WM_HINTS;
-
-    // First try to unset MWM hints
-    WM_HINTS = XInternAtom(disp, "_MOTIF_WM_HINTS", True);
-    if ( WM_HINTS != None ) {
-      XDeleteProperty(disp, win, WM_HINTS);
-      set = eTrue;
-    }
-    // Now try to unset KWM hints
-    WM_HINTS = XInternAtom(disp, "KWM_WIN_DECORATION", True);
-    if ( WM_HINTS != None ) {
-      XDeleteProperty(disp, win, WM_HINTS);
-      set = eTrue;
-    }
-    // Now try to unset GNOME hints
-    WM_HINTS = XInternAtom(disp, "_WIN_HINTS", True);
-    if ( WM_HINTS != None ) {
-      XDeleteProperty(disp, win, WM_HINTS);
-      set = eTrue;
-    }
-    // Finally unset the transient hints if necessary
-    if (!set) {
-      // NOTE: Does this work ?
-      XSetTransientForHint(disp, win, None);
+      niLog(Info, "X11_OpenDisplay failed.");
     }
   }
+
+  tBool IsOK() const {
+    return mbIsLoaded;
+  }
+
+  void _AddMonitor(Display* display, int screen) {
+    sX11Monitor m;
+    m.mHandle = screen;
+    m.mstrName.Format(_A("Screen%d"), screen);
+
+    Screen* scr = ScreenOfDisplay(display, screen);
+    m.mRect = ni::sRecti(0, 0, scr->width, scr->height);
+
+    m.mFlags = 0;
+    if (screen == DefaultScreen(display)) {
+      m.mFlags |= eOSMonitorFlags_Primary;
+    }
+
+    mvMonitors.push_back(m);
+    niLog(Info, niFmt(
+      "... X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
+      mvMonitors.size()-1,
+      m.mHandle, m.mstrName.Chars(),
+      m.mRect,
+      m.mFlags));
+  }
+
+  Display* OpenDisplay() {
+    cString displayName = ni::GetProperty("X11.Display", nullptr);
+    return dll_XOpenDisplay(displayName.IsNotEmpty() ? displayName.data() : nullptr);
+  }
+
+  void SetHints(Display* disp, Window win, int screen,
+                int x, int y, int w, int h, tU32 flags)
+  {
+    XSizeHints *hints;
+
+    hints = dll_XAllocSizeHints();
+    if (hints) {
+      if (flags & eOSWindowStyleFlags_FixedSize) {
+        hints->min_width = hints->max_width = w;
+        hints->min_height = hints->max_height = h;
+      }
+      else {
+        hints->min_width = knMinXwinWidth;
+        hints->min_height = knMinXwinHeight;
+        hints->max_width = knMaxXwinWidth;
+        hints->max_height = knMaxXwinHeight;
+      }
+      hints->flags = PMaxSize | PMinSize;
+      if (flags & eOSWindowStyleFlags_FullScreen) {
+        hints->x = 0;
+        hints->y = 0;
+        hints->flags |= USPosition;
+      }
+
+      dll_XSetWMNormalHints(disp, win, hints);
+      dll_XFree(hints);
+    }
+
+    // Respect the window caption style
+    if (flags & eOSWindowStyleFlags_Overlay) {
+      tBool set = eFalse;
+      Atom WM_HINTS;
+
+      // First try to set MWM hints
+      WM_HINTS = dll_XInternAtom(disp, "_MOTIF_WM_HINTS", True);
+      if ( WM_HINTS != None ) {
+        // Hints used by Motif compliant window managers
+        struct {
+          unsigned long flags;
+          unsigned long functions;
+          unsigned long decorations;
+          long input_mode;
+          unsigned long status;
+        } MWMHints = { (1L << 1), 0, 0, 0, 0 };
+
+        dll_XChangeProperty(disp, win,
+                            WM_HINTS, WM_HINTS, 32,
+                            PropModeReplace,
+                            (unsigned char *)&MWMHints,
+                            sizeof(MWMHints)/sizeof(long));
+        set = eTrue;
+      }
+      // Now try to set KWM hints
+      WM_HINTS = dll_XInternAtom(disp, "KWM_WIN_DECORATION", True);
+      if ( WM_HINTS != None ) {
+        long KWMHints = 0;
+        dll_XChangeProperty(disp, win,
+                            WM_HINTS, WM_HINTS, 32,
+                            PropModeReplace,
+                            (unsigned char *)&KWMHints,
+                            sizeof(KWMHints)/sizeof(long));
+        set = eTrue;
+      }
+      // Now try to set GNOME hints
+      WM_HINTS = dll_XInternAtom(disp, "_WIN_HINTS", True);
+      if ( WM_HINTS != None ) {
+        long GNOMEHints = 0;
+        dll_XChangeProperty(disp, win,
+                            WM_HINTS, WM_HINTS, 32,
+                            PropModeReplace,
+                            (unsigned char *)&GNOMEHints,
+                            sizeof(GNOMEHints)/sizeof(long));
+        set = eTrue;
+      }
+      // Finally set the transient hints if necessary
+      if (!set) {
+        dll_XSetTransientForHint(disp, win, screen);
+      }
+    } else {
+      tBool set = eFalse;
+      Atom WM_HINTS;
+
+      // First try to unset MWM hints
+      WM_HINTS = dll_XInternAtom(disp, "_MOTIF_WM_HINTS", True);
+      if ( WM_HINTS != None ) {
+        dll_XDeleteProperty(disp, win, WM_HINTS);
+        set = eTrue;
+      }
+      // Now try to unset KWM hints
+      WM_HINTS = dll_XInternAtom(disp, "KWM_WIN_DECORATION", True);
+      if ( WM_HINTS != None ) {
+        dll_XDeleteProperty(disp, win, WM_HINTS);
+        set = eTrue;
+      }
+      // Now try to unset GNOME hints
+      WM_HINTS = dll_XInternAtom(disp, "_WIN_HINTS", True);
+      if ( WM_HINTS != None ) {
+        dll_XDeleteProperty(disp, win, WM_HINTS);
+        set = eTrue;
+      }
+      // Finally unset the transient hints if necessary
+      if (!set) {
+        // NOTE: Does this work ?
+        dll_XSetTransientForHint(disp, win, None);
+      }
+    }
+  }
+};
+
+///////////////////////////////////////////////
+static sX11System* _GetX11System() {
+  static sX11System* _system = niNew sX11System();
+  return _system;
 }
+
 
 class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
@@ -272,6 +362,9 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
  public:
   cLinuxWindow(sVec2i aSize)
   {
+    sX11System* x11 = _GetX11System();
+    niCheck(x11->IsOK(), ;);
+
     mbRequestedClose = eFalse;
     mnStyle = eOSWindowStyleFlags_Regular;
     mRect.Set(5,5,105,105);
@@ -295,7 +388,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
     // Init XWindow display
     {
-      mpDisplay = X11_OpenDisplay();
+      mpDisplay = x11->OpenDisplay();
       niCheck(mpDisplay != nullptr,;);
       mnScreen = DefaultScreen(mpDisplay);
       mpVisual = DefaultVisual(mpDisplay,mnScreen);
@@ -304,7 +397,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     // Init IM
 #ifdef USE_X11_IM
     {
-      mIM = XOpenIM(mpDisplay, nullptr, nullptr, nullptr);
+      mIM = dll_XOpenIM(mpDisplay, nullptr, nullptr, nullptr);
       if (!mIM) {
         niWarning("XIM: XOpenIM failed.");
       }
@@ -314,7 +407,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     // Init custom protocol
     {
       // Look up some useful Atoms
-      WM_DELETE_WINDOW = XInternAtom(mpDisplay, "WM_DELETE_WINDOW", False);
+      WM_DELETE_WINDOW = dll_XInternAtom(mpDisplay, "WM_DELETE_WINDOW", False);
     }
 
     // Create default window
@@ -331,7 +424,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       tU32 mask = CWBackPixel | CWBorderPixel /*| CWColormap*/;
 
       // Create the window
-      mHandle = XCreateWindow(mpDisplay, DefaultRootWindow(mpDisplay),
+      mHandle = dll_XCreateWindow(mpDisplay, DefaultRootWindow(mpDisplay),
                               mRect.x,mRect.y,
                               mRect.GetWidth(),
                               mRect.GetHeight(),
@@ -347,15 +440,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       this->SetTitle("niApp");
 
       // Create the GC
-      mGC = XCreateGC(mpDisplay, mHandle, 0, 0);
+      mGC = dll_XCreateGC(mpDisplay, mHandle, 0, 0);
       niCheck(mGC != 0,;);
 
       // Set foreground and background colors
-      XSetBackground(mpDisplay, mGC, white);
-      XSetForeground(mpDisplay, mGC, black);
+      dll_XSetBackground(mpDisplay, mGC, white);
+      dll_XSetForeground(mpDisplay, mGC, black);
 
       // Create invisible X cursor
-      Pixmap pixmap = XCreatePixmap(mpDisplay,mHandle,1,1,1);
+      Pixmap pixmap = dll_XCreatePixmap(mpDisplay,mHandle,1,1,1);
       if (pixmap != None) {
         tU32 gcmask = GCFunction | GCForeground | GCBackground;
 
@@ -364,18 +457,18 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         gcvalues.foreground = 0;
         gcvalues.background = 0;
 
-        GC temp_gc = XCreateGC(mpDisplay, pixmap, gcmask, &gcvalues);
-        XDrawPoint(mpDisplay, pixmap, temp_gc, 0, 0);
-        XFreeGC(mpDisplay, temp_gc);
+        GC temp_gc = dll_XCreateGC(mpDisplay, pixmap, gcmask, &gcvalues);
+        dll_XDrawPoint(mpDisplay, pixmap, temp_gc, 0, 0);
+        dll_XFreeGC(mpDisplay, temp_gc);
 
         XColor color;
         color.pixel = 0;
         color.red = color.green = color.blue = 0;
         color.flags = DoRed | DoGreen | DoBlue;
 
-        mCursorNone = XCreatePixmapCursor(mpDisplay, pixmap, pixmap,
+        mCursorNone = dll_XCreatePixmapCursor(mpDisplay, pixmap, pixmap,
                                               &color, &color, 0, 0);
-        XFreePixmap(mpDisplay, pixmap);
+        dll_XFreePixmap(mpDisplay, pixmap);
       }
 
       SetCursor(eOSCursor_Arrow);
@@ -384,8 +477,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       this->SetSize(aSize);
 
       // Clear the window and bring it to the top
-      XClearWindow(mpDisplay, mHandle);
-      XMapRaised(mpDisplay, mHandle);
+      dll_XClearWindow(mpDisplay, mHandle);
+      dll_XMapRaised(mpDisplay, mHandle);
 
       tU32 selectInputMask =
           KeyPressMask | KeyReleaseMask |
@@ -397,35 +490,35 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
 #ifdef USE_X11_IM
       if (mIM) {
-        mIC = XCreateIC(mIM, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, mHandle, NULL);
+        mIC = dll_XCreateIC(mIM, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, mHandle, NULL);
         if (mIC == nullptr) {
           niWarning("XIM: Can't open IC.");
         }
         else {
           tU32 mask = 0;
-          if (!XGetICValues(mIC, XNFilterEvents, &mask, NULL)) {
+          if (!dll_XGetICValues(mIC, XNFilterEvents, &mask, NULL)) {
             niLog(Info, niFmt("XIM: Got IM mask of %x.", mask));
             selectInputMask |= mask;
           }
           else {
             niLog(Warning, niFmt("XIM: Could not get an IM mask.", mask));
           }
-          XSetICFocus(mIC);
+          dll_XSetICFocus(mIC);
         }
       }
 #endif
 
       // Set the wanted inputs
-      XSelectInput(mpDisplay, mHandle, selectInputMask);
+      dll_XSelectInput(mpDisplay, mHandle, selectInputMask);
 
 
       // Wait for the first exposure event
       XEvent event;
       do {
-        XNextEvent(mpDisplay, &event);
+        dll_XNextEvent(mpDisplay, &event);
       } while((event.type != Expose) || (event.xexpose.count != 0));
 
-      XSetWMProtocols(mpDisplay, mHandle, &WM_DELETE_WINDOW, 1);
+      dll_XSetWMProtocols(mpDisplay, mHandle, &WM_DELETE_WINDOW, 1);
 
       this->_UpdateStyle();
     }
@@ -439,64 +532,65 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   tBool __stdcall _GLCreateContext() {
+    niCheck(ni_dll_load_glx(), eFalse);
     niCheck(mpGLX == nullptr, eFalse);
 
     GLint attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-    XVisualInfo* xvi = glXChooseVisual(mpDisplay, 0, attr);
+    XVisualInfo* xvi = dll_glXChooseVisual(mpDisplay, 0, attr);
     if (!xvi) {
       niError("glXChooseVisual failed.");
       return eFalse;
     }
     niLog(Info, niFmt("glXChooseVisual: %p",(void*)xvi)); // same output as glxinfo
 
-    mpGLX = glXCreateContext(mpDisplay, xvi, NULL, GL_TRUE);
+    mpGLX = dll_glXCreateContext(mpDisplay, xvi, NULL, GL_TRUE);
     if (!mpGLX) {
       niError("glXCreateContext failed.");
       return eFalse;
     }
 
-    glXMakeCurrent(mpDisplay, mHandle, mpGLX);
+    dll_glXMakeCurrent(mpDisplay, mHandle, mpGLX);
     return eTrue;
   }
   tBool __stdcall _GLDestroyContext() {
     if (!mpGLX) {
       return eFalse;
     }
-    glXMakeCurrent(mpDisplay, None, nullptr);
-    glXDestroyContext(mpDisplay, mpGLX);
+    dll_glXMakeCurrent(mpDisplay, None, nullptr);
+    dll_glXDestroyContext(mpDisplay, mpGLX);
     return eTrue;
   }
   tBool __stdcall _GLMakeCurrentContext() {
     if (!mpGLX) return eFalse;
-    glXMakeCurrent(mpDisplay, mHandle, mpGLX);
+    dll_glXMakeCurrent(mpDisplay, mHandle, mpGLX);
     return eTrue;
   }
   tBool __stdcall _GLSwapBuffers(tBool abDoNotWait) {
     niUnused(abDoNotWait);
     if (!mpGLX) return eFalse;
-    glXSwapBuffers(mpDisplay,mHandle);
+    dll_glXSwapBuffers(mpDisplay,mHandle);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
   void __stdcall Invalidate() {
     if (mCursor != None) {
-      XUndefineCursor(mpDisplay,mHandle);
+      dll_XUndefineCursor(mpDisplay,mHandle);
       if (mCursor != mCursorNone) {
-        XFreeCursor(mpDisplay,mCursor);
+        dll_XFreeCursor(mpDisplay,mCursor);
       }
       mCursor = None;
     }
     if (mCursorNone != None) {
-      XFreeCursor(mpDisplay,mCursorNone);
+      dll_XFreeCursor(mpDisplay,mCursorNone);
       mCursorNone = None;
     }
     if (mGC) {
-      XFreeGC(mpDisplay,mGC);
+      dll_XFreeGC(mpDisplay,mGC);
       mGC = nullptr;
     }
     if (mHandle) {
-      XDestroyWindow(mpDisplay,mHandle);
+      dll_XDestroyWindow(mpDisplay,mHandle);
       mHandle = 0;
       mbOwnedHandle = eFalse;
       mbIsActive = eFalse;
@@ -504,7 +598,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     if (mpDisplay) {
       mpVisual = nullptr;
       mnScreen = 0;
-      XCloseDisplay(mpDisplay);
+      dll_XCloseDisplay(mpDisplay);
       mpDisplay = nullptr;
     }
     if (mptrMT.IsOK()) {
@@ -550,7 +644,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   ///////////////////////////////////////////////
   virtual void __stdcall ActivateWindow() niImpl {
     niCheckSilent(mHandle,;);
-    XMapRaised(mpDisplay, mHandle);
+    dll_XMapRaised(mpDisplay, mHandle);
   }
 
   ///////////////////////////////////////////////
@@ -572,7 +666,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl {
     niCheckSilent(mHandle,;);
     mstrTitle = aaszTitle;
-    XStoreName(mpDisplay,mHandle,mstrTitle.Chars());
+    dll_XStoreName(mpDisplay,mHandle,mstrTitle.Chars());
   }
   virtual const achar* __stdcall GetTitle() const niImpl {
     niCheckSilent(mHandle,nullptr);
@@ -590,9 +684,10 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return mnStyle;
   }
   virtual void __stdcall _UpdateStyle() {
-    X11_SetHints(mpDisplay,mHandle,mnScreen,
-                 mRect.x,mRect.y,mRect.GetWidth(),mRect.GetHeight(),
-                 mnStyle);
+    sX11System* x11 = _GetX11System();
+    x11->SetHints(mpDisplay,mHandle,mnScreen,
+                  mRect.x,mRect.y,mRect.GetWidth(),mRect.GetHeight(),
+                  mnStyle);
   }
 
   ///////////////////////////////////////////////
@@ -639,7 +734,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       mRect.SetHeight(knMinXwinHeight);
     }
 
-    XMoveResizeWindow(mpDisplay,mHandle,
+    dll_XMoveResizeWindow(mpDisplay,mHandle,
                       mRect.x,mRect.y,
                       mRect.GetWidth(),mRect.GetHeight());
 
@@ -667,7 +762,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   ///////////////////////////////////////////////
   virtual void __stdcall Clear() niImpl {
     niCheckSilent(mHandle,;);
-    XClearWindow(mpDisplay,mHandle);
+    dll_XClearWindow(mpDisplay,mHandle);
   }
 
   ///////////////////////////////////////////////
@@ -680,8 +775,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     niCheckSilent(mHandle,eFalse);
 
     // How many events are available in the queue.
-    XSync(mpDisplay, False);
-    int events = XEventsQueued(mpDisplay, QueuedAlready);
+    dll_XSync(mpDisplay, False);
+    int events = dll_XEventsQueued(mpDisplay, QueuedAlready);
     if (events > 0) {
       // Limit amount of events we read at once
       if (events > 5)
@@ -732,15 +827,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     if (!mHandle) return;
     if (GetCursor() == aCursor) return;
     mnCursorShape = -1;
-    XUndefineCursor(mpDisplay,mHandle);
+    dll_XUndefineCursor(mpDisplay,mHandle);
     if (mCursor != None && mCursor != mCursorNone) {
-      XFreeCursor(mpDisplay,mCursor);
+      dll_XFreeCursor(mpDisplay,mCursor);
       mCursor = None;
     }
     switch (aCursor) {
       case eOSCursor_None:
         mCursor = mCursorNone;
-        XDefineCursor(mpDisplay, mHandle, mCursor);
+        dll_XDefineCursor(mpDisplay, mHandle, mCursor);
         return;
       case eOSCursor_Wait:
         mnCursorShape = XC_watch;
@@ -756,8 +851,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         mnCursorShape = XC_left_ptr;
         break;
     }
-    mCursor = XCreateFontCursor(mpDisplay, mnCursorShape);
-    XDefineCursor(mpDisplay, mHandle, mCursor);
+    mCursor = dll_XCreateFontCursor(mpDisplay, mnCursorShape);
+    dll_XDefineCursor(mpDisplay, mHandle, mCursor);
   }
 
   virtual eOSCursor __stdcall GetCursor() const niImpl {
@@ -880,12 +975,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   {
     XEvent event;
     XEvent *e = &event;
-    XNextEvent(mpDisplay, e);
+    dll_XNextEvent(mpDisplay, e);
 
     // filter events catches XIM events and sends them to the correct handler
     // Key press/release events are filtered in _HandleKeyEvent()
     if (e->type != KeyPress && e->type != KeyRelease) {
-      if (XFilterEvent(e, None)) {
+      if (dll_XFilterEvent(e, None)) {
         return;
       }
     }
@@ -1056,13 +1151,13 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     }
 
     // Get the number of keycodes
-    XDisplayKeycodes(mpDisplay, &min_keycode, &max_keycode);
+    dll_XDisplayKeycodes(mpDisplay, &min_keycode, &max_keycode);
     if (min_keycode < 0)   min_keycode = 0;
     if (max_keycode > 255) max_keycode = 255;
 
     // Setup mappings
     for (i = min_keycode; i <= max_keycode; i++) {
-      keysym = XKeycodeToKeysym(mpDisplay, i, 0);
+      keysym = dll_XKeycodeToKeysym(mpDisplay, i, 0);
       if (keysym != NoSymbol) {
         for (j = 0; keysym_to_scancode[j].keysym != NoSymbol; j++) {
           if (keysym_to_scancode[j].keysym == keysym) {
@@ -1095,7 +1190,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       }
     };
 
-    if (XFilterEvent(e,None)) {
+    if (dll_XFilterEvent(e,None)) {
       sendKey();
       return;
     }
@@ -1111,7 +1206,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       if (mIC) {
         KeySym keysym;
         Status status;
-        int numBytes = Xutf8LookupString(mIC, &e->xkey, text, sizeof(text)-1, &keysym, &status);
+        int numBytes = dll_Xutf8LookupString(mIC, &e->xkey, text, sizeof(text)-1, &keysym, &status);
         if (numBytes > 0 && (status == XLookupChars || status == XLookupBoth)) {
           text[numBytes] = '\0';
           StrCharIt itText(text);
@@ -1127,7 +1222,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 #endif
       {
         KeySym keysym;
-        int numChars = XLookupString(&e->xkey, text, sizeof(text)-1, &keysym, nullptr);
+        int numChars = dll_XLookupString(&e->xkey, text, sizeof(text)-1, &keysym, nullptr);
         if (numChars > 0) {
           niLoop(i, numChars) {
             // only allow ascii7 characters
@@ -1272,59 +1367,6 @@ iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszT
 
   Ptr<cLinuxWindow> wnd = niNew cLinuxWindow(aRect.GetSize());
   return wnd.GetRawAndSetNull();
-}
-
-struct sX11System : public Impl_HeapAlloc {
-  struct sX11Monitor {
-    tIntPtr mHandle;
-    cString mstrName;
-    sRecti mRect;
-    tOSMonitorFlags mFlags;
-  };
-  astl::vector<sX11Monitor> mvMonitors;
-
-  sX11System() {
-    Display* display = X11_OpenDisplay();
-    if (display) {
-      int screenCount = XScreenCount(display);
-      niLog(Info, niFmt("XScreenCount found '%d' screens.", screenCount));
-      niLoop(i, screenCount) {
-        _AddMonitor(display, i);
-      }
-      XCloseDisplay(display);
-    }
-    else {
-      niLog(Info, "X11_OpenDisplay failed.");
-    }
-  }
-
-  void _AddMonitor(Display* display, int screen) {
-    sX11Monitor m;
-    m.mHandle = screen;
-    m.mstrName.Format(_A("Screen%d"), screen);
-
-    Screen* scr = ScreenOfDisplay(display, screen);
-    m.mRect = ni::sRecti(0, 0, scr->width, scr->height);
-
-    m.mFlags = 0;
-    if (screen == DefaultScreen(display)) {
-      m.mFlags |= eOSMonitorFlags_Primary;
-    }
-
-    mvMonitors.push_back(m);
-    niLog(Info, niFmt(
-      "... X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
-      mvMonitors.size()-1,
-      m.mHandle, m.mstrName.Chars(),
-      m.mRect,
-      m.mFlags));
-  }
-};
-
-///////////////////////////////////////////////
-static sX11System* _GetX11System() {
-  static sX11System* _system = niNew sX11System();
-  return _system;
 }
 
 ///////////////////////////////////////////////

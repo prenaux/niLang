@@ -57,7 +57,7 @@
 #  pragma comment(lib,"opengl32.lib")
 #  define TSGL_DESKTOP
 
-#  define __TSGL_STATIC_WRAPPER__
+#  define __TSGL_STATIC_CORE__
 #  define __TSGL_KIND_DESKTOP__
 
 #  define GL_APIENTRY APIENTRY
@@ -127,8 +127,17 @@
 #  include <OpenGL/gl.h>
 #  include <OpenGL/glext.h>
 #  define TSGL_DESKTOP
-#  define __TSGL_STATIC_WRAPPER__
+#  define __TSGL_STATIC_CORE__
+#  define __TSGL_STATIC_EXT__
 #  define __TSGL_KIND_DESKTOP__
+using GLhandle = GLhandleARB;
+#define glCreateShaderObject glCreateShaderObjectARB
+#define glCreateProgramObject glCreateProgramObjectARB
+#define glDeleteObject glDeleteObjectARB
+#define glAttachObject glAttachObjectARB
+#define glUseProgramObject glUseProgramObjectARB
+#define glGetObjectParameteriv glGetObjectParameterivARB
+#define glGetInfoLog glGetInfoLogARB
 
 //// niLinux /////////////////////////////////////////////////////////////////////////
 #elif defined niLinuxDesktop
@@ -141,6 +150,7 @@
 #  define TSGL_DESKTOP
 #  define __TSGL_KIND_DESKTOP__
 #  define USE_OQ
+using GLhandle = void*;
 
 #  undef Bool
 #  undef Status
@@ -161,12 +171,12 @@
 //  OpenGL APIs
 //
 //===========================================================================
-// #define __TSGL_STATIC_WRAPPER__  // wrap statically linked gles, assumed OpenGL headers have been included before this header file
-// #define __TSGL_IMPLEMENT__
-// #define __TSGL_IMPLEMENT_STATIC__
+// #define __TSGL_STATIC_CORE__
+// #define __TSGL_STATIC_EXT__
 // #define __TSGL_KIND_ES1__
 // #define __TSGL_KIND_ES2__
 // #define __TSGL_KIND_DESKTOP__
+// #define __TSGL_IMPLEMENT_API__
 
 #ifdef __GLES1__
 #  error "__GLES1__ shouldnt be defined somewhere else."
@@ -233,7 +243,7 @@
 #endif
 
 // TSGL_CORE_PROC, loaded dynamically or through compiler linking
-#if defined __TSGL_IMPLEMENT__
+#if defined __TSGL_IMPLEMENT_API__
 #  define TSGL_CORE_PROC(RET,FUNC,PARAMS)           \
   typedef RET (TSGL_APIENTRY *tpfn_##FUNC) PARAMS;  \
   tpfn_##FUNC _##FUNC = nullptr;

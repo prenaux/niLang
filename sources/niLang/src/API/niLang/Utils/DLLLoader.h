@@ -84,8 +84,11 @@ struct sDLLLoader {
   tIntPtr _dllHandle = 0;
   astl::vector<cString> _loadErrors;
   tBool _isLoaded = eFalse;
-  tU32 _numLoadedFromDLL = 0;
-  tU32 _numLoadedWith = 0;
+  struct {
+    tU32 _dll = 0;
+    tU32 _custom = 0;
+    tU32 _static = 0;
+  } _numLoaded;
 
   sDLLLoader(const achar* aName, const achar* aFileName)
       : _dllName(aName)
@@ -136,8 +139,7 @@ struct sDLLLoader {
   tBool BeginLoad() {
     _loadErrors.clear();
     _loadMutex.ThreadLock();
-    _numLoadedFromDLL = 0;
-    _numLoadedWith = 0;
+    niZeroMember(_numLoaded);
     // once we begin loading we mark it as loaded, the mutex makes sure that
     // we dont have a race condition if this is called from multiple thread
     _isLoaded = eTrue;
@@ -149,14 +151,16 @@ struct sDLLLoader {
       for (auto& err : _loadErrors) {
         niError(err.Chars());
       }
-      niLog(Info, niFmt("DLLLoader: %s: Loading failed with %d errors (%d loaded from dll, %d loaded from custom).",
-                        _dllName, _loadErrors.size(),
-                        _numLoadedFromDLL, _numLoadedWith));
+      niLog(Info, niFmt(
+        "DLLLoader: %s: Loading failed with %d errors. Loaded %d from dll, %d from custom, %d statically.",
+        _dllName, _loadErrors.size(),
+        _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
       _FreeHandle();
     }
     else {
-      niLog(Info, niFmt("DLLLoader: %s: Loaded successfully (%d loaded from dll, %d loaded from custom).",
-                        _dllName, _numLoadedFromDLL, _numLoadedWith));
+      niLog(Info, niFmt(
+        "DLLLoader: %s: Loaded successfully. Loaded %d from dll, %d from custom, %d statically.",
+        _dllName, _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
     }
     _loadMutex.ThreadUnlock();
     return !HasLoadError();
@@ -170,11 +174,11 @@ struct sDLLLoader {
       }
       return nullptr;
     }
-    ++_numLoadedFromDLL;
+    ++_numLoaded._dll;
     return r;
   }
 
-  void* LoadProcWith(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse) {
+  void* LoadProcCustom(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse) {
     void* r = apfnLoadProc(aProcName);
     if (!r) {
       if (!abOptional) {
@@ -182,7 +186,7 @@ struct sDLLLoader {
       }
       return nullptr;
     }
-    ++_numLoadedWith;
+    ++_numLoaded._custom;
     return r;
   }
 };

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define __TSGL_IMPLEMENT__
+#define __TSGL_IMPLEMENT_API__
 #include "GDRV_GLContext.h"
 
 #if defined TSGL_CONTEXT
@@ -516,7 +516,7 @@ void tsglSwapBuffers(tsglContext* apCtx, tBool abDoNotWait) {
 //===========================================================================
 #include <niLang/Utils/DLLLoader.h>
 
-#ifdef __TSGL_STATIC_WRAPPER__
+#ifdef __TSGL_STATIC_CORE__
 #define TSGL_DLL_NAME ""
 #elif defined niLinux
 #define TSGL_DLL_NAME "libGL.so"
@@ -532,14 +532,19 @@ void tsglSwapBuffers(tsglContext* apCtx, tBool abDoNotWait) {
 // ni_dll_load_opengl
 NI_DLL_BEGIN_LOADER(opengl, TSGL_DLL_NAME);
 
-#ifdef __TSGL_STATIC_WRAPPER__
-#define TSGL_CORE_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC
+#ifdef __TSGL_STATIC_CORE__
+#define TSGL_CORE_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC; ++_dllLoader._numLoaded._static
 #else
 #define TSGL_CORE_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProc(#FUNC)
 #endif
 
-#define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcWith(#FUNC, tsglGetExtProcAddress, eFalse)
-#define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcWith(#FUNC, tsglGetExtProcAddress, eTrue)
+#ifdef __TSGL_STATIC_EXT__
+#define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC; ++_dllLoader._numLoaded._static
+#define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC; ++_dllLoader._numLoaded._static
+#else
+#define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcCustom(#FUNC, tsglGetExtProcAddress, eFalse)
+#define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcCustom(#FUNC, tsglGetExtProcAddress, eTrue)
+#endif
 
 #ifdef __GLDESKTOP__
 #include "GDRV_GLContext_sym_core_desktop.h"

@@ -2,13 +2,13 @@
 
 #if defined niWinDesktop
 
+#include "Platform_Generic_StackWalker.h"
 #include "API/niLang/ILang.h"
 #include "API/niLang/Utils/CrashReport.h"
 #include "API/niLang/Platforms/Win32/Win32_UTF.h"
 #include "API/niLang/Platforms/Win32/Win32_Redef.h"
 #include "API/niLang/StringDef.h"
 #include "API/niLang/Utils/ThreadImpl.h"
-#include "API/niLang/Utils/Path.h"
 
 #include <windows.h>
 #undef _tprintf
@@ -1578,25 +1578,14 @@ struct MyStackWalker : public StackWalker {
       if (entry.moduleName[0] == 0)
         MyStrCpy(entry.moduleName, STACKWALK_MAX_NAMELEN, "noModule");
 
-      ni::cPath fileName;
-      if (entry.lineFileName[0] == 0) {
-        fileName = "noFile";
-      }
-      else {
-        fileName = entry.lineFileName;
-      }
-
-      (*_output) << niFmt("[%d] ",_stackIndex) << entry.name;
-
-      (*_output) << niFmt(" [%s:%d] (%s:%p)",
-                          fileName.GetFile(),
-                          entry.lineNumber,
-                          entry.moduleName,
-                          entry.offset);
+      _StackCatEntry(
+        *_output, _stackIndex,
+        entry.lineFileName, entry.lineNumber,
+        entry.name,
+        entry.moduleName, entry.offset,
+        eTrue);
 
       _stackIndex++;
-
-      (*_output) << "\n";
     }
   }
 

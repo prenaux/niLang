@@ -16,10 +16,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build_ubuntu:
-    # Use Ubuntu 20, because the Ubuntu 22 image broke the C++20 compiler.
-    # See https://github.com/actions/runner-images/issues/8659
-    # Fix the ubuntu version to avoid surprise updates in ubuntu-latest
-    runs-on: ubuntu-20.04 # ubuntu-22.04
+    runs-on: ubuntu-22.04
 
     steps:
       # Check-out and init ham

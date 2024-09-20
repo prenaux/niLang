@@ -6,19 +6,36 @@ fi
 
 export PM2_ENV_NAME=niLang
 
+# Base toolsets
+TOOLSET_LIST=(repos)
+
+# Platform specific toolsets
 case $HAM_OS in
   NT*)
-    toolset_import_list "repos" "dx9sdk2004" cppm boost_cppm thrift_cppm || return 1
-    ;;
-  *)
-    if [ "$SHADER_COMPILE" = "1" ]; then
-      log_info "Shader compilation enabled."
-      toolset_import_list "repos" cppm boost_cppm thrift_cppm nicgc || return 1
-      export SHADER_COMPILE=1
-    else
-      unset SHADER_COMPILE
-      log_info "No shader compilation."
-      toolset_import_list "repos" cppm boost_cppm thrift_cppm || return 1
+    TOOLSET_LIST+=(dx9sdk2004)
+    # The shader compiler is enabled by default on Windows
+    if [ -z "$SHADER_COMPILE" ]; then
+      SHADER_COMPILE=1
     fi
     ;;
+  LINUX*)
+    TOOLSET_LIST+=(syslib_bfd)
+    ;;
+  *) ;;
 esac
+
+# Shader compiler
+if [ "$SHADER_COMPILE" = "1" ]; then
+  TOOLSET_LIST+=(nicgc)
+  export SHADER_COMPILE=1
+else
+  unset SHADER_COMPILE
+  log_info "No shader compilation."
+  toolset_import_list "repos" cppm boost_cppm thrift_cppm || return 1
+fi
+
+# C++ toolsets
+TOOLSET_LIST+=(cppm boost_cppm thrift_cppm)
+
+# Done, import our toolsets...
+toolset_import_list "${TOOLSET_LIST[@]}" || return 1

@@ -1,5 +1,11 @@
 #!/bin/bash
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#===== PRELUDE BEGIN ===========
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+# shellcheck disable=SC2034
+SCRIPT_NAME=$(basename "$0")
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE END =============
 cd "$SCRIPT_DIR"
 
 if [ "$1" = "clean" ]; then

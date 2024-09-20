@@ -19,7 +19,7 @@
 #ifdef niLinux
 #define USE_BACKWARD
 #define BACKWARD_HAS_BFD 1
-#define BACKWARD_HAS_LIBUNWIND 1
+#define BACKWARD_HAS_UNWIND 1
 #else
 #define USE_BACKTRACE_DLADDR
 #endif

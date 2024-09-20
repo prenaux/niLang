@@ -28,6 +28,25 @@
 #error "It's not going to compile without a C++ compiler..."
 #endif
 
+#include <niLang/Types.h>
+
+#if defined niLinux
+// NOTE: niLang: We defined this here to keep our sanity since we might
+// include it in multiple places. Getting the right combo here + library +
+// compiler + linker flags is a *lot* harder than it seems, dont mess with the
+// things that relate to getting a stacktrace unless you truely know what
+// you're doing.
+#define BACKWARD_HAS_BFD 1
+#define BACKWARD_HAS_UNWIND 1
+#else
+#error "Platform not supported, you need to configure backward-cpp for this platform (see the top of backward.hpp)."
+#endif
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunqualified-std-cast-call"
+#endif
+
 #if defined(BACKWARD_CXX11)
 #elif defined(BACKWARD_CXX98)
 #else
@@ -4492,5 +4511,9 @@ public:
 #endif // BACKWARD_SYSTEM_UNKNOWN
 
 } // namespace backward
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif /* H_GUARD */

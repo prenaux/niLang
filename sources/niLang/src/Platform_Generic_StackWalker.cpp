@@ -2,6 +2,8 @@
 #include "API/niLang/Utils/Path.h"
 
 #if !defined niEmbedded
+#define BACKWARD_HAS_BFD 1
+#define BACKWARD_HAS_UNWIND 1
 #include "backward.hpp"
 #include "API/niLang/Utils/ThreadImpl.h"
 #endif

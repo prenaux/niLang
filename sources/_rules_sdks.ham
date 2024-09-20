@@ -13,7 +13,7 @@ if $(LINUX) = 1 {
   CCFLAGS += -fvisibility=default ;
   C++FLAGS += -fvisibility=default ;
   LINKFLAGS += -rdynamic ;
-  LINKLIBS += -lbfd -lunwind ;
+  LINKLIBS += -lbfd ;
 }
 
 #----------------------------------------------------------------------

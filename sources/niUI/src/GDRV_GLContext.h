@@ -19,10 +19,11 @@
 #  if defined __JSCC__
 #    include <GLES2/gl2.h>
 #    include <GLES2/gl2ext.h>
-
 #    ifndef GL_HALF_FLOAT_OES
 #      error "Emscripten GLES OES extensions not included"
 #    endif
+#    define __TSGL_STATIC_CORE__
+#    define __TSGL_STATIC_EXT__
 
 #  elif defined niAndroid
 #    include <GLES2/gl2.h>
@@ -30,9 +31,16 @@
 // Use separated alpha blending to composite the alpha channel additively so
 // that translucent backgrounds work correctly.
 #    define GLDRV_CORRECT_ALPHA_COMPOSITING
+#    define __TSGL_STATIC_CORE__
 
 #  elif defined niIOS
-
+#    if defined ni64
+#      define USE_GLES3
+#      define USE_GL_BIND_VAO
+#      define _glBindVertexArray glBindVertexArray
+#      define USE_GL_BIND_SAMPLER
+#      define _glBindSampler glBindSampler
+#    endif
 #    ifdef USE_GLES3
 #      import <OpenGLES/ES3/gl.h>
 #      import <OpenGLES/ES3/glext.h>
@@ -40,6 +48,8 @@
 #      import <OpenGLES/ES2/gl.h>
 #      import <OpenGLES/ES2/glext.h>
 #    endif
+#    define __TSGL_STATIC_CORE__
+#    define __TSGL_STATIC_EXT__
 
 #  elif defined niQNX
 #    include "GLES2/gl2.h"
@@ -262,6 +272,9 @@ using GLhandle = void*;
 #define TSGL_OPT_EXT_PROC TSGL_EXT_PROC
 #endif
 
+#define TSGL_OK             0
+#define TSGL_ERROR         -1
+
 //===========================================================================
 //
 //  Context
@@ -269,10 +282,8 @@ using GLhandle = void*;
 //===========================================================================
 #if !defined __TSGL_NOCONTEXT__
 
-#  define TSGL_CONTEXT
+#define TSGL_CONTEXT
 
-#define TSGL_OK             0
-#define TSGL_ERROR         -1
 #define TSGL_ERR_ALLOCCTX  -2
 #define TSGL_ERR_LIBEGL    -3
 #define TSGL_ERR_LIBGL1    -4

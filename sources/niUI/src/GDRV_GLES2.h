@@ -89,14 +89,6 @@
 // #define USE_TEXFMT_USE_DEFAULT_ONLY
 // #endif
 
-#if defined niIOS && defined ni64
-#define USE_GLES3
-#define USE_GL_BIND_VAO
-#define _glBindVertexArray glBindVertexArray
-#define USE_GL_BIND_SAMPLER
-#define _glBindSampler glBindSampler
-#endif
-
 /*
   Valid values for glEnable/glDisable in ES2 :
 

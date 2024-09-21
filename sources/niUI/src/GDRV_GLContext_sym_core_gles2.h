@@ -96,7 +96,7 @@ TSGL_CORE_PROC(void        ,glRenderbufferStorage, (GLenum target, GLenum intern
 TSGL_CORE_PROC(void        ,glSampleCoverage, (GLclampf value, GLboolean invert));
 TSGL_CORE_PROC(void        ,glScissor, (GLint x, GLint y, GLsizei width, GLsizei height));
 TSGL_CORE_PROC(void        ,glShaderBinary, (GLsizei n, const GLuint* shaders, GLenum binaryformat, const void* binary, GLsizei length));
-TSGL_CORE_PROC(void        ,glShaderSource, (GLuint shader, GLsizei count, const char** string, const GLint* length));
+TSGL_CORE_PROC(void        ,glShaderSource, (GLuint shader, GLsizei count, const char* const* str, const GLint* length));
 TSGL_CORE_PROC(void        ,glStencilFunc, (GLenum func, GLint ref, GLuint mask));
 TSGL_CORE_PROC(void        ,glStencilFuncSeparate, (GLenum face, GLenum func, GLint ref, GLuint mask));
 TSGL_CORE_PROC(void        ,glStencilMask, (GLuint mask));

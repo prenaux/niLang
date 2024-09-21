@@ -191,13 +191,12 @@ static bool hasTexFmtDepth = false;
 #define USE_GL_GET_TEX_IMAGE
 #endif
 
-#if defined __GLES2__ && !defined USE_GLES3
-#define _glReadBuffer(X) // NOOP
+#if defined USE_GLES3
+// TODO: This should go in a future GDRV_GLContext_sym_core_gles2.h header.
+#define _glReadBuffer(X) glReadBuffer
 #else
-#define _glReadBuffer(X) _glReadBuffer(X)
+#define _glReadBuffer(X) // NOOP
 #endif
-
-#define _glReadPixels _glReadPixels
 
 #if defined niIOS
 #define USE_FBO_MAINRT_IS_FBO
@@ -3125,8 +3124,8 @@ class cGL2ContextWindow : public sGLContext
 
   /////////////////////////////////////////////
   virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
-#ifdef _glReadPixels
-    if (!mpDrv) return NULL;
+    if (!mpDrv)
+      return NULL;
 
     const tU32 w = this->GetWidth();
     const tU32 h = this->GetHeight();
@@ -3151,9 +3150,6 @@ class cGL2ContextWindow : public sGLContext
 
     // mpDrv->GetGraphics()->SaveBitmap("d:/_screencap_gl2.png", ptrBmp, 0);
     return ptrBmp.GetRawAndSetNull();
-#else
-    return NULL;
-#endif
   }
 
   /////////////////////////////////////////////
@@ -3766,7 +3762,7 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
           aDestRect.GetWidth(),aDestRect.GetHeight());
     }
     else {
-#if defined USE_FBO && defined _glReadPixels
+#if defined USE_FBO
       // TODO: Handle the main render target. Atm it should work, but on
       // desktop - and probably mobile the result will be flipped. This need
       // to be tested, or just marked as unsupported (and return eFalse).
@@ -3812,8 +3808,8 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
 
         _glBindFramebuffer(GL_FRAMEBUFFER, wasFBO);
         return eTrue;
-      }
 #endif
+      }
 
 #ifdef USE_GL_GET_TEX_IMAGE
       GL_DEBUG_LOG(("- BlitTextureToBitmap: Use glGetTexImage."));

@@ -4,11 +4,12 @@
 #if !defined niEmbedded
 #include "backward.hpp"
 #include "API/niLang/Utils/ThreadImpl.h"
+#define HAS_CODE_SNIPPET
 #endif
 
 namespace ni {
 
-#if !defined niEmbedded // we're not gonna have the source on embedded systems anyway...
+#ifdef HAS_CODE_SNIPPET
 static ni::tBool _StackCatCodeSnippet(
   cString& aOutput,
   const std::string& aFileName, int aLine,
@@ -75,9 +76,11 @@ niExportFunc(void) _StackCatEntry(cString& aOutput, tInt frameIndex, const achar
 
   aOutput.append("\n");
 
+#ifdef HAS_CODE_SNIPPET
   if (abIncludeCodeSnippet && niStringIsOK(file)) {
     _StackCatCodeSnippet(aOutput, file, line, "    ", 5);
   }
+#endif
 }
 
 }

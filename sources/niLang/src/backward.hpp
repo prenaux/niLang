@@ -38,8 +38,6 @@
 // you're doing.
 #define BACKWARD_HAS_BFD 1
 #define BACKWARD_HAS_UNWIND 1
-#else
-#error "Platform not supported, you need to configure backward-cpp for this platform (see the top of backward.hpp)."
 #endif
 
 #if defined(__clang__)

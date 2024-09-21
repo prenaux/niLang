@@ -368,7 +368,7 @@ static tBool GL2_InitializeExt() {
   // shader caps
   {
     _glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&kGL2_MaxVertexAttrs);
-#if defined __GL1__ || defined niOSX
+#if defined niOSX || defined niWindows
     _glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&kGL2_MaxVertexUniforms);
     kGL2_MaxVertexUniforms /= 4;
     _glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&kGL2_MaxPixelUniforms);

@@ -56,9 +56,9 @@
 #  include "GL/ni_glext.h"
 #  pragma comment(lib,"opengl32.lib")
 #  define TSGL_DESKTOP
-
 #  define __TSGL_STATIC_CORE__
 #  define __TSGL_KIND_DESKTOP__
+using GLhandle = void*;
 
 #  define GL_APIENTRY APIENTRY
 #  define USE_OQ
@@ -131,6 +131,7 @@
 #  define __TSGL_STATIC_EXT__
 #  define __TSGL_KIND_DESKTOP__
 using GLhandle = GLhandleARB;
+
 #define glCreateShaderObject glCreateShaderObjectARB
 #define glCreateProgramObject glCreateProgramObjectARB
 #define glDeleteObject glDeleteObjectARB

@@ -83,7 +83,6 @@ NI_CMD += -I "$(NILANG_SCRIPTS)" ;
 if ! $(NI_EXE) || ! [ FExists $(NI_EXE) ] {
   ECHO "W/Can't find Ni executable " $(NI_EXE) " disabled ModuleDef generation." ;
   NO_MODULEDEF = 1 ;
-  NO_BASETOOLS = 1 ;
 }
 
 # This is necessary to support includes where the include file name is the same
@@ -123,7 +122,7 @@ rule niGenIDLs {
     #     IDLS += [ FDirName API $(3) $(_i)".idl.xml" ] ;
     DEPENDS $(<) : $(d) ;
     VMCALLS += $(x) ;
-    if ! ( $(NO_BASETOOLS) = 1 ) {
+    if ! ( $(NO_MODULEDEF) = 1 ) {
       niIDL $(d) $(x) : $(s) ;
       MakeDirForTarget $(d) $(x) : $(IDLDIR) ;
     }
@@ -138,7 +137,7 @@ rule niModuleIDLs {
   ECHO "W/niModuleIDLs is deprecated use niBuildModuleDef instead of niModuleIDLs. ($(<[0]))" ;
 }
 
-if ! ( $(NO_BASETOOLS) = 1 ) {
+if ! ( $(NO_MODULEDEF) = 1 ) {
   # niIDL target : source ;
   # REM: Requires the fully qualified path (absolute path)
   rule niIDL {

@@ -92,6 +92,45 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
+  build_ios:
+    # Fix the macOS version to avoid surprise updates in macos-latest
+    runs-on: macos-13
+
+    steps:
+      # Check-out and init ham
+      - name: Check-out ham
+        uses: actions/checkout@v3
+        with:
+          repository: prenaux/ham
+          ref: master
+          path: ham
+
+      - name: Install OS packages
+        run: |
+          ./ham/bin/ham-install-os-packages
+
+      - name: ham-toolset repos cppm
+        run: |
+          ./ham/bin/ham-toolset repos cppm
+
+      # Check-out our repo
+      - uses: actions/checkout@v3
+        with:
+          path: niLang
+
+      - name: niLang _build_bootstrap.sh
+        run: |
+          ./ham/bin/ham -X niLang _build_bootstrap.sh
+          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=ra pass1
+
+      - name: niLang _run_ci.sh BUILD=da
+        run: |
+          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=da pass1 all
+
+      - name: niLang _run_ci.sh BUILD=ra
+        run: |
+          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=ra pass1 all
+
   build_windows:
     # Fix the Windows version to avoid surprise updates in windows-latest
     runs-on: windows-2019

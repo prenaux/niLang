@@ -130,25 +130,33 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
 
 TEST_FIXTURE(FOSWindow,Create) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK_RETURN_IF_FAILED(wnd.IsOK());
+  // TODO: This should be some kind of "HAS_DISPLAY" flag which is false for
+  // most CI that dont actually have a usable Linux display we can use to
+  // create a window successfully.
+#if defined niLinux
+  if (isInteractive)
+#endif
+  {
+    Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+      NULL,
+      "HelloWindow",
+      sRecti(50,50,400,300),
+      0,
+      eOSWindowStyleFlags_Regular);
+    CHECK_RETURN_IF_FAILED(wnd.IsOK());
 
-  Ptr<sTestWindowSink> sink = niNew sTestWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
+    Ptr<sTestWindowSink> sink = niNew sTestWindowSink(wnd);
+    wnd->GetMessageHandlers()->AddSink(sink.ptr());
 
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
+    if (isInteractive) {
+      wnd->CenterWindow();
+      wnd->SetShow(eOSWindowShowFlags_Show);
+      wnd->ActivateWindow();
+      while (!wnd->GetRequestedClose()) {
+        wnd->UpdateWindow(eTrue);
+      }
+      niDebugFmt(("... isInteractive end of '%s'.", m_testName));
     }
-    niDebugFmt(("... isInteractive end of '%s'.", m_testName));
   }
 }
 

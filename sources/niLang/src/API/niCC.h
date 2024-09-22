@@ -400,6 +400,9 @@ constexpr T unsafe_narrow_cast(U&& u) noexcept {
   return static_cast<T>(astl::forward<U>(u));
 }
 
+#undef niUnsafeNarrowCast
+#define niUnsafeNarrowCast(T,EXP) ni::unsafe_narrow_cast<T>(EXP)
+
 template <class T, class U>
 constexpr T narrow_cast(U u) noexcept(false) {
   constexpr const bool is_different_signedness =

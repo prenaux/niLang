@@ -1568,6 +1568,10 @@ template<> inline niConstExpr tF64 TypeMaxExp<tF64>() { return ni::kMaxExpF64; }
 
 #  ifdef __cplusplus
 
+// template version in niCC.h which should be preferred, this is here as a
+// bridge between old and new code
+#define niUnsafeNarrowCast(T,EXP) ((T)(EXP))
+
 // Use implicit_cast as a safe version of static_cast or const_cast
 // for upcasting in the type hierarchy (i.e. casting a pointer to Foo
 // to a pointer to SuperclassOfFoo or casting a pointer to Foo to

@@ -171,7 +171,7 @@ inline tI64 FdPathSize(const achar* path, ni::cString* apPathOnDisk = NULL) {
   return r;
 }
 
-inline int FdWrite(int fd, const void* data, unsigned int size) {
+inline tI64 FdWrite(int fd, const void* data, unsigned int size) {
   if (fd < 0)
     return 0;
 #ifdef niWin32
@@ -180,7 +180,7 @@ inline int FdWrite(int fd, const void* data, unsigned int size) {
   return write(fd,data,size);
 #endif
 }
-inline int FdRead(int fd,  void* data, unsigned int size) {
+inline tI64 FdRead(int fd,  void* data, unsigned int size) {
   if (fd < 0)
     return 0;
 #ifdef niWin32

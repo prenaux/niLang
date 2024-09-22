@@ -26,14 +26,14 @@ struct FlexView : public ni::ImplRC<ni::iUnknown>, public css_node_t {
   tBool AddChild(FlexView* apChild) {
     niCheckSilent(niIsOK(apChild),eFalse);
     mvChildren.push_back(apChild);
-    this->children_count = mvChildren.size();
+    this->children_count = niUnsafeNarrowCast(int, mvChildren.size());
     return eTrue;
   }
 
   FlexView* AddChild() {
     Ptr<FlexView> ptrChild = niNew FlexView();
     mvChildren.push_back(ptrChild);
-    this->children_count = mvChildren.size();
+    this->children_count = niUnsafeNarrowCast(int, mvChildren.size());
     return ptrChild;
   }
 

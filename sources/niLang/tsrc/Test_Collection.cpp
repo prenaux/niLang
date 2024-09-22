@@ -52,7 +52,7 @@ TEST_FIXTURE(FCollection,MutableVector) {
 
   ni::tBool first = ni::eTrue;
   niLoopIterator(it,vec) {
-    const ni::tU32 v = it->Value().GetIntValue();
+    const ni::tU32 v = ni::narrow_cast<ni::tU32>(it->Value().GetIntValue());
     if (first) {
       CHECK(vec->Remove(4)); // remove 4
       CHECK(!it->IsOK());
@@ -70,7 +70,7 @@ TEST_FIXTURE(FCollection,MutableVector) {
   }
 
   niLoopIterator(it,vec) {
-    const ni::tU32 v = it->Value().GetIntValue();
+    const ni::tU32 v = ni::narrow_cast<ni::tU32>(it->Value().GetIntValue());
     niDebugFmt(("V: %d",v));
     *seqPtr++ = v;
   }
@@ -153,7 +153,7 @@ TEST_FIXTURE(FCollection,MutableMap) {
 
   ni::tBool first = ni::eTrue;
   niLoopIterator(it,map) {
-    const ni::tU32 v = it->Value().GetIntValue();
+    const ni::tU32 v = ni::narrow_cast<ni::tU32>(it->Value().GetIntValue());
     if (first) {
       CHECK(map->Remove("4")); // remove 4
       CHECK(map->Remove("7")); // remove 7

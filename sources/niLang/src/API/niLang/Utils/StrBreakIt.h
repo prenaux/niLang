@@ -173,7 +173,7 @@ struct StrBreakWord {
     if (cursor.current() != it.current()) {
       lastSeparator = StrCharIt(it.current(),cursor.current());
     }
-    return (cursor.current()-it.current());
+    return niUnsafeNarrowCast(tU32,cursor.current()-it.current());
   }
 };
 typedef StrBreakIt<StrBreakWord> StrBreakWordIt;
@@ -197,7 +197,7 @@ struct StrBreakSpace {
     if (cursor.current() != it.current()) {
       lastSeparator = StrCharIt(it.current(),cursor.current());
     }
-    return (cursor.current()-it.current());
+    return niUnsafeNarrowCast(tU32,cursor.current()-it.current());
   }
 };
 typedef StrBreakIt<StrBreakSpace> StrBreakSpaceIt;
@@ -237,7 +237,7 @@ struct StrBreakChr {
     if (cursor.current() != it.current()) {
       lastSeparator = StrCharIt(it.current(),cursor.current());
     }
-    return (cursor.current()-it.current());
+    return niUnsafeNarrowCast(tU32,cursor.current()-it.current());
   }
 };
 typedef StrBreakIt<StrBreakChr> StrBreakChrIt;
@@ -260,7 +260,7 @@ struct StrBreakIdentifier {
     if (cursor.current() != it.current()) {
       lastSeparator = StrCharIt(it.current(),cursor.current());
     }
-    return (cursor.current()-it.current());
+    return niUnsafeNarrowCast(tU32,cursor.current()-it.current());
   }
 };
 typedef StrBreakIt<StrBreakIdentifier> StrBreakIdentifierIt;

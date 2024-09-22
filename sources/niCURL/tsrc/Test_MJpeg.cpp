@@ -33,7 +33,7 @@ tBool __stdcall ReadMjpegPart(iGraphics* apGraphics, iFile* apJpeg, tU32 anPartI
   static cString _basePath = UnitTest::GetTestOutputFilePath("test_curl_mjpeg");
   cString path;
   tBool bRet = eFalse;
-  tI32 headerSize = -1;
+  tOffset headerSize = -1;
   {
     tPtr p = apJpeg->GetBase();
     // find the jpeg header
@@ -84,7 +84,7 @@ TEST_FIXTURE(FCURLMJpeg,IPCam) {
   int numJpegDecoded = 0;
 
   Ptr<iRunnable> runnable = _curl->URLGetMultiPart(
-      ni::MessageHandler([=,&futureValue,&numPartReceived,&numJpegDecoded] (tU32 anMsg, const Var& A, const Var& B) {
+      ni::MessageHandler([=,this,&futureValue,&numPartReceived,&numJpegDecoded] (tU32 anMsg, const Var& A, const Var& B) {
           futureValue = B;
           switch (anMsg) {
             case eCURLMessage_Started: {

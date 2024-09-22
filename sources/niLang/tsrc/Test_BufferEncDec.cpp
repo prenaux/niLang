@@ -365,7 +365,7 @@ TEST_FIXTURE(FBufferEncDec,EncInvert) {
   niDefer { niFree(blockData); };
 
   for (;;) {
-    const tInt readBytes = fpIn->ReadRaw(blockData, blockSize);
+    const auto readBytes = fpIn->ReadRaw(blockData, blockSize);
     if (readBytes > 0) {
       EncodeBlockInvert(blockData, blockSize);
       fpOut->WriteRaw(blockData,readBytes);

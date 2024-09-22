@@ -36,13 +36,13 @@ struct TNiFileReaderTransport : public TTransport {
   uint32_t read_virt(uint8_t* buf, uint32_t len) override {
     niPanicAssertMsg(_readBuffer.IsOK(), 0);
     // niDebugFmt(("... Read: len: %d", len));
-    uint32_t nread = _readBuffer->ReadRaw(buf, len);
+    uint32_t nread = niUnsafeNarrowCast(uint32_t, _readBuffer->ReadRaw(buf, len));
     return nread;
   }
   uint32_t readAll_virt(uint8_t* buf, uint32_t len) override {
     niPanicAssertMsg(_readBuffer.IsOK(), 0);
     // niDebugFmt(("... ReadAll: len: %d", len));
-    uint32_t nread = _readBuffer->ReadRaw(buf, len);
+    uint32_t nread = niUnsafeNarrowCast(uint32_t, _readBuffer->ReadRaw(buf, len));
     return nread;
   }
 

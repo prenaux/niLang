@@ -10,7 +10,7 @@ hamToolsetHdrs boost_cppm : ham ;
 SubDirHdrs $(SUBDIR) API ;
 SubDirHdrs $(SUBDIR) mbedtls include ;
 if $(LINUX) = 1 {
-  hamToolsetHdrs syslib_bfd : bfd.h ;
+  hamToolsetHdrs syslib_libdw : elfutils/libdw.h ;
 }
 
 ### SOURCES #############################################################

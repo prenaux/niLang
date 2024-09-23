@@ -36,7 +36,8 @@
 // compiler + linker flags is a *lot* harder than it seems, dont mess with the
 // things that relate to getting a stacktrace unless you truely know what
 // you're doing.
-#define BACKWARD_HAS_BFD 1
+// #define BACKWARD_HAS_BFD 1
+#define BACKWARD_HAS_DW 1
 #define BACKWARD_HAS_UNWIND 1
 #endif
 

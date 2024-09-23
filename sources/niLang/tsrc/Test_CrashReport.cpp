@@ -22,6 +22,10 @@ TEST_FIXTURE(FCrashReport,StackGetCurrent) {
   ni_stack_get_current(stack,NULL,0);
   niDebugFmt(("... stack:\n%s", stack));
   CHECK(stack.contains("FCrashReportStackGetCurrentHelper::RunTest"));
+  // Following platforms should have the source line numbers
+#if defined niLinux
+  CHECK(stack.contains("Test_CrashReport.cpp:"));
+#endif
 }
 
 TEST_FIXTURE(FCrashReport,PanicAssert) {

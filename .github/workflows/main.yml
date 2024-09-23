@@ -14,12 +14,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  # This workflow contains a single job called "build"
-  build_ubuntu:
+  build_ubuntu22:
     runs-on: ubuntu-22.04
 
     steps:
-      # Check-out and init ham
       - name: Check-out ham
         uses: actions/checkout@v3
         with:
@@ -35,7 +33,6 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      # Check-out our repo
       - uses: actions/checkout@v3
         with:
           path: niLang
@@ -53,12 +50,10 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_macos:
-    # Fix the macOS version to avoid surprise updates in macos-latest
-    runs-on: macos-12
+  build_ubuntu24:
+    runs-on: ubuntu-24.04
 
     steps:
-      # Check-out and init ham
       - name: Check-out ham
         uses: actions/checkout@v3
         with:
@@ -74,7 +69,6 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      # Check-out our repo
       - uses: actions/checkout@v3
         with:
           path: niLang
@@ -92,12 +86,10 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_ios:
-    # Fix the macOS version to avoid surprise updates in macos-latest
+  build_macos13:
     runs-on: macos-13
 
     steps:
-      # Check-out and init ham
       - name: Check-out ham
         uses: actions/checkout@v3
         with:
@@ -113,7 +105,42 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      # Check-out our repo
+      - uses: actions/checkout@v3
+        with:
+          path: niLang
+
+      - name: niLang _build_bootstrap.sh
+        run: |
+          ./ham/bin/ham -X niLang _build_bootstrap.sh
+
+      - name: niLang _run_ci.sh BUILD=da
+        continue-on-error: true
+        run: |
+          ./ham/bin/ham -X niLang -E BUILD=da _run_ci.sh
+
+      - name: niLang _run_ci.sh BUILD=ra
+        run: |
+          ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
+
+  build_ios_on_macos13:
+    runs-on: macos-13
+
+    steps:
+      - name: Check-out ham
+        uses: actions/checkout@v3
+        with:
+          repository: prenaux/ham
+          ref: master
+          path: ham
+
+      - name: Install OS packages
+        run: |
+          ./ham/bin/ham-install-os-packages
+
+      - name: ham-toolset repos cppm
+        run: |
+          ./ham/bin/ham-toolset repos cppm
+
       - uses: actions/checkout@v3
         with:
           path: niLang
@@ -131,8 +158,7 @@ jobs:
         run: |
           BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=ra pass1 all
 
-  build_windows:
-    # Fix the Windows version to avoid surprise updates in windows-latest
+  build_windows2019:
     runs-on: windows-2019
 
     steps:
@@ -141,7 +167,6 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      # Check-out and init ham
       - name: Check-out ham
         uses: actions/checkout@v3
         with:
@@ -157,7 +182,6 @@ jobs:
         run: |
           .\ham\bin\ham-toolset.cmd repos cppm
 
-      # Check-out our repo
       - uses: actions/checkout@v3
         with:
           path: niLang

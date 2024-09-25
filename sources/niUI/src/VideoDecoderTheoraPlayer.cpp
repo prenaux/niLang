@@ -112,7 +112,7 @@ class cVideoDecoderTheoraPlayer : public ni::ImplRC<ni::iVideoDecoder,ni::eImplF
     return _A("THEORAPLAYER");
   }
   virtual tF64 __stdcall GetVideoFps() const {
-    return mpTheoraVideoClip ? 1.0/24.0 : mpTheoraVideoClip->getFPS();
+    return mpTheoraVideoClip ? mpTheoraVideoClip->getFPS() : 1.0/24.0 ;
   }
 
   ///////////////////////////////////////////////

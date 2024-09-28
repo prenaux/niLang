@@ -44,3 +44,16 @@
   ::println("zz: " + zz)
   ::CHECK_EQUAL(z,zz);
 })
+
+::TEST("oo","SetDelegate",#() {
+  local del = { bar = 456 };
+  local a = { foo = 123 };
+  local b = a.SetDelegate(del);
+  ::CHECK_EQUAL(a.ToIntPtr(), b.ToIntPtr());
+  ::CHECK_EQUAL(123, a.foo);
+  ::CHECK_EQUAL(123, b.foo);
+  ::CHECK_EQUAL(456, a.bar);
+  ::CHECK_EQUAL(456, b.bar);
+  ::CHECK_EQUAL(456, del.?bar);
+  ::CHECK_EQUAL(null, del.?foo);
+})

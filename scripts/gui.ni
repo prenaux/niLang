@@ -473,7 +473,7 @@
     c.exclusive = true
     c.zorder = ::eWidgetZOrder.Overlay
 
-    local postSink = ::delegate(::gui.baseWidgetSink, {
+    local postSink = {
       function OnNCRightClickDown(w,a,b) {
         ::dbg("... OnNCRightClickDown Destroy")
         w.Destroy()
@@ -487,7 +487,7 @@
           aButton.check = false
         }
       }
-    });
+    }.SetDelegate(::gui.baseWidgetSink);
 
     c.AddPostSink(postSink)
     aWidget.SetFocus()
@@ -556,7 +556,7 @@
                                   ::eWidgetStyle.DontSerialize|::eWidgetFormStyle.CloseButton|
                                   ::eWidgetStyle.HoldFocus)
 
-    local sink = ::delegate(::gui.baseWidgetSink, {
+    local sink = {
       function OnCommand(w,aCmd) {
         if (aCmd.id == ::eWidgetButtonCmd.Clicked) {
           w.Destroy()
@@ -568,7 +568,7 @@
       function OnCancel(w,a,b) {
         w.Destroy()
       }
-    })
+    }.SetDelegate(::gui.baseWidgetSink)
     form.padding = ::Vec4(5,5,5,5)
     if (aButtons.len() == 1)
       form.input_submit_flags = ::eUIInputSubmitFlags.SubmitA
@@ -685,13 +685,13 @@
   }
   function dialogMessageEx2(aParent,aTitle,aMsg,aButtons,aSink) {
     local form = ::gui.createMessageBox(::gUIContext,aParent,aTitle,aMsg,aButtons)
-    local sink = ::delegate(::gui.baseWidgetSink, {
+    local sink = {
       function OnCommand(w,aCmd) {
         if (aCmd.id == ::eWidgetButtonCmd.Clicked) {
           w.Destroy()
         }
       }
-    })
+    }.SetDelegate(::gui.baseWidgetSink)
     form.AddSink(sink)
     if (aSink) form.AddSink(aSink)
     return form
@@ -741,7 +741,7 @@
       ::gui.setIconSmall(form,"ID_Cancel","cancel")
     } catch(e) {}
 
-    local sink = ::delegate(::gui.baseWidgetSink, {
+    local sink = {
       function OnCancel(w,a,b) {
         w.Destroy()
       }
@@ -765,7 +765,7 @@
           }
         }
       }
-    })
+    }.SetDelegate(::gui.baseWidgetSink)
     form.input_submit_flags = ::eUIInputSubmitFlags.SubmitA
     form.AddSink(sink)
     if (aSink) form.AddSink(aSink)
@@ -821,7 +821,7 @@
       ::gui.setIconSmall(form,"ID_Cancel","cancel")
     } catch(e) {}
 
-    local sink = ::delegate(::gui.baseWidgetSink, {
+    local sink = {
       function OnCancel(w,a,b) {
         w.Destroy()
       }
@@ -845,7 +845,7 @@
           }
         }
       }
-    })
+    }.SetDelegate(::gui.baseWidgetSink)
     form.auto_layout |= ::eWidgetAutoLayoutFlags.Size
     form.input_submit_flags = ::eUIInputSubmitFlags.SubmitA
     form.AddSink(sink)

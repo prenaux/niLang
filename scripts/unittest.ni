@@ -150,16 +150,17 @@
   }
 }
 
-::FIXTURE <- function(aName,aTable) {
+::FIXTURE <- function(aName,_aTable) {
   if (typeof aName == "array") {
     foreach (v in aName) {
-      ::FIXTURE(v,aTable)
+      ::FIXTURE(v,_aTable)
     }
     return;
   }
-  if (aName in ::FIXTURES)
+  if (aName in ::FIXTURES) {
     throw "Fixture '"+aName+"' already exist."
-  ::FIXTURES[aName] <- aTable || {}
+  }
+  ::FIXTURES[aName] <- _aTable || {}
   ::FIXTURES[aName].name <- aName
 }
 

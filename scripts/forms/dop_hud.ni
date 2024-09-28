@@ -5,7 +5,7 @@
 mCurrentDop <- invalid
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-mRTViewSink <- ::delegate(::gui.baseWidgetSink, {
+mRTViewSink <- {
   mZoomFactor = 1.0
 
   function OnSetCursor(aWidget,aPA,aPB) {
@@ -57,7 +57,9 @@ mRTViewSink <- ::delegate(::gui.baseWidgetSink, {
     zoom(-1)
     return true
   }
-  function OnNCWheel(w,a,b) OnWheel(w,a,b)
+  function OnNCWheel(w,a,b) {
+    return OnWheel(w,a,b)
+  }
   function OnWheel(w,a,b) {
     zoom(a)
     return true
@@ -113,7 +115,7 @@ mRTViewSink <- ::delegate(::gui.baseWidgetSink, {
       ::printdebugln("ZOOM IN: " + aSteps + ", " + mZoomFactor)
     }
   }
-})
+}.SetDelegate(::gui.baseWidgetSink)
 
 function getTexName(t) {
   local ctxt = "[" + t.device_resource_name + "]"
@@ -187,7 +189,7 @@ function OnSetFocus(w,a,b) {
 
 function OnVisible(w,a,b) {
   if (a) {
-    OnSetFocus(w)
+    OnSetFocus(w,null,null)
   }
 }
 
@@ -244,8 +246,9 @@ function OnPaint(w,a,b) {
             if (dt.Push(name)) {
               if (cc && cc[states]) {
                 local s = cc[states]
-                if (typeof(s) == "int")
+                if (typeof(s) == "int") {
                   s = ::gGraphics["compiled_"+states][s]
+                }
                 if (s) {
                   s.SerializeDataTable(
                     dt.top,
@@ -519,7 +522,7 @@ mZoomFactor <- 1.0
 mImageMap <- null
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-TexViewSink <- ::delegate(::gui.baseWidgetSink, {
+TexViewSink <- {
 
   function OnSetCursor(aWidget,aPA,aPB) {
     ::gUIContext.cursor = aWidget.FindSkinCursor("","","Zoom")
@@ -564,7 +567,9 @@ TexViewSink <- ::delegate(::gui.baseWidgetSink, {
     zoom(-1)
     return true
   }
-  function OnNCWheel(w,a,b) OnWheel(w,a,b)
+  function OnNCWheel(w,a,b) {
+    return OnWheel(w,a,b)
+  }
   function OnWheel(w,a,b) {
     zoom(a<0?-1:1)
     return true
@@ -622,7 +627,7 @@ TexViewSink <- ::delegate(::gui.baseWidgetSink, {
 
     p.updateZoomLabel()
   }
-})
+}.SetDelegate(::gui.baseWidgetSink)
 
 ///////////////////////////////////////////////
 function setLabel(aText) {
@@ -694,8 +699,7 @@ function updateCurrentTexture() {
   if (mTexture) {
     local type = ::EnumToString(mTexture.type,::eBitmapType)
     local flags = ::FlagsToString(mTexture.flags,::eTextureFlags)
-    local fmt = mTexture.?pixel_format.?format
-    if (typeof(fmt) != "string") fmt = "Unknown"
+    local fmt = mTexture.?pixel_format.?format || "Unknown"
     setLabel(getTexName(mTexture))
   }
   else {

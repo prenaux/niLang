@@ -3,6 +3,7 @@
 ::Import("fs.ni")
 ::Import("seq.ni")
 ::Import("algo.ni")
+::Import("gui.ni")
 
 mInLogSink <- false
 mListBox <- null
@@ -30,7 +31,7 @@ function OnSinkAttached(w,a,b) {
   }
 
   mCmdLine = w.FindWidget("ID_CmdLine")
-  mCmdLine.AddSink(::delegate(::gui.baseWidgetSink, {
+  mCmdLine.AddSink({
     _thisOnCmdLineKeyDown = ::closure.new(this, OnCmdLineKeyDown)
 
     function OnMoveFocus(w,a,b) {
@@ -42,7 +43,7 @@ function OnSinkAttached(w,a,b) {
       // ::println("... OnKeyDown:" a);
       return _thisOnCmdLineKeyDown(w,a,b);
     }
-  }));
+  }.SetDelegate(::gui.baseWidgetSink));
 
   ::gLang.system_message_handlers.AddSink(w)
 
@@ -55,7 +56,7 @@ function OnSinkAttached(w,a,b) {
       _desc = "Clear the console",
       _func = function(args) : (formId, logId) {
         local wForm = ::gUIContext.root_widget.FindWidget(formId)
-        local wLog = wForm.FindWidget(logId)
+        local wLog = wForm.FindWidget(logId).QueryInterface("iWidgetListBox")
         wLog.ClearItems()
       }
     }
@@ -89,7 +90,7 @@ function OnDefault(aWidget,aMsg,aA,aB) {
   mInLogSink = false
 }
 
-function OnSetFocus(w,a,b) {
+function OnSetFocus(w,_a,_b) {
   local cmdLine = w.FindWidget("ID_CmdLine")
   if (w.visible && cmdLine)
     cmdLine.SetFocus()

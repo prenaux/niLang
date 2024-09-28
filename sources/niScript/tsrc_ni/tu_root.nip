@@ -4,8 +4,6 @@
 
 ::FIXTURE("root")
 
-::rootModule <- ::NewImportModule("tu_root_module.nim");
-
 ::name <- "_ROOT_"
 
 ::anotherRoot <- {
@@ -28,12 +26,4 @@ GetAnotherRootName.SetRoot(anotherRoot)
 ::TEST("root","base",#() {
   ::CHECK_EQUAL("_ROOT_",::GetRootName())
   ::CHECK_EQUAL("anotherRoot",::GetAnotherRootName())
-})
-
-::TEST("root","module",#() {
-  ::CHECK(!("tSomeTable" in ::getroottable()));
-  ::CHECK_EQUAL(null, ::?tSomeTable);
-  ::CHECK_EQUAL(null, ::?name2);
-  ::CHECK_EQUAL("_tu_root_module_name",::rootModule.GetRootName())
-  ::CHECK_EQUAL("_tu_root_module_name2",::rootModule.createSomeTable().GetRootName())
 })

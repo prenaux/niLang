@@ -1,6 +1,6 @@
 ::Import("app.ni")
 
-local widgetSink = ::delegate(::gui.baseWidgetSink {
+local widgetSink = {
   function OnSinkAttached(aW,aA,aB) {
     local w = aW.uicontext.CreateWidget(
       "Button",
@@ -98,7 +98,7 @@ local widgetSink = ::delegate(::gui.baseWidgetSink {
       aCanvas.Flush();
     }
   }
-});
+}.SetDelegate(::gui.baseWidgetSink);
 
 ::app.queueStartup(#() : (widgetSink) {
   ::gUIContext.root_widget.AddSink(widgetSink)

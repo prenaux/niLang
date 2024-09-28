@@ -11,8 +11,8 @@ module <- {
 
   ///////////////////////////////////////////////
   // Create a new pcre regular expression
-  function pcre(aStr,aOptions) iPCRE {
-    return ::CreateInstance("niLang.PCRE",aStr,aOptions).QueryInterface("iPCRE");
+  function pcre(aStr,_aOptions) iPCRE {
+    return ::CreateInstance("niLang.PCRE",aStr,_aOptions).QueryInterface("iPCRE");
   }
 }
 

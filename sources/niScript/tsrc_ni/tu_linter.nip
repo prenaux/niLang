@@ -8,11 +8,9 @@
 // # Lint scripts/lang.ni
 // ni -c "$WORK/niLang/scripts/lang.ni"
 //
+
 // TODO:
-// - [ ] p0: Remove ::ImportModule(script)
-// - [ ] p0: Remove ::namespace
-// - [ ] p0: Remove ::namespaceOrModule
-// - [ ] p0: Remove ::delegate
+// - [ ] p0: Lint iHString as the string type (.empty(), etc. should work)o
 //
 // - [ ] p1: lang.ni fully lints.
 // - [ ] p1: Fully lint all tu_* test cases.
@@ -29,7 +27,7 @@
 // - [ ] p2: Match table types, not just base types
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
 // - [ ] p2: Implement basic operators for literal types for float, string & integers
-// - [ ] p2: Some various lingering instances of incorrect line number being printed when no semicolon are present and also with arg counts when doing a multiline function call - frequent with ::namespace() for example.
+// - [ ] p2: Some various lingering instances of incorrect line number being printed when no semicolon are present and also with arg counts when doing a multiline function call
 // - [ ] p2: unused_local_variable
 // - [ ] p2: unused_parameter
 // - [ ] p2: unused_outer_variable
@@ -37,7 +35,12 @@
 // - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
 // - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
 // - [ ] p2: add a way to mark functions as deprecated, we'd like to mark all lowercase builtin as deprecated and encourage using the PascalCase functions instead
-//
+
+// Done:
+// - [x] p0: Remove ::namespace
+// - [x] p0: Remove ::delegate
+// - [x] p0: Remove ::ImportModule(script)
+// - [x] p0: Remove ::namespaceOrModule
 // - [x] p0: table.setdelegate() should return the this table
 // - [x] p0: Vec2/3/4 & Matrix swizzling getters
 // - [x] p0: correctly set the type of the foreach iterator variables - we set null only as type for now
@@ -64,10 +67,10 @@
 // - [x] p0: Handle ImportNative(NativeModule)
 // - [x] p0: if (typeof(x) == "sometype") { scopeA; } should set the type of x to "sometype" for the duration of scopeA
 // - [x] p0: switch (typeof(x)) { case "sometype": scopeA; break; } should set the type of x to "sometype" for the duration of scopeA
-//
+
 ::Import("unittest.ni")
 ::Import("lang.ni")
-::REGEX <- ::ImportModule("regex.ni")
+::Import("regex.ni")
 ::LINT_CHECK_TYPE("null", ::?bar.?qoo) // should be ok
 
 testLinter <- {
@@ -159,7 +162,7 @@ testLinter <- {
 // Takes `aLogs` explicitly so that it shows in a more readable manner in the
 // failure stack.
 function ::EXPECTED_LINT(aLogs,aExpectedCount,aMsg) {
-  local pattern = ::REGEX.pcre(aMsg)
+  local pattern = ::regex.pcre(aMsg)
   local found = 0;
   foreach (l in aLogs) {
     if (l.contains(aMsg) || pattern.DoesMatch(l))
@@ -176,7 +179,7 @@ function ::EXPECT_LINT_OK(aLogs) {
 function main() {
   local testProperty = ::lang.getProperty("test")
   if (testProperty) {
-    testLinter.mTestFilter = ::REGEX.pcre(testProperty)
+    testLinter.mTestFilter = ::regex.pcre(testProperty)
   }
 
   testLinter.check(

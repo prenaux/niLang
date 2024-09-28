@@ -1,6 +1,6 @@
 ::Import("gui.ni");
 
-mCanvasSink <- ::delegate(::gui.baseWidgetSink, {
+mCanvasSink <- {
   _wireframe = false
   _spring = ::gGraphics.CreateDampedSpring2(10.0,1.0)
 
@@ -82,7 +82,7 @@ mCanvasSink <- ::delegate(::gui.baseWidgetSink, {
     path.Circle(cursorPos.x,cursorPos.y,5.0);
     canvas.DrawPath(path);
   }
-})
+}.SetDelegate(::gui.baseWidgetSink)
 
 function OnSinkAttached(w,a,b) {
   ::dbg("... OnSinkAttached")

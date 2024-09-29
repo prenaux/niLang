@@ -34,6 +34,7 @@ rule niToolkitScriptDirs {
   local r ;
   for _tk in $(1) {
     r += [ FDirName [ tkFindToolkitDir $(_tk) ] scripts ] ;
+    r += [ FDirName [ tkFindToolkitDir $(_tk) ] sources ] ;
   }
   return $(r) ;
 }

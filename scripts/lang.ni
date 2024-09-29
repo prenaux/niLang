@@ -4,8 +4,8 @@
 ::Import("niScript");
 
 local __lint = {
-  // this_key_notfound_callk = 0
-  // this_key_notfound_getk = 0
+  // _experimental = 1
+  // _pedantic = 1
 };
 
 // Get the Lang instance.

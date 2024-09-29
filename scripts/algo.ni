@@ -16,7 +16,7 @@
   ///////////////////////////////////////////////
   function unboxArray(that) {
     if (typeof(that) == "array" && that.len() == 1) {
-      return that[0]
+      return that[?0]
     }
     else {
       return that
@@ -36,19 +36,19 @@
   }
 
   ///////////////////////////////////////////////
-  function first(that,aProperty) {
+  function first(that,_aProperty) {
     foreach (k,v in that) {
-      return aProperty ? v[aProperty] : v
+      return _aProperty ? v[_aProperty] : v
     }
     return null
   }
 
   ///////////////////////////////////////////////
-  function last(that,aProperty) {
+  function last(that,_aProperty) {
     local r
-    if (aProperty) {
+    if (_aProperty) {
       foreach (k,v in that) {
-        r = v[aProperty]
+        r = v[_aProperty]
       }
     }
     else {
@@ -104,8 +104,8 @@
   }
 
   ///////////////////////////////////////////////
-  function scan(that,aAcc0,fun,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function scan(that,aAcc0,fun,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       aAcc0 = fun(aAcc0,v,k)
       r.Add(aAcc0)
@@ -122,8 +122,8 @@
   }
 
   ///////////////////////////////////////////////
-  function map(that,fun,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function map(that,fun,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       r.Add(fun(v,k,r))
     }
@@ -131,8 +131,8 @@
   }
 
   ///////////////////////////////////////////////
-  function mapValid(that,fun,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function mapValid(that,fun,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       local t = fun(v,k,r)
       if (t)
@@ -151,8 +151,8 @@
   }
 
   ///////////////////////////////////////////////
-  function drop(that,aPred,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function drop(that,aPred,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       if (!aPred(v,k,r)) {
         r.Add(v)
@@ -162,8 +162,8 @@
   }
 
   ///////////////////////////////////////////////
-  function dropN(that,aN,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function dropN(that,aN,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     local c = 0
     foreach (k,v in that) {
       if (c++ < aN) {
@@ -177,13 +177,13 @@
   }
 
   ///////////////////////////////////////////////
-  function max(that,aProperty) {
+  function max(that,_aProperty) {
     if (that.empty())
       return null
-    local m = ::algo.first(that,aProperty)
-    if (aProperty) {
+    local m = ::algo.first(that,_aProperty)
+    if (_aProperty) {
       foreach (k,o in that) {
-        local v = o[aProperty]
+        local v = o[_aProperty]
         if (v > m)
           m = v
       }
@@ -198,13 +198,13 @@
   }
 
   ///////////////////////////////////////////////
-  function min(that,aProperty) {
+  function min(that,_aProperty) {
     if (that.empty())
       return null
-    local m = ::algo.first(that,aProperty)
-    if (aProperty) {
+    local m = ::algo.first(that,_aProperty)
+    if (_aProperty) {
       foreach (k,o in that) {
-        local v = o[aProperty]
+        local v = o[_aProperty]
         if (v < m)
           m = v
       }
@@ -219,9 +219,9 @@
   }
 
   ///////////////////////////////////////////////
-  function partition(that,aPred,aTrueArray,aFalseArray) {
-    local a = (aTrueArray ? aTrueArray : [])
-    local b = (aFalseArray ? aFalseArray : [])
+  function partition(that,aPred,_aTrueArray,_aFalseArray) {
+    local a = (_aTrueArray ? _aTrueArray : [])
+    local b = (_aFalseArray ? _aFalseArray : [])
     foreach (k,v in that) {
       if (aPred(v,k)) {
         a.Add(v)
@@ -234,14 +234,14 @@
   }
 
   ///////////////////////////////////////////////
-  function sum(that,aProperty) {
+  function sum(that,_aProperty) {
     if (that.empty())
       return null
-    local z = ::algo.first(that,aProperty)
+    local z = ::algo.first(that,_aProperty)
     local s = z
-    if (aProperty) {
+    if (_aProperty) {
       foreach (k,v in that) {
-        s += v[aProperty]
+        s += v[_aProperty]
       }
     }
     else {
@@ -254,13 +254,13 @@
   }
 
   ///////////////////////////////////////////////
-  function prod(that,aProperty) {
+  function prod(that,_aProperty) {
     if (that.empty())
       return null
     local s = 1
-    if (aProperty) {
+    if (_aProperty) {
       foreach (k,v in that) {
-        s *= v[aProperty]
+        s *= v[_aProperty]
       }
     }
     else {
@@ -272,8 +272,8 @@
   }
 
   ///////////////////////////////////////////////
-  function take(that,aPred,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function take(that,aPred,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       if (aPred(v,k,r)) {
         r.Add(v)
@@ -283,8 +283,8 @@
   }
 
   ///////////////////////////////////////////////
-  function takeN(that,aN,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function takeN(that,aN,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     local c = 0
     foreach (k,v in that) {
       if (c++ >= aN)
@@ -295,8 +295,8 @@
   }
 
   ///////////////////////////////////////////////
-  function keys(that,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function keys(that,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       r.Add(k)
     }
@@ -304,8 +304,8 @@
   }
 
   ///////////////////////////////////////////////
-  function values(that,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function values(that,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       r.Add(v)
     }
@@ -313,8 +313,8 @@
   }
 
   ///////////////////////////////////////////////
-  function keysValues(that,aOutputArray) {
-    local r = (aOutputArray ? aOutputArray : [])
+  function keysValues(that,_aOutputArray) {
+    local r = (_aOutputArray ? _aOutputArray : [])
     foreach (k,v in that) {
       r.Add(k)
       r.Add(v)
@@ -323,16 +323,16 @@
   }
 
   ///////////////////////////////////////////////
-  function findKey(that,aPred) {
-    if (typeof aPred == "function") {
+  function findKey(that,_aPred) {
+    if (typeof _aPred == "function") {
       foreach (k,v in that) {
-        if (aPred(v,k))
+        if (_aPred(v,k))
           return k
       }
     }
     else {
       foreach (k,v in that) {
-        if (v == aPred)
+        if (v == _aPred)
           return k
       }
     }
@@ -344,20 +344,3 @@
 ::algo.reduce <- ::algo.fold
 ::algo.filter <- ::algo.take
 ::algo.contains <- ::algo.has
-
-function ::algo::_getAsDelegate() {
-  local __lint = {
-    this_key_notfound_getk = 0
-  }
-  if ("_delegate" in this) {
-    return this._delegate;
-  }
-  local d = {}
-  foreach (k,f in ::algo) {
-    if (k[0] == '_')
-      continue
-    d[k] <- ::closure.thisAsFirstParm(::algo,f)
-  }
-  this._delegate <- d
-  return this._delegate
-}

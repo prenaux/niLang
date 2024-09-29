@@ -1,9 +1,9 @@
 
-nums <- [1,2,3,4,5,6,7]
+::nums <- [1,2,3,4,5,6,7]
 
-letters <- ['a','b','c','d','e','f']
+::letters <- ['a','b','c','d','e','f']
 
-inventory <- {
+::inventory <- {
     items = [
         {
             genre = "apparel"

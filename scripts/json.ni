@@ -19,7 +19,12 @@
     }
     function fetchTop() {
       _top = _cur.top();
-      _inObject = (typeof(_top)=="table")
+      if (typeof(_top) == "table") {
+        _inObject = true
+      }
+      else {
+        _inObject = false
+      }
     }
     function pushArray() {
       _cur.push([])

@@ -1611,7 +1611,7 @@ struct SQCompiler {
       }
 
       // return type ?
-      if (_token == TK_IDENTIFIER || _token == TK_THIS) {
+      if (_token == TK_IDENTIFIER || _token == TK_THIS || _token == TK_DOUBLE_COLON) {
         SQObjectPtr typeOrParamName;
         COMPILE_CHECK(ParseType(aErrors,funcstate._returntype,NULL));
       }

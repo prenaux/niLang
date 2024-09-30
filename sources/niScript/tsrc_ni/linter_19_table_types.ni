@@ -49,10 +49,11 @@ function table_this_sub_type(table:qoo.tSubThisLion t) {
   }
 }
 
-function table_global_type(::foo.tGlobalSquirrel t) {
+function table_global_type(::foo.tGlobalSquirrel t) ::foo.tGlobalSquirrel {
   t.name; // should
   t.im_squirrel; // should be ok
   t.not_a_field; // should fail
+  return t
 }
 
 /* TODO: Fetch type from local variables?

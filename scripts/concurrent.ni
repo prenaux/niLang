@@ -52,11 +52,11 @@
     throw "Invalid function type: " + typeof(aFunOrTable)
   }
 
-  function newCallback(aFunOrTable,aThis) {
+  function newCallback(aFunOrTable,_aThis) {
     switch (typeof aFunOrTable) {
       case "closure":
       case "function": {
-        local _this = aThis || this
+        local _this = _aThis || this
         return ::Concurrent_CallbackFromFunction(function(aA,aB) : (aFunOrTable,_this) {
           try {
             return aFunOrTable.call(_this,aA,aB);

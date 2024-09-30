@@ -2,13 +2,13 @@
 ::Import("closure.ni")
 ::Import("algo.ni")
 
-function ::printFunFreeVars(aFun,aDots) {
-  if (!aDots) aDots = ""
+function ::printFunFreeVars(aFun,string _aDots) {
+  local dots = _aDots || ""
   foreach (i in aFun.GetNumFreeVars()) {
     local fv = aFun.GetFreeVar(i)
-    ::println(aDots + "... freeVar["+i+"]: " + ::lang.toString(fv))
+    ::println(dots + "... freeVar["+i+"]: " + ::lang.toString(fv))
     if (typeof fv == "function") {
-      ::printFunFreeVars(fv,aDots+".")
+      ::printFunFreeVars(fv,dots+".")
     }
   }
 }

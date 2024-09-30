@@ -134,8 +134,8 @@ TEST("int", #() {
   local a = ["alpha","beta","gamma","delta","eta"]
   local numIt = 0
   foreach (ri,i in a.len()) {
-    ::println("...  a["+i+"]: " + a[i])
-    ::println("... ra["+ri+"]: " + a[ri])
+    ::println("...  a["+i+"]: " + a[?i])
+    ::println("... ra["+ri+"]: " + a[?ri])
     ++numIt
   }
   ::CHECK_EQUAL(5,a.len())

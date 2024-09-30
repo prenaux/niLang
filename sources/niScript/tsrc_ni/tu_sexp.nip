@@ -2,12 +2,12 @@
 ::Import("assert.ni")
 ::Import("sexp.ni")
 
-::sexp.eval <- #(a,c,sf) {
-  sf = sf || ::sexp.sforms
-  c = c || ::sexp.context
+::sexp.eval <- #(a,_c,_sf) {
+  local sf = _sf || ::sexp.sforms
+  local c = _c || ::sexp.context
   local e
   if (typeof a == "array") {
-    e = a[0]
+    e = a[?0]
   }
   else {
     e = a
@@ -16,17 +16,17 @@
   switch (typeof e) {
     case "string": {
       // String literal ?
-      if (e[0] == '`') {
+      if (e[?0] == '`') {
         return e.slice(1)
       }
       // Special form ?
       if (e in sf) {
         // ::println("... sf["+e+"]: " + ::lang.toString(c))
-        return sf[e].call(c,a)
+        return sf[?e].call(c,a)
       }
       // In Context ?
       if (e in c) {
-        local cv = c[e]
+        local cv = c[?e]
         if (typeof cv == "function") {
           return cv.call(c,a)
         }
@@ -45,8 +45,12 @@
     }
     case "array": {
       local cv = c.eval(e,c)
-      return (typeof cv == "function") ?
-        cv.call(c,a) : cv
+      if (typeof cv == "function") {
+        return cv.call(c,a)
+      }
+      else {
+        return cv
+      }
     }
     default:
     throw "Invalid type '"+typeof(e)+"' as first member of S-Exp"
@@ -72,9 +76,12 @@
   c = c || ::sexp.context
   local r = ::sexp.eval(a,c,sf)
   // ::println(".... feval c: " + ::lang.toString(c))
-  return (typeof r == "function") ?
-    #(aA,aB,aC,aD,aE) : (c,r) => r.call(c,[r,aA,aB,aC,aD,aE]) :
-  #() : (r) => r
+  if (typeof r == "function") {
+    return #(aA,aB,aC,aD,aE) : (c,r) => r.call(c,[r,aA,aB,aC,aD,aE])
+  }
+  else {
+    return #() : (r) => r
+  }
 }
 
 ::sexp.sforms <- {
@@ -82,6 +89,7 @@
   // (define var exp)
   // (define (funcname p0 ... pN) exp0 ... expN)
   define = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     if (a.len() != 3)
       throw "sform 'define': Invalid number of expressions '"+a.len()+"'.";
 
@@ -104,7 +112,7 @@
       throw "sform 'define': name definition is invalid."
     }
 
-    local r = this.eval(exp,this)
+    local r = _this.eval(exp,_this)
     // ::println("... define '"+name+"' = "+::lang.toString(r));
     this[name] <- r
     return r;
@@ -113,12 +121,14 @@
   // Evaluate all expressions without creating a new context
   // (begin exp0 ... expN)
   ,["do"] = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
+
     // ::println("... begin: " + ::lang.toString(a))
     local c = this
     local r = null
     local alen = a.len()
     for (local i = 1; i < alen; ++i) {
-      r = this.eval(a[i],c)
+      r = _this.eval(a[i],c)
     }
     return r
   }
@@ -126,12 +136,13 @@
   // Creates a new context and evaluate all expressions in that context
   // (begin exp0 ... expN)
   begin = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     // ::println("... begin: " + ::lang.toString(a))
     local c = {}.SetDelegate(this)
     local r = null
     local alen = a.len()
     for (local i = 1; i < alen; ++i) {
-      r = this.eval(a[i],c)
+      r = _this.eval(a[i],c)
     }
     return r
   }
@@ -140,22 +151,23 @@
   // (let ((name0 exp0) (name1 exp0) ... (nameN expN)) exp0 ... expN)
   // (let (name exp) exp0 ... expN)
   let = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     if (a.len() < 3)
       throw "sform 'let': Invalid number of expressions '"+a.len()+"'.";
     if (typeof a[1] != "array")
       throw "sform 'let': Bindings must be an array."
 
-    local c = {}.SetDelegate(this)
+    local c = {}.SetDelegate(_this)
     local toBind = a[1]
     if (!toBind.empty()) {
       if (typeof toBind[0] == "array") {
         foreach (b in toBind) {
           // ::println(".... bind '"+b[0]+"' = " + ::lang.toString(b[1]))
-          c[b[0]] <- this.eval(b[1],this)
+          c[b[0]] <- _this.eval(b[1],_this)
         }
       }
       else {
-        c[toBind[0]] <- this.eval(toBind[1],this)
+        c[toBind[0]] <- _this.eval(toBind[1],_this)
       }
     }
 
@@ -177,12 +189,13 @@
     local params = a[1]
     local exps = a.slice(2)
     return #(a) : (params,exps) {
+      local _this = ::LINT_AS_TYPE("::sexp", this)
       // ::println("... this: " + ::lang.toString(this))
       // ::println("... a: " + ::lang.toString(a))
       // ::println("... params: " + ::lang.toString(params))
       // ::println("... exps: " + ::lang.toString(exps))
       // ::println("... baseContext: " + ::lang.toString(baseContext))
-      local c = {}.SetDelegate(this)
+      local c = {}.SetDelegate(_this)
       if (!params.empty()) {
         if (!a) {
           foreach (p in params) {
@@ -195,7 +208,7 @@
           foreach (p in params) {
             c[p] <-
               i < alen ?
-              this.eval(a[i],c) :
+              _this.eval(a[i],c) :
               null
             ++i
           }
@@ -203,7 +216,7 @@
       }
       local r
       foreach (e in exps) {
-        r = this.eval(e,c)
+        r = _this.eval(e,c)
       }
       return r
     }
@@ -222,6 +235,7 @@
 
   // (cond (test0 clause0) ... (testN clauseN))
   cond = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     local alen = a.len()
     if (alen < 2)
       throw "sform 'cond': Invalid number of expressions '"+a.len()+"'.";
@@ -229,11 +243,11 @@
       local t = a[i]
       if (typeof t != "array")
         throw "sform 'cond': expression ["+(i-1)+"] not an array."
-      local r = this.eval(t[0],this)
+      local r = _this.eval(t[0],_this)
       if (r) {
         local tlen = t.len()
         for (local i = 1; i < tlen; ++i) {
-          r = this.eval(t[i],this)
+          r = _this.eval(t[i],_this)
         }
         return r
       }
@@ -243,21 +257,22 @@
 
   // (if (test) (then0 ... thenN) (else))
   ,["if"] = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     local alen = a.len()
     if (alen < 3)
       throw "sform 'if': Invalid number of expressions '"+a.len()+"'.";
     local t = a[1]
     if (typeof t != "array")
       throw "sform 'if': test is not an array."
-    local r = this.eval(t,this)
+    local r = _this.eval(t,_this)
     if (r) {
-      r = this.eval(a[2],this)
+      r = _this.eval(a[2],_this)
     }
     else {
       if (alen < 4)
         return null
       for (local i = 3; i < alen; ++i) {
-        r = this.eval(a[i],this)
+        r = _this.eval(a[i],_this)
       }
     }
     // ::println(".... if: " + ::lang.toString(r))
@@ -277,6 +292,7 @@
   // (loop (name exp) exp0 ... expN)
   // (recur exp0-'will be bound to name0' ... expN-'will be bound to nameN')
   loop = #(a) {
+    local _this = ::LINT_AS_TYPE("::sexp", this)
     if (a.len() < 3)
       throw "sform 'loop': Invalid number of expressions '"+a.len()+"'.";
     if (typeof a[1] != "array")
@@ -284,7 +300,7 @@
 
     ::SetRaiseErrorMode(~0)
 
-    local c = { recur = ::sexp.sforms._recur }.SetDelegate(this)
+    local c = { recur = ::sexp.sforms._recur }.SetDelegate(_this)
     local toBind = a[1]
     if (!toBind.empty()) {
       if (typeof toBind[0] == "array") {
@@ -315,16 +331,17 @@
           // ::println(".... loop recur: " + ::sexp.toString(e))
           shouldLoop = true
         }
-        else if (typeof r == "array" && r[0] == "recur") {
+        else if (typeof r == "array" && r[?0] == "recur") {
           // ::println(".... loop recur array: " + ::sexp.toString(r))
           local rlen = r.len()
+          local elen = e.len()
           if (!toBind.empty()) {
-            if (e.len() < 2)
+            if (elen < 2)
               throw "sform 'loop': recur has an invalid number of expression '"+elen+"'."
             if (typeof toBind[0] == "array") {
               local ri = 1
               foreach (b in toBind) {
-                local v = c.eval(r[ri],c)
+                local v = c.eval(r[?ri],c)
                 c[b[0]] <- v
                 // ::println(".... bind '"+b[0]+"' = " + ::lang.toString(v))
                 if (++ri >= rlen)
@@ -332,14 +349,15 @@
               }
             }
             else {
-              local v = c.eval(r[1],c)
+              local v = c.eval(r[?1],c)
               // ::println(".... bind single '"+toBind[0]+"' = " + ::lang.toString(v))
               c[toBind[0]] <- v
             }
           }
           else {
-            if (r.len() > 1)
+            if (r.len() > 1) {
               throw "sform 'loop': recur has an invalid number of expression '"+elen+"'."
+            }
           }
           shouldLoop = true
         }
@@ -569,9 +587,9 @@
 // Add sexp to the array system delegate
 {
   local d = ::GetLangDelegate("array")
-  d.eval <- #(c,sf) => ::sexp.eval(this,c,sf)
-  d.deval <- #(c,sf) => ::sexp.deval(this,c,sf)
-  d.feval <- #(c,sf) => ::sexp.feval(this,c,sf)
+  d.eval <- #(_c,_sf) => ::sexp.eval(this,_c,_sf)
+  d.deval <- #(_c,_sf) => ::sexp.deval(this,_c,_sf)
+  d.feval <- #(_c,_sf) => ::sexp.feval(this,_c,_sf)
 }
 
 // local x = @(1 2 3 (4 5 6) "abc" "def" "geh")

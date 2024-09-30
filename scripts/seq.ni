@@ -6,10 +6,10 @@ module <- {
   // Create a sequence table between aBegin/aLast, if aFun isn't it will be
   // called with each index and the return value of the function will be the
   // value returned by the iterator.
-  function range(aBegin,aLast,aFun) {
+  function range(aBegin,aLast,_aFun) {
     if (typeof aLast == "function") {
       // new(0-num,aFun(idx))
-      aFun = aLast
+      _aFun = aLast
       aLast = aBegin
       aBegin = 0
     }
@@ -24,7 +24,7 @@ module <- {
       function empty() {
         return _start != _last
       }
-      function _nexti(itr) : (aFun) {
+      function _nexti(itr) : (_aFun) {
         local r
         if (itr == null) {
           r = _start;
@@ -36,7 +36,7 @@ module <- {
         if (r >= _last)
           return null
         itr[0] = r
-        itr[1] = aFun ? aFun(r) : r
+        itr[1] = _aFun ? _aFun(r) : r
         return itr
       }
     }
@@ -102,7 +102,7 @@ module <- {
   // foreach (key,value in ::seq.directory(...))  => key = itr[0], value = itr[1]
   function directory(aDirectory) {
     local r = {
-      _e = ::gRootFS.CreateEnumerator()
+      _e = ::?gRootFS.CreateEnumerator()
       _count = 0
       _directory = "".setdir(aDirectory).setfile("*")
       function _nexti(itr) {

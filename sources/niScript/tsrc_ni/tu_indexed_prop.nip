@@ -5,7 +5,7 @@
 ::FIXTURE("IndexedProperty")
 
 ::TEST("IndexedProperty" "indexed_u32" #{
-  local testInterop = ::CreateInstance("niTestInterop.TestInterop")
+  local testInterop = ::CreateInstance("niTestInterop.TestInterop").QueryInterface("iTestInterop")
   local objIndexedProp
   {
     local obj = testInterop.CreateTestInteropObject(100);

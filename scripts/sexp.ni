@@ -4,7 +4,7 @@
 ::Import("tostring.ni")
 
 module <- {
-  function newToString() {
+  function newToString() ::tToString {
     local s = ::tToString.new()
     s._isIdentifier = #(v) => v[?0] != '`'
     s._arrayOpen = "("
@@ -13,8 +13,8 @@ module <- {
     return s
   }
 
-  function toString(v,aSpace) {
-    return newToString().stringify(v,aSpace)
+  function toString(v,_aSpace) {
+    return newToString().stringify(v,_aSpace)
   }
   function toIndentedString(v) {
     return newToString().indented(v)

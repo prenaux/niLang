@@ -2097,8 +2097,8 @@ static int lint_lint_as_type(HSQUIRRELVM v)
   return 1;
 }
 
-struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
-  sLintFuncCallQueryInterface()
+struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
+  sLintFuncCall_root_QueryInterface()
   {}
 
   virtual nn_mut<iHString> __stdcall GetName() const {
@@ -2106,13 +2106,10 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   }
 
   virtual tI32 __stdcall GetArity() const {
-    return 1;
+    return 2;
   }
 
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
-  {
-    niLet& qiID = aCallArgs[1];
-    // niDebugFmt(("... sLintFuncCallQueryInterface: qiID: %s", _ObjToString(qiID)));
+  static SQObjectPtr __stdcall _LintCallQueryInterface(sLinter& aLinter, ain<SQObjectPtr> qiID) {
     tUUID qiUUID = kuuidZero;
     switch(sqa_getscriptobjtype(qiID)) {
       case eScriptType_String: {
@@ -2121,9 +2118,10 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
       }
       default: {
         switch (_GetResolvedObjType(qiID)) {
+          case eScriptType_Null:
           case eScriptType_String:
           case eScriptType_UUID: {
-            // we cant determine the interface type from a non-literal value so we assume iUnknown
+            // we cant determine the interface type from a non-literal value so we return iUnknown
             qiUUID = niGetInterfaceUUID(iUnknown);
             break;
           }
@@ -2135,7 +2133,7 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
       }
     }
 
-    // niDebugFmt(("... sLintFuncCallQueryInterface: qiUUID: %s", qiUUID));
+    // niDebugFmt(("... sLintFuncCall_this_QueryInterface: qiUUID: %s", qiUUID));
     if (qiUUID == kuuidZero) {
       return _MakeLintCallError(
         aLinter,niFmt("Cant find interface uuid '%s'.", _ObjToString(qiID)));
@@ -2147,8 +2145,29 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
         aLinter,niFmt("Cant find interface def '%s'.", _ObjToString(qiID)));
     }
 
-    // niDebugFmt(("... sLintFuncCallQueryInterface: qiDef: %s", qiDef->maszName));
+    // niDebugFmt(("... sLintFuncCall_this_QueryInterface: qiDef: %s", qiDef->maszName));
     return niNew sScriptTypeInterfaceDef(aLinter._ss, qiDef);
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) {
+    return _LintCallQueryInterface(aLinter, aCallArgs[2]);
+  }
+};
+
+struct sLintFuncCall_this_QueryInterface : public ImplRC<iLintFuncCall> {
+  sLintFuncCall_this_QueryInterface()
+  {}
+
+  virtual nn_mut<iHString> __stdcall GetName() const {
+    return _HC(QueryInterface);
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) {
+    return sLintFuncCall_root_QueryInterface::_LintCallQueryInterface(aLinter, aCallArgs[1]);
   }
 };
 
@@ -2308,6 +2327,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("Import")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("NewImport"))); // for now NewImport is considered the same as Import by the linter
+  RegisterLintFunc(table, MakeNN<sLintFuncCall_root_QueryInterface>());
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_check_type>(_H("LINT_CHECK_TYPE")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_as_type>(_H("LINT_AS_TYPE")));
@@ -2337,7 +2357,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_or_array_clone>(_H("ShallowClone"))));
   }
 
-  _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();
+  _lintFuncCallQueryInterface = niNew sLintFuncCall_this_QueryInterface();
 }
 
 void SQFunctionProto::LintTrace(

@@ -11,3 +11,8 @@ function OnSinkAttached(w,a,b) {
   i = lb.AddItem("eta");
   i = lb.AddItem("theta");
 }
+
+function ID_ComboBox(iUnknown w, iWidgetCommand cmd) if (cmd.id == ::eWidgetComboBoxCmd.SelectionChanged) {
+  local lb = cmd.sender.QueryInterface("iWidgetListBox")
+  ::println("... SelectionChanged:" lb.GetSelectedItem(0))
+}

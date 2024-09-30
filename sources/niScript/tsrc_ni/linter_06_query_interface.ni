@@ -1,3 +1,5 @@
+::Import("niLang")
+
 local __lint = {
   _all = 1
   _pedantic = 1
@@ -10,6 +12,11 @@ local __lint = {
 
 function iunknown_QueryInterface(iunknown obj) iMath {
   return obj.QueryInterface("iMath");
+}
+
+function global_QueryInterface(iunknown obj) iMath {
+  local r = ::QueryInterface(obj,"iMath");
+  ::LINT_CHECK_TYPE("interface_def<iMath>", r);
 }
 
 function main(iunknown m) void {

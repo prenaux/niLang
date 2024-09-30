@@ -22,7 +22,7 @@ struct sScriptTypeInterfaceDef : SQ_USERDATA_BASE(sScriptTypeInterfaceDef)
     return this->_DoQueryInterface(this,aIID);
   }
 
-  const sInterfaceDef*  pInterfaceDef;
+  const sInterfaceDef* pInterfaceDef;
 
   sScriptTypeInterfaceDef(
     const SQSharedState& aSS,

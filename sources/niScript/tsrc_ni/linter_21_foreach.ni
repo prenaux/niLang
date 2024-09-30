@@ -59,3 +59,19 @@ function foreach_of_noniterable(iFile t) {
     ::LINT_CHECK_TYPE("null", v);
   }
 }
+
+function foreach_iIterator(iIterator t) {
+  foreach (i,v in t) {
+    ::LINT_CHECK_TYPE("interface_def<iIterator>", t);
+    ::LINT_CHECK_TYPE("null", i);
+    ::LINT_CHECK_TYPE("null", v);
+  }
+}
+
+function foreach_iCollection(iCollection t) {
+  foreach (i,v in t) {
+    ::LINT_CHECK_TYPE("interface_def<iCollection>", t);
+    ::LINT_CHECK_TYPE("null", i);
+    ::LINT_CHECK_TYPE("null", v);
+  }
+}

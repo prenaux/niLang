@@ -3343,6 +3343,23 @@ void SQFunctionProto::LintTrace(
         okey = oval = orefpos = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
         break;
       }
+      case eScriptType_InterfaceDef: {
+        sScriptTypeInterfaceDef* pV = (sScriptTypeInterfaceDef*)_userdata(othis);
+        if ((*pV->pInterfaceDef->mUUID == niGetInterfaceUUID(iIterator)) ||
+            (*pV->pInterfaceDef->mUUID == niGetInterfaceUUID(iCollection)))
+        {
+          // the iterator type
+          orefpos = aLinter.ResolveTypeUUID(niGetInterfaceID(iIterator), niGetInterfaceUUID(iIterator));
+          // for now we dont retrieve the key/val type but we should be able
+          // to derive it from the full typename in sMethodDef if we can carry
+          // this here somehow
+          okey = oval = _null_;
+        }
+        else if (_LENABLED(foreach_usage)) {
+          _LINT(foreach_usage, niFmt("Cannot iterate '%s'.", _ObjToString(othis)));
+        }
+        break;
+      }
       default: {
         if (_LENABLED(foreach_usage)) {
           _LINT(foreach_usage, niFmt("Cannot iterate '%s'.", _ObjToString(othis)));

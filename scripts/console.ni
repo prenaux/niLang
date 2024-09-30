@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 ::Import("lang.ni")
 ::Import("json.ni")
+::Import("niUI")
 
 ::gConsole <- ::CreateGlobalInstance("niLang.Console").QueryInterface("iConsole")
 
@@ -43,23 +44,24 @@
   _allCommands = {}
 
   //! Register the specified command
-  function registerCommand(ns,name,desc,func,key,_aIcon) {
+  function registerCommand(ns,name,desc,func,_aKey,_aIcon) {
     local cmdName = ns+"."+name;
 
     // Adding shortcut
-    if (key) {
-      if (::gUIContext.shortcut_command[key]) {
+    if (_aKey && ::?gUIContext) {
+      local uiContext = ::LINT_AS_TYPE("iUIContext", ::?gUIContext)
+      if (uiContext.shortcut_command[_aKey]) {
         ::logWarning("Binding '"+cmdName+"' to an already bound key.")
       }
-      ::gUIContext.AddShortcut(key,cmdName)
+      uiContext.AddShortcut(_aKey,cmdName)
     }
 
-    local s = ::LINT_AS_TYPE("table:commandSink", commandSink.Clone())
+    local s = commandSink.Clone()
     s._name = name
     s._ns = ns
     s._desc = desc
     s._func = func
-    s._key = key
+    s._key = _aKey
     s._icon = _aIcon
     ::gConsole.AddCommand(s)
 
@@ -73,8 +75,9 @@
     if (cmdName in _allCommands) {
       // ::dbg(" ... unregisterCommand found it:" ns name)
       local cmd = _allCommands[cmdName];
-      if (cmd.?_key) {
-        ::gUIContext.RemoveShortcut(cmd.?_key)
+      if (cmd.?_key && ::?gUIContext) {
+        local uiContext = ::LINT_AS_TYPE("iUIContext", ::?gUIContext)
+        uiContext.RemoveShortcut(cmd.?_key)
       }
       ::gConsole.RemoveCommand(cmdName);
       delete _allCommands[cmdName];
@@ -97,13 +100,14 @@
   }
 
   //! Register the specifed namespace table.
-  function registerNS(aName,aFuncs,aUnregister) {
-    if (aUnregister) {
-      unregisterNS(aName,aFuncs);
+  function registerNS(aName,_aFuncs,_aUnregister) {
+    if (_aUnregister) {
+      unregisterNS(aName,_aFuncs);
     }
     ::gConsole.AddNamespace(aName)
-    foreach (key,cmd in aFuncs) {
+    foreach (key,cmd in _aFuncs) {
       if (typeof(cmd) == "table") {
+        cmd = ::LINT_AS_TYPE("table:commandSink", cmd);
         this.registerCommand(aName,key,cmd.?_desc,cmd._func,cmd.?_key);
       }
     }

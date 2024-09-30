@@ -12,6 +12,7 @@ cd "$CWD"
 . "$SCRIPT_DIR/ni-bash-setenv.sh" ra
 
 INCLUDE_DIRS=(
+  "$WORK/ham/scripts"
   "$SCRIPT_DIR/../sources"
   "$SCRIPT_DIR/../scripts"
 )

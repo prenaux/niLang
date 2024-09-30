@@ -45,7 +45,10 @@ rule niScript {
   local SRC = [ niScriptSrc $(3) : $(2) ] ;
   local APPSCRIPT ;
 
-  local SCRIPT_INCS = [ niToolkitScriptDirs niLang ] ;
+  local SCRIPT_INCS =
+    [ niToolkitScriptDirs ham ]
+    [ niToolkitScriptDirs niLang ]
+  ;
   if $(4) {
     SCRIPT_INCS += $(4) ;
   }

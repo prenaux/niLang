@@ -80,7 +80,7 @@ int SQArray::Next(const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &o
 }
 
 ///////////////////////////////////////////////
-SQArray *SQArray::Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone)
+SQArray *SQArray::Clone(tSQDeepCloneGuardSet* apDeepClone)
 {
   SQArray *anew = Create(Size());
   anew->_values = _values;

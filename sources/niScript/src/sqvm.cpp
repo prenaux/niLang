@@ -656,12 +656,12 @@ bool SQVM::Clone(const SQObjectPtr &self,SQObjectPtr &target, tSQDeepCloneGuardS
       break;
     }
     case OT_USERDATA: {
-      target = _userdata(self)->Clone(this,apDeepClone);
+      target = _userdata(self)->Clone(*_ss,apDeepClone);
       ret = true;
       break;
     }
     case OT_ARRAY: {
-      target = _array(self)->Clone(this,apDeepClone);
+      target = _array(self)->Clone(apDeepClone);
       if (apDeepClone) {
         for (SQObjectPtrVec::iterator it = _array(target)->_values.begin();
              it != _array(target)->_values.end(); ++it)

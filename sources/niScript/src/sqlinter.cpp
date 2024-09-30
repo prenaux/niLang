@@ -2150,10 +2150,10 @@ struct sLintFuncCallQueryInterface : public ImplRC<iLintFuncCall> {
   }
 };
 
-struct sLintFuncCall_table_clone : public ImplRC<iLintFuncCall> {
+struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
   NN_mut<iHString> _name;
 
-  sLintFuncCall_table_clone(iHString* aName)
+  sLintFuncCall_table_or_array_clone(iHString* aName)
       : _name(aName)
   {}
 
@@ -2167,26 +2167,35 @@ struct sLintFuncCall_table_clone : public ImplRC<iLintFuncCall> {
 
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
-    niLet objTable = aCallArgs[0];
-    // niDebugFmt(("... sLintFuncCall_table_clone: objTable: %s", _ObjToString(objTable)));
-    niLet objTableType = sqa_getscriptobjtype(objTable);
-    if (objTableType == eScriptType_Table) {
+    niLet objThis = aCallArgs[0];
+    // niDebugFmt(("... sLintFuncCall_table_clone: objThis: %s", _ObjToString(objThis)));
+    niLet objThisType = sqa_getscriptobjtype(objThis);
+    if (objThisType == eScriptType_Table) {
       // TODO: Do deep clone? Technically its more correct, if we deep clone the
       // sub tables that get modified might get incorrectly linted. So for 100%
       // correctness it'd be better, however its somewhat of an edge case so
       // we'll leave it for now.
-      NN_mut<SQTable> clonedTable { _table(objTable)->Clone(nullptr) };
+      NN_mut<SQTable> clonedTable { _table(objThis)->Clone(nullptr) };
       return clonedTable.raw_ptr();
     }
-    else if (objTableType == eScriptType_ResolvedType) {
-      niLet resolvedType = _ObjToResolvedTyped(objTable);
-      if (resolvedType->_scriptType == eScriptType_Table) {
-        return objTable;
+    else if (objThisType == eScriptType_Array) {
+      // TODO: Do deep clone? Technically its more correct, if we deep clone the
+      // sub tables that get modified might get incorrectly linted. So for 100%
+      // correctness it'd be better, however its somewhat of an edge case so
+      // we'll leave it for now.
+      NN_mut<SQArray> clonedArray { _array(objThis)->Clone(nullptr) };
+      return clonedArray.raw_ptr();
+    }
+    else if (objThisType == eScriptType_ResolvedType) {
+      niLet resolvedType = _ObjToResolvedTyped(objThis);
+      if (resolvedType->_scriptType == eScriptType_Table ||
+          resolvedType->_scriptType == eScriptType_Array) {
+        return objThis;
       }
     }
 
     return _MakeLintCallError(
-      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
+      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objThis)));
   }
 };
 
@@ -2304,9 +2313,9 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   {
     SQTable* del = _ddel(_ss,table);
     niPanicAssert(
-      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("DeepClone"))));
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_or_array_clone>(_H("DeepClone"))));
     niPanicAssert(
-      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_clone>(_H("ShallowClone"))));
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_or_array_clone>(_H("ShallowClone"))));
     niPanicAssert(
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_setdelegate>(_H("SetDelegate"))));
     niPanicAssert(
@@ -2315,6 +2324,14 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("GetDelegate"))));
     niPanicAssert(
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("getdelegate"))));
+  }
+
+  {
+    SQTable* del = _ddel(_ss,array);
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_or_array_clone>(_H("DeepClone"))));
+    niPanicAssert(
+      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_or_array_clone>(_H("ShallowClone"))));
   }
 
   _lintFuncCallQueryInterface = niNew sLintFuncCallQueryInterface();

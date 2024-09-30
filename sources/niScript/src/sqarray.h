@@ -22,7 +22,7 @@ public:
   bool Get(const int nidx,SQObjectPtr &val);
   bool Set(const int nidx,const SQObjectPtr &val);
   int Next(const SQObjectPtr &refpos,SQObjectPtr &outkey,SQObjectPtr &outval);
-  SQArray *Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone);
+  SQArray *Clone(tSQDeepCloneGuardSet* apDeepClone);
   int Size() const;
   int Capacity() const;
   void Resize(int size,SQObjectPtr &fill = _null_);

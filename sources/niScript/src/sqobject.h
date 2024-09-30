@@ -283,7 +283,7 @@ struct SQUserData : public SQCollectable
 
   void SetDelegate(SQTable *mt);
   SQTable* GetDelegate() const;
-  SQUserData* Clone(SQVM* apVM, tSQDeepCloneGuardSet* apDeepClone);
+  SQUserData* Clone(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone);
   int CmpType(SQUserData* r) const {
     return CmpByVal(this->GetType(),r->GetType());
   }

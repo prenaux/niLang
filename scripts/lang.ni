@@ -1181,7 +1181,7 @@ if (!("main" in ::getroottable())) {
 ::printdebug <- ::vmprintdebug
 
 ::interop <- {
-  function doEval(string path, iid, defaultDelegateTable) {
+  function doEval(string path, iid, defaultDelegateTable) iUnknown {
     local className = path.GetFileNoExt()
     local loadedTable = {}
     ::Import(path,loadedTable)
@@ -1192,7 +1192,7 @@ if (!("main" in ::getroottable())) {
       }
       implTable = loadedTable
     }
-    return ::?QueryInterface(implTable,iid)
+    return ::QueryInterface(implTable,iid)
   }
   function evalImpl(aContext,aPath,aIID) {
     if (!(aContext in ::interop))

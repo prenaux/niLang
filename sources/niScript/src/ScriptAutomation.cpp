@@ -286,6 +286,42 @@ static int std_import(HSQUIRRELVM v)
 }
 
 ///////////////////////////////////////////////
+static int std_queryinterface(HSQUIRRELVM v)
+{
+  iUnknown* pIUnk = NULL;
+  tUUID uuid;
+  iHString* hspName = NULL;
+
+  switch (sqa_getscripttype(v,3)) {
+    case eScriptType_UUID:
+      if (!SQ_SUCCEEDED(sqa_getUUID(v,3,&uuid))) {
+        return sq_throwerror(v,"std_queryinterface, can't get interface uuid.");
+      }
+      break;
+    case eScriptType_IUnknown:
+    case eScriptType_String:
+      if (!SQ_SUCCEEDED(sq_gethstring(v,3,&hspName))) {
+        return sq_throwerror(v,"std_queryinterface, can't get interface string id.");
+      }
+      uuid = ni::GetLang()->GetInterfaceUUID(hspName);
+      if (uuid == kuuidZero) {
+        return sq_throwerror(v,niFmt("std_queryinterface, can't get uuid of interface '%s'.",hspName));
+      }
+      break;
+    default:
+      return sq_throwerror(v,"std_queryinterface, parameter 2 is not a valid interface id");
+  }
+
+  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pIUnk,uuid)))
+    return sq_throwerror(v,_A("std_queryinterface, the first parameter is not a valid iunknown."));
+  if (!SQ_SUCCEEDED(sqa_pushIUnknown(v,pIUnk)))
+    return sq_throwerror(v,niFmt("std_queryinterface, can't query interface '%s' (%s).",
+                                 uuid, hspName));
+
+  return 1;
+}
+
+///////////////////////////////////////////////
 bool iunknown_nexti(HSQUIRRELVM v, iUnknown* apObj, const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval, SQObjectPtr &outitr) {
 
   Ptr<iIterator> it = ni::QueryInterface<iIterator>(apObj);
@@ -1084,6 +1120,7 @@ SQRegFunction SQSharedState::_automation_funcs[] = {
   {"CreateInstance", std_createinstance, -2, "ts", _HC(typestr_iunknown)},
   {"Import", std_import, -2, "ts", nullptr},
   {"NewImport", std_newimport, -2, "ts", nullptr},
+  {"QueryInterface", std_queryinterface, 3, "t..", _HC(typestr_iunknown)},
   {"Vec2", vec2f_constructor, -1, "t", _HC(Vec2)},
   {"Vec3", vec3f_constructor, -1, "t", _HC(Vec3)},
   {"RGB", vec3f_constructor, -1, "t", _HC(Vec3)},

@@ -2307,6 +2307,7 @@ void sLinter::RegisterBuiltinFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallCreateInstance>(_H("CreateGlobalInstance")));
   RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("Import")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCallImport>(_H("NewImport"))); // for now NewImport is considered the same as Import by the linter
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_check_type>(_H("LINT_CHECK_TYPE")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_as_type>(_H("LINT_AS_TYPE")));

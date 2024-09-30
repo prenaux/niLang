@@ -1031,7 +1031,9 @@ struct sLinter {
         this->_ss, eScriptType_Closure);
       _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
     }
-    else if (hspType == _HC(typestr_void)) {
+    else if (hspType == _HC(typestr_null) ||
+             hspType == _HC(typestr_void))
+    {
       resolvedType = niNew sScriptTypeResolvedType(
         this->_ss, eScriptType_Null);
     }

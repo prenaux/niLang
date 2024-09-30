@@ -16,6 +16,7 @@
 // - [ ] p1: Fully lint all tu_* test cases.
 // - [ ] p1: Fully lint all scripts folder.
 //
+// - [ ] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
 // - [ ] p2: Decide whether the default aThisTable with Import(aPath) is the root table or a new empty table. The linter use a new empty table but the implementation uses the root table. Using the root table by default is fairly messy and can lead to unexpected modification of the root table. Finally Import() should return the this table it used - this would enable ::Import("bla").module and work well with using a new table as this table.
 // - [ ] p2: Correctly lint Import(aPath, aThisTable).
 // - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed

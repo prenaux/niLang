@@ -2,6 +2,10 @@
 ::Import("lang.ni")
 ::Import("assert.ni")
 
+local __lint = {
+  param_decl = 0
+}
+
 ::FIXTURE("typeannotation")
 
 function ::getString(string aKey, string aDefault) string {

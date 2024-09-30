@@ -1,6 +1,6 @@
 #!/usr/bin/env ni -e -FDI
 ::Import("lang.ni")
-::Import("".setdir(::gLang.env["HAM_HOME"]).adddirback("scripts").setfile("ham.ni"))
+::Import("ham.ni")
 ::Import("unittest.ni")
 
 ::FIXTURE(["bash"])

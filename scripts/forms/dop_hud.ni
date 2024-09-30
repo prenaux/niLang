@@ -247,9 +247,10 @@ function OnPaint(w,a,b) {
               if (cc && cc[states]) {
                 local s = cc[states]
                 if (typeof(s) == "int") {
-                  s = ::gGraphics["compiled_"+states][s]
+                  s = ::gGraphics[?"compiled_"+states][?s]
                 }
                 if (s) {
+                  s = ::LINT_AS_TYPE("iSamplerStates", s);
                   s.SerializeDataTable(
                     dt.top,
                     ::eSerializeFlags.Write|::eSerializeFlags.TypeInfoMetadata)
@@ -651,7 +652,7 @@ function fillTextureList(aForce) {
     local ucount = 0
     for (local i = 0; i < ::gGraphics.num_textures; ++i) {
       local tex = ::gGraphics.texture_from_index[i]
-      local name = tex.device_resource_name
+      local name = tex.device_resource_name || ""
       if (!name || name.empty()) {
         name = "UNNAMED#"+(ucount++)+"-"+tex.width+"x"+tex.height+"x"+tex.depth+"-"+tex.pixel_format.format
         texs2.append(name)

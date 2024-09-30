@@ -1,3 +1,5 @@
+::Import("gui.ni")
+
 function OnSinkAttached(w,a,b) {
   ::dbg("... OnSinkAttached")
   local lb = w.FindWidget("ID_ComboBox");

@@ -1,3 +1,8 @@
+::Import("lang.ni")
+::Import("fs.ni")
+::Import("seq.ni")
+::Import("niUI")
+
 mInLogSink <- false
 mIsEvaluating <- false
 mListBox <- null
@@ -29,8 +34,8 @@ function OnDestroy(w,a,b) {
   ::gLang.system_message_handlers.RemoveSink(w)
 }
 
-function _evalExpression(exprText, abForceEval) {
-  if (!abForceEval && (exprText == mLastExprEvaled)) {
+function _evalExpression(exprText, _abForceEval) {
+  if (!_abForceEval && (exprText == mLastExprEvaled)) {
     _addMessage(null, "Expression already evaluated: " + exprText);
     return
   }

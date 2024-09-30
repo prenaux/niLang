@@ -4,7 +4,7 @@
 ::Import("algo.ni")
 ::Import("concurrent.ni")
 
-::REPL_SetRunCallback(::concurrent.newCallback(#(toRun,code) {
+::?REPL_SetRunCallback(::concurrent.newCallback(#(toRun,code) {
   // ::dbg("... REPL Run:" code)
   toRun.Run()
 }))

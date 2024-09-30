@@ -38,7 +38,7 @@ function GenerateModule(aSource) {
 }
 
 try {
-  local args = ::GetArgs();
+  local args = ::?GetArgs();
   switch (args.GetSize()) {
     case 2: {
       GenerateModule(args[1]);

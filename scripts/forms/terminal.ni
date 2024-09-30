@@ -173,7 +173,7 @@ function setHistoryItem(aDelta) {
     mHistoryCurrent = mHistory.len()-1
   else if (mHistoryCurrent >= mHistory.len())
     mHistoryCurrent = 0
-  mCmdLine.text = mHistory[mHistoryCurrent]
+  mCmdLine.text = mHistory[?mHistoryCurrent]
   mCmdLine.MoveCursorEnd(true)
 }
 

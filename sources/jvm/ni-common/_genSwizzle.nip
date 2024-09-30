@@ -1,4 +1,5 @@
 ::Import("lang.ni")
+::Import("fs.ni")
 
 local o = "";
 local fp = ::fs.fileOpenWrite("src/selena/common/math/Swz.java");
@@ -6,17 +7,17 @@ local res = {}
 function permute(level, permuted, used, original) : (res) {
 	local length = original.len();
 	if(level == length) { // permutation complete, display
-        res[permuted] <- 1
+    res[permuted] <- 1
 	} else {
 		for (local i = 0; i < length; i++) { // try to add an unused character
 			if (!used[i]) {
 				used[i] = true;
-                // find the permutations starting with this string
+        // find the permutations starting with this string
 				permute(level+1, original[i].ToChar() + permuted, used, original);
 				used[i] = false;
 			}
 		}
-    }
+  }
 }
 
 permute(0, "", [0,0], "xx");
@@ -182,67 +183,67 @@ permute(0, "", [0,0,0,0], "wzwz");
 
 local f = []
 foreach (k,v in res) {
-    f.append(k)
+  f.append(k)
 }
 f.sort(function(a,b) {
-    if (a.len() == b.len())
-        return a.Cmp(b)
-    return a.len()-b.len()
+  if (a.len() == b.len())
+    return a.Cmp(b)
+  return a.len()-b.len()
 })
 
 foreach (v in f) {
-    ::println(v)
+  ::println(v)
 }
 
 ::println("Found "+f.len()+" permutations.")
 
-function w(s) : (fp) {
-    s = s || ""
-    fp.WriteString(s);
+function w(_s) : (fp) {
+  local s = _s || ""
+  fp.WriteString(s);
 }
-function wln(s) : (fp) {
-    s = s || ""
-    fp.WriteString(s+"\n");
+function wln(_s) : (fp) {
+  local s = _s || ""
+  fp.WriteString(s+"\n");
 }
-function wi(s) : (fp) {
-    s = s || ""
-    fp.WriteString("    "+s);
+function wi(_s) : (fp) {
+  local s = _s || ""
+  fp.WriteString("    "+s);
 }
-function wiln(s) : (fp) {
-    s = s || ""
-    fp.WriteString("    "+s+"\n");
+function wiln(_s) : (fp) {
+  local s = _s || ""
+  fp.WriteString("    "+s+"\n");
 }
 
 local compNames = ["x","y","z","w"]
 local vecTypes = ["Vec2","Vec3","Vec4"]
 local minVT = { x = 0, y = 0, z = 1, w = 2 }
 function gen(v) : (w,wln,wi,wiln,compNames,vecTypes,minVT) {
-    local vt = vecTypes[v.len()-2]
-    local retType = [vt+"l",vt+"f"];
-    local parType = ["l","f"];
-    local vtMin = 0
-    foreach (c in v) {
-        local ch = c.ToChar()
-        if (minVT[ch] > vtMin)
-            vtMin = minVT[ch];
+  local vt = vecTypes[v.len()-2]
+  local retType = [vt+"l",vt+"f"];
+  local parType = ["l","f"];
+  local vtMin = 0
+  foreach (c in v) {
+    local ch = c.ToChar()
+    if (minVT[ch] > vtMin)
+      vtMin = minVT[ch];
+  }
+  foreach (i,r in retType) {
+    for (local t = vtMin; t < vecTypes.len(); ++t) {
+      local pt = vecTypes[?t]+parType[?i]
+      wiln("public static "+r+" "+v+"("+r+" o, final "+pt+" v) {")
+      wiln("    if (o == null) { o = new "+r+"(); }");
+      wi("   ");
+      for (local s = 0; s < v.len(); ++s) {
+        w(" o."+compNames[s]+" = v."+v[s].ToChar()+";")
+      }
+      wln();
+      wiln("    return o;");
+      wiln("}")
+      wiln("public static "+r+" "+v+"(final "+pt+" v) {")
+      wiln("    return "+v+"(null, v);");
+      wiln("}\n")
     }
-    foreach (i,r in retType) {
-        for (local t = vtMin; t < vecTypes.len(); ++t) {
-            local pt = vecTypes[t]+parType[i]
-            wiln("public static "+r+" "+v+"("+r+" o, final "+pt+" v) {")
-            wiln("    if (o == null) { o = new "+r+"(); }");
-            wi("   ");
-            for (local s = 0; s < v.len(); ++s) {
-                w(" o."+compNames[s]+" = v."+v[s].ToChar()+";")
-            }
-            wln();
-            wiln("    return o;");
-            wiln("}")
-            wiln("public static "+r+" "+v+"(final "+pt+" v) {")
-            wiln("    return "+v+"(null, v);");
-            wiln("}\n")
-        }
-    }
+  }
 }
 
 wln("// AUTO-GENERATED DOT NOT EDIT");
@@ -262,6 +263,6 @@ wln("public class Swz {")
 wln("    protected Swz() {}")
 wln()
 foreach (v in f) {
-    gen(v)
+  gen(v)
 }
 wln("}")

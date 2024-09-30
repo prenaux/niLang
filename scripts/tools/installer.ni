@@ -126,10 +126,12 @@ local __lint = {
   //////////////////////////////////////////////////////////////////////////////////////////////
   // Utilities
   //////////////////////////////////////////////////////////////////////////////////////////////
-  function getFinalDestName(d,f,dirSrc,dirDst) {
+  function getFinalDestName(d,f,string _aDirSrc,string _aDirDst) {
+    local dirSrc = _aDirSrc;
     if (!dirSrc) {
-      dirSrc = dirSrc || d.source.after(_baseDir) + "/";
+      dirSrc = d.source.after(_baseDir) + "/";
     }
+    local dirDst = _aDirDst;
     if (!dirDst) {
       dirDst = d.dest;
       if (dirDst.startswith("{app}/"))
@@ -623,23 +625,27 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function computeFileHash(aFilePath,aType) {
+  function computeFileHash(aFilePath, string aType) string {
     local hashType
     switch (aType) {
       case "wrl": hashType = "Whirlpool"; break;
       case "sha1": hashType = "SHA-1"; break;
-      default:
-      throw "Unknown hash type."
+      default: {
+        throw "Unknown hash type."
+      }
     }
-    local fp = (typeof aFilePath == "string") ? ::fs.fileOpenRead(aFilePath) : aFilePath
+
+    local fp = ::fs.fileOpenRead(aFilePath)
     if (!fp)
       throw "Can't open file to hash: " + aFilePath
+
     local hash = ::crypto.createHash(hashType)
     if (!hash.Update(fp,fp.size))
       throw "Can't update hash."
     local dig = hash.FinalString(0)
     if (!dig.?len())
       throw "Can't compute digest."
+
     return aType.toupper()+":"+dig
   }
 

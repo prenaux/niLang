@@ -71,15 +71,15 @@ local __lint = {
 }
 
 // Create a DataTable, see ni::iSystem::CreateDataTable
-::DataTable <- function(aName,aInitWith) {
+::DataTable <- function(aName,_aInitWith) {
   if (typeof aName == "table") {
-    aInitWith = aName
+    _aInitWith = aName
     aName = ""
   }
   aName = (aName != null) ? aName : "NoName"
   local dt = ::gLang.CreateDataTable(aName)
-  if (aInitWith) {
-    dt % aInitWith
+  if (_aInitWith) {
+    dt % _aInitWith;
   }
   return dt
 }
@@ -920,12 +920,12 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function getTimeMinutesString(aTime) {
-    local time = aTime || ::gLang.current_time
+  function getTimeMinutesString(_aTime) {
+    local time = _aTime || ::gLang.current_time
     return ::format("%04d%02d%02d_%02d%02d",time.year,time.month,time.day,time.hour,time.minute)
   }
-  function getTimeSecondsString(aTime) {
-    local time = aTime || ::gLang.current_time
+  function getTimeSecondsString(_aTime) {
+    local time = _aTime || ::gLang.current_time
     return ::format("%04d%02d%02d_%02d%02d%02d",
                     time.year,time.month,time.day,
                     time.hour,time.minute,time.second)

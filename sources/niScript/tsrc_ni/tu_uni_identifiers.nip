@@ -4,7 +4,7 @@
 ::Import("unittest.ni")
 ::Import("algo.ni")
 ::Import("lang.ni")
-::Import("tu_algo_data.ni")
+::Import("niScript/tsrc_ni/tu_algo_data.ni")
 
 ::∑ <- ::algo.sum
 ::∏ <- ::algo.prod

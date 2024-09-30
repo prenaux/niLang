@@ -1,4 +1,4 @@
-::NewImport("gui.ni");
+::Import("gui.ni");
 
 function OnSinkAttached(w,a,b) {
 }

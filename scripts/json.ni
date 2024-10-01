@@ -133,9 +133,9 @@
   }
 
   ///////////////////////////////////////////////
-  function toString(v,aPrettyPrint) {
+  function toString(v,_aPrettyPrint) {
     local fp = ::gLang.CreateFileDynamicMemory(128,null)
-    local writer = ::gLang.CreateJsonFileWriter(fp,aPrettyPrint)
+    local writer = ::gLang.CreateJsonFileWriter(fp,_aPrettyPrint)
     toWriter(v,writer)
     fp.SeekSet(0)
     return fp.ReadString()

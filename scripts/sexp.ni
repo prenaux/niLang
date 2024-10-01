@@ -3,7 +3,7 @@
 ::Import("lang.ni")
 ::Import("tostring.ni")
 
-module <- {
+module_sexp <- {
   function newToString() ::tToString {
     local s = ::tToString.new()
     s._isIdentifier = #(v) => v[?0] != '`'
@@ -53,7 +53,7 @@ module <- {
   }
 }
 
-module.utils <- {
+module_sexp.utils <- {
   function getAfter(sexp,k,aDefault) {
     foreach (i,e in sexp) {
       if (e == k) {
@@ -94,6 +94,6 @@ module.utils <- {
   }
 }
 
-::LINT_CHECK_TYPE("null", ::?seq);
-::LINT_CHECK_TYPE("null", ::?seq.?utils);
-::sexp <- module
+::LINT_CHECK_TYPE("null", ::?sexp);
+::LINT_CHECK_TYPE("null", ::?sexp.?utils);
+::sexp <- module_sexp

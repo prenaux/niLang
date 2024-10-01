@@ -100,7 +100,7 @@ module <- {
 
   ///////////////////////////////////////////////
   // Returns an array of tFileEntry
-  function listFiles(aPath,aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
+  function listFiles(aPath,_aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
   {
     aPath = "".setdir(aPath)
     local sink = {
@@ -141,7 +141,7 @@ module <- {
     sink.mAppendBaseDir = _aAppendBaseDir;
     sink.mBaseDir = aPath;
     sink.mRecursive = _aRecursive;
-    sink.mFilter = aFilter || "*.*";
+    sink.mFilter = _aFilter || "*.*";
     sink.mAttr = (_aAttr == null) ? ::eFileAttrFlags.AllFiles : _aAttr;
 
     _rootFS.FileEnum(

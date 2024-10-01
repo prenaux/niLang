@@ -9,6 +9,7 @@
 ::gGraphics <- ::gUIContext.?graphics
 ::gGraphicsContext <- ::gUIContext.?graphics_context
 
+::LINT_CHECK_TYPE("null", ::?gui);
 ::gui <- {
   //--------------------------------------------------------------------------------------------
   //
@@ -650,15 +651,15 @@
     return createMessageBox2(aUICtx,aParent,aTitle,aMsg,aButtons,null)
   }
 
-  function findWidget(aID1,aID2,aID3,aID4)
+  function findWidget(aID1,_aID2,_aID3,_aID4)
   {
     local w = ::gUIContext.root_widget.FindWidget(aID1)
-    if (aID2 && w) {
-      w = w.FindWidget(aID2);
-      if (aID3 && w) {
-        w = w.FindWidget(aID3);
-        if (aID4 && w) {
-          w = w.FindWidget(aID4);
+    if (_aID2 && w) {
+      w = w.FindWidget(_aID2);
+      if (_aID3 && w) {
+        w = w.FindWidget(_aID3);
+        if (_aID4 && w) {
+          w = w.FindWidget(_aID4);
         }
       }
     }
@@ -1062,9 +1063,9 @@ else {
   _speed = 10.0
   _overlay = null
 
-  function new(path) {
+  function new(_aPath) {
     local t = this.Clone()
-    path = path || "niUI://loading.tga"
+    local path = _aPath || "niUI://loading.tga"
     t._speed <- 10.0
     t._overlay <- ::gGraphics.CreateOverlayResource(path)
     if (t._overlay) {
@@ -1073,6 +1074,7 @@ else {
     }
     return t
   }
+
   function draw(canvas,r) {
     if (_overlay) {
       local sz = _overlay.size

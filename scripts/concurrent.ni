@@ -7,7 +7,7 @@
 
 ::gConcurrent <- ::LINT_AS_TYPE("iConcurrent",::Concurrent_Get())
 
-::concurrent <- {
+module <- {
 
   function isConcurrent() {
     return true
@@ -125,9 +125,12 @@
   }
 }
 
-::ioRun <- concurrent.ioRun
-::cpuRun <- concurrent.cpuRun
-::mainRun <- concurrent.mainRun
+::LINT_CHECK_TYPE("null", ::?concurrent);
+::concurrent <- module
+
+::ioRun <- ::concurrent.ioRun
+::cpuRun <- ::concurrent.cpuRun
+::mainRun <- ::concurrent.mainRun
 
 // This is set as the concurrent child vm root table's delegate.
 // In the future it should be made immutable.

@@ -114,9 +114,9 @@
   }
 
   //! Unregister a namespace and all the functions in the specified command table
-  function unregisterNS(aName,aFuncs) {
-    if (aFuncs) {
-      foreach (key,cmd in aFuncs) {
+  function unregisterNS(aName,_aFuncs) {
+    if (_aFuncs) {
+      foreach (key,cmd in _aFuncs) {
         if (typeof(cmd) != "table")
           continue
         unregisterCommand(aName,key)

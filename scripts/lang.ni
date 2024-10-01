@@ -240,15 +240,15 @@ local __lint = {
   d.IsEmpty <- d.empty
   d.Clone <- d.DeepClone
   d.Has <- function(k) { return (k in this); }
-  d.GetKeys <- function(arr) {
-    arr = arr || [];
+  d.GetKeys <- function(_aOutputArray) {
+    local arr = _aOutputArray || [];
     foreach (k,v in this) {
       arr.append(k);
     }
     return arr;
   }
-  d.GetValues <- function(arr) {
-    arr = arr || [];
+  d.GetValues <- function(_aOutputArray) {
+    local arr = _aOutputArray || [];
     foreach (k,v in this) {
       arr.append(v);
     }
@@ -588,18 +588,20 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function getPropertyPath(string aKey, string aDefault) string {
+  function getPropertyPath(string aKey, string _aDefault) string {
     local v = ::gLang.property[aKey]
-    if (!(v.?len()))
-      return ::lang.urlDecode(aDefault)
+    if (!(v.?len())) {
+      return ::lang.urlDecode(_aDefault)
+    }
     return ::lang.urlDecode(v)
   }
 
   ///////////////////////////////////////////////
-  function getPropertyBool(string aKey, bool aDefault) bool {
+  function getPropertyBool(string aKey, bool _aDefault) bool {
     local v = ::gLang.GetProperty(aKey)
-    if (!(v.?len()))
-      return aDefault
+    if (!(v.?len())) {
+      return _aDefault;
+    }
     return ::lang.toBool(v)
   }
 
@@ -967,7 +969,7 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function createDataTableXML(aXMLString)
+  function createDataTableXML(aXMLString) iDataTable
   {
     local dt = ::gLang.CreateDataTable("")
     local fp = ::?fs.createStringFile(aXMLString)
@@ -977,14 +979,14 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function dataTableFromString(aString,_aType) {
+  function dataTableFromString(aString,_aType) iDataTable {
     _aType = _aType || "xml"
     return ::lang.loadDataTable(_aType,::?fs.createStringFile(aString))
   }
 
   ///////////////////////////////////////////////
   // Load a data table
-  function loadDataTable(aType,aPath,_aDT)
+  function loadDataTable(aType,aPath,_aDT) iDataTable
   {
     local fp = ::lang.urlOpen(aPath)
     if (!fp)
@@ -1007,11 +1009,11 @@ local __lint = {
     if (!::gLang.SerializeDataTable(aType,::eSerializeMode.Write,aDT,fp))
       throw "Can't write data table to '"+aPath+"'."
   }
-  function dataTableToString(aDT,aMode)
+  function dataTableToString(aDT,_aMode)
   {
-    aMode = aMode || "xml-stream"
+    local mode = _aMode || "xml-stream"
     local fp = ::gLang.CreateFileDynamicMemory(4096,"")
-    if (!::gLang.SerializeDataTable(aMode,::eSerializeMode.Write,aDT,fp))
+    if (!::gLang.SerializeDataTable(mode,::eSerializeMode.Write,aDT,fp))
       throw "Can't write data table."
     fp.SeekSet(0);
     return fp.ReadString();
@@ -1069,16 +1071,16 @@ local __lint = {
   // If a __name property exists and aName is null sets that property's value as the datatable's name
   // If a __tables property exists serialize those first and makes sure those tables arent serialized twice
   //    rem for this to work the extra added tables need to have a name which is different of all tables in the array
-  function convertTableToDataTable(table aTable, string aName) iDataTable {
-    if (!aName) {
+  function convertTableToDataTable(table aTable, string _aName) iDataTable {
+    if (!_aName) {
       if ("__name" in aTable) {
-        aName = aTable[?"__name"]
+        _aName = aTable[?"__name"]
       }
       else {
-        aName = "Unnamed"
+        _aName = "Unnamed"
       }
     }
-    local dt = ::gLang.CreateDataTable(aName)
+    local dt = ::gLang.CreateDataTable(_aName)
     local subTables = null
     if ("__tables" in aTable) {
       subTables = {}

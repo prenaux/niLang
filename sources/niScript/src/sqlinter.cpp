@@ -1784,7 +1784,7 @@ struct sLinter {
         StrEndsWithI(aModuleName,".niw");
     if (isScriptFile) {
       // Script code import
-      niLetMut fp = niCheckNN(
+      niLetMut fp = niCheckNNSilent(
         fp,
         ImportFileOpen(aModuleName),
         niNew sScriptTypeErrorCode(
@@ -1829,7 +1829,7 @@ struct sLinter {
     }
     else {
       // Native module import
-      niLet ptrModuleDef = niCheckNN(
+      niLet ptrModuleDef = niCheckNNSilent(
         ptrModuleDef,
         ni::GetLang()->LoadModuleDef(aModuleName),
         niNew sScriptTypeErrorCode(

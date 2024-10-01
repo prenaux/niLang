@@ -661,6 +661,11 @@ static_assert(std::is_same<
     return RET;                               \
   }
 
+#define niCheckNNSilent(V, EXPR, RET)         \
+  niCheckNNIfNull(V, EXPR) {                  \
+    return RET;                               \
+  }
+
 //##################################################################
 // to_container & to_vector
 //##################################################################

@@ -2289,7 +2289,13 @@ struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
 
     niLet objTableType = sqa_getscriptobjtype(objTable);
     if (objTableType == eScriptType_Table) {
-      return _table(objTable)->GetDelegate();
+      SQTable* del = _table(objTable)->GetDelegate();
+      if (del) {
+        return del;
+      }
+      else {
+        return _null_;
+      }
     }
     else if (objTableType == eScriptType_ResolvedType) {
       niLet resolvedType = _ObjToResolvedTyped(objTable);

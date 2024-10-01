@@ -324,6 +324,7 @@ SQTable* SQTable::GetDelegate() const
 }
 
 void SQTable::SetParent(SQTable* apParent) {
+  niAssert(apParent != this);
   mpParent = apParent;
 }
 

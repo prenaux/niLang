@@ -10,7 +10,10 @@
 //
 
 // TODO:
-// - [ ] p2: Lint iHString as the string type (.empty(), etc. should work) - one workaround is to just ::LINT_AS_TYPE("string"...)
+// - [ ] p0: Math operators should preserve the type of the first non-null operand, starting from the right. Ideally it should just "call" the apprioriate metamethod?
+// - [ ] p0: Lint iHString as the string type (.empty(), etc. should work). Current workaround is to ::LINT_AS_TYPE("string",EXPR).
+// - [ ] p0: Fix key_cant_set with 'table.field_in_delegate_only = value'
+//
 // - [ ] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
 // - [ ] p2: Decide whether the default aThisTable with Import(aPath) is the root table or a new empty table. The linter use a new empty table but the implementation uses the root table. Using the root table by default is fairly messy and can lead to unexpected modification of the root table. Finally Import() should return the this table it used - this would enable ::Import("bla").module and work well with using a new table as this table.
 // - [ ] p2: Correctly lint Import(aPath, aThisTable).
@@ -33,6 +36,8 @@
 // - [ ] p2: foreach: infer the type of v of array type and/or allow specifying an explicity type in foreach
 // - [ ] p2: foreach: infer the type of k,v of table type and/or allow specifying an explicity type in foreach
 // - [ ] p2: add a way to mark functions as deprecated, we'd like to mark all lowercase builtin as deprecated and encourage using the PascalCase functions instead
+// - [ ] p2: lint operators when used with a table types, those should have __SetCanCallMetaMethod(true) & the required metamethods for operator. Particularly the % operator used for .merge()... and that thing needs to go and be removed.
+// - [ ] p2: remove the table % modulo operator that calls .merge
 
 // Done:
 // - [x] p1: Fully lint all scripts folder.

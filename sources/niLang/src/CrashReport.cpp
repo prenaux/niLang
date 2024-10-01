@@ -98,7 +98,7 @@ static void _FormatThrowMessage(
           hasMsg?(exceptionMsg[StrSize(exceptionMsg)-1]=='\n'?_A(""):_A("\n")):_A("")),
     -1, -1);
   fmt.append("--- CALLSTACK ------------------\n");
-  ni_stack_get_current(fmt,nullptr,1); // 1 to skip _FormatThrowMessage
+  ni_stack_get_current(fmt,nullptr,2); // 1 to skip _FormatThrowMessage and its caller
 }
 
 #ifdef niJSCC

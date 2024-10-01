@@ -16,7 +16,7 @@ tkPkgLinkLibs niAppLibConsole ;
 
 SRC = [ tkPkgSrc ] ;
 
-BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) ] ;
 niCURL_LinkLibs_Deps $(PKGTARGET) ;
 
 # XXX: This should be in the openssl toolset

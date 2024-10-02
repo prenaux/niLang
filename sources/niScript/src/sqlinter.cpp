@@ -3401,6 +3401,19 @@ void SQFunctionProto::LintTrace(
     sset(IARG0, niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int, aOpcode, nullptr));
   };
 
+  auto op_arith = [&](const SQInstruction& inst, SQOpcode aOpcode) {
+    SQObjectPtr opLeft = sget(IARG2);
+    SQObjectPtr opRight = (IARG3 != 0) ? lget(IARG1) : sget(IARG1);
+
+    _LTRACE(("op_arith: opLeft: %s (%s), opRight: %s (%s)",
+             _ObjToString(opLeft), sstr(IARG2),
+             _ObjToString(opRight), sstr(IARG1)));
+
+    // by default with return the type of left operand since that's how
+    // metamethods would be selected
+    sset(IARG0, opLeft);
+  };
+
   auto op_lint_hint = [&](const SQInstruction& inst) {
     niLet hint = (eSQLintHint)inst._arg0;
     SQObjectPtr arg1 = sget(IARG1);
@@ -3596,6 +3609,11 @@ void SQFunctionProto::LintTrace(
       case _OP_TYPEOF: op_typeof(inst); break;
       case _OP_LINT_HINT: op_lint_hint(inst); break;
       case _OP_FOREACH: op_foreach(inst); break;
+      case _OP_ADD: op_arith(inst, _OP_ADD); break;
+      case _OP_SUB: op_arith(inst, _OP_SUB); break;
+      case _OP_MUL: op_arith(inst, _OP_MUL); break;
+      case _OP_DIV: op_arith(inst, _OP_DIV); break;
+      case _OP_MODULO: op_arith(inst, _OP_MODULO); break;
       default: {
         break;
       }

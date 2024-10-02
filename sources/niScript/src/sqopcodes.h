@@ -13,7 +13,7 @@ enum SQOpcode
   _OP_PREPCALL      = 7,  //<<closuretarget>> <<key>> <<src>> <<ttarget>>
   _OP_CALL          = 8,  //<<target>> <<closure>> <<firstarg>> <<nargs>>
   _OP_MOVE          = 9,  //<<target>> <<src>>
-  _OP_ADD           = 10, //<<terget>> <<op1>> <<op2>>
+  _OP_ADD           = 10, //<<target>> <<op1>> <<op2>>
   _OP_SUB           = 11, //like ADD
   _OP_MUL           = 12, //like ADD
   _OP_DIV           = 13, //like ADD

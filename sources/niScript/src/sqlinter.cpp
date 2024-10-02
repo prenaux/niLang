@@ -1614,6 +1614,22 @@ struct sLinter {
     // niDebugFmt(("... DoLintSet: '%s' in %s", _ObjToString(key), _ObjToString(self)));
     switch(_sqtype(self)) {
       case OT_TABLE: {
+        // Disabled with #if 0 because the linter, which doesn't fully execute
+        // the code, may legitimately pass the same table without creating new
+        // tables or clones when unnecessary for linting purposes. As a
+        // result, the table might end up being set in itself here
+        // directly. In the runtime version, however, it would usually operate
+        // on a clone of the table.
+#if 0
+        if (sq_istable(val)) {
+          if (_table(self) == _table(val)) {
+            errDesc.Format(niFmt("setting table '%s' as the value for key '%s' in itself",
+                                 _ObjToString(self), _ObjToString(key)));
+            return false;
+          }
+        }
+#endif
+
         if (!_table(self)->Set(key,val)) {
           if (_table(self)->GetDelegate()) {
             SQObjectPtr v;

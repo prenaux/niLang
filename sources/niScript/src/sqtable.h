@@ -107,7 +107,7 @@ public:
   int CountUsed();
   bool SetDelegate(SQTable *mt);
   SQTable* GetDelegate() const;
-  void SetParent(SQTable* apParent);
+  tBool SetParent(SQTable* apParent);
   SQTable* GetParent() const;
   void __stdcall SetDebugName(const achar* aaszName);
   void __stdcall SetDebugName(iHString* hspName) { SetDebugName(niHStr(hspName)); }

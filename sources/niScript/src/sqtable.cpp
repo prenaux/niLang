@@ -238,8 +238,9 @@ bool SQTable::Set(const SQObjectPtr &key, const SQObjectPtr &val)
   tHMapIt it = mhmap.find(key);
   if (it == mhmap.end())
     return false;
-  if (_sqtype(val) == OT_TABLE)
+  if (_sqtype(val) == OT_TABLE) {
     _table(val)->SetParent(this);
+  }
   it->second = val;
   CHECK_HASH_MAP();
   return true;
@@ -251,14 +252,18 @@ bool SQTable::NewSlot(const SQObjectPtr &key,const SQObjectPtr &val)
   CHECK_HASH_MAP();
   tHMapIt it = mhmap.find(key);
   if (it == mhmap.end()) {
-    if (_sqtype(val) == OT_TABLE) _table(val)->SetParent(this);
+    if (_sqtype(val) == OT_TABLE) {
+      _table(val)->SetParent(this);
+    }
     SQTable_BeforeWrite(this);
     astl::upsert(mhmap,key,val);
     CHECK_HASH_MAP();
     return true;
   }
   else {
-    if (_sqtype(val) == OT_TABLE) _table(val)->SetParent(this);
+    if (_sqtype(val) == OT_TABLE) {
+      _table(val)->SetParent(this);
+    }
     it->second = val;
     CHECK_HASH_MAP();
     return false;
@@ -323,9 +328,19 @@ SQTable* SQTable::GetDelegate() const
   return _table(mptrDelegate);
 }
 
-void SQTable::SetParent(SQTable* apParent) {
-  niAssert(apParent != this);
+tBool SQTable::SetParent(SQTable* apParent) {
+  // Setting itself as parent is generally no bueno but its usually the
+  // consequence of creating a direct cycle which is considered valid
+  // code. The linter can also do this much more readily as its passing types
+  // around which are represented as tables. So we return eFalse in this case
+  // but do not panic assert.
+  {
+    // niAssert(apParent != this);
+    if (apParent == this)
+      return eFalse;
+  }
   mpParent = apParent;
+  return eTrue;
 }
 
 SQTable* SQTable::GetParent() const {

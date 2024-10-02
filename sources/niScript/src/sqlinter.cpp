@@ -2831,8 +2831,8 @@ void SQFunctionProto::LintTrace(
       }
       else if (sq_istable(v) && _table(v)->GetDebugHName() == nullptr) {
         niLet parent = _table(v)->GetParent();
-        niLet parentDebugName = (parent && parent != rootTable) ? parent->GetDebugName() : nullptr;
-        if (niStringIsOK(parentDebugName)) {
+        niLet parentDebugName = (parent && parent != rootTable) ? parent->GetDebugHName() : nullptr;
+        if (HStringIsNotEmpty(parentDebugName)) {
           _table(v)->SetDebugName(_H(niFmt("%s.%s", parentDebugName, _stringhval(k))));
         }
         else {
@@ -3635,17 +3635,18 @@ tU32 SQFunctionProto::LintTraceRoot() {
   sLinter linter;
 
   SQObjectPtr moduleThis = SQTable::Create();
+
   SQObjectPtr moduleRoot = SQTable::Create();
   _table(moduleRoot)->SetDelegate(_table(linter._vmroot));
 
   tHStringPtr sourceName = this->GetSourceName();
   if (HStringIsNotEmpty(sourceName)) {
     cPath path(niHStr(sourceName));
-    _table(moduleRoot)->SetDebugName(niFmt("__modulethis_%s__",path.GetFileNoExt()));
+    _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",path.GetFileNoExt()));
     _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%s__",path.GetFileNoExt()));
   }
   else {
-    _table(moduleRoot)->SetDebugName(niFmt("__modulethis_%s__",_PtrToString((tIntPtr)this)));
+    _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",_PtrToString((tIntPtr)this)));
     _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%p__",_PtrToString((tIntPtr)this)));
   }
 

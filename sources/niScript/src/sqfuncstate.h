@@ -30,7 +30,9 @@ struct SQFuncState
   int CalcStackFrameSize();
   void AddLineInfos(sVec2i aSourceLineCol, bool lineop, bool force);
   int AllocStackPos();
-  int PushTarget(int n=-1);
+  int PushTargetAt(int n);
+  int PushTarget() { return this->PushTargetAt(-1); }
+  int PushTargetThis() { return this->PushTargetAt(0); };
   int PopTarget();
   int TopTarget();
   bool IsLocal(unsigned int stkpos);

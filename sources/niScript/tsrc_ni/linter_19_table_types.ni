@@ -4,6 +4,8 @@ local __lint = {
   _pedantic = 0
 }
 
+__debug_name <- "linter_19_test_thistable";
+
 function table_generic(table t) {
   t.name; // should fail
   t.not_a_field; // should fail
@@ -73,7 +75,6 @@ function table_local_type(table:tLocalHamster t) {
 tClone <- {
   name = "vongole"
   im_clone = 10000
-
 }
 
 function table_cloned(tClone t) {

@@ -193,24 +193,24 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_callk: "doesntExist" not found in "stuff".]})
-      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_callk: "t2" not found in TABLE{localTable]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__moduleroot_linter_01]})
-      EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{subTable]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__moduleroot_linter_01]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__moduleroot_linter_01]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: "someOuter" not found in TABLE{__moduleroot_linter_01]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_callk: implicit this access to "t2"]})
-      EXPECTED_LINT(aLogs, 3, {[Lint: Warning: implicit_this_getk: implicit this access to "thisLocalTable"]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "two"]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "x"]})
-      EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "y"]})
-      EXPECTED_LINT(aLogs, 1, {[Error: key_cant_newslot: newslot "bla" cant be created in resolved_type<string>.]})
-      EXPECTED_LINT(aLogs, 1, {[Warning: prepcall_dynamic: dynamic function call prevents linting, trying to call resolved_type<string> from TABLE{__moduleroot_linter_01]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_callk: "doesntExist" not found in "stuff".]})
+      ::EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_callk: "t2" not found in TABLE{localTable]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__modulethis_linter_01]})
+      ::EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{localTable.subTable]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__modulethis_linter_01]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__modulethis_linter_01]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: "someOuter" not found in TABLE{__modulethis_linter_01]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "unkvar" key cant be set in]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "one"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_callk: implicit this access to "t2"]})
+      ::EXPECTED_LINT(aLogs, 3, {[Lint: Warning: implicit_this_getk: implicit this access to "thisLocalTable"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "two"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "x"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning: implicit_this_getk: implicit this access to "y"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_cant_newslot: newslot "bla" cant be created in resolved_type<string>.]})
+      ::EXPECTED_LINT(aLogs, 1, {[Warning: prepcall_dynamic: dynamic function call prevents linting, trying to call resolved_type<string> from TABLE{__modulethis_linter_01]})
 
       ::CHECK_EQUAL(13,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(9,aLintResults.mLogsWarning,"Expected lint warnings.");
@@ -219,40 +219,37 @@ function main() {
   testLinter.check(
     "linter_02_this_and_roottable.ni",
     function(aLogs) {
-      ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[Lint: Error: key_notfound_callk: "functionNotInRoot"]})
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_callk: "functionInRoot"]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_callk: "functionNotInRoot"]});
+      ::CHECK_EQUAL(2,aLogs.size(),"Lints count.");
     })
 
   testLinter.check(
     "linter_03_this_set_key_notfound.ni",
     function(aLogs) {
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_cant_set: "_unknownkey"]})
       ::CHECK_EQUAL(1,aLogs.size(),"Lints count.");
-      EXPECTED_LINT(
-        aLogs, 1,
-        {[Lint: Error: key_cant_set: "_unknownkey"]})
     })
 
   testLinter.check(
     "linter_04_function_call.ni",
     function(aLogs) {
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_atleast2/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_atleast2/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_atleast2/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_borkedoptional/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_borkedoptional/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_borkedoptional/4(2)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 1. Calling f0/0(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 2. Calling f0/0(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 0. Calling f3/3(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 2. Calling f3/3(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3/3(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3b/3(0)]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: param_decl: Non-optional parameter[3] "d" after optional parameter[3] "_c". (in f_borkedoptional)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_atleast2/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_atleast2/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_atleast2/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 0. Calling f_borkedoptional/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 2 but got 1. Calling f_borkedoptional/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 4 but got 5. Calling f_borkedoptional/4(2)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 1. Calling f0/0(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 0 but got 2. Calling f0/0(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 0. Calling f3/3(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Not enough arguments passed, expected at least 3 but got 2. Calling f3/3(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3/3(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_num_args: call_func: Too many arguments passed, expected at most 3 but got 4. Calling f3b/3(0)]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: param_decl: Non-optional parameter[3] "d" after optional parameter[3] "_c". (in f_borkedoptional)]});
 
-      EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Too many arguments passed]})
-      EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Not enough arguments passed]})
+      ::EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Too many arguments passed]})
+      ::EXPECTED_LINT(aLogs, 6, {[call_num_args: call_func: Not enough arguments passed]})
 
       ::CHECK_EQUAL(13,aLogs.size(),"Lints count.");
     })
@@ -262,23 +259,23 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[call_num_args: call_method: Incorrect number of arguments passed, expected 2 but got 3. Calling method_def<iMath,RandIntRange/2>.]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[call_num_args: call_method: Incorrect number of arguments passed, expected 2 but got 1. Calling method_def<iMath,RandIntRange/2>.]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 0. Calling method_def<iFile,WriteString/1>.]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[ret_type_cant_assign: Cant assign type 'interface_def<iTime>' to return type 'resolved_type<string>'.]})
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,Cant find method definition 'iMath::NotaMethod'>'");
 
@@ -293,11 +290,11 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "call_null: Attempting to call 'error_code<error_code_cant_find_method_def,Cant find method definition 'iUnknown::RandIntRange'>'");
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_callk: "RandIntRange" not found in interface_def<iUnknown>]});
 
@@ -312,32 +309,32 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_num_args: call_method: Incorrect number of arguments passed, expected 1 but got 2. Calling method_def<NULL,vmprintln/1>.");
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_error: call_lint_func: CreateInstance/-1: too many arguments '4', expected at most 3.");
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_error: call_lint_func: CreateInstance/-1: not enough arguments '0', expected at least 1.");
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: too many arguments '4', expected at most 3.");
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: not enough arguments '0', expected at least 1.");
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_error: call_lint_func: CreateGlobalInstance/-1: Cant find object type 'niLang.TheUnknownHamster'.");
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_num_args: call_nativeclosure: Incorrect number of arguments, expected 1 but got 2. Calling endswith/1.");
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         "Lint: Error: call_num_args: call_nativeclosure: Incorrect number of arguments, expected at least 1 but got 0. Calling find/-3.");
 
@@ -352,7 +349,7 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_callk: "Log" not found in interface_def<iUnknown>]});
 
@@ -367,39 +364,39 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<float>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<string>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<array>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<table>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<closure>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec2>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec3>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec4>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<float>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<string>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<array>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<table>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<closure>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec2>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec3>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Vec4>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<Matrix>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<UUID>]});
 
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{2} not found in resolved_type<Vec2>: index out of range '2']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyz" not found in resolved_type<Vec2>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{3} not found in resolved_type<Vec3>: index out of range '3']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzw" not found in resolved_type<Vec3>]});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{4} not found in resolved_type<Vec4>: index out of range '4']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzww" not found in resolved_type<Vec4>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{2} not found in resolved_type<Vec2>: index out of range '2']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyz" not found in resolved_type<Vec2>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{3} not found in resolved_type<Vec3>: index out of range '3']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzw" not found in resolved_type<Vec3>]});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{4} not found in resolved_type<Vec4>: index out of range '4']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "xyzww" not found in resolved_type<Vec4>]});
 
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{16} not found in resolved_type<Matrix>: index out of range '16']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_111" not found in resolved_type<Matrix>: matrix invalid swizzle member '_111']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_01" not found in resolved_type<Matrix>: matrix invalid row in member '_01']});
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_15" not found in resolved_type<Matrix>: matrix invalid column in member '_15']});
-      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "z" key cant be set in resolved_type<Vec2>: not found.]})
-      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec2>: not found.]})
-      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "w" key cant be set in resolved_type<Vec3>: not found.]})
-      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec3>: not found.]})
-      EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec4>: not found.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: I32{16} not found in resolved_type<Matrix>: index out of range '16']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_111" not found in resolved_type<Matrix>: matrix invalid swizzle member '_111']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_01" not found in resolved_type<Matrix>: matrix invalid row in member '_01']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "_15" not found in resolved_type<Matrix>: matrix invalid column in member '_15']});
+      ::EXPECTED_LINT(aLogs, 1, {[key_cant_set: "z" key cant be set in resolved_type<Vec2>: not found.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec2>: not found.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_cant_set: "w" key cant be set in resolved_type<Vec3>: not found.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec3>: not found.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_cant_set: "xy" key cant be set in resolved_type<Vec4>: not found.]})
 
-      EXPECTED_LINT(aLogs, 1, {[call_num_args: call_nativeclosure: Incorrect number of arguments, expected 1 but got 2. Calling elementName/1]})
-      EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "HamsterText" not found in enum_def<eTextEncodingFormat>]})
+      ::EXPECTED_LINT(aLogs, 1, {[call_num_args: call_nativeclosure: Incorrect number of arguments, expected 1 but got 2. Calling elementName/1]})
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "HamsterText" not found in enum_def<eTextEncodingFormat>]})
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 11,
         {[key_notfound_callk: "thehamster" not found in resolved_type]});
 
@@ -412,16 +409,16 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     "ret_type_cant_assign: Cant assign type 'I32' to return type 'resolved_type<string>'");
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     "ret_type_cant_assign: Cant assign type 'resolved_type<string>' to return type 'resolved_type<int>'");
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     "ret_type_cant_assign: Cant assign type 'interface_def<iLang>' to return type 'interface_def<iFile>'");
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     "ret_type_cant_assign: Cant assign type 'interface_def<iFile>' to return type 'interface_def<iFuture>'");
 
       ::CHECK_EQUAL(4, aLintResults.mLogsError, "Expected lint errors.");
@@ -433,17 +430,17 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     "Cant assign type 'interface_def<iTime>' to return type 'resolved_type<int>'.");
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:19:.*]})
 
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     {[key_cant_set: "hamster" key cant be set in interface_def<iLang>: not found.]})
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     {[key_notfound_getk: "fagiano" not found in interface_def<iLang>]})
-      EXPECTED_LINT(aLogs, 1,
+      ::EXPECTED_LINT(aLogs, 1,
                     {[key_cant_set: "FOO" key cant be set in error_code<error_code_cant_find_method_def,Cant find method definition 'iLang::fagiano'>: not found]})
 
       ::CHECK_EQUAL(5, aLintResults.mLogsError, "Expected lint errors.");
@@ -455,11 +452,11 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_callk: "Log" not found in interface_def<iUnknown>]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[call_error: call_lint_func: LINT_AS_TYPE/2: Cant find interface definition 'iTheUnknownHamster']});
 
@@ -474,11 +471,11 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_getk: "StartedHamster" not found in enum_def<eCURLMessage>]});
 
@@ -507,71 +504,71 @@ function main() {
 
       // typeof_usage
       {
-        EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_usage.*\)]});
-        EXPECTED_LINT(aLogs, 9, {[Lint: Warning:.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 9, {[Lint: Warning:.*\(in typeof_usage.*\)]});
 
-        EXPECTED_LINT(aLogs, 2, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
-        EXPECTED_LINT(aLogs, 3, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
-        EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Typedef should be a literal string.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 3, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Typedef should be a literal string.*\(in typeof_usage.*\)]});
       }
 
       // typeof_t_append
       {
-        EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_t_append.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_t_append.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_t_append.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_t_append.*\)]});
       }
 
       // typeof_switch1
       {
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
 
-        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_switch1.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_switch1.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_switch1.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_switch1.*\)]});
       }
 
       // typeof_switch2
       {
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "startswith" not found in resolved_type<array>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "startswith" not found in resolved_type<array>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
 
-        EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
       }
 
       // typeof_if_string_eq_t
       {
-        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_string_eq_t.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_string_eq_t.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_string_eq_t.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_string_eq_t.*\)]});
 
-        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_string_eq_t.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_string_eq_t.*\)]});
       }
 
       // typeof_if_t_eq_string
       {
-        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_t_eq_string.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_t_eq_string.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_t_eq_string.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_if_t_eq_string.*\)]});
 
-        EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_t_eq_string.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end IfEnd>. \(in typeof_if_t_eq_string.*\)]});
       }
 
       // typeof_if_n_eq_string
       {
-        EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_n_eq_string.*\)]});
-        EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_if_n_eq_string.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_if_n_eq_string.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_if_n_eq_string.*\)]});
       }
 
       // typeof_table_member
       {
-        EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_table_member.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_table_member.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_table_member.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_table_member.*\)]});
       }
 
       // main
       {
-        EXPECTED_LINT(aLogs, 4, {[Lint: Error:.*\(in main.*\)]});
-        EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in main.*\)]});
+        ::EXPECTED_LINT(aLogs, 4, {[Lint: Error:.*\(in main.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in main.*\)]});
       }
 
       // all
@@ -586,7 +583,7 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_getk: "FluffyHamster" not found in enum_def<eDataTablePropertyType>]});
 
@@ -612,23 +609,23 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[Error: key_notfound_getk: "numfagiano" not found]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_callk: "cookfagiano" not found]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_getk: "hamster" not found in TABLE{foo]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_callk: "byebye" not found in TABLE{foo]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[key_notfound_getk: I32{10} not found in ARRAY{size:3]});
 
@@ -641,15 +638,16 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{__moduleroot_linter_19]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
-      EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tClone]})
-      EXPECTED_LINT(aLogs, 2, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
+      ::EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{linter_19_test_thistable]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tClone]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{linter_19_test_thistable.tThis]})
 
       ::CHECK_EQUAL(10,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
@@ -660,19 +658,19 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:bli'.*linter_20_namespace.ni:16:40]})
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:bar.bli'.*linter_20_namespace.ni:16:40]})
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[Lint: Error: key_notfound_getk: "qoo" not found in TABLE.*linter_20_namespace.ni:19:12]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:foo'.*linter_20_namespace.ni:23:35]]});
 
-      EXPECTED_LINT(
+      ::EXPECTED_LINT(
         aLogs, 1,
         {[Lint: Error: key_notfound_getk: "fluffy" not found in TABLE{bar.*linter_20_namespace.ni:29:41]});
 
@@ -686,8 +684,8 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'resolved_type<float>'.]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'interface_def<iFile>'.]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'resolved_type<float>'.]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'interface_def<iFile>'.]});
 
       ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
@@ -698,8 +696,8 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{tTheTable]});
-      EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_error: call_lint_func: SetDelegate/1: Delegate expected a table but got 'I32{44719}'.]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{linter_22_test_thistable.tTheTable]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_error: call_lint_func: SetDelegate/1: Delegate expected a table but got 'I32{44719}'.]});
 
       ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
@@ -710,8 +708,8 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in ARRAY{size:3""");
-      EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in I32{6""");
+      ::EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in ARRAY{size:3""");
+      ::EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in I32{6""");
 
       ::CHECK_EQUAL(4,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");

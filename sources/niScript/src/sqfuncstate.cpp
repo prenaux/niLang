@@ -89,14 +89,14 @@ int SQFuncState::AllocStackPos()
   return npos;
 }
 
-int SQFuncState::PushTarget(int n)
+int SQFuncState::PushTargetAt(int n)
 {
-  if(n!=-1){
+  if (n!=-1) {
     niAssert(n < (int)_vlocals.size());
     _targetstack.push_back(n);
     return n;
   }
-  n=AllocStackPos();
+  n = AllocStackPos();
   niAssert(n < (int)_vlocals.size());
   _targetstack.push_back(n);
   return n;

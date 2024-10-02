@@ -832,21 +832,20 @@ struct SQCompiler {
             else if (pos != 0) {
               COMPILER_ERROR("'this' local at an unexpected position.");
             }
-            // 'this' is always the 0th local
-            _fs->PushTarget(0);
+            _fs->PushTargetThis();
             _exst._deref = pos;
             niFlagOn(_exst._opExt, _OPEXT_EXPLICIT_THIS);
           }
           else {
             if (pos == -1) {
-              _fs->PushTarget(0);
+              _fs->PushTargetThis();
               _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
               if (NeedGet(false))
                 Emit2ArgsOP(_OP_GET);
               _exst._deref = DEREF_FIELD;
             }
             else {
-              _fs->PushTarget(pos);
+              _fs->PushTargetAt(pos);
               _exst._deref = pos;
             }
             niFlagOff(_exst._opExt, _OPEXT_EXPLICIT_THIS);
@@ -1388,22 +1387,24 @@ struct SQCompiler {
   eCompileResult FunctionStatement(sCompileErrors& aErrors, int* apPos)
   {
     SQObjectPtr id;
-    tBool bPushTarget0 = eTrue;
     COMPILE_CHECK(Lex(aErrors));
 
     if (_token == TK_DOUBLE_COLON) {
-      bPushTarget0 = eFalse;
-      _fs->AddInstruction(_OP_LOADROOTTABLE, _fs->PushTarget(0));
+      _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo(), false);
+      _fs->AddInstruction(_OP_LOADROOTTABLE, _fs->PushTarget());
       COMPILE_CHECK(Lex(aErrors));
+    }
+    else {
+      _fs->PushTargetThis();
     }
 
     COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
     _fs->AddLineInfos(_lex.GetLastTokenLineCol(), getGenerateLineInfo(), false);
-    if (bPushTarget0) _fs->PushTarget(0);
     _fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetStringConstant(id));
 
-    if (_token == TK_DOUBLE_COLON)
+    if (_token == TK_DOUBLE_COLON) {
       Emit2ArgsOP(_OP_GET);
+    }
     while(_token == TK_DOUBLE_COLON) {
       COMPILE_CHECK(Lex(aErrors));
       COMPILE_CHECK(Expect(aErrors,TK_IDENTIFIER,&id));
@@ -1415,6 +1416,7 @@ struct SQCompiler {
       if (_token == TK_DOUBLE_COLON)
         Emit2ArgsOP(_OP_GET);
     }
+
     bool hasArgList;
     COMPILE_CHECK(ExpectFuncArgList(aErrors,hasArgList));
     COMPILE_CHECK(CreateFunction(aErrors,id,hasArgList,apPos));

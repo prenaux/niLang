@@ -7,9 +7,10 @@ local __lint = {
   ret_type_is_null = 0
 }
 
-function del_string(string v) {
+function del_string(string v) string {
   v.thehamster(1,2,3)
-  return v.split(":")
+  v.split(":")
+  return v.slice(0,123).getfile()
 }
 
 local lang = ::CreateInstance("niLang.Lang").QueryInterface("iLang")

@@ -1,3 +1,5 @@
+::Import("niLang")
+
 local __lint = {
   _experimental = 1
 }

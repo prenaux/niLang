@@ -623,11 +623,10 @@ struct sLinter {
   sLinter() {
     _vmroot = SQTable::Create();
     _table(_vmroot)->SetDebugName("__vmroot__");
-    this->RegisterBuiltinFuncs(_table(_vmroot));
-
     _typedefs = SQTable::Create();
     _table(_typedefs)->SetDebugName("__typedefs__");
 
+    this->RegisterBuiltinTypesAndFuncs(_table(_vmroot));
     SetDefaultLintEnabled();
   }
 
@@ -831,21 +830,24 @@ struct sLinter {
     return del->Set(aLintFunc->GetName(), aLintFunc.raw_ptr());
   }
 
-  void RegisterBuiltinFuncs(SQTable* table);
+  void RegisterBuiltinTypesAndFuncs(SQTable* table);
 
-  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) const {
-    {
+  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID) {
+    if (aTypeUUID == niGetInterfaceUUID(iHString)) {
+      return GetRegisteredTypeDef(_ss._typeStr_string);
+    }
+    else {
       niLet idef = ni::GetLang()->GetInterfaceDefFromUUID(aTypeUUID);
       if (idef) {
-        return niNew sScriptTypeInterfaceDef(
-          this->_ss, idef);
+        return niNew sScriptTypeInterfaceDef(this->_ss, idef);
       }
     }
+
     return niNew sScriptTypeErrorCode(
       this->_ss,
       _HC(error_code_cant_find_type_uuid),
       niFmt("Cant find type uuid '%s' (%s).",aTypeName,aTypeUUID));
- }
+  }
 
   astl::optional<const sInterfaceDef*> FindInterfaceDef(ain_nn_mut<iHString> aInterfaceName) const
   {
@@ -976,6 +978,21 @@ struct sLinter {
     return curr;
   }
 
+  SQObjectPtr GetRegisteredTypeDef(const SQObjectPtr& aType)
+  {
+    if (sq_isnull(aType))
+      return _null_;
+
+    SQObjectPtr typeDef;
+    if (LintGet(_typedefs,aType,typeDef,0)) {
+      return typeDef;
+    }
+
+    return niNew sScriptTypeErrorCode(
+      this->_ss, _HC(error_code_cant_find_registered_type),
+      niFmt("Cant find registered typedef: %s.", _ObjToString(aType)));
+  }
+
   SQObjectPtr ResolveType(const SQObjectPtr& aType, ain<LintClosure> aClosure, const SQObjectPtr& aThis)
   {
     if (sq_isnull(aType))
@@ -1012,8 +1029,8 @@ struct sLinter {
           niFmt("Cant find interface definition '%s'.", hspType));
       }
       else {
-        resolvedType = niNew sScriptTypeInterfaceDef(
-          this->_ss, foundInterfaceDef.value());
+        niLet idef = foundInterfaceDef.value();
+        resolvedType = this->ResolveTypeUUID(idef->maszName, *idef->mUUID);
       }
     }
 
@@ -1030,78 +1047,7 @@ struct sLinter {
       }
     }
 
-    // Base types
-    else if (hspType == _HC(typestr_string)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_String);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,string));
-    }
-    else if (hspType == _HC(typestr_int) ||
-             hspType == _HC(typestr_bool))
-    {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Int);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
-    }
-    else if (hspType == _HC(typestr_float)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Float);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,number));
-    }
-    else if (hspType == _HC(typestr_array)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Array);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,array));
-    }
-    else if (hspType == _HC(typestr_table)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Table);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,table));
-    }
-    else if (hspType == _HC(typestr_closure) ||
-             hspType == _HC(typestr_function))
-    {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Closure);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,closure));
-    }
-    else if (hspType == _HC(typestr_null) ||
-             hspType == _HC(typestr_void))
-    {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Null);
-    }
-    else if (hspType == _HC(typestr_iunknown)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_IUnknown);
-    }
-
-    // Userdata based types
-    else if (hspType == _HC(Vec2)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Vec2);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec2f));
-    }
-    else if (hspType == _HC(Vec3)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Vec3);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec3f));
-    }
-    else if (hspType == _HC(Vec4)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Vec4);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,vec4f));
-    }
-    else if (hspType == _HC(Matrix)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_Matrix);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,matrixf));
-    }
-    else if (hspType == _HC(UUID)) {
-      resolvedType = niNew sScriptTypeResolvedType(
-        this->_ss, eScriptType_UUID);
-      _userdata(resolvedType)->SetDelegate(_ddel(_ss,uuid));
-    }
+    // Unknown type
     else {
       resolvedType = niNew sScriptTypeErrorCode(
         this->_ss, _HC(error_code_unknown_typedef),
@@ -2188,10 +2134,12 @@ struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
   }
 
   static SQObjectPtr __stdcall _LintCallQueryInterface(sLinter& aLinter, ain<SQObjectPtr> qiID) {
+    tHStringPtr qiName;
     tUUID qiUUID = kuuidZero;
     switch(sqa_getscriptobjtype(qiID)) {
       case eScriptType_String: {
-        qiUUID = ni::GetLang()->GetInterfaceUUID(_stringhval(qiID));
+        qiName = _stringhval(qiID);
+        qiUUID = ni::GetLang()->GetInterfaceUUID(qiName);
         break;
       }
       default: {
@@ -2224,7 +2172,7 @@ struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
     }
 
     // niDebugFmt(("... sLintFuncCall_this_QueryInterface: qiDef: %s", qiDef->maszName));
-    return niNew sScriptTypeInterfaceDef(aLinter._ss, qiDef);
+    return aLinter.ResolveTypeUUID(niHStr(qiName), qiUUID);
   }
 
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) {
@@ -2394,7 +2342,73 @@ SQRegFunction SQSharedState::_lint_funcs[] = {
   {0,0}
 };
 
-void sLinter::RegisterBuiltinFuncs(SQTable* table) {
+void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
+
+#define NEW_BASE_RESOLVED_TYPE(SCRIPTTYPE,DEL)              \
+  SQObjectPtr resolvedType = niNew sScriptTypeResolvedType( \
+    this->_ss, SCRIPTTYPE);                                 \
+  _userdata(resolvedType)->SetDelegate(_ddel(_ss,DEL));
+
+#define REGISTER_BASE_TYPE(NAME)                        \
+  this->LintNewSlot(_typedefs,_HC(NAME),resolvedType);
+
+  // Builtin types
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_String, string);
+    REGISTER_BASE_TYPE(typestr_string);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Int, number);
+    REGISTER_BASE_TYPE(typestr_int);
+    REGISTER_BASE_TYPE(typestr_bool);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Float, number);
+    REGISTER_BASE_TYPE(typestr_float);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Array, array);
+    REGISTER_BASE_TYPE(typestr_array);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Table, table);
+    REGISTER_BASE_TYPE(typestr_table);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Closure, closure);
+    REGISTER_BASE_TYPE(typestr_closure);
+    REGISTER_BASE_TYPE(typestr_function);
+  }
+  {
+    SQObjectPtr resolvedType = niNew sScriptTypeResolvedType(this->_ss, eScriptType_Null);
+    REGISTER_BASE_TYPE(typestr_null);
+    REGISTER_BASE_TYPE(typestr_void);
+  }
+  {
+    SQObjectPtr resolvedType = niNew sScriptTypeResolvedType(this->_ss, eScriptType_IUnknown);
+    REGISTER_BASE_TYPE(typestr_iunknown);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Vec2, vec2f);
+    REGISTER_BASE_TYPE(Vec2);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Vec3, vec3f);
+    REGISTER_BASE_TYPE(Vec3);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Vec4, vec4f);
+    REGISTER_BASE_TYPE(Vec4);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_Matrix, matrixf);
+    REGISTER_BASE_TYPE(Matrix);
+  }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_UUID, uuid);
+    REGISTER_BASE_TYPE(UUID);
+  }
+
   // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
   RegisterFunc(table, "vmprint", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprint));
   RegisterFunc(table, "vmprintln", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprintln));
@@ -3215,7 +3229,7 @@ void SQFunctionProto::LintTrace(
                         _ObjToString(tocall),
                         aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
           }
-          sset(IARG0, _MakeLintCallError(aLinter, _ObjToString(tocall).c_str()));
+          sset(IARG0, _MakeLintCallError(aLinter, niFmt("Cant call iunknown %s", _ObjToString(tocall))));
         }
         break;
       };
@@ -3226,7 +3240,7 @@ void SQFunctionProto::LintTrace(
                       _ObjToString(tocall),
                       aLinter._ss.GetTypeNameStr(_sqtype(tocall))));
         }
-        sset(IARG0, _MakeLintCallError(aLinter, _ObjToString(tocall).c_str()));
+        sset(IARG0, _MakeLintCallError(aLinter, niFmt("Cant call type %s", _ObjToString(tocall))));
         break;
       }
     }

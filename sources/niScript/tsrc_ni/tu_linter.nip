@@ -11,7 +11,6 @@
 
 // TODO:
 // - [ ] p0: Math operators should preserve the type of the first non-null operand, starting from the right. Ideally it should just "call" the apprioriate metamethod?
-// - [ ] p0: Lint iHString as the string type (.empty(), etc. should work). Current workaround is to ::LINT_AS_TYPE("string",EXPR).
 // - [ ] p0: Fix key_cant_set with 'table.field_in_delegate_only = value'
 //
 // - [ ] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
@@ -40,6 +39,7 @@
 // - [ ] p2: remove the table % modulo operator that calls .merge
 
 // Done:
+// - [x] p0: Lint iHString as the string type (.empty(), etc. should work). Current workaround is to ::LINT_AS_TYPE("string",EXPR).
 // - [x] p1: Fully lint all scripts folder.
 // - [x] p1: lang.ni fully lints.
 // - [x] p1: Fully lint all tu_* test cases.
@@ -434,7 +434,8 @@ function main() {
                     "Cant assign type 'interface_def<iTime>' to return type 'resolved_type<int>'.");
 
       ::EXPECTED_LINT(aLogs, 1,
-                    {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:19:.*]})
+                      {[key_notfound_getk: "num_chars_hamster" not found in interface_def<iHStringCharIt>.*linter_11_property.ni:21:.*]})
+
 
       ::EXPECTED_LINT(aLogs, 1,
                     {[key_cant_set: "hamster" key cant be set in interface_def<iLang>: not found.]})
@@ -712,6 +713,18 @@ function main() {
       ::EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in I32{6""");
 
       ::CHECK_EQUAL(4,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_24_ihstring.ni",
+    function(aLogs, table:testLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "length" not found in resolved_type<string>.]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_callk: "IsLocalized" not found in resolved_type<string>.]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

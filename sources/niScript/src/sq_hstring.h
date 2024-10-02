@@ -46,6 +46,7 @@ _HDecl(error_code_lint_call_error);
 _HDecl(error_code_dangling_type);
 _HDecl(error_code_cant_resolve_table_type_path);
 _HDecl(error_code_out_of_range);
+_HDecl(error_code_cant_find_registered_type);
 _HDecl(resolved_type);
 _HDecl(QueryInterface);
 _HDecl_(typestr_null, "null");

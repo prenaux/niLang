@@ -21,7 +21,7 @@ function ::GetRootName() {
 function ::GetAnotherRootName() {
   return ::name
 }
-GetAnotherRootName.SetRoot(anotherRoot)
+::GetAnotherRootName.SetRoot(::anotherRoot)
 
 ::TEST("root","base",#() {
   ::CHECK_EQUAL("_ROOT_",::GetRootName())

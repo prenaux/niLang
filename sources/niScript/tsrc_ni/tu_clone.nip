@@ -1,6 +1,6 @@
 ::Import("unittest.ni")
 
-TEST("shallow", #() {
+::TEST("shallow", #() {
   {
     local b = [1,2,3]
     local a = [b,4,5,6]
@@ -19,7 +19,7 @@ TEST("shallow", #() {
   }
 })
 
-TEST("deep", #() {
+::TEST("deep", #() {
   {
     local b = [1,2,3]
     local a = [b,4,5,6]
@@ -39,7 +39,7 @@ TEST("deep", #() {
 })
 
 // default is deep clone...
-TEST("default", #() {
+::TEST("default", #() {
   {
     local b = [1,2,3]
     local a = [b,4,5,6]

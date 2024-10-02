@@ -16,7 +16,7 @@ for (local i = 0; i < (::lang.isDebugVM() ? 1000 : 10000); ++i) {
   ::BigTotal += i
 }
 
-TEST("table", #() {
+::TEST("table", #() {
   local acc = 0;
   foreach (k,v in ::BigTable) {
     acc += k
@@ -24,7 +24,7 @@ TEST("table", #() {
   ::CHECK_EQUAL(::BigTotal, acc)
 })
 
-TEST("table-nested", #() {
+::TEST("table-nested", #() {
   local len = 0;
   local acc = 0;
   local t = ::SmallTable.Clone()
@@ -40,7 +40,7 @@ TEST("table-nested", #() {
   ::CHECK_EQUAL(::SmallTable.len()*::SmallTable.len()*::SmallTable.len(), len)
 })
 
-TEST("table-nested-remove", #() {
+::TEST("table-nested-remove", #() {
   local len = 0;
   local acc = 0;
   local t = ::SmallTable.Clone()
@@ -73,7 +73,7 @@ TEST("table-nested-remove", #() {
   }
 })
 
-TEST("table-nexti", #() {
+::TEST("table-nexti", #() {
   local Range = {
     _start = 0
     _last = 0
@@ -116,7 +116,7 @@ TEST("table-nexti", #() {
   ::CHECK_EQUAL(5,a.len())
 })
 
-TEST("string", #() {
+::TEST("string", #() {
   local str = "small-小-medium-中-big-大";
   local numIt = 0
   foreach (i,c in str) {
@@ -130,7 +130,7 @@ TEST("string", #() {
   ::CHECK_EQUAL(28,str.len())
 })
 
-TEST("int", #() {
+::TEST("int", #() {
   local a = ["alpha","beta","gamma","delta","eta"]
   local numIt = 0
   foreach (ri,i in a.len()) {
@@ -142,7 +142,7 @@ TEST("int", #() {
   ::CHECK_EQUAL(a.len(),numIt)
 })
 
-TEST("Vector1", #() {
+::TEST("Vector1", #() {
   local a = ::Vector("String") % ["alpha"]
   {
     local numIt = 0
@@ -182,7 +182,7 @@ TEST("Vector1", #() {
   }
 })
 
-TEST("Vector", #() {
+::TEST("Vector", #() {
   local a = ::Vector("String") % ["alpha","beta","gamma","delta","eta"]
   {
     local numIt = 0
@@ -218,7 +218,7 @@ TEST("Vector", #() {
   }
 })
 
-TEST("import_file_systems", #() {
+::TEST("import_file_systems", #() {
 
   // add the import file systems to gResources...
   foreach (fs in ::GetThisVM().import_file_systems) {

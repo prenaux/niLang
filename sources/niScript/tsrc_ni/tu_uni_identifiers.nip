@@ -1,5 +1,6 @@
-√ <- "√"
-::vmprintln("ROOT: " + ::√ + " " + √)
+Θ <- "Θ"
+::Γ <- "Γ"
+::vmprintln("ROOT: " + ::Γ + " " + this.Θ)
 
 ::Import("unittest.ni")
 ::Import("algo.ni")

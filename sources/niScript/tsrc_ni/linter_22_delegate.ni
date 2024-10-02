@@ -13,7 +13,7 @@ tTheTable <- {
   simple_squirrel = "yata!"
 }
 
-function delegate_set() {
+function delegate_setdelegate() {
   local t = tTheTable
   ::LINT_CHECK_TYPE("table:linter_22_test_thistable.tTheTable", t);
   ::LINT_CHECK_TYPE("string", t.simple_squirrel);
@@ -26,4 +26,11 @@ function delegate_set() {
   ::LINT_CHECK_TYPE("I32", t2.delegated_squirrel);
 
   tTheTable.SetDelegate(44719);
+}
+
+function delegate_setvalue() {
+  local t = tTheTable.DeepClone().SetDelegate(tTheDelegate)
+  t.simple_squirrel = "wwww"
+  t.delegated_squirrel = "im_in_this_now_not_in_del"
+  t.GetDelegate().delegated_squirrel = "weeee!"
 }

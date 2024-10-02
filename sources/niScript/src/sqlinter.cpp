@@ -1614,11 +1614,21 @@ struct sLinter {
     // niDebugFmt(("... DoLintSet: '%s' in %s", _ObjToString(key), _ObjToString(self)));
     switch(_sqtype(self)) {
       case OT_TABLE: {
-        SQObjectPtr v;
-        if (!DoLintGet(self,key,v,_OPEXT_LINT_SETVALUE)) {
-          return false;
+        if (!_table(self)->Set(key,val)) {
+          if (_table(self)->GetDelegate()) {
+            SQObjectPtr v;
+            if (!DoLintGet(self,key,v,_OPEXT_LINT_SETVALUE)) {
+              return false;
+            }
+            return _table(self)->NewSlot(key,val);
+          }
+          else {
+            return false;
+          }
         }
-        return _table(self)->Set(key,val);
+        else {
+          return true;
+        }
       }
       case OT_ARRAY:
         if (!sq_isnumeric(key)) {

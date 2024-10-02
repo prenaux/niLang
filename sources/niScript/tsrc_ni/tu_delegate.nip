@@ -1,0 +1,25 @@
+::Import("unittest.ni")
+
+local that = {
+  tTable <- {
+    inthis = "im_in_this"
+  }
+
+  tDel <- {
+    indel = "im_in_del"
+  }
+}
+
+::TEST("set", #():(that) {
+  ::CHECK_EQUAL("im_in_this", that.tTable.inthis)
+  ::CHECK_EQUAL("im_in_del", that.tDel.indel)
+
+  local t = that.tTable.Clone().SetDelegate(that.tDel)
+  ::CHECK_EQUAL("im_in_this", t.inthis)
+  ::CHECK_EQUAL("im_in_del", t.indel)
+
+  t.indel = "im_in_this_now_not_in_del"
+  ::CHECK_EQUAL("im_in_this_now_not_in_del", t.indel)
+
+  ::CHECK_EQUAL("im_in_del", t.GetDelegate().indel)
+})

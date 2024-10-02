@@ -26,6 +26,8 @@ function table_this_type(table:tThisFagiano t) {
 }
 
 qoo <- {
+  boo = ::Vec3()
+
   tSubThisLion = {
     name = "simba"
     im_lion = 0
@@ -105,4 +107,10 @@ function table_this(tThis t) {
   r.name; // should be ok
   r.im_this; // should be ok
   r.not_a_field; // should fail
+}
+
+function table_parent(table:qoo.tSubThisLion t) Vec3 {
+  local p = t.GetParent();
+  ::LINT_CHECK_TYPE("table:linter_19_test_thistable.qoo", p);
+  return p.boo;
 }

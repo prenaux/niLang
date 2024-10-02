@@ -329,14 +329,23 @@ SQTable* SQTable::GetDelegate() const
 }
 
 tBool SQTable::SetParent(SQTable* apParent) {
+  //
   // Setting itself as parent is generally no bueno but its usually the
   // consequence of creating a direct cycle which is considered valid
   // code. The linter can also do this much more readily as its passing types
   // around which are represented as tables. So we return eFalse in this case
   // but do not panic assert.
+  //
+  // We also only set the parent once, if it hasnt been set before, since the
+  // purpose of the parent table should be mostly for type relationships or
+  // "fixed" table hierarchies.
+  //
+  // TODO: The whole notion of table parent is a bit dubious. It would likely
+  // be wise to get rid of it entierly.
+  //
   {
     // niAssert(apParent != this);
-    if (apParent == this)
+    if (apParent == this || mpParent != nullptr)
       return eFalse;
   }
   mpParent = apParent;

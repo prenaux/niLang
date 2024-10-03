@@ -201,7 +201,7 @@ function main() {
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in resolved_type<table>.]})
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "four" not found in TABLE{localTable]})
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "one" not found in TABLE{__modulethis_linter_01]})
-      ::EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{localTable.subTable]})
+      ::EXPECTED_LINT(aLogs, 2, {[Lint: Error: key_notfound_getk: "subDoesntExist" not found in TABLE{subTable]})
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "x" not found in TABLE{__modulethis_linter_01]})
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "y" not found in TABLE{__modulethis_linter_01]})
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_outer: "someOuter" not found in TABLE{__modulethis_linter_01]})
@@ -647,11 +647,10 @@ function main() {
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:qoo.tSubThisLion]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tClone]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{linter_19_test_thistable.tThis]})
+      ::EXPECTED_LINT(aLogs, 2, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
 
       ::CHECK_EQUAL(10,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
@@ -664,7 +663,7 @@ function main() {
 
       ::EXPECTED_LINT(
         aLogs, 1,
-        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:bar.bli'.*linter_20_namespace.ni:16:40]})
+        {[Lint: Error: call_error: call_lint_func: LINT_CHECK_TYPE/2: Expected type 'null' but got 'table:bli'.*linter_20_namespace.ni:16:40]})
 
       ::EXPECTED_LINT(
         aLogs, 1,
@@ -700,7 +699,7 @@ function main() {
     function(aLogs, table:testLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{linter_22_test_thistable.tTheTable]});
+      ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{tTheTable]});
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: call_error: call_lint_func: SetDelegate/1: Delegate expected a table but got 'I32{44719}'.]});
 
       ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");

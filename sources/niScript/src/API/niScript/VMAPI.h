@@ -156,7 +156,6 @@ niExportFunc(SQRESULT) sq_arrayresize(HSQUIRRELVM v,int idx,int newsize);
 niExportFunc(SQRESULT) sq_arrayreverse(HSQUIRRELVM v,int idx);
 niExportFunc(SQRESULT) sq_setdelegate(HSQUIRRELVM v,int idx);
 niExportFunc(SQRESULT) sq_getdelegate(HSQUIRRELVM v,int idx);
-niExportFunc(SQRESULT) sq_getparent(HSQUIRRELVM v,int idx);
 niExportFunc(SQRESULT) sq_shallow_clone(HSQUIRRELVM v,int idx);
 niExportFunc(SQRESULT) sq_deep_clone(HSQUIRRELVM v,int idx);
 niExportFunc(SQRESULT) sq_setfreevariable(HSQUIRRELVM v,int idx,unsigned int nval);

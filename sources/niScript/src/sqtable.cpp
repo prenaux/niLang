@@ -102,7 +102,6 @@ SQTable* SQTable::Create() {
 SQTable::SQTable()
 {
   mptrDelegate = _null_;
-  mpParent = NULL;
   mpDispatch = NULL;
   mnFlags = 0;
   mpIterators = NULL;
@@ -159,13 +158,6 @@ void SQTable::Invalidate()
         }
       }
     }
-
-    for (tHMapIt it = mhmap.begin(); it != mhmap.end(); ++it) {
-      SQObjectPtr& p = it->second;
-      if (_sqtype(p) == OT_TABLE && _table(p)->mpParent == this) {
-        _table(p)->mpParent = NULL;
-      }
-    }
     mhmap.clear();
     SetDelegate(NULL);
   }
@@ -196,7 +188,6 @@ int SQTable::CountUsed()
 SQTable *SQTable::Clone(tSQDeepCloneGuardSet* apDeepClone)
 {
   SQTable* nt = niNew SQTable();
-  nt->mpParent = NULL;
   nt->mhmap = mhmap;
   if (!mptrDelegate.IsNull()) {
     nt->SetDelegate(_table(mptrDelegate));
@@ -238,9 +229,6 @@ bool SQTable::Set(const SQObjectPtr &key, const SQObjectPtr &val)
   tHMapIt it = mhmap.find(key);
   if (it == mhmap.end())
     return false;
-  if (_sqtype(val) == OT_TABLE) {
-    _table(val)->SetParent(this);
-  }
   it->second = val;
   CHECK_HASH_MAP();
   return true;
@@ -252,18 +240,12 @@ bool SQTable::NewSlot(const SQObjectPtr &key,const SQObjectPtr &val)
   CHECK_HASH_MAP();
   tHMapIt it = mhmap.find(key);
   if (it == mhmap.end()) {
-    if (_sqtype(val) == OT_TABLE) {
-      _table(val)->SetParent(this);
-    }
     SQTable_BeforeWrite(this);
     astl::upsert(mhmap,key,val);
     CHECK_HASH_MAP();
     return true;
   }
   else {
-    if (_sqtype(val) == OT_TABLE) {
-      _table(val)->SetParent(this);
-    }
     it->second = val;
     CHECK_HASH_MAP();
     return false;
@@ -326,34 +308,6 @@ SQTable* SQTable::GetDelegate() const
   }
 #endif
   return _table(mptrDelegate);
-}
-
-tBool SQTable::SetParent(SQTable* apParent) {
-  //
-  // Setting itself as parent is generally no bueno but its usually the
-  // consequence of creating a direct cycle which is considered valid
-  // code. The linter can also do this much more readily as its passing types
-  // around which are represented as tables. So we return eFalse in this case
-  // but do not panic assert.
-  //
-  // We also only set the parent once, if it hasnt been set before, since the
-  // purpose of the parent table should be mostly for type relationships or
-  // "fixed" table hierarchies.
-  //
-  // TODO: The whole notion of table parent is a bit dubious. It would likely
-  // be wise to get rid of it entierly.
-  //
-  {
-    // niAssert(apParent != this);
-    if (apParent == this || mpParent != nullptr)
-      return eFalse;
-  }
-  mpParent = apParent;
-  return eTrue;
-}
-
-SQTable* SQTable::GetParent() const {
-  return mpParent;
 }
 
 void SQTable::SetDebugName(const achar* aaszName)

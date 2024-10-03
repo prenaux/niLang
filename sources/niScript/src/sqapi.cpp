@@ -558,18 +558,6 @@ niExportFunc(SQRESULT) sq_getdelegate(HSQUIRRELVM v,int idx)
   return SQ_ERROR;
 }
 
-niExportFunc(SQRESULT) sq_getparent(HSQUIRRELVM v,int idx)
-{
-  SQObjectPtr &self=stack_get(v,idx);
-  switch(_sqtype(self)){
-    case OT_TABLE:
-      if (!_table(self)->GetParent()) break;
-      v->Push(SQObjectPtr(_table(self)->GetParent()));
-      return SQ_OK;
-  }
-  return SQ_ERROR;
-}
-
 static cString GetObjectString(const SQSharedState& aSS,
                                const SQObjectPtr &obj) {
   cString val;

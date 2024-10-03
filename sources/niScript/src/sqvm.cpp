@@ -649,9 +649,6 @@ bool SQVM::Clone(const SQObjectPtr &self,SQObjectPtr &target, tSQDeepCloneGuardS
           if (!Clone(p,p,apDeepClone)) {
             VM_ERRORB(_A("Can't deep clone table member."));
           }
-          if (_sqtype(p) == OT_TABLE) {
-            _table(p)->SetParent(_table(target));
-          }
         }
       }
       ret = true;

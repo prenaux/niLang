@@ -881,11 +881,6 @@ static SQInt table_getdelegate(HSQUIRRELVM v)
   return SQ_SUCCEEDED(sq_getdelegate(v,-1))?1:0;
 }
 
-static SQInt table_getparent(HSQUIRRELVM v)
-{
-  return SQ_SUCCEEDED(sq_getparent(v,-1))?1:0;
-}
-
 static SQInt table_hasdelegate(HSQUIRRELVM v)
 {
   SQObject& t = stack_get(v,1);
@@ -2314,8 +2309,6 @@ SQRegFunction SQSharedState::_table_default_delegate_funcz[]={
   {_A("SetDelegate"),table_setdelegate,2, _A(".t"), _HC(this)},
   {_A("getdelegate"),table_getdelegate,1, _A(".")},
   {_A("GetDelegate"),table_getdelegate,1, _A(".")},
-  {_A("getparent"),table_getparent,1, _A(".")},
-  {_A("GetParent"),table_getparent,1, _A(".")},
   {_A("hasdelegate"),table_hasdelegate,2, _A("tt"), _HC(typestr_bool)},
   {_A("HasDelegate"),table_hasdelegate,2, _A("tt"), _HC(typestr_bool)},
   {_A("Invalidate"),table_invalidate,1, _A("t"), _HC(typestr_void)},

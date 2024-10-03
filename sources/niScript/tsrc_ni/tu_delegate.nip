@@ -3,6 +3,10 @@
 local that = {
   tTable <- {
     inthis = "im_in_this"
+
+    tSub = {
+      insub = "in_in_sub"
+    }
   }
 
   tDel <- {

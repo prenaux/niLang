@@ -15,13 +15,13 @@ tTheTable <- {
 
 function delegate_setdelegate() {
   local t = tTheTable
-  ::LINT_CHECK_TYPE("table:linter_22_test_thistable.tTheTable", t);
+  ::LINT_CHECK_TYPE("table:tTheTable", t);
   ::LINT_CHECK_TYPE("string", t.simple_squirrel);
   ::LINT_CHECK_TYPE("null", t.delegated_squirrel);
 
   local t2 = tTheTable.SetDelegate(tTheDelegate)
-  ::LINT_CHECK_TYPE("table:linter_22_test_thistable.tTheTable", t2);
-  ::LINT_CHECK_TYPE("table:linter_22_test_thistable.tTheDelegate", t2.GetDelegate());
+  ::LINT_CHECK_TYPE("table:tTheTable", t2);
+  ::LINT_CHECK_TYPE("table:tTheDelegate", t2.GetDelegate());
   ::LINT_CHECK_TYPE("string", t2.simple_squirrel);
   ::LINT_CHECK_TYPE("I32", t2.delegated_squirrel);
 

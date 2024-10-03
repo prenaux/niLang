@@ -76,7 +76,6 @@ struct SQTable : public SQCollectable, public SQ_ALLOCATOR(SQTable)
 
   tHMap       mhmap;
   SQObjectPtr mptrDelegate;
-  SQTable*    mpParent;
   iUnknown*   mpDispatch;
   tU32        mnFlags;
   SQTableIterator* mpIterators;
@@ -107,8 +106,6 @@ public:
   int CountUsed();
   bool SetDelegate(SQTable *mt);
   SQTable* GetDelegate() const;
-  tBool SetParent(SQTable* apParent);
-  SQTable* GetParent() const;
   void __stdcall SetDebugName(const achar* aaszName);
   void __stdcall SetDebugName(iHString* hspName) { SetDebugName(niHStr(hspName)); }
   const iHString* __stdcall GetDebugHName() const;

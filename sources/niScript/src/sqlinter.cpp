@@ -2361,47 +2361,6 @@ struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
   }
 };
 
-struct sLintFuncCall_table_getparent : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
-
-  sLintFuncCall_table_getparent(iHString* aName)
-      : _name(aName)
-  {}
-
-  virtual nn_mut<iHString> __stdcall GetName() const {
-    return _name;
-  }
-
-  virtual tI32 __stdcall GetArity() const {
-    return 0;
-  }
-
-  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
-  {
-    niLet& objTable = aCallArgs[0];
-
-    niLet objTableType = sqa_getscriptobjtype(objTable);
-    if (objTableType == eScriptType_Table) {
-      SQTable* del = _table(objTable)->GetParent();
-      if (del) {
-        return del;
-      }
-      else {
-        return _null_;
-      }
-    }
-    else if (objTableType == eScriptType_ResolvedType) {
-      niLet resolvedType = _ObjToResolvedTyped(objTable);
-      if (resolvedType->_scriptType == eScriptType_Table) {
-        return niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Table);
-      }
-    }
-
-    return _MakeLintCallError(
-      aLinter,niFmt("This should be a table but got '%s'.", _ObjToString(objTable)));
-  }
-};
-
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
@@ -2512,10 +2471,6 @@ void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("GetDelegate"))));
     niPanicAssert(
       OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getdelegate>(_H("getdelegate"))));
-    niPanicAssert(
-      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getparent>(_H("GetParent"))));
-    niPanicAssert(
-      OverrideDelegateFunc(del, MakeNN<sLintFuncCall_table_getparent>(_H("getparent"))));
   }
 
   {
@@ -2915,14 +2870,7 @@ void SQFunctionProto::LintTrace(
         _funcproto(v)->_name = k;
       }
       else if (sq_istable(v) && _table(v)->GetDebugHName() == nullptr) {
-        niLet parent = _table(v)->GetParent();
-        niLet parentDebugName = (parent && parent != rootTable) ? parent->GetDebugHName() : nullptr;
-        if (HStringIsNotEmpty(parentDebugName)) {
-          _table(v)->SetDebugName(_H(niFmt("%s.%s", parentDebugName, _stringhval(k))));
-        }
-        else {
-          _table(v)->SetDebugName(_stringhval(k));
-        }
+        _table(v)->SetDebugName(_stringhval(k));
       }
       // TODO: Should we have a pendantic warning if we're assigning an
       // already named object?

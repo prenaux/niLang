@@ -11,7 +11,7 @@ function table_generic(table t) {
   t.not_a_field; // should fail
 }
 
-function table_invalid_type(table:tNotAType t) {
+function table_invalid_type(tNotAType t) {
 }
 
 tThisFagiano <- {
@@ -19,8 +19,8 @@ tThisFagiano <- {
   im_fagiano = 0
 }
 
-function table_this_type(table:tThisFagiano t) {
-  t.name; // should
+function table_this_type(tThisFagiano t) {
+  t.name; // should be ok
   t.im_fagiano; // should be ok
   t.not_a_field; // should fail
 }
@@ -31,17 +31,34 @@ qoo <- {
   tSubThisLion = {
     name = "simba"
     im_lion = 0
+
+    function subthislion_subthislion_param(qoo.tSubThisLion t) __this__ {
+      ::LINT_CHECK_TYPE("table:qoo.tSubThisLion", t)
+      t.name; // should be ok
+      t.im_lion; // should be ok
+      t.not_a_field; // should fail
+      return t
+    }
+
+    function subthislion_this_param(__this__ t) qoo.tSubThisLion {
+      ::LINT_CHECK_TYPE("table:qoo.tSubThisLion", t)
+      t.name; // should be ok
+      t.im_lion; // should be ok
+      t.not_a_field; // should fail
+      return t
+    }
   }
 
-  function table_in_table_sub(table:tSubThisLion t) {
-    t.name; // should
+  function qoo_subthislion_param(qoo.tSubThisLion t) {
+    ::LINT_CHECK_TYPE("table:qoo.tSubThisLion", t)
+    t.name; // should be ok
     t.im_lion; // should be ok
     t.not_a_field; // should fail
   }
 }
 
-function table_this_sub_type(table:qoo.tSubThisLion t) {
-  t.name; // should
+function table_this_sub_type(qoo.tSubThisLion t) {
+  t.name; // should be ok
   t.im_lion; // should be ok
   t.not_a_field; // should fail
 }
@@ -54,7 +71,7 @@ function table_this_sub_type(table:qoo.tSubThisLion t) {
 }
 
 function table_global_type(::foo.tGlobalSquirrel t) ::foo.tGlobalSquirrel {
-  t.name; // should
+  t.name; // should be ok
   t.im_squirrel; // should be ok
   t.not_a_field; // should fail
   return t
@@ -90,11 +107,12 @@ tThis <- {
   name = "vongole"
   im_this = 10000
 
-  function wee() this {
+  function wee() __this__ {
     return this.DeepClone()
   }
 
-  function bla(this b) this {
+  function bla(__this__ b) __this__ {
+    ::LINT_CHECK_TYPE("table:tThis", b)
     b.name; // should be ok
     b.im_this; // should be ok
     b.not_a_field; // should fail
@@ -107,4 +125,10 @@ function table_this(tThis t) {
   r.name; // should be ok
   r.im_this; // should be ok
   r.not_a_field; // should fail
+}
+
+function table_thismodule(__this_module__ t) {
+  t.tThisFagiano; // should be ok
+  t.qoo.tSubThisLion; // should be ok
+  t.not_a_field; // should fail
 }

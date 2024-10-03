@@ -108,7 +108,7 @@
   ///////////////////////////////////////////////
   function parseFile(fp) {
     local fp = ::fs.fileOpenRead(fp)
-    local sink = ::LINT_AS_TYPE("table:_parseSink",_parseSink.Clone())
+    local sink = ::LINT_AS_TYPE("::json._parseSink",_parseSink.Clone())
     ::gLang.JsonParseFile(fp,sink)
     if (sink._error)
       throw sink._error
@@ -117,7 +117,7 @@
 
   ///////////////////////////////////////////////
   function parseString(str) {
-    local sink = ::LINT_AS_TYPE("table:_parseSink",_parseSink.Clone())
+    local sink = ::LINT_AS_TYPE("::json._parseSink",_parseSink.Clone())
     ::gLang.JsonParseString(str,sink)
     if (sink._error)
       throw sink._error

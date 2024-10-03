@@ -95,9 +95,9 @@ public:
     return Vec2i(this->_sourceline,this->_sourcecol);
   }
 
-  void LintTrace(sLinter& aLinter, SQTable* rootTable, SQTable* thisTable) const;
+  void LintTrace(sLinter& aLinter, SQTable* rootTable, SQTable* thisModuleTable, SQTable* thisTable) const;
   // Return the number of lint errors
-  tU32 LintTraceRoot();
+  tU32 LintTraceRoot() const;
 
   SQObjectPtrVec _literals;
   SQObjectPtrVec _functions;

@@ -484,11 +484,6 @@ static tBool _IsInterfaceTypeNameByConvention(ain<tChars> aName) {
   return aName[0] == 'i' && StrIsUpper(aName[1]);
 }
 
-// for tTableName naming convention
-static tBool _IsTableTypeNameByConvention(ain<tChars> aName) {
-  return aName[0] == 't' && StrIsUpper(aName[1]);
-}
-
 static cString _FmtKeyNotFoundMsg(ain<SQObjectPtr> aObj, ain<SQObjectPtr> aKey, ain<SQObjectPtr> aVal)
 {
   if (sqa_getscriptobjtype(aVal) == eScriptType_ErrorCode) {
@@ -502,6 +497,22 @@ static cString _FmtKeyNotFoundMsg(ain<SQObjectPtr> aObj, ain<SQObjectPtr> aKey, 
     return niFmt(
       "%s not found in %s.",
       _ObjToString(aKey), _ObjToString(aObj));
+  }
+}
+
+static void _TableSetDebugNameFromSourceName(ain_nn_mut<SQTable> aTable, const achar* aBaseName, iHString* ahspSourceName) {
+  if (HStringIsNotEmpty(ahspSourceName)) {
+    cPath path(niHStr(ahspSourceName));
+    niLet fileName = path.GetFileNoExt();
+    if (fileName.EndsWith("_aflymake")) { // TODO: HACK: Not super elegant but really useful for me...
+      aTable->SetDebugName(niFmt("__%s_%s__",aBaseName,fileName.RBefore("_aflymake")));
+    }
+    else {
+      aTable->SetDebugName(niFmt("__%s_%s__",aBaseName,fileName));
+    }
+  }
+  else {
+    aTable->SetDebugName(niFmt("__%s_%p__",aBaseName,_PtrToString((tIntPtr)aTable.raw_ptr())));
   }
 }
 
@@ -530,17 +541,26 @@ struct sLintStackEntry {
 
 struct LintClosure : public ImplRC<iUnknown>
 {
-  LintClosure(const SQFunctionProto *func, SQTable* rootTable, SQTable* thisTable) {
+  LintClosure(const SQFunctionProto *func,
+              ain_nn_mut<SQTable> rootTable,
+              ain_nn_mut<SQTable> thisModuleTable,
+              ain_nn_mut<SQTable> thisTable) {
     _func = func;
-    _root = rootTable;
-    _this = thisTable;
+    _root = rootTable.raw_ptr();
+    _thisModule = thisModuleTable.raw_ptr();
+    _thisWhenAssigned = thisTable.raw_ptr();
     _stack.resize(_func->_stacksize);
   }
 
   Ptr<SQFunctionProto> _func;
   SQObjectPtrVec _outervalues;
+  // The vmroot table when the closure has been assigned. TODO: This might actually not be necessary?
   SQObjectPtr _root;
-  SQObjectPtr _this;
+  // The this table of the module import.
+  SQObjectPtr _thisModule;
+  // The this table when the closure was set in a table, this is the this
+  // table that is used when linting the closure.
+  SQObjectPtr _thisWhenAssigned;
   astl::vector<sLintStackEntry> _stack;
 };
 
@@ -595,8 +615,6 @@ _DEF_LINT(null_notfound,IsWarning,IsExplicit);
 
 #undef _DEF_LINT
 
-static const cString _typestr_prefix_table = "table:";
-
 struct sLinter {
  private:
   sLinter(const sLinter& aLinter);
@@ -615,19 +633,52 @@ struct sLinter {
   tU32 _numLintErrors = 0;
   tU32 _numLintWarnings = 0;
 
+  astl::vector<NN_mut<SQTable>> _tables;
+  astl::vector<NN_mut<SQArray>> _arrays;
+
 #define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),          \
                                      niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) && \
                                      niFlagIsNot(_LKEY(KIND),eLintFlags_IsExperimental) && \
                                      niFlagIsNot(_LKEY(KIND),eLintFlags_IsExplicit))
 
-  sLinter() {
-    _vmroot = SQTable::Create();
-    _table(_vmroot)->SetDebugName("__vmroot__");
-    _typedefs = SQTable::Create();
+  sLinter(iHString* ahspSourceName) {
+    _vmroot = this->CreateTable().raw_ptr();
+    _TableSetDebugNameFromSourceName(as_nn(_table(_vmroot)), "vmroot", ahspSourceName);
+
+    _typedefs = this->CreateTable().raw_ptr();
     _table(_typedefs)->SetDebugName("__typedefs__");
 
     this->RegisterBuiltinTypesAndFuncs(_table(_vmroot));
     SetDefaultLintEnabled();
+  }
+
+  ~sLinter() {
+    static tBool _printStats = ni::GetProperty("niScript.LintPrintStats").Bool(eFalse);
+    if (_printStats) {
+      niLog(Info, niFmt(
+        "Linter cleanup stats: vmroot: %s, errors: %d, warnings: %d, tables: %d, arrays: %d, typedefs: %d",
+        _ObjToString(_vmroot),
+        _numLintErrors, _numLintWarnings,
+        _tables.size(),
+        _arrays.size(),
+        _table(_typedefs)->GetHMap().size()));
+    }
+
+    // Clear all the tables & arrays we created
+    niLoop(i,_arrays.size()) {
+      _arrays[i]->Clear();
+    }
+    niLoop(i,_tables.size()) {
+      _tables[i]->Clear();
+    }
+  }
+
+  NN_mut<SQTable> CreateTable() {
+    return _tables.emplace_back(SQTable::Create());
+  }
+
+  NN_mut<SQArray> CreateArray(int nsize) {
+    return _arrays.emplace_back(SQArray::Create(nsize));
   }
 
   void SetDefaultLintEnabled() {
@@ -885,45 +936,33 @@ struct sLinter {
     return -1;
   }
 
-  SQObjectPtr ResolveTableTypePath(
+  //
+  // Type can be fetched from the root table or relative to the module's this
+  // table.
+  //
+  // Examples:
+  //   foo.bar -> __this_module__.foo.bar
+  //   tFoo.bar -> __this_module__.tFoo.bar
+  //   ::tInRoot.qoo.nix -> __root_module__.tInRoot.qoo.nix
+  //   __root_module__
+  //   __this_module__
+  //   __this__
+  //
+  SQObjectPtr _ResolveTableTypePath(
     iHString* ahspPath,
-    ain<LintClosure> aClosure)
+    ain<LintClosure> aClosure,
+    const SQObjectPtr& aThis)
   {
-    SQObjectPtr curr;
     niLetMut pathCursor = niHStr(ahspPath);
-    // niDebugFmt(("... ResolveTableTypePath: %s", pathCursor));
-
-    // fetch root table?
+    // Start at this module
+    SQObjectPtr curr = aClosure._thisModule;
+    // or start at root?
     if (StrStartsWith(pathCursor, "::")) {
       curr = aClosure._root;
       pathCursor += 2;
-      // niDebugFmt(("... ResolveTableTypePath root: %s", pathCursor));
     }
-    else if (StrStartsWith(pathCursor,_typestr_prefix_table.c_str())) {
-      pathCursor += _typestr_prefix_table.size();
-      // niDebugFmt(("... ResolveTableTypePath prefixed: %s", pathCursor));
 
-      // not starting at root, not a local variable, so we start at the this object
-      curr = aClosure._this;
-    }
-    else if (_IsTableTypeNameByConvention(pathCursor)) {
-      // tTableName always starts at the this object
-      curr = aClosure._this;
-    }
-    else if (ahspPath == _HC(this)) {
-      // TODO: Maybe this should be a clone of this? Same issue as for
-      // ShallowClone/DeepClone we return the this table which might be
-      // modified afterward. Again though for the purpose of linting this
-      // should be good enough.
-      return aClosure._this;
-    }
-    else {
-      return niNew sScriptTypeErrorCode(
-        this->_ss, _HC(error_code_cant_resolve_table_type_path),
-        niFmt("Invalid table type path '%s'.", ahspPath));
-    }
     niPanicAssert(sq_istable(curr));
-
     niLet hasMultipleElements = niFun(&) -> tBool {
       const achar* p = pathCursor;
       while (*p) {
@@ -934,8 +973,8 @@ struct sLinter {
       return eFalse;
     }();
 
-    niLet doGetElement = [&](const achar* aEl) -> SQObjectPtr {
-      SQObjectPtr key = _H(aEl);
+    niLet doGetElement = [&](iHString* aEl) -> SQObjectPtr {
+      SQObjectPtr key = aEl;
       SQObjectPtr dest;
       if (!DoLintGet(curr, key, dest, _OPEXT_GET_RAW))
         return _null_;
@@ -948,23 +987,32 @@ struct sLinter {
       cString toSplit(pathCursor);
       // niDebugFmt(("... ResolveTableTypePath hasMultipleElements: %s", pathCursor));
       StringSplit(toSplit,".",&pathElements);
-      niPanicAssert(pathElements.size() >= 1);
+      niPanicAssert(pathElements.size() >= 2);
       niLoop(i, pathElements.size()) {
         niLet& pathElement = pathElements[i];
+        tHStringNN hspEl = _H(pathElement.c_str());
+        if (hspEl == _HC(__this__) || hspEl == _HC(__this_module__) || hspEl == _HC(__root_table__)) {
+          return niNew sScriptTypeErrorCode(
+            this->_ss, _HC(error_code_cant_resolve_table_type_path),
+            niFmt("Cant find table type '%s'. Path element[%d] '%s' is a reserved type name that cant be used in a path.",
+                  ahspPath, i, hspEl));
+        }
+
         // niDebugFmt(("... ResolveTableTypePath el[%d]: %s", i, pathElement));
-        SQObjectPtr found = doGetElement(pathElement.c_str());
+        SQObjectPtr found = doGetElement(hspEl);
         if (!sq_istable(found)) {
           return niNew sScriptTypeErrorCode(
             this->_ss, _HC(error_code_cant_resolve_table_type_path),
             niFmt("Cant find table type '%s'. Path element[%d] '%s' not found in %s, got %s.",
-                  i, pathElement, _ObjToString(curr), _ObjToString(found), ahspPath));
+                  ahspPath, i, pathElement, _ObjToString(curr), _ObjToString(found), ahspPath));
         }
         curr = found;
       }
     }
     else {
       // niDebugFmt(("... ResolveTableTypePath single elemente: %s", pathCursor));
-      SQObjectPtr found = doGetElement(pathCursor);
+      tHStringNN hspEl = _H(pathCursor);
+      SQObjectPtr found = doGetElement(hspEl);
       if (!sq_istable(found)) {
         return niNew sScriptTypeErrorCode(
           this->_ss, _HC(error_code_cant_resolve_table_type_path),
@@ -997,30 +1045,39 @@ struct sLinter {
   {
     if (sq_isnull(aType))
       return _null_;
-
-    SQObjectPtr typeDef;
-    if (LintGet(_typedefs,aType,typeDef,0)) {
-      return typeDef;
-    }
-
     if (!sq_isstring(aType)) {
       return _null_;
     }
 
-    SQObjectPtr resolvedType = _null_;
-
     niLet hspType = as_NN(_stringhval(aType));
 
-    // Return the type of the 'this' object
-    if (hspType == _HC(this)) {
+    // Reserved type names
+    if (hspType == _HC(__this__)) {
+      // TODO: Maybe this should be a clone of this? Same issue as for
+      // ShallowClone/DeepClone we return the this table which might be
+      // modified afterward. Again though for the purpose of linting this
+      // should be good enough.
       return aThis;
     }
+    else if (hspType == _HC(__this_module__)) {
+      return aClosure._thisModule;
+    }
+    else if (hspType == _HC(__root_table__)) {
+      return aClosure._root;
+    }
 
+    // Already registered types
+    {
+      SQObjectPtr foundType = _null_;
+      if (LintGet(_typedefs,aType,foundType,0)) {
+        return foundType;
+      }
+    }
+
+    // Other types
     niLet typeStrChars = hspType->GetChars();
-    niLet typeStrLen = hspType->GetLength();
-    // niDebugFmt(("... ResolveType: %s", hspType));
-
-    // Interface types, for iInterfaceName naming convention
+    SQObjectPtr resolvedType = _null_;
+    // Interface types
     if (_IsInterfaceTypeNameByConvention(typeStrChars)) {
       niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
       if (!foundInterfaceDef.has_value()) {
@@ -1033,25 +1090,14 @@ struct sLinter {
         resolvedType = this->ResolveTypeUUID(idef->maszName, *idef->mUUID);
       }
     }
-
     // Table types
-    else if (_IsTableTypeNameByConvention(typeStrChars) ||
-             StrStartsWith(typeStrChars,"::") ||
-             StrStartsWith(typeStrChars,_typestr_prefix_table.c_str()))
-    {
-      resolvedType = ResolveTableTypePath(hspType, aClosure);
+    else {
+      resolvedType = _ResolveTableTypePath(hspType, aClosure, aThis);
       if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
         // we return without caching if there's an error because the type
         // might become available later on or in another context
         return resolvedType;
       }
-    }
-
-    // Unknown type
-    else {
-      resolvedType = niNew sScriptTypeErrorCode(
-        this->_ss, _HC(error_code_unknown_typedef),
-        niFmt("Unknown type definition '%s'.", hspType));
     }
 
     niPanicAssert(resolvedType != _null_);
@@ -1680,6 +1726,7 @@ struct sLinter {
             }
 
             // niDebugFmt(("... DoLintSet: didGet: %s[%s] = %s.", _ObjTypeString(self), _ObjToString(key), _ObjToString(dest)));
+
             if (sqa_getscriptobjtype(dest) == eScriptType_PropertyDef) {
               niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
               niLet pdefSet = destUD->pSetMethodDef;
@@ -1777,7 +1824,7 @@ struct sLinter {
   SQObjectPtr ImportScript(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
     static tBool _traceImportScript = ni::GetProperty("niScript.LintTraceImportScript").Bool(eFalse);
     static tBool _traceImportScriptAlreadyImported = ni::GetProperty("niScript.LintTraceImportScript").Bool(eFalse);
-    static tBool _traceImportLint = ni::GetProperty("niScript.LintTraceImportLint").Bool(eFalse);
+    static tBool _lintPrintImportLint = ni::GetProperty("niScript.LintPrintImportLint").Bool(eTrue);
 
     SQObjectPtr roottable = aClosure._root;
     niPanicAssert(sq_istable(roottable));
@@ -1835,7 +1882,7 @@ struct sLinter {
     niPanicAssert(sq_isfuncproto(o));
 
     mImportStack.push_back(hspSourceName);
-    SQObjectPtr moduleThis = SQTable::Create();
+    SQObjectPtr moduleThis = this->CreateTable().raw_ptr();
     _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",hspSourceName));
     // TODO: Skipping the logs of the imported scripts for now, a bit jank
     // way to do it but it'll do for now.  Should this be its own linter but
@@ -1844,8 +1891,8 @@ struct sLinter {
       niLet wasPrintLogs = _printLogs;
       niLet wasLintEnabled = _lintEnabled;
       SetDefaultLintEnabled();
-      _printLogs = _traceImportLint ? eTrue : eFalse;
-      _funcproto(o)->LintTrace(*this,_table(roottable),_table(moduleThis));
+      _printLogs = _lintPrintImportLint;
+      _funcproto(o)->LintTrace(*this,_table(roottable),_table(moduleThis),_table(moduleThis));
       _lintEnabled = wasLintEnabled;
       _printLogs = wasPrintLogs;
     }
@@ -2135,7 +2182,7 @@ struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
         aLinter,niFmt("First parameter should be the expected type name as a literal string but got '%s'.", _ObjToString(expectedTypeArg)));
     }
 
-    return aLinter.ResolveType(expectedTypeArg, aClosure, aClosure._this);
+    return aLinter.ResolveType(expectedTypeArg, aClosure, aCallArgs[0]);
   }
 };
 
@@ -2487,6 +2534,7 @@ void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
 void SQFunctionProto::LintTrace(
   sLinter& aLinter,
   SQTable* rootTable,
+  SQTable* thisModuleTable,
   SQTable* thisTable) const
 {
 #define IARG0 inst._arg0
@@ -2496,7 +2544,7 @@ void SQFunctionProto::LintTrace(
 #define IEXT inst._ext
 
   const SQFunctionProto* thisfunc = this;
-  LintClosure thisClosure(thisfunc, rootTable, thisTable);
+  LintClosure thisClosure(thisfunc, as_nn(rootTable), as_nn(thisModuleTable), as_nn(thisTable));
 
   const tBool shouldLintTrace = _ShouldKeepName(
     ni::GetProperty("niScript.LintTrace").c_str(),
@@ -2508,7 +2556,7 @@ void SQFunctionProto::LintTrace(
   astl::vector<sLintStackEntry>& stack = thisClosure._stack;
   niLet thisfunc_stacksize = stack.size();
 
-  niLet thisfunc_resolvedrettype = aLinter.ResolveType(thisfunc->_returntype, thisClosure, thisClosure._this);
+  niLet thisfunc_resolvedrettype = aLinter.ResolveType(thisfunc->_returntype, thisClosure, thisClosure._thisWhenAssigned);
 
   _LTRACE(("-------------------------------------------------------\n"));
   _LTRACE(("--- FUNCTION TRACE: %s\n", _FuncProtoToString(*thisfunc)));
@@ -2588,7 +2636,7 @@ void SQFunctionProto::LintTrace(
 
       stack[si]._provenance = _H(niFmt("__param%d__",pi));
 
-      SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure, thisClosure._this);
+      SQObjectPtr resolvedParamType = aLinter.ResolveType(param._type, thisClosure, thisClosure._thisWhenAssigned);
       if (sqa_getscriptobjtype(resolvedParamType) == eScriptType_ErrorCode) {
         if (_LENABLED(param_decl)) {
           _LINT_(param_decl, thisfunc->GetSourceLineCol(), niFmt(
@@ -2687,7 +2735,7 @@ void SQFunctionProto::LintTrace(
   };
 
   auto op_newtable = [&](const SQInstruction& inst) {
-    SQObjectPtr table = SQTable::Create();
+    SQObjectPtr table = aLinter.CreateTable().raw_ptr();
     SQObjectPtr lname = localname(IARG0);
     if (!lname.IsNull()) {
       _table(table)->SetDebugName(_stringhval(lname));
@@ -2699,7 +2747,7 @@ void SQFunctionProto::LintTrace(
   };
 
   auto op_newarray = [&](const SQInstruction& inst) {
-    SQObjectPtr array = SQArray::Create(0);
+    SQObjectPtr array = aLinter.CreateArray(0).raw_ptr();
     SQObjectPtr lname = localname(IARG0);
     _array(array)->Reserve(IARG1);
     _LTRACE(("op_newarray: %s, reserve: %s, lname: %s (%s)",
@@ -2797,7 +2845,7 @@ void SQFunctionProto::LintTrace(
 
     SQFunctionProto* funcproto = _funcproto(func);
     Ptr<LintClosure> lintClosure = niNew LintClosure(
-      funcproto,_table(thisClosure._root),_table(localthis));
+      funcproto,as_nn(_table(thisClosure._root)),as_nn(thisModuleTable),as_nn(_table(localthis)));
     {
       const tSize nouters = _funcproto(func)->_outervalues.size();
       if (nouters) {
@@ -2852,7 +2900,7 @@ void SQFunctionProto::LintTrace(
       if (sq_type(v) == OT_FUNCPROTO) {
         LintClosure* closure = aLinter.GetClosure(_funcproto(v));
         if (closure) {
-          closure->_this = table.raw_ptr();
+          closure->_thisWhenAssigned = table.raw_ptr();
         }
         else {
           _LINTERNAL_ERROR(niFmt("Cant find closure associated with '%s'",
@@ -3539,7 +3587,7 @@ void SQFunctionProto::LintTrace(
     _LINTERNAL_ERROR("Function doesn't have a local 'this'.");
     return;
   }
-  sset(localThis,thisClosure._this);
+  sset(localThis,thisClosure._thisWhenAssigned);
 
   if (shouldLintTrace) {
     _LTRACE(("--- LOCALS BEGIN --------------------------------------\n"));
@@ -3659,9 +3707,9 @@ void SQFunctionProto::LintTrace(
         _LTRACE(("func[%d]: %s, this: %s",
                  i,
                  _ObjToString(cfproto->_name),
-                 _ObjToString(cfclosure->_this)));
+                 _ObjToString(cfclosure->_thisWhenAssigned)));
         sLinter::tLintKindMap wasLintEnabled = aLinter._lintEnabled;
-        cfproto->LintTrace(aLinter,_table(cfclosure->_root),_table(cfclosure->_this));
+        cfproto->LintTrace(aLinter,_table(cfclosure->_root),thisModuleTable,_table(cfclosure->_thisWhenAssigned));
         aLinter._lintEnabled = wasLintEnabled;
       }
     }
@@ -3682,26 +3730,10 @@ cString SQInstructionToString(ain<SQInstruction> inst) {
                _GetOpExt(inst._ext));
 }
 
-tU32 SQFunctionProto::LintTraceRoot() {
-  sLinter linter;
-
-  SQObjectPtr moduleThis = SQTable::Create();
-
-  SQObjectPtr moduleRoot = SQTable::Create();
-  _table(moduleRoot)->SetDelegate(_table(linter._vmroot));
-
-  tHStringPtr sourceName = this->GetSourceName();
-  if (HStringIsNotEmpty(sourceName)) {
-    cPath path(niHStr(sourceName));
-    _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",path.GetFileNoExt()));
-    _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%s__",path.GetFileNoExt()));
-  }
-  else {
-    _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",_PtrToString((tIntPtr)this)));
-    _table(moduleRoot)->SetDebugName(niFmt("__moduleroot_%p__",_PtrToString((tIntPtr)this)));
-  }
-
-  this->LintTrace(linter,_table(moduleRoot),_table(moduleThis));
-
+tU32 SQFunctionProto::LintTraceRoot() const {
+  sLinter linter(this->GetSourceName());
+  SQObjectPtr moduleThis = linter.CreateTable().raw_ptr();
+  _TableSetDebugNameFromSourceName(as_nn(_table(moduleThis)), "modulethis", this->GetSourceName());
+  this->LintTrace(linter,_table(linter._vmroot),_table(moduleThis),_table(moduleThis));
   return linter._numLintErrors;
 }

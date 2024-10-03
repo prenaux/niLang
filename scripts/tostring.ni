@@ -21,7 +21,7 @@
   _throwRecursive <- true
   _result <- ""
 
-  function new() this {
+  function new() __this__ {
     return this.DeepClone()
   }
 

@@ -107,7 +107,7 @@
     ::gConsole.AddNamespace(aName)
     foreach (key,cmd in _aFuncs) {
       if (typeof(cmd) == "table") {
-        cmd = ::LINT_AS_TYPE("table:commandSink", cmd);
+        cmd = ::LINT_AS_TYPE("::console.commandSink", cmd);
         this.registerCommand(aName,key,cmd.?_desc,cmd._func,cmd.?_key);
       }
     }

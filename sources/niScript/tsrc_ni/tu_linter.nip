@@ -82,7 +82,7 @@
 ::Import("regex.ni")
 ::LINT_CHECK_TYPE("null", ::?bar.?qoo) // should be ok
 
-testLinter <- {
+tTestLinter <- {
   mTestFilter = null
   mLogs = []
   mLogsError = 0
@@ -186,6 +186,7 @@ function ::EXPECT_LINT_OK(aLogs) {
 }
 
 function main() {
+  local testLinter = tTestLinter
   local testProperty = ::lang.getProperty("test")
   if (testProperty) {
     testLinter.mTestFilter = ::regex.pcre(testProperty)
@@ -193,7 +194,7 @@ function main() {
 
   testLinter.check(
     "linter_01.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_callk: "doesntExist" not found in "stuff".]})
@@ -259,7 +260,7 @@ function main() {
 
   testLinter.check(
     "linter_05_method_def_call.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -290,7 +291,7 @@ function main() {
 
   testLinter.check(
     "linter_06_query_interface.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -309,7 +310,7 @@ function main() {
 
   testLinter.check(
     "linter_07_call_native_func.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -349,7 +350,7 @@ function main() {
 
   testLinter.check(
     "linter_08_lint_check_type.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -364,7 +365,7 @@ function main() {
 
   testLinter.check(
     "linter_09_builtin_delegates.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "thehamster" not found in resolved_type<int>]});
@@ -409,7 +410,7 @@ function main() {
 
   testLinter.check(
     "linter_10_function_ret_type.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1,
@@ -430,7 +431,7 @@ function main() {
 
   testLinter.check(
     "linter_11_property.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1,
@@ -453,7 +454,7 @@ function main() {
 
   testLinter.check(
     "linter_12_lint_as_type.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -472,7 +473,7 @@ function main() {
 
   testLinter.check(
     "linter_13_import_native.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -491,7 +492,7 @@ function main() {
 
   testLinter.check(
     "linter_14_in_operator.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // TODO
@@ -503,7 +504,7 @@ function main() {
 
   testLinter.check(
     "linter_15_typeof_operator.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // typeof_usage
@@ -584,7 +585,7 @@ function main() {
 
   testLinter.check(
     "linter_16_import_script.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -598,7 +599,7 @@ function main() {
 
   testLinter.check(
     "linter_17_import_script_in_table.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       // TODO
@@ -610,7 +611,7 @@ function main() {
 
   testLinter.check(
     "linter_18_safe_get.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -639,26 +640,26 @@ function main() {
 
   testLinter.check(
     "linter_19_table_types.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-      ::EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "table:tNotAType" of parameter[0] "t": Cant find table type 'table:tNotAType'. Single path element 'tNotAType' not found in TABLE{linter_19_test_thistable]})
+      ::EXPECTED_LINT(aLogs, 1, {[Error: param_decl: Cant resolve type "tNotAType" of parameter[0] "t": Cant find table type 'tNotAType'. Single path element 'tNotAType' not found in TABLE{linter_19_test_thistable]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "name" not found in resolved_type<table>.]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in resolved_type<table>.]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tThisFagiano]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
-      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{table:tSubThisLion]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tThisFagiano,]})
+      ::EXPECTED_LINT(aLogs, 4, {[key_notfound_getk: "not_a_field" not found in TABLE{qoo.tSubThisLion]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{::foo.tGlobalSquirrel]})
       ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{tClone]})
-      ::EXPECTED_LINT(aLogs, 2, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis]})
+      ::EXPECTED_LINT(aLogs, 2, {[key_notfound_getk: "not_a_field" not found in TABLE{tThis,]})
+      ::EXPECTED_LINT(aLogs, 1, {[key_notfound_getk: "not_a_field" not found in TABLE{linter_19_test_thistable]})
 
-      ::CHECK_EQUAL(10,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(13,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 
   testLinter.check(
     "linter_20_namespace.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(
@@ -684,7 +685,7 @@ function main() {
 
   testLinter.check(
     "linter_21_foreach.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: foreach_usage: Cannot iterate 'resolved_type<float>'.]});
@@ -696,7 +697,7 @@ function main() {
 
   testLinter.check(
     "linter_22_delegate.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1, {[Lint: Error: key_notfound_getk: "delegated_squirrel" not found in TABLE{tTheTable]});
@@ -708,7 +709,7 @@ function main() {
 
   testLinter.check(
     "linter_23_array_types.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 2, """Error: key_notfound_getk: I32{10} not found in ARRAY{size:3""");
@@ -720,7 +721,7 @@ function main() {
 
   testLinter.check(
     "linter_24_ihstring.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "length" not found in resolved_type<string>.]});
@@ -732,7 +733,7 @@ function main() {
 
   testLinter.check(
     "linter_25_mm.ni",
-    function(aLogs, table:testLinter aLintResults) {
+    function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
       ::CHECK_EQUAL(0,aLintResults.mLogsError,"Expected lint errors.");

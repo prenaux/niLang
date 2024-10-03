@@ -1705,7 +1705,7 @@
       else {
         outInl("IDLC_METH_BEGIN("+inlFmtMethodDecl+")")
         foreach (pi in interopParams) {
-          pi = ::LINT_AS_TYPE("tInteropParam", pi)
+          pi = ::LINT_AS_TYPE("::idlGen.tInteropParam", pi)
           local type = pi.typeval
           local baseType = type&::knTypeMask;
           local typeName = pi.typec
@@ -1752,7 +1752,7 @@
             typeName = typeName.after("const ");
           local inlFmtMethodParams = "(";
           foreach (i,pi in interopParams) {
-            pi = ::LINT_AS_TYPE("tInteropParam", pi)
+            pi = ::LINT_AS_TYPE("::idlGen.tInteropParam", pi)
             inlFmtMethodParams += pi.name
             if (i+1 < interopParams.len())
               inlFmtMethodParams += ","
@@ -1828,7 +1828,7 @@
     dtSet("typec",interopRetType.typec)
     dtPop()
     foreach (i,pi in interopParams) {
-      pi = ::LINT_AS_TYPE("tInteropParam", pi)
+      pi = ::LINT_AS_TYPE("::idlGen.tInteropParam", pi)
       dtPushNewName("parameter",pi.name)
       dtSet("type",pi.type)
       if (!hasNoAutomation)

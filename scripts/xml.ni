@@ -18,7 +18,7 @@ module <- {
     _top = null
     _stack = []
 
-    function new(aName) this {
+    function new(aName) __this__ {
       local that = this.DeepClone()
       that._name = aName || "XMLNode";
       return that

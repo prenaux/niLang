@@ -12,7 +12,7 @@ if (!::gUIContext) {
   throw "No UIContext initialized before starting a hosted app."
 }
 
-::gConfig <- ::tAppConfig.Clone()
+::gAppConfig <- ::tAppConfig.Clone()
 
 ::app <- {
   mName = "niApp"
@@ -61,8 +61,8 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
-  function startFormApp(aFormPath,_aDir,_aConfig) {
-    local loadForm = function() : (aFormPath,_aDir,_aConfig,registerCppScriptingHost) {
+  function startFormApp(aFormPath,_aDir) {
+    local loadForm = function() : (aFormPath,registerCppScriptingHost) {
       local loadingStart = ::clock()
       ::log("Loading form app '" + aFormPath + "'.")
 
@@ -113,10 +113,10 @@ if (!::gUIContext) {
       // Load configs from the form's xml
       local formDT = ::lang.loadDataTable("xml",aFormPath)
       if (formDT.vec2.window_size.x > 0) {
-        ::gConfig.window.size <- formDT.vec2.window_size;
+        ::gAppConfig.window.size <- formDT.vec2.window_size;
       }
       if (formDT.vec2.window_position.x > 0) {
-        ::gConfig.window.position <- formDT.vec2.window_position;
+        ::gAppConfig.window.position <- formDT.vec2.window_position;
       }
     }
 
@@ -190,14 +190,6 @@ if (!::gUIContext) {
     return null
   }
 
-  function loadConfigNew(aName) {
-    local cfg = loadConfigNew(aName)
-    if (cfg) return cfg
-    local dt = ::gLang.CreateDataTable(aName)
-    writeConfig(dt,aName)
-    return dt
-  }
-
   function writeConfig(aDT,aName) {
     local path = getConfigPath(aName);
     ::gRootFS.FileMakeDir(path.getdir())
@@ -212,27 +204,27 @@ if (!::gUIContext) {
 
   ///////////////////////////////////////////////
   function useLoadSaveImageMap() {
-    return ::gConfig.?misc.?load_save_image_map
+    return ::gAppConfig.?misc.?load_save_image_map
   }
   function logMessage(astrMsg) {}
 
   ///////////////////////////////////////////////
   function setWindowPositionAndSizeFromConfig() {
-    if (::gConfig.window.size) {
-      mMainWindow.size = ::gConfig.window.size
+    if (::gAppConfig.window.size) {
+      mMainWindow.size = ::gAppConfig.window.size
     }
-    if (::gConfig.window.position) {
-      mMainWindow.position = ::gConfig.window.position
+    if (::gAppConfig.window.position) {
+      mMainWindow.position = ::gAppConfig.window.position
     }
     else {
       // Center the window if no position has been explicitly specified
       mMainWindow.CenterWindow()
     }
-    if (::gConfig.window.fullscreen) {
-      setFullScreen(::gConfig.window.fullscreen);
+    if (::gAppConfig.window.fullscreen) {
+      setFullScreen(::gAppConfig.window.fullscreen);
     }
-    if (::gConfig.window.show_flags) {
-      mMainWindow.show = ::gConfig.window.show_flags
+    if (::gAppConfig.window.show_flags) {
+      mMainWindow.show = ::gAppConfig.window.show_flags
     }
   }
 
@@ -257,7 +249,7 @@ if (!::gUIContext) {
 
     mMainWindow.message_handlers.AddSink(this)
     ::gWindow <- mMainWindow
-    if (::gConfig.misc.drop_target) {
+    if (::gAppConfig.misc.drop_target) {
       if (mMainWindow)
         mMainWindow.drop_target = true
     }
@@ -267,7 +259,7 @@ if (!::gUIContext) {
     ::gUIContext.root_widget.AddSink(this)
 
     // Initialize the loading queue
-    if ("loading_screen" in ::gConfig.misc) {
+    if ("loading_screen" in ::gAppConfig.misc) {
       mLQ.initialize(::gGraphicsContext)
     }
     else {
@@ -288,7 +280,7 @@ if (!::gUIContext) {
         }
       }
       try {
-        ::gUIContext.default_skin = ::gConfig.misc.ui_skin
+        ::gUIContext.default_skin = ::gAppConfig.misc.ui_skin
       } catch (e) {}
     })
 
@@ -363,7 +355,7 @@ if (!::gUIContext) {
 
   ///////////////////////////////////////////////
   function isFullScreen() {
-    if (::gConfig.misc.can_fullscreen) {
+    if (::gAppConfig.misc.can_fullscreen) {
       return ::gWindow.full_screen != invalid
     }
     else {
@@ -371,7 +363,7 @@ if (!::gUIContext) {
     }
   }
   function setFullScreen(abFullScreen) {
-    if (!::gConfig.misc.can_fullscreen)
+    if (!::gAppConfig.misc.can_fullscreen)
       return false
     ::gWindow.full_screen = abFullScreen ? ::gWindow.monitor : invalid
   }

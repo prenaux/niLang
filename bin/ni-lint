@@ -1,0 +1,61 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+NI_PARAMS=()
+FILE_PARAMS=()
+
+# Usage function
+usage() {
+  echo "Usage: $(basename "$0") [options] [files/directories]"
+  echo ""
+  echo "Options:"
+  echo "  -Dfoo=bar      Pass -Dfoo=bar parameters to ni"
+  echo "  -h, --help     Display this help message"
+  echo ""
+  echo "Files/Directories:"
+  echo "  Specify files or directories to lint using ni scripts."
+  echo "  If no files or directories are provided, the current directory is used."
+  exit 1
+}
+
+# Separate -* parameters from file/directory parameters
+for arg in "$@"; do
+  if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
+    usage
+  fi
+
+  if [[ "$arg" == -* ]]; then
+    NI_PARAMS+=("$arg")
+  else
+    FILE_PARAMS+=("$arg")
+  fi
+done
+
+# Function to lint ni scripts
+function lint_ni_script() {
+  if [ -d "$1" ]; then
+    FILES=$(rg -g '*.ni' -g '*.nip' -g '*.niw' -g '!**/niScript/tsrc_ni/linter_*.ni' --files "$1")
+    for f in $FILES; do
+      (
+        set -ex
+        ni -c "${NI_PARAMS[@]}" "$f"
+      ) || return 1
+    done
+  else
+    (
+      set -ex
+      ni -c "${NI_PARAMS[@]}" "$1"
+    ) || return 1
+  fi
+}
+
+# Main logic
+if [ ${#FILE_PARAMS[@]} -eq 0 ]; then
+  lint_ni_script "$(pwd)" || exit 1
+else
+  for file_param in "${FILE_PARAMS[@]}"; do
+    lint_ni_script "$file_param" || exit 1
+  done
+fi

@@ -3,15 +3,146 @@
 ::Import("gui.ni")
 
 mCurrentDop <- invalid
+mUI <- null
+mImageMap <- null
+mwTexturesTab <- null
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-mRTViewSink <- {
-  mZoomFactor = 1.0
+mTexViewBaseSink <- {
+  mTexZoom = 1.0
+  mwZoomLabel = null
 
+  function _initialize(w) {
+    mwZoomLabel = w.FindWidget("ID_ZoomLabel")
+  }
+
+  // zoom in/plus
+  function zoomIn() {
+    if (mTexZoom >= 8) {
+      mTexZoom += 1
+    }
+    else if (mTexZoom >= 1) {
+      mTexZoom += 0.5
+    }
+    else {
+      mTexZoom += 0.1
+    }
+  }
+
+  // zoom out/minus
+  function zoomOut() {
+    if (mTexZoom >= 9) {
+      mTexZoom -= 1
+    }
+    else if (mTexZoom >= 1) {
+      mTexZoom -= 0.5
+    }
+    else {
+      mTexZoom -= 0.1
+    }
+  }
+
+  function zoom(aSteps) {
+    if (aSteps < 0) {
+      // zoom out
+      local c = -aSteps
+      while (c--) {
+        zoomOut()
+        if (mTexZoom < 0.1) {
+          mTexZoom = 0.1
+          break
+        }
+      }
+      ::printdebugln("ZOOM OUT: " + aSteps + ", " + mTexZoom)
+    }
+    else {
+      // zoom in
+      local c = aSteps
+      while (c--) {
+        zoomIn()
+        if (mTexZoom > 16.0) {
+          mTexZoom = 16.0
+          break
+        }
+      }
+      ::printdebugln("ZOOM IN: " + aSteps + ", " + mTexZoom)
+    }
+
+    updateZoomLabel()
+  }
+
+  ///////////////////////////////////////////////
   function OnSetCursor(aWidget,aPA,aPB) {
     ::gUIContext.cursor = aWidget.FindSkinCursor("","","Zoom")
   }
 
+  ///////////////////////////////////////////////
+  function OnLeftClick(w,a,b) {
+    this.zoom( 1)
+    return true
+  }
+
+  ///////////////////////////////////////////////
+  function OnRightClick(w,a,b) {
+    this.zoom(-1)
+    return true
+  }
+
+  ///////////////////////////////////////////////
+  function OnNCWheel(w,a,b) {
+    return OnWheel(w,a,b)
+  }
+
+  ///////////////////////////////////////////////
+  function OnWheel(w,a,b) {
+    this.zoom(a<0?-1:1)
+    return true
+  }
+
+  ///////////////////////////////////////////////
+  function updateZoomLabel() {
+    local text = (mTexZoom*100.0).toint()+"%"
+    if (mwZoomLabel) {
+      mwZoomLabel.text = text
+    }
+  }
+}.SetDelegate(::gui.baseWidgetSink)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+mTexViewSink <- {
+  mTexture = null
+
+  function OnPaint(aWidget,aPA,aCanvas) {
+    local texture = mTexture
+    if (texture) {
+      local tw = texture.width*mTexZoom
+      local th = texture.height*mTexZoom
+      local cs = ::Vec2(tw+4,th*2+6);
+      aWidget.client_size = ::Vec2(tw+4,th*2+6);
+      aWidget.font.color = ::RGBA(1,1,1,1).toint()
+      try {
+        aCanvas.color_a = ::gGraphics.color4_from_name["darkorange"].toint()
+        aCanvas.Rect(::Vec2(0,0),aWidget.client_size,0)
+
+        aCanvas.color_a = 0xFFFFFFFF
+        local r = ::Rect(2,2,tw,th)
+        aCanvas.SetDefaultMaterial(texture,::eBlendMode.NoBlending,::eCompiledStates.SS_SmoothClamp)
+        aCanvas.Rect(r.top_left,r.bottom_right,0)
+
+        r = ::Rect(2,th+4,tw,th)
+        aCanvas.SetDefaultMaterial(texture,::eBlendMode.Translucent,::eCompiledStates.SS_SmoothClamp)
+        aCanvas.Rect(r.top_left,r.bottom_right,0)
+      }
+      catch (e) {}
+    }
+    else {
+      aWidget.client_size = aWidget.size
+    }
+    return false
+  }
+}.SetDelegate(mTexViewBaseSink)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+mRTViewSink <- {
   function OnPaint(aWidget,aPA,aCanvas) {
     local dopc = ::gGraphics.draw_op_capture
     if (dopc) {
@@ -22,8 +153,8 @@ mRTViewSink <- {
         local cc = dopc.captured_draw_op_context[i]
         if (cc) {
           local texture = cc.render_target[0]
-          local tw = texture.width*mZoomFactor
-          local th = texture.height*mZoomFactor
+          local tw = texture.width*mTexZoom
+          local th = texture.height*mTexZoom
           aWidget.client_size = ::Vec2(tw+4,th*2+6);
           aWidget.font.color = ::RGBA(1,1,1,1).toint()
           try {
@@ -49,73 +180,7 @@ mRTViewSink <- {
     aWidget.client_size = aWidget.size
     return false
   }
-  function OnLeftClick(w,a,b) {
-    zoom( 1)
-    return true
-  }
-  function OnRightClick(w,a,b) {
-    zoom(-1)
-    return true
-  }
-  function OnNCWheel(w,a,b) {
-    return OnWheel(w,a,b)
-  }
-  function OnWheel(w,a,b) {
-    zoom(a)
-    return true
-  }
-  // zoom in/plus
-  function zoomIn() {
-    if (mZoomFactor >= 8) {
-      mZoomFactor += 1
-    }
-    else if (mZoomFactor >= 1) {
-      mZoomFactor += 0.5
-    }
-    else {
-      mZoomFactor += 0.1
-    }
-  }
-  // zoom out/minus
-  function zoomOut() {
-    if (mZoomFactor >= 9) {
-      mZoomFactor -= 1
-    }
-    else if (mZoomFactor >= 1) {
-      mZoomFactor -= 0.5
-    }
-    else {
-      mZoomFactor -= 0.1
-    }
-  }
-  function zoom(aSteps) {
-
-    if (aSteps < 0) {
-      // zoom out
-      local c = -aSteps
-      while (c--) {
-        zoomOut()
-        if (mZoomFactor < 0.1) {
-          mZoomFactor = 0.1
-          break
-        }
-      }
-      ::printdebugln("ZOOM OUT: " + aSteps + ", " + mZoomFactor)
-    }
-    else {
-      // zoom in
-      local c = aSteps
-      while (c--) {
-        zoomIn()
-        if (mZoomFactor > 16.0) {
-          mZoomFactor = 16.0
-          break
-        }
-      }
-      ::printdebugln("ZOOM IN: " + aSteps + ", " + mZoomFactor)
-    }
-  }
-}.SetDelegate(::gui.baseWidgetSink)
+}.SetDelegate(mTexViewBaseSink)
 
 function getTexName(t) {
   local ctxt = "[" + t.device_resource_name + "]"
@@ -164,17 +229,22 @@ function OnSinkAttached(w,a,b) {
   if (pb)
     pb.data_table = ::gLang.CreateDataTable("States")
 
-  local c = w.FindWidget("ID_RT")
-  if (c)
-    c.AddSink(mRTViewSink)
-
-  local tv = w.FindWidget("Texs")
-  if (tv) {
-    mTVWidget = tv
-    // ::gui.setIconSmall(w,"ID_RefreshList","reload")
-    w.FindWidget("ID_TextureView").AddSink(TexViewSink)
+  mwTexturesTab = w.FindWidget("Texs")
+  if (mwTexturesTab) {
+    // ::gui.setIconSmall(mwTexturesTab,"ID_RefreshList","reload") // commented, as we dont bundle the icon anymore
+    local wTexView = mwTexturesTab.FindWidget("ID_TextureView")
+    mTexViewSink._initialize(mwTexturesTab)
+    mTexViewSink.updateZoomLabel()
+    wTexView.AddSink(mTexViewSink)
+    fillTextureList(false)
     updateCurrentTexture()
-    updateZoomLabel()
+  }
+
+  local wRTView = w.FindWidget("ID_RT")
+  if (wRTView) {
+    mRTViewSink._initialize(wRTView)
+    mRTViewSink.updateZoomLabel()
+    wRTView.AddSink(mRTViewSink);
   }
 
   if (stopAt)
@@ -210,7 +280,6 @@ function OnNCPaint(w,a,b) {
 
 function OnPaint(w,a,b) {
   local dopc = ::gGraphics.draw_op_capture
-
   local txt = ""
 
   local stopAtEnabled = w.FindWidget("ID_StopAtEnabled")
@@ -514,136 +583,14 @@ function ID_StopAtBreakEnd(w,cmd) {
   dopc.capture_flags |= ::eGraphicsCaptureFlags.BreakOnStopAtEnd
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-mTVWidget <- null
-mUI <- null
-mTexture <- null
-mZoomFactor <- 1.0
-
-mImageMap <- null
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-TexViewSink <- {
-
-  function OnSetCursor(aWidget,aPA,aPB) {
-    ::gUIContext.cursor = aWidget.FindSkinCursor("","","Zoom")
-  }
-
-  function OnPaint(aWidget,aPA,aCanvas) {
-    local p = GetParent();
-    p.checkTextureValidity()
-
-    local texture = p.mTexture
-    if (texture) {
-      local tw = texture.width*p.mZoomFactor
-      local th = texture.height*p.mZoomFactor
-      local cs = ::Vec2(tw+4,th*2+6);
-      aWidget.client_size = ::Vec2(tw+4,th*2+6);
-      aWidget.font.color = ::RGBA(1,1,1,1).toint()
-      try {
-        aCanvas.color_a = ::gGraphics.color4_from_name["darkorange"].toint()
-        aCanvas.Rect(::Vec2(0,0),aWidget.client_size,0)
-
-        aCanvas.color_a = 0xFFFFFFFF
-        local r = ::Rect(2,2,tw,th)
-        aCanvas.SetDefaultMaterial(texture,::eBlendMode.NoBlending,::eCompiledStates.SS_SmoothClamp)
-        aCanvas.Rect(r.top_left,r.bottom_right,0)
-
-        r = ::Rect(2,th+4,tw,th)
-        aCanvas.SetDefaultMaterial(texture,::eBlendMode.Translucent,::eCompiledStates.SS_SmoothClamp)
-        aCanvas.Rect(r.top_left,r.bottom_right,0)
-      }
-      catch (e) {}
-    }
-    else {
-      aWidget.client_size = aWidget.size
-    }
-    return false
-  }
-  function OnLeftClick(w,a,b) {
-    zoom( 1)
-    return true
-  }
-  function OnRightClick(w,a,b) {
-    zoom(-1)
-    return true
-  }
-  function OnNCWheel(w,a,b) {
-    return OnWheel(w,a,b)
-  }
-  function OnWheel(w,a,b) {
-    zoom(a<0?-1:1)
-    return true
-  }
-  // zoom in/plus
-  function zoomIn() {
-    local p = GetParent()
-    if (p.mZoomFactor >= 8) {
-      p.mZoomFactor += 1
-    }
-    else if (p.mZoomFactor >= 1) {
-      p.mZoomFactor += 0.5
-    }
-    else {
-      p.mZoomFactor += 0.1
-    }
-  }
-  // zoom out/minus
-  function zoomOut() {
-    local p = GetParent()
-    if (p.mZoomFactor >= 9) {
-      p.mZoomFactor -= 1
-    }
-    else if (p.mZoomFactor >= 1) {
-      p.mZoomFactor -= 0.5
-    }
-    else {
-      p.mZoomFactor -= 0.1
-    }
-  }
-  function zoom(aSteps) {
-    local p = GetParent()
-    if (aSteps < 0) {
-      // zoom out
-      local c = -aSteps
-      while (c--) {
-        zoomOut()
-        if (p.mZoomFactor < 0.1) {
-          p.mZoomFactor = 0.1
-          break
-        }
-      }
-    }
-    else {
-      // zoom in
-      local c = aSteps
-      while (c--) {
-        zoomIn()
-        if (p.mZoomFactor > 16.0) {
-          p.mZoomFactor = 16.0
-          break
-        }
-      }
-    }
-
-    p.updateZoomLabel()
-  }
-}.SetDelegate(::gui.baseWidgetSink)
-
 ///////////////////////////////////////////////
 function setLabel(aText) {
-  mTVWidget.FindWidget("ID_Label").text = aText
-}
-
-///////////////////////////////////////////////
-function updateZoomLabel() {
-  local text = (mZoomFactor*100.0).toint()+"%"
-  mTVWidget.FindWidget("ID_ZoomLabel").text = text
+  mwTexturesTab.FindWidget("ID_Label").text = aText
 }
 
 ///////////////////////////////////////////////
 function fillTextureList(aForce) {
-  local cb = mTVWidget.FindWidget("ID_TexList")
+  local cb = mwTexturesTab.FindWidget("ID_TexList")
   local list = cb.dropped_widget
   if (aForce || list.num_items != ::gGraphics.num_textures) {
     list.ClearItems()
@@ -678,7 +625,7 @@ function ID_TexList(w,cmd) {
   if (cmd.id != ::eWidgetListBoxCmd.SelectionChanged)
     return false
   fillTextureList(false)
-  updateZoomLabel()
+  mTexViewSink.updateZoomLabel()
 }
 
 ///////////////////////////////////////////////
@@ -690,25 +637,22 @@ function ID_RefreshList(w,cmd) {
 
 ///////////////////////////////////////////////
 function updateCurrentTexture() {
-  mTexture = null
-  local list = mTVWidget.FindWidget("ID_TexList")
+  local texture = null
+  local list = mwTexturesTab.FindWidget("ID_TexList")
   local texName = list.child_from_id["ComboBox_EditBox"].text
   if (texName.startswith("UNNAMED#"))
-    mTexture = ::gGraphics.texture_from_index[list.selected]
+    texture = ::gGraphics.texture_from_index[list.selected]
   else
-    mTexture = ::gGraphics.texture_from_name[texName]
-  if (mTexture) {
-    local type = ::EnumToString(mTexture.type,::eBitmapType)
-    local flags = ::FlagsToString(mTexture.flags,::eTextureFlags)
-    local fmt = mTexture.?pixel_format.?format || "Unknown"
-    setLabel(getTexName(mTexture))
+    texture = ::gGraphics.texture_from_name[texName]
+  if (texture) {
+    ::LINT_CHECK_TYPE("interface_def<iTexture>",texture)
+    local type = ::EnumToString(texture.type,::eBitmapType)
+    local flags = ::FlagsToString(texture.flags,::eTextureFlags)
+    local fmt = texture.?pixel_format.?format || "Unknown"
+    setLabel(getTexName(texture))
   }
   else {
     setLabel("Can't get texture ["+texName+"]")
   }
-}
-
-///////////////////////////////////////////////
-function checkTextureValidity() {
-  fillTextureList(false)
+  mTexViewSink.mTexture = texture;
 }

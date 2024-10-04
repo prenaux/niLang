@@ -79,10 +79,10 @@ struct sOptions {
   // Args
   Ptr<tStringCVec> _vArgs;
   // Run.
-  tBool _bRun;
+  tBool _bRun = eTrue;
   // Entry point script (for archives)
-  cString _strEntryPoint;
-  // Script Main (::main function)
+  cString _strEntryPoint = "main.niw";
+  // Script Main (by default will try this.main and then ::main function)
   cString _strScriptMain;
 #ifdef NI_WINDOWED
   // Run a hosted app.
@@ -95,11 +95,6 @@ struct sOptions {
   astl::vector<cString> _vREPLStartupExec;
 #endif
 
-  sOptions() {
-    _bRun = eTrue;
-    _strEntryPoint = "main.niw";
-    _strScriptMain = "::main";
-  }
   void Invalidate() {
     _strOutput = _strInput = _strEntryPoint = _strScriptMain = AZEROSTR;
     _vIncludes.clear();
@@ -162,7 +157,7 @@ cString GetHelpString() {
       _A("   -L directory   \t add a lookup folder for DLL imports\n")
       _A("   -D pname=value \t set the value of a system property\n")
       _A("   -E filename    \t set the entry point script (default: main.niw)\n")
-      _A("   -M entrypoint  \t set the main script function (default: ::main)\n")
+      _A("   -M entrypoint  \t set the main script function (default: try this.main and then ::main)\n")
 #ifdef NI_WINDOWED
       _A("   -A appName     \t run as hosted app, the main function is ran in OnAppStarted\n")
 #endif
@@ -213,7 +208,7 @@ void ErrorHelp(const achar* aszMsg) {
 
 void ErrorExit(const achar* aszMsg) {
   cString str;
-  str = _A("Error:\n");
+  str = _A("Error: ");
   str += aszMsg;
   str += _A("\n");
   PutString(ni::GetStdOut(),str.Chars());
@@ -468,7 +463,7 @@ void monitoredImport(tMonitoredFiles& aSet, const achar* aaszFileName) {
     return;
   }
 
-  if (!_GetOptions()->_ptrScriptVM->NewImport(_H(aaszFileName),NULL)) {
+  if (!_GetOptions()->_ptrScriptVM->NewImport(_H(aaszFileName)).IsOK()) {
     niLog(Info,niFmt("import: can't import '%s'.",aaszFileName));
     return;
   }
@@ -484,7 +479,7 @@ void monitoredImport(tMonitoredFiles& aSet, const achar* aaszFileName) {
 void monitoredUpdate(tMonitoredFiles& aSet) {
   niLoopit(tMonitoredFiles::iterator,it,aSet) {
     if (it->updateFileTime()) {
-      if (_GetOptions()->_ptrScriptVM->NewImport(_H(it->fileName),NULL)) {
+      if (_GetOptions()->_ptrScriptVM->NewImport(_H(it->fileName)).IsOK()) {
         niLog(Info,niFmt("import: updated '%s'.",it->fileName));
       }
       else {
@@ -585,7 +580,7 @@ void REPL(iScriptVM* apVM)
   SQInt string = 0;
   astl::set<sMonitoredFile> monitored;
 
-  if (!apVM->Import(_H("repl.ni"),NULL)) {
+  if (!apVM->Import(_H("repl.ni")).IsOK()) {
     ErrorExit("REPL startup: Can't open repl.ni");
     return;
   }
@@ -1181,7 +1176,7 @@ ni_main
   Ptr<iFuture> replFuture;
   if (_GetOptions()->_bRunREPL) {
     Ptr<iExecutor> replExecutor;
-    if (!_GetOptions()->_ptrScriptVM->Import(_H("repl.ni"),NULL)) {
+    if (!_GetOptions()->_ptrScriptVM->Import(_H("repl.ni")).IsOK()) {
       niLog(Warning,"REPL startup: Can't open repl.ni");
     }
 
@@ -1201,19 +1196,48 @@ ni_main
 
   if (hasMainScript) {
     auto runMain = [&]() -> tU32 {
-      // run
-      if (!_GetOptions()->_ptrScriptVM->Import(ptrInputFile,NULL)) {
-        ErrorExit("Script call error.");
+      auto& vm = _GetOptions()->_ptrScriptVM;
+
+      // Import the script
+      Ptr<iScriptObject> importedTable = vm->Import(ptrInputFile);
+      if (!importedTable.IsOK()) {
+        ErrorExit(niFmt("Running script '%s' failed.", ptrInputFile->GetSourcePath()));
       }
 
-      // call ::main
+      // Figure out the script's main function
+      cString scriptMainFn;
+      if (_GetOptions()->_strScriptMain.IsEmpty()) {
+        if (vm->ScriptVar(importedTable, "main", eTrue).IsOK()) {
+          scriptMainFn = "main";
+        }
+        else if (vm->ScriptVar(importedTable, "::main", eTrue).IsOK()) {
+          scriptMainFn = "::main";
+        }
+        else {
+          ErrorExit(niFmt("Couldn't find this.main or ::main in '%s'.", ptrInputFile->GetSourcePath()));
+        }
+      }
+      else {
+        if (vm->ScriptVar(importedTable, _GetOptions()->_strScriptMain.Chars(), eTrue).IsOK()) {
+          scriptMainFn = _GetOptions()->_strScriptMain;
+        }
+        else {
+          ErrorExit(niFmt("Couldn't find '%s' in '%s'.", _GetOptions()->_strScriptMain, ptrInputFile->GetSourcePath()));
+        }
+      }
+
+      // Run the script's main function
       Var ret((ni::tU32)1);
       Var params[1] = { _GetOptions()->_vArgs.ptr() };
-      _GetOptions()->_ptrScriptVM->ScriptCall(
-        NULL,
-        _GetOptions()->_strScriptMain.Chars(),
-        params, niCountOf(params),
-        &ret);
+      if (!vm->ScriptCall(
+            importedTable,
+            scriptMainFn.c_str(),
+            params, niCountOf(params),
+            &ret))
+      {
+        ErrorExit(niFmt("Call to '%s' in '%s' failed.", _GetOptions()->_strScriptMain, ptrInputFile->GetSourcePath()));
+      }
+
       return ret.mU32;
     };
 

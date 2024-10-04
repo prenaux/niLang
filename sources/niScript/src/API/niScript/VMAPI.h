@@ -278,9 +278,6 @@ niExportFunc(int) sqa_getMethodDef(HSQUIRRELVM v, int idx, const ni::sInterfaceD
 niExportFunc(int) sqa_pushInterfaceDef(HSQUIRRELVM v, const ni::sInterfaceDef* apInterfaceDef);
 niExportFunc(int) sqa_getInterfaceDef(HSQUIRRELVM v, int idx, const ni::sInterfaceDef** appInterfaceDef);
 
-niExportFunc(int) sqa_pushIUnknown(HSQUIRRELVM v, ni::iUnknown* apClass);
-niExportFunc(int) sqa_getIUnknown(HSQUIRRELVM v, int idx, ni::iUnknown** appIUnknown, const ni::tUUID& aIID);
-
 niExportFuncCPP(cString) sqa_gettypestring(int type);
 
 #ifdef _DEBUG

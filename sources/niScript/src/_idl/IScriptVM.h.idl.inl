@@ -357,32 +357,28 @@ IDLC_METH_BEGIN(ni,iScriptVM,ImportFileOpen,1)
 IDLC_METH_END(ni,iScriptVM,ImportFileOpen,1)
 #endif // niMinFeatures(15)
 
-/** ni -> iScriptVM::Import/2 -> MIN FEATURES '15' **/
+/** ni -> iScriptVM::Import/1 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iScriptVM::Import/2 **/
-IDLC_METH_BEGIN(ni,iScriptVM,Import,2)
+/** ni -> iScriptVM::Import/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,Import,1)
 	IDLC_DECL_VAR(iUnknown*,apPathOrFile)
 	IDLC_BUF_TO_INTF(iUnknown,apPathOrFile)
-	IDLC_DECL_VAR(iScriptObject*,apDestTable)
-	IDLC_BUF_TO_INTF(iScriptObject,apDestTable)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,Import,2,(apPathOrFile,apDestTable))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iScriptVM,Import,2)
+	IDLC_DECL_RETVAR(Ptr<iScriptObject>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,Import,1,(apPathOrFile))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iScriptVM,Import,1)
 #endif // niMinFeatures(15)
 
-/** ni -> iScriptVM::NewImport/2 -> MIN FEATURES '15' **/
+/** ni -> iScriptVM::NewImport/1 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iScriptVM::NewImport/2 **/
-IDLC_METH_BEGIN(ni,iScriptVM,NewImport,2)
+/** ni -> iScriptVM::NewImport/1 **/
+IDLC_METH_BEGIN(ni,iScriptVM,NewImport,1)
 	IDLC_DECL_VAR(iUnknown*,apPathOrFile)
 	IDLC_BUF_TO_INTF(iUnknown,apPathOrFile)
-	IDLC_DECL_VAR(iScriptObject*,apDestTable)
-	IDLC_BUF_TO_INTF(iScriptObject,apDestTable)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,NewImport,2,(apPathOrFile,apDestTable))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iScriptVM,NewImport,2)
+	IDLC_DECL_RETVAR(Ptr<iScriptObject>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,NewImport,1,(apPathOrFile))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iScriptVM,NewImport,1)
 #endif // niMinFeatures(15)
 
 /** ni -> iScriptVM::CreateTable/2 -> MIN FEATURES '15' **/
@@ -413,20 +409,22 @@ IDLC_METH_BEGIN(ni,iScriptVM,CreateObject,2)
 IDLC_METH_END(ni,iScriptVM,CreateObject,2)
 #endif // niMinFeatures(15)
 
-/** ni -> iScriptVM::CreateObjectGet/3 -> MIN FEATURES '15' **/
+/** ni -> iScriptVM::CreateObjectGet/4 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iScriptVM::CreateObjectGet/3 **/
-IDLC_METH_BEGIN(ni,iScriptVM,CreateObjectGet,3)
+/** ni -> iScriptVM::CreateObjectGet/4 **/
+IDLC_METH_BEGIN(ni,iScriptVM,CreateObjectGet,4)
 	IDLC_DECL_VAR(achar*,aaszKey)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszKey)
 	IDLC_DECL_VAR(eScriptObjectType,aRequiredType)
 	IDLC_BUF_TO_ENUM(eScriptObjectType,aRequiredType)
 	IDLC_DECL_VAR(tI32,anNumPop)
 	IDLC_BUF_TO_BASE(ni::eType_I32,anNumPop)
+	IDLC_DECL_VAR(tBool,abTry)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abTry)
 	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateObjectGet,3,(aaszKey,aRequiredType,anNumPop))
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,CreateObjectGet,4,(aaszKey,aRequiredType,anNumPop,abTry))
 	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
-IDLC_METH_END(ni,iScriptVM,CreateObjectGet,3)
+IDLC_METH_END(ni,iScriptVM,CreateObjectGet,4)
 #endif // niMinFeatures(15)
 
 /** ni -> iScriptVM::Call/2 -> MIN FEATURES '15' **/
@@ -470,18 +468,20 @@ IDLC_METH_END(ni,iScriptVM,ReadClosure,1)
 #endif // niMinFeatures(15)
 
 /** ni -> iScriptVM::ScriptCall/5 -> NO AUTOMATION **/
-/** ni -> iScriptVM::ScriptVar/2 -> MIN FEATURES '15' **/
+/** ni -> iScriptVM::ScriptVar/3 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
-/** ni -> iScriptVM::ScriptVar/2 **/
-IDLC_METH_BEGIN(ni,iScriptVM,ScriptVar,2)
-	IDLC_DECL_VAR(achar*,aaszModule)
-	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszModule)
+/** ni -> iScriptVM::ScriptVar/3 **/
+IDLC_METH_BEGIN(ni,iScriptVM,ScriptVar,3)
+	IDLC_DECL_VAR(iScriptObject*,apThis)
+	IDLC_BUF_TO_INTF(iScriptObject,apThis)
 	IDLC_DECL_VAR(achar*,aaszVar)
 	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aaszVar)
-	IDLC_DECL_RETVAR(iScriptObject*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iScriptVM,ScriptVar,2,(aaszModule,aaszVar))
-	IDLC_RET_FROM_INTF(iScriptObject,_Ret)
-IDLC_METH_END(ni,iScriptVM,ScriptVar,2)
+	IDLC_DECL_VAR(tBool,abTry)
+	IDLC_BUF_TO_BASE(ni::eType_I8,abTry)
+	IDLC_DECL_RETVAR(Ptr<iScriptObject>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iScriptVM,ScriptVar,3,(apThis,aaszVar,abTry))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iScriptVM,ScriptVar,3)
 #endif // niMinFeatures(15)
 
 /** ni -> iScriptVM::EvalString/2 -> MIN FEATURES '15' **/

@@ -47,9 +47,9 @@ class cScriptAutomation : public ImplRC<iUnknown>
 {
   niBeginClass(cScriptAutomation);
 
-  typedef astl::hash_map<cString,Ptr<iModuleDef> >   tModuleMap;
-  typedef tModuleMap::iterator        tModuleMapIt;
-  typedef tModuleMap::const_iterator      tModuleMapCIt;
+  typedef astl::hash_map<cString,Ptr<iModuleDef> > tModuleMap;
+  typedef tModuleMap::iterator tModuleMapIt;
+  typedef tModuleMap::const_iterator tModuleMapCIt;
 
   typedef astl::bimap<SQTable*,cScriptDispatch*> tDispatchMap;
 
@@ -106,8 +106,6 @@ class cScriptAutomation : public ImplRC<iUnknown>
   tBool __stdcall IsOK() const;
   //! Invalidate.
   void __stdcall Invalidate();
-
-  tBool Import(HSQUIRRELVM vm, const achar* aszMod);
 
   int PushIUnknown(HSQUIRRELVM vm, iUnknown* apClass);
   int GetIUnknown(HSQUIRRELVM vm, int idx, iUnknown** appIUnknown, const tUUID& aIID);

@@ -28,6 +28,8 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 #endif
 
   SQObjectPtr _refs_table;
+  SQObjectPtr _scriptimports_table;
+  SQObjectPtr _nativeimports_table;
 
   static SQRegFunction _base_funcs[];
   static SQRegFunction _automation_funcs[]; // in ScriptAutomation.cpp

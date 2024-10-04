@@ -1185,8 +1185,7 @@ if (!("main" in ::getroottable())) {
 ::interop <- {
   function doEval(string path, iid, defaultDelegateTable) iUnknown {
     local className = path.GetFileNoExt()
-    local loadedTable = {}
-    ::Import(path,loadedTable)
+    local loadedTable = ::Import(path)
     local implTable = loadedTable[?className]
     if (!implTable) {
       if (defaultDelegateTable) {

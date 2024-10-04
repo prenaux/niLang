@@ -615,6 +615,88 @@ _DEF_LINT(null_notfound,IsWarning,IsExplicit);
 
 #undef _DEF_LINT
 
+SQObjectPtr DoImportNative(aout<SQSharedState> aSS, ain<SQObjectPtr> aDestTable, ain<SQObjectPtr> aImports, ain<SQObjectPtr> aModuleName) {
+  niPanicAssert(sq_istable(aDestTable));
+  niPanicAssert(sq_isstring(aModuleName));
+
+  if (!sq_isnull(aImports)) {
+    niPanicAssert(sq_istable(aImports));
+    niLet importTable = _table(aImports);
+    SQObjectPtr foundValue;
+    if (importTable->Get(aModuleName, foundValue)) {
+      return foundValue;
+    }
+  }
+
+  niLet hspModuleName = _stringhval(aModuleName);
+
+  // Native module import
+  niLet ptrModuleDef = niCheckNNSilent(
+    ptrModuleDef,
+    ni::GetLang()->LoadModuleDef(niHStr(hspModuleName)),
+    niNew sScriptTypeErrorCode(
+      aSS, _HC(error_code_import_native),
+      niFmt("Can't load module '%s'.",hspModuleName)));
+  SQObjectPtr objModuleDef = (iUnknown*)ptrModuleDef.raw_ptr();
+
+  // insert in the map here to make sure we don't re-import unnecessarly
+  // if there's any indirect circular dependency
+  if (!sq_isnull(aImports)) {
+    niLet importTable = _table(aImports);
+    importTable->NewSlot(aModuleName,objModuleDef);
+  }
+
+  niLoop(i, ptrModuleDef->GetNumEnums()) {
+    niLet pEnumDef = ptrModuleDef->GetEnum(i);
+    niLet enumName = niFun(&) -> tHStringNN {
+      if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
+        return _HC(e);
+      }
+      else {
+        return _H(pEnumDef->maszName);
+      }
+    }();
+    _table(aDestTable)->NewSlot(enumName, niNew sScriptTypeEnumDef(aSS,pEnumDef));
+  }
+
+  niLoop(i,ptrModuleDef->GetNumDependencies()) {
+    // check for invalid dependency
+    if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
+      cString moduleLoadingWarning = niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName());
+      niWarning(moduleLoadingWarning);
+      continue;
+    }
+
+    // import the dependency
+    niLet ret = DoImportNative(aSS, aDestTable, aImports, _H(ptrModuleDef->GetDependency(i)));
+    if (sqa_getscriptobjtype(ret) == eScriptType_ErrorCode) {
+      cString moduleLoadingWarning = niFmt(
+        "Module '%s' loading, cant import the dependency '%s': %s.",
+        ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i),
+        _ObjToString(ret));
+      niWarning(moduleLoadingWarning);
+    }
+  }
+
+  niLoop(i, ptrModuleDef->GetNumConstants()) {
+    niLet constDef = ptrModuleDef->GetConstant(i);
+    niLet constName = _H(constDef->maszName);
+    niLet& constVal = constDef->mvarValue;
+    SQObjectPtr value = _VarToObj(aSS, constDef->mvarValue);
+    if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
+      cString moduleLoadingWarning = niFmt(
+        "Module '%s' loading, cant load constant '%s' = '%s'.",
+        ptrModuleDef->GetName(),
+        constName,
+        _ObjToString(value));
+      niWarning(moduleLoadingWarning);
+    }
+    _table(aDestTable)->NewSlot(constName, value);
+  }
+
+  return objModuleDef;
+}
+
 struct sLinter {
  private:
   sLinter(const sLinter& aLinter);
@@ -627,6 +709,12 @@ struct sLinter {
   SQObjectPtr _vmroot;
   SQObjectPtr _typedefs;
   SQObjectPtr _lintFuncCallQueryInterface;
+
+  typedef astl::hash_map<cString,SQObjectPtr> tImportMap;
+  typedef tImportMap::iterator tImportMapIt;
+  typedef tImportMap::const_iterator tImportMapCIt;
+  tImportMap _scriptImports;
+  astl::vector<tHStringNN> _scriptImportStack;
 
   tBool _printLogs = eTrue;
   astl::vector<cString> _logs;
@@ -656,7 +744,7 @@ struct sLinter {
     static tBool _printStats = ni::GetProperty("niScript.LintPrintStats").Bool(eFalse);
     if (_printStats) {
       niLog(Info, niFmt(
-        "Linter cleanup stats: vmroot: %s, errors: %d, warnings: %d, tables: %d, arrays: %d, typedefs: %d",
+        "Linter cleanup stats: vmroot: %s, errors: %d, warnings: %d, tables: %d, arrays: %d, typedefs: %d, nativeimports: %d",
         _ObjToString(_vmroot),
         _numLintErrors, _numLintWarnings,
         _tables.size(),
@@ -668,9 +756,15 @@ struct sLinter {
     niLoop(i,_arrays.size()) {
       _arrays[i]->Clear();
     }
+    _arrays.clear();
     niLoop(i,_tables.size()) {
       _tables[i]->Clear();
     }
+    _tables.clear();
+    _table(_vmroot)->Clear();
+    _vmroot = _null_;
+    _table(_typedefs)->Clear();
+    _typedefs = _null_;
   }
 
   NN_mut<SQTable> CreateTable() {
@@ -1806,12 +1900,6 @@ struct sLinter {
     return eFalse;
   }
 
-  typedef astl::hash_map<cString,SQObjectPtr> tImportMap;
-  typedef tImportMap::iterator tImportMapIt;
-  typedef tImportMap::const_iterator tImportMapCIt;
-  tImportMap mmapImports;
-  astl::vector<tHStringNN> mImportStack;
-
   // TODO: Dedupe with implementation in cScriptVM::ImportFileOpen
   Opt_mut<iFile> __stdcall ImportFileOpen(const achar* aaszFile) {
     return ni::GetLang()->URLOpen(
@@ -1838,26 +1926,26 @@ struct sLinter {
         niFmt("ImportScript: Cant open script module file '%s'.",aModuleName)));
 
     tHStringNN hspSourceName = _H(fp->GetSourcePath());
-    if (astl::contains(mImportStack, hspSourceName)) {
+    if (astl::contains(_scriptImportStack, hspSourceName)) {
       if (_traceImportScript) {
-        niDebugFmt(("%sImportScript: '%s'", StringRepeat(mImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s'", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
       }
       return niNew sScriptTypeErrorCode(
         _ss, _HC(error_code_lint_call_error),
         niFmt("ImportScript: Import cycle while importing '%s'. Stack: %s.",
-              aModuleName,StringVecJoin(mImportStack," > ")));
+              aModuleName,StringVecJoin(_scriptImportStack," > ")));
     }
 
-    tImportMapIt it = mmapImports.find(aModuleName);
-    if (it != mmapImports.end()) {
+    tImportMapIt it = _scriptImports.find(aModuleName);
+    if (it != _scriptImports.end()) {
       if (_traceImportScriptAlreadyImported) {
-        niDebugFmt(("%sImportScript: '%s', already imported.", StringRepeat(mImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s', already imported.", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
       }
-      return _null_;
+      return it->second;
     }
     else {
       if (_traceImportScript) {
-        niDebugFmt(("%sImportScript: '%s'", StringRepeat(mImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s'", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
       }
     }
 
@@ -1872,17 +1960,15 @@ struct sLinter {
               errors.GetLastError().line,
               errors.GetLastError().col,
               errors.GetLastError().msg));
-      astl::upsert(mmapImports, aModuleName, o);
+      astl::upsert(_scriptImports, aModuleName, o);
       return o;
-    }
-    else {
-      astl::upsert(mmapImports, aModuleName, o);
     }
 
     niPanicAssert(sq_isfuncproto(o));
 
-    mImportStack.push_back(hspSourceName);
+    _scriptImportStack.push_back(hspSourceName);
     SQObjectPtr moduleThis = this->CreateTable().raw_ptr();
+    astl::upsert(_scriptImports, aModuleName, moduleThis);
     _table(moduleThis)->SetDebugName(niFmt("__modulethis_%s__",hspSourceName));
     // TODO: Skipping the logs of the imported scripts for now, a bit jank
     // way to do it but it'll do for now.  Should this be its own linter but
@@ -1896,86 +1982,15 @@ struct sLinter {
       _lintEnabled = wasLintEnabled;
       _printLogs = wasPrintLogs;
     }
-    mImportStack.pop_back();
+    _scriptImportStack.pop_back();
 
-    return _null_;
+    return moduleThis;
   }
 
   SQObjectPtr ImportNative(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
     SQObjectPtr roottable = aClosure._root;
     niPanicAssert(sq_istable(roottable));
-
-    tImportMapIt it = mmapImports.find(aModuleName);
-    if (it != mmapImports.end()) {
-      // niDebugFmt(("... ImportNative: already imported %s", aModuleName));
-      return _null_;
-    }
-
-    // Native module import
-    niLet ptrModuleDef = niCheckNNSilent(
-      ptrModuleDef,
-      ni::GetLang()->LoadModuleDef(aModuleName),
-      niNew sScriptTypeErrorCode(
-        _ss, _HC(error_code_lint_call_error),
-        niFmt("Can't load module '%s'.",aModuleName)));
-
-    // insert in the map here to make sure we don't re-import unnecessarly
-    // if there's any indirect circular dependency
-    {
-      SQObjectPtr o = (iUnknown*)ptrModuleDef.raw_ptr();
-      astl::upsert(mmapImports, aModuleName, o);
-    }
-
-    niLoop(i, ptrModuleDef->GetNumEnums()) {
-      niLet pEnumDef = ptrModuleDef->GetEnum(i);
-      niLet enumName = niFun(&) -> tHStringNN {
-        if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
-          return _HC(e);
-        }
-        else {
-          return _H(pEnumDef->maszName);
-        }
-      }();
-      _table(roottable)->NewSlot(enumName, niNew sScriptTypeEnumDef(_ss,pEnumDef));
-    }
-
-    cString moduleLoadingWarning;
-    niLoop(i,ptrModuleDef->GetNumDependencies()) {
-      // check for invalid dependency
-      if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0) {
-        moduleLoadingWarning = niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName());
-        niWarning(moduleLoadingWarning);
-        continue;
-      }
-
-      // import the dependency
-      niLet ret = Import(aClosure, ptrModuleDef->GetDependency(i));
-      if (ret != _null_) {
-        moduleLoadingWarning = niFmt(
-          "Module '%s' loading, cant import the dependency '%s': %s.",
-          ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i),
-          _ObjToString(ret));
-        niWarning(moduleLoadingWarning);
-      }
-    }
-
-    niLoop(i, ptrModuleDef->GetNumConstants()) {
-      niLet constDef = ptrModuleDef->GetConstant(i);
-      niLet constName = _H(constDef->maszName);
-      niLet& constVal = constDef->mvarValue;
-      SQObjectPtr value = _VarToObj(this->_ss, constDef->mvarValue);
-      if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
-        moduleLoadingWarning = niFmt(
-          "Module '%s' loading, cant load constant '%s' = '%s'.",
-          ptrModuleDef->GetName(),
-          constName,
-          _ObjToString(value));
-        niWarning(moduleLoadingWarning);
-      }
-      _table(roottable)->NewSlot(constName, value);
-    }
-
-    return _null_;
+    return DoImportNative(_ss, roottable, _ss._nativeimports_table, _H(aModuleName));
   }
 
   SQObjectPtr Import(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
@@ -2050,14 +2065,12 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
   }
 
   virtual tI32 __stdcall GetArity() const {
-    return -1;
+    return 1;
   }
 
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet objModuleName = aCallArgs[1];
-    // TODO: We should validate the other parameters...
-
     // niDebugFmt(("... LintCall: objModuleName: %s", _ObjToString(objModuleName)));
 
     if (sqa_getscriptobjtype(objModuleName) != eScriptType_String) {
@@ -2069,7 +2082,6 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
           aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
       }
     }
-
 
     return aLinter.Import(aClosure, _stringval(objModuleName));
   }

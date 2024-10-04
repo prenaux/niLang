@@ -923,14 +923,13 @@ static const ni::sMethodDef iScriptVM_ImportFileOpen = {
 
 #if niMinFeatures(15)
 // Method: Import
-static const ni::sParameterDef iScriptVM_Import_Parameters[2] = { 
-  { "apPathOrFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }, 
-  { "apDestTable", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*" }
+static const ni::sParameterDef iScriptVM_Import_Parameters[1] = { 
+  { "apPathOrFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
 }; 
 static const ni::sMethodDef iScriptVM_Import = {
   "Import",
-  0|ni::eType_I8, NULL, "tBool",
-  2, iScriptVM_Import_Parameters,
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "Ptr<iScriptObject>",
+  1, iScriptVM_Import_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iScriptVM_Import)
 #else
@@ -941,14 +940,13 @@ static const ni::sMethodDef iScriptVM_Import = {
 
 #if niMinFeatures(15)
 // Method: NewImport
-static const ni::sParameterDef iScriptVM_NewImport_Parameters[2] = { 
-  { "apPathOrFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }, 
-  { "apDestTable", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*" }
+static const ni::sParameterDef iScriptVM_NewImport_Parameters[1] = { 
+  { "apPathOrFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
 }; 
 static const ni::sMethodDef iScriptVM_NewImport = {
   "NewImport",
-  0|ni::eType_I8, NULL, "tBool",
-  2, iScriptVM_NewImport_Parameters,
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "Ptr<iScriptObject>",
+  1, iScriptVM_NewImport_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iScriptVM_NewImport)
 #else
@@ -995,15 +993,16 @@ static const ni::sMethodDef iScriptVM_CreateObject = {
 
 #if niMinFeatures(15)
 // Method: CreateObjectGet
-static const ni::sParameterDef iScriptVM_CreateObjectGet_Parameters[3] = { 
+static const ni::sParameterDef iScriptVM_CreateObjectGet_Parameters[4] = { 
   { "aaszKey", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aRequiredType", ni::eType_Enum, NULL, "eScriptObjectType" }, 
-  { "anNumPop", ni::eType_I32, NULL, "tI32" }
+  { "anNumPop", ni::eType_I32, NULL, "tI32" }, 
+  { "abTry", ni::eType_I8, NULL, "tBool" }
 }; 
 static const ni::sMethodDef iScriptVM_CreateObjectGet = {
   "CreateObjectGet",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*",
-  3, iScriptVM_CreateObjectGet_Parameters,
+  4, iScriptVM_CreateObjectGet_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iScriptVM_CreateObjectGet)
 #else
@@ -1068,7 +1067,7 @@ static const ni::sMethodDef iScriptVM_ReadClosure = {
 #if niMinFeatures(15)
 // Method: ScriptCall
 static const ni::sParameterDef iScriptVM_ScriptCall_Parameters[5] = { 
-  { "aaszModule", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apThis", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*" }, 
   { "aaszFunc", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "apParams", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var*" }, 
   { "anNumParams", ni::eType_U32, NULL, "tU32" }, 
@@ -1084,14 +1083,15 @@ NULL
 
 #if niMinFeatures(15)
 // Method: ScriptVar
-static const ni::sParameterDef iScriptVM_ScriptVar_Parameters[2] = { 
-  { "aaszModule", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
-  { "aaszVar", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
+static const ni::sParameterDef iScriptVM_ScriptVar_Parameters[3] = { 
+  { "apThis", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*" }, 
+  { "aaszVar", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "abTry", ni::eType_I8, NULL, "tBool" }
 }; 
 static const ni::sMethodDef iScriptVM_ScriptVar = {
   "ScriptVar",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "iScriptObject*",
-  2, iScriptVM_ScriptVar_Parameters,
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iScriptObject), "Ptr<iScriptObject>",
+  3, iScriptVM_ScriptVar_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iScriptVM_ScriptVar)
 #else

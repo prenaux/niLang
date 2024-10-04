@@ -1,0 +1,55 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+::Import("assert.ni")
+
+local mod1 = ::Import("niScript/tsrc_ni/tu_test_module.ni")
+::println("... mod1:" mod1.ToIntPtr() "::" ::lang.toString(mod1))
+local mod2 = ::Import("niScript/tsrc_ni/tu_test_module.ni")
+::println("... mod2:" mod2.ToIntPtr() "::" ::lang.toString(mod2))
+local newmod = ::NewImport("niScript/tsrc_ni/tu_test_module.ni")
+::println("... newbla:" newmod.ToIntPtr() "::" ::lang.toString(newmod))
+::LINT_CHECK_TYPE("table:__tu_test_module__", newmod);
+
+::FIXTURE("root")
+
+::name <- "_ROOT_"
+
+::anotherRoot <- {
+  name = "anotherRoot"
+}
+
+::anotherRoot2 <- {
+  name = "anotherRoot2"
+}
+
+function ::GetRootName() {
+  return ::name
+}
+
+function ::GetAnotherRootName() {
+  return ::name
+}
+::GetAnotherRootName.SetRoot(::anotherRoot)
+
+::TEST("root","base", #{
+  ::CHECK_EQUAL("_ROOT_",::GetRootName())
+  ::CHECK_EQUAL("anotherRoot",::GetAnotherRootName())
+})
+
+::TEST("root","module", #():(mod1,mod2,newmod) {
+  ::CHECK_EQUAL(null,::?inmodule_string)
+
+  ::CHECK_EQUAL(mod1.ToIntPtr(),mod2.ToIntPtr())
+  ::CHECK_NOT_EQUAL(mod1.ToIntPtr(),newmod.ToIntPtr())
+  ::CHECK_NOT_EQUAL(mod2.ToIntPtr(),newmod.ToIntPtr())
+
+  ::CHECK_EQUAL("squirrel",mod1.inmodule_string)
+  ::CHECK_EQUAL("squirrel",mod2.inmodule_string)
+  ::CHECK_EQUAL("squirrel",newmod.inmodule_string)
+
+  mod2.inmodule_string = "weee"
+
+  ::CHECK_EQUAL("weee",mod1.inmodule_string)
+  ::CHECK_EQUAL("weee",mod2.inmodule_string)
+  ::CHECK_EQUAL("squirrel",newmod.inmodule_string)
+})

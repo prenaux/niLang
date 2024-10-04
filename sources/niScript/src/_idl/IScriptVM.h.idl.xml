@@ -479,38 +479,28 @@
 				java_name="doImport"
 				min_features="15"
 				name="Import"
-				num_parameters="2">
+				num_parameters="1">
 				<comments desc="Call the system Import function. "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<return type="Ptr&lt;iScriptObject&gt;" typec="Ptr&lt;iScriptObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
+					last="1"
 					name="apPathOrFile"
 					type="iUnknown *"
 					typec="iUnknown*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					last="1"
-					name="apDestTable"
-					type="iScriptObject *"
-					typec="iScriptObject*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				java_name="newImport"
 				min_features="15"
 				name="NewImport"
-				num_parameters="2">
+				num_parameters="1">
 				<comments desc="Call the system NewImport function. "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<return type="Ptr&lt;iScriptObject&gt;" typec="Ptr&lt;iScriptObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
+					last="1"
 					name="apPathOrFile"
 					type="iUnknown *"
 					typec="iUnknown*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					last="1"
-					name="apDestTable"
-					type="iScriptObject *"
-					typec="iScriptObject*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
@@ -562,11 +552,12 @@
 				java_name="createObjectGet"
 				min_features="15"
 				name="CreateObjectGet"
-				num_parameters="3">
+				num_parameters="4">
 				<comments desc="Create an object the pushed table. " return="NULL if the object can&apos;t be found or that the type doesn&apos;t match aRequiredType. ">
 					<params text="aaszKey is the name of the object to get. "/>
 					<params text="aRequiredType is the type that the object should have. If eScriptObjectType_Last this is ignored. "/>
 					<params text="anNumPop is the number of pop, by defaul the object is pushed on the stack. "/>
+					<params text="abTry When set to true, no error log will be output if the object can&apos;t be found. "/>
 				</comments>
 				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
@@ -582,11 +573,17 @@
 					typei="ni::eType_Enum"/>
 				<parameter
 					default="1 "
-					last="1"
 					name="anNumPop"
 					type="tI32"
 					typec="tI32"
 					typei="ni::eType_I32"/>
+				<parameter
+					default="eFalse "
+					last="1"
+					name="abTry"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
 			</method>
 			<method
 				java_name="call"
@@ -652,7 +649,7 @@
 				num_parameters="5">
 				<comments desc=""/>
 				<return type="tBool" typec="tBool"/>
-				<parameter name="aaszModule" type="const achar *" typec="const achar*"/>
+				<parameter name="apThis" type="iScriptObject *" typec="iScriptObject*"/>
 				<parameter name="aaszFunc" type="const achar *" typec="const achar*"/>
 				<parameter name="apParams" type="const Var *" typec="const Var*"/>
 				<parameter name="anNumParams" type="tU32" typec="tU32"/>
@@ -666,20 +663,29 @@
 				java_name="scriptVar"
 				min_features="15"
 				name="ScriptVar"
-				num_parameters="2">
-				<comments desc=""/>
-				<return type="iScriptObject *" typec="iScriptObject*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				num_parameters="3">
+				<comments desc="Get a script object by path starting from the root table or the specified this object. " return="The iScriptObject found at the specified path, or nullptr if not found. ">
+					<params text="apThis Pointer to the script object to start the search from. If nullptr, the root table is used. "/>
+					<params text="aaszVar A string representing the path of the variable to search for, for example &apos;foo.bar&apos;. "/>
+					<params text="abTry When set to true, no error log will be output if the object can&apos;t be found. "/>
+				</comments>
+				<return type="Ptr&lt;iScriptObject&gt;" typec="Ptr&lt;iScriptObject&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="aaszModule"
+					name="apThis"
+					type="iScriptObject *"
+					typec="iScriptObject*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszVar"
 					type="const achar *"
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
-					name="aaszVar"
-					type="const achar *"
-					typec="const achar*"
-					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+					name="abTry"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
 			</method>
 			<method
 				java_name="evalString"

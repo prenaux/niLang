@@ -179,9 +179,9 @@ struct iScriptVM : public iScriptingHost
   //! Open a file using the script protocol by default if no procotol is specified.
   virtual iFile* __stdcall ImportFileOpen(const achar* aaszFile) = 0;
   //! Call the system Import function.
-  virtual tBool __stdcall Import(iUnknown* apPathOrFile, iScriptObject* apDestTable) = 0;
+  virtual Ptr<iScriptObject> __stdcall Import(iUnknown* apPathOrFile) = 0;
   //! Call the system NewImport function.
-  virtual tBool __stdcall NewImport(iUnknown* apPathOrFile, iScriptObject* apDestTable) = 0;
+  virtual Ptr<iScriptObject> __stdcall NewImport(iUnknown* apPathOrFile) = 0;
   //! @ }
 
   //########################################################################################
@@ -200,8 +200,9 @@ struct iScriptVM : public iScriptingHost
   //! \param  aaszKey is the name of the object to get.
   //! \param  aRequiredType is the type that the object should have. If eScriptObjectType_Last this is ignored.
   //! \param  anNumPop is the number of pop, by defaul the object is pushed on the stack.
+  //! \param  abTry When set to true, no error log will be output if the object can't be found.
   //! \return NULL if the object can't be found or that the type doesn't match aRequiredType.
-  virtual iScriptObject* __stdcall CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType = eScriptObjectType_Last, tI32 anNumPop = 1) = 0;
+  virtual iScriptObject* __stdcall CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType = eScriptObjectType_Last, tI32 anNumPop = 1, tBool abTry = eFalse) = 0;
   //! @}
 
   //########################################################################################
@@ -234,8 +235,14 @@ struct iScriptVM : public iScriptingHost
   //! @{
 
   //! {NoAutomation}
-  virtual tBool __stdcall ScriptCall(const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) = 0;
-  virtual iScriptObject* __stdcall ScriptVar(const achar* aaszModule, const achar* aaszVar) = 0;
+  virtual tBool __stdcall ScriptCall(iScriptObject* apThis, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) = 0;
+
+  //! Get a script object by path starting from the root table or the specified this object.
+  //! \param apThis Pointer to the script object to start the search from. If nullptr, the root table is used.
+  //! \param aaszVar A string representing the path of the variable to search for, for example 'foo.bar'.
+  //! \param abTry When set to true, no error log will be output if the object can't be found.
+  //! \return The iScriptObject found at the specified path, or nullptr if not found.
+  virtual Ptr<iScriptObject> __stdcall ScriptVar(iScriptObject* apThis, const achar* aaszVar, tBool abTry) = 0;
 
   //! Evaluate the specified string.
   virtual tBool __stdcall EvalString(iHString* ahspContext, const ni::achar* aaszCode) = 0;
@@ -268,7 +275,7 @@ inline iScriptVM* CreateConcurrentScriptVM(iConcurrent* apConcurrent) {
 }
 
 ///////////////////////////////////////////////
-inline tBool ScriptCall(iScriptVM* apVM, const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) {
+inline tBool ScriptCall(iScriptVM* apVM, iScriptObject* apThis, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet) {
   if (!apVM) {
     apVM = ni::QueryInterface<iScriptVM>(ni::GetLang()->GetGlobalInstance("niLang.ScriptVM"));
     if (!apVM) {
@@ -276,11 +283,11 @@ inline tBool ScriptCall(iScriptVM* apVM, const achar* aaszModule, const achar* a
       return eFalse;
     }
   }
-  return apVM->ScriptCall(aaszModule,aaszFunc,apParams,anNumParams,apRet);
+  return apVM->ScriptCall(apThis,aaszFunc,apParams,anNumParams,apRet);
 }
 
 ///////////////////////////////////////////////
-inline iScriptObject* ScriptVar(iScriptVM* apVM, const achar* aaszModule, const achar* aaszVar) {
+inline Ptr<iScriptObject> ScriptVar(iScriptVM* apVM, iScriptObject* apThis, const achar* aaszVar, tBool abTry) {
   if (!apVM) {
     apVM = ni::QueryInterface<iScriptVM>(ni::GetLang()->GetGlobalInstance("niLang.ScriptVM"));
     if (!apVM) {
@@ -288,7 +295,7 @@ inline iScriptObject* ScriptVar(iScriptVM* apVM, const achar* aaszModule, const 
       return NULL;
     }
   }
-  return apVM->ScriptVar(aaszModule,aaszVar);
+  return apVM->ScriptVar(apThis,aaszVar,abTry);
 }
 
 ///////////////////////////////////////////////
@@ -349,7 +356,7 @@ inline ni::Ptr<iScriptVM> ScriptCreateOrGetDefaultVM(ni::iFileSystem* apFS = ni:
   }
   if (vm.IsOK() && !ni::GetLang()->GetScriptingHostFromName(_H("ni"))) {
     ScriptAddToolkitImportDir(vm,"niLang","scripts",apFS);
-    niCheck(vm->Import(_H("lang.ni"),NULL),NULL);
+    niCheck(vm->Import(_H("lang.ni")).IsOK(),nullptr);
     ni::GetLang()->AddScriptingHost(_H("ni"),vm);
   }
   return vm.ptr();

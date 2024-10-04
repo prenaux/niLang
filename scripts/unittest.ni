@@ -105,7 +105,7 @@
     }
   }
   catch (e) {
-    m = "Compare failed."
+    m = "Compare failed: " + e
   }
   if (m) {
     r = false
@@ -120,6 +120,44 @@
   }
   if (!r) {
     ::THROW("CHECK_EQUAL FAILED: " + m, _aDesc)
+  }
+}
+
+::CHECK_NOT_EQUAL <- function(a,b,_aDesc) {
+  local m
+  local r
+  try {
+    if (typeof a == "array" && typeof b == "array") {
+      local len = a.GetSize();
+      r = len == b.GetSize();
+      if (r) {
+        for (local i = 0; i < len; ++i) {
+          r = (a[?i] == b[?i]);
+          if (!r)
+            break;
+        }
+      }
+    }
+    else {
+      r = (a == b)
+    }
+  }
+  catch (e) {
+    m = "Compare failed: " + e
+  }
+  if (m) {
+    r = true
+  }
+  else if (r) {
+    try {
+      m = "Expected '"+::lang.toString(a)+"' to be different of '"+::lang.toString(b)+"'."
+    }
+    catch (e) {
+      m = "Can't convert test report to string."
+    }
+  }
+  if (r) {
+    ::THROW("CHECK_NOT_EQUAL FAILED: " + m, _aDesc)
   }
 }
 
@@ -231,6 +269,7 @@
   ::println("### "+total+" test"+(total>1?"s":"")+" ###")
   if (numFailed == total) {
     ::println("All failed.")
+    return 1;
   }
   else if (numSucceded == total) {
     ::println("All succeded.")

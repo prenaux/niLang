@@ -33,3 +33,7 @@ function main() {
     });
   }
 }
+
+local newmod = ::Import("niScript/tsrc_ni/tu_test_module.ni")
+::LINT_CHECK_TYPE("table:__tu_test_module__", newmod);
+::LINT_CHECK_TYPE("string", newmod.inmodule_string);

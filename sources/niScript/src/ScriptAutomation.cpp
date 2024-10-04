@@ -28,17 +28,6 @@ niDeclareModuleTrace_(niScript,TraceScriptImport);
 niDeclareModuleProperty(niScript,RegisterProperties,ni::eTrue);
 #define SHOULD_REGISTER_PROPERTIES() niModuleShouldTrace_(niScript,RegisterProperties)
 
-///////////////////////////////////////////////
-// Squirrel api :
-//
-//    - CreateInstance(objecttype[,vara][,varb])
-//    - Import(ModuleName)  - if module name refers to a AOM module
-//    - NewImport
-//    - GetIUnknown(object)
-//    - QueryInterface(object,IID)
-//
-///////////////////////////////////////////////
-
 #pragma niTodo("Seems that when an exception is throw the stack is not properly popped, might be because of the active {} statement, check it")
 #pragma niTodo("Test when properties are in several interfaces that one object implements --- It works the first interface is used --- BUT WE SHOULD ISSUE A WARNING, or throw an exceptions so that ambiguities are resolvable")
 #pragma niTodo("Add op_Add, op_Sub, etc... automatic binding to metha-methods")
@@ -62,6 +51,9 @@ sScriptTypeIUnknown::~sScriptTypeIUnknown() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// in sqlinter.cpp
+SQObjectPtr DoImportNative(aout<SQSharedState> aSS, ain<SQObjectPtr> aDestTable, ain<SQObjectPtr> aImports, ain<SQObjectPtr> aModuleName);
+
 ///////////////////////////////////////////////
 static int std_createinstance(HSQUIRRELVM v)
 {
@@ -73,95 +65,81 @@ static int std_createinstance(HSQUIRRELVM v)
   top -= 1; // remove this out of the equation
 
   if (top <= 0 || top > 3)
-    return sq_throwerror(v, _A("std_createinstance, Invalid number of parameters."));
+    return sq_throwerror(v, _A("std_createinstance: Invalid number of parameters."));
 
   if (!SQ_SUCCEEDED(sq_getstring(v,2,&aszObjectType)))
-    return sq_throwerror(v, _A("std_createinstance, First parameter (object type) must be string containing the object type."));
+    return sq_throwerror(v, _A("std_createinstance: First parameter (object type) must be string containing the object type."));
 
   if (top > 1)
   {
     if (!SQ_SUCCEEDED(sqa_getvar(v,3,&varA)))
-      return sq_throwerror(v, _A("std_createinstance, Second parameter (vara) must be a valid variant."));
+      return sq_throwerror(v, _A("std_createinstance: Second parameter (vara) must be a valid variant."));
   }
 
   if (top > 2)
   {
     if (!SQ_SUCCEEDED(sqa_getvar(v,4,&varB)))
-      return sq_throwerror(v, _A("std_createinstance, Third parameter (varb) must be a valid variant."));
+      return sq_throwerror(v, _A("std_createinstance: Third parameter (varb) must be a valid variant."));
   }
 
   iUnknown* pI = GetLang()->CreateInstance(aszObjectType, varA, varB);
   if (!niIsOK(pI)) {
     niSafeRelease(pI);
-    return sq_throwerror(v, niFmt(_A("std_createinstance, Can't create an instance of '%s'."), aszObjectType));
+    return sq_throwerror(v, niFmt(_A("std_createinstance: Can't create an instance of '%s'."), aszObjectType));
   }
 
   cString strModule = aszObjectType;
   strModule = strModule.substr(0,strModule.find(_A(".")));
-  if (!pVM->GetAutomation()->Import(v,strModule.Chars())) {
-    return sq_throwerror(v, niFmt(_A("std_createinstance, Can't import the module '%s'."),strModule.Chars()));
+  SQObjectPtr objModuleDef = DoImportNative(*v->_ss, v->_roottable, v->_ss->_nativeimports_table, _H(strModule));
+  if (sqa_getscriptobjtype(objModuleDef) == eScriptType_ErrorCode) {
+    return sq_throwerror(v, niFmt(
+      _A("std_createinstance: Can't import the module '%s': %s."),
+      strModule.Chars(),
+      ((sScriptTypeErrorCode*)_userdata(objModuleDef))->_strErrorDesc));
   }
 
   if (!SQ_SUCCEEDED(sqa_pushIUnknown(v,pI))) {
     niSafeRelease(pI);
-    return sq_throwerror(v, niFmt(_A("std_createinstance, Can't push the new instance of '%s'."), aszObjectType));
+    return sq_throwerror(v, niFmt(_A("std_createinstance: Can't push the new instance of '%s'."), aszObjectType));
   }
 
   return 1;
 }
 
 ///////////////////////////////////////////////
-// The import table is local to each table when it's imported, because a same source file
-// can be imported in different table.
-static int std_pushimports(HSQUIRRELVM v)
-{
-  sq_pushstring(v,_HC(__imports));
-  if (SQ_FAILED(sq_get(v,-2)))
-  {
-    sq_pushstring(v,_HC(__imports));
-    sq_newtable(v);
-    sq_createslot(v,-3);
-
-    sq_pushstring(v,_HC(__imports));
-    sq_get(v,-2);
-
-    sqa_setdebugname(v,-1,_A("__imports"));
-  }
-
-  return SQ_OK;
-}
-
-//static int __call_count = 0;
-
-///////////////////////////////////////////////
 static int std_import_ex(HSQUIRRELVM v, tBool abNew)
 {
-  int top = sq_gettop(v);
+  niLet numParams = sq_gettop(v)-1;
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
-  const achar* aszModule = NULL;
-
   niSqGuard(v);
 
-  top -= 1; // remove this out of the equation
-
-  if (top <= 0 || top > 2)
-    return sq_throwerror(v, _A("std_import, Invalid number of parameters."));
+  if (numParams != 1) {
+    niSqUnGuard(v);
+    return sq_throwerror(v, niFmt("std_import: one parameter expected.", numParams));
+  }
 
   eScriptType type = sqa_getscripttype(v,2);
-  if (type != eScriptType_String && type != eScriptType_IUnknown)
-    return sq_throwerror(v, _A("std_import, the first parameter should be a string or a iFile instance."));
+  if (type != eScriptType_String && type != eScriptType_IUnknown) {
+    niSqUnGuard(v);
+    return sq_throwerror(v, _A("std_import: the first parameter should be a string or a iFile instance."));
+  }
 
+  const achar* aszModule = NULL;
   tBool isScriptFile = eFalse;
   Ptr<iFile> ptrFile;
   if (type == eScriptType_IUnknown) {
     iUnknown* pFile;
-    if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pFile,niGetInterfaceUUID(iFile))))
-      return sq_throwerror(v,_A("std_import, the given instance doesn't implement iFile."));
+    if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pFile,niGetInterfaceUUID(iFile)))) {
+      niSqUnGuard(v);
+      return sq_throwerror(v,_A("std_import: the given instance doesn't implement iFile."));
+    }
     ptrFile = (iFile*)pFile;
   }
   else {
-    if (!SQ_SUCCEEDED(sq_getstring(v,2,&aszModule)))
-      return sq_throwerror(v, _A("std_import, can't get first parameter's string."));
+    if (!SQ_SUCCEEDED(sq_getstring(v,2,&aszModule))) {
+      niSqUnGuard(v);
+      return sq_throwerror(v, _A("std_import: can't get first parameter's string."));
+    }
     isScriptFile =
         StrEndsWithI(aszModule,".ni") ||
         StrEndsWithI(aszModule,".nim") ||
@@ -170,106 +148,84 @@ static int std_import_ex(HSQUIRRELVM v, tBool abNew)
         StrEndsWithI(aszModule,".niw");
   }
 
-  if (ptrFile.IsOK() || isScriptFile)
-  {
+  // Import a script file
+  if (ptrFile.IsOK() || isScriptFile) {
     if (!niIsStringOK(aszModule))
       aszModule = ptrFile->GetSourcePath();
 
-    if (!niIsStringOK(aszModule))
-    {
+    if (!niIsStringOK(aszModule)) {
       niSqUnGuard(v);
-      return sq_throwerror(v, niFmt(_A("std_import, unnamed module cant be imported."),aszModule));
+      return sq_throwerror(v, niFmt(_A("std_import: unnamed module cant be imported."),aszModule));
     }
 
-    Ptr<iScriptObject> ptrTable = NULL;
-    if (top > 1)
-    {
-      ptrTable = pVM->CreateObject(3,0);
-      if (!niIsOK(ptrTable) || ptrTable->GetType() != eScriptObjectType_Table)
-      {
-        niSqUnGuard(v);
-        return sq_throwerror(v, niFmt(_A("std_import, Can't open script module '%s', second parameter not a table."),aszModule));
-      }
-    }
-
-    if (!abNew)
-    {
-      if (ptrTable.IsOK()) pVM->PushObject(ptrTable);
-      else          pVM->PushRootTable();
-      std_pushimports(v);
-      sq_pushstring(v,_H(aszModule));
-      tBool bAlreadyImported = SQ_SUCCEEDED(sq_get(v,-2));
-      sq_pop(v,2); // pop the imports and root tables
-      if (bAlreadyImported)
-      {
-        sq_pop(v,1);  // pop an extra item added by the successful get
+    SQObjectPtr importKey = _H(aszModule);
+    if (!abNew) {
+      SQObjectPtr foundImported;
+      if (_table(v->_ss->_scriptimports_table)->Get(importKey,foundImported)) {
+        if (!sq_istable(foundImported)) {
+          niSqUnGuard(v);
+          return sq_throwerror(v, niFmt("std_import: %s: got an invalid object from the imports table.",aszModule));
+        }
         TRACE_SCRIPT_IMPORT(("niScript-Import: ni script '%s' already imported.",aszModule));
         niSqUnGuard(v);
-        return 0;
+        v->Push(foundImported);
+        return 1;
       }
     }
 
     if (!ptrFile.IsOK()) {
       ptrFile = pVM->ImportFileOpen(aszModule);
       if (!ptrFile.IsOK()) {
-        return sq_throwerror(v, niFmt(_A("std_import, Can't open script module '%s', can't open source file."),aszModule));
+        niSqUnGuard(v);
+        return sq_throwerror(v, niFmt(_A("std_import: %s: cant open script module as a file."),aszModule));
       }
     }
 
-    // register the module
-    if (!abNew) {
-      if (ptrTable.IsOK()) pVM->PushObject(ptrTable);
-      else          pVM->PushRootTable();
-      std_pushimports(v);
-      sq_pushstring(v,_H(aszModule));
-      sq_pushint(v,1);
-      sq_createslot(v,-3);
-      sq_pop(v,2);  // pop the imports and root tables
-      if (ptrTable.IsOK()) {
-        TRACE_SCRIPT_IMPORT(("niScript-Import: ni script '%s' (%s) imported in a custom table.",
-                             aszModule, ptrFile.IsOK() ? ptrFile->GetSourcePath() : aszModule));
-      }
-      else {
-        TRACE_SCRIPT_IMPORT(("niScript-Import: ni script '%s' (%s) imported in the root table.",
-                            aszModule, aszModule, ptrFile.IsOK() ? ptrFile->GetSourcePath() : aszModule));
-      }
-    }
-
+    SQObjectPtr thisTable = SQTable::Create();
     Ptr<iScriptObject> ptrScript = pVM->Compile(
         ptrFile,ni::GetRootFS()->GetAbsolutePath(ptrFile->GetSourcePath()).Chars());
-    if (!niIsOK(ptrScript))
-    {
+    if (!niIsOK(ptrScript)) {
       niSqUnGuard(v);
-      return sq_throwerror(v, niFmt(_A("Can't compile script module '%s'."),aszModule));
+      return sq_throwerror(v, niFmt("std_import: %s: cant compile script.",aszModule));
     }
-    //niTraceSqCallStack(v);
-    //++__call_count;
+
+    // register thisTable now, so that we dont try to reimport if there's an import cycle
+    if (!abNew) {
+      SQObjectPtr importsTable;
+      if (!_table(v->_ss->_scriptimports_table)->NewSlot(importKey,thisTable)) {
+        niSqUnGuard(v);
+        return sq_throwerror(v, niFmt("std_import: %s: cant add to imports table.",aszModule));
+      }
+    }
+
     pVM->PushObject(ptrScript);
-    if (ptrTable.IsOK()) pVM->PushObject(ptrTable);
-    else          pVM->PushRootTable();
-    //niTraceSqCallStack(v);
-    if (!pVM->Call(1,eFalse))
-    {
+    v->Push(thisTable);
+    if (!pVM->Call(1,eFalse)) {
       pVM->Pop(1);
-      //niTraceSqCallStack(v);
       niSqUnGuard(v);
       return sq_throwerror(v, niFmt(_A("Can't call script module '%s' closure."),aszModule));
     }
     pVM->Pop(1);
 
     niSqUnGuard(v);
-    return 0;
+    v->Push(thisTable);
+    return 1;
   }
-  else
-  {
-    if (!pVM->GetAutomation()->Import(v,aszModule)) {
+  // Import a native script module
+  else {
+    SQObjectPtr objModuleDef = DoImportNative(*v->_ss, v->_roottable, v->_ss->_nativeimports_table, _H(aszModule));
+    if (sqa_getscriptobjtype(objModuleDef) == eScriptType_ErrorCode) {
       niSqUnGuard(v);
-      return sq_throwerror(v, niFmt(_A("std_import, Can't import the module '%s'."),aszModule));
+      return sq_throwerror(v, niFmt(
+        _A("std_import: Can't import the module '%s': %s."),
+        aszModule,
+        ((sScriptTypeErrorCode*)_userdata(objModuleDef))->_strErrorDesc));
     }
 
     TRACE_SCRIPT_IMPORT(("niScript-Import: ni module '%s' imported.",aszModule));
     niSqUnGuard(v);
-    return 0;
+    v->Push(objModuleDef);
+    return 1;
   }
 }
 
@@ -771,78 +727,6 @@ tBool __stdcall cScriptAutomation::IsOK() const
 {
   niClassIsOK(cScriptAutomation);
   return ni::eTrue;
-}
-
-///////////////////////////////////////////////
-tBool cScriptAutomation::Import(HSQUIRRELVM vm, const achar* aszMod)
-{
-  if (!mbIsValid) {
-    niWarning(_A("Script automation invalidated."));
-    return eFalse;
-  }
-  niAssert(vm != NULL);
-
-  //tHStringPtr hspModule = _H(aszMod);
-  tModuleMapIt it = mmapModules.find(aszMod);
-  if (it != mmapModules.end())  return eTrue;
-
-  Ptr<iModuleDef> ptrModuleDef = ni::GetLang()->LoadModuleDef(aszMod);
-  if (!ptrModuleDef.IsOK()) {
-    niError(niFmt(_A("Can't load module '%s'."),aszMod));
-    return eFalse;
-  }
-
-  tU32 i;
-
-  sq_pushroottable(vm);
-  for (i = 0; i < ptrModuleDef->GetNumEnums(); ++i)
-  {
-    const sEnumDef* pEnumDef = ptrModuleDef->GetEnum(i);
-    if (ni::StrCmp(pEnumDef->maszName,_A("Unnamed")) == 0) {
-      sq_pushstring(vm, _HC(e));
-    }
-    else {
-      sq_pushstring(vm, _H(pEnumDef->maszName));
-    }
-    sqa_pushEnumDef(vm,ptrModuleDef->GetEnum(i));
-    sq_createslot(vm,-3);
-  }
-  sq_pop(vm,1);
-
-  astl::upsert(mmapModules, aszMod, ptrModuleDef);
-
-  for (i = 0; i < ptrModuleDef->GetNumDependencies(); ++i)
-  {
-    // check for invalid dependency
-    if (ni::StrCmp(ptrModuleDef->GetDependency(i),ptrModuleDef->GetName()) == 0)
-    {
-      niWarning(niFmt(_A("Module '%s' loading, self-dependency."),ptrModuleDef->GetName()));
-      continue;
-    }
-
-    // import the dependency
-    if (!Import(vm,ptrModuleDef->GetDependency(i))) {
-      niWarning(niFmt(_A("Module '%s' loading, can't import the dependency '%s'."),ptrModuleDef->GetName(),ptrModuleDef->GetDependency(i)));
-    }
-  }
-
-  sq_pushroottable(vm);
-  for (i = 0; i < ptrModuleDef->GetNumConstants(); ++i)
-  {
-    const sConstantDef* pConstDef = ptrModuleDef->GetConstant(i);
-    //    niLog(Info,niFmt(_A("Const reg: %s\n"),pConstDef->GetName()));
-    //    niPrintln(niFmt(_A("Const reg: %s\n"),pConstDef->GetName()));
-    sq_pushstring(vm,_H(pConstDef->maszName));
-    if (SQ_FAILED(sqa_pushvar(vm,pConstDef->mvarValue))) {
-      sq_pop(vm,1); // pop the key
-      niWarning(niFmt(_A("Can't push the value of constant '%s'."),pConstDef->maszName));
-      continue;
-    }
-    sq_createslot(vm,-3);
-  }
-  sq_pop(vm,1);
-
-  return eTrue;
 }
 
 ///////////////////////////////////////////////

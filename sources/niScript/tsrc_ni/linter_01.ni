@@ -122,11 +122,12 @@ function newslot() {
   this.stringmethods().bla <- "weee" // should fail we cant create slots in anything but tables
 }
 
+function for_dmove(string path, something) {}
+
 // this will generate a dmove opcode
 function dmove(string path) {
-  local className = path.GetFileNoExt()
-  local loadedTable = {}
-  ::Import(path,loadedTable)
+  local something = {}
+  this.for_dmove(path,something)
 }
 
 // this will generate a dmove opcode

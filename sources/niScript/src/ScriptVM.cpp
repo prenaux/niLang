@@ -1037,106 +1037,50 @@ iFile* __stdcall cScriptVM::ImportFileOpen(const achar* aaszFile) {
 
 ///////////////////////////////////////////////
 //! Call the system import function.
-tBool __stdcall cScriptVM::_DoImport(tBool abNew, iUnknown* apPathOrFile, iScriptObject* apDestTable)
+Ptr<iScriptObject> __stdcall cScriptVM::_DoImport(tBool abNew, iUnknown* apPathOrFile)
 {
-  const achar* aaszModule = NULL;
-  iFile* apFile = NULL;
-  Ptr<iUnknown> refToPathOrFile = apPathOrFile;
-  {
-    QPtr<iHString> ptrPath = apPathOrFile;
-    if (ptrPath.IsOK()) {
-      aaszModule = niHStr(ptrPath);
-    }
-    else {
-      QPtr<iFile> ptrFile = apPathOrFile;
-      if (ptrFile.IsOK()) {
-        apFile = ptrFile.ptr();
-      }
-      else {
-        niError(niFmt("apPathOrFile is not a iHString nor a iFile instance."));
-        return eFalse;
-      }
-    }
-  }
+  tU32 numPop = 0;
+  niLet funName = abNew?_HC(NewImport):_HC(Import);
 
-  tU32 nNumPop = 0;
-
-  // get the import closure
+  // Get the closure
   sq_pushroottable(mptrVM);
-  ++nNumPop;
-  sq_pushstring(mptrVM,abNew?_HC(NewImport):_HC(Import));
+  ++numPop;
+  sq_pushstring(mptrVM,funName);
   if (!SQ_SUCCEEDED(sq_get(mptrVM,-2))) {
-    niError(_A("Can't get the Import closure."));
-    Pop(nNumPop);
-    return eFalse;
+    niError(niFmt("Can't get the '%s' closure.", funName));
+    Pop(numPop);
+    return nullptr;
   }
-  ++nNumPop;
+
+  // push 'this'
   sq_pushroottable(mptrVM);
-  ++nNumPop;
-
-  if (niIsStringOK(aaszModule))
-  {
-    if (niIsOK(apDestTable))
-    {
-      niError(_A("Destination object provided when importing module symbols."));
-      Pop(nNumPop);
-      return eFalse;
-    }
-    sq_pushstring(mptrVM,_H(aaszModule));
-    ++nNumPop;
+  ++numPop; // we'll have to pop this if the next call fails
+  // push the first argument
+  if (SQ_FAILED(sqa_pushIUnknown(mptrVM,apPathOrFile))) {
+    niError(niFmt("Can't push apPathOrFile."));
+    Pop(numPop);
+    return nullptr;
   }
-  else
-  {
-    if (niIsOK(apDestTable) && apDestTable->GetType() != eScriptObjectType_Table)
-    {
-      niError(_A("The destination object is not a table."));
-      Pop(nNumPop);
-      return eFalse;
-    }
+  --numPop; // we dont want to pop this...
 
-    if (!niIsOK(apFile))
-    {
-      niError(niFmt(_A("The module name and the file are invalid, one must be provided.")));
-      Pop(nNumPop);
-      return eFalse;
-    }
-
-    if (SQ_FAILED(sqa_pushIUnknown(mptrVM,apFile)))
-    {
-      niError(niFmt(_A("Can't push the iUnknown object.")));
-      Pop(nNumPop);
-      return eFalse;
-    }
-    ++nNumPop;
+  // call the import function
+  if (SQ_FAILED(sq_call(mptrVM,2,1))) {
+    niError(niFmt("Call to '%s' failed.", funName));
+    Pop(numPop);
+    return nullptr;
   }
+  // Get the return value and pop it.
+  Ptr<iScriptObject> ret = CreateObject(-1,1);
 
-  if (niIsOK(apDestTable))
-  {
-    if (!PushObject(apDestTable))
-    {
-      niError(_A("Can't push the destination table."));
-      Pop(nNumPop);
-      return eFalse;
-    }
-    ++nNumPop;
-  }
-
-  nNumPop -= niIsOK(apDestTable)?3:2;
-  if (SQ_FAILED(sq_call(mptrVM,niIsOK(apDestTable)?3:2,0)))
-  {
-    niError(_A("Call to import failed."));
-    Pop(nNumPop);
-    return eFalse;
-  }
-
-  Pop(nNumPop);
-  return eTrue;
+  // Pop whatever is left over
+  Pop(numPop);
+  return ret;
 }
-tBool __stdcall cScriptVM::Import(iUnknown* apPathOrFile, iScriptObject* apDestTable) {
-  return this->_DoImport(ni::eFalse,apPathOrFile,apDestTable);
+Ptr<iScriptObject> __stdcall cScriptVM::Import(iUnknown* apPathOrFile) {
+  return this->_DoImport(ni::eFalse,apPathOrFile);
 }
-tBool __stdcall cScriptVM::NewImport(iUnknown* apPathOrFile, iScriptObject* apDestTable) {
-  return this->_DoImport(ni::eTrue,apPathOrFile,apDestTable);
+Ptr<iScriptObject> __stdcall cScriptVM::NewImport(iUnknown* apPathOrFile) {
+  return this->_DoImport(ni::eTrue,apPathOrFile);
 }
 
 ///////////////////////////////////////////////
@@ -1151,12 +1095,13 @@ iScriptObject* __stdcall cScriptVM::CreateObject(tI32 anIndex, tI32 anNumPop)
 //! \param  aaszKey is the name of the object to get.
 //! \param  aRequiredType is the type that the object should have. If eScriptObjectType_Last this is ignored.
 //! \return NULL if the object can't be found or that the type doesn't match aRequiredType.
-iScriptObject* __stdcall cScriptVM::CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType, tI32 anNumPop)
+iScriptObject* __stdcall cScriptVM::CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType, tI32 anNumPop, tBool abTry)
 {
   sq_pushstring(mptrVM,_H(aaszKey));
-  if (SQ_FAILED(sq_get(mptrVM,-2)))
-  {
-    niError(niFmt(_A("Can't get the object '%s'."), aaszKey));
+  if (SQ_FAILED(sq_get(mptrVM,-2))) {
+    if (!abTry) {
+      niError(niFmt(_A("Can't get the object '%s'."), aaszKey));
+    }
     return NULL;
   }
 
@@ -1171,11 +1116,13 @@ iScriptObject* __stdcall cScriptVM::CreateObjectGet(const achar* aaszKey, eScrip
 
   if (aRequiredType != eScriptObjectType_Last && pObject->GetType() != aRequiredType)
   {
-    niError(niFmt(_A("Object '%s' don't have the required type, %d expected, %d found."),
-                  aaszKey,
-                  aRequiredType,
-                  pObject->GetType()
-                  ));
+    if (!abTry) {
+      niError(niFmt(
+        "Object '%s' don't have the required type, %d expected, %d found.",
+        aaszKey,
+        aRequiredType,
+        pObject->GetType()));
+    }
     return NULL;
   }
 
@@ -1241,17 +1188,11 @@ iScriptObject* __stdcall cScriptVM::ReadClosure(iFile* apFile)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cScriptVM::ScriptCall(const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anParams, Var* apRet)
+tBool __stdcall cScriptVM::ScriptCall(iScriptObject* apThis, const achar* aaszFunc, const Var* apParams, tU32 anParams, Var* apRet)
 {
   niCheck(niIsStringOK(aaszFunc),eFalse);
 
   const tU32 nStartStackSize = this->GetStackSize();
-  if (niIsStringOK(aaszModule)) {
-    if (!this->Import(_H(aaszModule),NULL)) {
-      niError(niFmt(_A("Can't import module '%s'."),aaszModule));
-      return eFalse;
-    }
-  }
 
   tBool bPushRoot = eFalse;
   astl::vector<cString> vTables;
@@ -1276,6 +1217,10 @@ tBool __stdcall cScriptVM::ScriptCall(const achar* aaszModule, const achar* aasz
     this->PushRootTable();
     ++nNumPop;
   }
+  else if (apThis) {
+    this->PushObject(apThis);
+    ++nNumPop;
+  }
   niLoop(i,vTables.size()) {
     o = this->CreateObjectGet(vTables[i].Chars(),
                               i == (vTables.size()-1) ?
@@ -1290,7 +1235,13 @@ tBool __stdcall cScriptVM::ScriptCall(const achar* aaszModule, const achar* aasz
 
   tBool bRet = eFalse;
   if (niIsOK(o)) {
-    this->PushRootTable();  // this table of the call
+    // this table of the call
+    if (apThis) {
+      this->PushObject(apThis);
+    }
+    else {
+      this->PushRootTable();
+    }
     // push the parameters
     tU32 numParams = 0;
     tBool bFailPushParams = eFalse;
@@ -1368,17 +1319,10 @@ tBool __stdcall cScriptVM::ScriptCall(const achar* aaszModule, const achar* aasz
 }
 
 ///////////////////////////////////////////////
-iScriptObject* __stdcall cScriptVM::ScriptVar(const achar* aaszModule, const achar* aaszVar)
+Ptr<iScriptObject> __stdcall cScriptVM::ScriptVar(iScriptObject* apThis, const achar* aaszVar, tBool abTry)
 {
   niCheck(niIsStringOK(aaszVar),NULL);
-
-  tU32 nStartStackSize = this->GetStackSize();
-  if (niIsStringOK(aaszModule)) {
-    if (!this->Import(_H(aaszModule),NULL)) {
-      niError(niFmt(_A("Can't import module '%s'."),aaszModule));
-      return NULL;
-    }
-  }
+  const tU32 nStartStackSize = this->GetStackSize();
 
   tBool bPushRoot = eFalse;
   astl::vector<cString> vTables;
@@ -1391,10 +1335,9 @@ iScriptObject* __stdcall cScriptVM::ScriptVar(const achar* aaszModule, const ach
   }
 
   StringSplit(cString(p),_A("."),&vTables);
-
   if (vTables.empty()) {
     niError(niFmt(_A("No variable name defined '%s'."),aaszVar));
-    return NULL;
+    return nullptr;
   }
 
   Ptr<iScriptObject> o;
@@ -1403,10 +1346,17 @@ iScriptObject* __stdcall cScriptVM::ScriptVar(const achar* aaszModule, const ach
     this->PushRootTable();
     ++nNumPop;
   }
+  else if (apThis) {
+    this->PushObject(apThis);
+    ++nNumPop;
+  }
+
   niLoop(i,vTables.size()) {
-    o = this->CreateObjectGet(vTables[i].Chars(),eScriptObjectType_Last,0);
+    o = this->CreateObjectGet(vTables[i].Chars(),eScriptObjectType_Last,0,abTry);
     if (!o.IsOK()) {
-      niError(niFmt(_A("Can't get object key '%s' trying to get '%s'."),vTables[i].Chars(),aaszVar));
+      if (!abTry) {
+        niError(niFmt(_A("Can't get object key '%s' trying to get '%s'."),vTables[i].Chars(),aaszVar));
+      }
       break;
     }
     ++nNumPop;
@@ -1415,7 +1365,8 @@ iScriptObject* __stdcall cScriptVM::ScriptVar(const achar* aaszModule, const ach
   if (nNumPop) {
     this->Pop(nNumPop);
   }
-  tU32 nEndStackSize = this->GetStackSize();
+
+  const tU32 nEndStackSize = this->GetStackSize();
   if (nEndStackSize != nStartStackSize) {
     niError(niFmt(_A("Getting '%s', corrupted stack, should be %d, is %d."),aaszVar,nStartStackSize,nEndStackSize));
   }

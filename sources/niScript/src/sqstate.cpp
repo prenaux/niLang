@@ -33,6 +33,8 @@ SQSharedState::SQSharedState() {
   };
 
   _refs_table = SQTable::Create();
+  _scriptimports_table = SQTable::Create();
+  _nativeimports_table = SQTable::Create();
   _table_default_delegate = createDelegate(this,_table_default_delegate_funcz);
   _array_default_delegate = createDelegate(this,_array_default_delegate_funcz);
   _string_default_delegate = createDelegate(this,_string_default_delegate_funcz);
@@ -183,6 +185,13 @@ SQSharedState::~SQSharedState()
 {
   _table(_refs_table)->Invalidate();
   _refs_table = _null_;
+
+  _table(_scriptimports_table)->Invalidate();
+  _scriptimports_table = _null_;
+
+  _table(_nativeimports_table)->Invalidate();
+  _nativeimports_table = _null_;
+
   _table_default_delegate=_null_;
   _array_default_delegate=_null_;
   _string_default_delegate=_null_;

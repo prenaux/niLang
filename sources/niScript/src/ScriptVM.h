@@ -99,21 +99,21 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
 
   tInterfaceCVec<iFileSystem>* __stdcall GetImportFileSystems() const;
   iFile* __stdcall ImportFileOpen(const achar* aaszFile);
-  tBool __stdcall _DoImport(tBool abNew, iUnknown* apPathOrFile, iScriptObject* apDestTable);
-  tBool __stdcall Import(iUnknown* apPathOrFile, iScriptObject* apDestTable);
-  tBool __stdcall NewImport(iUnknown* apPathOrFile, iScriptObject* apDestTable);
+  Ptr<iScriptObject>  __stdcall _DoImport(tBool abNew, iUnknown* apPathOrFile);
+  Ptr<iScriptObject> __stdcall Import(iUnknown* apPathOrFile);
+  Ptr<iScriptObject> __stdcall NewImport(iUnknown* apPathOrFile);
 
   iScriptObject* __stdcall CreateTable(iScriptObject* apDelegate, tI32 anNumPop);
   iScriptObject* __stdcall CreateObject(tI32 anIndex, tI32 anNumPop);
-  iScriptObject* __stdcall CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType = eScriptObjectType_Last, tI32 anTablePos = -2);
+  iScriptObject* __stdcall CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType = eScriptObjectType_Last, tI32 anTablePos = -2, tBool abTry = eFalse);
 
   tBool __stdcall Call(tU32 anNumParams, tBool abPushRet);
 
   tBool __stdcall WriteClosure(iFile* apFile, iScriptObject* apObject);
   iScriptObject* __stdcall ReadClosure(iFile* apFile);
 
-  tBool __stdcall ScriptCall(const achar* aaszModule, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet);
-  iScriptObject* __stdcall ScriptVar(const achar* aaszModule, const achar* aaszVar);
+  tBool __stdcall ScriptCall(iScriptObject* apThis, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet);
+  Ptr<iScriptObject> __stdcall ScriptVar(iScriptObject* apThis, const achar* aaszVar, tBool abTry);
   //// iScriptVM ////////////////////////////////
 
   //// iScriptingHost ////////////////////////////////

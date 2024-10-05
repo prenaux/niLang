@@ -40,3 +40,8 @@ NI_DLL_PROC(void, __cdecl, XSetICFocus, (XIC ic));
 NI_DLL_PROC(int, __cdecl, XSelectInput, (Display* a, Window b, long event_mask));
 NI_DLL_PROC(Status, __cdecl, XSetWMProtocols, (Display* a, Window b, Atom* protocols, int count));
 NI_DLL_PROC(int, __cdecl, XScreenCount, (Display* a));
+
+NI_DLL_PROC(char*, __cdecl, XResourceManagerString, (Display*));
+NI_DLL_PROC(XrmDatabase, __cdecl, XrmGetStringDatabase, (const char*));
+NI_DLL_PROC(void, __cdecl, XrmDestroyDatabase, (XrmDatabase));
+NI_DLL_PROC(Bool, __cdecl, XrmGetResource, (XrmDatabase,const char*,const char*,char**,XrmValue*));

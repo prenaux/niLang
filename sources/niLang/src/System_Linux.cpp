@@ -15,6 +15,7 @@
 #include <X11/Xos.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h> // default cursors defined here...
+#include <X11/Xresource.h>
 #include <GL/glx.h>
 
 using namespace ni;
@@ -180,7 +181,6 @@ static struct
   { NoSymbol, eKey_Unknown },
 };
 
-
 struct sX11System : public Impl_HeapAlloc {
   tBool mbIsLoaded;
   struct sX11Monitor {
@@ -190,6 +190,7 @@ struct sX11System : public Impl_HeapAlloc {
     tOSMonitorFlags mFlags;
   };
   astl::vector<sX11Monitor> mvMonitors;
+  tF32 mfContentsScale = 1.0f;
 
   sX11System() {
     mbIsLoaded = ni_dll_load_x11();
@@ -202,11 +203,14 @@ struct sX11System : public Impl_HeapAlloc {
       niLoop(i, screenCount) {
         _AddMonitor(display, i);
       }
+      mfContentsScale = _GetSystemContentsScale(display);
       dll_XCloseDisplay(display);
     }
     else {
       niLog(Info, "X11_OpenDisplay failed.");
     }
+
+    niLog(Info, niFmt("X11 ContentsScale: %g.", mfContentsScale));
   }
 
   tBool IsOK() const {
@@ -228,7 +232,7 @@ struct sX11System : public Impl_HeapAlloc {
 
     mvMonitors.push_back(m);
     niLog(Info, niFmt(
-      "... X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
+      "X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
       mvMonitors.size()-1,
       m.mHandle, m.mstrName.Chars(),
       m.mRect,
@@ -238,6 +242,37 @@ struct sX11System : public Impl_HeapAlloc {
   Display* OpenDisplay() {
     cString displayName = ni::GetProperty("X11.Display", nullptr);
     return dll_XOpenDisplay(displayName.IsNotEmpty() ? displayName.data() : nullptr);
+  }
+
+  static tF32 _GetSystemContentsScale(Display* disp) {
+    float dpi = -1.0f;
+    char* rms = dll_XResourceManagerString(disp);
+    if (rms) {
+      XrmDatabase db = dll_XrmGetStringDatabase(rms);
+      if (db) {
+        const char* valueString = nullptr;
+        {
+          XrmValue value;
+          char* type;
+          if (!dll_XrmGetResource(db, "Xft.dpi", "Xft.Dpi", &type, &value)) {
+            valueString = value.addr;
+          }
+          else if (dll_XrmGetResource(db, "Xft.dpi", "String", &type, &value)) {
+            valueString = value.addr;
+          }
+        }
+        if (valueString) {
+          dpi = StringToDouble(valueString, 0, nullptr, eStringToDoubleFlags_Default, -1.0, -1);
+        }
+        dll_XrmDestroyDatabase(db);
+      }
+    }
+    if (dpi < 10.0f || dpi > 1000.0f) { // cull non-sensical values
+      return 1.0f;
+    }
+    else {
+      return dpi / 96.f;
+    }
   }
 
   void SetHints(Display* disp, Window win, int screen,
@@ -355,7 +390,7 @@ static sX11System* _GetX11System() {
   return _system;
 }
 
-
+///////////////////////////////////////////////
 class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
 
@@ -756,7 +791,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual tF32 __stdcall GetContentsScale() const {
-    return 1.0f;
+    return _GetX11System()->mfContentsScale;
   }
 
   ///////////////////////////////////////////////

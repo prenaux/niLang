@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: MIT
 #include "../Types.h"
 #include "../StringDef.h"
+#include "../STL/scope_guard.h"
 #include "ThreadImpl.h"
 
 namespace ni {

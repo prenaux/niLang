@@ -1,0 +1,17 @@
+NI_DLL_PROC(int, __cdecl, snd_pcm_open, (snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode));
+NI_DLL_PROC(int, __cdecl, snd_pcm_close, (snd_pcm_t *pcm));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_malloc, (snd_pcm_hw_params_t **ptr));
+NI_DLL_PROC(void, __cdecl, snd_pcm_hw_params_free, (snd_pcm_hw_params_t *obj));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_any, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_set_access, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_access_t _access));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_set_format, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_format_t val));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_set_channels, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int val));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_set_rate_near, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int *val, int *dir));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params_set_buffer_size_near, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_uframes_t *val));
+NI_DLL_PROC(int, __cdecl, snd_pcm_hw_params, (snd_pcm_t *pcm, snd_pcm_hw_params_t *params));
+NI_DLL_PROC(snd_pcm_sframes_t, __cdecl, snd_pcm_writei, (snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size));
+NI_DLL_PROC(int, __cdecl, snd_pcm_recover, (snd_pcm_t *pcm, int err, int silent));
+NI_DLL_PROC(int, __cdecl, snd_pcm_drain, (snd_pcm_t *pcm));
+NI_DLL_PROC(const char*, __cdecl, snd_strerror, (int errnum));
+NI_DLL_PROC(int, __cdecl, snd_pcm_format_width, (snd_pcm_format_t format));
+NI_DLL_PROC(const char*, __cdecl, snd_pcm_format_name, (snd_pcm_format_t format));

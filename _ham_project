@@ -19,7 +19,7 @@ case $HAM_OS in
     fi
     ;;
   LINUX*)
-    TOOLSET_LIST+=(syslib_libdw)
+    TOOLSET_LIST+=(syslib_libdw syslib_alsa)
     # TOOLSET_LIST+=(syslib_bfd)
     ;;
   *) ;;

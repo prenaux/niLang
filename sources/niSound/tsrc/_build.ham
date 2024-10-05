@@ -11,11 +11,7 @@ niImportModuleLibs niUnitTest ;
 SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc : $(CHK_SOURCES) ] ;
-
-# TODO: Linux support, needs iOSWindow & Audio driver
-if ! ( $(LINUX) = 1 ) {
-  DEPENDS Run_ci : [ runInDir Test_niSound ] ;
-}
+DEPENDS Run_ci : [ runInDir Test_niSound ] ;
 
 if ( $(EMSCRIPTEN) = 1 ) {
   TargetLinkFlags $(PKGTARGETF) :

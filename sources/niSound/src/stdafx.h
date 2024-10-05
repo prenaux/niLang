@@ -20,7 +20,10 @@ iSoundDriver* __stdcall New_SoundDriverSDL();
 #elif defined niIOS || defined niOSX
 iSoundDriver* __stdcall New_SoundDriverOSX();
 
-#elif defined niQNX || defined niLinux
+#elif defined niLinuxDesktop
+iSoundDriver* __stdcall New_SoundDriverALSA();
+
+#elif defined niQNX || defined niLinuxDesktop
 #define NO_SOUND
 
 #else

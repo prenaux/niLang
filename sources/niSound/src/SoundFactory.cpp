@@ -42,6 +42,9 @@ cSoundFactory::cSoundFactory()
 #elif defined niOSX || defined niIOS
   mvDrivers.push_back(New_SoundDriverOSX());
   if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
+#elif defined niLinuxDesktop
+  mvDrivers.push_back(New_SoundDriverALSA());
+  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
 #else
   mvDrivers.push_back(New_SoundDriverSDL());
   if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
@@ -132,8 +135,7 @@ tBool __stdcall cSoundFactory::StartupDriver(tU32 anDriver, eSoundFormat aSoundF
   ShutdownDriver();
 
   if (anDriver == eInvalidHandle) {
-    // the last driver is supposed to be the best one... so we try to init that driver first... if it fails we try until we exhausted all possibilities
-    for (tI32 i = mvDrivers.size()-1; i >= 0; --i) {
+    niLoop(i,mvDrivers.size()) {
       Ptr<iSoundDriver> ptrDrv = mvDrivers[i];
       if (ptrDrv->Startup(aSoundFormat,anFrequency,aWindowHandle)) {
         mnActiveDriver = i;

@@ -62,6 +62,9 @@ rule MBEDTLS_Hdrs {
 #     Custom rules to simplify static linking
 #----------------------------------------------------------------------
 
+#######################################################################
+# NI_VIDEO_USE_*
+#######################################################################
 if $(NO_THREADS) = 1 {
   ECHO "I/NO_THREADS, no video player." ;
 }
@@ -127,6 +130,9 @@ if $(WINDOWS) = 1 {
   NI_VIDEO_USE_WEBCAM ?= 1 ;
 }
 
+#######################################################################
+# niUI
+#######################################################################
 rule niUI_Link_CopyDeps {
   if $(WINDOWS) = 1 && $(NI_VIDEO_USE_FFMPEG) = 1 && $(FFMPEG_USE_SDK) = 1 {
     local FFMPEG_DLLS = avcodec-57 avformat-57 avutil-55 postproc-54 swresample-2 swscale-4 ;
@@ -231,6 +237,9 @@ rule niImportModuleDll_niUI {
   niUI_LinkDll $(PKGTARGET) : $(1) ;
 }
 
+#######################################################################
+# niCURL
+#######################################################################
 if $(JSCC) = 1 || $(LINUX) = 1 || $(LOA_OS) = qnx {
   USE_SYSTEM_LIBCURL = 1 ;
 }

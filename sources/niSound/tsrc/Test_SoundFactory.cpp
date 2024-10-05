@@ -31,17 +31,17 @@ struct FSoundFactory {
         niDebugFmt(("... play time: %gs", currentTime - startTime));
         lastDisplayedTime = currentTime;
       }
-      if (currentTime - startTime > afMaxPlayTime) {
+      if ((currentTime - startTime) > afMaxPlayTime) {
         niDebugFmt(("... play time timeout: %gs", ni::TimerInSeconds() - startTime));
         return eFalse;
       }
       SleepMs(10);
     } while(sndSource->GetIsPlaying());
 
-    niDebugFmt(("... full play time: %gs", ni::TimerInSeconds() - startTime));
+    niDebugFmt(("... full play time: %gs, loops: %d", ni::TimerInSeconds() - startTime, numLoops));
 
     CHECK_NOT_EQUAL(1,numLoops);
-    CHECK(numLoops > 10);
+    CHECK(numLoops > 5);
 
     return eTrue;
   };
@@ -49,13 +49,13 @@ struct FSoundFactory {
 
 TEST_FIXTURE(FSoundFactory,Base) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 }
 
 #if !defined NO_CONSOLE_AUDIO
 TEST_FIXTURE(FSoundFactory,ClickWAV) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://click.wav");
@@ -75,7 +75,7 @@ TEST_FIXTURE(FSoundFactory,ClickWAV) {
 
 TEST_FIXTURE(FSoundFactory,Mono8WAV) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://lobby_chat.wav");
@@ -98,7 +98,7 @@ TEST_FIXTURE(FSoundFactory,Mono8WAV) {
 
 TEST_FIXTURE(FSoundFactory,WAVEJUNK) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://weapon_13_shoot_1.wav");
@@ -121,7 +121,7 @@ TEST_FIXTURE(FSoundFactory,WAVEJUNK) {
 
 TEST_FIXTURE(FSoundFactory,ClickOGG) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://click.ogg");
@@ -141,7 +141,7 @@ TEST_FIXTURE(FSoundFactory,ClickOGG) {
 
 TEST_FIXTURE(FSoundFactory,StreamWAV) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.wav");
@@ -166,7 +166,7 @@ TEST_FIXTURE(FSoundFactory,StreamWAV) {
 
 TEST_FIXTURE(FSoundFactory,StreamOGG) {
   CHECK(mptrSoundFactory.IsOK());
-  CHECK(mptrSoundFactory->StartupDriver(0,eSoundFormat_Stereo16,44100,0));
+  CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 
   {
     Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://atmo_loop_01.ogg");

@@ -52,6 +52,32 @@ TEST_FIXTURE(FSoundFactory,Base) {
   CHECK(mptrSoundFactory->StartupDriver(eInvalidHandle,eSoundFormat_Stereo16,44100,0));
 }
 
+TEST_FIXTURE(FSoundFactory,Silent_ClickWAV) {
+  CHECK(mptrSoundFactory.IsOK());
+
+  niLet silentDriverIndex = mptrSoundFactory->GetDriverIndex(_H("Silent"));
+  CHECK(mptrSoundFactory->StartupDriver(silentDriverIndex,eSoundFormat_Stereo16,44100,0));
+
+  Ptr<iSoundDriver> activeDriver = mptrSoundFactory->GetDriver(mptrSoundFactory->GetActiveDriver());
+  CHECK_RETURN_IF_FAILED(activeDriver.IsOK());
+  CHECK_RETURN_IF_FAILED(activeDriver->GetName() == _H("Silent"));
+
+  {
+    Ptr<iFile> fpSound = ni::GetLang()->URLOpen("Test_niSound://click.wav");
+    CHECK_RETURN_IF_FAILED(mptrSoundFactory.IsOK());
+
+    Ptr<iSoundBuffer> sndBuffer = mptrSoundFactory->CreateSoundBuffer(fpSound,eFalse,_H(fpSound->GetSourcePath()));
+    CHECK_RETURN_IF_FAILED(sndBuffer.IsOK());
+
+    Ptr<iSoundSource> sndSource = mptrSoundFactory->CreateSoundSource(sndBuffer);
+    CHECK_RETURN_IF_FAILED(sndSource.IsOK());
+
+    niLoop(i,3) {
+      CHECK(PlayOnce(TEST_PARAMS_CALL, 0.5, sndSource));
+    }
+  }
+}
+
 #if !defined NO_CONSOLE_AUDIO
 TEST_FIXTURE(FSoundFactory,ClickWAV) {
   CHECK(mptrSoundFactory.IsOK());

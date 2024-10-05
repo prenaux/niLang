@@ -63,14 +63,10 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
 
     const tU32 samples = 1024;
     const tU32 channels = bStereo ? 2 : 1;    /* 1 = mono, 2 = stereo */
+    mvBuffer.resize(samples * channels * ((nBits == 16) ? 2 : 1));
 
-    mnBufferSize = samples;
-    mnBufferSize *= channels;
-    if (nBits == 16)
-      mnBufferSize *= 2;
-
-    niLog(Info,niFmt("Silent driver started with bits: %d, freq: %d, channels: %d",
-                     nBits, anFreq, channels));
+    niLog(Info,niFmt("Silent sound driver started with bits: %d, freq: %d, channels: %d, buffer size: %d",
+                     nBits, anFreq, channels, mvBuffer.size()));
 
     mbIsPlaying = true;
     return eTrue;
@@ -86,7 +82,7 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
 
   ///////////////////////////////////////////////
   virtual tSize __stdcall GetSize() const {
-    return mnBufferSize;
+    return mvBuffer.size();
   }
 
   ///////////////////////////////////////////////
@@ -111,11 +107,14 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
 
   ///////////////////////////////////////////////
   void __stdcall UpdateBuffer() {
+    if (mSink.IsOK()) {
+      mSink->OnSoundDriverBufferDataSink(mvBuffer.data(), mvBuffer.size());
+    }
   }
 
   Ptr<iSoundDriverBufferDataSink> mSink;
   tBool mbIsPlaying = eFalse;
-  tU32  mnBufferSize = 0;
+  astl::vector<tU8> mvBuffer;
 
   niEndClass(cSoundDriverBufferSilent);
 };

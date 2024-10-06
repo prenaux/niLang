@@ -4,3 +4,7 @@
 
 # *.png binary
 # *.fbx binary
+
+*.ni linguist-language=Squirrel
+*.niw linguist-language=Squirrel
+*.nip linguist-language=Squirrel

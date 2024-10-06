@@ -171,6 +171,12 @@ static int std_import_ex(HSQUIRRELVM v, tBool abNew)
         v->Push(foundImported);
         return 1;
       }
+      else {
+        TRACE_SCRIPT_IMPORT(("niScript-Import: ni script '%s' not found, importing.",aszModule));
+      }
+    }
+    else {
+      TRACE_SCRIPT_IMPORT(("niScript-Import: ni script '%s' NewImport, importing.",aszModule));
     }
 
     if (!ptrFile.IsOK()) {

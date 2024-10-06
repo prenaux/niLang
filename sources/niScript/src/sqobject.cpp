@@ -369,6 +369,8 @@ bool ReadSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQREADFUNC 
 #ifndef NO_GARBAGE_COLLECTOR
 void SQSharedState::Mark(SQCollectable **chain) {
   SQGarbageCollector::MarkObject(_refs_table,chain);
+  SQGarbageCollector::MarkObject(_scriptimports_table,chain);
+  SQGarbageCollector::MarkObject(_nativeimports_table,chain);
   SQGarbageCollector::MarkObject(_table_default_delegate,chain);
   SQGarbageCollector::MarkObject(_array_default_delegate,chain);
   SQGarbageCollector::MarkObject(_string_default_delegate,chain);

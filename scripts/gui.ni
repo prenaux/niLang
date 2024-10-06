@@ -5,7 +5,7 @@
 ::Import("math.ni")
 ::Import("fs.ni")
 
-::gUIContext <- ::gLang.global_instance["iUIContext"].QueryInterface("iUIContext")
+::gUIContext <- ::gLang.global_instance["iUIContext"].?QueryInterface("iUIContext")
 ::gGraphics <- ::gUIContext.?graphics
 ::gGraphicsContext <- ::gUIContext.?graphics_context
 

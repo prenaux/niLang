@@ -243,7 +243,7 @@ if (!::gUIContext) {
     ::printdebugln("--- Get Existing Objects ---")
 
     /// Setup the window
-    mMainWindow = ::gLang.global_instance["iOSWindow"].QueryInterface("iOSWindow")
+    mMainWindow = ::gLang.global_instance["iOSWindow"].?QueryInterface("iOSWindow")
     if (!mMainWindow)
       throw "Can't get existing iOSWindow."
 

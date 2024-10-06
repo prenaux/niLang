@@ -11,6 +11,7 @@
 
 // TODO:
 //
+// - [ ] p2: function's this pointer should be undefined if its not set in a table, for example in ::app.queueLoading(function() { ... }) this should resolved to error_code_dangling_this (similar to error_code_dangling_type)
 // - [ ] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
 // - [ ] p2: Correctly lint Import(aPath, aThisTable).
 // - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed

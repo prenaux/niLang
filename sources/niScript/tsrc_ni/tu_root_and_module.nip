@@ -53,3 +53,9 @@ function ::GetAnotherRootName() {
   ::CHECK_EQUAL("weee",mod2.inmodule_string)
   ::CHECK_EQUAL("squirrel",newmod.inmodule_string)
 })
+
+::TEST("root","nativemodule", #() {
+  local nativemodule = ::Import("niLang")
+  ::LINT_CHECK_TYPE("interface_def<iModuleDef>", nativemodule);
+  ::CHECK_EQUAL("niLang",nativemodule.GetName())
+})

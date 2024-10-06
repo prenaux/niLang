@@ -1990,7 +1990,12 @@ struct sLinter {
   SQObjectPtr ImportNative(ain<LintClosure> aClosure, ain<tChars> aModuleName) {
     SQObjectPtr roottable = aClosure._root;
     niPanicAssert(sq_istable(roottable));
-    return DoImportNative(_ss, roottable, _ss._nativeimports_table, _H(aModuleName));
+    niLet ret = DoImportNative(_ss, roottable, _ss._nativeimports_table, _H(aModuleName));
+    if (sqa_getscriptobjtype(ret) != eScriptType_IUnknown) {
+      return ret;
+    }
+
+    return niNew sScriptTypeInterfaceDef(_ss, ni::GetLang()->GetInterfaceDefFromUUID(niGetInterfaceUUID(ni::iModuleDef)));
   }
 
   SQObjectPtr Import(ain<LintClosure> aClosure, ain<tChars> aModuleName) {

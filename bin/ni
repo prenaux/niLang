@@ -12,15 +12,14 @@ cd "$CWD"
 . "$SCRIPT_DIR/ni-bash-setenv.sh" ra
 
 INCLUDE_DIRS=(
-  "$WORK/ham/scripts"
-  "$SCRIPT_DIR/../sources"
   "$SCRIPT_DIR/../scripts"
+  "$SCRIPT_DIR/../sources"
 )
 
 PARAMS=()
 for dir in "${INCLUDE_DIRS[@]}"; do
   if [ -d "$dir" ]; then
-    PARAMS+=("-I" "$dir")
+    PARAMS+=(-I"$dir")
   fi
 done
 

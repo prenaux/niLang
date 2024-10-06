@@ -354,7 +354,7 @@ if (!::gUIContext) {
   }
 
   ///////////////////////////////////////////////
-  function isFullScreen() {
+  function isFullScreen() bool {
     if (::gAppConfig.misc.can_fullscreen) {
       return ::gWindow.full_screen != invalid
     }
@@ -362,20 +362,21 @@ if (!::gUIContext) {
       return false
     }
   }
-  function setFullScreen(abFullScreen) {
+  function setFullScreen(abFullScreen) bool {
     if (!::gAppConfig.misc.can_fullscreen)
       return false
     ::gWindow.full_screen = abFullScreen ? ::gWindow.monitor : invalid
+    return true
   }
-  function toggleFullScreen() {
+  function toggleFullScreen() void {
     setFullScreen(!isFullScreen())
   }
 
   ///////////////////////////////////////////////
-  function queueLoading(aFunc,_aThis) {
+  function queueLoading(aFunc,_aThis) void {
     mLQ.queue(aFunc,_aThis)
   }
-  function queueStartup(aFunc,_aThis) {
+  function queueStartup(aFunc,_aThis) void {
     if (mStartupQueue) {
       if (_aThis) {
         mStartupQueue.append(::closure.new(_aThis,aFunc))

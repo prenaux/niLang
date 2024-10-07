@@ -36,6 +36,7 @@
 // - [ ] p2: lint operators when used with a table types, those should have __SetCanCallMetaMethod(true) & the required metamethods for operator. Particularly the % operator used for .merge()... and that thing needs to go and be removed.
 // - [ ] p2: remove the table % modulo operator that calls .merge
 // - [ ] p2: call all operator metamethods
+// - [ ] p2: metamethods should be named __add__, __invalidate__, __initialize__, etc... so that they are easily distinguishable and are linted correctly as such. __SetCanCallMetaMethod should be taken into account with the lint and/or potentially removed if a neater solution can be found.
 
 // Done:
 // - [x] p1: In the VM the 'this' table should be different from the root table when running and importing modules. That is how the Linter lints and its the less confusing and more correct way of doing things. With Import() returning the this table it allows to do everything we did before, just more cleanly.

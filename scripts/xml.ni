@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-::Import("oo.ni")
 ::Import("sexp.ni")
 ::Import("assert.ni")
 ::Import("fs.ni")

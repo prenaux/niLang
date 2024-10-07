@@ -46,7 +46,6 @@ rule niScript {
   local APPSCRIPT ;
 
   local SCRIPT_INCS =
-    [ niToolkitScriptDirs ham ]
     [ niToolkitScriptDirs niLang ]
   ;
   if $(4) {

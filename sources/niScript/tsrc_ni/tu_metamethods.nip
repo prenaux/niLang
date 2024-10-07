@@ -1,18 +1,25 @@
 ::Import("unittest.ni")
-::Import("oo.ni")
 
-::FIXTURE("oo")
+::FIXTURE("metamethods")
 
 ::my <- {}
 
 ::my.Vec3 <- {
+  // oo.bla
   _x = 0, _y = 0, _z = 0
-  function _initialize(x,y,z) {
+  function _initialize(x,y,z) __this__ {
     ::println("... Vec3's initialized")
-    _x = x
+    // __SetCanCallMetaMethod enables the metamethods like _invalidate, _add, _tostring and _cmp
+    this.__SetCanCallMetaMethod(true)
+   _x = x
     _y = y
     _z = z
+    return this
   }
+  function new(x,y,z) __this__ {
+    return this.Clone()._initialize(x,y,z)
+  }
+
   function _invalidate() {
     ::println("... Vec3 ("+_tostring()+") invalidate")
   }
@@ -26,14 +33,15 @@
     return "MyVec3("+_x+","+_y+","+_z+")"
   }
   function _cmp(b) {
+    if (!("_z" in b)) return 1;
     if (_x != b._x) return b._x-_x;
     if (_y != b._y) return b._y-_y;
     if (_z != b._z) return b._z-_z;
     return 0;
   }
-}.SetDelegate(::oo.base)
+}
 
-::TEST("oo","base",#() {
+::TEST("metamethods","base",#() {
   local x = ::my.Vec3.new(1,2,3)
   local y = ::my.Vec3.new(4,5,6)
   local z = ::my.Vec3.new(5,7,9)
@@ -43,9 +51,10 @@
   ::println("z: " + z)
   ::println("zz: " + zz)
   ::CHECK_EQUAL(z,zz);
+  ::CHECK_EQUAL("MyVec3(1,2,3)",""+x);
 })
 
-::TEST("oo","SetDelegate",#() {
+::TEST("metamethods","SetDelegate",#() {
   local del = { bar = 456 };
   local a = { foo = 123 };
   local b = a.SetDelegate(del);

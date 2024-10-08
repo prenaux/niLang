@@ -5230,6 +5230,8 @@ tBool DoEvaluate(iExpressionContext* apContext)
 
   Ptr<iDataTable> d = dt.ptr();
   for (tU32 i = 1; i < mvOperands.size(); ++i) {
+    if (!d.IsOK()) return eTrue;
+
     Ptr<iExpressionVariable> var = mvOperands[i].GetVariable();
     if (var->GetType() == ni::eExpressionVariableType_Float) {
       d = d->GetChildFromIndex(var->GetFloat());

@@ -16,14 +16,14 @@ namespace ni {
 //! \remark You can use RandSecureGetBytes(&someInt,sizeof(someInt)) to
 //!         detect if a secure entropy source is available.
 //! \remark Panic if they are no secure entropy source available.
-niExportFunc(tI64) ni_prng_get_seed_from_secure_source();
+niExportFunc(tU64) ni_prng_get_seed_from_secure_source();
 //! Generate a seed from a weak time based entropy source.
 //! \remark This is not a secure source of entropy.
-niExportFunc(tI64) ni_prng_get_seed_from_time_source();
+niExportFunc(tU64) ni_prng_get_seed_from_time_source();
 //! Generate a seed from a secure entropy source is possible otherwise fallback
 //! to the time based source.
 //! \remark This is not a secure source of entropy.
-niExportFunc(tI64) ni_prng_get_seed_from_maybe_secure_source();
+niExportFunc(tU64) ni_prng_get_seed_from_maybe_secure_source();
 
 //! Initialize a new PRNG with the specified seed.
 niExportFunc(int4) ni_prng_init(tU64 anSeed);

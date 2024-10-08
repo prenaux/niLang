@@ -101,25 +101,25 @@ namespace ni {
 // This class is neither reentrant nor threadsafe.
 //
 
-niExportFunc(tI64) ni_prng_get_seed_from_time_source() {
-  tI64 seed =
-      ((tI64)(ni::GetLang()->GetCurrentTime()->GetUnixTimeSecs()) << 24) +
-      ((tI64)(ni::GetLang()->TimerInSeconds() * 1e6));
-  seed ^= (tI64)(ni::TimerInSeconds() * 1000) << 16;
-  seed ^= (tI64)(ni::TimerInSeconds() * 1000) << 8;
+niExportFunc(tU64) ni_prng_get_seed_from_time_source() {
+  tU64 seed =
+      ((tU64)(ni::GetLang()->GetCurrentTime()->GetUnixTimeSecs()) << 24) +
+      ((tU64)(ni::GetLang()->TimerInSeconds() * 1e6));
+  seed ^= (tU64)(ni::TimerInSeconds() * 1000) << 16;
+  seed ^= (tU64)(ni::TimerInSeconds() * 1000) << 8;
   return seed;
 }
 
-niExportFunc(tI64) ni_prng_get_seed_from_secure_source() {
-  tI64 seed;
+niExportFunc(tU64) ni_prng_get_seed_from_secure_source() {
+  tU64 seed;
   if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
     niPanicUnreachable("No secure random entropy source.");
   }
   return seed;
 }
 
-niExportFunc(tI64) ni_prng_get_seed_from_maybe_secure_source() {
-  tI64 seed;
+niExportFunc(tU64) ni_prng_get_seed_from_maybe_secure_source() {
+  tU64 seed;
   if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
     return ni_prng_get_seed_from_time_source();
   }

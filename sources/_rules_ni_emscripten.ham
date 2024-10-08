@@ -10,6 +10,7 @@ LINKFLAGS +=
   --pre-js [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_pre.js ] ]
   --post-js [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_post.js ] ]
   --shell-file [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_shell.html ] ]
+  -s USE_WEBGL2=1
   -s WASM_ASYNC_COMPILATION=1
   -s MODULARIZE=1
   -s EXPORT_NAME=createDefaultNiModule

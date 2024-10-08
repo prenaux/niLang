@@ -44,7 +44,7 @@ class cFilePosTracker : public ImplRC<iFileBase,eImplFlags_Default>
   }
   inline tBool __stdcall SeekEnd(tI64 offset) {
     if (mBase->SeekEnd(offset)) {
-      const tSize size = this->GetSize();
+      const tI64 size = this->GetSize();
       mnPos = (offset < size) ? (size - offset) : 0;
       return eTrue;
     }

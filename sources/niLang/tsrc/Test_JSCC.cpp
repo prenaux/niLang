@@ -35,7 +35,7 @@ struct sOpenGLWindowSink : public ImplRC<iMessageHandler> {
   WeakPtr<iOSWindow> _wnd;
 
   sOpenGLWindowSink(iOSWindow* apWnd)
-      : _wnd(apWnd), _threadId(ni::ThreadGetCurrentThreadID())
+    : _wnd(apWnd), _threadId((tU32)ni::ThreadGetCurrentThreadID())
   {}
 
   tU64 __stdcall GetThreadID() const {

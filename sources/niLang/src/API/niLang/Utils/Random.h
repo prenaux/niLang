@@ -154,6 +154,141 @@ inline tU32 RandColor(int4* aPRNG = ni_prng_global()) {
   return RandColorA((tU8)ni::RandIntRange(0,255,aPRNG));
 }
 
+///////////////////////////////////////////////////////////////////////////
+/*!
+ * \class sRandEngineTpl
+ * \brief Random number engine template class wrapping the ni_prng API.
+ *
+ * This class provides random number generation for different types by wrapping the ni_prng API functions.
+ * It requires an explicit seed upon construction. If you don't have a specific seed,
+ * use `ni_prng_get_seed_from_secure_source()` to obtain a secure seed.
+ * Note that this function will panic if there is no secure entropy source available.
+ *
+ * Conforms to the std C++ API in https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine.
+ *
+ * \param TTYPE The type of random numbers to generate (e.g., tI32, tI64, tF32, tBool).
+ */
+template <typename TTYPE>
+struct sRandEngineTpl {
+ public:
+  typedef TTYPE result_type;
+
+  // No empty constructor, you have to specify a seed.
+  sRandEngineTpl() = delete;
+
+  // \remark No default seed value as its unsafe,
+  //         ni_prng_get_seed_from_secure_source() is the best option in
+  //         general.
+  explicit sRandEngineTpl(tU64 anSeed) {
+    this->seed(anSeed);
+  }
+
+  sRandEngineTpl(const sRandEngineTpl& other)
+      : _prng_state(other._prng_state) {}
+
+  sRandEngineTpl& operator = (const sRandEngineTpl& other) {
+    _prng_state = other._prng_state;
+    return *this;
+  }
+
+  void seed(tU64 anSeed) {
+    ni_prng_seed(&_prng_state, anSeed);
+  }
+
+  result_type operator()() {
+    return _next();
+  }
+
+  void discard(tSize aCount) {
+    // TODO: this can probably be done better using ni_prng_next_bytes
+    niLoop(i,aCount) {
+      _next();
+    }
+  }
+
+  static constexpr result_type min() {
+    return ni::TypeMin<result_type>();
+  }
+
+  static constexpr result_type max() {
+    return ni::TypeMax<result_type>();
+  }
+
+  friend bool operator==(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs) {
+    return lhs._prng_state == rhs._prng_state;
+  }
+
+  friend bool operator!=(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs) {
+    return !(lhs == rhs);
+  }
+
+ private:
+  result_type _next();
+  int4 _prng_state;
+};
+
+template <>
+inline tI32 sRandEngineTpl<tI32>::_next() {
+  return ni_prng_next_i32(&_prng_state);
+}
+template <>
+inline tU32 sRandEngineTpl<tU32>::_next() {
+  return (tU32)ni_prng_next_i32(&_prng_state);
+}
+
+template <>
+inline tI64 sRandEngineTpl<tI64>::_next() {
+  return ni_prng_next_i64(&_prng_state);
+}
+template <>
+inline tU64 sRandEngineTpl<tU64>::_next() {
+  return (tU64)ni_prng_next_i64(&_prng_state);
+}
+
+template <>
+inline tF32 sRandEngineTpl<tF32>::_next() {
+  return static_cast<tF32>(ni_prng_next_f64(&_prng_state));
+}
+template <>
+inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::min() {
+  return 0.0f;
+}
+template <>
+inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::max() {
+  return 1.0f;
+}
+
+template <>
+inline tF64 sRandEngineTpl<tF64>::_next() {
+  return ni_prng_next_f64(&_prng_state);
+}
+template <>
+inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::min() {
+  return 0.0;
+}
+template <>
+inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::max() {
+  return 1.0;
+}
+
+template <>
+inline tBool sRandEngineTpl<tBool>::_next() {
+  return ni_prng_next_bool(&_prng_state);
+}
+template <>
+inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::min() {
+  return eFalse;
+}
+template <>
+inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::max() {
+  return eTrue;
+}
+
+typedef sRandEngineTpl<tU32> tRandEngineU32;
+typedef sRandEngineTpl<tU64> tRandEngineU64;
+typedef sRandEngineTpl<tF64> tRandEngineF64;
+typedef sRandEngineTpl<tBool> tRandEngineBool;
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/

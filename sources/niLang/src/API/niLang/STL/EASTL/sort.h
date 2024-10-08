@@ -3,29 +3,29 @@
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
-// This file implements sorting algorithms. Some of these are equivalent to 
-// std C++ sorting algorithms, while others don't have equivalents in the 
+// This file implements sorting algorithms. Some of these are equivalent to
+// std C++ sorting algorithms, while others don't have equivalents in the
 // C++ standard. We implement the following sorting algorithms:
-//    is_sorted             -- 
+//    is_sorted             --
 //    sort                  -- Unstable.    The implementation of this is mapped to quick_sort by default.
 //    quick_sort            -- Unstable.    This is actually an intro-sort (quick sort with switch to insertion sort).
 //    tim_sort              -- Stable.
 //    tim_sort_buffer       -- Stable.
 //    partial_sort          -- Unstable.
-//    insertion_sort        -- Stable. 
+//    insertion_sort        -- Stable.
 //    shell_sort            -- Unstable.
-//    heap_sort             -- Unstable. 
+//    heap_sort             -- Unstable.
 //    stable_sort           -- Stable.      The implementation of this is simply mapped to merge_sort.
-//    merge                 -- 
-//    merge_sort            -- Stable. 
-//    merge_sort_buffer     -- Stable. 
+//    merge                 --
+//    merge_sort            -- Stable.
+//    merge_sort_buffer     -- Stable.
 //    nth_element           -- Unstable.
 //    radix_sort            -- Stable.      Important and useful sort for integral data, and faster than all others for this.
 //    comb_sort             -- Unstable.    Possibly the best combination of small code size but fast sort.
 //    bubble_sort           -- Stable.      Useful in practice for sorting tiny sets of data (<= 10 elements).
 //    selection_sort*       -- Unstable.
 //    shaker_sort*          -- Stable.
-//    bucket_sort*          -- Stable. 
+//    bucket_sort*          -- Stable.
 //
 // * Found in sort_extra.h.
 //
@@ -49,8 +49,7 @@
 #include "functional.h"
 #include "heap.h"
 #include "allocator.h"
-#include "memory.h"
-
+#include "../bit.h"
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
 	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
@@ -77,7 +76,7 @@ namespace eastl
 	///
 	/// Returns true if the range [first, last) is sorted.
 	/// An empty range is considered to be sorted.
-	/// To test if a range is reverse-sorted, use 'greater' as the comparison 
+	/// To test if a range is reverse-sorted, use 'greater' as the comparison
 	/// instead of 'less'.
 	///
 	/// Example usage:
@@ -218,7 +217,7 @@ namespace eastl
 
 	/// insertion_sort
 	///
-	/// Since insertion_sort requires that the data be addressed with a BidirectionalIterator and 
+	/// Since insertion_sort requires that the data be addressed with a BidirectionalIterator and
 	/// not the more flexible RandomAccessIterator, we implement the sort by doing a for loop within
 	/// a for loop. If we were to specialize this for a RandomAccessIterator, we could replace the
 	/// inner for loop with a call to upper_bound, which would be faster.
@@ -239,7 +238,7 @@ namespace eastl
 				iNext = iCurrent = iSorted;
 
 				// Note: The following loop has a problem: it can decrement iCurrent to before 'first'.
-				// It doesn't dereference the iterator, but std STL disallows that operation. This isn't 
+				// It doesn't dereference the iterator, but std STL disallows that operation. This isn't
 				// a problem for EASTL containers and ranges, as they support a single decrement of first,
 				// but std STL iterators may have a problem with it. Dinkumware STL, for example, will assert.
 				// To do: Fix this loop to not decrement like so.
@@ -271,7 +270,7 @@ namespace eastl
 				iNext = iCurrent = iSorted;
 
 				// Note: The following loop has a problem: it can decrement iCurrent to before 'first'.
-				// It doesn't dereference the iterator, but std STL disallows that operation. This isn't 
+				// It doesn't dereference the iterator, but std STL disallows that operation. This isn't
 				// a problem for EASTL containers and ranges, as they support a single decrement of first,
 				// but std STL iterators may have a problem with it. Dinkumware STL, for example, will assert.
 				// To do: Fix this loop to not decrement like so.
@@ -359,7 +358,7 @@ namespace eastl
 
 	/// shell_sort
 	///
-	/// Implements the ShellSort algorithm. This algorithm is a serious algorithm for larger 
+	/// Implements the ShellSort algorithm. This algorithm is a serious algorithm for larger
 	/// data sets, as reported by Sedgewick in his discussions on QuickSort. Note that shell_sort
 	/// requires a random access iterator, which usually means an array (eg. vector, deque).
 	/// ShellSort has good performance with presorted sequences.
@@ -372,10 +371,10 @@ namespace eastl
 	{
 		typedef typename eastl::iterator_traits<RandomAccessIterator>::difference_type difference_type;
 
-		// We use the Knuth 'h' sequence below, as it is easy to calculate at runtime. 
+		// We use the Knuth 'h' sequence below, as it is easy to calculate at runtime.
 		// However, possibly we are better off using a different sequence based on a table.
 		// One such sequence which averages slightly better than Knuth is:
-		//    1, 5, 19, 41, 109, 209, 505, 929, 2161, 3905, 8929, 16001, 36289, 
+		//    1, 5, 19, 41, 109, 209, 505, 929, 2161, 3905, 8929, 16001, 36289,
 		//    64769, 146305, 260609, 587521, 1045505, 2354689, 4188161, 9427969, 16764929
 
 		if(first != last)
@@ -385,7 +384,7 @@ namespace eastl
 			difference_type      nSpace = 1; // nSpace is the 'h' value of the ShellSort algorithm.
 
 			while(nSpace < nSize)
-				nSpace = (nSpace * 3) + 1; // This is the Knuth 'h' sequence: 1, 4, 13, 40, 121, 364, 1093, 3280, 9841, 29524, 88573, 265720, 797161, 2391484, 7174453, 21523360, 64570081, 193710244, 
+				nSpace = (nSpace * 3) + 1; // This is the Knuth 'h' sequence: 1, 4, 13, 40, 121, 364, 1093, 3280, 9841, 29524, 88573, 265720, 797161, 2391484, 7174453, 21523360, 64570081, 193710244,
 
 			for(nSpace = (nSpace - 1) / 3; nSpace >= 1; nSpace = (nSpace - 1) / 3)  // Integer division is less than ideal.
 			{
@@ -396,7 +395,7 @@ namespace eastl
 					for(iSorted = iInsertFirst + nSpace; iSorted < last; iSorted += nSpace)
 					{
 						iBack = iCurrent = iSorted;
-						
+
 						for(iBack -= nSpace; (iCurrent != iInsertFirst) && compare(*iCurrent, *iBack); iCurrent = iBack, iBack -= nSpace)
 						{
 							EASTL_VALIDATE_COMPARE(!compare(*iBack, *iCurrent)); // Validate that the compare function is sane.
@@ -420,8 +419,8 @@ namespace eastl
 
 	/// heap_sort
 	///
-	/// Implements the HeapSort algorithm. 
-	/// Note that heap_sort requires a random access iterator, which usually means 
+	/// Implements the HeapSort algorithm.
+	/// Note that heap_sort requires a random access iterator, which usually means
 	/// an array (eg. vector, deque).
 	///
 	template <typename RandomAccessIterator, typename StrictWeakOrdering>
@@ -481,7 +480,7 @@ namespace eastl
 	///
 	/// Implements the MergeSort algorithm with a user-supplied buffer.
 	/// The input buffer must be able to hold a number of items equal to 'last - first'.
-	/// Note that merge_sort_buffer requires a random access iterator, which usually means 
+	/// Note that merge_sort_buffer requires a random access iterator, which usually means
 	/// an array (eg. vector, deque).
 	///
 	/// The algorithm used for merge sort is not the standard merge sort.  It has been modified
@@ -521,7 +520,7 @@ namespace eastl
 		//
 		// This sort routine sorts the data in [first, last) and places the result in pBuffer or in the original range of the input.  The actual
 		// location of the data is indicated by the enum returned.
-		// 
+		//
 		// lastSortedEnd is used to specify a that data in the range [first, first + lastSortedEnd] is already sorted.  This information is used
 		// to avoid unnecessary merge sorting of already sorted data.  lastSortedEnd is a hint, and can be an under estimate of the sorted elements
 		// (i.e. it is legal to pass 0).
@@ -634,9 +633,9 @@ namespace eastl
 	/// Implements the MergeSort algorithm.
 	/// This algorithm allocates memory via the user-supplied allocator. Use merge_sort_buffer
 	/// function if you want a version which doesn't allocate memory.
-	/// Note that merge_sort requires a random access iterator, which usually means 
+	/// Note that merge_sort requires a random access iterator, which usually means
 	/// an array (eg. vector, deque).
-	/// 
+	///
 	template <typename RandomAccessIterator, typename Allocator, typename StrictWeakOrdering>
 	void merge_sort(RandomAccessIterator first, RandomAccessIterator last, Allocator& allocator, StrictWeakOrdering compare)
 	{
@@ -672,25 +671,25 @@ namespace eastl
 	/// partition
 	///
 	/// Implements the partition algorithm.
-	/// Rearranges the elements in the range [first, last), in such a way that all the elements 
-	/// for which pred returns true precede all those for which it returns false. The iterator 
+	/// Rearranges the elements in the range [first, last), in such a way that all the elements
+	/// for which pred returns true precede all those for which it returns false. The iterator
 	/// returned points to the first element of the second group.
-	/// The relative ordering within each group is not necessarily the same as before the call. 
-	/// See function stable_partition for a function with a similar behavior and stability in 
+	/// The relative ordering within each group is not necessarily the same as before the call.
+	/// See function stable_partition for a function with a similar behavior and stability in
 	/// the ordering.
-	/// 
-	/// To do: Implement a version that uses a faster BidirectionalIterator algorithm for the 
+	///
+	/// To do: Implement a version that uses a faster BidirectionalIterator algorithm for the
 	///        case that the iterator range is a bidirectional iterator instead of just an
 	///        input iterator (one direction).
 	///
 	template<typename InputIterator, typename Predicate>
 	InputIterator partition(InputIterator begin, InputIterator end, Predicate predicate)
 	{
-		if(begin != end) 
+		if(begin != end)
 		{
 			while(predicate(*begin))
 			{
-				if(++begin == end) 
+				if(++begin == end)
 					return begin;
 			}
 
@@ -719,7 +718,7 @@ namespace eastl
 	// many articles on quick sort, but briefly what it does is a median-
 	// of-three quick sort whereby the recursion depth is limited to a
 	// some value (after which it gives up on quick sort and switches to
-	// a heap sort) and whereby after a certain amount of sorting the 
+	// a heap sort) and whereby after a certain amount of sorting the
 	// algorithm stops doing quick-sort and finishes the sorting via
 	// a simple insertion sort.
 	/////////////////////////////////////////////////////////////////////
@@ -748,7 +747,7 @@ namespace eastl
 		//     float    f;
 		//     uint32_t i;
 		// };
-		// 
+		//
 		// inline uint32_t Log2(uint32_t x)
 		// {
 		//     const FloatInt32Union u = { x };
@@ -826,7 +825,7 @@ namespace eastl
 		}
 	}
 
-	template <typename RandomAccessIterator, typename T, typename Compare> 
+	template <typename RandomAccessIterator, typename T, typename Compare>
 	inline RandomAccessIterator get_partition(RandomAccessIterator first, RandomAccessIterator last, const T& pivotValue, Compare compare)
 	{
 		const T pivotCopy(pivotValue); // Need to make a temporary because the sequence below is mutating.
@@ -843,10 +842,10 @@ namespace eastl
 
 	namespace Internal
 	{
-		// This function is used by quick_sort and is not intended to be used by itself. 
+		// This function is used by quick_sort and is not intended to be used by itself.
 		// This is because the implementation below makes an assumption about the input
 		// data that quick_sort satisfies but arbitrary data may not.
-		// There is a standalone insertion_sort function. 
+		// There is a standalone insertion_sort function.
 		template <typename RandomAccessIterator>
 		inline void insertion_sort_simple(RandomAccessIterator first, RandomAccessIterator last)
 		{
@@ -868,10 +867,10 @@ namespace eastl
 		}
 
 
-		// This function is used by quick_sort and is not intended to be used by itself. 
+		// This function is used by quick_sort and is not intended to be used by itself.
 		// This is because the implementation below makes an assumption about the input
 		// data that quick_sort satisfies but arbitrary data may not.
-		// There is a standalone insertion_sort function. 
+		// There is a standalone insertion_sort function.
 		template <typename RandomAccessIterator, typename Compare>
 		inline void insertion_sort_simple(RandomAccessIterator first, RandomAccessIterator last, Compare compare)
 		{
@@ -1069,16 +1068,16 @@ namespace eastl
 	/// quick_sort
 	///
 	/// This is an unstable sort.
-	/// quick_sort sorts the elements in [first, last) into ascending order, 
-	/// meaning that if i and j are any two valid iterators in [first, last) 
-	/// such that i precedes j, then *j is not less than *i. quick_sort is not 
-	/// guaranteed to be stable. That is, suppose that *i and *j are equivalent: 
-	/// neither one is less than the other. It is not guaranteed that the 
+	/// quick_sort sorts the elements in [first, last) into ascending order,
+	/// meaning that if i and j are any two valid iterators in [first, last)
+	/// such that i precedes j, then *j is not less than *i. quick_sort is not
+	/// guaranteed to be stable. That is, suppose that *i and *j are equivalent:
+	/// neither one is less than the other. It is not guaranteed that the
 	/// relative order of these two elements will be preserved by sort.
 	///
-	/// We implement the "introspective" variation of quick-sort. This is 
-	/// considered to be the best general-purpose variant, as it avoids 
-	/// worst-case behaviour and optimizes the final sorting stage by 
+	/// We implement the "introspective" variation of quick-sort. This is
+	/// considered to be the best general-purpose variant, as it avoids
+	/// worst-case behaviour and optimizes the final sorting stage by
 	/// switching to an insertion sort.
 	///
 	template <typename RandomAccessIterator>
@@ -1127,7 +1126,7 @@ namespace eastl
 	{
 		// Portions of the tim_sort code were originally written by Christopher Swenson.
 		// https://github.com/swenson/sort
-		// All code in this repository, unless otherwise specified, is hereby licensed under the 
+		// All code in this repository, unless otherwise specified, is hereby licensed under the
 		// MIT Public License: Copyright (c) 2010 Christopher Swenson
 
 		const intptr_t kTimSortStackSize = 64; // Question: What's the upper-limit size requirement for this?
@@ -1137,56 +1136,6 @@ namespace eastl
 			intptr_t start;
 			intptr_t length;
 		};
-
-
-		// EASTL_COUNT_LEADING_ZEROES
-		//
-		// Count leading zeroes in an integer.
-		//
-		#ifndef EASTL_COUNT_LEADING_ZEROES
-			#if   defined(__GNUC__)
-				#if (EA_PLATFORM_PTR_SIZE == 8)
-					#define EASTL_COUNT_LEADING_ZEROES __builtin_clzll
-				#else
-					#define EASTL_COUNT_LEADING_ZEROES __builtin_clz
-				#endif
-			#endif
-
-			#ifndef EASTL_COUNT_LEADING_ZEROES
-				static inline int eastl_count_leading_zeroes(uint64_t x)
-				{
-					if(x)
-					{
-						int n = 0;
-						if(x & UINT64_C(0xFFFFFFFF00000000)) { n += 32; x >>= 32; }
-						if(x & 0xFFFF0000)                   { n += 16; x >>= 16; }
-						if(x & 0xFFFFFF00)                   { n +=  8; x >>=  8; }
-						if(x & 0xFFFFFFF0)                   { n +=  4; x >>=  4; }
-						if(x & 0xFFFFFFFC)                   { n +=  2; x >>=  2; }
-						if(x & 0xFFFFFFFE)                   { n +=  1;           }
-						return 63 - n;
-					}
-					return 64;
-				}
-
-				static inline int eastl_count_leading_zeroes(uint32_t x)
-				{
-					if(x)
-					{
-						int n = 0;
-						if(x <= 0x0000FFFF) { n += 16; x <<= 16; }
-						if(x <= 0x00FFFFFF) { n +=  8; x <<=  8; }
-						if(x <= 0x0FFFFFFF) { n +=  4; x <<=  4; }
-						if(x <= 0x3FFFFFFF) { n +=  2; x <<=  2; }
-						if(x <= 0x7FFFFFFF) { n +=  1;           }
-						return n;
-					}
-					return 32;
-				}
-
-				#define EASTL_COUNT_LEADING_ZEROES eastl_count_leading_zeroes
-			#endif
-		#endif
 
 
 		// reverse_elements
@@ -1217,7 +1166,7 @@ namespace eastl
 			if((size - start) > 1) // If there is anything in the set...
 			{
 				intptr_t curr = (start + 2);
-				
+
 				if(!compare(*(first + start + 1), *(first + start))) // If (first[start + 1] >= first[start]) (If the run is increasing) ...
 				{
 					for(;; ++curr)
@@ -1237,7 +1186,7 @@ namespace eastl
 							break;
 
 						if(!compare(*(first + curr), *(first + curr - 1)))  // If this item is not in order... this run is done.
-							break;                                          // Note that we intentionally compare against <= 0 and not just < 0. This is because 
+							break;                                          // Note that we intentionally compare against <= 0 and not just < 0. This is because
 					}                                                       // The reverse_elements call below could reverse two equal elements and break our stability requirement.
 
 					reverse_elements(first, start, curr - 1);
@@ -1246,7 +1195,7 @@ namespace eastl
 				return (curr - start);
 			}
 
-			// Else we have just one item in the set.       
+			// Else we have just one item in the set.
 			return 1;
 		}
 
@@ -1278,7 +1227,7 @@ namespace eastl
 		//
 		static inline intptr_t timsort_compute_minrun(intptr_t size)
 		{
-			const int32_t  top_bit = (int32_t)((sizeof(intptr_t) * 8) - EASTL_COUNT_LEADING_ZEROES((uintptr_t)size));
+			const int32_t  top_bit = (int32_t)((sizeof(intptr_t) * 8) - astl::_CountLeadingZeros((uintptr_t)size));
 			const int32_t  shift   = (top_bit > 6) ? (top_bit - 6) : 0;
 			const intptr_t mask    = (intptr_t(1) << shift) - 1;
 				  intptr_t minrun  = (intptr_t)(size >> shift);
@@ -1291,7 +1240,7 @@ namespace eastl
 
 
 		template <typename RandomAccessIterator, typename T, typename StrictWeakOrdering>
-		void tim_sort_merge(RandomAccessIterator first, const tim_sort_run* run_stack, const intptr_t stack_curr, 
+		void tim_sort_merge(RandomAccessIterator first, const tim_sort_run* run_stack, const intptr_t stack_curr,
 							T* pBuffer, StrictWeakOrdering compare)
 		{
 			const intptr_t A    = run_stack[stack_curr - 2].length;
@@ -1314,7 +1263,7 @@ namespace eastl
 
 				intptr_t i = 0;
 				intptr_t j = curr + A;
-				
+
 				for(intptr_t k = curr; k < curr + A + B; k++)
 				{
 					if((i < A) && (j < (curr + A + B)))
@@ -1336,7 +1285,7 @@ namespace eastl
 
 				intptr_t i = B - 1;
 				intptr_t j = curr + A - 1;
-				
+
 				for(intptr_t k = curr + A + B - 1; k >= curr; k--)
 				{
 					if((i >= 0) && (j >= curr))
@@ -1359,7 +1308,7 @@ namespace eastl
 		//
 		// ------------------------------------------------------------------------
 		// What turned out to be a good compromise maintains two invariants on the
-		// stack entries, where A, B and C are the lengths of the three righmost 
+		// stack entries, where A, B and C are the lengths of the three righmost
 		// not-yet merged slices:
 		//    1.  A > B+C
 		//    2.  B > C
@@ -1395,7 +1344,7 @@ namespace eastl
 
 
 		template <typename RandomAccessIterator, typename T, typename StrictWeakOrdering>
-		intptr_t tim_sort_collapse(RandomAccessIterator first, tim_sort_run* run_stack, intptr_t stack_curr, 
+		intptr_t tim_sort_collapse(RandomAccessIterator first, tim_sort_run* run_stack, intptr_t stack_curr,
 								   T* pBuffer, const intptr_t size, StrictWeakOrdering compare)
 		{
 			// If the run_stack only has one thing on it, we are done with the collapse.
@@ -1433,7 +1382,7 @@ namespace eastl
 				const intptr_t A = run_stack[stack_curr - 3].length;
 				const intptr_t B = run_stack[stack_curr - 2].length;
 				const intptr_t C = run_stack[stack_curr - 1].length;
-				
+
 				if(A <= (B + C)) // Check first invariant.
 				{
 					if(A < C)
@@ -1488,7 +1437,7 @@ namespace eastl
 		// Return true if the sort is done.
 		//
 		template <typename RandomAccessIterator, typename T, typename StrictWeakOrdering>
-		bool tim_sort_add_run(tim_sort_run* run_stack, RandomAccessIterator first, T* pBuffer, const intptr_t size, const intptr_t minrun, 
+		bool tim_sort_add_run(tim_sort_run* run_stack, RandomAccessIterator first, T* pBuffer, const intptr_t size, const intptr_t minrun,
 							  intptr_t& len, intptr_t& run, intptr_t& curr, intptr_t& stack_curr, StrictWeakOrdering compare)
 		{
 			len = tim_sort_count_run<RandomAccessIterator, StrictWeakOrdering>(first, curr, size, compare); // This will count the length of the run and reverse the run if it is backwards.
@@ -1548,8 +1497,8 @@ namespace eastl
 	// Implements the tim-sort sorting algorithm with a user-provided scratch buffer.
 	// http://en.wikipedia.org/wiki/Timsort
 	// This sort is the fastest sort when sort stability (maintaining order of equal values) is required and
-	// data sets are non-trivial (size >= 15). It's also the fastest sort (e.g. faster than quick_sort) for 
-	// the case that at at least half your data is already sorted. Otherwise, eastl::quick_sort is about 10% 
+	// data sets are non-trivial (size >= 15). It's also the fastest sort (e.g. faster than quick_sort) for
+	// the case that at at least half your data is already sorted. Otherwise, eastl::quick_sort is about 10%
 	// faster than tim_sort_buffer but is not a stable sort. There are some reports that tim_sort outperforms
 	// quick_sort but most of these aren't taking into account that optimal quick_sort implementations use
 	// a hybrid approach called "introsort" (http://en.wikipedia.org/wiki/Introsort) which improves quick_sort
@@ -1637,7 +1586,7 @@ namespace eastl
 	/// See http://en.wikipedia.org/wiki/Radix_sort.
 	/// This sort requires that the sorted data be of a type that has a member
 	/// radix_type typedef and an mKey member of that type. The type must be
-	/// an integral type. This limits what can be sorted, but radix_sort is 
+	/// an integral type. This limits what can be sorted, but radix_sort is
 	/// very fast -- typically faster than any other sort.
 	/// For example:
 	///     struct Sortable {
@@ -1651,7 +1600,7 @@ namespace eastl
 	///         typedef Integer radix_type;
 	///         Integer mKey;
 	///     };
-	/// 
+	///
 	/// Example usage:
 	///     struct Element {
 	///         typedef uint16_t radix_type;
@@ -1670,8 +1619,8 @@ namespace eastl
 	{
 		/// extract_radix_key
 		///
-		/// Default radix sort integer value reader. It expects the sorted elements 
-		/// to have an integer member of type radix_type and of name "mKey". 
+		/// Default radix sort integer value reader. It expects the sorted elements
+		/// to have an integer member of type radix_type and of name "mKey".
 		///
 		template <typename Node>
 		struct extract_radix_key
@@ -1798,7 +1747,7 @@ namespace eastl
 	/// comb_sort
 	///
 	/// This is an unstable sort.
-	/// Implements the CombSort algorithm; in particular, implements the CombSort11 variation 
+	/// Implements the CombSort algorithm; in particular, implements the CombSort11 variation
 	/// of the CombSort algorithm, based on the reference to '11' in the implementation.
 	///
 	/// To consider: Use a comb sort table instead of the '((nSpace * 10) + 3) / 13' expression.
@@ -1822,7 +1771,7 @@ namespace eastl
 
 			iCurrent = iNext = first;
 			eastl::advance(iNext, nSpace);
-			
+
 			for(bSwapped = false; iNext != last; iCurrent++, iNext++)
 			{
 				if(compare(*iNext, *iCurrent))
@@ -1849,7 +1798,7 @@ namespace eastl
 	/// bubble_sort
 	///
 	/// This is a stable sort.
-	/// Implements the BubbleSort algorithm. This algorithm is only useful for 
+	/// Implements the BubbleSort algorithm. This algorithm is only useful for
 	/// small range sizes, such as 10 or less items. You may be better off using
 	/// insertion_sort for cases where bubble_sort works.
 	///
@@ -1863,8 +1812,8 @@ namespace eastl
 			while(first != last)
 			{
 				iNext = iCurrent = first;
-				
-				for(++iNext; iNext != last; iCurrent = iNext, ++iNext) 
+
+				for(++iNext; iNext != last; iCurrent = iNext, ++iNext)
 				{
 					if(compare(*iNext, *iCurrent))
 					{
@@ -1888,7 +1837,7 @@ namespace eastl
 				while(first != last)
 				{
 					iLastModified = iNext = iCurrent = first;
-					
+
 					for(++iNext; iCurrent != last; iCurrent = iNext, ++iNext)
 					{
 						if(compare(*iNext, *iCurrent))
@@ -1925,14 +1874,14 @@ namespace eastl
 
 
 	/// sort
-	/// 
+	///
 	/// We use quick_sort by default. See quick_sort for details.
 	///
 	/// EASTL_DEFAULT_SORT_FUNCTION
 	/// If a default sort function is specified then call it, otherwise use EASTL's default quick_sort.
 	/// EASTL_DEFAULT_SORT_FUNCTION must be namespace-qualified and include any necessary template
-	/// parameters (e.g. eastl::comb_sort instead of just comb_sort), and it must be visible to this code. 
-	/// The EASTL_DEFAULT_SORT_FUNCTION must be provided in two versions: 
+	/// parameters (e.g. eastl::comb_sort instead of just comb_sort), and it must be visible to this code.
+	/// The EASTL_DEFAULT_SORT_FUNCTION must be provided in two versions:
 	///     template <typename RandomAccessIterator>
 	///     void EASTL_DEFAULT_SORT_FUNCTION(RandomAccessIterator first, RandomAccessIterator last);
 	///
@@ -1962,21 +1911,21 @@ namespace eastl
 
 
 	/// stable_sort
-	/// 
+	///
 	/// We use merge_sort by default. See merge_sort for details.
-	/// Beware that the used merge_sort -- and thus stable_sort -- allocates 
+	/// Beware that the used merge_sort -- and thus stable_sort -- allocates
 	/// memory during execution. Try using merge_sort_buffer if you want
 	/// to avoid memory allocation.
 	///
 	/// EASTL_DEFAULT_STABLE_SORT_FUNCTION
 	/// If a default sort function is specified then call it, otherwise use EASTL's default merge_sort.
 	/// EASTL_DEFAULT_STABLE_SORT_FUNCTION must be namespace-qualified and include any necessary template
-	/// parameters (e.g. eastl::tim_sort instead of just tim_sort), and it must be visible to this code. 
+	/// parameters (e.g. eastl::tim_sort instead of just tim_sort), and it must be visible to this code.
 	/// The EASTL_DEFAULT_STABLE_SORT_FUNCTION must be provided in three versions, though the third
-	/// allocation implementation may choose to ignore the allocator parameter: 
+	/// allocation implementation may choose to ignore the allocator parameter:
 	///     template <typename RandomAccessIterator, typename StrictWeakOrdering>
 	///     void EASTL_DEFAULT_STABLE_SORT_FUNCTION(RandomAccessIterator first, RandomAccessIterator last, StrictWeakOrdering compare);
-	///     
+	///
 	///     template <typename RandomAccessIterator>
 	///     void EASTL_DEFAULT_STABLE_SORT_FUNCTION(RandomAccessIterator first, RandomAccessIterator last);
 	///
@@ -2015,7 +1964,7 @@ namespace eastl
 		#endif
 	}
 
-	// This is not defined because it would cause compiler errors due to conflicts with a version above. 
+	// This is not defined because it would cause compiler errors due to conflicts with a version above.
 	//template <typename RandomAccessIterator, typename Allocator>
 	//void stable_sort(RandomAccessIterator first, RandomAccessIterator last, Allocator& allocator)
 	//{
@@ -2029,10 +1978,10 @@ namespace eastl
 
 
 
-	/* 
-	// Something to consider adding: An eastl sort which uses qsort underneath. 
+	/*
+	// Something to consider adding: An eastl sort which uses qsort underneath.
 	// The primary purpose of this is to have an eastl interface for sorting which
-	// results in very little code generation, since all instances map to the 
+	// results in very little code generation, since all instances map to the
 	// C qsort function.
 
 	template <typename T>
@@ -2058,6 +2007,3 @@ namespace eastl
 
 
 #endif // Header include guard
-
-
-

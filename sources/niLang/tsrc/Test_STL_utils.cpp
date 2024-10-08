@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <niLang/STL/bit.h>
 #include <niLang/STL/utils.h>
 #include <niLang/STL/type_traits.h>
 #include <niLang/STL/array.h>

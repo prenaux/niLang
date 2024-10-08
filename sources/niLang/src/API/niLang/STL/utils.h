@@ -59,6 +59,8 @@ using eastl::equal;
 using eastl::identical;
 using eastl::search;
 using eastl::count_if;
+using eastl::any_of;
+using eastl::is_permutation;
 
 template <typename T>
 struct hash_cast {

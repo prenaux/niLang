@@ -107,22 +107,25 @@ niExportFunc(tU64) ni_prng_get_seed_from_time_source() {
       ((tU64)(ni::GetLang()->TimerInSeconds() * 1e6));
   seed ^= (tU64)(ni::TimerInSeconds() * 1000) << 16;
   seed ^= (tU64)(ni::TimerInSeconds() * 1000) << 8;
+  niPanicAssert(seed != 0);
   return seed;
 }
 
 niExportFunc(tU64) ni_prng_get_seed_from_secure_source() {
-  tU64 seed;
+  tU64 seed {0};
   if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
     niPanicUnreachable("No secure random entropy source.");
   }
+  niPanicAssert(seed != 0);
   return seed;
 }
 
 niExportFunc(tU64) ni_prng_get_seed_from_maybe_secure_source() {
-  tU64 seed;
+  tU64 seed {0};
   if (!RandSecureGetBytes((tPtr)(&seed), sizeof(seed))) {
     return ni_prng_get_seed_from_time_source();
   }
+  niPanicAssert(seed != 0);
   return seed;
 }
 

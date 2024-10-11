@@ -32,11 +32,10 @@ if [ "$SHADER_COMPILE" = "1" ]; then
 else
   unset SHADER_COMPILE
   log_info "No shader compilation."
-  toolset_import_list "repos" cppm boost_cppm thrift_cppm || return 1
 fi
 
 # C++ toolsets
-TOOLSET_LIST+=(cppm boost_cppm thrift_cppm)
+TOOLSET_LIST+=(cppm)
 
 # Done, import our toolsets...
 toolset_import_list "${TOOLSET_LIST[@]}" || return 1

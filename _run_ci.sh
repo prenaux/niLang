@@ -10,14 +10,13 @@ export BUILD=${BUILD:-ra}
  ham pass1 all)
 
 if [[ "${GITHUB_ACTIONS}" == "true" ]]; then
-    echo "I/Running in GITHUB_ACTIONS..."
-    (set -ex ;
-     ham Run_Test_niLang ;
-     ham Run_Test_niCURL ;
-     ham Run_Test_niScript_ni ;
-     ham Run_Test_niScriptCpp ;
-     ham Run_Test_niThrift)
+  echo "I/Running in GITHUB_ACTIONS..."
+  (set -ex ;
+   ham Run_Test_niLang ;
+   ham Run_Test_niCURL ;
+   ham Run_Test_niScript_ni ;
+   ham Run_Test_niScriptCpp)
 else
-    echo "I/Running full CI..."
-    (set -ex ; time ham -- -j1 Run_ci)
+  echo "I/Running full CI..."
+  (set -ex ; time ham -- -j1 Run_ci)
 fi

@@ -3,10 +3,19 @@
 
 #include "Lang.h"
 
-#if !defined __JSCC__
-#define niUseStdHighResolutionClock
-#endif
-
+//
+// While this would be nice <chrono> is a cursed dependency its the first
+// thing that breaks when there's any issue with the C++ compiler. And yes
+// this is a lot more common that we'd want, you use Clang, but it wants to
+// use gcc's stdlib? better hope the versions (and stars) are aligned - for
+// example it'll pick what it thinks is the latest version on your machine but
+// you might not know that another program/library installed a more recent GCC
+// version than the GCC version you actually use and expect...
+//
+// #if !defined __JSCC__
+// #define niUseStdHighResolutionClock
+// #endif
+//
 #if defined niUseStdHighResolutionClock
 
 #include <chrono>
@@ -56,12 +65,43 @@ niExportFunc(tF64) TimerInSeconds() {
 //--------------------------------------------------------------------------------------------
 #elif defined niPosix
 
+#include <time.h>
 #include <unistd.h>
 #include <sys/time.h>
+#if 0
+#include "API/niLang/STL/run_once.h"
+#endif
 
 namespace ni {
 
 niExportFunc(tF64) TimerInSeconds() {
+  static const bool clock_gettime_available = []() {
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }();
+
+#if 0
+  niRunOnce {
+    if (clock_gettime_available) {
+      niLog(Info, "TimerInSeconds: using clock_gettime with CLOCK_MONOTONIC.");
+    }
+    else {
+      niLog(Info, "TimerInSeconds: using gettimeofday (CLOCK_MONOTONIC not available).");
+    }
+  };
+#endif
+
+  if (clock_gettime_available) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (tF64)ts.tv_sec + (tF64)ts.tv_nsec / 1e9;
+  }
+
   struct timeval currentTime;
   gettimeofday(&currentTime, 0);
   tU64 const dsecs = currentTime.tv_sec;

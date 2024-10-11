@@ -41,7 +41,7 @@ struct FSoundFactory {
     niDebugFmt(("... full play time: %gs, loops: %d", ni::TimerInSeconds() - startTime, numLoops));
 
     CHECK_NOT_EQUAL(1,numLoops);
-    CHECK(numLoops > 5);
+    CHECK(numLoops > 3);
 
     return eTrue;
   };

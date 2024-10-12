@@ -28,6 +28,7 @@ if $(FEATURES) >= 15 {
   ### PCRE ###
   SRC_EXTRA += [ tkPkgSrcSubDir pcre ] ;
 }
+ObjectDefines $(SRC_EXTRA) : MBEDTLS_ECP_RESTARTABLE ;
 
 IDLS = [ niBuildModuleDef ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;

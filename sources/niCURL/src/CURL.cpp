@@ -19,6 +19,7 @@
 #include "curl/curl.h"
 #elif defined niJSCC
 #include <emscripten/fetch.h>
+#include <emscripten.h>
 #else
 #error "Unsupported platform for CURL implementation."
 #endif

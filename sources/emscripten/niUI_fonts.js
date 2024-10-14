@@ -15,7 +15,6 @@ NIAPP_FSMODULES['niUI_fonts'] = function FS_niUI_fonts() {
     "fonts/Roboto-Bold.ttf",
     "fonts/Roboto-BoldItalic.ttf",
     "fonts/Roboto-Italic.ttf",
-    "fonts/Roboto-Regular.ttf",
     "fonts/fab-400.otf",
     "fonts/far-400.otf",
     "fonts/fas-900.otf",

@@ -234,6 +234,11 @@
       ::lang.dataTableFromString(aXML), aParent, "", "")
   }
 
+  function createBaseWidgetSink(aSink)
+  {
+    return aSink.SetDelegate(::gui.baseWidgetSink)
+  }
+
   function createDummy(aCtx,aParent,aRect)
   {
     return ::gui.createWidget(aCtx,"Dummy",aParent,aRect,"",0)

@@ -623,13 +623,16 @@ local __lint = {
   }
 
   ///////////////////////////////////////////////
-  function implements(obj,string interface) bool {
+  function implements(obj,string interface) iUnknown {
     switch (typeof(obj)) {
       case "iunknown": {
-        return (obj.QueryInterface(interface) != null);
+        local qi = obj.QueryInterface(interface);
+        if (qi != null)
+          return qi;
+        return qi;
       }
     }
-    return false
+    return ::LINT_AS_TYPE("iUnknown", null);
   }
 
   ///////////////////////////////////////////////

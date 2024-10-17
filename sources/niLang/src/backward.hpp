@@ -356,12 +356,6 @@
 
 #include <basetsd.h>
 
-#ifdef _WIN64
-typedef SSIZE_T ssize_t;
-#else
-typedef int ssize_t;
-#endif
-
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
@@ -839,7 +833,7 @@ public:
 
 private:
   F *_f;
-  ssize_t _index;
+  ni::tOffset _index;
   size_t _depth;
 
   static _Unwind_Reason_Code backtrace_trampoline(_Unwind_Context *ctx,
@@ -1320,7 +1314,7 @@ private:
     path.resize(100);
 
     while (true) {
-      ssize_t len =
+      ni::tOffset len =
           ::readlink(symlink_path.c_str(), &*path.begin(), path.size());
       if (len < 0) {
         return "";
@@ -1627,9 +1621,9 @@ private:
       return r; // that's what happen when you forget to compile in debug.
     }
 
-    ssize_t symtab_storage_size = bfd_get_symtab_upper_bound(bfd_handle.get());
+    ni::tOffset symtab_storage_size = bfd_get_symtab_upper_bound(bfd_handle.get());
 
-    ssize_t dyn_symtab_storage_size =
+    ni::tOffset dyn_symtab_storage_size =
         bfd_get_dynamic_symtab_upper_bound(bfd_handle.get());
 
     if (symtab_storage_size <= 0 && dyn_symtab_storage_size <= 0) {
@@ -1637,7 +1631,7 @@ private:
     }
 
     bfd_symtab_t symtab, dynamic_symtab;
-    ssize_t symcount = 0, dyn_symcount = 0;
+    ni::tOffset symcount = 0, dyn_symcount = 0;
 
     if (symtab_storage_size > 0) {
       symtab.reset(static_cast<bfd_symbol **>(

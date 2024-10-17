@@ -24,7 +24,7 @@ static ni::tBool _StackCatCodeSnippet(
   auto lines = _snippetFactory.get_snippet(aFileName, aLine, aContextLines);
   if (!lines.empty()) {
     for (auto it = lines.begin(); it != lines.end(); ++it) {
-      if (it->first == aLine) {
+      if ((int)it->first == aLine) {
         aOutput << aIndent << ">";
       } else {
         aOutput << aIndent << " ";

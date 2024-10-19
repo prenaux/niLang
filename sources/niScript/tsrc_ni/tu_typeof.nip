@@ -1,0 +1,84 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+
+::FIXTURE("typeof")
+
+::TEST("typeof","base",#() {
+  local __lint = {
+    typeof_usage = 0
+  }
+
+  {
+    local v = 123;
+    if (typeof v == "int") {
+    }
+    local t = typeof 123;
+    ::println("... t:" t)
+    ::CHECK_EQUAL("int", t);
+  }
+  {
+    local v = 123.456;
+    if (typeof v == "float") {
+    }
+    local t = typeof 123.456;
+    ::println("... t:" t)
+    ::CHECK_EQUAL("float", t);
+  }
+  {
+    local v = "foobar";
+    if (typeof v == "string") {
+    }
+    local t = typeof "foobar";
+    ::println("... t:" t)
+    ::CHECK_EQUAL("string", t);
+  }
+  {
+    local v = ::gLang;
+    if (typeof v == "iunknown") {
+    }
+    local t = typeof ::gLang;
+    ::println("... t:" t)
+    ::CHECK_EQUAL("iunknown", t);
+  };
+  {
+    local v = ::Vec2();
+    if (typeof v == "Vec2") {
+    }
+    local t = typeof ::Vec2();
+    ::println("... t:" t)
+    ::CHECK_EQUAL("Vec2", t);
+  }
+  {
+    local v = ::Vec3();
+    if (typeof v == "Vec3") {
+    }
+    local t = typeof ::Vec3();
+    ::println("... t:" t)
+    ::CHECK_EQUAL("Vec3", t);
+  }
+  {
+    local v = ::Vec4();
+    if (typeof v == "Vec4") {
+    }
+    local t = typeof ::Vec4();
+    ::println("... t:" t)
+    ::CHECK_EQUAL("Vec4", t);
+  }
+  {
+    local v = ::UUID();
+    if (typeof v == "UUID") {
+    }
+    local t = typeof ::UUID();
+    ::println("... t:" t)
+    ::CHECK_EQUAL("UUID", t);
+  }
+
+  {
+    local v = ::eType;
+    if (typeof v == "enum[eType]") {
+    }
+    local t = typeof ::eType;
+    ::println("... t:" t)
+    ::CHECK_EQUAL("enum[eType]", t);
+  }
+})

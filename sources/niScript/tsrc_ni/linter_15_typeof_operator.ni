@@ -1,3 +1,5 @@
+::Import("lang.ni")
+
 local __lint = {
   _all = 1
   _experimental = 1
@@ -139,6 +141,18 @@ function typeof_table_member(table t) {
     // first does the same without the significant increase in complexity in
     // the linter.
     t.pstr.startswith("foo");
+  }
+}
+
+function typeof_iunknown() {
+  local __lint = {
+    typeof_usage = 0
+  }
+
+  if (typeof ::gLang == "iunknown") {
+  }
+  // should fail, only the lower case variant is returned by the VM
+  if (typeof ::gLang == "iUnknown") {
   }
 }
 

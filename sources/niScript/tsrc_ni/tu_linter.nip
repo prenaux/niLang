@@ -509,12 +509,15 @@ function main() {
 
       // typeof_usage
       {
-        ::EXPECTED_LINT(aLogs, 0, {[Lint: Error:.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 3, {[Lint: Error:.*\(in typeof_usage.*\)]});
         ::EXPECTED_LINT(aLogs, 9, {[Lint: Warning:.*\(in typeof_usage.*\)]});
 
         ::EXPECTED_LINT(aLogs, 2, {[typeof_usage: Redundant typeof with known value type.*\(in typeof_usage.*\)]});
         ::EXPECTED_LINT(aLogs, 3, {[typeof_usage: typeof_eq: Invalid typeof test type.*\(in typeof_usage.*\)]});
         ::EXPECTED_LINT(aLogs, 4, {[typeof_usage: typeof_eq: Typedef should be a literal string.*\(in typeof_usage.*\)]});
+
+        ::EXPECTED_LINT(aLogs, 2, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'SomeHamster'.*\(in typeof_usage.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'SomeHamster2'.*\(in typeof_usage.*\)]});
       }
 
       // typeof_t_append
@@ -537,8 +540,9 @@ function main() {
         ::EXPECTED_LINT(aLogs, 2, {[key_notfound_callk: "startswith" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
         ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in error_code<error_code_dangling_type,typeof_end Switch.*>. \(in typeof_switch2.*\)]});
         ::EXPECTED_LINT(aLogs, 1, {[key_notfound_callk: "append" not found in resolved_type<string>. \(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'stringnarf'.*\(in typeof_switch2.*\)]});
 
-        ::EXPECTED_LINT(aLogs, 6, {[Lint: Error:.*\(in typeof_switch2.*\)]});
+        ::EXPECTED_LINT(aLogs, 7, {[Lint: Error:.*\(in typeof_switch2.*\)]});
         ::EXPECTED_LINT(aLogs, 1, {[Lint: Warning:.*\(in typeof_switch2.*\)]});
       }
 
@@ -570,6 +574,14 @@ function main() {
         ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_table_member.*\)]});
       }
 
+      // typeof_iunknown
+      {
+        ::EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_iunknown.*\)]});
+        ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_iunknown.*\)]});
+
+        ::EXPECTED_LINT(aLogs, 1, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'iUnknown'.*\(in typeof_iunknown.*\)]});
+      }
+
       // main
       {
         ::EXPECTED_LINT(aLogs, 4, {[Lint: Error:.*\(in main.*\)]});
@@ -578,7 +590,7 @@ function main() {
 
       // all
       {
-        ::CHECK_EQUAL(18,aLintResults.mLogsError,"Expected lint errors.");
+        ::CHECK_EQUAL(23,aLintResults.mLogsError,"Expected lint errors.");
         ::CHECK_EQUAL(11,aLintResults.mLogsWarning,"Expected lint warnings.");
       }
     })

@@ -595,6 +595,7 @@ _DEF_LINT(call_error,IsError,None);
 _DEF_LINT(call_num_args,IsError,None);
 _DEF_LINT(ret_type_cant_assign,IsError,None);
 _DEF_LINT(typeof_usage,IsWarning,None);
+_DEF_LINT(typeof_invalid,IsError,None);
 _DEF_LINT(param_decl,IsError,None);
 _DEF_LINT(foreach_usage,IsError,None);
 
@@ -796,6 +797,7 @@ struct sLinter {
     _REG_LINT(ret_type_cant_assign);
     _REG_LINT(null_notfound);
     _REG_LINT(typeof_usage);
+    _REG_LINT(typeof_invalid);
     _REG_LINT(param_decl);
     _REG_LINT(foreach_usage);
   }
@@ -884,6 +886,7 @@ struct sLinter {
     _E(ret_type_cant_assign)
     _E(null_notfound)
     _E(typeof_usage)
+    _E(typeof_invalid)
     _E(param_decl)
     _E(foreach_usage)
     else {
@@ -3336,6 +3339,7 @@ void SQFunctionProto::LintTrace(
   astl::stack<sLintScope> scopes;
 
   auto lint_typeof_eq = [&](ain_nn_mut<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
+    niLet& ss = aLinter._ss;
     niLet typeofObj = typeofInfo->_obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure, _null_);
 
@@ -3361,6 +3365,36 @@ void SQFunctionProto::LintTrace(
             niFmt("typeof_eq: Invalid typeof test type: %s.", _ObjToString(resolvedType)));
         }
       }
+
+      niLet typeofStr = _stringhval(eqLiteral);
+      if ((typeofStr != _HC(typestr_null))
+          && (typeofStr != _HC(typestr_int))
+          && (typeofStr != _HC(typestr_float))
+          && (typeofStr != _HC(typestr_string))
+          && (typeofStr != _HC(typestr_table))
+          && (typeofStr != _HC(typestr_array))
+          && (typeofStr != _HC(typestr_closure))
+          && (typeofStr != _HC(typestr_function))
+          && (typeofStr != _HC(typestr_userdata))
+          && (typeofStr != _HC(typestr_function))
+          && (typeofStr != _HC(typestr_iunknown))
+          && (typeofStr != _HC(UUID))
+          && (typeofStr != _HC(Vec2))
+          && (typeofStr != _HC(Vec3))
+          && (typeofStr != _HC(Vec4))
+          && (typeofStr != _HC(Matrix))
+      )
+      {
+        if (ni::StrStartsWith(niHStr(typeofStr), "enum[")) {
+          // TODO: Can we check this?
+        }
+        else if (_LENABLED(typeof_invalid)) {
+          _LINT_(
+            typeof_invalid, lineCol,
+            niFmt("typeof_eq: Unknown typeof typename: '%s'.", typeofStr));
+        }
+      }
+
       if (typeofInfo->_iarg1 >= 0) {
         if (scopes.empty()) {
           _LINTERNAL_ERROR("typeof_eq: Outside of a if/switch scope.");

@@ -12,15 +12,13 @@
 // TODO:
 //
 // - [ ] p2: function's this pointer should be undefined if its not set in a table, for example in ::app.queueLoading(function() { ... }) this should resolved to error_code_dangling_this (similar to error_code_dangling_type)
-// - [ ] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
-// - [ ] p2: Correctly lint Import(aPath, aThisTable).
 // - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
 // - [ ] p2: Add a var/any type - as in resolve it - which explicitly states that we accept any type
 // - [ ] p2: key_notfound shouldn't be triggered for resolved_type<> unless the key_notfound_resolve_type pendatic lint is on
 // - [ ] p2: Add all "ni" exe utility functions to the linter, things like ::GetArgs()
 // - [ ] p2: All category_ = 1 in the __lint object should act on the specified class of lints. Make the trailing underscore require for this to work so that its less prone to unintentional change in categories.
-// - [ ] p2: if ("foo" in someTable) { scopeA; } should add "foo" for the duration of scopeA
-// - [ ] p2: if (someTable.?foo) { scopeA; } should add "foo" for the duration of scopeA
+// - [ ] p2: if ("foo" in someTable) { ... scopeA ... } should add "foo" for the duration of scopeA
+// - [ ] p2: if (someTable.?foo) { ... scopeA ... } should add "foo" for the duration of scopeA
 // - [ ] p2: Match types that are passed to function parameters, right now we only count the numbers of parameter passed
 // - [ ] p2: Match table types, not just base types
 // - [ ] p2: Check operator usages, -= with a string should fail, += is fine, "string" * int is dodgy, etc...
@@ -39,6 +37,7 @@
 // - [ ] p2: metamethods should be named __add__, __invalidate__, __initialize__, etc... so that they are easily distinguishable and are linted correctly as such. __SetCanCallMetaMethod should be taken into account with the lint and/or potentially removed if a neater solution can be found.
 
 // Done:
+// - [x] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
 // - [x] p1: In the VM the 'this' table should be different from the root table when running and importing modules. That is how the Linter lints and its the less confusing and more correct way of doing things. With Import() returning the this table it allows to do everything we did before, just more cleanly.
 // - [x] p0: Math operators should preserve the type of the first operand - since that's what match metamethods.
 // - [x] p0: Fix key_cant_set with 'table.field_in_delegate_only = value'
@@ -576,10 +575,11 @@ function main() {
 
       // typeof_iunknown
       {
-        ::EXPECTED_LINT(aLogs, 1, {[Lint: Error:.*\(in typeof_iunknown.*\)]});
+        ::EXPECTED_LINT(aLogs, 2, {[Lint: Error:.*\(in typeof_iunknown.*\)]});
         ::EXPECTED_LINT(aLogs, 0, {[Lint: Warning:.*\(in typeof_iunknown.*\)]});
 
         ::EXPECTED_LINT(aLogs, 1, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'iUnknown'.*\(in typeof_iunknown.*\)]});
+        ::EXPECTED_LINT(aLogs, 1, {[typeof_invalid: typeof_eq: Unknown typeof typename: 'void'.*\(in typeof_iunknown.*\)]});
       }
 
       // main
@@ -590,7 +590,7 @@ function main() {
 
       // all
       {
-        ::CHECK_EQUAL(23,aLintResults.mLogsError,"Expected lint errors.");
+        ::CHECK_EQUAL(24,aLintResults.mLogsError,"Expected lint errors.");
         ::CHECK_EQUAL(11,aLintResults.mLogsWarning,"Expected lint warnings.");
       }
     })

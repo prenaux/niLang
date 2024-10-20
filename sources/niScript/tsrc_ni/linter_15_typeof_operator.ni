@@ -154,6 +154,10 @@ function typeof_iunknown() {
   // should fail, only the lower case variant is returned by the VM
   if (typeof ::gLang == "iUnknown") {
   }
+
+  // should fail, void isnt a valid typename, only can be used as return type to indicate "return nothing/null"
+  if (typeof ::gLang == "void") {
+  }
 }
 
 function main() void {

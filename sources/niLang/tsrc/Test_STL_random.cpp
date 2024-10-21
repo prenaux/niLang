@@ -124,8 +124,8 @@ TEST_FIXTURE(ASTL_random_independent_bits_engine,with_64bit_engine) {
     independent_bits_engine<mt19937_64, ni::tU64> ind_engine(engine, w);
 
     for (int i = 0; i < 10; ++i) {
-      ni::tU32 value = ind_engine();
-      ni::tU32 max_value = (w == 64) ? 0xFFFFFFFFu : (ni::tU64)((1ull << w) - 1);
+      ni::tU64 value = ind_engine();
+      ni::tU64 max_value = (w == 64) ? 0xFFFFFFFFu : (ni::tU64)((1ull << w) - 1);
       // Check that the value is within the correct range
       CHECK(value <= max_value);
       // Check that bits beyond w are not set

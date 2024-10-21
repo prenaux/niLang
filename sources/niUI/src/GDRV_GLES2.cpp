@@ -2936,10 +2936,13 @@ class cGL2ContextWindow : public sGLContext
     mnBBFlags = anBBFlags;
     mnSyncCounter = 0;
 
+    // NOTE: GL libraries on Windows can only load after window created
+#ifndef _WIN32
     if (tsglLoadLibrary() != TSGL_OK) {
       niError("Can't initialize TSGL.");
       return;
     }
+#endif
 
     mptrBBPxf = mpDrv->GetGraphics()->CreatePixelFormat(aaszBBPxf);
     if (!mptrBBPxf.IsOK())

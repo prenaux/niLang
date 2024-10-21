@@ -63,7 +63,8 @@
 
 #  include <niLang/Platforms/Win32/Win32_Redef.h>
 #  include <GL/gl.h>
-#  include "GL/ni_glext.h"
+#  include "GLES/PC/glext.h"
+#  include "GL/ni_wglext.h"
 #  pragma comment(lib,"opengl32.lib")
 #  define TSGL_DESKTOP
 #  define __TSGL_STATIC_CORE__
@@ -141,14 +142,6 @@ using GLhandle = void*;
 #  define __TSGL_STATIC_EXT__
 #  define __TSGL_KIND_DESKTOP__
 using GLhandle = GLhandleARB;
-
-#define glCreateShaderObject glCreateShaderObjectARB
-#define glCreateProgramObject glCreateProgramObjectARB
-#define glDeleteObject glDeleteObjectARB
-#define glAttachObject glAttachObjectARB
-#define glUseProgramObject glUseProgramObjectARB
-#define glGetObjectParameteriv glGetObjectParameterivARB
-#define glGetInfoLog glGetInfoLogARB
 
 //// niLinux /////////////////////////////////////////////////////////////////////////
 #elif defined niLinuxDesktop
@@ -266,6 +259,10 @@ using GLhandle = void*;
 
 #ifndef TSGL_EXT_PROC
 #define TSGL_EXT_PROC TSGL_CORE_PROC
+#endif
+
+#ifndef TSGL_ARB_EXT_PROC
+#define TSGL_ARB_EXT_PROC TSGL_CORE_PROC
 #endif
 
 #ifndef TSGL_OPT_EXT_PROC
@@ -397,7 +394,7 @@ void tsglSwapBuffers(tsglContext* apCtx, ni::tBool abDoNotWait);
 
 niExportFunc(void*) tsglGetCoreProcAddress(const char *name);
 niExportFunc(void*) tsglGetExtProcAddress(const char *name);
-niExportFunc(tBool) tsglLoadLibrary();
+niExportFunc(ni::tBool) tsglLoadLibrary();
 
 #ifdef __GLDESKTOP__
 #include "GDRV_GLContext_sym_core_desktop.h"

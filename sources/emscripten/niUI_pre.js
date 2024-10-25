@@ -4,7 +4,7 @@ niAssert(NIAPP_FSMODULES['niUI'] == undefined, 'FSModule "niUI" already defined'
 
 // dirs: find "$WORK/niLang/data/niUI" -type d | sed "s~$WORK/niLang/data/niUI/~~g" | sort | awk '{print "\"" $0 "\","}'
 // files: find "$WORK/niLang/data/niUI" -type f | sed "s~$WORK/niLang/data/niUI/~~g" | sort | awk '{print "\"" $0 "\","}'
-NIAPP_FSMODULES['niUI'] = function FS_niUI() {
+NIAPP_FSMODULES['niUI'] = function FS_niUI(params) {
   console.log("FSModule: niUI");
   var dir = "/Work/niLang/data/niUI";
   var url = niPath_Join(NIAPP_CONFIG.baseUrl, "/niLang/data/niUI");
@@ -14,7 +14,8 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
     "shaders",
     "fonts",
   ]);
-  niFS_AddFiles(dir, url, [
+
+  var files = [
     "error.dds",
     "loading.tga",
     "shaders/fixed_ps.cgo",
@@ -54,5 +55,16 @@ NIAPP_FSMODULES['niUI'] = function FS_niUI() {
     "skins/UIDark.png",
     "skins/default.uiskin.xml",
     "fonts/Roboto-Regular.ttf",
-  ]);
+  ]
+
+  try {
+    var cn = params["cn"];
+    if (cn) {
+      files.push("fonts/NotoSansCJKsc-Regular.otf");
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
+  niFS_AddFiles(dir, url, files);
 };

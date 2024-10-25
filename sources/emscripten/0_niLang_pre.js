@@ -923,7 +923,7 @@ _preRun(function niLang_preRun() {
   console.log("I/niLang_preRun DONE");
 });
 
-Module["preRun"] = function Module_preRun(params) {
+Module["preRun"] = function Module_preRun(_params) {
   console.log("I/Module_preRun BEGIN");
 
   var params = NIAPP.GetParamsAsObject(location.search);
@@ -952,7 +952,7 @@ Module["preRun"] = function Module_preRun(params) {
   for (var key in NIAPP_FSMODULES) {
     if (NIAPP_FSMODULES.hasOwnProperty(key)) {
       console.log("I/Register NIAPP_FSMODULES: " + key);
-      NIAPP_FSMODULES[key]();
+      NIAPP_FSMODULES[key](params);
     }
   }
 

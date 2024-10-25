@@ -906,6 +906,15 @@ struct iMojoShader : public iShader {
 
 #if !defined __JSCC__
 static void* mojo_getprocaddress(const char *name, void*) {
+#if defined niWindows
+  if (strcmp(name,"glGetString") == 0) return (void*)_glGetString;
+  if (strcmp(name,"glGetError") == 0) return (void*)_glGetError;
+  if (strcmp(name,"glGetIntegerv") == 0) return (void*)_glGetIntegerv;
+  if (strcmp(name,"glEnable") == 0) return (void*)_glEnable;
+  if (strcmp(name,"glDisable") == 0) return (void*)_glDisable;
+  if (strcmp(name,"glFlush") == 0) return (void*)_glFlush;
+#endif
+
   {
     void* addr = tsglGetCoreProcAddress(name);
     if (addr) return addr;

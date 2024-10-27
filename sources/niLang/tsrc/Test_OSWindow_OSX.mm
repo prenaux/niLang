@@ -19,18 +19,22 @@ struct FOSWindowOSX {
 };
 
 struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
-  iOSWindow* w;
-  sTestOSXWindowSink(iOSWindow* _w) : w(_w) {}
+  const tU64 _threadId;
+  iOSWindow* _w;
+  sTestOSXWindowSink(iOSWindow* aWindow)
+      : _threadId(ni::ThreadGetCurrentThreadID())
+      , _w(aWindow)
+  {}
 
   tU64 __stdcall GetThreadID() const {
-    return ni::ThreadGetCurrentThreadID();
+    return _threadId;
   }
 
   void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
     switch (anMsg) {
       case eOSWindowMessage_Close:
         niDebugFmt((_A("eOSWindowMessage_Close: \n")));
-        w->Invalidate();
+        _w->Invalidate();
         break;
       case eOSWindowMessage_SwitchIn:
         niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
@@ -43,37 +47,37 @@ struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
         break;
       }
       case eOSWindowMessage_Size:
-        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(w->GetSize())));
+        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(_w->GetSize())));
         break;
       case eOSWindowMessage_Move:
-        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(w->GetPosition())));
+        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(_w->GetPosition())));
         break;
       case eOSWindowMessage_KeyDown:
         niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {
           case eKey_F:
-            w->SetFullScreen(w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
+            _w->SetFullScreen(_w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
             break;
           case eKey_Z:
-            w->SetCursorPosition(sVec2i::Zero());
+            _w->SetCursorPosition(sVec2i::Zero());
             break;
           case eKey_X:
-            w->SetCursorPosition(w->GetClientSize()/2);
+            _w->SetCursorPosition(_w->GetClientSize()/2);
             break;
           case eKey_C:
-            w->SetCursorPosition(w->GetClientSize());
+            _w->SetCursorPosition(_w->GetClientSize());
             break;
           case eKey_Q:
-            w->SetCursor(eOSCursor_None);
+            _w->SetCursor(eOSCursor_None);
             break;
           case eKey_W:
-            w->SetCursor(eOSCursor_Arrow);
+            _w->SetCursor(eOSCursor_Arrow);
             break;
           case eKey_E:
-            w->SetCursor(eOSCursor_Text);
+            _w->SetCursor(eOSCursor_Text);
             break;
           case eKey_K:
-            w->SetCursorCapture(!w->GetCursorCapture());
+            _w->SetCursorCapture(!_w->GetCursorCapture());
             break;
         }
         break;
@@ -92,10 +96,10 @@ struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
       case eOSWindowMessage_MouseButtonDoubleClick:
         niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
         if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
-          //                     w->SetFullScreen(!w->GetFullScreen());
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
         }
         else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
-          //                     w->SetFullScreen(!w->GetFullScreen());
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
         }
         break;
       case eOSWindowMessage_MouseWheel:
@@ -121,7 +125,7 @@ struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
         niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
                     a.mV2L[0],a.mV2L[1],
                     b.mV2L[0],b.mV2L[1],
-                    w->GetContentsScale()));
+                    _w->GetContentsScale()));
         break;
     }
   }
@@ -137,7 +141,7 @@ TEST_FIXTURE(FOSWindowOSX,OpenGL) {
     sRecti(50,50,400,300),
     0,
     eOSWindowStyleFlags_Regular);
-  CHECK(wnd.IsOK());
+  CHECK_RETURN_IF_FAILED(wnd.IsOK());
 
   Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
   wnd->GetMessageHandlers()->AddSink(sink.ptr());
@@ -147,10 +151,10 @@ TEST_FIXTURE(FOSWindowOSX,OpenGL) {
   }
 
   sOSXGLConfig glConfig;
-  CHECK(osxglCreateContext(wnd,&glConfig));
-  CHECK(osxglHasContext(wnd));
+  CHECK_RETURN_IF_FAILED(osxglCreateContext(wnd,&glConfig));
+  CHECK_RETURN_IF_FAILED(osxglHasContext(wnd));
   osxglMakeContextCurrent(wnd);
-  CHECK(osxglGetCurrentContext() == wnd);
+  CHECK_RETURN_IF_FAILED(osxglGetCurrentContext() == wnd);
 
   struct sOpenGLWindowSink : public ImplRC<iMessageHandler> {
     const tU32 _threadId;
@@ -225,7 +229,55 @@ TEST_FIXTURE(FOSWindowOSX,OpenGL) {
   }
 }
 
-TEST_FIXTURE(FOSWindowOSX,Metal) {
+struct sMetalWindowSink : public ImplRC<iMessageHandler> {
+  const tU32 _threadId;
+  Ptr<iOSXMetalAPI> _metalAPI;
+  id<MTLCommandQueue> _commandQueue;
+
+  sMetalWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
+  }
+
+  ~sMetalWindowSink() {
+  }
+
+  tU64 __stdcall GetThreadID() const {
+    return _threadId;
+  }
+
+  virtual tBool Init(iOSWindow* apWnd) {
+    osxMetalSetDefaultDevice();
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
+    niCheck(_metalAPI.IsOK(),eFalse);
+
+    id<MTLDevice> device = (__bridge id<MTLDevice>)_metalAPI->GetDevice();
+
+    NSError *error = nil;
+    dispatch_data_t data = dispatch_data_create(_allShaders_DATA, _allShaders_DATA_SIZE, NULL, NULL);
+    id<MTLLibrary> library = [device
+                              newLibraryWithData:data
+                              error:&error];
+    if (!library) {
+      NSLog(@"Error occurred when compiling shader library: %@", error);
+      return eFalse;
+    }
+
+    _commandQueue = [device newCommandQueue];
+    return eTrue;
+  }
+
+  virtual void Draw() = 0;
+
+  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
+    switch (anMsg) {
+      case eOSWindowMessage_Paint: {
+        this->Draw();
+        break;
+      };
+    }
+  }
+};
+
+TEST_FIXTURE(FOSWindowOSX,MetalClear) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 
@@ -235,35 +287,58 @@ TEST_FIXTURE(FOSWindowOSX,Metal) {
     sRecti(50,50,400,300),
     0,
     eOSWindowStyleFlags_Regular);
-  CHECK(wnd.IsOK());
+  CHECK_RETURN_IF_FAILED(wnd.IsOK());
 
   Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
   wnd->GetMessageHandlers()->AddSink(sink.ptr());
 
-  struct sMetalWindowSink : public ImplRC<iMessageHandler> {
-    const tU32 _threadId;
-    Ptr<iOSXMetalAPI> metalAPI;
-    id<MTLCommandQueue> commandQueue;
-    id<MTLRenderPipelineState> pipeline;
-    id<MTLBuffer> vertexBuffer;
+  struct sMetalClear_MetalWindowSink : public sMetalWindowSink {
+    virtual void Draw() {
+      id<MTLRenderCommandEncoder> commandEncoder = (__bridge id<MTLRenderCommandEncoder>)_metalAPI->NewRenderCommandEncoder(
+        Vec4<tF64>(0,1,1,1), 1.0f, 0);
+      _metalAPI->PresentAndCommit(NULL);
+    };
+  };
 
-    sMetalWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
+  Ptr<sMetalWindowSink> metalSink = niNew sMetalClear_MetalWindowSink();
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
+TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK_RETURN_IF_FAILED(wnd.IsOK());
+
+  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
+  wnd->GetMessageHandlers()->AddSink(sink.ptr());
+
+  struct sMetalTriangle_MetalWindowSink : public sMetalWindowSink {
+    id<MTLRenderPipelineState> _pipeline;
+    id<MTLBuffer> _vertexBuffer;
+
+    sMetalTriangle_MetalWindowSink() {
     }
 
-    ~sMetalWindowSink() {
-      niDebugFmt(("... ~sMetalWindowSink"));
-    }
-
-    tU64 __stdcall GetThreadID() const {
-      return _threadId;
-    }
-
-    tBool Init(iOSWindow* apWnd) {
-      osxMetalSetDefaultDevice();
-      metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
-      niCheck(metalAPI.IsOK(),eFalse);
-
-      id<MTLDevice> device = (__bridge id<MTLDevice>)metalAPI->GetDevice();
+    tBool Init(iOSWindow* apWnd) override {
+      niCheck(sMetalWindowSink::Init(apWnd),eFalse);
+      id<MTLDevice> device = (__bridge id<MTLDevice>)_metalAPI->GetDevice();
 
       // Triangle, red a the top, green on the left, blue on the right
       // (important to make sure rgb/bgr aren't swapped)
@@ -271,9 +346,9 @@ TEST_FIXTURE(FOSWindowOSX,Metal) {
       vertices[0].pos = {  0.0,  0.5, 0 }; vertices[0].colora = ULColorBuildf( 1, 0, 0, 1 );
       vertices[1].pos = { -0.5, -0.5, 0 }; vertices[1].colora = ULColorBuildf( 0, 1, 0, 1 );
       vertices[2].pos = {  0.5, -0.5, 0 }; vertices[2].colora = ULColorBuildf( 0, 0, 1, 1 );
-      vertexBuffer = [device newBufferWithBytes:vertices
-                      length:sizeof(vertices)
-                      options:MTLResourceCPUCacheModeDefaultCache];
+      _vertexBuffer = [device newBufferWithBytes:vertices
+                       length:sizeof(vertices)
+                       options:MTLResourceCPUCacheModeDefaultCache];
 
       NSError *error = nil;
       dispatch_data_t data = dispatch_data_create(_allShaders_DATA, _allShaders_DATA_SIZE, NULL, NULL);
@@ -294,36 +369,27 @@ TEST_FIXTURE(FOSWindowOSX,Metal) {
       pipelineDescriptor.fragmentFunction = fragmentFunc;
       // pipelineDescriptor.vertexDescriptor = _CreateMetalVertDesc(0, sVertexPA::eFVF);
 
-      pipeline = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
-                  error:&error];
-      if (!pipeline) {
+      _pipeline = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
+                   error:&error];
+      if (!_pipeline) {
         NSLog(@"Error occurred when creating render pipeline state: %@", error);
       }
 
-      commandQueue = [device newCommandQueue];
       return eTrue;
     }
 
-    void Draw() {
-      id<MTLRenderCommandEncoder> commandEncoder = (__bridge id<MTLRenderCommandEncoder>)metalAPI->NewRenderCommandEncoder(
+    void Draw() override {
+      id<MTLRenderCommandEncoder> commandEncoder = (__bridge id<MTLRenderCommandEncoder>)_metalAPI->NewRenderCommandEncoder(
         Vec4<tF64>(0,1,1,1), 1.0f, 0);
-      [commandEncoder setRenderPipelineState:pipeline];
-      [commandEncoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
+      [commandEncoder setRenderPipelineState:_pipeline];
+      [commandEncoder setVertexBuffer:_vertexBuffer offset:0 atIndex:0];
       [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
-      metalAPI->PresentAndCommit(NULL);
+      _metalAPI->PresentAndCommit(NULL);
     };
-
-    void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
-      switch (anMsg) {
-        case eOSWindowMessage_Paint: {
-          this->Draw();
-          break;
-        };
-      }
-    }
   };
-  Ptr<sMetalWindowSink> metalSink = niNew sMetalWindowSink();
-  CHECK(metalSink->Init(wnd));
+
+  Ptr<sMetalWindowSink> metalSink = niNew sMetalTriangle_MetalWindowSink();
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 
   if (isInteractive) {

@@ -15,7 +15,7 @@
 #include "shaders/_allShaders.osx.metallib.h"
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan_macos.h>
+#include <vulkan/vulkan_metal.h>
 #include <MoltenVK/mvk_vulkan.h>
 
 namespace ni {
@@ -410,8 +410,11 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
 struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   Ptr<iOSXMetalAPI> _metalAPI;
-  VkInstance _instance;
-  VkPhysicalDevice _physicalDevice;
+  VkInstance _instance = VK_NULL_HANDLE;
+  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
+  typedef astl::map<cString,tU32> tVkExtensionsMap;
+  tVkExtensionsMap _extensions;
+  VkSurfaceKHR _surface = VK_NULL_HANDLE;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -433,7 +436,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   }
 
   tBool _InitPhysicalDevice() {
-    uint32_t deviceCount = 0;
+    tU32 deviceCount = 0;
     vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
     niCheck(deviceCount > 0, eFalse);
 
@@ -451,10 +454,44 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
                      VK_VERSION_MINOR(props.apiVersion),
                      VK_VERSION_PATCH(props.apiVersion)));
 
+    // Get extensions
+    {
+      tU32 extensionCount = 0;
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
+      astl::vector<VkExtensionProperties> extensions(extensionCount);
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
+      for (const auto& extension : extensions) {
+        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
+      }
+    }
+
+    {
+      cString o;
+      niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
+        if (it != _extensions.begin())
+          o << ", ";
+        o << it->first << ":" << it->second;
+      }
+      niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
+    }
+
     return eTrue;
   }
 
+  tBool _CreateSurface() {
+    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
+    CAMetalLayer* metalLayer = (CAMetalLayer*)mtkView.layer;
+    VkMetalSurfaceCreateInfoEXT surfaceCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT,
+      .pNext = nullptr,
+      .flags = 0,
+      .pLayer = metalLayer
+    };
+    return vkCreateMetalSurfaceEXT(_instance, &surfaceCreateInfo, nullptr, &_surface) == VK_SUCCESS;
+  }
+
   void _Cleanup() {
+    if (_surface) vkDestroySurfaceKHR(_instance, _surface, nullptr);
     if (_instance) vkDestroyInstance(_instance, nullptr);
   }
 
@@ -464,6 +501,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niCheck(_metalAPI.IsOK(),eFalse);
     niCheck(_CreateInstance(),eFalse);
     niCheck(_InitPhysicalDevice(),eFalse);
+    niCheck(_CreateSurface(),eFalse);
 
     return eTrue;
   }

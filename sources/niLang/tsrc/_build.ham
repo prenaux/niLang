@@ -3,6 +3,7 @@ if ! $(TARGET_FEATURE_EXE) { return ; }
 
 tkDefTest Test_niLang : 1.0.0 ;
 MBEDTLS_Hdrs $(BUILD_SRC) ;
+Vulkan_Hdrs $(BUILD_SRC) ;
 
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
@@ -12,6 +13,8 @@ SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niLang ] ;
+
+Vulkan_LinkLibs $(PKGTARGET) ;
 
 if ( $(EMSCRIPTEN) = 1 ) {
   TargetLinkFlags $(PKGTARGETF) :

@@ -519,6 +519,9 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
   VkRenderPass _renderPass = VK_NULL_HANDLE;
   sVulkanFramebuffer _currentFb;
+  VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
+  VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
+  VkFence _inFlightFence = VK_NULL_HANDLE;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -777,9 +780,39 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderPass) == VK_SUCCESS;
   }
 
+  tBool _CreateSyncObjects() {
+    VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+    };
+
+    VkFenceCreateInfo fenceInfo = {
+      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
+    };
+
+    niCheck(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore) == VK_SUCCESS, eFalse);
+    niCheck(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore) == VK_SUCCESS, eFalse);
+    niCheck(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFence) == VK_SUCCESS, eFalse);
+
+    return eTrue;
+  }
 
   void _Cleanup() {
+    if (_inFlightFence) {
+      vkDestroyFence(_device, _inFlightFence, nullptr);
+      _inFlightFence = VK_NULL_HANDLE;
+    }
+    if (_renderFinishedSemaphore) {
+      vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
+      _renderFinishedSemaphore = VK_NULL_HANDLE;
+    }
+    if (_imageAvailableSemaphore) {
+      vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
+      _imageAvailableSemaphore = VK_NULL_HANDLE;
+    }
+
     _currentFb.Destroy(_device);
+
     if (_renderPass) {
       vkDestroyRenderPass(_device, _renderPass, nullptr);
       _renderPass = VK_NULL_HANDLE;
@@ -818,6 +851,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niCheck(_CreateLogicalDevice(), eFalse);
     niCheck(_CreateCommandPool(), eFalse);
     niCheck(_CreateRenderPass(), eFalse);
+    niCheck(_CreateSyncObjects(), eFalse);
 
     MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
     niCheck(_currentFb.CreateFromMTKView(mtkView, _device, _renderPass), eFalse);
@@ -825,13 +859,29 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return eTrue;
   }
 
-  tBool Present() {
+  tBool PresentAndCommit() {
+    niCheck(vkEndCommandBuffer(_commandBuffer) == VK_SUCCESS, eFalse);
+
+    VkSubmitInfo submitInfo = {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .waitSemaphoreCount = 0,
+      .signalSemaphoreCount = 1,
+      .pSignalSemaphores = &_renderFinishedSemaphore,
+      .commandBufferCount = 1,
+      .pCommandBuffers = &_commandBuffer
+    };
+
+    niCheck(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) == VK_SUCCESS, eFalse);
+
     id<CAMetalDrawable> drawable = [(__bridge MTKView*)_metalAPI->GetMTKView() currentDrawable];
     [drawable present];
     return eTrue;
   }
 
   tBool BeginFrame() {
+    niCheck(vkWaitForFences(_device, 1, &_inFlightFence, VK_TRUE, UINT64_MAX) == VK_SUCCESS, eFalse);
+    niCheck(vkResetFences(_device, 1, &_inFlightFence) == VK_SUCCESS, eFalse);
+
     MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
     MTLRenderPassDescriptor* passDesc = mtkView.currentRenderPassDescriptor;
     niCheck(passDesc != nil, eFalse);
@@ -840,7 +890,6 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niCheck(_currentFb.CreateFromMTKView(mtkView, _device, _renderPass), eFalse);
 
     vkResetCommandBuffer(_commandBuffer, 0);
-    niCheck(vkQueueWaitIdle(_graphicsQueue) == VK_SUCCESS, eFalse);
 
     VkCommandBufferBeginInfo beginInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -882,7 +931,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
     VkClearValue _clearValue = {
       // r, g, b, a
       .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
-      };
+    };
     tF64 _clearTimer = 0.0f;
 
     virtual void Draw() override {
@@ -896,7 +945,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
               (tF32)RandFloat(), // b
               1.0f               // a
             }}
-      };
+        };
         _clearTimer = ni::TimerInSeconds();
       }
 
@@ -910,18 +959,10 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
       };
 
       vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      // Nothing, we're just clearing the buffer
       vkCmdEndRenderPass(_commandBuffer);
-      niCheck(vkEndCommandBuffer(_commandBuffer) == VK_SUCCESS, (void)0);
 
-      VkSubmitInfo submitInfo = {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .commandBufferCount = 1,
-        .pCommandBuffers = &_commandBuffer
-      };
-
-      niCheck(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS, (void)0);
-
-      this->Present();
+      this->PresentAndCommit();
     };
   };
 

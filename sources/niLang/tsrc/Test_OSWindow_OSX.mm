@@ -426,11 +426,22 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return _threadId;
   }
 
-  tBool _CreateInstance() {
+  tBool _CreateInstance(const achar* aAppName) {
+    VkApplicationInfo appInfo = {
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pNext = nullptr,
+        .pApplicationName = aAppName,
+        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+        .pEngineName = "niVlk",
+        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+        .apiVersion = VK_API_VERSION_1_0
+    };
     VkInstanceCreateInfo createInfo = {
-      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-      .enabledLayerCount = 0,
-      .enabledExtensionCount = 0
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext = nullptr,
+        .pApplicationInfo = &appInfo,
+        .enabledLayerCount = 0,
+        .enabledExtensionCount = 0
     };
     return vkCreateInstance(&createInfo, nullptr, &_instance) == VK_SUCCESS;
   }
@@ -470,7 +481,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
       niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
         if (it != _extensions.begin())
           o << ", ";
-        o << it->first << ":" << it->second;
+        o << it->first << "=" << it->second;
       }
       niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
     }
@@ -495,11 +506,11 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     if (_instance) vkDestroyInstance(_instance, nullptr);
   }
 
-  tBool Init(iOSWindow* apWnd) {
+  tBool Init(iOSWindow* apWnd, const achar* aAppName) {
     osxMetalSetDefaultDevice();
     _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
     niCheck(_metalAPI.IsOK(),eFalse);
-    niCheck(_CreateInstance(),eFalse);
+    niCheck(_CreateInstance(aAppName),eFalse);
     niCheck(_InitPhysicalDevice(),eFalse);
     niCheck(_CreateSurface(),eFalse);
 
@@ -539,7 +550,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
   };
 
   Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 
   if (isInteractive) {

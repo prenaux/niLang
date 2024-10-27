@@ -59,6 +59,27 @@ rule MBEDTLS_Hdrs {
 }
 
 #----------------------------------------------------------------------
+#     Vulkan
+#----------------------------------------------------------------------
+# TODO: Move to specs/toolsets/vulkan_sdk/rules.ham
+
+rule Vulkan_Hdrs {
+  SubDirHdrs [ AssertFExists Vulkan_Hdrs : $(VULKAN_SDK_INCDIR) ] ;
+  if $(OSX) = 1 {
+    SubDirHdrs [ AssertFExists Vulkan_Hdrs : $(VULKAN_SDK_MOLTENVK_INCDIR) ] ;
+  }
+}
+
+rule Vulkan_LinkLibs {
+  if $(OSX) = 1 {
+    TargetLinkLibs $(<) :
+      [ AssertFExists Vulkan_LinkLibs : [ FDirName $(VULKAN_SDK_MOLTENVK_LIBDIR) libMoltenVK.a ] ]
+      -framework IOSurface
+    ;
+  }
+}
+
+#----------------------------------------------------------------------
 #     Custom rules to simplify static linking
 #----------------------------------------------------------------------
 

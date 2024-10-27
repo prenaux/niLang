@@ -3,6 +3,7 @@
 
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
+#import <MetalKit/MetalKit.h>
 #include <OpenGL/gl.h>
 #include "../src/API/niLang/Platforms/OSX/osxgl.h"
 #include "../src/API/niLang/Platforms/OSX/osxMetal.h"
@@ -12,6 +13,10 @@
 #include "../../niUI/src/API/niUI/GraphicsEnum.h"
 #include "../../niUI/src/API/niUI/FVF.h"
 #include "shaders/_allShaders.osx.metallib.h"
+
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_macos.h>
+#include <MoltenVK/mvk_vulkan.h>
 
 namespace ni {
 
@@ -401,5 +406,113 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
     }
   }
 }
+
+struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
+  const tU32 _threadId;
+  Ptr<iOSXMetalAPI> _metalAPI;
+  VkInstance _instance;
+  VkPhysicalDevice _physicalDevice;
+
+  sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
+  }
+
+  ~sVulkanWindowSink() {
+  }
+
+  tU64 __stdcall GetThreadID() const {
+    return _threadId;
+  }
+
+  tBool _CreateInstance() {
+    VkInstanceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .enabledLayerCount = 0,
+      .enabledExtensionCount = 0
+    };
+    return vkCreateInstance(&createInfo, nullptr, &_instance) == VK_SUCCESS;
+  }
+
+  tBool _InitPhysicalDevice() {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+    niCheck(deviceCount > 0, eFalse);
+
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, &_physicalDevice);
+
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(_physicalDevice, &props);
+    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
+    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.driverVersion),
+                     VK_VERSION_MINOR(props.driverVersion),
+                     VK_VERSION_PATCH(props.driverVersion)));
+    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.apiVersion),
+                     VK_VERSION_MINOR(props.apiVersion),
+                     VK_VERSION_PATCH(props.apiVersion)));
+
+    return eTrue;
+  }
+
+  void _Cleanup() {
+    if (_instance) vkDestroyInstance(_instance, nullptr);
+  }
+
+  tBool Init(iOSWindow* apWnd) {
+    osxMetalSetDefaultDevice();
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
+    niCheck(_metalAPI.IsOK(),eFalse);
+    niCheck(_CreateInstance(),eFalse);
+    niCheck(_InitPhysicalDevice(),eFalse);
+
+    return eTrue;
+  }
+
+  virtual void Draw() = 0;
+
+  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
+    switch (anMsg) {
+      case eOSWindowMessage_Paint: {
+        this->Draw();
+        break;
+      };
+    }
+  }
+};
+
+TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
+  wnd->GetMessageHandlers()->AddSink(sink.ptr());
+
+  struct sVulkanClear_VulkanWindowSink : public sVulkanWindowSink {
+    virtual void Draw() override {
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink();
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
 } // end of namespace ni
 #endif

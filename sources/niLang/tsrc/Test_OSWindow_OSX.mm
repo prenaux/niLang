@@ -12,6 +12,7 @@
 #include "../src/Platform_OSX.h"
 #include "../../niUI/src/API/niUI/GraphicsEnum.h"
 #include "../../niUI/src/API/niUI/FVF.h"
+#include <niLang/STL/set.h>
 #include "shaders/_allShaders.osx.metallib.h"
 
 #include <vulkan/vulkan.h>
@@ -415,6 +416,9 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   typedef astl::map<cString,tU32> tVkExtensionsMap;
   tVkExtensionsMap _extensions;
   VkSurfaceKHR _surface = VK_NULL_HANDLE;
+  tBool _enableValidationLayers = eTrue;
+  typedef astl::set<cString> tVkInstanceLayersSet;
+  tVkInstanceLayersSet _instanceLayers;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -426,23 +430,97 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return _threadId;
   }
 
+  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* /*pUserData*/) {
+
+    switch (severity) {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      default:
+        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+    }
+    return VK_FALSE;
+  }
+
   tBool _CreateInstance(const achar* aAppName) {
+    {
+      tU32 layerCount;
+      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+      astl::vector<VkLayerProperties> availableLayers(layerCount);
+      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+      for (const auto& layer : availableLayers) {
+        _instanceLayers.insert(layer.layerName);
+      }
+      {
+        cString o;
+        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
+          if (it != _instanceLayers.begin())
+            o << ", ";
+          o << *it;
+        }
+        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
+      }
+    }
+
+    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+    astl::vector<const char*> layers;
+    if (_enableValidationLayers) {
+      // NOTE: Statically linking directly MoltenVK we cannot use the
+      // validation layer.
+      const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
+      if (!astl::contains(_instanceLayers,validationLayerName)) {
+        _enableValidationLayers = eFalse;
+        niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
+                        validationLayerName));
+      }
+      else {
+        layers.push_back(validationLayerName);
+      }
+    }
+
     VkApplicationInfo appInfo = {
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pNext = nullptr,
-        .pApplicationName = aAppName,
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "niVlk",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-        .apiVersion = VK_API_VERSION_1_0
+      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = nullptr,
+      .pApplicationName = aAppName,
+      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+      .pEngineName = "niVlk",
+      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+      .apiVersion = VK_API_VERSION_1_0
     };
+
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
+      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
+      .pfnUserCallback = _DebugCallback
+    };
+
     VkInstanceCreateInfo createInfo = {
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pNext = nullptr,
-        .pApplicationInfo = &appInfo,
-        .enabledLayerCount = 0,
-        .enabledExtensionCount = 0
+      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .pNext = nullptr,
+      .pApplicationInfo = &appInfo,
+      .enabledLayerCount = (tU32)layers.size(),
+      .ppEnabledLayerNames = layers.data(),
+      .enabledExtensionCount = (tU32)extensions.size(),
+      .ppEnabledExtensionNames = extensions.data()
     };
+    createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
+
     return vkCreateInstance(&createInfo, nullptr, &_instance) == VK_SUCCESS;
   }
 
@@ -474,8 +552,6 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
       for (const auto& extension : extensions) {
         astl::upsert(_extensions,extension.extensionName,extension.specVersion);
       }
-    }
-
     {
       cString o;
       niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
@@ -484,6 +560,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
         o << it->first << "=" << it->second;
       }
       niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
+    }
     }
 
     return eTrue;
@@ -502,8 +579,14 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   }
 
   void _Cleanup() {
-    if (_surface) vkDestroySurfaceKHR(_instance, _surface, nullptr);
-    if (_instance) vkDestroyInstance(_instance, nullptr);
+    if (_surface) {
+      vkDestroySurfaceKHR(_instance, _surface, nullptr);
+      _surface = VK_NULL_HANDLE;
+    }
+    if (_instance) {
+      vkDestroyInstance(_instance, nullptr);
+      _instance = VK_NULL_HANDLE;
+    }
   }
 
   tBool Init(iOSWindow* apWnd, const achar* aAppName) {

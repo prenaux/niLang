@@ -419,6 +419,11 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   tBool _enableValidationLayers = eTrue;
   typedef astl::set<cString> tVkInstanceLayersSet;
   tVkInstanceLayersSet _instanceLayers;
+  tU32 _queueFamilyIndex = 0;
+  VkDevice _device = VK_NULL_HANDLE;
+  VkQueue _graphicsQueue = VK_NULL_HANDLE;
+  VkCommandPool _commandPool = VK_NULL_HANDLE;
+  VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -578,7 +583,86 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return vkCreateMetalSurfaceEXT(_instance, &surfaceCreateInfo, nullptr, &_surface) == VK_SUCCESS;
   }
 
+  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
+    tU32 queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+    astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    niLog(Info,"Vulkan Queue Families:");
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      niLog(Info,niFmt("  Family %d:", i));
+      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
+      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
+    }
+
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        aQueueFamilyIndex = i;
+        return eTrue;
+      }
+    }
+
+    return eFalse;
+  }
+
+  tBool _CreateLogicalDevice() {
+    tF32 queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .queueCount = 1,
+      .pQueuePriorities = &queuePriority
+    };
+
+    VkDeviceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .queueCreateInfoCount = 1,
+      .pQueueCreateInfos = &queueCreateInfo,
+      .enabledExtensionCount = 0,
+      .enabledLayerCount = 0
+    };
+
+    niCheck(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) == VK_SUCCESS, eFalse);
+    vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
+    return eTrue;
+  }
+
+  tBool _CreateCommandPool() {
+    VkCommandPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+    };
+
+    niCheck(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) == VK_SUCCESS, eFalse);
+
+    VkCommandBufferAllocateInfo allocInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .commandPool = _commandPool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1
+    };
+
+    return vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer) == VK_SUCCESS;
+  }
+
   void _Cleanup() {
+    if (_commandBuffer) {
+      vkFreeCommandBuffers(_device, _commandPool, 1, &_commandBuffer);
+      _commandBuffer = VK_NULL_HANDLE;
+    }
+    if (_commandPool) {
+      vkDestroyCommandPool(_device, _commandPool, nullptr);
+      _commandPool = VK_NULL_HANDLE;
+    }
+    if (_device) {
+      vkDestroyDevice(_device, nullptr);
+      _device = VK_NULL_HANDLE;
+    }
     if (_surface) {
       vkDestroySurfaceKHR(_instance, _surface, nullptr);
       _surface = VK_NULL_HANDLE;
@@ -596,6 +680,10 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niCheck(_CreateInstance(aAppName),eFalse);
     niCheck(_InitPhysicalDevice(),eFalse);
     niCheck(_CreateSurface(),eFalse);
+    niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
+    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
+    niCheck(_CreateLogicalDevice(), eFalse);
+    niCheck(_CreateCommandPool(), eFalse);
 
     return eTrue;
   }

@@ -15,7 +15,7 @@
 
 namespace ni {
 
-struct FOSXWindow {
+struct FOSWindowOSX {
 };
 
 struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
@@ -127,7 +127,7 @@ struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
   }
 };
 
-TEST_FIXTURE(FOSXWindow,OpenGL) {
+TEST_FIXTURE(FOSWindowOSX,OpenGL) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
 
@@ -225,7 +225,7 @@ TEST_FIXTURE(FOSXWindow,OpenGL) {
   }
 }
 
-TEST_FIXTURE(FOSXWindow,Metal) {
+TEST_FIXTURE(FOSWindowOSX,Metal) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 

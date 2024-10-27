@@ -408,6 +408,99 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
   }
 }
 
+struct sVulkanFramebuffer {
+  VkImage _image = VK_NULL_HANDLE;
+  VkImageView _view = VK_NULL_HANDLE;
+  VkFramebuffer _framebuffer = VK_NULL_HANDLE;
+  tU32 _width = 0;
+  tU32 _height = 0;
+
+  tBool CreateFromMTKView(MTKView* apView, VkDevice aDevice, VkRenderPass aRenderPass) {
+    MTLRenderPassDescriptor* passDesc = apView.currentRenderPassDescriptor;
+    niCheck(passDesc != nullptr, eFalse);
+
+    id<MTLTexture> texture = passDesc.colorAttachments[0].texture;
+    _width = texture.width;
+    _height = texture.height;
+
+#if 0
+    niLog(Info,niFmt("Creating Vulkan framebuffer: %dx%d from MTLTexture (format: %lu, usage: %lu)",
+                     _width, _height,
+                     texture.pixelFormat,
+                     texture.usage));
+#endif
+
+    VkImportMetalTextureInfoEXT importInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT,
+      .plane = VK_IMAGE_ASPECT_COLOR_BIT,
+      .mtlTexture = texture
+    };
+
+    VkImageCreateInfo imageInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .pNext = &importInfo,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = VK_FORMAT_B8G8R8A8_UNORM,
+      .extent = {_width, _height, 1},
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+    };
+
+    niCheck(vkCreateImage(aDevice, &imageInfo, nullptr, &_image) == VK_SUCCESS, eFalse);
+
+    VkImageViewCreateInfo viewInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      .image = _image,
+      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .format = VK_FORMAT_B8G8R8A8_UNORM,
+      .components = {
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY
+      },
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      }
+    };
+
+    niCheck(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view) == VK_SUCCESS, eFalse);
+
+    VkFramebufferCreateInfo fbInfo = {
+      .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+      .renderPass = aRenderPass,
+      .attachmentCount = 1,
+      .pAttachments = &_view,
+      .width = _width,
+      .height = _height,
+      .layers = 1
+    };
+
+    return vkCreateFramebuffer(aDevice, &fbInfo, nullptr, &_framebuffer) == VK_SUCCESS;
+  }
+
+  void Destroy(VkDevice device) {
+    if (_framebuffer) {
+      vkDestroyFramebuffer(device, _framebuffer, nullptr);
+      _framebuffer = VK_NULL_HANDLE;
+    }
+    if (_view) {
+      vkDestroyImageView(device, _view, nullptr);
+      _view = VK_NULL_HANDLE;
+    }
+    if (_image) {
+      vkDestroyImage(device, _image, nullptr);
+      _image = VK_NULL_HANDLE;
+    }
+  }
+};
+
 struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   Ptr<iOSXMetalAPI> _metalAPI;
@@ -424,6 +517,8 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
   VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
+  VkRenderPass _renderPass = VK_NULL_HANDLE;
+  sVulkanFramebuffer _currentFb;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -557,15 +652,15 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
       for (const auto& extension : extensions) {
         astl::upsert(_extensions,extension.extensionName,extension.specVersion);
       }
-    {
-      cString o;
-      niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
-        if (it != _extensions.begin())
-          o << ", ";
-        o << it->first << "=" << it->second;
+      {
+        cString o;
+        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
+          if (it != _extensions.begin())
+            o << ", ";
+          o << it->first << "=" << it->second;
+        }
+        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
       }
-      niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
-    }
     }
 
     return eTrue;
@@ -650,7 +745,45 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer) == VK_SUCCESS;
   }
 
+  tBool _CreateRenderPass() {
+    VkAttachmentDescription colorAttachment = {
+      .format = VK_FORMAT_B8G8R8A8_UNORM,  // Match Metal format
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+    };
+
+    VkAttachmentReference colorRef = {
+      .attachment = 0,
+      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    };
+
+    VkSubpassDescription subpass = {
+      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+      .colorAttachmentCount = 1,
+      .pColorAttachments = &colorRef
+    };
+
+    VkRenderPassCreateInfo renderPassInfo = {
+      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+      .attachmentCount = 1,
+      .pAttachments = &colorAttachment,
+      .subpassCount = 1,
+      .pSubpasses = &subpass
+    };
+
+    return vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderPass) == VK_SUCCESS;
+  }
+
+
   void _Cleanup() {
+    _currentFb.Destroy(_device);
+    if (_renderPass) {
+      vkDestroyRenderPass(_device, _renderPass, nullptr);
+      _renderPass = VK_NULL_HANDLE;
+    }
     if (_commandBuffer) {
       vkFreeCommandBuffers(_device, _commandPool, 1, &_commandBuffer);
       _commandBuffer = VK_NULL_HANDLE;
@@ -684,7 +817,37 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
     niCheck(_CreateLogicalDevice(), eFalse);
     niCheck(_CreateCommandPool(), eFalse);
+    niCheck(_CreateRenderPass(), eFalse);
 
+    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
+    niCheck(_currentFb.CreateFromMTKView(mtkView, _device, _renderPass), eFalse);
+
+    return eTrue;
+  }
+
+  tBool Present() {
+    id<CAMetalDrawable> drawable = [(__bridge MTKView*)_metalAPI->GetMTKView() currentDrawable];
+    [drawable present];
+    return eTrue;
+  }
+
+  tBool BeginFrame() {
+    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
+    MTLRenderPassDescriptor* passDesc = mtkView.currentRenderPassDescriptor;
+    niCheck(passDesc != nil, eFalse);
+
+    _currentFb.Destroy(_device);
+    niCheck(_currentFb.CreateFromMTKView(mtkView, _device, _renderPass), eFalse);
+
+    vkResetCommandBuffer(_commandBuffer, 0);
+    niCheck(vkQueueWaitIdle(_graphicsQueue) == VK_SUCCESS, eFalse);
+
+    VkCommandBufferBeginInfo beginInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+    };
+
+    niCheck(vkBeginCommandBuffer(_commandBuffer, &beginInfo) == VK_SUCCESS, eFalse);
     return eTrue;
   }
 
@@ -716,7 +879,49 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
   wnd->GetMessageHandlers()->AddSink(sink.ptr());
 
   struct sVulkanClear_VulkanWindowSink : public sVulkanWindowSink {
+    VkClearValue _clearValue = {
+      // r, g, b, a
+      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
+      };
+    tF64 _clearTimer = 0.0f;
+
     virtual void Draw() override {
+      niCheck(BeginFrame(),;);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearValue = {
+          .color = {{
+              (tF32)RandFloat(), // r
+              (tF32)RandFloat(), // g
+              (tF32)RandFloat(), // b
+              1.0f               // a
+            }}
+      };
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      VkRenderPassBeginInfo renderPassInfo = {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = _renderPass,
+        .framebuffer = _currentFb._framebuffer,
+        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
+        .clearValueCount = 1,
+        .pClearValues = &_clearValue
+      };
+
+      vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      vkCmdEndRenderPass(_commandBuffer);
+      niCheck(vkEndCommandBuffer(_commandBuffer) == VK_SUCCESS, (void)0);
+
+      VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &_commandBuffer
+      };
+
+      niCheck(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS, (void)0);
+
+      this->Present();
     };
   };
 

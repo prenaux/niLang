@@ -420,6 +420,7 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
 }
 
 struct sVulkanDriver {
+  VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
 };
 
@@ -577,6 +578,12 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
   tPtr __stdcall Lock(tU32 aFirstVertex, tU32 aNumVertex, eLock aLock) override {
     niCheck(!_locked,nullptr);
 
+    // TODO: Bad (but should be correct) as it stalls the whole pipeline. Only
+    // for the first implementation. Take a look at
+    // https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/usage_patterns.html#usage_patterns_advanced_data_uploading
+    // to do something better for dynamic arrays.
+    vkDeviceWaitIdle(_driver->_device);
+
     tU32 offset = aFirstVertex * _fvf.GetStride();
     tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
 
@@ -625,7 +632,6 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
   typedef astl::set<cString> tVkInstanceLayersSet;
   tVkInstanceLayersSet _instanceLayers;
   tU32 _queueFamilyIndex = 0;
-  VkDevice _device = VK_NULL_HANDLE;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
   VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;

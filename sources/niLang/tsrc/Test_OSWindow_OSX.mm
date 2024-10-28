@@ -419,6 +419,10 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
   }
 }
 
+struct sVulkanDriver {
+  VmaAllocator _allocator = nullptr;
+};
+
 struct sVulkanFramebuffer {
   VkImage _image = VK_NULL_HANDLE;
   VkImageView _view = VK_NULL_HANDLE;
@@ -515,15 +519,15 @@ struct sVulkanFramebuffer {
 struct sVulkanVertexArray : public ImplRC<iVertexArray> {
   niBeginClass(sVulkanVertexArray);
 
-  VmaAllocator& _allocator;
+  nn_mut<sVulkanDriver> _driver;
   VkBuffer _buffer = VK_NULL_HANDLE;
   VmaAllocation _allocation = nullptr;
   cFVFDescription _fvf;
   tU32 _numVertices;
   tBool _locked;
 
-  sVulkanVertexArray(aout<VmaAllocator> aAllocator, tU32 aNumVertices, tU32 aFVF)
-      : _allocator(aAllocator)
+  sVulkanVertexArray(ain_nn_mut<sVulkanDriver> aDriver, tU32 aNumVertices, tU32 aFVF)
+      : _driver(aDriver)
   {
     _numVertices = aNumVertices;
     _locked = eFalse;
@@ -538,7 +542,7 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
     allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
     niCheck(vmaCreateBuffer(
-      _allocator, &bufferInfo, &allocInfo,
+      _driver->_allocator, &bufferInfo, &allocInfo,
       &_buffer, &_allocation, nullptr) == VK_SUCCESS, ;);
   }
 
@@ -547,7 +551,7 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
       Unlock();
     }
     if (_allocation != nullptr) {
-      vmaDestroyBuffer(_allocator, _buffer, _allocation);
+      vmaDestroyBuffer(_driver->_allocator, _buffer, _allocation);
       _allocation = nullptr;
       _buffer = VK_NULL_HANDLE;
     }
@@ -577,14 +581,14 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
     tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
 
     tPtr mappedData;
-    niCheck(vmaMapMemory(_allocator, _allocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
+    niCheck(vmaMapMemory(_driver->_allocator, _allocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
     _locked = eTrue;
     return mappedData + offset;
   }
 
   tBool __stdcall Unlock() override {
     niCheck(_locked,eFalse);
-    vmaUnmapMemory(_allocator, _allocation);
+    vmaUnmapMemory(_driver->_allocator, _allocation);
     _locked = eFalse;
     return eTrue;
   }
@@ -609,7 +613,7 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
   niEndClass(sVulkanVertexArray);
 };
 
-struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
+struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   Ptr<iOSXMetalAPI> _metalAPI;
   VkInstance _instance = VK_NULL_HANDLE;
@@ -630,7 +634,6 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
   VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _inFlightFence = VK_NULL_HANDLE;
-  VmaAllocator _allocator = nullptr;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
@@ -1133,7 +1136,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
     VkPipeline _pipeline = VK_NULL_HANDLE;
 
     tBool _CreateVertexArray() {
-      _va = niNew sVulkanVertexArray(_allocator, 3, sVertexPA::eFVF);
+      _va = niNew sVulkanVertexArray(astl::non_null{this}, 3, sVertexPA::eFVF);
       niCheckIsOK(_va, eFalse);
       {
         sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);

@@ -18,6 +18,7 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_metal.h>
 #include <MoltenVK/mvk_vulkan.h>
+// #define TRACE_MOUSE_MOVE
 
 namespace ni {
 
@@ -123,15 +124,19 @@ struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
         break;
 
       case eOSWindowMessage_RelativeMouseMove:
+#ifdef TRACE_MOUSE_MOVE
         niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
                     a.mV2L[0],a.mV2L[1]));
+#endif
         break;
 
       case eOSWindowMessage_MouseMove:
+#ifdef TRACE_MOUSE_MOVE
         niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
                     a.mV2L[0],a.mV2L[1],
                     b.mV2L[0],b.mV2L[1],
                     _w->GetContentsScale()));
+#endif
         break;
     }
   }

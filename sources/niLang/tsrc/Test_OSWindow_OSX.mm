@@ -18,6 +18,11 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_metal.h>
 #include <MoltenVK/mvk_vulkan.h>
+#include "../../niUI/src/API/niUI/IVertexArray.h"
+
+#define niVulkanMemoryAllocator_Implement
+#include "../../thirdparty/VulkanMemoryAllocator/niVulkanMemoryAllocator.h"
+
 // #define TRACE_MOUSE_MOVE
 
 namespace ni {
@@ -506,6 +511,103 @@ struct sVulkanFramebuffer {
   }
 };
 
+struct sVulkanVertexArray : public ImplRC<iVertexArray> {
+  niBeginClass(sVulkanVertexArray);
+
+  VmaAllocator& _allocator;
+  VkBuffer _buffer = VK_NULL_HANDLE;
+  VmaAllocation _allocation = nullptr;
+  cFVFDescription _fvf;
+  tU32 _numVertices;
+  tBool _locked;
+
+  sVulkanVertexArray(aout<VmaAllocator> aAllocator, tU32 aNumVertices, tU32 aFVF)
+      : _allocator(aAllocator)
+  {
+    _numVertices = aNumVertices;
+    _locked = eFalse;
+    _fvf.Setup(aFVF);
+
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = _numVertices * _fvf.GetStride();
+    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+    VmaAllocationCreateInfo allocInfo = {};
+    allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+    niCheck(vmaCreateBuffer(
+      _allocator, &bufferInfo, &allocInfo,
+      &_buffer, &_allocation, nullptr) == VK_SUCCESS, ;);
+  }
+
+  ~sVulkanVertexArray() {
+    if (_locked) {
+      Unlock();
+    }
+    if (_allocation != nullptr) {
+      vmaDestroyBuffer(_allocator, _buffer, _allocation);
+      _allocation = nullptr;
+      _buffer = VK_NULL_HANDLE;
+    }
+  }
+
+  tBool __stdcall IsOK() const override {
+    niClassIsOK(sVulkanVertexArray);
+    return _allocation != nullptr;
+  }
+
+  tFVF __stdcall GetFVF() const override {
+    return _fvf.GetFVF();
+  }
+
+  tU32 __stdcall GetNumVertices() const override {
+    return _numVertices;
+  }
+
+  eArrayUsage __stdcall GetUsage() const override {
+    return eArrayUsage_Dynamic;
+  }
+
+  tPtr __stdcall Lock(tU32 aFirstVertex, tU32 aNumVertex, eLock aLock) override {
+    niCheck(!_locked,nullptr);
+
+    tU32 offset = aFirstVertex * _fvf.GetStride();
+    tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
+
+    tPtr mappedData;
+    niCheck(vmaMapMemory(_allocator, _allocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
+    _locked = eTrue;
+    return mappedData + offset;
+  }
+
+  tBool __stdcall Unlock() override {
+    niCheck(_locked,eFalse);
+    vmaUnmapMemory(_allocator, _allocation);
+    _locked = eFalse;
+    return eTrue;
+  }
+
+  tBool __stdcall GetIsLocked() const override {
+    return _locked;
+  }
+
+  iHString* __stdcall GetDeviceResourceName() const override {
+    return NULL;
+  }
+  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
+    return eFalse;
+  }
+  tBool __stdcall ResetDeviceResource() override {
+    return eFalse;
+  }
+  iDeviceResource* __stdcall Bind(iUnknown*) override {
+    return this;
+  }
+
+  niEndClass(sVulkanVertexArray);
+};
+
 struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   Ptr<iOSXMetalAPI> _metalAPI;
@@ -527,11 +629,13 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
   VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _inFlightFence = VK_NULL_HANDLE;
+  VmaAllocator _allocator = nullptr;
 
   sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
   }
 
   ~sVulkanWindowSink() {
+    this->_Cleanup();
   }
 
   tU64 __stdcall GetThreadID() const {
@@ -802,7 +906,21 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return eTrue;
   }
 
+  tBool _CreateAllocator() {
+    VmaAllocatorCreateInfo allocatorInfo = {};
+    allocatorInfo.physicalDevice = _physicalDevice;
+    allocatorInfo.device = _device;
+    allocatorInfo.instance = _instance;
+    niCheck(vmaCreateAllocator(&allocatorInfo, &_allocator) == VK_SUCCESS, eFalse);
+    return eTrue;
+  }
+
   void _Cleanup() {
+    if (_allocator != nullptr) {
+      vmaDestroyAllocator(_allocator);
+      _allocator = nullptr;
+    }
+
     if (_inFlightFence) {
       vkDestroyFence(_device, _inFlightFence, nullptr);
       _inFlightFence = VK_NULL_HANDLE;
@@ -844,7 +962,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     }
   }
 
-  tBool Init(iOSWindow* apWnd, const achar* aAppName) {
+  virtual tBool __stdcall Init(iOSWindow* apWnd, const achar* aAppName) {
     osxMetalSetDefaultDevice();
     _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
     niCheck(_metalAPI.IsOK(),eFalse);
@@ -857,6 +975,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     niCheck(_CreateCommandPool(), eFalse);
     niCheck(_CreateRenderPass(), eFalse);
     niCheck(_CreateSyncObjects(), eFalse);
+    niCheck(_CreateAllocator(), eFalse);
 
     MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
     niCheck(_currentFb.CreateFromMTKView(mtkView, _device, _renderPass), eFalse);
@@ -939,7 +1058,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
     };
     tF64 _clearTimer = 0.0f;
 
-    virtual void Draw() override {
+    void Draw() override {
       niCheck(BeginFrame(),;);
 
       if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
@@ -972,6 +1091,91 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
   };
 
   Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink();
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
+TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
+  wnd->GetMessageHandlers()->AddSink(sink.ptr());
+
+  struct sVulkanTriangle_VulkanWindowSink : public sVulkanWindowSink {
+    VkClearValue _clearValue = {
+      // r, g, b, a
+      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
+    };
+    tF64 _clearTimer = 0.0f;
+    Ptr<sVulkanVertexArray> _va;
+
+    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+      _va = niNew sVulkanVertexArray(_allocator, 3, sVertexPA::eFVF);
+
+      {
+        sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);
+        niCheck(verts != nullptr, eFalse);
+        verts[0] = {{0.0f, -0.5f, 0.0f}, 0xFF0000FF}; // Red
+        verts[1] = {{0.5f, 0.5f, 0.0f}, 0xFF00FF00};  // Green
+        verts[2] = {{-0.5f, 0.5f, 0.0f}, 0xFFFF0000}; // Blue
+        _va->Unlock();
+      }
+
+      return eTrue;
+    }
+
+    void Draw() override {
+      niCheck(BeginFrame(),;);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearValue = {
+          .color = {{
+              (tF32)RandFloat(), // r
+              (tF32)RandFloat(), // g
+              (tF32)RandFloat(), // b
+              1.0f               // a
+            }}
+        };
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      VkRenderPassBeginInfo renderPassInfo = {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = _renderPass,
+        .framebuffer = _currentFb._framebuffer,
+        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
+        .clearValueCount = 1,
+        .pClearValues = &_clearValue
+      };
+
+      vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      // Nothing, we're just clearing the buffer
+      vkCmdEndRenderPass(_commandBuffer);
+
+      this->PresentAndCommit();
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink();
   CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 

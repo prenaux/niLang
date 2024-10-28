@@ -1,4 +1,4 @@
-// glslangValidator -S vert -V triangle_vs.glsl -o triangle_vs.spv && bin2h triangle_vs.spv triangle_vs.spv.h triangle_vs
+// glslangValidator -S vert -V triangle_vs.glsl -o triangle_vs.spv && bin2h triangle_vs.spv triangle_vs.spv.h triangle_vs_spv
 #version 450
 
 layout(location = 0) in vec3 inPosition;

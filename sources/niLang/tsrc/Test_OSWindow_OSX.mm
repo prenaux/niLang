@@ -19,9 +19,10 @@
 #include <vulkan/vulkan_metal.h>
 #include <MoltenVK/mvk_vulkan.h>
 #include "../../niUI/src/API/niUI/IVertexArray.h"
-
 #define niVulkanMemoryAllocator_Implement
 #include "../../thirdparty/VulkanMemoryAllocator/niVulkanMemoryAllocator.h"
+#include "shaders/triangle_vs.spv.h"
+#include "shaders/triangle_ps.spv.h"
 
 // #define TRACE_MOUSE_MOVE
 
@@ -635,7 +636,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   }
 
   ~sVulkanWindowSink() {
-    this->_Cleanup();
+    this->Cleanup();
   }
 
   tU64 __stdcall GetThreadID() const {
@@ -915,7 +916,7 @@ struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
     return eTrue;
   }
 
-  void _Cleanup() {
+  virtual void Cleanup() {
     if (_allocator != nullptr) {
       vmaDestroyAllocator(_allocator);
       _allocator = nullptr;
@@ -1126,11 +1127,14 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
     };
     tF64 _clearTimer = 0.0f;
     Ptr<sVulkanVertexArray> _va;
+    VkShaderModule _vertexShader = VK_NULL_HANDLE;
+    VkShaderModule _pixelShader = VK_NULL_HANDLE;
+    VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+    VkPipeline _pipeline = VK_NULL_HANDLE;
 
-    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+    tBool _CreateVertexArray() {
       _va = niNew sVulkanVertexArray(_allocator, 3, sVertexPA::eFVF);
-
+      niCheckIsOK(_va, eFalse);
       {
         sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);
         niCheck(verts != nullptr, eFalse);
@@ -1139,12 +1143,186 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
         verts[2] = {{-0.5f, 0.5f, 0.0f}, 0xFFFF0000}; // Blue
         _va->Unlock();
       }
-
       return eTrue;
+    }
+
+    tBool _CreateShaders() {
+      VkShaderModuleCreateInfo vertInfo = {
+        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+        .codeSize = (size_t)triangle_vs_spv_DATA_SIZE,
+        .pCode = (const uint32_t*)triangle_vs_spv_DATA
+      };
+      niCheck(vkCreateShaderModule(_device, &vertInfo, nullptr, &_vertexShader) == VK_SUCCESS, eFalse);
+
+      VkShaderModuleCreateInfo fragInfo = {
+        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+        .codeSize = (size_t)triangle_ps_spv_DATA_SIZE,
+        .pCode = (const uint32_t*)triangle_ps_spv_DATA
+      };
+      niCheck(vkCreateShaderModule(_device, &fragInfo, nullptr, &_pixelShader) == VK_SUCCESS, eFalse);
+      return eTrue;
+    }
+
+    tBool _CreatePipeline() {
+      VkPipelineLayoutCreateInfo layoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount = 0,
+        .pushConstantRangeCount = 0
+      };
+      niCheck(vkCreatePipelineLayout(_device, &layoutInfo, nullptr, &_pipelineLayout) == VK_SUCCESS, eFalse);
+
+      VkVertexInputBindingDescription bindingDesc = {
+        .binding = 0,
+        .stride = sizeof(sVertexPA),
+        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+      };
+
+      VkVertexInputAttributeDescription attrDesc[] = {
+        {
+          .location = 0,
+          .binding = 0,
+          .format = VK_FORMAT_R32G32B32_SFLOAT,
+          .offset = offsetof(sVertexPA, pos)
+        },
+        {
+          .location = 1,
+          .binding = 0,
+          .format = VK_FORMAT_R32_UINT,
+          .offset = offsetof(sVertexPA, colora)
+        }
+      };
+
+      VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+        .vertexBindingDescriptionCount = 1,
+        .pVertexBindingDescriptions = &bindingDesc,
+        .vertexAttributeDescriptionCount = 2,
+        .pVertexAttributeDescriptions = attrDesc
+      };
+
+      VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        .primitiveRestartEnable = VK_FALSE
+      };
+
+      VkDynamicState dynamicStates[] = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR
+      };
+
+      VkPipelineDynamicStateCreateInfo dynamicState = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+        .dynamicStateCount = 2,
+        .pDynamicStates = dynamicStates
+      };
+
+      VkPipelineViewportStateCreateInfo viewportState = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+        .viewportCount = 1,
+        .scissorCount = 1,
+      };
+
+      VkPipelineRasterizationStateCreateInfo rasterizer = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+        .depthClampEnable = VK_FALSE,
+        .rasterizerDiscardEnable = VK_FALSE,
+        .polygonMode = VK_POLYGON_MODE_FILL,
+        .cullMode = VK_CULL_MODE_NONE,
+        .frontFace = VK_FRONT_FACE_CLOCKWISE,
+        .depthBiasEnable = VK_FALSE,
+        .lineWidth = 1.0f
+      };
+
+      VkPipelineMultisampleStateCreateInfo multisampling = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+        .sampleShadingEnable = VK_FALSE
+      };
+
+      VkPipelineColorBlendAttachmentState colorBlendAttachment = {
+        .blendEnable = VK_FALSE,
+        .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+      };
+
+      VkPipelineColorBlendStateCreateInfo colorBlending = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+        .logicOpEnable = VK_FALSE,
+        .attachmentCount = 1,
+        .pAttachments = &colorBlendAttachment
+      };
+
+      VkPipelineShaderStageCreateInfo shaderStages[] = {
+        {
+          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+          .stage = VK_SHADER_STAGE_VERTEX_BIT,
+          .module = _vertexShader,
+          .pName = "main"
+        },
+        {
+          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+          .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+          .module = _pixelShader,
+          .pName = "main"
+        }
+      };
+
+      VkGraphicsPipelineCreateInfo pipelineInfo = {
+        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+        .stageCount = 2,
+        .pStages = shaderStages,
+        .pVertexInputState = &vertexInputInfo,
+        .pInputAssemblyState = &inputAssembly,
+        .pViewportState = &viewportState,
+        .pDynamicState = &dynamicState,
+        .pRasterizationState = &rasterizer,
+        .pMultisampleState = &multisampling,
+        .pDepthStencilState = nullptr,
+        .pColorBlendState = &colorBlending,
+        .layout = _pipelineLayout,
+        .renderPass = _renderPass,
+        .subpass = 0
+      };
+
+      niCheck(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) == VK_SUCCESS, eFalse);
+      return eTrue;
+    }
+
+
+    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+      niCheck(_CreateVertexArray(), eFalse);
+      niCheck(_CreateShaders(), eFalse);
+      niCheck(_CreatePipeline(), eFalse);
+      return eTrue;
+    }
+
+    void Cleanup() override {
+      if (_vertexShader != VK_NULL_HANDLE) {
+        vkDestroyShaderModule(_device, _vertexShader, nullptr);
+        _vertexShader = VK_NULL_HANDLE;
+      }
+      if (_pixelShader != VK_NULL_HANDLE) {
+        vkDestroyShaderModule(_device, _pixelShader, nullptr);
+        _pixelShader = VK_NULL_HANDLE;
+      }
+      sVulkanWindowSink::Cleanup();
     }
 
     void Draw() override {
       niCheck(BeginFrame(),;);
+
+      VkViewport viewport = {
+        .width = (float)_currentFb._width,
+        .height = (float)_currentFb._height,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+      };
+      VkRect2D scissor = {{0, 0}, {_currentFb._width, _currentFb._height}};
+
+      vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
+      vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
 
       if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
         _clearValue = {
@@ -1168,7 +1346,13 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
       };
 
       vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      // Nothing, we're just clearing the buffer
+      {
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+        VkBuffer vertexBuffers[] = {_va->_buffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdDraw(_commandBuffer, 3, 1, 0, 0);
+      }
       vkCmdEndRenderPass(_commandBuffer);
 
       this->PresentAndCommit();

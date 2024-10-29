@@ -202,6 +202,9 @@ struct iUIContext : public iUnknown
   //! \name Skins
   //########################################################################################
   //! @{
+  //! Create new UISkin from a skin file
+  virtual iUISkin* __stdcall CreateUISkin(iHString* apSkinPath, tF32 afContentsScale) = 0;
+
   //! Get the UISkin object
   //! {Property}
   virtual iUISkin* __stdcall GetUISkin() const = 0;

@@ -71,7 +71,7 @@ struct cWidgetLabel : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetLabel>
               break;
             default: break;
           }
-          sRectf rect(0,0,0,0);
+          sRectf rect(0,0,apWidget->GetClientSize().x,0);
           rect = apWidget->GetFont()->ComputeTextSize(
               rect,niHStr(apWidget->GetLocalizedText()),
               mFontFormatFlags);

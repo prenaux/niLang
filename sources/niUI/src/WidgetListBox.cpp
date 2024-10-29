@@ -814,9 +814,14 @@ void cWidgetListBox::UpdateExpression() {
   Ptr<iExpressionVariable> ItemRow = ctx->CreateVariable("ItemRow",eExpressionVariableType_Float,0);
   ctx->AddVariable(ItemRow);
 
+  Ptr<iExpressionVariable> ItemData = ctx->CreateVariable("ItemData", ni::eExpressionVariableType_IUnknown);
+  ctx->AddVariable(ItemData);
+
   tU32 numColumns = GetNumColumns();
   niLoop(i, dt->GetNumChildren()) {
     Ptr<iDataTable> item = dt->GetChildFromIndex(i);
+    ItemData->SetIUnknown(item);
+
     tU32 itemId = AddItem(item->GetName());
     ItemRow->SetFloat(itemId);
 
@@ -859,8 +864,13 @@ void cWidgetListBox::UpdateExpression() {
             }
             mvItems[itemId]->vData[j].ptrWidget = itemWidget;
 
-            itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, ctx);
             SetItemWidget(j, itemId, itemWidget);
+            Ptr<iExpressionContext> localCtx = ctx->CreateContext();
+            localCtx->AddVariable(ItemText->Clone());
+            localCtx->AddVariable(ItemColumn->Clone());
+            localCtx->AddVariable(ItemRow->Clone());
+            localCtx->AddVariable(ItemData->Clone());
+            itemWidget->BroadcastMessage(eUIMessage_ExpressionUpdate, localCtx);
           }
         }
       }

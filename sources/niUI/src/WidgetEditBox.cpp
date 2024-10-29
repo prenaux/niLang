@@ -1079,11 +1079,11 @@ void cEditBoxWidget::UpdateStyle()
   if(mpWidget->GetStyle() & eWidgetEditBoxStyle_MultiLine)
   {
     iUIContext *pUICtx = mpWidget->GetUIContext();
-    mpLeftScrollbar = pUICtx->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),0);
+    mpLeftScrollbar = pUICtx->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetStyle_DontSerialize);
     mpLeftScrollbar->SetVisible(eFalse);
     mpsbScrollBarLeft = ni::QueryInterface<iWidgetScrollBar>(mpLeftScrollbar);
     mpsbScrollBarLeft->SetScrollPosition(0);
-    mpBottomScrollbar = pUICtx->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetScrollBarStyle_Horz);
+    mpBottomScrollbar = pUICtx->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),eWidgetScrollBarStyle_Horz|eWidgetStyle_DontSerialize);
     mpBottomScrollbar->SetVisible(eFalse);
     mpsbScrollBarBottom = ni::QueryInterface<iWidgetScrollBar>(mpBottomScrollbar);
     mpsbScrollBarBottom->SetScrollPosition(0);

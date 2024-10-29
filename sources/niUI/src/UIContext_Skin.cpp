@@ -355,6 +355,10 @@ iOverlay* __stdcall cUIContext::FindSkinElement(iHString* ahspSkin, iHString* ah
   return mptrSkin->GetErrorOverlay();
 }
 
+iUISkin* __stdcall cUIContext::CreateUISkin(iHString* apSkinPath, tF32 afContentsScale) {
+  return niNew cUISkin(GetGraphicsContext(), apSkinPath, afContentsScale);
+}
+
 iUISkin* __stdcall cUIContext::GetUISkin() const {return mptrSkin;}
 iOverlay* __stdcall cUIContext::GetErrorOverlay() const {return mptrSkin->GetErrorOverlay();}
 tBool __stdcall cUIContext::SetErrorOverlay(iOverlay* apOverlay) {return mptrSkin->SetErrorOverlay(apOverlay);}

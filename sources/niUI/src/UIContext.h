@@ -162,6 +162,8 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   iImageMap* __stdcall GetImageMap() const niImpl;
 
   tBool __stdcall SetErrorOverlay(iOverlay* apOverlay) niImpl;
+
+  iUISkin* __stdcall CreateUISkin(iHString* apSkinPath, tF32 afContentsScale) niImpl;
   void __stdcall SetUISkin(iUISkin* apUISkin) niImpl;
   void __stdcall SetUISkinFromPath(iHString* ahspSkinPath) niImpl;
   iUISkin* __stdcall GetUISkin() const niImpl;

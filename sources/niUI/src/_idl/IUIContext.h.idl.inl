@@ -220,6 +220,17 @@ IDLC_METH_BEGIN(ni,iUIContext,GetHoverInputModifiers,0)
 	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
 IDLC_METH_END(ni,iUIContext,GetHoverInputModifiers,0)
 
+/** ni -> iUIContext::CreateUISkin/2 **/
+IDLC_METH_BEGIN(ni,iUIContext,CreateUISkin,2)
+	IDLC_DECL_VAR(iHString*,apSkinPath)
+	IDLC_BUF_TO_INTF(iHString,apSkinPath)
+	IDLC_DECL_VAR(tF32,afContentsScale)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afContentsScale)
+	IDLC_DECL_RETVAR(iUISkin*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUIContext,CreateUISkin,2,(apSkinPath,afContentsScale))
+	IDLC_RET_FROM_INTF(iUISkin,_Ret)
+IDLC_METH_END(ni,iUIContext,CreateUISkin,2)
+
 /** ni -> iUIContext::GetUISkin/0 **/
 IDLC_METH_BEGIN(ni,iUIContext,GetUISkin,0)
 	IDLC_DECL_RETVAR(iUISkin*,_Ret)

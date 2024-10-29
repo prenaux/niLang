@@ -21638,6 +21638,21 @@
 				<comments desc="Get the input modifier required to enable the hover. \see ni::eUIInputModifier "/>
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
 			</method>
+			<method java_name="createUISkin" name="CreateUISkin" num_parameters="2">
+				<comments desc="\name Skins @{ Create new UISkin from a skin file "/>
+				<return type="iUISkin *" typec="iUISkin*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSkinPath"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afContentsScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
 			<method
 				const="yes"
 				java_name="getUISkin"
@@ -21646,7 +21661,7 @@
 				property="get"
 				property_name2="uiskin"
 				property_name="uiskin">
-				<comments desc="\name Skins @{ Get the UISkin object "/>
+				<comments desc="Get the UISkin object "/>
 				<return type="iUISkin *" typec="iUISkin*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="setUISkin" name="SetUISkin" num_parameters="1">

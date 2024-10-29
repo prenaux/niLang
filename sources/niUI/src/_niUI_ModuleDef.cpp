@@ -20353,6 +20353,22 @@ static const ni::sMethodDef iUIContext_GetHoverInputModifiers = {
 #endif
 };
 
+// Method: CreateUISkin
+static const ni::sParameterDef iUIContext_CreateUISkin_Parameters[2] = { 
+  { "apSkinPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "afContentsScale", ni::eType_F32, NULL, "tF32" }
+}; 
+static const ni::sMethodDef iUIContext_CreateUISkin = {
+  "CreateUISkin",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUISkin), "iUISkin*",
+  2, iUIContext_CreateUISkin_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUIContext_CreateUISkin)
+#else
+  NULL
+#endif
+};
+
 // Method: GetUISkin
 static const ni::sMethodDef iUIContext_GetUISkin = {
   "GetUISkin",
@@ -21540,6 +21556,7 @@ static const ni::sMethodDef* Methods_iUIContext[] = {
 	&iUIContext_GetHoverDelay,
 	&iUIContext_SetHoverInputModifiers,
 	&iUIContext_GetHoverInputModifiers,
+	&iUIContext_CreateUISkin,
 	&iUIContext_GetUISkin,
 	&iUIContext_SetUISkin,
 	&iUIContext_SetUISkinFromPath,

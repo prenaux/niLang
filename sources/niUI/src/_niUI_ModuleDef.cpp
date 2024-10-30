@@ -35874,6 +35874,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eVertexFormat() {
 static const ni::sEnumValueDef Enum_eVertexFormat_Values[] = {
 	{ "P", ni::eVertexFormat_P },
 	{ "PA", ni::eVertexFormat_PA },
+	{ "PAT1", ni::eVertexFormat_PAT1 },
 	{ "PN", ni::eVertexFormat_PN },
 	{ "PNA", ni::eVertexFormat_PNA },
 	{ "PNT1", ni::eVertexFormat_PNT1 },

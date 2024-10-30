@@ -203,15 +203,6 @@ enum eGraphicsPrimitiveType
   eGraphicsPrimitiveType_TriangleListAdjacency = 7,
   //! Triangle strip with adjacency information.
   eGraphicsPrimitiveType_TriangleStripAdjacency = 8,
-  //! List of screen aligned rectangle blitting.
-  //! \remark The vertex format used is Position|Tex1(3)|ColorA.
-  //!     Two vertices define one rectangle blitting (topLeft/bottomRight),
-  //!     the z coordinate of the texture define the slice/texture to use
-  //!     for the blitting.
-  //! \remark Blit list is a special type of screen aligned only blitting,
-  //!     it's mean to be used to render GUI elements, a 3D texture can
-  //!     be used to pack several pages of textures.
-  eGraphicsPrimitiveType_BlitList = 9,
   //! \internal
   eGraphicsPrimitiveType_Last niMaybeUnused = 10,
   //! \internal

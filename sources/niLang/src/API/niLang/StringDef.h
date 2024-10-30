@@ -91,6 +91,8 @@ niExportFuncCPP(tU32) StringSplitScript(
 niExportFunc(tBool) StringEncodeCsvShouldQuote(const achar *aaszString, const achar aDelim, const achar aQuote);
 niExportFuncCPP(cString) StringEncodeCsvQuote(const char *aaszString, const char aQuote);
 
+niExportFuncCPP(cString) StringBytesToReadableSize(tU64 aBytes, tBool abAlwaysPrintBytes = eFalse);
+
 niExportFuncCPP(cString&) StringAppendCsvValue(
   cString& o, const achar aDelim, const achar aQuote,
   const achar* aValue, const tU32 i);

@@ -3455,4 +3455,22 @@ niExportFuncCPP(tU32) StringSplitCsvFields(const cString& aToSplit,
   return token_num;
 }
 
+niExportFuncCPP(cString) StringBytesToReadableSize(tU64 aBytes, tBool abAlwaysPrintBytes) {
+  const char* suffixes[] = { "B", "KB", "MB", "GB", "TB", "PB" };
+  const int maxSuffix = niCountOf(suffixes) - 1;
+  int suffixIndex = 0;
+  tF64 bytes = (tF64)aBytes;
+  while (bytes >= 1024 && suffixIndex < maxSuffix) {
+    bytes /= 1024;
+    ++suffixIndex;
+  }
+  if (abAlwaysPrintBytes && suffixIndex != 0) {
+    return niFmt("%g%s (%uB)", (tF64)bytes, suffixes[suffixIndex], aBytes);
+  }
+  else {
+    return niFmt("%g%s", (tF64)bytes, suffixes[suffixIndex]);
+  }
+}
+
+
 }

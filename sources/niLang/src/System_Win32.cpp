@@ -1796,19 +1796,22 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
   tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth, tU32 anHeight, tU32 anPivotX, tU32 anPivotY, const tU32* apData) {
     if (aID == mnCustomCursorID)
       return eTrue;
-    if (anWidth != 32 || anHeight != 32) {
-      if (apData)
-        mnCustomCursorID = 0;
-      return eFalse;
-    }
+    // if (anWidth != 32 || anHeight != 32) {
+    if (apData)
+      mnCustomCursorID = 0;
+
     if (!apData) // we're just checking size support...
       return eTrue;
+
+
+    DWORD dwWidth = anWidth;
+    DWORD dwHeight = anHeight;
 
     BITMAPV5HEADER bi;
     ZeroMemory(&bi,sizeof(BITMAPV5HEADER));
     bi.bV5Size   = sizeof(BITMAPV5HEADER);
-    bi.bV5Width  = 32;
-    bi.bV5Height = 32;
+    bi.bV5Width  = anWidth;
+    bi.bV5Height = anHeight;
     bi.bV5Planes = 1;
     bi.bV5BitCount = 32;
     bi.bV5Compression = BI_BITFIELDS;
@@ -1830,7 +1833,7 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
     niCheck(lpBits!=NULL,eFalse);
 
     // Create an empty mask bitmap.
-    HBITMAP hMonoBitmap = CreateBitmap(32,32,1,1,NULL);
+    HBITMAP hMonoBitmap = CreateBitmap(dwWidth,dwHeight,1,1,NULL);
     if (!hMonoBitmap) {
       DeleteObject(hBitmap);
       niCheck(hMonoBitmap!=NULL,eFalse);
@@ -1840,9 +1843,9 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
     // the complete cursor is semi-transparent.
     const tU32* pSrc = apData;
     DWORD* lpdwPixel = (DWORD *)lpBits;
-    for (DWORD y = 0; y < 32; ++y) {
-      for (DWORD x = 0; x < 32; ++x) {
-        tU32 c = *(pSrc+(31-y)*32+x);
+    for (DWORD y = 0; y < dwHeight; ++y) {
+      for (DWORD x = 0; x < dwWidth; ++x) {
+        tU32 c = *(pSrc+(dwHeight-1-y)*dwWidth+x);
         tU8 r = ULColorGetR(c);
         tU8 g = ULColorGetG(c);
         tU8 b = ULColorGetB(c);

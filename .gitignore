@@ -66,3 +66,7 @@ xcuserdata/
 
 ## ignore the http server
 _http_server/
+niLang.sln
+niLang.vcxproj
+Debug
+.vs

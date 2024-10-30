@@ -19,6 +19,7 @@
 #include <vulkan/vulkan_metal.h>
 #include <MoltenVK/mvk_vulkan.h>
 #include "../../niUI/src/API/niUI/IVertexArray.h"
+#include "../../niUI/src/API/niUI/IIndexArray.h"
 #define niVulkanMemoryAllocator_Implement
 #include "../../thirdparty/VulkanMemoryAllocator/niVulkanMemoryAllocator.h"
 #include "shaders/triangle_vs.spv.h"
@@ -419,6 +420,33 @@ TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
   }
 }
 
+#define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
+
+static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType) {
+  switch (aType) {
+    case eGraphicsPrimitiveType_PointList:
+      return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+    case eGraphicsPrimitiveType_LineList:
+      return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+    case eGraphicsPrimitiveType_LineStrip:
+      return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+    case eGraphicsPrimitiveType_TriangleList:
+      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    case eGraphicsPrimitiveType_TriangleStrip:
+      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+    case eGraphicsPrimitiveType_LineListAdjacency:
+      return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
+    case eGraphicsPrimitiveType_LineStripAdjacency:
+      return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+    case eGraphicsPrimitiveType_TriangleListAdjacency:
+      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
+    case eGraphicsPrimitiveType_TriangleStripAdjacency:
+      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
+    default:
+      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  }
+}
+
 struct sVulkanDriver {
   VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
@@ -517,50 +545,103 @@ struct sVulkanFramebuffer {
   }
 };
 
-struct sVulkanVertexArray : public ImplRC<iVertexArray> {
-  niBeginClass(sVulkanVertexArray);
-
+struct sVulkanBuffer {
   nn_mut<sVulkanDriver> _driver;
-  VkBuffer _buffer = VK_NULL_HANDLE;
-  VmaAllocation _allocation = nullptr;
-  cFVFDescription _fvf;
-  tU32 _numVertices;
-  tBool _locked;
+  VkBuffer _vkBuffer = VK_NULL_HANDLE;
+  VmaAllocation _vmaAllocation = nullptr;
+  tBool _locked = eFalse;
+  const eArrayUsage _usage;
 
-  sVulkanVertexArray(ain_nn_mut<sVulkanDriver> aDriver, tU32 aNumVertices, tU32 aFVF)
+  sVulkanBuffer(ain_nn_mut<sVulkanDriver> aDriver, eArrayUsage aUsage)
       : _driver(aDriver)
-  {
-    _numVertices = aNumVertices;
-    _locked = eFalse;
-    _fvf.Setup(aFVF);
+      , _usage(aUsage)
+  {}
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = _numVertices * _fvf.GetStride();
-    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  tBool Create(tU32 anSize, VkBufferUsageFlags aUsage) {
+    VkBufferCreateInfo bufferInfo = {
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = anSize,
+      .usage = aUsage
+    };
 
-    VmaAllocationCreateInfo allocInfo = {};
-    allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+    VmaAllocationCreateInfo allocInfo = {
+      .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
+    };
 
     niCheck(vmaCreateBuffer(
       _driver->_allocator, &bufferInfo, &allocInfo,
-      &_buffer, &_allocation, nullptr) == VK_SUCCESS, ;);
+      &_vkBuffer, &_vmaAllocation, nullptr) == VK_SUCCESS, eFalse);
+
+    return eTrue;
   }
 
-  ~sVulkanVertexArray() {
+  void Destroy() {
     if (_locked) {
       Unlock();
     }
-    if (_allocation != nullptr) {
-      vmaDestroyBuffer(_driver->_allocator, _buffer, _allocation);
-      _allocation = nullptr;
-      _buffer = VK_NULL_HANDLE;
+    if (_vkBuffer) {
+      vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
+      _vkBuffer = VK_NULL_HANDLE;
+      _vmaAllocation = nullptr;
     }
+  }
+
+  tBool IsOK() const {
+    return _vkBuffer != VK_NULL_HANDLE;
+  }
+
+  tPtr Lock(tU32 anStart, tU32 anSize, eLock aLock) {
+    niCheck(!_locked,nullptr);
+
+    // TODO: Bad (but should be correct) as it stalls the whole pipeline. Only
+    // for the first implementation. Take a look at
+    // https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/usage_patterns.html#usage_patterns_advanced_data_uploading
+    // to do something better for dynamic arrays.
+    vkDeviceWaitIdle(_driver->_device);
+
+    tPtr mappedData;
+    niCheck(vmaMapMemory(_driver->_allocator, _vmaAllocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
+    _locked = eTrue;
+    return mappedData + anStart;
+  }
+
+  tBool Unlock() {
+    niCheck(_locked,eFalse);
+    vmaUnmapMemory(_driver->_allocator, _vmaAllocation);
+    _locked = eFalse;
+    return eTrue;
+  }
+};
+
+struct sVulkanVertexArray : public ImplRC<iVertexArray> {
+  niBeginClass(sVulkanVertexArray);
+
+  sVulkanBuffer _buffer;
+  const cFVFDescription _fvf;
+  const tU32 _numVertices;
+
+  sVulkanVertexArray(ain_nn_mut<sVulkanDriver> aDriver, tU32 aNumVertices, tU32 aFVF, eArrayUsage aUsage)
+      : _buffer(aDriver, aUsage)
+      , _numVertices(aNumVertices)
+      , _fvf(aFVF)
+  {
+    niCheck(_buffer.Create(
+      _numVertices * _fvf.GetStride(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT), ;);
+
+    VULKAN_TRACE((
+      ">>> MetalVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %s.",
+      FVFToString(_fvf.GetFVF()).Chars(),
+      this->GetNumVertices(),_fvf.GetStride(),
+      StringBytesToReadableSize(_fvf.GetStride() * _numVertices * 12357, eTrue)));
+  }
+
+  ~sVulkanVertexArray() {
+    _buffer.Destroy();
   }
 
   tBool __stdcall IsOK() const override {
     niClassIsOK(sVulkanVertexArray);
-    return _allocation != nullptr;
+    return _buffer.IsOK();
   }
 
   tFVF __stdcall GetFVF() const override {
@@ -576,32 +657,17 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
   }
 
   tPtr __stdcall Lock(tU32 aFirstVertex, tU32 aNumVertex, eLock aLock) override {
-    niCheck(!_locked,nullptr);
-
-    // TODO: Bad (but should be correct) as it stalls the whole pipeline. Only
-    // for the first implementation. Take a look at
-    // https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/usage_patterns.html#usage_patterns_advanced_data_uploading
-    // to do something better for dynamic arrays.
-    vkDeviceWaitIdle(_driver->_device);
-
-    tU32 offset = aFirstVertex * _fvf.GetStride();
-    tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
-
-    tPtr mappedData;
-    niCheck(vmaMapMemory(_driver->_allocator, _allocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
-    _locked = eTrue;
-    return mappedData + offset;
+    const tU32 offset = aFirstVertex * _fvf.GetStride();
+    const tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
+    return _buffer.Lock(offset,size,aLock);
   }
 
   tBool __stdcall Unlock() override {
-    niCheck(_locked,eFalse);
-    vmaUnmapMemory(_driver->_allocator, _allocation);
-    _locked = eFalse;
-    return eTrue;
+    return _buffer.Unlock();
   }
 
   tBool __stdcall GetIsLocked() const override {
-    return _locked;
+    return _buffer._locked;
   }
 
   iHString* __stdcall GetDeviceResourceName() const override {
@@ -618,6 +684,75 @@ struct sVulkanVertexArray : public ImplRC<iVertexArray> {
   }
 
   niEndClass(sVulkanVertexArray);
+};
+
+const tU32 knVulkanIndexSize = sizeof(tU32);
+
+struct sVulkanIndexArray : public ni::ImplRC<iIndexArray> {
+  sVulkanBuffer _buffer;
+  const eGraphicsPrimitiveType _primType;
+  const tU32 _numIndices;
+  const VkIndexType  _indexType = VK_INDEX_TYPE_UINT32;
+
+  sVulkanIndexArray(ain_nn_mut<sVulkanDriver> aDriver, eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, eArrayUsage aUsage)
+      : _buffer(aDriver, aUsage)
+      , _primType(aPrimType)
+      , _numIndices(anNumIndices)
+  {
+    niCheck(_buffer.Create(
+      knVulkanIndexSize * _numIndices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT), ;);
+
+    niDebugFmt((
+      ">>> VulkanIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %s.",
+      _primType,
+      0xFFFFFFFF,
+      this->GetNumIndices(), knVulkanIndexSize,
+      StringBytesToReadableSize(knVulkanIndexSize * _numIndices)));
+  }
+
+  ~sVulkanIndexArray() {
+    _buffer.Destroy();
+  }
+
+  tBool __stdcall IsOK() const niImpl {
+    return _buffer.IsOK();
+  }
+
+  iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return NULL;
+  }
+  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const niImpl {
+    return _primType;
+  }
+  virtual tU32 __stdcall GetNumIndices() const niImpl {
+    return _numIndices;
+  }
+  virtual tU32 __stdcall GetMaxVertexIndex() const niImpl {
+    return 0xFFFFFFFF;
+  }
+  virtual eArrayUsage __stdcall GetUsage() const niImpl {
+    return _buffer._usage;
+  }
+
+  tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) niImpl {
+    return _buffer.Lock(anFirstIndex * knVulkanIndexSize, anNumIndex * knVulkanIndexSize, aLock);
+  }
+  tBool __stdcall Unlock() niImpl {
+    return _buffer.Unlock();
+  }
+  virtual tBool __stdcall GetIsLocked() const niImpl {
+    return _buffer._locked;
+  }
 };
 
 struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
@@ -1114,6 +1249,177 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
   }
 }
 
+struct sVulkanPipelineVertexPA {
+  VkShaderModule _vertexShader = VK_NULL_HANDLE;
+  VkShaderModule _pixelShader = VK_NULL_HANDLE;
+  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _vkPipeline = VK_NULL_HANDLE;
+
+  tBool _CreateShaders(VkDevice avkDevice) {
+    VkShaderModuleCreateInfo vertInfo = {
+      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+      .codeSize = (size_t)triangle_vs_spv_DATA_SIZE,
+      .pCode = (const uint32_t*)triangle_vs_spv_DATA
+    };
+    niCheck(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader) == VK_SUCCESS, eFalse);
+
+    VkShaderModuleCreateInfo fragInfo = {
+      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+      .codeSize = (size_t)triangle_ps_spv_DATA_SIZE,
+      .pCode = (const uint32_t*)triangle_ps_spv_DATA
+    };
+    niCheck(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader) == VK_SUCCESS, eFalse);
+    return eTrue;
+  }
+
+  tBool _CreatePipeline(VkDevice avkDevice, VkRenderPass avkRenderPass) {
+    VkPipelineLayoutCreateInfo layoutInfo = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      .setLayoutCount = 0,
+      .pushConstantRangeCount = 0
+    };
+    niCheck(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout) == VK_SUCCESS, eFalse);
+
+    VkVertexInputBindingDescription bindingDesc = {
+      .binding = 0,
+      .stride = sizeof(sVertexPA),
+      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+    };
+
+    VkVertexInputAttributeDescription attrDesc[] = {
+      {
+        .location = 0,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offsetof(sVertexPA, pos)
+      },
+      {
+        .location = 1,
+        .binding = 0,
+        .format = VK_FORMAT_R32_UINT,
+        .offset = offsetof(sVertexPA, colora)
+      }
+    };
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+      .vertexBindingDescriptionCount = 1,
+      .pVertexBindingDescriptions = &bindingDesc,
+      .vertexAttributeDescriptionCount = 2,
+      .pVertexAttributeDescriptions = attrDesc
+    };
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+      .primitiveRestartEnable = VK_FALSE
+    };
+
+    VkDynamicState dynamicStates[] = {
+      VK_DYNAMIC_STATE_VIEWPORT,
+      VK_DYNAMIC_STATE_SCISSOR
+    };
+
+    VkPipelineDynamicStateCreateInfo dynamicState = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+      .dynamicStateCount = 2,
+      .pDynamicStates = dynamicStates
+    };
+
+    VkPipelineViewportStateCreateInfo viewportState = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+      .viewportCount = 1,
+      .scissorCount = 1,
+    };
+
+    VkPipelineRasterizationStateCreateInfo rasterizer = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+      .depthClampEnable = VK_FALSE,
+      .rasterizerDiscardEnable = VK_FALSE,
+      .polygonMode = VK_POLYGON_MODE_FILL,
+      .cullMode = VK_CULL_MODE_NONE,
+      .frontFace = VK_FRONT_FACE_CLOCKWISE,
+      .depthBiasEnable = VK_FALSE,
+      .lineWidth = 1.0f
+    };
+
+    VkPipelineMultisampleStateCreateInfo multisampling = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+      .sampleShadingEnable = VK_FALSE
+    };
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment = {
+      .blendEnable = VK_FALSE,
+      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+    };
+
+    VkPipelineColorBlendStateCreateInfo colorBlending = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+      .logicOpEnable = VK_FALSE,
+      .attachmentCount = 1,
+      .pAttachments = &colorBlendAttachment
+    };
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {
+      {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+        .stage = VK_SHADER_STAGE_VERTEX_BIT,
+        .module = _vertexShader,
+        .pName = "main"
+      },
+      {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+        .module = _pixelShader,
+        .pName = "main"
+      }
+    };
+
+    VkGraphicsPipelineCreateInfo pipelineInfo = {
+      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      .stageCount = 2,
+      .pStages = shaderStages,
+      .pVertexInputState = &vertexInputInfo,
+      .pInputAssemblyState = &inputAssembly,
+      .pViewportState = &viewportState,
+      .pDynamicState = &dynamicState,
+      .pRasterizationState = &rasterizer,
+      .pMultisampleState = &multisampling,
+      .pDepthStencilState = nullptr,
+      .pColorBlendState = &colorBlending,
+      .layout = _vkPipelineLayout,
+      .renderPass = avkRenderPass,
+      .subpass = 0
+    };
+
+    niCheck(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline) == VK_SUCCESS, eFalse);
+    return eTrue;
+  }
+
+  tBool Init(VkDevice aDevice, VkRenderPass aRenderPass) {
+    niCheck(_CreateShaders(aDevice), eFalse);
+    niCheck(_CreatePipeline(aDevice,aRenderPass), eFalse);
+    return eTrue;
+  }
+
+  void Cleanup(VkDevice aDevice) {
+    if (_vertexShader != VK_NULL_HANDLE) {
+      vkDestroyShaderModule(aDevice, _vertexShader, nullptr);
+      _vertexShader = VK_NULL_HANDLE;
+    }
+    if (_pixelShader != VK_NULL_HANDLE) {
+      vkDestroyShaderModule(aDevice, _pixelShader, nullptr);
+      _pixelShader = VK_NULL_HANDLE;
+    }
+    if (_vkPipeline != VK_NULL_HANDLE) {
+      vkDestroyPipeline(aDevice, _vkPipeline, nullptr);
+      _vkPipeline = VK_NULL_HANDLE;
+    }
+  }
+};
+
 TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
@@ -1136,13 +1442,11 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
     };
     tF64 _clearTimer = 0.0f;
     Ptr<sVulkanVertexArray> _va;
-    VkShaderModule _vertexShader = VK_NULL_HANDLE;
-    VkShaderModule _pixelShader = VK_NULL_HANDLE;
-    VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
-    VkPipeline _pipeline = VK_NULL_HANDLE;
+    sVulkanPipelineVertexPA _pipeline;
 
-    tBool _CreateVertexArray() {
-      _va = niNew sVulkanVertexArray(astl::non_null{this}, 3, sVertexPA::eFVF);
+    tBool _CreateArrays() {
+      _va = niNew sVulkanVertexArray(
+        astl::non_null{this}, 3, sVertexPA::eFVF, eArrayUsage_Static);
       niCheckIsOK(_va, eFalse);
       {
         sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);
@@ -1155,167 +1459,16 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
       return eTrue;
     }
 
-    tBool _CreateShaders() {
-      VkShaderModuleCreateInfo vertInfo = {
-        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-        .codeSize = (size_t)triangle_vs_spv_DATA_SIZE,
-        .pCode = (const uint32_t*)triangle_vs_spv_DATA
-      };
-      niCheck(vkCreateShaderModule(_device, &vertInfo, nullptr, &_vertexShader) == VK_SUCCESS, eFalse);
-
-      VkShaderModuleCreateInfo fragInfo = {
-        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-        .codeSize = (size_t)triangle_ps_spv_DATA_SIZE,
-        .pCode = (const uint32_t*)triangle_ps_spv_DATA
-      };
-      niCheck(vkCreateShaderModule(_device, &fragInfo, nullptr, &_pixelShader) == VK_SUCCESS, eFalse);
-      return eTrue;
-    }
-
-    tBool _CreatePipeline() {
-      VkPipelineLayoutCreateInfo layoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
-        .pushConstantRangeCount = 0
-      };
-      niCheck(vkCreatePipelineLayout(_device, &layoutInfo, nullptr, &_pipelineLayout) == VK_SUCCESS, eFalse);
-
-      VkVertexInputBindingDescription bindingDesc = {
-        .binding = 0,
-        .stride = sizeof(sVertexPA),
-        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
-      };
-
-      VkVertexInputAttributeDescription attrDesc[] = {
-        {
-          .location = 0,
-          .binding = 0,
-          .format = VK_FORMAT_R32G32B32_SFLOAT,
-          .offset = offsetof(sVertexPA, pos)
-        },
-        {
-          .location = 1,
-          .binding = 0,
-          .format = VK_FORMAT_R32_UINT,
-          .offset = offsetof(sVertexPA, colora)
-        }
-      };
-
-      VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-        .vertexBindingDescriptionCount = 1,
-        .pVertexBindingDescriptions = &bindingDesc,
-        .vertexAttributeDescriptionCount = 2,
-        .pVertexAttributeDescriptions = attrDesc
-      };
-
-      VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-        .primitiveRestartEnable = VK_FALSE
-      };
-
-      VkDynamicState dynamicStates[] = {
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_SCISSOR
-      };
-
-      VkPipelineDynamicStateCreateInfo dynamicState = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-        .dynamicStateCount = 2,
-        .pDynamicStates = dynamicStates
-      };
-
-      VkPipelineViewportStateCreateInfo viewportState = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-        .viewportCount = 1,
-        .scissorCount = 1,
-      };
-
-      VkPipelineRasterizationStateCreateInfo rasterizer = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-        .depthClampEnable = VK_FALSE,
-        .rasterizerDiscardEnable = VK_FALSE,
-        .polygonMode = VK_POLYGON_MODE_FILL,
-        .cullMode = VK_CULL_MODE_NONE,
-        .frontFace = VK_FRONT_FACE_CLOCKWISE,
-        .depthBiasEnable = VK_FALSE,
-        .lineWidth = 1.0f
-      };
-
-      VkPipelineMultisampleStateCreateInfo multisampling = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-        .sampleShadingEnable = VK_FALSE
-      };
-
-      VkPipelineColorBlendAttachmentState colorBlendAttachment = {
-        .blendEnable = VK_FALSE,
-        .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-      };
-
-      VkPipelineColorBlendStateCreateInfo colorBlending = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-        .logicOpEnable = VK_FALSE,
-        .attachmentCount = 1,
-        .pAttachments = &colorBlendAttachment
-      };
-
-      VkPipelineShaderStageCreateInfo shaderStages[] = {
-        {
-          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-          .stage = VK_SHADER_STAGE_VERTEX_BIT,
-          .module = _vertexShader,
-          .pName = "main"
-        },
-        {
-          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-          .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-          .module = _pixelShader,
-          .pName = "main"
-        }
-      };
-
-      VkGraphicsPipelineCreateInfo pipelineInfo = {
-        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .stageCount = 2,
-        .pStages = shaderStages,
-        .pVertexInputState = &vertexInputInfo,
-        .pInputAssemblyState = &inputAssembly,
-        .pViewportState = &viewportState,
-        .pDynamicState = &dynamicState,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState = &multisampling,
-        .pDepthStencilState = nullptr,
-        .pColorBlendState = &colorBlending,
-        .layout = _pipelineLayout,
-        .renderPass = _renderPass,
-        .subpass = 0
-      };
-
-      niCheck(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) == VK_SUCCESS, eFalse);
-      return eTrue;
-    }
-
-
     tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
-      niCheck(_CreateVertexArray(), eFalse);
-      niCheck(_CreateShaders(), eFalse);
-      niCheck(_CreatePipeline(), eFalse);
+      niCheck(_CreateArrays(), eFalse);
+      niCheck(_pipeline.Init(_device,_renderPass), eFalse);
       return eTrue;
     }
 
     void Cleanup() override {
-      if (_vertexShader != VK_NULL_HANDLE) {
-        vkDestroyShaderModule(_device, _vertexShader, nullptr);
-        _vertexShader = VK_NULL_HANDLE;
-      }
-      if (_pixelShader != VK_NULL_HANDLE) {
-        vkDestroyShaderModule(_device, _pixelShader, nullptr);
-        _pixelShader = VK_NULL_HANDLE;
-      }
+      _va = nullptr;
+      _pipeline.Cleanup(_device);
       sVulkanWindowSink::Cleanup();
     }
 
@@ -1356,8 +1509,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
 
       vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       {
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-        VkBuffer vertexBuffers[] = {_va->_buffer};
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
+        VkBuffer vertexBuffers[] = {_va->_buffer._vkBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdDraw(_commandBuffer, 3, 1, 0, 0);
@@ -1369,6 +1522,134 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
   };
 
   Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink();
+  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
+TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
+  wnd->GetMessageHandlers()->AddSink(sink.ptr());
+
+  struct sVulkanSquare_VulkanWindowSink : public sVulkanWindowSink {
+    VkClearValue _clearValue = {
+      // r, g, b, a
+      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
+    };
+    tF64 _clearTimer = 0.0f;
+    Ptr<sVulkanVertexArray> _va;
+    Ptr<sVulkanIndexArray> _ia;
+    sVulkanPipelineVertexPA _pipeline;
+
+    tBool _CreateArrays() {
+      {
+        _va = niNew sVulkanVertexArray(
+          astl::non_null{this}, 4, sVertexPA::eFVF, eArrayUsage_Static);
+        niCheckIsOK(_va, eFalse);
+        sVertexPA* pVerts = (sVertexPA*)_va->Lock(0, 4, eLock_Discard);
+        pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
+        pVerts[1] = {{ 0.5f, -0.5f, 0.0f}, 0xFF00FF00}; // Bottom Right - Green
+        pVerts[2] = {{ 0.5f,  0.5f, 0.0f}, 0xFFFF0000}; // Top Right - Blue
+        pVerts[3] = {{-0.5f,  0.5f, 0.0f}, 0xFFFFFFFF}; // Top Left - White
+        _va->Unlock();
+      }
+      {
+        _ia = niNew sVulkanIndexArray(
+          astl::non_null{this}, eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
+        niCheckIsOK(_ia, eFalse);
+        tU32* pIndices = (tU32*)_ia->Lock(0, 6, eLock_Discard);
+        pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
+        pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
+        _ia->Unlock();
+      }
+      return eTrue;
+    }
+
+    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+      niCheck(_pipeline.Init(_device,_renderPass), eFalse);
+      niCheck(_CreateArrays(), eFalse);
+      return eTrue;
+    }
+
+    void Cleanup() override {
+      _va = nullptr;
+      _ia = nullptr;
+      _pipeline.Cleanup(_device);
+      sVulkanWindowSink::Cleanup();
+    }
+
+    void Draw() override {
+      niCheck(BeginFrame(),;);
+
+      VkViewport viewport = {
+        .width = (float)_currentFb._width,
+        .height = (float)_currentFb._height,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+      };
+      VkRect2D scissor = {{0, 0}, {_currentFb._width, _currentFb._height}};
+
+      vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
+      vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearValue = {
+          .color = {{
+              (tF32)RandFloat(), // r
+              (tF32)RandFloat(), // g
+              (tF32)RandFloat(), // b
+              1.0f               // a
+            }}
+        };
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      VkRenderPassBeginInfo renderPassInfo = {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = _renderPass,
+        .framebuffer = _currentFb._framebuffer,
+        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
+        .clearValueCount = 1,
+        .pClearValues = &_clearValue
+      };
+
+      vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      {
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
+        VkBuffer vertexBuffers[] = {_va->_buffer._vkBuffer};
+        VkDeviceSize offsets[] = {0};
+
+        vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(_commandBuffer, _ia->_buffer._vkBuffer, 0, _ia->_indexType);
+        vkCmdDrawIndexed(_commandBuffer, _ia->GetNumIndices(), 1, 0, 0, 0);
+      }
+      vkCmdEndRenderPass(_commandBuffer);
+
+      this->PresentAndCommit();
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanSquare_VulkanWindowSink();
   CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 

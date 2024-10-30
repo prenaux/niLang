@@ -3,10 +3,15 @@ if ! $(TARGET_FEATURE_EXE) { return ; }
 
 tkDefTest Test_niLang : 1.0.0 ;
 MBEDTLS_Hdrs $(BUILD_SRC) ;
+
+# TODO: REMOVE, this is only for our wip Vulkan test implementation
 Vulkan_Hdrs $(BUILD_SRC) ;
 
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
+
+# TODO: REMOVE, this is only for our wip Vulkan test implementation
+niImportModuleDll niUI ;
 
 SRC = [ tkPkgSrc ] ;
 
@@ -14,6 +19,7 @@ BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niLang ] ;
 
+# TODO: REMOVE, this is only for our wip Vulkan test implementation
 Vulkan_LinkLibs $(PKGTARGET) ;
 
 if ( $(EMSCRIPTEN) = 1 ) {

@@ -188,12 +188,6 @@
 			<value name="eGraphicsPrimitiveType_TriangleStripAdjacency" value="8 ">
 				<comments desc="Triangle strip with adjacency information. "/>
 			</value>
-			<value name="eGraphicsPrimitiveType_BlitList" value="9 ">
-				<comments desc="List of screen aligned rectangle blitting. ">
-					<remark text="The vertex format used is Position|Tex1(3)|ColorA. Two vertices define one rectangle blitting (topLeft/bottomRight), the z coordinate of the texture define the slice/texture to use for the blitting. "/>
-					<remark text="Blit list is a special type of screen aligned only blitting, it&apos;s mean to be used to render GUI elements, a 3D texture can be used to pack several pages of textures. "/>
-				</comments>
-			</value>
 			<value name="eGraphicsPrimitiveType_Last" value="10 ">
 				<comments desc="\internal "/>
 			</value>

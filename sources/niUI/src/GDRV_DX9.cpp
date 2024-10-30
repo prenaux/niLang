@@ -462,7 +462,6 @@ D3DPRIMITIVETYPE D3D9_GetPrimitivePRIMITIVETYPE(eGraphicsPrimitiveType aType) {
   niConvTableItem(eGraphicsPrimitiveType_TriangleListAdjacency, D3DPT_TRIANGLELIST);
   niConvTableItem(eGraphicsPrimitiveType_TriangleStrip, D3DPT_TRIANGLESTRIP);
   niConvTableItem(eGraphicsPrimitiveType_TriangleStripAdjacency, D3DPT_TRIANGLESTRIP);
-  niConvTableItem(eGraphicsPrimitiveType_BlitList, D3DPT_TRIANGLELIST);
   niConvTableEnd(D3DPT_FORCE_DWORD)
       }
 

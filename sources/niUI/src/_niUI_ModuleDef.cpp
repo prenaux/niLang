@@ -36065,7 +36065,6 @@ static const ni::sEnumValueDef Enum_eGraphicsPrimitiveType_Values[] = {
 	{ "LineStripAdjacency", ni::eGraphicsPrimitiveType_LineStripAdjacency },
 	{ "TriangleListAdjacency", ni::eGraphicsPrimitiveType_TriangleListAdjacency },
 	{ "TriangleStripAdjacency", ni::eGraphicsPrimitiveType_TriangleStripAdjacency },
-	{ "BlitList", ni::eGraphicsPrimitiveType_BlitList },
 	{ "Last", ni::eGraphicsPrimitiveType_Last },
 };
 static const ni::sEnumDef Enum_eGraphicsPrimitiveType = {

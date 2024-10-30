@@ -1014,6 +1014,7 @@ inline tPtr FVFLerp(tFVF aFVF, tPtr _pOut, const tPtr _pA, const tPtr _pB, tF32 
 enum eVertexFormat {
   eVertexFormat_P = eFVF_Position,
   eVertexFormat_PA = eFVF_Position|eFVF_ColorA,
+  eVertexFormat_PAT1 = eFVF_Position|eFVF_ColorA|eFVF_Tex1,
   eVertexFormat_PN = eFVF_Position|eFVF_Normal,
   eVertexFormat_PNA = eFVF_Position|eFVF_Normal|eFVF_ColorA,
   eVertexFormat_PNT1 = eFVF_Position|eFVF_Normal|eFVF_Tex1,
@@ -1035,6 +1036,13 @@ struct sVertexPA {
   enum { eFVF = eVertexFormat_PA };
   sVec3f pos;
   tU32   colora;
+};
+
+struct sVertexPAT1 {
+  enum { eFVF = eVertexFormat_PAT1 };
+  sVec3f pos;
+  tU32   colora;
+  sVec2f tex1;
 };
 
 struct sVertexPN {

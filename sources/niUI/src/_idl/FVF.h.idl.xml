@@ -99,6 +99,9 @@
 			<value name="eVertexFormat_PA" value="eFVF_Position|eFVF_ColorA ">
 				<comments desc=""/>
 			</value>
+			<value name="eVertexFormat_PAT1" value="eFVF_Position|eFVF_ColorA|eFVF_Tex1 ">
+				<comments desc=""/>
+			</value>
 			<value name="eVertexFormat_PN" value="eFVF_Position|eFVF_Normal ">
 				<comments desc=""/>
 			</value>

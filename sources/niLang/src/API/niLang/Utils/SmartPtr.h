@@ -55,10 +55,6 @@ public:
       ni::AddRef(mPtr);
   }
 
-  Ptr(const astl::non_null<T*>& aRight) {
-    mPtr = niConstCast(T*,aRight.raw_ptr());
-    ni::AddRef(mPtr);
-  }
   template <typename U,
             typename = eastl::enable_if_t<
               eastl::is_convertible<U*, T*>::value>>
@@ -102,10 +98,6 @@ public:
     return *this;
   }
 
-  Ptr& operator = (const astl::non_null<T*> &newp) {
-    _Set(newp.raw_ptr());
-    return *this;
-  }
   template <typename U,
             typename = eastl::enable_if_t<
               eastl::is_convertible<U*, T*>::value>>

@@ -20,7 +20,7 @@ using eastl::make_shared;
 
 template<typename T, typename... Args>
 shared_non_null<T> make_shared_non_null(Args&&... args) {
-  return shared_non_null<T>(make_shared<T>(eastl::forward<Args>(args)...));
+  return as_non_null(make_shared<T>(eastl::forward<Args>(args)...));
 }
 
 template <typename T>
@@ -36,17 +36,17 @@ using unique_non_null = astl::non_null<eastl::unique_ptr<T> >;
 
 template<typename T, typename... Args>
 unique_non_null<T> make_unique_non_null(Args&&... args) {
-  return unique_non_null<T>(make_unique<T>(eastl::forward<Args>(args)...));
+  return as_non_null(make_unique<T>(eastl::forward<Args>(args)...));
 }
 
 template<typename T>
 astl::non_null<T*> as_non_null(const astl::shared_non_null<T>& v) {
-  return astl::non_null<T*>(v.raw_ptr().get());
+  return as_non_null(v.raw_ptr().get());
 }
 
 template<typename T>
 astl::non_null<T*> as_non_null(const astl::unique_non_null<T>& v) {
-  return astl::non_null<T*>(v.raw_ptr().get());
+  return as_non_null(v.raw_ptr().get());
 }
 
 /**

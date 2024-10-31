@@ -735,7 +735,7 @@ struct sWriteBufferToFile {
     if (!_file.IsOK()) {
       return 0;
     }
-    astl::non_null<iFile*> fp = _file.non_null();
+    Nonnull<iFile> fp = _file.non_null();
     const tSize writeSize = (aCommitSize >= 0) ? aCommitSize : _size;
     tSize r = 0;
     if (writeSize > 0) {

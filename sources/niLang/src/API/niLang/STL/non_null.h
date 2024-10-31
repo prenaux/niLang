@@ -11,12 +11,13 @@
 #include "../Types.h"
 #include "EASTL/functional.h"
 #include "EASTL/type_traits.h"
+#include "source_location.h"
+
+namespace astl {
 
 #ifndef TRACE_ASTL_NON_NULL
 #define TRACE_ASTL_NON_NULL(X)
 #endif
-
-namespace astl {
 
 namespace details {
 template <typename T, typename = void>
@@ -55,35 +56,54 @@ struct non_null
  public:
   static_assert(details::is_comparable_to_nullptr<T>::value, "T cannot be compared to nullptr.");
 
-  template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
-  constexpr explicit non_null(U&& u) : ptr_(eastl::forward<U>(u))
-  {
-    niPanicAssert(ptr_ != nullptr);
+  template <typename U>
+  constexpr non_null(U&& u, eastl::enable_if_t<eastl::is_pointer_v<U>>* = nullptr) {
+    static_assert(false, "Trying to move a raw pointer to non_null. Use ni::as_nn(ptr) or astl::as_non_null(ptr) to mark the raw pointer as non null.");
   }
 
   template <typename = eastl::enable_if_t<!eastl::is_same<std::nullptr_t, T>::value>>
-  constexpr explicit non_null(T u) : ptr_(eastl::move(u))
-  {
-    niPanicAssert(ptr_ != nullptr);
+  constexpr non_null(T u) {
+    static_assert(
+      false,
+      "Trying to copy a raw pointer to non_null. Use ni::as_nn(ptr) or astl::as_non_null(ptr) to mark the raw pointer as non null.");
   }
 
-  template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
-  constexpr non_null(const non_null<U>& other) : non_null(other.raw_ptr())
-  {}
+  // For non_null conversions - allow
+  template <typename U>
+  constexpr non_null(const non_null<U>& other,
+                  eastl::enable_if_t<!eastl::is_pointer_v<U>>* = nullptr)
+      : ptr_(other.raw_ptr()) {}
 
   template <typename U, typename = eastl::enable_if_t<eastl::is_convertible<U, T>::value>>
-  non_null& operator = (non_null<U>&& u) {
-    ptr_ = eastl::move(u.ptr_);
+  constexpr non_null(const non_null<U>& other) : ptr_(other.raw_ptr())
+  {}
+
+  non_null(const non_null& other) : ptr_(other.ptr_) {}
+  non_null(non_null&& other) : ptr_(eastl::move(other.ptr_)) {}
+
+  non_null& operator=(const non_null& other) {
+    this->ptr_ = other.ptr_;
+    return *this;
+  }
+  template <typename U>
+  non_null& operator=(const non_null<U>& other) {
+    this->ptr_ = other.ptr_;
     return *this;
   }
 
-  non_null(non_null&& other) = default;
-  non_null(const non_null& other) = default;
-  non_null& operator=(const non_null& other) = default;
+  non_null& operator=(non_null&& other) {
+    this->ptr_ = eastl::move(other.ptr_);
+    return *this;
+  }
+  template <typename U>
+  non_null& operator=(non_null<U>&& other) {
+    ptr_ = eastl::move(other.ptr_);
+    return *this;
+  }
 
   constexpr eastl::conditional_t<eastl::is_copy_constructible<T>::value, T, const T&> raw_ptr() const
   {
-    // No null check here, can be nulled by tUnsafeCheckNonnullInitForMacro.
+    // No null check here, can be nulled with tUnsafeUncheckedInitializer.
     return ptr_;
   }
 
@@ -116,6 +136,9 @@ struct non_null
   struct tUnsafeUncheckedInitializer {
     explicit tUnsafeUncheckedInitializer(T&& aPointer)
         : _maybe_null_ptr(eastl::move(aPointer)) {
+    }
+    explicit tUnsafeUncheckedInitializer(T& aPointer)
+        : _maybe_null_ptr(aPointer) {
     }
     ~tUnsafeUncheckedInitializer() {
     }
@@ -204,14 +227,17 @@ auto operator>=(const non_null<T>& lhs,
 static_assert(sizeof(non_null<int*>) == sizeof(int*), "non_null<> must be the same size as a pointer.");
 
 template <class T>
-auto as_non_null(T&& t) noexcept
+inline auto as_non_null(T&& t, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) noexcept
 {
-  return non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>>{eastl::forward<T>(t)};
-}
-
-template<typename DestT, typename SrcT>
-astl::non_null<DestT> const_cast_non_null(astl::non_null<SrcT> p) {
-  return astl::non_null<DestT>(const_cast<DestT>(p.raw_ptr()));
+  if (!t) {
+    ni_throw_panic(
+      _HSym(ni,panic),
+      "as_non_null(&&) with nullptr",
+      ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  typedef non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>> tNN;
+  return tNN{typename tNN::tUnsafeUncheckedInitializer(
+    eastl::forward<T>(t))};
 }
 
 #if (defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L))

@@ -1664,7 +1664,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
 
     tBool _CreateArrays() {
       _va = niNew sVulkanVertexArray(
-        astl::non_null{this}, 3, sVertexPA::eFVF, eArrayUsage_Static);
+        as_nn(this), 3, sVertexPA::eFVF, eArrayUsage_Static);
       niCheckIsOK(_va, eFalse);
       {
         sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);
@@ -1781,7 +1781,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
     tBool _CreateArrays() {
       {
         _va = niNew sVulkanVertexArray(
-          astl::non_null{this}, 4, sVertexPA::eFVF, eArrayUsage_Static);
+          as_nn(this), 4, sVertexPA::eFVF, eArrayUsage_Static);
         niCheckIsOK(_va, eFalse);
         sVertexPA* pVerts = (sVertexPA*)_va->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
@@ -1792,7 +1792,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
       }
       {
         _ia = niNew sVulkanIndexArray(
-          astl::non_null{this}, eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
+          as_nn(this), eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
         niCheckIsOK(_ia, eFalse);
         tU32* pIndices = (tU32*)_ia->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
@@ -2093,7 +2093,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
     tBool _CreateArrays() {
       {
         _va = niNew sVulkanVertexArray(
-          astl::non_null{this}, 4, sVertexPAT1::eFVF, eArrayUsage_Static);
+          as_nn(this), 4, sVertexPAT1::eFVF, eArrayUsage_Static);
         niCheckIsOK(_va, eFalse);
         sVertexPAT1* pVerts = (sVertexPAT1*)_va->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFFFFFFFF, {0.0f, 0.0f}}; // TL (White)
@@ -2104,7 +2104,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
       }
       {
         _ia = niNew sVulkanIndexArray(
-          astl::non_null{this}, eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
+          as_nn(this), eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
         niCheckIsOK(_ia, eFalse);
         tU32* pIndices = (tU32*)_ia->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
@@ -2134,7 +2134,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
                   bmp->GetHeight(),
                   bmp->GetPixelFormat()->GetFormat()));
 
-      _texture = niNew sVulkanTexture(astl::non_null{this});
+      _texture = niNew sVulkanTexture(as_nn(this));
       niCheck(_texture->Create(
         bmp->GetWidth(), bmp->GetHeight(), (tU32*)bmp->GetData()), eFalse);
 

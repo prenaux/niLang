@@ -231,7 +231,7 @@ struct Nonnull
   // Conversion operator to non_null<U*> where U is a base of T
   template <typename U, typename = eastl::enable_if_t<eastl::is_base_of<U, T>::value>>
   operator astl::non_null<U*>() const {
-    return astl::non_null<U*>(mRefPtr);
+    return astl::as_non_null((U*)mRefPtr);
   }
 
   struct tUnsafeUncheckedInitializer {
@@ -466,11 +466,6 @@ inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(QPtr<T>&& p) {
 }; // End of ni
 
 namespace astl {
-
-template<typename DestT, typename SrcT>
-astl::non_null<DestT> const_cast_non_null(const ni::Nonnull<SrcT>& p) {
-  return astl::non_null<DestT>(const_cast<DestT>(p.raw_ptr()));
-}
 
 template<typename T>
 astl::non_null<T*> as_non_null(const ni::Nonnull<T>& v) {

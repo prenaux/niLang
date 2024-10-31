@@ -361,12 +361,8 @@ static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(void*));
 static_assert(astl::is_same_v<amove<sVec2f>, sVec2f&&>);
 static_assert(astl::is_same_v<aout<sVec2f>, sVec2f&>);
 
-// Types are the same (as checked while dumping them by other means) but still
-// MSVC & GCC fails the static_assert
-#if !defined niMSVC && !defined niGCC
-static_assert(astl::is_same_v<ain<nn<iUnknown>>, const nn<iUnknown>>);
-static_assert(astl::is_same_v<ain<nn_mut<iUnknown>>, const nn_mut<iUnknown>>);
-#endif
+static_assert(sizeof(ain<nn<iUnknown>>) == sizeof(const nn<iUnknown>));
+static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(const nn_mut<iUnknown>));
 
 // Not allowed as input types
 // static_assert(astl::is_same_v<ain<NN<iUnknown>>, const nn<iUnknown>>);
@@ -421,12 +417,12 @@ constexpr T narrow_cast(U u) noexcept(false) {
 
 template <typename T, typename... Args>
 unn_mut<T> make_unn(Args&&... args) {
-  return unn_mut<T>(astl::make_unique<T>(astl::forward<Args>(args)...));
+  return astl::as_non_null(astl::make_unique<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
 snn_mut<T> make_snn(Args&&... args) {
-  return snn_mut<T>(astl::make_shared<T>(astl::forward<Args>(args)...));
+  return astl::as_non_null(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>

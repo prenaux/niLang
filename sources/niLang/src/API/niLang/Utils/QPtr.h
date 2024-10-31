@@ -169,10 +169,6 @@ struct QPtr {
     this->Swap(newp);
     return *this;
   }
-  QPtr& operator=(const astl::non_null<T*>& newp) {
-    this->Swap(newp.raw_ptr());
-    return *this;
-  }
   QPtr& operator=(const Nonnull<T>& newp) {
     this->Swap(newp.raw_ptr());
     return *this;

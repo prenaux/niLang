@@ -1881,17 +1881,21 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
   }
 }
 
-struct sVulkanTexture : public ImplRC<iUnknown> {
+struct sVulkanTexture : public ImplRC<iTexture> {
   nn_mut<sVulkanDriver> _driver;
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;
   VkImageView _vkView = VK_NULL_HANDLE;
   VkSampler _vkSampler = VK_NULL_HANDLE;
   tU32 _width = 0, _height = 0;
+  const tHStringPtr _name;
+  const tTextureFlags _flags = eTextureFlags_Default;
 
-  sVulkanTexture(ain_nn_mut<sVulkanDriver> aDriver)
+  sVulkanTexture(ain_nn_mut<sVulkanDriver> aDriver, iHString* ahspName)
       : _driver(aDriver)
-  {}
+      , _name(ahspName)
+  {
+  }
 
   ~sVulkanTexture() {
     if (_vkSampler) {
@@ -1906,6 +1910,55 @@ struct sVulkanTexture : public ImplRC<iUnknown> {
       vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
       _vkImage = VK_NULL_HANDLE;
     }
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const override {
+    return _name;
+  }
+
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall ResetDeviceResource() override {
+    return eTrue;
+  }
+
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
+    return this;
+  }
+
+  virtual eBitmapType __stdcall GetType() const override {
+    return eBitmapType_2D;
+  }
+
+  virtual tU32 __stdcall GetWidth() const override {
+    return _width;
+  }
+
+  virtual tU32 __stdcall GetHeight() const override {
+    return _height;
+  }
+
+  virtual tU32 __stdcall GetDepth() const override {
+    return 1;
+  }
+
+  virtual iPixelFormat* __stdcall GetPixelFormat() const override {
+    niPanicUnreachable("NOT IMPLEMENTED");
+    return nullptr;
+  }
+
+  virtual tU32 __stdcall GetNumMipMaps() const override {
+    return 1;
+  }
+
+  virtual tTextureFlags __stdcall GetFlags() const override {
+    return _flags;
+  }
+
+  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override {
+    return nullptr;
   }
 
   tBool Create(tU32 aWidth, tU32 aHeight, const tU32* apData) {
@@ -2058,7 +2111,6 @@ struct sVulkanTexture : public ImplRC<iUnknown> {
 
     return eTrue;
   }
-
 };
 
 TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
@@ -2134,7 +2186,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
                   bmp->GetHeight(),
                   bmp->GetPixelFormat()->GetFormat()));
 
-      _texture = niNew sVulkanTexture(as_nn(this));
+      _texture = niNew sVulkanTexture(as_nn(this), _H(fp->GetSourcePath()));
       niCheck(_texture->Create(
         bmp->GetWidth(), bmp->GetHeight(), (tU32*)bmp->GetData()), eFalse);
 

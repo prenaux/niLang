@@ -451,6 +451,109 @@ static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType)
   }
 }
 
+static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
+  astl::vector<VkVertexInputAttributeDescription> attrs;
+  tU32 location = 0;
+  tU32 offset = 0;
+
+  if (eFVF_HasPosition(aFVF)) {
+    attrs.push_back({
+        .location = location++,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offset
+      });
+    offset += sizeof(sVec3f);
+
+    if (eFVF_HasWeights(aFVF)) {
+      const tU32 numWeights = eFVF_NumWeights(aFVF);
+      switch (numWeights) {
+        case 1:
+          attrs.push_back({
+              .location = location++,
+              .binding = 0,
+              .format = VK_FORMAT_R32_SFLOAT,
+              .offset = offset
+            });
+          offset += sizeof(tF32);
+          break;
+        case 2:
+          attrs.push_back({
+              .location = location++,
+              .binding = 0,
+              .format = VK_FORMAT_R32G32_SFLOAT,
+              .offset = offset
+            });
+          offset += sizeof(tF32) * 2;
+          break;
+        case 3:
+          attrs.push_back({
+              .location = location++,
+              .binding = 0,
+              .format = VK_FORMAT_R32G32B32_SFLOAT,
+              .offset = offset
+            });
+          offset += sizeof(tF32) * 3;
+          break;
+        case 4:
+          attrs.push_back({
+              .location = location++,
+              .binding = 0,
+              .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+              .offset = offset
+            });
+          offset += sizeof(tF32) * 4;
+          break;
+        default:
+          niPanicUnreachable(niFmt("Unexpected number of vertex weights '%d'.",numWeights));
+          break;
+      }
+    }
+  }
+
+  if (niFlagIs(aFVF,eFVF_Indices)) {
+    attrs.push_back({
+        .location = location++,
+        .binding = 0,
+        .format = VK_FORMAT_R32_UINT,
+        .offset = offset
+      });
+    offset += sizeof(tU32);
+  }
+
+  if (niFlagIs(aFVF,eFVF_Normal)) {
+    attrs.push_back({
+        .location = location++,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offset
+      });
+    offset += sizeof(sVec3f);
+  }
+
+  if (niFlagIs(aFVF,eFVF_ColorA)) {
+    attrs.push_back({
+        .location = location++,
+        .binding = 0,
+        .format = VK_FORMAT_R32_UINT,
+        .offset = offset
+      });
+    offset += sizeof(tU32);
+  }
+
+  for (tU32 i = 0; i < eFVF_TexNumCoo(aFVF); ++i) {
+    attrs.push_back({
+        .location = location++,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32_SFLOAT,
+        .offset = offset
+      });
+    offset += sizeof(sVec2f);
+  }
+
+  return attrs;
+}
+
 struct sVulkanDriver {
   VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
@@ -1325,27 +1428,14 @@ struct sVulkanPipelineVertexPA {
       .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
     };
 
-    VkVertexInputAttributeDescription attrDesc[] = {
-      {
-        .location = 0,
-        .binding = 0,
-        .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = offsetof(sVertexPA, pos)
-      },
-      {
-        .location = 1,
-        .binding = 0,
-        .format = VK_FORMAT_R32_UINT,
-        .offset = offsetof(sVertexPA, colora)
-      }
-    };
+    astl::vector<VkVertexInputAttributeDescription> attrDesc = Vulkan_CreateVertexInputDesc(sVertexPA::eFVF);
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
       .vertexBindingDescriptionCount = 1,
       .pVertexBindingDescriptions = &bindingDesc,
-      .vertexAttributeDescriptionCount = 2,
-      .pVertexAttributeDescriptions = attrDesc
+      .vertexAttributeDescriptionCount = (tU32)attrDesc.size(),
+      .pVertexAttributeDescriptions = attrDesc.data()
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
@@ -1498,33 +1588,14 @@ struct sVulkanPipelineVertexPAT1 {
       .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
     };
 
-    VkVertexInputAttributeDescription attrDesc[] = {
-      {
-        .location = 0,
-        .binding = 0,
-        .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = offsetof(sVertexPAT1, pos)
-      },
-      {
-        .location = 1,
-        .binding = 0,
-        .format = VK_FORMAT_R32_UINT,
-        .offset = offsetof(sVertexPAT1, colora)
-      },
-      {
-        .location = 2,
-        .binding = 0,
-        .format = VK_FORMAT_R32G32_SFLOAT,
-        .offset = offsetof(sVertexPAT1, tex1)
-      }
-    };
+    astl::vector<VkVertexInputAttributeDescription> attrDesc = Vulkan_CreateVertexInputDesc(sVertexPAT1::eFVF);
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
       .vertexBindingDescriptionCount = 1,
       .pVertexBindingDescriptions = &bindingDesc,
-      .vertexAttributeDescriptionCount = niCountOf(attrDesc),
-      .pVertexAttributeDescriptions = attrDesc
+      .vertexAttributeDescriptionCount = (tU32)attrDesc.size(),
+      .pVertexAttributeDescriptions = attrDesc.data()
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {

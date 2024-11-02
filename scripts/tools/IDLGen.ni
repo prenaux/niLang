@@ -1421,11 +1421,11 @@
           break;
         }
         case "remark": {
-          remarks[remarks.len()-1] += l+eol;
+          remarks[?remarks.len()-1] += l+eol;
           break;
         }
         case "param": {
-          params[params.len()-1] += l+eol;
+          params[?params.len()-1] += l+eol;
           break;
         }
         default: {

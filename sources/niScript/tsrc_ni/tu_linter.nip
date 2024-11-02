@@ -37,6 +37,7 @@
 // - [ ] p2: metamethods should be named __add__, __invalidate__, __initialize__, etc... so that they are easily distinguishable and are linted correctly as such. __SetCanCallMetaMethod should be taken into account with the lint and/or potentially removed if a neater solution can be found.
 
 // Done:
+// - [x] p0: `foobar += 123;` doesnt mark 'foobar' as a missing key like `foobar = 123` does.
 // - [x] p2: 'typeof(x) == "void"' isnt correct it shouldnt pass lint
 // - [x] p1: In the VM the 'this' table should be different from the root table when running and importing modules. That is how the Linter lints and its the less confusing and more correct way of doing things. With Import() returning the this table it allows to do everything we did before, just more cleanly.
 // - [x] p0: Math operators should preserve the type of the first operand - since that's what match metamethods.
@@ -748,7 +749,24 @@ function main() {
     function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
+
       ::CHECK_EQUAL(0,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_26_opeq.ni",
+    function(aLogs, tTestLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_cant_set: "xyz_eq" key cant be set]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_pluseq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_minuseq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_muleq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_diveq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_moduloeq" not found]});
+
+      ::CHECK_EQUAL(6,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

@@ -36,7 +36,7 @@ done
 # Function to lint ni scripts
 function lint_ni_script() {
   if [ -d "$1" ]; then
-    FILES=$(rg -g '*.ni' -g '*.nip' -g '*.niw' -g '!**/niScript/tsrc_ni/linter_*.ni' --files "$1")
+    FILES=$(rg -g '*.ni' -g '*.nip' -g '*.niw' -g '!**/niScript/tsrc_ni/linter_*.ni' --files "$1" | sort)
     for f in $FILES; do
       (
         set -ex

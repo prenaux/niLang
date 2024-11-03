@@ -678,7 +678,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
       if (id == mnAutoScroll && !mpWidget->GetAbsoluteRect().Intersect(mpWidget->GetUIContext()->GetCursorPosition())) {
         QPtr<iWidgetScrollBar> ptrVSB = mptrVtScroll.ptr();
         if (ptrVSB.IsOK() && mptrVtScroll->GetVisible()) {
-          tF32 scrollpos = Floor(ptrVSB->GetScrollPosition());
+          tF32 scrollpos = Floor(mpSpringScroll->GetIdealPosition());
           tF32 pagesize = ptrVSB->GetPageSize();
           tU32 itemSize  = mvItems.size();
 
@@ -689,7 +689,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
           tF32 k = Ceil(pagesize) - pagesize;
           scrollpos += k;
 
-          ++scrollpos;
+          scrollpos += 1.0f;
           if (scrollpos > ptrVSB->GetScrollRange().y) {
             scrollpos = 0;
           }

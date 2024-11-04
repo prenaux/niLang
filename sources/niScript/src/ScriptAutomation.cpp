@@ -115,7 +115,7 @@ static int std_import_ex(HSQUIRRELVM v, tBool abNew)
 
   if (numParams != 1) {
     niSqUnGuard(v);
-    return sq_throwerror(v, niFmt("std_import: one parameter expected.", numParams));
+    return sq_throwerror(v, niFmt("std_import: one parameter expected, %d provided.", numParams));
   }
 
   eScriptType type = sqa_getscripttype(v,2);

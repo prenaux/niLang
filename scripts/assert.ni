@@ -110,13 +110,13 @@
   return actual;
 }
 
-::assertType <- #(expected,actual,_aMsg) {
+::assertType <- #(expectedType,actual,_aMsg) {
   local __lint = { typeof_usage = 0 }
   local actualType = (typeof actual)
-  if (!(expected == actualType)) {
+  if (!(expectedType == actualType)) {
     throw (_aMsg ? _aMsg : "Assert") + " ==> " +
-      "expected type '"+ ::lang.toString(expected) +
-      "' but was '" + ::lang.toString(actual) + "'."
+      "expected type '"+ expectedType +
+      "' but was '" + actualType + "'."
   }
   return actual;
 }
@@ -139,4 +139,10 @@
   ::assertType("string",actual,_aMsg);
   ::assertNotEmpty(actual,_aMsg);
   return actual;
+}
+
+::assertUnexpectedType <- #(actual,_aMsg) {
+  local __lint = { typeof_usage = 0 }
+  local actualType = (typeof actual)
+  throw (_aMsg ? _aMsg : "Assert") + " ==> " + "unexpected type '"+ actualType + "'.";
 }

@@ -11,7 +11,7 @@ module <- {
   }
 
   ///////////////////////////////////////////////
-  function createStringFile(string)
+  function createStringFile(string) iFile
   {
     local f = ::gLang.CreateFileDynamicMemory(0,"--string--")
     f.BeginTextFileWrite(::eTextEncodingFormat.Native,true)

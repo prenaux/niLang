@@ -1,4 +1,4 @@
-// glslangValidator -S vert -V texture_vs.glsl -o texture_vs.spv && bin2h texture_vs.spv texture_vs.spv.h texture_vs_spv
+// glslangValidator -S vert -V "$WORK/niLang/sources/niLang/tsrc/shaders/texture_vs.glsl" -o "$WORK/niLang/sources/niLang/tsrc/shaders/texture_vs.spv" && bin2h "$WORK/niLang/sources/niLang/tsrc/shaders/texture_vs.spv" "$WORK/niLang/sources/niLang/tsrc/shaders/texture_vs.spv.h" texture_vs_spv
 #version 450
 
 layout(location = 0) in vec3 inPosition;

@@ -2265,17 +2265,25 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
     }
 
     tBool _CreateDescriptorSetLayout() {
-      VkDescriptorSetLayoutBinding samplerBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1,
-        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+      VkDescriptorSetLayoutBinding bindings[2] = {
+        {  // Texture
+          .binding = 0,
+          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+          .descriptorCount = 1,
+          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+        },
+        {  // Sampler
+          .binding = 1,
+          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+          .descriptorCount = 1,
+          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+        }
       };
 
       VkDescriptorSetLayoutCreateInfo layoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = 1,
-        .pBindings = &samplerBinding
+        .bindingCount = niCountOf(bindings),
+        .pBindings = bindings
       };
 
       niCheck(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_vkDescSetLayout) == VK_SUCCESS, eFalse);
@@ -2292,16 +2300,22 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
     }
 
     tBool _CreateDescriptorPool() {
-      VkDescriptorPoolSize poolSize = {
-        .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1
+      VkDescriptorPoolSize poolSizes[2] = {
+        {
+          .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+          .descriptorCount = 1
+        },
+        {
+          .type = VK_DESCRIPTOR_TYPE_SAMPLER,
+          .descriptorCount = 1
+        }
       };
 
       VkDescriptorPoolCreateInfo poolInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
         .maxSets = 1,
-        .poolSizeCount = 1,
-        .pPoolSizes = &poolSize
+        .poolSizeCount = niCountOf(poolSizes),
+        .pPoolSizes = poolSizes
       };
 
       niCheck(vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_vkDescPool) == VK_SUCCESS, eFalse);
@@ -2317,21 +2331,34 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
 
       // Update descriptor with texture
       VkDescriptorImageInfo imageInfo = {
-        .sampler = _texture->_vkSampler,
         .imageView = _texture->_vkView,
         .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
       };
 
-      VkWriteDescriptorSet descriptorWrite = {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = _vkDescSet,
-        .dstBinding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1,
-        .pImageInfo = &imageInfo
+      VkDescriptorImageInfo samplerInfo = {
+        .sampler = _texture->_vkSampler
       };
 
-      vkUpdateDescriptorSets(_device, 1, &descriptorWrite, 0, nullptr);
+      VkWriteDescriptorSet writes[2] = {
+        {
+          .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+          .dstSet = _vkDescSet,
+          .dstBinding = 0,
+          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+          .descriptorCount = 1,
+          .pImageInfo = &imageInfo
+        },
+        {
+          .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+          .dstSet = _vkDescSet,
+          .dstBinding = 1,
+          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+          .descriptorCount = 1,
+          .pImageInfo = &samplerInfo
+        }
+      };
+
+      vkUpdateDescriptorSets(_device, niCountOf(writes), writes, 0, nullptr);
       return eTrue;
     }
 

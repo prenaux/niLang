@@ -182,12 +182,20 @@ module <- {
     throw "Can't find the temp folder."
   }
 
-  function getNewTempFilePath(aExt,_aName) {
-    local path = getTempDir().setfile((_aName || "")+::gLang.CreateGlobalUUID()).setext(aExt || "tmp")
-    _tempFilesCollector.Add(path)
+  function addTempFile(aPath) {
     if (_debugEchoAll) {
-      ::dbg("... Added temp file:" path)
+      ::dbg("... Added temp file:" aPath)
     }
+    _tempFilesCollector.Add(aPath)
+  }
+
+  function genNewTempFilePath(aExt,_aName,_aTag) {
+    return getTempDir().setfile((_aName || "")+(_aTag || ::gLang.CreateGlobalUUID())).setext(aExt || "tmp")
+  }
+
+  function getNewTempFilePath(aExt,_aName,_aTag) {
+    local path = genNewTempFilePath(aExt,_aName,_aTag)
+    this.addTempFile(path)
     return path;
   }
 

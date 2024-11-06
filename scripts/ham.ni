@@ -189,12 +189,12 @@ module <- {
     _tempFilesCollector.Add(aPath)
   }
 
-  function genNewTempFilePath(aExt,_aName,_aTag) {
+  function genTempFilePath(aExt,_aName,_aTag) {
     return getTempDir().setfile((_aName || "")+(_aTag || ::gLang.CreateGlobalUUID())).setext(aExt || "tmp")
   }
 
   function getNewTempFilePath(aExt,_aName,_aTag) {
-    local path = genNewTempFilePath(aExt,_aName,_aTag)
+    local path = genTempFilePath(aExt,_aName,_aTag)
     this.addTempFile(path)
     return path;
   }
@@ -449,7 +449,7 @@ module <- {
 
   function runDetachedBash(aScript) {
     local tmpFilePath = _writeHamBashScriptToTempFile(aScript)
-    {
+    if (_debugEchoAll) {
       ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }

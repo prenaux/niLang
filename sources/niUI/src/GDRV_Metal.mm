@@ -662,7 +662,6 @@ class cMetalShaderPixel :
 
 struct sMetalShaderLibrary {
   std::map<tU128,id<MTLRenderPipelineState> > _pipelines;
-  std::vector<id<MTLFunction> > _funcs;
 
   id<MTLLibrary> LoadLibrary(id<MTLDevice> aDevice, const achar* aString) {
     auto str = [NSString stringWithUTF8String:aString];

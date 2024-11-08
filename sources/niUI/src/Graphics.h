@@ -175,11 +175,8 @@ class cGraphics : public ImplRC<iGraphics>
   iBitmap2D* __stdcall CaptureFrontBuffer() const;
 
   // GDRV_Compiled.cpp
-  tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates);
   iSamplerStates* __stdcall GetCompiledSamplerStates(tIntPtr aHandle) const;
-  tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates);
   iRasterizerStates* __stdcall GetCompiledRasterizerStates(tIntPtr aHandle) const;
-  tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates);
   iDepthStencilStates* __stdcall GetCompiledDepthStencilStates(tIntPtr aHandle) const;
 
   // GDRV_Material.cpp

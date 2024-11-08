@@ -9690,21 +9690,6 @@ static const ni::sMethodDef iGraphics_CreateOcclusionQuery = {
 #endif
 };
 
-// Method: CompileSamplerStates
-static const ni::sParameterDef iGraphics_CompileSamplerStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSamplerStates), "iSamplerStates*" }
-}; 
-static const ni::sMethodDef iGraphics_CompileSamplerStates = {
-  "CompileSamplerStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphics_CompileSamplerStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphics_CompileSamplerStates)
-#else
-  NULL
-#endif
-};
-
 // Method: GetCompiledSamplerStates
 static const ni::sParameterDef iGraphics_GetCompiledSamplerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
@@ -9720,21 +9705,6 @@ static const ni::sMethodDef iGraphics_GetCompiledSamplerStates = {
 #endif
 };
 
-// Method: CompileRasterizerStates
-static const ni::sParameterDef iGraphics_CompileRasterizerStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRasterizerStates), "iRasterizerStates*" }
-}; 
-static const ni::sMethodDef iGraphics_CompileRasterizerStates = {
-  "CompileRasterizerStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphics_CompileRasterizerStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphics_CompileRasterizerStates)
-#else
-  NULL
-#endif
-};
-
 // Method: GetCompiledRasterizerStates
 static const ni::sParameterDef iGraphics_GetCompiledRasterizerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
@@ -9745,21 +9715,6 @@ static const ni::sMethodDef iGraphics_GetCompiledRasterizerStates = {
   1, iGraphics_GetCompiledRasterizerStates_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGraphics_GetCompiledRasterizerStates)
-#else
-  NULL
-#endif
-};
-
-// Method: CompileDepthStencilStates
-static const ni::sParameterDef iGraphics_CompileDepthStencilStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDepthStencilStates), "iDepthStencilStates*" }
-}; 
-static const ni::sMethodDef iGraphics_CompileDepthStencilStates = {
-  "CompileDepthStencilStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphics_CompileDepthStencilStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphics_CompileDepthStencilStates)
 #else
   NULL
 #endif
@@ -11669,11 +11624,8 @@ static const ni::sMethodDef* Methods_iGraphics[] = {
 	&iGraphics_CreateDrawOperation,
 	&iGraphics_CreateDrawOperationSet,
 	&iGraphics_CreateOcclusionQuery,
-	&iGraphics_CompileSamplerStates,
 	&iGraphics_GetCompiledSamplerStates,
-	&iGraphics_CompileRasterizerStates,
 	&iGraphics_GetCompiledRasterizerStates,
-	&iGraphics_CompileDepthStencilStates,
 	&iGraphics_GetCompiledDepthStencilStates,
 	&iGraphics_CreateMaterial,
 	&iGraphics_CreateMaterialLibrary,
@@ -12859,66 +12811,6 @@ static const ni::sMethodDef iGraphicsDriver_CreateIndexArray = {
 #endif
 };
 
-// Method: CreateShaderConstants
-static const ni::sParameterDef iGraphicsDriver_CreateShaderConstants_Parameters[1] = { 
-  { "anMaxRegisters", ni::eType_U32, NULL, "tU32" }
-}; 
-static const ni::sMethodDef iGraphicsDriver_CreateShaderConstants = {
-  "CreateShaderConstants",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "iShaderConstants*",
-  1, iGraphicsDriver_CreateShaderConstants_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriver_CreateShaderConstants)
-#else
-  NULL
-#endif
-};
-
-// Method: CompileSamplerStates
-static const ni::sParameterDef iGraphicsDriver_CompileSamplerStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSamplerStates), "iSamplerStates*" }
-}; 
-static const ni::sMethodDef iGraphicsDriver_CompileSamplerStates = {
-  "CompileSamplerStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphicsDriver_CompileSamplerStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriver_CompileSamplerStates)
-#else
-  NULL
-#endif
-};
-
-// Method: CompileRasterizerStates
-static const ni::sParameterDef iGraphicsDriver_CompileRasterizerStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRasterizerStates), "iRasterizerStates*" }
-}; 
-static const ni::sMethodDef iGraphicsDriver_CompileRasterizerStates = {
-  "CompileRasterizerStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphicsDriver_CompileRasterizerStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriver_CompileRasterizerStates)
-#else
-  NULL
-#endif
-};
-
-// Method: CompileDepthStencilStates
-static const ni::sParameterDef iGraphicsDriver_CompileDepthStencilStates_Parameters[1] = { 
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDepthStencilStates), "iDepthStencilStates*" }
-}; 
-static const ni::sMethodDef iGraphicsDriver_CompileDepthStencilStates = {
-  "CompileDepthStencilStates",
-  0|ni::eType_IntPtr, NULL, "tIntPtr",
-  1, iGraphicsDriver_CompileDepthStencilStates_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriver_CompileDepthStencilStates)
-#else
-  NULL
-#endif
-};
-
 static const ni::sMethodDef* Methods_iGraphicsDriver[] = {
 	&iGraphicsDriver_GetGraphics,
 	&iGraphicsDriver_GetName,
@@ -12944,10 +12836,6 @@ static const ni::sMethodDef* Methods_iGraphicsDriver[] = {
 	&iGraphicsDriver_CreateOcclusionQuery,
 	&iGraphicsDriver_CreateVertexArray,
 	&iGraphicsDriver_CreateIndexArray,
-	&iGraphicsDriver_CreateShaderConstants,
-	&iGraphicsDriver_CompileSamplerStates,
-	&iGraphicsDriver_CompileRasterizerStates,
-	&iGraphicsDriver_CompileDepthStencilStates,
 
 };
 
@@ -36082,11 +35970,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eGraphicsDriverImplFlags() {
 static const ni::sEnumValueDef Enum_eGraphicsDriverImplFlags_Values[] = {
 	{ "VertexArrayObject", ni::eGraphicsDriverImplFlags_VertexArrayObject },
 	{ "IndexArrayObject", ni::eGraphicsDriverImplFlags_IndexArrayObject },
-	{ "ShaderConstantsObject", ni::eGraphicsDriverImplFlags_ShaderConstantsObject },
 	{ "SystemMemoryTexture", ni::eGraphicsDriverImplFlags_SystemMemoryTexture },
-	{ "CompileSamplerStates", ni::eGraphicsDriverImplFlags_CompileSamplerStates },
-	{ "CompileDepthStencilStates", ni::eGraphicsDriverImplFlags_CompileDepthStencilStates },
-	{ "CompileRasterizerStates", ni::eGraphicsDriverImplFlags_CompileRasterizerStates },
 };
 static const ni::sEnumDef Enum_eGraphicsDriverImplFlags = {
 	"eGraphicsDriverImplFlags",
@@ -36308,6 +36192,10 @@ static const ni::sEnumValueDef Enum_eCompiledStates_Values[] = {
 	{ "SS_SharpPointRepeat", ni::eCompiledStates_SS_SharpPointRepeat },
 	{ "SS_SharpPointClamp", ni::eCompiledStates_SS_SharpPointClamp },
 	{ "SS_SharpPointMirror", ni::eCompiledStates_SS_SharpPointMirror },
+	{ "SS_PointWhiteBorder", ni::eCompiledStates_SS_PointWhiteBorder },
+	{ "SS_SmoothWhiteBorder", ni::eCompiledStates_SS_SmoothWhiteBorder },
+	{ "SS_SharpWhiteBorder", ni::eCompiledStates_SS_SharpWhiteBorder },
+	{ "SS_SharpPointWhiteBorder", ni::eCompiledStates_SS_SharpPointWhiteBorder },
 	{ "Driver", ni::eCompiledStates_Driver },
 };
 static const ni::sEnumDef Enum_eCompiledStates = {

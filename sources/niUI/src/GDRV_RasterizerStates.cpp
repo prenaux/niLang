@@ -240,35 +240,6 @@ iRasterizerStates* __stdcall cGraphics::CreateRasterizerStates() {
 }
 
 ///////////////////////////////////////////////
-tIntPtr __stdcall cGraphics::CompileRasterizerStates(iRasterizerStates* apStates) {
-  CHECKDRIVER(0);
-  niCheckIsOK(apStates,0);
-
-  const sRasterizerStatesDesc& desc = *(sRasterizerStatesDesc*)apStates->GetDescStructPtr();
-  niLoopit(tRSMap::iterator,it,mmapRasterizerStates) {
-    if (*((sRasterizerStatesDesc*)(it->second->GetDescStructPtr())) == desc)
-      return it->first;
-  }
-
-  tIntPtr handle = 0;
-  if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileRasterizerStates)) {
-    handle = mptrDrv->CompileRasterizerStates(apStates);
-    if (!handle) {
-      niError(_A("Driver can't compile the specified states."));
-      return 0;
-    }
-    niAssert(handle >= eCompiledStates_Driver);
-  }
-  else {
-    handle = mStatesHandleGen++;
-  }
-
-  Ptr<iRasterizerStates> ds = niNew cRasterizerStates<eTrue>(desc);
-  astl::upsert(mmapRasterizerStates,handle,ds);
-  return handle;
-}
-
-///////////////////////////////////////////////
 iRasterizerStates* __stdcall cGraphics::GetCompiledRasterizerStates(tIntPtr aHandle) const {
   if (!aHandle) return NULL;
   tRSMap::const_iterator it = mmapRasterizerStates.find(aHandle);

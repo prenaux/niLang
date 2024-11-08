@@ -4093,29 +4093,6 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
     }
 #endif
   }
-  virtual iShaderConstants* __stdcall CreateShaderConstants(tU32) const {
-    return NULL;
-  }
-  virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) {
-    return 0;
-  }
-  virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
-    return 0;
-  }
-  virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) {
-    return 0;
-  }
-
-  /////////////////////////////////////////////
-  virtual tBool __stdcall InitHardwareCursor(iTexture* apTex, const sRecti& aRect, const sVec2i& avPivot) {
-    return eTrue;
-  }
-  virtual tBool __stdcall UpdateHardwareCursor(tI32 anX, tI32 anY, tBool abImmediate) {
-    return eTrue;
-  }
-  virtual tBool __stdcall ShowHardwareCursor(tBool abShown) {
-    return eTrue;
-  }
 
   ///////////////////////////////////////////////
   inline tBool DoDrawOp(

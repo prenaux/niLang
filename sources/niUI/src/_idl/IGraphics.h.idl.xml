@@ -1966,16 +1966,6 @@
 				<comments desc="Create a new occlusion query object. "/>
 				<return type="iOcclusionQuery *" typec="iOcclusionQuery*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="compileSamplerStates" name="CompileSamplerStates" num_parameters="1">
-				<comments desc="Compile a sampler states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iSamplerStates *"
-					typec="iSamplerStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
 			<method
 				const="yes"
 				java_name="getCompiledSamplerStates"
@@ -1993,16 +1983,6 @@
 					typec="tIntPtr"
 					typei="ni::eType_IntPtr"/>
 			</method>
-			<method java_name="compileRasterizerStates" name="CompileRasterizerStates" num_parameters="1">
-				<comments desc="Compile a rasterizer states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iRasterizerStates *"
-					typec="iRasterizerStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
 			<method
 				const="yes"
 				java_name="getCompiledRasterizerStates"
@@ -2019,16 +1999,6 @@
 					type="tIntPtr"
 					typec="tIntPtr"
 					typei="ni::eType_IntPtr"/>
-			</method>
-			<method java_name="compileDepthStencilStates" name="CompileDepthStencilStates" num_parameters="1">
-				<comments desc="Compile a depth stencil states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iDepthStencilStates *"
-					typec="iDepthStencilStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				const="yes"

@@ -200,20 +200,8 @@
 			<value name="eGraphicsDriverImplFlags_IndexArrayObject" value="niBit ( 1 ) ">
 				<comments desc="Index array. "/>
 			</value>
-			<value name="eGraphicsDriverImplFlags_ShaderConstantsObject" value="niBit ( 2 ) ">
-				<comments desc="Shader constants. "/>
-			</value>
 			<value name="eGraphicsDriverImplFlags_SystemMemoryTexture" value="niBit ( 3 ) ">
 				<comments desc="Can render using system memory textures. "/>
-			</value>
-			<value name="eGraphicsDriverImplFlags_CompileSamplerStates" value="niBit ( 4 ) ">
-				<comments desc="Compile sampler states. "/>
-			</value>
-			<value name="eGraphicsDriverImplFlags_CompileDepthStencilStates" value="niBit ( 5 ) ">
-				<comments desc="Compile DepthStencil states. "/>
-			</value>
-			<value name="eGraphicsDriverImplFlags_CompileRasterizerStates" value="niBit ( 6 ) ">
-				<comments desc="Compile rasterizer states. "/>
 			</value>
 		</enum>
 		<enum name="eSamplerFilter">
@@ -541,6 +529,18 @@
 				<comments desc=""/>
 			</value>
 			<value name="eCompiledStates_SS_SharpPointMirror" value="212 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCompiledStates_SS_PointWhiteBorder" value="213 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCompiledStates_SS_SmoothWhiteBorder" value="214 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCompiledStates_SS_SharpWhiteBorder" value="215 ">
+				<comments desc=""/>
+			</value>
+			<value name="eCompiledStates_SS_SharpPointWhiteBorder" value="216 ">
 				<comments desc=""/>
 			</value>
 			<value name="eCompiledStates_Driver" value="1000 ">

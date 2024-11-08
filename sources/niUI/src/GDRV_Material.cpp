@@ -387,24 +387,12 @@ tBool cMaterial::SerializeWrite(iDataTableWriteStack* apDT, iHString* ahspBasePa
   apDT->SetEnum(_A("blend_mode"),niEnumExpr(eBlendMode),GetBlendMode());
   apDT->SetVec2(_A("polygon_offset"), GetPolygonOffset());
 
-  // rasterizer states
-  iRasterizerStates* pRS = mptrGraphics->GetCompiledRasterizerStates(GetRasterizerStates());
-  if (pRS) {
-    apDT->Push(_A("RasterizerStates"));
-    pRS->SerializeDataTable(
-        apDT->GetTop(),
-        eSerializeFlags_Write|eSerializeFlags_CategoryAll);
-    apDT->Pop();
+  // rasterizer & depth states
+  if (mhRS) {
+    apDT->SetEnum(_A("rasterizer_states"),niEnumExpr(eCompiledStates),mhRS);
   }
-
-  // depth stencil states
-  iDepthStencilStates* pDS = mptrGraphics->GetCompiledDepthStencilStates(GetDepthStencilStates());
-  if (pDS) {
-    apDT->Push(_A("DepthStencilStates"));
-    pDS->SerializeDataTable(
-        apDT->GetTop(),
-        eSerializeFlags_Write|eSerializeFlags_CategoryAll);
-    apDT->Pop();
+  if (mhDS) {
+    apDT->SetEnum(_A("depth_stencil_states"),niEnumExpr(eCompiledStates),mhDS);
   }
 
   const sMaterialDesc& defaultMaterial = _GetDefaultMaterial();
@@ -431,17 +419,8 @@ tBool cMaterial::SerializeWrite(iDataTableWriteStack* apDT, iHString* ahspBasePa
       apDT->SetString(_A("texture"),_A(""));
       apDT->SetString(_A("texture_flags"),_A("eTextureFlags.Default"));
     }
-
     if (GetChannelSamplerStates(c) != DEFAULT_SS) {
-      // sampler states
-      iSamplerStates* pSS = mptrGraphics->GetCompiledSamplerStates(GetChannelSamplerStates(c));
-      if (pSS) {
-        apDT->Push(_A("SamplerStates"));
-        pSS->SerializeDataTable(
-            apDT->GetTop(),
-            eSerializeFlags_Write|eSerializeFlags_CategoryAll);
-        apDT->Pop();
-      }
+      apDT->SetEnum("sampler_states",niEnumExpr(eCompiledStates),GetChannelSamplerStates(c));
     }
     apDT->Pop();
   }
@@ -483,24 +462,22 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
 
   // rasterizer states
   if (apDT->PushFail(_A("RasterizerStates"))) {
-    niProfileBlock(cMaterial_SerializeRead_RasStates);
-    Ptr<iRasterizerStates> ptrRS = mptrGraphics->CreateRasterizerStates();
-    ptrRS->SerializeDataTable(
-        apDT->GetTop(),
-        eSerializeFlags_Read|eSerializeFlags_CategoryAll);
-    SetRasterizerStates(mptrGraphics->CompileRasterizerStates(ptrRS));
+    // TODO: Remove or load legacy? This will be moved to the pipeline states though?
     apDT->Pop();
+  }
+  else {
+    SetRasterizerStates((eCompiledStates)apDT->GetEnumDefault(
+      "rasterizer_states",niEnumExpr(eCompiledStates),GetRasterizerStates()));
   }
 
   // depth stencil states
-  if (apDT->PushFail(_A("DepthStencilStates"))) {
-    niProfileBlock(cMaterial_SerializeRead_DSStates);
-    Ptr<iDepthStencilStates> ptrDS = mptrGraphics->CreateDepthStencilStates();
-    ptrDS->SerializeDataTable(
-        apDT->GetTop(),
-        eSerializeFlags_Read|eSerializeFlags_CategoryAll);
-    SetDepthStencilStates(mptrGraphics->CompileDepthStencilStates(ptrDS));
+  if (apDT->PushFail(_A("DepthstencilStates"))) {
+    // TODO: Remove or load legacy? This will be moved to the pipeline states though?
     apDT->Pop();
+  }
+  else {
+    SetDepthStencilStates((eCompiledStates)apDT->GetEnumDefault(
+      "depth_stencil_states",niEnumExpr(eCompiledStates),GetDepthStencilStates()));
   }
 
   // channels
@@ -560,19 +537,22 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
 
         // sampler states
         if (apDT->PushFail(_A("SamplerStates"))) {
-          niProfileBlock(cMaterial_SerializeRead_Channel_SamplerStates);
-          if (!ptrSS.IsOK()) {
-            ptrSS = mptrGraphics->CreateSamplerStates();
-          }
-          ptrSS->SerializeDataTable(
-              apDT->GetTop(),
-              eSerializeFlags_Read|eSerializeFlags_CategoryAll);
+          // TODO: Load legacy setup?
           apDT->Pop();
-
-          SetChannelSamplerStates(c,mptrGraphics->CompileSamplerStates(ptrSS));
         }
         else {
-          SetChannelSamplerStates(c,DEFAULT_SS);
+          if (apDT->PushFail(_A("SamplerStates"))) {
+            // TODO: Remove or load legacy? This will be moved to the pipeline states though?
+            apDT->Pop();
+          }
+          else if (apDT->HasProperty("sampler_states")) {
+            SetChannelSamplerStates(c,(eCompiledStates)apDT->GetEnumDefault(
+              "sampler_states",niEnumExpr(eCompiledStates),
+              GetChannelSamplerStates(c)));
+          }
+          else {
+            SetChannelSamplerStates(c,DEFAULT_SS);
+          }
         }
       }
       apDT->Pop();

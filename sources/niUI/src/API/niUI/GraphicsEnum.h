@@ -215,16 +215,8 @@ enum eGraphicsDriverImplFlags {
   eGraphicsDriverImplFlags_VertexArrayObject = niBit(0),
   //! Index array.
   eGraphicsDriverImplFlags_IndexArrayObject = niBit(1),
-  //! Shader constants.
-  eGraphicsDriverImplFlags_ShaderConstantsObject = niBit(2),
   //! Can render using system memory textures.
   eGraphicsDriverImplFlags_SystemMemoryTexture = niBit(3),
-  //! Compile sampler states.
-  eGraphicsDriverImplFlags_CompileSamplerStates = niBit(4),
-  //! Compile DepthStencil states.
-  eGraphicsDriverImplFlags_CompileDepthStencilStates = niBit(5),
-  //! Compile rasterizer states.
-  eGraphicsDriverImplFlags_CompileRasterizerStates = niBit(6),
   //! \internal
   eGraphicsDriverImplFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -469,6 +461,10 @@ enum eCompiledStates {
   eCompiledStates_SS_SharpPointRepeat = 210,
   eCompiledStates_SS_SharpPointClamp = 211,
   eCompiledStates_SS_SharpPointMirror = 212,
+  eCompiledStates_SS_PointWhiteBorder = 213,
+  eCompiledStates_SS_SmoothWhiteBorder = 214,
+  eCompiledStates_SS_SharpWhiteBorder = 215,
+  eCompiledStates_SS_SharpPointWhiteBorder = 216,
 
   //! Driver compiled
   eCompiledStates_Driver = 1000,

@@ -1147,15 +1147,6 @@ IDLC_METH_BEGIN(ni,iGraphics,CreateOcclusionQuery,0)
 	IDLC_RET_FROM_INTF(iOcclusionQuery,_Ret)
 IDLC_METH_END(ni,iGraphics,CreateOcclusionQuery,0)
 
-/** ni -> iGraphics::CompileSamplerStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphics,CompileSamplerStates,1)
-	IDLC_DECL_VAR(iSamplerStates*,apStates)
-	IDLC_BUF_TO_INTF(iSamplerStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphics,CompileSamplerStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphics,CompileSamplerStates,1)
-
 /** ni -> iGraphics::GetCompiledSamplerStates/1 **/
 IDLC_METH_BEGIN(ni,iGraphics,GetCompiledSamplerStates,1)
 	IDLC_DECL_VAR(tIntPtr,aHandle)
@@ -1165,15 +1156,6 @@ IDLC_METH_BEGIN(ni,iGraphics,GetCompiledSamplerStates,1)
 	IDLC_RET_FROM_INTF(iSamplerStates,_Ret)
 IDLC_METH_END(ni,iGraphics,GetCompiledSamplerStates,1)
 
-/** ni -> iGraphics::CompileRasterizerStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphics,CompileRasterizerStates,1)
-	IDLC_DECL_VAR(iRasterizerStates*,apStates)
-	IDLC_BUF_TO_INTF(iRasterizerStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphics,CompileRasterizerStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphics,CompileRasterizerStates,1)
-
 /** ni -> iGraphics::GetCompiledRasterizerStates/1 **/
 IDLC_METH_BEGIN(ni,iGraphics,GetCompiledRasterizerStates,1)
 	IDLC_DECL_VAR(tIntPtr,aHandle)
@@ -1182,15 +1164,6 @@ IDLC_METH_BEGIN(ni,iGraphics,GetCompiledRasterizerStates,1)
 	IDLC_METH_CALL(_Ret,ni,iGraphics,GetCompiledRasterizerStates,1,(aHandle))
 	IDLC_RET_FROM_INTF(iRasterizerStates,_Ret)
 IDLC_METH_END(ni,iGraphics,GetCompiledRasterizerStates,1)
-
-/** ni -> iGraphics::CompileDepthStencilStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphics,CompileDepthStencilStates,1)
-	IDLC_DECL_VAR(iDepthStencilStates*,apStates)
-	IDLC_BUF_TO_INTF(iDepthStencilStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphics,CompileDepthStencilStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphics,CompileDepthStencilStates,1)
 
 /** ni -> iGraphics::GetCompiledDepthStencilStates/1 **/
 IDLC_METH_BEGIN(ni,iGraphics,GetCompiledDepthStencilStates,1)

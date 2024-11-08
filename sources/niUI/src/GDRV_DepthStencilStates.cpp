@@ -283,35 +283,6 @@ iDepthStencilStates* __stdcall cGraphics::CreateDepthStencilStates() {
 }
 
 ///////////////////////////////////////////////
-tIntPtr __stdcall cGraphics::CompileDepthStencilStates(iDepthStencilStates* apStates) {
-  CHECKDRIVER(0);
-  niCheckIsOK(apStates,0);
-
-  const sDepthStencilStatesDesc& desc = *(sDepthStencilStatesDesc*)apStates->GetDescStructPtr();
-  niLoopit(tDSMap::iterator,it,mmapDepthStencilStates) {
-    if (*((sDepthStencilStatesDesc*)(it->second->GetDescStructPtr())) == desc)
-      return it->first;
-  }
-
-  tIntPtr handle = 0;
-  if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileDepthStencilStates)) {
-    handle = mptrDrv->CompileDepthStencilStates(apStates);
-    if (!handle) {
-      niError(_A("Driver can't compile the specified states."));
-      return 0;
-    }
-    niAssert(handle >= eCompiledStates_Driver);
-  }
-  else {
-    handle = mStatesHandleGen++;
-  }
-
-  Ptr<iDepthStencilStates> ds = niNew cDepthStencilStates<eTrue>(desc);
-  astl::upsert(mmapDepthStencilStates,handle,ds);
-  return handle;
-}
-
-///////////////////////////////////////////////
 iDepthStencilStates* __stdcall cGraphics::GetCompiledDepthStencilStates(tIntPtr aHandle) const {
   if (!aHandle) return NULL;
   tDSMap::const_iterator it = mmapDepthStencilStates.find(aHandle);

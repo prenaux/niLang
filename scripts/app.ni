@@ -310,13 +310,13 @@ if (!::gUIContext) {
     }
     if (::gGraphicsContext) {
       ::gGraphicsContext.Invalidate()
-      ::gGraphicsContext = null;
+      ::gGraphicsContext = ::LINT_AS_TYPE("iGraphicsContext",null);
     }
     if (::?gResources) {
       ::?gResources = null
     }
-    ::gGraphics = null
-    ::gUIContext = null
+    ::gGraphics = ::LINT_AS_TYPE("iGraphics",null);
+    ::gUIContext = ::LINT_AS_TYPE("iUIContext",null);
     mStarted = false
     local collected = ::lang.gc()
     ::printdebugln("--- APP SHUTDOWN END (GC:"+collected+") ---")

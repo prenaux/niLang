@@ -6,8 +6,8 @@
 ::Import("fs.ni")
 
 ::gUIContext <- ::gLang.global_instance["iUIContext"].?QueryInterface("iUIContext")
-::gGraphics <- ::gUIContext.?graphics
-::gGraphicsContext <- ::gUIContext.?graphics_context
+::gGraphics <- ::gUIContext.?graphics.?QueryInterface("iGraphics")
+::gGraphicsContext <- ::gUIContext.?graphics_context.?QueryInterface("iGraphicsContext")
 
 ::LINT_CHECK_TYPE("null", ::?gui);
 ::gui <- {

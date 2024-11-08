@@ -218,14 +218,6 @@ struct iGraphicsDriver : public iUnknown {
   virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) = 0;
   //! Create a new driver index array instance.
   virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) = 0;
-  //! Creates a new empty driver shader constants instance.
-  virtual iShaderConstants* __stdcall CreateShaderConstants(tU32 anMaxRegisters) const = 0;
-  //! Compile a sampler states.
-  virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) = 0;
-  //! Compile a rasterizer states.
-  virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) = 0;
-  //! Compile a depth stencil states.
-  virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) = 0;
   //! @}
 };
 

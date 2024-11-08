@@ -1340,8 +1340,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
   /////////////////////////////////////////////
   virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const {
     return eGraphicsDriverImplFlags_IndexArrayObject|
-        eGraphicsDriverImplFlags_VertexArrayObject|
-        eGraphicsDriverImplFlags_CompileDepthStencilStates;
+        eGraphicsDriverImplFlags_VertexArrayObject;
   }
 
   /////////////////////////////////////////////
@@ -1573,16 +1572,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
   }
 
   /////////////////////////////////////////////
-  virtual iShaderConstants* __stdcall CreateShaderConstants(tU32) const {
-    return NULL;
-  }
-
-  /////////////////////////////////////////////
-  virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
-    return 0;
-  }
-
-  /////////////////////////////////////////////
   id<MTLSamplerState> _ssCompiled[(eCompiledStates_SS_SharpPointMirror-eCompiledStates_SS_PointRepeat)+1];
   std::map<tU32,id<MTLSamplerState> > _ssMap;
 
@@ -1620,34 +1609,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
       return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
     }
     return _ssCompiled[0];
-  }
-
-  id<MTLSamplerState> __stdcall _CompileSamplerStates(const sSamplerStatesDesc* ssDesc) {
-    const tU32 ssKey = niFourCC(ssDesc->mFilter, ssDesc->mWrapS, ssDesc->mWrapT, ssDesc->mWrapR);
-    std::map<tU32,id<MTLSamplerState> >::const_iterator itSS = _ssMap.find(ssKey);
-    if (itSS != _ssMap.end()) {
-      return itSS->second;
-    }
-
-    MTLSamplerDescriptor* desc = [MTLSamplerDescriptor new];
-    _toMTLSamplerFilter(desc, ssDesc->mFilter);
-    desc.sAddressMode = _toMTLSamplerAddress[ssDesc->mWrapS];
-    desc.tAddressMode = _toMTLSamplerAddress[ssDesc->mWrapT];
-    desc.rAddressMode = _toMTLSamplerAddress[ssDesc->mWrapR];
-    id<MTLSamplerState> ss = [mMetalDevice newSamplerStateWithDescriptor: desc];
-    _ssMap[ssKey] = ss;
-    return ss;
-  }
-
-  virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) {
-#if 1
-    niAssertUnreachable("Not implemented.");
-    return 0;
-#else
-    niCheckIsOK(apStates,0);
-    const sSamplerStatesDesc* ssDesc = (const sSamplerStatesDesc*)apStates->GetDescStructPtr();
-    return eCompiledStates_Driver + (tIntPtr)_CompileSamplerStates(ssDesc);
-#endif
   }
 
   /////////////////////////////////////////////
@@ -1693,57 +1654,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
       return _dsDepthTestOnly;
     }
     return _dsNoDepthTest;
-  }
-
-  virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) {
-#if 1
-    niAssertUnreachable("Not implemented.");
-    return 0;
-#else
-    niCheckIsOK(apStates,0);
-
-    const sDepthStencilStatesDesc* dsDesc = (const sDepthStencilStatesDesc*)apStates->GetDescStructPtr();
-    if (!dsDesc->mbDepthTest) {
-      return eCompiledStates_DS_NoDepthTest;
-    }
-
-    id<MTLDepthStencilState> dsStates;
-    if (dsDesc->mbDepthTestWrite) {
-      dsStates = _dsStatesWrite[dsDesc->mDepthTestCompare];
-      if (!dsStates) {
-        MTLDepthStencilDescriptor* desc = [MTLDepthStencilDescriptor new];
-        desc.depthWriteEnabled = YES;
-        desc.depthCompareFunction = _toMTLCompareFunction[dsDesc->mDepthTestCompare];
-        dsStates = _dsStatesWrite[dsDesc->mDepthTestCompare] = [mMetalDevice newDepthStencilStateWithDescriptor: desc];
-      }
-    }
-    else {
-      dsStates = _dsStatesWrite[dsDesc->mDepthTestCompare];
-      if (!dsStates) {
-        MTLDepthStencilDescriptor* desc = [MTLDepthStencilDescriptor new];
-        desc.depthWriteEnabled = NO;
-        desc.depthCompareFunction = _toMTLCompareFunction[dsDesc->mDepthTestCompare];
-        dsStates = _dsStatesWrite[dsDesc->mDepthTestCompare] = [mMetalDevice newDepthStencilStateWithDescriptor: desc];
-      }
-    }
-    if (!dsStates) {
-      niError("Can't create the depth stencil states.");
-      return NULL;
-    }
-
-    return eCompiledStates_Driver + (tIntPtr)dsStates;
-#endif
-  }
-
-  /////////////////////////////////////////////
-  virtual tBool __stdcall InitHardwareCursor(iTexture* apTex, const sRecti& aRect, const sVec2i& avPivot) {
-    return eTrue;
-  }
-  virtual tBool __stdcall UpdateHardwareCursor(tI32 anX, tI32 anY, tBool abImmediate) {
-    return eTrue;
-  }
-  virtual tBool __stdcall ShowHardwareCursor(tBool abShown) {
-    return eTrue;
   }
 };
 

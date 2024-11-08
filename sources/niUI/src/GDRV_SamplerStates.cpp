@@ -161,6 +161,7 @@ tBool cGraphics::_CompileDefaultSamplerStates() {
   s->SetWrapS(eSamplerWrap_##WRAP);             \
   s->SetWrapT(eSamplerWrap_##WRAP);             \
   s->SetWrapR(eSamplerWrap_##WRAP);             \
+  s->SetBorderColor(sColor4f::White());         \
   END();
 
   SS(PointRepeat,Point,Repeat);
@@ -176,6 +177,11 @@ tBool cGraphics::_CompileDefaultSamplerStates() {
   SS(SharpPointClamp,SharpPoint,Clamp);
   SS(SharpPointMirror,SharpPoint,Mirror);
 
+  SS(PointWhiteBorder,Point,Border);
+  SS(SmoothWhiteBorder,Smooth,Border);
+  SS(SharpWhiteBorder,Sharp,Border);
+  SS(SharpPointWhiteBorder,SharpPoint,Border);
+
   return eTrue;
 }
 
@@ -183,35 +189,6 @@ tBool cGraphics::_CompileDefaultSamplerStates() {
 iSamplerStates* __stdcall cGraphics::CreateSamplerStates() {
   CHECKDRIVER(NULL);
   return niNew cSamplerStates<eFalse>();
-}
-
-///////////////////////////////////////////////
-tIntPtr __stdcall cGraphics::CompileSamplerStates(iSamplerStates* apStates) {
-  CHECKDRIVER(0);
-  niCheckIsOK(apStates,0);
-
-  const sSamplerStatesDesc& desc = *(sSamplerStatesDesc*)apStates->GetDescStructPtr();
-  niLoopit(tSSMap::iterator,it,mmapSamplerStates) {
-    if (*((sSamplerStatesDesc*)(it->second->GetDescStructPtr())) == desc)
-      return it->first;
-  }
-
-  tIntPtr handle = 0;
-  if (niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_CompileSamplerStates)) {
-    handle = mptrDrv->CompileSamplerStates(apStates);
-    if (!handle) {
-      niError(_A("Driver can't compile the specified states."));
-      return 0;
-    }
-    niAssert(handle >= eCompiledStates_Driver);
-  }
-  else {
-    handle = mStatesHandleGen++;
-  }
-
-  Ptr<iSamplerStates> ds = niNew cSamplerStates<eTrue>(desc);
-  astl::upsert(mmapSamplerStates,handle,ds);
-  return handle;
 }
 
 ///////////////////////////////////////////////

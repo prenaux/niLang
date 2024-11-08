@@ -754,50 +754,6 @@
 					typec="eArrayUsage"
 					typei="ni::eType_Enum"/>
 			</method>
-			<method
-				const="yes"
-				java_name="createShaderConstants"
-				name="CreateShaderConstants"
-				num_parameters="1">
-				<comments desc="Creates a new empty driver shader constants instance. "/>
-				<return type="iShaderConstants *" typec="iShaderConstants*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					last="1"
-					name="anMaxRegisters"
-					type="tU32"
-					typec="tU32"
-					typei="ni::eType_U32"/>
-			</method>
-			<method java_name="compileSamplerStates" name="CompileSamplerStates" num_parameters="1">
-				<comments desc="Compile a sampler states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iSamplerStates *"
-					typec="iSamplerStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method java_name="compileRasterizerStates" name="CompileRasterizerStates" num_parameters="1">
-				<comments desc="Compile a rasterizer states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iRasterizerStates *"
-					typec="iRasterizerStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method java_name="compileDepthStencilStates" name="CompileDepthStencilStates" num_parameters="1">
-				<comments desc="Compile a depth stencil states. "/>
-				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
-				<parameter
-					last="1"
-					name="apStates"
-					type="iDepthStencilStates *"
-					typec="iDepthStencilStates*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
 		</interface>
 	</namespace>
 </niIDL>

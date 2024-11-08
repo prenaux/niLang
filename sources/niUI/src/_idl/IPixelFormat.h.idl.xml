@@ -61,7 +61,7 @@
 			</value>
 			<value name="ePixelFormatCaps_BlockCompressed" value="niBit ( 14 ) ">
 				<comments desc="Block compressed format. ">
-					<remark text="This includes format such as DXT formats (DX9/GL) and ASTC (GL/iOS/Android). "/>
+					<remark text="This includes format such as DXT formats and ASTC. "/>
 				</comments>
 			</value>
 		</enum>

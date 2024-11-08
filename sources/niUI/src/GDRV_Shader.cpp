@@ -20,12 +20,7 @@ iHString* __stdcall cGraphics::GetShaderProfile(eShaderUnit aUnit, tU32 anIndex)
 
 ///////////////////////////////////////////////
 iShaderConstants* __stdcall cGraphics::CreateShaderConstants(tU32 anMaxRegisters) const {
-  if (mptrDrv.IsOK() && niFlagIs(mptrDrv->GetGraphicsDriverImplFlags(),eGraphicsDriverImplFlags_ShaderConstantsObject)) {
-    return mptrDrv->CreateShaderConstants(anMaxRegisters);
-  }
-  else {
-    return niNew cShaderConstants(anMaxRegisters);
-  }
+  return niNew cShaderConstants(anMaxRegisters);
 }
 
 ///////////////////////////////////////////////

@@ -441,42 +441,6 @@ IDLC_METH_BEGIN(ni,iGraphicsDriver,CreateIndexArray,4)
 	IDLC_RET_FROM_INTF(iIndexArray,_Ret)
 IDLC_METH_END(ni,iGraphicsDriver,CreateIndexArray,4)
 
-/** ni -> iGraphicsDriver::CreateShaderConstants/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriver,CreateShaderConstants,1)
-	IDLC_DECL_VAR(tU32,anMaxRegisters)
-	IDLC_BUF_TO_BASE(ni::eType_U32,anMaxRegisters)
-	IDLC_DECL_RETVAR(iShaderConstants*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriver,CreateShaderConstants,1,(anMaxRegisters))
-	IDLC_RET_FROM_INTF(iShaderConstants,_Ret)
-IDLC_METH_END(ni,iGraphicsDriver,CreateShaderConstants,1)
-
-/** ni -> iGraphicsDriver::CompileSamplerStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriver,CompileSamplerStates,1)
-	IDLC_DECL_VAR(iSamplerStates*,apStates)
-	IDLC_BUF_TO_INTF(iSamplerStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriver,CompileSamplerStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphicsDriver,CompileSamplerStates,1)
-
-/** ni -> iGraphicsDriver::CompileRasterizerStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriver,CompileRasterizerStates,1)
-	IDLC_DECL_VAR(iRasterizerStates*,apStates)
-	IDLC_BUF_TO_INTF(iRasterizerStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriver,CompileRasterizerStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphicsDriver,CompileRasterizerStates,1)
-
-/** ni -> iGraphicsDriver::CompileDepthStencilStates/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriver,CompileDepthStencilStates,1)
-	IDLC_DECL_VAR(iDepthStencilStates*,apStates)
-	IDLC_BUF_TO_INTF(iDepthStencilStates,apStates)
-	IDLC_DECL_RETVAR(tIntPtr,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriver,CompileDepthStencilStates,1,(apStates))
-	IDLC_RET_FROM_BASE(ni::eType_IntPtr,_Ret)
-IDLC_METH_END(ni,iGraphicsDriver,CompileDepthStencilStates,1)
-
 IDLC_END_INTF(ni,iGraphicsDriver)
 
 IDLC_END_NAMESPACE()

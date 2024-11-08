@@ -454,29 +454,6 @@ struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
   virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
     return NULL;
   }
-  virtual iShaderConstants* __stdcall CreateShaderConstants(tU32) const {
-    return NULL;
-  }
-  virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) {
-    return 0;
-  }
-  virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) {
-    return 0;
-  }
-  virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) {
-    return 0;
-  }
-
-  /////////////////////////////////////////////
-  virtual tBool __stdcall InitHardwareCursor(iTexture* apTex, const sRecti& aRect, const sVec2i& avPivot) {
-    return eTrue;
-  }
-  virtual tBool __stdcall UpdateHardwareCursor(tI32 anX, tI32 anY, tBool abImmediate) {
-    return eTrue;
-  }
-  virtual tBool __stdcall ShowHardwareCursor(tBool abShown) {
-    return eTrue;
-  }
 };
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&) {

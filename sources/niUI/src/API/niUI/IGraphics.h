@@ -413,18 +413,12 @@ struct iGraphics : public iUnknown
   //########################################################################################
   //! @{
 
-  //! Compile a sampler states.
-  virtual tIntPtr __stdcall CompileSamplerStates(iSamplerStates* apStates) = 0;
   //! Get the specified compiled sampler states.
   //! {Property}
   virtual iSamplerStates* __stdcall GetCompiledSamplerStates(tIntPtr aHandle) const = 0;
-  //! Compile a rasterizer states.
-  virtual tIntPtr __stdcall CompileRasterizerStates(iRasterizerStates* apStates) = 0;
   //! Get the specified compiled rasterizer states.
   //! {Property}
   virtual iRasterizerStates* __stdcall GetCompiledRasterizerStates(tIntPtr aHandle) const = 0;
-  //! Compile a depth stencil states.
-  virtual tIntPtr __stdcall CompileDepthStencilStates(iDepthStencilStates* apStates) = 0;
   //! Get the specified compiled depth stencil states.
   //! {Property}
   virtual iDepthStencilStates* __stdcall GetCompiledDepthStencilStates(tIntPtr aHandle) const = 0;

@@ -420,12 +420,7 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
   Ptr<iVGStyle> mptrVGStyle;
 
   Ptr<iVGTransform>       mVGTransforms[eVGTransform_Last];
-
   Ptr<iMaterial>          mptrVGMaterial;
-  tIntPtr                 mhSS_MirrorPoint;
-  tIntPtr                 mhSS_MirrorBilinear;
-  tIntPtr                 mhSS_WhiteBorderPoint;
-  tIntPtr                 mhSS_WhiteBorderBilinear;
 
   tIntPtr mnBeginAddPath_PrevImageSig;
   tBool mbAddPathPolygons_TexGen;
@@ -452,33 +447,6 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         eMaterialFlags_Vertex);
     mptrVGMaterial->SetChannelSamplerStates(
         eMaterialChannel_Base,VG_SS_DEFAULT_FILTER);
-
-    Ptr<iSamplerStates> ss = g->CreateSamplerStates();
-    ss->SetFilter(eSamplerFilter_Point);
-    ss->SetWrapS(eSamplerWrap_Mirror);
-    ss->SetWrapT(eSamplerWrap_Mirror);
-    ss->SetWrapR(eSamplerWrap_Mirror);
-    mhSS_MirrorPoint = g->CompileSamplerStates(ss);
-
-    ss->SetFilter(eSamplerFilter_Smooth);
-    ss->SetWrapS(eSamplerWrap_Mirror);
-    ss->SetWrapT(eSamplerWrap_Mirror);
-    ss->SetWrapR(eSamplerWrap_Mirror);
-    mhSS_MirrorBilinear = g->CompileSamplerStates(ss);
-
-    ss->SetFilter(eSamplerFilter_Point);
-    ss->SetWrapS(eSamplerWrap_Border);
-    ss->SetWrapT(eSamplerWrap_Border);
-    ss->SetWrapR(eSamplerWrap_Border);
-    ss->SetBorderColor(sColor4f::White());
-    mhSS_WhiteBorderPoint = g->CompileSamplerStates(ss);
-
-    ss->SetFilter(eSamplerFilter_Smooth);
-    ss->SetWrapS(eSamplerWrap_Border);
-    ss->SetWrapT(eSamplerWrap_Border);
-    ss->SetWrapR(eSamplerWrap_Border);
-    ss->SetBorderColor(sColor4f::White());
-    mhSS_WhiteBorderBilinear = g->CompileSamplerStates(ss);
   }
 
   //! Called when begining to render a path.
@@ -561,19 +529,23 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
           //                     sColor4f backColor = apPaint->GetColor();
           //                     ss->SetBorderColor(backColor);
           hSS = (imageFilter==eVGImageFilter_Point)?
-              mhSS_WhiteBorderPoint:mhSS_WhiteBorderBilinear;
+              eCompiledStates_SS_PointWhiteBorder:
+              eCompiledStates_SS_SmoothWhiteBorder;
         }
         else if (wrapType == eVGWrapType_Mirror)  {
           hSS = (imageFilter==eVGImageFilter_Point)?
-              mhSS_MirrorPoint:mhSS_MirrorBilinear;
+              eCompiledStates_SS_PointMirror:
+              eCompiledStates_SS_SmoothMirror;
         }
         else if (wrapType == eVGWrapType_Clamp)  {
           hSS = (imageFilter==eVGImageFilter_Point)?
-              eCompiledStates_SS_PointClamp:eCompiledStates_SS_SmoothClamp;
+              eCompiledStates_SS_PointClamp:
+              eCompiledStates_SS_SmoothClamp;
         }
         else /*if (wrapType == eVGWrapType_Repeat)*/  {
           hSS = (imageFilter==eVGImageFilter_Point)?
-              eCompiledStates_SS_PointRepeat:eCompiledStates_SS_SmoothRepeat;
+              eCompiledStates_SS_PointRepeat:
+              eCompiledStates_SS_SmoothRepeat;
         }
         mptrVGMaterial->SetChannelSamplerStates(eMaterialChannel_Base,hSS);
 

@@ -69,7 +69,7 @@ enum ePixelFormatCaps
   //! Support a specialize clear method.
   ePixelFormatCaps_Clear = niBit(13),
   //! Block compressed format.
-  //! \remark This includes format such as DXT formats (DX9/GL) and ASTC (GL/iOS/Android).
+  //! \remark This includes format such as DXT formats and ASTC.
   ePixelFormatCaps_BlockCompressed = niBit(14),
   //! \internal
   ePixelFormatCaps_ForceDWORD niMaybeUnused = 0xFFFFFFFF

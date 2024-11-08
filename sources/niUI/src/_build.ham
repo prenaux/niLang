@@ -14,10 +14,6 @@ if $(NI_VIDEO_USE_IPCAM) = 1 {
   niImportModuleDll niCURL ;
 }
 
-if $(WINDOWS) = 1 {
-  SDK_DX9_2004_Hdrs $(BUILD_SRC) ;
-}
-
 if $(NI_VIDEO_USE_DSHOW) = 1 {
   SDK_DShow_Hdrs $(BUILD_SRC) ;
 }

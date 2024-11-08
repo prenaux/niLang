@@ -12,9 +12,6 @@
 #ifdef GDRV_DUMMY
 niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&);
 #endif
-#ifdef GDRV_DX9
-niExportFunc(iUnknown*) New_GraphicsDriver_D3D9(const Var& avarA, const Var&);
-#endif
 #ifdef GDRV_GL2
 niExportFunc(iUnknown*) New_GraphicsDriver_GL2(const Var& avarA, const Var&);
 #endif
@@ -44,9 +41,6 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
 #ifdef GDRV_DUMMY
       _RegisterGraphicsDriver("Dummy",New_GraphicsDriver_Dummy);
 #endif
-#ifdef GDRV_DX9
-      _RegisterGraphicsDriver("D3D9",New_GraphicsDriver_D3D9);
-#endif
 #ifdef GDRV_GL2
       _RegisterGraphicsDriver("GL2",New_GraphicsDriver_GL2);
 #endif
@@ -71,20 +65,16 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
 #endif
 
   if (StrIEq(niHStr(hspDriver),"Auto")) {
-#if defined niWindows && defined GDRV_DX9
+#if defined niWindows
     if (GetSystemMetrics(SM_REMOTESESSION)) {
       // Windows RDP works only with DirectX
-      niLog(Info, "Windows RDP detected, using D3D9 rendering driver.");
-      hspDriver = _H("D3D9");
+      niLog(Info, "Windows RDP detected.");
     }
-    else
 #endif
 
     {
 #if defined GDRV_GL2
       hspDriver = _H("GL2");
-#elif defined GDRV_DX9
-      hspDriver = _H("D3D9");
 #elif defined GDRV_METAL
       hspDriver = _H("Metal");
 #else

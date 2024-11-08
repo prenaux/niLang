@@ -21,7 +21,6 @@ using namespace ni;
 #define GDRV_DUMMY
 
 #if defined niWindows
-#  define GDRV_DX9
 #  define GDRV_GL2
 #elif defined niOSX
 #  define GDRV_GL2

@@ -14,7 +14,10 @@
 #include "API/niUI/Utils/BufferCache.h"
 
 // #define USE_BUFFER_CACHE_RING_BUFFER
-// #define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
+
+// Uses base vertex indexing to allocate vertices beyond the currently used
+// range, preventing overlap with active vertex data.
+#define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
 
 namespace ni {
 template struct BufferCacheVertex<tVertexCanvas>;

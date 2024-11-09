@@ -13,7 +13,7 @@ class cGraphics;
 class cFontTTF;
 struct sMyFTLibrary;
 
-niConstValue auto kFontFilterOnSS = eCompiledStates_SS_SharpClamp;
+niConstValue auto kFontFilterOnSS = eCompiledStates_SS_SmoothClamp;
 niConstValue auto kFontFilterOffSS = eCompiledStates_SS_PointClamp;
 
 struct sFontGlyph {

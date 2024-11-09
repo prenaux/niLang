@@ -363,7 +363,11 @@
 				property="set"
 				property_name2="polygonOffset"
 				property_name="polygon_offset">
-				<comments desc="Set the material&apos;s polygon offset. "/>
+				<comments desc="Set the material&apos;s polygon offset. ">
+					<remark text="The polygon offset is computed as: offset = (slope * DZ) + (units * r) where DZ is the change in depth relative to the screen area of the triangle, and r is the smallest value that is guaranteed to produce a resolvable offset for a given implementation. "/>
+					<remark text="Useful for avoiding z-fighting when rendering decals, shadows, or coplanar geometry. "/>
+					<params text="avOffset. Vec2(x: units scale factor, y: depth slope factor) "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -380,7 +384,7 @@
 				property="get"
 				property_name2="polygonOffset"
 				property_name="polygon_offset">
-				<comments desc="Get the material&apos;s polygon offset. "/>
+				<comments desc="Get the material&apos;s polygon offset. " return="Vec2(x: units scale factor, y: depth slope factor) "/>
 				<return type="ni::sVec2f" typec="ni::sVec2f" typei="ni::eType_Vec2f"/>
 			</method>
 			<method

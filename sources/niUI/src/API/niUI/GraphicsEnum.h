@@ -54,29 +54,32 @@ enum eGraphicsCaps
   eGraphicsCaps_OrthoProjectionOffset   = 16,
   //! Whether we can blit the backbuffer to a texture with BlitTextureToTexture.
   eGraphicsCaps_BlitBackBuffer          = 17,
+  //! Return whether or not the driver can do wireframe rendering.
+  eGraphicsCaps_Wireframe               = 18,
   //! \internal
-  eGraphicsCaps_Last niMaybeUnused = 18,
+  eGraphicsCaps_Last niMaybeUnused = 19,
   //! \internal
   eGraphicsCaps_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Buffer clearing flags.
-enum eClearBuffersFlags
-{
+enum eClearBuffersFlags {
   //! Clear color buffer.
-  eClearBuffersFlags_Color = 0x1,
+  eClearBuffersFlags_Color = niBit(0),
   //! Clear depth buffer.
-  eClearBuffersFlags_Depth = 0x2,
+  eClearBuffersFlags_Depth = niBit(1),
   //! Clear stencil buffer.
-  eClearBuffersFlags_Stencil = 0x4,
+  eClearBuffersFlags_Stencil = niBit(2),
+
   //! Clear the color and depth buffers.
   eClearBuffersFlags_ColorDepth = eClearBuffersFlags_Color|eClearBuffersFlags_Depth,
   //! Clear the color and stencil buffers.
   eClearBuffersFlags_ColorStencil = eClearBuffersFlags_Color|eClearBuffersFlags_Stencil,
   //! Clear the depth and stencil buffers.
-  eClearBuffersFlags_DepthStencil = eClearBuffersFlags_Depth|eClearBuffersFlags_Depth,
+  eClearBuffersFlags_DepthStencil = eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil,
   //! Clear the color, depth and stencil buffers.
   eClearBuffersFlags_ColorDepthStencil = eClearBuffersFlags_Color|eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil,
+
   //! \internal
   eClearBuffersFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -229,12 +232,8 @@ typedef tU32 tGraphicsDriverImplFlags;
 enum eSamplerFilter {
   //! Default, smooth filtering.
   eSamplerFilter_Smooth = 0,
-  //! Sharper filtering. Anisotropic filtering and/or a negative lod bias.
-  eSamplerFilter_Sharp = 1,
   //! Point filtering.
-  eSamplerFilter_Point = 2,
-  //! Sharper point filtering. Anisotropic filtering and/or a negative lod bias.
-  eSamplerFilter_SharpPoint = 3,
+  eSamplerFilter_Point = 1,
   //! \internal
   eSamplerFilter_Last niMaybeUnused = 4,
   //! \internal
@@ -432,18 +431,12 @@ enum eCompiledStates {
   eCompiledStates_RS_ColorWriteNone = 1,
   eCompiledStates_RS_Filled = 2,
   eCompiledStates_RS_Wireframe = 3,
-  eCompiledStates_RS_FilledScissor = 4,
-  eCompiledStates_RS_WireframeScissor = 5,
-  eCompiledStates_RS_NoCullingColorWriteNone = 6,
-  eCompiledStates_RS_NoCullingFilled = 7,
-  eCompiledStates_RS_NoCullingWireframe = 8,
-  eCompiledStates_RS_NoCullingFilledScissor = 9,
-  eCompiledStates_RS_NoCullingWireframeScissor = 10,
-  eCompiledStates_RS_CWCullingColorWriteNone = 11,
-  eCompiledStates_RS_CWCullingFilled = 12,
-  eCompiledStates_RS_CWCullingWireframe = 13,
-  eCompiledStates_RS_CWCullingFilledScissor = 14,
-  eCompiledStates_RS_CWCullingWireframeScissor = 15,
+  eCompiledStates_RS_NoCullingColorWriteNone = 4,
+  eCompiledStates_RS_NoCullingFilled = 5,
+  eCompiledStates_RS_NoCullingWireframe = 6,
+  eCompiledStates_RS_CWCullingColorWriteNone = 7,
+  eCompiledStates_RS_CWCullingFilled = 8,
+  eCompiledStates_RS_CWCullingWireframe = 9,
 
   eCompiledStates_DS_NoDepthTest = 101,
   eCompiledStates_DS_DepthTestAndWrite = 102,
@@ -452,19 +445,11 @@ enum eCompiledStates {
   eCompiledStates_SS_PointRepeat = 201,
   eCompiledStates_SS_PointClamp = 202,
   eCompiledStates_SS_PointMirror = 203,
-  eCompiledStates_SS_SmoothRepeat = 204,
-  eCompiledStates_SS_SmoothClamp = 205,
-  eCompiledStates_SS_SmoothMirror = 206,
-  eCompiledStates_SS_SharpRepeat = 207,
-  eCompiledStates_SS_SharpClamp = 208,
-  eCompiledStates_SS_SharpMirror = 209,
-  eCompiledStates_SS_SharpPointRepeat = 210,
-  eCompiledStates_SS_SharpPointClamp = 211,
-  eCompiledStates_SS_SharpPointMirror = 212,
-  eCompiledStates_SS_PointWhiteBorder = 213,
-  eCompiledStates_SS_SmoothWhiteBorder = 214,
-  eCompiledStates_SS_SharpWhiteBorder = 215,
-  eCompiledStates_SS_SharpPointWhiteBorder = 216,
+  eCompiledStates_SS_PointWhiteBorder = 204,
+  eCompiledStates_SS_SmoothRepeat = 205,
+  eCompiledStates_SS_SmoothClamp = 206,
+  eCompiledStates_SS_SmoothMirror = 207,
+  eCompiledStates_SS_SmoothWhiteBorder = 208,
 
   //! Driver compiled
   eCompiledStates_Driver = 1000,

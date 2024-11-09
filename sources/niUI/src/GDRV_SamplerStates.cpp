@@ -167,20 +167,11 @@ tBool cGraphics::_CompileDefaultSamplerStates() {
   SS(PointRepeat,Point,Repeat);
   SS(PointClamp,Point,Clamp);
   SS(PointMirror,Point,Mirror);
+  SS(PointWhiteBorder,Point,Border);
   SS(SmoothRepeat,Smooth,Repeat);
   SS(SmoothClamp,Smooth,Clamp);
   SS(SmoothMirror,Smooth,Mirror);
-  SS(SharpRepeat,Sharp,Repeat);
-  SS(SharpClamp,Sharp,Clamp);
-  SS(SharpMirror,Sharp,Mirror);
-  SS(SharpPointRepeat,SharpPoint,Repeat);
-  SS(SharpPointClamp,SharpPoint,Clamp);
-  SS(SharpPointMirror,SharpPoint,Mirror);
-
-  SS(PointWhiteBorder,Point,Border);
   SS(SmoothWhiteBorder,Smooth,Border);
-  SS(SharpWhiteBorder,Sharp,Border);
-  SS(SharpPointWhiteBorder,SharpPoint,Border);
 
   return eTrue;
 }

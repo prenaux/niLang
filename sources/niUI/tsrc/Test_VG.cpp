@@ -82,9 +82,10 @@ struct VGLine : public VGBase {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), ~0);
 
     // Set wireframe state, use W to toggle
-    apCanvas->GetVGMaterial()->SetRasterizerStates(mbWireframe ?
-                                                    eCompiledStates_RS_WireframeScissor :
-                                                    eCompiledStates_RS_NoCullingFilledScissor);
+    apCanvas->GetVGMaterial()->SetRasterizerStates(
+      mbWireframe ?
+      eCompiledStates_RS_Wireframe :
+      eCompiledStates_RS_NoCullingFilled);
 
     iVGStyle* style = apCanvas->GetVGStyle();
     // mptrStyle->SetFill(eFalse);
@@ -118,9 +119,10 @@ struct PieChart : public VGBase {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), ~0);
 
     // Set wireframe state, use W to toggle
-    apCanvas->GetVGMaterial()->SetRasterizerStates(mbWireframe ?
-                                                   eCompiledStates_RS_WireframeScissor :
-                                                   eCompiledStates_RS_NoCullingFilledScissor);
+    apCanvas->GetVGMaterial()->SetRasterizerStates(
+      mbWireframe ?
+      eCompiledStates_RS_Wireframe :
+      eCompiledStates_RS_NoCullingFilled);
 
     iVGStyle* style = apCanvas->GetVGStyle();
     // style->SetFill(eFalse);
@@ -185,9 +187,10 @@ struct HeartSVGPath : public VGBase {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), ~0);
 
     // Set wireframe state, use W to toggle
-    apCanvas->GetVGMaterial()->SetRasterizerStates(mbWireframe ?
-                                                   eCompiledStates_RS_WireframeScissor :
-                                                   eCompiledStates_RS_NoCullingFilledScissor);
+    apCanvas->GetVGMaterial()->SetRasterizerStates(
+      mbWireframe ?
+      eCompiledStates_RS_Wireframe :
+      eCompiledStates_RS_NoCullingFilled);
 
     iVGStyle* style = apCanvas->GetVGStyle();
     style->SetFill(eFalse);
@@ -236,9 +239,10 @@ struct Icons : public VGBase {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xDDDDDDDD);
 
     // Set wireframe state, use W to toggle
-    apCanvas->GetVGMaterial()->SetRasterizerStates(mbWireframe ?
-                                                   eCompiledStates_RS_WireframeScissor :
-                                                   eCompiledStates_RS_NoCullingFilledScissor);
+    apCanvas->GetVGMaterial()->SetRasterizerStates(
+      mbWireframe ?
+      eCompiledStates_RS_Wireframe :
+      eCompiledStates_RS_NoCullingFilled);
 
     iVGStyle* style = apCanvas->GetVGStyle();
     style->SetFill(eTrue);

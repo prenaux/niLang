@@ -481,54 +481,6 @@ IDLC_METH_BEGIN(ni,iRasterizerStates,GetColorWriteMask,0)
 	IDLC_RET_FROM_ENUM(eColorWriteMask,_Ret)
 IDLC_METH_END(ni,iRasterizerStates,GetColorWriteMask,0)
 
-/** ni -> iRasterizerStates::SetScissorTest/1 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,SetScissorTest,1)
-	IDLC_DECL_VAR(tBool,abTest)
-	IDLC_BUF_TO_BASE(ni::eType_I8,abTest)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetScissorTest,1,(abTest))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,SetScissorTest,1)
-
-/** ni -> iRasterizerStates::GetScissorTest/0 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,GetScissorTest,0)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetScissorTest,0,())
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,GetScissorTest,0)
-
-/** ni -> iRasterizerStates::SetDepthBiasFactor/1 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,SetDepthBiasFactor,1)
-	IDLC_DECL_VAR(tF32,aVal)
-	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetDepthBiasFactor,1,(aVal))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,SetDepthBiasFactor,1)
-
-/** ni -> iRasterizerStates::GetDepthBiasFactor/0 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,GetDepthBiasFactor,0)
-	IDLC_DECL_RETVAR(tF32,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetDepthBiasFactor,0,())
-	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,GetDepthBiasFactor,0)
-
-/** ni -> iRasterizerStates::SetDepthBiasUnitScale/1 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,SetDepthBiasUnitScale,1)
-	IDLC_DECL_VAR(tF32,aVal)
-	IDLC_BUF_TO_BASE(ni::eType_F32,aVal)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,SetDepthBiasUnitScale,1,(aVal))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,SetDepthBiasUnitScale,1)
-
-/** ni -> iRasterizerStates::GetDepthBiasUnitScale/0 **/
-IDLC_METH_BEGIN(ni,iRasterizerStates,GetDepthBiasUnitScale,0)
-	IDLC_DECL_RETVAR(tF32,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRasterizerStates,GetDepthBiasUnitScale,0,())
-	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
-IDLC_METH_END(ni,iRasterizerStates,GetDepthBiasUnitScale,0)
-
 /** ni -> iRasterizerStates::GetDescStructPtr/0 **/
 IDLC_METH_BEGIN(ni,iRasterizerStates,GetDescStructPtr,0)
 	IDLC_DECL_RETVAR(tPtr,_Ret)

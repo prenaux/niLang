@@ -265,20 +265,14 @@ struct iDepthStencilStates : public iUnknown {
 //! Rasterizer states description structure.
 struct sRasterizerStatesDesc
 {
-  tBool     mbWireframe;
-  eCullingMode  mCullingMode;
+  tBool           mbWireframe;
+  eCullingMode    mCullingMode;
   eColorWriteMask mColorWriteMask;
-  tBool     mbScissorTest;
-  tF32      mfDepthBiasFactor;
-  tF32      mfDepthBiasUnitScale;
   bool operator == (const sRasterizerStatesDesc& aR) const {
     return
         mbWireframe == aR.mbWireframe &&
         mCullingMode == aR.mCullingMode &&
-        mColorWriteMask == aR.mColorWriteMask &&
-        mbScissorTest == aR.mbScissorTest &&
-        mfDepthBiasFactor == aR.mfDepthBiasFactor &&
-        mfDepthBiasUnitScale == aR.mfDepthBiasUnitScale;
+        mColorWriteMask == aR.mColorWriteMask;
   }
   bool operator != (const sRasterizerStatesDesc& aR) const {
     return !(*this == aR);
@@ -330,39 +324,6 @@ struct iRasterizerStates : public iUnknown {
   //! Get the color write mask.
   //! {Property}{Serialize}
   virtual eColorWriteMask __stdcall GetColorWriteMask() const = 0;
-  //! @}
-
-  //########################################################################################
-  //! \name Scissor
-  //########################################################################################
-  //! @{
-
-  //! Set whether the scissor test is enabled. (default false)
-  //! {Property}{Serialize}
-  virtual tBool __stdcall SetScissorTest(tBool abTest) = 0;
-  //! Get whether the scissor test is enabled.
-  //! {Property}{Serialize}
-  virtual tBool __stdcall GetScissorTest() const = 0;
-  //! @}
-
-  //########################################################################################
-  //! \name Depth bias
-  //########################################################################################
-  //! @{
-
-  //! Set the depth bias factor. (default 0)
-  //! {Property}{Serialize}
-  virtual tBool __stdcall SetDepthBiasFactor(tF32 aVal) = 0;
-  //! Get the depth bias factor.
-  //! {Property}{Serialize}
-  virtual tF32 __stdcall GetDepthBiasFactor() const = 0;
-
-  //! Set the depth bias unit scale factor. (default 0)
-  //! {Property}{Serialize}
-  virtual tBool __stdcall SetDepthBiasUnitScale(tF32 aVal) = 0;
-  //! Get the depth bias unit scale factor.
-  //! {Property}{Serialize}
-  virtual tF32 __stdcall GetDepthBiasUnitScale() const = 0;
   //! @}
 
   //! Get the states description structure pointer.

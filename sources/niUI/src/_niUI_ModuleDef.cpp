@@ -13737,87 +13737,6 @@ static const ni::sMethodDef iRasterizerStates_GetColorWriteMask = {
 #endif
 };
 
-// Method: SetScissorTest
-static const ni::sParameterDef iRasterizerStates_SetScissorTest_Parameters[1] = { 
-  { "abTest", ni::eType_I8, NULL, "tBool" }
-}; 
-static const ni::sMethodDef iRasterizerStates_SetScissorTest = {
-  "SetScissorTest",
-  ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
-  1, iRasterizerStates_SetScissorTest_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_SetScissorTest)
-#else
-  NULL
-#endif
-};
-
-// Method: GetScissorTest
-static const ni::sMethodDef iRasterizerStates_GetScissorTest = {
-  "GetScissorTest",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_GetScissorTest)
-#else
-  NULL
-#endif
-};
-
-// Method: SetDepthBiasFactor
-static const ni::sParameterDef iRasterizerStates_SetDepthBiasFactor_Parameters[1] = { 
-  { "aVal", ni::eType_F32, NULL, "tF32" }
-}; 
-static const ni::sMethodDef iRasterizerStates_SetDepthBiasFactor = {
-  "SetDepthBiasFactor",
-  ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
-  1, iRasterizerStates_SetDepthBiasFactor_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_SetDepthBiasFactor)
-#else
-  NULL
-#endif
-};
-
-// Method: GetDepthBiasFactor
-static const ni::sMethodDef iRasterizerStates_GetDepthBiasFactor = {
-  "GetDepthBiasFactor",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_GetDepthBiasFactor)
-#else
-  NULL
-#endif
-};
-
-// Method: SetDepthBiasUnitScale
-static const ni::sParameterDef iRasterizerStates_SetDepthBiasUnitScale_Parameters[1] = { 
-  { "aVal", ni::eType_F32, NULL, "tF32" }
-}; 
-static const ni::sMethodDef iRasterizerStates_SetDepthBiasUnitScale = {
-  "SetDepthBiasUnitScale",
-  ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
-  1, iRasterizerStates_SetDepthBiasUnitScale_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_SetDepthBiasUnitScale)
-#else
-  NULL
-#endif
-};
-
-// Method: GetDepthBiasUnitScale
-static const ni::sMethodDef iRasterizerStates_GetDepthBiasUnitScale = {
-  "GetDepthBiasUnitScale",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRasterizerStates_GetDepthBiasUnitScale)
-#else
-  NULL
-#endif
-};
-
 // Method: GetDescStructPtr
 static const ni::sMethodDef iRasterizerStates_GetDescStructPtr = {
   "GetDescStructPtr",
@@ -13856,12 +13775,6 @@ static const ni::sMethodDef* Methods_iRasterizerStates[] = {
 	&iRasterizerStates_GetCullingMode,
 	&iRasterizerStates_SetColorWriteMask,
 	&iRasterizerStates_GetColorWriteMask,
-	&iRasterizerStates_SetScissorTest,
-	&iRasterizerStates_GetScissorTest,
-	&iRasterizerStates_SetDepthBiasFactor,
-	&iRasterizerStates_GetDepthBiasFactor,
-	&iRasterizerStates_SetDepthBiasUnitScale,
-	&iRasterizerStates_GetDepthBiasUnitScale,
 	&iRasterizerStates_GetDescStructPtr,
 	&iRasterizerStates_SerializeDataTable,
 
@@ -35828,6 +35741,7 @@ static const ni::sEnumValueDef Enum_eGraphicsCaps_Values[] = {
 	{ "OverlayTexture", ni::eGraphicsCaps_OverlayTexture },
 	{ "OrthoProjectionOffset", ni::eGraphicsCaps_OrthoProjectionOffset },
 	{ "BlitBackBuffer", ni::eGraphicsCaps_BlitBackBuffer },
+	{ "Wireframe", ni::eGraphicsCaps_Wireframe },
 	{ "Last", ni::eGraphicsCaps_Last },
 };
 static const ni::sEnumDef Enum_eGraphicsCaps = {
@@ -35985,9 +35899,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eSamplerFilter() {
 
 static const ni::sEnumValueDef Enum_eSamplerFilter_Values[] = {
 	{ "Smooth", ni::eSamplerFilter_Smooth },
-	{ "Sharp", ni::eSamplerFilter_Sharp },
 	{ "Point", ni::eSamplerFilter_Point },
-	{ "SharpPoint", ni::eSamplerFilter_SharpPoint },
 	{ "Last", ni::eSamplerFilter_Last },
 };
 static const ni::sEnumDef Enum_eSamplerFilter = {
@@ -36165,37 +36077,23 @@ static const ni::sEnumValueDef Enum_eCompiledStates_Values[] = {
 	{ "RS_ColorWriteNone", ni::eCompiledStates_RS_ColorWriteNone },
 	{ "RS_Filled", ni::eCompiledStates_RS_Filled },
 	{ "RS_Wireframe", ni::eCompiledStates_RS_Wireframe },
-	{ "RS_FilledScissor", ni::eCompiledStates_RS_FilledScissor },
-	{ "RS_WireframeScissor", ni::eCompiledStates_RS_WireframeScissor },
 	{ "RS_NoCullingColorWriteNone", ni::eCompiledStates_RS_NoCullingColorWriteNone },
 	{ "RS_NoCullingFilled", ni::eCompiledStates_RS_NoCullingFilled },
 	{ "RS_NoCullingWireframe", ni::eCompiledStates_RS_NoCullingWireframe },
-	{ "RS_NoCullingFilledScissor", ni::eCompiledStates_RS_NoCullingFilledScissor },
-	{ "RS_NoCullingWireframeScissor", ni::eCompiledStates_RS_NoCullingWireframeScissor },
 	{ "RS_CWCullingColorWriteNone", ni::eCompiledStates_RS_CWCullingColorWriteNone },
 	{ "RS_CWCullingFilled", ni::eCompiledStates_RS_CWCullingFilled },
 	{ "RS_CWCullingWireframe", ni::eCompiledStates_RS_CWCullingWireframe },
-	{ "RS_CWCullingFilledScissor", ni::eCompiledStates_RS_CWCullingFilledScissor },
-	{ "RS_CWCullingWireframeScissor", ni::eCompiledStates_RS_CWCullingWireframeScissor },
 	{ "DS_NoDepthTest", ni::eCompiledStates_DS_NoDepthTest },
 	{ "DS_DepthTestAndWrite", ni::eCompiledStates_DS_DepthTestAndWrite },
 	{ "DS_DepthTestOnly", ni::eCompiledStates_DS_DepthTestOnly },
 	{ "SS_PointRepeat", ni::eCompiledStates_SS_PointRepeat },
 	{ "SS_PointClamp", ni::eCompiledStates_SS_PointClamp },
 	{ "SS_PointMirror", ni::eCompiledStates_SS_PointMirror },
+	{ "SS_PointWhiteBorder", ni::eCompiledStates_SS_PointWhiteBorder },
 	{ "SS_SmoothRepeat", ni::eCompiledStates_SS_SmoothRepeat },
 	{ "SS_SmoothClamp", ni::eCompiledStates_SS_SmoothClamp },
 	{ "SS_SmoothMirror", ni::eCompiledStates_SS_SmoothMirror },
-	{ "SS_SharpRepeat", ni::eCompiledStates_SS_SharpRepeat },
-	{ "SS_SharpClamp", ni::eCompiledStates_SS_SharpClamp },
-	{ "SS_SharpMirror", ni::eCompiledStates_SS_SharpMirror },
-	{ "SS_SharpPointRepeat", ni::eCompiledStates_SS_SharpPointRepeat },
-	{ "SS_SharpPointClamp", ni::eCompiledStates_SS_SharpPointClamp },
-	{ "SS_SharpPointMirror", ni::eCompiledStates_SS_SharpPointMirror },
-	{ "SS_PointWhiteBorder", ni::eCompiledStates_SS_PointWhiteBorder },
 	{ "SS_SmoothWhiteBorder", ni::eCompiledStates_SS_SmoothWhiteBorder },
-	{ "SS_SharpWhiteBorder", ni::eCompiledStates_SS_SharpWhiteBorder },
-	{ "SS_SharpPointWhiteBorder", ni::eCompiledStates_SS_SharpPointWhiteBorder },
 	{ "Driver", ni::eCompiledStates_Driver },
 };
 static const ni::sEnumDef Enum_eCompiledStates = {

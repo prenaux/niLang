@@ -853,19 +853,22 @@
 			<value name="eGraphicsCaps_BlitBackBuffer" value="17 ">
 				<comments desc="Whether we can blit the backbuffer to a texture with BlitTextureToTexture. "/>
 			</value>
-			<value name="eGraphicsCaps_Last" value="18 ">
+			<value name="eGraphicsCaps_Wireframe" value="18 ">
+				<comments desc="Return whether or not the driver can do wireframe rendering. "/>
+			</value>
+			<value name="eGraphicsCaps_Last" value="19 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
 		<enum name="eClearBuffersFlags">
 			<comments desc="Buffer clearing flags. "/>
-			<value name="eClearBuffersFlags_Color" value="0x1 ">
+			<value name="eClearBuffersFlags_Color" value="niBit ( 0 ) ">
 				<comments desc="Clear color buffer. "/>
 			</value>
-			<value name="eClearBuffersFlags_Depth" value="0x2 ">
+			<value name="eClearBuffersFlags_Depth" value="niBit ( 1 ) ">
 				<comments desc="Clear depth buffer. "/>
 			</value>
-			<value name="eClearBuffersFlags_Stencil" value="0x4 ">
+			<value name="eClearBuffersFlags_Stencil" value="niBit ( 2 ) ">
 				<comments desc="Clear stencil buffer. "/>
 			</value>
 			<value name="eClearBuffersFlags_ColorDepth" value="eClearBuffersFlags_Color|eClearBuffersFlags_Depth ">
@@ -874,7 +877,7 @@
 			<value name="eClearBuffersFlags_ColorStencil" value="eClearBuffersFlags_Color|eClearBuffersFlags_Stencil ">
 				<comments desc="Clear the color and stencil buffers. "/>
 			</value>
-			<value name="eClearBuffersFlags_DepthStencil" value="eClearBuffersFlags_Depth|eClearBuffersFlags_Depth ">
+			<value name="eClearBuffersFlags_DepthStencil" value="eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil ">
 				<comments desc="Clear the depth and stencil buffers. "/>
 			</value>
 			<value name="eClearBuffersFlags_ColorDepthStencil" value="eClearBuffersFlags_Color|eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil ">
@@ -1002,14 +1005,8 @@
 			<value name="eSamplerFilter_Smooth" value="0 ">
 				<comments desc="Default, smooth filtering. "/>
 			</value>
-			<value name="eSamplerFilter_Sharp" value="1 ">
-				<comments desc="Sharper filtering. Anisotropic filtering and/or a negative lod bias. "/>
-			</value>
-			<value name="eSamplerFilter_Point" value="2 ">
+			<value name="eSamplerFilter_Point" value="1 ">
 				<comments desc="Point filtering. "/>
-			</value>
-			<value name="eSamplerFilter_SharpPoint" value="3 ">
-				<comments desc="Sharper point filtering. Anisotropic filtering and/or a negative lod bias. "/>
 			</value>
 			<value name="eSamplerFilter_Last" value="4 ">
 				<comments desc="\internal "/>
@@ -1243,40 +1240,22 @@
 			<value name="eCompiledStates_RS_Wireframe" value="3 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_FilledScissor" value="4 ">
+			<value name="eCompiledStates_RS_NoCullingColorWriteNone" value="4 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_WireframeScissor" value="5 ">
+			<value name="eCompiledStates_RS_NoCullingFilled" value="5 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_NoCullingColorWriteNone" value="6 ">
+			<value name="eCompiledStates_RS_NoCullingWireframe" value="6 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_NoCullingFilled" value="7 ">
+			<value name="eCompiledStates_RS_CWCullingColorWriteNone" value="7 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_NoCullingWireframe" value="8 ">
+			<value name="eCompiledStates_RS_CWCullingFilled" value="8 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_RS_NoCullingFilledScissor" value="9 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_NoCullingWireframeScissor" value="10 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_CWCullingColorWriteNone" value="11 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_CWCullingFilled" value="12 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_CWCullingWireframe" value="13 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_CWCullingFilledScissor" value="14 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_RS_CWCullingWireframeScissor" value="15 ">
+			<value name="eCompiledStates_RS_CWCullingWireframe" value="9 ">
 				<comments desc=""/>
 			</value>
 			<value name="eCompiledStates_DS_NoDepthTest" value="101 ">
@@ -1297,43 +1276,19 @@
 			<value name="eCompiledStates_SS_PointMirror" value="203 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_SS_SmoothRepeat" value="204 ">
+			<value name="eCompiledStates_SS_PointWhiteBorder" value="204 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_SS_SmoothClamp" value="205 ">
+			<value name="eCompiledStates_SS_SmoothRepeat" value="205 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_SS_SmoothMirror" value="206 ">
+			<value name="eCompiledStates_SS_SmoothClamp" value="206 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_SS_SharpRepeat" value="207 ">
+			<value name="eCompiledStates_SS_SmoothMirror" value="207 ">
 				<comments desc=""/>
 			</value>
-			<value name="eCompiledStates_SS_SharpClamp" value="208 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpMirror" value="209 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpPointRepeat" value="210 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpPointClamp" value="211 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpPointMirror" value="212 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_PointWhiteBorder" value="213 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SmoothWhiteBorder" value="214 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpWhiteBorder" value="215 ">
-				<comments desc=""/>
-			</value>
-			<value name="eCompiledStates_SS_SharpPointWhiteBorder" value="216 ">
+			<value name="eCompiledStates_SS_SmoothWhiteBorder" value="208 ">
 				<comments desc=""/>
 			</value>
 			<value name="eCompiledStates_Driver" value="1000 ">
@@ -15095,93 +15050,6 @@
 				<return type="eColorWriteMask" typec="eColorWriteMask" typei="ni::eType_Enum"/>
 			</method>
 			<method
-				java_name="setScissorTest"
-				name="SetScissorTest"
-				num_parameters="1"
-				property="set"
-				property_name2="scissorTest"
-				property_name="scissor_test"
-				serialize="1">
-				<comments desc="Set whether the scissor test is enabled. (default false) "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-				<parameter
-					last="1"
-					name="abTest"
-					type="tBool"
-					typec="tBool"
-					typei="ni::eType_I8"/>
-			</method>
-			<method
-				const="yes"
-				java_name="getScissorTest"
-				name="GetScissorTest"
-				num_parameters="0"
-				property="get"
-				property_name2="scissorTest"
-				property_name="scissor_test"
-				serialize="1">
-				<comments desc="Get whether the scissor test is enabled. "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-			</method>
-			<method
-				java_name="setDepthBiasFactor"
-				name="SetDepthBiasFactor"
-				num_parameters="1"
-				property="set"
-				property_name2="depthBiasFactor"
-				property_name="depth_bias_factor"
-				serialize="1">
-				<comments desc="Set the depth bias factor. (default 0) "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-				<parameter
-					last="1"
-					name="aVal"
-					type="tF32"
-					typec="tF32"
-					typei="ni::eType_F32"/>
-			</method>
-			<method
-				const="yes"
-				java_name="getDepthBiasFactor"
-				name="GetDepthBiasFactor"
-				num_parameters="0"
-				property="get"
-				property_name2="depthBiasFactor"
-				property_name="depth_bias_factor"
-				serialize="1">
-				<comments desc="Get the depth bias factor. "/>
-				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
-			</method>
-			<method
-				java_name="setDepthBiasUnitScale"
-				name="SetDepthBiasUnitScale"
-				num_parameters="1"
-				property="set"
-				property_name2="depthBiasUnitScale"
-				property_name="depth_bias_unit_scale"
-				serialize="1">
-				<comments desc="Set the depth bias unit scale factor. (default 0) "/>
-				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
-				<parameter
-					last="1"
-					name="aVal"
-					type="tF32"
-					typec="tF32"
-					typei="ni::eType_F32"/>
-			</method>
-			<method
-				const="yes"
-				java_name="getDepthBiasUnitScale"
-				name="GetDepthBiasUnitScale"
-				num_parameters="0"
-				property="get"
-				property_name2="depthBiasUnitScale"
-				property_name="depth_bias_unit_scale"
-				serialize="1">
-				<comments desc="Get the depth bias unit scale factor. "/>
-				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
-			</method>
-			<method
 				const="yes"
 				java_name="getDescStructPtr"
 				name="GetDescStructPtr"
@@ -16959,7 +16827,11 @@
 				property="set"
 				property_name2="polygonOffset"
 				property_name="polygon_offset">
-				<comments desc="Set the material&apos;s polygon offset. "/>
+				<comments desc="Set the material&apos;s polygon offset. ">
+					<remark text="The polygon offset is computed as: offset = (slope * DZ) + (units * r) where DZ is the change in depth relative to the screen area of the triangle, and r is the smallest value that is guaranteed to produce a resolvable offset for a given implementation. "/>
+					<remark text="Useful for avoiding z-fighting when rendering decals, shadows, or coplanar geometry. "/>
+					<params text="avOffset. Vec2(x: units scale factor, y: depth slope factor) "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -16976,7 +16848,7 @@
 				property="get"
 				property_name2="polygonOffset"
 				property_name="polygon_offset">
-				<comments desc="Get the material&apos;s polygon offset. "/>
+				<comments desc="Get the material&apos;s polygon offset. " return="Vec2(x: units scale factor, y: depth slope factor) "/>
 				<return type="ni::sVec2f" typec="ni::sVec2f" typei="ni::eType_Vec2f"/>
 			</method>
 			<method

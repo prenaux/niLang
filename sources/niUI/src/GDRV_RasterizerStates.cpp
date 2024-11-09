@@ -28,9 +28,6 @@ class cRasterizerStates :
     mbWireframe = eFalse;
     mCullingMode = eCullingMode_CCW;
     mColorWriteMask = eColorWriteMask_All;
-    mbScissorTest = eFalse;
-    mfDepthBiasFactor = 0.0f;
-    mfDepthBiasUnitScale = 0.0f;
   }
   cRasterizerStates(const sRasterizerStatesDesc& aDesc) {
     *(sRasterizerStatesDesc*)this = aDesc;
@@ -56,9 +53,6 @@ class cRasterizerStates :
     SetWireframe(apStates->GetWireframe());
     SetCullingMode(apStates->GetCullingMode());
     SetColorWriteMask(apStates->GetColorWriteMask());
-    SetScissorTest(apStates->GetScissorTest());
-    SetDepthBiasFactor(apStates->GetDepthBiasFactor());
-    SetDepthBiasUnitScale(apStates->GetDepthBiasUnitScale());
     return eTrue;
   }
 
@@ -105,44 +99,11 @@ class cRasterizerStates :
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SetScissorTest(tBool abTest) {
-    if (IS_RO) return eFalse;
-    mbScissorTest = abTest;
-    return eTrue;
-  }
-  virtual tBool __stdcall GetScissorTest() const {
-    return mbScissorTest;
-  }
-
-  ///////////////////////////////////////////////
-  virtual tBool __stdcall SetDepthBiasFactor(tF32 aVal) {
-    if (IS_RO) return eFalse;
-    mfDepthBiasFactor = aVal;
-    return eTrue;
-  }
-  virtual tF32 __stdcall GetDepthBiasFactor() const {
-    return mfDepthBiasFactor;
-  }
-
-  ///////////////////////////////////////////////
-  virtual tBool __stdcall SetDepthBiasUnitScale(tF32 aVal) {
-    if (IS_RO) return eFalse;
-    mfDepthBiasUnitScale = aVal;
-    return eTrue;
-  }
-  virtual tF32 __stdcall GetDepthBiasUnitScale() const {
-    return mfDepthBiasUnitScale;
-  }
-
-  ///////////////////////////////////////////////
   virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tSerializeFlags aFlags) {
     _DTS_INIT(apDT,aFlags,IS_RO);
     _DTS_B("wireframe", mbWireframe);
     _DTS_E("culling_mode", mCullingMode, eCullingMode);
     _DTS_L("color_write_mask", mColorWriteMask, eColorWriteMask);
-    _DTS_B("scissor_test", mbScissorTest);
-    _DTS_F("depth_bias_factor", mfDepthBiasFactor);
-    _DTS_F("depth_bias_unit_scale", mfDepthBiasUnitScale);
     return ni::eTrue;
   }
 
@@ -174,18 +135,9 @@ tBool cGraphics::_CompileDefaultRasterizerStates() {
   BEGIN(Filled);
   s->SetCullingMode(eCullingMode_CCW);
   END();
-  BEGIN(FilledScissor);
-  s->SetCullingMode(eCullingMode_CCW);
-  s->SetScissorTest(eTrue);
-  END();
   BEGIN(Wireframe);
   s->SetCullingMode(eCullingMode_CCW);
   s->SetWireframe(eTrue);
-  END();
-  BEGIN(WireframeScissor);
-  s->SetCullingMode(eCullingMode_CCW);
-  s->SetWireframe(eTrue);
-  s->SetScissorTest(eTrue);
   END();
 
   BEGIN(NoCullingColorWriteNone);
@@ -195,18 +147,9 @@ tBool cGraphics::_CompileDefaultRasterizerStates() {
   BEGIN(NoCullingFilled);
   s->SetCullingMode(eCullingMode_None);
   END();
-  BEGIN(NoCullingFilledScissor);
-  s->SetCullingMode(eCullingMode_None);
-  s->SetScissorTest(eTrue);
-  END();
   BEGIN(NoCullingWireframe);
   s->SetCullingMode(eCullingMode_None);
   s->SetWireframe(eTrue);
-  END();
-  BEGIN(NoCullingWireframeScissor);
-  s->SetCullingMode(eCullingMode_None);
-  s->SetWireframe(eTrue);
-  s->SetScissorTest(eTrue);
   END();
 
   BEGIN(CWCullingColorWriteNone);
@@ -216,18 +159,9 @@ tBool cGraphics::_CompileDefaultRasterizerStates() {
   BEGIN(CWCullingFilled);
   s->SetCullingMode(eCullingMode_CW);
   END();
-  BEGIN(CWCullingFilledScissor);
-  s->SetCullingMode(eCullingMode_CW);
-  s->SetScissorTest(eTrue);
-  END();
   BEGIN(CWCullingWireframe);
   s->SetCullingMode(eCullingMode_CW);
   s->SetWireframe(eTrue);
-  END();
-  BEGIN(CWCullingWireframeScissor);
-  s->SetCullingMode(eCullingMode_CW);
-  s->SetWireframe(eTrue);
-  s->SetScissorTest(eTrue);
   END();
 
   return eTrue;

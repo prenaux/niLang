@@ -42,6 +42,8 @@ namespace ni {
 #define COMPILED_DS (eCompiledStates_Driver+(MAX_COMPILED_STATES*2))
 
 const tU32 knMetalIndexSize = sizeof(tU32);
+// TODO: This should move to some "context creation" time thing, similar to the MSAA setting.
+static tU32 knMetalSamplerFilterAnisotropy = 8;
 
 static cString _GetDeviceCaps(id<MTLDevice> aDevice) {
   cString r;
@@ -371,19 +373,9 @@ void _toMTLSamplerFilter(MTLSamplerDescriptor* desc, eSamplerFilter aFilter) {
       desc.minFilter = MTLSamplerMinMagFilterLinear;
       desc.magFilter = MTLSamplerMinMagFilterLinear;
       desc.mipFilter = MTLSamplerMipFilterLinear;
-      desc.maxAnisotropy = 4;
+      desc.maxAnisotropy = knMetalSamplerFilterAnisotropy;
 #if defined METAL_IOS
       desc.lodAverage = YES;
-#endif
-      break;
-    }
-    case eSamplerFilter_Sharp: {
-      desc.minFilter = MTLSamplerMinMagFilterLinear;
-      desc.magFilter = MTLSamplerMinMagFilterLinear;
-      desc.mipFilter = MTLSamplerMipFilterLinear;
-      desc.maxAnisotropy = 8;
-#if defined METAL_IOS
-      desc.lodAverage = NO;
 #endif
       break;
     }
@@ -391,17 +383,7 @@ void _toMTLSamplerFilter(MTLSamplerDescriptor* desc, eSamplerFilter aFilter) {
       desc.minFilter = MTLSamplerMinMagFilterNearest;
       desc.magFilter = MTLSamplerMinMagFilterNearest;
       desc.mipFilter = MTLSamplerMipFilterNearest;
-      desc.maxAnisotropy = 4;
-#if defined METAL_IOS
-      desc.lodAverage = YES;
-#endif
-      break;
-    }
-    case eSamplerFilter_SharpPoint: {
-      desc.minFilter = MTLSamplerMinMagFilterNearest;
-      desc.magFilter = MTLSamplerMinMagFilterNearest;
-      desc.mipFilter = MTLSamplerMipFilterNearest;
-      desc.maxAnisotropy = 8;
+      desc.maxAnisotropy = knMetalSamplerFilterAnisotropy;
 #if defined METAL_IOS
       desc.lodAverage = YES;
 #endif
@@ -1328,6 +1310,8 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
       case eGraphicsCaps_OrthoProjectionOffset:
       case eGraphicsCaps_BlitBackBuffer:
         return 0;
+      case eGraphicsCaps_Wireframe:
+        return 1;
     }
   }
 
@@ -1572,7 +1556,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
   }
 
   /////////////////////////////////////////////
-  id<MTLSamplerState> _ssCompiled[(eCompiledStates_SS_SharpPointMirror-eCompiledStates_SS_PointRepeat)+1];
+  id<MTLSamplerState> _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
   std::map<tU32,id<MTLSamplerState> > _ssMap;
 
   void _InitCompiledSamplerStates() {
@@ -1582,6 +1566,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
       const tU32 ssKey = niFourCC(eSamplerFilter_##FILTER, eSamplerWrap_##WRAP, eSamplerWrap_##WRAP, eSamplerWrap_##WRAP); \
       _toMTLSamplerFilter(desc, eSamplerFilter_##FILTER);               \
       desc.sAddressMode = desc.tAddressMode = desc.rAddressMode = _toMTLSamplerAddress[eSamplerWrap_##WRAP]; \
+      desc.borderColor = MTLSamplerBorderColorOpaqueWhite;              \
       id<MTLSamplerState> ss = [mMetalDevice newSamplerStateWithDescriptor: desc]; \
       _ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat] = ss; \
       _ssMap[ssKey] = ss;                                               \
@@ -1590,22 +1575,16 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
     INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
     INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
     INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
 
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
-
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpRepeat, Sharp, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpClamp,  Sharp, Clamp);
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpMirror, Sharp, Mirror);
-
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpPointRepeat, SharpPoint, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpPointClamp,  SharpPoint, Clamp);
-    INIT_COMPILED_SAMPLER_STATES(SS_SharpPointMirror, SharpPoint, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
   }
 
   inline id<MTLSamplerState> _GetMTLSamplerState(tIntPtr ahSS) {
-    if (ahSS >= eCompiledStates_SS_PointRepeat && ahSS <= eCompiledStates_SS_SharpMirror) {
+    if (ahSS >= eCompiledStates_SS_PointRepeat && ahSS <= eCompiledStates_SS_SmoothWhiteBorder) {
       return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
     }
     return _ssCompiled[0];
@@ -1615,8 +1594,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
   id<MTLDepthStencilState> _dsNoDepthTest;
   id<MTLDepthStencilState> _dsDepthTestAndWrite;
   id<MTLDepthStencilState> _dsDepthTestOnly;
-  id<MTLDepthStencilState> _dsStatesWrite[eGraphicsCompare_Last] = {0};
-  id<MTLDepthStencilState> _dsStatesNoWrite[eGraphicsCompare_Last] = {0};
 
   void _InitCompiledDepthStencilStates() {
     MTLDepthStencilDescriptor* desc = [MTLDepthStencilDescriptor new];

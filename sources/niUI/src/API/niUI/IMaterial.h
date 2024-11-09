@@ -253,9 +253,18 @@ struct iMaterial : public iUnknown
   virtual tIntPtr __stdcall GetDepthStencilStates() const = 0;
   //! Set the material's polygon offset.
   //! {Property}
+  //! \param avOffset. Vec2(x: units scale factor, y: depth slope factor)
+  //! \remark The polygon offset is computed as:
+  //!         offset = (slope * DZ) + (units * r)
+  //!         where DZ is the change in depth relative to the screen area
+  //!         of the triangle, and r is the smallest value that is guaranteed
+  //!         to produce a resolvable offset for a given implementation.
+  //! \remark Useful for avoiding z-fighting when rendering decals,
+  //!         shadows, or coplanar geometry.
   virtual void __stdcall SetPolygonOffset(const ni::sVec2f& avOffset) = 0;
   //! Get the material's polygon offset.
   //! {Property}
+  //! \return Vec2(x: units scale factor, y: depth slope factor)
   virtual ni::sVec2f __stdcall GetPolygonOffset() const = 0;
   //! Get whether any shader is set.
   //! {Property}

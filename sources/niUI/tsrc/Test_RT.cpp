@@ -318,7 +318,7 @@ struct RT2 : public RTBase {
     Ptr<iGraphicsContext> gc = apCanvas->GetGraphicsContext();
     if (!mptrDSMaterial.IsOK()) {
       mptrDSMaterial = gc->GetGraphics()->CreateMaterial();
-      mptrDSMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilledScissor);
+      mptrDSMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       mptrDSMaterial->SetDepthStencilStates(eCompiledStates_DS_DepthTestAndWrite);
       mptrDSMaterial->SetFlags(
           mptrDSMaterial->GetFlags()|

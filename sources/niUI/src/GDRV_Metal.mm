@@ -14,7 +14,6 @@
 #include "Graphics.h"
 #include "GDRV_Utils.h"
 #include "API/niUI_ModuleDef.h"
-#include "API/niUI/Utils/BufferCache.h"
 #include "../../nicgc/src/mojoshader/mojoshader.h"
 #include "FixedShaders.h"
 #include <niLang/STL/scope_guard.h>
@@ -744,21 +743,18 @@ struct sMetalShaderLibrary {
 //--------------------------------------------------------------------------------------------
 struct sMetalBuffer {
   id<MTLBuffer> _mtlBuffer;
-  tU32 _lockStart = 0, _lockSize = 0;
+  tU32 _lockStart = 0, _lockEnd = 0;
+  tU32 _modifiedStart = 0, _modifiedEnd = 0;
   eArrayUsage _usage;
+  tBool _tracked;
 
   tBool IsOK() const {
     return _mtlBuffer != NULL;
   }
 
-  void Adopt(id<MTLBuffer> aBuffer) {
-    _mtlBuffer = aBuffer;
-  }
-
   tBool Create(id<MTLDevice> aDevice, void* apInitialData, tU32 anSize, eArrayUsage aUsage) {
-    // Use MTLResourceStorageModeShared atm, other modes seem to be buggy on
-    // NVidia cards. At least on hackintosh. It'll have to be changed once we
-    // get a mac with a real GPU...
+    _tracked = eFalse;
+    _usage = aUsage;
     MTLResourceOptions resOptions = MTLResourceStorageModeShared;
     if (apInitialData) {
       _mtlBuffer = [aDevice newBufferWithBytes:apInitialData
@@ -777,27 +773,49 @@ struct sMetalBuffer {
   }
 
   tBool __stdcall IsLocked() const {
-    return _lockSize != 0;
+    return _lockEnd != 0;
   }
 
   tPtr __stdcall Lock(tU32 anStart, tU32 anSize, eLock aLock) {
-    niUnused(aLock);
     niAssert(!IsLocked());
     _lockStart = anStart;
-    _lockSize = anSize ? anSize : (GetSize()-anStart);
-    niAssert(_lockSize <= this->GetSize());
-    niAssert((_lockStart + _lockSize) <= this->GetSize());
+    _lockEnd = anStart + (anSize ? anSize : (GetSize()-anStart)) - 1;
+    if (_modifiedEnd == 0) {
+      _modifiedStart = _lockStart;
+      _modifiedEnd = _lockEnd;
+    }
+    else if ((_lockStart <= _modifiedEnd) && (_lockEnd >= _modifiedStart))
+    {
+      if (_tracked) {
+        // TODO: I think this should result in Lock() failing and returning
+        // nullptr. Its essentially a "locked region in use" error.
+        niWarning(niFmt(
+          "Lock(%d,%d,%d): %p: [ls:%d,le:%d] [ms:%d,me:%d] Locked inflight overlapping area.",
+          anStart,anSize,(tU32)aLock,
+          (tIntPtr)this,
+          _lockStart,_lockEnd,
+          _modifiedStart,_modifiedEnd));
+      }
+      _modifiedStart = ni::Min(_modifiedStart,_lockStart);
+      _modifiedEnd = ni::Max(_modifiedEnd,_lockEnd);
+    }
     return ((tPtr)[_mtlBuffer contents]) + _lockStart;
   }
   tBool __stdcall Unlock() {
     if (!IsLocked())
       return eFalse;
-    _lockStart = _lockSize = 0;
+    _lockStart = _lockEnd = 0;
     return eTrue;
   }
 
   id<MTLBuffer> Bind() {
     return _mtlBuffer;
+  }
+
+  void Untrack() {
+    // niDebugFmt(("... Unbind: %p: [ms:%d,me:%d].", (tIntPtr)this, _modifiedStart,_modifiedEnd));
+    _modifiedStart = _modifiedEnd = 0;
+    _tracked = eFalse;
   }
 };
 
@@ -1703,6 +1721,19 @@ struct cMetalContextBase :
     mFrameSem.Signal();
     return niVarNull;
   }
+
+  void _CleanupTrackedBuffers() {
+    // niDebugFmt(("... CommandQueue mTrackedVAs: %d, mTrackedIAs: %d", mTrackedVAs.size(), mTrackedIAs.size()));
+    niLoop(i,mTrackedVAs.size()) {
+      mTrackedVAs[i]->_buffer.Untrack();
+    }
+    niLoop(i,mTrackedIAs.size()) {
+      mTrackedIAs[i]->_buffer.Untrack();
+    }
+    mTrackedVAs.clear();
+    mTrackedIAs.clear();
+  }
+
   tU32 mDirtyFlags = 0;
   tIntPtr mCurrentRS = eInvalidHandle;
   tIntPtr mCurrentDS = eInvalidHandle;
@@ -1710,6 +1741,8 @@ struct cMetalContextBase :
   tU32 mCurrentBufferOffset = 0;
   sMetalRenderPipelineId mCurrentRenderPipelineId;
   tU32 mNumDrawOps = 0;
+  astl::vector<Ptr<cMetalVertexArray>> mTrackedVAs;
+  astl::vector<Ptr<cMetalIndexArray>> mTrackedIAs;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
@@ -1719,7 +1752,8 @@ struct cMetalContextBase :
     niAssert(mpParent != NULL);
 
     mFrameSem.Signal(mFrameMaxInFlight);
-
+    mTrackedVAs.reserve(128);
+    mTrackedIAs.reserve(128);
   }
 
   virtual id<MTLRenderCommandEncoder> __stdcall _NewRenderCommandEncoder() = 0;
@@ -1731,6 +1765,7 @@ struct cMetalContextBase :
     // wait on the previous frame to be completed
     {
       mFrameSem.InfiniteWait();
+      _CleanupTrackedBuffers();
       mDirtyFlags = DIRTY_VIEWPORT | DIRTY_SCISSOR;
       mNumDrawOps = 0;
       mCurrentBufferOffset = 0;
@@ -1816,7 +1851,7 @@ struct cMetalContextBase :
       }
       return eFalse;
 #endif
-      _BeginFrame();
+      niCheck(_BeginFrame(),eFalse);
     }
 
     cMetalVertexArray* va = (cMetalVertexArray*)apDrawOp->GetVertexArray();
@@ -1847,7 +1882,6 @@ struct cMetalContextBase :
                   // sizeof(sUniformsFixed)));
 
       sMetalRenderPipelineId rpId = mBaseRenderPipelineId;
-
 
       iShader* pVS = pDOMatDesc->mShaders[eShaderUnit_Vertex];
       iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
@@ -1910,8 +1944,6 @@ struct cMetalContextBase :
       if (mDirtyFlags & DIRTY_SCISSOR) {
         [mCommandEncoder setScissorRect:mScissorRect];
       }
-
-      [mCommandEncoder setVertexBuffer:va->_buffer._mtlBuffer offset:(baseVertexIndex*va->_fvfStride) atIndex:0];
 
       auto applyMaterialChannel =
       [&](cMetalContextBase* apContext, iGraphics* apGraphics, tU32 anTSS, eMaterialChannel aChannel, const sMaterialDesc* apDOMat)
@@ -2005,10 +2037,22 @@ struct cMetalContextBase :
       updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
       updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
 
+      if (!va->_buffer._tracked && va->_buffer._modifiedEnd) {
+        mTrackedVAs.push_back(va);
+        va->_buffer._tracked = eTrue;
+      }
+      [mCommandEncoder setVertexBuffer:va->_buffer.Bind()
+       offset:(baseVertexIndex*va->_fvfStride)
+       atIndex:0];
+
+      if (!ia->_buffer._tracked && ia->_buffer._modifiedEnd) {
+        mTrackedIAs.push_back(ia);
+        ia->_buffer._tracked = eTrue;
+      }
       [mCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
        indexCount:numInds
        indexType:MTLIndexTypeUInt32
-       indexBuffer:ia->_buffer._mtlBuffer
+       indexBuffer:ia->_buffer.Bind()
        indexBufferOffset:(firstInd*sizeof(tU32))];
       METAL_TRACE(("DrawOperation END"));
     }

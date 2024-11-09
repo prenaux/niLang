@@ -110,7 +110,7 @@ struct sGraphicsContext : public BASE {
     if (mpMaterialDesc && mpMaterialDesc->mhRS) {
       return mpMaterialDesc->mhRS;
     }
-    return eCompiledStates_RS_NoCullingFilledScissor;
+    return eCompiledStates_RS_NoCullingFilled;
   }
 
   /////////////////////////////////////////////

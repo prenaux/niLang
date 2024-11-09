@@ -11,7 +11,7 @@
 
 static Ptr<iMaterial> _CreateOverlayMaterial(iGraphics* apGraphics, iTexture* apTexture) {
   Ptr<iMaterial> ptrMaterial = apGraphics->CreateMaterial();
-  ptrMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilledScissor);
+  ptrMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
   ptrMaterial->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
   ptrMaterial->SetFlags(ptrMaterial->GetFlags()|eMaterialFlags_NoLighting|eMaterialFlags_DoubleSided|eMaterialFlags_Vertex);
   ptrMaterial->SetChannelTexture(eMaterialChannel_Base,apTexture);

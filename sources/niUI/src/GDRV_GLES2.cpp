@@ -11,8 +11,7 @@ tPtr _GetGenericVertexArrayMemPtr(iVertexArray* apVA);
 iIndexArray* _CreateGenericIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex);
 tPtr _GetGenericIndexArrayMemPtr(iIndexArray* apVA);
 
-static GLint samplerFilterAnisotropySmooth = 4;
-static GLint samplerFilterAnisotropySharp = 8;
+static GLint knGLSamplerFilterAnisotropy = 8;
 
 #include "Graphics.h"
 #include "GDRV_Utils.h"
@@ -63,7 +62,6 @@ struct sGLCache : public sStateCache {
     _depthMask = ni::eFalse;
     _colorWriteMask = ni::eColorWriteMask_All;
     _scissorTest = ni::eFalse;
-    _scissorRectIsFullScreen = ni::eFalse;
     _renderTargetFBO = ni::eInvalidHandle;
     _depthStencilFBO = ni::eInvalidHandle;
     niLoop(i,GLDRV_MAX_TEXTURE_UNIT) {
@@ -77,7 +75,6 @@ struct sGLCache : public sStateCache {
   tBool             _depthTest;
   tBool             _depthMask;
   tBool             _scissorTest;
-  tBool             _scissorRectIsFullScreen;
   eMaterialChannel  _tuChannel[GLDRV_MAX_TEXTURE_UNIT];
 };
 
@@ -126,7 +123,7 @@ static tU32 _kNumGL2TexUpload = 0;
 class cGL2ContextWindow;
 class cGL2ContextRT;
 
-static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil, tBool abScissorTest);
+static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
 static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
 static tBool GLES2_DrawOperation(iGraphicsDriver* apDrv, sGLContext* apContext, iDrawOperation* apDrawOp, const tU32 anAA);
 static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait);
@@ -504,16 +501,12 @@ static tBool GL2_InitializeExt() {
     if (strExt.contains("EXT_texture_filter_anisotropic")) {
       _glGetIntegerv(GLEXT_MAX_TEXTURE_MAX_ANISOTROPY,&maxAnisotropic);
       if (maxAnisotropic > 1) {
-        if (ni::GetLang()->HasProperty("GL2.samplerFilterAnisotropySmooth")) {
-          samplerFilterAnisotropySmooth = ni::GetLang()->GetProperty("GL2.samplerFilterAnisotropySmooth").Long();
-        }
-        if (ni::GetLang()->HasProperty("GL2.samplerFilterAnisotropySharp")) {
-          samplerFilterAnisotropySharp = ni::GetLang()->GetProperty("GL2.samplerFilterAnisotropySharp").Long();
+        if (ni::GetLang()->HasProperty("GL2.samplerFilterAnisotropy")) {
+          knGLSamplerFilterAnisotropy = ni::GetLang()->GetProperty("GL2.samplerFilterAnisotropy").Long();
         }
       }
     }
-    samplerFilterAnisotropySmooth = ni::Min(samplerFilterAnisotropySmooth, maxAnisotropic);
-    samplerFilterAnisotropySharp = ni::Min(samplerFilterAnisotropySharp, maxAnisotropic);
+    knGLSamplerFilterAnisotropy = ni::Min(knGLSamplerFilterAnisotropy, maxAnisotropic);
   }
 
   if (ni::GetLang()->HasProperty("GL2.hasContextLost")) {
@@ -565,8 +558,7 @@ static tBool GL2_InitializeExt() {
 #endif
     niDebugFmt(("GL2 hasStandardDerivatives: %d",hasStandardDerivatives));
     niDebugFmt(("GL2 hasTextureLod: %d",hasTextureLod));
-    niDebugFmt(("GL2 samplerFilterAnisotropySmooth: %d",samplerFilterAnisotropySmooth));
-    niDebugFmt(("GL2 samplerFilterAnisotropySharp: %d",samplerFilterAnisotropySharp));
+    niDebugFmt(("GL2 samplerFilterAnisotropy: %d",knGLSamplerFilterAnisotropy));
     niDebugFmt(("GL_MAX_TEXTURE_SIZE (Regular): %d",kGL2_MaxRegularTexSize));
     niDebugFmt(("GL_MAX_TEXTURE_SIZE (Overlay): %d",kGL2_MaxOverlayTexSize));
     niDebugFmt(("GL_MAX_TEXTURE_SIZE (CubeMap): %d",kGL2_MaxCubeTexSize));
@@ -718,23 +710,16 @@ static inline void GL_TexSamplerFilter(GLenum texType, eSamplerFilter aFilter, t
   GLint magfilter = GL_NEAREST;
   switch (aFilter) {
     case eSamplerFilter_Point:
-    case eSamplerFilter_SharpPoint:
       magfilter = GL_NEAREST;
       minfilter = anNumMipMaps ? GL_NEAREST_MIPMAP_NEAREST : GL_NEAREST;
       break;
     case eSamplerFilter_Smooth:
-    case eSamplerFilter_Sharp:
       magfilter = GL_LINEAR;
       minfilter = anNumMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
       break;
   }
   if (anNumMipMaps) {
-    if (aFilter == eSamplerFilter_Sharp || aFilter == eSamplerFilter_SharpPoint) {
-      _glTexParameteri(texType, GLEXT_TEXTURE_MAX_ANISOTROPY, samplerFilterAnisotropySharp);
-    }
-    else {
-      _glTexParameteri(texType, GLEXT_TEXTURE_MAX_ANISOTROPY, samplerFilterAnisotropySmooth);
-    }
+    _glTexParameteri(texType, GLEXT_TEXTURE_MAX_ANISOTROPY, knGLSamplerFilterAnisotropy);
   }
   else {
     _glTexParameteri(texType, GLEXT_TEXTURE_MAX_ANISOTROPY, 1);
@@ -882,14 +867,7 @@ static void GL_ApplyRasterizerStates(sGLCache& aCache, const sRasterizerStatesDe
                  niFlagTest(m,eColorWriteMask_Alpha));
     GLERR_RET(;);
   }
-  // Scissor //
-  // if (0)
-  {
-    aCache._scissorTest = v.mbScissorTest && !aCache._scissorRectIsFullScreen;
-    if (aCache._scissorTest) _glEnable(GL_SCISSOR_TEST);
-    else _glDisable(GL_SCISSOR_TEST);
-    GLERR_RET(;);
-  }
+
   // TODO: Depth Bias ? //
 }
 
@@ -2101,7 +2079,7 @@ struct sGL2Texture : public sGL2TextureBase
         GLERR_RET(eFalse);
 
         // Clear RT to black
-        GLES2_DoClear(mpDriver, eClearBuffersFlags_Color, 0, 1.0f, 0, eFalse);
+        GLES2_DoClear(mpDriver, eClearBuffersFlags_Color, 0, 1.0f, 0);
       }
     }
 
@@ -2150,7 +2128,7 @@ struct sGL2Texture : public sGL2TextureBase
       GLERR_RET(eFalse);
 
       if (bNewHandle) {
-        GLES2_DoClear(mpDriver, eClearBuffersFlags_Depth, 0, 1.0f, 0, eFalse);
+        GLES2_DoClear(mpDriver, eClearBuffersFlags_Depth, 0, 1.0f, 0);
       }
     }
 
@@ -3055,12 +3033,6 @@ class cGL2ContextWindow : public sGLContext
     mrectScissor = sRecti(0,0,w,h);
     mrectViewport = mrectScissor;
 
-    const sRecti vp = this->GetViewport();
-    GLCALL_WARN(_glViewport(vp.x,vp.y,vp.GetWidth(),vp.GetHeight()));
-    const sRecti sc = this->GetScissorRect();
-    const tU32 nY = (this->GetHeight()-sc.y)-sc.GetHeight();
-    GLCALL_WARN(_glScissor(sc.x,nY,sc.GetWidth(),sc.GetHeight()));
-
     niDebugFmt((_A("GLES2 Context - Resized [%p]: %dx%d, BB: %s, DS: %s, AA: %s, VP: %s, SC: %s"),
                 (tIntPtr)this,
                 w,h,
@@ -3298,10 +3270,18 @@ static tBool GL2_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlip
     GLCALL_WARN(_glViewport(vp.x,nVPY,vp.GetWidth(),vp.GetHeight()));
 
     const sRecti sc = vp.ClipRect(apCtx->GetScissorRect());
-    const tU32 nSCY = isFlippedRT ? sc.y : (rtHeight-sc.y)-sc.GetHeight();
-    GLCALL_WARN(_glScissor(sc.x,nSCY,sc.GetWidth(),sc.GetHeight()));
 
-    aCache._scissorRectIsFullScreen = (rtWidth == sc.GetWidth() && rtHeight == sc.GetHeight());
+    // since we clip the vp with the scissor rect we only need to compare the size
+    aCache._scissorTest = (rtWidth != sc.GetWidth() || rtHeight != sc.GetHeight());
+    if (aCache._scissorTest) {
+      _glEnable(GL_SCISSOR_TEST);
+      const tU32 nSCY = isFlippedRT ? sc.y : (rtHeight-sc.y)-sc.GetHeight();
+      GLCALL_WARN(_glScissor(sc.x,nSCY,sc.GetWidth(),sc.GetHeight()));
+    }
+    else {
+      _glDisable(GL_SCISSOR_TEST);
+    }
+    GLERR_RET(eFalse);
   }
 
   return eTrue;
@@ -3540,6 +3520,13 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
 #endif
       case eGraphicsCaps_BlitBackBuffer:
         return eFalse; // This works, but glCopyTexSubImage2D is just too slow, especially on Mobile
+      case eGraphicsCaps_Wireframe: {
+#ifdef _glPolygonMode
+        return eTrue;
+#else
+        return eFalse;
+#endif
+      }
       default:
         return 0;
     }
@@ -4558,7 +4545,7 @@ static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tB
   return eTrue;
 }
 
-static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil, tBool abScissorTest) {
+static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
   cGLES2GraphicsDriver* d = ((cGLES2GraphicsDriver*)apDrv);
   sGLCache& cache = d->mCache;
 
@@ -4589,24 +4576,7 @@ static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer
 #endif
 
   if (flags) {
-    if (abScissorTest) {
-      if (!cache._scissorTest) {
-        _glEnable(GL_SCISSOR_TEST);
-      }
-      _glClear(flags);
-      if (!cache._scissorTest) {
-        _glDisable(GL_SCISSOR_TEST);
-      }
-    }
-    else {
-      if (cache._scissorTest) {
-        _glDisable(GL_SCISSOR_TEST);
-      }
-      _glClear(flags);
-      if (cache._scissorTest) {
-        _glEnable(GL_SCISSOR_TEST);
-      }
-    }
+    _glClear(flags);
   }
 
   if (clearBuffer&eClearBuffersFlags_Depth) {
@@ -4644,7 +4614,7 @@ static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tC
     return;
   }
 
-  GLES2_DoClear(apDrv, clearBuffer, anColor, afDepth, anStencil, eTrue);
+  GLES2_DoClear(apDrv, clearBuffer, anColor, afDepth, anStencil);
 
   if (pDrawOpCapture) {
     pDrawOpCapture->EndCaptureDrawOp(

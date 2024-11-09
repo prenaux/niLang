@@ -438,7 +438,7 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
 
     // Material
     mptrVGMaterial = g->CreateMaterial();
-    mptrVGMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilledScissor);
+    mptrVGMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
     mptrVGMaterial->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
     mptrVGMaterial->SetFlags(
         mptrVGMaterial->GetFlags()|
@@ -657,7 +657,7 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       mptrResetMaterial = g->CreateMaterial();
       mptrResetMaterial->SetName(_H("CanvasDefaultMaterial"));
       mptrResetMaterial->SetBlendMode(eBlendMode_NoBlending);
-      mptrResetMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilledScissor);
+      mptrResetMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       mptrResetMaterial->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
       mptrResetMaterial->SetFlags(eMaterialFlags_NoLighting|eMaterialFlags_DoubleSided|eMaterialFlags_Vertex);
       mptrResetMaterial->SetChannelSamplerStates(eMaterialChannel_Base, eCompiledStates_SS_SmoothClamp);

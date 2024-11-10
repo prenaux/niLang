@@ -656,9 +656,9 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   cCanvasGraphics(iGraphics* apGraphics, iGraphicsContext* apContext, iMaterial* apResetMaterial)
   {
 #ifdef USE_BUFFER_CACHE_RING_BUFFER
-    niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_RING_BUFFER");
+    // niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_RING_BUFFER");
 #else
-    niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_RING_BUFFER");
+    // niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_RING_BUFFER");
 #endif
 
     mptrGraphics = apGraphics;

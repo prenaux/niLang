@@ -10,14 +10,17 @@
 
 #ifdef GDRV_METAL
 
-#include <niLang/Platforms/OSX/osxMetal.h>
-#include "Graphics.h"
-#include "GDRV_Utils.h"
 #include "API/niUI_ModuleDef.h"
-#include "../../nicgc/src/mojoshader/mojoshader.h"
-#include "FixedShaders.h"
+
+#include <niLang/Platforms/OSX/osxMetal.h>
 #include <niLang/STL/scope_guard.h>
 #include <niLang/Utils/IDGenerator.h>
+
+#include "../../nicgc/src/mojoshader/mojoshader.h"
+#include "FixedShaders.h"
+#include "GDRV_Gpu.h"
+#include "GDRV_Utils.h"
+#include "Graphics.h"
 
 #if defined niOSX || defined niIOSMac
 #define METAL_MAC
@@ -201,18 +204,6 @@ inline MTLVertexDescriptor* _CreateMetalVertDesc(const tU32 aBufferIndex, tFVF a
 // States & Shaders
 //
 //-------------------------------------------------------------------------------------------
-enum eRenderPipelineColorFormat {
-  eRenderPipelineColorFormat_None = 0,
-  eRenderPipelineColorFormat_BGRA8 = 1,
-  eRenderPipelineColorFormat_RGBA8 = 2,
-  eRenderPipelineColorFormat_RGBA16F = 3,
-  eRenderPipelineColorFormat_R16F = 4,
-  eRenderPipelineColorFormat_R32F = 5,
-  eRenderPipelineColorFormat_Last niMaybeUnused = 6,
-  eRenderPipelineColorFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-niCAssert(eRenderPipelineColorFormat_Last <= 8);
-
 static const MTLPixelFormat _toMTLColorFormat[] = {
   MTLPixelFormatInvalid,
   MTLPixelFormatBGRA8Unorm,
@@ -221,7 +212,7 @@ static const MTLPixelFormat _toMTLColorFormat[] = {
   MTLPixelFormatR16Float,
   MTLPixelFormatR32Float,
 };
-niCAssert(niCountOf(_toMTLColorFormat) == eRenderPipelineColorFormat_Last);
+niCAssert(niCountOf(_toMTLColorFormat) == eGpuPipelineColorFormat_Last);
 
 // Commented out, we dont want to use native DXT support on macOS only since its not supported on iOS, which is our primary target
 // #define USE_METAL_DXT
@@ -294,46 +285,25 @@ static MTLPixelFormat _GetMTLPixelFormat(const iPixelFormat* apPxf) {
   return MTLPixelFormatBGRA8Unorm;
 }
 
-enum eRenderPipelineDepthFormat {
-  eRenderPipelineDepthFormat_None = 0,
-  eRenderPipelineDepthFormat_D32 = 1,
-#if defined METAL_IOS
-  eRenderPipelineDepthFormat_Last niMaybeUnused = 2,
-#else
-  eRenderPipelineDepthFormat_D16 = 2,
-  eRenderPipelineDepthFormat_D24S8 = 3,
-  eRenderPipelineDepthFormat_Last niMaybeUnused = 4,
-#endif
-  eRenderPipelineDepthFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-#if defined METAL_IOS
-niCAssert(eRenderPipelineDepthFormat_Last == 2);
-#else
-niCAssert(eRenderPipelineDepthFormat_Last == 4);
-#endif
-
-static eRenderPipelineColorFormat _GetRTRenderPipelineColorFormat(const achar* aaszDSFormat) {
+static eGpuPipelineColorFormat _GetRTRenderPipelineColorFormat(const achar* aaszDSFormat) {
   // the default metal RT is using BGRA8, other RT will follow this format so we can reuse those Pipelines
-  return eRenderPipelineColorFormat_BGRA8;
+  return eGpuPipelineColorFormat_BGRA8;
 }
 
-
-static eRenderPipelineDepthFormat _GetDSRenderPipelineDepthFormat(const achar* aaszDSFormat) {
+static eGpuPipelineDepthFormat _GetDSGpuPipelineDepthFormat(const achar* aaszDSFormat) {
   if (niStringIsOK(aaszDSFormat)) {
-    return eRenderPipelineDepthFormat_D32;
+    return eGpuPipelineDepthFormat_D32;
   }
-  return eRenderPipelineDepthFormat_None;
+  return eGpuPipelineDepthFormat_None;
 }
 
-static const MTLPixelFormat _toMTLDepthFormat[eRenderPipelineDepthFormat_Last] = {
+static const MTLPixelFormat _toMTLDepthFormat[eGpuPipelineDepthFormat_Last] = {
   MTLPixelFormatInvalid,
   MTLPixelFormatDepth32Float,
-#if !defined METAL_IOS
   MTLPixelFormatDepth16Unorm,
   MTLPixelFormatDepth24Unorm_Stencil8,
-#endif
 };
-niCAssert(niCountOf(_toMTLDepthFormat) == eRenderPipelineDepthFormat_Last);
+niCAssert(niCountOf(_toMTLDepthFormat) == eGpuPipelineDepthFormat_Last);
 
 static const MTLCullMode _toMTLCullMode[] = {
   MTLCullModeNone,
@@ -399,68 +369,31 @@ static const MTLSamplerAddressMode _toMTLSamplerAddress[] = {
 };
 niCAssert(niCountOf(_toMTLSamplerAddress) == eSamplerWrap_Last);
 
-static const MTLBlendFactor _toMTLBlendFactor[][2] = {
-#define MTL_BLENDFACTOR_ZERO 0
-  { MTLBlendFactorZero,                     MTLBlendFactorZero                     },
-#define MTL_BLENDFACTOR_ONE 1
-  { MTLBlendFactorOne,                      MTLBlendFactorOne                      },
-#define MTL_BLENDFACTOR_SRCCOLOR 2
-  { MTLBlendFactorSourceColor,              MTLBlendFactorSourceAlpha              },
-#define MTL_BLENDFACTOR_INVSRCCOLOR 3
-  { MTLBlendFactorOneMinusSourceColor,      MTLBlendFactorOneMinusSourceAlpha      },
-#define MTL_BLENDFACTOR_SRCALPHA 4
-  { MTLBlendFactorSourceAlpha,              MTLBlendFactorSourceAlpha              },
-#define MTL_BLENDFACTOR_INVSRCALPHA 5
-  { MTLBlendFactorOneMinusSourceAlpha,      MTLBlendFactorOneMinusSourceAlpha      },
-#define MTL_BLENDFACTOR_DESTALPHA 6
-  { MTLBlendFactorDestinationAlpha,         MTLBlendFactorDestinationAlpha         },
-#define MTL_BLENDFACTOR_INVDESTALPHA 7
-  { MTLBlendFactorOneMinusDestinationAlpha, MTLBlendFactorOneMinusDestinationAlpha },
-#define MTL_BLENDFACTOR_DESTCOLOR 8
-  { MTLBlendFactorDestinationColor,         MTLBlendFactorDestinationAlpha         },
-#define MTL_BLENDFACTOR_INVDESTCOLOR 9
-  { MTLBlendFactorOneMinusDestinationColor, MTLBlendFactorOneMinusDestinationAlpha },
-#define MTL_BLENDFACTOR_SRCALPHA_SAT 10
-  { MTLBlendFactorSourceAlphaSaturated,     MTLBlendFactorOne                      },
-#define MTL_BLENDFACTOR_FACTOR 11
-  { MTLBlendFactorBlendColor,               MTLBlendFactorBlendColor               },
-#define MTL_BLENDFACTOR_INVFACTOR 12
-  { MTLBlendFactorOneMinusBlendColor,       MTLBlendFactorOneMinusBlendColor       },
+static const MTLBlendOperation _toMTLBlendOp[] = {
+  MTLBlendOperationAdd,
+  MTLBlendOperationSubtract,
+  MTLBlendOperationReverseSubtract,
+  MTLBlendOperationMin,
+  MTLBlendOperationMax,
 };
+niCAssert(niCountOf(_toMTLBlendOp) == eGpuBlendOp_Last);
 
-struct sMetalBlendMode {
-  MTLBlendOperation op;
-  MTLBlendFactor    srcRGB, srcA;
-  MTLBlendFactor    dstRGB, dstA;
+static const MTLBlendFactor _toMTLBlendFactor[] = {
+  MTLBlendFactorZero,
+  MTLBlendFactorOne,
+  MTLBlendFactorSourceColor,
+  MTLBlendFactorOneMinusSourceColor,
+  MTLBlendFactorSourceAlpha,
+  MTLBlendFactorOneMinusSourceAlpha,
+  MTLBlendFactorDestinationAlpha,
+  MTLBlendFactorOneMinusDestinationAlpha,
+  MTLBlendFactorDestinationColor,
+  MTLBlendFactorOneMinusDestinationColor,
+  MTLBlendFactorSourceAlphaSaturated,
+  MTLBlendFactorBlendColor,
+  MTLBlendFactorOneMinusBlendColor,
 };
-#define METAL_BLENDMODE(OP,SRCRGB,SRCALPHA,DESTRGB,DESTALPHA) \
-  { MTLBlendOperation##OP, _toMTLBlendFactor[MTL_BLENDFACTOR_##SRCRGB][0], _toMTLBlendFactor[MTL_BLENDFACTOR_##SRCALPHA][1],  _toMTLBlendFactor[MTL_BLENDFACTOR_##DESTRGB][0], _toMTLBlendFactor[MTL_BLENDFACTOR_##DESTALPHA][1] }
-
-static const sMetalBlendMode _toMTLBlendMode[] = {
-  // eBlendMode_NoBlending
-  METAL_BLENDMODE(Add, ONE, ONE, ZERO, ZERO),
-  // eBlendMode_ReplaceAlpha
-  METAL_BLENDMODE(Add, ZERO, ZERO, ONE, ONE),
-  // eBlendMode_Additive
-  METAL_BLENDMODE(Add, ONE, ONE, ONE, ONE),
-  // eBlendMode_Modulate
-  METAL_BLENDMODE(Add, DESTCOLOR, DESTCOLOR, ZERO, ZERO),
-  // eBlendMode_Modulate2x
-  METAL_BLENDMODE(Add, DESTCOLOR, DESTCOLOR, SRCCOLOR, SRCCOLOR),
-  // eBlendMode_Translucent
-  METAL_BLENDMODE(Add, SRCALPHA, SRCALPHA, INVSRCALPHA, INVSRCALPHA),
-  // eBlendMode_TranslucentInvAlpha
-  METAL_BLENDMODE(Add, INVSRCALPHA, INVSRCALPHA, SRCALPHA, SRCALPHA),
-  // eBlendMode_TintedGlass
-  METAL_BLENDMODE(Add, SRCCOLOR, SRCCOLOR, INVSRCCOLOR, INVSRCCOLOR),
-  // eBlendMode_PreMulAlpha
-  METAL_BLENDMODE(Add, ONE, ONE, INVSRCALPHA, INVSRCALPHA),
-  // eBlendMode_ModulateReplaceAlpha
-  METAL_BLENDMODE(Add, DESTCOLOR, DESTCOLOR, ZERO, ZERO),
-  // eBlendMode_Modulate2xReplaceAlpha
-  METAL_BLENDMODE(Add, DESTCOLOR, DESTCOLOR, SRCCOLOR, SRCCOLOR),
-};
-niCAssert(niCountOf(_toMTLBlendMode) == eBlendMode_Last);
+niCAssert(niCountOf(_toMTLBlendFactor) == eGpuBlendFactor_Last);
 
 // 128 bit unsigned int for pipeline id
 // 32 for FVF
@@ -663,13 +596,13 @@ struct sMetalShaderLibrary {
       NSString* shaderFuncName = [NSString stringWithUTF8String:aShaderFunc];
       id<MTLFunction> shaderFunc = [library newFunctionWithName:library.functionNames[0]];
       if (shaderFunc == NULL) {
-        niError(niFmt("CompileShader FIALED function[%s] not found",aShaderFunc));
+        niError(niFmt("CompileShader FAILED function[%s] not found",aShaderFunc));
         niError(niFmt("IN Library[%s]",aShaderProgram));
       }
       // niDebugFmt(("Shader Function Loaded %s",aShaderFunc));
       return shaderFunc;
     }
-    niError("CompileShader FIALED library not loaded");
+    niError("CompileShader FAILED library not loaded");
     return NULL;
   }
 
@@ -706,13 +639,13 @@ struct sMetalShaderLibrary {
         ca.blendingEnabled = NO;
       }
       else if (aIdBits.blendMode < eBlendMode_Last) {
-        const sMetalBlendMode& bm = _toMTLBlendMode[aIdBits.blendMode];
+        const sGpuBlendModeDesc& bm = ToGpuBlendModeDesc((eBlendMode)aIdBits.blendMode);
         ca.blendingEnabled = YES;
-        ca.rgbBlendOperation = ca.alphaBlendOperation = bm.op;
-        ca.sourceRGBBlendFactor = bm.srcRGB;
-        ca.sourceAlphaBlendFactor = bm.srcA;
-        ca.destinationRGBBlendFactor = bm.dstRGB;
-        ca.destinationAlphaBlendFactor = bm.dstA;
+        ca.rgbBlendOperation = ca.alphaBlendOperation = _toMTLBlendOp[bm.mOp];
+        ca.sourceRGBBlendFactor = _toMTLBlendFactor[bm.mSrcRGB];
+        ca.sourceAlphaBlendFactor = _toMTLBlendFactor[bm.mSrcAlpha];
+        ca.destinationRGBBlendFactor = _toMTLBlendFactor[bm.mDstRGB];
+        ca.destinationAlphaBlendFactor = _toMTLBlendFactor[bm.mDstAlpha];
       }
       else {
         ca.blendingEnabled = NO;
@@ -1260,7 +1193,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
     {
       MTKView* mtkView = (__bridge MTKView*)metalAPI->GetMTKView();
       if (mtkView) {
-        mtkView.depthStencilPixelFormat = _toMTLDepthFormat[_GetDSRenderPipelineDepthFormat(aaszDSFormat)];
+        mtkView.depthStencilPixelFormat = _toMTLDepthFormat[_GetDSGpuPipelineDepthFormat(aaszDSFormat)];
         if (anSwapInterval) {
           mtkView.preferredFramesPerSecond = (anSwapInterval == 2) ? 30 : 60;
         }
@@ -1778,7 +1711,7 @@ struct cMetalContextBase :
     if (mBaseRenderPipelineId.IsNull()) {
       mBaseRenderPipelineId.rt0 = _GetRTRenderPipelineColorFormat(mptrRT[0]->GetPixelFormat()->GetFormat());
       if (mptrDS.IsOK()) {
-        mBaseRenderPipelineId.ds = _GetDSRenderPipelineDepthFormat(mptrDS->GetPixelFormat()->GetFormat());
+        mBaseRenderPipelineId.ds = _GetDSGpuPipelineDepthFormat(mptrDS->GetPixelFormat()->GetFormat());
       }
     }
 

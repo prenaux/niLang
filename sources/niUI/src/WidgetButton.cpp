@@ -88,8 +88,12 @@ void cButtonWidget::Paint_PushButton(const sRectf& aRect, iCanvas* apCanvas)
   _GetStatusItems(&frame,&pFont,&pIcon,&bIsPressed);
 
   if (niFlagIsNot(nStyle,eWidgetButtonStyle_NoFrame)) {
-    //    frame->DrawFrameEx(NULL,mDrawFrameFlags,rect.GetTopLeft(),rect.GetSize());
-    apCanvas->BlitOverlayFrame(rect,frame,mDrawFrameFlags);
+    if (frame->GetIsFrame()) {
+      apCanvas->BlitOverlayFrame(rect,frame,mDrawFrameFlags);
+    }
+    else {
+      apCanvas->BlitOverlay(rect,frame);
+    }
     rect = frame->ComputeFrameCenter(rect);
   }
 

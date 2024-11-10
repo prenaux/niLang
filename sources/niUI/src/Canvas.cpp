@@ -15,10 +15,6 @@
 
 // #define USE_BUFFER_CACHE_RING_BUFFER
 
-// Uses base vertex indexing to allocate vertices beyond the currently used
-// range, preventing overlap with active vertex data.
-#define USE_BUFFER_CACHE_BASE_VERTEX_INDEX
-
 namespace ni {
 template struct BufferCacheVertex<tVertexCanvas>;
 }
@@ -634,11 +630,6 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
 #else
     niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_RING_BUFFER");
 #endif
-#ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
-    niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_BASE_VERTEX_INDEX");
-#else
-    niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_BASE_VERTEX_INDEX");
-#endif
 
     mptrGraphics = apGraphics;
     mptrContext = apContext;
@@ -716,9 +707,7 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       mptrDrawOp->SetIndexArray(bufferCacheIndex->mptrIA);
       mptrDrawOp->SetFirstIndex(inds.x);
       mptrDrawOp->SetNumIndices(inds.y);
-#ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
       mptrDrawOp->SetBaseVertexIndex(verts.x);
-#endif
       mptrDrawOp->SetMaterial(mStates.mptrMaterial.IsOK() ? mStates.mptrMaterial : mptrDefaultMaterial);
       mptrDrawOp->SetMatrix(mStates.mMatrix);
       mptrContext->DrawOperation(mptrDrawOp);
@@ -998,11 +987,7 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   }
   __forceinline tIndex _GetCurrentVertex() const {
     GET_BUFFER_CACHE_VERTEX();
-#ifdef USE_BUFFER_CACHE_BASE_VERTEX_INDEX
     return bufferCacheVertex->GetCurrentIndex();
-#else
-    return bufferCacheVertex->GetCurrentEl();
-#endif
   }
   __forceinline void _AddIndex(tIndex anIndex) {
     GET_BUFFER_CACHE_INDEX();

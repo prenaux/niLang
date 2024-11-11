@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include <niLang/Utils/StringTokenizerImpl.h>
+#include <niLang/StringDef.h>
 
 namespace ni {
 /** \addtogroup niUI

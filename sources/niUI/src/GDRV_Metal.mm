@@ -674,21 +674,40 @@ struct sMetalShaderLibrary {
 // MetalBuffer
 //
 //--------------------------------------------------------------------------------------------
-struct sMetalBuffer {
+
+struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
   id<MTLBuffer> _mtlBuffer;
-  tU32 _lockStart = 0, _lockEnd = 0;
-  tU32 _modifiedStart = 0, _modifiedEnd = 0;
-  eArrayUsage _usage;
+  eGpuBufferMemoryMode _memMode;
+  tGpuBufferUsageFlags _usage;
+  tU32 _lockOffset = 0, _lockSize = 0;
+  tU32 _modifiedOffset = 0, _modifiedSize = 0;
+  eLock _lockMode;
   tBool _tracked;
 
-  tBool IsOK() const {
-    return _mtlBuffer != NULL;
-  }
-
-  tBool Create(id<MTLDevice> aDevice, void* apInitialData, tU32 anSize, eArrayUsage aUsage) {
+  tBool _Create(id<MTLDevice> aDevice, void* apInitialData, tU32 anSize,
+                eGpuBufferMemoryMode aMemMode,
+                tGpuBufferUsageFlags aUsage)
+  {
     _tracked = eFalse;
     _usage = aUsage;
-    MTLResourceOptions resOptions = MTLResourceStorageModeShared;
+    _memMode = aMemMode;
+
+    MTLResourceOptions resOptions;
+    switch (_memMode) {
+      case eGpuBufferMemoryMode_Shared: {
+        resOptions = MTLResourceStorageModeShared;
+        break;
+      }
+      case eGpuBufferMemoryMode_Managed: {
+        resOptions = MTLResourceStorageModeManaged;
+        break;
+      }
+      case eGpuBufferMemoryMode_Private: {
+        resOptions = MTLResourceStorageModePrivate;
+        break;
+      }
+    }
+
     if (apInitialData) {
       _mtlBuffer = [aDevice newBufferWithBytes:apInitialData
                     length: anSize
@@ -701,66 +720,107 @@ struct sMetalBuffer {
     return _mtlBuffer != NULL;
   }
 
-  tU32 GetSize() const {
+  void _Untrack() {
+    // niDebugFmt(("... Unbind: %p: [ms:%d,me:%d].", (tIntPtr)this, _modifiedStart,_modifiedEnd));
+    _modifiedOffset = _modifiedSize = 0;
+    _tracked = eFalse;
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _mtlBuffer != NULL;
+  }
+
+  virtual eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
+    return _memMode;
+  }
+  virtual tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
+    return _usage;
+  }
+
+  virtual tU32 GetSize() const niImpl {
     return [_mtlBuffer length];
   }
 
-  tBool __stdcall IsLocked() const {
-    return _lockEnd != 0;
-  }
+  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) niImpl {
+    niCheck(_memMode != eGpuBufferMemoryMode_Private, nullptr);
+    niCheck(!GetIsLocked(),nullptr);
 
-  tPtr __stdcall Lock(tU32 anStart, tU32 anSize, eLock aLock) {
-    niAssert(!IsLocked());
-    _lockStart = anStart;
-    _lockEnd = anStart + (anSize ? anSize : (GetSize()-anStart)) - 1;
-    if (_modifiedEnd == 0) {
-      _modifiedStart = _lockStart;
-      _modifiedEnd = _lockEnd;
+    _lockMode = aLock;
+    _lockOffset = anOffset;
+    _lockSize = anSize ? anSize : (GetSize()-anOffset);
+
+    if (_modifiedSize == 0) {
+      _modifiedOffset = _lockOffset;
+      _modifiedSize = _lockSize;
     }
-    else if ((_lockStart <= _modifiedEnd) && (_lockEnd >= _modifiedStart))
+    else if ((_lockOffset < (_modifiedOffset+_modifiedSize)) &&
+             (_lockOffset+_lockSize) > _modifiedOffset)
     {
       if (_tracked) {
-        // TODO: I think this should result in Lock() failing and returning
-        // nullptr. Its essentially a "locked region in use" error.
+        // TODO: The lock should fail in this case and return nullptr? We
+        // should not allow submitted buffers to be modified?
         niWarning(niFmt(
-          "Lock(%d,%d,%d): %p: [ls:%d,le:%d] [ms:%d,me:%d] Locked inflight overlapping area.",
-          anStart,anSize,(tU32)aLock,
+          "Lock(%d,%d,%d): %p: [lo:%d,ls:%d] [mo:%d,ms:%d] Locked inflight overlapping area.",
+          anOffset,anSize,aLock,
           (tIntPtr)this,
-          _lockStart,_lockEnd,
-          _modifiedStart,_modifiedEnd));
+          _lockOffset,_lockSize,
+          _modifiedOffset,_modifiedSize));
       }
-      _modifiedStart = ni::Min(_modifiedStart,_lockStart);
-      _modifiedEnd = ni::Max(_modifiedEnd,_lockEnd);
+      const tU32 newStart = ni::Min(_modifiedOffset,_lockOffset);
+      const tU32 newEnd = ni::Max(_modifiedOffset+_modifiedSize,
+                                  _lockOffset+_lockSize);
+      _modifiedOffset = newStart;
+      _modifiedSize = newEnd - newStart;
     }
-    return ((tPtr)[_mtlBuffer contents]) + _lockStart;
+    return ((tPtr)[_mtlBuffer contents]) + _lockOffset;
   }
-  tBool __stdcall Unlock() {
-    if (!IsLocked())
+
+  virtual tBool __stdcall Unlock() niImpl {
+    if (!GetIsLocked())
       return eFalse;
-    _lockStart = _lockEnd = 0;
+    if (_memMode == eGpuBufferMemoryMode_Managed &&
+        _lockMode != eLock_ReadOnly)
+    {
+      [_mtlBuffer
+       didModifyRange:NSMakeRange(_lockOffset,_lockSize)];
+    }
+    _lockOffset = _lockSize = 0;
     return eTrue;
   }
 
-  id<MTLBuffer> Bind() {
-    return _mtlBuffer;
+  virtual tBool __stdcall GetIsLocked() const {
+    return _lockSize != 0;
   }
 
-  void Untrack() {
-    // niDebugFmt(("... Unbind: %p: [ms:%d,me:%d].", (tIntPtr)this, _modifiedStart,_modifiedEnd));
-    _modifiedStart = _modifiedEnd = 0;
-    _tracked = eFalse;
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return nullptr;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
+    return this;
   }
 };
 
 struct cMetalVertexArray : public ni::ImplRC<iVertexArray> {
-  sMetalBuffer _buffer;
+  NN<sMetalBuffer> _buffer;
   tFVF _fvf;
   tU32 _fvfStride;
+  const eArrayUsage _arrayUsage;
 
-  cMetalVertexArray(id<MTLDevice> aDevice, tU32 anNumVertices, tFVF aFVF, eArrayUsage aUsage) {
+  cMetalVertexArray(id<MTLDevice> aDevice, tU32 anNumVertices, tFVF aFVF, eArrayUsage aUsage)
+      : _arrayUsage(aUsage)
+      , _buffer(niNew sMetalBuffer())
+  {
     _fvf = aFVF;
     _fvfStride = FVFGetStride(_fvf);
-    _buffer.Create(aDevice, NULL, _fvfStride * anNumVertices, aUsage);
+    _buffer->_Create(aDevice, NULL, _fvfStride * anNumVertices,
+                     eGpuBufferMemoryMode_Shared,
+                     eGpuBufferUsageFlags_Vertex);
 
     METAL_TRACE((">>> MetalVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %db (%gMB).",
                  FVFToString(_fvf).Chars(),
@@ -770,7 +830,7 @@ struct cMetalVertexArray : public ni::ImplRC<iVertexArray> {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
-    return _buffer._mtlBuffer != NULL;
+    return _buffer->_mtlBuffer != NULL;
   }
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
@@ -783,37 +843,43 @@ struct cMetalVertexArray : public ni::ImplRC<iVertexArray> {
     return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
-    _buffer.Bind();
-    return this;
+    return _buffer->Bind(apDevice);
   }
 
   virtual tFVF __stdcall GetFVF() const {
     return _fvf;
   }
   virtual tU32 __stdcall GetNumVertices() const {
-    return _buffer.GetSize() / _fvfStride;
+    return _buffer->GetSize() / _fvfStride;
   }
   virtual eArrayUsage __stdcall GetUsage() const {
-    return _buffer._usage;
+    return _arrayUsage;
   }
   virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) {
-    return _buffer.Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
+    niUnused(aLock);
+    return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
   }
   virtual tBool __stdcall Unlock() {
-    return _buffer.Unlock();
+    return _buffer->Unlock();
   }
   virtual tBool __stdcall GetIsLocked() const {
-    return _buffer.IsLocked();
+    return _buffer->GetIsLocked();
   }
 };
 
 struct cMetalIndexArray : public ni::ImplRC<iIndexArray> {
-  sMetalBuffer _buffer;
+  NN<sMetalBuffer> _buffer;
   eGraphicsPrimitiveType _primType;
+  const eArrayUsage _arrayUsage;
 
-  cMetalIndexArray(id<MTLDevice> aDevice, eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, eArrayUsage aUsage) {
+  cMetalIndexArray(id<MTLDevice> aDevice, eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, eArrayUsage aUsage)
+      : _arrayUsage(aUsage)
+      , _buffer(niNew sMetalBuffer())
+  {
     _primType = aPrimType;
-    _buffer.Create(aDevice, NULL, knMetalIndexSize * anNumIndices, aUsage);
+    _buffer->_Create(aDevice, NULL, knMetalIndexSize * anNumIndices,
+                     eGpuBufferMemoryMode_Shared,
+                     eGpuBufferUsageFlags_Index);
 
     METAL_TRACE((">>> MetalIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %db (%gMB).",
                  niEnumToChars(eGraphicsPrimitiveType,_primType),
@@ -824,7 +890,7 @@ struct cMetalIndexArray : public ni::ImplRC<iIndexArray> {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
-    return _buffer._mtlBuffer != NULL;
+    return _buffer->_mtlBuffer != NULL;
   }
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
@@ -837,31 +903,30 @@ struct cMetalIndexArray : public ni::ImplRC<iIndexArray> {
     return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
-    _buffer.Bind();
-    return this;
+    return _buffer->Bind(apDevice);
   }
 
   virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {
     return _primType;
   }
   virtual tU32 __stdcall GetNumIndices() const {
-    return _buffer.GetSize() / knMetalIndexSize;
+    return _buffer->GetSize() / knMetalIndexSize;
   }
   virtual tU32 __stdcall GetMaxVertexIndex() const {
     return 0xFFFFFFFF;
   }
   virtual eArrayUsage __stdcall GetUsage() const {
-    return _buffer._usage;
+    return _arrayUsage;
   }
 
   virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) {
-    return _buffer.Lock(anFirstIndex * knMetalIndexSize, anNumIndex * knMetalIndexSize, aLock);
+    return _buffer->Lock(anFirstIndex * knMetalIndexSize, anNumIndex * knMetalIndexSize, aLock);
   }
   virtual tBool __stdcall Unlock() {
-    return _buffer.Unlock();
+    return _buffer->Unlock();
   }
   virtual tBool __stdcall GetIsLocked() const {
-    return _buffer.IsLocked();
+    return _buffer->GetIsLocked();
   }
 };
 
@@ -1092,7 +1157,7 @@ static iGraphicsContextRT* New_MetalContextRT(
  iTexture* apRT,
   iTexture* apDS);
 
-struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
+struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu>
 {
   iGraphics* mpGraphics;
   id<MTLDevice> mMetalDevice;
@@ -1583,6 +1648,58 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver>
     }
     return _dsNoDepthTest;
   }
+
+  virtual Ptr<iGpuBuffer> __stdcall CreateBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+    niLet buffer = MakeNN<sMetalBuffer>();
+    if (!buffer->_Create(mMetalDevice, nullptr, anSize, aMemMode, aUsage)) {
+      return nullptr;
+    }
+    return buffer;
+  }
+
+  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+    niCheckIsOK(apFile,nullptr);
+    astl::vector<tU8> data;
+    data.resize(anSize);
+    if (apFile->ReadRaw(data.data(),anSize) != anSize) {
+      return nullptr;
+    }
+    return CreateBufferFromDataRaw(data.data(),anSize,aMemMode,aUsage);
+  }
+
+  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+    niCheck(apData != nullptr, nullptr);
+    niLet buffer = MakeNN<sMetalBuffer>();
+    if (!buffer->_Create(mMetalDevice, apData, anSize, aMemMode, aUsage)) {
+      return nullptr;
+    }
+    return buffer;
+  }
+
+  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, const achar* aaszSource, const achar* aaszEntryPoint, eGpuFunctionType aType) niImpl {
+    niPanicUnreachable("Unimplemented");
+    return nullptr;
+  }
+
+  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline() niImpl {
+    niPanicUnreachable("Unimplemented");
+    return nullptr;
+  }
+
+  virtual tIntPtr __stdcall CompilePipeline(iGpuPipeline* apDesc) niImpl {
+    niPanicUnreachable("Unimplemented");
+    return 0;
+  }
+
+  virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() niImpl {
+    niPanicUnreachable("Unimplemented");
+    return nullptr;
+  }
+
+  virtual tBool BlitBufferToSystemMemory(iGpuBuffer* apBuffer) {
+    niPanicUnreachable("Unimplemented");
+    return eFalse;
+  }
 };
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& avarB) {
@@ -1597,7 +1714,8 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& av
   if (!device) {
     niError("No metal device found.");
   }
-  return niNew cMetalGraphicsDriver(ptrGraphics,device);
+  Ptr<iGraphicsDriver> driver = niNew cMetalGraphicsDriver(ptrGraphics,device);
+  return driver.GetRawAndSetNull();
 }
 
 
@@ -1656,15 +1774,11 @@ struct cMetalContextBase :
   }
 
   void _CleanupTrackedBuffers() {
-    // niDebugFmt(("... CommandQueue mTrackedVAs: %d, mTrackedIAs: %d", mTrackedVAs.size(), mTrackedIAs.size()));
-    niLoop(i,mTrackedVAs.size()) {
-      mTrackedVAs[i]->_buffer.Untrack();
+    // niDebugFmt(("... CommandQueue mvTrackedBuffers: %d", mvTrackedBuffers.size()));
+    niLoop(i,mvTrackedBuffers.size()) {
+      mvTrackedBuffers[i]->_Untrack();
     }
-    niLoop(i,mTrackedIAs.size()) {
-      mTrackedIAs[i]->_buffer.Untrack();
-    }
-    mTrackedVAs.clear();
-    mTrackedIAs.clear();
+    mvTrackedBuffers.clear();
   }
 
   tU32 mDirtyFlags = 0;
@@ -1674,8 +1788,7 @@ struct cMetalContextBase :
   tU32 mCurrentBufferOffset = 0;
   sMetalRenderPipelineId mCurrentRenderPipelineId;
   tU32 mNumDrawOps = 0;
-  astl::vector<Ptr<cMetalVertexArray>> mTrackedVAs;
-  astl::vector<Ptr<cMetalIndexArray>> mTrackedIAs;
+  astl::vector<Ptr<sMetalBuffer>> mvTrackedBuffers;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
@@ -1685,8 +1798,7 @@ struct cMetalContextBase :
     niAssert(mpParent != NULL);
 
     mFrameSem.Signal(mFrameMaxInFlight);
-    mTrackedVAs.reserve(128);
-    mTrackedIAs.reserve(128);
+    mvTrackedBuffers.reserve(128);
   }
 
   virtual id<MTLRenderCommandEncoder> __stdcall _NewRenderCommandEncoder() = 0;
@@ -1970,22 +2082,28 @@ struct cMetalContextBase :
       updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
       updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
 
-      if (!va->_buffer._tracked && va->_buffer._modifiedEnd) {
-        mTrackedVAs.push_back(va);
-        va->_buffer._tracked = eTrue;
+      if (!va->_buffer->_tracked && va->_buffer->_modifiedSize) {
+        mvTrackedBuffers.push_back(va->_buffer);
+        va->_buffer->_tracked = eTrue;
       }
-      [mCommandEncoder setVertexBuffer:va->_buffer.Bind()
+
+      sMetalBuffer* vaMtlBuffer = reinterpret_cast<sMetalBuffer*>(va->Bind(nullptr));
+      niPanicAssert(vaMtlBuffer != nullptr);
+      [mCommandEncoder setVertexBuffer:vaMtlBuffer->_mtlBuffer
        offset:(baseVertexIndex*va->_fvfStride)
        atIndex:0];
 
-      if (!ia->_buffer._tracked && ia->_buffer._modifiedEnd) {
-        mTrackedIAs.push_back(ia);
-        ia->_buffer._tracked = eTrue;
+      if (!ia->_buffer->_tracked && ia->_buffer->_modifiedSize) {
+        mvTrackedBuffers.push_back(ia->_buffer);
+        ia->_buffer->_tracked = eTrue;
       }
+
+      sMetalBuffer* iaMtlBuffer = reinterpret_cast<sMetalBuffer*>(ia->Bind(nullptr));
+      niPanicAssert(vaMtlBuffer != nullptr);
       [mCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
        indexCount:numInds
        indexType:MTLIndexTypeUInt32
-       indexBuffer:ia->_buffer.Bind()
+       indexBuffer:iaMtlBuffer->_mtlBuffer
        indexBufferOffset:(firstInd*sizeof(tU32))];
       METAL_TRACE(("DrawOperation END"));
     }

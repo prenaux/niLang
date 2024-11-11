@@ -10,6 +10,7 @@
 
 namespace ni {
 
+enum eLock;
 struct iDataTable;
 
 /** \addtogroup niUI
@@ -24,15 +25,18 @@ enum eGpuBufferMemoryMode
   eGpuBufferMemoryMode_Shared = 0,
   //! Memory only accessible by GPU, optimal for static resources
   //! that won't change after initialization.
+  //! \remark Lock() with private buffers always fails and return nullptr. You should use CreateBufferFromData to initialize them.
   eGpuBufferMemoryMode_Private = 1,
-  //! Memory that can be accessed by CPU but requires explicit synchronization.
-  //! Best for resources updated occasionally by CPU.
+  //! Defines a synchronized memory pair for a resource, with one copy in
+  //! system memory and another in video memory. Managed resources benefit
+  //! from fast CPU and GPU access to each copy of the resource, with minimal
+  //! API calls needed to synchronize these copies.
+  //! \remark Lock() returns a pointer to the system memory, Unlock synchronizes it with the GPU.
+  //! \remark To copy the GPU version of the buffer to the system memory you must use iGraphicsDriverGpu::BlitGpuBufferToSystemMemory().
   eGpuBufferMemoryMode_Managed = 2,
-  //! Memory only accessible by CPU, used for readback from GPU.
-  eGpuBufferMemoryMode_HostOnly = 3,
 
   //! \internal
-  eGpuBufferMemoryMode_Last niMaybeUnused = 4,
+  eGpuBufferMemoryMode_Last niMaybeUnused = 3,
   //! \internal
   eGpuBufferMemoryMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -93,8 +97,9 @@ struct iGpuBuffer : public iDeviceResource
   //! Lock buffer memory for CPU access.
   //! \param anOffset is the offset in the buffer data.
   //! \param anSize is the size to lock.
+  //! \param aLock specify to locking mode.
   //! \return a pointer to the buffer data.
-  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize) = 0;
+  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) = 0;
   //! Unlock buffer memory.
   virtual tBool __stdcall Unlock() = 0;
   //! Return true if the buffer is locked.
@@ -146,7 +151,7 @@ struct iGpuFunction : public iDeviceResource
   //! - Platform-specific compiled shader code
   //! - Platform-specific binding decorations (descriptor sets, register bindings)
   //! This data is used to:
-  //! - Create pipeline state objects
+  //! - Create gpu pipelines
   //! - Setup resource binding infrastructure (descriptor sets, root signatures)
   //! - Validate resource bindings at runtime
   virtual iDataTable* __stdcall GetDataTable() const = 0;
@@ -416,20 +421,28 @@ struct iGraphicsDriverGpu : public iUnknown
   niDeclareInterfaceUUID(iGraphicsDriverGpu,0xe689ee7e,0xf674,0x1541,0x9a,0x2b,0xb3,0x06,0x55,0x7e,0x6f,0x09);
 
   //! Create a new GPU buffer.
-  virtual iGpuBuffer* __stdcall CreateBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  virtual Ptr<iGpuBuffer> __stdcall CreateBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  //! Create a new GPU buffer with initial data.
+  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  //! Create a new GPU buffer with initial raw data.
+  //! {NoAutomation}
+  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
 
   //! Create a new GPU function.
-  virtual iGpuFunction* __stdcall CreateFunction(iHString* ahspName, const achar* aaszSource, const achar* aaszEntryPoint, eGpuFunctionType aType) = 0;
+  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, const achar* aaszSource, const achar* aaszEntryPoint, eGpuFunctionType aType) = 0;
 
   //! Create a new GPU pipeline description.
-  virtual iGpuPipeline* __stdcall CreatePipeline() = 0;
+  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline() = 0;
 
   //! Compile a GPU pipeline description into a driver handle.
   //! \return Handle to the compiled pipeline, 0 if compilation failed.
   virtual tIntPtr __stdcall CompilePipeline(iGpuPipeline* apDesc) = 0;
 
   //! Create a new GPU blend mode description.
-  virtual iGpuBlendMode* __stdcall CreateBlendMode() = 0;
+  virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() = 0;
+
+  //! Synchronize a managed resource from the GPU to the CPU memory.
+  virtual tBool BlitBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
 };
 
 }

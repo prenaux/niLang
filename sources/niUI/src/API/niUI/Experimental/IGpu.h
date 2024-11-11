@@ -6,12 +6,14 @@
 #include <niLang/Types.h>
 #include <niLang/IDeviceResource.h>
 #include <niLang/IHString.h>
+#include <niLang/Math/MathRect.h>
 #include "../FVF.h"
 
 namespace ni {
 
 enum eLock;
 struct iDataTable;
+struct iTexture;
 
 /** \addtogroup niUI
  * @{
@@ -253,7 +255,7 @@ struct iGpuBlendMode : public iUnknown {
   //! Copy another blend mode.
   virtual tBool __stdcall Copy(const iGpuBlendMode* apBlend) = 0;
   //! Clone this blend mode.
-  virtual iGpuBlendMode* __stdcall Clone() const = 0;
+  virtual Ptr<iGpuBlendMode> __stdcall Clone() const = 0;
 
   //! Set the blend operation.
   //! {Property}
@@ -299,25 +301,22 @@ struct iGpuBlendMode : public iUnknown {
 struct sGpuPipelineDesc {
   eGpuPipelineColorFormat mColorFormats[4];
   eGpuPipelineDepthFormat mDepthFormat;
-  tFVF                  mFVF;
-  tIntPtr               mhRS;
-  tIntPtr               mhDS;
-  Ptr<iGpuFunction>     mptrFuncs[eGpuFunctionType_Last];
-  Ptr<iGpuBlendMode>    mptrBlendMode;
+  tFVF               mFVF;
+  tIntPtr            mhRS;
+  tIntPtr            mhDS;
+  Ptr<iGpuFunction>  mptrFuncs[eGpuFunctionType_Last];
+  Ptr<iGpuBlendMode> mptrBlendMode;
 };
 
-//! Gpu pipeline interface.
-struct iGpuPipeline : public iUnknown
+//! Gpu pipeline desc interface.
+struct iGpuPipelineDesc : public iUnknown
 {
-  niDeclareInterfaceUUID(iGpuPipeline,0xbd30dcb2,0x8309,0xb84a,0xa5,0x9f,0xf4,0xa1,0x08,0x6d,0xc9,0x05);
+  niDeclareInterfaceUUID(iGpuPipelineDesc,0xbd30dcb2,0x8309,0xb84a,0xa5,0x9f,0xf4,0xa1,0x08,0x6d,0xc9,0x05);
 
   //! Copy another pipeline.
-  virtual tBool __stdcall Copy(const iGpuPipeline* apPipe) = 0;
+  virtual tBool __stdcall Copy(const iGpuPipelineDesc* apPipe) = 0;
   //! Clone this pipeline.
-  virtual Ptr<iGpuPipeline> __stdcall Clone() const = 0;
-  //! Return whether the depth-stencil states are compiled (read-only)
-  //! {Property}
-  virtual tBool __stdcall GetIsCompiled() const = 0;
+  virtual Ptr<iGpuPipelineDesc> __stdcall Clone() const = 0;
 
   //! Set a color format.
   //! {Property}
@@ -361,16 +360,60 @@ struct iGpuPipeline : public iUnknown
   //! {Property}
   virtual iGpuFunction* __stdcall GetFunction(eGpuFunctionType aType) const = 0;
 
-  //! Set the blend factors (constants)
+  //! Set the blend mode. Set to nullptr to disable.
   //! {Property}
-  virtual void __stdcall SetBlendFactors(const sColor4f& aFactors) = 0;
-  //! Get the blend factors (constants)
+  virtual tBool __stdcall SetBlendMode(iGpuBlendMode* apBlendMode) = 0;
+  //! Get the blend mode.
   //! {Property}
-  virtual sColor4f __stdcall GetBlendFactors() const = 0;
+  virtual iGpuBlendMode* __stdcall GetBlendMode() const = 0;
 
   //! Get the pipeline description structure pointer.
   //! {Property}
   virtual tPtr __stdcall GetDescStructPtr() const = 0;
+};
+
+struct iGpuPipeline : public iUnknown
+{
+  niDeclareInterfaceUUID(iGpuPipeline,0x4298b417,0xddeb,0xbf4d,0x82,0x5c,0x12,0x5b,0x3e,0x0b,0x5b,0x05);
+
+  //! Get the gpu pipeline description.
+  //! {Property}
+  virtual const iGpuPipelineDesc* __stdcall GetDesc() const = 0;
+};
+
+struct iGpuCommandEncoder : public iUnknown {
+  niDeclareInterfaceUUID(iGpuCommandEncoder,0x055a196d,0x4ae9,0x7648,0xa8,0x6e,0x5e,0x90,0xaf,0xf2,0x16,0xce);
+
+  //##########################################################################
+  //! \name Resource Bindings
+  //##########################################################################
+  //! @{
+  virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) = 0;
+  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset) = 0;
+  virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) = 0;
+  virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) = 0;
+  virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) = 0;
+  //! @}
+
+  //##########################################################################
+  //! \name Dynamic States
+  //##########################################################################
+  //! @{
+  virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) = 0;
+  virtual void __stdcall SetScissorRect(const sRecti& aRect) = 0;
+  virtual void __stdcall SetViewport(const sRecti& aRect) = 0;
+  virtual void __stdcall SetStencilReference(tI32 aRef) = 0;
+  virtual void __stdcall SetStencilMask(tU32 aMask) = 0;
+  virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) = 0;
+  //! @}
+
+  //##########################################################################
+  //! \name Draw Commands
+  //##########################################################################
+  //! @{
+  virtual void __stdcall Draw(tU32 anVertexCount, tU32 anFirstVertex) = 0;
+  virtual void __stdcall DrawIndexed(tU32 anNumIndices, tU32 anFirstIndex) = 0;
+  //! @}
 };
 
 //! GPU-specific graphics context interface.
@@ -378,40 +421,10 @@ struct iGraphicsContextGpu : public iUnknown
 {
   niDeclareInterfaceUUID(iGraphicsContextGpu,0x0d2ffd6c,0x887d,0x3d46,0xaa,0x18,0x12,0x3b,0x27,0x29,0x54,0xe0);
 
-  //##########################################################################
-  //! \name Dynamic states
-  //##########################################################################
-  //! @{
-
-  //! Set the polygon offset.
-  //! \param avOffset Vec2(x: units scale factor, y: depth slope factor)
-  //! {Property}
-  virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) = 0;
-  //! Get the polygon offset.
-  //! {Property}
-  virtual sVec2f __stdcall GetPolygonOffset() const = 0;
-
-  //! Set the stencil reference value.
-  //! {Property}
-  virtual void __stdcall SetStencilReference(tI32 aRef) = 0;
-  //! Get the stencil reference value.
-  //! {Property}
-  virtual tI32 __stdcall GetStencilReference() const = 0;
-
-  //! Set the stencil mask.
-  //! {Property}
-  virtual void __stdcall SetStencilMask(tU32 aMask) = 0;
-  //! Get the stencil mask.
-  //! {Property}
-  virtual tU32 __stdcall GetStencilMask() const = 0;
-
-  //! Set the blend color constant
-  //! {Property}
-  virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) = 0;
-  //! Get the blend color constant
-  //! {Property}
-  virtual sColor4f __stdcall GetBlendColorConstant() const = 0;
-  //! @}
+  //! Begin a command encoder for recording commands
+  virtual iGpuCommandEncoder* __stdcall BeginCommandEncoder() = 0;
+  //! End the current command encoder
+  virtual void __stdcall EndCommandEncoder() = 0;
 };
 
 //! GPU-specific graphics driver interface.
@@ -429,20 +442,19 @@ struct iGraphicsDriverGpu : public iUnknown
   virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
 
   //! Create a new GPU function.
-  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, const achar* aaszSource, const achar* aaszEntryPoint, eGpuFunctionType aType) = 0;
+  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, iDataTable* apGpuFunctionDT) = 0;
 
   //! Create a new GPU pipeline description.
-  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline() = 0;
+  virtual Ptr<iGpuPipelineDesc> __stdcall CreatePipelineDesc() = 0;
 
   //! Compile a GPU pipeline description into a driver handle.
-  //! \return Handle to the compiled pipeline, 0 if compilation failed.
-  virtual tIntPtr __stdcall CompilePipeline(iGpuPipeline* apDesc) = 0;
+  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline(const iGpuPipelineDesc* apDesc) = 0;
 
   //! Create a new GPU blend mode description.
   virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() = 0;
 
   //! Synchronize a managed resource from the GPU to the CPU memory.
-  virtual tBool BlitBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
+  virtual tBool BlitManagedBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
 };
 
 }

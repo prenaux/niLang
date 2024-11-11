@@ -125,9 +125,6 @@ enum eLock
   eLock_NoOverwrite = niBit(1),
   //! The application will not write to the buffer.
   eLock_ReadOnly = niBit(2),
-  //! The application will read only the positions in the buffer.
-  //! \remark This is meaningfull only for vertex arrays.
-  eLock_ReadOnlyPosition = eLock_ReadOnly|niBit(3),
   //! \internal
   eLock_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

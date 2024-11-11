@@ -35797,7 +35797,6 @@ static const ni::sEnumValueDef Enum_eLock_Values[] = {
 	{ "Discard", ni::eLock_Discard },
 	{ "NoOverwrite", ni::eLock_NoOverwrite },
 	{ "ReadOnly", ni::eLock_ReadOnly },
-	{ "ReadOnlyPosition", ni::eLock_ReadOnlyPosition },
 };
 static const ni::sEnumDef Enum_eLock = {
 	"eLock",

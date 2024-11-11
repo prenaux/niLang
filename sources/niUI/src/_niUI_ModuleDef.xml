@@ -913,11 +913,6 @@
 			<value name="eLock_ReadOnly" value="niBit ( 2 ) ">
 				<comments desc="The application will not write to the buffer. "/>
 			</value>
-			<value name="eLock_ReadOnlyPosition" value="eLock_ReadOnly|niBit ( 3 ) ">
-				<comments desc="The application will read only the positions in the buffer. ">
-					<remark text="This is meaningfull only for vertex arrays. "/>
-				</comments>
-			</value>
 		</enum>
 		<enum min_features="20" name="eShaderCompilerFlags">
 			<comments desc="Shader compiler flags. "/>

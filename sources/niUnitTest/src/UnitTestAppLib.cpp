@@ -106,18 +106,34 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName) {
   // to show it. Note that by default the TEST_WIDGET macros will show the
   // window when a test is run interactively.
   GetTestAppContext()->_config.windowShow = eFalse;
-  UnitTest::TestRunner_Startup(fixtureName.Chars());
 
-  if (!app::AppNativeStartup(GetTestAppContext(),
-                             aTitle, 0, 0,
-                             ni::Runnable<ni::tpfnRunnable>(OnAppStarted),
-                             ni::Runnable<ni::tpfnRunnable>(OnAppShutdown)))
-  {
-    ni::GetLang()->FatalError("Can't start application.");
-    return -1;
+  niTry {
+    UnitTest::TestRunner_Startup(fixtureName.Chars());
+  }
+  niCatchAll() {
+    ni::GetLang()->FatalError("TestAppNativeMainLoop: TestRunner_Startup: Unhandled exception.");
   }
 
-  app::AppNativeMainLoop(GetTestAppContext());
+  niTry {
+    if (!app::AppNativeStartup(GetTestAppContext(),
+                               aTitle, 0, 0,
+                               ni::Runnable<ni::tpfnRunnable>(OnAppStarted),
+                               ni::Runnable<ni::tpfnRunnable>(OnAppShutdown)))
+    {
+      ni::GetLang()->FatalError("Can't start application.");
+      return -1;
+    }
+  }
+  niCatchAll() {
+    ni::GetLang()->FatalError("TestAppNativeMainLoop: AppNativeStartup: Unhandled exception.");
+  }
+
+  niTry {
+    app::AppNativeMainLoop(GetTestAppContext());
+  }
+  niCatchAll() {
+    ni::GetLang()->FatalError("TestAppNativeMainLoop: AppNativeMainLoop: Unhandled exception.");
+  }
   return gTestResults;
 }
 

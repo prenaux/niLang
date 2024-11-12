@@ -540,69 +540,80 @@ void AppRender(astl::non_null<AppContext*> apContext) {
 }
 
 tBool AppStartup(astl::non_null<AppContext*> apContext, iOSWindow* apWindow, iRunnable* apOnStarted, iRunnable* apOnShutdown) {
-  niCheckIsOK(apWindow,eFalse);
-  AppNotifyHost("BeforeStartup");
+  niTry {
+    niCheckIsOK(apWindow,eFalse);
+    AppNotifyHost("BeforeStartup");
 
-  if (ni::GetLang()->HasProperty("windowRefreshTimerForeground")) {
-    apContext->_config.windowRefreshTimerForeground = ni::GetLang()->GetProperty("windowRefreshTimerForeground").Float();
-  }
-  if (ni::GetLang()->HasProperty("windowRefreshTimerBackground")) {
-    apContext->_config.windowRefreshTimerBackground = ni::GetLang()->GetProperty("windowRefreshTimerBackground").Float();
-  }
-  if (ni::GetLang()->HasProperty("maxFPS")) {
-    apContext->_config.maxFPS = ni::GetLang()->GetProperty("maxFPS").Long();
-  }
-  if (ni::GetLang()->HasProperty("fixedFPS")) {
-    apContext->_config.fixedFPS = ni::GetLang()->GetProperty("fixedFPS").Long();
-  }
-  if (ni::GetLang()->HasProperty("drawFPS")) {
-    apContext->_config.drawFPS = ni::GetLang()->GetProperty("drawFPS").Long();
-  }
-  else {
-    ni::GetLang()->SetProperty("drawFPS",niFmt("%d",apContext->_config.drawFPS));
-  }
-  if (ni::GetLang()->HasProperty("renderer")) {
-    apContext->_config.graphicsDriver = _H(ni::GetLang()->GetProperty("renderer"));
-  }
-  if (ni::GetLang()->HasProperty("swapinterval")) {
-    apContext->_config.swapInterval = ni::GetLang()->GetProperty("swapinterval").Long();
-  }
-  if (ni::GetLang()->HasProperty("noaa")) {
-    const ni::tBool bNoAA = ni::GetLang()->GetProperty("noaa").Bool(ni::eTrue);
-    if (bNoAA) {
-      apContext->_config.backBufferFlags &= ~eTextureFlags_RTAA4Samples;
+    if (ni::GetLang()->HasProperty("windowRefreshTimerForeground")) {
+      apContext->_config.windowRefreshTimerForeground = ni::GetLang()->GetProperty("windowRefreshTimerForeground").Float();
     }
-  }
-  if (ni::GetLang()->HasProperty("windowRect")) {
-    apContext->_config.windowCentered = ni::GetLang()->GetProperty("windowCentered").Bool(eFalse);
-    apContext->_config.windowRect = ni::sRectf(ni::GetLang()->Eval(
-      ni::GetLang()->GetProperty("windowRect").Chars())->GetVec4()).ToInt();
-  }
+    if (ni::GetLang()->HasProperty("windowRefreshTimerBackground")) {
+      apContext->_config.windowRefreshTimerBackground = ni::GetLang()->GetProperty("windowRefreshTimerBackground").Float();
+    }
+    if (ni::GetLang()->HasProperty("maxFPS")) {
+      apContext->_config.maxFPS = ni::GetLang()->GetProperty("maxFPS").Long();
+    }
+    if (ni::GetLang()->HasProperty("fixedFPS")) {
+      apContext->_config.fixedFPS = ni::GetLang()->GetProperty("fixedFPS").Long();
+    }
+    if (ni::GetLang()->HasProperty("drawFPS")) {
+      apContext->_config.drawFPS = ni::GetLang()->GetProperty("drawFPS").Long();
+    }
+    else {
+      ni::GetLang()->SetProperty("drawFPS",niFmt("%d",apContext->_config.drawFPS));
+    }
+    if (ni::GetLang()->HasProperty("renderer")) {
+      apContext->_config.graphicsDriver = _H(ni::GetLang()->GetProperty("renderer"));
+    }
+    if (ni::GetLang()->HasProperty("swapinterval")) {
+      apContext->_config.swapInterval = ni::GetLang()->GetProperty("swapinterval").Long();
+    }
+    if (ni::GetLang()->HasProperty("noaa")) {
+      const ni::tBool bNoAA = ni::GetLang()->GetProperty("noaa").Bool(ni::eTrue);
+      if (bNoAA) {
+        apContext->_config.backBufferFlags &= ~eTextureFlags_RTAA4Samples;
+      }
+    }
+    if (ni::GetLang()->HasProperty("windowRect")) {
+      apContext->_config.windowCentered = ni::GetLang()->GetProperty("windowCentered").Bool(eFalse);
+      apContext->_config.windowRect = ni::sRectf(ni::GetLang()->Eval(
+        ni::GetLang()->GetProperty("windowRect").Chars())->GetVec4()).ToInt();
+    }
 
-  apContext->_appRenderCount = 0;
-  apContext->_appOnShutdown = apOnShutdown;
+    apContext->_appRenderCount = 0;
+    apContext->_appOnShutdown = apOnShutdown;
 
-  apContext->_appWnd = niNew AppWindow(apContext);
-  if (!((AppWindow*)apContext->_appWnd.ptr())->OnStartup(apWindow,apOnStarted)) {
-    niError("Can't start the application window.");
+    apContext->_appWnd = niNew AppWindow(apContext);
+    if (!((AppWindow*)apContext->_appWnd.ptr())->OnStartup(apWindow,apOnStarted)) {
+      niError("Can't start the application window.");
+      return eFalse;
+    }
+
+    AppNotifyHost("Started");
+    return eTrue;
+  }
+  niCatchAll() {
+    ni::GetLang()->FatalError("AppStartup: Unhandled exception.");
     return eFalse;
   }
-
-  AppNotifyHost("Started");
-  return eTrue;
 }
 
 void AppShutdown(astl::non_null<AppContext*> apContext) {
-  AppNotifyHost("BeforeShutdown");
-  if (apContext->_appOnShutdown.IsOK()) {
-    apContext->_appOnShutdown->Run();
-    apContext->_appOnShutdown = NULL;
+  niTry {
+    AppNotifyHost("BeforeShutdown");
+    if (apContext->_appOnShutdown.IsOK()) {
+      apContext->_appOnShutdown->Run();
+      apContext->_appOnShutdown = NULL;
+    }
+    if (apContext->_appWnd.IsOK()) {
+      apContext->_appWnd->Invalidate();
+      apContext->_appWnd = NULL;
+    }
+    AppNotifyHost("Shutdowned");
   }
-  if (apContext->_appWnd.IsOK()) {
-    apContext->_appWnd->Invalidate();
-    apContext->_appWnd = NULL;
+  niCatchAll() {
+    ni::GetLang()->FatalError("AppStartup: Unhandled exception.");
   }
-  AppNotifyHost("Shutdowned");
 }
 
 tBool AppIsStarted(astl::non_null<AppContext*> apContext) {
@@ -715,32 +726,39 @@ namespace app {
 tBool AppNativeStartup(astl::non_null<AppContext*> apContext,
                        const achar* aaszTitle, ni::tI32 anWidth, ni::tI32 anHeight,
                        iRunnable* apOnStarted, ni::iRunnable* apOnShutdown) {
-  //// Create the window ////
-  sRecti r = ni::GetLang()->GetMonitorRect(0);
-  if (anWidth > 0 && anHeight > 0) {
-    r.SetWidth(anWidth);
-    r.SetHeight(anHeight);
-  }
-  else {
-    r.SetWidth((int)(r.GetWidth() * 0.75));
-    r.SetHeight((int)(r.GetHeight() * 0.75));
-  }
-  if ((r.GetWidth() < 10) || (r.GetHeight() < 10)) {
-    r.Set(0, 0, 1024, 768);
-  }
 
-  Ptr<iOSWindow> ptrWindow = ni::GetLang()->CreateWindow(
-    NULL,
-    APPLIB_DEFAULT_WINDOW_TITLE,
-    r,
-    0,
-    apContext->_config.windowStyle);
-  if (!ptrWindow.IsOK()) {
-    niError("Can't create window.");
+  niTry {
+    //// Create the window ////
+    sRecti r = ni::GetLang()->GetMonitorRect(0);
+    if (anWidth > 0 && anHeight > 0) {
+      r.SetWidth(anWidth);
+      r.SetHeight(anHeight);
+    }
+    else {
+      r.SetWidth((int)(r.GetWidth() * 0.75));
+      r.SetHeight((int)(r.GetHeight() * 0.75));
+    }
+    if ((r.GetWidth() < 10) || (r.GetHeight() < 10)) {
+      r.Set(0, 0, 1024, 768);
+    }
+
+    Ptr<iOSWindow> ptrWindow = ni::GetLang()->CreateWindow(
+      NULL,
+      APPLIB_DEFAULT_WINDOW_TITLE,
+      r,
+      0,
+      apContext->_config.windowStyle);
+    if (!ptrWindow.IsOK()) {
+      niError("Can't create window.");
+      return eFalse;
+    }
+
+    return app::AppStartup(apContext, ptrWindow, apOnStarted, apOnShutdown);
+  }
+  niCatchAll() {
+    ni::GetLang()->FatalError("AppNativeStartup: Unhandled exception.");
     return eFalse;
   }
-
-  return app::AppStartup(apContext, ptrWindow, apOnStarted, apOnShutdown);
 }
 
 int AppNativeMainLoop(astl::non_null<AppContext*> apContext) {
@@ -760,17 +778,21 @@ int AppNativeMainLoop(astl::non_null<AppContext*> apContext) {
   };
   niJSCC_SetMainLoopFn(_JSCCLoop::Loop, (void*)apContext);
 #else
-  for (;;) {
-    const tF64 frameStartTime = ni::TimerInSeconds();
-    if (!app::AppUpdate(apContext))
-      break;
-    const tF64 frameTime = ni::TimerInSeconds() - frameStartTime;
-    if (apContext->_config.maxFPS != 0) {
-      const tF64 sleepSecs = (1.0/(tF64)apContext->_config.maxFPS) - frameTime;
-      if (sleepSecs > 0.0) {
-        ni::SleepSecs(sleepSecs);
+  niTry {
+    for (;;) {
+      const tF64 frameStartTime = ni::TimerInSeconds();
+      if (!app::AppUpdate(apContext))
+        break;
+      const tF64 frameTime = ni::TimerInSeconds() - frameStartTime;
+      if (apContext->_config.maxFPS != 0) {
+        const tF64 sleepSecs = (1.0/(tF64)apContext->_config.maxFPS) - frameTime;
+        if (sleepSecs > 0.0) {
+          ni::SleepSecs(sleepSecs);
+        }
       }
     }
+  } niCatchAll() {
+    ni::GetLang()->FatalError("AppNativeMainLoop: Unhandled exception.");
   }
 #endif
 

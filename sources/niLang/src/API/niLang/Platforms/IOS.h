@@ -43,16 +43,6 @@
 #include <new>
 #endif
 
-#ifndef __EXCEPTIONS
-#ifndef niNoExceptions
-#define niNoExceptions
-#endif
-#else
-#ifdef niNoExceptions
-#error "niNoExceptions defines although exceptions are enabled"
-#endif
-#endif
-
 #define _vsnprintf  vsnprintf
 #define _vsnwprintf vswprintf
 

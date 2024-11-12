@@ -75,5 +75,14 @@ struct iFixedGpuPipelines : public iUnknown {
 
 iFixedGpuPipelines* CreateFixedGpuPipelines();
 
+static const tU32 knFixedGpuIndexSize = sizeof(tU32);
+
+iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage);
+iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA);
+sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA);
+
+iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage);
+iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
+
 }
 #endif // __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__

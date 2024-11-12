@@ -39,7 +39,7 @@
 // actual origin of the crash so it disabled by default since it makes
 // debugging more difficult.
 //
-// #define TEST_NICATCHALL
+//#  define TEST_NICATCHALL
 #  define TEST_TRY niTry
 #  define TEST_CATCH niCatch
 #  define TEST_CATCHALL niCatchAll
@@ -135,7 +135,7 @@ namespace UnitTest {
   niCatch(ni::iPanicException,e) {                      \
     testResults_.OnTestFailure(                         \
       __FILE__, __LINE__, m_testName,                   \
-      niFmt("iPanicException: %s: %s", MSG, e.what())); \
+      niFmt("iPanicException: %s:\n%s", MSG, e.what())); \
   }
 #else
 #  define TEST_CATCH_ASSERT_EXCEPTION(MSG)
@@ -263,7 +263,7 @@ class Test##Name : public UnitTest::Test                                        
  Test##Name() : Test(#Name, __FILE__, __LINE__) {}                               \
  private:                                                                        \
  virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {         \
-   TEST_TRY {                                                                  \
+   TEST_TRY {                                                           \
      TEST_STEPS(5);                                                              \
      UnitTest::TestAppSetCurrentTestWidgetSink(                                  \
        niNew Name(TEST_PARAMS_CALL),                                             \
@@ -504,6 +504,16 @@ struct UnitTestMemDelta {
   }                                                                     \
   TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK(" #value ")")  \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")") \
+
+#define CHECK_RET(VALUE,RET)                                            \
+  TEST_TRY {                                                            \
+    if (!UnitTest::Check(VALUE)) {                                      \
+      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #VALUE); \
+      return RET;                                                       \
+    }                                                                   \
+  }                                                                     \
+  TEST_CATCH_ASSERT_EXCEPTION("Assert exception in CHECK(" #VALUE ")")  \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #VALUE ")") \
 
 #define CHECK_EQUAL(expected, actual)                                   \
   TEST_TRY {                                                             \

@@ -2,6 +2,7 @@
 #include "API/niUI/Experimental/IGpu.h"
 #include <niLang/Utils/IDGenerator.h>
 #include "GDRV_Gpu.h"
+#include "API/niUI_ModuleDef.h"
 
 namespace ni {
 
@@ -452,6 +453,155 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
 iFixedGpuPipelines* CreateFixedGpuPipelines() {
   return niNew sFixedGpuPipelines();
+}
+
+struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
+  NN<iGpuBuffer> _buffer;
+  tFVF _fvf;
+  tU32 _fvfStride;
+  const eArrayUsage _arrayUsage;
+
+  sFixedGpuVertexArray(iGpuBuffer* apGpuBuffer, tFVF aFVF, eArrayUsage aUsage)
+      : _arrayUsage(aUsage)
+      , _buffer(apGpuBuffer)
+  {
+    _fvf = aFVF;
+    _fvfStride = FVFGetStride(_fvf);
+    GPU_TRACE((
+      ">>> sFixedGpuVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %db (%gMB).",
+      FVFToString(_fvf).Chars(),
+      this->GetNumVertices(),_fvfStride,
+      _fvfStride * anNumVertices,
+      ((tF64)(_fvfStride * anNumVertices))/(1024.0*1024.0)));
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _buffer->IsOK();
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return NULL;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
+    return _buffer->Bind(apDevice);
+  }
+
+  virtual tFVF __stdcall GetFVF() const {
+    return _fvf;
+  }
+  virtual tU32 __stdcall GetNumVertices() const {
+    return _buffer->GetSize() / _fvfStride;
+  }
+  virtual eArrayUsage __stdcall GetUsage() const {
+    return _arrayUsage;
+  }
+  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) {
+    niUnused(aLock);
+    return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
+  }
+  virtual tBool __stdcall Unlock() {
+    return _buffer->Unlock();
+  }
+  virtual tBool __stdcall GetIsLocked() const {
+    return _buffer->GetIsLocked();
+  }
+};
+
+iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA) {
+  return ((sFixedGpuVertexArray*)apVA)->_buffer;
+}
+sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA) {
+  niLet va = (sFixedGpuVertexArray*)apVA;
+  return Vec2i((tI32)va->_fvf,(tI32)va->_fvfStride);
+}
+
+struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
+  NN<iGpuBuffer> _buffer;
+  eGraphicsPrimitiveType _primType;
+  const eArrayUsage _arrayUsage;
+
+  sFixedGpuIndexArray(iGpuBuffer* apGpuBuffer, eGraphicsPrimitiveType aPrimType, eArrayUsage aUsage)
+      : _arrayUsage(aUsage)
+      , _primType(aPrimType)
+      , _buffer(apGpuBuffer)
+  {
+    GPU_TRACE((
+      ">>> sFixedGpuIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %db (%gMB).",
+      niEnumToChars(eGraphicsPrimitiveType,_primType),
+      0xFFFFFFFF,
+      this->GetNumIndices(), knFixedGpuIndexSize,
+      knFixedGpuIndexSize * anNumIndices,
+      ((tF64)(knFixedGpuIndexSize * anNumIndices))/(1024.0*1024.0)));
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _buffer->IsOK();
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return NULL;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
+    return _buffer->Bind(apDevice);
+  }
+
+  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {
+    return _primType;
+  }
+  virtual tU32 __stdcall GetNumIndices() const {
+    return _buffer->GetSize() / knFixedGpuIndexSize;
+  }
+  virtual tU32 __stdcall GetMaxVertexIndex() const {
+    return 0xFFFFFFFF;
+  }
+  virtual eArrayUsage __stdcall GetUsage() const {
+    return _arrayUsage;
+  }
+
+  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) {
+    return _buffer->Lock(anFirstIndex * knFixedGpuIndexSize, anNumIndex * knFixedGpuIndexSize, aLock);
+  }
+  virtual tBool __stdcall Unlock() {
+    return _buffer->Unlock();
+  }
+  virtual tBool __stdcall GetIsLocked() const {
+    return _buffer->GetIsLocked();
+  }
+};
+
+iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA) {
+  return ((sFixedGpuIndexArray*)apVA)->_buffer;
+}
+
+iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
+    niLet fvfStride = FVFGetStride(anFVF);
+    Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateBuffer(
+      fvfStride * anNumVertices,
+      eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_Vertex);
+    niCheckIsOK(vaBuffer,nullptr);
+    return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage);
+  }
+
+iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
+  niUnused(anMaxVertexIndex);
+  Ptr<iGpuBuffer> iaBuffer = apGpuDriver->CreateBuffer(
+    knFixedGpuIndexSize * anNumIndices,
+    eGpuBufferMemoryMode_Shared,
+    eGpuBufferUsageFlags_Index);
+  return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
 }
 
 }

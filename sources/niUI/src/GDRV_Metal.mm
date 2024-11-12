@@ -43,7 +43,6 @@ namespace ni {
 #define COMPILED_SS (eCompiledStates_Driver+(MAX_COMPILED_STATES*1))
 #define COMPILED_DS (eCompiledStates_Driver+(MAX_COMPILED_STATES*2))
 
-const tU32 knMetalIndexSize = sizeof(tU32);
 // TODO: This should move to some "context creation" time thing, similar to the MSAA setting.
 static tU32 knMetalSamplerFilterAnisotropy = 8;
 
@@ -546,7 +545,6 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
 // MetalBuffer
 //
 //--------------------------------------------------------------------------------------------
-
 struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
   id<MTLBuffer> _mtlBuffer;
   eGpuBufferMemoryMode _memMode;
@@ -675,130 +673,6 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
     return this;
-  }
-};
-
-struct cMetalVertexArray : public ni::ImplRC<iVertexArray> {
-  NN<sMetalBuffer> _buffer;
-  tFVF _fvf;
-  tU32 _fvfStride;
-  const eArrayUsage _arrayUsage;
-
-  cMetalVertexArray(id<MTLDevice> aDevice, tU32 anNumVertices, tFVF aFVF, eArrayUsage aUsage)
-      : _arrayUsage(aUsage)
-      , _buffer(niNew sMetalBuffer())
-  {
-    _fvf = aFVF;
-    _fvfStride = FVFGetStride(_fvf);
-    _buffer->_Create(aDevice, NULL, _fvfStride * anNumVertices,
-                     eGpuBufferMemoryMode_Shared,
-                     eGpuBufferUsageFlags_Vertex);
-
-    METAL_TRACE((">>> MetalVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %db (%gMB).",
-                 FVFToString(_fvf).Chars(),
-                 this->GetNumVertices(),_fvfStride,
-                 _fvfStride * anNumVertices,
-                 ((tF64)(_fvfStride * anNumVertices))/(1024.0*1024.0)));
-  }
-
-  virtual tBool __stdcall IsOK() const niImpl {
-    return _buffer->_mtlBuffer != NULL;
-  }
-
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
-    return NULL;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eTrue;
-  }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
-    return _buffer->Bind(apDevice);
-  }
-
-  virtual tFVF __stdcall GetFVF() const {
-    return _fvf;
-  }
-  virtual tU32 __stdcall GetNumVertices() const {
-    return _buffer->GetSize() / _fvfStride;
-  }
-  virtual eArrayUsage __stdcall GetUsage() const {
-    return _arrayUsage;
-  }
-  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) {
-    niUnused(aLock);
-    return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
-  }
-  virtual tBool __stdcall Unlock() {
-    return _buffer->Unlock();
-  }
-  virtual tBool __stdcall GetIsLocked() const {
-    return _buffer->GetIsLocked();
-  }
-};
-
-struct cMetalIndexArray : public ni::ImplRC<iIndexArray> {
-  NN<sMetalBuffer> _buffer;
-  eGraphicsPrimitiveType _primType;
-  const eArrayUsage _arrayUsage;
-
-  cMetalIndexArray(id<MTLDevice> aDevice, eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, eArrayUsage aUsage)
-      : _arrayUsage(aUsage)
-      , _buffer(niNew sMetalBuffer())
-  {
-    _primType = aPrimType;
-    _buffer->_Create(aDevice, NULL, knMetalIndexSize * anNumIndices,
-                     eGpuBufferMemoryMode_Shared,
-                     eGpuBufferUsageFlags_Index);
-
-    METAL_TRACE((">>> MetalIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %db (%gMB).",
-                 niEnumToChars(eGraphicsPrimitiveType,_primType),
-                 0xFFFFFFFF,
-                 this->GetNumIndices(), knMetalIndexSize,
-                 knMetalIndexSize * anNumIndices,
-                 ((tF64)(knMetalIndexSize * anNumIndices))/(1024.0*1024.0)));
-  }
-
-  virtual tBool __stdcall IsOK() const niImpl {
-    return _buffer->_mtlBuffer != NULL;
-  }
-
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
-    return NULL;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eTrue;
-  }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
-    return _buffer->Bind(apDevice);
-  }
-
-  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {
-    return _primType;
-  }
-  virtual tU32 __stdcall GetNumIndices() const {
-    return _buffer->GetSize() / knMetalIndexSize;
-  }
-  virtual tU32 __stdcall GetMaxVertexIndex() const {
-    return 0xFFFFFFFF;
-  }
-  virtual eArrayUsage __stdcall GetUsage() const {
-    return _arrayUsage;
-  }
-
-  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) {
-    return _buffer->Lock(anFirstIndex * knMetalIndexSize, anNumIndex * knMetalIndexSize, aLock);
-  }
-  virtual tBool __stdcall Unlock() {
-    return _buffer->Unlock();
-  }
-  virtual tBool __stdcall GetIsLocked() const {
-    return _buffer->GetIsLocked();
   }
 };
 
@@ -1425,12 +1299,11 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   }
 
   /////////////////////////////////////////////
-  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
-    return niNew cMetalVertexArray(mMetalDevice, anNumVertices, anFVF, aUsage);
+  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF aFVF, eArrayUsage aUsage) {
+    return CreateFixedGpuVertexArray(this,anNumVertices,aFVF,aUsage);
   }
-  virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
-    niUnused(anMaxVertexIndex);
-    return niNew cMetalIndexArray(mMetalDevice, aPrimitiveType, anNumIndex, aUsage);
+  virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
+    return CreateFixedGpuIndexArray(this,aPrimitiveType,anNumIndices,anMaxVertexIndex,aUsage);
   }
 
   /////////////////////////////////////////////
@@ -1888,12 +1761,15 @@ struct cMetalContextBase :
 
     niLet cmdEncoder = mCmdEncoder->_encoder;
 
-    cMetalVertexArray* va = (cMetalVertexArray*)apDrawOp->GetVertexArray();
+    iVertexArray* va = apDrawOp->GetVertexArray();
     if (!va) {
       return eFalse;
     }
 
     METAL_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
+    const sVec2i fvfAndStride = GetVertexArrayFvfAndStride(va);
+    const tFVF fvf = (tFVF)fvfAndStride.x;
+    const tU32 fvfStride = (tU32)fvfAndStride.y;
     const iMaterial* pDOMat = apDrawOp->GetMaterial();
     const sMaterialDesc* pDOMatDesc = (const sMaterialDesc*)pDOMat->GetDescStructPtr();
     const sMatrixf mtxDrawOp = apDrawOp->GetMatrix();
@@ -1912,7 +1788,7 @@ struct cMetalContextBase :
     iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
 
     if (!pVS) {
-      pVS = mpParent->mFixedShaders.GetVertexShader(va->_fvf,*pDOMatDesc);
+      pVS = mpParent->mFixedShaders.GetVertexShader(fvf,*pDOMatDesc);
       if (!pVS) {
         niError("Can't get fixed vertex shader.");
         return eFalse;
@@ -1933,7 +1809,7 @@ struct cMetalContextBase :
     rpId.vertFuncId = ((iFixedGpuShader*)pVS)->GetUID();
     rpId.fragFuncId = ((iFixedGpuShader*)pPS)->GetUID();
     rpId.blendMode = _GetBlendMode(pDOMatDesc);
-    rpId.fvf = va->_fvf;
+    rpId.fvf = fvf;
 
     {
       const tIntPtr hRS = _GetRS(pDOMatDesc);
@@ -2064,9 +1940,12 @@ struct cMetalContextBase :
     updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
     updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
 
-    if (!va->_buffer->_tracked && va->_buffer->_modifiedSize) {
-      mvTrackedBuffers.push_back(va->_buffer);
-      va->_buffer->_tracked = eTrue;
+    {
+      sMetalBuffer* vaBuffer = (sMetalBuffer*)GetVertexArrayGpuBuffer(va);
+      if (!vaBuffer->_tracked && vaBuffer->_modifiedSize) {
+        mvTrackedBuffers.push_back(vaBuffer);
+        vaBuffer->_tracked = eTrue;
+      }
     }
 
     const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
@@ -2074,19 +1953,22 @@ struct cMetalContextBase :
     sMetalBuffer* vaMtlBuffer = reinterpret_cast<sMetalBuffer*>(va->Bind(nullptr));
     niPanicAssert(vaMtlBuffer != nullptr);
     [cmdEncoder setVertexBuffer:vaMtlBuffer->_mtlBuffer
-     offset:(baseVertexIndex*va->_fvfStride)
+     offset:(baseVertexIndex*fvfStride)
      atIndex:0];
 
-    cMetalIndexArray* ia = (cMetalIndexArray*)apDrawOp->GetIndexArray();
+    iIndexArray* ia = apDrawOp->GetIndexArray();
     if (ia) {
       const tU32 firstInd = apDrawOp->GetFirstIndex();
       tU32 numInds = apDrawOp->GetNumIndices();
       if (!numInds) {
         numInds = ia->GetNumIndices()-firstInd;
       }
-      if (!ia->_buffer->_tracked && ia->_buffer->_modifiedSize) {
-        mvTrackedBuffers.push_back(ia->_buffer);
-        ia->_buffer->_tracked = eTrue;
+      {
+        sMetalBuffer* iaBuffer = (sMetalBuffer*)GetIndexArrayGpuBuffer(ia);
+        if (!iaBuffer->_tracked && iaBuffer->_modifiedSize) {
+          mvTrackedBuffers.push_back(iaBuffer);
+          iaBuffer->_tracked = eTrue;
+        }
       }
 
       sMetalBuffer* iaMtlBuffer = reinterpret_cast<sMetalBuffer*>(ia->Bind(nullptr));

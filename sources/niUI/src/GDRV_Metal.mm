@@ -203,6 +203,20 @@ inline MTLVertexDescriptor* _CreateMetalVertDesc(const tU32 aBufferIndex, tFVF a
 // GpuFunction
 //
 //----------------------------------------------------------------------------
+static inline eGpuFunctionType _GetGpuFunctionType(MTLFunctionType aFuncType) {
+  switch (aFuncType) {
+    case MTLFunctionTypeVertex:
+      return eGpuFunctionType_Vertex;
+    case MTLFunctionTypeFragment:
+      return eGpuFunctionType_Pixel;
+    case MTLFunctionTypeKernel:
+      return eGpuFunctionType_Compute;
+    default:
+      niPanicUnreachable("Unsupported MTLFunction type");
+      return eGpuFunctionType_Last;
+  }
+}
+
 struct sMetalFunction : public ImplRC<iGpuFunction> {
   tHStringPtr _hspName;
   Ptr<iDataTable> _datatable;
@@ -214,21 +228,21 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
     _datatable = apDT;
 
     cString source;
-    if (apDT->HasProperty("_data")) {
-      source = apDT->GetString("_data");
-    }
-    else if (apDT->HasProperty("source")) {
+    if (apDT->HasProperty("source")) {
       source = apDT->GetString("source");
+    }
+    else if (apDT->HasProperty("_data")) {
+      source = apDT->GetString("_data");
     }
     niCheck(source.IsNotEmpty(),eFalse);
 
-    cString entry = apDT->GetStringDefault("entry", "main0");
-
     NSString* nsSource = [NSString stringWithUTF8String:source.c_str()];
-    NSString* nsEntry = [NSString stringWithUTF8String:entry.c_str()];
 
     NSError* error = nil;
-    id<MTLLibrary> lib = [aDevice newLibraryWithSource:nsSource options:nil error:&error];
+    MTLCompileOptions* compileOptions = [MTLCompileOptions new];
+    compileOptions.languageVersion = MTLLanguageVersion2_0;
+    id<MTLLibrary> lib = [aDevice newLibraryWithSource:nsSource
+                          options:compileOptions error:&error];
     if (!lib) {
       niError(niFmt(
         "MetalGpuFunction '%s': Couldn't create MTLLibrary: %s",
@@ -237,15 +251,22 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
       return eFalse;
     }
 
-    _function = [lib newFunctionWithName:nsEntry];
+    NSString* funcName = lib.functionNames[0];
+    _function = [lib newFunctionWithName:funcName];
     if (!_function) {
       niError(niFmt(
-        "MetalGpuFunction '%s': Couldn't create MTLFunction '%s'.",
-        _hspName, entry));
+        "MetalGpuFunction '%s': Couldn't find MTLFunction '%s'.",
+        _hspName, funcName.UTF8String));
       return eFalse;
     }
 
     return eTrue;
+  }
+
+  virtual eGpuFunctionType __stdcall GetFunctionType() const {
+    if (_function == nil)
+      return eGpuFunctionType_Last;
+    return _GetGpuFunctionType(_function.functionType);
   }
 
   virtual iDataTable* __stdcall GetDataTable() const niImpl {
@@ -637,13 +658,18 @@ class cMetalShaderBase : public T, public sShaderDesc
  public:
   typedef cMetalShaderBase tMetalShaderBase;
 
-  cMetalShaderBase(iGraphics* apGraphics, LocalIDGenerator* apIDGenerator, iHString* ahspName, iDeviceResourceManager* apDevResMan, iHString* ahspProfile, id<MTLFunction> apMetalShader, const astl::vector<tU8>& avData)
-      : mvData(avData)
+  cMetalShaderBase(
+    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iHString* ahspName,
+    iDeviceResourceManager* apDevResMan,
+    iHString* ahspProfile,
+    sMetalFunction* apMetalFunction)
+      : mptrFunction(apMetalFunction)
   {
+    niPanicAssert(mptrFunction.IsOK());
     mpGraphics = apGraphics;
     mhspName = ahspName;
     mhspProfile = ahspProfile;
-    mpShader = apMetalShader;
     mptrDevResMan = apDevResMan;
     mptrDevResMan->Register(this);
     mpIDGenerator = apIDGenerator;
@@ -654,6 +680,18 @@ class cMetalShaderBase : public T, public sShaderDesc
     Invalidate();
   }
 
+  virtual iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
+    if (aIID == niGetInterfaceUUID(iGpuFunction)) {
+      return mptrFunction;
+    }
+    return T::QueryInterface(aIID);
+  }
+
+  virtual void __stdcall ListInterfaces(iMutableCollection* apLst, tU32 anFlags) const {
+    apLst->Add(niGetInterfaceUUID(iGpuFunction));
+    T::ListInterfaces(apLst,anFlags);
+  }
+
   iHString* __stdcall GetDeviceResourceName() const
   {
     return mhspName;
@@ -662,7 +700,6 @@ class cMetalShaderBase : public T, public sShaderDesc
     return eFalse;
   }
   virtual tBool __stdcall ResetDeviceResource() {
-    _DeleteShader();
     return eFalse;
   }
 
@@ -673,13 +710,7 @@ class cMetalShaderBase : public T, public sShaderDesc
     if (!mptrDevResMan.IsOK()) return;
     mptrDevResMan->Unregister(this);
     mptrDevResMan = NULL;
-    _DeleteShader();
-  }
-
-  void _DeleteShader() {
-    if (mpShader) {
-      mpShader = NULL;
-    }
+    mptrFunction = nullptr;
   }
 
   iHString* __stdcall GetProfile() const
@@ -696,7 +727,7 @@ class cMetalShaderBase : public T, public sShaderDesc
   }
 
   id<MTLFunction> __stdcall GetShader() const {
-    return mpShader;
+    return mptrFunction->_function;
   }
 
   tBool __stdcall GetHasConstants() const {
@@ -721,11 +752,10 @@ class cMetalShaderBase : public T, public sShaderDesc
     return this;
   }
 
- private:
-  iGraphics*      mpGraphics;
-  Ptr<iDeviceResourceManager>   mptrDevResMan;
-  id<MTLFunction> mpShader;
-  astl::vector<tU8> mvData;
+ protected:
+  iGraphics* mpGraphics;
+  Ptr<iDeviceResourceManager> mptrDevResMan;
+  Ptr<sMetalFunction> mptrFunction;
   tU32 mnUID;
   LocalIDGenerator* mpIDGenerator;
 };
@@ -742,9 +772,15 @@ class cMetalShaderVertex :
     public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
-  cMetalShaderVertex(iGraphics* apGraphics, LocalIDGenerator* apIDGenerator, iHString* ahspName, iDeviceResourceManager* apDevResMan, iHString* ahspProfile, id<MTLFunction> apShader, const astl::vector<tU8>& avData)
-    : tMetalShaderBase(apGraphics,apIDGenerator,ahspName,apDevResMan,ahspProfile,apShader,avData)
+  cMetalShaderVertex(
+    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iHString* ahspName, iDeviceResourceManager* apDevResMan,
+    iHString* ahspProfile, sMetalFunction* apFunction)
+    : tMetalShaderBase(apGraphics,apIDGenerator,
+                       ahspName,apDevResMan,ahspProfile,
+                       apFunction)
   {
+    niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Vertex);
   }
   ~cMetalShaderVertex() {
   }
@@ -758,9 +794,16 @@ class cMetalShaderPixel :
     public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
-  cMetalShaderPixel(iGraphics* apGraphics, LocalIDGenerator* apIDGenerator, iHString* ahspName, iDeviceResourceManager* apDevResMan, iHString* ahspProfile, id<MTLFunction> apShader, const astl::vector<tU8>& avData)
-    : tMetalShaderBase(apGraphics,apIDGenerator,ahspName,apDevResMan,ahspProfile,apShader,avData)
+  cMetalShaderPixel(
+    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iHString* ahspName, iDeviceResourceManager* apDevResMan,
+    iHString* ahspProfile, sMetalFunction* apFunction)
+    : tMetalShaderBase(
+        apGraphics,apIDGenerator,
+        ahspName,apDevResMan,
+        ahspProfile,apFunction)
   {
+    niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Pixel);
   }
   ~cMetalShaderPixel() {
   }
@@ -772,33 +815,14 @@ class cMetalShaderPixel :
 struct sMetalShaderLibrary {
   std::map<tU128,id<MTLRenderPipelineState> > _pipelines;
 
-  id<MTLLibrary> LoadLibrary(id<MTLDevice> aDevice, const achar* aString) {
-    auto str = [NSString stringWithUTF8String:aString];
-    NSError *error;
-    MTLCompileOptions* compileOptions = [MTLCompileOptions new];
-    compileOptions.languageVersion = MTLLanguageVersion1_1;
-    auto library = [aDevice newLibraryWithSource:str options:compileOptions error:&error];
-    if (!library) {
-      NSLog(@"Error occurred when compiling shader library: %@", error);
-      return NULL;
+  Ptr<sMetalFunction> CompileShader(id<MTLDevice> aDevice, iHString* ahspName, const achar* aShaderProgram) {
+    NN<sMetalFunction> func = MakeNN<sMetalFunction>();
+    Ptr<iDataTable> dtFunc = ni::GetLang()->CreateDataTable("GpuFunction");
+    dtFunc->SetString("source",aShaderProgram);
+    if (!func->_Create(aDevice, ahspName, dtFunc)) {
+      return nullptr;
     }
-    return library;
-  }
-
-  id<MTLFunction> CompileShader(id<MTLDevice> aDevice, const achar* aShaderProgram, const achar* aShaderFunc) {
-    auto library = LoadLibrary(aDevice, aShaderProgram);
-    if (library != NULL) {
-      NSString* shaderFuncName = [NSString stringWithUTF8String:aShaderFunc];
-      id<MTLFunction> shaderFunc = [library newFunctionWithName:library.functionNames[0]];
-      if (shaderFunc == NULL) {
-        niError(niFmt("CompileShader FAILED function[%s] not found",aShaderFunc));
-        niError(niFmt("IN Library[%s]",aShaderProgram));
-      }
-      // niDebugFmt(("Shader Function Loaded %s",aShaderFunc));
-      return shaderFunc;
-    }
-    niError("CompileShader FAILED library not loaded");
-    return NULL;
+    return func;
   }
 
   id<MTLRenderPipelineState> GetRenderPipeline(id<MTLDevice> aDevice, const tU128 aPipelineId, cMetalShaderVertex* vs, cMetalShaderPixel* ps) {
@@ -1697,32 +1721,41 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
       return NULL;
     }
 
-    const MOJOSHADER_parseData *shaderPD = MOJOSHADER_parse(MOJOSHADER_PROFILE_METAL,
-                                                            &vData[0],
-                                                            nBufferSize, NULL, 0,
-                                                            NULL,
-                                                            NULL,
-                                                            NULL);
+    const MOJOSHADER_parseData *shaderPD = MOJOSHADER_parse(
+      MOJOSHADER_PROFILE_METAL,
+      &vData[0],
+      nBufferSize, NULL, 0,
+      NULL,
+      NULL,
+      NULL);
     niDefer { MOJOSHADER_freeParseData(shaderPD); };
     ni::cString code(shaderPD->output, shaderPD->output_len);
 
-    cString funcName = cPath(ahspName->GetChars()).GetFileNoExt();
     iShader* pProg = NULL;
-    auto shader = mLibrary.CompileShader(mMetalDevice, code.Chars(), funcName.Chars());
+    auto func = mLibrary.CompileShader(
+      mMetalDevice,
+      HFmt("gpufunc_%s",ahspName),
+      code.Chars());
+    niCheckIsOK_(func,"Can't compile shader.",nullptr);
+
     if (nUnit == eShaderUnit_Vertex) {
-      pProg = niNew cMetalShaderVertex(mpGraphics,
-                                       &mIDGenerator,
-                                       ahspName,
-                                       mpGraphics->GetShaderDeviceResourceManager(),
-                                       hspProfileName,shader,vData);
+      pProg = niNew cMetalShaderVertex(
+        mpGraphics,
+        &mIDGenerator,
+        ahspName,
+        mpGraphics->GetShaderDeviceResourceManager(),
+        hspProfileName,
+        func);
     }
     else if (nUnit == eShaderUnit_Pixel)
     {
-      pProg = niNew cMetalShaderPixel(mpGraphics,
-                                      &mIDGenerator,
-                                      ahspName,
-                                      mpGraphics->GetShaderDeviceResourceManager(),
-                                      hspProfileName,shader,vData);
+      pProg = niNew cMetalShaderPixel(
+        mpGraphics,
+        &mIDGenerator,
+        ahspName,
+        mpGraphics->GetShaderDeviceResourceManager(),
+        hspProfileName,
+        func);
     }
 
     if (!niIsOK(pProg)) {

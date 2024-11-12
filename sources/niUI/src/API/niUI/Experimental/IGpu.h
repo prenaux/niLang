@@ -145,6 +145,10 @@ struct iGpuFunction : public iDeviceResource
 {
   niDeclareInterfaceUUID(iGpuFunction,0xa9fb33ce,0x9b16,0x4e4e,0xa9,0x33,0x53,0x82,0x07,0x42,0x0d,0x92);
 
+  //! Get the function's type.
+  //! {Property}
+  virtual eGpuFunctionType __stdcall GetFunctionType() const = 0;
+
   //! Get the gpu function's datatable.
   //! {Property}
   //! \remark The function's datatable describes the complete gpu function's interface:

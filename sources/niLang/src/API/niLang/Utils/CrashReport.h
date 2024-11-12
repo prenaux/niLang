@@ -29,7 +29,6 @@ niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
 #endif
 
 niExportFunc(void) cpp_terminate_handler();
-niExportFunc(void) cpp_unexp_handler();
 niExportFunc(void) cpp_purecall_handler();
 niExportFunc(void) cpp_security_handler(int code, void *x);
 niExportFunc(void) cpp_invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved);
@@ -46,6 +45,8 @@ niExportFunc(void) cpp_sigterm_handler(int);
 static inline void __niCrashReportModuleInstall()
 {
   // niPrintln("__niCrashReportModuleInstall");
+
+  std::set_terminate(cpp_terminate_handler);
 
 #ifdef niWindows
   _set_error_mode(_OUT_TO_STDERR);

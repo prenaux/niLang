@@ -534,6 +534,22 @@ typedef SYNC_INT_TYPE tSyncInt;
 #  define niStandardTypesAlignment 8
 #endif
 
+#if (defined(__EXCEPTIONS) || defined(_CPPUNWIND))
+#  define niCPP_Exceptions 1
+#else
+#  define niCPP_Exceptions 0
+#endif
+
+#if !niCPP_Exceptions
+#  ifndef niNoExceptions
+#    define niNoExceptions
+#  endif
+#else
+#  ifdef niNoExceptions
+#    error "niNoExceptions defined although exceptions are enabled"
+#  endif
+#endif
+
 // Exceptions
 #ifdef niNoExceptions
 #  define niTry

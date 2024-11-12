@@ -248,6 +248,8 @@ SignalTranslator::SignalTranslator ()
   sigaction( SIGFPE , &action, &m_old_SIGFPE_action  );
   sigaction( SIGTRAP, &action, &m_old_SIGTRAP_action );
   sigaction( SIGBUS , &action, &m_old_SIGBUS_action  );
+  sigaction( SIGABRT, &action, &m_old_SIGABRT_action  );
+  sigaction( SIGALRM, &action, &m_old_SIGALRM_action  );
 }
 
 SignalTranslator::~SignalTranslator()
@@ -256,6 +258,8 @@ SignalTranslator::~SignalTranslator()
   sigaction( SIGTRAP, &m_old_SIGTRAP_action, 0 );
   sigaction( SIGFPE , &m_old_SIGFPE_action , 0 );
   sigaction( SIGSEGV, &m_old_SIGSEGV_action, 0 );
+  sigaction( SIGABRT, &m_old_SIGABRT_action, 0 );
+  sigaction( SIGALRM, &m_old_SIGALRM_action, 0 );
 
   s_jumpTarget = m_oldJumpTarget;
 }
@@ -295,7 +299,7 @@ class SignalException
   virtual ~SignalException() niThrowSpec() {
   }
   const char* what() const niThrowSpec() {
-    return m_desc;
+    return m_desc.c_str();
   }
 
   ni::cString m_desc;
@@ -945,7 +949,12 @@ struct TestRunner {
       }
       RunStep();
       if (curTest->m_numSteps != ni::eInvalidHandle &&
-          ++curTestSteps >= curTest->m_numSteps) {
+          ++curTestSteps >= curTest->m_numSteps)
+      {
+        AfterRun();
+      }
+      else if (result->m_totalFailureCountPush != result->m_totalFailureCount) {
+        niLog(Error,niFmt("Test steps interrupted by failure in fixture '%s'.", runFixtureName));
         AfterRun();
       }
     }

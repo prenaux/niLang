@@ -174,9 +174,6 @@ extern "C" void __ni_module_export ni_harakiri(niConst iHString* aKind, niConst 
 extern "C" __ni_module_export void cpp_terminate_handler() {
   niHarakiri("## cpp_terminate_handler ##", nullptr);
 }
-extern "C" __ni_module_export void cpp_unexp_handler() {
-  niHarakiri("## cpp_unexp_handler ##", nullptr);
-}
 extern "C" __ni_module_export void cpp_purecall_handler() {
   niHarakiri("## cpp_purecall_handler ##", nullptr);
 }

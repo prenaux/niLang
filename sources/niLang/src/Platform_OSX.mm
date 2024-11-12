@@ -132,7 +132,14 @@ cString _GetCommandLine(void) {
 
 ///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
-  exit(aulErrorCode);
+  if (aulErrorCode == 0xDEADBEEF) {
+    ni::GetConcurrent()->Invalidate();
+    // Not very nice, but I cant find another way to have the process not deadlock when exiting from a signal handler on macOS.
+    kill(getpid(), SIGKILL);
+  }
+  else {
+    exit(aulErrorCode);
+  }
 }
 
 ///////////////////////////////////////////////

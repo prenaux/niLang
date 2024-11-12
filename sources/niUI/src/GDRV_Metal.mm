@@ -220,7 +220,7 @@ static inline eGpuFunctionType _GetGpuFunctionType(MTLFunctionType aFuncType) {
 struct sMetalFunction : public ImplRC<iGpuFunction> {
   tHStringPtr _hspName;
   Ptr<iDataTable> _datatable;
-  id<MTLFunction> _function;
+  id<MTLFunction> _mtlFunction;
 
   tBool _Create(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDT) {
     niCheckIsOK(apDT,eFalse);
@@ -252,8 +252,8 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
     }
 
     NSString* funcName = lib.functionNames[0];
-    _function = [lib newFunctionWithName:funcName];
-    if (!_function) {
+    _mtlFunction = [lib newFunctionWithName:funcName];
+    if (!_mtlFunction) {
       niError(niFmt(
         "MetalGpuFunction '%s': Couldn't find MTLFunction '%s'.",
         _hspName, funcName.UTF8String));
@@ -264,9 +264,9 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
   }
 
   virtual eGpuFunctionType __stdcall GetFunctionType() const {
-    if (_function == nil)
+    if (_mtlFunction == nil)
       return eGpuFunctionType_Last;
-    return _GetGpuFunctionType(_function.functionType);
+    return _GetGpuFunctionType(_mtlFunction.functionType);
   }
 
   virtual iDataTable* __stdcall GetDataTable() const niImpl {
@@ -482,79 +482,9 @@ static const MTLBlendFactor _toMTLBlendFactor[] = {
 };
 niCAssert(niCountOf(_toMTLBlendFactor) == eGpuBlendFactor_Last);
 
-struct sMetalBlendMode : public ImplRC<iGpuBlendMode> {
-  sGpuBlendModeDesc _desc;
-
-  sMetalBlendMode() {
-    _desc.mOp = eGpuBlendOp_Add;
-    _desc.mSrcRGB = eGpuBlendFactor_One;
-    _desc.mSrcAlpha = eGpuBlendFactor_One;
-    _desc.mDstRGB = eGpuBlendFactor_Zero;
-    _desc.mDstAlpha = eGpuBlendFactor_Zero;
-  }
-
-  sMetalBlendMode(const sGpuBlendModeDesc& aDesc) {
-    _desc = aDesc;
-  }
-
-  tBool __stdcall Copy(const iGpuBlendMode* apBlend) niImpl {
-    niCheckIsOK(apBlend,eFalse);
-    _desc = *(sGpuBlendModeDesc*)apBlend->GetDescStructPtr();
-    return eTrue;
-  }
-
-  Ptr<iGpuBlendMode> __stdcall Clone() const niImpl {
-    return MakeNN<sMetalBlendMode>(_desc);
-  }
-
-  tBool __stdcall SetOp(eGpuBlendOp aOp) niImpl {
-    _desc.mOp = aOp;
-    return eTrue;
-  }
-  eGpuBlendOp __stdcall GetOp() const niImpl {
-    return _desc.mOp;
-  }
-
-  tBool __stdcall SetSrcRGB(eGpuBlendFactor aFactor) niImpl {
-    _desc.mSrcRGB = aFactor;
-    return eTrue;
-  }
-  eGpuBlendFactor __stdcall GetSrcRGB() const niImpl {
-    return _desc.mSrcRGB;
-  }
-
-  tBool __stdcall SetSrcAlpha(eGpuBlendFactor aFactor) niImpl {
-    _desc.mSrcAlpha = aFactor;
-    return eTrue;
-  }
-  eGpuBlendFactor __stdcall GetSrcAlpha() const niImpl {
-    return _desc.mSrcAlpha;
-  }
-
-  tBool __stdcall SetDstRGB(eGpuBlendFactor aFactor) niImpl {
-    _desc.mDstRGB = aFactor;
-    return eTrue;
-  }
-  eGpuBlendFactor __stdcall GetDstRGB() const niImpl {
-    return _desc.mDstRGB;
-  }
-
-  tBool __stdcall SetDstAlpha(eGpuBlendFactor aFactor) niImpl {
-    _desc.mDstAlpha = aFactor;
-    return eTrue;
-  }
-  eGpuBlendFactor __stdcall GetDstAlpha() const niImpl {
-    return _desc.mDstAlpha;
-  }
-
-  tPtr __stdcall GetDescStructPtr() const niImpl {
-    return (tPtr)&_desc;
-  }
-};
-
 struct sMetalPipeline : public ImplRC<iGpuPipeline> {
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
-  id<MTLRenderPipelineState> _pipeline;
+  id<MTLRenderPipelineState> _mtlPipeline;
 
   tBool _Create(id<MTLDevice> aDevice, const iGpuPipelineDesc* apDesc) {
     niCheckIsOK(apDesc,eFalse);
@@ -569,8 +499,8 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
     sMetalFunction* pixelFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
     niCheck(pixelFunction != nullptr, 0);
 
-    pipelineDesc.vertexFunction = vertexFunction->_function;
-    pipelineDesc.fragmentFunction = pixelFunction->_function;
+    pipelineDesc.vertexFunction = vertexFunction->_mtlFunction;
+    pipelineDesc.fragmentFunction = pixelFunction->_mtlFunction;
 
     // Color attachments
     {
@@ -597,8 +527,8 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
 
     // Create the pipeline state
     NSError* error = nil;
-    _pipeline = [aDevice newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
-    if (!_pipeline) {
+    _mtlPipeline = [aDevice newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
+    if (!_mtlPipeline) {
       niError(niFmt("Cant create pipeline state: %s", error.localizedDescription.UTF8String));
       return eFalse;
     }
@@ -608,283 +538,6 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
 
   virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl {
     return _desc;
-  }
-};
-
-// 128 bit unsigned int for pipeline id
-// 32 for FVF
-// 32 for vertex shader id
-// 32 for pixel shader id
-// 32 for the reset flags
-// cause all metal devices are x64 platform, so we just use unsigned __int128
-#define tU128 unsigned __int128
-
-struct sMetalRenderPipelineId {
-  tU32 fvf : 32;
-  tU32 rt0 : 4;
-  tU32 rt1 : 4;
-  tU32 rt2 : 4;
-  tU32 rt3 : 4;
-  tU32 ds : 2;
-  tU32 blendMode : 4;
-  tU32 colorWriteMask : 4;
-  tU32 msaa : 4;
-  tU32 alphaToCoverage : 2;
-  tU32 vertFuncId : 32;
-  tU32 fragFuncId : 32;
-
-  sMetalRenderPipelineId() {
-    (tU128&)(*this) = 0;
-  }
-
-  void Clear() { (tU128&)(*this) = 0; };
-
-  tBool IsNull() const {
-    return (tU128&)(*this) == 0;
-  }
-  cString ToString() const {
-    return niFmt("fvf: %d, rt: [%d,%d,%d,%d], ds: %d, blendMode: %d, colorWriteMask: %d, msaa: %d, alphaToCoverage: %d, vertFunc: %d, fragFunc: %d",
-                 fvf, rt0, rt1, rt2, rt3, ds, blendMode, colorWriteMask, msaa, alphaToCoverage, vertFuncId, fragFuncId);
-  }
-  operator tU128 () const {
-    return (tU128&)(*this);
-  }
-};
-niCAssert(sizeof(sMetalRenderPipelineId) == sizeof(tU128));
-
-template <typename T>
-class cMetalShaderBase : public T, public sShaderDesc
-{
- public:
-  typedef cMetalShaderBase tMetalShaderBase;
-
-  cMetalShaderBase(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
-    iHString* ahspName,
-    iDeviceResourceManager* apDevResMan,
-    iHString* ahspProfile,
-    sMetalFunction* apMetalFunction)
-      : mptrFunction(apMetalFunction)
-  {
-    niPanicAssert(mptrFunction.IsOK());
-    mpGraphics = apGraphics;
-    mhspName = ahspName;
-    mhspProfile = ahspProfile;
-    mptrDevResMan = apDevResMan;
-    mptrDevResMan->Register(this);
-    mpIDGenerator = apIDGenerator;
-    mnUID = apIDGenerator->AllocID();
-  }
-
-  ~cMetalShaderBase() {
-    Invalidate();
-  }
-
-  virtual iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
-    if (aIID == niGetInterfaceUUID(iGpuFunction)) {
-      return mptrFunction;
-    }
-    return T::QueryInterface(aIID);
-  }
-
-  virtual void __stdcall ListInterfaces(iMutableCollection* apLst, tU32 anFlags) const {
-    apLst->Add(niGetInterfaceUUID(iGpuFunction));
-    T::ListInterfaces(apLst,anFlags);
-  }
-
-  iHString* __stdcall GetDeviceResourceName() const
-  {
-    return mhspName;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eFalse;
-  }
-
-  virtual void __stdcall Invalidate()
-  {
-    mptrConstants = NULL;
-    mpIDGenerator->FreeID(mnUID);
-    if (!mptrDevResMan.IsOK()) return;
-    mptrDevResMan->Unregister(this);
-    mptrDevResMan = NULL;
-    mptrFunction = nullptr;
-  }
-
-  iHString* __stdcall GetProfile() const
-  {
-    return mhspProfile;
-  }
-
-  iShaderConstants* __stdcall GetConstants() const
-  {
-    if (!mptrConstants.IsOK()) {
-      niThis(cMetalShaderBase)->mptrConstants = mpGraphics->CreateShaderConstants(4096);
-    }
-    return mptrConstants;
-  }
-
-  id<MTLFunction> __stdcall GetShader() const {
-    return mptrFunction->_function;
-  }
-
-  tBool __stdcall GetHasConstants() const {
-    return mptrConstants.IsOK();
-  }
-
-  tPtr __stdcall GetDescStructPtr() const {
-    const sShaderDesc* d = this;
-    return (tPtr)d;
-  }
-
-  iHString* __stdcall GetCode() const {
-    return mhspName;
-  }
-
-  tU32 GetUID() const {
-    return mnUID;
-  }
-
-  ///////////////////////////////////////////////
-  iDeviceResource* __stdcall Bind(iUnknown*) {
-    return this;
-  }
-
- protected:
-  iGraphics* mpGraphics;
-  Ptr<iDeviceResourceManager> mptrDevResMan;
-  Ptr<sMetalFunction> mptrFunction;
-  tU32 mnUID;
-  LocalIDGenerator* mpIDGenerator;
-};
-
-
-struct iMetalShader : public iShader {
-  niDeclareInterfaceUUID(iMetalShader,0x27897b00,0x0c78,0x4815,0x92,0x2e,0x17,0x38,0x5f,0xef,0x23,0x97);
-  virtual id<MTLFunction> __stdcall GetShader() const = 0;
-};
-
-
-// Vertex program
-class cMetalShaderVertex :
-    public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
-{
- public:
-  cMetalShaderVertex(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
-    iHString* ahspName, iDeviceResourceManager* apDevResMan,
-    iHString* ahspProfile, sMetalFunction* apFunction)
-    : tMetalShaderBase(apGraphics,apIDGenerator,
-                       ahspName,apDevResMan,ahspProfile,
-                       apFunction)
-  {
-    niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Vertex);
-  }
-  ~cMetalShaderVertex() {
-  }
-  eShaderUnit __stdcall GetUnit() const {
-    return eShaderUnit_Vertex;
-  }
-};
-
-// Pixel program
-class cMetalShaderPixel :
-    public cMetalShaderBase<ImplRC<iMetalShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
-{
- public:
-  cMetalShaderPixel(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
-    iHString* ahspName, iDeviceResourceManager* apDevResMan,
-    iHString* ahspProfile, sMetalFunction* apFunction)
-    : tMetalShaderBase(
-        apGraphics,apIDGenerator,
-        ahspName,apDevResMan,
-        ahspProfile,apFunction)
-  {
-    niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Pixel);
-  }
-  ~cMetalShaderPixel() {
-  }
-  eShaderUnit __stdcall GetUnit() const {
-    return eShaderUnit_Pixel;
-  }
-};
-
-struct sMetalShaderLibrary {
-  std::map<tU128,id<MTLRenderPipelineState> > _pipelines;
-
-  Ptr<sMetalFunction> CompileShader(id<MTLDevice> aDevice, iHString* ahspName, const achar* aShaderProgram) {
-    NN<sMetalFunction> func = MakeNN<sMetalFunction>();
-    Ptr<iDataTable> dtFunc = ni::GetLang()->CreateDataTable("GpuFunction");
-    dtFunc->SetString("source",aShaderProgram);
-    if (!func->_Create(aDevice, ahspName, dtFunc)) {
-      return nullptr;
-    }
-    return func;
-  }
-
-  id<MTLRenderPipelineState> GetRenderPipeline(id<MTLDevice> aDevice, const tU128 aPipelineId, cMetalShaderVertex* vs, cMetalShaderPixel* ps) {
-    std::map<tU128,id<MTLRenderPipelineState> >::iterator it = _pipelines.find(aPipelineId);
-    if (it == _pipelines.end()) {
-      id<MTLRenderPipelineState> metalRenderPipelineState = _CreatePipeline(
-        aDevice,(sMetalRenderPipelineId&)aPipelineId,vs,ps);
-      if (!metalRenderPipelineState) {
-        // niDebugFmt(("VS %s, PS %s",vs->GetCode(),ps->GetCode()));
-        niError("Can't create the metal render pipeline states.");
-        return NULL;
-      }
-      it = _pipelines.insert(std::make_pair(aPipelineId,metalRenderPipelineState)).first;
-    }
-    METAL_TRACE((">>> MetalRenderPipeline: %s.",((sMetalRenderPipelineId&)aPipelineId).ToString()));
-    return it->second;
-  }
-
-  id<MTLRenderPipelineState> _CreatePipeline(id<MTLDevice> aDevice, const sMetalRenderPipelineId aIdBits, cMetalShaderVertex* vs, cMetalShaderPixel* ps) {
-
-    if (vs->GetShader() == NULL || ps->GetShader() == NULL) return NULL;
-    NSError *error = nil;
-    MTLRenderPipelineDescriptor *pipelineDescriptor = [MTLRenderPipelineDescriptor new];
-    pipelineDescriptor.vertexFunction = vs->GetShader();
-    pipelineDescriptor.fragmentFunction = ps->GetShader();
-    {
-      pipelineDescriptor.depthAttachmentPixelFormat = _toMTLDepthFormat[aIdBits.ds];
-    }
-    {
-      MTLRenderPipelineColorAttachmentDescriptor* ca = pipelineDescriptor.colorAttachments[0];
-      ca.pixelFormat = _toMTLColorFormat[aIdBits.rt0]; //MTLPixelFormatBGRA8Unorm; // pipline for render target can only be BGRA8 in metal
-      if (aIdBits.blendMode == 0) {
-        ca.blendingEnabled = NO;
-      }
-      else if (aIdBits.blendMode < eBlendMode_Last) {
-        const sGpuBlendModeDesc& bm = ToGpuBlendModeDesc((eBlendMode)aIdBits.blendMode);
-        ca.blendingEnabled = YES;
-        ca.rgbBlendOperation = ca.alphaBlendOperation = _toMTLBlendOp[bm.mOp];
-        ca.sourceRGBBlendFactor = _toMTLBlendFactor[bm.mSrcRGB];
-        ca.sourceAlphaBlendFactor = _toMTLBlendFactor[bm.mSrcAlpha];
-        ca.destinationRGBBlendFactor = _toMTLBlendFactor[bm.mDstRGB];
-        ca.destinationAlphaBlendFactor = _toMTLBlendFactor[bm.mDstAlpha];
-      }
-      else {
-        ca.blendingEnabled = NO;
-        niWarning("Invalid blend mode, falling back to 'no blending'.");
-      }
-    }
-
-    {
-      pipelineDescriptor.vertexDescriptor = _CreateMetalVertDesc(0, aIdBits.fvf);
-    }
-
-    id<MTLRenderPipelineState> pipeline = [aDevice newRenderPipelineStateWithDescriptor:pipelineDescriptor
-                                           error:&error];
-    if (!pipeline) {
-      NSLog(@"Error occurred when creating render pipeline state: %@", error);
-      return NULL;
-    }
-
-    METAL_TRACE((">>> MetalRenderPipeline: %s.", aIdBits.ToString()));
-    return pipeline;
   }
 };
 
@@ -1383,10 +1036,12 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   id<MTLCommandQueue> mMetalCommandQueue;
   sFixedShaders mFixedShaders;
   astl::vector<Ptr<iHString>> mvProfiles[eShaderUnit_Last];
-  sMetalShaderLibrary mLibrary;
+  NN<iFixedGpuPipelines> mFixedPipelines;
   LocalIDGenerator mIDGenerator;
 
-  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice) {
+  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice)
+      : mFixedPipelines(CreateFixedGpuPipelines())
+  {
     mpGraphics = apGraphics;
     mMetalDevice = aDevice;
 
@@ -1688,7 +1343,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return mvProfiles[aUnit][anIndex];
   }
   virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apFile) {
-
     if (!niIsOK(apFile)) {
       niError(_A("Invalid file."));
       return NULL;
@@ -1731,48 +1385,28 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     niDefer { MOJOSHADER_freeParseData(shaderPD); };
     ni::cString code(shaderPD->output, shaderPD->output_len);
 
-    iShader* pProg = NULL;
-    auto func = mLibrary.CompileShader(
-      mMetalDevice,
+    auto func = mFixedPipelines->CompileShader(
+      this,
       HFmt("gpufunc_%s",ahspName),
       code.Chars());
     niCheckIsOK_(func,"Can't compile shader.",nullptr);
-
-    if (nUnit == eShaderUnit_Vertex) {
-      pProg = niNew cMetalShaderVertex(
-        mpGraphics,
-        &mIDGenerator,
-        ahspName,
-        mpGraphics->GetShaderDeviceResourceManager(),
-        hspProfileName,
-        func);
-    }
-    else if (nUnit == eShaderUnit_Pixel)
-    {
-      pProg = niNew cMetalShaderPixel(
-        mpGraphics,
-        &mIDGenerator,
-        ahspName,
-        mpGraphics->GetShaderDeviceResourceManager(),
-        hspProfileName,
-        func);
-    }
-
-    if (!niIsOK(pProg)) {
-      niSafeRelease(pProg);
-      niError(_A("Can't create the shader instance."));
-      return NULL;
+    Ptr<iShader> ptrProg = mFixedPipelines->CreateFixedGpuShader(
+      mpGraphics,func,ahspName);
+    if (!ptrProg.IsOK()) {
+      niError("Can't create the shader instance.");
+      return nullptr;
     }
 
     if (bHasConstants) {
-      if (!ni::GetLang()->SerializeObject(apFile,(iShaderConstants*)pProg->GetConstants(),eSerializeMode_ReadRaw,NULL)) {
-        niSafeRelease(pProg);
+      if (!ni::GetLang()->SerializeObject(
+            apFile,(iShaderConstants*)ptrProg->GetConstants(),
+            eSerializeMode_ReadRaw,NULL)) {
         niError(_A("Can't load the shader constants."));
         return NULL;
       }
     }
 
-    return pProg;
+    return ptrProg.GetRawAndSetNull();
   }
   virtual tBool __stdcall IsShader(iFile* apFile) const {
     return eFalse;
@@ -1925,7 +1559,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   }
 
   virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() niImpl {
-    return niNew sMetalBlendMode();
+    return CreateGpuBlendMode();
   }
 
   virtual tBool BlitManagedBufferToSystemMemory(iGpuBuffer* apBuffer) {
@@ -2091,7 +1725,7 @@ struct cMetalContextBase :
 
   NN<sMetalCommandEncoder> mCmdEncoder;
 
-  sMetalRenderPipelineId mBaseRenderPipelineId;
+  sFixedGpuPipelineId mBaseRenderPipelineId;
 
   tIntPtr mFixedShaderVertexFVFPosColor;
   tIntPtr mFixedShaderVertexFVFPosNormalColor;
@@ -2127,7 +1761,7 @@ struct cMetalContextBase :
   tIntPtr mCurrentDS = eInvalidHandle;
   tIntPtr mCurrentSS = eInvalidHandle;
   tU32 mCurrentBufferOffset = 0;
-  sMetalRenderPipelineId mCurrentRenderPipelineId;
+  sFixedGpuPipelineId mCurrentRenderPipelineId;
   tU32 mNumDrawOps = 0;
   astl::vector<Ptr<sMetalBuffer>> mvTrackedBuffers;
 
@@ -2272,7 +1906,7 @@ struct cMetalContextBase :
     // mCurrentBufferOffset,
     // sizeof(sUniformsFixed)));
 
-    sMetalRenderPipelineId rpId = mBaseRenderPipelineId;
+    sFixedGpuPipelineId rpId = mBaseRenderPipelineId;
 
     iShader* pVS = pDOMatDesc->mShaders[eShaderUnit_Vertex];
     iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
@@ -2296,8 +1930,8 @@ struct cMetalContextBase :
       FixedShaders_UpdateConstants(this, (iShaderConstants*)pPS->GetConstants(), apDrawOp);
     }
 
-    rpId.vertFuncId = ((cMetalShaderVertex*)pVS)->GetUID();
-    rpId.fragFuncId = ((cMetalShaderPixel*)pPS)->GetUID();
+    rpId.vertFuncId = ((iFixedGpuShader*)pVS)->GetUID();
+    rpId.fragFuncId = ((iFixedGpuShader*)pPS)->GetUID();
     rpId.blendMode = _GetBlendMode(pDOMatDesc);
     rpId.fvf = va->_fvf;
 
@@ -2317,15 +1951,17 @@ struct cMetalContextBase :
     }
 
     if (rpId != mCurrentRenderPipelineId) {
-      id<MTLRenderPipelineState> pipeline = mpParent->mLibrary.GetRenderPipeline(mpParent->mMetalDevice,
-                                                                                 rpId,
-                                                                                 (cMetalShaderVertex*)pVS,
-                                                                                 (cMetalShaderPixel*)pPS);
-      if (!pipeline) {
+      Ptr<iGpuPipeline> pipeline = mpParent->mFixedPipelines->GetRenderPipeline(
+        mpParent,
+        rpId,
+        (iFixedGpuShader*)pVS,
+        (iFixedGpuShader*)pPS);
+      if (!pipeline.IsOK()) {
         niError("Can't get the render pipeline.");
         return eFalse;
       }
-      [cmdEncoder setRenderPipelineState:pipeline];
+      [cmdEncoder setRenderPipelineState:
+       ((sMetalPipeline*)pipeline.raw_ptr())->_mtlPipeline];
       mCurrentRenderPipelineId = rpId;
     }
 

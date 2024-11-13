@@ -136,6 +136,7 @@ class cLang : public ImplLocal<iLang>
   Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) niImpl;
   cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
   tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
+  tU32 __stdcall StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) niImpl;
 
   iProf* __stdcall GetProf() const;
 

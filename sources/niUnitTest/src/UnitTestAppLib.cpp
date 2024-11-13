@@ -58,6 +58,7 @@ void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink, ni::tBool abInteractiv
       GetTestAppContext()->_window->SetShow(eOSWindowShowFlags_Show);
     }
     GetTestAppContext()->_window->ActivateWindow();
+    GetTestAppContext()->_window->SetTitle(UnitTest::TestRunner_GetCurrentTestName());
   }
   currentSink = niGetIfOK(apSink);
   if (currentSink.IsOK()) {

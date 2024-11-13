@@ -515,7 +515,7 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
     attrs.push_back({
         .location = location++,
         .binding = 0,
-        .format = VK_FORMAT_R32_UINT,
+        .format = VK_FORMAT_B8G8R8A8_UNORM,
         .offset = offset
       });
     offset += sizeof(tU32);
@@ -535,7 +535,7 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
     attrs.push_back({
         .location = location++,
         .binding = 0,
-        .format = VK_FORMAT_R32_UINT,
+        .format = VK_FORMAT_B8G8R8A8_UNORM,
         .offset = offset
       });
     offset += sizeof(tU32);

@@ -40,6 +40,7 @@
   <include>niUI/src/_idl/IFont.h.idl.xml</include>
   <include>niUI/src/_idl/IFrustum.h.idl.xml</include>
   <include>niUI/src/_idl/IGeometry.h.idl.xml</include>
+  <include>niUI/src/_idl/IGpu.h.idl.xml</include>
   <include>niUI/src/_idl/IGraphics.h.idl.xml</include>
   <include>niUI/src/_idl/IGraphicsContext.h.idl.xml</include>
   <include>niUI/src/_idl/IGraphicsDriver.h.idl.xml</include>

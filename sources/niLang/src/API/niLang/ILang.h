@@ -447,7 +447,11 @@ struct iLang : public iUnknown
   //! Convert an enum value to an expression string.
   virtual cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) = 0;
   //! Convert an expression string to an enum value.
+  //! \return 0 if the expression cant be parsed or isnt found in the enum def.
   virtual tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) = 0;
+  //! Convert an expression string to an enum value.
+  //! \return aDefaultValue if the expression cant be parsed or isnt found in the enum def.
+  virtual tU32 __stdcall StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) = 0;
   //! @}
 
   //########################################################################################

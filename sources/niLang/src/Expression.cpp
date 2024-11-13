@@ -6425,12 +6425,12 @@ Ptr<iExpressionVariable> cLang::Eval(const achar* aaszExpr) {
     return _exprVarEvalError.ptr();
 }
 
-tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {
+tU32 cLang::StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) {
   Ptr<iExpressionContext> ptrCtx;
   if (apEnumDef) {
     ptrCtx = GetExpressionContext()->CreateContext();
     if (!ptrCtx.IsOK()) {
-      return NULL;
+      return aDefaultValue;
     }
     ptrCtx->AddEnumDef(apEnumDef);
     if (!niFlagIs(aFlags,eEnumToStringFlags_Full)) {
@@ -6445,7 +6445,11 @@ tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToS
   }
 
   Ptr<iExpressionVariable> pVar = ptrCtx->Eval(aExpr);
-  return niIsOK(pVar) ? (tU32)pVar->GetFloat() : 0;
+  return niIsOK(pVar) ? (tU32)pVar->GetFloat() : aDefaultValue;
+}
+
+tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {
+  return StringToEnumDefault(aExpr,apEnumDef,aFlags,0);
 }
 
 cString cLang::EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {

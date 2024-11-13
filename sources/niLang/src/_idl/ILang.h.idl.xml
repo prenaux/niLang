@@ -1337,7 +1337,7 @@
 					typei="ni::eType_Enum"/>
 			</method>
 			<method java_name="stringToEnum" name="StringToEnum" num_parameters="3">
-				<comments desc="Convert an expression string to an enum value. "/>
+				<comments desc="Convert an expression string to an enum value. " return="0 if the expression cant be parsed or isnt found in the enum def. "/>
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
 				<parameter
 					name="aExpr"
@@ -1355,6 +1355,31 @@
 					type="tEnumToStringFlags"
 					typec="tEnumToStringFlags"
 					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="stringToEnumDefault" name="StringToEnumDefault" num_parameters="4">
+				<comments desc="Convert an expression string to an enum value. " return="aDefaultValue if the expression cant be parsed or isnt found in the enum def. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aExpr"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aDefaultValue"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
 			</method>
 			<method
 				java_name="addScriptingHost"

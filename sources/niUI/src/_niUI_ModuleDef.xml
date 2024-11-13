@@ -44,6 +44,7 @@
 		<include>niUI/src/_idl/IFont.h.idl.xml</include>
 		<include>niUI/src/_idl/IFrustum.h.idl.xml</include>
 		<include>niUI/src/_idl/IGeometry.h.idl.xml</include>
+		<include>niUI/src/_idl/IGpu.h.idl.xml</include>
 		<include>niUI/src/_idl/IGraphics.h.idl.xml</include>
 		<include>niUI/src/_idl/IGraphicsContext.h.idl.xml</include>
 		<include>niUI/src/_idl/IGraphicsDriver.h.idl.xml</include>
@@ -9340,6 +9341,1073 @@
 					<remark text="Should be called after a parameter is changed or the input geometry is changed. "/>
 				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+	<namespace name="ni" source="niUI/src/_idl/IGpu.h.idl.xml">
+		<enum name="eGpuBufferMemoryMode">
+			<comments desc="GPU Buffer memory mode "/>
+			<value name="eGpuBufferMemoryMode_Shared" value="0 ">
+				<comments desc="Default shared memory between CPU &amp; GPU, best for dynamic resources that are updated frequently by the CPU. "/>
+			</value>
+			<value name="eGpuBufferMemoryMode_Private" value="1 ">
+				<comments desc="Memory only accessible by GPU, optimal for static resources that won&apos;t change after initialization. ">
+					<remark text="Lock() with private buffers always fails and return nullptr. You should use CreateGpuBufferFromData to initialize them. "/>
+				</comments>
+			</value>
+			<value name="eGpuBufferMemoryMode_Managed" value="2 ">
+				<comments desc="Defines a synchronized memory pair for a resource, with one copy in system memory and another in video memory. Managed resources benefit from fast CPU and GPU access to each copy of the resource, with minimal API calls needed to synchronize these copies. ">
+					<remark text="Lock() returns a pointer to the system memory, Unlock synchronizes it with the GPU. "/>
+					<remark text="To copy the GPU version of the buffer to the system memory you must use iGraphicsDriverGpu::BlitGpuBufferToSystemMemory(). "/>
+				</comments>
+			</value>
+			<value name="eGpuBufferMemoryMode_Last" value="3 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBufferUsageFlags">
+			<comments desc="GPU Buffer usage flags "/>
+			<value name="eGpuBufferUsageFlags_Vertex" value="niBit ( 0 ) ">
+				<comments desc="Can be used as vertex buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Index" value="niBit ( 1 ) ">
+				<comments desc="Can be used as index buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Uniform" value="niBit ( 2 ) ">
+				<comments desc="Can be used as uniform buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Storage" value="niBit ( 3 ) ">
+				<comments desc="Can be used as storage buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Indirect" value="niBit ( 4 ) ">
+				<comments desc="Can be used as indirect buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_TransferSrc" value="niBit ( 5 ) ">
+				<comments desc="Source for transfer operations "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_TransferDst" value="niBit ( 6 ) ">
+				<comments desc="Destination for transfer operations "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Last" value="8 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iGpuBuffer" uuid1="64A75FF7-630A-FA48-8C23-C3B6519C0471" uuid2="0x64a75ff7,0x630a,0xfa48,0x8c,0x23,0xc3,0xb6,0x51,0x9c,0x04,0x71">
+			<comments desc="GPU Buffer interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size of the buffer. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMemoryMode"
+				name="GetMemoryMode"
+				num_parameters="0"
+				property="get"
+				property_name2="memoryMode"
+				property_name="memory_mode">
+				<comments desc="Get the memory mode of the buffer. "/>
+				<return type="eGpuBufferMemoryMode" typec="eGpuBufferMemoryMode" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUsageFlags"
+				name="GetUsageFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="usageFlags"
+				property_name="usage_flags">
+				<comments desc="Get the usage flags of the buffer. "/>
+				<return type="tGpuBufferUsageFlags" typec="tGpuBufferUsageFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="lock" name="Lock" num_parameters="3">
+				<comments desc="Lock buffer memory for CPU access. " return="a pointer to the buffer data. ">
+					<params text="anOffset is the offset in the buffer data. "/>
+					<params text="anSize is the size to lock. "/>
+					<params text="aLock specify to locking mode. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aLock"
+					type="eLock"
+					typec="eLock"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="unlock" name="Unlock" num_parameters="0">
+				<comments desc="Unlock buffer memory. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsLocked"
+				name="GetIsLocked"
+				num_parameters="0"
+				property="get"
+				property_name2="isLocked"
+				property_name="is_locked">
+				<comments desc="Return true if the buffer is locked. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<enum name="eGpuFunctionType">
+			<comments desc="GPU Function type "/>
+			<value name="eGpuFunctionType_Vertex" value="0 ">
+				<comments desc="Vertex function "/>
+			</value>
+			<value name="eGpuFunctionType_Pixel" value="1 ">
+				<comments desc="Fragment/Pixel function "/>
+			</value>
+			<value name="eGpuFunctionType_Compute" value="2 ">
+				<comments desc="Compute function "/>
+			</value>
+			<value name="eGpuFunctionType_Mesh" value="3 ">
+				<comments desc="Mesh function "/>
+			</value>
+			<value name="eGpuFunctionType_Task" value="4 ">
+				<comments desc="Task/Amplification function "/>
+			</value>
+			<value name="eGpuFunctionType_RayGeneration" value="5 ">
+				<comments desc="Ray generation function "/>
+			</value>
+			<value name="eGpuFunctionType_RayIntersection" value="6 ">
+				<comments desc="Ray intersection function "/>
+			</value>
+			<value name="eGpuFunctionType_RayAnyHit" value="7 ">
+				<comments desc="Ray any hit function "/>
+			</value>
+			<value name="eGpuFunctionType_RayClosestHit" value="8 ">
+				<comments desc="Ray closest hit function "/>
+			</value>
+			<value name="eGpuFunctionType_RayMiss" value="9 ">
+				<comments desc="Ray miss function "/>
+			</value>
+			<value name="eGpuFunctionType_Last" value="10 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iGpuFunction" uuid1="A9FB33CE-9B16-4E4E-A933-538207420D92" uuid2="0xa9fb33ce,0x9b16,0x4e4e,0xa9,0x33,0x53,0x82,0x07,0x42,0x0d,0x92">
+			<comments desc="GPU Function interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFunctionType"
+				name="GetFunctionType"
+				num_parameters="0"
+				property="get"
+				property_name2="functionType"
+				property_name="function_type">
+				<comments desc="Get the function&apos;s type. "/>
+				<return type="eGpuFunctionType" typec="eGpuFunctionType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDataTable"
+				name="GetDataTable"
+				num_parameters="0"
+				property="get"
+				property_name2="dataTable"
+				property_name="data_table">
+				<comments desc="Get the gpu function&apos;s datatable. ">
+					<remark text="The function&apos;s datatable describes the complete gpu function&apos;s interface: - Input/Output interface (attribute locations and types) - Resource bindings (textures, samplers, uniform buffers) - Platform-specific compiled shader code - Platform-specific binding decorations (descriptor sets, register bindings) This data is used to: - Create gpu pipelines - Setup resource binding infrastructure (descriptor sets, root signatures) - Validate resource bindings at runtime "/>
+				</comments>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<enum name="eGpuPipelineColorFormat">
+			<comments desc="GPU Pipeline color format "/>
+			<value name="eGpuPipelineColorFormat_None" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_BGRA8" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_RGBA8" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_RGBA16F" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_R16F" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_R32F" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineColorFormat_Last" value="6 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuPipelineDepthFormat">
+			<comments desc="GPU Pipeline depth format "/>
+			<value name="eGpuPipelineDepthFormat_None" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineDepthFormat_D32" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineDepthFormat_D16" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineDepthFormat_D24S8" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPipelineDepthFormat_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBlendFactor">
+			<comments desc="GPU Blend factor "/>
+			<value name="eGpuBlendFactor_Zero" value="0 ">
+				<comments desc="(0, 0, 0, 0) "/>
+			</value>
+			<value name="eGpuBlendFactor_One" value="1 ">
+				<comments desc="(1, 1, 1, 1) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcColor" value="2 ">
+				<comments desc="(Rs, Gs, Bs, As) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvSrcColor" value="3 ">
+				<comments desc="(1-Rs, 1-Gs, 1-Bs, 1-As) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcAlpha" value="4 ">
+				<comments desc="(As, As, As, As) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvSrcAlpha" value="5 ">
+				<comments desc="(1-As, 1-As, 1-As, 1-As) "/>
+			</value>
+			<value name="eGpuBlendFactor_DstAlpha" value="6 ">
+				<comments desc="(Ad, Ad, Ad, Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvDstAlpha" value="7 ">
+				<comments desc="(1-Ad, 1-Ad, 1-Ad, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_DstColor" value="8 ">
+				<comments desc="(Rd, Gd, Bd, Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvDstColor" value="9 ">
+				<comments desc="(1-Rd, 1-Gd, 1-Bd, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcAlphaSat" value="10 ">
+				<comments desc="(f, f, f, 1) where f = min(As, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_BlendColorConstant" value="11 ">
+				<comments desc="Constant blend color "/>
+			</value>
+			<value name="eGpuBlendFactor_InvBlendColorConstant" value="12 ">
+				<comments desc="1 - Constant blend color "/>
+			</value>
+			<value name="eGpuBlendFactor_Last" value="13 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBlendOp">
+			<comments desc="GPU Blend operation "/>
+			<value name="eGpuBlendOp_Add" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Subtract" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_ReverseSubtract" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Min" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Max" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Last" value="5 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iGpuBlendMode" uuid1="979BDA0B-8876-294F-83DE-AD0BDC159833" uuid2="0x979bda0b,0x8876,0x294f,0x83,0xde,0xad,0x0b,0xdc,0x15,0x98,0x33">
+			<comments desc="GPU Blend mode interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another blend mode. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBlend"
+					type="const iGpuBlendMode *"
+					typec="const iGpuBlendMode*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this blend mode. "/>
+				<return type="Ptr&lt;iGpuBlendMode&gt;" typec="Ptr&lt;iGpuBlendMode&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setOp"
+				name="SetOp"
+				num_parameters="1"
+				property="set"
+				property_name2="op"
+				property_name="op">
+				<comments desc="Set the blend operation. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aOp"
+					type="eGpuBlendOp"
+					typec="eGpuBlendOp"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getOp"
+				name="GetOp"
+				num_parameters="0"
+				property="get"
+				property_name2="op"
+				property_name="op">
+				<comments desc="Get the blend operation. "/>
+				<return type="eGpuBlendOp" typec="eGpuBlendOp" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setSrcRGB"
+				name="SetSrcRGB"
+				num_parameters="1"
+				property="set"
+				property_name2="srcRGB"
+				property_name="src_rgb">
+				<comments desc="Set the source RGB blend factor. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFactor"
+					type="eGpuBlendFactor"
+					typec="eGpuBlendFactor"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSrcRGB"
+				name="GetSrcRGB"
+				num_parameters="0"
+				property="get"
+				property_name2="srcRGB"
+				property_name="src_rgb">
+				<comments desc="Get the source RGB blend factor. "/>
+				<return type="eGpuBlendFactor" typec="eGpuBlendFactor" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setSrcAlpha"
+				name="SetSrcAlpha"
+				num_parameters="1"
+				property="set"
+				property_name2="srcAlpha"
+				property_name="src_alpha">
+				<comments desc="Set the source alpha blend factor. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFactor"
+					type="eGpuBlendFactor"
+					typec="eGpuBlendFactor"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSrcAlpha"
+				name="GetSrcAlpha"
+				num_parameters="0"
+				property="get"
+				property_name2="srcAlpha"
+				property_name="src_alpha">
+				<comments desc="Get the source alpha blend factor. "/>
+				<return type="eGpuBlendFactor" typec="eGpuBlendFactor" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setDstRGB"
+				name="SetDstRGB"
+				num_parameters="1"
+				property="set"
+				property_name2="dstRGB"
+				property_name="dst_rgb">
+				<comments desc="Set the destination RGB blend factor. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFactor"
+					type="eGpuBlendFactor"
+					typec="eGpuBlendFactor"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDstRGB"
+				name="GetDstRGB"
+				num_parameters="0"
+				property="get"
+				property_name2="dstRGB"
+				property_name="dst_rgb">
+				<comments desc="Get the destination RGB blend factor. "/>
+				<return type="eGpuBlendFactor" typec="eGpuBlendFactor" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setDstAlpha"
+				name="SetDstAlpha"
+				num_parameters="1"
+				property="set"
+				property_name2="dstAlpha"
+				property_name="dst_alpha">
+				<comments desc="Set the destination alpha blend factor. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFactor"
+					type="eGpuBlendFactor"
+					typec="eGpuBlendFactor"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDstAlpha"
+				name="GetDstAlpha"
+				num_parameters="0"
+				property="get"
+				property_name2="dstAlpha"
+				property_name="dst_alpha">
+				<comments desc="Get the destination alpha blend factor. "/>
+				<return type="eGpuBlendFactor" typec="eGpuBlendFactor" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the blend mode description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+		</interface>
+		<interface name="iGpuPipelineDesc" uuid1="BD30DCB2-8309-B84A-A59F-F4A1086DC905" uuid2="0xbd30dcb2,0x8309,0xb84a,0xa5,0x9f,0xf4,0xa1,0x08,0x6d,0xc9,0x05">
+			<comments desc="Gpu pipeline desc interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another pipeline. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPipe"
+					type="const iGpuPipelineDesc *"
+					typec="const iGpuPipelineDesc*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this pipeline. "/>
+				<return type="Ptr&lt;iGpuPipelineDesc&gt;" typec="Ptr&lt;iGpuPipelineDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setColorFormat"
+				name="SetColorFormat"
+				num_parameters="2"
+				property="set"
+				property_name2="colorFormat"
+				property_name="color_format">
+				<comments desc="Set a color format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFormat"
+					type="eGpuPipelineColorFormat"
+					typec="eGpuPipelineColorFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorFormat"
+				name="GetColorFormat"
+				num_parameters="1"
+				property="get"
+				property_name2="colorFormat"
+				property_name="color_format">
+				<comments desc="Get a color format. "/>
+				<return type="eGpuPipelineColorFormat" typec="eGpuPipelineColorFormat" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDepthFormat"
+				name="SetDepthFormat"
+				num_parameters="1"
+				property="set"
+				property_name2="depthFormat"
+				property_name="depth_format">
+				<comments desc="Set the depth format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFormat"
+					type="eGpuPipelineDepthFormat"
+					typec="eGpuPipelineDepthFormat"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthFormat"
+				name="GetDepthFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="depthFormat"
+				property_name="depth_format">
+				<comments desc="Get the depth format. "/>
+				<return type="eGpuPipelineDepthFormat" typec="eGpuPipelineDepthFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setFVF"
+				name="SetFVF"
+				num_parameters="1"
+				property="set"
+				property_name2="fvf"
+				property_name="fvf">
+				<comments desc="Set the vertex format. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFVF"
+					type="tFVF"
+					typec="tFVF"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFVF"
+				name="GetFVF"
+				num_parameters="0"
+				property="get"
+				property_name2="fvf"
+				property_name="fvf">
+				<comments desc="Get the vertex format. "/>
+				<return type="tFVF" typec="tFVF" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setRasterizerStates"
+				name="SetRasterizerStates"
+				num_parameters="1"
+				property="set"
+				property_name2="rasterizerStates"
+				property_name="rasterizer_states">
+				<comments desc="Set the rasterizer states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRasterizerStates"
+				name="GetRasterizerStates"
+				num_parameters="0"
+				property="get"
+				property_name2="rasterizerStates"
+				property_name="rasterizer_states">
+				<comments desc="Get the rasterizer states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setDepthStencilStates"
+				name="SetDepthStencilStates"
+				num_parameters="1"
+				property="set"
+				property_name2="depthStencilStates"
+				property_name="depth_stencil_states">
+				<comments desc="Set the depth stencil states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDepthStencilStates"
+				name="GetDepthStencilStates"
+				num_parameters="0"
+				property="get"
+				property_name2="depthStencilStates"
+				property_name="depth_stencil_states">
+				<comments desc="Get the depth stencil states. "/>
+				<return type="tIntPtr" typec="tIntPtr" typei="ni::eType_IntPtr"/>
+			</method>
+			<method
+				java_name="setFunction"
+				name="SetFunction"
+				num_parameters="2"
+				property="set"
+				property_name2="function"
+				property_name="function">
+				<comments desc="Set a function. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aType"
+					type="eGpuFunctionType"
+					typec="eGpuFunctionType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="apFunc"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFunction"
+				name="GetFunction"
+				num_parameters="1"
+				property="get"
+				property_name2="function"
+				property_name="function">
+				<comments desc="Get a function. "/>
+				<return type="iGpuFunction *" typec="iGpuFunction*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eGpuFunctionType"
+					typec="eGpuFunctionType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setBlendMode"
+				name="SetBlendMode"
+				num_parameters="1"
+				property="set"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Set the blend mode. Set to nullptr to disable. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBlendMode"
+					type="iGpuBlendMode *"
+					typec="iGpuBlendMode*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBlendMode"
+				name="GetBlendMode"
+				num_parameters="0"
+				property="get"
+				property_name2="blendMode"
+				property_name="blend_mode">
+				<comments desc="Get the blend mode. "/>
+				<return type="iGpuBlendMode *" typec="iGpuBlendMode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDescStructPtr"
+				name="GetDescStructPtr"
+				num_parameters="0"
+				property="get"
+				property_name2="descStructPtr"
+				property_name="desc_struct_ptr">
+				<comments desc="Get the pipeline description structure pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+		</interface>
+		<interface name="iGpuPipeline" uuid1="4298B417-DDEB-BF4D-825C-125B3E0B5B05" uuid2="0x4298b417,0xddeb,0xbf4d,0x82,0x5c,0x12,0x5b,0x3e,0x0b,0x5b,0x05">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getDesc"
+				name="GetDesc"
+				num_parameters="0"
+				property="get"
+				property_name2="desc"
+				property_name="desc">
+				<comments desc="Get the gpu pipeline description. "/>
+				<return type="const iGpuPipelineDesc *" typec="const iGpuPipelineDesc*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iGpuCommandEncoder" uuid1="055A196D-4AE9-7648-A86E-5E90AFF216CE" uuid2="0x055a196d,0x4ae9,0x7648,0xa8,0x6e,0x5e,0x90,0xaf,0xf2,0x16,0xce">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="setPipeline" name="SetPipeline" num_parameters="1">
+				<comments desc="Binds a GPU pipeline to the command encoder. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apPipeline"
+					type="iGpuPipeline *"
+					typec="iGpuPipeline*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setVertexBuffer" name="SetVertexBuffer" num_parameters="3">
+				<comments desc="Binds a vertex buffer to the specified binding slot. @param apBuffer The GPU buffer containing vertex data @param anOffset Byte offset into the buffer @param anBinding The binding slot index "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apBuffer"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setIndexBuffer" name="SetIndexBuffer" num_parameters="2">
+				<comments desc="Binds an index buffer for indexed draw calls. @param apBuffer The GPU buffer containing index data @param anOffset Byte offset into the buffer "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apBuffer"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setUniformBuffer" name="SetUniformBuffer" num_parameters="3">
+				<comments desc="Binds a uniform buffer to the specified binding slot. @param apBuffer The GPU buffer containing uniform data @param anOffset Byte offset into the buffer @param anBinding The binding slot index "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apBuffer"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setTexture" name="SetTexture" num_parameters="2">
+				<comments desc="Binds a texture to the specified binding slot. @param apTexture The texture to bind @param anBinding The binding slot index "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apTexture"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setSamplerState" name="SetSamplerState" num_parameters="2">
+				<comments desc="Binds a sampler state to the specified binding slot. @param ahSS Handle to the sampler state @param anBinding The binding slot index "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="ahSS"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setPolygonOffset" name="SetPolygonOffset" num_parameters="1">
+				<comments desc="Sets the polygon offset for depth bias. @param avOffset Vector containing the constant and slope factors "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avOffset"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setScissorRect" name="SetScissorRect" num_parameters="1">
+				<comments desc="Sets the scissor test rectangle. @param aRect Rectangle defining the scissor region "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setViewport" name="SetViewport" num_parameters="1">
+				<comments desc="Sets the viewport dimensions. @param aRect Rectangle defining the viewport region "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setStencilReference" name="SetStencilReference" num_parameters="1">
+				<comments desc="Sets the stencil reference value. @param aRef The reference value to compare against "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRef"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="setStencilMask" name="SetStencilMask" num_parameters="1">
+				<comments desc="Sets the stencil read/write mask. @param aMask The stencil mask value "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMask"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setBlendColorConstant" name="SetBlendColorConstant" num_parameters="1">
+				<comments desc="Sets the blend color constant. @param aColor The color to use for constant blend factor "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="draw" name="Draw" num_parameters="2">
+				<comments desc="Draws primitives using the current vertex buffer. @param anVertexCount Number of vertices to draw @param anFirstVertex Index of first vertex to draw "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anVertexCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anFirstVertex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="2">
+				<comments desc="Draws indexed primitives using the current index buffer. @param anNumIndices Number of indices to draw @param anFirstIndex Index of first index to draw "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anNumIndices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anFirstIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iGraphicsContextGpu" uuid1="0D2FFD6C-887D-3D46-AA18-123B272954E0" uuid2="0x0d2ffd6c,0x887d,0x3d46,0xaa,0x18,0x12,0x3b,0x27,0x29,0x54,0xe0">
+			<comments desc="GPU-specific graphics context interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="beginCommandEncoder" name="BeginCommandEncoder" num_parameters="0">
+				<comments desc="Begin a command encoder for recording commands "/>
+				<return type="iGpuCommandEncoder *" typec="iGpuCommandEncoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="endCommandEncoder" name="EndCommandEncoder" num_parameters="0">
+				<comments desc="End the current command encoder "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+		<interface name="iGraphicsDriverGpu" uuid1="E689EE7E-F674-1541-9A2B-B306557E6F09" uuid2="0xe689ee7e,0xf674,0x1541,0x9a,0x2b,0xb3,0x06,0x55,0x7e,0x6f,0x09">
+			<comments desc="GPU-specific graphics driver interface. ">
+				<remark text="WIP/Placeholder "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="createGpuBuffer" name="CreateGpuBuffer" num_parameters="3">
+				<comments desc="Create a new GPU buffer. "/>
+				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aMemMode"
+					type="eGpuBufferMemoryMode"
+					typec="eGpuBufferMemoryMode"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="tGpuBufferUsageFlags"
+					typec="tGpuBufferUsageFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="createGpuBufferFromData" name="CreateGpuBufferFromData" num_parameters="4">
+				<comments desc="Create a new GPU buffer with initial data. "/>
+				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aMemMode"
+					type="eGpuBufferMemoryMode"
+					typec="eGpuBufferMemoryMode"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="tGpuBufferUsageFlags"
+					typec="tGpuBufferUsageFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="createGpuBufferFromDataRaw"
+				name="CreateGpuBufferFromDataRaw"
+				noautomation="yes"
+				num_parameters="4">
+				<comments desc="Create a new GPU buffer with initial raw data. "/>
+				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;"/>
+				<parameter name="apData" type="tPtr" typec="tPtr"/>
+				<parameter name="anSize" type="tU32" typec="tU32"/>
+				<parameter name="aMemMode" type="eGpuBufferMemoryMode" typec="eGpuBufferMemoryMode"/>
+				<parameter
+					last="1"
+					name="aUsage"
+					type="tGpuBufferUsageFlags"
+					typec="tGpuBufferUsageFlags"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGpuFunctionTarget"
+				name="GetGpuFunctionTarget"
+				num_parameters="0"
+				property="get"
+				property_name2="gpuFunctionTarget"
+				property_name="gpu_function_target">
+				<comments desc="Get the gpu function target. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGpuFunction" name="CreateGpuFunction" num_parameters="3">
+				<comments desc="Create a new GPU function. "/>
+				<return type="Ptr&lt;iGpuFunction&gt;" typec="Ptr&lt;iGpuFunction&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eGpuFunctionType"
+					typec="eGpuFunctionType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apGpuFunctionDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGpuPipelineDesc" name="CreateGpuPipelineDesc" num_parameters="0">
+				<comments desc="Create a new GPU pipeline description. "/>
+				<return type="Ptr&lt;iGpuPipelineDesc&gt;" typec="Ptr&lt;iGpuPipelineDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGpuPipeline" name="CreateGpuPipeline" num_parameters="1">
+				<comments desc="Compile a GPU pipeline description into a driver handle. "/>
+				<return type="Ptr&lt;iGpuPipeline&gt;" typec="Ptr&lt;iGpuPipeline&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apDesc"
+					type="const iGpuPipelineDesc *"
+					typec="const iGpuPipelineDesc*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGpuBlendMode" name="CreateGpuBlendMode" num_parameters="0">
+				<comments desc="Create a new GPU blend mode description. "/>
+				<return type="Ptr&lt;iGpuBlendMode&gt;" typec="Ptr&lt;iGpuBlendMode&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="blitManagedGpuBufferToSystemMemory" name="BlitManagedGpuBufferToSystemMemory" num_parameters="1">
+				<comments desc="Synchronize a managed resource from the GPU to the CPU memory. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apBuffer"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

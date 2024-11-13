@@ -22,7 +22,7 @@ inline Ptr<iDataTable> LoadDataTable(iFile* fp, const achar* aaszSerFormat = "xm
   if (!ni::GetLang()->SerializeDataTable(aaszSerFormat,eSerializeMode_Read,
                                          dt,fp)) {
     niError(niFmt("Can't read datatable from '%s'.", fp->GetSourcePath()));
-    return NULL;
+    return nullptr;
   }
   return dt;
 }
@@ -30,6 +30,10 @@ inline Ptr<iDataTable> LoadDataTable(iFile* fp, const achar* aaszSerFormat = "xm
 ///////////////////////////////////////////////
 inline Ptr<iDataTable> LoadDataTable(const achar* aURL, const achar* aaszSerFormat = "xml") {
   Ptr<iFile> fp = ni::GetLang()->URLOpen(aURL);
+  if (!fp.IsOK()) {
+    niError(niFmt("Can't open file '%s' to load datatable.", aURL));
+    return nullptr;
+  }
   return LoadDataTable(fp.raw_ptr(),aaszSerFormat);
 }
 
@@ -59,7 +63,7 @@ inline Ptr<iDataTable> CreateDataTableFromXML(const achar* aaszText, tI32 anSize
   Nonnull<iDataTable> dt(ni::GetLang()->CreateDataTable(""));
   if (!ni::GetLang()->SerializeDataTable("xml",eSerializeMode_Read,
                                          dt,fp))
-    return NULL;
+    return nullptr;
   return dt;
 }
 

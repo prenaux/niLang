@@ -1,0 +1,115 @@
+<Shader ver="2" name="triangle_vs" exec="vertex" input_filename="glslc450_triangle_vs_vert.spv" input_digest="26aw8427jvnmes2xwx7bwg8wm4">
+	<Target target="vkgl45" src_digest="4z4zbwgev4yfvans4gsqbnmg4r">
+		<Inputs>
+			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+		</Inputs>
+		<Outputs deco_location="1">
+			<Output name="OUT_1_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures/>
+		<SamplerStates/>
+		<SampledTextures/>
+		<ConstBuffs/>
+		<![CDATA[#version 450
+
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 1) out vec4 OUT_1_rval_color;
+
+void main()
+{
+    gl_Position = vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_1_aInput_color;
+}
+
+]]>
+	</Target>
+	<Target target="msl2_macos" src_digest="9zbg05dwgbzmbt5bg76rq4r9x0">
+		<Inputs>
+			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+		</Inputs>
+		<Outputs deco_location="1">
+			<Output name="OUT_1_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures/>
+		<SamplerStates/>
+		<SampledTextures/>
+		<ConstBuffs/>
+		<![CDATA[#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct main0_out
+{
+    float4 OUT_1_rval_color [[user(locn1)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    float3 IN_0_aInput_position [[attribute(0)]];
+    float4 IN_1_aInput_color [[attribute(1)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]])
+{
+    main0_out out = {};
+    out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
+    out.OUT_1_rval_color = in.IN_1_aInput_color;
+    return out;
+}
+
+]]>
+	</Target>
+	<Target target="hlsl5" src_digest="0sja18q9rddfy0wj8vj0ywhr7r">
+		<Inputs>
+			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+		</Inputs>
+		<Outputs deco_location="1">
+			<Output name="OUT_1_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures/>
+		<SamplerStates/>
+		<SampledTextures/>
+		<ConstBuffs/>
+		<![CDATA[static float4 gl_Position;
+static float3 IN_0_aInput_position;
+static float4 IN_1_aInput_color;
+static float4 OUT_1_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float3 IN_0_aInput_position : TEXCOORD0;
+    float4 IN_1_aInput_color : TEXCOORD1;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_1_rval_color : TEXCOORD1;
+    float4 gl_Position : SV_Position;
+};
+
+void vert_main()
+{
+    gl_Position = float4(IN_0_aInput_position, 1.0f);
+    OUT_1_rval_color = IN_1_aInput_color;
+    gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_0_aInput_position = stage_input.IN_0_aInput_position;
+    IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    vert_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.gl_Position = gl_Position;
+    stage_output.OUT_1_rval_color = OUT_1_rval_color;
+    return stage_output;
+}
+]]>
+	</Target>
+</Shader>

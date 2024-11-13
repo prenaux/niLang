@@ -2,16 +2,15 @@
 #ifndef __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__
 #define __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__
 
-#include "API/niUI/Experimental/IGpu.h"
+#include "API/niUI/IGpu.h"
 #include "API/niUI/GraphicsEnum.h"
 #include "API/niUI/IShader.h"
 
 namespace ni {
 
-const sGpuBlendModeDesc& ToGpuBlendModeDesc(eBlendMode aBlendMode);
-iGpuPipelineDesc* CreateGpuPipelineDesc();
-
-iGpuBlendMode* CreateGpuBlendMode();
+const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode);
+iGpuPipelineDesc* _CreateGpuPipelineDesc();
+iGpuBlendMode* _CreateGpuBlendMode();
 
 // 128 bit unsigned int for pipeline id
 // 32 for FVF
@@ -64,7 +63,7 @@ struct iFixedGpuPipelines : public iUnknown {
   niDeclareInterfaceUUID(iFixedGpuPipelines,0x716fc8a9,0x30e6,0x3641,0xb4,0xf2,0x69,0x0f,0xb8,0x83,0x58,0xa7);
 
   //! Compile a shader from source code
-  virtual Ptr<iGpuFunction> __stdcall CompileShader(iGraphicsDriverGpu* apGpuDriver, iHString* ahspName, const achar* aShaderProgram) = 0;
+  virtual Ptr<iGpuFunction> __stdcall CompileShader(iGraphicsDriverGpu* apGpuDriver, eGpuFunctionType aType, iHString* ahspName, const achar* aShaderProgram) = 0;
 
   //! Get or create a render pipeline for the given id and shaders
   virtual Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, ain<tFixedGpuPipelineId> aPipelineId, iFixedGpuShader* apVS, iFixedGpuShader* apPS) = 0;
@@ -83,6 +82,9 @@ sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA);
 
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage);
 iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
+
+NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar* aaszSource);
+iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget);
 
 }
 #endif // __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__

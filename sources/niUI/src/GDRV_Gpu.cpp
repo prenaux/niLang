@@ -1,8 +1,7 @@
 #include "stdafx.h"
-#include "API/niUI/Experimental/IGpu.h"
 #include <niLang/Utils/IDGenerator.h>
-#include "GDRV_Gpu.h"
 #include "API/niUI_ModuleDef.h"
+#include "GDRV_Gpu.h"
 
 namespace ni {
 
@@ -13,7 +12,7 @@ _HDecl(gpufunction);
 #define GPU_BLENDMODE(OP,SRCRGB,SRCALPHA,DESTRGB,DESTALPHA) \
   { eGpuBlendOp_##OP, eGpuBlendFactor_##SRCRGB, eGpuBlendFactor_##SRCALPHA, eGpuBlendFactor_##DESTRGB, eGpuBlendFactor_##DESTALPHA }
 
-const sGpuBlendModeDesc& ToGpuBlendModeDesc(eBlendMode aBlendMode) {
+const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode) {
   static const sGpuBlendModeDesc _toBlendModeDesc[] = {
     // eBlendMode_NoBlending
     GPU_BLENDMODE(Add, One, One, Zero, Zero),
@@ -112,7 +111,7 @@ struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
   }
 };
 
-iGpuBlendMode* CreateGpuBlendMode() {
+iGpuBlendMode* _CreateGpuBlendMode() {
   return niNew sGpuBlendMode();
 }
 
@@ -205,7 +204,7 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
   }
 };
 
-iGpuPipelineDesc* CreateGpuPipelineDesc() {
+iGpuPipelineDesc* _CreateGpuPipelineDesc() {
   return niNew sGpuPipelineDescImpl();
 }
 
@@ -366,10 +365,9 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   tPipelineMap _pipelines;
   LocalIDGenerator _idGenerator;
 
-  Ptr<iGpuFunction> CompileShader(iGraphicsDriverGpu* apGpuDriver, iHString* ahspName, const achar* aShaderProgram) niImpl {
-    Ptr<iDataTable> dtFunc = ni::GetLang()->CreateDataTable("GpuFunction");
-    dtFunc->SetString("source",aShaderProgram);
-    return apGpuDriver->CreateFunction(ahspName,dtFunc);
+  Ptr<iGpuFunction> CompileShader(iGraphicsDriverGpu* apGpuDriver, eGpuFunctionType aType, iHString* ahspName, const achar* aSource) niImpl {
+    NN<iDataTable> dtFunc = CreateGpuFunctionDT(apGpuDriver,aSource);
+    return apGpuDriver->CreateGpuFunction(aType,ahspName,dtFunc);
   }
 
   Ptr<iGpuPipeline> GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, ain<tFixedGpuPipelineId> aPipelineId, iFixedGpuShader* apVS, iFixedGpuShader* apPS) niImpl {
@@ -399,7 +397,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     cFixedGpuShaderVertex* vs = (cFixedGpuShaderVertex*)apVS;
     cFixedGpuShaderPixel* ps = (cFixedGpuShaderPixel*)apPS;
 
-    NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreatePipelineDesc()};
+    NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreateGpuPipelineDesc()};
     sGpuPipelineDesc& desc = *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
     desc.mFVF = aIdBits.fvf;
     desc.mColorFormats[0] = aIdBits.rt0;
@@ -413,15 +411,15 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
       desc.mptrBlendMode = nullptr;
     }
     else if (aIdBits.blendMode < eBlendMode_Last) {
-      const sGpuBlendModeDesc& bm = ToGpuBlendModeDesc((eBlendMode)aIdBits.blendMode);
-      desc.mptrBlendMode = apGpuDriver->CreateBlendMode();
+      const sGpuBlendModeDesc& bm = _BlendModeToGpuBlendModeDesc((eBlendMode)aIdBits.blendMode);
+      desc.mptrBlendMode = apGpuDriver->CreateGpuBlendMode();
       *((sGpuBlendModeDesc*)desc.mptrBlendMode->GetDescStructPtr()) = bm;
     }
     else {
       desc.mptrBlendMode = nullptr;
       niWarning("Invalid blend mode, falling back to 'no blending'.");
     }
-    return apGpuDriver->CreatePipeline(ptrPipelineDesc);
+    return apGpuDriver->CreateGpuPipeline(ptrPipelineDesc);
   }
 
   Ptr<iFixedGpuShader> CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) niImpl {
@@ -587,7 +585,7 @@ iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA) {
 
 iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
     niLet fvfStride = FVFGetStride(anFVF);
-    Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateBuffer(
+    Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateGpuBuffer(
       fvfStride * anNumVertices,
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Vertex);
@@ -597,11 +595,43 @@ iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 an
 
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
   niUnused(anMaxVertexIndex);
-  Ptr<iGpuBuffer> iaBuffer = apGpuDriver->CreateBuffer(
+  Ptr<iGpuBuffer> iaBuffer = apGpuDriver->CreateGpuBuffer(
     knFixedGpuIndexSize * anNumIndices,
     eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Index);
   return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
+}
+
+NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar* aaszSource) {
+  NN<iDataTable> dtFunc = AsNN(ni::GetLang()->CreateDataTable("GpuFunction"));
+  dtFunc->SetHString("target",apGpuDriver->GetGpuFunctionTarget());
+  dtFunc->SetString("source",aaszSource);
+  return dtFunc;
+}
+
+iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
+  if (!apDT)
+    return nullptr;
+
+  niLet dtName = apDT->GetName();
+  if (!StrEq(dtName,"Shader") &&
+      !StrEq(dtName,"Target") &&
+      !StrEq(dtName,"GpuFunction") &&
+      !StrEq(dtName,"GpuFunctionTarget") &&
+      !StrEq(dtName,"GpuLibrary"))
+    return nullptr;
+
+  tHStringPtr hspTarget = apDT->GetHString("target");
+  //niDebugFmt(("... FindGpuFunctionDT: %s, %s", apDT->GetName(), hspTarget));
+  if (hspTarget == ahspTarget) {
+    return apDT;
+  }
+  niLoop(i,apDT->GetNumChildren()) {
+    iDataTable* foundDT = FindGpuFunctionDT(apDT->GetChildFromIndex(i), ahspTarget);
+    if (foundDT)
+      return foundDT;
+  }
+  return nullptr;
 }
 
 }

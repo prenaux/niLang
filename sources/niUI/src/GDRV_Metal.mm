@@ -35,6 +35,13 @@
 
 namespace ni {
 
+#define NISH_TARGET msl2_macos
+
+_HDecl(NISH_TARGET);
+static __forceinline iHString* _GetGpuFunctionTarget() {
+  return _HC(NISH_TARGET);
+}
+
 #define METAL_TRACE(aFmt) //niDebugFmt(aFmt)
 
 #define METAL_DEVICE(aDevice) id<MTLDevice> mMetalDevice = (id<MTLDevice>)aDevice->GetDevice();
@@ -59,54 +66,51 @@ static cString _GetDeviceCaps(id<MTLDevice> aDevice) {
   r += niFmt("  depth24Stencil8PixelFormatSupported: %y\n", (tBool)!!aDevice.depth24Stencil8PixelFormatSupported);
   r += niFmt("  recommendedMaxWorkingSetSize: %d\n", (tU64)aDevice.recommendedMaxWorkingSetSize);
 #endif
-  r += niFmt("  supportsFeatureSet:");
 
-#if defined METAL_IOS
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v1]) {
-    r += niFmt(" iOS_GPUFamily1_v1,");
+  EA_DISABLE_CLANG_WARNING(-Wunguarded-availability-new);
+  r += niFmt("  supportsFamily:");
+  if ([aDevice supportsFamily:MTLGPUFamilyMetal3]) {
+    r += niFmt(" Metal3,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
-    r += niFmt(" iOS_GPUFamily2_v1,");
+  if ([aDevice supportsFamily:MTLGPUFamilyCommon3]) {
+    r += niFmt(" Common3,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v2]) {
-    r += niFmt(" iOS_GPUFamily1_v2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyCommon2]) {
+    r += niFmt(" Common2,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v2]) {
-    r += niFmt(" iOS_GPUFamily2_v2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyCommon1]) {
+    r += niFmt(" Common1,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1]) {
-    r += niFmt(" iOS_GPUFamily3_v1,");
+  if ([aDevice supportsFamily:MTLGPUFamilyApple9]) {
+    r += niFmt(" Apple9,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v3]) {
-    r += niFmt(" iOS_GPUFamily1_v3,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple8]) {
+    r += niFmt(" Apple8,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v3]) {
-    r += niFmt(" iOS_GPUFamily2_v3,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple7]) {
+    r += niFmt(" Apple7,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v2]) {
-    r += niFmt(" iOS_GPUFamily3_v2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple6]) {
+    r += niFmt(" Apple6,");
   }
-#endif
-#if defined METAL_MAC && !defined niIOSMac
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_OSX_GPUFamily1_v1]) {
-    r += niFmt(" OSX_GPUFamily1_v1,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple5]) {
+    r += niFmt(" Apple5,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_OSX_GPUFamily1_v2]) {
-    r += niFmt(" OSX_GPUFamily1_v2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple4]) {
+    r += niFmt(" Apple4,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_OSX_ReadWriteTextureTier2]) {
-    r += niFmt(" OSX_ReadWriteTextureTier2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple3]) {
+    r += niFmt(" Apple3,");
   }
-#endif
-#if defined METAL_TVOS
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1]) {
-    r += niFmt(" tvOS_GPUFamily1_v1,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple2]) {
+    r += niFmt(" Apple2,");
   }
-  if ([aDevice supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v2]) {
-    r += niFmt(" tvOS_GPUFamily1_v2,");
+  else if ([aDevice supportsFamily:MTLGPUFamilyApple1]) {
+    r += niFmt(" Apple1,");
   }
-#endif
-
+  if ([aDevice supportsFamily:MTLGPUFamilyMac2]) {
+    r += niFmt(" Mac2,");
+  }
   if (r.EndsWith(",")) {
     r.resize(r.length()-1);
   }
@@ -221,17 +225,17 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
   Ptr<iDataTable> _datatable;
   id<MTLFunction> _mtlFunction;
 
-  tBool _Create(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDT) {
-    niCheckIsOK(apDT,eFalse);
+  tBool _Create(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDTRoot) {
+    niCheckIsOK(apDTRoot,eFalse);
     _hspName = ahspName;
-    _datatable = apDT;
+    _datatable = niCheckNN(_datatable,FindGpuFunctionDT(apDTRoot,_GetGpuFunctionTarget()),eFalse);
 
     cString source;
-    if (apDT->HasProperty("source")) {
-      source = apDT->GetString("source");
+    if (_datatable->HasProperty("source")) {
+      source = _datatable->GetString("source");
     }
-    else if (apDT->HasProperty("_data")) {
-      source = apDT->GetString("_data");
+    else if (_datatable->HasProperty("_data")) {
+      source = _datatable->GetString("_data");
     }
     niCheck(source.IsNotEmpty(),eFalse);
 
@@ -1261,6 +1265,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
 
     auto func = mFixedPipelines->CompileShader(
       this,
+      nUnit == eShaderUnit_Pixel ? eGpuFunctionType_Pixel : eGpuFunctionType_Vertex,
       HFmt("gpufunc_%s",ahspName),
       code.Chars());
     niCheckIsOK_(func,"Can't compile shader.",nullptr);
@@ -1384,7 +1389,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return _dsNoDepthTest;
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niLet buffer = MakeNN<sMetalBuffer>();
     if (!buffer->_Create(mMetalDevice, nullptr, anSize, aMemMode, aUsage)) {
       return nullptr;
@@ -1392,17 +1397,17 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return buffer;
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niCheckIsOK(apFile,nullptr);
     astl::vector<tU8> data;
     data.resize(anSize);
     if (apFile->ReadRaw(data.data(),anSize) != anSize) {
       return nullptr;
     }
-    return CreateBufferFromDataRaw(data.data(),anSize,aMemMode,aUsage);
+    return this->CreateGpuBufferFromDataRaw(data.data(),anSize,aMemMode,aUsage);
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niCheck(apData != nullptr, nullptr);
     niLet buffer = MakeNN<sMetalBuffer>();
     if (!buffer->_Create(mMetalDevice, apData, anSize, aMemMode, aUsage)) {
@@ -1411,19 +1416,29 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return buffer;
   }
 
-  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, iDataTable* apGpuFunctionDT) niImpl {
+  virtual iHString* __stdcall GetGpuFunctionTarget() const {
+    return _GetGpuFunctionTarget();
+  }
+
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspName, iDataTable* apGpuFunctionDT) niImpl {
     NN<sMetalFunction> func = MakeNN<sMetalFunction>();
     if (!func->_Create(mMetalDevice, ahspName, apGpuFunctionDT)) {
+      return nullptr;
+    }
+    if (func->GetFunctionType() != aType) {
+      niError(niFmt(
+        "Expected function type '%s' by got '%s'.",
+        (tU32)aType, (tU32)func->GetFunctionType()));
       return nullptr;
     }
     return func;
   }
 
-  virtual Ptr<iGpuPipelineDesc> __stdcall CreatePipelineDesc() niImpl {
-    return CreateGpuPipelineDesc();
+  virtual Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() niImpl {
+    return ni::_CreateGpuPipelineDesc();
   }
 
-  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline(const iGpuPipelineDesc* apDesc) niImpl {
+  virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(const iGpuPipelineDesc* apDesc) niImpl {
     NN<sMetalPipeline> pipeline = MakeNN<sMetalPipeline>();
     if (!pipeline->_Create(mMetalDevice,apDesc)) {
       return nullptr;
@@ -1431,11 +1446,11 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return pipeline;
   }
 
-  virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() niImpl {
-    return CreateGpuBlendMode();
+  virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl {
+    return ni::_CreateGpuBlendMode();
   }
 
-  virtual tBool BlitManagedBufferToSystemMemory(iGpuBuffer* apBuffer) {
+  virtual tBool BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl {
     niPanicUnreachable("Unimplemented");
     return eFalse;
   }
@@ -1472,6 +1487,12 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     ain<nn<cMetalGraphicsDriver>> aDriver)
       : _driver(aDriver)
   {}
+
+  virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
+    niCheck(apPipeline != nullptr,;);
+    [_encoder setRenderPipelineState:
+     ((sMetalPipeline*)apPipeline)->_mtlPipeline];
+  }
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(apBuffer != nullptr, ;);

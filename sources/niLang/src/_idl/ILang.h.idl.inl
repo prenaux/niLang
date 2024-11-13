@@ -820,6 +820,21 @@ IDLC_METH_BEGIN(ni,iLang,StringToEnum,3)
 	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
 IDLC_METH_END(ni,iLang,StringToEnum,3)
 
+/** ni -> iLang::StringToEnumDefault/4 **/
+IDLC_METH_BEGIN(ni,iLang,StringToEnumDefault,4)
+	IDLC_DECL_VAR(achar*,aExpr)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer,aExpr)
+	IDLC_DECL_VAR(sEnumDef*,apEnumDef)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer,apEnumDef)
+	IDLC_DECL_VAR(tEnumToStringFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tEnumToStringFlags,aFlags)
+	IDLC_DECL_VAR(tU32,aDefaultValue)
+	IDLC_BUF_TO_BASE(ni::eType_U32,aDefaultValue)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iLang,StringToEnumDefault,4,(aExpr,apEnumDef,aFlags,aDefaultValue))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iLang,StringToEnumDefault,4)
+
 /** ni -> iLang::AddScriptingHost/2 -> MIN FEATURES '15' **/
 #if niMinFeatures(15)
 /** ni -> iLang::AddScriptingHost/2 **/

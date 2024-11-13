@@ -12888,6 +12888,24 @@ static const ni::sMethodDef iLang_StringToEnum = {
 #endif
 };
 
+// Method: StringToEnumDefault
+static const ni::sParameterDef iLang_StringToEnumDefault_Parameters[4] = { 
+  { "aExpr", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apEnumDef", ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sEnumDef*" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tEnumToStringFlags" }, 
+  { "aDefaultValue", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iLang_StringToEnumDefault = {
+  "StringToEnumDefault",
+  0|ni::eType_U32, NULL, "tU32",
+  4, iLang_StringToEnumDefault_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iLang_StringToEnumDefault)
+#else
+  NULL
+#endif
+};
+
 #if niMinFeatures(15)
 // Method: AddScriptingHost
 static const ni::sParameterDef iLang_AddScriptingHost_Parameters[2] = { 
@@ -13791,6 +13809,7 @@ static const ni::sMethodDef* Methods_iLang[] = {
 	&iLang_Eval,
 	&iLang_EnumToString,
 	&iLang_StringToEnum,
+	&iLang_StringToEnumDefault,
 #if niMinFeatures(15)
 	&iLang_AddScriptingHost,
 #endif // niMinFeatures(15)

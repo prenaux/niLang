@@ -7,7 +7,7 @@
 #include <niLang/IDeviceResource.h>
 #include <niLang/IHString.h>
 #include <niLang/Math/MathRect.h>
-#include "../FVF.h"
+#include "FVF.h"
 
 namespace ni {
 
@@ -27,7 +27,7 @@ enum eGpuBufferMemoryMode
   eGpuBufferMemoryMode_Shared = 0,
   //! Memory only accessible by GPU, optimal for static resources
   //! that won't change after initialization.
-  //! \remark Lock() with private buffers always fails and return nullptr. You should use CreateBufferFromData to initialize them.
+  //! \remark Lock() with private buffers always fails and return nullptr. You should use CreateGpuBufferFromData to initialize them.
   eGpuBufferMemoryMode_Private = 1,
   //! Defines a synchronized memory pair for a resource, with one copy in
   //! system memory and another in video memory. Managed resources benefit
@@ -392,10 +392,35 @@ struct iGpuCommandEncoder : public iUnknown {
   //! \name Resource Bindings
   //##########################################################################
   //! @{
+
+  //! Binds a GPU pipeline to the command encoder.
+  virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) = 0;
+
+  //! Binds a vertex buffer to the specified binding slot.
+  //! @param apBuffer The GPU buffer containing vertex data
+  //! @param anOffset Byte offset into the buffer
+  //! @param anBinding The binding slot index
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) = 0;
+
+  //! Binds an index buffer for indexed draw calls.
+  //! @param apBuffer The GPU buffer containing index data
+  //! @param anOffset Byte offset into the buffer
   virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset) = 0;
+
+  //! Binds a uniform buffer to the specified binding slot.
+  //! @param apBuffer The GPU buffer containing uniform data
+  //! @param anOffset Byte offset into the buffer
+  //! @param anBinding The binding slot index
   virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) = 0;
+
+  //! Binds a texture to the specified binding slot.
+  //! @param apTexture The texture to bind
+  //! @param anBinding The binding slot index
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) = 0;
+
+  //! Binds a sampler state to the specified binding slot.
+  //! @param ahSS Handle to the sampler state
+  //! @param anBinding The binding slot index
   virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) = 0;
   //! @}
 
@@ -403,11 +428,29 @@ struct iGpuCommandEncoder : public iUnknown {
   //! \name Dynamic States
   //##########################################################################
   //! @{
+
+  //! Sets the polygon offset for depth bias.
+  //! @param avOffset Vector containing the constant and slope factors
   virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) = 0;
+
+  //! Sets the scissor test rectangle.
+  //! @param aRect Rectangle defining the scissor region
   virtual void __stdcall SetScissorRect(const sRecti& aRect) = 0;
+
+  //! Sets the viewport dimensions.
+  //! @param aRect Rectangle defining the viewport region
   virtual void __stdcall SetViewport(const sRecti& aRect) = 0;
+
+  //! Sets the stencil reference value.
+  //! @param aRef The reference value to compare against
   virtual void __stdcall SetStencilReference(tI32 aRef) = 0;
+
+  //! Sets the stencil read/write mask.
+  //! @param aMask The stencil mask value
   virtual void __stdcall SetStencilMask(tU32 aMask) = 0;
+
+  //! Sets the blend color constant.
+  //! @param aColor The color to use for constant blend factor
   virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) = 0;
   //! @}
 
@@ -415,7 +458,15 @@ struct iGpuCommandEncoder : public iUnknown {
   //! \name Draw Commands
   //##########################################################################
   //! @{
+
+  //! Draws primitives using the current vertex buffer.
+  //! @param anVertexCount Number of vertices to draw
+  //! @param anFirstVertex Index of first vertex to draw
   virtual void __stdcall Draw(tU32 anVertexCount, tU32 anFirstVertex) = 0;
+
+  //! Draws indexed primitives using the current index buffer.
+  //! @param anNumIndices Number of indices to draw
+  //! @param anFirstIndex Index of first index to draw
   virtual void __stdcall DrawIndexed(tU32 anNumIndices, tU32 anFirstIndex) = 0;
   //! @}
 };
@@ -438,27 +489,30 @@ struct iGraphicsDriverGpu : public iUnknown
   niDeclareInterfaceUUID(iGraphicsDriverGpu,0xe689ee7e,0xf674,0x1541,0x9a,0x2b,0xb3,0x06,0x55,0x7e,0x6f,0x09);
 
   //! Create a new GPU buffer.
-  virtual Ptr<iGpuBuffer> __stdcall CreateBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
   //! Create a new GPU buffer with initial data.
-  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
   //! Create a new GPU buffer with initial raw data.
   //! {NoAutomation}
-  virtual Ptr<iGpuBuffer> __stdcall CreateBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) = 0;
 
+  //! Get the gpu function target.
+  //! {Property}
+  virtual iHString* __stdcall GetGpuFunctionTarget() const = 0;
   //! Create a new GPU function.
-  virtual Ptr<iGpuFunction> __stdcall CreateFunction(iHString* ahspName, iDataTable* apGpuFunctionDT) = 0;
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspName, iDataTable* apGpuFunctionDT) = 0;
 
   //! Create a new GPU pipeline description.
-  virtual Ptr<iGpuPipelineDesc> __stdcall CreatePipelineDesc() = 0;
+  virtual Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() = 0;
 
   //! Compile a GPU pipeline description into a driver handle.
-  virtual Ptr<iGpuPipeline> __stdcall CreatePipeline(const iGpuPipelineDesc* apDesc) = 0;
+  virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(const iGpuPipelineDesc* apDesc) = 0;
 
   //! Create a new GPU blend mode description.
-  virtual Ptr<iGpuBlendMode> __stdcall CreateBlendMode() = 0;
+  virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() = 0;
 
   //! Synchronize a managed resource from the GPU to the CPU memory.
-  virtual tBool BlitManagedBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
+  virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
 };
 
 }

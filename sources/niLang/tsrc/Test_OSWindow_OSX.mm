@@ -438,14 +438,6 @@ static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType)
       return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     case eGraphicsPrimitiveType_TriangleStrip:
       return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-    case eGraphicsPrimitiveType_LineListAdjacency:
-      return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
-    case eGraphicsPrimitiveType_LineStripAdjacency:
-      return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
-    case eGraphicsPrimitiveType_TriangleListAdjacency:
-      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
-    case eGraphicsPrimitiveType_TriangleStripAdjacency:
-      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
     default:
       return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   }

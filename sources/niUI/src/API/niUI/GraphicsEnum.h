@@ -325,31 +325,31 @@ enum eStencilOp
 enum eBlendMode
 {
   //! Solid, no blending
-  eBlendMode_NoBlending     = 0,
+  eBlendMode_NoBlending = 0,
   //! Means that the current alpha will be replaced by the current stage's alpha.
   //! \remark For first stage only Final = Src*0 + Dest*SrcAlpha.
-  eBlendMode_ReplaceAlpha     = 1,
+  eBlendMode_ReplaceAlpha = 1,
   //! Additive blending
   //! \remark Final = Src*1 + Dest*1
-  eBlendMode_Additive       = 2,
+  eBlendMode_Additive = 2,
   //! Modulate
   //! \remark Final = Src*Dest + Dest*0
-  eBlendMode_Modulate       = 3,
+  eBlendMode_Modulate = 3,
   //! Modulate 2x
   //! \remark Final = (Src*Dest + Dest*Src)
-  eBlendMode_Modulate2x     = 4,
+  eBlendMode_Modulate2x = 4,
   //! Translucent blending
   //! \remark Final = (Src*SrcAlpha + Dest*(1-SrcAlpha))
-  eBlendMode_Translucent      = 5,
+  eBlendMode_Translucent = 5,
   //! Translucent blending with inverted alpha
   //! \remark Final = (Src*(1-SrcAlpha) + Dest*SrcAlpha)
-  eBlendMode_TranslucentInvAlpha  = 6,
+  eBlendMode_TranslucentInvAlpha = 6,
   //! Tinted blending
   //! \remark Final = (Src*Src + Dest*(1-SrcColor))
-  eBlendMode_TintedGlass      = 7,
+  eBlendMode_TintedGlass = 7,
   //! Premultiplied alpha light blending.
   //! \remark Final = (Src*1 + Dest*(1-SrcAlpha))
-  eBlendMode_PreMulAlpha          = 8,
+  eBlendMode_PreMulAlpha = 8,
   //! Modulate RGB, replace alpha
   //! \remark Final.RGB = Src*Dest + Dest*0, Final.Alpha = Channel.Alpha
   eBlendMode_ModulateReplaceAlpha = 9,

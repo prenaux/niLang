@@ -173,6 +173,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eGeometryGenerate();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGeometryType();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGeometryCreateFlags();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGeometryOptimizeFlags();
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuIndexType();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferMemoryMode();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferUsageFlags();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionType();

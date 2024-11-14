@@ -149,7 +149,7 @@ struct GpuTriangle : public GpuCanvasBase {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
   }
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuTriangle);
@@ -236,7 +236,7 @@ struct GpuSquare : public GpuCanvasBase {
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0);
-    cmdEncoder->DrawIndexed(6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,eGpuIndexType_U32,6,0);
   }
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuSquare);
@@ -336,8 +336,7 @@ struct GpuTexture : public GpuCanvasBase {
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0);
     cmdEncoder->SetTexture(_texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
-    cmdEncoder->DrawIndexed(6,0);
-    //cmdEncoder->Draw(3,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,eGpuIndexType_U32,6,0);
   }
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuTexture);

@@ -8678,7 +8678,7 @@ static const ni::sMethodDef iGpuPipelineDesc_Clone = {
 // Method: SetColorFormat
 static const ni::sParameterDef iGpuPipelineDesc_SetColorFormat_Parameters[2] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }, 
-  { "aFormat", ni::eType_Enum, NULL, "eGpuPipelineColorFormat" }
+  { "aFormat", ni::eType_Enum, NULL, "eGpuPixelFormat" }
 }; 
 static const ni::sMethodDef iGpuPipelineDesc_SetColorFormat = {
   "SetColorFormat",
@@ -8697,7 +8697,7 @@ static const ni::sParameterDef iGpuPipelineDesc_GetColorFormat_Parameters[1] = {
 }; 
 static const ni::sMethodDef iGpuPipelineDesc_GetColorFormat = {
   "GetColorFormat",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuPipelineColorFormat",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuPixelFormat",
   1, iGpuPipelineDesc_GetColorFormat_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuPipelineDesc_GetColorFormat)
@@ -8708,7 +8708,7 @@ static const ni::sMethodDef iGpuPipelineDesc_GetColorFormat = {
 
 // Method: SetDepthFormat
 static const ni::sParameterDef iGpuPipelineDesc_SetDepthFormat_Parameters[1] = { 
-  { "aFormat", ni::eType_Enum, NULL, "eGpuPipelineDepthFormat" }
+  { "aFormat", ni::eType_Enum, NULL, "eGpuPixelFormat" }
 }; 
 static const ni::sMethodDef iGpuPipelineDesc_SetDepthFormat = {
   "SetDepthFormat",
@@ -8724,7 +8724,7 @@ static const ni::sMethodDef iGpuPipelineDesc_SetDepthFormat = {
 // Method: GetDepthFormat
 static const ni::sMethodDef iGpuPipelineDesc_GetDepthFormat = {
   "GetDepthFormat",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuPipelineDepthFormat",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuPixelFormat",
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuPipelineDesc_GetDepthFormat)
@@ -37630,42 +37630,27 @@ static const ni::sEnumDef Enum_eGpuFunctionType = {
 	return &Enum_eGpuFunctionType;
 }
 
-// --- eGpuPipelineColorFormat ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPipelineColorFormat() {
+// --- eGpuPixelFormat ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPixelFormat() {
 
-static const ni::sEnumValueDef Enum_eGpuPipelineColorFormat_Values[] = {
-	{ "None", ni::eGpuPipelineColorFormat_None },
-	{ "BGRA8", ni::eGpuPipelineColorFormat_BGRA8 },
-	{ "RGBA8", ni::eGpuPipelineColorFormat_RGBA8 },
-	{ "RGBA16F", ni::eGpuPipelineColorFormat_RGBA16F },
-	{ "R16F", ni::eGpuPipelineColorFormat_R16F },
-	{ "R32F", ni::eGpuPipelineColorFormat_R32F },
-	{ "Last", ni::eGpuPipelineColorFormat_Last },
+static const ni::sEnumValueDef Enum_eGpuPixelFormat_Values[] = {
+	{ "None", ni::eGpuPixelFormat_None },
+	{ "BGRA8", ni::eGpuPixelFormat_BGRA8 },
+	{ "RGBA8", ni::eGpuPixelFormat_RGBA8 },
+	{ "RGBA16F", ni::eGpuPixelFormat_RGBA16F },
+	{ "R16F", ni::eGpuPixelFormat_R16F },
+	{ "R32F", ni::eGpuPixelFormat_R32F },
+	{ "D32", ni::eGpuPixelFormat_D32 },
+	{ "D16", ni::eGpuPixelFormat_D16 },
+	{ "D24S8", ni::eGpuPixelFormat_D24S8 },
+	{ "Last", ni::eGpuPixelFormat_Last },
 };
-static const ni::sEnumDef Enum_eGpuPipelineColorFormat = {
-	"eGpuPipelineColorFormat",
-  niCountOf(Enum_eGpuPipelineColorFormat_Values), Enum_eGpuPipelineColorFormat_Values
-};
-
-	return &Enum_eGpuPipelineColorFormat;
-}
-
-// --- eGpuPipelineDepthFormat ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPipelineDepthFormat() {
-
-static const ni::sEnumValueDef Enum_eGpuPipelineDepthFormat_Values[] = {
-	{ "None", ni::eGpuPipelineDepthFormat_None },
-	{ "D32", ni::eGpuPipelineDepthFormat_D32 },
-	{ "D16", ni::eGpuPipelineDepthFormat_D16 },
-	{ "D24S8", ni::eGpuPipelineDepthFormat_D24S8 },
-	{ "Last", ni::eGpuPipelineDepthFormat_Last },
-};
-static const ni::sEnumDef Enum_eGpuPipelineDepthFormat = {
-	"eGpuPipelineDepthFormat",
-  niCountOf(Enum_eGpuPipelineDepthFormat_Values), Enum_eGpuPipelineDepthFormat_Values
+static const ni::sEnumDef Enum_eGpuPixelFormat = {
+	"eGpuPixelFormat",
+  niCountOf(Enum_eGpuPixelFormat_Values), Enum_eGpuPixelFormat_Values
 };
 
-	return &Enum_eGpuPipelineDepthFormat;
+	return &Enum_eGpuPixelFormat;
 }
 
 // --- eGpuBlendFactor ---
@@ -39669,8 +39654,7 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGpuBufferMemoryMode(),
   GetEnumDef_eGpuBufferUsageFlags(),
   GetEnumDef_eGpuFunctionType(),
-  GetEnumDef_eGpuPipelineColorFormat(),
-  GetEnumDef_eGpuPipelineDepthFormat(),
+  GetEnumDef_eGpuPixelFormat(),
   GetEnumDef_eGpuBlendFactor(),
   GetEnumDef_eGpuBlendOp(),
   GetEnumDef_eGraphicsCaptureFlags(),

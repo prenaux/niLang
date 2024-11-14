@@ -9539,45 +9539,36 @@
 				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
-		<enum name="eGpuPipelineColorFormat">
-			<comments desc="GPU Pipeline color format "/>
-			<value name="eGpuPipelineColorFormat_None" value="0 ">
+		<enum name="eGpuPixelFormat">
+			<comments desc="GPU Pixel format "/>
+			<value name="eGpuPixelFormat_None" value="0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_BGRA8" value="1 ">
+			<value name="eGpuPixelFormat_BGRA8" value="1 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_RGBA8" value="2 ">
+			<value name="eGpuPixelFormat_RGBA8" value="2 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_RGBA16F" value="3 ">
+			<value name="eGpuPixelFormat_RGBA16F" value="3 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_R16F" value="4 ">
+			<value name="eGpuPixelFormat_R16F" value="4 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_R32F" value="5 ">
+			<value name="eGpuPixelFormat_R32F" value="5 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineColorFormat_Last" value="6 ">
-				<comments desc="\internal "/>
-			</value>
-		</enum>
-		<enum name="eGpuPipelineDepthFormat">
-			<comments desc="GPU Pipeline depth format "/>
-			<value name="eGpuPipelineDepthFormat_None" value="0 ">
+			<value name="eGpuPixelFormat_D32" value="6 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineDepthFormat_D32" value="1 ">
+			<value name="eGpuPixelFormat_D16" value="7 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineDepthFormat_D16" value="2 ">
+			<value name="eGpuPixelFormat_D24S8" value="8 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGpuPipelineDepthFormat_D24S8" value="3 ">
-				<comments desc=""/>
-			</value>
-			<value name="eGpuPipelineDepthFormat_Last" value="4 ">
+			<value name="eGpuPixelFormat_Last" value="9 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -9857,8 +9848,8 @@
 				<parameter
 					last="1"
 					name="aFormat"
-					type="eGpuPipelineColorFormat"
-					typec="eGpuPipelineColorFormat"
+					type="eGpuPixelFormat"
+					typec="eGpuPixelFormat"
 					typei="ni::eType_Enum"/>
 			</method>
 			<method
@@ -9870,7 +9861,7 @@
 				property_name2="colorFormat"
 				property_name="color_format">
 				<comments desc="Get a color format. "/>
-				<return type="eGpuPipelineColorFormat" typec="eGpuPipelineColorFormat" typei="ni::eType_Enum"/>
+				<return type="eGpuPixelFormat" typec="eGpuPixelFormat" typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
 					name="anIndex"
@@ -9890,8 +9881,8 @@
 				<parameter
 					last="1"
 					name="aFormat"
-					type="eGpuPipelineDepthFormat"
-					typec="eGpuPipelineDepthFormat"
+					type="eGpuPixelFormat"
+					typec="eGpuPixelFormat"
 					typei="ni::eType_Enum"/>
 			</method>
 			<method
@@ -9903,7 +9894,7 @@
 				property_name2="depthFormat"
 				property_name="depth_format">
 				<comments desc="Get the depth format. "/>
-				<return type="eGpuPipelineDepthFormat" typec="eGpuPipelineDepthFormat" typei="ni::eType_Enum"/>
+				<return type="eGpuPixelFormat" typec="eGpuPixelFormat" typei="ni::eType_Enum"/>
 			</method>
 			<method
 				java_name="setFVF"

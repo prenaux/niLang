@@ -44,11 +44,8 @@ static __forceinline iHString* _GetGpuFunctionTarget() {
 
 #define METAL_TRACE(aFmt) //niDebugFmt(aFmt)
 
-#define METAL_DEVICE(aDevice) id<MTLDevice> mMetalDevice = (id<MTLDevice>)aDevice->GetDevice();
-
-#define MAX_COMPILED_STATES 1000
-#define COMPILED_SS (eCompiledStates_Driver+(MAX_COMPILED_STATES*1))
-#define COMPILED_DS (eCompiledStates_Driver+(MAX_COMPILED_STATES*2))
+// Commented out, we dont want to use native DXT support on macOS only since its not supported on iOS, which is our primary target
+// #define USE_METAL_DXT
 
 // TODO: This should move to some "context creation" time thing, similar to the MSAA setting.
 static tU32 knMetalSamplerFilterAnisotropy = 8;
@@ -295,105 +292,29 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
 // States & Shaders
 //
 //-------------------------------------------------------------------------------------------
-static const MTLPixelFormat _toMTLColorFormat[] = {
-  MTLPixelFormatInvalid,
-  MTLPixelFormatBGRA8Unorm,
-  MTLPixelFormatRGBA8Unorm,
-  MTLPixelFormatRGBA16Float,
-  MTLPixelFormatR16Float,
-  MTLPixelFormatR32Float,
-};
-niCAssert(niCountOf(_toMTLColorFormat) == eGpuPipelineColorFormat_Last);
-
-// Commented out, we dont want to use native DXT support on macOS only since its not supported on iOS, which is our primary target
-// #define USE_METAL_DXT
-
-static MTLPixelFormat _GetMTLTexturePixelFormat(const iPixelFormat* apPxf) {
-  niAssert(apPxf != NULL);
-  const achar* fmt = apPxf->GetFormat();
-  if (ni::StrEq(fmt,"D16") ||
-      ni::StrEq(fmt,"D32") ||
-      ni::StrEq(fmt,"D24X8") ||
-      ni::StrEq(fmt,"D24S8"))
-  {
-    // We don't support other depth format because only macOS supports them
-    // and iOS is our primary target right now.
-    return MTLPixelFormatDepth32Float;
+static MTLPixelFormat _GetMTLPixelFormat(eGpuPixelFormat aFmt) {
+  switch (aFmt) {
+    case eGpuPixelFormat_None:
+      return MTLPixelFormatInvalid;
+    case eGpuPixelFormat_BGRA8:
+      return MTLPixelFormatBGRA8Unorm;
+    case eGpuPixelFormat_RGBA8:
+      return MTLPixelFormatRGBA8Unorm;
+    case eGpuPixelFormat_RGBA16F:
+      return MTLPixelFormatRGBA16Float;
+    case eGpuPixelFormat_R16F:
+      return MTLPixelFormatR16Float;
+    case eGpuPixelFormat_R32F:
+      return MTLPixelFormatR32Float;
+    case eGpuPixelFormat_D32:
+      return MTLPixelFormatDepth32Float;
+    case eGpuPixelFormat_D16:
+      return MTLPixelFormatDepth16Unorm;
+    case eGpuPixelFormat_D24S8:
+      return MTLPixelFormatDepth24Unorm_Stencil8;
   }
-
-  if (ni::StrEq(fmt,"R8G8B8A8")) {
-    return MTLPixelFormatRGBA8Unorm;
-  }
-  else if (ni::StrEq(fmt,"B8G8R8A8")) {
-    return MTLPixelFormatBGRA8Unorm;
-  }
-  else if (ni::StrEq(fmt,"A8")) {
-    return MTLPixelFormatA8Unorm;
-  }
-  else if (ni::StrEq(fmt,"FR16G16B16A16")) {
-    return MTLPixelFormatRGBA16Float;
-  }
-#ifdef USE_METAL_DXT
-  else if (ni::StrEq(fmt,"DXT3")) {
-    return MTLPixelFormatBC2_RGBA;
-  }
-#endif
-  return MTLPixelFormatRGBA8Unorm;
+  return MTLPixelFormatInvalid;
 }
-
-static const achar* _GetNITexturePixelFormat(MTLPixelFormat format) {
-  switch (format) {
-    case MTLPixelFormatDepth32Float:
-      return "D32";
-    case MTLPixelFormatRGBA8Unorm:
-      return "R8G8B8A8";
-    case MTLPixelFormatBGRA8Unorm:
-      return "B8G8R8A8";
-    case MTLPixelFormatA8Unorm:
-      return "A8";
-    case MTLPixelFormatRGBA16Float:
-      return "FR16G16B16A16";
-#ifdef USE_METAL_DXT
-    case MTLPixelFormatBC2_RGBA:
-      return "DXT3";
-#endif
-    default:
-      return NULL;
-  }
-}
-
-static MTLPixelFormat _GetMTLPixelFormat(const iPixelFormat* apPxf) {
-  niAssert(apPxf != NULL);
-  const achar* fmt = apPxf->GetFormat();
-  if (ni::StrEq(fmt,"D16") ||
-      ni::StrEq(fmt,"D32") ||
-      ni::StrEq(fmt,"D24X8") ||
-      ni::StrEq(fmt,"D24S8"))
-  {
-    return MTLPixelFormatDepth32Float;
-  }
-  return MTLPixelFormatBGRA8Unorm;
-}
-
-static eGpuPipelineColorFormat _GetRTRenderPipelineColorFormat(const achar* aaszDSFormat) {
-  // the default metal RT is using BGRA8, other RT will follow this format so we can reuse those Pipelines
-  return eGpuPipelineColorFormat_BGRA8;
-}
-
-static eGpuPipelineDepthFormat _GetDSGpuPipelineDepthFormat(const achar* aaszDSFormat) {
-  if (niStringIsOK(aaszDSFormat)) {
-    return eGpuPipelineDepthFormat_D32;
-  }
-  return eGpuPipelineDepthFormat_None;
-}
-
-static const MTLPixelFormat _toMTLDepthFormat[eGpuPipelineDepthFormat_Last] = {
-  MTLPixelFormatInvalid,
-  MTLPixelFormatDepth32Float,
-  MTLPixelFormatDepth16Unorm,
-  MTLPixelFormatDepth24Unorm_Stencil8,
-};
-niCAssert(niCountOf(_toMTLDepthFormat) == eGpuPipelineDepthFormat_Last);
 
 static const MTLCullMode _toMTLCullMode[] = {
   MTLCullModeNone,
@@ -523,7 +444,7 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
     // Color attachments
     {
       MTLRenderPipelineColorAttachmentDescriptor* ca = pipelineDesc.colorAttachments[0];
-      ca.pixelFormat = _toMTLColorFormat[_desc->GetColorFormat(0)];
+      ca.pixelFormat = _GetMTLPixelFormat(_desc->GetColorFormat(0));
 
       if (_desc->GetBlendMode()) {
         const sGpuBlendModeDesc* bm = (const sGpuBlendModeDesc*)_desc->GetBlendMode()->GetDescStructPtr();
@@ -540,7 +461,13 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
     }
 
     // Depth
-    pipelineDesc.depthAttachmentPixelFormat = _toMTLDepthFormat[_desc->GetDepthFormat()];
+    pipelineDesc.depthAttachmentPixelFormat = _GetMTLPixelFormat(_desc->GetDepthFormat());
+    niCheck(
+      _desc->GetDepthFormat() == eGpuPixelFormat_None ||
+      _desc->GetDepthFormat() == eGpuPixelFormat_D32 ||
+      _desc->GetDepthFormat() == eGpuPixelFormat_D16 ||
+      _desc->GetDepthFormat() == eGpuPixelFormat_D24S8,
+      eFalse);
     pipelineDesc.vertexDescriptor = _CreateMetalVertDesc(0, _desc->GetFVF());
 
     // Create the pipeline state
@@ -707,7 +634,7 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   const eBitmapType mType;
   const tU32 mnW, mnH, mnD;
   const tU32 mnMM;
-  Ptr<iPixelFormat> mptrPxf;
+  eGpuPixelFormat mGpuPxf;
   tTextureFlags mnFlags;
   Ptr<iBitmapBase> mptrBitmap;
   tU32 mnFace;
@@ -730,30 +657,30 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
       , mnH(anH)
       , mnD(anD)
       , mnMM(anMM)
-      , mptrPxf(apPxf)
       , mnFlags(anFlags)
   {
+    niPanicAssert(niIsOK(apPxf));
+    if (niFlagIs(anFlags,eTextureFlags_DepthStencil)) {
+      mGpuPxf = _GetClosestGpuPixelFormatForDS(apPxf->GetFormat());
+    }
+    else if (niFlagIs(anFlags,eTextureFlags_RenderTarget)) {
+      mGpuPxf = _GetClosestGpuPixelFormatForRT(apPxf->GetFormat());
+    }
+    else {
+      mGpuPxf = _GetClosestGpuPixelFormatForTexture(apPxf->GetFormat());
+    }
+    Ptr<iPixelFormat> texPxf = _GetIPixelFormat(apGraphics,mGpuPxf);
+    if (!texPxf.IsOK()) {
+      niError(niFmt("Can't get compatible gpu pixel format for '%s'.", apPxf->GetFormat()));
+      return;
+    }
+
     if (niFlagIsNot(anFlags,eTextureFlags_Surface)) {
-      MTLPixelFormat pixFmt = _GetMTLTexturePixelFormat(apPxf);
-      cString fmt = _GetNITexturePixelFormat(pixFmt);
-      if (!fmt.Eq(apPxf->GetFormat())) {
-        niWarning(niFmt("Texture format %s not supported by metal, convert to %s",apPxf->GetFormat(),fmt));
-        mptrPxf = apGraphics->CreatePixelFormat(fmt.Chars());
-      }
-
       METAL_TRACE(("## METAL-TEXTURE [%s] fmt:%s w:%s h:%s",ahspName,apPxf->GetFormat(),mnW,mnH));
-      if (pixFmt == MTLPixelFormatInvalid) {
-        niError(niFmt("Can't get compatible MTLPixelFormat for '%s'.", apPxf->GetFormat()));
-        return;
-      }
-      if (niFlagIs(anFlags,eTextureFlags_RenderTarget)) {
-        pixFmt = MTLPixelFormatBGRA8Unorm;
-      }
-
       MTLTextureDescriptor*  desc = [MTLTextureDescriptor new];
       desc.width = anW;
       desc.height = anH;
-      desc.pixelFormat = pixFmt;
+      desc.pixelFormat = _GetMTLPixelFormat(mGpuPxf);
       desc.mipmapLevelCount = mnMM + 1;
       switch (aType) {
         case eBitmapType_2D:
@@ -782,13 +709,13 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
       else {
         switch (aType) {
           case eBitmapType_2D:
-            mptrBitmap = apGraphics->CreateBitmap2DEx(mnW,mnH,mptrPxf);
+            mptrBitmap = apGraphics->CreateBitmap2DEx(mnW,mnH,texPxf);
             break;
           case eBitmapType_Cube:
-            mptrBitmap = apGraphics->CreateBitmapCubeEx(mnW,mptrPxf);
+            mptrBitmap = apGraphics->CreateBitmapCubeEx(mnW,texPxf);
             break;
           case eBitmapType_3D:
-            mptrBitmap = apGraphics->CreateBitmap3DEx(mnW,mnH,mnD,mptrPxf);
+            mptrBitmap = apGraphics->CreateBitmap3DEx(mnW,mnH,mnD,texPxf);
             break;
         }
         if (anMM) {
@@ -800,7 +727,7 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
       if (aType == eBitmapType_Cube) {
         niLoop(i,6) {
           _subTexs[i] = niNew cMetalTexture(aDevice,mpGraphics,ahspName,eBitmapType_2D,
-                                            mnW,mnH,mnD,mnMM,mptrPxf,eTextureFlags_SubTexture|eTextureFlags_Surface);
+                                            mnW,mnH,mnD,mnMM,texPxf,eTextureFlags_SubTexture|eTextureFlags_Surface);
           _subTexs[i]->_tex = _tex;
           _subTexs[i]->mnFace = i;
           _subTexs[i]->mptrBitmap = QPtr<iBitmapCube>(mptrBitmap)->GetFace((eBitmapCubeFace)i);
@@ -853,7 +780,7 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
     return mnD;
   }
   virtual iPixelFormat* __stdcall GetPixelFormat() const {
-    return mptrPxf;
+    return _GetIPixelFormat(mpGraphics,mGpuPxf);
   }
   virtual tU32 __stdcall GetNumMipMaps() const {
     return mnMM;
@@ -895,7 +822,7 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   iBitmap2D* GetBitmap() {
     QPtr<iBitmap2D> bmp(mptrBitmap);
     if (!bmp.IsOK()) {
-      bmp = mpGraphics->CreateBitmap2DEx(mnW, mnH, mptrPxf);
+      bmp = mpGraphics->CreateBitmap2DEx(mnW, mnH, this->GetPixelFormat());
       [_tex getBytes:bmp->GetData() bytesPerRow:bmp->GetPitch() fromRegion:MTLRegionMake2D(0, 0, mnW, mnH) mipmapLevel:mnMM];
     }
     return bmp.GetRawAndSetNull();
@@ -1025,7 +952,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     {
       MTKView* mtkView = (__bridge MTKView*)metalAPI->GetMTKView();
       if (mtkView) {
-        mtkView.depthStencilPixelFormat = _toMTLDepthFormat[_GetDSGpuPipelineDepthFormat(aaszDSFormat)];
+        mtkView.depthStencilPixelFormat = _GetMTLPixelFormat(_GetClosestGpuPixelFormatForDS(aaszDSFormat));
         if (anSwapInterval) {
           mtkView.preferredFramesPerSecond = (anSwapInterval == 2) ? 30 : 60;
         }
@@ -1120,22 +1047,27 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   /////////////////////////////////////////////
   virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) {
     niCheckSilent(niIsOK(apFormat),eFalse);
-    MTLPixelFormat mtlFormat;
-    if (niFlagIs(aFlags,eTextureFlags_RenderTarget) || niFlagIs(aFlags,eTextureFlags_DepthStencil))
-    {
-      mtlFormat = _GetMTLPixelFormat(apFormat->GetPixelFormat());
+
+    eGpuPixelFormat gpufmt;
+    if (niFlagIs(aFlags,eTextureFlags_DepthStencil)) {
+      gpufmt = _GetClosestGpuPixelFormatForDS(apFormat->GetPixelFormat()->GetFormat());
+    }
+    else if (niFlagIs(aFlags,eTextureFlags_RenderTarget)) {
+      gpufmt = _GetClosestGpuPixelFormatForRT(apFormat->GetPixelFormat()->GetFormat());
     }
     else {
-      mtlFormat = _GetMTLTexturePixelFormat(apFormat->GetPixelFormat());
+      gpufmt = _GetClosestGpuPixelFormatForTexture(apFormat->GetPixelFormat()->GetFormat());
     }
 
-    const achar* fmt = _GetNITexturePixelFormat(mtlFormat);
-    if (StrEq(fmt, apFormat->GetPixelFormat()->GetFormat()))
-    {
+    // TODO: For now all eGpuPixelFormat are supported by metal, but that
+    // might not always be the case. Eventually we should validate this.
+    MTLPixelFormat mtlFormat = _GetMTLPixelFormat(gpufmt);
+    NN<iPixelFormat> bmpFormat = niCheckNN(bmpFormat,_GetIPixelFormat(mpGraphics,gpufmt),eFalse);
+    if (bmpFormat->IsSamePixelFormat(apFormat->GetPixelFormat())) {
       return eTrue;
     }
     else {
-      apFormat->SetPixelFormat(mpGraphics->CreatePixelFormat(fmt));
+      apFormat->SetPixelFormat(bmpFormat);
       return eFalse;
     }
   }
@@ -1724,9 +1656,9 @@ struct cMetalContextBase :
     }
 
     if (mBaseRenderPipelineId.IsNull()) {
-      mBaseRenderPipelineId.rt0 = _GetRTRenderPipelineColorFormat(mptrRT[0]->GetPixelFormat()->GetFormat());
+      mBaseRenderPipelineId.rt0 = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
       if (mptrDS.IsOK()) {
-        mBaseRenderPipelineId.ds = _GetDSGpuPipelineDepthFormat(mptrDS->GetPixelFormat()->GetFormat());
+        mBaseRenderPipelineId.ds = _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
       }
     }
 

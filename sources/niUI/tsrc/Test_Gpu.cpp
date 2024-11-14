@@ -131,8 +131,8 @@ struct GpuTriangle : public GpuCanvasBase {
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexFmt::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPipelineColorFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPipelineDepthFormat_D32);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
       _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
@@ -216,8 +216,8 @@ struct GpuSquare : public GpuCanvasBase {
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexFmt::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPipelineColorFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPipelineDepthFormat_D32);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
       _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
@@ -307,8 +307,8 @@ struct GpuTexture : public GpuCanvasBase {
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexFmt::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPipelineColorFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPipelineDepthFormat_D32);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
       _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);

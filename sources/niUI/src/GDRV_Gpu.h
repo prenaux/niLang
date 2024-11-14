@@ -2,11 +2,18 @@
 #ifndef __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__
 #define __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__
 
+#include <niCC.h>
+#include "API/niUI/IGraphics.h"
 #include "API/niUI/IGpu.h"
 #include "API/niUI/GraphicsEnum.h"
 #include "API/niUI/IShader.h"
 
 namespace ni {
+
+eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat);
+eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat);
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat);
+iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat);
 
 const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode);
 iGpuPipelineDesc* _CreateGpuPipelineDesc();
@@ -19,19 +26,20 @@ iGpuBlendMode* _CreateGpuBlendMode();
 // 32 for the reset flags
 typedef unsigned __int128 tFixedGpuPipelineId;
 
+// Needed for our cache to work
+niCAssert(eGpuPixelFormat_Last < niBit(4));
+niCAssert(eBlendMode_Last < niBit(4));
+
 struct sFixedGpuPipelineId {
   tU32 fvf : 32;
-  eGpuPipelineColorFormat rt0 : 4;
-  eGpuPipelineColorFormat rt1 : 4;
-  eGpuPipelineColorFormat rt2 : 4;
-  eGpuPipelineColorFormat rt3 : 4;
-  eGpuPipelineDepthFormat ds : 2;
+  eGpuPixelFormat rt0 : 4;
+  eGpuPixelFormat rt1 : 4;
+  eGpuPixelFormat rt2 : 4;
+  eGpuPixelFormat rt3 : 4;
+  eGpuPixelFormat ds : 4;
   tU32 blendMode : 4;
-  tU32 colorWriteMask : 4;
-  tU32 msaa : 4;
-  tU32 alphaToCoverage : 2;
-  tU32 vertFuncId : 32;
-  tU32 fragFuncId : 32;
+  tU32 vertFuncId : 24;
+  tU32 fragFuncId : 24;
 
   sFixedGpuPipelineId() {
     (tFixedGpuPipelineId&)(*this) = 0;
@@ -43,8 +51,9 @@ struct sFixedGpuPipelineId {
     return (tFixedGpuPipelineId&)(*this) == 0;
   }
   cString ToString() const {
-    return niFmt("fvf: %d, rt: [%d,%d,%d,%d], ds: %d, blendMode: %d, colorWriteMask: %d, msaa: %d, alphaToCoverage: %d, vertFunc: %d, fragFunc: %d",
-                 fvf, rt0, rt1, rt2, rt3, ds, blendMode, colorWriteMask, msaa, alphaToCoverage, vertFuncId, fragFuncId);
+    return niFmt(
+      "fvf: %d, rt: [%d,%d,%d,%d], ds: %d, blendMode: %d, vertFunc: %d, fragFunc: %d",
+      fvf, rt0, rt1, rt2, rt3, ds, blendMode, vertFuncId, fragFuncId);
   }
   operator tFixedGpuPipelineId () const {
     return (tFixedGpuPipelineId&)(*this);

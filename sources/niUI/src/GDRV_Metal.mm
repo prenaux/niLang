@@ -1095,6 +1095,8 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
         return 0;
       case eGraphicsCaps_Wireframe:
         return 1;
+      case eGraphicsCaps_IGpu:
+        return 1;
     }
   }
 

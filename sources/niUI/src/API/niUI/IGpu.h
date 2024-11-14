@@ -176,34 +176,23 @@ struct iGpuFunction : public iDeviceResource
   virtual iDataTable* __stdcall GetDataTable() const = 0;
 };
 
-//! GPU Pipeline color format
-enum eGpuPipelineColorFormat
+//! GPU Pixel format
+enum eGpuPixelFormat
 {
-  eGpuPipelineColorFormat_None = 0,
-  eGpuPipelineColorFormat_BGRA8 = 1,
-  eGpuPipelineColorFormat_RGBA8 = 2,
-  eGpuPipelineColorFormat_RGBA16F = 3,
-  eGpuPipelineColorFormat_R16F = 4,
-  eGpuPipelineColorFormat_R32F = 5,
+  eGpuPixelFormat_None = 0,
+  eGpuPixelFormat_BGRA8 = 1,
+  eGpuPixelFormat_RGBA8 = 2,
+  eGpuPixelFormat_RGBA16F = 3,
+  eGpuPixelFormat_R16F = 4,
+  eGpuPixelFormat_R32F = 5,
+  eGpuPixelFormat_D32 = 6,
+  eGpuPixelFormat_D16 = 7,
+  eGpuPixelFormat_D24S8 = 8,
 
   //! \internal
-  eGpuPipelineColorFormat_Last niMaybeUnused = 6,
+  eGpuPixelFormat_Last niMaybeUnused = 9,
   //! \internal
-  eGpuPipelineColorFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-
-//! GPU Pipeline depth format
-enum eGpuPipelineDepthFormat
-{
-  eGpuPipelineDepthFormat_None = 0,
-  eGpuPipelineDepthFormat_D32 = 1,
-  eGpuPipelineDepthFormat_D16 = 2,
-  eGpuPipelineDepthFormat_D24S8 = 3,
-
-  //! \internal
-  eGpuPipelineDepthFormat_Last niMaybeUnused = 4,
-  //! \internal
-  eGpuPipelineDepthFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+  eGpuPixelFormat_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! GPU Blend factor
@@ -316,8 +305,8 @@ struct iGpuBlendMode : public iUnknown {
 
 //! Gpu pipeline storage description.
 struct sGpuPipelineDesc {
-  eGpuPipelineColorFormat mColorFormats[4];
-  eGpuPipelineDepthFormat mDepthFormat;
+  eGpuPixelFormat mColorFormats[4];
+  eGpuPixelFormat mDepthFormat;
   tFVF               mFVF;
   tIntPtr            mhRS;
   tIntPtr            mhDS;
@@ -337,17 +326,17 @@ struct iGpuPipelineDesc : public iUnknown
 
   //! Set a color format.
   //! {Property}
-  virtual tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPipelineColorFormat aFormat) = 0;
+  virtual tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPixelFormat aFormat) = 0;
   //! Get a color format.
   //! {Property}
-  virtual eGpuPipelineColorFormat __stdcall GetColorFormat(tU32 anIndex) const = 0;
+  virtual eGpuPixelFormat __stdcall GetColorFormat(tU32 anIndex) const = 0;
 
   //! Set the depth format.
   //! {Property}
-  virtual tBool __stdcall SetDepthFormat(eGpuPipelineDepthFormat aFormat) = 0;
+  virtual tBool __stdcall SetDepthFormat(eGpuPixelFormat aFormat) = 0;
   //! Get the depth format.
   //! {Property}
-  virtual eGpuPipelineDepthFormat __stdcall GetDepthFormat() const = 0;
+  virtual eGpuPixelFormat __stdcall GetDepthFormat() const = 0;
 
   //! Set the vertex format.
   //! {Property}

@@ -1575,14 +1575,6 @@ struct cMetalContextBase :
 
   sFixedGpuPipelineId mBaseRenderPipelineId;
 
-  tIntPtr mFixedShaderVertexFVFPosColor;
-  tIntPtr mFixedShaderVertexFVFPosNormalColor;
-  tIntPtr mFixedShaderVertexFVFPosNormalTex1;
-  tIntPtr mFixedShaderVertexFVFRigid;
-  tIntPtr mFixedShaderVertexFVFRigid2;
-  tIntPtr mFixedShaderVertexFVFSkinned;
-  tIntPtr mFixedShaderFragSolid, mFixedShaderFragTex, mFixedShaderFragTexAlpha;
-
   double4 mClearColor = double4::Zero();
   tF32 mClearDepth = 1.0f;
   tI32 mClearStencil = 0;

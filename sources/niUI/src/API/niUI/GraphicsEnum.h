@@ -56,6 +56,8 @@ enum eGraphicsCaps
   eGraphicsCaps_BlitBackBuffer          = 17,
   //! Return whether or not the driver can do wireframe rendering.
   eGraphicsCaps_Wireframe               = 18,
+  //! Return whether or not the driver supports the IGpu interfaces.
+  eGraphicsCaps_IGpu                    = 19,
   //! \internal
   eGraphicsCaps_Last niMaybeUnused = 19,
   //! \internal

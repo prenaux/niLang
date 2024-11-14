@@ -36940,6 +36940,7 @@ static const ni::sEnumValueDef Enum_eGraphicsCaps_Values[] = {
 	{ "OrthoProjectionOffset", ni::eGraphicsCaps_OrthoProjectionOffset },
 	{ "BlitBackBuffer", ni::eGraphicsCaps_BlitBackBuffer },
 	{ "Wireframe", ni::eGraphicsCaps_Wireframe },
+	{ "IGpu", ni::eGraphicsCaps_IGpu },
 	{ "Last", ni::eGraphicsCaps_Last },
 };
 static const ni::sEnumDef Enum_eGraphicsCaps = {

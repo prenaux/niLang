@@ -3527,6 +3527,8 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
         return eFalse;
 #endif
       }
+      case eGraphicsCaps_IGpu:
+        return eFalse;
       default:
         return 0;
     }

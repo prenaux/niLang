@@ -63,6 +63,9 @@
 			<value name="eGraphicsCaps_Wireframe" value="18 ">
 				<comments desc="Return whether or not the driver can do wireframe rendering. "/>
 			</value>
+			<value name="eGraphicsCaps_IGpu" value="19 ">
+				<comments desc="Return whether or not the driver supports the IGpu interfaces. "/>
+			</value>
 			<value name="eGraphicsCaps_Last" value="19 ">
 				<comments desc="\internal "/>
 			</value>

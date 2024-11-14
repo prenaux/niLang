@@ -968,19 +968,7 @@
 			<value name="eGraphicsPrimitiveType_TriangleStrip" value="4 ">
 				<comments desc="List of vertices as a triangle strip. The culling flag is automatically flipped on even-numbered triangles. "/>
 			</value>
-			<value name="eGraphicsPrimitiveType_LineListAdjacency" value="5 ">
-				<comments desc="Line list with adjacency information. "/>
-			</value>
-			<value name="eGraphicsPrimitiveType_LineStripAdjacency" value="6 ">
-				<comments desc="Line strip with adjacency information. "/>
-			</value>
-			<value name="eGraphicsPrimitiveType_TriangleListAdjacency" value="7 ">
-				<comments desc="Triangle list with adjacency information. "/>
-			</value>
-			<value name="eGraphicsPrimitiveType_TriangleStripAdjacency" value="8 ">
-				<comments desc="Triangle strip with adjacency information. "/>
-			</value>
-			<value name="eGraphicsPrimitiveType_Last" value="10 ">
+			<value name="eGraphicsPrimitiveType_Last" value="5 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

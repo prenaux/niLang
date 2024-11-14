@@ -9,6 +9,72 @@ _HDecl(gpufunction);
 
 #define GPU_TRACE(aFmt) //niDebugFmt(aFmt)
 
+eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat) {
+  // the default RT is using BGRA8, other RT will follow this format so we can
+  // reuse those pipelines
+  return eGpuPixelFormat_BGRA8;
+}
+
+eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
+  if (niStringIsOK(aDSFormat)) {
+    return eGpuPixelFormat_D32;
+  }
+  return eGpuPixelFormat_None;
+}
+
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat) {
+  // Depth formats
+  if (ni::StrEq(aTexFormat,"D16")) {
+    return eGpuPixelFormat_D16;
+  }
+  else if (ni::StrEq(aTexFormat,"D32")) {
+    return eGpuPixelFormat_D32;
+  }
+  else if (ni::StrEq(aTexFormat,"D24S8")) {
+    return eGpuPixelFormat_D24S8;
+  }
+  else if (ni::StrEq(aTexFormat,"D24X8")) {
+    return eGpuPixelFormat_D32; // Fallback to D32
+  }
+
+  // Color formats
+  if (ni::StrEq(aTexFormat,"R8G8B8A8")) {
+    return eGpuPixelFormat_RGBA8;
+  }
+  else if (ni::StrEq(aTexFormat,"B8G8R8A8")) {
+    return eGpuPixelFormat_BGRA8;
+  }
+  else if (ni::StrEq(aTexFormat,"A8")) {
+    return eGpuPixelFormat_RGBA8; // Fallback to RGBA8
+  }
+  else if (ni::StrEq(aTexFormat,"FR16G16B16A16")) {
+    return eGpuPixelFormat_RGBA16F;
+  }
+
+  // Default fallback
+  return eGpuPixelFormat_RGBA8;
+}
+
+iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat) {
+  static Ptr<iPixelFormat> _pixelFormats[eGpuPixelFormat_Last];
+  if (!_pixelFormats[aFormat].IsOK()) {
+    const achar* pxf = nullptr;
+    switch (aFormat) {
+      case eGpuPixelFormat_BGRA8: pxf = "B8G8R8A8"; break;
+      case eGpuPixelFormat_RGBA8: pxf = "R8G8B8A8"; break;
+      case eGpuPixelFormat_RGBA16F: pxf = "FR16G16B16A16"; break;
+      case eGpuPixelFormat_R16F: pxf = "FR16"; break;
+      case eGpuPixelFormat_R32F: pxf = "FR32"; break;
+      case eGpuPixelFormat_D32: pxf = "D32"; break;
+      case eGpuPixelFormat_D16: pxf = "D16"; break;
+      case eGpuPixelFormat_D24S8: pxf = "D24S8"; break;
+      case eGpuPixelFormat_None: return nullptr;
+    }
+    _pixelFormats[aFormat] = pxf ? apGraphics->CreatePixelFormat(pxf) : nullptr;
+  }
+  return _pixelFormats[aFormat];
+}
+
 #define GPU_BLENDMODE(OP,SRCRGB,SRCALPHA,DESTRGB,DESTALPHA) \
   { eGpuBlendOp_##OP, eGpuBlendFactor_##SRCRGB, eGpuBlendFactor_##SRCALPHA, eGpuBlendFactor_##DESTRGB, eGpuBlendFactor_##DESTALPHA }
 
@@ -119,13 +185,13 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
   sGpuPipelineDesc _desc;
 
   sGpuPipelineDescImpl() {
-    _desc.mDepthFormat = eGpuPipelineDepthFormat_None;
+    _desc.mDepthFormat = eGpuPixelFormat_None;
     _desc.mFVF = 0;
     _desc.mhRS = 0;
     _desc.mhDS = 0;
     niCAssert(niCountOf(_desc.mColorFormats) == 4);
     niLoop(i,niCountOf(_desc.mColorFormats)) {
-      _desc.mColorFormats[i] = eGpuPipelineColorFormat_None;
+      _desc.mColorFormats[i] = eGpuPixelFormat_None;
     }
   }
 
@@ -141,20 +207,20 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
     return clone;
   }
 
-  tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPipelineColorFormat aFormat) niImpl {
+  tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPixelFormat aFormat) niImpl {
     if (anIndex >= 4) return eFalse;
     _desc.mColorFormats[anIndex] = aFormat;
     return eTrue;
   }
-  eGpuPipelineColorFormat __stdcall GetColorFormat(tU32 anIndex) const niImpl {
-    return anIndex >= 4 ? eGpuPipelineColorFormat_None : _desc.mColorFormats[anIndex];
+  eGpuPixelFormat __stdcall GetColorFormat(tU32 anIndex) const niImpl {
+    return anIndex >= 4 ? eGpuPixelFormat_None : _desc.mColorFormats[anIndex];
   }
 
-  tBool __stdcall SetDepthFormat(eGpuPipelineDepthFormat aFormat) niImpl {
+  tBool __stdcall SetDepthFormat(eGpuPixelFormat aFormat) niImpl {
     _desc.mDepthFormat = aFormat;
     return eTrue;
   }
-  eGpuPipelineDepthFormat __stdcall GetDepthFormat() const niImpl {
+  eGpuPixelFormat __stdcall GetDepthFormat() const niImpl {
     return _desc.mDepthFormat;
   }
 

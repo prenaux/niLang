@@ -195,16 +195,8 @@ enum eGraphicsPrimitiveType
   //! List of vertices as a triangle strip. The culling flag is automatically flipped on
   //! even-numbered triangles.
   eGraphicsPrimitiveType_TriangleStrip = 4,
-  //! Line list with adjacency information.
-  eGraphicsPrimitiveType_LineListAdjacency = 5,
-  //! Line strip with adjacency information.
-  eGraphicsPrimitiveType_LineStripAdjacency = 6,
-  //! Triangle list with adjacency information.
-  eGraphicsPrimitiveType_TriangleListAdjacency = 7,
-  //! Triangle strip with adjacency information.
-  eGraphicsPrimitiveType_TriangleStripAdjacency = 8,
   //! \internal
-  eGraphicsPrimitiveType_Last niMaybeUnused = 10,
+  eGraphicsPrimitiveType_Last niMaybeUnused = 5,
   //! \internal
   eGraphicsPrimitiveType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

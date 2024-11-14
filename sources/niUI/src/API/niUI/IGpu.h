@@ -8,16 +8,29 @@
 #include <niLang/IHString.h>
 #include <niLang/Math/MathRect.h>
 #include "FVF.h"
+#include "GraphicsEnum.h"
 
 namespace ni {
 
-enum eLock;
 struct iDataTable;
 struct iTexture;
 
 /** \addtogroup niUI
  * @{
  */
+
+//! GPU Index type
+enum eGpuIndexType
+{
+  //! 16-bit unsigned integer
+  eGpuIndexType_U16 = 0,
+  //! 32-bit unsigned integer
+  eGpuIndexType_U32 = 1,
+  //! \internal
+  eGpuIndexType_Last niMaybeUnused = 2,
+  //! \internal
+  eGpuIndexType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+};
 
 //! GPU Buffer memory mode
 enum eGpuBufferMemoryMode
@@ -462,12 +475,12 @@ struct iGpuCommandEncoder : public iUnknown {
   //! Draws primitives using the current vertex buffer.
   //! @param anVertexCount Number of vertices to draw
   //! @param anFirstVertex Index of first vertex to draw
-  virtual void __stdcall Draw(tU32 anVertexCount, tU32 anFirstVertex) = 0;
+  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) = 0;
 
   //! Draws indexed primitives using the current index buffer.
   //! @param anNumIndices Number of indices to draw
   //! @param anFirstIndex Index of first index to draw
-  virtual void __stdcall DrawIndexed(tU32 anNumIndices, tU32 anFirstIndex) = 0;
+  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, eGpuIndexType aIndexType, tU32 anNumIndices, tU32 anFirstIndex) = 0;
   //! @}
 };
 

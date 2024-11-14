@@ -449,23 +449,33 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetBlendColorConstant,1)
 	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,SetBlendColorConstant,1,(aColor))
 IDLC_METH_END(ni,iGpuCommandEncoder,SetBlendColorConstant,1)
 
-/** ni -> iGpuCommandEncoder::Draw/2 **/
-IDLC_METH_BEGIN(ni,iGpuCommandEncoder,Draw,2)
+/** ni -> iGpuCommandEncoder::Draw/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,Draw,3)
+	IDLC_DECL_VAR(eGraphicsPrimitiveType,aPrimType)
+	IDLC_BUF_TO_ENUM(eGraphicsPrimitiveType,aPrimType)
 	IDLC_DECL_VAR(tU32,anVertexCount)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anVertexCount)
 	IDLC_DECL_VAR(tU32,anFirstVertex)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anFirstVertex)
-	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,Draw,2,(anVertexCount,anFirstVertex))
-IDLC_METH_END(ni,iGpuCommandEncoder,Draw,2)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,Draw,3,(aPrimType,anVertexCount,anFirstVertex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,Draw,3)
 
-/** ni -> iGpuCommandEncoder::DrawIndexed/2 **/
-IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DrawIndexed,2)
+/** ni -> iGpuCommandEncoder::DrawIndexed/4 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DrawIndexed,4)
+	IDLC_DECL_VAR(eGraphicsPrimitiveType,aPrimType)
+	IDLC_BUF_TO_ENUM(eGraphicsPrimitiveType,aPrimType)
+	IDLC_DECL_VAR(eGpuIndexType,aIndexType)
+	IDLC_BUF_TO_ENUM(eGpuIndexType,aIndexType)
 	IDLC_DECL_VAR(tU32,anNumIndices)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anNumIndices)
 	IDLC_DECL_VAR(tU32,anFirstIndex)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anFirstIndex)
-	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,DrawIndexed,2,(anNumIndices,anFirstIndex))
-IDLC_METH_END(ni,iGpuCommandEncoder,DrawIndexed,2)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DrawIndexed,4,(aPrimType,aIndexType,anNumIndices,anFirstIndex))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,DrawIndexed,4)
 
 IDLC_END_INTF(ni,iGpuCommandEncoder)
 

@@ -9160,14 +9160,15 @@ static const ni::sMethodDef iGpuCommandEncoder_SetBlendColorConstant = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[2] = { 
+static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[3] = { 
+  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
   { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
   { "anFirstVertex", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_Draw = {
   "Draw",
-  0|ni::eType_Null, NULL, "void",
-  2, iGpuCommandEncoder_Draw_Parameters,
+  0|ni::eType_I8, NULL, "tBool",
+  3, iGpuCommandEncoder_Draw_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_Draw)
 #else
@@ -9176,14 +9177,16 @@ static const ni::sMethodDef iGpuCommandEncoder_Draw = {
 };
 
 // Method: DrawIndexed
-static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[2] = { 
+static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[4] = { 
+  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
+  { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }, 
   { "anNumIndices", ni::eType_U32, NULL, "tU32" }, 
   { "anFirstIndex", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_DrawIndexed = {
   "DrawIndexed",
-  0|ni::eType_Null, NULL, "void",
-  2, iGpuCommandEncoder_DrawIndexed_Parameters,
+  0|ni::eType_I8, NULL, "tBool",
+  4, iGpuCommandEncoder_DrawIndexed_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_DrawIndexed)
 #else
@@ -37548,6 +37551,22 @@ static const ni::sEnumDef Enum_eGeometryOptimizeFlags = {
 	return &Enum_eGeometryOptimizeFlags;
 }
 
+// --- eGpuIndexType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuIndexType() {
+
+static const ni::sEnumValueDef Enum_eGpuIndexType_Values[] = {
+	{ "U16", ni::eGpuIndexType_U16 },
+	{ "U32", ni::eGpuIndexType_U32 },
+	{ "Last", ni::eGpuIndexType_Last },
+};
+static const ni::sEnumDef Enum_eGpuIndexType = {
+	"eGpuIndexType",
+  niCountOf(Enum_eGpuIndexType_Values), Enum_eGpuIndexType_Values
+};
+
+	return &Enum_eGpuIndexType;
+}
+
 // --- eGpuBufferMemoryMode ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferMemoryMode() {
 
@@ -39645,6 +39664,7 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGeometryType(),
   GetEnumDef_eGeometryCreateFlags(),
   GetEnumDef_eGeometryOptimizeFlags(),
+  GetEnumDef_eGpuIndexType(),
   GetEnumDef_eGpuBufferMemoryMode(),
   GetEnumDef_eGpuBufferUsageFlags(),
   GetEnumDef_eGpuFunctionType(),

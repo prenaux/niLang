@@ -485,6 +485,21 @@ static const MTLBlendFactor _toMTLBlendFactor[] = {
 };
 niCAssert(niCountOf(_toMTLBlendFactor) == eGpuBlendFactor_Last);
 
+static const MTLPrimitiveType _toMTLPrimitiveType[] = {
+  MTLPrimitiveTypePoint,
+  MTLPrimitiveTypeLine,
+  MTLPrimitiveTypeLineStrip,
+  MTLPrimitiveTypeTriangle,
+  MTLPrimitiveTypeTriangleStrip,
+};
+niCAssert(niCountOf(_toMTLPrimitiveType) == eGraphicsPrimitiveType_Last);
+
+static const MTLIndexType _toMTLIndexType[] = {
+  MTLIndexTypeUInt16,
+  MTLIndexTypeUInt32,
+};
+niCAssert(niCountOf(_toMTLIndexType) == eGpuIndexType_Last);
+
 struct sMetalPipeline : public ImplRC<iGpuPipeline> {
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   id<MTLRenderPipelineState> _mtlPipeline;
@@ -1568,20 +1583,25 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
      alpha:aColor.w];
   }
 
-  virtual void __stdcall DrawIndexed(tU32 anNumIndices, tU32 anFirstIndex) niImpl
+  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, eGpuIndexType aIndexType, tU32 anNumIndices, tU32 anFirstIndex) niImpl
   {
-    [_encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
+    niCheck(aIndexType <= eGpuIndexType_Last, eFalse);
+    [_encoder drawIndexedPrimitives:_toMTLPrimitiveType[aPrimType]
      indexCount:anNumIndices
-     indexType:MTLIndexTypeUInt32
+     indexType:_toMTLIndexType[aIndexType]
      indexBuffer:_indexBuffer->_mtlBuffer
      indexBufferOffset:_indexOffset + (anFirstIndex * sizeof(tU32))];
+    return eTrue;
   }
 
-  virtual void __stdcall Draw(tU32 anVertexCount, tU32 anFirstVertex) niImpl
+  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl
   {
-    [_encoder drawPrimitives:MTLPrimitiveTypeTriangle
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
+    [_encoder drawPrimitives:_toMTLPrimitiveType[aPrimType]
      vertexStart:anFirstVertex
      vertexCount:anVertexCount];
+    return eTrue;
   }
 };
 

@@ -1,5 +1,17 @@
 <niIDL>
 	<namespace name="ni">
+		<enum name="eGpuIndexType">
+			<comments desc="GPU Index type "/>
+			<value name="eGpuIndexType_U16" value="0 ">
+				<comments desc="16-bit unsigned integer "/>
+			</value>
+			<value name="eGpuIndexType_U32" value="1 ">
+				<comments desc="32-bit unsigned integer "/>
+			</value>
+			<value name="eGpuIndexType_Last" value="2 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
 		<enum name="eGpuBufferMemoryMode">
 			<comments desc="GPU Buffer memory mode "/>
 			<value name="eGpuBufferMemoryMode_Shared" value="0 ">
@@ -892,9 +904,14 @@
 					typec="const sColor4f&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="draw" name="Draw" num_parameters="2">
+			<method java_name="draw" name="Draw" num_parameters="3">
 				<comments desc="Draws primitives using the current vertex buffer. @param anVertexCount Number of vertices to draw @param anFirstVertex Index of first vertex to draw "/>
-				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aPrimType"
+					type="eGraphicsPrimitiveType"
+					typec="eGraphicsPrimitiveType"
+					typei="ni::eType_Enum"/>
 				<parameter
 					name="anVertexCount"
 					type="tU32"
@@ -907,9 +924,19 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="2">
+			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="4">
 				<comments desc="Draws indexed primitives using the current index buffer. @param anNumIndices Number of indices to draw @param anFirstIndex Index of first index to draw "/>
-				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aPrimType"
+					type="eGraphicsPrimitiveType"
+					typec="eGraphicsPrimitiveType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aIndexType"
+					type="eGpuIndexType"
+					typec="eGpuIndexType"
+					typei="ni::eType_Enum"/>
 				<parameter
 					name="anNumIndices"
 					type="tU32"

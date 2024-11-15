@@ -1,5 +1,5 @@
-<Shader ver="2" name="texture_ps" exec="pixel" input_filename="glslc450_texture_ps_frag.spv" input_digest="c4p4htc8aq95gx7xcxtj8gx3qr">
-	<Target target="vkgl45" src_digest="hpgabacxcxmh2q2eyjftbdxst4">
+<Shader ver="2" name="texture_ps" exec="pixel" input_filename="texture_ps.spv" input_digest="w958e54yj80b2ddd6sp5cm5j3g">
+	<Target target="vkgl45" src_digest="n3jtet9nxth07g6h8txwdnjga0">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -8,7 +8,7 @@
 			<Output name="OUT_0_rval_color" type="vec4"/>
 		</Outputs>
 		<SeparateTextures>
-			<SeparateTexture name="IN_0_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
 		</SeparateTextures>
 		<SamplerStates>
 			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="1"/>
@@ -17,7 +17,7 @@
 		<ConstBuffs/>
 		<![CDATA[#version 450
 
-layout(set = 0, binding = 0) uniform texture2D IN_0_aTexture;
+layout(set = 0, binding = 0) uniform texture2D IN_1_aTexture;
 layout(set = 0, binding = 1) uniform sampler IN_1_aSS;
 
 layout(location = 1) in vec4 IN_1_aInput_color;
@@ -26,12 +26,12 @@ layout(location = 0) out vec4 OUT_0_rval_color;
 
 void main()
 {
-    OUT_0_rval_color = texture(sampler2D(IN_0_aTexture, IN_1_aSS), IN_2_aInput_tex0) * IN_1_aInput_color;
+    OUT_0_rval_color = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0) * IN_1_aInput_color;
 }
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="1p6k8b2dw4cvqykkw0ye6t3c9m">
+	<Target target="msl2_macos" src_digest="8wcn764t8y5z3mmggyytr56nkg">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -40,7 +40,7 @@ void main()
 			<Output name="OUT_0_rval_color" type="vec4"/>
 		</Outputs>
 		<SeparateTextures>
-			<SeparateTexture name="IN_0_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
 		</SeparateTextures>
 		<SamplerStates>
 			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="1"/>
@@ -63,16 +63,16 @@ struct main0_in
     float2 IN_2_aInput_tex0 [[user(locn2)]];
 };
 
-fragment main0_out main0(main0_in in [[stage_in]], texture2d<float> IN_0_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+fragment main0_out main0(main0_in in [[stage_in]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
 {
     main0_out out = {};
-    out.OUT_0_rval_color = IN_0_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0) * in.IN_1_aInput_color;
+    out.OUT_0_rval_color = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0) * in.IN_1_aInput_color;
     return out;
 }
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="dh6t57zzdrp6d3w47xjr7qj368">
+	<Target target="hlsl5" src_digest="rzfjwpxrz3p2jpbksg0jzaqr6r">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -81,14 +81,14 @@ fragment main0_out main0(main0_in in [[stage_in]], texture2d<float> IN_0_aTextur
 			<Output name="OUT_0_rval_color" type="vec4"/>
 		</Outputs>
 		<SeparateTextures>
-			<SeparateTexture name="IN_0_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="0"/>
 		</SeparateTextures>
 		<SamplerStates>
 			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="1"/>
 		</SamplerStates>
 		<SampledTextures/>
 		<ConstBuffs/>
-		<![CDATA[Texture2D<float4> IN_0_aTexture : register(t0);
+		<![CDATA[Texture2D<float4> IN_1_aTexture : register(t0);
 SamplerState IN_1_aSS : register(s1);
 
 static float4 IN_1_aInput_color;
@@ -108,7 +108,7 @@ struct SPIRV_Cross_Output
 
 void frag_main()
 {
-    OUT_0_rval_color = IN_0_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0) * IN_1_aInput_color;
+    OUT_0_rval_color = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0) * IN_1_aInput_color;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

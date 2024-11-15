@@ -2,6 +2,7 @@
 #include <niLang/Math/MathRect.h>
 #include <niUI/IGpu.h>
 #include <niLang/Utils/DataTableUtils.h>
+#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
 using namespace ni;
 
@@ -351,11 +352,6 @@ struct GpuTexAlpha : public GpuCanvasBase {
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
   NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
 
-  struct sTestUniforms {
-    alignas(16) tF32 alphaTest = 0.0f;
-    alignas(16) sVec4f materialColor = Vec4f(0,1,1,1);
-  };
-  static_assert(sizeof(sTestUniforms) == (sizeof(float)*8));
   NN<iGpuBuffer> _uBuffer = niDeferredInit(NN<iGpuBuffer>);
 
   TEST_CONSTRUCTOR_BASE(GpuTexAlpha,GpuCanvasBase) {
@@ -400,11 +396,11 @@ struct GpuTexAlpha : public GpuCanvasBase {
       _uBuffer = niCheckNN(
         _uBuffer,
         _driverGpu->CreateGpuBuffer(
-          sizeof(sTestUniforms),
+          sizeof(TestGpuFuncs_TestUniforms),
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Uniform),
         eFalse);
-      sTestUniforms* uBuffer = (sTestUniforms*)_uBuffer->Lock(0, _uBuffer->GetSize(), eLock_Discard);
+      niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(0, _uBuffer->GetSize(), eLock_Discard);
       niCheck(uBuffer != nullptr, eFalse);
       uBuffer->alphaTest = 1.0f;
       uBuffer->materialColor = sVec4f::One();
@@ -450,7 +446,8 @@ struct GpuTexAlpha : public GpuCanvasBase {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
     apCanvas->Flush(); // submit in the current command encoder
 
-    sTestUniforms* uBuffer = (sTestUniforms*)_uBuffer->Lock(0, _uBuffer->GetSize(), eLock_Discard);
+    niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
+      0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
     {
       niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;

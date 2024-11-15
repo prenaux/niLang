@@ -22,12 +22,12 @@
 #include "../../niUI/src/API/niUI/IIndexArray.h"
 #define niVulkanMemoryAllocator_Implement
 #include "../../thirdparty/VulkanMemoryAllocator/niVulkanMemoryAllocator.h"
-#include "shaders/triangle_vs.spv.h"
-#include "shaders/triangle_ps.spv.h"
 #include "../../niUI/tsrc/data/A.jpg.hxx"
 #include "../../niUI/src/API/niUI/IGraphics.h"
-#include "shaders/texture_vs.spv.h"
-#include "shaders/texture_ps.spv.h"
+#include "../../../data/test/gpufunc/triangle_vs_spv.h"
+#include "../../../data/test/gpufunc/triangle_ps_spv.h"
+#include "../../../data/test/gpufunc/texture_vs_spv.h"
+#include "../../../data/test/gpufunc/texture_ps_spv.h"
 
 // #define TRACE_MOUSE_MOVE
 

@@ -1,8 +1,9 @@
-<Shader ver="2" name="triangle_vs" exec="vertex" input_filename="triangle_vs.spv" input_digest="yymx378hfdnry201hr0p450ex4">
-	<Target target="vkgl45" src_digest="4d0xf49r143h1ssbq8phv0qxaw">
+<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="sjcca9cedhb0h4p4kyadxrcp2g">
+	<Target target="vkgl45" src_digest="qdxjm38gf0qsedcg1hqsw855j4">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
 		</Inputs>
 		<Outputs deco_location="2">
 			<Output name="OUT_1_rval_color" type="vec4"/>
@@ -11,29 +12,40 @@
 		<SeparateTextures/>
 		<SamplerStates/>
 		<SampledTextures/>
-		<ConstBuffs/>
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
 		<![CDATA[#version 450
 
+struct TestApp_TestUniforms
+{
+    float alphaTest;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestApp_TestUniforms[2];
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 2) in vec2 IN_2_aInput_tex0;
 layout(location = 1) out vec4 OUT_1_rval_color;
 layout(location = 2) out vec2 OUT_2_rval_tex0;
-vec2 vec2_Zero;
 
 void main()
 {
-    vec2_Zero = vec2(0.0);
     gl_Position = vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = IN_1_aInput_color;
-    OUT_2_rval_tex0 = vec2_Zero;
+    OUT_1_rval_color = IN_1_aInput_color * TestApp_TestUniforms(UBO_TestApp_TestUniforms[0].x, UBO_TestApp_TestUniforms[1]).materialColor;
+    OUT_2_rval_tex0 = IN_2_aInput_tex0;
 }
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="1gwwahyxa3mvnmd0tqn3rcd1am">
+	<Target target="msl2_macos" src_digest="146zn4qdfk72fggtknnmhw0jvc">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
 		</Inputs>
 		<Outputs deco_location="2">
 			<Output name="OUT_1_rval_color" type="vec4"/>
@@ -42,11 +54,26 @@ void main()
 		<SeparateTextures/>
 		<SamplerStates/>
 		<SampledTextures/>
-		<ConstBuffs/>
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
 		<![CDATA[#include <metal_stdlib>
 #include <simd/simd.h>
 
 using namespace metal;
+
+struct TestApp_TestUniforms
+{
+    float alphaTest;
+    float4 materialColor;
+};
+
+struct UBO_TestApp_TestUniforms
+{
+    TestApp_TestUniforms v;
+};
 
 struct main0_out
 {
@@ -59,24 +86,25 @@ struct main0_in
 {
     float3 IN_0_aInput_position [[attribute(0)]];
     float4 IN_1_aInput_color [[attribute(1)]];
+    float2 IN_2_aInput_tex0 [[attribute(2)]];
 };
 
-vertex main0_out main0(main0_in in [[stage_in]])
+vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestApp_TestUniforms& IN_1_aUniforms [[buffer(0)]])
 {
     main0_out out = {};
-    float2 vec2_Zero = float2(0.0);
     out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = in.IN_1_aInput_color;
-    out.OUT_2_rval_tex0 = vec2_Zero;
+    out.OUT_1_rval_color = in.IN_1_aInput_color * IN_1_aUniforms.v.materialColor;
+    out.OUT_2_rval_tex0 = in.IN_2_aInput_tex0;
     return out;
 }
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="08xhe6tsjte4ghbwkjxpfk6138">
+	<Target target="hlsl5" src_digest="txxs7x0f6x96s082q6kb5z4nt8">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
 		</Inputs>
 		<Outputs deco_location="2">
 			<Output name="OUT_1_rval_color" type="vec4"/>
@@ -85,10 +113,27 @@ vertex main0_out main0(main0_in in [[stage_in]])
 		<SeparateTextures/>
 		<SamplerStates/>
 		<SampledTextures/>
-		<ConstBuffs/>
-		<![CDATA[static float4 gl_Position;
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
+		<![CDATA[struct TestApp_TestUniforms
+{
+    float alphaTest;
+    float4 materialColor;
+};
+
+cbuffer UBO_TestApp_TestUniforms : register(b0)
+{
+    TestApp_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+
+static float4 gl_Position;
 static float3 IN_0_aInput_position;
 static float4 IN_1_aInput_color;
+static float2 IN_2_aInput_tex0;
 static float4 OUT_1_rval_color;
 static float2 OUT_2_rval_tex0;
 
@@ -96,6 +141,7 @@ struct SPIRV_Cross_Input
 {
     float3 IN_0_aInput_position : TEXCOORD0;
     float4 IN_1_aInput_color : TEXCOORD1;
+    float2 IN_2_aInput_tex0 : TEXCOORD2;
 };
 
 struct SPIRV_Cross_Output
@@ -105,14 +151,11 @@ struct SPIRV_Cross_Output
     float4 gl_Position : SV_Position;
 };
 
-static float2 vec2_Zero;
-
 void vert_main()
 {
-    vec2_Zero = 0.0f.xx;
     gl_Position = float4(IN_0_aInput_position, 1.0f);
-    OUT_1_rval_color = IN_1_aInput_color;
-    OUT_2_rval_tex0 = vec2_Zero;
+    OUT_1_rval_color = IN_1_aInput_color * IN_1_aUniforms_v.materialColor;
+    OUT_2_rval_tex0 = IN_2_aInput_tex0;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
 
@@ -120,6 +163,7 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 {
     IN_0_aInput_position = stage_input.IN_0_aInput_position;
     IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
     vert_main();
     SPIRV_Cross_Output stage_output;
     stage_output.gl_Position = gl_Position;

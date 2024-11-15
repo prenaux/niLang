@@ -44,6 +44,11 @@ static __forceinline iHString* _GetGpuFunctionTarget() {
 
 #define METAL_TRACE(aFmt) //niDebugFmt(aFmt)
 
+// This is where the [[stage_in]] vertex buffer is bound. We reserve the last
+// index for it so that we dont overlap with [[buffer(0)]] which will usually
+// be a uniform buffer.
+static const tU32 knMetalStageInBufferIndex = 30;
+
 // Commented out, we dont want to use native DXT support on macOS only since its not supported on iOS, which is our primary target
 // #define USE_METAL_DXT
 
@@ -191,7 +196,7 @@ inline MTLVertexDescriptor* _CreateMetalVertDesc(const tU32 aBufferIndex, tFVF a
   layoutDesc.stride = stride;
   layoutDesc.stepFunction = MTLVertexStepFunctionPerVertex;
   layoutDesc.stepRate = 1;
-  [vertDesc.layouts setObject: layoutDesc atIndexedSubscript: 0];
+  [vertDesc.layouts setObject: layoutDesc atIndexedSubscript: aBufferIndex];
 
   return vertDesc;
 
@@ -468,7 +473,7 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
       _desc->GetDepthFormat() == eGpuPixelFormat_D16 ||
       _desc->GetDepthFormat() == eGpuPixelFormat_D24S8,
       eFalse);
-    pipelineDesc.vertexDescriptor = _CreateMetalVertDesc(0, _desc->GetFVF());
+    pipelineDesc.vertexDescriptor = _CreateMetalVertDesc(knMetalStageInBufferIndex, _desc->GetFVF());
 
     // Create the pipeline state
     NSError* error = nil;
@@ -1446,7 +1451,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(apBuffer != nullptr, ;);
     sMetalBuffer* buffer = (sMetalBuffer*)apBuffer;
-    [_encoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:anBinding];
+    [_encoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:knMetalStageInBufferIndex];
   }
 
   virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset) niImpl {
@@ -1921,7 +1926,7 @@ struct cMetalContextBase :
     niPanicAssert(vaMtlBuffer != nullptr);
     [cmdEncoder setVertexBuffer:vaMtlBuffer->_mtlBuffer
      offset:(baseVertexIndex*fvfStride)
-     atIndex:0];
+     atIndex:knMetalStageInBufferIndex];
 
     iIndexArray* ia = apDrawOp->GetIndexArray();
     if (ia) {

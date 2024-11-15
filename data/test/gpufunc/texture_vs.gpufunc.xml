@@ -1,4 +1,4 @@
-<Shader ver="2" name="texture_vs" exec="vertex" input_filename="glslc450_texture_vs_vert.spv" input_digest="8sjdctvpbz5fx58hyzgr2rpcww">
+<Shader ver="2" name="texture_vs" exec="vertex" input_filename="texture_vs.spv" input_digest="8sjdctvpbz5fx58hyzgr2rpcww">
 	<Target target="vkgl45" src_digest="pr9k73xctgtasfwh41dha38qgg">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>

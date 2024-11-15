@@ -1,0 +1,181 @@
+<Shader ver="2" name="texture_alphatest_ps" exec="pixel" input_filename="texture_alphatest_ps.spv" input_digest="8hdfeyzd54bkfcj2gt4b91bz90">
+	<Target target="vkgl45" src_digest="83mg47pgfe871djdwxb3zzet6c">
+		<Inputs>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
+		</Inputs>
+		<Outputs deco_location="0">
+			<Output name="OUT_0_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="1"/>
+		</SeparateTextures>
+		<SamplerStates>
+			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="2"/>
+		</SamplerStates>
+		<SampledTextures/>
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
+		<![CDATA[#version 450
+
+struct TestApp_TestUniforms
+{
+    float alphaTest;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestApp_TestUniforms[2];
+layout(set = 0, binding = 1) uniform texture2D IN_1_aTexture;
+layout(set = 0, binding = 2) uniform sampler IN_1_aSS;
+
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 2) in vec2 IN_2_aInput_tex0;
+layout(location = 0) out vec4 OUT_0_rval_color;
+
+void main()
+{
+    vec4 _122 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
+    if (_122.w < TestApp_TestUniforms(UBO_TestApp_TestUniforms[0].x, UBO_TestApp_TestUniforms[1]).alphaTest)
+    {
+        discard;
+    }
+    OUT_0_rval_color = _122 * IN_1_aInput_color;
+}
+
+]]>
+	</Target>
+	<Target target="msl2_macos" src_digest="hmpd7hjvds4y4g9rw8fna9qjyg">
+		<Inputs>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
+		</Inputs>
+		<Outputs deco_location="0">
+			<Output name="OUT_0_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="1"/>
+		</SeparateTextures>
+		<SamplerStates>
+			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="2"/>
+		</SamplerStates>
+		<SampledTextures/>
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
+		<![CDATA[#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct TestApp_TestUniforms
+{
+    float alphaTest;
+    float4 materialColor;
+};
+
+struct UBO_TestApp_TestUniforms
+{
+    TestApp_TestUniforms v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+struct main0_in
+{
+    float4 IN_1_aInput_color [[user(locn1)]];
+    float2 IN_2_aInput_tex0 [[user(locn2)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestApp_TestUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+{
+    main0_out out = {};
+    float4 _122 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
+    if (_122.w < IN_1_aUniforms.v.alphaTest)
+    {
+        discard_fragment();
+    }
+    out.OUT_0_rval_color = _122 * in.IN_1_aInput_color;
+    return out;
+}
+
+]]>
+	</Target>
+	<Target target="hlsl5" src_digest="5fbbvxhwmjpjd34v6z5wq94fr0">
+		<Inputs>
+			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
+		</Inputs>
+		<Outputs deco_location="0">
+			<Output name="OUT_0_rval_color" type="vec4"/>
+		</Outputs>
+		<SeparateTextures>
+			<SeparateTexture name="IN_1_aTexture" type="2D" deco_descriptor_set="0" deco_binding="1"/>
+		</SeparateTextures>
+		<SamplerStates>
+			<SamplerState name="IN_1_aSS" deco_descriptor_set="0" deco_binding="2"/>
+		</SamplerStates>
+		<SampledTextures/>
+		<ConstBuffs>
+			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="" size="1" offset="0"/>
+			</ConstBuff>
+		</ConstBuffs>
+		<![CDATA[struct TestApp_TestUniforms
+{
+    float alphaTest;
+    float4 materialColor;
+};
+
+cbuffer UBO_TestApp_TestUniforms : register(b0)
+{
+    TestApp_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+Texture2D<float4> IN_1_aTexture : register(t1);
+SamplerState IN_1_aSS : register(s2);
+
+static float4 IN_1_aInput_color;
+static float2 IN_2_aInput_tex0;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 IN_1_aInput_color : TEXCOORD1;
+    float2 IN_2_aInput_tex0 : TEXCOORD2;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+void frag_main()
+{
+    float4 _122 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
+    if (_122.w < IN_1_aUniforms_v.alphaTest)
+    {
+        discard;
+    }
+    OUT_0_rval_color = _122 * IN_1_aInput_color;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}
+]]>
+	</Target>
+</Shader>

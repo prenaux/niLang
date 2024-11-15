@@ -1,4 +1,4 @@
-<Shader ver="2" name="triangle_ps" exec="pixel" input_filename="glslc450_triangle_ps_frag.spv" input_digest="h1v87y6c8m1czckbwdnrhe4wn0">
+<Shader ver="2" name="triangle_ps" exec="pixel" input_filename="triangle_ps.spv" input_digest="6tfzde9ppgchxj8wzn5k87g484">
 	<Target target="vkgl45" src_digest="ay79x93zt5kbtj8r43dqr8b7tw">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>

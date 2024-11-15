@@ -1,5 +1,5 @@
-<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="sjcca9cedhb0h4p4kyadxrcp2g">
-	<Target target="vkgl45" src_digest="qdxjm38gf0qsedcg1hqsw855j4">
+<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="7v4dn29xvbyf150r3k36xdcc9m">
+	<Target target="vkgl45" src_digest="41wr2k7rc595sttd8erdnad6b4">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -13,19 +13,22 @@
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
-				<Const name="v" type="" size="1" offset="0"/>
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
 		<![CDATA[#version 450
 
-struct TestApp_TestUniforms
+struct TestGpuFuncs_TestUniforms
 {
     float alphaTest;
+    float padding0;
+    float padding1;
+    float padding2;
     vec4 materialColor;
 };
 
-uniform vec4 UBO_TestApp_TestUniforms[2];
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[2];
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
@@ -35,13 +38,13 @@ layout(location = 2) out vec2 OUT_2_rval_tex0;
 void main()
 {
     gl_Position = vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = IN_1_aInput_color * TestApp_TestUniforms(UBO_TestApp_TestUniforms[0].x, UBO_TestApp_TestUniforms[1]).materialColor;
+    OUT_1_rval_color = IN_1_aInput_color * TestGpuFuncs_TestUniforms(UBO_TestGpuFuncs_TestUniforms[0].x, UBO_TestGpuFuncs_TestUniforms[0].y, UBO_TestGpuFuncs_TestUniforms[0].z, UBO_TestGpuFuncs_TestUniforms[0].w, UBO_TestGpuFuncs_TestUniforms[1]).materialColor;
     OUT_2_rval_tex0 = IN_2_aInput_tex0;
 }
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="146zn4qdfk72fggtknnmhw0jvc">
+	<Target target="msl2_macos" src_digest="yfh9cz2wr2t9581we6rzzh4b7w">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -55,8 +58,8 @@ void main()
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
-				<Const name="v" type="" size="1" offset="0"/>
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
 		<![CDATA[#include <metal_stdlib>
@@ -64,15 +67,18 @@ void main()
 
 using namespace metal;
 
-struct TestApp_TestUniforms
+struct TestGpuFuncs_TestUniforms
 {
     float alphaTest;
+    float padding0;
+    float padding1;
+    float padding2;
     float4 materialColor;
 };
 
-struct UBO_TestApp_TestUniforms
+struct UBO_TestGpuFuncs_TestUniforms
 {
-    TestApp_TestUniforms v;
+    TestGpuFuncs_TestUniforms v;
 };
 
 struct main0_out
@@ -89,7 +95,7 @@ struct main0_in
     float2 IN_2_aInput_tex0 [[attribute(2)]];
 };
 
-vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestApp_TestUniforms& IN_1_aUniforms [[buffer(0)]])
+vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]])
 {
     main0_out out = {};
     out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
@@ -100,7 +106,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestApp_TestUnifor
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="txxs7x0f6x96s082q6kb5z4nt8">
+	<Target target="hlsl5" src_digest="sv8swj32w2hwcxpw0pc97sw3vw">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -114,19 +120,22 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestApp_TestUnifor
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestApp_TestUniforms" name="IN_1_aUniforms" size="32">
-				<Const name="v" type="" size="1" offset="0"/>
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
-		<![CDATA[struct TestApp_TestUniforms
+		<![CDATA[struct TestGpuFuncs_TestUniforms
 {
     float alphaTest;
+    float padding0;
+    float padding1;
+    float padding2;
     float4 materialColor;
 };
 
-cbuffer UBO_TestApp_TestUniforms : register(b0)
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
 {
-    TestApp_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+    TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
 };
 
 

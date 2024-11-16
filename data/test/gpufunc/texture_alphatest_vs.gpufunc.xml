@@ -1,5 +1,5 @@
-<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="7v4dn29xvbyf150r3k36xdcc9m">
-	<Target target="vkgl45" src_digest="41wr2k7rc595sttd8erdnad6b4">
+<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="njn8v3m1jkd52jn12bxpca9n78">
+	<Target target="vkgl45" src_digest="14yrkyj481m6e66cfqsp9swmqm">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -21,7 +21,7 @@
 
 struct TestGpuFuncs_TestUniforms
 {
-    float alphaTest;
+    float alphaRef;
     float padding0;
     float padding1;
     float padding2;
@@ -44,7 +44,7 @@ void main()
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="yfh9cz2wr2t9581we6rzzh4b7w">
+	<Target target="msl2_macos" src_digest="gds5dhbr0733jb9kmhfdb9j3hg">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -69,7 +69,7 @@ using namespace metal;
 
 struct TestGpuFuncs_TestUniforms
 {
-    float alphaTest;
+    float alphaRef;
     float padding0;
     float padding1;
     float padding2;
@@ -106,7 +106,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="sv8swj32w2hwcxpw0pc97sw3vw">
+	<Target target="hlsl5" src_digest="my7rj0hyj1ddfx0eydmmwz6gtr">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -126,7 +126,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
 		</ConstBuffs>
 		<![CDATA[struct TestGpuFuncs_TestUniforms
 {
-    float alphaTest;
+    float alphaRef;
     float padding0;
     float padding1;
     float padding2;

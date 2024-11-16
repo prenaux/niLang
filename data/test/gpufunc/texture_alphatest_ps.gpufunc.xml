@@ -1,5 +1,5 @@
-<Shader ver="2" name="texture_alphatest_ps" exec="pixel" input_filename="texture_alphatest_ps.spv" input_digest="shn9esgn6ph9mwf75yrsr6g9pr">
-	<Target target="vkgl45" src_digest="b7ckb39p1nm5gay9s9zd7z1k8g">
+<Shader ver="2" name="texture_alphatest_ps" exec="pixel" input_filename="texture_alphatest_ps.spv" input_digest="4gm53w229pmhdkkwpkbg5mg45w">
+	<Target target="vkgl45" src_digest="red7k1qf102phb87ajnpxzv5tr">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -15,7 +15,7 @@
 		</SamplerStates>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
@@ -23,6 +23,7 @@
 
 struct TestGpuFuncs_TestUniforms
 {
+    mat4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -30,7 +31,7 @@ struct TestGpuFuncs_TestUniforms
     vec4 materialColor;
 };
 
-uniform vec4 UBO_TestGpuFuncs_TestUniforms[2];
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
 layout(set = 0, binding = 1) uniform texture2D IN_1_aTexture;
 layout(set = 0, binding = 2) uniform sampler IN_1_aSS;
 
@@ -40,17 +41,17 @@ layout(location = 0) out vec4 OUT_0_rval_color;
 
 void main()
 {
-    vec4 _141 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
-    if (_141.w < TestGpuFuncs_TestUniforms(UBO_TestGpuFuncs_TestUniforms[0].x, UBO_TestGpuFuncs_TestUniforms[0].y, UBO_TestGpuFuncs_TestUniforms[0].z, UBO_TestGpuFuncs_TestUniforms[0].w, UBO_TestGpuFuncs_TestUniforms[1]).alphaRef)
+    vec4 _146 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
+    if (_146.w < TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]).alphaRef)
     {
         discard;
     }
-    OUT_0_rval_color = _141 * IN_1_aInput_color;
+    OUT_0_rval_color = _146 * IN_1_aInput_color;
 }
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="m8kvw0cgcbaej97a6x95f955xm">
+	<Target target="msl2_macos" src_digest="npk07sj7vse1t2q9kg7ghdmer8">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -66,7 +67,7 @@ void main()
 		</SamplerStates>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
@@ -77,6 +78,7 @@ using namespace metal;
 
 struct TestGpuFuncs_TestUniforms
 {
+    float4x4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -103,18 +105,18 @@ struct main0_in
 fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
 {
     main0_out out = {};
-    float4 _141 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
-    if (_141.w < IN_1_aUniforms.v.alphaRef)
+    float4 _146 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
+    if (_146.w < IN_1_aUniforms.v.alphaRef)
     {
         discard_fragment();
     }
-    out.OUT_0_rval_color = _141 * in.IN_1_aInput_color;
+    out.OUT_0_rval_color = _146 * in.IN_1_aInput_color;
     return out;
 }
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="t7528tdtv7p4wxvdsrh2242qy8">
+	<Target target="hlsl5" src_digest="pdgtzhynn1a27r4nwk3083j6x0">
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
@@ -130,12 +132,13 @@ fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_Tes
 		</SamplerStates>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
 		<![CDATA[struct TestGpuFuncs_TestUniforms
 {
+    row_major float4x4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -168,12 +171,12 @@ struct SPIRV_Cross_Output
 
 void frag_main()
 {
-    float4 _141 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
-    if (_141.w < IN_1_aUniforms_v.alphaRef)
+    float4 _146 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
+    if (_146.w < IN_1_aUniforms_v.alphaRef)
     {
         discard;
     }
-    OUT_0_rval_color = _141 * IN_1_aInput_color;
+    OUT_0_rval_color = _146 * IN_1_aInput_color;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

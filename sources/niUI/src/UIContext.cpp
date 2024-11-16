@@ -952,7 +952,18 @@ tBool __stdcall cUIContext::DrawTransformedWidget(iWidget* apWidget, iCanvas* ap
   }
   cWidget* w = (cWidget*)apWidget;
   const sRectf rectContext = apWidget->GetWidgetRect();
-  tBool r = _DrawWidget(w,apCanvas,rectContext,abUseScissor ? RAW_VIEWPORT_SCISSOR : RAW_VIEWPORT,aBaseMatrix);
+  tU32 vpStyle = abUseScissor ? RAW_VIEWPORT_SCISSOR : RAW_VIEWPORT;
+  tBool r = _DrawWidget(w,apCanvas,rectContext, vpStyle, aBaseMatrix);
+  if (!mFreeWidgets.zmapDraw.IsEmpty()) {
+    for (tWidgetZMapRIt zit = mFreeWidgets.zmapDraw.RBegin(); zit != mFreeWidgets.zmapDraw.REnd(); ++zit) {
+      for (tWidgetPtrDeqIt lit = zit->second.begin(); lit != zit->second.end(); ++lit) {
+        Ptr<cWidget> w = *lit;
+        if (w->GetVisible() && w != mpwRootWidget) {
+          _DrawWidget(w,apCanvas,rectContext,vpStyle,aBaseMatrix);
+        }
+      }
+    }
+  }
   apCanvas->Flush();
   return r;
 }

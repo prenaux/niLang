@@ -121,22 +121,22 @@ static cString _GetDeviceCaps(id<MTLDevice> aDevice) {
   return r;
 }
 
-// We're not using the vertex descriptor, the vertex shader takes care of
-// that. But this might come in handy later so its here for reference.
-inline MTLVertexAttributeDescriptor* _CreateMetalAttrDesc(const tU32 aBufferIndex, MTLVertexFormat aFmt, const tU32 aOffset) {
-  MTLVertexAttributeDescriptor* attrDesc = [MTLVertexAttributeDescriptor new];
-  attrDesc.format = aFmt;
-  attrDesc.offset = aOffset;
-  attrDesc.bufferIndex = aBufferIndex;
-  return attrDesc;
-}
-
-inline MTLVertexDescriptor* _CreateMetalVertDesc(const tU32 aBufferIndex, tFVF aFVF)
+static MTLVertexDescriptor* _CreateMetalVertDescForFVF(const tU32 aBufferIndex, tFVF aFVF)
 {
   MTLVertexDescriptor* vertDesc = [MTLVertexDescriptor vertexDescriptor];
 
   tU32 index = 0;
   tU32 off = 0;
+
+  niLet _CreateMetalAttrDesc = [](const tU32 aBufferIndex, MTLVertexFormat aFmt, const tU32 aOffset)
+      -> MTLVertexAttributeDescriptor*
+  {
+    MTLVertexAttributeDescriptor* attrDesc = [MTLVertexAttributeDescriptor new];
+    attrDesc.format = aFmt;
+    attrDesc.offset = aOffset;
+    attrDesc.bufferIndex = aBufferIndex;
+    return attrDesc;
+  };
 
 #define METAL_ATTR(TYPE, TYPESZ)                              \
   { [vertDesc.attributes                                      \
@@ -203,6 +203,108 @@ inline MTLVertexDescriptor* _CreateMetalVertDesc(const tU32 aBufferIndex, tFVF a
 #undef METAL_ATTR
 }
 
+static MTLVertexDescriptor* _CreateMetalVertDescForFVFAndGpuVertexAttibutes(
+  ain<tU32> aBufferIndex,
+  ain<tFVF> aFVF,
+  ain<astl::vector<sGpuVertexAttribute>> aVertAttrs)
+{
+  MTLVertexDescriptor* vertDesc = [MTLVertexDescriptor vertexDescriptor];
+
+  cFVFDescription fvfDesc(aFVF);
+  for (const auto& attr : aVertAttrs) {
+    if ((attr._fvf & aFVF) != attr._fvf) {
+      niError(niFmt("Vertex attribute FVF mismatch: expected '%s' (0x%x), got '%s' (0x%x)",
+                    ni::FVFToShortString(aFVF), aFVF, ni::FVFToShortString(attr._fvf), attr._fvf));
+      return nil;
+    }
+
+    MTLVertexAttributeDescriptor* attrDesc = [MTLVertexAttributeDescriptor new];
+    attrDesc.bufferIndex = aBufferIndex;
+
+    niLet handleTexCoo = [&](const tU32 i) -> tBool {
+      const tU32 dim = eFVF_TexCooDim(aFVF,i);
+      switch(dim) {
+        case 1:
+          attrDesc.format = MTLVertexFormatFloat;
+          break;
+        case 2:
+          attrDesc.format = MTLVertexFormatFloat2;
+          break;
+        case 3:
+          attrDesc.format = MTLVertexFormatFloat3;
+          break;
+        case 4:
+          attrDesc.format = MTLVertexFormatFloat4;
+          break;
+        default: {
+          niError(niFmt("Unsupported vertex attribute '%s' (%d) texcoo size '%d' fvf: %s (0x%x)",
+                        attr._name, attr._location,
+                        dim,
+                        ni::FVFToShortString(attr._fvf), attr._fvf));
+          return eFalse;
+        }
+      }
+      attrDesc.offset = fvfDesc.GetTexCooOffset(i);
+      return eTrue;
+    };
+
+    tBool handledFvf = eTrue;
+    switch(attr._fvf) {
+      case eFVF_PositionB4:
+        attrDesc.format = MTLVertexFormatFloat4;
+        attrDesc.offset = fvfDesc.GetWeightsOffset();
+        break;
+      case eFVF_Position:
+        attrDesc.format = MTLVertexFormatFloat3;
+        attrDesc.offset = fvfDesc.GetPositionOffset();
+        break;
+      case eFVF_Indices:
+        attrDesc.format = MTLVertexFormatUChar4;
+        attrDesc.offset = fvfDesc.GetIndicesOffset();
+        break;
+      case eFVF_Normal:
+        attrDesc.format = MTLVertexFormatFloat3;
+        attrDesc.offset = fvfDesc.GetNormalOffset();
+        break;
+      case eFVF_PointSize:
+        attrDesc.format = MTLVertexFormatFloat;
+        attrDesc.offset = fvfDesc.GetPointSizeOffset();
+        break;
+      case eFVF_ColorA:
+        attrDesc.format = MTLVertexFormatUChar4Normalized_BGRA;
+        attrDesc.offset = fvfDesc.GetColorAOffset();
+        break;
+      case eFVF_Tex1: handledFvf = handleTexCoo(0); break;
+      case eFVF_Tex2: handledFvf = handleTexCoo(1); break;
+      case eFVF_Tex3: handledFvf = handleTexCoo(2); break;
+      case eFVF_Tex4: handledFvf = handleTexCoo(3); break;
+      case eFVF_Tex5: handledFvf = handleTexCoo(4); break;
+      case eFVF_Tex6: handledFvf = handleTexCoo(5); break;
+      case eFVF_Tex7: handledFvf = handleTexCoo(6); break;
+      case eFVF_Tex8: handledFvf = handleTexCoo(7); break;
+      default:
+        handledFvf = eFalse;
+        break;
+    }
+    if (!handledFvf) {
+      niError(niFmt("Unsupported vertex attribute '%s' (%d) fvf: %s (0x%x)",
+                    attr._name, attr._location,
+                    ni::FVFToShortString(attr._fvf), attr._fvf));
+      return nil;
+    }
+
+    [vertDesc.attributes setObject:attrDesc atIndexedSubscript:attr._location];
+  }
+
+  MTLVertexBufferLayoutDescriptor* layoutDesc = [MTLVertexBufferLayoutDescriptor new];
+  layoutDesc.stride = fvfDesc.GetStride();
+  layoutDesc.stepFunction = MTLVertexStepFunctionPerVertex;
+  layoutDesc.stepRate = 1;
+  [vertDesc.layouts setObject:layoutDesc atIndexedSubscript:aBufferIndex];
+
+  return vertDesc;
+}
+
 //----------------------------------------------------------------------------
 //
 // GpuFunction
@@ -240,6 +342,12 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
       source = _datatable->GetString("_data");
     }
     niCheck(source.IsNotEmpty(),eFalse);
+
+#if 0
+    niLog(Info,niFmt(
+      "Creating shader '%s':\n----------\n%s\n----------\n",
+      ahspName,source));
+#endif
 
     NSString* nsSource = [NSString stringWithUTF8String:source.c_str()];
 
@@ -426,6 +534,95 @@ static const MTLIndexType _toMTLIndexType[] = {
 };
 niCAssert(niCountOf(_toMTLIndexType) == eGpuIndexType_Last);
 
+static inline tType _MTLDataTypeToType(MTLDataType aMTLDataType) {
+  switch (aMTLDataType) {
+    case MTLDataTypeFloat: return eType_F32;
+    case MTLDataTypeFloat2: return eType_Vec2f;
+    case MTLDataTypeFloat3: return eType_Vec3f;
+    case MTLDataTypeFloat4: return eType_Vec4f;
+    case MTLDataTypeInt: return eType_I32;
+    case MTLDataTypeInt2: return eType_Vec2i;
+    case MTLDataTypeInt3: return eType_Vec3i;
+    case MTLDataTypeInt4: return eType_Vec4i;
+    case MTLDataTypeUInt: return eType_U32;
+    case MTLDataTypeUInt2: return eType_Vec2i;
+    case MTLDataTypeUInt3: return eType_Vec3i;
+    case MTLDataTypeUInt4: return eType_Vec4i;
+    default: return eType_Null;
+  }
+}
+
+tBool _MTLVertexAttributeToGpuVertexAttribute(aout<sGpuVertexAttribute> aOut, MTLVertexAttribute* attr) {
+  aOut._name = attr.name.UTF8String;
+  niLet& attrName = aOut._name;
+  aOut._location = attr.attributeIndex;
+  aOut._type = _MTLDataTypeToType(attr.attributeType);
+  if (attrName.StartsWith("IN_")) {
+    if (attrName.EndsWith("_position")) {
+      aOut._fvf = eFVF_Position;
+    }
+    else if (attrName.EndsWith("_weights")) {
+      aOut._fvf = eFVF_PositionB4;
+    }
+    else if (attrName.EndsWith("_indices")) {
+      aOut._fvf = eFVF_Indices;
+    }
+    else if (attrName.EndsWith("_normal")) {
+      aOut._fvf = eFVF_Normal;
+    }
+    else if (attrName.EndsWith("_color")) {
+      aOut._fvf = eFVF_ColorA;
+    }
+    else if (attrName.EndsWith("_tex0")) {
+      aOut._fvf = eFVF_Tex1;
+    }
+    else if (attrName.EndsWith("_tex1")) {
+      aOut._fvf = eFVF_Tex2;
+    }
+    else if (attrName.EndsWith("_tex2")) {
+      aOut._fvf = eFVF_Tex3;
+    }
+    else if (attrName.EndsWith("_tex3")) {
+      aOut._fvf = eFVF_Tex4;
+    }
+    else if (attrName.EndsWith("_tex4")) {
+      aOut._fvf = eFVF_Tex5;
+    }
+    else if (attrName.EndsWith("_tex5")) {
+      aOut._fvf = eFVF_Tex6;
+    }
+    else if (attrName.EndsWith("_tex6")) {
+      aOut._fvf = eFVF_Tex7;
+    }
+    else if (attrName.EndsWith("_tex7")) {
+      aOut._fvf = eFVF_Tex8;
+    }
+    else {
+      niError(niFmt("Unidentified IN vertex attribute name '%s'.", attrName));
+      return eFalse;
+    }
+    return eTrue;
+  }
+  else if (attrName.Eq("v0") ||
+           attrName.Eq("v1") ||
+           attrName.Eq("v2") ||
+           attrName.Eq("v3") ||
+           attrName.Eq("v4") ||
+           attrName.Eq("v5") ||
+           attrName.Eq("v6") ||
+           attrName.Eq("v7") ||
+           attrName.Eq("v8") ||
+           attrName.Eq("v9"))
+  {
+    aOut._fvf = 0;
+    return eTrue;
+  }
+  else {
+    niError(niFmt("Unidentified IN vertex attribute name '%s'.", attrName));
+    return eFalse;
+  }
+}
+
 struct sMetalPipeline : public ImplRC<iGpuPipeline> {
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   id<MTLRenderPipelineState> _mtlPipeline;
@@ -436,15 +633,58 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
 
     MTLRenderPipelineDescriptor* pipelineDesc = [MTLRenderPipelineDescriptor new];
 
-    // Vertex & Fragment functions
-    sMetalFunction* vertexFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
-    niCheck(vertexFunction != nullptr, 0);
+    // Vertex gpu function
+    {
+      sMetalFunction* vertexFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
+      niCheck(vertexFunction != nullptr, 0);
+      pipelineDesc.vertexFunction = vertexFunction->_mtlFunction;
 
-    sMetalFunction* pixelFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
-    niCheck(pixelFunction != nullptr, 0);
+      // Vertex attributes
+      tBool hasMojoVertexAttribute = eFalse;
+      astl::vector<sGpuVertexAttribute> attrs;
+      {
+        NSArray<MTLVertexAttribute*>* attributes = vertexFunction->_mtlFunction.vertexAttributes;
+        for (MTLVertexAttribute* attr in attributes) {
+          sGpuVertexAttribute& va = attrs.emplace_back();
+          if (!_MTLVertexAttributeToGpuVertexAttribute(va, attr)) {
+            niError(niFmt("Can't create pipeline, cant validate vertex attribute [%d]: %s", attrs.size()-1,va.ToString()));
+            return eFalse;
+          }
+          // niDebugFmt(("... Vertex Attribute[%d]: %s.", attrs.size()-1, va.ToString()));
 
-    pipelineDesc.vertexFunction = vertexFunction->_mtlFunction;
-    pipelineDesc.fragmentFunction = pixelFunction->_mtlFunction;
+          niLet isMojoVA = (va._fvf == 0);
+          // first attribute
+          if (attrs.size() == 1) {
+            hasMojoVertexAttribute = isMojoVA;
+          }
+          else if ((hasMojoVertexAttribute && !isMojoVA) ||
+                   (!hasMojoVertexAttribute && isMojoVA)) {
+            niError(niFmt("Can't create pipeline, cant mix legacy and IN vertex attributes [%d]: %s",
+                          attrs.size()-1,va.ToString()));
+            return eFalse;
+          }
+        }
+      }
+      if (attrs.empty()) {
+        niError(niFmt("Can't create pipeline, gpu vertex function '%s' doesn't have vertex attributes.",
+                      vertexFunction->GetDeviceResourceName()));
+        return eFalse;
+      }
+      if (hasMojoVertexAttribute) {
+        pipelineDesc.vertexDescriptor = _CreateMetalVertDescForFVF(knMetalStageInBufferIndex, _desc->GetFVF());
+      }
+      else {
+        pipelineDesc.vertexDescriptor = _CreateMetalVertDescForFVFAndGpuVertexAttibutes(
+          knMetalStageInBufferIndex, _desc->GetFVF(), attrs);
+      }
+    }
+
+    // Pixel gpu function
+    {
+      sMetalFunction* pixelFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
+      niCheck(pixelFunction != nullptr, 0);
+      pipelineDesc.fragmentFunction = pixelFunction->_mtlFunction;
+    }
 
     // Color attachments
     {
@@ -473,7 +713,6 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
       _desc->GetDepthFormat() == eGpuPixelFormat_D16 ||
       _desc->GetDepthFormat() == eGpuPixelFormat_D24S8,
       eFalse);
-    pipelineDesc.vertexDescriptor = _CreateMetalVertDesc(knMetalStageInBufferIndex, _desc->GetFVF());
 
     // Create the pipeline state
     NSError* error = nil;

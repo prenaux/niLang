@@ -10,6 +10,20 @@
 
 namespace ni {
 
+struct sGpuVertexAttribute {
+  cString _name;
+  tU32 _location = eInvalidHandle;
+  tType _type = 0;
+  tFVF _fvf = 0;
+
+  cString ToString() const {
+    return niFmt("sGpuVertexAttribute { name='%s', loc: %d, type: %s, fvf: '%s' (0x%x) }",
+                 _name, _location,
+                 ni::GetTypeString(_type),
+                 ni::FVFToShortString(_fvf), _fvf);
+  }
+};
+
 eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat);
 eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat);
 eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat);

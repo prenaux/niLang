@@ -4800,7 +4800,7 @@ tBool DoEvaluate(iExpressionContext*)
 EndOp()
 
 //! StrRFind(aText, aSub) -> Int
-BeginOpF(StrRFind,eInvalidHandle)
+BeginOpF(StrRFind,2)
 tBool SetupEvaluation(iExpressionContext*)
 {
   mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
@@ -4811,6 +4811,87 @@ tBool DoEvaluate(iExpressionContext*)
   cString text = mvOperands[0].GetVariable()->GetString();
   cString tofind = mvOperands[1].GetVariable()->GetString();
   mptrResult->SetFloat(text.rfind(tofind));
+  return eTrue;
+}
+EndOp()
+
+//! StrReplace(aText, aSub) -> String
+BeginOpF(StrReplace,3)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  return eTrue;
+}
+tBool DoEvaluate(iExpressionContext*)
+{
+  cString text = mvOperands[0].GetVariable()->GetString();
+  cString match = mvOperands[1].GetVariable()->GetString();
+  cString toReplace = mvOperands[2].GetVariable()->GetString();
+  tI32 idx = text.find(match);
+  if (idx >= 0) {
+    text = text.substr(0, idx) + toReplace + text.substr(idx + match.length(), text.length());
+  }
+  mptrResult->SetString(text);
+  return eTrue;
+}
+EndOp()
+
+//! StrMerge(aText, aSub) -> String
+BeginOpF(StrMerge,2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  return eTrue;
+}
+tBool DoEvaluate(iExpressionContext*)
+{
+  cString text = mvOperands[0].GetVariable()->GetString();
+  cString toMerge = mvOperands[1].GetVariable()->GetString();
+  tI32 idx = text.find(toMerge);
+  if (idx < 0) {
+    text += toMerge;
+  }
+  mptrResult->SetString(text);
+  return eTrue;
+}
+EndOp()
+
+//! StrErase(aText, aSub) -> String
+BeginOpF(StrErase,2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  return eTrue;
+}
+tBool DoEvaluate(iExpressionContext*)
+{
+  cString text = mvOperands[0].GetVariable()->GetString();
+  cString toRemove = mvOperands[1].GetVariable()->GetString();
+  tI32 idx = text.find(toRemove);
+  if (idx >= 0) {
+    text.erase(idx, toRemove.length());
+  }
+  mptrResult->SetString(text);
+  return eTrue;
+}
+EndOp()
+
+//! StrRRemove(aText, aSub) -> String
+BeginOpF(StrRErase,2)
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  return eTrue;
+}
+tBool DoEvaluate(iExpressionContext*)
+{
+  cString text = mvOperands[0].GetVariable()->GetString();
+  cString toRemove = mvOperands[1].GetVariable()->GetString();
+  tI32 idx = text.rfind(toRemove);
+  if (idx >= 0) {
+    text.erase(idx, toRemove.length());
+  }
+  mptrResult->SetString(text);
   return eTrue;
 }
 EndOp()
@@ -6491,6 +6572,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   AddOp(StrNormalize);
   AddOp(StrFind);
   AddOp(StrRFind);
+  AddOp(StrReplace);
+  AddOp(StrMerge);
+  AddOp(StrErase);
+  AddOp(StrRErase);
 
   AddOp(Format);
   AddOp(FormatTimeSeconds);

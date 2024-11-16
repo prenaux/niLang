@@ -1094,6 +1094,39 @@ TEST_FIXTURE(FExpression,StrAfter) {
   CHECK_EQUAL(_ASTR("02C-G1-FHD01"),v);
 }
 
+TEST_FIXTURE(FExpression,StrReplace) {
+  {
+    const cString v = ni::GetLang()->Eval("StrReplace('Container-02C-G1-FHD01','-02C','-03D')")->GetString();
+    CHECK_EQUAL(_ASTR("Container-03D-G1-FHD01"),v);
+  }
+
+  {
+    const cString v = ni::GetLang()->Eval("StrReplace('Container-02C-G1-FHD01','-02C',null)")->GetString();
+    CHECK_EQUAL(_ASTR("Container-G1-FHD01"),v);
+  }
+}
+
+TEST_FIXTURE(FExpression,StrMerge) {
+  const cString v = ni::GetLang()->Eval("StrMerge('Container-02C-G1-FHD01','-02C')")->GetString();
+  CHECK_EQUAL(_ASTR("Container-02C-G1-FHD01"),v);
+
+  const cString v1 = ni::GetLang()->Eval("StrMerge('Container-02C-G1-FHD01','-02D')")->GetString();
+  CHECK_EQUAL(_ASTR("Container-02C-G1-FHD01-02D"),v1);
+}
+
+TEST_FIXTURE(FExpression,StrErase) {
+  const cString v = ni::GetLang()->Eval("StrErase('Container-02C-G1-FHD01','-02C')")->GetString();
+  CHECK_EQUAL(_ASTR("Container-G1-FHD01"),v);
+
+  const cString v1 = ni::GetLang()->Eval("StrErase('Container-02C-G1-FHD01','')")->GetString();
+  CHECK_EQUAL(_ASTR("Container-02C-G1-FHD01"),v1);
+}
+
+TEST_FIXTURE(FExpression,StrRErase) {
+  const cString v = ni::GetLang()->Eval("StrRErase('Container-02C-G1-02C-FHD01','-02C')")->GetString();
+  CHECK_EQUAL(_ASTR("Container-02C-G1-FHD01"),v);
+}
+
 TEST_FIXTURE(FExpression,Quat) {
   Ptr<iExpressionContext> ptrCtx = ni::GetLang()->CreateExpressionContext();
   CHECK(ptrCtx.IsOK());

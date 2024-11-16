@@ -359,6 +359,15 @@ struct GpuTexAlpha : public GpuCanvasBase {
 
   tBool _Init() niImpl {
     {
+      niLetMut wnd = UnitTest::GetTestAppContext()->_window;
+      // Make a square window so that when we're rotating the square it doesnt
+      // look too stretched. We're drawing it directly in clip space which is
+      // [-1;1] from the left to the right of our application window.
+      wnd->SetClientSize(Vec2i(500,500));
+      wnd->CenterWindow();
+    }
+
+    {
       _vaBuffer = niCheckNN(
         _vaBuffer,
         _driverGpu->CreateGpuBuffer(
@@ -393,18 +402,15 @@ struct GpuTexAlpha : public GpuCanvasBase {
       _iaBuffer->Unlock();
     }
     {
+      TestGpuFuncs_TestUniforms ubInit;
       _uBuffer = niCheckNN(
         _uBuffer,
-        _driverGpu->CreateGpuBuffer(
+        _driverGpu->CreateGpuBufferFromDataRaw(
+          (tPtr)&ubInit,
           sizeof(TestGpuFuncs_TestUniforms),
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Uniform),
         eFalse);
-      niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(0, _uBuffer->GetSize(), eLock_Discard);
-      niCheck(uBuffer != nullptr, eFalse);
-      uBuffer->alphaRef = 1.0f;
-      uBuffer->materialColor = sVec4f::One();
-      _uBuffer->Unlock();
     }
 
     {
@@ -452,7 +458,8 @@ struct GpuTexAlpha : public GpuCanvasBase {
     {
       niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;
       uBuffer->materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
-      uBuffer->alphaRef = cosTime;
+      uBuffer->alphaRef = cosTime - 0.05f; // 0.05 so that we have a full "no alpha test" mode
+      MatrixRotationZ(uBuffer->mtxWVP,WrapRad((tF32)mfAnimationTime*0.1f));
     }
     _uBuffer->Unlock();
 

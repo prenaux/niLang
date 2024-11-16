@@ -3107,12 +3107,13 @@ iWidget* __stdcall cWidget::CreateDefaultHoverWidget(ni::iHString* ahspHoverText
   w->SetText(ahspHoverText);
 
   iOverlay* frame = w->FindSkinElement(w->GetSkinClass(),NULL,_H("Frame"));
-  iFont* font = w->GetFont();
+  iFont* font = w->FindSkinFont(w->GetSkinClass(), NULL, _H("Default"));
   if (font) {
     const tF32 extraWidth = font->GetCharWidth(' ') * 2.0f;
     sRectf rect(0,0,0,0);
     rect = font->ComputeTextSize(rect,niHStr(w->GetLocalizedText()),0);
     if (frame) {
+      frame->GetMaterial()->SetFlags(frame->GetMaterial()->GetFlags()|eMaterialFlags_Translucent);
       const sVec4f& vFrame = frame->GetFrame();
       w->SetSize(
           rect.GetSize()+

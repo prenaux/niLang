@@ -1,5 +1,5 @@
-<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="njn8v3m1jkd52jn12bxpca9n78">
-	<Target target="vkgl45" src_digest="14yrkyj481m6e66cfqsp9swmqm">
+<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="sxc59ev8mtt6rp3c6rc7w6s24g">
+	<Target target="vkgl45" src_digest="b656pfvas66hn6n0df976vrfrm">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -13,7 +13,7 @@
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
@@ -21,6 +21,7 @@
 
 struct TestGpuFuncs_TestUniforms
 {
+    mat4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -28,7 +29,7 @@ struct TestGpuFuncs_TestUniforms
     vec4 materialColor;
 };
 
-uniform vec4 UBO_TestGpuFuncs_TestUniforms[2];
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
@@ -37,14 +38,15 @@ layout(location = 2) out vec2 OUT_2_rval_tex0;
 
 void main()
 {
-    gl_Position = vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = IN_1_aInput_color * TestGpuFuncs_TestUniforms(UBO_TestGpuFuncs_TestUniforms[0].x, UBO_TestGpuFuncs_TestUniforms[0].y, UBO_TestGpuFuncs_TestUniforms[0].z, UBO_TestGpuFuncs_TestUniforms[0].w, UBO_TestGpuFuncs_TestUniforms[1]).materialColor;
+    TestGpuFuncs_TestUniforms _109 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    gl_Position = _109.mtxWVP * vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_1_aInput_color * _109.materialColor;
     OUT_2_rval_tex0 = IN_2_aInput_tex0;
 }
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="gds5dhbr0733jb9kmhfdb9j3hg">
+	<Target target="msl2_macos" src_digest="r0xr1426ds16xqf4a76hgc4zb4">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -58,7 +60,7 @@ void main()
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
@@ -69,6 +71,7 @@ using namespace metal;
 
 struct TestGpuFuncs_TestUniforms
 {
+    float4x4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -98,7 +101,7 @@ struct main0_in
 vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]])
 {
     main0_out out = {};
-    out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
+    out.gl_Position = IN_1_aUniforms.v.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
     out.OUT_1_rval_color = in.IN_1_aInput_color * IN_1_aUniforms.v.materialColor;
     out.OUT_2_rval_tex0 = in.IN_2_aInput_tex0;
     return out;
@@ -106,7 +109,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="my7rj0hyj1ddfx0eydmmwz6gtr">
+	<Target target="hlsl5" src_digest="efmp7bv49zn3xfamaqfcjstz1w">
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
@@ -120,12 +123,13 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
 		<SamplerStates/>
 		<SampledTextures/>
 		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="32">
+			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
 				<Const name="v" type="struct" size="1" offset="0"/>
 			</ConstBuff>
 		</ConstBuffs>
 		<![CDATA[struct TestGpuFuncs_TestUniforms
 {
+    row_major float4x4 mtxWVP;
     float alphaRef;
     float padding0;
     float padding1;
@@ -162,7 +166,7 @@ struct SPIRV_Cross_Output
 
 void vert_main()
 {
-    gl_Position = float4(IN_0_aInput_position, 1.0f);
+    gl_Position = mul(float4(IN_0_aInput_position, 1.0f), IN_1_aUniforms_v.mtxWVP);
     OUT_1_rval_color = IN_1_aInput_color * IN_1_aUniforms_v.materialColor;
     OUT_2_rval_tex0 = IN_2_aInput_tex0;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;

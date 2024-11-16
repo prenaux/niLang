@@ -244,7 +244,7 @@ struct GpuSquare : public GpuCanvasBase {
 TEST_FIXTURE_WIDGET(FGpu,GpuSquare);
 
 struct GpuTexture : public GpuCanvasBase {
-  typedef sVertexPAT1 tVertexFmt;
+  typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
@@ -270,10 +270,10 @@ struct GpuTexture : public GpuCanvasBase {
       // left x = -1,  right x =  1
       //  top y =  1, bottom y = -1
       // this a regular "math grid" with the x axis going right and y axis going up
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, 0xFFFF0000, {0.0f,0.0f}}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, 0xFF00FF00, {1.0f,0.0f}}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, 0xFF0000FF, {1.0f,1.0f}}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, 0xFFFFFFFF, {0.0f,1.0f}}; // White
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White
       _vaBuffer->Unlock();
     }
     {
@@ -344,7 +344,7 @@ struct GpuTexture : public GpuCanvasBase {
 TEST_FIXTURE_WIDGET(FGpu,GpuTexture);
 
 struct GpuTexAlpha : public GpuCanvasBase {
-  typedef sVertexPAT1 tVertexFmt;
+  typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
@@ -372,10 +372,10 @@ struct GpuTexAlpha : public GpuCanvasBase {
       // left x = -1,  right x =  1
       //  top y =  1, bottom y = -1
       // this a regular "math grid" with the x axis going right and y axis going up
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, 0xFFFF0000, {0.0f,0.0f}}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, 0xFF00FF00, {1.0f,0.0f}}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, 0xFF0000FF, {1.0f,1.0f}}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, 0xFFFFFFFF, {0.0f,1.0f}}; // White
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White
       _vaBuffer->Unlock();
     }
     {

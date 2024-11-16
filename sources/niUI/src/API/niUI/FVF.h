@@ -230,7 +230,7 @@ inline cString FVFToShortString(tFVF aFVF)
   if (niFlagIs(aFVF,eFVF_ColorA))
     str += _A("A");
   for (tU32 i = 0; i < eFVF_TexNumCoo(aFVF); ++i) {
-    str += niFmt(_A("T%d%d"),i+1,eFVF_TexCooDim(aFVF,i));
+    str += niFmt(_A("T%d_%d"),i+1,eFVF_TexCooDim(aFVF,i));
   }
   return str;
 }

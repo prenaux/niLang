@@ -402,7 +402,7 @@ struct GpuTexAlpha : public GpuCanvasBase {
         eFalse);
       niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(0, _uBuffer->GetSize(), eLock_Discard);
       niCheck(uBuffer != nullptr, eFalse);
-      uBuffer->alphaTest = 1.0f;
+      uBuffer->alphaRef = 1.0f;
       uBuffer->materialColor = sVec4f::One();
       _uBuffer->Unlock();
     }
@@ -452,7 +452,7 @@ struct GpuTexAlpha : public GpuCanvasBase {
     {
       niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;
       uBuffer->materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
-      uBuffer->alphaTest = cosTime;
+      uBuffer->alphaRef = cosTime;
     }
     _uBuffer->Unlock();
 

@@ -78,7 +78,18 @@ niExportFuncCPP(tU32) StringSplit(const cString& aToSplit, const achar* aaszSepa
 niExportFuncCPP(void) StringSplitNameFlags(const cString& aToSplit, cString* pstrName, astl::vector<cString>* plstFlags);
 niExportFuncCPP(tU32) StringSplitSep(const cString& aToSplit, const achar* aaszSeparators, astl::vector<cString>* apOut);
 niExportFuncCPP(tU32) StringSplitSepQuoted(const cString& aToSplit, const achar* aaszSeparators, const tU32 aQuote, astl::vector<cString>* apOut);
-niExportFuncCPP(cString) StringVecJoin(const astl::vector<cString>& aVec, const achar* aaszJoin);
+
+template<typename TVEC>
+inline cString StringJoin(const TVEC& aVec, const achar* aaszJoin) {
+  cString r;
+  niLoop(i,aVec.size()) {
+    r << aVec[i];
+    if (niStringIsOK(aaszJoin) && i != (aVec.size()-1)) {
+      r << aaszJoin;
+    }
+  }
+  return r;
+}
 
 niExportFuncCPP(tU32) StringSplitScript(
   astl::vector<cString>* apStatements,
@@ -98,7 +109,7 @@ niExportFuncCPP(cString&) StringAppendCsvValue(
   const achar* aValue, const tU32 i);
 
 template <typename T>
-cString& StringAppendCsvValues(
+inline cString& StringAppendCsvValues(
   cString& o, const achar aDelim, const achar aQuote,
   const T* apValues, const tU32 anNumValues)
 {
@@ -111,7 +122,7 @@ cString& StringAppendCsvValues(
 }
 
 template <typename T>
-cString& StringAppendCsvValues(
+inline cString& StringAppendCsvValues(
   cString& o, const achar aDelim, const achar aQuote, const T& container)
 {
   tU32 i = 0;

@@ -41,18 +41,6 @@ niExportFuncCPP(cString) StringRepeat(ain<tI32> aN, ain<tChars> aToRepeat) {
   return StringCatRepeat(r, aN, aToRepeat);
 }
 
-// TODO: Move to StringDef.h & StringLib.cpp
-niExportFuncCPP(cString) StringVecJoin(const astl::vector<tHStringNN>& aVec, const achar* aaszJoin) {
-  cString r;
-  niLoop(i,aVec.size()) {
-    r += niHStr(aVec[i]);
-    if (niStringIsOK(aaszJoin) && i != (aVec.size()-1)) {
-      r += aaszJoin;
-    }
-  }
-  return r;
-}
-
 struct iLintFuncCall : public iUnknown {
   niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
 
@@ -1936,7 +1924,7 @@ struct sLinter {
       return niNew sScriptTypeErrorCode(
         _ss, _HC(error_code_lint_call_error),
         niFmt("ImportScript: Import cycle while importing '%s'. Stack: %s.",
-              aModuleName,StringVecJoin(_scriptImportStack," > ")));
+              aModuleName,StringJoin(_scriptImportStack," > ")));
     }
 
     tImportMapIt it = _scriptImports.find(aModuleName);

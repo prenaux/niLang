@@ -3199,17 +3199,6 @@ niExportFuncCPP(tU32) StringSplitSepQuoted(const cString& aToSplit,
   return token_num;
 }
 
-niExportFuncCPP(cString) StringVecJoin(const astl::vector<cString>& aVec, const achar* aaszJoin) {
-  cString r;
-  niLoop(i,aVec.size()) {
-    r += aVec[i];
-    if (niStringIsOK(aaszJoin) && i != (aVec.size()-1)) {
-      r += aaszJoin;
-    }
-  }
-  return r;
-}
-
 niExportFunc(const achar*) StrHasText(const achar* aText) {
   if (!niStringIsOK(aText))
     return NULL;

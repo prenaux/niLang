@@ -1,22 +1,69 @@
-<Shader ver="2" name="texture_alphatest_vs" exec="vertex" input_filename="texture_alphatest_vs.spv" input_digest="sxc59ev8mtt6rp3c6rc7w6s24g">
-	<Target target="vkgl45" src_digest="b656pfvas66hn6n0df976vrfrm">
+<GpuFunction ver="3" name="texture_alphatest_vs" exec="vertex">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="vertex"/>
+		</EntryPoints>
+		<Types>
+			<_103 name="TestGpuFuncs_TestUniforms">
+				<members>
+					<Member name="mtxWVP" type="mat4">
+						<MemberQualifiers offset="0" matrix_stride="16"/>
+					</Member>
+					<Member name="alphaRef" type="float">
+						<MemberQualifiers offset="64"/>
+					</Member>
+					<Member name="padding0" type="float">
+						<MemberQualifiers offset="68"/>
+					</Member>
+					<Member name="padding1" type="float">
+						<MemberQualifiers offset="72"/>
+					</Member>
+					<Member name="padding2" type="float">
+						<MemberQualifiers offset="76"/>
+					</Member>
+					<Member name="materialColor" type="vec4">
+						<MemberQualifiers offset="80"/>
+					</Member>
+				</members>
+			</_103>
+			<_104 name="UBO_TestGpuFuncs_TestUniforms">
+				<members>
+					<Member name="v" type="_103">
+						<MemberQualifiers offset="0"/>
+					</Member>
+				</members>
+			</_104>
+			<_131 name="gl_PerVertex">
+				<members>
+					<Member name="gl_Position" type="vec4"/>
+					<Member name="gl_PointSize" type="float"/>
+					<Member name="gl_ClipDistance" type="float">
+						<MemberQualifiers>
+							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
+						</MemberQualifiers>
+					</Member>
+					<Member name="gl_CullDistance" type="float">
+						<MemberQualifiers>
+							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
+						</MemberQualifiers>
+					</Member>
+				</members>
+			</_131>
+		</Types>
 		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
+			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
+			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
+			<Input name="IN_2_aInput_tex0" type="vec2" location="2"/>
 		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
+		<Outputs>
+			<Output name="OUT_1_rval_color" type="vec4" location="1"/>
+			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
-				<Const name="v" type="struct" size="1" offset="0"/>
-			</ConstBuff>
-		</ConstBuffs>
+		<UBOs>
+			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_104" set="0" binding="0"/>
+		</UBOs>
+	</Reflection>
+	<Target target="vkgl45">
 		<![CDATA[#version 450
 
 struct TestGpuFuncs_TestUniforms
@@ -46,24 +93,7 @@ void main()
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="r0xr1426ds16xqf4a76hgc4zb4">
-		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
-		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
-				<Const name="v" type="struct" size="1" offset="0"/>
-			</ConstBuff>
-		</ConstBuffs>
+	<Target target="msl2_macos">
 		<![CDATA[#include <metal_stdlib>
 #include <simd/simd.h>
 
@@ -109,24 +139,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="efmp7bv49zn3xfamaqfcjstz1w">
-		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-			<Input name="IN_2_aInput_tex0" type="vec2" deco_location="2"/>
-		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs>
-			<ConstBuff type="UBO_TestGpuFuncs_TestUniforms" name="IN_1_aUniforms" size="96">
-				<Const name="v" type="struct" size="1" offset="0"/>
-			</ConstBuff>
-		</ConstBuffs>
+	<Target target="hlsl5">
 		<![CDATA[struct TestGpuFuncs_TestUniforms
 {
     row_major float4x4 mtxWVP;
@@ -186,4 +199,4 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 }
 ]]>
 	</Target>
-</Shader>
+</GpuFunction>

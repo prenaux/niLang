@@ -1,10 +1,39 @@
-<GpuFunction ver="3" name="texture_vs" exec="vertex">
+<GpuFunction ver="3" name="fixed_pat1_vs" exec="vertex">
 	<Reflection>
 		<EntryPoints>
 			<EntryPoint name="main" exec="vertex"/>
 		</EntryPoints>
 		<Types>
-			<_95 name="gl_PerVertex">
+			<_103 name="TestGpuFuncs_TestUniforms">
+				<members>
+					<Member name="mtxWVP" type="mat4">
+						<MemberQualifiers offset="0" matrix_stride="16"/>
+					</Member>
+					<Member name="alphaRef" type="float">
+						<MemberQualifiers offset="64"/>
+					</Member>
+					<Member name="padding0" type="float">
+						<MemberQualifiers offset="68"/>
+					</Member>
+					<Member name="padding1" type="float">
+						<MemberQualifiers offset="72"/>
+					</Member>
+					<Member name="padding2" type="float">
+						<MemberQualifiers offset="76"/>
+					</Member>
+					<Member name="materialColor" type="vec4">
+						<MemberQualifiers offset="80"/>
+					</Member>
+				</members>
+			</_103>
+			<_104 name="UBO_TestGpuFuncs_TestUniforms">
+				<members>
+					<Member name="v" type="_103">
+						<MemberQualifiers offset="0"/>
+					</Member>
+				</members>
+			</_104>
+			<_131 name="gl_PerVertex">
 				<members>
 					<Member name="gl_Position" type="vec4"/>
 					<Member name="gl_PointSize" type="float"/>
@@ -19,7 +48,7 @@
 						</MemberQualifiers>
 					</Member>
 				</members>
-			</_95>
+			</_131>
 		</Types>
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
@@ -30,10 +59,24 @@
 			<Output name="OUT_1_rval_color" type="vec4" location="1"/>
 			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
+		<UBOs>
+			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_104" set="0" binding="0"/>
+		</UBOs>
 	</Reflection>
 	<Target target="vkgl45">
 		<![CDATA[#version 450
 
+struct TestGpuFuncs_TestUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
@@ -42,8 +85,9 @@ layout(location = 2) out vec2 OUT_2_rval_tex0;
 
 void main()
 {
-    gl_Position = vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = IN_1_aInput_color;
+    TestGpuFuncs_TestUniforms _109 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    gl_Position = _109.mtxWVP * vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_1_aInput_color * _109.materialColor;
     OUT_2_rval_tex0 = IN_2_aInput_tex0;
 }
 
@@ -54,6 +98,21 @@ void main()
 #include <simd/simd.h>
 
 using namespace metal;
+
+struct TestGpuFuncs_TestUniforms
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_TestGpuFuncs_TestUniforms
+{
+    TestGpuFuncs_TestUniforms v;
+};
 
 struct main0_out
 {
@@ -69,11 +128,11 @@ struct main0_in
     float2 IN_2_aInput_tex0 [[attribute(2)]];
 };
 
-vertex main0_out main0(main0_in in [[stage_in]])
+vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]])
 {
     main0_out out = {};
-    out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = in.IN_1_aInput_color;
+    out.gl_Position = IN_1_aUniforms.v.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
+    out.OUT_1_rval_color = in.IN_1_aInput_color * IN_1_aUniforms.v.materialColor;
     out.OUT_2_rval_tex0 = in.IN_2_aInput_tex0;
     return out;
 }
@@ -81,7 +140,23 @@ vertex main0_out main0(main0_in in [[stage_in]])
 ]]>
 	</Target>
 	<Target target="hlsl5">
-		<![CDATA[static float4 gl_Position;
+		<![CDATA[struct TestGpuFuncs_TestUniforms
+{
+    row_major float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
+{
+    TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+
+static float4 gl_Position;
 static float3 IN_0_aInput_position;
 static float4 IN_1_aInput_color;
 static float2 IN_2_aInput_tex0;
@@ -104,8 +179,8 @@ struct SPIRV_Cross_Output
 
 void vert_main()
 {
-    gl_Position = float4(IN_0_aInput_position, 1.0f);
-    OUT_1_rval_color = IN_1_aInput_color;
+    gl_Position = mul(float4(IN_0_aInput_position, 1.0f), IN_1_aUniforms_v.mtxWVP);
+    OUT_1_rval_color = IN_1_aInput_color * IN_1_aUniforms_v.materialColor;
     OUT_2_rval_tex0 = IN_2_aInput_tex0;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }

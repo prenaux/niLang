@@ -1,17 +1,36 @@
-<Shader ver="2" name="triangle_vs" exec="vertex" input_filename="triangle_vs.spv" input_digest="yymx378hfdnry201hr0p450ex4">
-	<Target target="vkgl45" src_digest="4d0xf49r143h1ssbq8phv0qxaw">
+<GpuFunction ver="3" name="triangle_vs" exec="vertex">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="vertex"/>
+		</EntryPoints>
+		<Types>
+			<_100 name="gl_PerVertex">
+				<members>
+					<Member name="gl_Position" type="vec4"/>
+					<Member name="gl_PointSize" type="float"/>
+					<Member name="gl_ClipDistance" type="float">
+						<MemberQualifiers>
+							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
+						</MemberQualifiers>
+					</Member>
+					<Member name="gl_CullDistance" type="float">
+						<MemberQualifiers>
+							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
+						</MemberQualifiers>
+					</Member>
+				</members>
+			</_100>
+		</Types>
 		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
+			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
 		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
+		<Outputs>
+			<Output name="OUT_1_rval_color" type="vec4" location="1"/>
+			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	</Reflection>
+	<Target target="vkgl45">
 		<![CDATA[#version 450
 
 layout(location = 0) in vec3 IN_0_aInput_position;
@@ -30,19 +49,7 @@ void main()
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="1gwwahyxa3mvnmd0tqn3rcd1am">
-		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	<Target target="msl2_macos">
 		<![CDATA[#include <metal_stdlib>
 #include <simd/simd.h>
 
@@ -73,19 +80,7 @@ vertex main0_out main0(main0_in in [[stage_in]])
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="08xhe6tsjte4ghbwkjxpfk6138">
-		<Inputs>
-			<Input name="IN_0_aInput_position" type="vec3" deco_location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-		</Inputs>
-		<Outputs deco_location="2">
-			<Output name="OUT_1_rval_color" type="vec4"/>
-			<Output name="OUT_2_rval_tex0" type="vec2"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	<Target target="hlsl5">
 		<![CDATA[static float4 gl_Position;
 static float3 IN_0_aInput_position;
 static float4 IN_1_aInput_color;
@@ -129,4 +124,4 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 }
 ]]>
 	</Target>
-</Shader>
+</GpuFunction>

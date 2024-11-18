@@ -1,20 +1,25 @@
 #include "stdafx.h"
-#include <niLang/Utils/IDGenerator.h>
 #include "API/niUI_ModuleDef.h"
 #include "GDRV_Gpu.h"
+#include "GDRV_Utils.h"
+#include <niLang/Utils/DataTableUtils.h>
+#include <niLang/Utils/IDGenerator.h>
 
 namespace ni {
 
 _HDecl(gpufunction);
 
+/////////////////////////////////////////////////////////////////
 #define GPU_TRACE(aFmt) //niDebugFmt(aFmt)
 
+/////////////////////////////////////////////////////////////////
 eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat) {
   // the default RT is using BGRA8, other RT will follow this format so we can
   // reuse those pipelines
   return eGpuPixelFormat_BGRA8;
 }
 
+/////////////////////////////////////////////////////////////////
 eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
   if (niStringIsOK(aDSFormat)) {
     return eGpuPixelFormat_D32;
@@ -22,6 +27,7 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
   return eGpuPixelFormat_None;
 }
 
+/////////////////////////////////////////////////////////////////
 eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat) {
   // Depth formats
   if (ni::StrEq(aTexFormat,"D16")) {
@@ -55,6 +61,7 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat) {
   return eGpuPixelFormat_RGBA8;
 }
 
+/////////////////////////////////////////////////////////////////
 iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat) {
   static Ptr<iPixelFormat> _pixelFormats[eGpuPixelFormat_Last];
   if (!_pixelFormats[aFormat].IsOK()) {
@@ -75,9 +82,11 @@ iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat) {
   return _pixelFormats[aFormat];
 }
 
+/////////////////////////////////////////////////////////////////
 #define GPU_BLENDMODE(OP,SRCRGB,SRCALPHA,DESTRGB,DESTALPHA) \
   { eGpuBlendOp_##OP, eGpuBlendFactor_##SRCRGB, eGpuBlendFactor_##SRCALPHA, eGpuBlendFactor_##DESTRGB, eGpuBlendFactor_##DESTALPHA }
 
+/////////////////////////////////////////////////////////////////
 const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode) {
   static const sGpuBlendModeDesc _toBlendModeDesc[] = {
     // eBlendMode_NoBlending
@@ -107,6 +116,7 @@ const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode) {
   return _toBlendModeDesc[aBlendMode];
 }
 
+/////////////////////////////////////////////////////////////////
 struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
   sGpuBlendModeDesc _desc;
 
@@ -177,10 +187,12 @@ struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
   }
 };
 
+/////////////////////////////////////////////////////////////////
 iGpuBlendMode* _CreateGpuBlendMode() {
   return niNew sGpuBlendMode();
 }
 
+/////////////////////////////////////////////////////////////////
 struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
   sGpuPipelineDesc _desc;
 
@@ -270,10 +282,12 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
   }
 };
 
+/////////////////////////////////////////////////////////////////
 iGpuPipelineDesc* _CreateGpuPipelineDesc() {
   return niNew sGpuPipelineDescImpl();
 }
 
+/////////////////////////////////////////////////////////////////
 template <typename T>
 class cFixedGpuShaderBase : public T, public sShaderDesc
 {
@@ -281,7 +295,7 @@ class cFixedGpuShaderBase : public T, public sShaderDesc
   typedef cFixedGpuShaderBase tFixedGpuShaderBase;
 
   cFixedGpuShaderBase(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iGraphics* apGraphics,
     iHString* ahspName,
     iDeviceResourceManager* apDevResMan,
     iHString* ahspProfile,
@@ -294,8 +308,6 @@ class cFixedGpuShaderBase : public T, public sShaderDesc
     mhspProfile = ahspProfile;
     mptrDevResMan = apDevResMan;
     mptrDevResMan->Register(this);
-    mpIDGenerator = apIDGenerator;
-    mnUID = apIDGenerator->AllocID();
   }
 
   ~cFixedGpuShaderBase() {
@@ -328,7 +340,6 @@ class cFixedGpuShaderBase : public T, public sShaderDesc
   virtual void __stdcall Invalidate()
   {
     mptrConstants = NULL;
-    mpIDGenerator->FreeID(mnUID);
     if (!mptrDevResMan.IsOK()) return;
     mptrDevResMan->Unregister(this);
     mptrDevResMan = NULL;
@@ -365,10 +376,6 @@ class cFixedGpuShaderBase : public T, public sShaderDesc
     return mhspName;
   }
 
-  tU32 __stdcall GetUID() const niImpl {
-    return mnUID;
-  }
-
   ///////////////////////////////////////////////
   iDeviceResource* __stdcall Bind(iUnknown*) {
     return this;
@@ -377,22 +384,19 @@ class cFixedGpuShaderBase : public T, public sShaderDesc
   iGraphics* mpGraphics;
   Ptr<iDeviceResourceManager> mptrDevResMan;
   Ptr<iGpuFunction> mptrFunction;
-  tU32 mnUID;
-  LocalIDGenerator* mpIDGenerator;
 };
 
+/////////////////////////////////////////////////////////////////
 // Vertex program
 class cFixedGpuShaderVertex :
     public cFixedGpuShaderBase<ImplRC<iFixedGpuShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cFixedGpuShaderVertex(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iGraphics* apGraphics,
     iHString* ahspName, iDeviceResourceManager* apDevResMan,
     iHString* ahspProfile, iGpuFunction* apFunction)
-    : tFixedGpuShaderBase(apGraphics,apIDGenerator,
-                       ahspName,apDevResMan,ahspProfile,
-                       apFunction)
+    : tFixedGpuShaderBase(apGraphics,ahspName,apDevResMan,ahspProfile,apFunction)
   {
     niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Vertex);
   }
@@ -403,19 +407,17 @@ class cFixedGpuShaderVertex :
   }
 };
 
+/////////////////////////////////////////////////////////////////
 // Pixel program
 class cFixedGpuShaderPixel :
     public cFixedGpuShaderBase<ImplRC<iFixedGpuShader,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iShader,iDeviceResource> >
 {
  public:
   cFixedGpuShaderPixel(
-    iGraphics* apGraphics, LocalIDGenerator* apIDGenerator,
+    iGraphics* apGraphics,
     iHString* ahspName, iDeviceResourceManager* apDevResMan,
     iHString* ahspProfile, iGpuFunction* apFunction)
-    : tFixedGpuShaderBase(
-        apGraphics,apIDGenerator,
-        ahspName,apDevResMan,
-        ahspProfile,apFunction)
+    : tFixedGpuShaderBase(apGraphics,ahspName,apDevResMan,ahspProfile,apFunction)
   {
     niPanicAssert(mptrFunction->GetFunctionType() == eGpuFunctionType_Pixel);
   }
@@ -426,20 +428,36 @@ class cFixedGpuShaderPixel :
   }
 };
 
+/////////////////////////////////////////////////////////////////
 struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   typedef astl::map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
   tPipelineMap _pipelines;
-  LocalIDGenerator _idGenerator;
+  Ptr<iGpuFunction> _vertFuncPAT1;
+  Ptr<iGpuFunction> _pixelFuncTex;
+  Ptr<iGpuFunction> _pixelFuncTexAlphaTest;
 
-  Ptr<iGpuFunction> CompileShader(iGraphicsDriverGpu* apGpuDriver, eGpuFunctionType aType, iHString* ahspName, const achar* aSource) niImpl {
-    NN<iDataTable> dtFunc = CreateGpuFunctionDT(apGpuDriver,aSource);
-    return apGpuDriver->CreateGpuFunction(aType,ahspName,dtFunc);
+  tBool _CreateFixedGpuPipelines(iGraphicsDriverGpu* apGpuDriver) {
+#define LOAD_FIXED_GPUFUNC(TYPE,VAR,PATH) {                             \
+      tHStringPtr hspPath = _H("niUI://gpufunc/fixed_" #PATH ".gpufunc.xml"); \
+      niLet dtFunc = niCheckNN(dtFunc,LoadDataTable(niHStr(hspPath)),eFalse); \
+      VAR = niCheckNN(                                                  \
+        VAR, apGpuDriver->CreateGpuFunction(hspPath,eGpuFunctionType_##TYPE,dtFunc), \
+        eFalse);                                                        \
+    }
+
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPAT1, pat1_vs);
+    LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTex, tex_ps);
+    LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTexAlphaTest, tex_alphatest_ps);
+
+#undef LOAD_FIXED_GPUFUNC
+    return eTrue;
   }
 
-  Ptr<iGpuPipeline> GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, ain<tFixedGpuPipelineId> aPipelineId, iFixedGpuShader* apVS, iFixedGpuShader* apPS) niImpl {
+  Ptr<iGpuPipeline> GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl {
     tPipelineMap::iterator it = _pipelines.find(aPipelineId);
     if (it == _pipelines.end()) {
-      Ptr<iGpuPipeline> pipeline = _CreatePipeline(apGpuDriver,(sFixedGpuPipelineId&)aPipelineId,apVS,apPS);
+      Ptr<iGpuPipeline> pipeline = CreateFixedGpuPipeline(
+        apGpuDriver,aPipelineId,apFuncVertex,apFuncPixel);
       if (!pipeline.IsOK()) {
         // niDebugFmt(("VS %s, PS %s",vs->GetCode(),ps->GetCode()));
         niPanicUnreachable("Can't create gpu pipeline.");
@@ -451,50 +469,12 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     return it->second;
   }
 
-  Ptr<iGpuPipeline> _CreatePipeline(
-    iGraphicsDriverGpu* apGpuDriver,
-    const sFixedGpuPipelineId& aIdBits,
-    iFixedGpuShader* apVS, iFixedGpuShader* apPS)
-  {
-    niCheck(apVS && apVS->GetGpuFunction() != nullptr,nullptr);
-    niCheck(apVS->GetGpuFunction()->GetFunctionType() == eGpuFunctionType_Vertex,nullptr);
-    niCheck(apPS && apPS->GetGpuFunction() != nullptr,nullptr);
-    niCheck(apPS->GetGpuFunction()->GetFunctionType() == eGpuFunctionType_Pixel,nullptr);
-    cFixedGpuShaderVertex* vs = (cFixedGpuShaderVertex*)apVS;
-    cFixedGpuShaderPixel* ps = (cFixedGpuShaderPixel*)apPS;
-
-    NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreateGpuPipelineDesc()};
-    sGpuPipelineDesc& desc = *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
-    desc.mFVF = aIdBits.fvf;
-    desc.mColorFormats[0] = aIdBits.rt0;
-    desc.mColorFormats[1] = aIdBits.rt1;
-    desc.mColorFormats[2] = aIdBits.rt2;
-    desc.mColorFormats[3] = aIdBits.rt3;
-    desc.mDepthFormat = aIdBits.ds;
-    desc.mptrFuncs[eGpuFunctionType_Vertex] = vs->mptrFunction;
-    desc.mptrFuncs[eGpuFunctionType_Pixel] = ps->mptrFunction;
-    if (aIdBits.blendMode == 0) {
-      desc.mptrBlendMode = nullptr;
-    }
-    else if (aIdBits.blendMode < eBlendMode_Last) {
-      const sGpuBlendModeDesc& bm = _BlendModeToGpuBlendModeDesc((eBlendMode)aIdBits.blendMode);
-      desc.mptrBlendMode = apGpuDriver->CreateGpuBlendMode();
-      *((sGpuBlendModeDesc*)desc.mptrBlendMode->GetDescStructPtr()) = bm;
-    }
-    else {
-      desc.mptrBlendMode = nullptr;
-      niWarning("Invalid blend mode, falling back to 'no blending'.");
-    }
-    return apGpuDriver->CreateGpuPipeline(ptrPipelineDesc);
-  }
-
   Ptr<iFixedGpuShader> CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) niImpl {
     niCheckIsOK(apFunc,nullptr);
     switch (apFunc->GetFunctionType()) {
       case eGpuFunctionType_Vertex:
         return niNew cFixedGpuShaderVertex(
           apGraphics,
-          &_idGenerator,
           ahspName,
           apGraphics->GetShaderDeviceResourceManager(),
           _HC(gpufunction),
@@ -502,7 +482,6 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
       case eGpuFunctionType_Pixel:
         return niNew cFixedGpuShaderPixel(
           apGraphics,
-          &_idGenerator,
           ahspName,
           apGraphics->GetShaderDeviceResourceManager(),
           _HC(gpufunction),
@@ -515,10 +494,16 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   }
 };
 
-iFixedGpuPipelines* CreateFixedGpuPipelines() {
-  return niNew sFixedGpuPipelines();
+/////////////////////////////////////////////////////////////////
+Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriverGpu* apGpuDriver) {
+  NN<sFixedGpuPipelines> fixedPipelines = ni::MakeNN<sFixedGpuPipelines>();
+  niCheck(
+    fixedPipelines->_CreateFixedGpuPipelines(apGpuDriver),
+    nullptr);
+  return fixedPipelines;
 }
 
+/////////////////////////////////////////////////////////////////
 struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   NN<iGpuBuffer> _buffer;
   tFVF _fvf;
@@ -577,14 +562,18 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   }
 };
 
+/////////////////////////////////////////////////////////////////
 iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA) {
   return ((sFixedGpuVertexArray*)apVA)->_buffer;
 }
+
+/////////////////////////////////////////////////////////////////
 sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA) {
   niLet va = (sFixedGpuVertexArray*)apVA;
   return Vec2i((tI32)va->_fvf,(tI32)va->_fvfStride);
 }
 
+/////////////////////////////////////////////////////////////////
 struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
   NN<iGpuBuffer> _buffer;
   eGraphicsPrimitiveType _primType;
@@ -645,13 +634,16 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
   }
 };
 
+/////////////////////////////////////////////////////////////////
 iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA) {
   return ((sFixedGpuIndexArray*)apVA)->_buffer;
 }
 
+/////////////////////////////////////////////////////////////////
 iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
     niLet fvfStride = FVFGetStride(anFVF);
     Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateGpuBuffer(
+      nullptr,
       fvfStride * anNumVertices,
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Vertex);
@@ -662,12 +654,14 @@ iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 an
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
   niUnused(anMaxVertexIndex);
   Ptr<iGpuBuffer> iaBuffer = apGpuDriver->CreateGpuBuffer(
+    nullptr,
     knFixedGpuIndexSize * anNumIndices,
     eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Index);
   return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
 }
 
+/////////////////////////////////////////////////////////////////
 NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar* aaszSource) {
   NN<iDataTable> dtFunc = AsNN(ni::GetLang()->CreateDataTable("GpuFunction"));
   dtFunc->SetHString("target",apGpuDriver->GetGpuFunctionTarget());
@@ -675,6 +669,7 @@ NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar*
   return dtFunc;
 }
 
+/////////////////////////////////////////////////////////////////
 iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
   if (!apDT)
     return nullptr;
@@ -698,6 +693,361 @@ iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
       return foundDT;
   }
   return nullptr;
+}
+
+static tU32 _VertexFormatToFixedGpuVertexFormat(tFVF aFVF) {
+  switch (aFVF) {
+    case eVertexFormat_P: return eFixedGpuVertexFormat_P;
+    case eVertexFormat_PA: return eFixedGpuVertexFormat_PA;
+    case eVertexFormat_PAT1: return eFixedGpuVertexFormat_PAT1;
+    case eVertexFormat_PN: return eFixedGpuVertexFormat_PN;
+    case eVertexFormat_PNA: return eFixedGpuVertexFormat_PNA;
+    case eVertexFormat_PNT1: return eFixedGpuVertexFormat_PNT1;
+    case eVertexFormat_PNAT1: return eFixedGpuVertexFormat_PNAT1;
+    case eVertexFormat_PNT2: return eFixedGpuVertexFormat_PNT2;
+    case eVertexFormat_PNAT2: return eFixedGpuVertexFormat_PNAT2;
+    case eVertexFormat_PB4INT1: return eFixedGpuVertexFormat_PB4INT1;
+    case eVertexFormat_PB4INAT1: return eFixedGpuVertexFormat_PB4INAT1;
+    default: return eInvalidHandle;
+  }
+}
+
+static tU32 _CompiledStatesRSToFixedGpuRS(eCompiledStates aRS) {
+  switch (aRS) {
+    case eCompiledStates_RS_ColorWriteNone: return eFixedGpuRS_ColorWriteNone;
+    case eCompiledStates_RS_Filled: return eFixedGpuRS_Filled;
+    case eCompiledStates_RS_Wireframe: return eFixedGpuRS_Wireframe;
+    case eCompiledStates_RS_NoCullingColorWriteNone: return eFixedGpuRS_NoCullingColorWriteNone;
+    case eCompiledStates_RS_NoCullingFilled: return eFixedGpuRS_NoCullingFilled;
+    case eCompiledStates_RS_NoCullingWireframe: return eFixedGpuRS_NoCullingWireframe;
+    case eCompiledStates_RS_CWCullingColorWriteNone: return eFixedGpuRS_CWCullingColorWriteNone;
+    case eCompiledStates_RS_CWCullingFilled: return eFixedGpuRS_CWCullingFilled;
+    case eCompiledStates_RS_CWCullingWireframe: return eFixedGpuRS_CWCullingWireframe;
+    default: return eInvalidHandle;
+  }
+}
+
+static tU32 _CompiledStatesRSToFixedGpuDS(eCompiledStates aDS) {
+  switch (aDS) {
+    case eCompiledStates_DS_NoDepthTest: return eFixedGpuDS_NoDepthTest;
+    case eCompiledStates_DS_DepthTestAndWrite: return eFixedGpuDS_DepthTestAndWrite;
+    case eCompiledStates_DS_DepthTestOnly: return eFixedGpuDS_DepthTestOnly;
+    default: return eInvalidHandle;
+  }
+}
+
+static tFVF _FixedGpuVertexFormatToVertexFormat(tU32 aVF) {
+  switch (aVF) {
+    case eFixedGpuVertexFormat_P: return eVertexFormat_P;
+    case eFixedGpuVertexFormat_PA: return eVertexFormat_PA;
+    case eFixedGpuVertexFormat_PAT1: return eVertexFormat_PAT1;
+    case eFixedGpuVertexFormat_PN: return eVertexFormat_PN;
+    case eFixedGpuVertexFormat_PNA: return eVertexFormat_PNA;
+    case eFixedGpuVertexFormat_PNT1: return eVertexFormat_PNT1;
+    case eFixedGpuVertexFormat_PNAT1: return eVertexFormat_PNAT1;
+    case eFixedGpuVertexFormat_PNT2: return eVertexFormat_PNT2;
+    case eFixedGpuVertexFormat_PNAT2: return eVertexFormat_PNAT2;
+    case eFixedGpuVertexFormat_PB4INT1: return eVertexFormat_PB4INT1;
+    case eFixedGpuVertexFormat_PB4INAT1: return eVertexFormat_PB4INAT1;
+    default: return 0;
+  }
+}
+
+static eCompiledStates _FixedGpuRSToCompiledStatesRS(tU32 aRS) {
+  switch (aRS) {
+    case eFixedGpuRS_ColorWriteNone: return eCompiledStates_RS_ColorWriteNone;
+    case eFixedGpuRS_Filled: return eCompiledStates_RS_Filled;
+    case eFixedGpuRS_Wireframe: return eCompiledStates_RS_Wireframe;
+    case eFixedGpuRS_NoCullingColorWriteNone: return eCompiledStates_RS_NoCullingColorWriteNone;
+    case eFixedGpuRS_NoCullingFilled: return eCompiledStates_RS_NoCullingFilled;
+    case eFixedGpuRS_NoCullingWireframe: return eCompiledStates_RS_NoCullingWireframe;
+    case eFixedGpuRS_CWCullingColorWriteNone: return eCompiledStates_RS_CWCullingColorWriteNone;
+    case eFixedGpuRS_CWCullingFilled: return eCompiledStates_RS_CWCullingFilled;
+    case eFixedGpuRS_CWCullingWireframe: return eCompiledStates_RS_CWCullingWireframe;
+    default: return eCompiledStates_Invalid;
+  }
+}
+
+static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS) {
+  switch (aDS) {
+    case eFixedGpuDS_NoDepthTest: return eCompiledStates_DS_NoDepthTest;
+    case eFixedGpuDS_DepthTestAndWrite: return eCompiledStates_DS_DepthTestAndWrite;
+    case eFixedGpuDS_DepthTestOnly: return eCompiledStates_DS_DepthTestOnly;
+    default: return eCompiledStates_Invalid;
+  }
+}
+
+tFixedGpuPipelineId GetFixedGpuPipelineId(
+  eGpuPixelFormat aRT0Format,
+  eGpuPixelFormat aDSFormat,
+  tFVF aFVF,
+  eBlendMode aBlendMode,
+  eCompiledStates aRS,
+  eCompiledStates aDS,
+  const iGpuFunction* apFuncVertex,
+  const iGpuFunction* apFuncPixel)
+{
+  sFixedGpuPipelineIdDesc id = {};
+
+  id.rt0 = aRT0Format;
+  id.ds = aDSFormat;
+
+  {
+    niLet v = _VertexFormatToFixedGpuVertexFormat(aFVF);
+    if (v == eInvalidHandle) {
+      niError(niFmt("Invalid vertex format: %s (%x).", FVFToString(aFVF), aFVF));
+      return 0;
+    }
+    id.vertexFormat = (eFixedGpuVertexFormat)v;
+  }
+
+  {
+    niLet v = _CompiledStatesRSToFixedGpuRS(aRS);
+    if (v == eInvalidHandle) {
+      niError(niFmt("Invalid rasterizer state: %d.", aRS));
+      return 0;
+    }
+    id.compiledRS = (eFixedGpuRS)v;
+  }
+
+  {
+    niLet v = _CompiledStatesRSToFixedGpuDS(aDS);
+    if (id.compiledDS == eInvalidHandle) {
+      niError(niFmt("Invalid depth state: %d.", aDS));
+      return 0;
+    }
+    id.compiledDS = (eFixedGpuDS)v;
+  }
+
+  id.blendMode = aBlendMode;
+
+  niCheckIsOK(apFuncVertex,0);
+  {
+    niLet v = apFuncVertex->GetFunctionId();
+    if (v >= knFixedGpuMaxFuncId) {
+      niError(niFmt("Invalid vertex func id: %d.", v));
+      return 0;
+    }
+    id.funcVertex = v;
+  }
+
+  niCheckIsOK(apFuncPixel,0);
+  {
+    niLet v = apFuncPixel->GetFunctionId();
+    if (v >= knFixedGpuMaxFuncId) {
+      niError(niFmt("Invalid pixel func id: %d.", v));
+      return 0;
+    }
+    id.funcPixel = v;
+  }
+
+  return id.ToId();
+}
+
+Ptr<iGpuPipeline> CreateFixedGpuPipeline(
+  iGraphicsDriverGpu* apGpuDriver,
+  tFixedGpuPipelineId aPipelineId,
+  iGpuFunction* apFuncVertex,
+  iGpuFunction* apFuncPixel)
+{
+  niCheck(apFuncVertex != nullptr,nullptr);
+  niCheck(apFuncVertex->GetFunctionType() == eGpuFunctionType_Vertex,nullptr);
+  niCheck(apFuncPixel != nullptr,nullptr);
+  niCheck(apFuncPixel->GetFunctionType() == eGpuFunctionType_Pixel,nullptr);
+
+  sFixedGpuPipelineIdDesc idDesc = sFixedGpuPipelineIdDesc::FromId(aPipelineId);
+
+  NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreateGpuPipelineDesc()};
+  sGpuPipelineDesc& desc = *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
+  desc.mFVF = _FixedGpuVertexFormatToVertexFormat(idDesc.vertexFormat);
+  desc.mColorFormats[0] = idDesc.rt0;
+  desc.mColorFormats[1] = eGpuPixelFormat_None;
+  desc.mColorFormats[2] = eGpuPixelFormat_None;
+  desc.mColorFormats[3] = eGpuPixelFormat_None;
+  desc.mDepthFormat = idDesc.ds;
+  desc.mptrFuncs[eGpuFunctionType_Vertex] = apFuncVertex;
+  desc.mptrFuncs[eGpuFunctionType_Pixel] = apFuncPixel;
+  if (idDesc.blendMode == eBlendMode_NoBlending) {
+    desc.mptrBlendMode = nullptr;
+  }
+  else if (idDesc.blendMode < eBlendMode_Last) {
+    const sGpuBlendModeDesc& bm = _BlendModeToGpuBlendModeDesc((eBlendMode)idDesc.blendMode);
+    desc.mptrBlendMode = apGpuDriver->CreateGpuBlendMode();
+    *((sGpuBlendModeDesc*)desc.mptrBlendMode->GetDescStructPtr()) = bm;
+  }
+  else {
+    desc.mptrBlendMode = nullptr;
+    niWarning("Invalid blend mode, falling back to 'no blending'.");
+  }
+  return apGpuDriver->CreateGpuPipeline(
+    HFmt("sFixedGpuPipelines{%s}",idDesc.ToString()),
+    ptrPipelineDesc);
+}
+
+/////////////////////////////////////////////////////////////////
+// Submits the draw call for the specified draw operation.
+tBool DrawOperationSubmitGpuDrawCall(
+  iGpuCommandEncoder* apCmdEncoder,
+  iDrawOperation* apDrawOp)
+{
+  iVertexArray* va = apDrawOp->GetVertexArray();
+  iIndexArray* ia = apDrawOp->GetIndexArray();
+  const sVec2i fvfAndStride = GetVertexArrayFvfAndStride(va);
+  const tFVF fvf = (tFVF)fvfAndStride.x;
+  const tU32 fvfStride = (tU32)fvfAndStride.y;
+
+  const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
+  iGpuBuffer* vaBuffer = GetVertexArrayGpuBuffer(va);
+  apCmdEncoder->SetVertexBuffer(vaBuffer, baseVertexIndex * fvfStride, 0);
+
+  if (ia) {
+    const tU32 firstInd = apDrawOp->GetFirstIndex();
+    tU32 numInds = apDrawOp->GetNumIndices();
+    if (!numInds) {
+      numInds = ia->GetNumIndices()-firstInd;
+    }
+    iGpuBuffer* iaBuffer = GetIndexArrayGpuBuffer(ia);
+    apCmdEncoder->SetIndexBuffer(iaBuffer, firstInd * knFixedGpuIndexSize, eGpuIndexType_U32);
+    apCmdEncoder->DrawIndexed(apDrawOp->GetPrimitiveType(), numInds, 0);
+  }
+  else {
+    const tU32 nNumVerts = va->GetNumVertices()-baseVertexIndex;
+    apCmdEncoder->Draw(apDrawOp->GetPrimitiveType(), nNumVerts, baseVertexIndex);
+  }
+
+  return eTrue;
+}
+
+/////////////////////////////////////////////////////////////////
+struct sGpuStream : public ImplRC<iGpuStream> {
+  const tU32 _chunkSize;
+  const tU32 _maxChunks;
+  const tU32 _blockAlignment;
+  const tGpuBufferUsageFlags _usageFlags;
+  NN<iGraphicsDriverGpu> _driver;
+  astl::vector<NN<iGpuBuffer>> _chunks;
+  tU32 _currentChunk = 0;
+  tU32 _currentOffset = 0;
+  sGpuStreamBlock _lastBlock;
+  tU32 _numBlocks = 0;
+
+  sGpuStream(ain<nn<iGraphicsDriverGpu>> apDriver,
+             tGpuBufferUsageFlags aUsageFlags,
+             tU32 aChunkSize = 65536,
+             tU32 aMaxChunks = 1024,
+             tU32 aBlockAlignment = 0)
+      : _chunkSize(aChunkSize)
+      , _maxChunks(aMaxChunks)
+      , _blockAlignment(aBlockAlignment)
+      , _usageFlags(aUsageFlags)
+      , _driver(apDriver)
+  {
+    _chunks.reserve(_maxChunks);
+  }
+
+  tBool _AllocateNextChunk() {
+    niLet chunk = niCheckNN(chunk, _driver->CreateGpuBuffer(
+      nullptr, _chunkSize,
+      eGpuBufferMemoryMode_Shared, _usageFlags),
+                            eFalse);
+    _chunks.push_back(chunk);
+    return eTrue;
+  }
+
+  tBool __stdcall UpdateNextBlock(ain<tPtr> apData, ain<tU32> anSize) niImpl {
+    if (anSize > _chunkSize) {
+      niError("Data size larger than chunk size");
+      return eFalse;
+    }
+
+    if (_chunks.empty() || (_currentOffset + anSize > _chunkSize)) {
+      if (_chunks.size() >= _maxChunks) {
+        niError("Maximum chunks reached");
+        return eFalse;
+      }
+
+      niCheck(_AllocateNextChunk(),eFalse);
+      _currentChunk = _chunks.size() - 1;
+      _currentOffset = 0;
+    }
+
+    niLet& chunk = _chunks[_currentChunk];
+    niLet dst = chunk->Lock(_currentOffset, anSize, eLock_Discard);
+    if (!dst) {
+      niError("Can't lock chunk");
+      return eFalse;
+    }
+
+    memcpy(dst, apData, anSize);
+    chunk->Unlock();
+
+    _lastBlock.mBuffer = chunk;
+    _lastBlock.mOffset = _currentOffset;
+    _lastBlock.mSize = anSize;
+    ++_numBlocks;
+
+    _currentOffset += _blockAlignment ?
+        ((anSize + _blockAlignment - 1) & ~(_blockAlignment - 1)) :
+        anSize;
+    return eTrue;
+  }
+
+  const sGpuStreamBlock& __stdcall GetLastBlock() const niImpl {
+    return _lastBlock;
+  }
+
+  iGpuBuffer* __stdcall GetLastBuffer() const niImpl {
+    return _lastBlock.mBuffer;
+  }
+  tU32 __stdcall GetLastOffset() const niImpl {
+    return _lastBlock.mOffset;
+  }
+  tU32 __stdcall GetLastSize() const niImpl {
+    return _lastBlock.mSize;
+  }
+
+  tU32 __stdcall GetNumBlocks() const niImpl {
+    return _numBlocks;
+  }
+
+  void __stdcall Reset() niImpl {
+    _currentChunk = 0;
+    _currentOffset = 0;
+    _numBlocks = 0;
+  }
+};
+
+/////////////////////////////////////////////////////////////////
+Ptr<iGpuStream> CreateGpuStream(
+  ain<nn<iGraphicsDriverGpu>> apDriver,
+  tGpuBufferUsageFlags aUsageFlags,
+  tU32 aChunkSize,
+  tU32 aMaxChunks,
+  tU32 aBlockAlignment)
+{
+  return niNew sGpuStream(apDriver,aUsageFlags,aChunkSize,aMaxChunks,aBlockAlignment);
+}
+
+/////////////////////////////////////////////////////////////////
+tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding) {
+  niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
+  niLet& block = apStream->GetLastBlock();
+  apEncoder->SetVertexBuffer(block.mBuffer, block.mOffset, anBinding);
+  return eTrue;
+}
+
+tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, eGpuIndexType aIndexType) {
+  niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
+  niLet& block = apStream->GetLastBlock();
+  apEncoder->SetIndexBuffer(block.mBuffer, block.mOffset, aIndexType);
+  return eTrue;
+}
+
+tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding) {
+  niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
+  niLet& block = apStream->GetLastBlock();
+  apEncoder->SetUniformBuffer(block.mBuffer, block.mOffset, anBinding);
+  return eTrue;
 }
 
 }

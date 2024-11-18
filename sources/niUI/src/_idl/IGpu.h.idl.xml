@@ -143,7 +143,7 @@
 				<comments desc="Vertex function "/>
 			</value>
 			<value name="eGpuFunctionType_Pixel" value="1 ">
-				<comments desc="Fragment/Pixel function "/>
+				<comments desc="Pixel/Fragment function "/>
 			</value>
 			<value name="eGpuFunctionType_Compute" value="2 ">
 				<comments desc="Compute function "/>
@@ -178,6 +178,17 @@
 			<parents>
 				<parent name="iDeviceResource"/>
 			</parents>
+			<method
+				const="yes"
+				java_name="getFunctionId"
+				name="GetFunctionId"
+				num_parameters="0"
+				property="get"
+				property_name2="functionId"
+				property_name="function_id">
+				<comments desc="Get the function&apos;s id. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
 			<method
 				const="yes"
 				java_name="getFunctionType"
@@ -721,7 +732,7 @@
 		<interface name="iGpuPipeline" uuid1="4298B417-DDEB-BF4D-825C-125B3E0B5B05" uuid2="0x4298b417,0xddeb,0xbf4d,0x82,0x5c,0x12,0x5b,0x3e,0x0b,0x5b,0x05">
 			<comments desc=""/>
 			<parents>
-				<parent name="iUnknown"/>
+				<parent name="iDeviceResource"/>
 			</parents>
 			<method
 				const="yes"
@@ -751,7 +762,11 @@
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="setVertexBuffer" name="SetVertexBuffer" num_parameters="3">
-				<comments desc="Binds a vertex buffer to the specified binding slot. @param apBuffer The GPU buffer containing vertex data @param anOffset Byte offset into the buffer @param anBinding The binding slot index "/>
+				<comments desc="Binds a vertex buffer to the specified binding slot. ">
+					<params text="apBuffer The GPU buffer containing vertex data "/>
+					<params text="anOffset Byte offset into the buffer "/>
+					<params text="anBinding The binding slot index "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="apBuffer"
@@ -770,8 +785,11 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="setIndexBuffer" name="SetIndexBuffer" num_parameters="2">
-				<comments desc="Binds an index buffer for indexed draw calls. @param apBuffer The GPU buffer containing index data @param anOffset Byte offset into the buffer "/>
+			<method java_name="setIndexBuffer" name="SetIndexBuffer" num_parameters="3">
+				<comments desc="Binds an index buffer for indexed draw calls. ">
+					<params text="apBuffer The GPU buffer containing index data "/>
+					<params text="anOffset Byte offset into the buffer "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="apBuffer"
@@ -779,14 +797,23 @@
 					typec="iGpuBuffer*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					last="1"
 					name="anOffset"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aIndexType"
+					type="eGpuIndexType"
+					typec="eGpuIndexType"
+					typei="ni::eType_Enum"/>
 			</method>
 			<method java_name="setUniformBuffer" name="SetUniformBuffer" num_parameters="3">
-				<comments desc="Binds a uniform buffer to the specified binding slot. @param apBuffer The GPU buffer containing uniform data @param anOffset Byte offset into the buffer @param anBinding The binding slot index "/>
+				<comments desc="Binds a uniform buffer to the specified binding slot. ">
+					<params text="apBuffer The GPU buffer containing uniform data "/>
+					<params text="anOffset Byte offset into the buffer "/>
+					<params text="anBinding The binding slot index "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="apBuffer"
@@ -806,7 +833,10 @@
 					typei="ni::eType_U32"/>
 			</method>
 			<method java_name="setTexture" name="SetTexture" num_parameters="2">
-				<comments desc="Binds a texture to the specified binding slot. @param apTexture The texture to bind @param anBinding The binding slot index "/>
+				<comments desc="Binds a texture to the specified binding slot. ">
+					<params text="apTexture The texture to bind "/>
+					<params text="anBinding The binding slot index "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="apTexture"
@@ -821,7 +851,10 @@
 					typei="ni::eType_U32"/>
 			</method>
 			<method java_name="setSamplerState" name="SetSamplerState" num_parameters="2">
-				<comments desc="Binds a sampler state to the specified binding slot. @param ahSS Handle to the sampler state @param anBinding The binding slot index "/>
+				<comments desc="Binds a sampler state to the specified binding slot. ">
+					<params text="ahSS Handle to the sampler state "/>
+					<params text="anBinding The binding slot index "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="ahSS"
@@ -835,8 +868,82 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
+			<method java_name="streamVertexBuffer" name="StreamVertexBuffer" num_parameters="3">
+				<comments desc="Stream vertex data through an internally managed GPU stream. " return="eTrue on success, eFalse if the upload or binding fails ">
+					<params text="apData Pointer to the vertex data to upload "/>
+					<params text="anSize Size of the data in bytes "/>
+					<params text="anBinding Vertex buffer binding slot index "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="streamIndexBuffer" name="StreamIndexBuffer" num_parameters="3">
+				<comments desc="Stream index data through an internally managed GPU stream. " return="eTrue on success, eFalse if the upload or binding fails ">
+					<params text="apData Pointer to the index data to upload "/>
+					<params text="anSize Size of the data in bytes "/>
+					<params text="aIndexType Type of indices (16 or 32-bit) "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aIndexType"
+					type="eGpuIndexType"
+					typec="eGpuIndexType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="streamUniformBuffer" name="StreamUniformBuffer" num_parameters="3">
+				<comments desc="Stream uniform data through an internally managed GPU stream. " return="eTrue on success, eFalse if the upload or binding fails ">
+					<params text="apData Pointer to the uniform data to upload "/>
+					<params text="anSize Size of the data in bytes "/>
+					<params text="anBinding Uniform buffer binding slot index "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anBinding"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
 			<method java_name="setPolygonOffset" name="SetPolygonOffset" num_parameters="1">
-				<comments desc="Sets the polygon offset for depth bias. @param avOffset Vector containing the constant and slope factors "/>
+				<comments desc="Sets the polygon offset for depth bias. ">
+					<params text="avOffset Vector containing the constant and slope factors "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -846,7 +953,9 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="setScissorRect" name="SetScissorRect" num_parameters="1">
-				<comments desc="Sets the scissor test rectangle. @param aRect Rectangle defining the scissor region "/>
+				<comments desc="Sets the scissor test rectangle. ">
+					<params text="aRect Rectangle defining the scissor region "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -856,7 +965,9 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="setViewport" name="SetViewport" num_parameters="1">
-				<comments desc="Sets the viewport dimensions. @param aRect Rectangle defining the viewport region "/>
+				<comments desc="Sets the viewport dimensions. ">
+					<params text="aRect Rectangle defining the viewport region "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -866,7 +977,9 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="setStencilReference" name="SetStencilReference" num_parameters="1">
-				<comments desc="Sets the stencil reference value. @param aRef The reference value to compare against "/>
+				<comments desc="Sets the stencil reference value. ">
+					<params text="aRef The reference value to compare against "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -876,7 +989,9 @@
 					typei="ni::eType_I32"/>
 			</method>
 			<method java_name="setStencilMask" name="SetStencilMask" num_parameters="1">
-				<comments desc="Sets the stencil read/write mask. @param aMask The stencil mask value "/>
+				<comments desc="Sets the stencil read/write mask. ">
+					<params text="aMask The stencil mask value "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -886,7 +1001,9 @@
 					typei="ni::eType_U32"/>
 			</method>
 			<method java_name="setBlendColorConstant" name="SetBlendColorConstant" num_parameters="1">
-				<comments desc="Sets the blend color constant. @param aColor The color to use for constant blend factor "/>
+				<comments desc="Sets the blend color constant. ">
+					<params text="aColor The color to use for constant blend factor "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -896,7 +1013,10 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="draw" name="Draw" num_parameters="3">
-				<comments desc="Draws primitives using the current vertex buffer. @param anVertexCount Number of vertices to draw @param anFirstVertex Index of first vertex to draw "/>
+				<comments desc="Draws primitives using the current vertex buffer. ">
+					<params text="anVertexCount Number of vertices to draw "/>
+					<params text="anFirstVertex Index of first vertex to draw "/>
+				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aPrimType"
@@ -915,18 +1035,16 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="4">
-				<comments desc="Draws indexed primitives using the current index buffer. @param anNumIndices Number of indices to draw @param anFirstIndex Index of first index to draw "/>
+			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="3">
+				<comments desc="Draws indexed primitives using the current index buffer. ">
+					<params text="anNumIndices Number of indices to draw "/>
+					<params text="anFirstIndex Index of first index to draw "/>
+				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aPrimType"
 					type="eGraphicsPrimitiveType"
 					typec="eGraphicsPrimitiveType"
-					typei="ni::eType_Enum"/>
-				<parameter
-					name="aIndexType"
-					type="eGpuIndexType"
-					typec="eGpuIndexType"
 					typei="ni::eType_Enum"/>
 				<parameter
 					name="anNumIndices"
@@ -962,9 +1080,14 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method java_name="createGpuBuffer" name="CreateGpuBuffer" num_parameters="3">
+			<method java_name="createGpuBuffer" name="CreateGpuBuffer" num_parameters="4">
 				<comments desc="Create a new GPU buffer. "/>
 				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="anSize"
 					type="tU32"
@@ -982,9 +1105,14 @@
 					typec="tGpuBufferUsageFlags"
 					typei="ni::eType_Enum"/>
 			</method>
-			<method java_name="createGpuBufferFromData" name="CreateGpuBufferFromData" num_parameters="4">
+			<method java_name="createGpuBufferFromData" name="CreateGpuBufferFromData" num_parameters="5">
 				<comments desc="Create a new GPU buffer with initial data. "/>
 				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="apFile"
 					type="iFile *"
@@ -1011,9 +1139,10 @@
 				java_name="createGpuBufferFromDataRaw"
 				name="CreateGpuBufferFromDataRaw"
 				noautomation="yes"
-				num_parameters="4">
+				num_parameters="5">
 				<comments desc="Create a new GPU buffer with initial raw data. "/>
 				<return type="Ptr&lt;iGpuBuffer&gt;" typec="Ptr&lt;iGpuBuffer&gt;"/>
+				<parameter name="ahspName" type="iHString *" typec="iHString*"/>
 				<parameter name="apData" type="tPtr" typec="tPtr"/>
 				<parameter name="anSize" type="tU32" typec="tU32"/>
 				<parameter name="aMemMode" type="eGpuBufferMemoryMode" typec="eGpuBufferMemoryMode"/>
@@ -1038,15 +1167,15 @@
 				<comments desc="Create a new GPU function. "/>
 				<return type="Ptr&lt;iGpuFunction&gt;" typec="Ptr&lt;iGpuFunction&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="aType"
-					type="eGpuFunctionType"
-					typec="eGpuFunctionType"
-					typei="ni::eType_Enum"/>
-				<parameter
 					name="ahspName"
 					type="iHString *"
 					typec="iHString*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eGpuFunctionType"
+					typec="eGpuFunctionType"
+					typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
 					name="apGpuFunctionDT"
@@ -1058,19 +1187,24 @@
 				<comments desc="Create a new GPU pipeline description. "/>
 				<return type="Ptr&lt;iGpuPipelineDesc&gt;" typec="Ptr&lt;iGpuPipelineDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createGpuPipeline" name="CreateGpuPipeline" num_parameters="1">
+			<method java_name="createGpuBlendMode" name="CreateGpuBlendMode" num_parameters="0">
+				<comments desc="Create a new GPU blend mode description. "/>
+				<return type="Ptr&lt;iGpuBlendMode&gt;" typec="Ptr&lt;iGpuBlendMode&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createGpuPipeline" name="CreateGpuPipeline" num_parameters="2">
 				<comments desc="Compile a GPU pipeline description into a driver handle. "/>
 				<return type="Ptr&lt;iGpuPipeline&gt;" typec="Ptr&lt;iGpuPipeline&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
 					name="apDesc"
 					type="const iGpuPipelineDesc *"
 					typec="const iGpuPipelineDesc*"
 					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method java_name="createGpuBlendMode" name="CreateGpuBlendMode" num_parameters="0">
-				<comments desc="Create a new GPU blend mode description. "/>
-				<return type="Ptr&lt;iGpuBlendMode&gt;" typec="Ptr&lt;iGpuBlendMode&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="blitManagedGpuBufferToSystemMemory" name="BlitManagedGpuBufferToSystemMemory" num_parameters="1">
 				<comments desc="Synchronize a managed resource from the GPU to the CPU memory. "/>

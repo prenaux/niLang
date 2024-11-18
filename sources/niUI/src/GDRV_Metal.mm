@@ -44,6 +44,21 @@ static __forceinline iHString* _GetGpuFunctionTarget() {
 
 #define METAL_TRACE(aFmt) //niDebugFmt(aFmt)
 
+template <typename T>
+void _MTLSetLabel(T* aObj, const achar* aaszLabel) {
+  if (niStringIsOK(aaszLabel)) {
+    aObj.label = [NSString stringWithUTF8String:aaszLabel];
+  }
+}
+
+#if defined METAL_MAC
+static const tU32 knUniformBufferAlignment = 256;
+#elif defined METAL_IOS
+static const tU32 knUniformBufferAlignment = 16;
+#endif
+
+static const tU32 knMetalMaxFrameInFlight = 2;
+
 // This is where the [[stage_in]] vertex buffer is bound. We reserve the last
 // index for it so that we dont overlap with [[buffer(0)]] which will usually
 // be a uniform buffer.
@@ -58,6 +73,7 @@ static tU32 knMetalSamplerFilterAnisotropy = 8;
 static cString _GetDeviceCaps(id<MTLDevice> aDevice) {
   cString r;
   r += niFmt("  name: %s\n", [aDevice.name UTF8String]);
+  r += niFmt("  maxFrameInFlight: %d\n", knMetalMaxFrameInFlight);
   r += niFmt("  maxThreadsPerThreadgroup: %dx%dx%d\n",
              (tI32)aDevice.maxThreadsPerThreadgroup.width,
              (tI32)aDevice.maxThreadsPerThreadgroup.height,
@@ -324,12 +340,15 @@ static inline eGpuFunctionType _GetGpuFunctionType(MTLFunctionType aFuncType) {
   }
 }
 
-struct sMetalFunction : public ImplRC<iGpuFunction> {
+struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
+  const tU32 _id;
   tHStringPtr _hspName;
   Ptr<iDataTable> _datatable;
   id<MTLFunction> _mtlFunction;
 
-  tBool _Create(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDTRoot) {
+  sMetalFunction(tU32 anID) : _id(anID) {}
+
+  tBool _Compile(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDTRoot) {
     niCheckIsOK(apDTRoot,eFalse);
     _hspName = ahspName;
     _datatable = niCheckNN(_datatable,FindGpuFunctionDT(apDTRoot,_GetGpuFunctionTarget()),eFalse);
@@ -373,7 +392,12 @@ struct sMetalFunction : public ImplRC<iGpuFunction> {
       return eFalse;
     }
 
+    _MTLSetLabel(_mtlFunction,niHStr(ahspName));
     return eTrue;
+  }
+
+  virtual tU32 __stdcall GetFunctionId() const {
+    return _id;
   }
 
   virtual eGpuFunctionType __stdcall GetFunctionType() const {
@@ -623,15 +647,42 @@ tBool _MTLVertexAttributeToGpuVertexAttribute(aout<sGpuVertexAttribute> aOut, MT
   }
 }
 
-struct sMetalPipeline : public ImplRC<iGpuPipeline> {
+struct sMetalPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDeviceResource> {
+  tHStringPtr _hspName;
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   id<MTLRenderPipelineState> _mtlPipeline;
+  id<MTLDepthStencilState> _mtlDepthStencil;
+  MTLCullMode _cullMode = MTLCullModeNone;
+  MTLTriangleFillMode _fillMode = MTLTriangleFillModeFill;
+  MTLWinding _winding = MTLWindingClockwise;
 
-  tBool _Create(id<MTLDevice> aDevice, const iGpuPipelineDesc* apDesc) {
+  iHString* __stdcall GetDeviceResourceName() const {
+    return _hspName;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
+    return this;
+  }
+
+  tBool _CreateMTLPipeline(
+    id<MTLDevice> aDevice, iHString* ahspName,
+    const iGpuPipelineDesc* apDesc,
+    const iRasterizerStates* apRS,
+    id<MTLDepthStencilState> aDS)
+  {
     niCheckIsOK(apDesc,eFalse);
+    _hspName = ahspName;
     _desc = niCheckNN(_desc,apDesc->Clone(),eFalse);
+    _mtlDepthStencil = aDS;
 
     MTLRenderPipelineDescriptor* pipelineDesc = [MTLRenderPipelineDescriptor new];
+    _MTLSetLabel(pipelineDesc, niHStr(ahspName));
+    pipelineDesc.rasterizationEnabled = YES;
 
     // Vertex gpu function
     {
@@ -703,6 +754,33 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
       else {
         ca.blendingEnabled = NO;
       }
+
+      if (apRS) {
+        _fillMode = apRS->GetWireframe() ? MTLTriangleFillModeLines : MTLTriangleFillModeFill;
+        _cullMode = _toMTLCullMode[apRS->GetCullingMode()];
+        niLet colorWriteMask = apRS->GetColorWriteMask();
+        switch (colorWriteMask) {
+          case eColorWriteMask_None:
+            ca.writeMask = MTLColorWriteMaskNone;
+            break;
+          case eColorWriteMask_All:
+            ca.writeMask = MTLColorWriteMaskAll;
+            break;
+          default: {
+            MTLColorWriteMask mask = MTLColorWriteMaskNone;
+            if (colorWriteMask & eColorWriteMask_Red)
+              mask |= MTLColorWriteMaskRed;
+            if (colorWriteMask & eColorWriteMask_Green)
+              mask |= MTLColorWriteMaskGreen;
+            if (colorWriteMask & eColorWriteMask_Blue)
+              mask |= MTLColorWriteMaskBlue;
+            if (colorWriteMask & eColorWriteMask_Alpha)
+              mask |= MTLColorWriteMaskAlpha;
+            ca.writeMask = mask;
+            break;
+          }
+        }
+      }
     }
 
     // Depth
@@ -728,6 +806,14 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
   virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl {
     return _desc;
   }
+
+  void Apply(id<MTLRenderCommandEncoder> aEncoder) {
+    [aEncoder setRenderPipelineState:_mtlPipeline];
+    [aEncoder setDepthStencilState:_mtlDepthStencil];
+    [aEncoder setFrontFacingWinding:_winding];
+    [aEncoder setTriangleFillMode:_fillMode];
+    [aEncoder setCullMode:_cullMode];
+  }
 };
 
 //--------------------------------------------------------------------------------------------
@@ -735,7 +821,7 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline> {
 // MetalBuffer
 //
 //--------------------------------------------------------------------------------------------
-struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
+struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource> {
   id<MTLBuffer> _mtlBuffer;
   eGpuBufferMemoryMode _memMode;
   tGpuBufferUsageFlags _usage;
@@ -744,9 +830,12 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
   eLock _lockMode;
   tBool _tracked;
 
-  tBool _Create(id<MTLDevice> aDevice, void* apInitialData, tU32 anSize,
-                eGpuBufferMemoryMode aMemMode,
-                tGpuBufferUsageFlags aUsage)
+  tBool _CreateMTLBuffer(
+    id<MTLDevice> aDevice,
+    iHString* ahspName,
+    void* apInitialData, tU32 anSize,
+    eGpuBufferMemoryMode aMemMode,
+    tGpuBufferUsageFlags aUsage)
   {
     _tracked = eFalse;
     _usage = aUsage;
@@ -777,6 +866,8 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer> {
       _mtlBuffer = [aDevice newBufferWithLength:anSize
                     options: resOptions];
     }
+
+    _MTLSetLabel(_mtlBuffer,niHStr(ahspName));
     return _mtlBuffer != NULL;
   }
 
@@ -1100,20 +1191,25 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   id<MTLCommandQueue> mMetalCommandQueue;
   sFixedShaders mFixedShaders;
   astl::vector<Ptr<iHString>> mvProfiles[eShaderUnit_Last];
-  NN<iFixedGpuPipelines> mFixedPipelines;
+  NN<iFixedGpuPipelines> mFixedPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
   LocalIDGenerator mIDGenerator;
 
-  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice)
-      : mFixedPipelines(CreateFixedGpuPipelines())
-  {
+  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice) {
     mpGraphics = apGraphics;
     mMetalDevice = aDevice;
 
     _InitCompiledSamplerStates();
     _InitCompiledDepthStencilStates();
-    {
-      niLog(Info,niFmt("--- Metal Device Info ---\n%s\n-------------------------", _GetDeviceCaps(mMetalDevice)));
+
+    mFixedPipelines = niCheckNNIfNull(mFixedPipelines, CreateFixedGpuPipelines(this)) {
+      niError("CreateFixedGpuPipelines failed.");
+      mpGraphics = nullptr;
+      return;
     }
+
+    niLog(Info, niFmt(
+      "--- Metal Device Info ---\n%s\n-------------------------",
+      _GetDeviceCaps(mMetalDevice)));
   }
 
   /////////////////////////////////////////////
@@ -1149,16 +1245,13 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return mMetalCommandQueue;
   }
 
+  /////////////////////////////////////////////
   tBool _DetectShaderProfiles() {
-    // Detect profiles
     if (mvProfiles[0].empty()) {
       niLoop(i,eShaderUnit_Last) {
         mvProfiles[i].clear();
       }
-
-      // mvProfiles[eShaderUnit_Vertex].push_back(_H("glslv"));
       mvProfiles[eShaderUnit_Vertex].push_back(_H("hlsl_vs_3_0"));
-      // mvProfiles[eShaderUnit_Pixel].push_back(_H("glslf"));
       mvProfiles[eShaderUnit_Pixel].push_back(_H("hlsl_ps_3_0"));
     }
     return eTrue;
@@ -1209,7 +1302,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     _DetectShaderProfiles();
 
     Ptr<iGraphicsContext> ctx = New_MetalContextWindow(
-      this, 1,
+      this, knMetalMaxFrameInFlight,
       apWindow,
       metalAPI,
       aaszBBFormat,aaszDSFormat,
@@ -1456,11 +1549,11 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     niDefer { MOJOSHADER_freeParseData(shaderPD); };
     ni::cString code(shaderPD->output, shaderPD->output_len);
 
-    auto func = mFixedPipelines->CompileShader(
-      this,
-      nUnit == eShaderUnit_Pixel ? eGpuFunctionType_Pixel : eGpuFunctionType_Vertex,
+    NN<iDataTable> dtFunc = CreateGpuFunctionDT(this,code.Chars());
+    auto func = this->CreateGpuFunction(
       HFmt("gpufunc_%s",ahspName),
-      code.Chars());
+      nUnit == eShaderUnit_Pixel ? eGpuFunctionType_Pixel : eGpuFunctionType_Vertex,
+      dtFunc);
     niCheckIsOK_(func,"Can't compile shader.",nullptr);
     Ptr<iShader> ptrProg = mFixedPipelines->CreateFixedGpuShader(
       mpGraphics,func,ahspName);
@@ -1532,6 +1625,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
   }
 
+  /////////////////////////////////////////////
   inline id<MTLSamplerState> _GetMTLSamplerState(tIntPtr ahSS) {
     if (ahSS >= eCompiledStates_SS_PointRepeat && ahSS <= eCompiledStates_SS_SmoothWhiteBorder) {
       return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
@@ -1582,30 +1676,30 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return _dsNoDepthTest;
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niLet buffer = MakeNN<sMetalBuffer>();
-    if (!buffer->_Create(mMetalDevice, nullptr, anSize, aMemMode, aUsage)) {
-      return nullptr;
-    }
+    niCheck(
+      buffer->_CreateMTLBuffer(mMetalDevice, ahspName, nullptr, anSize, aMemMode, aUsage),
+      nullptr);
     return buffer;
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niCheckIsOK(apFile,nullptr);
     astl::vector<tU8> data;
     data.resize(anSize);
     if (apFile->ReadRaw(data.data(),anSize) != anSize) {
       return nullptr;
     }
-    return this->CreateGpuBufferFromDataRaw(data.data(),anSize,aMemMode,aUsage);
+    return this->CreateGpuBufferFromDataRaw(ahspName,data.data(),anSize,aMemMode,aUsage);
   }
 
-  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl {
     niCheck(apData != nullptr, nullptr);
     niLet buffer = MakeNN<sMetalBuffer>();
-    if (!buffer->_Create(mMetalDevice, apData, anSize, aMemMode, aUsage)) {
-      return nullptr;
-    }
+    niCheck(
+      buffer->_CreateMTLBuffer(mMetalDevice, ahspName, apData, anSize, aMemMode, aUsage),
+      nullptr);
     return buffer;
   }
 
@@ -1613,15 +1707,23 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return _GetGpuFunctionTarget();
   }
 
-  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspName, iDataTable* apGpuFunctionDT) niImpl {
-    NN<sMetalFunction> func = MakeNN<sMetalFunction>();
-    if (!func->_Create(mMetalDevice, ahspName, apGpuFunctionDT)) {
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(iHString* ahspName, eGpuFunctionType aType, iDataTable* apGpuFunctionDT) niImpl {
+    niLet newId = mIDGenerator.AllocID();
+    NN<sMetalFunction> func = MakeNN<sMetalFunction>(newId);
+    if (!func->_Compile(mMetalDevice, ahspName, apGpuFunctionDT)) {
+      mIDGenerator.FreeID(newId);
+      niError(niFmt(
+        "Can't create gpu function '%s': Compilation failed.",
+        ahspName));
       return nullptr;
     }
     if (func->GetFunctionType() != aType) {
+      mIDGenerator.FreeID(newId);
       niError(niFmt(
-        "Expected function type '%s' by got '%s'.",
-        (tU32)aType, (tU32)func->GetFunctionType()));
+        "Can't create gpu function '%s': Expected function type '%s' but got '%s'.",
+        ahspName,
+        niEnumToChars(eGpuFunctionType,aType),
+        niEnumToChars(eGpuFunctionType,func->GetFunctionType())));
       return nullptr;
     }
     return func;
@@ -1631,11 +1733,14 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return ni::_CreateGpuPipelineDesc();
   }
 
-  virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(const iGpuPipelineDesc* apDesc) niImpl {
+  virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl {
+    niCheckIsOK(apDesc,nullptr);
+    niLet ds = _GetMTLDepthStencilState(apDesc->GetDepthStencilStates());
+    niLet rs = mpGraphics->GetCompiledRasterizerStates(apDesc->GetRasterizerStates());
     NN<sMetalPipeline> pipeline = MakeNN<sMetalPipeline>();
-    if (!pipeline->_Create(mMetalDevice,apDesc)) {
-      return nullptr;
-    }
+    niCheck(
+      pipeline->_CreateMTLPipeline(mMetalDevice,ahspName,apDesc,rs,ds),
+      nullptr);
     return pipeline;
   }
 
@@ -1670,57 +1775,161 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& av
 // sMetalCommandEncoder
 //
 //----------------------------------------------------------------------------
+struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
+  ThreadEvent _event = ThreadEvent(eFalse);
+  astl::vector<Ptr<sMetalBuffer>> _trackedBuffers;
+  Ptr<iGpuStream> _stream;
+  tU32 _frameNumber = 0;
+  tU32 _frameInFlight = 0;
+
+  sMetalEncoderFrameData(ain<nn<cMetalGraphicsDriver>> aDriver) {
+    _stream = CreateGpuStream(
+      aDriver,
+      eGpuBufferUsageFlags_Vertex|
+      eGpuBufferUsageFlags_Index|
+      eGpuBufferUsageFlags_Uniform);
+  }
+
+  void StartFrame(const tU32 anFrameNumber, const tU32 anCurrentFrame) {
+    niPanicAssert(!IsInUse());
+    _frameNumber = anFrameNumber;
+    _frameInFlight = anCurrentFrame;
+  }
+
+  void OnFrameCompleted() {
+    _frameNumber = 0;
+  }
+
+  tBool IsInUse() {
+    return _frameNumber != 0;
+  }
+
+  void _TrackBuffer(iGpuBuffer* apBuffer) {
+    sMetalBuffer* buffer = (sMetalBuffer*)apBuffer;
+    if (!buffer->_tracked && buffer->_modifiedSize) {
+      _trackedBuffers.push_back(buffer);
+      buffer->_tracked = eTrue;
+    }
+  }
+
+  void _WaitCompletion() {
+    _event.InfiniteWait();
+  }
+
+  virtual Var __stdcall Run() niImpl {
+    niLet& lastBlock = _stream->GetLastBlock();
+    // niDebugFmt((
+    //   "... OnFrameCompleted: sMetalEncoderFrameData{_frameNumber=%d,_frameInFlight=%d,_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d}",
+    //   _frameNumber,_frameInFlight,
+    //   _trackedBuffers.size(),_stream->GetNumBlocks(),
+    //   lastBlock.mOffset,lastBlock.mSize));
+    niLoop(i,_trackedBuffers.size()) {
+      _trackedBuffers[i]->_Untrack();
+    }
+    _trackedBuffers.clear();
+    _stream->Reset();
+    _event.Signal();
+    this->OnFrameCompleted();
+    return niVarNull;
+  }
+};
+
 struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   nn<cMetalGraphicsDriver> _driver;
-  id<MTLRenderCommandEncoder> _encoder;
+  id<MTLRenderCommandEncoder> _cmdEncoder;
+  astl::vector<NN<sMetalEncoderFrameData>> _frames;
+  tU32 _currentFrame = 0;
   Ptr<sMetalBuffer> _indexBuffer;
   tU32 _indexOffset = 0;
+  eGpuIndexType _indexType = eGpuIndexType_U32;
 
   sMetalCommandEncoder(
-    ain<nn<cMetalGraphicsDriver>> aDriver)
+    ain<nn<cMetalGraphicsDriver>> aDriver,
+    ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
-  {}
+  {
+    _frames.reserve(aFrameMaxInFlight);
+    niLoop(i,aFrameMaxInFlight) {
+      _frames.emplace_back(niNew sMetalEncoderFrameData(aDriver));
+    }
+  }
+
+  sMetalEncoderFrameData* _GetCurrentFrame() {
+    return _frames[_currentFrame];
+  }
+
+  void _BeginFrame(id<MTLRenderCommandEncoder> aNewEncoder, tU32 aCurrentFrame) {
+    niPanicAssert(_cmdEncoder == nil);
+    _cmdEncoder = aNewEncoder;
+    _currentFrame = aCurrentFrame;
+    if (_frames[_currentFrame]->IsInUse()) {
+      niWarning(niFmt("Waiting for frame %d completion...",_currentFrame));
+      _frames[_currentFrame]->_WaitCompletion();
+    }
+    _frames[_currentFrame]->StartFrame(
+      ni::GetLang()->GetFrameNumber(),_currentFrame);
+  }
+
+  Ptr<sMetalEncoderFrameData> _EndFrame() {
+    niLet frameData = _frames[_currentFrame];
+    _cmdEncoder = nil;
+    return frameData;
+  }
 
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
     niCheck(apPipeline != nullptr,;);
-    [_encoder setRenderPipelineState:
-     ((sMetalPipeline*)apPipeline)->_mtlPipeline];
+    ((sMetalPipeline*)apPipeline)->Apply(_cmdEncoder);
   }
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(apBuffer != nullptr, ;);
+    _GetCurrentFrame()->_TrackBuffer(apBuffer);
     sMetalBuffer* buffer = (sMetalBuffer*)apBuffer;
-    [_encoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:knMetalStageInBufferIndex];
+    [_cmdEncoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:knMetalStageInBufferIndex];
   }
 
-  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset) niImpl {
+  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, eGpuIndexType aIndexType) niImpl {
     niCheck(apBuffer != nullptr, ;);
-    // Metal handles this in DrawIndexed
+    _GetCurrentFrame()->_TrackBuffer(apBuffer);
     _indexBuffer = (sMetalBuffer*)apBuffer;
     _indexOffset = anOffset;
+    _indexType = aIndexType;
   }
 
   virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(apBuffer != nullptr, ;);
+    _GetCurrentFrame()->_TrackBuffer(apBuffer);
     sMetalBuffer* buffer = (sMetalBuffer*)apBuffer;
-    [_encoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:anBinding];
-    [_encoder setFragmentBuffer:buffer->_mtlBuffer offset:anOffset atIndex:anBinding];
+    [_cmdEncoder setVertexBuffer:buffer->_mtlBuffer offset:anOffset atIndex:anBinding];
+    [_cmdEncoder setFragmentBuffer:buffer->_mtlBuffer offset:anOffset atIndex:anBinding];
   }
 
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
     niCheck(apTexture != nullptr, ;);
     cMetalTexture* tex = (cMetalTexture*)apTexture;
-    [_encoder setFragmentTexture:tex->_tex atIndex:anBinding];
+    [_cmdEncoder setFragmentTexture:tex->_tex atIndex:anBinding];
+  }
+
+  virtual tBool __stdcall StreamVertexBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
+    return UpdateGpuStreamToVertexBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,anBinding);
+  }
+
+  virtual tBool __stdcall StreamIndexBuffer(const tPtr apData, tU32 anSize, eGpuIndexType aIndexType) niImpl {
+    return UpdateGpuStreamToIndexBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,aIndexType);
+  }
+
+  virtual tBool __stdcall StreamUniformBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
+    return UpdateGpuStreamToUniformBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,anBinding);
   }
 
   virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl {
-    [_encoder
+    [_cmdEncoder
      setFragmentSamplerState:_driver->_GetMTLSamplerState(ahSS)
      atIndex:anBinding];
   }
 
   virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) niImpl {
-    [_encoder setDepthBias:avOffset.x
+    [_cmdEncoder setDepthBias:avOffset.x
      slopeScale:avOffset.y
      clamp:0.0f];
   }
@@ -1731,7 +1940,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     rect.y = aRect.y;
     rect.width = aRect.GetWidth();
     rect.height = aRect.GetHeight();
-    [_encoder setScissorRect:rect];
+    [_cmdEncoder setScissorRect:rect];
   }
 
   virtual void __stdcall SetViewport(const sRecti& aRect) niImpl {
@@ -1742,32 +1951,33 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     vp.height = aRect.GetHeight();
     vp.znear = 0.0f;
     vp.zfar = 1.0f;
-    [_encoder setViewport:vp];
+    [_cmdEncoder setViewport:vp];
   }
 
   virtual void __stdcall SetStencilReference(tI32 aRef) niImpl {
-    [_encoder setStencilReferenceValue:aRef];
+    [_cmdEncoder setStencilReferenceValue:aRef];
   }
 
   virtual void __stdcall SetStencilMask(tU32 aMask) niImpl {
-    [_encoder setStencilFrontReferenceValue:aMask
+    [_cmdEncoder setStencilFrontReferenceValue:aMask
      backReferenceValue:aMask];
   }
 
   virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) niImpl {
-    [_encoder setBlendColorRed:aColor.x
+    [_cmdEncoder setBlendColorRed:aColor.x
      green:aColor.y
      blue:aColor.z
      alpha:aColor.w];
   }
 
-  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, eGpuIndexType aIndexType, tU32 anNumIndices, tU32 anFirstIndex) niImpl
+  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl
   {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
-    niCheck(aIndexType <= eGpuIndexType_Last, eFalse);
-    [_encoder drawIndexedPrimitives:_toMTLPrimitiveType[aPrimType]
+    niCheckIsOK(_indexBuffer,eFalse);
+    niCheck(_indexType <= eGpuIndexType_Last,eFalse);
+    [_cmdEncoder drawIndexedPrimitives:_toMTLPrimitiveType[aPrimType]
      indexCount:anNumIndices
-     indexType:_toMTLIndexType[aIndexType]
+     indexType:_toMTLIndexType[_indexType]
      indexBuffer:_indexBuffer->_mtlBuffer
      indexBufferOffset:_indexOffset + (anFirstIndex * sizeof(tU32))];
     return eTrue;
@@ -1776,7 +1986,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl
   {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
-    [_encoder drawPrimitives:_toMTLPrimitiveType[aPrimType]
+    [_cmdEncoder drawPrimitives:_toMTLPrimitiveType[aPrimType]
      vertexStart:anFirstVertex
      vertexCount:anVertexCount];
     return eTrue;
@@ -1788,23 +1998,6 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 // MetalContextWindow
 //
 //--------------------------------------------------------------------------------------------
-#if defined METAL_MAC
-static const tU32 knUniformBufferAlignment = 256;
-#elif defined METAL_IOS
-static const tU32 knUniformBufferAlignment = 16;
-#endif
-
-#define DIRTY_VIEWPORT niBit(0)
-#define DIRTY_SCISSOR niBit(1)
-
-
-struct sUniformsFixed {
-  sMatrixf mtxViewProjection;
-  sMatrixf mtxDrawOp;
-  sVec4f matColorDiffuse;
-  sVec4f matColorOpacity;
-} niAligned(256);
-
 struct cMetalContextBase :
     public sGraphicsContext<1,ni::ImplRC<
                                 iGraphicsContextRT,
@@ -1817,7 +2010,8 @@ struct cMetalContextBase :
 
   NN<sMetalCommandEncoder> mCmdEncoder;
 
-  sFixedGpuPipelineId mBaseRenderPipelineId;
+  eGpuPixelFormat mRT0Format;
+  eGpuPixelFormat mDSFormat;
 
   double4 mClearColor = double4::Zero();
   tF32 mClearDepth = 1.0f;
@@ -1825,6 +2019,7 @@ struct cMetalContextBase :
 
   tBool mbBeganFrame = eFalse;
 
+  tU32 mnCurrentFrame = 0;
   const tU32 mFrameMaxInFlight;
   ThreadSem mFrameSem = ThreadSem(0);
   virtual ni::Var __stdcall Run() niImpl {
@@ -1832,37 +2027,21 @@ struct cMetalContextBase :
     return niVarNull;
   }
 
-  void _CleanupTrackedBuffers() {
-    // niDebugFmt(("... CommandQueue mvTrackedBuffers: %d", mvTrackedBuffers.size()));
-    niLoop(i,mvTrackedBuffers.size()) {
-      mvTrackedBuffers[i]->_Untrack();
-    }
-    mvTrackedBuffers.clear();
-  }
-
-  tU32 mDirtyFlags = 0;
-  tIntPtr mCurrentRS = eInvalidHandle;
-  tIntPtr mCurrentDS = eInvalidHandle;
-  tIntPtr mCurrentSS = eInvalidHandle;
-  tU32 mCurrentBufferOffset = 0;
-  sFixedGpuPipelineId mCurrentRenderPipelineId;
+  tFixedGpuPipelineId mCurrentFixedGpuPipelineId = 0;
   tU32 mNumDrawOps = 0;
-  astl::vector<Ptr<sMetalBuffer>> mvTrackedBuffers;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
       , mFrameMaxInFlight(aFrameMaxInFlight)
-      , mCmdEncoder(MakeNN<sMetalCommandEncoder>(as_nn(apParent)))
+      , mCmdEncoder(MakeNN<sMetalCommandEncoder>(as_nn(apParent),aFrameMaxInFlight))
   {
     mpParent = apParent;
     niAssert(mpParent != NULL);
-
     mFrameSem.Signal(mFrameMaxInFlight);
-    mvTrackedBuffers.reserve(128);
   }
 
   virtual id<MTLRenderCommandEncoder> __stdcall _NewRenderCommandEncoder() = 0;
-  virtual tBool __stdcall _PresentAndCommit(iRunnable* apOnCompleted) = 0;
+  virtual tBool __stdcall _EndCommandEncoder() = 0;
 
   virtual iGpuCommandEncoder* __stdcall BeginCommandEncoder() niImpl {
     if (!mbBeganFrame) {
@@ -1875,32 +2054,35 @@ struct cMetalContextBase :
     _EndFrame();
   }
 
-  inline tBool _BeginFrame() {
-    niAssert(mbBeganFrame == eFalse);
+  void _AddCompletedHandler(iRunnable* apRunnable) {
+    niLet commandBuffer = [mpParent->_GetCommandQueue() commandBuffer];
+    Ptr<iRunnable> onCompleted = apRunnable;
+    [commandBuffer addCompletedHandler: ^(id<MTLCommandBuffer> _Nonnull) {
+        onCompleted->Run();
+      }];
+  }
 
-    // wait on the previous frame to be completed
+  inline tBool _BeginFrame() {
+    niPanicAssert(mbBeganFrame == eFalse);
+    mbBeganFrame = eTrue;
+
+    // wait on the previous N frames to be completed
     {
       mFrameSem.InfiniteWait();
-      _CleanupTrackedBuffers();
-      mDirtyFlags = DIRTY_VIEWPORT | DIRTY_SCISSOR;
       mNumDrawOps = 0;
-      mCurrentBufferOffset = 0;
-      mCurrentRenderPipelineId.Clear();
-      mCurrentRS = eInvalidHandle;
-      mCurrentDS = eInvalidHandle;
-      mCurrentSS = eInvalidHandle;
+      mCurrentFixedGpuPipelineId = 0;
     }
 
-    if (mBaseRenderPipelineId.IsNull()) {
-      mBaseRenderPipelineId.rt0 = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
-      if (mptrDS.IsOK()) {
-        mBaseRenderPipelineId.ds = _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
-      }
+    mRT0Format = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
+    if (mptrDS.IsOK()) {
+      mDSFormat = _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
+    }
+    else {
+      mDSFormat = eGpuPixelFormat_None;
     }
 
-    mCmdEncoder->_encoder = _NewRenderCommandEncoder();
-    mbBeganFrame = eTrue;
-    // niDebugFmt(("... _BeginFrame: %d", ni::GetLang()->GetFrameNumber()));
+    mCmdEncoder->_BeginFrame(_NewRenderCommandEncoder(),mnCurrentFrame);
+    // niDebugFmt(("... _BeginFrame: %d (inFlight: %d)", ni::GetLang()->GetFrameNumber(), mnCurrentFrame));
     return eTrue;
   }
 
@@ -1908,10 +2090,12 @@ struct cMetalContextBase :
     if (!mbBeganFrame) {
       return;
     }
-    _PresentAndCommit(this);
-    mCmdEncoder->_encoder = nil;
+    _AddCompletedHandler(mCmdEncoder->_EndFrame());
+    _AddCompletedHandler(this);
+    _EndCommandEncoder();
+    mnCurrentFrame = (mnCurrentFrame + 1) % mFrameMaxInFlight;
     mbBeganFrame = eFalse;
-    // niDebugFmt(("... _EndFrame: %d", ni::GetLang()->GetFrameNumber()));
+    // niDebugFmt(("... _EndFrame: %d (inFlight: %d)", ni::GetLang()->GetFrameNumber(), mnCurrentFrame));
   }
 
   virtual tBool __stdcall IsOK() const {
@@ -1934,43 +2118,19 @@ struct cMetalContextBase :
     mClearColor = Vec4<tF64>(ULColorGetRf(anColor),ULColorGetGf(anColor),ULColorGetBf(anColor),ULColorGetAf(anColor));
     mClearDepth = afDepth;
     mClearStencil = anStencil;
-
-#if 0
-    if (clearBuffer == eClearBuffersFlags_ColorDepthStencil) {
-      niAssert(!mbBeganFrame);
-      if (mbBeganFrame) {
-        static tU32 _lastErrorFrame = ni::eInvalidHandle;
-        if (_lastErrorFrame != ni::GetLang()->GetFrameNumber()) {
-          niError("Frame already began");
-          _lastErrorFrame = ni::GetLang()->GetFrameNumber();
-        }
-        return;
-      }
-      _BeginFrame();
-    }
-#endif
   }
 
   /////////////////////////////////////////////
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
-
     ++mNumDrawOps;
 
     // niAssert(mbBeganFrame);
     if (!mbBeganFrame) {
-#if 0
-      static tU32 _lastErrorFrame = ni::eInvalidHandle;
-      if (_lastErrorFrame != ni::GetLang()->GetFrameNumber()) {
-        niError("Frame not began.");
-        _lastErrorFrame = ni::GetLang()->GetFrameNumber();
-      }
-      return eFalse;
-#endif
       niCheck(_BeginFrame(),eFalse);
     }
 
-    niLet cmdEncoder = mCmdEncoder->_encoder;
+    niLet cmdEncoder = mCmdEncoder->_cmdEncoder;
 
     iVertexArray* va = apDrawOp->GetVertexArray();
     if (!va) {
@@ -1978,26 +2138,10 @@ struct cMetalContextBase :
     }
 
     METAL_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
-    const sVec2i fvfAndStride = GetVertexArrayFvfAndStride(va);
-    const tFVF fvf = (tFVF)fvfAndStride.x;
-    const tU32 fvfStride = (tU32)fvfAndStride.y;
-    const iMaterial* pDOMat = apDrawOp->GetMaterial();
-    const sMaterialDesc* pDOMatDesc = (const sMaterialDesc*)pDOMat->GetDescStructPtr();
-    const sMatrixf mtxDrawOp = apDrawOp->GetMatrix();
-    const sFixedStatesDesc* fixedDesc = (const sFixedStatesDesc*)mptrFS->GetDescStructPtr();
-    const tMaterialFlags matFlags = _GetMaterialFlags(pDOMatDesc);
-
-    // niDebugFmt(("... DrawOperation: frame: %d, base: %d, first: %d, num: %d (%d tris), uoff: %d, uSize: %d",
-    // ni::GetLang()->GetFrameNumber(),
-    // baseVertexIndex, firstInd, numInds, numInds/3,
-    // mCurrentBufferOffset,
-    // sizeof(sUniformsFixed)));
-
-    sFixedGpuPipelineId rpId = mBaseRenderPipelineId;
+    niLet fvf = va->GetFVF();
+    niLet pDOMatDesc = (const sMaterialDesc*)apDrawOp->GetMaterial()->GetDescStructPtr();
 
     iShader* pVS = pDOMatDesc->mShaders[eShaderUnit_Vertex];
-    iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
-
     if (!pVS) {
       pVS = mpParent->mFixedShaders.GetVertexShader(fvf,*pDOMatDesc);
       if (!pVS) {
@@ -2007,6 +2151,8 @@ struct cMetalContextBase :
       METAL_TRACE(("VS : %s",pVS->GetDeviceResourceName()));
       FixedShaders_UpdateConstants(this, (iShaderConstants*)pVS->GetConstants(), apDrawOp);
     }
+
+    iShader* pPS = pDOMatDesc->mShaders[eShaderUnit_Pixel];
     if (!pPS) {
       pPS = mpParent->mFixedShaders.GetPixelShader(*pDOMatDesc);
       if (!pPS) {
@@ -2017,71 +2163,54 @@ struct cMetalContextBase :
       FixedShaders_UpdateConstants(this, (iShaderConstants*)pPS->GetConstants(), apDrawOp);
     }
 
-    rpId.vertFuncId = ((iFixedGpuShader*)pVS)->GetUID();
-    rpId.fragFuncId = ((iFixedGpuShader*)pPS)->GetUID();
-    rpId.blendMode = _GetBlendMode(pDOMatDesc);
-    rpId.fvf = fvf;
+    const tFixedGpuPipelineId rpId = GetFixedGpuPipelineId(
+      mRT0Format, mDSFormat,
+      fvf,
+      _GetBlendMode(pDOMatDesc),
+      (eCompiledStates)_GetRS(pDOMatDesc),
+      (eCompiledStates)_GetDS(pDOMatDesc),
+      ((iFixedGpuShader*)pVS)->GetGpuFunction(),
+      ((iFixedGpuShader*)pPS)->GetGpuFunction());
+    niCheck(rpId != 0, eFalse);
 
-    {
-      const tIntPtr hRS = _GetRS(pDOMatDesc);
-      if (mCurrentRS != hRS) {
-        mCurrentRS = hRS;
-      }
-    }
-
-    {
-      const tIntPtr hDS = _GetDS(pDOMatDesc);
-      if (rpId.ds && (mCurrentDS != hDS)) {
-        [cmdEncoder setDepthStencilState:mpParent->_GetMTLDepthStencilState(hDS)];
-        mCurrentDS = hDS;
-      }
-    }
-
-    if (rpId != mCurrentRenderPipelineId) {
-      Ptr<iGpuPipeline> pipeline = mpParent->mFixedPipelines->GetRenderPipeline(
-        mpParent,
-        rpId,
-        (iFixedGpuShader*)pVS,
-        (iFixedGpuShader*)pPS);
-      if (!pipeline.IsOK()) {
-        niError("Can't get the render pipeline.");
+    if (rpId != mCurrentFixedGpuPipelineId) {
+      sMetalPipeline* pipeline = (sMetalPipeline*)mpParent->mFixedPipelines->GetRenderPipeline(
+        mpParent,rpId,
+        ((iFixedGpuShader*)pVS)->GetGpuFunction(),
+        ((iFixedGpuShader*)pPS)->GetGpuFunction()).raw_ptr();
+      if (!pipeline) {
+        niError("Can't get the pipeline.");
         return eFalse;
       }
-      [cmdEncoder setRenderPipelineState:
-       ((sMetalPipeline*)pipeline.raw_ptr())->_mtlPipeline];
-      mCurrentRenderPipelineId = rpId;
+      pipeline->Apply(cmdEncoder);
+      mCurrentFixedGpuPipelineId = rpId;
     }
 
-    if (mDirtyFlags & DIRTY_VIEWPORT) {
-      [cmdEncoder setViewport:mViewport];
-    }
-    if (mDirtyFlags & DIRTY_SCISSOR) {
-      [cmdEncoder setScissorRect:mScissorRect];
-    }
+    [cmdEncoder setViewport:mViewport];
+    [cmdEncoder setScissorRect:mScissorRect];
 
-    auto applyMaterialChannel =
-        [&](cMetalContextBase* apContext, iGraphics* apGraphics, tU32 anTSS, eMaterialChannel aChannel, const sMaterialDesc* apDOMat)
-        {
-          const sMaterialChannel& ch = apContext->_GetChannel(apDOMat, aChannel);
-          if (ch.mTexture.IsOK()) {
-            cMetalTexture* tex = (cMetalTexture*)ch.mTexture->Bind(NULL);
-            if (tex == NULL || tex->_tex == nil) {
-              // Probably trying to use the frame buffer we don't support this atm...
-              [cmdEncoder setFragmentTexture:NULL atIndex:anTSS];
-            }
-            else {
-              [cmdEncoder setFragmentTexture:tex->_tex atIndex:anTSS];
-              // niDebugFmt(("TEX SET >>> %s",tex->GetDeviceResourceName()));
-              if (mCurrentSS != ch.mhSS) {
-                [cmdEncoder setFragmentSamplerState: mpParent->_GetMTLSamplerState(ch.mhSS) atIndex: anTSS];
-                mCurrentSS = ch.mhSS;
-              }
-            }
-          }
-          else {
-            [cmdEncoder setFragmentTexture:NULL atIndex: anTSS];
-          }
-        };
+    auto applyMaterialChannel = [&](cMetalContextBase* apContext,
+                                    iGraphics* apGraphics,
+                                    tU32 anTSS, eMaterialChannel aChannel,
+                                    const sMaterialDesc* apDOMat)
+    {
+      const sMaterialChannel& ch = apContext->_GetChannel(apDOMat, aChannel);
+      if (ch.mTexture.IsOK()) {
+        cMetalTexture* tex = (cMetalTexture*)ch.mTexture->Bind(NULL);
+        if (tex == NULL || tex->_tex == nil) {
+          // Probably trying to use the frame buffer we don't support this atm...
+          [cmdEncoder setFragmentTexture:nil atIndex:anTSS];
+        }
+        else {
+          [cmdEncoder setFragmentTexture:tex->_tex atIndex:anTSS];
+          // niDebugFmt(("TEX SET >>> %s",tex->GetDeviceResourceName()));
+          [cmdEncoder setFragmentSamplerState: mpParent->_GetMTLSamplerState(ch.mhSS) atIndex: anTSS];
+        }
+      }
+      else {
+        [cmdEncoder setFragmentTexture:NULL atIndex: anTSS];
+      }
+    };
 
     niLoop(i,eMaterialChannel_Last) {
       eMaterialChannel channel = (eMaterialChannel)i;
@@ -2096,110 +2225,59 @@ struct cMetalContextBase :
       }
     }
 
-    auto updateConstant =
-        [&](eShaderUnit aUnit, const sShaderConstantsDesc* constDesc) {
-          tU32 size = 0;
-          sVec4f vf[constDesc->mvFloatRegisters.size()];
-          for (auto c : constDesc->mvConstants) {
-            auto cd = constDesc;
-            iHString* hspName = c.hspName;
-            // niDebugFmt(("Bind Constant[%s] %s,%s,%s,%s,%s",hspName,c.Type,c.hspMetadata,c.nDataIndex,c.nSize,c.nHwIndex));
-            if (hspName) {
-              auto matConst = pDOMatDesc->mptrConstants;
-              if (matConst.IsOK()) {
-                // niDebugFmt(("material is ok"));
-                const sShaderConstantsDesc* ct = (const sShaderConstantsDesc*)matConst->GetDescStructPtr();
-                sShaderConstantsDesc::tConstMap::const_iterator it = ct->mmapConstants.find(hspName);
-                if (it != ct->mmapConstants.end() && it->second != eInvalidHandle) {
-                  // niDebugFmt(("Find const material %s",hspName));
-                  c = ct->mvConstants[it->second];
-                  cd = ct;
-                }
-              }
-            }
-
-            switch (c.Type) {
-              case eShaderRegisterType_ConstFloat: {
-                niLoop(i, c.nSize) {
-                  vf[i + c.nHwIndex] = cd->mvFloatRegisters[i + c.nDataIndex];
-                }
-                size += c.nSize * sizeof(sVec4f);
-                break;
-              }
-              case eShaderRegisterType_ConstInt: {
-
-                break;
-              }
-              case eShaderRegisterType_ConstBool: {
-                break;
-              }
-              default:
-                niAssertUnreachable("Unreachable.");
-                return eFalse;
+    auto updateConstant = [&](eShaderUnit aUnit, const sShaderConstantsDesc* constDesc) {
+      tU32 size = 0;
+      sVec4f vf[constDesc->mvFloatRegisters.size()];
+      for (auto c : constDesc->mvConstants) {
+        auto cd = constDesc;
+        iHString* hspName = c.hspName;
+        // niDebugFmt(("Bind Constant[%s] %s,%s,%s,%s,%s",hspName,c.Type,c.hspMetadata,c.nDataIndex,c.nSize,c.nHwIndex));
+        if (hspName) {
+          auto matConst = pDOMatDesc->mptrConstants;
+          if (matConst.IsOK()) {
+            // niDebugFmt(("material is ok"));
+            const sShaderConstantsDesc* ct = (const sShaderConstantsDesc*)matConst->GetDescStructPtr();
+            sShaderConstantsDesc::tConstMap::const_iterator it = ct->mmapConstants.find(hspName);
+            if (it != ct->mmapConstants.end() && it->second != eInvalidHandle) {
+              // niDebugFmt(("Find const material %s",hspName));
+              c = ct->mvConstants[it->second];
+              cd = ct;
             }
           }
-
-          if (aUnit == eShaderUnit_Vertex) {
-            [cmdEncoder setVertexBytes:&vf[0] length:size atIndex:16];
+        }
+        switch (c.Type) {
+          case eShaderRegisterType_ConstFloat: {
+            niLoop(i, c.nSize) {
+              vf[i + c.nHwIndex] = cd->mvFloatRegisters[i + c.nDataIndex];
+            }
+            size += c.nSize * sizeof(sVec4f);
+            break;
           }
-          else if (aUnit == eShaderUnit_Pixel) {
-            [cmdEncoder setFragmentBytes:&vf[0] length:size atIndex:16];
+          case eShaderRegisterType_ConstInt: {
+
+            break;
           }
-          return eTrue;
-        };
-
-    updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
-    updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
-
-    {
-      sMetalBuffer* vaBuffer = (sMetalBuffer*)GetVertexArrayGpuBuffer(va);
-      if (!vaBuffer->_tracked && vaBuffer->_modifiedSize) {
-        mvTrackedBuffers.push_back(vaBuffer);
-        vaBuffer->_tracked = eTrue;
-      }
-    }
-
-    const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
-
-    sMetalBuffer* vaMtlBuffer = reinterpret_cast<sMetalBuffer*>(va->Bind(nullptr));
-    niPanicAssert(vaMtlBuffer != nullptr);
-    [cmdEncoder setVertexBuffer:vaMtlBuffer->_mtlBuffer
-     offset:(baseVertexIndex*fvfStride)
-     atIndex:knMetalStageInBufferIndex];
-
-    iIndexArray* ia = apDrawOp->GetIndexArray();
-    if (ia) {
-      const tU32 firstInd = apDrawOp->GetFirstIndex();
-      tU32 numInds = apDrawOp->GetNumIndices();
-      if (!numInds) {
-        numInds = ia->GetNumIndices()-firstInd;
-      }
-      {
-        sMetalBuffer* iaBuffer = (sMetalBuffer*)GetIndexArrayGpuBuffer(ia);
-        if (!iaBuffer->_tracked && iaBuffer->_modifiedSize) {
-          mvTrackedBuffers.push_back(iaBuffer);
-          iaBuffer->_tracked = eTrue;
+          case eShaderRegisterType_ConstBool: {
+            break;
+          }
+          default:
+            niAssertUnreachable("Unreachable.");
+            return eFalse;
         }
       }
 
-      sMetalBuffer* iaMtlBuffer = reinterpret_cast<sMetalBuffer*>(ia->Bind(nullptr));
-      niPanicAssert(vaMtlBuffer != nullptr);
-      [cmdEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
-       indexCount:numInds
-       indexType:MTLIndexTypeUInt32
-       indexBuffer:iaMtlBuffer->_mtlBuffer
-       indexBufferOffset:(firstInd*sizeof(tU32))];
-      METAL_TRACE(("DrawOperation END"));
-    }
-    else {
-      const tU32 nNumVerts = va->GetNumVertices()-baseVertexIndex;
-      [cmdEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-       vertexStart:0
-       vertexCount:nNumVerts];
-    }
+      if (aUnit == eShaderUnit_Vertex) {
+        [cmdEncoder setVertexBytes:&vf[0] length:size atIndex:16];
+      }
+      else if (aUnit == eShaderUnit_Pixel) {
+        [cmdEncoder setFragmentBytes:&vf[0] length:size atIndex:16];
+      }
+      return eTrue;
+    };
+    updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
+    updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
 
-    mDirtyFlags = 0;
-    return eTrue;
+    return DrawOperationSubmitGpuDrawCall(mCmdEncoder,apDrawOp);
   }
 
   /////////////////////////////////////////////
@@ -2229,7 +2307,6 @@ struct cMetalContextBase :
     }
     mViewport.znear = 0.0f;
     mViewport.zfar = 1.0f;
-    mDirtyFlags |= DIRTY_VIEWPORT;
   }
   virtual sRecti __stdcall GetViewport() const {
     return Recti(mViewport.originX,mViewport.originY,mViewport.width,mViewport.height);
@@ -2249,7 +2326,6 @@ struct cMetalContextBase :
       mScissorRect.width = aVal.GetWidth();
       mScissorRect.height = aVal.GetHeight();
     }
-    mDirtyFlags |= DIRTY_SCISSOR;
   }
   virtual sRecti __stdcall GetScissorRect() const {
     return Recti(mScissorRect.x,mScissorRect.y,mScissorRect.width,mScissorRect.height);
@@ -2304,13 +2380,11 @@ struct cMetalContextWindow : public cMetalContextBase
     }
     return (__bridge id<MTLRenderCommandEncoder>)mptrMetalAPI->NewRenderCommandEncoder(mClearColor,mClearDepth,mClearStencil);
   }
-  virtual tBool __stdcall _PresentAndCommit(iRunnable* apOnCompleted) {
-    return mptrMetalAPI->PresentAndCommit(apOnCompleted);
+  virtual tBool __stdcall _EndCommandEncoder() {
+    return mptrMetalAPI->PresentAndCommit(nullptr);
   }
 
   tBool __stdcall _DoResizeContext() {
-    _EndFrame();
-
     iGraphics* g = mpParent->GetGraphics();
     niCheck(mptrWindow.IsOK(),eFalse);
     const tU32 w = mptrWindow->GetClientSize().x;
@@ -2399,29 +2473,25 @@ struct cMetalContextRT : public cMetalContextBase
     [_commandBuffer enqueue];
     return _commandEncoder;
   }
-  virtual tBool __stdcall _PresentAndCommit(iRunnable* apOnCompleted) {
+  virtual tBool __stdcall _EndCommandEncoder() {
     const tBool r = (_commandBuffer != NULL);
     if (_commandEncoder) {
       [_commandEncoder endEncoding];
     }
-
     if (_commandBuffer) {
-      if (apOnCompleted) {
-        Ptr<iRunnable> onCompleted = apOnCompleted;
-        [_commandBuffer addCompletedHandler: ^(id<MTLCommandBuffer> _Nonnull) {
-            onCompleted->Run();
-          }];
-      }
-
 #ifdef niOSX
-      // NOTE: iOS don't have synchronizeTexture function, maybe there is no need to, we need some test..
-      // we need to synchronize the renderTarget here to get the right texture;
+      //
+      // TODO: The code and note below look wrong and incorrect, needs to be reviewed.
+      //
+
+      // NOTE: iOS don't have synchronizeTexture function, maybe there is no
+      // need to, we need some test. We need to synchronize the renderTarget
+      // here to get the right texture.
       id<MTLBlitCommandEncoder> blitEncoder = [_commandBuffer blitCommandEncoder];
       cMetalTexture* rtTex = (cMetalTexture*)mptrRT[0].ptr();
       [blitEncoder synchronizeTexture:rtTex->_tex slice:0 level:0];
       [blitEncoder endEncoding];
 #endif
-
       [_commandBuffer commit];
       [_commandBuffer waitUntilCompleted];
     }

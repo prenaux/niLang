@@ -1,4 +1,4 @@
-<GpuFunction ver="3" name="texture_alphatest_ps" exec="pixel">
+<GpuFunction ver="3" name="fixed_tex_alphatest_ps" exec="pixel">
 	<Reflection>
 		<EntryPoints>
 			<EntryPoint name="main" exec="pixel"/>

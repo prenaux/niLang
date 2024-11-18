@@ -68,6 +68,13 @@ IDLC_END_INTF(ni,iGpuBuffer)
 
 /** interface : iGpuFunction **/
 IDLC_BEGIN_INTF(ni,iGpuFunction)
+/** ni -> iGpuFunction::GetFunctionId/0 **/
+IDLC_METH_BEGIN(ni,iGpuFunction,GetFunctionId,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuFunction,GetFunctionId,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iGpuFunction,GetFunctionId,0)
+
 /** ni -> iGpuFunction::GetFunctionType/0 **/
 IDLC_METH_BEGIN(ni,iGpuFunction,GetFunctionType,0)
 	IDLC_DECL_RETVAR(eGpuFunctionType,_Ret)
@@ -369,14 +376,16 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetVertexBuffer,3)
 	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,SetVertexBuffer,3,(apBuffer,anOffset,anBinding))
 IDLC_METH_END(ni,iGpuCommandEncoder,SetVertexBuffer,3)
 
-/** ni -> iGpuCommandEncoder::SetIndexBuffer/2 **/
-IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetIndexBuffer,2)
+/** ni -> iGpuCommandEncoder::SetIndexBuffer/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetIndexBuffer,3)
 	IDLC_DECL_VAR(iGpuBuffer*,apBuffer)
 	IDLC_BUF_TO_INTF(iGpuBuffer,apBuffer)
 	IDLC_DECL_VAR(tU32,anOffset)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anOffset)
-	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,SetIndexBuffer,2,(apBuffer,anOffset))
-IDLC_METH_END(ni,iGpuCommandEncoder,SetIndexBuffer,2)
+	IDLC_DECL_VAR(eGpuIndexType,aIndexType)
+	IDLC_BUF_TO_ENUM(eGpuIndexType,aIndexType)
+	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,SetIndexBuffer,3,(apBuffer,anOffset,aIndexType))
+IDLC_METH_END(ni,iGpuCommandEncoder,SetIndexBuffer,3)
 
 /** ni -> iGpuCommandEncoder::SetUniformBuffer/3 **/
 IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetUniformBuffer,3)
@@ -406,6 +415,45 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetSamplerState,2)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anBinding)
 	IDLC_METH_CALL_VOID(ni,iGpuCommandEncoder,SetSamplerState,2,(ahSS,anBinding))
 IDLC_METH_END(ni,iGpuCommandEncoder,SetSamplerState,2)
+
+/** ni -> iGpuCommandEncoder::StreamVertexBuffer/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,StreamVertexBuffer,3)
+	IDLC_DECL_VAR(tPtr,apData)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr,apData)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_DECL_VAR(tU32,anBinding)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anBinding)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,StreamVertexBuffer,3,(apData,anSize,anBinding))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,StreamVertexBuffer,3)
+
+/** ni -> iGpuCommandEncoder::StreamIndexBuffer/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,StreamIndexBuffer,3)
+	IDLC_DECL_VAR(tPtr,apData)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr,apData)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_DECL_VAR(eGpuIndexType,aIndexType)
+	IDLC_BUF_TO_ENUM(eGpuIndexType,aIndexType)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,StreamIndexBuffer,3,(apData,anSize,aIndexType))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,StreamIndexBuffer,3)
+
+/** ni -> iGpuCommandEncoder::StreamUniformBuffer/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,StreamUniformBuffer,3)
+	IDLC_DECL_VAR(tPtr,apData)
+	IDLC_BUF_TO_PTR(ni::eTypeFlags_Constant|ni::eType_Ptr,apData)
+	IDLC_DECL_VAR(tU32,anSize)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
+	IDLC_DECL_VAR(tU32,anBinding)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anBinding)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,StreamUniformBuffer,3,(apData,anSize,anBinding))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,StreamUniformBuffer,3)
 
 /** ni -> iGpuCommandEncoder::SetPolygonOffset/1 **/
 IDLC_METH_BEGIN(ni,iGpuCommandEncoder,SetPolygonOffset,1)
@@ -462,20 +510,18 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,Draw,3)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iGpuCommandEncoder,Draw,3)
 
-/** ni -> iGpuCommandEncoder::DrawIndexed/4 **/
-IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DrawIndexed,4)
+/** ni -> iGpuCommandEncoder::DrawIndexed/3 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DrawIndexed,3)
 	IDLC_DECL_VAR(eGraphicsPrimitiveType,aPrimType)
 	IDLC_BUF_TO_ENUM(eGraphicsPrimitiveType,aPrimType)
-	IDLC_DECL_VAR(eGpuIndexType,aIndexType)
-	IDLC_BUF_TO_ENUM(eGpuIndexType,aIndexType)
 	IDLC_DECL_VAR(tU32,anNumIndices)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anNumIndices)
 	IDLC_DECL_VAR(tU32,anFirstIndex)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anFirstIndex)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DrawIndexed,4,(aPrimType,aIndexType,anNumIndices,anFirstIndex))
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DrawIndexed,3,(aPrimType,anNumIndices,anFirstIndex))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iGpuCommandEncoder,DrawIndexed,4)
+IDLC_METH_END(ni,iGpuCommandEncoder,DrawIndexed,3)
 
 IDLC_END_INTF(ni,iGpuCommandEncoder)
 
@@ -497,8 +543,10 @@ IDLC_END_INTF(ni,iGraphicsContextGpu)
 
 /** interface : iGraphicsDriverGpu **/
 IDLC_BEGIN_INTF(ni,iGraphicsDriverGpu)
-/** ni -> iGraphicsDriverGpu::CreateGpuBuffer/3 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBuffer,3)
+/** ni -> iGraphicsDriverGpu::CreateGpuBuffer/4 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBuffer,4)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
 	IDLC_DECL_VAR(tU32,anSize)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anSize)
 	IDLC_DECL_VAR(eGpuBufferMemoryMode,aMemMode)
@@ -506,12 +554,14 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBuffer,3)
 	IDLC_DECL_VAR(tGpuBufferUsageFlags,aUsage)
 	IDLC_BUF_TO_ENUM(tGpuBufferUsageFlags,aUsage)
 	IDLC_DECL_RETVAR(Ptr<iGpuBuffer>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuBuffer,3,(anSize,aMemMode,aUsage))
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuBuffer,4,(ahspName,anSize,aMemMode,aUsage))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuBuffer,3)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuBuffer,4)
 
-/** ni -> iGraphicsDriverGpu::CreateGpuBufferFromData/4 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBufferFromData,4)
+/** ni -> iGraphicsDriverGpu::CreateGpuBufferFromData/5 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBufferFromData,5)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
 	IDLC_DECL_VAR(iFile*,apFile)
 	IDLC_BUF_TO_INTF(iFile,apFile)
 	IDLC_DECL_VAR(tU32,anSize)
@@ -521,11 +571,11 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBufferFromData,4)
 	IDLC_DECL_VAR(tGpuBufferUsageFlags,aUsage)
 	IDLC_BUF_TO_ENUM(tGpuBufferUsageFlags,aUsage)
 	IDLC_DECL_RETVAR(Ptr<iGpuBuffer>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuBufferFromData,4,(apFile,anSize,aMemMode,aUsage))
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuBufferFromData,5,(ahspName,apFile,anSize,aMemMode,aUsage))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuBufferFromData,4)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuBufferFromData,5)
 
-/** ni -> iGraphicsDriverGpu::CreateGpuBufferFromDataRaw/4 -> NO AUTOMATION **/
+/** ni -> iGraphicsDriverGpu::CreateGpuBufferFromDataRaw/5 -> NO AUTOMATION **/
 /** ni -> iGraphicsDriverGpu::GetGpuFunctionTarget/0 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,GetGpuFunctionTarget,0)
 	IDLC_DECL_RETVAR(iHString*,_Ret)
@@ -535,14 +585,14 @@ IDLC_METH_END(ni,iGraphicsDriverGpu,GetGpuFunctionTarget,0)
 
 /** ni -> iGraphicsDriverGpu::CreateGpuFunction/3 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuFunction,3)
-	IDLC_DECL_VAR(eGpuFunctionType,aType)
-	IDLC_BUF_TO_ENUM(eGpuFunctionType,aType)
 	IDLC_DECL_VAR(iHString*,ahspName)
 	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(eGpuFunctionType,aType)
+	IDLC_BUF_TO_ENUM(eGpuFunctionType,aType)
 	IDLC_DECL_VAR(iDataTable*,apGpuFunctionDT)
 	IDLC_BUF_TO_INTF(iDataTable,apGpuFunctionDT)
 	IDLC_DECL_RETVAR(Ptr<iGpuFunction>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuFunction,3,(aType,ahspName,apGpuFunctionDT))
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuFunction,3,(ahspName,aType,apGpuFunctionDT))
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuFunction,3)
 
@@ -553,21 +603,23 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuPipelineDesc,0)
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuPipelineDesc,0)
 
-/** ni -> iGraphicsDriverGpu::CreateGpuPipeline/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuPipeline,1)
-	IDLC_DECL_VAR(iGpuPipelineDesc*,apDesc)
-	IDLC_BUF_TO_INTF(iGpuPipelineDesc,apDesc)
-	IDLC_DECL_RETVAR(Ptr<iGpuPipeline>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuPipeline,1,(apDesc))
-	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuPipeline,1)
-
 /** ni -> iGraphicsDriverGpu::CreateGpuBlendMode/0 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuBlendMode,0)
 	IDLC_DECL_RETVAR(Ptr<iGpuBlendMode>,_Ret)
 	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuBlendMode,0,())
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuBlendMode,0)
+
+/** ni -> iGraphicsDriverGpu::CreateGpuPipeline/2 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuPipeline,2)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(iGpuPipelineDesc*,apDesc)
+	IDLC_BUF_TO_INTF(iGpuPipelineDesc,apDesc)
+	IDLC_DECL_RETVAR(Ptr<iGpuPipeline>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuPipeline,2,(ahspName,apDesc))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuPipeline,2)
 
 /** ni -> iGraphicsDriverGpu::BlitManagedGpuBufferToSystemMemory/1 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,BlitManagedGpuBufferToSystemMemory,1)

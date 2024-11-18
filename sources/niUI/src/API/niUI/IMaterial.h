@@ -172,7 +172,6 @@ struct sMaterialChannel {
 struct sMaterialDesc {
   tHStringPtr           mhspName;
   tHStringPtr           mhspClass;
-  tFVF                  mFVF;
   tMaterialFlags        mFlags;
   eBlendMode            mBlendMode;
   tIntPtr               mhRS;

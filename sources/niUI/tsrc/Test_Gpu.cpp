@@ -106,6 +106,7 @@ struct GpuTriangle : public GpuCanvasBase {
       _vaBuffer = niCheckNN(
         _vaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuTriangle_VA"),
           sizeof(tVertexFmt)*3,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Vertex),
@@ -123,12 +124,14 @@ struct GpuTriangle : public GpuCanvasBase {
     {
       tHStringPtr hspPath = _H("test/gpufunc/triangle_vs.gpufunc.xml");
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
-      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(eGpuFunctionType_Vertex,hspPath,dtVertex),eFalse);
+      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
+        hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
     }
     {
       tHStringPtr hspPath = _H("test/gpufunc/triangle_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
-      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(eGpuFunctionType_Pixel,hspPath,dtPixel),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
+        hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
     }
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
@@ -137,7 +140,7 @@ struct GpuTriangle : public GpuCanvasBase {
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
-      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
     }
     return eTrue;
   }
@@ -173,6 +176,7 @@ struct GpuSquare : public GpuCanvasBase {
       _vaBuffer = niCheckNN(
         _vaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuSquare_VA"),
           sizeof(tVertexFmt)*4,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Vertex),
@@ -193,6 +197,7 @@ struct GpuSquare : public GpuCanvasBase {
       _iaBuffer = niCheckNN(
         _iaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuSquare_IA"),
           sizeof(tU32)*6,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Index),
@@ -207,12 +212,12 @@ struct GpuSquare : public GpuCanvasBase {
     {
       tHStringPtr hspPath = _H("test/gpufunc/triangle_vs.gpufunc.xml");
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
-      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(eGpuFunctionType_Vertex,hspPath,dtVertex),eFalse);
+      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
     }
     {
       tHStringPtr hspPath = _H("test/gpufunc/triangle_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
-      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(eGpuFunctionType_Pixel,hspPath,dtPixel),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
     }
 
     {
@@ -222,7 +227,7 @@ struct GpuSquare : public GpuCanvasBase {
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
-      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuSquare_Pipeline"),pipelineDesc), eFalse);
     }
 
     return eTrue;
@@ -237,8 +242,8 @@ struct GpuSquare : public GpuCanvasBase {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->SetIndexBuffer(_iaBuffer, 0);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,eGpuIndexType_U32,6,0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
   }
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuSquare);
@@ -260,6 +265,7 @@ struct GpuTexture : public GpuCanvasBase {
       _vaBuffer = niCheckNN(
         _vaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuTexture_VA"),
           sizeof(tVertexFmt)*4,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Vertex),
@@ -280,6 +286,7 @@ struct GpuTexture : public GpuCanvasBase {
       _iaBuffer = niCheckNN(
         _iaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuTexture_IA"),
           sizeof(tU32)*6,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Index),
@@ -296,14 +303,14 @@ struct GpuTexture : public GpuCanvasBase {
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
       _vertexGpuFun = niCheckNN(
         _vertexGpuFun,
-        _driverGpu->CreateGpuFunction(eGpuFunctionType_Vertex,hspPath,dtVertex),eFalse);
+        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
     }
     {
       tHStringPtr hspPath = _H("test/gpufunc/texture_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
       _pixelGpuFun = niCheckNN(
         _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(eGpuFunctionType_Pixel,hspPath,dtPixel),eFalse);
+        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
     }
 
     {
@@ -313,7 +320,7 @@ struct GpuTexture : public GpuCanvasBase {
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
-      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTexture_Pipeline"),pipelineDesc), eFalse);
     }
 
     {
@@ -335,15 +342,15 @@ struct GpuTexture : public GpuCanvasBase {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->SetIndexBuffer(_iaBuffer, 0);
     cmdEncoder->SetTexture(_texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,eGpuIndexType_U32,6,0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
   }
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuTexture);
 
-struct GpuTexAlpha : public GpuCanvasBase {
+struct GpuTexAlphaBase : public GpuCanvasBase {
   typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -352,10 +359,11 @@ struct GpuTexAlpha : public GpuCanvasBase {
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
   NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
 
-  NN<iGpuBuffer> _uBuffer = niDeferredInit(NN<iGpuBuffer>);
-
-  TEST_CONSTRUCTOR_BASE(GpuTexAlpha,GpuCanvasBase) {
+  TEST_CONSTRUCTOR_BASE(GpuTexAlphaBase,GpuCanvasBase) {
   }
+
+  virtual tBool InitUniformBuffer() = 0;
+  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) = 0;
 
   tBool _Init() niImpl {
     {
@@ -371,6 +379,7 @@ struct GpuTexAlpha : public GpuCanvasBase {
       _vaBuffer = niCheckNN(
         _vaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuTexAlpha_VA"),
           sizeof(tVertexFmt)*4,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Vertex),
@@ -382,15 +391,16 @@ struct GpuTexAlpha : public GpuCanvasBase {
       //  top y =  1, bottom y = -1
       // this a regular "math grid" with the x axis going right and y axis going up
       verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {3.0f,0.0f}}; // Green
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {3.0f,3.0f}}; // Blue
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,3.0f}}; // White
       _vaBuffer->Unlock();
     }
     {
       _iaBuffer = niCheckNN(
         _iaBuffer,
         _driverGpu->CreateGpuBuffer(
+          _H("GpuTexAlpha_IA"),
           sizeof(tU32)*6,
           eGpuBufferMemoryMode_Shared,
           eGpuBufferUsageFlags_Index),
@@ -401,31 +411,22 @@ struct GpuTexAlpha : public GpuCanvasBase {
       inds[3] = 2; inds[4] = 3; inds[5] = 0;
       _iaBuffer->Unlock();
     }
-    {
-      TestGpuFuncs_TestUniforms ubInit;
-      _uBuffer = niCheckNN(
-        _uBuffer,
-        _driverGpu->CreateGpuBufferFromDataRaw(
-          (tPtr)&ubInit,
-          sizeof(TestGpuFuncs_TestUniforms),
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Uniform),
-        eFalse);
-    }
+
+    niCheck(InitUniformBuffer(),eFalse);
 
     {
       tHStringPtr hspPath = _H("test/gpufunc/texture_alphatest_vs.gpufunc.xml");
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
       _vertexGpuFun = niCheckNN(
         _vertexGpuFun,
-        _driverGpu->CreateGpuFunction(eGpuFunctionType_Vertex,hspPath,dtVertex),eFalse);
+        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
     }
     {
       tHStringPtr hspPath = _H("test/gpufunc/texture_alphatest_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
       _pixelGpuFun = niCheckNN(
         _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(eGpuFunctionType_Pixel,hspPath,dtPixel),eFalse);
+        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
     }
 
     {
@@ -435,7 +436,7 @@ struct GpuTexAlpha : public GpuCanvasBase {
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
-      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(pipelineDesc), eFalse);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTexAlpha_Pipeline"),pipelineDesc), eFalse);
     }
 
     {
@@ -451,7 +452,39 @@ struct GpuTexAlpha : public GpuCanvasBase {
   void _DrawMain(iCanvas* apCanvas) niImpl {
     apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
     apCanvas->Flush(); // submit in the current command encoder
+    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    UpdateUniformBuffer(cmdEncoder);
+    cmdEncoder->SetTexture(_texture, 0);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothMirror, 0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+  }
+};
 
+struct GpuTexAlphaUBuffer : public GpuTexAlphaBase {
+  NN<iGpuBuffer> _uBuffer = niDeferredInit(NN<iGpuBuffer>);
+
+  TEST_CONSTRUCTOR_BASE(GpuTexAlphaUBuffer,GpuTexAlphaBase) {
+  }
+
+  virtual tBool InitUniformBuffer() {
+    TestGpuFuncs_TestUniforms ubInit;
+    _uBuffer = niCheckNN(
+      _uBuffer,
+      _driverGpu->CreateGpuBufferFromDataRaw(
+        _H("GpuTexAlpha_TestUniforms"),
+        (tPtr)&ubInit,
+        sizeof(TestGpuFuncs_TestUniforms),
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Uniform),
+      eFalse);
+    return eTrue;
+  }
+  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) {
     niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
       0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
@@ -462,19 +495,27 @@ struct GpuTexAlpha : public GpuCanvasBase {
       MatrixRotationZ(uBuffer->mtxWVP,WrapRad((tF32)mfAnimationTime*0.1f));
     }
     _uBuffer->Unlock();
-
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
-    niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
-    cmdEncoder->SetPipeline(_pipeline);
-    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->SetIndexBuffer(_iaBuffer, 0);
-    cmdEncoder->SetUniformBuffer(_uBuffer, 0, 0);
-    cmdEncoder->SetTexture(_texture, 0);
-    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,eGpuIndexType_U32,6,0);
+    aCmdEncoder->SetUniformBuffer(_uBuffer, 0, 0);
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuTexAlpha);
+TEST_FIXTURE_WIDGET(FGpu,GpuTexAlphaUBuffer);
+
+struct GpuTexAlphaStream : public GpuTexAlphaBase {
+  TEST_CONSTRUCTOR_BASE(GpuTexAlphaStream,GpuTexAlphaBase) {
+  }
+
+  virtual tBool InitUniformBuffer() {
+    return eTrue;
+  }
+  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) {
+    TestGpuFuncs_TestUniforms u;
+    niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;
+    u.materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
+    u.alphaRef = cosTime - 0.05f;
+    MatrixRotationZ(u.mtxWVP,WrapRad((tF32)mfAnimationTime*0.1f));
+    aCmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+  }
+};
+TEST_FIXTURE_WIDGET(FGpu,GpuTexAlphaStream);
 
 }

@@ -1,15 +1,17 @@
-<Shader ver="2" name="triangle_ps" exec="pixel" input_filename="triangle_ps.spv" input_digest="6tfzde9ppgchxj8wzn5k87g484">
-	<Target target="vkgl45" src_digest="ay79x93zt5kbtj8r43dqr8b7tw">
+<GpuFunction ver="3" name="triangle_ps" exec="pixel">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="pixel"/>
+		</EntryPoints>
+		<Types/>
 		<Inputs>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
+			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
 		</Inputs>
-		<Outputs deco_location="0">
-			<Output name="OUT_0_rval_color" type="vec4"/>
+		<Outputs>
+			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	</Reflection>
+	<Target target="vkgl45">
 		<![CDATA[#version 450
 
 layout(location = 1) in vec4 IN_1_aInput_color;
@@ -22,17 +24,7 @@ void main()
 
 ]]>
 	</Target>
-	<Target target="msl2_macos" src_digest="wd5e6a5fj8cnyz9cybgxhx82km">
-		<Inputs>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-		</Inputs>
-		<Outputs deco_location="0">
-			<Output name="OUT_0_rval_color" type="vec4"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	<Target target="msl2_macos">
 		<![CDATA[#include <metal_stdlib>
 #include <simd/simd.h>
 
@@ -57,17 +49,7 @@ fragment main0_out main0(main0_in in [[stage_in]])
 
 ]]>
 	</Target>
-	<Target target="hlsl5" src_digest="edveqxt22fv66qdhxepq7bpntw">
-		<Inputs>
-			<Input name="IN_1_aInput_color" type="vec4" deco_location="1"/>
-		</Inputs>
-		<Outputs deco_location="0">
-			<Output name="OUT_0_rval_color" type="vec4"/>
-		</Outputs>
-		<SeparateTextures/>
-		<SamplerStates/>
-		<SampledTextures/>
-		<ConstBuffs/>
+	<Target target="hlsl5">
 		<![CDATA[static float4 IN_1_aInput_color;
 static float4 OUT_0_rval_color;
 
@@ -96,4 +78,4 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 }
 ]]>
 	</Target>
-</Shader>
+</GpuFunction>

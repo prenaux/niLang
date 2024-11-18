@@ -8377,6 +8377,18 @@ static const ni::sInterfaceDef InterfaceDef_iGpuBuffer = {
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGpuFunction() {
 
+// Method: GetFunctionId
+static const ni::sMethodDef iGpuFunction_GetFunctionId = {
+  "GetFunctionId",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuFunction_GetFunctionId)
+#else
+  NULL
+#endif
+};
+
 // Method: GetFunctionType
 static const ni::sMethodDef iGpuFunction_GetFunctionType = {
   "GetFunctionType",
@@ -8402,6 +8414,7 @@ static const ni::sMethodDef iGpuFunction_GetDataTable = {
 };
 
 static const ni::sMethodDef* Methods_iGpuFunction[] = {
+	&iGpuFunction_GetFunctionId,
 	&iGpuFunction_GetFunctionType,
 	&iGpuFunction_GetDataTable,
 
@@ -8949,7 +8962,7 @@ static const ni::sMethodDef* Methods_iGpuPipeline[] = {
 
 //// Interface description //////////////////////////////////
 static const ni::tUUID* Parents_iGpuPipeline[] = {
-  &niGetInterfaceUUID(iUnknown),
+  &niGetInterfaceUUID(iDeviceResource),
 };
 
 static const ni::sInterfaceDef InterfaceDef_iGpuPipeline = {
@@ -9005,14 +9018,15 @@ static const ni::sMethodDef iGpuCommandEncoder_SetVertexBuffer = {
 };
 
 // Method: SetIndexBuffer
-static const ni::sParameterDef iGpuCommandEncoder_SetIndexBuffer_Parameters[2] = { 
+static const ni::sParameterDef iGpuCommandEncoder_SetIndexBuffer_Parameters[3] = { 
   { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
-  { "anOffset", ni::eType_U32, NULL, "tU32" }
+  { "anOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_SetIndexBuffer = {
   "SetIndexBuffer",
   0|ni::eType_Null, NULL, "void",
-  2, iGpuCommandEncoder_SetIndexBuffer_Parameters,
+  3, iGpuCommandEncoder_SetIndexBuffer_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_SetIndexBuffer)
 #else
@@ -9064,6 +9078,57 @@ static const ni::sMethodDef iGpuCommandEncoder_SetSamplerState = {
   2, iGpuCommandEncoder_SetSamplerState_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_SetSamplerState)
+#else
+  NULL
+#endif
+};
+
+// Method: StreamVertexBuffer
+static const ni::sParameterDef iGpuCommandEncoder_StreamVertexBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "anBinding", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iGpuCommandEncoder_StreamVertexBuffer = {
+  "StreamVertexBuffer",
+  0|ni::eType_I8, NULL, "tBool",
+  3, iGpuCommandEncoder_StreamVertexBuffer_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuCommandEncoder_StreamVertexBuffer)
+#else
+  NULL
+#endif
+};
+
+// Method: StreamIndexBuffer
+static const ni::sParameterDef iGpuCommandEncoder_StreamIndexBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }
+}; 
+static const ni::sMethodDef iGpuCommandEncoder_StreamIndexBuffer = {
+  "StreamIndexBuffer",
+  0|ni::eType_I8, NULL, "tBool",
+  3, iGpuCommandEncoder_StreamIndexBuffer_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuCommandEncoder_StreamIndexBuffer)
+#else
+  NULL
+#endif
+};
+
+// Method: StreamUniformBuffer
+static const ni::sParameterDef iGpuCommandEncoder_StreamUniformBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "anBinding", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iGpuCommandEncoder_StreamUniformBuffer = {
+  "StreamUniformBuffer",
+  0|ni::eType_I8, NULL, "tBool",
+  3, iGpuCommandEncoder_StreamUniformBuffer_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuCommandEncoder_StreamUniformBuffer)
 #else
   NULL
 #endif
@@ -9177,16 +9242,15 @@ static const ni::sMethodDef iGpuCommandEncoder_Draw = {
 };
 
 // Method: DrawIndexed
-static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[4] = { 
+static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[3] = { 
   { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
-  { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }, 
   { "anNumIndices", ni::eType_U32, NULL, "tU32" }, 
   { "anFirstIndex", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_DrawIndexed = {
   "DrawIndexed",
   0|ni::eType_I8, NULL, "tBool",
-  4, iGpuCommandEncoder_DrawIndexed_Parameters,
+  3, iGpuCommandEncoder_DrawIndexed_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_DrawIndexed)
 #else
@@ -9201,6 +9265,9 @@ static const ni::sMethodDef* Methods_iGpuCommandEncoder[] = {
 	&iGpuCommandEncoder_SetUniformBuffer,
 	&iGpuCommandEncoder_SetTexture,
 	&iGpuCommandEncoder_SetSamplerState,
+	&iGpuCommandEncoder_StreamVertexBuffer,
+	&iGpuCommandEncoder_StreamIndexBuffer,
+	&iGpuCommandEncoder_StreamUniformBuffer,
 	&iGpuCommandEncoder_SetPolygonOffset,
 	&iGpuCommandEncoder_SetScissorRect,
 	&iGpuCommandEncoder_SetViewport,
@@ -9293,7 +9360,8 @@ static const ni::sInterfaceDef InterfaceDef_iGraphicsContextGpu = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphicsDriverGpu() {
 
 // Method: CreateGpuBuffer
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBuffer_Parameters[3] = { 
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBuffer_Parameters[4] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
   { "aUsage", ni::eType_Enum, NULL, "tGpuBufferUsageFlags" }
@@ -9301,7 +9369,7 @@ static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBuffer_Parameters[3] 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBuffer = {
   "CreateGpuBuffer",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
-  3, iGraphicsDriverGpu_CreateGpuBuffer_Parameters,
+  4, iGraphicsDriverGpu_CreateGpuBuffer_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuBuffer)
 #else
@@ -9310,7 +9378,8 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBuffer = {
 };
 
 // Method: CreateGpuBufferFromData
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters[4] = { 
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
@@ -9319,7 +9388,7 @@ static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromData_Parame
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromData = {
   "CreateGpuBufferFromData",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
-  4, iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters,
+  5, iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuBufferFromData)
 #else
@@ -9328,7 +9397,8 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromData = {
 };
 
 // Method: CreateGpuBufferFromDataRaw
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters[4] = { 
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apData", ni::eType_Ptr, NULL, "tPtr" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
@@ -9337,7 +9407,7 @@ static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Par
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw = {
   "CreateGpuBufferFromDataRaw",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
-  4, iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters,
+  5, iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters,
 NULL
 };
 
@@ -9355,8 +9425,8 @@ static const ni::sMethodDef iGraphicsDriverGpu_GetGpuFunctionTarget = {
 
 // Method: CreateGpuFunction
 static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuFunction_Parameters[3] = { 
-  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }, 
   { "apGpuFunctionDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
 }; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuFunction = {
@@ -9382,21 +9452,6 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuPipelineDesc = {
 #endif
 };
 
-// Method: CreateGpuPipeline
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuPipeline_Parameters[1] = { 
-  { "apDesc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipelineDesc), "const iGpuPipelineDesc*" }
-}; 
-static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuPipeline = {
-  "CreateGpuPipeline",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipeline), "Ptr<iGpuPipeline>",
-  1, iGraphicsDriverGpu_CreateGpuPipeline_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuPipeline)
-#else
-  NULL
-#endif
-};
-
 // Method: CreateGpuBlendMode
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBlendMode = {
   "CreateGpuBlendMode",
@@ -9404,6 +9459,22 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBlendMode = {
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuBlendMode)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateGpuPipeline
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuPipeline_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apDesc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipelineDesc), "const iGpuPipelineDesc*" }
+}; 
+static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuPipeline = {
+  "CreateGpuPipeline",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipeline), "Ptr<iGpuPipeline>",
+  2, iGraphicsDriverGpu_CreateGpuPipeline_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuPipeline)
 #else
   NULL
 #endif
@@ -9431,8 +9502,8 @@ static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_GetGpuFunctionTarget,
 	&iGraphicsDriverGpu_CreateGpuFunction,
 	&iGraphicsDriverGpu_CreateGpuPipelineDesc,
-	&iGraphicsDriverGpu_CreateGpuPipeline,
 	&iGraphicsDriverGpu_CreateGpuBlendMode,
+	&iGraphicsDriverGpu_CreateGpuPipeline,
 	&iGraphicsDriverGpu_BlitManagedGpuBufferToSystemMemory,
 
 };

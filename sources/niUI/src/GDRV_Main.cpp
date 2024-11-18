@@ -84,13 +84,15 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
     }
   }
 
-  QPtr<iGraphicsDriver> ptrDrv = ni::GetLang()->CreateInstance(niFmt("GraphicsDriver.%s",hspDriver),this);
-  if (!ptrDrv.IsOK()) {
-    niError(niFmt(_A("Can't find driver '%s'."),niHStr(hspDriver)));
-    return eFalse;
+  {
+    cString driverName = niFmt("GraphicsDriver.%s",hspDriver);
+    QPtr<iGraphicsDriver> ptrDrv = ni::GetLang()->CreateInstance(driverName.c_str(),this);
+    if (!ptrDrv.IsOK()) {
+      niError(niFmt(_A("Can't create instance of '%s'."),driverName));
+      return eFalse;
+    }
+    mptrDrv = ptrDrv;
   }
-
-  mptrDrv = ptrDrv;
 
   mptrDRMGeneric = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsGeneric"));
   niCheck(mptrDRMGeneric.IsOK(),eFalse);

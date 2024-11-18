@@ -1,4 +1,4 @@
-<GpuFunction ver="3" name="texture_ps" exec="pixel">
+<GpuFunction ver="3" name="fixed_tex_ps" exec="pixel">
 	<Reflection>
 		<EntryPoints>
 			<EntryPoint name="main" exec="pixel"/>
@@ -12,17 +12,17 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 		<SeparateImages>
-			<SeparateImage name="IN_1_aTexture" type="texture2D" set="0" binding="0"/>
+			<SeparateImage name="IN_1_aTexture" type="texture2D" set="0" binding="1"/>
 		</SeparateImages>
 		<SeparateSamplers>
-			<SeparateSampler name="IN_1_aSS" type="sampler" set="0" binding="1"/>
+			<SeparateSampler name="IN_1_aSS" type="sampler" set="0" binding="2"/>
 		</SeparateSamplers>
 	</Reflection>
 	<Target target="vkgl45">
 		<![CDATA[#version 450
 
-layout(set = 0, binding = 0) uniform texture2D IN_1_aTexture;
-layout(set = 0, binding = 1) uniform sampler IN_1_aSS;
+layout(set = 0, binding = 1) uniform texture2D IN_1_aTexture;
+layout(set = 0, binding = 2) uniform sampler IN_1_aSS;
 
 layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
@@ -62,8 +62,8 @@ fragment main0_out main0(main0_in in [[stage_in]], texture2d<float> IN_1_aTextur
 ]]>
 	</Target>
 	<Target target="hlsl5">
-		<![CDATA[Texture2D<float4> IN_1_aTexture : register(t0);
-SamplerState IN_1_aSS : register(s1);
+		<![CDATA[Texture2D<float4> IN_1_aTexture : register(t1);
+SamplerState IN_1_aSS : register(s2);
 
 static float4 IN_1_aInput_color;
 static float2 IN_2_aInput_tex0;

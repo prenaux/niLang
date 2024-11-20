@@ -432,6 +432,9 @@ class cFixedGpuShaderPixel :
 struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   typedef astl::hash_map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
   tPipelineMap _pipelines;
+  NN<iGpuFunction> _vertFuncP = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPA = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPT1 = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _vertFuncPAT1 = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTex = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTexAlphaTest = niDeferredInit(NN<iGpuFunction>);
@@ -456,6 +459,9 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
         eFalse);                                                        \
     }
 
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncP, p_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPA, pa_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPT1, pt1_vs);
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPAT1, pat1_vs);
     LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTex, tex_ps);
     LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTexAlphaTest, tex_alphatest_ps);
@@ -482,7 +488,22 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
   iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const niImpl {
     niUnused(aFVF);
-    return _vertFuncPAT1;
+    if (aFVF & eFVF_ColorA) {
+      if (aFVF & eFVF_Tex1) {
+        return _vertFuncPAT1;
+      }
+      else {
+        return _vertFuncPA;
+      }
+    }
+    else {
+      if (aFVF & eFVF_Tex1) {
+        return _vertFuncPT1;
+      }
+      else {
+        return _vertFuncP;
+      }
+    }
   }
 
   iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const niImpl {

@@ -1013,11 +1013,12 @@ struct sGpuStream : public ImplRC<iGpuStream> {
     _lastBlock.mBuffer = chunk;
     _lastBlock.mOffset = _currentOffset;
     _lastBlock.mSize = anSize;
-    ++_numBlocks;
-
-    _currentOffset += _blockAlignment ?
+    _lastBlock.mAlignedSize = _blockAlignment ?
         ((anSize + _blockAlignment - 1) & ~(_blockAlignment - 1)) :
         anSize;
+    ++_numBlocks;
+
+    _currentOffset += _lastBlock.mAlignedSize;
     return eTrue;
   }
 

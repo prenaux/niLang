@@ -430,7 +430,7 @@ class cFixedGpuShaderPixel :
 
 /////////////////////////////////////////////////////////////////
 struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
-  typedef astl::map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
+  typedef astl::hash_map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
   tPipelineMap _pipelines;
   NN<iGpuFunction> _vertFuncPAT1 = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTex = niDeferredInit(NN<iGpuFunction>);

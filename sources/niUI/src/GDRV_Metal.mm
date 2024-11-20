@@ -17,10 +17,16 @@
 #include <niLang/Utils/IDGenerator.h>
 
 #include "../../nicgc/src/mojoshader/mojoshader.h"
-#include "FixedShaders.h"
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
 #include "Graphics.h"
+#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+
+// #define USE_LEGACY_SHADERS
+
+#ifdef USE_LEGACY_SHADERS
+#include "FixedShaders.h"
+#endif
 
 #if defined niOSX || defined niIOSMac
 #define METAL_MAC
@@ -1189,7 +1195,9 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   iGraphics* mpGraphics;
   id<MTLDevice> mMetalDevice;
   id<MTLCommandQueue> mMetalCommandQueue;
+#ifdef USE_LEGACY_SHADERS
   sFixedShaders mFixedShaders;
+#endif
   astl::vector<Ptr<iHString>> mvProfiles[eShaderUnit_Last];
   NN<iFixedGpuPipelines> mFixedPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
   LocalIDGenerator mIDGenerator;
@@ -1200,12 +1208,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
 
     _InitCompiledSamplerStates();
     _InitCompiledDepthStencilStates();
-
-    mFixedPipelines = niCheckNNIfNull(mFixedPipelines, CreateFixedGpuPipelines(this)) {
-      niError("CreateFixedGpuPipelines failed.");
-      mpGraphics = nullptr;
-      return;
-    }
 
     niLog(Info, niFmt(
       "--- Metal Device Info ---\n%s\n-------------------------",
@@ -1311,10 +1313,16 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     if (!niIsOK(ctx))
       return NULL;
 
+    if (mFixedPipelines.raw_ptr() == nullptr) {
+      mFixedPipelines = niCheckNN(mFixedPipelines, CreateFixedGpuPipelines(this), nullptr);
+    }
+
+#ifdef USE_LEGACY_SHADERS
     if (!mFixedShaders.Initialize(mpGraphics)) {
       niError("Can't load fixed shaders.");
       return NULL;
     }
+#endif
 
     return ctx.GetRawAndSetNull();
   }
@@ -1905,8 +1913,9 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
-    niCheck(apTexture != nullptr, ;);
-    cMetalTexture* tex = (cMetalTexture*)apTexture;
+    cMetalTexture* tex = (apTexture == nullptr) ?
+        (cMetalTexture*)_driver->mFixedPipelines->GetWhiteTexture().raw_ptr() :
+        (cMetalTexture*)apTexture;
     [_cmdEncoder setFragmentTexture:tex->_tex atIndex:anBinding];
   }
 
@@ -2121,7 +2130,8 @@ struct cMetalContextBase :
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
+#ifdef USE_LEGACY_SHADERS
+  virtual tBool __stdcall DrawOperationLegacy(iDrawOperation* apDrawOp) {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
     ++mNumDrawOps;
 
@@ -2276,6 +2286,79 @@ struct cMetalContextBase :
     };
     updateConstant(eShaderUnit_Vertex, (sShaderConstantsDesc*)pVS->GetConstants()->GetDescStructPtr());
     updateConstant(eShaderUnit_Pixel, (sShaderConstantsDesc*)pPS->GetConstants()->GetDescStructPtr());
+
+    return DrawOperationSubmitGpuDrawCall(mCmdEncoder,apDrawOp);
+  }
+#endif
+
+  /////////////////////////////////////////////
+  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
+    niCheckSilent(niIsOK(apDrawOp), eFalse);
+    ++mNumDrawOps;
+
+    // niAssert(mbBeganFrame);
+    if (!mbBeganFrame) {
+      niCheck(_BeginFrame(),eFalse);
+    }
+
+    niLet cmdEncoder = mCmdEncoder->_cmdEncoder;
+
+    iVertexArray* va = apDrawOp->GetVertexArray();
+    if (!va) {
+      return eFalse;
+    }
+
+    METAL_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
+    niLet fvf = va->GetFVF();
+    niLet pDOMatDesc = (const sMaterialDesc*)apDrawOp->GetMaterial()->GetDescStructPtr();
+
+    iGpuFunction* funcVertex = mpParent->mFixedPipelines->GetFixedGpuFuncVertex(fvf);
+    iGpuFunction* funcPixel = mpParent->mFixedPipelines->GetFixedGpuFuncPixel(*pDOMatDesc);
+    const tFixedGpuPipelineId rpId = GetFixedGpuPipelineId(
+      mRT0Format, mDSFormat,
+      fvf,
+      _GetBlendMode(pDOMatDesc),
+      (eCompiledStates)_GetRS(pDOMatDesc),
+      (eCompiledStates)_GetDS(pDOMatDesc),
+      funcVertex, funcPixel);
+    niCheck(rpId != 0, eFalse);
+
+    if (rpId != mCurrentFixedGpuPipelineId) {
+      sMetalPipeline* pipeline = (sMetalPipeline*)mpParent->mFixedPipelines->GetRenderPipeline(
+        mpParent,rpId,
+        funcVertex, funcPixel).raw_ptr();
+      if (!pipeline) {
+        niError("Can't get the pipeline.");
+        return eFalse;
+      }
+      pipeline->Apply(cmdEncoder);
+      mCurrentFixedGpuPipelineId = rpId;
+    }
+
+    [cmdEncoder setViewport:mViewport];
+    [cmdEncoder setScissorRect:mScissorRect];
+
+    TestGpuFuncs_TestUniforms fixedUniforms;
+    {
+      const sMaterialChannel& chBase = _GetChannel(pDOMatDesc, eMaterialChannel_Base);
+      const sMaterialChannel& chOpacity = _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);
+      mCmdEncoder->SetTexture(chBase.mTexture, 0);
+      mCmdEncoder->SetSamplerState(chBase.mhSS, 0);
+
+      if (pDOMatDesc->mFlags & eMaterialFlags_DiffuseModulate) {
+        fixedUniforms.materialColor = sColor4f::White();
+      }
+      else {
+        fixedUniforms.materialColor = sColor4f::White();
+      }
+      fixedUniforms.alphaRef = chOpacity.mColor.w;
+    }
+
+    {
+      sMatrixf mtxVP = this->GetFixedStates()->GetViewProjectionMatrix();
+      fixedUniforms.mtxWVP = apDrawOp->GetMatrix() * mtxVP;
+      mCmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,sizeof(fixedUniforms),0);
+    }
 
     return DrawOperationSubmitGpuDrawCall(mCmdEncoder,apDrawOp);
   }

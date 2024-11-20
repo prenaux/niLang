@@ -432,16 +432,27 @@ class cFixedGpuShaderPixel :
 struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   typedef astl::map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
   tPipelineMap _pipelines;
-  Ptr<iGpuFunction> _vertFuncPAT1;
-  Ptr<iGpuFunction> _pixelFuncTex;
-  Ptr<iGpuFunction> _pixelFuncTexAlphaTest;
+  NN<iGpuFunction> _vertFuncPAT1 = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelFuncTex = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelFuncTexAlphaTest = niDeferredInit(NN<iGpuFunction>);
+  NN<iTexture> _texWhite = niDeferredInit(NN<iTexture>);
 
-  tBool _CreateFixedGpuPipelines(iGraphicsDriverGpu* apGpuDriver) {
+  tBool _CreateFixedGpuPipelines(iGraphicsDriver* apDriver) {
+    iGraphics* g = apDriver->GetGraphics();
+    NN<iGraphicsDriverGpu> gpuDriver = niCheckNN(gpuDriver,QueryInterface<iGraphicsDriverGpu>(apDriver),eFalse);
+
+    {
+      _texWhite = niCheckNN(
+        _texWhite,
+        g->CreateTextureFromRes(_H("niUI://white.tga"),nullptr,eTextureFlags_Default),
+        eFalse);
+    }
+
 #define LOAD_FIXED_GPUFUNC(TYPE,VAR,PATH) {                             \
       tHStringPtr hspPath = _H("niUI://gpufunc/fixed_" #PATH ".gpufunc.xml"); \
       niLet dtFunc = niCheckNN(dtFunc,LoadDataTable(niHStr(hspPath)),eFalse); \
       VAR = niCheckNN(                                                  \
-        VAR, apGpuDriver->CreateGpuFunction(hspPath,eGpuFunctionType_##TYPE,dtFunc), \
+        VAR, gpuDriver->CreateGpuFunction(hspPath,eGpuFunctionType_##TYPE,dtFunc), \
         eFalse);                                                        \
     }
 
@@ -453,7 +464,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     return eTrue;
   }
 
-  Ptr<iGpuPipeline> GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl {
+  Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl {
     tPipelineMap::iterator it = _pipelines.find(aPipelineId);
     if (it == _pipelines.end()) {
       Ptr<iGpuPipeline> pipeline = CreateFixedGpuPipeline(
@@ -469,7 +480,25 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     return it->second;
   }
 
-  Ptr<iFixedGpuShader> CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) niImpl {
+  iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const niImpl {
+    niUnused(aFVF);
+    return _vertFuncPAT1;
+  }
+
+  iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const niImpl {
+    if (aMatDesc.mFlags & eMaterialFlags_Transparent) {
+      return _pixelFuncTexAlphaTest;
+    }
+    else {
+      return _pixelFuncTex;
+    }
+  }
+
+  nn<iTexture> __stdcall GetWhiteTexture() const {
+    return _texWhite;
+  }
+
+  Ptr<iFixedGpuShader> __stdcall CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) niImpl {
     niCheckIsOK(apFunc,nullptr);
     switch (apFunc->GetFunctionType()) {
       case eGpuFunctionType_Vertex:
@@ -495,7 +524,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 };
 
 /////////////////////////////////////////////////////////////////
-Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriverGpu* apGpuDriver) {
+Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver) {
   NN<sFixedGpuPipelines> fixedPipelines = ni::MakeNN<sFixedGpuPipelines>();
   niCheck(
     fixedPipelines->_CreateFixedGpuPipelines(apGpuDriver),

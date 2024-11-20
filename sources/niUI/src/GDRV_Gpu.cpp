@@ -444,7 +444,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     {
       _texWhite = niCheckNN(
         _texWhite,
-        g->CreateTextureFromRes(_H("niUI://white.tga"),nullptr,eTextureFlags_Default),
+        g->CreateTextureFromRes(_H("niUI://white1x1.tga"),nullptr,eTextureFlags_Default),
         eFalse);
     }
 

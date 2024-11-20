@@ -122,6 +122,18 @@ struct iUISkin : public iUnknown
   //! {Property}
   virtual iHString* __stdcall GetDefaultSkin() const = 0;
 
+  //! Get scroll bar size.
+  //! {Property}
+  virtual tF32 __stdcall GetScrollBarSize() const = 0;
+
+  //! Get scroll bar has buttons.
+  //! {Property}
+  virtual tBool __stdcall GetScrollBarHasButtons() const = 0;
+
+  //! Get scroll bar has buttons.
+  //! {Property}
+  virtual tF32 __stdcall GetScrollBarMinThumbSize() const = 0;
+
   //! Get the number of skins.
   //! {Property}
   virtual tU32 __stdcall GetNumSkins() const = 0;

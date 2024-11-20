@@ -196,6 +196,8 @@ class cWidgetListBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,
     Ptr<iOverlay> arrowDown;
     Ptr<iOverlay> emptyImage;
     tU32          ulcolBg;
+    tU32          colFirst;
+    tU32          colSec;
   } skin;
 
   tF32 _GetVScrollPos() const;

@@ -215,6 +215,39 @@
 			</method>
 			<method
 				const="yes"
+				java_name="getScrollBarSize"
+				name="GetScrollBarSize"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarSize"
+				property_name="scroll_bar_size">
+				<comments desc="Get scroll bar size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollBarHasButtons"
+				name="GetScrollBarHasButtons"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarHasButtons"
+				property_name="scroll_bar_has_buttons">
+				<comments desc="Get scroll bar has buttons. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollBarMinThumbSize"
+				name="GetScrollBarMinThumbSize"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarMinThumbSize"
+				property_name="scroll_bar_min_thumb_size">
+				<comments desc="Get scroll bar has buttons. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
 				java_name="getNumSkins"
 				name="GetNumSkins"
 				num_parameters="0"

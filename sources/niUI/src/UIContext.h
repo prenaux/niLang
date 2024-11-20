@@ -112,6 +112,9 @@ public :
   tU32 __stdcall GetSkinIndex(iHString* ahspName) const niImpl;
   iDataTable* __stdcall GetSkinDataTable(iHString* ahspSkin) const niImpl;
   iDataTable* __stdcall GetErrorSkinDataTable() const niImpl;
+  tF32 __stdcall GetScrollBarSize() const { return mfScrollBarSize; }
+  tBool __stdcall GetScrollBarHasButtons() const { return mbScrollBarHasButtons; }
+  tF32 __stdcall GetScrollBarMinThumbSize() const { return mfScrollBarMinThumbSize; }
 
   /// Skins ///
   Ptr<iOverlay> mptrErrorOverlay;
@@ -125,6 +128,9 @@ public :
   Ptr<iGraphics>  mptrGraphics;
   Ptr<iImageMap>  mptrImageMap;
   tF32 mfContentsScale;
+  tBool mbScrollBarHasButtons;
+  tF32 mfScrollBarSize;
+  tF32 mfScrollBarMinThumbSize;
 
   niEndClass(cUISkin);
 };

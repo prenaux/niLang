@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "WidgetScrollBar.h"
-#include "HardCodedSkin.h"
 
 static niDefConstHString(ScrollBar_ButtonUp);
 static niDefConstHString(ScrollBar_ButtonDown);
@@ -29,6 +28,7 @@ struct sScrollBarThumbMetrics {
 
   sScrollBarThumbMetrics(cScrollBarWidget* apScrollBar, const tF32 w, const tF32 h) {
     const tU32 style = apScrollBar->mpWidget->GetStyle();
+    tF32 kfScrollBarMinThumbSize = apScrollBar->mpWidget->GetUIContext()->GetUISkin()->GetScrollBarMinThumbSize();
     bHorz = niFlagIs(style,eWidgetScrollBarStyle_Horz);
     bSlider = niFlagIs(style,eWidgetScrollBarStyle_Slider);
     if (!bSlider) {
@@ -455,7 +455,7 @@ void cScrollBarWidget::UpdateStyle()
   const tU32 style = mpWidget->GetStyle();
   const tBool isSlider = !!(style&eWidgetScrollBarStyle_Slider);
   const tBool bHorz = !!(style&eWidgetScrollBarStyle_Horz);
-  const tBool hasButtons = kbSrollBarHasButtons;
+  const tBool hasButtons = mpWidget->GetUIContext()->GetUISkin()->GetScrollBarHasButtons();
 
   tHStringPtr hspSkinClass = mpWidget->GetSkinClass();
   if (isSlider && (hspSkinClass == mpWidget->GetClassName())) {

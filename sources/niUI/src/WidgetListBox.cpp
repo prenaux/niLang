@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "WidgetListBox.h"
-#include "HardCodedSkin.h"
 #include <niLang/STL/sort.h>
 #include <niLang/Utils/UnitSnap.h>
 
@@ -1151,6 +1150,7 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
 
   // Use the value we'll set, don't get it from the scrollbar itself since it
   // might not have been initialized yet.
+  const tF32 kfScrollBarSize = mpWidget->GetUIContext()->GetUISkin()->GetScrollBarSize();
   const tF32 vtScrollBarW = kfScrollBarSize;
   const tF32 vtScrollBarH = kfScrollBarSize;
 
@@ -1165,7 +1165,8 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
 
   // We show the hz scrolling if the widest item would overflow with the vt
   // scrollbar visible.
-  const tBool bHorzScollbar = (mfWidestItem > (mfRealW-vtScrollBarW));
+  const tBool bHorzScollbar = niFlagIsNot(mpWidget->GetStyle(), eWidgetListBoxStyle_HideScrollBarH)
+  && (mfWidestItem > (mfRealW-vtScrollBarW));
   if (bHorzScollbar) {
     mfRealH -= vtScrollBarH;
     mptrHzScroll->SetVisible(eTrue);
@@ -1183,7 +1184,8 @@ void cWidgetListBox::UpdateWidgetScrollBars(tF32 w, tF32 h)
     ptrHSB->SetScrollPosition(0);
   }
 
-  const tBool bVertScollbar = (_ComputeItemsPerPage() < mvItems.size());
+  const tBool bVertScollbar = niFlagIsNot(mpWidget->GetStyle(), eWidgetListBoxStyle_HideScrollBarV)
+  && (_ComputeItemsPerPage() < mvItems.size());
   if (bVertScollbar) {
     mfRealW -= vtScrollBarW;
     mptrVtScroll->SetVisible(eTrue);
@@ -1299,6 +1301,13 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
   auto paintItem = [this,apCanvas,font,vAbsPos,defColW,&rect,fh,sepw,clientW,numCols]
       (const sItem& item, const tU32 itemIndex, const tF32 startX, const tF32 y) -> tF32
   {
+    if (itemIndex % 2 == 1) {
+      apCanvas->BlitFillAlpha(sRectf(0,y,rect.GetWidth(),fh),skin.colFirst);
+    }
+    else {
+      apCanvas->BlitFillAlpha(sRectf(0,y,rect.GetWidth(),fh),skin.colSec);
+    }
+
     if (this->GetIsItemSelected(itemIndex)) {
       iOverlay *sel = mpWidget->GetHasFocus() ? skin.sel : skin.selNF;
       apCanvas->BlitOverlay(
@@ -1497,6 +1506,11 @@ void cWidgetListBox::InitSkin()
   skin.emptyImage = mpWidget->FindSkinElement(NULL,NULL,_H("EmptyImage"));
   skin.ulcolBg = ULColorBuild(
     mpWidget->FindSkinColor(sVec4f::Zero(),NULL,NULL,_H("Background")));
+
+  skin.colFirst = ULColorBuild(mpWidget->FindSkinColor(sVec4f::Zero(),NULL,NULL,_H("FirstRow")));
+  skin.colSec = ULColorBuild(mpWidget->FindSkinColor(sVec4f::Zero(),NULL,NULL,_H("SecondRow")));
+
+  mptrVtScroll->SetSize(Vec2f(20,100));
 }
 
 ///////////////////////////////////////////////

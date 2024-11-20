@@ -94,6 +94,27 @@ IDLC_METH_BEGIN(ni,iUISkin,GetDefaultSkin,0)
 	IDLC_RET_FROM_INTF(iHString,_Ret)
 IDLC_METH_END(ni,iUISkin,GetDefaultSkin,0)
 
+/** ni -> iUISkin::GetScrollBarSize/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetScrollBarSize,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetScrollBarSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iUISkin,GetScrollBarSize,0)
+
+/** ni -> iUISkin::GetScrollBarHasButtons/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetScrollBarHasButtons,0)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetScrollBarHasButtons,0,())
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iUISkin,GetScrollBarHasButtons,0)
+
+/** ni -> iUISkin::GetScrollBarMinThumbSize/0 **/
+IDLC_METH_BEGIN(ni,iUISkin,GetScrollBarMinThumbSize,0)
+	IDLC_DECL_RETVAR(tF32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iUISkin,GetScrollBarMinThumbSize,0,())
+	IDLC_RET_FROM_BASE(ni::eType_F32,_Ret)
+IDLC_METH_END(ni,iUISkin,GetScrollBarMinThumbSize,0)
+
 /** ni -> iUISkin::GetNumSkins/0 **/
 IDLC_METH_BEGIN(ni,iUISkin,GetNumSkins,0)
 	IDLC_DECL_RETVAR(tU32,_Ret)

@@ -5,13 +5,12 @@
 #include "WidgetCanvasSink.h"
 #include "Font.h"
 #include "FontTTF.h"
-#include "HardCodedSkin.h"
 #include "niUI_HString.h"
 
 #define STEP_SIZE_V   mfStepV
 #define STEP_SIZE_H   mfStepH
-#define SCROLLBAR_SIZE_V  ((ScrollV()&&!HideScrollV()) ? kfScrollBarSize : 0)
-#define SCROLLBAR_SIZE_H  ((ScrollH()&&!HideScrollH()) ? kfScrollBarSize : 0)
+#define SCROLLBAR_SIZE_V  ((ScrollV()&&!HideScrollV()) ? mpWidget->GetUIContext()->GetUISkin()->GetScrollBarSize() : 0)
+#define SCROLLBAR_SIZE_H  ((ScrollH()&&!HideScrollH()) ? mpWidget->GetUIContext()->GetUISkin()->GetScrollBarSize() : 0)
 
 #pragma niNote("The filling rules for the renderer is that the last pixel is not drawn")
 #pragma niTodo("Add a possibility to set a iMetrics in the math expression evaluator, so that it supports parsing those automatically.")

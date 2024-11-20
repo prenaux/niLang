@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "WidgetTree.h"
-#include "HardCodedSkin.h"
 #include <niLang/Utils/WeakPtr.h>
 
 class cWidgetTreeNode;
@@ -1944,6 +1943,7 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
 
   tU32 nHScroll = 0;
   tU32 nVScroll = 0;
+  tF32 kfScrollBarSize = mpWidget->GetUIContext()->GetUISkin()->GetScrollBarSize();
   niLoop(i,10) {
     _UpdateScrollOffset();
 

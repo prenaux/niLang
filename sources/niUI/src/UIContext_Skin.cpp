@@ -518,6 +518,10 @@ tBool cUISkin::_InitializeSkinDataTable(iDataTable* apDT)
     if (apDT->GetPropertyIndex(_A("bitmap")) != eInvalidHandle) {
       mptrDefaultSkinOverlay = mptrGraphics->CreateOverlayResource(apDT->GetHString(_A("bitmap")));
     }
+
+    mfScrollBarSize = apDT->GetFloatDefault("scroll_bar_size", 6);
+    mfScrollBarMinThumbSize = apDT->GetFloatDefault("scroll_bar_min_thumb_size", 24);
+    mbScrollBarHasButtons = apDT->GetBoolDefault("scroll_bar_has_buttons", eFalse);
   }
 
   // Load the material library

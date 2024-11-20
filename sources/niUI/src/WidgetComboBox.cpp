@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "WidgetComboBox.h"
-#include "HardCodedSkin.h"
 #include "API/niUI/Utils/WidgetSinkImpl.h"
 
 #define LB_TEXT_Y_OFFSET 2

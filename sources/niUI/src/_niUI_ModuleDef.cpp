@@ -21603,6 +21603,42 @@ static const ni::sMethodDef iUISkin_GetDefaultSkin = {
 #endif
 };
 
+// Method: GetScrollBarSize
+static const ni::sMethodDef iUISkin_GetScrollBarSize = {
+  "GetScrollBarSize",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetScrollBarSize)
+#else
+  NULL
+#endif
+};
+
+// Method: GetScrollBarHasButtons
+static const ni::sMethodDef iUISkin_GetScrollBarHasButtons = {
+  "GetScrollBarHasButtons",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetScrollBarHasButtons)
+#else
+  NULL
+#endif
+};
+
+// Method: GetScrollBarMinThumbSize
+static const ni::sMethodDef iUISkin_GetScrollBarMinThumbSize = {
+  "GetScrollBarMinThumbSize",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iUISkin_GetScrollBarMinThumbSize)
+#else
+  NULL
+#endif
+};
+
 // Method: GetNumSkins
 static const ni::sMethodDef iUISkin_GetNumSkins = {
   "GetNumSkins",
@@ -21683,6 +21719,9 @@ static const ni::sMethodDef* Methods_iUISkin[] = {
 	&iUISkin_RemoveSkin,
 	&iUISkin_SetDefaultSkin,
 	&iUISkin_GetDefaultSkin,
+	&iUISkin_GetScrollBarSize,
+	&iUISkin_GetScrollBarHasButtons,
+	&iUISkin_GetScrollBarMinThumbSize,
 	&iUISkin_GetNumSkins,
 	&iUISkin_GetSkinName,
 	&iUISkin_GetSkinIndex,
@@ -39961,6 +40000,8 @@ static const ni::sEnumValueDef Enum_eWidgetListBoxStyle_Values[] = {
 	{ "Multiselect", ni::eWidgetListBoxStyle_Multiselect },
 	{ "SelectOnMove", ni::eWidgetListBoxStyle_SelectOnMove },
 	{ "ClickAddSelection", ni::eWidgetListBoxStyle_ClickAddSelection },
+	{ "HideScrollBarV", ni::eWidgetListBoxStyle_HideScrollBarV },
+	{ "HideScrollBarH", ni::eWidgetListBoxStyle_HideScrollBarH },
 };
 static const ni::sEnumDef Enum_eWidgetListBoxStyle = {
 	"eWidgetListBoxStyle",

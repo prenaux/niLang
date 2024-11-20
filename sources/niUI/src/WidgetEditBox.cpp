@@ -3,10 +3,8 @@
 
 #include "stdafx.h"
 #include "WidgetEditBox.h"
-#include "HardCodedSkin.h"
 #include <niLang/STL/scope_guard.h>
 
-#define EB_SB_SIZE kfScrollBarSize
 niConstValue tU32 knBlinkTimerID = 500;
 niConstValue tF32 kfBlinkTimerTime = 0.5f;
 
@@ -55,6 +53,7 @@ void cEditBoxWidget::AdjustChildrenLayout(tF32 w,tF32 h)
   if (mpWidget->GetStyle() & eWidgetEditBoxStyle_MultiLine)
   {
     ComputeWidestLine();
+    const tF32 kfScrollBarSize = mpWidget->GetUIContext()->GetUISkin()->GetScrollBarSize();
     const tF32 fh = GetLineHeight();
     const sRectf clir = mpWidget->GetClientRect();
     tF32 realw = clir.GetWidth();
@@ -69,12 +68,12 @@ void cEditBoxWidget::AdjustChildrenLayout(tF32 w,tF32 h)
       if(!mpLeftScrollbar->GetVisible())
         mpsbScrollBarLeft->SetScrollPosition(0);
       mpLeftScrollbar->SetVisible(eTrue);
-      realw -= EB_SB_SIZE;
+      realw -= kfScrollBarSize;
       bVertScollbar = eTrue;
     }
     if (mfWidestLine > realw) {
       sRectf wr = mpBottomScrollbar->GetClientRect();
-      realh -= EB_SB_SIZE;
+      realh -= kfScrollBarSize;
       bHorzScollbar = eTrue;
     }
     if (bVertScollbar) {
@@ -102,8 +101,8 @@ void cEditBoxWidget::AdjustChildrenLayout(tF32 w,tF32 h)
 
     tF32 lsbx = (realw - clir.GetLeft()) - (realw - clir.GetRight());
     tF32 lsby = (realh - clir.GetTop()) - (realh - clir.GetBottom());
-    mpLeftScrollbar->SetRect(sRectf(lsbx-EB_SB_SIZE,0,EB_SB_SIZE,realh));
-    mpBottomScrollbar->SetRect(sRectf(0,lsby-EB_SB_SIZE,realw,EB_SB_SIZE));
+    mpLeftScrollbar->SetRect(sRectf(lsbx-kfScrollBarSize,0,kfScrollBarSize,realh));
+    mpBottomScrollbar->SetRect(sRectf(0,lsby-kfScrollBarSize,realw,kfScrollBarSize));
   }
 }
 

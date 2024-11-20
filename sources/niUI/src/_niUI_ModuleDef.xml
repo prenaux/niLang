@@ -22965,6 +22965,39 @@
 			</method>
 			<method
 				const="yes"
+				java_name="getScrollBarSize"
+				name="GetScrollBarSize"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarSize"
+				property_name="scroll_bar_size">
+				<comments desc="Get scroll bar size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollBarHasButtons"
+				name="GetScrollBarHasButtons"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarHasButtons"
+				property_name="scroll_bar_has_buttons">
+				<comments desc="Get scroll bar has buttons. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollBarMinThumbSize"
+				name="GetScrollBarMinThumbSize"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollBarMinThumbSize"
+				property_name="scroll_bar_min_thumb_size">
+				<comments desc="Get scroll bar has buttons. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
 				java_name="getNumSkins"
 				name="GetNumSkins"
 				num_parameters="0"
@@ -33667,6 +33700,12 @@
 			</value>
 			<value name="eWidgetListBoxStyle_ClickAddSelection" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
 				<comments desc="Click down add selection, Ctrl+Click set selection. (This is the opposite of the default) "/>
+			</value>
+			<value name="eWidgetListBoxStyle_HideScrollBarV" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+				<comments desc="Hide vertical scroll bar. "/>
+			</value>
+			<value name="eWidgetListBoxStyle_HideScrollBarH" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+				<comments desc="Hide horizontal scroll bar. "/>
 			</value>
 		</enum>
 		<interface name="iWidgetListBox" uuid1="72906A6E-E5D6-4A1C-B0D9-AC687986BFF6" uuid2="0x72906a6e,0xe5d6,0x4a1c,0xb0,0xd9,0xac,0x68,0x79,0x86,0xbf,0xf6">

@@ -29,6 +29,10 @@ enum eWidgetListBoxStyle
   eWidgetListBoxStyle_SelectOnMove = niBit(eWidgetStyle_MaxBit+3),
   //! Click down add selection, Ctrl+Click set selection. (This is the opposite of the default)
   eWidgetListBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit+4),
+  //! Hide vertical scroll bar.
+  eWidgetListBoxStyle_HideScrollBarV = niBit(eWidgetStyle_MaxBit+5),
+  //! Hide horizontal scroll bar.
+  eWidgetListBoxStyle_HideScrollBarH = niBit(eWidgetStyle_MaxBit+6),
   //! \internal
   eWidgetListBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

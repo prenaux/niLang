@@ -138,9 +138,16 @@ struct iFixedGpuPipelines : public iUnknown {
 };
 
 struct sGpuStreamBlock {
+  //! Underlying GPU buffer holding the stream data.
   Ptr<iGpuBuffer> mBuffer;
+  //! Byte offset from buffer start where this block begins.
   tU32 mOffset;
+  //! Actual size in bytes of the data written to this block.
   tU32 mSize;
+  //! Size in bytes after hardware alignment, used for offset calculations.
+  //! Takes into account GPU/driver/OS alignment requirements and may be
+  //! larger than mSize.
+  tU32 mAlignedSize;
 };
 
 struct iGpuStream : public iUnknown {

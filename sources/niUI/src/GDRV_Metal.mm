@@ -234,8 +234,8 @@ static MTLVertexDescriptor* _CreateMetalVertDescForFVFAndGpuVertexAttibutes(
 
   cFVFDescription fvfDesc(aFVF);
   for (const auto& attr : aVertAttrs) {
-    if ((attr._fvf & aFVF) != attr._fvf) {
-      niError(niFmt("Vertex attribute FVF mismatch: expected '%s' (0x%x), got '%s' (0x%x)",
+    if ((aFVF & attr._fvf) != attr._fvf) {
+      niError(niFmt("Vertex attribute FVF mismatch: expected FVF '%s' (0x%x) to have '%s' (0x%x)",
                     ni::FVFToShortString(aFVF), aFVF, ni::FVFToShortString(attr._fvf), attr._fvf));
       return nil;
     }
@@ -734,12 +734,13 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDevi
         pipelineDesc.vertexDescriptor = _CreateMetalVertDescForFVFAndGpuVertexAttibutes(
           knMetalStageInBufferIndex, _desc->GetFVF(), attrs);
       }
+      niCheck(pipelineDesc.vertexDescriptor != nil, eFalse);
     }
 
     // Pixel gpu function
     {
       sMetalFunction* pixelFunction = (sMetalFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
-      niCheck(pixelFunction != nullptr, 0);
+      niCheck(pixelFunction != nullptr, eFalse);
       pipelineDesc.fragmentFunction = pixelFunction->_mtlFunction;
     }
 
@@ -2346,7 +2347,7 @@ struct cMetalContextBase :
       mCmdEncoder->SetSamplerState(chBase.mhSS, 0);
 
       if (pDOMatDesc->mFlags & eMaterialFlags_DiffuseModulate) {
-        fixedUniforms.materialColor = sColor4f::White();
+        fixedUniforms.materialColor = chBase.mColor;
       }
       else {
         fixedUniforms.materialColor = sColor4f::White();

@@ -130,6 +130,11 @@ struct iFixedGpuPipelines : public iUnknown {
 
   //! Create a new fixed gpu shader
   virtual Ptr<iFixedGpuShader> __stdcall CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) = 0;
+
+  virtual iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const = 0;
+  virtual iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const = 0;
+
+  virtual nn<iTexture> __stdcall GetWhiteTexture() const = 0;
 };
 
 struct sGpuStreamBlock {
@@ -182,7 +187,7 @@ tBool DrawOperationSubmitGpuDrawCall(
   iGpuCommandEncoder* apCmdEncoder,
   iDrawOperation* apDrawOp);
 
-Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriverGpu* apGpuDriver);
+Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver);
 
 Ptr<iGpuStream> CreateGpuStream(
   ain<nn<iGraphicsDriverGpu>> apDriver,

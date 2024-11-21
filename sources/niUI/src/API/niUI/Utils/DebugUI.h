@@ -15,6 +15,7 @@ inline tBool InitScriptVMForDebugUI() {
   ni::Ptr<ni::iScriptVM> vm = ni::ScriptCreateOrGetDefaultVM();
   niCheckIsOK(vm,eFalse);
   vm->Import(_H("gui.ni"));
+  niLog(Info,"InitScriptVMForDebugUI initialized.");
   return eTrue;
 }
 

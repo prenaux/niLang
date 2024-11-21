@@ -50,11 +50,14 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat) {
   else if (ni::StrEq(aTexFormat,"B8G8R8A8")) {
     return eGpuPixelFormat_BGRA8;
   }
-  else if (ni::StrEq(aTexFormat,"A8")) {
-    return eGpuPixelFormat_RGBA8; // Fallback to RGBA8
-  }
   else if (ni::StrEq(aTexFormat,"FR16G16B16A16")) {
     return eGpuPixelFormat_RGBA16F;
+  }
+  else if (ni::StrEq(aTexFormat,"FR16")) {
+    return eGpuPixelFormat_R16F;
+  }
+  else if (ni::StrEq(aTexFormat,"FR32")) {
+    return eGpuPixelFormat_R32F;
   }
 
   // Default fallback

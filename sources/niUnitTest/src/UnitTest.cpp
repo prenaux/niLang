@@ -987,6 +987,7 @@ using namespace ni;
 struct URLFileHandler_Tests : public URLFileHandler_Manifest {
   URLFileHandler_Tests() {
     dataDirs.push_back(ni::GetToolkitDir("niLang","data"));
+    dataDirs.push_back(ni::GetToolkitDir("niLang","scripts"));
   }
 
   tBool _GetExistingPath(const achar* aURL, cString& aPath) {

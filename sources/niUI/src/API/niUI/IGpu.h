@@ -509,10 +509,8 @@ struct iGraphicsContextGpu : public iUnknown
 {
   niDeclareInterfaceUUID(iGraphicsContextGpu,0x0d2ffd6c,0x887d,0x3d46,0xaa,0x18,0x12,0x3b,0x27,0x29,0x54,0xe0);
 
-  //! Begin a command encoder for recording commands
-  virtual iGpuCommandEncoder* __stdcall BeginCommandEncoder() = 0;
-  //! End the current command encoder
-  virtual void __stdcall EndCommandEncoder() = 0;
+  //! Get the current command encoder
+  virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() = 0;
 };
 
 //! GPU-specific graphics driver interface.

@@ -9304,33 +9304,20 @@ static const ni::sInterfaceDef InterfaceDef_iGpuCommandEncoder = {
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphicsContextGpu() {
 
-// Method: BeginCommandEncoder
-static const ni::sMethodDef iGraphicsContextGpu_BeginCommandEncoder = {
-  "BeginCommandEncoder",
+// Method: GetCommandEncoder
+static const ni::sMethodDef iGraphicsContextGpu_GetCommandEncoder = {
+  "GetCommandEncoder",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuCommandEncoder), "iGpuCommandEncoder*",
   0, NULL,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsContextGpu_BeginCommandEncoder)
-#else
-  NULL
-#endif
-};
-
-// Method: EndCommandEncoder
-static const ni::sMethodDef iGraphicsContextGpu_EndCommandEncoder = {
-  "EndCommandEncoder",
-  0|ni::eType_Null, NULL, "void",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsContextGpu_EndCommandEncoder)
+  XCALL_CIMPL(iGraphicsContextGpu_GetCommandEncoder)
 #else
   NULL
 #endif
 };
 
 static const ni::sMethodDef* Methods_iGraphicsContextGpu[] = {
-	&iGraphicsContextGpu_BeginCommandEncoder,
-	&iGraphicsContextGpu_EndCommandEncoder,
+	&iGraphicsContextGpu_GetCommandEncoder,
 
 };
 

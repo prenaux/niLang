@@ -497,12 +497,22 @@ static void __stdcall _ImportInitialize() {
           Ptr<iFileSystem> scriptsDirFS = ni::GetLang()->CreateFileSystemDir(
               scriptsDirPath.Chars(),ni::eFileSystemRightsFlags_ReadOnly);
           _ptrImportFileSystems->Add(scriptsDirFS.ptr());
+          niInfo(niFmt("ScriptVM _ImportInitialize: Registered scripts dir '%s'.",scriptsDirPath));
+        }
+        else {
+          niWarning(niFmt("ScriptVM _ImportInitialize: scripts dir doesnt exist '%s'.",scriptsDirPath));
         }
       }
       else {
-        niWarning("No root file system to add as default import file system.");
+        niWarning("ScriptVM _ImportInitialize: No root file system to add as default import file system.");
       }
     }
+    else {
+      niInfo(niFmt("ScriptVM _ImportInitialize: Skipped initialization in player mode."));
+    }
+  }
+  else {
+    niWarning("ScriptVM _ImportInitialize: already has a script url handler.");
   }
 }
 

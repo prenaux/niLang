@@ -1862,15 +1862,11 @@ struct cMetalContextBase :
   virtual id<MTLRenderCommandEncoder> __stdcall _NewRenderCommandEncoder() = 0;
   virtual tBool __stdcall _EndCommandEncoder() = 0;
 
-  virtual iGpuCommandEncoder* __stdcall BeginCommandEncoder() niImpl {
+  virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() niImpl {
     if (!mbBeganFrame) {
       _BeginFrame();
     }
     return mCmdEncoder;
-  }
-
-  virtual void __stdcall EndCommandEncoder() niImpl {
-    _EndFrame();
   }
 
   void _AddCompletedHandler(iRunnable* apRunnable) {

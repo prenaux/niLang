@@ -527,17 +527,12 @@ IDLC_END_INTF(ni,iGpuCommandEncoder)
 
 /** interface : iGraphicsContextGpu **/
 IDLC_BEGIN_INTF(ni,iGraphicsContextGpu)
-/** ni -> iGraphicsContextGpu::BeginCommandEncoder/0 **/
-IDLC_METH_BEGIN(ni,iGraphicsContextGpu,BeginCommandEncoder,0)
+/** ni -> iGraphicsContextGpu::GetCommandEncoder/0 **/
+IDLC_METH_BEGIN(ni,iGraphicsContextGpu,GetCommandEncoder,0)
 	IDLC_DECL_RETVAR(iGpuCommandEncoder*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsContextGpu,BeginCommandEncoder,0,())
+	IDLC_METH_CALL(_Ret,ni,iGraphicsContextGpu,GetCommandEncoder,0,())
 	IDLC_RET_FROM_INTF(iGpuCommandEncoder,_Ret)
-IDLC_METH_END(ni,iGraphicsContextGpu,BeginCommandEncoder,0)
-
-/** ni -> iGraphicsContextGpu::EndCommandEncoder/0 **/
-IDLC_METH_BEGIN(ni,iGraphicsContextGpu,EndCommandEncoder,0)
-	IDLC_METH_CALL_VOID(ni,iGraphicsContextGpu,EndCommandEncoder,0,())
-IDLC_METH_END(ni,iGraphicsContextGpu,EndCommandEncoder,0)
+IDLC_METH_END(ni,iGraphicsContextGpu,GetCommandEncoder,0)
 
 IDLC_END_INTF(ni,iGraphicsContextGpu)
 

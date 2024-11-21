@@ -151,7 +151,7 @@ struct GpuTriangle : public GpuCanvasBase {
 
     QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
     niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
@@ -239,7 +239,7 @@ struct GpuSquare : public GpuCanvasBase {
 
     QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
     niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
@@ -339,7 +339,7 @@ struct GpuTexture : public GpuCanvasBase {
 
     QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
     niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetTexture(_texture, 0);
@@ -454,7 +454,7 @@ struct GpuTexAlphaBase : public GpuCanvasBase {
     apCanvas->Flush(); // submit in the current command encoder
     QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
     niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->BeginCommandEncoder());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     UpdateUniformBuffer(cmdEncoder);

@@ -6,7 +6,6 @@
 #include "API/niUI/IGraphics.h"
 #include "API/niUI/IGpu.h"
 #include "API/niUI/GraphicsEnum.h"
-#include "API/niUI/IShader.h"
 
 namespace ni {
 
@@ -116,20 +115,11 @@ struct sFixedGpuPipelineIdDesc {
 } niPacked(4);
 static_assert(sizeof(sFixedGpuPipelineIdDesc) == sizeof(tU64));
 
-struct iFixedGpuShader : public iShader {
-  niDeclareInterfaceUUID(iFixedGpuShader,0x27897b00,0x0c78,0x4815,0x92,0x2e,0x17,0x38,0x5f,0xef,0x23,0x97);
-
-  virtual iGpuFunction* __stdcall GetGpuFunction() const = 0;
-};
-
 struct iFixedGpuPipelines : public iUnknown {
   niDeclareInterfaceUUID(iFixedGpuPipelines,0x716fc8a9,0x30e6,0x3641,0xb4,0xf2,0x69,0x0f,0xb8,0x83,0x58,0xa7);
 
   //! Get or create a render pipeline for the given id and shaders
   virtual Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) = 0;
-
-  //! Create a new fixed gpu shader
-  virtual Ptr<iFixedGpuShader> __stdcall CreateFixedGpuShader(iGraphics* apGraphics, iGpuFunction* apFunc, iHString* ahspName) = 0;
 
   virtual iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const = 0;
   virtual iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const = 0;

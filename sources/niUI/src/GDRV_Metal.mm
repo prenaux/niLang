@@ -2346,7 +2346,9 @@ struct cMetalContextBase :
       mCmdEncoder->SetTexture(chBase.mTexture, 0);
       mCmdEncoder->SetSamplerState(chBase.mhSS, 0);
 
-      if (pDOMatDesc->mFlags & eMaterialFlags_DiffuseModulate) {
+      if (pDOMatDesc->mFlags & eMaterialFlags_DiffuseModulate ||
+          !chBase.mTexture.raw_ptr())
+      {
         fixedUniforms.materialColor = chBase.mColor;
       }
       else {

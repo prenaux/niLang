@@ -22,8 +22,8 @@ mCanvasSink <- {
 
     local material = canvas.vgmaterial
     material.SetRasterizerStates(_wireframe ?
-                                 ::eCompiledStates.RS_WireframeScissor :
-                                 ::eCompiledStates.RS_NoCullingFilledScissor);
+                                 ::eCompiledStates.RS_Wireframe :
+                                 ::eCompiledStates.RS_NoCullingFilled);
 
     local style = canvas.vgstyle;
     style.SetFill(true);

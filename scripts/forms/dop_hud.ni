@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 ::Import("gui.ni")
+::gui._initialize(); // make sure we have the current ::gGraphics, etc...
 
 mCurrentDop <- invalid
 mUI <- null

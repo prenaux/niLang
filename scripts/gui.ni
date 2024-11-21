@@ -5,12 +5,14 @@
 ::Import("math.ni")
 ::Import("fs.ni")
 
-::gUIContext <- ::gLang.global_instance["iUIContext"].?QueryInterface("iUIContext")
-::gGraphics <- ::gUIContext.?graphics.?QueryInterface("iGraphics")
-::gGraphicsContext <- ::gUIContext.?graphics_context.?QueryInterface("iGraphicsContext")
-
 ::LINT_CHECK_TYPE("null", ::?gui);
 ::gui <- {
+  function _initialize() {
+    ::gUIContext <- ::gLang.global_instance["iUIContext"].?QueryInterface("iUIContext")
+    ::gGraphics <- ::gUIContext.?graphics.?QueryInterface("iGraphics")
+    ::gGraphicsContext <- ::gUIContext.?graphics_context.?QueryInterface("iGraphicsContext")
+  }
+
   //--------------------------------------------------------------------------------------------
   //
   //  Toolbar
@@ -1187,9 +1189,10 @@ else {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+// initialize ::gui
+::gui._initialize();
 // initialize the base widget sink
 ::gui.baseWidgetSink._initialize();
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Interop
+// initialize interop
 ::interop.UIWidget <- #(path,iid) => ::interop.doEval(path,iid,::gui.baseWidgetSink)

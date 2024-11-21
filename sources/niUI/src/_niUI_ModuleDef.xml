@@ -10400,13 +10400,9 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method java_name="beginCommandEncoder" name="BeginCommandEncoder" num_parameters="0">
-				<comments desc="Begin a command encoder for recording commands "/>
+			<method java_name="getCommandEncoder" name="GetCommandEncoder" num_parameters="0">
+				<comments desc="Get the current command encoder "/>
 				<return type="iGpuCommandEncoder *" typec="iGpuCommandEncoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method java_name="endCommandEncoder" name="EndCommandEncoder" num_parameters="0">
-				<comments desc="End the current command encoder "/>
-				<return type="void" typec="void" typei="ni::eType_Null"/>
 			</method>
 		</interface>
 		<interface name="iGraphicsDriverGpu" uuid1="E689EE7E-F674-1541-9A2B-B306557E6F09" uuid2="0xe689ee7e,0xf674,0x1541,0x9a,0x2b,0xb3,0x06,0x55,0x7e,0x6f,0x09">

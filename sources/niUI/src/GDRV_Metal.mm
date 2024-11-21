@@ -1085,6 +1085,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   astl::vector<Ptr<iHString>> mvProfiles[eShaderUnit_Last];
   NN<iFixedGpuPipelines> mFixedPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
   LocalIDGenerator mIDGenerator;
+  Ptr<iGraphicsDrawOpCapture> mptrDOCapture;
 
   cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice) {
     mpGraphics = apGraphics;
@@ -1249,7 +1250,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     }
   }
 
-
   /////////////////////////////////////////////
   virtual tBool __stdcall ResetAllCaches() {
     return eTrue;
@@ -1404,9 +1404,10 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
 
   /////////////////////////////////////////////
   virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture) {
+    mptrDOCapture = niGetIfOK(apCapture);
   }
   virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const {
-    return NULL;
+    return mptrDOCapture;
   }
 
   /////////////////////////////////////////////
@@ -1847,7 +1848,6 @@ struct cMetalContextBase :
   }
 
   tFixedGpuPipelineId mCurrentFixedGpuPipelineId = 0;
-  tU32 mNumDrawOps = 0;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
@@ -1888,7 +1888,6 @@ struct cMetalContextBase :
     // wait on the previous N frames to be completed
     {
       mFrameSem.InfiniteWait();
-      mNumDrawOps = 0;
       mCurrentFixedGpuPipelineId = 0;
     }
 
@@ -1942,11 +1941,21 @@ struct cMetalContextBase :
   /////////////////////////////////////////////
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
-    ++mNumDrawOps;
 
     // niAssert(mbBeganFrame);
     if (!mbBeganFrame) {
       niCheck(_BeginFrame(),eFalse);
+    }
+
+    niLet doCapture = mpParent->mptrDOCapture.IsOK();
+    niDefer {
+      if (doCapture) {
+        mpParent->mptrDOCapture->EndCaptureDrawOp(this,apDrawOp,sVec4i::Zero());
+      }
+    };
+    if (doCapture) {
+      if (!mpParent->mptrDOCapture->BeginCaptureDrawOp(this,apDrawOp,sVec4i::Zero()))
+        return eTrue;
     }
 
     niLet cmdEncoder = mCmdEncoder->_cmdEncoder;

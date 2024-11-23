@@ -2022,7 +2022,7 @@ struct cMetalContextBase :
 
     if (rpId != cmdStateCache._lastPipeline) {
       sMetalPipeline* pipeline = (sMetalPipeline*)mpParent->mFixedPipelines->GetRenderPipeline(
-        mpParent,rpId,
+        mpParent, rpId,
         funcVertex, funcPixel).raw_ptr();
       if (!pipeline) {
         niError("Can't get the pipeline.");

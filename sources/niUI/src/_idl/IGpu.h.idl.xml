@@ -1068,6 +1068,31 @@
 				<comments desc="Get the current command encoder "/>
 				<return type="iGpuCommandEncoder *" typec="iGpuCommandEncoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method java_name="clearBuffersRect" name="ClearBuffersRect" num_parameters="4">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFlags"
+					type="tClearBuffersFlags"
+					typec="tClearBuffersFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afZ"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
 		</interface>
 		<interface name="iGraphicsDriverGpu" uuid1="E689EE7E-F674-1541-9A2B-B306557E6F09" uuid2="0xe689ee7e,0xf674,0x1541,0x9a,0x2b,0xb3,0x06,0x55,0x7e,0x6f,0x09">
 			<comments desc="GPU-specific graphics driver interface. ">

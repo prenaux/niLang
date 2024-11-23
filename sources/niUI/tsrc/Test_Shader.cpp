@@ -302,6 +302,7 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
   Ptr<iMaterial> CreateMaterial(iTexture* apTex) {
     Ptr<iMaterial> mat = mpWidget->GetGraphics()->CreateMaterial();
     mat->SetDepthStencilStates(eCompiledStates_DS_DepthTestAndWrite);
+    mat->SetRasterizerStates(eCompiledStates_RS_Filled);
     if (kbTextures && apTex) {
       mat->SetChannelTexture(eMaterialChannel_Base,apTex);
     }
@@ -319,8 +320,8 @@ struct ShaderBase : public ni::cWidgetSinkImpl<> {
 
     Ptr<iMaterial> mat = CreateMaterial(apTex);
     if (abForceTranslucent) {
-      mat->SetFlags(mat->GetFlags()|eMaterialFlags_Translucent);
-      mat->SetFlags(mat->GetFlags()|eMaterialFlags_Transparent);
+      mat->SetFlags(
+        mat->GetFlags()|eMaterialFlags_Translucent|eMaterialFlags_Transparent);
     }
 
     Ptr<iDrawOperation> drawOp = mpWidget->GetGraphics()->CreateDrawOperation();

@@ -2819,21 +2819,21 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
       SetSkinClass(_H(apDT->GetStringFromIndex(nPropertyIndex)));
     }
     // font
-    nPropertyIndex = apDT->GetPropertyIndex(_A("font"));
-    if (nPropertyIndex != eInvalidHandle) {
-      cString strFont = apDT->GetStringFromIndex(nPropertyIndex);
-      if (!ni::StrEq(niHStr(this->GetFont()->GetName()),strFont.Chars())) {
-        this->SetFont(mpUICtx->mptrGraphics->LoadFont(_H(strFont)));
-      }
-    }
+    // nPropertyIndex = apDT->GetPropertyIndex(_A("font"));
+    // if (nPropertyIndex != eInvalidHandle) {
+      // cString strFont = apDT->GetStringFromIndex(nPropertyIndex);
+      // if (!ni::StrEq(niHStr(this->GetFont()->GetName()),strFont.Chars())) {
+        // this->SetFont(mpUICtx->mptrGraphics->LoadFont(_H(strFont)));
+      // }
+    // }
     // font size
-    nPropertyIndex = apDT->GetPropertyIndex(_A("font_size"));
-    if (nPropertyIndex != eInvalidHandle) {
-      tI32 fontSize = apDT->GetIntFromIndex(nPropertyIndex);
-      if (fontSize >= 2 && fontSize <= 256) {
-        this->GetFont()->SetSizeAndResolution(sVec2f::Zero(),fontSize,mpUICtx->mfContentsScale);
-      }
-    }
+    // nPropertyIndex = apDT->GetPropertyIndex(_A("font_size"));
+    // if (nPropertyIndex != eInvalidHandle) {
+      // tI32 fontSize = apDT->GetIntFromIndex(nPropertyIndex);
+      // if (fontSize >= 2 && fontSize <= 256) {
+        // this->GetFont()->SetSizeAndResolution(sVec2f::Zero(),fontSize,mpUICtx->mfContentsScale);
+      // }
+    // }
   }
   else {
     apDT->SetEnum(_A("style"),
@@ -2858,8 +2858,8 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
     RetrieveText(eTrue);
     apDT->SetString(_A("text"),niHStr(mhspText));
     apDT->SetString(_A("hover_text"),niHStr(mhspHoverText));
-    apDT->SetString(_A("font"),niHStr(this->GetFont()->GetName()));
-    apDT->SetInt(_A("font_size"),this->GetFont()->GetResolution() * mpUICtx->mfContentsScale);
+    // apDT->SetString(_A("font"),niHStr(this->GetFont()->GetName()));
+    // apDT->SetInt(_A("font_size"),this->GetFont()->GetResolution());
     apDT->SetString(_A("skin"),niHStr(this->GetSkin()));
     if (HStringIsNotEmpty(mhspSkinClass) && mhspSkinClass != mhspClass)
       apDT->SetString(_A("skin_class"),niHStr(this->GetSkinClass()));

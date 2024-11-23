@@ -693,7 +693,7 @@ static tU32 _CompiledStatesRSToFixedGpuRS(eCompiledStates aRS) {
   }
 }
 
-static tU32 _CompiledStatesRSToFixedGpuDS(eCompiledStates aDS) {
+static tU32 _CompiledStatesDSToFixedGpuDS(eCompiledStates aDS) {
   switch (aDS) {
     case eCompiledStates_DS_NoDepthTest: return eFixedGpuDS_NoDepthTest;
     case eCompiledStates_DS_DepthTestAndWrite: return eFixedGpuDS_DepthTestAndWrite;
@@ -715,8 +715,9 @@ static tFVF _FixedGpuVertexFormatToVertexFormat(tU32 aVF) {
     case eFixedGpuVertexFormat_PNAT2: return eVertexFormat_PNAT2;
     case eFixedGpuVertexFormat_PB4INT1: return eVertexFormat_PB4INT1;
     case eFixedGpuVertexFormat_PB4INAT1: return eVertexFormat_PB4INAT1;
-    default: return 0;
   }
+  niPanicUnreachable(niFmt("Unknown fixed gpu vertex format '%d'.", (tU32)aVF));
+  return 0;
 }
 
 static eCompiledStates _FixedGpuRSToCompiledStatesRS(tU32 aRS) {
@@ -730,8 +731,9 @@ static eCompiledStates _FixedGpuRSToCompiledStatesRS(tU32 aRS) {
     case eFixedGpuRS_CWCullingColorWriteNone: return eCompiledStates_RS_CWCullingColorWriteNone;
     case eFixedGpuRS_CWCullingFilled: return eCompiledStates_RS_CWCullingFilled;
     case eFixedGpuRS_CWCullingWireframe: return eCompiledStates_RS_CWCullingWireframe;
-    default: return eCompiledStates_Invalid;
   }
+  niPanicUnreachable(niFmt("Unknown fixed gpu RS '%d'.", (tU32)aRS));
+  return eCompiledStates_Invalid;
 }
 
 static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS) {
@@ -740,8 +742,9 @@ static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS) {
     case eFixedGpuDS_DepthTestAndWrite: return eCompiledStates_DS_DepthTestAndWrite;
     case eFixedGpuDS_DepthTestOnly: return eCompiledStates_DS_DepthTestOnly;
     case eFixedGpuDS_DepthWriteOnly: return eCompiledStates_DS_DepthWriteOnly;
-    default: return eCompiledStates_Invalid;
   }
+  niPanicUnreachable(niFmt("Unknown fixed gpu DS '%d'.", (tU32)aDS));
+  return eCompiledStates_Invalid;
 }
 
 tFixedGpuPipelineId GetFixedGpuPipelineId(
@@ -778,7 +781,7 @@ tFixedGpuPipelineId GetFixedGpuPipelineId(
   }
 
   {
-    niLet v = _CompiledStatesRSToFixedGpuDS(aDS);
+    niLet v = _CompiledStatesDSToFixedGpuDS(aDS);
     if (id.compiledDS == eInvalidHandle) {
       niError(niFmt("Invalid depth state: %d.", aDS));
       return 0;

@@ -398,9 +398,7 @@ function OnPaint(w,a,b) {
           }
         }
       }
-
-      txt += "* Index: " + (i+1) + "/" + (dopc.num_captured) + "\n"
-      txt += "* Time: " + ::format("%.3fms",ct*1000.0) + "\n"
+      txt += "* Index: " + (i+1) + "/" + (dopc.num_captured) + ", Time: " + ::format("%.3fms\n",ct*1000.0)
 
       function getShaderName(cc,unit) {
         local sh = cc.shader[unit]
@@ -447,14 +445,11 @@ function OnPaint(w,a,b) {
         }
         return txt;
       }
-      function getRTName(cc,i) {
-        local txt = ""
+      local function appendRTName(txt,cc,i) {
         local rt = cc.render_target[i]
         if (rt) {
-          txt += getTexName(rt)
-        }
-        else {
-          txt = "NA"
+          local texName = getTexName(rt);
+          return txt + "  - RT["+i+"]: " + texName + "\n"
         }
         return txt
       }
@@ -474,11 +469,12 @@ function OnPaint(w,a,b) {
         txt += "* Context:\n"
         txt += "  - scissor: " + cc.scissor_rect + "\n"
         txt += "  - viewport: " + cc.viewport + "\n"
-        txt += "  - RT[0]: " + getRTName(cc,0) + "\n"
-        txt += "  - RT[1]: " + getRTName(cc,1) + "\n"
-        txt += "  - RT[2]: " + getRTName(cc,2) + "\n"
-        txt += "  - RT[3]: " + getRTName(cc,3) + "\n"
+        txt = appendRTName(txt,cc,0);
+        txt = appendRTName(txt,cc,1);
+        txt = appendRTName(txt,cc,2);
+        txt = appendRTName(txt,cc,3);
         txt += "  - DS: " + getDSName(cc) + "\n"
+        txt += getMatText(cc.material)
       }
       if (cdo) {
         txt += "* DrawOperation:\n"

@@ -511,6 +511,8 @@ struct iGraphicsContextGpu : public iUnknown
 
   //! Get the current command encoder
   virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() = 0;
+
+  virtual tBool __stdcall ClearBuffersRect(tClearBuffersFlags aFlags, const sRectf& aRect, tU32 anColor, tF32 afZ) = 0;
 };
 
 //! GPU-specific graphics driver interface.

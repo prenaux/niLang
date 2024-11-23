@@ -534,6 +534,21 @@ IDLC_METH_BEGIN(ni,iGraphicsContextGpu,GetCommandEncoder,0)
 	IDLC_RET_FROM_INTF(iGpuCommandEncoder,_Ret)
 IDLC_METH_END(ni,iGraphicsContextGpu,GetCommandEncoder,0)
 
+/** ni -> iGraphicsContextGpu::ClearBuffersRect/4 **/
+IDLC_METH_BEGIN(ni,iGraphicsContextGpu,ClearBuffersRect,4)
+	IDLC_DECL_VAR(tClearBuffersFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tClearBuffersFlags,aFlags)
+	IDLC_DECL_VAR(sRectf,aRect)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer,aRect)
+	IDLC_DECL_VAR(tU32,anColor)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anColor)
+	IDLC_DECL_VAR(tF32,afZ)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afZ)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsContextGpu,ClearBuffersRect,4,(aFlags,aRect,anColor,afZ))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGraphicsContextGpu,ClearBuffersRect,4)
+
 IDLC_END_INTF(ni,iGraphicsContextGpu)
 
 /** interface : iGraphicsDriverGpu **/

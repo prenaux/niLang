@@ -273,6 +273,12 @@ tBool cGraphics::_CompileDefaultDepthStencilStates() {
   s->SetDepthTestWrite(eFalse);
   END();
 
+  BEGIN(DepthWriteOnly);
+  s->SetDepthTest(eTrue);
+  s->SetDepthTestCompare(eGraphicsCompare_Always);
+  s->SetDepthTestWrite(eTrue);
+  END();
+
   return eTrue;
 }
 

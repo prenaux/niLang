@@ -460,6 +460,9 @@
 			<value name="eCompiledStates_DS_DepthTestOnly" value="103 ">
 				<comments desc=""/>
 			</value>
+			<value name="eCompiledStates_DS_DepthWriteOnly" value="104 ">
+				<comments desc=""/>
+			</value>
 			<value name="eCompiledStates_SS_PointRepeat" value="201 ">
 				<comments desc=""/>
 			</value>

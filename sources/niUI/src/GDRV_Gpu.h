@@ -80,8 +80,9 @@ enum eFixedGpuDS {
   eFixedGpuDS_NoDepthTest = 0,
   eFixedGpuDS_DepthTestAndWrite = 1,
   eFixedGpuDS_DepthTestOnly = 2,
+  eFixedGpuDS_DepthWriteOnly = 3,
   //! \internal
-  eFixedGpuDS_Last niMaybeUnused = 3,
+  eFixedGpuDS_Last niMaybeUnused = 4,
   //! \internal
   eFixedGpuDS_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -125,6 +126,8 @@ struct iFixedGpuPipelines : public iUnknown {
   virtual iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const = 0;
 
   virtual nn<iTexture> __stdcall GetWhiteTexture() const = 0;
+
+  virtual tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder, ain<sVec2f> aPixelSize, tClearBuffersFlags aFlags, ain<sRectf> aRect, tU32 anColor, tF32 afZ) = 0;
 };
 
 struct sGpuStreamBlock {
@@ -189,9 +192,9 @@ Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver);
 Ptr<iGpuStream> CreateGpuStream(
   ain<nn<iGraphicsDriverGpu>> apDriver,
   tGpuBufferUsageFlags aUsageFlags,
+  tU32 aBlockAlignment = 0,
   tU32 aChunkSize = 65536,
-  tU32 aMaxChunks = 1024,
-  tU32 aBlockAlignment = 0);
+  tU32 aMaxChunks = 1024);
 
 tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding);
 tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, eGpuIndexType aIndexType);

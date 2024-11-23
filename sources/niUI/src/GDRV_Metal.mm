@@ -1449,6 +1449,8 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     if (ahSS >= eCompiledStates_SS_PointRepeat && ahSS <= eCompiledStates_SS_SmoothWhiteBorder) {
       return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
     }
+
+    niPanicAssert(niFmt("Unknown sampler states '%d'.", ahSS));
     return _ssCompiled[0];
   }
 
@@ -1456,6 +1458,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   id<MTLDepthStencilState> _dsNoDepthTest;
   id<MTLDepthStencilState> _dsDepthTestAndWrite;
   id<MTLDepthStencilState> _dsDepthTestOnly;
+  id<MTLDepthStencilState> _dsDepthWriteOnly;
 
   void _InitCompiledDepthStencilStates() {
     MTLDepthStencilDescriptor* desc = [MTLDepthStencilDescriptor new];
@@ -1480,18 +1483,30 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
       _dsDepthTestOnly = [mMetalDevice newDepthStencilStateWithDescriptor: desc];
       niAssert(_dsDepthTestOnly != nil);
     }
+
+    {
+      desc.depthCompareFunction = _toMTLCompareFunction[eGraphicsCompare_Always];
+      desc.depthWriteEnabled = YES;
+      _dsDepthWriteOnly = [mMetalDevice newDepthStencilStateWithDescriptor: desc];
+      niAssert(_dsDepthWriteOnly != nil);
+    }
   }
 
   inline id<MTLDepthStencilState> _GetMTLDepthStencilState(tIntPtr ahDS) {
-    if (!ahDS || ahDS == eCompiledStates_DS_NoDepthTest) {
+    if (ahDS == eCompiledStates_DS_NoDepthTest) {
       return _dsNoDepthTest;
     }
-    if (ahDS == eCompiledStates_DS_DepthTestAndWrite) {
+    else if (ahDS == eCompiledStates_DS_DepthTestAndWrite) {
       return _dsDepthTestAndWrite;
     }
     else if (ahDS == eCompiledStates_DS_DepthTestOnly) {
       return _dsDepthTestOnly;
     }
+    else if (ahDS == eCompiledStates_DS_DepthWriteOnly) {
+      return _dsDepthWriteOnly;
+    }
+
+    niPanicAssert(niFmt("Unknown depth stencil states '%d'.", ahDS));
     return _dsNoDepthTest;
   }
 
@@ -1661,6 +1676,9 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   Ptr<sMetalBuffer> _indexBuffer;
   tU32 _indexOffset = 0;
   eGpuIndexType _indexType = eGpuIndexType_U32;
+  struct sCache {
+    tIntPtr _lastPipeline = 0;
+  } _cache;
 
   sMetalCommandEncoder(
     ain<nn<cMetalGraphicsDriver>> aDriver,
@@ -1687,6 +1705,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     }
     _frames[_currentFrame]->StartFrame(
       ni::GetLang()->GetFrameNumber(),_currentFrame);
+    _cache = sCache();
   }
 
   Ptr<sMetalEncoderFrameData> _EndFrame() {
@@ -1697,7 +1716,10 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
     niCheck(apPipeline != nullptr,;);
+    if (_cache._lastPipeline == (tIntPtr)apPipeline)
+      return;
     ((sMetalPipeline*)apPipeline)->Apply(_cmdEncoder);
+    _cache._lastPipeline = (tIntPtr)apPipeline;
   }
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
@@ -1833,10 +1855,6 @@ struct cMetalContextBase :
   eGpuPixelFormat mRT0Format;
   eGpuPixelFormat mDSFormat;
 
-  double4 mClearColor = double4::Zero();
-  tF32 mClearDepth = 1.0f;
-  tI32 mClearStencil = 0;
-
   tBool mbBeganFrame = eFalse;
 
   tU32 mnCurrentFrame = 0;
@@ -1846,8 +1864,6 @@ struct cMetalContextBase :
     mFrameSem.Signal();
     return niVarNull;
   }
-
-  tFixedGpuPipelineId mCurrentFixedGpuPipelineId = 0;
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
@@ -1882,10 +1898,7 @@ struct cMetalContextBase :
     mbBeganFrame = eTrue;
 
     // wait on the previous N frames to be completed
-    {
-      mFrameSem.InfiniteWait();
-      mCurrentFixedGpuPipelineId = 0;
-    }
+    mFrameSem.InfiniteWait();
 
     mRT0Format = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
     if (mptrDS.IsOK()) {
@@ -1929,9 +1942,39 @@ struct cMetalContextBase :
 
   /////////////////////////////////////////////
   virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
-    mClearColor = Vec4<tF64>(ULColorGetRf(anColor),ULColorGetGf(anColor),ULColorGetBf(anColor),ULColorGetAf(anColor));
-    mClearDepth = afDepth;
-    mClearStencil = anStencil;
+    niUnused(anStencil);
+    this->ClearBuffersRect(
+      clearBuffer,
+      Rectf(0,0,(tF32)this->GetWidth(),(tF32)this->GetHeight()),
+      anColor, afDepth);
+  }
+
+  /////////////////////////////////////////////
+  virtual tBool __stdcall ClearBuffersRect(tClearBuffersFlags aFlags, const sRectf& aRect, tU32 anColor, tF32 afZ) {
+    if (!mbBeganFrame) {
+      niCheck(_BeginFrame(),eFalse);
+    }
+
+    niLet doCapture = mpParent->mptrDOCapture.IsOK();
+    niDefer {
+      if (doCapture) {
+        niLet clearParams = Vec4<tI32>(aFlags,anColor,ftoul(afZ),-1);
+        mpParent->mptrDOCapture->EndCaptureDrawOp(this,nullptr,clearParams);
+      }
+    };
+    if (doCapture) {
+        niLet clearParams = Vec4<tI32>(aFlags,anColor,ftoul(afZ),-1);
+      if (!mpParent->mptrDOCapture->BeginCaptureDrawOp(
+            this,nullptr,clearParams))
+        return eTrue;
+    }
+
+    niLet pixelSize = Vec2f(
+      2.0f / (tF32)this->GetWidth(),
+      2.0f / (tF32)this->GetHeight()
+    );
+    return mpParent->mFixedPipelines->ClearRect(
+      mCmdEncoder,pixelSize,aFlags,aRect,anColor,afZ);
   }
 
   /////////////////////////////////////////////
@@ -1954,6 +1997,7 @@ struct cMetalContextBase :
         return eTrue;
     }
 
+    niLetMut& cmdStateCache = mCmdEncoder->_cache;
     niLet cmdEncoder = mCmdEncoder->_cmdEncoder;
 
     iVertexArray* va = apDrawOp->GetVertexArray();
@@ -1976,7 +2020,7 @@ struct cMetalContextBase :
       funcVertex, funcPixel);
     niCheck(rpId != 0, eFalse);
 
-    if (rpId != mCurrentFixedGpuPipelineId) {
+    if (rpId != cmdStateCache._lastPipeline) {
       sMetalPipeline* pipeline = (sMetalPipeline*)mpParent->mFixedPipelines->GetRenderPipeline(
         mpParent,rpId,
         funcVertex, funcPixel).raw_ptr();
@@ -1985,7 +2029,7 @@ struct cMetalContextBase :
         return eFalse;
       }
       pipeline->Apply(cmdEncoder);
-      mCurrentFixedGpuPipelineId = rpId;
+      cmdStateCache._lastPipeline = rpId;
     }
 
     [cmdEncoder setViewport:mViewport];
@@ -2116,7 +2160,8 @@ struct cMetalContextWindow : public cMetalContextBase
     if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
       _DoResizeContext();
     }
-    return (__bridge id<MTLRenderCommandEncoder>)mptrMetalAPI->NewRenderCommandEncoder(mClearColor,mClearDepth,mClearStencil);
+    return (__bridge id<MTLRenderCommandEncoder>)mptrMetalAPI->NewRenderCommandEncoder(
+      sVec4d::Zero(),1.0f,0);
   }
   virtual tBool __stdcall _EndCommandEncoder() {
     return mptrMetalAPI->PresentAndCommit(nullptr);
@@ -2193,8 +2238,7 @@ struct cMetalContextRT : public cMetalContextBase
     {
       cMetalTexture* rtTex = (cMetalTexture*)mptrRT[0].ptr();
       passDesc.colorAttachments[0].texture = rtTex->_tex;
-      niCAssert(sizeof(MTLClearColor) == sizeof(mClearColor));
-      passDesc.colorAttachments[0].clearColor = (MTLClearColor&)mClearColor;
+      passDesc.colorAttachments[0].clearColor = MTLClearColor{};
       // store all content on the render target
       passDesc.colorAttachments[0].storeAction = MTLStoreActionStore;
       passDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
@@ -2202,7 +2246,7 @@ struct cMetalContextRT : public cMetalContextBase
     if (mptrDS.IsOK()) {
       cMetalTexture* dsTex = (cMetalTexture*)mptrDS.ptr();
       passDesc.depthAttachment.texture = dsTex->_tex;
-      passDesc.depthAttachment.clearDepth = mClearDepth;
+      passDesc.depthAttachment.clearDepth = 1.0f;
       passDesc.depthAttachment.loadAction = MTLLoadActionLoad;
       passDesc.depthAttachment.storeAction = MTLStoreActionStore;
     }

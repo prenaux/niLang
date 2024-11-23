@@ -292,6 +292,9 @@ iGpuPipelineDesc* _CreateGpuPipelineDesc() {
 
 /////////////////////////////////////////////////////////////////
 struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
+  typedef sVertexPA tVertexClearRects;
+  static_assert(sizeof(sVertexPA) == 16);
+
   typedef astl::hash_map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
   tPipelineMap _pipelines;
   NN<iGpuFunction> _vertFuncP = niDeferredInit(NN<iGpuFunction>);
@@ -301,6 +304,10 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   NN<iGpuFunction> _pixelFuncTex = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTexAlphaTest = niDeferredInit(NN<iGpuFunction>);
   NN<iTexture> _texWhite = niDeferredInit(NN<iTexture>);
+
+  NN<iGpuPipeline> _pipelineClearColorDepth = niDeferredInit(NN<iGpuPipeline>);
+  NN<iGpuPipeline> _pipelineClearColor = niDeferredInit(NN<iGpuPipeline>);
+  NN<iGpuPipeline> _pipelineClearDepth = niDeferredInit(NN<iGpuPipeline>);
 
   tBool _CreateFixedGpuPipelines(iGraphicsDriver* apDriver) {
     iGraphics* g = apDriver->GetGraphics();
@@ -329,6 +336,38 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTexAlphaTest, tex_alphatest_ps);
 
 #undef LOAD_FIXED_GPUFUNC
+
+    {
+      tHStringPtr hspVfPath = _H("niUI://gpufunc/clear_vs.gpufunc.xml");
+      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspVfPath)),eFalse);
+      niLet vertexGpuFun = niCheckNN(vertexGpuFun, gpuDriver->CreateGpuFunction(
+        hspVfPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
+
+      tHStringPtr hspPfPath = _H("niUI://gpufunc/clear_ps.gpufunc.xml");
+      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPfPath)),eFalse);
+      niLet pixelGpuFun = niCheckNN(pixelGpuFun, gpuDriver->CreateGpuFunction(
+        hspPfPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, gpuDriver->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexClearRects::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,vertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,pixelGpuFun);
+
+      pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
+      pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
+      _pipelineClearColorDepth = niCheckNN(_pipelineClearColorDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+
+      pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
+      pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
+      _pipelineClearColor = niCheckNN(_pipelineClearColor, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+
+      pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingColorWriteNone);
+      pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
+      _pipelineClearDepth = niCheckNN(_pipelineClearDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+    }
+
     return eTrue;
   }
 
@@ -379,6 +418,45 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
   nn<iTexture> __stdcall GetWhiteTexture() const {
     return _texWhite;
+  }
+
+  // Convert from screen coordinates (pixels) to normalized device coordinates (NDC)
+  // Screen space: (0,0) is top-left, (width,height) is bottom-right
+  // Clip space: (-1,-1) is bottom-left, (1,1) is top-right, z is unchanged
+  __forceinline sVec3f ScreenToClipSpace(ain<sVec2f> aPixelSize, tF32 x, tF32 y, tF32 z) {
+    return Vec3f(
+      (x * aPixelSize.x) - 1.0f,    // Map [0,width] to [-1,1]
+      1.0f - (y * aPixelSize.y),    // Map [0,height] to [1,-1] (flip Y)
+      z                             // Keep Z as-is
+    );
+  }
+
+  tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder, ain<sVec2f> aPixelSize, tClearBuffersFlags aFlags, ain<sRectf> aRect, tU32 anColor, tF32 afZ) niImpl {
+    if (aFlags == eClearBuffersFlags_Depth) {
+      apCmdEncoder->SetPipeline(_pipelineClearDepth);
+    }
+    else if (aFlags == eClearBuffersFlags_Color) {
+      apCmdEncoder->SetPipeline(_pipelineClearColor);
+    }
+    else if (aFlags == eClearBuffersFlags_ColorDepth ||
+             aFlags == eClearBuffersFlags_ColorDepthStencil) {
+      apCmdEncoder->SetPipeline(_pipelineClearColorDepth);
+    }
+    else {
+      return eFalse;
+    }
+
+    niLet posTL = aRect.GetTopLeft();
+    niLet posBR = aRect.GetBottomRight();
+    tVertexClearRects verts[4] = {
+      {ScreenToClipSpace(aPixelSize,posTL.x,posTL.y,afZ), anColor}, // TL
+      {ScreenToClipSpace(aPixelSize,posBR.x,posTL.y,afZ), anColor}, // TR
+      {ScreenToClipSpace(aPixelSize,posTL.x,posBR.y,afZ), anColor}, // BL
+      {ScreenToClipSpace(aPixelSize,posBR.x,posBR.y,afZ), anColor}, // BR
+    };
+    apCmdEncoder->StreamVertexBuffer((tPtr)verts,sizeof(verts),0);
+    apCmdEncoder->Draw(eGraphicsPrimitiveType_TriangleStrip,4,0);
+    return eTrue;
   }
 };
 
@@ -661,6 +739,7 @@ static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS) {
     case eFixedGpuDS_NoDepthTest: return eCompiledStates_DS_NoDepthTest;
     case eFixedGpuDS_DepthTestAndWrite: return eCompiledStates_DS_DepthTestAndWrite;
     case eFixedGpuDS_DepthTestOnly: return eCompiledStates_DS_DepthTestOnly;
+    case eFixedGpuDS_DepthWriteOnly: return eCompiledStates_DS_DepthWriteOnly;
     default: return eCompiledStates_Invalid;
   }
 }
@@ -753,6 +832,8 @@ Ptr<iGpuPipeline> CreateFixedGpuPipeline(
   desc.mColorFormats[2] = eGpuPixelFormat_None;
   desc.mColorFormats[3] = eGpuPixelFormat_None;
   desc.mDepthFormat = idDesc.ds;
+  desc.mhRS = _FixedGpuRSToCompiledStatesRS(idDesc.compiledRS);
+  desc.mhDS = _FixedGpuDSToCompiledStatesDS(idDesc.compiledDS);
   desc.mptrFuncs[eGpuFunctionType_Vertex] = apFuncVertex;
   desc.mptrFuncs[eGpuFunctionType_Pixel] = apFuncPixel;
   if (idDesc.blendMode == eBlendMode_NoBlending) {
@@ -821,9 +902,9 @@ struct sGpuStream : public ImplRC<iGpuStream> {
 
   sGpuStream(ain<nn<iGraphicsDriverGpu>> apDriver,
              tGpuBufferUsageFlags aUsageFlags,
-             tU32 aChunkSize = 65536,
-             tU32 aMaxChunks = 1024,
-             tU32 aBlockAlignment = 0)
+             tU32 aBlockAlignment,
+             tU32 aChunkSize,
+             tU32 aMaxChunks)
       : _chunkSize(aChunkSize)
       , _maxChunks(aMaxChunks)
       , _blockAlignment(aBlockAlignment)
@@ -910,11 +991,11 @@ struct sGpuStream : public ImplRC<iGpuStream> {
 Ptr<iGpuStream> CreateGpuStream(
   ain<nn<iGraphicsDriverGpu>> apDriver,
   tGpuBufferUsageFlags aUsageFlags,
+  tU32 aBlockAlignment,
   tU32 aChunkSize,
-  tU32 aMaxChunks,
-  tU32 aBlockAlignment)
+  tU32 aMaxChunks)
 {
-  return niNew sGpuStream(apDriver,aUsageFlags,aChunkSize,aMaxChunks,aBlockAlignment);
+  return niNew sGpuStream(apDriver,aUsageFlags,aBlockAlignment,aChunkSize,aMaxChunks);
 }
 
 /////////////////////////////////////////////////////////////////

@@ -432,6 +432,7 @@ enum eCompiledStates {
   eCompiledStates_DS_NoDepthTest = 101,
   eCompiledStates_DS_DepthTestAndWrite = 102,
   eCompiledStates_DS_DepthTestOnly = 103,
+  eCompiledStates_DS_DepthWriteOnly = 104,
 
   eCompiledStates_SS_PointRepeat = 201,
   eCompiledStates_SS_PointClamp = 202,

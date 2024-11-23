@@ -518,4 +518,57 @@ struct GpuTexAlphaStream : public GpuTexAlphaBase {
 };
 TEST_FIXTURE_WIDGET(FGpu,GpuTexAlphaStream);
 
+struct GpuClearRects : public GpuCanvasBase {
+  TEST_CONSTRUCTOR_BASE(GpuClearRects,GpuCanvasBase) {
+  }
+
+  tBool _Init() niImpl {
+    return eTrue;
+  }
+
+  void _DrawMain(iCanvas* apCanvas) niImpl {
+    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFFFFFFFF);
+    apCanvas->Flush(); // submit in the current command encoder
+
+    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+
+    niLetMut ctx = mpWidget->GetGraphicsContext();
+    niLetMut gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),;);
+    niLet w = ctx->GetWidth();
+    niLet h = ctx->GetHeight();
+
+    // Clear rects
+    niLet border = 1;
+    gpuCtx->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(border,border,
+            (tF32)w-(2*border),
+            (tF32)h-(2*border)),
+      0xFF333333, 0.0f);
+
+    gpuCtx->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(50,50,
+            (tF32)w-100,
+            (tF32)h-100),
+      0xFF00FF00, 0.0f);
+
+    cmdEncoder->SetViewport(Recti(w/2,h/2,w/4,h/4));
+    gpuCtx->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(50,50,
+            (tF32)w-100,
+            (tF32)h-100),
+      0xFF0000FF, 0.0f);
+
+    cmdEncoder->SetViewport(Recti(0,0,w,h));
+    gpuCtx->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(50,50,500,500), 0xFFFF0000, 0.0f);
+  }
+};
+TEST_FIXTURE_WIDGET(FGpu,GpuClearRects);
+
 }

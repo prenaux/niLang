@@ -9316,8 +9316,27 @@ static const ni::sMethodDef iGraphicsContextGpu_GetCommandEncoder = {
 #endif
 };
 
+// Method: ClearBuffersRect
+static const ni::sParameterDef iGraphicsContextGpu_ClearBuffersRect_Parameters[4] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tClearBuffersFlags" }, 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "anColor", ni::eType_U32, NULL, "tU32" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }
+}; 
+static const ni::sMethodDef iGraphicsContextGpu_ClearBuffersRect = {
+  "ClearBuffersRect",
+  0|ni::eType_I8, NULL, "tBool",
+  4, iGraphicsContextGpu_ClearBuffersRect_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsContextGpu_ClearBuffersRect)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iGraphicsContextGpu[] = {
 	&iGraphicsContextGpu_GetCommandEncoder,
+	&iGraphicsContextGpu_ClearBuffersRect,
 
 };
 
@@ -37338,6 +37357,7 @@ static const ni::sEnumValueDef Enum_eCompiledStates_Values[] = {
 	{ "DS_NoDepthTest", ni::eCompiledStates_DS_NoDepthTest },
 	{ "DS_DepthTestAndWrite", ni::eCompiledStates_DS_DepthTestAndWrite },
 	{ "DS_DepthTestOnly", ni::eCompiledStates_DS_DepthTestOnly },
+	{ "DS_DepthWriteOnly", ni::eCompiledStates_DS_DepthWriteOnly },
 	{ "SS_PointRepeat", ni::eCompiledStates_SS_PointRepeat },
 	{ "SS_PointClamp", ni::eCompiledStates_SS_PointClamp },
 	{ "SS_PointMirror", ni::eCompiledStates_SS_PointMirror },

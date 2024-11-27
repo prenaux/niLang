@@ -370,7 +370,6 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
   tU32 _queueFamilyIndex = 0;
   VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
   sVulkanFramebuffer _currentFb;
-  VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
   VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _inFlightFence = VK_NULL_HANDLE;
 
@@ -603,7 +602,6 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
     };
 
-    VK_CHECK(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore), eFalse);
     VK_CHECK(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
     VK_CHECK(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFence), eFalse);
 
@@ -632,10 +630,6 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
     if (_renderFinishedSemaphore) {
       vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
       _renderFinishedSemaphore = VK_NULL_HANDLE;
-    }
-    if (_imageAvailableSemaphore) {
-      vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
-      _imageAvailableSemaphore = VK_NULL_HANDLE;
     }
 
     _currentFb.Destroy(_device);

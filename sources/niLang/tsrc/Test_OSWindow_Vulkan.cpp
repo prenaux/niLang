@@ -268,8 +268,17 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     eGpuBufferMemoryMode aMemMode,
     tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
+      , _memMode(aMemMode)
       , _usage(aUsage)
   {}
+
+  ~sVulkanBuffer() {
+    if (_vkBuffer) {
+      vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
+      _vkBuffer = VK_NULL_HANDLE;
+      _vmaAllocation = nullptr;
+    }
+  }
 
   tBool Create(tU32 anSize) {
     VkBufferCreateInfo bufferInfo = {
@@ -277,9 +286,20 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
       .size = anSize,
       .usage = _ToVkBufferUsageFlags(_usage)
     };
-    VmaAllocationCreateInfo allocInfo = {
-      .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
-    };
+
+    VmaAllocationCreateInfo allocInfo = {};
+    switch (_memMode) {
+      case eGpuBufferMemoryMode_Shared:
+        allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+        break;
+      case eGpuBufferMemoryMode_Private:
+        allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        break;
+      case eGpuBufferMemoryMode_Managed:
+        allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+        allocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+        break;
+    }
 
     VK_CHECK(vmaCreateBuffer(
       _driver->_allocator, &bufferInfo, &allocInfo,
@@ -288,70 +308,58 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     return eTrue;
   }
 
-  void Destroy() {
-    if (_locked) {
-      Unlock();
-    }
-    if (_vkBuffer) {
-      vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
-      _vkBuffer = VK_NULL_HANDLE;
-      _vmaAllocation = nullptr;
-    }
-  }
-
-  virtual iHString* __stdcall GetDeviceResourceName() const override {
-    return _name;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() override {
-    return eTrue;
-  }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
-    return this;
-  }
-
-  tBool IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl {
     return _vkBuffer != VK_NULL_HANDLE;
   }
 
-  tU32 __stdcall GetSize() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual tU32 __stdcall GetSize() const niImpl {
     VmaAllocationInfo info;
     vmaGetAllocationInfo(_driver->_allocator, _vmaAllocation, &info);
     return (tU32)info.size;
   }
 
-  eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
+  virtual eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
     return _memMode;
   }
-  tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
+
+  virtual tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
     return _usage;
   }
 
-  tPtr Lock(tU32 anStart, tU32 anSize, eLock aLock) niImpl {
-    niCheck(!_locked,nullptr);
+  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) niImpl {
+    if (_memMode == eGpuBufferMemoryMode_Private)
+      return nullptr;
+    if (_locked)
+      return nullptr;
 
-    // TODO: Bad (but should be correct) as it stalls the whole pipeline. Only
-    // for the first implementation. Take a look at
-    // https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/usage_patterns.html#usage_patterns_advanced_data_uploading
-    // to do something better for dynamic arrays.
-    vkDeviceWaitIdle(_driver->_device);
-
-    tPtr mappedData;
-    VK_CHECK(vmaMapMemory(_driver->_allocator, _vmaAllocation, (void**)&mappedData), nullptr);
+    void* data;
+    VK_CHECK(vmaMapMemory(_driver->_allocator, _vmaAllocation, &data), nullptr);
     _locked = eTrue;
-    return mappedData + anStart;
+    return ((tPtr)data) + anOffset;
   }
 
-  tBool Unlock() niImpl {
-    niCheck(_locked,eFalse);
+  virtual tBool __stdcall Unlock() niImpl {
+    if (!_locked)
+      return eFalse;
     vmaUnmapMemory(_driver->_allocator, _vmaAllocation);
     _locked = eFalse;
     return eTrue;
   }
 
-  tBool __stdcall GetIsLocked() const niImpl {
+  virtual tBool __stdcall GetIsLocked() const niImpl {
     return _locked;
   }
 };

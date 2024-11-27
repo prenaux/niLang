@@ -22,6 +22,7 @@
 #include "../../../data/test/gpufunc/texture_vs_spv.h"
 #include "../../../data/test/gpufunc/texture_ps_spv.h"
 #include "../../niUI/src/API/niUI/IGpu.h"
+#include <niLang/Utils/IDGenerator.h>
 
 // #define TRACE_MOUSE_MOVE
 
@@ -157,6 +158,7 @@ struct sVulkanDriver {
   VmaAllocator _allocator = nullptr;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
+  LocalIDGenerator _idGenerator;
 
   VkCommandBuffer BeginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo = {
@@ -363,6 +365,99 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     return _locked;
   }
 };
+
+
+struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
+  nn_mut<sVulkanDriver> _driver;
+  const eGpuFunctionType _functionType;
+  const tU32 _id;
+  tHStringPtr _hspName;
+  VkShaderModule _vkShaderModule = VK_NULL_HANDLE;
+
+  sVulkanFunction(
+    ain_nn_mut<sVulkanDriver> aDriver,
+    ain<eGpuFunctionType> aFuncType,
+    ain<tU32> anID)
+      : _driver(aDriver)
+      , _functionType(aFuncType)
+      , _id(anID)
+  {}
+
+  ~sVulkanFunction() {
+    if (_vkShaderModule) {
+      vkDestroyShaderModule(_driver->_device, _vkShaderModule, nullptr);
+      _vkShaderModule = VK_NULL_HANDLE;
+    }
+  }
+
+  tBool _Compile(VkDevice aDevice, iHString* ahspName, const tPtr apData, tSize aSize) {
+    _hspName = ahspName;
+
+    VkShaderModuleCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+      .codeSize = aSize,
+      .pCode = (tU32*)apData
+    };
+
+    VK_CHECK(vkCreateShaderModule(aDevice, &createInfo, nullptr, &_vkShaderModule), eFalse);
+    return eTrue;
+  }
+
+  virtual tU32 __stdcall GetFunctionId() const niImpl {
+    return _id;
+  }
+
+  virtual eGpuFunctionType __stdcall GetFunctionType() const niImpl {
+    return _functionType;
+  }
+
+  virtual iDataTable* __stdcall GetDataTable() const niImpl {
+    return nullptr;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _hspName;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+};
+
+static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
+  ain_nn_mut<sVulkanDriver> aDriver,
+  iHString* ahspName,
+  eGpuFunctionType aType,
+  const tPtr apData,
+  tSize aSize)
+{
+  niLet newId = aDriver->_idGenerator.AllocID();
+  NN_mut<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver,aType,newId);
+  if (!func->_Compile(aDriver->_device, ahspName, apData, aSize)) {
+    aDriver->_idGenerator.FreeID(newId);
+    niError(niFmt(
+      "Can't create gpu function '%s': Compilation failed.",
+      ahspName));
+    return nullptr;
+  }
+  if (func->GetFunctionType() != aType) {
+    aDriver->_idGenerator.FreeID(newId);
+    niError(niFmt(
+      "Can't create gpu function '%s': Expected function type '%s' but got '%s'.",
+      ahspName,
+      (tU32)aType, (tU32)func->GetFunctionType()
+      // niEnumToChars(eGpuFunctionType,aType),
+      // niEnumToChars(eGpuFunctionType,func->GetFunctionType())
+    ));
+    return nullptr;
+  }
+  return func;
+}
 
 struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
   const tU32 _threadId;
@@ -900,25 +995,25 @@ TEST_FIXTURE(FOSWindowVulkan,Clear) {
 }
 
 struct sVulkanPipelineVertexPA {
-  VkShaderModule _vertexShader = VK_NULL_HANDLE;
-  VkShaderModule _pixelShader = VK_NULL_HANDLE;
+  NN<sVulkanFunction> _vertexShader = niDeferredInit(NN<sVulkanFunction>);
+  NN<sVulkanFunction> _pixelShader = niDeferredInit(NN<sVulkanFunction>);
   VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
 
-  tBool _CreateShaders(VkDevice avkDevice) {
-    VkShaderModuleCreateInfo vertInfo = {
-      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-      .codeSize = (size_t)triangle_vs_spv_DATA_SIZE,
-      .pCode = (const uint32_t*)triangle_vs_spv_DATA
-    };
-    VK_CHECK(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader), eFalse);
+  tBool _CreateShaders(ain_nn_mut<sVulkanDriver> aDriver) {
+    _vertexShader = niCheckNN(_vertexShader,CreateVulkanGpuFunction(
+      aDriver,
+      _H("triangle_vs_spv"),
+      eGpuFunctionType_Vertex,
+      triangle_vs_spv_DATA,
+      triangle_vs_spv_DATA_SIZE), eFalse);
 
-    VkShaderModuleCreateInfo fragInfo = {
-      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-      .codeSize = (size_t)triangle_ps_spv_DATA_SIZE,
-      .pCode = (const uint32_t*)triangle_ps_spv_DATA
-    };
-    VK_CHECK(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader), eFalse);
+    _pixelShader = niCheckNN(_pixelShader,CreateVulkanGpuFunction(
+      aDriver,
+      _H("triangle_ps_spv"),
+      eGpuFunctionType_Pixel,
+      triangle_ps_spv_DATA,
+      triangle_ps_spv_DATA_SIZE), eFalse);
     return eTrue;
   }
 
@@ -1003,13 +1098,13 @@ struct sVulkanPipelineVertexPA {
       {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
         .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = _vertexShader,
+        .module = _vertexShader->_vkShaderModule,
         .pName = "main"
       },
       {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = _pixelShader,
+        .module = _pixelShader->_vkShaderModule,
         .pName = "main"
       }
     };
@@ -1043,21 +1138,13 @@ struct sVulkanPipelineVertexPA {
     return eTrue;
   }
 
-  tBool Init(VkDevice aDevice) {
-    niCheck(_CreateShaders(aDevice), eFalse);
-    niCheck(_CreatePipeline(aDevice), eFalse);
+  tBool Init(ain_nn_mut<sVulkanDriver> aDriver) {
+    niCheck(_CreateShaders(aDriver), eFalse);
+    niCheck(_CreatePipeline(aDriver->_device), eFalse);
     return eTrue;
   }
 
   void Cleanup(VkDevice aDevice) {
-    if (_vertexShader != VK_NULL_HANDLE) {
-      vkDestroyShaderModule(aDevice, _vertexShader, nullptr);
-      _vertexShader = VK_NULL_HANDLE;
-    }
-    if (_pixelShader != VK_NULL_HANDLE) {
-      vkDestroyShaderModule(aDevice, _pixelShader, nullptr);
-      _pixelShader = VK_NULL_HANDLE;
-    }
     if (_vkPipeline != VK_NULL_HANDLE) {
       vkDestroyPipeline(aDevice, _vkPipeline, nullptr);
       _vkPipeline = VK_NULL_HANDLE;
@@ -1066,25 +1153,25 @@ struct sVulkanPipelineVertexPA {
 };
 
 struct sVulkanPipelineVertexPAT1 {
-  VkShaderModule _vertexShader = VK_NULL_HANDLE;
-  VkShaderModule _pixelShader = VK_NULL_HANDLE;
+  NN<sVulkanFunction> _vertexShader = niDeferredInit(NN<sVulkanFunction>);
+  NN<sVulkanFunction> _pixelShader = niDeferredInit(NN<sVulkanFunction>);
   VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
 
-  tBool _CreateShaders(VkDevice avkDevice) {
-    VkShaderModuleCreateInfo vertInfo = {
-      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-      .codeSize = (size_t)texture_vs_spv_DATA_SIZE,
-      .pCode = (const uint32_t*)texture_vs_spv_DATA
-    };
-    VK_CHECK(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader), eFalse);
+  tBool _CreateShaders(ain_nn_mut<sVulkanDriver> aDriver) {
+    _vertexShader = niCheckNN(_vertexShader,CreateVulkanGpuFunction(
+      aDriver,
+      _H("texture_vs_spv"),
+      eGpuFunctionType_Vertex,
+      texture_vs_spv_DATA,
+      texture_vs_spv_DATA_SIZE), eFalse);
 
-    VkShaderModuleCreateInfo fragInfo = {
-      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-      .codeSize = (size_t)texture_ps_spv_DATA_SIZE,
-      .pCode = (const uint32_t*)texture_ps_spv_DATA
-    };
-    VK_CHECK(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader), eFalse);
+    _pixelShader = niCheckNN(_pixelShader,CreateVulkanGpuFunction(
+      aDriver,
+      _H("texture_ps_spv"),
+      eGpuFunctionType_Pixel,
+      texture_ps_spv_DATA,
+      texture_ps_spv_DATA_SIZE), eFalse);
     return eTrue;
   }
 
@@ -1171,13 +1258,13 @@ struct sVulkanPipelineVertexPAT1 {
       {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
         .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = _vertexShader,
+        .module = _vertexShader->_vkShaderModule,
         .pName = "main"
       },
       {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = _pixelShader,
+        .module = _pixelShader->_vkShaderModule,
         .pName = "main"
       }
     };
@@ -1211,21 +1298,13 @@ struct sVulkanPipelineVertexPAT1 {
     return eTrue;
   }
 
-  tBool Init(VkDevice aDevice, VkDescriptorSetLayout avkDescSetLayout) {
-    niCheck(_CreateShaders(aDevice), eFalse);
-    niCheck(_CreatePipeline(aDevice, avkDescSetLayout), eFalse);
+  tBool Init(ain_nn_mut<sVulkanDriver> aDriver, VkDescriptorSetLayout avkDescSetLayout) {
+    niCheck(_CreateShaders(aDriver), eFalse);
+    niCheck(_CreatePipeline(aDriver->_device, avkDescSetLayout), eFalse);
     return eTrue;
   }
 
   void Cleanup(VkDevice aDevice) {
-    if (_vertexShader != VK_NULL_HANDLE) {
-      vkDestroyShaderModule(aDevice, _vertexShader, nullptr);
-      _vertexShader = VK_NULL_HANDLE;
-    }
-    if (_pixelShader != VK_NULL_HANDLE) {
-      vkDestroyShaderModule(aDevice, _pixelShader, nullptr);
-      _pixelShader = VK_NULL_HANDLE;
-    }
     if (_vkPipeline != VK_NULL_HANDLE) {
       vkDestroyPipeline(aDevice, _vkPipeline, nullptr);
       _vkPipeline = VK_NULL_HANDLE;
@@ -1276,7 +1355,7 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateArrays(), eFalse);
-      niCheck(_pipeline.Init(_device), eFalse);
+      niCheck(_pipeline.Init(as_nn(this)), eFalse);
       return eTrue;
     }
 
@@ -1406,7 +1485,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      niCheck(_pipeline.Init(_device), eFalse);
+      niCheck(_pipeline.Init(as_nn(this)), eFalse);
       niCheck(_CreateArrays(), eFalse);
       return eTrue;
     }
@@ -1571,7 +1650,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     return nullptr;
   }
 
-  tBool Create(tU32 aWidth, tU32 aHeight, const tU32* apData) {
+  tBool Create(tU32 aWidth, tU32 aHeight, const tPtr apData) {
     _width = aWidth;
     _height = aHeight;
 
@@ -1798,7 +1877,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
 
       _texture = niNew sVulkanTexture(as_nn(this), _H(fp->GetSourcePath()));
       niCheck(_texture->Create(
-        bmp->GetWidth(), bmp->GetHeight(), (tU32*)bmp->GetData()), eFalse);
+        bmp->GetWidth(), bmp->GetHeight(), bmp->GetData()), eFalse);
 
       return eTrue;
     }
@@ -1904,7 +1983,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateDescriptorSetLayout(), eFalse);
-      niCheck(_pipeline.Init(_device,_vkDescSetLayout), eFalse);
+      niCheck(_pipeline.Init(as_nn(this),_vkDescSetLayout), eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_CreateTextures(), eFalse);
       niCheck(_CreateDescriptorPool(), eFalse);

@@ -34,21 +34,19 @@ niExportFunc(void*) osxMetalGetDevice() {
 //  Explicit MTKView
 //
 //--------------------------------------------------------------------------------------------
-struct sMetalAPIForMTKView : public ImplRC<iOSXMetalAPI> {
+struct sMetalAPIBase : public ImplRC<iOSXMetalAPI> {
   id<MTLDevice>               _device;
   id<MTLCommandQueue>         _commandQueue;
   id<MTLCommandBuffer>        _commandBuffer;
   id<MTLRenderCommandEncoder> _commandEncoder;
   MTKView*                    _mtkView;
 
-  sMetalAPIForMTKView(void* apMetalDevice, MTKView* apView) {
+  sMetalAPIBase(void* apMetalDevice) {
     _device = (__bridge id<MTLDevice>)apMetalDevice;
-    _mtkView = apView;
-    _mtkView.autoResizeDrawable = YES;
     _commandQueue = [_device newCommandQueue];
   }
 
-  virtual const achar* __stdcall GetName() const {
+  virtual const achar* __stdcall GetName() const niImpl {
     return "Metal";
   }
   virtual void* __stdcall GetDevice() const niImpl {
@@ -60,6 +58,7 @@ struct sMetalAPIForMTKView : public ImplRC<iOSXMetalAPI> {
   virtual void* __stdcall GetMTKView() const niImpl {
     return (__bridge void*)_mtkView;
   }
+
   virtual void* __stdcall NewRenderCommandEncoder(const double4& aClearColor, tF32 aClearDepth, tU32 aClearStencil) niImpl {
     _commandBuffer = [_commandQueue commandBuffer];
     MTLRenderPassDescriptor* passDesc = [_mtkView currentRenderPassDescriptor];
@@ -70,12 +69,12 @@ struct sMetalAPIForMTKView : public ImplRC<iOSXMetalAPI> {
     _commandEncoder = [_commandBuffer renderCommandEncoderWithDescriptor:passDesc];
     return (__bridge void*)_commandEncoder;
   }
+
   virtual tBool __stdcall PresentAndCommit(iRunnable* apOnCompleted) niImpl {
-    const tBool r = (_commandBuffer != NULL);
+    const tBool r = (_commandBuffer != nullptr);
     if (_commandEncoder) {
       [_commandEncoder endEncoding];
     }
-
     if (_commandBuffer) {
       [_commandBuffer presentDrawable:[_mtkView currentDrawable]];
       if (apOnCompleted) {
@@ -89,6 +88,30 @@ struct sMetalAPIForMTKView : public ImplRC<iOSXMetalAPI> {
     _commandEncoder = NULL;
     _commandBuffer = NULL;
     return r;
+  }
+
+  virtual sVec2i __stdcall GetViewSize() const niImpl {
+    MTLRenderPassDescriptor* passDesc = _mtkView.currentRenderPassDescriptor;
+    niCheck(passDesc != nullptr, sVec2i::Zero());
+    id<MTLTexture> texture = passDesc.colorAttachments[0].texture;
+    return Vec2i(texture.width, texture.height);
+  }
+
+  virtual tBool __stdcall DrawablePresent() niImpl {
+    id<CAMetalDrawable> drawable = [_mtkView currentDrawable];
+    if (drawable == nil)
+      return eFalse;
+    [drawable present];
+    return eTrue;
+  }
+};
+
+struct sMetalAPIForMTKView : public sMetalAPIBase {
+  sMetalAPIForMTKView(void* apMetalDevice, MTKView* apView)
+      : sMetalAPIBase(apMetalDevice)
+  {
+    _mtkView = apView;
+    _mtkView.autoResizeDrawable = YES;
   }
 };
 
@@ -111,25 +134,19 @@ struct sMetalAPIForWindow;
 - (id)initWithContext:(sMetalAPIForWindow*)apContext;
 @end
 
-struct sMetalAPIForWindow : public ImplRC<iOSXMetalAPI> {
-  id<MTLDevice>            _device;
+struct sMetalAPIForWindow : public sMetalAPIBase {
   ni::WeakPtr<iOSWindow>   _window;
-  MTKView*                 _mtkView;
   NIMTKViewDelegate*       _mtkViewDelegate;
-  id<MTLCommandQueue>      _commandQueue;
-  id<MTLCommandBuffer>     _commandBuffer;
-  id<MTLRenderCommandEncoder> _commandEncoder;
 
-  sMetalAPIForWindow(void* apMetalDevice, iOSWindow* apWindow) {
+  sMetalAPIForWindow(void* apMetalDevice, iOSWindow* apWindow)
+      : sMetalAPIBase(apMetalDevice)
+  {
     QPtr<iOSWindowOSX> osxWindow = apWindow;
     if (!osxWindow.IsOK() || !osxWindow->GetNSWindow()) {
       niError("Not an OSX window.");
       return;
     }
-
-    _device = (__bridge id<MTLDevice>)apMetalDevice;
     _window = apWindow;
-    _commandQueue = [_device newCommandQueue];
 
     const sVec2i wndSize = apWindow->GetRect().GetSize();
     NSWindow* nsWindow = (__bridge NSWindow*)osxWindow->GetNSWindow();
@@ -151,48 +168,6 @@ struct sMetalAPIForWindow : public ImplRC<iOSXMetalAPI> {
       return;
     [_mtkView removeFromSuperview];
     _mtkView = NULL;
-  }
-
-  virtual const achar* __stdcall GetName() const {
-    return "Metal";
-  }
-  virtual void* __stdcall GetDevice() const niImpl {
-    return (__bridge void*)_device;
-  }
-  virtual void* __stdcall GetCommandQueue() const niImpl {
-    return (__bridge void*)_commandQueue;
-  }
-  virtual void* __stdcall GetMTKView() const niImpl {
-    return (__bridge void*)_mtkView;
-  }
-  virtual void* __stdcall NewRenderCommandEncoder(const double4& aClearColor, tF32 aClearDepth, tU32 aClearStencil) niImpl {
-    _commandBuffer = [_commandQueue commandBuffer];
-    MTLRenderPassDescriptor* passDesc = [_mtkView currentRenderPassDescriptor];
-    niCAssert(sizeof(MTLClearColor) == sizeof(aClearColor));
-    passDesc.colorAttachments[0].clearColor = (MTLClearColor&)aClearColor;
-    passDesc.depthAttachment.clearDepth = aClearDepth;
-    passDesc.stencilAttachment.clearStencil = aClearStencil;
-    _commandEncoder = [_commandBuffer renderCommandEncoderWithDescriptor:passDesc];
-    return (__bridge void*)_commandEncoder;
-  }
-  virtual tBool __stdcall PresentAndCommit(iRunnable* apOnCompleted) niImpl {
-    const tBool r = (_commandBuffer != NULL);
-    if (_commandEncoder) {
-      [_commandEncoder endEncoding];
-    }
-    if (_commandBuffer) {
-      [_commandBuffer presentDrawable:[_mtkView currentDrawable]];
-      if (apOnCompleted) {
-        ni::Ptr<iRunnable> onCompleted = apOnCompleted;
-        [_commandBuffer addCompletedHandler: ^(id<MTLCommandBuffer> _Nonnull) {
-          onCompleted->Run();
-        }];
-      }
-      [_commandBuffer commit];
-    }
-    _commandEncoder = NULL;
-    _commandBuffer = NULL;
-    return r;
   }
 };
 

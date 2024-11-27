@@ -1,428 +1,34 @@
 #include "stdafx.h"
-#ifdef niOSX
 
-#import <Metal/Metal.h>
-#import <QuartzCore/QuartzCore.h>
-#import <MetalKit/MetalKit.h>
-#include <OpenGL/gl.h>
-#include "../src/API/niLang/Platforms/OSX/osxgl.h"
-#include "../src/API/niLang/Platforms/OSX/osxMetal.h"
+#if defined niOSX
+
 #include "../src/API/niLang/Math/MathMatrix.h"
 #include "../src/API/niLang_ModuleDef.h"
-#include "../src/Platform_OSX.h"
 #include "../../niUI/src/API/niUI/GraphicsEnum.h"
 #include "../../niUI/src/API/niUI/FVF.h"
 #include <niLang/STL/set.h>
-#include "shaders/_allShaders.osx.metallib.h"
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan_metal.h>
-#include <MoltenVK/mvk_vulkan.h>
 #include "../../niUI/src/API/niUI/IVertexArray.h"
 #include "../../niUI/src/API/niUI/IIndexArray.h"
 #define niVulkanMemoryAllocator_Implement
-#include "../../thirdparty/VulkanMemoryAllocator/niVulkanMemoryAllocator.h"
+#include "../../thirdparty/VulkanUtils/niVulkanMemoryAllocator.h"
+#include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+#include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
 #include "../../niUI/tsrc/data/A.jpg.hxx"
 #include "../../niUI/src/API/niUI/IGraphics.h"
 #include "../../../data/test/gpufunc/triangle_vs_spv.h"
 #include "../../../data/test/gpufunc/triangle_ps_spv.h"
 #include "../../../data/test/gpufunc/texture_vs_spv.h"
 #include "../../../data/test/gpufunc/texture_ps_spv.h"
+#include "../../niUI/src/API/niUI/IGpu.h"
 
 // #define TRACE_MOUSE_MOVE
 
 namespace ni {
 
-struct FOSWindowOSX {
+struct FOSWindowVulkan {
 };
-
-struct sTestOSXWindowSink : public ImplRC<iMessageHandler> {
-  const tU64 _threadId;
-  iOSWindow* _w;
-  sTestOSXWindowSink(iOSWindow* aWindow)
-      : _threadId(ni::ThreadGetCurrentThreadID())
-      , _w(aWindow)
-  {}
-
-  tU64 __stdcall GetThreadID() const {
-    return _threadId;
-  }
-
-  void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
-    switch (anMsg) {
-      case eOSWindowMessage_Close:
-        niDebugFmt((_A("eOSWindowMessage_Close: \n")));
-        _w->Invalidate();
-        break;
-      case eOSWindowMessage_SwitchIn:
-        niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
-        break;
-      case eOSWindowMessage_SwitchOut:
-        niDebugFmt((_A("eOSWindowMessage_SwitchOut: \n")));
-        break;
-      case eOSWindowMessage_Paint: {
-        // niDebugFmt((_A("eOSWindowMessage_Paint: \n")));
-        break;
-      }
-      case eOSWindowMessage_Size:
-        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(_w->GetSize())));
-        break;
-      case eOSWindowMessage_Move:
-        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(_w->GetPosition())));
-        break;
-      case eOSWindowMessage_KeyDown:
-        niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
-        switch (a.mU32) {
-          case eKey_F:
-            _w->SetFullScreen(_w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
-            break;
-          case eKey_Z:
-            _w->SetCursorPosition(sVec2i::Zero());
-            break;
-          case eKey_X:
-            _w->SetCursorPosition(_w->GetClientSize()/2);
-            break;
-          case eKey_C:
-            _w->SetCursorPosition(_w->GetClientSize());
-            break;
-          case eKey_Q:
-            _w->SetCursor(eOSCursor_None);
-            break;
-          case eKey_W:
-            _w->SetCursor(eOSCursor_Arrow);
-            break;
-          case eKey_E:
-            _w->SetCursor(eOSCursor_Text);
-            break;
-          case eKey_K:
-            _w->SetCursorCapture(!_w->GetCursorCapture());
-            break;
-        }
-        break;
-      case eOSWindowMessage_KeyUp:
-        niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
-        break;
-      case eOSWindowMessage_KeyChar:
-        niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonDown:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonUp:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonUp: %d\n"),a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonDoubleClick:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
-        if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
-          //                     _w->SetFullScreen(!_w->GetFullScreen());
-        }
-        else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
-          //                     _w->SetFullScreen(!_w->GetFullScreen());
-        }
-        break;
-      case eOSWindowMessage_MouseWheel:
-        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
-        break;
-      case eOSWindowMessage_LostFocus: {
-        niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
-        break;
-      }
-      case eOSWindowMessage_SetFocus:
-        niDebugFmt((_A("eOSWindowMessage_SetFocus: \n")));
-        break;
-      case eOSWindowMessage_Drop:
-        niDebugFmt((_A("eOSWindowMessage_Drop: \n")));
-        break;
-
-      case eOSWindowMessage_RelativeMouseMove:
-#ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
-                    a.mV2L[0],a.mV2L[1]));
-#endif
-        break;
-
-      case eOSWindowMessage_MouseMove:
-#ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
-                    a.mV2L[0],a.mV2L[1],
-                    b.mV2L[0],b.mV2L[1],
-                    _w->GetContentsScale()));
-#endif
-        break;
-    }
-  }
-};
-
-TEST_FIXTURE(FOSWindowOSX,OpenGL) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  Ptr<iMessageQueue> mq = ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
-
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK_RETURN_IF_FAILED(wnd.IsOK());
-
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
-  if (!osxglIsStarted()) {
-    CHECK(osxglStartup());
-  }
-
-  sOSXGLConfig glConfig;
-  CHECK_RETURN_IF_FAILED(osxglCreateContext(wnd,&glConfig));
-  CHECK_RETURN_IF_FAILED(osxglHasContext(wnd));
-  osxglMakeContextCurrent(wnd);
-  CHECK_RETURN_IF_FAILED(osxglGetCurrentContext() == wnd);
-
-  struct sOpenGLWindowSink : public ImplRC<iMessageHandler> {
-    const tU32 _threadId;
-    WeakPtr<iOSWindow> _wnd;
-
-    sOpenGLWindowSink(iOSWindow* apWnd) : _wnd(apWnd), _threadId(ni::ThreadGetCurrentThreadID()) {
-    }
-
-    tU64 __stdcall GetThreadID() const {
-      return _threadId;
-    }
-
-    void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
-      if (anMsg != eOSWindowMessage_Paint)
-        return;
-      QPtr<iOSWindow> wnd = _wnd;
-
-      const sVec2i size = wnd->GetClientSize();
-
-      glViewport( 0, 0, size.x, size.y );
-
-      glMatrixMode( GL_PROJECTION );
-      sMatrixf mtx;
-      MatrixPerspectiveFovRH<tF32>(mtx, niRadf(45.0f), (tF32)size.x/(tF32)size.y, 0.1f, 100.0f);
-      glLoadMatrixf(mtx.ptr());
-
-      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-      glMatrixMode( GL_MODELVIEW );
-      glLoadIdentity();
-
-      glColor4f(1,1,1,1);
-
-      glTranslatef( -1.5f, 0.0f, -6.0f );   // Left 1.5 units, into screen 6.0
-
-      glBegin( GL_TRIANGLES );             // Draw a triangle
-      glVertex3f(  0.0f,  1.0f, 0.0f );    // Top
-      glVertex3f( -1.0f, -1.0f, 0.0f );    // Bottom left
-      glVertex3f(  1.0f, -1.0f, 0.0f );    // Bottom right
-      glEnd();                             // Done with the triangle
-
-      glTranslatef( 3.0f, 0.0f, 0.0f );    // Move right 3 units
-
-      glBegin( GL_QUADS );                // Draw a quad
-      glVertex3f( -1.0f,  1.0f, 0.0f );   // Top left
-      glVertex3f(  1.0f,  1.0f, 0.0f );   // Top right
-      glVertex3f(  1.0f, -1.0f, 0.0f );   // Bottom right
-      glVertex3f( -1.0f, -1.0f, 0.0f );   // Bottom left
-      glEnd();                            // Quad is complete
-
-      osxglSwapBuffers(wnd,eFalse);
-    }
-  };
-  wnd->GetMessageHandlers()->AddSink(niNew sOpenGLWindowSink(wnd));
-
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
-      mq->PollAndDispatch();
-    }
-    CHECK(osxglGetCurrentContext() == NULL);
-    CHECK(!osxglHasContext(wnd));
-  }
-  else {
-    osxglMakeContextCurrent(NULL);
-    CHECK(osxglGetCurrentContext() == NULL);
-    CHECK(osxglHasContext(wnd));
-    osxglDestroyContext(wnd);
-    CHECK(!osxglHasContext(wnd));
-  }
-}
-
-struct sMetalWindowSink : public ImplRC<iMessageHandler> {
-  const tU32 _threadId;
-  Ptr<iOSXMetalAPI> _metalAPI;
-  id<MTLCommandQueue> _commandQueue;
-
-  sMetalWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
-  }
-
-  ~sMetalWindowSink() {
-  }
-
-  tU64 __stdcall GetThreadID() const {
-    return _threadId;
-  }
-
-  virtual tBool Init(iOSWindow* apWnd) {
-    osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
-    niCheck(_metalAPI.IsOK(),eFalse);
-
-    id<MTLDevice> device = (__bridge id<MTLDevice>)_metalAPI->GetDevice();
-
-    NSError *error = nil;
-    dispatch_data_t data = dispatch_data_create(_allShaders_DATA, _allShaders_DATA_SIZE, NULL, NULL);
-    id<MTLLibrary> library = [device
-                              newLibraryWithData:data
-                              error:&error];
-    if (!library) {
-      NSLog(@"Error occurred when compiling shader library: %@", error);
-      return eFalse;
-    }
-
-    _commandQueue = [device newCommandQueue];
-    return eTrue;
-  }
-
-  virtual void Draw() = 0;
-
-  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
-    switch (anMsg) {
-      case eOSWindowMessage_Paint: {
-        this->Draw();
-        break;
-      };
-    }
-  }
-};
-
-TEST_FIXTURE(FOSWindowOSX,MetalClear) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
-
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK_RETURN_IF_FAILED(wnd.IsOK());
-
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
-  struct sMetalClear_MetalWindowSink : public sMetalWindowSink {
-    virtual void Draw() {
-      id<MTLRenderCommandEncoder> commandEncoder = (__bridge id<MTLRenderCommandEncoder>)_metalAPI->NewRenderCommandEncoder(
-        Vec4<tF64>(0,1,1,1), 1.0f, 0);
-      _metalAPI->PresentAndCommit(NULL);
-    };
-  };
-
-  Ptr<sMetalWindowSink> metalSink = niNew sMetalClear_MetalWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
-  wnd->GetMessageHandlers()->AddSink(metalSink);
-
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
-    }
-  }
-}
-
-TEST_FIXTURE(FOSWindowOSX,MetalTriangle) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
-
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK_RETURN_IF_FAILED(wnd.IsOK());
-
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
-  struct sMetalTriangle_MetalWindowSink : public sMetalWindowSink {
-    id<MTLRenderPipelineState> _pipeline;
-    id<MTLBuffer> _vertexBuffer;
-
-    sMetalTriangle_MetalWindowSink() {
-    }
-
-    tBool Init(iOSWindow* apWnd) override {
-      niCheck(sMetalWindowSink::Init(apWnd),eFalse);
-      id<MTLDevice> device = (__bridge id<MTLDevice>)_metalAPI->GetDevice();
-
-      // Triangle, red a the top, green on the left, blue on the right
-      // (important to make sure rgb/bgr aren't swapped)
-      sVertexPA vertices[3];
-      vertices[0].pos = {  0.0,  0.5, 0 }; vertices[0].colora = ULColorBuildf( 1, 0, 0, 1 );
-      vertices[1].pos = { -0.5, -0.5, 0 }; vertices[1].colora = ULColorBuildf( 0, 1, 0, 1 );
-      vertices[2].pos = {  0.5, -0.5, 0 }; vertices[2].colora = ULColorBuildf( 0, 0, 1, 1 );
-      _vertexBuffer = [device newBufferWithBytes:vertices
-                       length:sizeof(vertices)
-                       options:MTLResourceCPUCacheModeDefaultCache];
-
-      NSError *error = nil;
-      dispatch_data_t data = dispatch_data_create(_allShaders_DATA, _allShaders_DATA_SIZE, NULL, NULL);
-      id<MTLLibrary> library = [device
-                                newLibraryWithData:data
-                                error:&error];
-      if (!library) {
-        NSLog(@"Error occurred when compiling shader library: %@", error);
-        return eFalse;
-      }
-
-      id<MTLFunction> vertexFunc = [library newFunctionWithName:@"vertex_main"];
-      id<MTLFunction> fragmentFunc = [library newFunctionWithName:@"fragment_main"];
-
-      MTLRenderPipelineDescriptor *pipelineDescriptor = [MTLRenderPipelineDescriptor new];
-      pipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-      pipelineDescriptor.vertexFunction = vertexFunc;
-      pipelineDescriptor.fragmentFunction = fragmentFunc;
-      // pipelineDescriptor.vertexDescriptor = _CreateMetalVertDesc(0, sVertexPA::eFVF);
-
-      _pipeline = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
-                   error:&error];
-      if (!_pipeline) {
-        NSLog(@"Error occurred when creating render pipeline state: %@", error);
-      }
-
-      return eTrue;
-    }
-
-    void Draw() override {
-      id<MTLRenderCommandEncoder> commandEncoder = (__bridge id<MTLRenderCommandEncoder>)_metalAPI->NewRenderCommandEncoder(
-        Vec4<tF64>(0,1,1,1), 1.0f, 0);
-      [commandEncoder setRenderPipelineState:_pipeline];
-      [commandEncoder setVertexBuffer:_vertexBuffer offset:0 atIndex:0];
-      [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
-      _metalAPI->PresentAndCommit(NULL);
-    };
-  };
-
-  Ptr<sMetalWindowSink> metalSink = niNew sMetalTriangle_MetalWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd));
-  wnd->GetMessageHandlers()->AddSink(metalSink);
-
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
-    }
-  }
-}
 
 #define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
 
@@ -594,40 +200,11 @@ struct sVulkanFramebuffer {
   tU32 _width = 0;
   tU32 _height = 0;
 
-  tBool CreateFromMTKView(MTKView* apView, VkDevice aDevice) {
-    MTLRenderPassDescriptor* passDesc = apView.currentRenderPassDescriptor;
-    niCheck(passDesc != nullptr, eFalse);
-
-    id<MTLTexture> texture = passDesc.colorAttachments[0].texture;
-    _width = texture.width;
-    _height = texture.height;
-
-#if 0
-    niLog(Info,niFmt("Creating Vulkan framebuffer: %dx%d from MTLTexture (format: %lu, usage: %lu)",
-                     _width, _height,
-                     texture.pixelFormat,
-                     texture.usage));
-#endif
-
-    VkImportMetalTextureInfoEXT importInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT,
-      .plane = VK_IMAGE_ASPECT_COLOR_BIT,
-      .mtlTexture = texture
-    };
-
-    VkImageCreateInfo imageInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-      .pNext = &importInfo,
-      .imageType = VK_IMAGE_TYPE_2D,
-      .format = VK_FORMAT_B8G8R8A8_UNORM,
-      .extent = {_width, _height, 1},
-      .mipLevels = 1,
-      .arrayLayers = 1,
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-    };
-
-    niCheck(vkCreateImage(aDevice, &imageInfo, nullptr, &_image) == VK_SUCCESS, eFalse);
+  tBool CreateFromMetalAPI(iOSXMetalAPI* apMetalAPI, VkDevice aDevice) {
+    niCheck(osxVkCreateImageForMetalAPI(apMetalAPI,aDevice,nullptr,&_image),eFalse);
+    niLet viewSize = apMetalAPI->GetViewSize();
+    _width = viewSize.x;
+    _height = viewSize.y;
 
     VkImageViewCreateInfo viewInfo = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -649,7 +226,8 @@ struct sVulkanFramebuffer {
       }
     };
 
-    return vkCreateImageView(aDevice, &viewInfo, nullptr, &_view) == VK_SUCCESS;
+    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view), eFalse);
+    return eTrue;
   }
 
   void Destroy(VkDevice device) {
@@ -664,32 +242,48 @@ struct sVulkanFramebuffer {
   }
 };
 
-struct sVulkanBuffer {
+static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
+  VkBufferUsageFlags vkUsage = 0;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Vertex)) vkUsage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Index)) vkUsage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Uniform)) vkUsage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Storage)) vkUsage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Indirect)) vkUsage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferSrc)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferDst)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+  return vkUsage;
+}
+
+struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource> {
   nn_mut<sVulkanDriver> _driver;
+  tHStringPtr _name;
   VkBuffer _vkBuffer = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation = nullptr;
   tBool _locked = eFalse;
-  const eArrayUsage _usage;
+  eGpuBufferMemoryMode _memMode;
+  tGpuBufferUsageFlags _usage;
 
-  sVulkanBuffer(ain_nn_mut<sVulkanDriver> aDriver, eArrayUsage aUsage)
+  sVulkanBuffer(
+    ain_nn_mut<sVulkanDriver> aDriver,
+    eGpuBufferMemoryMode aMemMode,
+    tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
       , _usage(aUsage)
   {}
 
-  tBool Create(tU32 anSize, VkBufferUsageFlags aUsage) {
+  tBool Create(tU32 anSize) {
     VkBufferCreateInfo bufferInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .size = anSize,
-      .usage = aUsage
+      .usage = _ToVkBufferUsageFlags(_usage)
     };
-
     VmaAllocationCreateInfo allocInfo = {
       .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
     };
 
-    niCheck(vmaCreateBuffer(
+    VK_CHECK(vmaCreateBuffer(
       _driver->_allocator, &bufferInfo, &allocInfo,
-      &_vkBuffer, &_vmaAllocation, nullptr) == VK_SUCCESS, eFalse);
+      &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
 
     return eTrue;
   }
@@ -705,11 +299,37 @@ struct sVulkanBuffer {
     }
   }
 
-  tBool IsOK() const {
+  virtual iHString* __stdcall GetDeviceResourceName() const override {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() override {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
+    return this;
+  }
+
+  tBool IsOK() const niImpl {
     return _vkBuffer != VK_NULL_HANDLE;
   }
 
-  tPtr Lock(tU32 anStart, tU32 anSize, eLock aLock) {
+  tU32 __stdcall GetSize() const niImpl {
+    VmaAllocationInfo info;
+    vmaGetAllocationInfo(_driver->_allocator, _vmaAllocation, &info);
+    return (tU32)info.size;
+  }
+
+  eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
+    return _memMode;
+  }
+  tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
+    return _usage;
+  }
+
+  tPtr Lock(tU32 anStart, tU32 anSize, eLock aLock) niImpl {
     niCheck(!_locked,nullptr);
 
     // TODO: Bad (but should be correct) as it stalls the whole pipeline. Only
@@ -719,169 +339,31 @@ struct sVulkanBuffer {
     vkDeviceWaitIdle(_driver->_device);
 
     tPtr mappedData;
-    niCheck(vmaMapMemory(_driver->_allocator, _vmaAllocation, (void**)&mappedData) == VK_SUCCESS, nullptr);
+    VK_CHECK(vmaMapMemory(_driver->_allocator, _vmaAllocation, (void**)&mappedData), nullptr);
     _locked = eTrue;
     return mappedData + anStart;
   }
 
-  tBool Unlock() {
+  tBool Unlock() niImpl {
     niCheck(_locked,eFalse);
     vmaUnmapMemory(_driver->_allocator, _vmaAllocation);
     _locked = eFalse;
     return eTrue;
   }
-};
 
-struct sVulkanVertexArray : public ImplRC<iVertexArray> {
-  niBeginClass(sVulkanVertexArray);
-
-  sVulkanBuffer _buffer;
-  const cFVFDescription _fvf;
-  const tU32 _numVertices;
-
-  sVulkanVertexArray(ain_nn_mut<sVulkanDriver> aDriver, tU32 aNumVertices, tU32 aFVF, eArrayUsage aUsage)
-      : _buffer(aDriver, aUsage)
-      , _numVertices(aNumVertices)
-      , _fvf(aFVF)
-  {
-    niCheck(_buffer.Create(
-      _numVertices * _fvf.GetStride(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT), ;);
-
-    VULKAN_TRACE((
-      ">>> MetalVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %s.",
-      FVFToString(_fvf.GetFVF()).Chars(),
-      this->GetNumVertices(),_fvf.GetStride(),
-      StringBytesToReadableSize(_fvf.GetStride() * _numVertices * 12357, eTrue)));
-  }
-
-  ~sVulkanVertexArray() {
-    _buffer.Destroy();
-  }
-
-  tBool __stdcall IsOK() const override {
-    niClassIsOK(sVulkanVertexArray);
-    return _buffer.IsOK();
-  }
-
-  tFVF __stdcall GetFVF() const override {
-    return _fvf.GetFVF();
-  }
-
-  tU32 __stdcall GetNumVertices() const override {
-    return _numVertices;
-  }
-
-  eArrayUsage __stdcall GetUsage() const override {
-    return eArrayUsage_Dynamic;
-  }
-
-  tPtr __stdcall Lock(tU32 aFirstVertex, tU32 aNumVertex, eLock aLock) override {
-    const tU32 offset = aFirstVertex * _fvf.GetStride();
-    const tU32 size = (aNumVertex ? aNumVertex : _numVertices) * _fvf.GetStride();
-    return _buffer.Lock(offset,size,aLock);
-  }
-
-  tBool __stdcall Unlock() override {
-    return _buffer.Unlock();
-  }
-
-  tBool __stdcall GetIsLocked() const override {
-    return _buffer._locked;
-  }
-
-  iHString* __stdcall GetDeviceResourceName() const override {
-    return NULL;
-  }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
-    return eFalse;
-  }
-  tBool __stdcall ResetDeviceResource() override {
-    return eFalse;
-  }
-  iDeviceResource* __stdcall Bind(iUnknown*) override {
-    return this;
-  }
-
-  niEndClass(sVulkanVertexArray);
-};
-
-const tU32 knVulkanIndexSize = sizeof(tU32);
-
-struct sVulkanIndexArray : public ni::ImplRC<iIndexArray> {
-  sVulkanBuffer _buffer;
-  const eGraphicsPrimitiveType _primType;
-  const tU32 _numIndices;
-  const VkIndexType  _indexType = VK_INDEX_TYPE_UINT32;
-
-  sVulkanIndexArray(ain_nn_mut<sVulkanDriver> aDriver, eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, eArrayUsage aUsage)
-      : _buffer(aDriver, aUsage)
-      , _primType(aPrimType)
-      , _numIndices(anNumIndices)
-  {
-    niCheck(_buffer.Create(
-      knVulkanIndexSize * _numIndices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT), ;);
-
-    niDebugFmt((
-      ">>> VulkanIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %s.",
-      _primType,
-      0xFFFFFFFF,
-      this->GetNumIndices(), knVulkanIndexSize,
-      StringBytesToReadableSize(knVulkanIndexSize * _numIndices)));
-  }
-
-  ~sVulkanIndexArray() {
-    _buffer.Destroy();
-  }
-
-  tBool __stdcall IsOK() const niImpl {
-    return _buffer.IsOK();
-  }
-
-  iHString* __stdcall GetDeviceResourceName() const niImpl {
-    return NULL;
-  }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
-  iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
-    return this;
-  }
-
-  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const niImpl {
-    return _primType;
-  }
-  virtual tU32 __stdcall GetNumIndices() const niImpl {
-    return _numIndices;
-  }
-  virtual tU32 __stdcall GetMaxVertexIndex() const niImpl {
-    return 0xFFFFFFFF;
-  }
-  virtual eArrayUsage __stdcall GetUsage() const niImpl {
-    return _buffer._usage;
-  }
-
-  tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) niImpl {
-    return _buffer.Lock(anFirstIndex * knVulkanIndexSize, anNumIndex * knVulkanIndexSize, aLock);
-  }
-  tBool __stdcall Unlock() niImpl {
-    return _buffer.Unlock();
-  }
-  virtual tBool __stdcall GetIsLocked() const niImpl {
-    return _buffer._locked;
+  tBool __stdcall GetIsLocked() const niImpl {
+    return _locked;
   }
 };
 
 struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
   const tU32 _threadId;
+  iOSWindow* _w;
   Ptr<iOSXMetalAPI> _metalAPI;
   VkInstance _instance = VK_NULL_HANDLE;
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
   typedef astl::map<cString,tU32> tVkExtensionsMap;
   tVkExtensionsMap _extensions;
-  VkSurfaceKHR _surface = VK_NULL_HANDLE;
   tBool _enableValidationLayers = eTrue;
   typedef astl::set<cString> tVkInstanceLayersSet;
   tVkInstanceLayersSet _instanceLayers;
@@ -892,7 +374,10 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
   VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _inFlightFence = VK_NULL_HANDLE;
 
-  sVulkanWindowSink() : _threadId(ni::ThreadGetCurrentThreadID()) {
+  sVulkanWindowSink(iOSWindow* aWindow)
+      : _threadId(ni::ThreadGetCurrentThreadID())
+      , _w(aWindow)
+  {
   }
 
   ~sVulkanWindowSink() {
@@ -994,7 +479,8 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
     };
     createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
 
-    return vkCreateInstance(&createInfo, nullptr, &_instance) == VK_SUCCESS;
+    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
+    return eTrue;
   }
 
   tBool _InitPhysicalDevice() {
@@ -1037,18 +523,6 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
     }
 
     return eTrue;
-  }
-
-  tBool _CreateSurface() {
-    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
-    CAMetalLayer* metalLayer = (CAMetalLayer*)mtkView.layer;
-    VkMetalSurfaceCreateInfoEXT surfaceCreateInfo = {
-      .sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT,
-      .pNext = nullptr,
-      .flags = 0,
-      .pLayer = metalLayer
-    };
-    return vkCreateMetalSurfaceEXT(_instance, &surfaceCreateInfo, nullptr, &_surface) == VK_SUCCESS;
   }
 
   tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
@@ -1094,7 +568,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .enabledLayerCount = 0
     };
 
-    niCheck(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
     vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
     return eTrue;
   }
@@ -1106,7 +580,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
     };
 
-    niCheck(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
 
     VkCommandBufferAllocateInfo allocInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -1115,7 +589,8 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .commandBufferCount = 1
     };
 
-    return vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer) == VK_SUCCESS;
+    VK_CHECK(vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer),eFalse);
+    return eTrue;
   }
 
   tBool _CreateSyncObjects() {
@@ -1128,9 +603,9 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
     };
 
-    niCheck(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore) == VK_SUCCESS, eFalse);
-    niCheck(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore) == VK_SUCCESS, eFalse);
-    niCheck(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFence) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore), eFalse);
+    VK_CHECK(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
+    VK_CHECK(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFence), eFalse);
 
     return eTrue;
   }
@@ -1140,7 +615,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
-    niCheck(vmaCreateAllocator(&allocatorInfo, &_allocator) == VK_SUCCESS, eFalse);
+    VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
     return eTrue;
   }
 
@@ -1177,23 +652,19 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       vkDestroyDevice(_device, nullptr);
       _device = VK_NULL_HANDLE;
     }
-    if (_surface) {
-      vkDestroySurfaceKHR(_instance, _surface, nullptr);
-      _surface = VK_NULL_HANDLE;
-    }
     if (_instance) {
       vkDestroyInstance(_instance, nullptr);
       _instance = VK_NULL_HANDLE;
     }
   }
 
-  virtual tBool __stdcall Init(iOSWindow* apWnd, const achar* aAppName) {
+  virtual tBool __stdcall Init(const achar* aAppName) {
     osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),apWnd);
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_w);
     niCheck(_metalAPI.IsOK(),eFalse);
+
     niCheck(_CreateInstance(aAppName),eFalse);
     niCheck(_InitPhysicalDevice(),eFalse);
-    niCheck(_CreateSurface(),eFalse);
     niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
     niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
     niCheck(_CreateLogicalDevice(), eFalse);
@@ -1201,14 +672,13 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
     niCheck(_CreateSyncObjects(), eFalse);
     niCheck(_CreateAllocator(), eFalse);
 
-    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
-    niCheck(_currentFb.CreateFromMTKView(mtkView, _device), eFalse);
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
 
     return eTrue;
   }
 
   tBool PresentAndCommit() {
-    niCheck(vkEndCommandBuffer(_commandBuffer) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkEndCommandBuffer(_commandBuffer), eFalse);
 
     VkSubmitInfo submitInfo = {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -1219,23 +689,18 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .pCommandBuffers = &_commandBuffer
     };
 
-    niCheck(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence), eFalse);
 
-    id<CAMetalDrawable> drawable = [(__bridge MTKView*)_metalAPI->GetMTKView() currentDrawable];
-    [drawable present];
+    _metalAPI->DrawablePresent();
     return eTrue;
   }
 
   tBool BeginFrame() {
-    niCheck(vkWaitForFences(_device, 1, &_inFlightFence, VK_TRUE, UINT64_MAX) == VK_SUCCESS, eFalse);
-    niCheck(vkResetFences(_device, 1, &_inFlightFence) == VK_SUCCESS, eFalse);
-
-    MTKView* mtkView = (__bridge MTKView*)_metalAPI->GetMTKView();
-    MTLRenderPassDescriptor* passDesc = mtkView.currentRenderPassDescriptor;
-    niCheck(passDesc != nil, eFalse);
+    VK_CHECK(vkWaitForFences(_device, 1, &_inFlightFence, VK_TRUE, UINT64_MAX), eFalse);
+    VK_CHECK(vkResetFences(_device, 1, &_inFlightFence), eFalse);
 
     _currentFb.Destroy(_device);
-    niCheck(_currentFb.CreateFromMTKView(mtkView, _device), eFalse);
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
 
     vkResetCommandBuffer(_commandBuffer, 0);
 
@@ -1244,7 +709,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
     };
 
-    niCheck(vkBeginCommandBuffer(_commandBuffer, &beginInfo) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkBeginCommandBuffer(_commandBuffer, &beginInfo), eFalse);
     return eTrue;
   }
 
@@ -1252,6 +717,101 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
 
   virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
     switch (anMsg) {
+      case eOSWindowMessage_Close:
+        niDebugFmt((_A("eOSWindowMessage_Close: \n")));
+        _w->Invalidate();
+        break;
+      case eOSWindowMessage_SwitchIn:
+        niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
+        break;
+      case eOSWindowMessage_SwitchOut:
+        niDebugFmt((_A("eOSWindowMessage_SwitchOut: \n")));
+        break;
+      case eOSWindowMessage_Size:
+        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(_w->GetSize())));
+        break;
+      case eOSWindowMessage_Move:
+        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(_w->GetPosition())));
+        break;
+      case eOSWindowMessage_KeyDown:
+        niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        switch (a.mU32) {
+          case eKey_F:
+            _w->SetFullScreen(_w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
+            break;
+          case eKey_Z:
+            _w->SetCursorPosition(sVec2i::Zero());
+            break;
+          case eKey_X:
+            _w->SetCursorPosition(_w->GetClientSize()/2);
+            break;
+          case eKey_C:
+            _w->SetCursorPosition(_w->GetClientSize());
+            break;
+          case eKey_Q:
+            _w->SetCursor(eOSCursor_None);
+            break;
+          case eKey_W:
+            _w->SetCursor(eOSCursor_Arrow);
+            break;
+          case eKey_E:
+            _w->SetCursor(eOSCursor_Text);
+            break;
+          case eKey_K:
+            _w->SetCursorCapture(!_w->GetCursorCapture());
+            break;
+        }
+        break;
+      case eOSWindowMessage_KeyUp:
+        niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        break;
+      case eOSWindowMessage_KeyChar:
+        niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonDown:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonUp:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonUp: %d\n"),a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonDoubleClick:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
+        if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
+        }
+        else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
+        }
+        break;
+      case eOSWindowMessage_MouseWheel:
+        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
+        break;
+      case eOSWindowMessage_LostFocus: {
+        niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
+        break;
+      }
+      case eOSWindowMessage_SetFocus:
+        niDebugFmt((_A("eOSWindowMessage_SetFocus: \n")));
+        break;
+      case eOSWindowMessage_Drop:
+        niDebugFmt((_A("eOSWindowMessage_Drop: \n")));
+        break;
+
+      case eOSWindowMessage_RelativeMouseMove:
+#ifdef TRACE_MOUSE_MOVE
+        niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
+                    a.mV2L[0],a.mV2L[1]));
+#endif
+        break;
+
+      case eOSWindowMessage_MouseMove:
+#ifdef TRACE_MOUSE_MOVE
+        niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
+                    a.mV2L[0],a.mV2L[1],
+                    b.mV2L[0],b.mV2L[1],
+                    _w->GetContentsScale()));
+#endif
+        break;
       case eOSWindowMessage_Paint: {
         this->Draw();
         break;
@@ -1260,7 +820,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
   }
 };
 
-TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
+TEST_FIXTURE(FOSWindowVulkan,Clear) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 
@@ -1272,10 +832,9 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
     eOSWindowStyleFlags_Regular);
   CHECK(wnd.IsOK());
 
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
   struct sVulkanClear_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanClear_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
     VkClearValue _clearValue = {
       // r, g, b, a
       .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
@@ -1324,8 +883,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanClear) {
     };
   };
 
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 
   if (isInteractive) {
@@ -1350,14 +909,14 @@ struct sVulkanPipelineVertexPA {
       .codeSize = (size_t)triangle_vs_spv_DATA_SIZE,
       .pCode = (const uint32_t*)triangle_vs_spv_DATA
     };
-    niCheck(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader), eFalse);
 
     VkShaderModuleCreateInfo fragInfo = {
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .codeSize = (size_t)triangle_ps_spv_DATA_SIZE,
       .pCode = (const uint32_t*)triangle_ps_spv_DATA
     };
-    niCheck(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader), eFalse);
     return eTrue;
   }
 
@@ -1367,7 +926,7 @@ struct sVulkanPipelineVertexPA {
       .setLayoutCount = 0,
       .pushConstantRangeCount = 0
     };
-    niCheck(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
 
     VkVertexInputBindingDescription bindingDesc = {
       .binding = 0,
@@ -1478,7 +1037,7 @@ struct sVulkanPipelineVertexPA {
       .pNext = &renderingInfo
     };
 
-    niCheck(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
     return eTrue;
   }
 
@@ -1516,14 +1075,14 @@ struct sVulkanPipelineVertexPAT1 {
       .codeSize = (size_t)texture_vs_spv_DATA_SIZE,
       .pCode = (const uint32_t*)texture_vs_spv_DATA
     };
-    niCheck(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateShaderModule(avkDevice, &vertInfo, nullptr, &_vertexShader), eFalse);
 
     VkShaderModuleCreateInfo fragInfo = {
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .codeSize = (size_t)texture_ps_spv_DATA_SIZE,
       .pCode = (const uint32_t*)texture_ps_spv_DATA
     };
-    niCheck(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateShaderModule(avkDevice, &fragInfo, nullptr, &_pixelShader), eFalse);
     return eTrue;
   }
 
@@ -1535,7 +1094,7 @@ struct sVulkanPipelineVertexPAT1 {
       .pushConstantRangeCount = 0,
       .pPushConstantRanges = nullptr
     };
-    niCheck(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
 
     VkVertexInputBindingDescription bindingDesc = {
       .binding = 0,
@@ -1646,7 +1205,7 @@ struct sVulkanPipelineVertexPAT1 {
       .pNext = &renderingInfo
     };
 
-    niCheck(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
     return eTrue;
   }
 
@@ -1672,7 +1231,7 @@ struct sVulkanPipelineVertexPAT1 {
   }
 };
 
-TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
+TEST_FIXTURE(FOSWindowVulkan,Triangle) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 
@@ -1684,42 +1243,43 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
     eOSWindowStyleFlags_Regular);
   CHECK(wnd.IsOK());
 
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
   struct sVulkanTriangle_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanTriangle_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
     VkClearValue _clearValue = {
       // r, g, b, a
       .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
     };
     tF64 _clearTimer = 0.0f;
-    Ptr<sVulkanVertexArray> _va;
+    Ptr<sVulkanBuffer> _vaBuffer;
     sVulkanPipelineVertexPA _pipeline;
 
     tBool _CreateArrays() {
-      _va = niNew sVulkanVertexArray(
-        as_nn(this), 3, sVertexPA::eFVF, eArrayUsage_Static);
-      niCheckIsOK(_va, eFalse);
+      cFVFDescription fvfDesc(sVertexPA::eFVF);
+      _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+      niCheck(
+        _vaBuffer->Create(3 * fvfDesc.GetStride()),
+        eFalse);
       {
-        sVertexPA* verts = (sVertexPA*)_va->Lock(0, 3, eLock_Discard);
+        sVertexPA* verts = (sVertexPA*)_vaBuffer->Lock(0, 3, eLock_Discard);
         niCheck(verts != nullptr, eFalse);
         verts[0] = {{0.0f, -0.5f, 0.0f}, 0xFF0000FF}; // Red
         verts[1] = {{0.5f, 0.5f, 0.0f}, 0xFF00FF00};  // Green
         verts[2] = {{-0.5f, 0.5f, 0.0f}, 0xFFFF0000}; // Blue
-        _va->Unlock();
+        _vaBuffer->Unlock();
       }
       return eTrue;
     }
 
-    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+    tBool Init(const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_pipeline.Init(_device), eFalse);
       return eTrue;
     }
 
     void Cleanup() override {
-      _va = nullptr;
+      _vaBuffer = nullptr;
       _pipeline.Cleanup(_device);
       sVulkanWindowSink::Cleanup();
     }
@@ -1770,7 +1330,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
       vkCmdBeginRendering(_commandBuffer, &renderingInfo);
       {
         vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
-        VkBuffer vertexBuffers[] = {_va->_buffer._vkBuffer};
+        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdDraw(_commandBuffer, 3, 1, 0, 0);
@@ -1781,8 +1341,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
     };
   };
 
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 
   if (isInteractive) {
@@ -1795,7 +1355,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTriangle) {
   }
 }
 
-TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
+TEST_FIXTURE(FOSWindowVulkan,Square) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 
@@ -1807,53 +1367,51 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
     eOSWindowStyleFlags_Regular);
   CHECK(wnd.IsOK());
 
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
   struct sVulkanSquare_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanSquare_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
     VkClearValue _clearValue = {
       // r, g, b, a
       .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
     };
     tF64 _clearTimer = 0.0f;
-    Ptr<sVulkanVertexArray> _va;
-    Ptr<sVulkanIndexArray> _ia;
+    Ptr<sVulkanBuffer> _vaBuffer;
+    Ptr<sVulkanBuffer> _iaBuffer;
     sVulkanPipelineVertexPA _pipeline;
 
     tBool _CreateArrays() {
       {
-        _va = niNew sVulkanVertexArray(
-          as_nn(this), 4, sVertexPA::eFVF, eArrayUsage_Static);
-        niCheckIsOK(_va, eFalse);
-        sVertexPA* pVerts = (sVertexPA*)_va->Lock(0, 4, eLock_Discard);
+        cFVFDescription fvfDesc(sVertexPA::eFVF);
+        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+        niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
+        sVertexPA* pVerts = (sVertexPA*)_vaBuffer->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
         pVerts[1] = {{ 0.5f, -0.5f, 0.0f}, 0xFF00FF00}; // Bottom Right - Green
         pVerts[2] = {{ 0.5f,  0.5f, 0.0f}, 0xFFFF0000}; // Top Right - Blue
         pVerts[3] = {{-0.5f,  0.5f, 0.0f}, 0xFFFFFFFF}; // Top Left - White
-        _va->Unlock();
+        _vaBuffer->Unlock();
       }
       {
-        _ia = niNew sVulkanIndexArray(
-          as_nn(this), eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
-        niCheckIsOK(_ia, eFalse);
-        tU32* pIndices = (tU32*)_ia->Lock(0, 6, eLock_Discard);
+        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
+        niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
+        tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
         pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
-        _ia->Unlock();
+        _iaBuffer->Unlock();
       }
       return eTrue;
     }
 
-    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+    tBool Init(const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_pipeline.Init(_device), eFalse);
       niCheck(_CreateArrays(), eFalse);
       return eTrue;
     }
 
     void Cleanup() override {
-      _va = nullptr;
-      _ia = nullptr;
+      _vaBuffer = nullptr;
+      _iaBuffer = nullptr;
       _pipeline.Cleanup(_device);
       sVulkanWindowSink::Cleanup();
     }
@@ -1904,12 +1462,12 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
       vkCmdBeginRendering(_commandBuffer, &renderingInfo);
       {
         vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
-        VkBuffer vertexBuffers[] = {_va->_buffer._vkBuffer};
+        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
 
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(_commandBuffer, _ia->_buffer._vkBuffer, 0, _ia->_indexType);
-        vkCmdDrawIndexed(_commandBuffer, _ia->GetNumIndices(), 1, 0, 0, 0);
+        vkCmdBindIndexBuffer(_commandBuffer, _iaBuffer->_vkBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(_commandBuffer, 6, 1, 0, 0, 0);
       }
       vkCmdEndRendering(_commandBuffer);
 
@@ -1917,8 +1475,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanSquare) {
     };
   };
 
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanSquare_VulkanWindowSink();
-  CHECK_RETURN_IF_FAILED(metalSink->Init(wnd, m_testName));
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanSquare_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
   wnd->GetMessageHandlers()->AddSink(metalSink);
 
   if (isInteractive) {
@@ -2034,8 +1592,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .usage = VMA_MEMORY_USAGE_GPU_ONLY
     };
 
-    niCheck(vmaCreateImage(_driver->_allocator, &imageInfo, &allocInfo,
-                           &_vkImage, &_vmaAllocation, nullptr) == VK_SUCCESS, eFalse);
+    VK_CHECK(vmaCreateImage(
+      _driver->_allocator, &imageInfo, &allocInfo,
+      &_vkImage, &_vmaAllocation, nullptr), eFalse);
 
     // Staging buffer
     VkBuffer vkStagingBuffer;
@@ -2051,12 +1610,13 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
     };
 
-    niCheck(vmaCreateBuffer(_driver->_allocator, &bufferInfo, &stagingAllocInfo,
-                            &vkStagingBuffer, &vmaStagingAllocation, nullptr) == VK_SUCCESS, eFalse);
+    VK_CHECK(vmaCreateBuffer(
+      _driver->_allocator, &bufferInfo, &stagingAllocInfo,
+      &vkStagingBuffer, &vmaStagingAllocation, nullptr), eFalse);
 
     // Copy data to staging
     void* data;
-    vmaMapMemory(_driver->_allocator, vmaStagingAllocation, &data);
+    VK_CHECK(vmaMapMemory(_driver->_allocator, vmaStagingAllocation, &data), eFalse);
     memcpy(data, apData, _width * _height * sizeof(tU32));
     vmaUnmapMemory(_driver->_allocator, vmaStagingAllocation);
 
@@ -2135,7 +1695,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       }
     };
 
-    niCheck(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
 
     // Create sampler
     VkSamplerCreateInfo samplerInfo = {
@@ -2157,13 +1717,13 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .unnormalizedCoordinates = VK_FALSE
     };
 
-    niCheck(vkCreateSampler(_driver->_device, &samplerInfo, nullptr, &_vkSampler) == VK_SUCCESS, eFalse);
+    VK_CHECK(vkCreateSampler(_driver->_device, &samplerInfo, nullptr, &_vkSampler), eFalse);
 
     return eTrue;
   }
 };
 
-TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
+TEST_FIXTURE(FOSWindowVulkan,Texture) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
 
@@ -2175,17 +1735,16 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
     eOSWindowStyleFlags_Regular);
   CHECK(wnd.IsOK());
 
-  Ptr<sTestOSXWindowSink> sink = niNew sTestOSXWindowSink(wnd);
-  wnd->GetMessageHandlers()->AddSink(sink.ptr());
-
   struct sVulkanTexture_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanTexture_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
     VkClearValue _clearValue = {
       // r, g, b, a
       .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
     };
     tF64 _clearTimer = 0.0f;
-    Ptr<sVulkanVertexArray> _va;
-    Ptr<sVulkanIndexArray> _ia;
+    Ptr<sVulkanBuffer> _vaBuffer;
+    Ptr<sVulkanBuffer> _iaBuffer;
     sVulkanPipelineVertexPAT1 _pipeline;
     Ptr<sVulkanTexture> _texture;
     VkDescriptorSetLayout _vkDescSetLayout = VK_NULL_HANDLE;
@@ -2194,24 +1753,23 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
 
     tBool _CreateArrays() {
       {
-        _va = niNew sVulkanVertexArray(
-          as_nn(this), 4, sVertexPAT1::eFVF, eArrayUsage_Static);
-        niCheckIsOK(_va, eFalse);
-        sVertexPAT1* pVerts = (sVertexPAT1*)_va->Lock(0, 4, eLock_Discard);
+        cFVFDescription fvfDesc(sVertexPAT1::eFVF);
+        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+        niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
+        sVertexPAT1* pVerts = (sVertexPAT1*)_vaBuffer->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFFFFFFFF, {0.0f, 0.0f}}; // TL (White)
         pVerts[1] = {{ 0.5f, -0.5f, 0.0f}, 0xFFFF0000, {1.0f, 0.0f}}; // TR (Red)
         pVerts[2] = {{ 0.5f,  0.5f, 0.0f}, 0xFF00FF00, {1.0f, 1.0f}}; // BR (Green)
         pVerts[3] = {{-0.5f,  0.5f, 0.0f}, 0xFF0000FF, {0.0f, 1.0f}}; // BL (Blue)
-        _va->Unlock();
+        _vaBuffer->Unlock();
       }
       {
-        _ia = niNew sVulkanIndexArray(
-          as_nn(this), eGraphicsPrimitiveType_TriangleList, 6, eArrayUsage_Static);
-        niCheckIsOK(_ia, eFalse);
-        tU32* pIndices = (tU32*)_ia->Lock(0, 6, eLock_Discard);
+        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
+        niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
+        tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
         pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
-        _ia->Unlock();
+        _iaBuffer->Unlock();
       }
       return eTrue;
     }
@@ -2265,7 +1823,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
         .pBindings = bindings
       };
 
-      niCheck(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_vkDescSetLayout) == VK_SUCCESS, eFalse);
+      VK_CHECK(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_vkDescSetLayout), eFalse);
 
       // Update pipeline layout creation to use descriptor set
       VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
@@ -2273,7 +1831,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
         .setLayoutCount = 1,
         .pSetLayouts = &_vkDescSetLayout
       };
-      niCheck(vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &_pipeline._vkPipelineLayout) == VK_SUCCESS, eFalse);
+      VK_CHECK(vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &_pipeline._vkPipelineLayout), eFalse);
 
       return eTrue;
     }
@@ -2297,7 +1855,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
         .pPoolSizes = poolSizes
       };
 
-      niCheck(vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_vkDescPool) == VK_SUCCESS, eFalse);
+      VK_CHECK(vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_vkDescPool), eFalse);
 
       VkDescriptorSetAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -2306,7 +1864,7 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
         .pSetLayouts = &_vkDescSetLayout
       };
 
-      niCheck(vkAllocateDescriptorSets(_device, &allocInfo, &_vkDescSet) == VK_SUCCESS, eFalse);
+      VK_CHECK(vkAllocateDescriptorSets(_device, &allocInfo, &_vkDescSet), eFalse);
 
       // Update descriptor with texture
       VkDescriptorImageInfo imageInfo = {
@@ -2341,8 +1899,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
       return eTrue;
     }
 
-    tBool Init(iOSWindow* apWnd, const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(apWnd,aAppName), eFalse);
+    tBool Init(const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateDescriptorSetLayout(), eFalse);
       niCheck(_pipeline.Init(_device,_vkDescSetLayout), eFalse);
       niCheck(_CreateArrays(), eFalse);
@@ -2353,8 +1911,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
 
     void Cleanup() override {
       _texture = nullptr;
-      _va = nullptr;
-      _ia = nullptr;
+      _vaBuffer = nullptr;
+      _iaBuffer = nullptr;
       _pipeline.Cleanup(_device);
       sVulkanWindowSink::Cleanup();
     }
@@ -2412,12 +1970,12 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
           0, nullptr);
 
         vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
-        VkBuffer vertexBuffers[] = {_va->_buffer._vkBuffer};
+        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
 
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(_commandBuffer, _ia->_buffer._vkBuffer, 0, _ia->_indexType);
-        vkCmdDrawIndexed(_commandBuffer, _ia->GetNumIndices(), 1, 0, 0, 0);
+        vkCmdBindIndexBuffer(_commandBuffer, _iaBuffer->_vkBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(_commandBuffer, 6, 1, 0, 0, 0);
       }
       vkCmdEndRendering(_commandBuffer);
 
@@ -2425,8 +1983,8 @@ TEST_FIXTURE(FOSWindowOSX,VulkanTexture) {
     };
   };
 
-  Ptr<sVulkanWindowSink> vulkanSink = niNew sVulkanTexture_VulkanWindowSink();
-  CHECK_RETURN_IF_FAILED(vulkanSink->Init(wnd, m_testName));
+  Ptr<sVulkanWindowSink> vulkanSink = niNew sVulkanTexture_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(vulkanSink->Init(m_testName));
   wnd->GetMessageHandlers()->AddSink(vulkanSink);
 
   if (isInteractive) {

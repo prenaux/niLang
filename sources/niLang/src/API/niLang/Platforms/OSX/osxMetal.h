@@ -5,6 +5,12 @@
 // SPDX-License-Identifier: MIT
 #include "../../IOSWindow.h"
 
+#ifndef VULKAN_H_
+struct VkDevice_T;
+struct VkImage_T;
+struct VkAllocationCallbacks;
+#endif
+
 namespace ni {
 /** \addtogroup niLang
  * @{
@@ -20,6 +26,8 @@ struct iOSXMetalAPI : public iOSGraphicsAPI {
   virtual void* __stdcall GetMTKView() const = 0;
   virtual void* __stdcall NewRenderCommandEncoder(const double4& aClearColor, tF32 aClearDepth, tU32 aClearStencil) = 0;
   virtual tBool __stdcall PresentAndCommit(iRunnable* apOnCompleted) = 0;
+  virtual sVec2i __stdcall GetViewSize() const = 0;
+  virtual tBool __stdcall DrawablePresent() = 0;
 };
 
 niExportFunc(tBool) osxMetalSetDefaultDevice();

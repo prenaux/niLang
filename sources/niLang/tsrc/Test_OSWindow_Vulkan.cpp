@@ -67,22 +67,14 @@ static const VkIndexType _ToVkIndexType[] = {
 };
 niCAssert(niCountOf(_ToVkIndexType) == eGpuIndexType_Last);
 
-static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType) {
-  switch (aType) {
-    case eGraphicsPrimitiveType_PointList:
-      return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-    case eGraphicsPrimitiveType_LineList:
-      return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-    case eGraphicsPrimitiveType_LineStrip:
-      return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-    case eGraphicsPrimitiveType_TriangleList:
-      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    case eGraphicsPrimitiveType_TriangleStrip:
-      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-    default:
-      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-  }
-}
+static const VkPrimitiveTopology _ToVkPrimitiveTopology[] = {
+  VK_PRIMITIVE_TOPOLOGY_POINT_LIST,       // eGraphicsPrimitiveType_PointList
+  VK_PRIMITIVE_TOPOLOGY_LINE_LIST,        // eGraphicsPrimitiveType_LineList
+  VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,       // eGraphicsPrimitiveType_LineStrip
+  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,    // eGraphicsPrimitiveType_TriangleList
+  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,   // eGraphicsPrimitiveType_TriangleStrip
+};
+niCAssert(niCountOf(_ToVkPrimitiveTopology) == eGraphicsPrimitiveType_Last);
 
 static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
@@ -576,6 +568,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       VK_DYNAMIC_STATE_SCISSOR,
       VK_DYNAMIC_STATE_BLEND_CONSTANTS,
       VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+      VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
     };
     VkPipelineDynamicStateCreateInfo dynamicState = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -992,11 +985,15 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
+    vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDrawIndexed(_cmdBuffer, anNumIndices, 1, anFirstIndex, 0, 0);
     return eTrue;
   }
 
   virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl {
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
+    vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
     return eTrue;
   }

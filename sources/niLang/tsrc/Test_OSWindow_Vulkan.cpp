@@ -33,6 +33,8 @@ namespace ni {
 struct FOSWindowVulkan {
 };
 
+static const tU32 knMaxFramesInFlight = 2;
+
 #define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
 
 static const VkBlendFactor _ToVkBlendFactor[] = {
@@ -490,6 +492,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _vkDescSetLayout = VK_NULL_HANDLE;
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
@@ -509,6 +512,10 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
   {}
 
   ~sVulkanPipeline() {
+    if (_vkDescSetLayout) {
+      vkDestroyDescriptorSetLayout(_driver->_device, _vkDescSetLayout, nullptr);
+      _vkDescSetLayout = VK_NULL_HANDLE;
+    }
     if (_vkPipeline) {
       vkDestroyPipeline(_driver->_device, _vkPipeline, nullptr);
       _vkPipeline = VK_NULL_HANDLE;
@@ -519,7 +526,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     }
   }
 
-  tBool _CreateVulkanPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc, VkDescriptorSetLayout avkDescSetLayout)
+  tBool _CreateVulkanPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc, ain<astl::vector<VkDescriptorSetLayoutBinding>> aBindings)
   {
     niCheckIsOK(apDesc,eFalse);
     _hspName = ahspName;
@@ -527,17 +534,30 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
 
     niLet vkDevice = _driver->_device;
 
-    VkPipelineLayoutCreateInfo layoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .setLayoutCount = 0,
-      .pushConstantRangeCount = 0,
-      .pPushConstantRanges = nullptr
-    };
-    if (avkDescSetLayout) {
-      layoutInfo.setLayoutCount = 1;
-      layoutInfo.pSetLayouts = &avkDescSetLayout;
+    // Descriptor set layout
+    if (!aBindings.empty()) {
+      VkDescriptorSetLayoutCreateInfo layoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .bindingCount = (tU32)aBindings.size(),
+        .pBindings = aBindings.data()
+      };
+      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &layoutInfo, nullptr, &_vkDescSetLayout), eFalse);
     }
-    VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
+
+    // Pipeline layout
+    {
+      VkPipelineLayoutCreateInfo layoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount = 0,
+        .pushConstantRangeCount = 0,
+        .pPushConstantRanges = nullptr
+      };
+      if (_vkDescSetLayout) {
+        layoutInfo.setLayoutCount = 1;
+        layoutInfo.pSetLayouts = &_vkDescSetLayout;
+      }
+      VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
+    }
 
     // Vertex input
     const cFVFDescription fvfDesc(_desc->GetFVF());
@@ -696,12 +716,12 @@ static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
   ain_nn<sVulkanDriver> aDriver,
   iHString* ahspName,
   const iGpuPipelineDesc* apDesc,
-  VkDescriptorSetLayout avkDescSetLayout)
+  ain<astl::vector<VkDescriptorSetLayoutBinding>> aBindings)
 {
   niCheckIsOK(apDesc,nullptr);
   NN<sVulkanPipeline> pipeline = MakeNN<sVulkanPipeline>(aDriver);
   niCheck(
-    pipeline->_CreateVulkanPipeline(ahspName,apDesc,avkDescSetLayout),
+    pipeline->_CreateVulkanPipeline(ahspName,apDesc,aBindings),
     nullptr);
   return pipeline;
 }
@@ -733,10 +753,12 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTriangle(ain_nn<sVulkanDriver> 
     aDriver,
     _H("triangle_pipeline"),
     pipelineDesc,
-    nullptr);
+    {});
 }
 
-static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(ain_nn<sVulkanDriver> aDriver, VkDescriptorSetLayout avkDescSetLayout) {
+static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(
+  ain_nn<sVulkanDriver> aDriver,
+  ain<astl::vector<VkDescriptorSetLayoutBinding>> aBindings) {
   NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
     aDriver,
     _H("texture_vs_spv"),
@@ -763,7 +785,7 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(ain_nn<sVulkanDriver> a
     aDriver,
     _H("texture_pipeline"),
     pipelineDesc,
-    avkDescSetLayout);
+    aBindings);
 }
 
 struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
@@ -1915,7 +1937,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     Ptr<sVulkanBuffer> _iaBuffer;
     Ptr<sVulkanPipeline> _pipeline;
     Ptr<sVulkanTexture> _texture;
-    VkDescriptorSetLayout _vkDescSetLayout = VK_NULL_HANDLE;
     VkDescriptorPool _vkDescPool = VK_NULL_HANDLE;
     VkDescriptorSet _vkDescSet = VK_NULL_HANDLE;
 
@@ -1969,33 +1990,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
       return eTrue;
     }
 
-    tBool _CreateDescriptorSetLayout() {
-      VkDescriptorSetLayoutBinding bindings[2] = {
-        {  // Texture
-          .binding = 0,
-          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-          .descriptorCount = 1,
-          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
-        },
-        {  // Sampler
-          .binding = 1,
-          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-          .descriptorCount = 1,
-          .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
-        }
-      };
-
-      VkDescriptorSetLayoutCreateInfo layoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = niCountOf(bindings),
-        .pBindings = bindings
-      };
-
-      VK_CHECK(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_vkDescSetLayout), eFalse);
-
-      return eTrue;
-    }
-
     tBool _CreateDescriptorPool() {
       VkDescriptorPoolSize poolSizes[2] = {
         {
@@ -2021,7 +2015,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
         .descriptorPool = _vkDescPool,
         .descriptorSetCount = 1,
-        .pSetLayouts = &_vkDescSetLayout
+        .pSetLayouts = &_pipeline->_vkDescSetLayout
       };
 
       VK_CHECK(vkAllocateDescriptorSets(_device, &allocInfo, &_vkDescSet), eFalse);
@@ -2062,8 +2056,26 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
-      niCheck(_CreateDescriptorSetLayout(), eFalse);
-      _pipeline = _CreateVulkanPipelineTexture(as_nn(this),_vkDescSetLayout);
+
+      {
+        astl::vector<VkDescriptorSetLayoutBinding> bindings;
+        // Texture
+        bindings.emplace_back(VkDescriptorSetLayoutBinding {
+            .binding = 0,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+          });
+        // Sampler
+        bindings.emplace_back(VkDescriptorSetLayoutBinding {
+            .binding = 1,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+          });
+        _pipeline = _CreateVulkanPipelineTexture(as_nn(this),bindings);
+      }
+
       niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_CreateTextures(), eFalse);

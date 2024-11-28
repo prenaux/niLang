@@ -61,6 +61,12 @@ static const VkBlendOp _ToVkBlendOp[] = {
 };
 niCAssert(niCountOf(_ToVkBlendOp) == eGpuBlendOp_Last);
 
+static const VkIndexType _ToVkIndexType[] = {
+  VK_INDEX_TYPE_UINT16,
+  VK_INDEX_TYPE_UINT32,
+};
+niCAssert(niCountOf(_ToVkIndexType) == eGpuIndexType_Last);
+
 static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType) {
   switch (aType) {
     case eGraphicsPrimitiveType_PointList:
@@ -394,7 +400,6 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   }
 };
 
-
 struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
   nn<sVulkanDriver> _driver;
   const eGpuFunctionType _functionType;
@@ -485,541 +490,6 @@ static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
     return nullptr;
   }
   return func;
-}
-
-struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
-  const tU32 _threadId;
-  iOSWindow* _w;
-  Ptr<iOSXMetalAPI> _metalAPI;
-  VkInstance _instance = VK_NULL_HANDLE;
-  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
-  typedef astl::map<cString,tU32> tVkExtensionsMap;
-  tVkExtensionsMap _extensions;
-  tBool _enableValidationLayers = eTrue;
-  typedef astl::set<cString> tVkInstanceLayersSet;
-  tVkInstanceLayersSet _instanceLayers;
-  tU32 _queueFamilyIndex = 0;
-  VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
-  sVulkanFramebuffer _currentFb;
-  VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
-  VkFence _inFlightFence = VK_NULL_HANDLE;
-
-  sVulkanWindowSink(iOSWindow* aWindow)
-      : _threadId(ni::ThreadGetCurrentThreadID())
-      , _w(aWindow)
-  {
-  }
-
-  ~sVulkanWindowSink() {
-    this->Cleanup();
-  }
-
-  tU64 __stdcall GetThreadID() const {
-    return _threadId;
-  }
-
-  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-    VkDebugUtilsMessageTypeFlagsEXT type,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* /*pUserData*/) {
-
-    switch (severity) {
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      default:
-        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-    }
-    return VK_FALSE;
-  }
-
-  tBool _CreateInstance(const achar* aAppName) {
-    {
-      tU32 layerCount;
-      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-      astl::vector<VkLayerProperties> availableLayers(layerCount);
-      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-      for (const auto& layer : availableLayers) {
-        _instanceLayers.insert(layer.layerName);
-      }
-      {
-        cString o;
-        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
-          if (it != _instanceLayers.begin())
-            o << ", ";
-          o << *it;
-        }
-        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
-      }
-    }
-
-    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
-    astl::vector<const char*> layers;
-    if (_enableValidationLayers) {
-      // NOTE: Statically linking directly MoltenVK we cannot use the
-      // validation layer.
-      const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
-      if (!astl::contains(_instanceLayers,validationLayerName)) {
-        _enableValidationLayers = eFalse;
-        niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
-                        validationLayerName));
-      }
-      else {
-        layers.push_back(validationLayerName);
-      }
-    }
-
-    VkApplicationInfo appInfo = {
-      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-      .pNext = nullptr,
-      .pApplicationName = aAppName,
-      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pEngineName = "niVlk",
-      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .apiVersion = VK_API_VERSION_1_0
-    };
-
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
-      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
-                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
-                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
-      .pfnUserCallback = _DebugCallback
-    };
-
-    VkInstanceCreateInfo createInfo = {
-      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-      .pNext = nullptr,
-      .pApplicationInfo = &appInfo,
-      .enabledLayerCount = (tU32)layers.size(),
-      .ppEnabledLayerNames = layers.data(),
-      .enabledExtensionCount = (tU32)extensions.size(),
-      .ppEnabledExtensionNames = extensions.data()
-    };
-    createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
-
-    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
-    return eTrue;
-  }
-
-  tBool _InitPhysicalDevice() {
-    tU32 deviceCount = 0;
-    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
-    niCheck(deviceCount > 0, eFalse);
-
-    vkEnumeratePhysicalDevices(_instance, &deviceCount, &_physicalDevice);
-
-    VkPhysicalDeviceProperties props;
-    vkGetPhysicalDeviceProperties(_physicalDevice, &props);
-    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
-    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.driverVersion),
-                     VK_VERSION_MINOR(props.driverVersion),
-                     VK_VERSION_PATCH(props.driverVersion)));
-    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.apiVersion),
-                     VK_VERSION_MINOR(props.apiVersion),
-                     VK_VERSION_PATCH(props.apiVersion)));
-
-    // Get extensions
-    {
-      tU32 extensionCount = 0;
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
-      astl::vector<VkExtensionProperties> extensions(extensionCount);
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
-      for (const auto& extension : extensions) {
-        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
-      }
-      {
-        cString o;
-        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
-          if (it != _extensions.begin())
-            o << ", ";
-          o << it->first << "=" << it->second;
-        }
-        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
-      }
-    }
-
-    return eTrue;
-  }
-
-  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
-    tU32 queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
-    astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
-
-    niLog(Info,"Vulkan Queue Families:");
-    for (tU32 i = 0; i < queueFamilyCount; i++) {
-      niLog(Info,niFmt("  Family %d:", i));
-      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
-      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
-    }
-
-    for (tU32 i = 0; i < queueFamilyCount; i++) {
-      if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-        aQueueFamilyIndex = i;
-        return eTrue;
-      }
-    }
-
-    return eFalse;
-  }
-
-  tBool _CreateLogicalDevice() {
-    tF32 queuePriority = 1.0f;
-    VkDeviceQueueCreateInfo queueCreateInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-      .queueFamilyIndex = _queueFamilyIndex,
-      .queueCount = 1,
-      .pQueuePriorities = &queuePriority
-    };
-
-    VkDeviceCreateInfo createInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-      .queueCreateInfoCount = 1,
-      .pQueueCreateInfos = &queueCreateInfo,
-      .enabledExtensionCount = 0,
-      .enabledLayerCount = 0
-    };
-
-    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
-    vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
-    return eTrue;
-  }
-
-  tBool _CreateCommandPool() {
-    VkCommandPoolCreateInfo poolInfo = {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-      .queueFamilyIndex = _queueFamilyIndex,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
-    };
-
-    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
-
-    VkCommandBufferAllocateInfo allocInfo = {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-      .commandPool = _commandPool,
-      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = 1
-    };
-
-    VK_CHECK(vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer),eFalse);
-    return eTrue;
-  }
-
-  tBool _CreateSyncObjects() {
-    VkSemaphoreCreateInfo semaphoreInfo = {
-      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
-    };
-
-    VkFenceCreateInfo fenceInfo = {
-      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-      .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
-    };
-
-    VK_CHECK(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
-    VK_CHECK(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFence), eFalse);
-
-    return eTrue;
-  }
-
-  tBool _CreateAllocator() {
-    VmaAllocatorCreateInfo allocatorInfo = {};
-    allocatorInfo.physicalDevice = _physicalDevice;
-    allocatorInfo.device = _device;
-    allocatorInfo.instance = _instance;
-    VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
-    return eTrue;
-  }
-
-  virtual void Cleanup() {
-    if (_allocator != nullptr) {
-      vmaDestroyAllocator(_allocator);
-      _allocator = nullptr;
-    }
-
-    if (_inFlightFence) {
-      vkDestroyFence(_device, _inFlightFence, nullptr);
-      _inFlightFence = VK_NULL_HANDLE;
-    }
-    if (_renderFinishedSemaphore) {
-      vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
-      _renderFinishedSemaphore = VK_NULL_HANDLE;
-    }
-
-    _currentFb.Destroy(_device);
-
-    if (_commandBuffer) {
-      vkFreeCommandBuffers(_device, _commandPool, 1, &_commandBuffer);
-      _commandBuffer = VK_NULL_HANDLE;
-    }
-    if (_commandPool) {
-      vkDestroyCommandPool(_device, _commandPool, nullptr);
-      _commandPool = VK_NULL_HANDLE;
-    }
-    if (_device) {
-      vkDestroyDevice(_device, nullptr);
-      _device = VK_NULL_HANDLE;
-    }
-    if (_instance) {
-      vkDestroyInstance(_instance, nullptr);
-      _instance = VK_NULL_HANDLE;
-    }
-  }
-
-  virtual tBool __stdcall Init(const achar* aAppName) {
-    osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_w);
-    niCheck(_metalAPI.IsOK(),eFalse);
-
-    niCheck(_CreateInstance(aAppName),eFalse);
-    niCheck(_InitPhysicalDevice(),eFalse);
-    niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
-    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
-    niCheck(_CreateLogicalDevice(), eFalse);
-    niCheck(_CreateCommandPool(), eFalse);
-    niCheck(_CreateSyncObjects(), eFalse);
-    niCheck(_CreateAllocator(), eFalse);
-
-    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
-
-    return eTrue;
-  }
-
-  tBool PresentAndCommit() {
-    VK_CHECK(vkEndCommandBuffer(_commandBuffer), eFalse);
-
-    VkSubmitInfo submitInfo = {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .waitSemaphoreCount = 0,
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &_renderFinishedSemaphore,
-      .commandBufferCount = 1,
-      .pCommandBuffers = &_commandBuffer
-    };
-
-    VK_CHECK(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence), eFalse);
-
-    _metalAPI->DrawablePresent();
-    return eTrue;
-  }
-
-  tBool BeginFrame() {
-    VK_CHECK(vkWaitForFences(_device, 1, &_inFlightFence, VK_TRUE, UINT64_MAX), eFalse);
-    VK_CHECK(vkResetFences(_device, 1, &_inFlightFence), eFalse);
-
-    _currentFb.Destroy(_device);
-    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
-
-    vkResetCommandBuffer(_commandBuffer, 0);
-
-    VkCommandBufferBeginInfo beginInfo = {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-      .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-    };
-
-    VK_CHECK(vkBeginCommandBuffer(_commandBuffer, &beginInfo), eFalse);
-    return eTrue;
-  }
-
-  virtual void Draw() = 0;
-
-  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
-    switch (anMsg) {
-      case eOSWindowMessage_Close:
-        niDebugFmt((_A("eOSWindowMessage_Close: \n")));
-        _w->Invalidate();
-        break;
-      case eOSWindowMessage_SwitchIn:
-        niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
-        break;
-      case eOSWindowMessage_SwitchOut:
-        niDebugFmt((_A("eOSWindowMessage_SwitchOut: \n")));
-        break;
-      case eOSWindowMessage_Size:
-        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(_w->GetSize())));
-        break;
-      case eOSWindowMessage_Move:
-        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(_w->GetPosition())));
-        break;
-      case eOSWindowMessage_KeyDown:
-        niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
-        switch (a.mU32) {
-          case eKey_F:
-            _w->SetFullScreen(_w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
-            break;
-          case eKey_Z:
-            _w->SetCursorPosition(sVec2i::Zero());
-            break;
-          case eKey_X:
-            _w->SetCursorPosition(_w->GetClientSize()/2);
-            break;
-          case eKey_C:
-            _w->SetCursorPosition(_w->GetClientSize());
-            break;
-          case eKey_Q:
-            _w->SetCursor(eOSCursor_None);
-            break;
-          case eKey_W:
-            _w->SetCursor(eOSCursor_Arrow);
-            break;
-          case eKey_E:
-            _w->SetCursor(eOSCursor_Text);
-            break;
-          case eKey_K:
-            _w->SetCursorCapture(!_w->GetCursorCapture());
-            break;
-        }
-        break;
-      case eOSWindowMessage_KeyUp:
-        niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
-        break;
-      case eOSWindowMessage_KeyChar:
-        niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonDown:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonUp:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonUp: %d\n"),a.mU32));
-        break;
-      case eOSWindowMessage_MouseButtonDoubleClick:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
-        if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
-          //                     _w->SetFullScreen(!_w->GetFullScreen());
-        }
-        else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
-          //                     _w->SetFullScreen(!_w->GetFullScreen());
-        }
-        break;
-      case eOSWindowMessage_MouseWheel:
-        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
-        break;
-      case eOSWindowMessage_LostFocus: {
-        niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
-        break;
-      }
-      case eOSWindowMessage_SetFocus:
-        niDebugFmt((_A("eOSWindowMessage_SetFocus: \n")));
-        break;
-      case eOSWindowMessage_Drop:
-        niDebugFmt((_A("eOSWindowMessage_Drop: \n")));
-        break;
-
-      case eOSWindowMessage_RelativeMouseMove:
-#ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
-                    a.mV2L[0],a.mV2L[1]));
-#endif
-        break;
-
-      case eOSWindowMessage_MouseMove:
-#ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
-                    a.mV2L[0],a.mV2L[1],
-                    b.mV2L[0],b.mV2L[1],
-                    _w->GetContentsScale()));
-#endif
-        break;
-      case eOSWindowMessage_Paint: {
-        this->Draw();
-        break;
-      };
-    }
-  }
-};
-
-TEST_FIXTURE(FOSWindowVulkan,Clear) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
-
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK(wnd.IsOK());
-
-  struct sVulkanClear_VulkanWindowSink : public sVulkanWindowSink {
-    sVulkanClear_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
-
-    VkClearValue _clearValue = {
-      // r, g, b, a
-      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
-    };
-    tF64 _clearTimer = 0.0f;
-
-    void Draw() override {
-      niCheck(BeginFrame(),;);
-
-      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
-        _clearValue = {
-          .color = {{
-              (tF32)RandFloat(), // r
-              (tF32)RandFloat(), // g
-              (tF32)RandFloat(), // b
-              1.0f               // a
-            }}
-        };
-        _clearTimer = ni::TimerInSeconds();
-      }
-
-      VkRenderingAttachmentInfo colorAttachment{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = _currentFb._view,
-        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .clearValue = _clearValue
-      };
-
-      VkRenderingInfo renderingInfo{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
-        .layerCount = 1,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachment
-      };
-
-      vkCmdBeginRendering(_commandBuffer, &renderingInfo);
-      {
-        // Nothing, we're just clearing the buffer
-      }
-      vkCmdEndRendering(_commandBuffer);
-
-      this->PresentAndCommit();
-    };
-  };
-
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink(wnd);
-  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
-  wnd->GetMessageHandlers()->AddSink(metalSink);
-
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
-    }
-  }
 }
 
 struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDeviceResource> {
@@ -1243,7 +713,7 @@ static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
   return pipeline;
 }
 
-static Ptr<sVulkanPipeline> _CreateVulkanPipelineVertexPA(ain_nn<sVulkanDriver> aDriver) {
+static Ptr<sVulkanPipeline> _CreateVulkanPipelineTriangle(ain_nn<sVulkanDriver> aDriver) {
   NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
     aDriver,
     _H("triangle_vs_spv"),
@@ -1303,262 +773,239 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(ain_nn<sVulkanDriver> a
     avkDescSetLayout);
 }
 
-TEST_FIXTURE(FOSWindowVulkan,Triangle) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
+  nn<sVulkanDriver> _driver; // TODO: weakptr
+  VkCommandBuffer _cmdBuffer = VK_NULL_HANDLE;
+  struct sCache {
+    tIntPtr _lastPipeline = 0;
+  } _cache;
+  VkSemaphore _encoderFinishedSemaphore = VK_NULL_HANDLE;
+  VkFence _encoderInFlightFence = VK_NULL_HANDLE;
+  tBool _beganFrame = eFalse;
 
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK(wnd.IsOK());
+  sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver)
+      : _driver(aDriver)
+  {}
 
-  struct sVulkanTriangle_VulkanWindowSink : public sVulkanWindowSink {
-    sVulkanTriangle_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
-
-    VkClearValue _clearValue = {
-      // r, g, b, a
-      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
-    };
-    tF64 _clearTimer = 0.0f;
-    Ptr<sVulkanBuffer> _vaBuffer;
-    Ptr<sVulkanPipeline> _pipeline;
-
-    tBool _CreateArrays() {
-      cFVFDescription fvfDesc(sVertexPA::eFVF);
-      _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
-      niCheck(
-        _vaBuffer->Create(3 * fvfDesc.GetStride()),
-        eFalse);
-      {
-        sVertexPA* verts = (sVertexPA*)_vaBuffer->Lock(0, 3, eLock_Discard);
-        niCheck(verts != nullptr, eFalse);
-        verts[0] = {{0.0f, -0.5f, 0.0f}, 0xFF0000FF}; // Red
-        verts[1] = {{0.5f, 0.5f, 0.0f}, 0xFF00FF00};  // Green
-        verts[2] = {{-0.5f, 0.5f, 0.0f}, 0xFFFF0000}; // Blue
-        _vaBuffer->Unlock();
-      }
-      return eTrue;
+  ~sVulkanCommandEncoder() {
+    if (_encoderInFlightFence) {
+      vkDestroyFence(_driver->_device, _encoderInFlightFence, nullptr);
+      _encoderInFlightFence = VK_NULL_HANDLE;
+    }
+    if (_encoderFinishedSemaphore) {
+      vkDestroySemaphore(_driver->_device, _encoderFinishedSemaphore, nullptr);
+      _encoderFinishedSemaphore = VK_NULL_HANDLE;
     }
 
-    tBool Init(const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      niCheck(_CreateArrays(), eFalse);
-      _pipeline = _CreateVulkanPipelineVertexPA(as_nn(this));
-      return eTrue;
-    }
-
-    void Cleanup() override {
-      _vaBuffer = nullptr;
-      _pipeline = nullptr;
-      sVulkanWindowSink::Cleanup();
-    }
-
-    void Draw() override {
-      niCheck(BeginFrame(),;);
-
-      VkViewport viewport = {
-        .width = (float)_currentFb._width,
-        .height = (float)_currentFb._height,
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-      };
-      VkRect2D scissor = {{0, 0}, {_currentFb._width, _currentFb._height}};
-
-      vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
-      vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
-
-      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
-        _clearValue = {
-          .color = {{
-              (tF32)RandFloat(), // r
-              (tF32)RandFloat(), // g
-              (tF32)RandFloat(), // b
-              1.0f               // a
-            }}
-        };
-        _clearTimer = ni::TimerInSeconds();
-      }
-
-      VkRenderingAttachmentInfo colorAttachment{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = _currentFb._view,
-        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .clearValue = _clearValue
-      };
-
-      VkRenderingInfo renderingInfo{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
-        .layerCount = 1,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachment
-      };
-
-      vkCmdBeginRendering(_commandBuffer, &renderingInfo);
-      {
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
-        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdDraw(_commandBuffer, 3, 1, 0, 0);
-      }
-      vkCmdEndRendering(_commandBuffer);
-
-      this->PresentAndCommit();
-    };
-  };
-
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink(wnd);
-  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
-  wnd->GetMessageHandlers()->AddSink(metalSink);
-
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
+    if (_cmdBuffer) {
+      vkFreeCommandBuffers(_driver->_device, _driver->_commandPool, 1, &_cmdBuffer);
+      _cmdBuffer = VK_NULL_HANDLE;
     }
   }
-}
 
-TEST_FIXTURE(FOSWindowVulkan,Square) {
-  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
-  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+  tBool _CreateCommandBuffer() {
+    niCheck(_driver->_commandPool != VK_NULL_HANDLE, eFalse);
 
-  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
-    NULL,
-    "HelloWindow",
-    sRecti(50,50,400,300),
-    0,
-    eOSWindowStyleFlags_Regular);
-  CHECK(wnd.IsOK());
-
-  struct sVulkanSquare_VulkanWindowSink : public sVulkanWindowSink {
-    sVulkanSquare_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
-
-    VkClearValue _clearValue = {
-      // r, g, b, a
-      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
+    VkCommandBufferAllocateInfo allocInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .commandPool = _driver->_commandPool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1
     };
-    tF64 _clearTimer = 0.0f;
-    Ptr<sVulkanBuffer> _vaBuffer;
-    Ptr<sVulkanBuffer> _iaBuffer;
-    Ptr<sVulkanPipeline> _pipeline;
 
-    tBool _CreateArrays() {
-      {
-        cFVFDescription fvfDesc(sVertexPA::eFVF);
-        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
-        niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
-        sVertexPA* pVerts = (sVertexPA*)_vaBuffer->Lock(0, 4, eLock_Discard);
-        pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
-        pVerts[1] = {{ 0.5f, -0.5f, 0.0f}, 0xFF00FF00}; // Bottom Right - Green
-        pVerts[2] = {{ 0.5f,  0.5f, 0.0f}, 0xFFFF0000}; // Top Right - Blue
-        pVerts[3] = {{-0.5f,  0.5f, 0.0f}, 0xFFFFFFFF}; // Top Left - White
-        _vaBuffer->Unlock();
-      }
-      {
-        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
-        niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
-        tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
-        pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
-        pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
-        _iaBuffer->Unlock();
-      }
-      return eTrue;
-    }
+    VK_CHECK(vkAllocateCommandBuffers(_driver->_device, &allocInfo, &_cmdBuffer),eFalse);
 
-    tBool Init(const achar* aAppName) override {
-      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      _pipeline = _CreateVulkanPipelineVertexPA(as_nn(this));
-      niCheckIsOK(_pipeline, eFalse);
-      niCheck(_CreateArrays(), eFalse);
-      return eTrue;
-    }
-
-    void Cleanup() override {
-      _vaBuffer = nullptr;
-      _iaBuffer = nullptr;
-      sVulkanWindowSink::Cleanup();
-    }
-
-    void Draw() override {
-      niCheck(BeginFrame(),;);
-
-      VkViewport viewport = {
-        .width = (float)_currentFb._width,
-        .height = (float)_currentFb._height,
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-      };
-      VkRect2D scissor = {{0, 0}, {_currentFb._width, _currentFb._height}};
-
-      vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
-      vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
-
-      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
-        _clearValue = {
-          .color = {{
-              (tF32)RandFloat(), // r
-              (tF32)RandFloat(), // g
-              (tF32)RandFloat(), // b
-              1.0f               // a
-            }}
-        };
-        _clearTimer = ni::TimerInSeconds();
-      }
-
-      VkRenderingAttachmentInfo colorAttachment = {
-        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = _currentFb._view,
-        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .clearValue = _clearValue
-      };
-
-      VkRenderingInfo renderingInfo = {
-        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
-        .layerCount = 1,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachment
-      };
-
-      vkCmdBeginRendering(_commandBuffer, &renderingInfo);
-      {
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
-        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
-        VkDeviceSize offsets[] = {0};
-
-        vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(_commandBuffer, _iaBuffer->_vkBuffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(_commandBuffer, 6, 1, 0, 0, 0);
-      }
-      vkCmdEndRendering(_commandBuffer);
-
-      this->PresentAndCommit();
+    VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
-  };
 
-  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanSquare_VulkanWindowSink(wnd);
-  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
-  wnd->GetMessageHandlers()->AddSink(metalSink);
+    VkFenceCreateInfo fenceInfo = {
+      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
+    };
 
-  if (isInteractive) {
-    wnd->CenterWindow();
-    wnd->SetShow(eOSWindowShowFlags_Show);
-    wnd->ActivateWindow();
-    while (!wnd->GetRequestedClose()) {
-      wnd->UpdateWindow(eTrue);
-    }
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_encoderFinishedSemaphore), eFalse);
+    VK_CHECK(vkCreateFence(_driver->_device, &fenceInfo, nullptr, &_encoderInFlightFence), eFalse);
+
+    return eTrue;
   }
+
+  tBool _BeginFrame(
+    const sVulkanFramebuffer& aFB,
+    ain<sVec4f> aClearColor = sVec4f::Zero(),
+    ain<tF32> aClearDepth = 1.0f,
+    ain<tU32> aClearStencil = 0)
+  {
+    niCheck(_beganFrame == eFalse, eFalse);
+    _beganFrame = eTrue;
+    _cache = sCache {};
+
+    vkResetCommandBuffer(_cmdBuffer, 0);
+
+    VkCommandBufferBeginInfo beginInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+      .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+    };
+
+    VK_CHECK(vkBeginCommandBuffer(_cmdBuffer, &beginInfo), eFalse);
+
+    VkClearValue clearColorValue = {};
+    static_assert(sizeof(clearColorValue) == sizeof(sVec4f));
+    ((sVec4f&)clearColorValue.color) = aClearColor;
+
+    VkRenderingAttachmentInfo colorAttachment{
+      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+      .imageView = aFB._view,
+      .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+      .clearValue = clearColorValue
+    };
+
+    VkRenderingInfo renderingInfo{
+      .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+      .renderArea = {{0, 0}, {aFB._width, aFB._height}},
+      .layerCount = 1,
+      .colorAttachmentCount = 1,
+      .pColorAttachments = &colorAttachment
+    };
+
+    vkCmdBeginRendering(_cmdBuffer, &renderingInfo);
+    return eTrue;
+  }
+
+  tBool _EndFrame() {
+    niCheck(_beganFrame == eTrue, eFalse);
+    niDefer {
+      _beganFrame = eFalse;
+    };
+
+    vkCmdEndRendering(_cmdBuffer);
+
+    VK_CHECK(vkEndCommandBuffer(_cmdBuffer), eFalse);
+
+    VkSubmitInfo submitInfo = {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .waitSemaphoreCount = 0,
+      .signalSemaphoreCount = 1,
+      .pSignalSemaphores = &_encoderFinishedSemaphore,
+      .commandBufferCount = 1,
+      .pCommandBuffers = &_cmdBuffer
+    };
+
+    VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
+
+    return eTrue;
+  }
+
+  tBool WaitForInFlightFence() {
+    VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
+    VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence), eFalse);
+    return eTrue;
+  }
+
+  virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
+    niCheck(apPipeline != nullptr,;);
+    if (_cache._lastPipeline == (tIntPtr)apPipeline)
+      return;
+    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
+    vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
+    _cache._lastPipeline = (tIntPtr)apPipeline;
+  }
+
+  virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
+    niCheck(apBuffer != nullptr, ;);
+    sVulkanBuffer* buffer = (sVulkanBuffer*)apBuffer;
+    VkBuffer vertexBuffers[] = {buffer->_vkBuffer};
+    VkDeviceSize offsets[] = {anOffset};
+    vkCmdBindVertexBuffers(_cmdBuffer, anBinding, 1, vertexBuffers, offsets);
+  }
+
+  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, eGpuIndexType aIndexType) niImpl {
+    niCheck(apBuffer != nullptr, ;);
+    sVulkanBuffer* indexBuffer = (sVulkanBuffer*)apBuffer;
+    vkCmdBindIndexBuffer(_cmdBuffer, indexBuffer->_vkBuffer, anOffset, _ToVkIndexType[aIndexType]);
+  }
+
+  virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+  }
+
+  virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+  }
+
+  virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+  }
+
+  virtual tBool __stdcall StreamVertexBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+    return eFalse;
+  }
+
+  virtual tBool __stdcall StreamIndexBuffer(const tPtr apData, tU32 anSize, eGpuIndexType aIndexType) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+    return eFalse;
+  }
+
+  virtual tBool __stdcall StreamUniformBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
+    niPanicUnreachable("NOT IMPLEMENTED");
+    return eFalse;
+  }
+
+  virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) niImpl {
+    vkCmdSetDepthBias(_cmdBuffer, avOffset.x, 0.0f, avOffset.y);
+  }
+
+  virtual void __stdcall SetScissorRect(const sRecti& aRect) niImpl {
+    VkRect2D scissor = {
+      .offset = {aRect.x, aRect.y},
+      .extent = {(tU32)aRect.GetWidth(), (tU32)aRect.GetHeight()}
+    };
+    vkCmdSetScissor(_cmdBuffer, 0, 1, &scissor);
+  }
+
+  virtual void __stdcall SetViewport(const sRecti& aRect) niImpl {
+    VkViewport viewport = {
+      .x = (float)aRect.x,
+      .y = (float)aRect.y,
+      .width = (float)aRect.GetWidth(),
+      .height = (float)aRect.GetHeight(),
+      .minDepth = 0.0f,
+      .maxDepth = 1.0f
+    };
+    vkCmdSetViewport(_cmdBuffer, 0, 1, &viewport);
+  }
+
+  virtual void __stdcall SetStencilReference(tI32 aRef) niImpl {
+    vkCmdSetStencilReference(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aRef);
+  }
+
+  virtual void __stdcall SetStencilMask(tU32 aMask) niImpl {
+    vkCmdSetStencilWriteMask(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aMask);
+    vkCmdSetStencilCompareMask(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aMask);
+  }
+
+  virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) niImpl {
+    vkCmdSetBlendConstants(_cmdBuffer, &aColor.x);
+  }
+
+  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
+    vkCmdDrawIndexed(_cmdBuffer, anNumIndices, 1, anFirstIndex, 0, 0);
+    return eTrue;
+  }
+
+  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl {
+    vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
+    return eTrue;
+  }
+};
+
+static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriver> aDriver) {
+  NN<sVulkanCommandEncoder> cmdEncoder = MakeNN<sVulkanCommandEncoder>(aDriver);
+  niCheck(cmdEncoder->_CreateCommandBuffer(), nullptr);
+  return cmdEncoder;
 }
 
 struct sVulkanTexture : public ImplRC<iTexture> {
@@ -1795,6 +1242,660 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 };
 
+struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
+  const tU32 _threadId;
+  iOSWindow* _w;
+  Ptr<iOSXMetalAPI> _metalAPI;
+  VkInstance _instance = VK_NULL_HANDLE;
+  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
+  typedef astl::map<cString,tU32> tVkExtensionsMap;
+  tVkExtensionsMap _extensions;
+  tBool _enableValidationLayers = eTrue;
+  typedef astl::set<cString> tVkInstanceLayersSet;
+  tVkInstanceLayersSet _instanceLayers;
+  tU32 _queueFamilyIndex = 0;
+  sVulkanFramebuffer _currentFb;
+
+  sVulkanWindowSink(iOSWindow* aWindow)
+      : _threadId(ni::ThreadGetCurrentThreadID())
+      , _w(aWindow)
+  {
+  }
+
+  ~sVulkanWindowSink() {
+    this->Cleanup();
+  }
+
+  tU64 __stdcall GetThreadID() const {
+    return _threadId;
+  }
+
+  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* /*pUserData*/) {
+
+    switch (severity) {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      default:
+        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+    }
+    return VK_FALSE;
+  }
+
+  tBool _CreateInstance(const achar* aAppName) {
+    {
+      tU32 layerCount;
+      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+      astl::vector<VkLayerProperties> availableLayers(layerCount);
+      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+      for (const auto& layer : availableLayers) {
+        _instanceLayers.insert(layer.layerName);
+      }
+      {
+        cString o;
+        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
+          if (it != _instanceLayers.begin())
+            o << ", ";
+          o << *it;
+        }
+        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
+      }
+    }
+
+    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+    astl::vector<const char*> layers;
+    if (_enableValidationLayers) {
+      // NOTE: Statically linking directly MoltenVK we cannot use the
+      // validation layer.
+      const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
+      if (!astl::contains(_instanceLayers,validationLayerName)) {
+        _enableValidationLayers = eFalse;
+        niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
+                        validationLayerName));
+      }
+      else {
+        layers.push_back(validationLayerName);
+      }
+    }
+
+    VkApplicationInfo appInfo = {
+      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = nullptr,
+      .pApplicationName = aAppName,
+      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+      .pEngineName = "niVlk",
+      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+      .apiVersion = VK_API_VERSION_1_0
+    };
+
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
+      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
+      .pfnUserCallback = _DebugCallback
+    };
+
+    VkInstanceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .pNext = nullptr,
+      .pApplicationInfo = &appInfo,
+      .enabledLayerCount = (tU32)layers.size(),
+      .ppEnabledLayerNames = layers.data(),
+      .enabledExtensionCount = (tU32)extensions.size(),
+      .ppEnabledExtensionNames = extensions.data()
+    };
+    createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
+
+    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
+    return eTrue;
+  }
+
+  tBool _InitPhysicalDevice() {
+    tU32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+    niCheck(deviceCount > 0, eFalse);
+
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, &_physicalDevice);
+
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(_physicalDevice, &props);
+    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
+    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.driverVersion),
+                     VK_VERSION_MINOR(props.driverVersion),
+                     VK_VERSION_PATCH(props.driverVersion)));
+    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.apiVersion),
+                     VK_VERSION_MINOR(props.apiVersion),
+                     VK_VERSION_PATCH(props.apiVersion)));
+
+    // Get extensions
+    {
+      tU32 extensionCount = 0;
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
+      astl::vector<VkExtensionProperties> extensions(extensionCount);
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
+      for (const auto& extension : extensions) {
+        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
+      }
+      {
+        cString o;
+        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
+          if (it != _extensions.begin())
+            o << ", ";
+          o << it->first << "=" << it->second;
+        }
+        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
+      }
+    }
+
+    return eTrue;
+  }
+
+  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
+    tU32 queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+    astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    niLog(Info,"Vulkan Queue Families:");
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      niLog(Info,niFmt("  Family %d:", i));
+      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
+      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
+    }
+
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        aQueueFamilyIndex = i;
+        return eTrue;
+      }
+    }
+
+    return eFalse;
+  }
+
+  tBool _CreateLogicalDevice() {
+    tF32 queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .queueCount = 1,
+      .pQueuePriorities = &queuePriority
+    };
+
+    VkDeviceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .queueCreateInfoCount = 1,
+      .pQueueCreateInfos = &queueCreateInfo,
+      .enabledExtensionCount = 0,
+      .enabledLayerCount = 0
+    };
+
+    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
+    vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
+    return eTrue;
+  }
+
+  tBool _CreateCommandPool() {
+    VkCommandPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+    };
+
+    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
+    return eTrue;
+  }
+
+  tBool _CreateAllocator() {
+    VmaAllocatorCreateInfo allocatorInfo = {};
+    allocatorInfo.physicalDevice = _physicalDevice;
+    allocatorInfo.device = _device;
+    allocatorInfo.instance = _instance;
+    VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
+    return eTrue;
+  }
+
+  virtual void Cleanup() {
+    _currentFb.Destroy(_device);
+
+    if (_commandPool) {
+      vkDestroyCommandPool(_device, _commandPool, nullptr);
+      _commandPool = VK_NULL_HANDLE;
+    }
+    if (_device) {
+      vkDestroyDevice(_device, nullptr);
+      _device = VK_NULL_HANDLE;
+    }
+    if (_instance) {
+      vkDestroyInstance(_instance, nullptr);
+      _instance = VK_NULL_HANDLE;
+    }
+
+    if (_allocator != nullptr) {
+      vmaDestroyAllocator(_allocator);
+      _allocator = nullptr;
+    }
+  }
+
+  virtual tBool __stdcall Init(const achar* aAppName) {
+    osxMetalSetDefaultDevice();
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_w);
+    niCheck(_metalAPI.IsOK(),eFalse);
+
+    niCheck(_CreateInstance(aAppName),eFalse);
+    niCheck(_InitPhysicalDevice(),eFalse);
+    niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
+    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
+    niCheck(_CreateLogicalDevice(), eFalse);
+    niCheck(_CreateCommandPool(), eFalse);
+    niCheck(_CreateAllocator(), eFalse);
+
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
+
+    return eTrue;
+  }
+
+  tBool PresentAndCommit() {
+    _metalAPI->DrawablePresent();
+    return eTrue;
+  }
+
+  tBool BeginFrame() {
+    _currentFb.Destroy(_device);
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
+    return eTrue;
+  }
+  virtual void Draw() = 0;
+
+  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) {
+    switch (anMsg) {
+      case eOSWindowMessage_Close:
+        niDebugFmt((_A("eOSWindowMessage_Close: \n")));
+        _w->Invalidate();
+        break;
+      case eOSWindowMessage_SwitchIn:
+        niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
+        break;
+      case eOSWindowMessage_SwitchOut:
+        niDebugFmt((_A("eOSWindowMessage_SwitchOut: \n")));
+        break;
+      case eOSWindowMessage_Size:
+        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(_w->GetSize())));
+        break;
+      case eOSWindowMessage_Move:
+        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(_w->GetPosition())));
+        break;
+      case eOSWindowMessage_KeyDown:
+        niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        switch (a.mU32) {
+          case eKey_F:
+            _w->SetFullScreen(_w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
+            break;
+          case eKey_Z:
+            _w->SetCursorPosition(sVec2i::Zero());
+            break;
+          case eKey_X:
+            _w->SetCursorPosition(_w->GetClientSize()/2);
+            break;
+          case eKey_C:
+            _w->SetCursorPosition(_w->GetClientSize());
+            break;
+          case eKey_Q:
+            _w->SetCursor(eOSCursor_None);
+            break;
+          case eKey_W:
+            _w->SetCursor(eOSCursor_Arrow);
+            break;
+          case eKey_E:
+            _w->SetCursor(eOSCursor_Text);
+            break;
+          case eKey_K:
+            _w->SetCursorCapture(!_w->GetCursorCapture());
+            break;
+        }
+        break;
+      case eOSWindowMessage_KeyUp:
+        niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        break;
+      case eOSWindowMessage_KeyChar:
+        niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonDown:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonUp:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonUp: %d\n"),a.mU32));
+        break;
+      case eOSWindowMessage_MouseButtonDoubleClick:
+        niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
+        if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
+        }
+        else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
+          //                     _w->SetFullScreen(!_w->GetFullScreen());
+        }
+        break;
+      case eOSWindowMessage_MouseWheel:
+        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
+        break;
+      case eOSWindowMessage_LostFocus: {
+        niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
+        break;
+      }
+      case eOSWindowMessage_SetFocus:
+        niDebugFmt((_A("eOSWindowMessage_SetFocus: \n")));
+        break;
+      case eOSWindowMessage_Drop:
+        niDebugFmt((_A("eOSWindowMessage_Drop: \n")));
+        break;
+
+      case eOSWindowMessage_RelativeMouseMove:
+#ifdef TRACE_MOUSE_MOVE
+        niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
+                    a.mV2L[0],a.mV2L[1]));
+#endif
+        break;
+
+      case eOSWindowMessage_MouseMove:
+#ifdef TRACE_MOUSE_MOVE
+        niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
+                    a.mV2L[0],a.mV2L[1],
+                    b.mV2L[0],b.mV2L[1],
+                    _w->GetContentsScale()));
+#endif
+        break;
+      case eOSWindowMessage_Paint: {
+        this->Draw();
+        break;
+      };
+    }
+  }
+};
+
+TEST_FIXTURE(FOSWindowVulkan,Clear) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  struct sVulkanClear_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanClear_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
+    sVec4f _clearColor = { 0.0f, 1.0f, 1.0f, 1.0f };
+    tF64 _clearTimer = 0.0f;
+    NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
+
+    tBool Init(const achar* aAppName) niImpl {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
+      return eTrue;
+    }
+
+    void Cleanup() niImpl {
+      // _cmdEncoder = nullptr;
+    }
+
+    void Draw() niImpl {
+      niCheck(_cmdEncoder->WaitForInFlightFence(), ;);
+      niCheck(BeginFrame(),;);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearColor = Vec4f(
+          (tF32)RandFloat(), // r
+          (tF32)RandFloat(), // g
+          (tF32)RandFloat(), // b
+          1.0f               // a
+        );
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      niCheck(_cmdEncoder->_BeginFrame(_currentFb,_clearColor),;);
+      {
+        // Nothing, we're just clearing the buffer
+      }
+      niCheck(_cmdEncoder->_EndFrame(),;);
+
+      this->PresentAndCommit();
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanClear_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
+TEST_FIXTURE(FOSWindowVulkan,Triangle) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  struct sVulkanTriangle_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanTriangle_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
+    sVec4f _clearColor = { 0.0f, 1.0f, 1.0f, 1.0f };
+    tF64 _clearTimer = 0.0f;
+    NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
+    Ptr<sVulkanBuffer> _vaBuffer;
+    Ptr<sVulkanPipeline> _pipeline;
+
+    tBool _CreateArrays() {
+      cFVFDescription fvfDesc(sVertexPA::eFVF);
+      _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+      niCheck(
+        _vaBuffer->Create(3 * fvfDesc.GetStride()),
+        eFalse);
+      {
+        sVertexPA* verts = (sVertexPA*)_vaBuffer->Lock(0, 3, eLock_Discard);
+        niCheck(verts != nullptr, eFalse);
+        verts[0] = {{0.0f, -0.5f, 0.0f}, 0xFF0000FF}; // Red
+        verts[1] = {{0.5f, 0.5f, 0.0f}, 0xFF00FF00};  // Green
+        verts[2] = {{-0.5f, 0.5f, 0.0f}, 0xFFFF0000}; // Blue
+        _vaBuffer->Unlock();
+      }
+      return eTrue;
+    }
+
+    tBool Init(const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
+      niCheck(_CreateArrays(), eFalse);
+      _pipeline = _CreateVulkanPipelineTriangle(as_nn(this));
+      return eTrue;
+    }
+
+    void Cleanup() override {
+      _vaBuffer = nullptr;
+      _pipeline = nullptr;
+      sVulkanWindowSink::Cleanup();
+    }
+
+    void Draw() override {
+      niCheck(_cmdEncoder->WaitForInFlightFence(), ;);
+      niCheck(BeginFrame(),;);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearColor = Vec4f(
+          (tF32)RandFloat(), // r
+          (tF32)RandFloat(), // g
+          (tF32)RandFloat(), // b
+          1.0f               // a
+        );
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      niCheck(_cmdEncoder->_BeginFrame(_currentFb,_clearColor),;);
+      {
+        niLet vp = Recti(0,0,_currentFb._width,_currentFb._height);
+        _cmdEncoder->SetViewport(vp);
+        _cmdEncoder->SetScissorRect(vp);
+        _cmdEncoder->SetPipeline(_pipeline);
+        _cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
+        _cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+      }
+      niCheck(_cmdEncoder->_EndFrame(),;);
+      this->PresentAndCommit();
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanTriangle_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
+TEST_FIXTURE(FOSWindowVulkan,Square) {
+  const bool isInteractive = (UnitTest::runFixtureName == m_testName);
+  AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
+
+  Ptr<iOSWindow> wnd = ni::GetLang()->CreateWindow(
+    NULL,
+    "HelloWindow",
+    sRecti(50,50,400,300),
+    0,
+    eOSWindowStyleFlags_Regular);
+  CHECK(wnd.IsOK());
+
+  struct sVulkanSquare_VulkanWindowSink : public sVulkanWindowSink {
+    sVulkanSquare_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
+
+    sVec4f _clearColor = { 0.0f, 1.0f, 1.0f, 1.0f };
+    tF64 _clearTimer = 0.0f;
+    NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
+    Ptr<sVulkanBuffer> _vaBuffer;
+    Ptr<sVulkanBuffer> _iaBuffer;
+    Ptr<sVulkanPipeline> _pipeline;
+
+    tBool _CreateArrays() {
+      {
+        cFVFDescription fvfDesc(sVertexPA::eFVF);
+        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+        niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
+        sVertexPA* pVerts = (sVertexPA*)_vaBuffer->Lock(0, 4, eLock_Discard);
+        pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
+        pVerts[1] = {{ 0.5f, -0.5f, 0.0f}, 0xFF00FF00}; // Bottom Right - Green
+        pVerts[2] = {{ 0.5f,  0.5f, 0.0f}, 0xFFFF0000}; // Top Right - Blue
+        pVerts[3] = {{-0.5f,  0.5f, 0.0f}, 0xFFFFFFFF}; // Top Left - White
+        _vaBuffer->Unlock();
+      }
+      {
+        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
+        niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
+        tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
+        pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
+        pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
+        _iaBuffer->Unlock();
+      }
+      return eTrue;
+    }
+
+    tBool Init(const achar* aAppName) override {
+      niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
+      _pipeline = _CreateVulkanPipelineTriangle(as_nn(this));
+      niCheckIsOK(_pipeline, eFalse);
+      niCheck(_CreateArrays(), eFalse);
+      return eTrue;
+    }
+
+    void Cleanup() override {
+      _vaBuffer = nullptr;
+      _iaBuffer = nullptr;
+      sVulkanWindowSink::Cleanup();
+    }
+
+    void Draw() override {
+      niCheck(_cmdEncoder->WaitForInFlightFence(), ;);
+      niCheck(BeginFrame(),;);
+
+      if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
+        _clearColor = Vec4f(
+          (tF32)RandFloat(), // r
+          (tF32)RandFloat(), // g
+          (tF32)RandFloat(), // b
+          1.0f               // a
+        );
+        _clearTimer = ni::TimerInSeconds();
+      }
+
+      niCheck(_cmdEncoder->_BeginFrame(_currentFb,_clearColor),;);
+      {
+        niLet vp = Recti(0,0,_currentFb._width,_currentFb._height);
+        _cmdEncoder->SetViewport(vp);
+        _cmdEncoder->SetScissorRect(vp);
+        _cmdEncoder->SetPipeline(_pipeline);
+        _cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
+        _cmdEncoder->SetIndexBuffer(_iaBuffer,0,eGpuIndexType_U32);
+        _cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+      }
+      niCheck(_cmdEncoder->_EndFrame(),;);
+      this->PresentAndCommit();
+    };
+  };
+
+  Ptr<sVulkanWindowSink> metalSink = niNew sVulkanSquare_VulkanWindowSink(wnd);
+  CHECK_RETURN_IF_FAILED(metalSink->Init(m_testName));
+  wnd->GetMessageHandlers()->AddSink(metalSink);
+
+  if (isInteractive) {
+    wnd->CenterWindow();
+    wnd->SetShow(eOSWindowShowFlags_Show);
+    wnd->ActivateWindow();
+    while (!wnd->GetRequestedClose()) {
+      wnd->UpdateWindow(eTrue);
+    }
+  }
+}
+
 TEST_FIXTURE(FOSWindowVulkan,Texture) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
   AUTO_WARNING_MODE_IF(UnitTest::IsRunningInCI());
@@ -1810,11 +1911,9 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
   struct sVulkanTexture_VulkanWindowSink : public sVulkanWindowSink {
     sVulkanTexture_VulkanWindowSink(iOSWindow* w) : sVulkanWindowSink(w) {}
 
-    VkClearValue _clearValue = {
-      // r, g, b, a
-      .color = {{ 0.0f, 1.0f, 1.0f, 1.0f }}
-    };
+    sVec4f _clearColor = { 0.0f, 1.0f, 1.0f, 1.0f };
     tF64 _clearTimer = 0.0f;
+    NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
     Ptr<sVulkanBuffer> _vaBuffer;
     Ptr<sVulkanBuffer> _iaBuffer;
     Ptr<sVulkanPipeline> _pipeline;
@@ -1965,6 +2064,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
       niCheck(_CreateDescriptorSetLayout(), eFalse);
       _pipeline = _CreateVulkanPipelineTexture(as_nn(this),_vkDescSetLayout);
       niCheckIsOK(_pipeline, eFalse);
@@ -1983,67 +2083,37 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     }
 
     void Draw() override {
+      niCheck(_cmdEncoder->WaitForInFlightFence(), ;);
       niCheck(BeginFrame(),;);
 
-      VkViewport viewport = {
-        .width = (float)_currentFb._width,
-        .height = (float)_currentFb._height,
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-      };
-      VkRect2D scissor = {{0, 0}, {_currentFb._width, _currentFb._height}};
-
-      vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
-      vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
-
       if ((ni::TimerInSeconds()-_clearTimer) > 0.5f) {
-        _clearValue = {
-          .color = {{
-              (tF32)RandFloat(), // r
-              (tF32)RandFloat(), // g
-              (tF32)RandFloat(), // b
-              1.0f               // a
-            }}
-        };
+        _clearColor = Vec4f(
+          (tF32)RandFloat(), // r
+          (tF32)RandFloat(), // g
+          (tF32)RandFloat(), // b
+          1.0f               // a
+        );
         _clearTimer = ni::TimerInSeconds();
       }
 
-      VkRenderingAttachmentInfo colorAttachment{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = _currentFb._view,
-        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .clearValue = _clearValue
-      };
-
-      VkRenderingInfo renderingInfo{
-        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-        .renderArea = {{0, 0}, {_currentFb._width, _currentFb._height}},
-        .layerCount = 1,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachment
-      };
-
-      vkCmdBeginRendering(_commandBuffer, &renderingInfo);
+      niCheck(_cmdEncoder->_BeginFrame(_currentFb,_clearColor),;);
       {
+        niLetMut cmdBuffer = _cmdEncoder->_cmdBuffer;
         vkCmdBindDescriptorSets(
-          _commandBuffer,
+          cmdBuffer,
           VK_PIPELINE_BIND_POINT_GRAPHICS,
           _pipeline->_vkPipelineLayout,
           0, 1, &_vkDescSet,
           0, nullptr);
-
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
-        VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
-        VkDeviceSize offsets[] = {0};
-
-        vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(_commandBuffer, _iaBuffer->_vkBuffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(_commandBuffer, 6, 1, 0, 0, 0);
+        sRecti vp = Recti(0,0,_currentFb._width,_currentFb._height);
+        _cmdEncoder->SetViewport(vp);
+        _cmdEncoder->SetScissorRect(vp);
+        _cmdEncoder->SetPipeline(_pipeline);
+        _cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
+        _cmdEncoder->SetIndexBuffer(_iaBuffer,0,eGpuIndexType_U32);
+        _cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
       }
-      vkCmdEndRendering(_commandBuffer);
-
+      niCheck(_cmdEncoder->_EndFrame(),;);
       this->PresentAndCommit();
     };
   };

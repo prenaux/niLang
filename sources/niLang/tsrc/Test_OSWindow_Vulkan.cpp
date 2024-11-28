@@ -24,6 +24,8 @@
 #include "../../niUI/src/API/niUI/IGpu.h"
 #include <niLang/Utils/IDGenerator.h>
 
+#include "../../niUI/src/GDRV_Gpu.h"
+
 // #define TRACE_MOUSE_MOVE
 
 namespace ni {
@@ -32,6 +34,32 @@ struct FOSWindowVulkan {
 };
 
 #define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
+
+static const VkBlendFactor _ToVkBlendFactor[] = {
+  VK_BLEND_FACTOR_ZERO,                      // eGpuBlendFactor_Zero
+  VK_BLEND_FACTOR_ONE,                       // eGpuBlendFactor_One
+  VK_BLEND_FACTOR_SRC_COLOR,                 // eGpuBlendFactor_SrcColor
+  VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR,       // eGpuBlendFactor_InvSrcColor
+  VK_BLEND_FACTOR_SRC_ALPHA,                 // eGpuBlendFactor_SrcAlpha
+  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,       // eGpuBlendFactor_InvSrcAlpha
+  VK_BLEND_FACTOR_DST_ALPHA,                 // eGpuBlendFactor_DstAlpha
+  VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA,       // eGpuBlendFactor_InvDstAlpha
+  VK_BLEND_FACTOR_DST_COLOR,                 // eGpuBlendFactor_DstColor
+  VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR,       // eGpuBlendFactor_InvDstColor
+  VK_BLEND_FACTOR_SRC_ALPHA_SATURATE,        // eGpuBlendFactor_SrcAlphaSat
+  VK_BLEND_FACTOR_CONSTANT_COLOR,            // eGpuBlendFactor_BlendColorConstant
+  VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR,  // eGpuBlendFactor_InvBlendColorConstant
+};
+niCAssert(niCountOf(_ToVkBlendFactor) == eGpuBlendFactor_Last);
+
+static const VkBlendOp _ToVkBlendOp[] = {
+  VK_BLEND_OP_ADD,              // eGpuBlendOp_Add
+  VK_BLEND_OP_SUBTRACT,         // eGpuBlendOp_Subtract
+  VK_BLEND_OP_REVERSE_SUBTRACT, // eGpuBlendOp_ReverseSubtract
+  VK_BLEND_OP_MIN,             // eGpuBlendOp_Min
+  VK_BLEND_OP_MAX,             // eGpuBlendOp_Max
+};
+niCAssert(niCountOf(_ToVkBlendOp) == eGpuBlendOp_Last);
 
 static VkPrimitiveTopology Vulkan_GetPrimitiveType(eGraphicsPrimitiveType aType) {
   switch (aType) {
@@ -257,7 +285,7 @@ static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
 }
 
 struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource> {
-  nn_mut<sVulkanDriver> _driver;
+  nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   VkBuffer _vkBuffer = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation = nullptr;
@@ -266,7 +294,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   tGpuBufferUsageFlags _usage;
 
   sVulkanBuffer(
-    ain_nn_mut<sVulkanDriver> aDriver,
+    ain_nn<sVulkanDriver> aDriver,
     eGpuBufferMemoryMode aMemMode,
     tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
@@ -368,14 +396,14 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
 
 
 struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
-  nn_mut<sVulkanDriver> _driver;
+  nn<sVulkanDriver> _driver;
   const eGpuFunctionType _functionType;
   const tU32 _id;
   tHStringPtr _hspName;
   VkShaderModule _vkShaderModule = VK_NULL_HANDLE;
 
   sVulkanFunction(
-    ain_nn_mut<sVulkanDriver> aDriver,
+    ain_nn<sVulkanDriver> aDriver,
     ain<eGpuFunctionType> aFuncType,
     ain<tU32> anID)
       : _driver(aDriver)
@@ -430,14 +458,14 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
 };
 
 static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
-  ain_nn_mut<sVulkanDriver> aDriver,
+  ain_nn<sVulkanDriver> aDriver,
   iHString* ahspName,
   eGpuFunctionType aType,
   const tPtr apData,
   tSize aSize)
 {
   niLet newId = aDriver->_idGenerator.AllocID();
-  NN_mut<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver,aType,newId);
+  NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver,aType,newId);
   if (!func->_Compile(aDriver->_device, ahspName, apData, aSize)) {
     aDriver->_idGenerator.FreeID(newId);
     niError(niFmt(
@@ -994,211 +1022,76 @@ TEST_FIXTURE(FOSWindowVulkan,Clear) {
   }
 }
 
-struct sVulkanPipelineVertexPA {
-  NN<sVulkanFunction> _vertexShader = niDeferredInit(NN<sVulkanFunction>);
-  NN<sVulkanFunction> _pixelShader = niDeferredInit(NN<sVulkanFunction>);
+struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDeviceResource> {
+  nn<sVulkanDriver> _driver; // TODO: Should be a weakptr
+  tHStringPtr _hspName;
+  NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
 
-  tBool _CreateShaders(ain_nn_mut<sVulkanDriver> aDriver) {
-    _vertexShader = niCheckNN(_vertexShader,CreateVulkanGpuFunction(
-      aDriver,
-      _H("triangle_vs_spv"),
-      eGpuFunctionType_Vertex,
-      triangle_vs_spv_DATA,
-      triangle_vs_spv_DATA_SIZE), eFalse);
-
-    _pixelShader = niCheckNN(_pixelShader,CreateVulkanGpuFunction(
-      aDriver,
-      _H("triangle_ps_spv"),
-      eGpuFunctionType_Pixel,
-      triangle_ps_spv_DATA,
-      triangle_ps_spv_DATA_SIZE), eFalse);
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _hspName;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
     return eTrue;
   }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
 
-  tBool _CreatePipeline(VkDevice avkDevice) {
+  sVulkanPipeline(ain<nn<sVulkanDriver>> aDriver)
+      : _driver(aDriver)
+  {}
+
+  ~sVulkanPipeline() {
+    if (_vkPipeline) {
+      vkDestroyPipeline(_driver->_device, _vkPipeline, nullptr);
+      _vkPipeline = VK_NULL_HANDLE;
+    }
+    if (_vkPipelineLayout) {
+      vkDestroyPipelineLayout(_driver->_device, _vkPipelineLayout, nullptr);
+      _vkPipelineLayout = VK_NULL_HANDLE;
+    }
+  }
+
+  tBool _CreateVulkanPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc, VkDescriptorSetLayout avkDescSetLayout)
+  {
+    niCheckIsOK(apDesc,eFalse);
+    _hspName = ahspName;
+    _desc = niCheckNN(_desc,apDesc->Clone(),eFalse);
+
+    niLet vkDevice = _driver->_device;
+
     VkPipelineLayoutCreateInfo layoutInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
       .setLayoutCount = 0,
-      .pushConstantRangeCount = 0
-    };
-    VK_CHECK(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
-
-    VkVertexInputBindingDescription bindingDesc = {
-      .binding = 0,
-      .stride = sizeof(sVertexPA),
-      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
-    };
-
-    astl::vector<VkVertexInputAttributeDescription> attrDesc = Vulkan_CreateVertexInputDesc(sVertexPA::eFVF);
-
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-      .vertexBindingDescriptionCount = 1,
-      .pVertexBindingDescriptions = &bindingDesc,
-      .vertexAttributeDescriptionCount = (tU32)attrDesc.size(),
-      .pVertexAttributeDescriptions = attrDesc.data()
-    };
-
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-      .primitiveRestartEnable = VK_FALSE
-    };
-
-    VkDynamicState dynamicStates[] = {
-      VK_DYNAMIC_STATE_VIEWPORT,
-      VK_DYNAMIC_STATE_SCISSOR
-    };
-
-    VkPipelineDynamicStateCreateInfo dynamicState = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-      .dynamicStateCount = 2,
-      .pDynamicStates = dynamicStates
-    };
-
-    VkPipelineViewportStateCreateInfo viewportState = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-      .viewportCount = 1,
-      .scissorCount = 1,
-    };
-
-    VkPipelineRasterizationStateCreateInfo rasterizer = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-      .depthClampEnable = VK_FALSE,
-      .rasterizerDiscardEnable = VK_FALSE,
-      .polygonMode = VK_POLYGON_MODE_FILL,
-      .cullMode = VK_CULL_MODE_NONE,
-      .frontFace = VK_FRONT_FACE_CLOCKWISE,
-      .depthBiasEnable = VK_FALSE,
-      .lineWidth = 1.0f
-    };
-
-    VkPipelineMultisampleStateCreateInfo multisampling = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .sampleShadingEnable = VK_FALSE
-    };
-
-    VkPipelineColorBlendAttachmentState colorBlendAttachment = {
-      .blendEnable = VK_FALSE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-    };
-
-    VkPipelineColorBlendStateCreateInfo colorBlending = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-      .logicOpEnable = VK_FALSE,
-      .attachmentCount = 1,
-      .pAttachments = &colorBlendAttachment
-    };
-
-    VkPipelineShaderStageCreateInfo shaderStages[] = {
-      {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = _vertexShader->_vkShaderModule,
-        .pName = "main"
-      },
-      {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = _pixelShader->_vkShaderModule,
-        .pName = "main"
-      }
-    };
-
-    VkFormat swapChainFormat = VK_FORMAT_B8G8R8A8_UNORM;
-    VkPipelineRenderingCreateInfo renderingInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-      .colorAttachmentCount = 1,
-      .pColorAttachmentFormats = &swapChainFormat
-    };
-
-    VkGraphicsPipelineCreateInfo pipelineInfo = {
-      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-      .stageCount = 2,
-      .pStages = shaderStages,
-      .pVertexInputState = &vertexInputInfo,
-      .pInputAssemblyState = &inputAssembly,
-      .pViewportState = &viewportState,
-      .pDynamicState = &dynamicState,
-      .pRasterizationState = &rasterizer,
-      .pMultisampleState = &multisampling,
-      .pDepthStencilState = nullptr,
-      .pColorBlendState = &colorBlending,
-      .layout = _vkPipelineLayout,
-      .renderPass = VK_NULL_HANDLE,
-      .subpass = 0,
-      .pNext = &renderingInfo
-    };
-
-    VK_CHECK(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
-    return eTrue;
-  }
-
-  tBool Init(ain_nn_mut<sVulkanDriver> aDriver) {
-    niCheck(_CreateShaders(aDriver), eFalse);
-    niCheck(_CreatePipeline(aDriver->_device), eFalse);
-    return eTrue;
-  }
-
-  void Cleanup(VkDevice aDevice) {
-    if (_vkPipeline != VK_NULL_HANDLE) {
-      vkDestroyPipeline(aDevice, _vkPipeline, nullptr);
-      _vkPipeline = VK_NULL_HANDLE;
-    }
-  }
-};
-
-struct sVulkanPipelineVertexPAT1 {
-  NN<sVulkanFunction> _vertexShader = niDeferredInit(NN<sVulkanFunction>);
-  NN<sVulkanFunction> _pixelShader = niDeferredInit(NN<sVulkanFunction>);
-  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
-  VkPipeline _vkPipeline = VK_NULL_HANDLE;
-
-  tBool _CreateShaders(ain_nn_mut<sVulkanDriver> aDriver) {
-    _vertexShader = niCheckNN(_vertexShader,CreateVulkanGpuFunction(
-      aDriver,
-      _H("texture_vs_spv"),
-      eGpuFunctionType_Vertex,
-      texture_vs_spv_DATA,
-      texture_vs_spv_DATA_SIZE), eFalse);
-
-    _pixelShader = niCheckNN(_pixelShader,CreateVulkanGpuFunction(
-      aDriver,
-      _H("texture_ps_spv"),
-      eGpuFunctionType_Pixel,
-      texture_ps_spv_DATA,
-      texture_ps_spv_DATA_SIZE), eFalse);
-    return eTrue;
-  }
-
-  tBool _CreatePipeline(VkDevice avkDevice, VkDescriptorSetLayout avkDescSetLayout) {
-    VkPipelineLayoutCreateInfo layoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .setLayoutCount = 1,
-      .pSetLayouts = &avkDescSetLayout,
       .pushConstantRangeCount = 0,
       .pPushConstantRanges = nullptr
     };
-    VK_CHECK(vkCreatePipelineLayout(avkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
+    if (avkDescSetLayout) {
+      layoutInfo.setLayoutCount = 1;
+      layoutInfo.pSetLayouts = &avkDescSetLayout;
+    }
+    VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
 
+    // Vertex input
+    const cFVFDescription fvfDesc(_desc->GetFVF());
+    niLet vertexAttrs = Vulkan_CreateVertexInputDesc(fvfDesc.GetFVF());
     VkVertexInputBindingDescription bindingDesc = {
       .binding = 0,
-      .stride = sizeof(sVertexPAT1),
+      .stride = fvfDesc.GetStride(),
       .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
     };
-
-    astl::vector<VkVertexInputAttributeDescription> attrDesc = Vulkan_CreateVertexInputDesc(sVertexPAT1::eFVF);
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
       .vertexBindingDescriptionCount = 1,
       .pVertexBindingDescriptions = &bindingDesc,
-      .vertexAttributeDescriptionCount = (tU32)attrDesc.size(),
-      .pVertexAttributeDescriptions = attrDesc.data()
+      .vertexAttributeDescriptionCount = (tU32)vertexAttrs.size(),
+      .pVertexAttributeDescriptions = vertexAttrs.data()
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
@@ -1207,23 +1100,28 @@ struct sVulkanPipelineVertexPAT1 {
       .primitiveRestartEnable = VK_FALSE
     };
 
+    // Dynamic states
     VkDynamicState dynamicStates[] = {
       VK_DYNAMIC_STATE_VIEWPORT,
-      VK_DYNAMIC_STATE_SCISSOR
+      VK_DYNAMIC_STATE_SCISSOR,
+      VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+      VK_DYNAMIC_STATE_STENCIL_REFERENCE,
     };
-
     VkPipelineDynamicStateCreateInfo dynamicState = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-      .dynamicStateCount = 2,
+      .dynamicStateCount = niCountOf(dynamicStates),
       .pDynamicStates = dynamicStates
     };
 
+    // Viewport & Scissor
     VkPipelineViewportStateCreateInfo viewportState = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
       .viewportCount = 1,
       .scissorCount = 1,
     };
 
+    // Rasterization
+    // TODO: Apply from rasterizer states
     VkPipelineRasterizationStateCreateInfo rasterizer = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
       .depthClampEnable = VK_FALSE,
@@ -1235,40 +1133,62 @@ struct sVulkanPipelineVertexPAT1 {
       .lineWidth = 1.0f
     };
 
+    // Multisampling
     VkPipelineMultisampleStateCreateInfo multisampling = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
       .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .sampleShadingEnable = VK_FALSE
+      .sampleShadingEnable = VK_FALSE,
     };
 
+    // Color blend attachment
+    // TODO: Apply from rasterizer states
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {
       .blendEnable = VK_FALSE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
+      VK_COLOR_COMPONENT_G_BIT |
+      VK_COLOR_COMPONENT_B_BIT |
+      VK_COLOR_COMPONENT_A_BIT
     };
+
+    // Setup blend mode if specified
+    if (_desc->GetBlendMode()) {
+      const sGpuBlendModeDesc* bm = (const sGpuBlendModeDesc*)_desc->GetBlendMode()->GetDescStructPtr();
+      colorBlendAttachment.blendEnable = VK_TRUE;
+      colorBlendAttachment.srcColorBlendFactor = _ToVkBlendFactor[bm->mSrcRGB];
+      colorBlendAttachment.dstColorBlendFactor = _ToVkBlendFactor[bm->mDstRGB];
+      colorBlendAttachment.colorBlendOp = _ToVkBlendOp[bm->mOp];
+      colorBlendAttachment.srcAlphaBlendFactor = _ToVkBlendFactor[bm->mSrcAlpha];
+      colorBlendAttachment.dstAlphaBlendFactor = _ToVkBlendFactor[bm->mDstAlpha];
+      colorBlendAttachment.alphaBlendOp = _ToVkBlendOp[bm->mOp];
+    }
 
     VkPipelineColorBlendStateCreateInfo colorBlending = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
       .logicOpEnable = VK_FALSE,
       .attachmentCount = 1,
-      .pAttachments = &colorBlendAttachment
+      .pAttachments = &colorBlendAttachment,
     };
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = {
-      {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = _vertexShader->_vkShaderModule,
-        .pName = "main"
-      },
-      {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = _pixelShader->_vkShaderModule,
-        .pName = "main"
-      }
+    // Shaders
+    VkPipelineShaderStageCreateInfo shaderStages[2] = {};
+    sVulkanFunction* vs = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
+    sVulkanFunction* ps = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
+    niCheck(vs && ps, eFalse);
+
+    shaderStages[0] = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_VERTEX_BIT,
+      .module = vs->_vkShaderModule,
+      .pName = "main"
+    };
+    shaderStages[1] = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+      .module = ps->_vkShaderModule,
+      .pName = "main"
     };
 
+    // TODO: Setup from RT0/DS
     VkFormat swapChainFormat = VK_FORMAT_B8G8R8A8_UNORM;
     VkPipelineRenderingCreateInfo renderingInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
@@ -1276,6 +1196,7 @@ struct sVulkanPipelineVertexPAT1 {
       .pColorAttachmentFormats = &swapChainFormat
     };
 
+    // Create the pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo = {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
       .stageCount = 2,
@@ -1294,23 +1215,93 @@ struct sVulkanPipelineVertexPAT1 {
       .pNext = &renderingInfo
     };
 
-    VK_CHECK(vkCreateGraphicsPipelines(avkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
+    // TODO: Apply iRasterizerStates / sRasterizerStatesDesc
+    // TODO: Apply iDepthStencilStates / sDepthStencilStatesDesc
+    VK_CHECK(vkCreateGraphicsPipelines(
+      vkDevice, VK_NULL_HANDLE, 1,
+      &pipelineInfo, nullptr, &_vkPipeline), eFalse);
+
     return eTrue;
   }
 
-  tBool Init(ain_nn_mut<sVulkanDriver> aDriver, VkDescriptorSetLayout avkDescSetLayout) {
-    niCheck(_CreateShaders(aDriver), eFalse);
-    niCheck(_CreatePipeline(aDriver->_device, avkDescSetLayout), eFalse);
-    return eTrue;
-  }
-
-  void Cleanup(VkDevice aDevice) {
-    if (_vkPipeline != VK_NULL_HANDLE) {
-      vkDestroyPipeline(aDevice, _vkPipeline, nullptr);
-      _vkPipeline = VK_NULL_HANDLE;
-    }
+  virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl {
+    return _desc;
   }
 };
+
+static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
+  ain_nn<sVulkanDriver> aDriver,
+  iHString* ahspName,
+  const iGpuPipelineDesc* apDesc,
+  VkDescriptorSetLayout avkDescSetLayout)
+{
+  niCheckIsOK(apDesc,nullptr);
+  NN<sVulkanPipeline> pipeline = MakeNN<sVulkanPipeline>(aDriver);
+  niCheck(
+    pipeline->_CreateVulkanPipeline(ahspName,apDesc,avkDescSetLayout),
+    nullptr);
+  return pipeline;
+}
+
+static Ptr<sVulkanPipeline> _CreateVulkanPipelineVertexPA(ain_nn<sVulkanDriver> aDriver) {
+  NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
+    aDriver,
+    _H("triangle_vs_spv"),
+    eGpuFunctionType_Vertex,
+    triangle_vs_spv_DATA,
+    triangle_vs_spv_DATA_SIZE), nullptr);
+
+  NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
+    aDriver,
+    _H("triangle_ps_spv"),
+    eGpuFunctionType_Pixel,
+    triangle_ps_spv_DATA,
+    triangle_ps_spv_DATA_SIZE), nullptr);
+
+  niLetMut pipelineDesc = _CreateGpuPipelineDesc();
+  niCheckIsOK(pipelineDesc, nullptr);
+
+  pipelineDesc->SetFVF(sVertexPA::eFVF);
+  pipelineDesc->SetColorFormat(0, eGpuPixelFormat_BGRA8);
+  pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
+  pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
+
+  return CreateVulkanGpuPipeline(
+    aDriver,
+    _H("triangle_pipeline"),
+    pipelineDesc,
+    nullptr);
+}
+
+static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(ain_nn<sVulkanDriver> aDriver, VkDescriptorSetLayout avkDescSetLayout) {
+  NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
+    aDriver,
+    _H("texture_vs_spv"),
+    eGpuFunctionType_Vertex,
+    texture_vs_spv_DATA,
+    texture_vs_spv_DATA_SIZE), nullptr);
+
+  NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
+    aDriver,
+    _H("texture_ps_spv"),
+    eGpuFunctionType_Pixel,
+    texture_ps_spv_DATA,
+    texture_ps_spv_DATA_SIZE), nullptr);
+
+  niLetMut pipelineDesc = _CreateGpuPipelineDesc();
+  niCheckIsOK(pipelineDesc, nullptr);
+
+  pipelineDesc->SetFVF(sVertexPAT1::eFVF);
+  pipelineDesc->SetColorFormat(0, eGpuPixelFormat_BGRA8);
+  pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
+  pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
+
+  return CreateVulkanGpuPipeline(
+    aDriver,
+    _H("texture_pipeline"),
+    pipelineDesc,
+    avkDescSetLayout);
+}
 
 TEST_FIXTURE(FOSWindowVulkan,Triangle) {
   const bool isInteractive = (UnitTest::runFixtureName == m_testName);
@@ -1333,7 +1324,7 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
     };
     tF64 _clearTimer = 0.0f;
     Ptr<sVulkanBuffer> _vaBuffer;
-    sVulkanPipelineVertexPA _pipeline;
+    Ptr<sVulkanPipeline> _pipeline;
 
     tBool _CreateArrays() {
       cFVFDescription fvfDesc(sVertexPA::eFVF);
@@ -1355,13 +1346,13 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateArrays(), eFalse);
-      niCheck(_pipeline.Init(as_nn(this)), eFalse);
+      _pipeline = _CreateVulkanPipelineVertexPA(as_nn(this));
       return eTrue;
     }
 
     void Cleanup() override {
       _vaBuffer = nullptr;
-      _pipeline.Cleanup(_device);
+      _pipeline = nullptr;
       sVulkanWindowSink::Cleanup();
     }
 
@@ -1410,7 +1401,7 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
 
       vkCmdBeginRendering(_commandBuffer, &renderingInfo);
       {
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
         VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -1458,7 +1449,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
     tF64 _clearTimer = 0.0f;
     Ptr<sVulkanBuffer> _vaBuffer;
     Ptr<sVulkanBuffer> _iaBuffer;
-    sVulkanPipelineVertexPA _pipeline;
+    Ptr<sVulkanPipeline> _pipeline;
 
     tBool _CreateArrays() {
       {
@@ -1485,7 +1476,8 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      niCheck(_pipeline.Init(as_nn(this)), eFalse);
+      _pipeline = _CreateVulkanPipelineVertexPA(as_nn(this));
+      niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       return eTrue;
     }
@@ -1493,7 +1485,6 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
     void Cleanup() override {
       _vaBuffer = nullptr;
       _iaBuffer = nullptr;
-      _pipeline.Cleanup(_device);
       sVulkanWindowSink::Cleanup();
     }
 
@@ -1542,7 +1533,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
 
       vkCmdBeginRendering(_commandBuffer, &renderingInfo);
       {
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
         VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
 
@@ -1571,7 +1562,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
 }
 
 struct sVulkanTexture : public ImplRC<iTexture> {
-  nn_mut<sVulkanDriver> _driver;
+  nn<sVulkanDriver> _driver;
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;
   VkImageView _vkView = VK_NULL_HANDLE;
@@ -1580,7 +1571,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   const tHStringPtr _name;
   const tTextureFlags _flags = eTextureFlags_Default;
 
-  sVulkanTexture(ain_nn_mut<sVulkanDriver> aDriver, iHString* ahspName)
+  sVulkanTexture(ain_nn<sVulkanDriver> aDriver, iHString* ahspName)
       : _driver(aDriver)
       , _name(ahspName)
   {
@@ -1826,7 +1817,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     tF64 _clearTimer = 0.0f;
     Ptr<sVulkanBuffer> _vaBuffer;
     Ptr<sVulkanBuffer> _iaBuffer;
-    sVulkanPipelineVertexPAT1 _pipeline;
+    Ptr<sVulkanPipeline> _pipeline;
     Ptr<sVulkanTexture> _texture;
     VkDescriptorSetLayout _vkDescSetLayout = VK_NULL_HANDLE;
     VkDescriptorPool _vkDescPool = VK_NULL_HANDLE;
@@ -1906,14 +1897,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
 
       VK_CHECK(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_vkDescSetLayout), eFalse);
 
-      // Update pipeline layout creation to use descriptor set
-      VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 1,
-        .pSetLayouts = &_vkDescSetLayout
-      };
-      VK_CHECK(vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &_pipeline._vkPipelineLayout), eFalse);
-
       return eTrue;
     }
 
@@ -1983,7 +1966,8 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       niCheck(_CreateDescriptorSetLayout(), eFalse);
-      niCheck(_pipeline.Init(as_nn(this),_vkDescSetLayout), eFalse);
+      _pipeline = _CreateVulkanPipelineTexture(as_nn(this),_vkDescSetLayout);
+      niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_CreateTextures(), eFalse);
       niCheck(_CreateDescriptorPool(), eFalse);
@@ -1994,7 +1978,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
       _texture = nullptr;
       _vaBuffer = nullptr;
       _iaBuffer = nullptr;
-      _pipeline.Cleanup(_device);
+      _pipeline = nullptr;
       sVulkanWindowSink::Cleanup();
     }
 
@@ -2046,11 +2030,11 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
         vkCmdBindDescriptorSets(
           _commandBuffer,
           VK_PIPELINE_BIND_POINT_GRAPHICS,
-          _pipeline._vkPipelineLayout,
+          _pipeline->_vkPipelineLayout,
           0, 1, &_vkDescSet,
           0, nullptr);
 
-        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline._vkPipeline);
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->_vkPipeline);
         VkBuffer vertexBuffers[] = {_vaBuffer->_vkBuffer};
         VkDeviceSize offsets[] = {0};
 
@@ -2079,4 +2063,7 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
 }
 
 } // end of namespace ni
+
+
+#include "../../niUI/src/GDRV_Gpu.cpp"
 #endif

@@ -191,8 +191,8 @@ struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
 };
 
 /////////////////////////////////////////////////////////////////
-iGpuBlendMode* _CreateGpuBlendMode() {
-  return niNew sGpuBlendMode();
+NN<iGpuBlendMode> _CreateGpuBlendMode() {
+  return MakeNN<sGpuBlendMode>();
 }
 
 /////////////////////////////////////////////////////////////////
@@ -272,11 +272,11 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
     return aType >= eGpuFunctionType_Last ? nullptr : _desc.mptrFuncs[aType];
   }
 
-  virtual tBool __stdcall SetBlendMode(iGpuBlendMode* apBlendMode) {
+  virtual tBool __stdcall SetBlendMode(iGpuBlendMode* apBlendMode) niImpl {
     _desc.mptrBlendMode = apBlendMode;
     return eTrue;
   }
-  virtual iGpuBlendMode* __stdcall GetBlendMode() const {
+  virtual iGpuBlendMode* __stdcall GetBlendMode() const niImpl {
     return _desc.mptrBlendMode;
   }
 
@@ -286,8 +286,8 @@ struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
 };
 
 /////////////////////////////////////////////////////////////////
-iGpuPipelineDesc* _CreateGpuPipelineDesc() {
-  return niNew sGpuPipelineDescImpl();
+NN<iGpuPipelineDesc> _CreateGpuPipelineDesc() {
+  return MakeNN<sGpuPipelineDescImpl>();
 }
 
 /////////////////////////////////////////////////////////////////
@@ -416,7 +416,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     }
   }
 
-  nn<iTexture> __stdcall GetWhiteTexture() const {
+  nn<iTexture> __stdcall GetWhiteTexture() const niImpl {
     return _texWhite;
   }
 
@@ -497,33 +497,33 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return NULL;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
     return eFalse;
   }
-  virtual tBool __stdcall ResetDeviceResource() {
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
     return eTrue;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return _buffer->Bind(apDevice);
   }
 
-  virtual tFVF __stdcall GetFVF() const {
+  virtual tFVF __stdcall GetFVF() const niImpl {
     return _fvf;
   }
-  virtual tU32 __stdcall GetNumVertices() const {
+  virtual tU32 __stdcall GetNumVertices() const niImpl {
     return _buffer->GetSize() / _fvfStride;
   }
-  virtual eArrayUsage __stdcall GetUsage() const {
+  virtual eArrayUsage __stdcall GetUsage() const niImpl {
     return _arrayUsage;
   }
-  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) {
+  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) niImpl {
     niUnused(aLock);
     return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
   }
-  virtual tBool __stdcall Unlock() {
+  virtual tBool __stdcall Unlock() niImpl {
     return _buffer->Unlock();
   }
-  virtual tBool __stdcall GetIsLocked() const {
+  virtual tBool __stdcall GetIsLocked() const niImpl {
     return _buffer->GetIsLocked();
   }
 };
@@ -566,36 +566,36 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return NULL;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
     return eFalse;
   }
-  virtual tBool __stdcall ResetDeviceResource() {
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
     return eTrue;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return _buffer->Bind(apDevice);
   }
 
-  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {
+  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const niImpl {
     return _primType;
   }
-  virtual tU32 __stdcall GetNumIndices() const {
+  virtual tU32 __stdcall GetNumIndices() const niImpl {
     return _buffer->GetSize() / knFixedGpuIndexSize;
   }
-  virtual tU32 __stdcall GetMaxVertexIndex() const {
+  virtual tU32 __stdcall GetMaxVertexIndex() const niImpl {
     return 0xFFFFFFFF;
   }
-  virtual eArrayUsage __stdcall GetUsage() const {
+  virtual eArrayUsage __stdcall GetUsage() const niImpl {
     return _arrayUsage;
   }
 
-  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) {
+  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) niImpl {
     return _buffer->Lock(anFirstIndex * knFixedGpuIndexSize, anNumIndex * knFixedGpuIndexSize, aLock);
   }
-  virtual tBool __stdcall Unlock() {
+  virtual tBool __stdcall Unlock() niImpl {
     return _buffer->Unlock();
   }
-  virtual tBool __stdcall GetIsLocked() const {
+  virtual tBool __stdcall GetIsLocked() const niImpl {
     return _buffer->GetIsLocked();
   }
 };

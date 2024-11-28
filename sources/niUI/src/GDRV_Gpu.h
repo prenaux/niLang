@@ -29,8 +29,8 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat);
 iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat);
 
 const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode);
-iGpuPipelineDesc* _CreateGpuPipelineDesc();
-iGpuBlendMode* _CreateGpuBlendMode();
+NN<iGpuPipelineDesc> _CreateGpuPipelineDesc();
+NN<iGpuBlendMode> _CreateGpuBlendMode();
 
 typedef tU64 tFixedGpuPipelineId;
 

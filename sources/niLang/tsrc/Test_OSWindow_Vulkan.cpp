@@ -78,6 +78,37 @@ static const VkPrimitiveTopology _ToVkPrimitiveTopology[] = {
 };
 niCAssert(niCountOf(_ToVkPrimitiveTopology) == eGraphicsPrimitiveType_Last);
 
+static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
+
+void _toVkSamplerFilter(VkSamplerCreateInfo& desc, eSamplerFilter aFilter) {
+  switch(aFilter) {
+    case eSamplerFilter_Smooth: {
+      desc.minFilter = VK_FILTER_LINEAR;
+      desc.magFilter = VK_FILTER_LINEAR;
+      desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+      desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
+      desc.anisotropyEnable = VK_TRUE;
+      break;
+    }
+    case eSamplerFilter_Point: {
+      desc.minFilter = VK_FILTER_NEAREST;
+      desc.magFilter = VK_FILTER_NEAREST;
+      desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+      desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
+      desc.anisotropyEnable = VK_TRUE;
+      break;
+    }
+  }
+}
+
+static const VkSamplerAddressMode _toVkSamplerAddress[] = {
+  VK_SAMPLER_ADDRESS_MODE_REPEAT,
+  VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+  VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
+  VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+};
+niCAssert(niCountOf(_toVkSamplerAddress) == eSamplerWrap_Last);
+
 static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
   tU32 location = 0;
@@ -186,7 +217,59 @@ struct sVulkanDriver {
   VmaAllocator _allocator = nullptr;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
+  VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
   LocalIDGenerator _idGenerator;
+
+  ~sVulkanDriver() {
+    niLoop(i,niCountOf(_ssCompiled)) {
+      if (_ssCompiled[i]) {
+        vkDestroySampler(_device, _ssCompiled[i], nullptr);
+        _ssCompiled[i] = VK_NULL_HANDLE;
+      }
+    }
+  }
+
+  tBool _InitCompiledSamplerStates() {
+    VkSamplerCreateInfo desc = {
+      .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+      .compareEnable = VK_FALSE,
+      .minLod = 0.0f,
+      .maxLod = FLT_MAX,
+      .unnormalizedCoordinates = VK_FALSE,
+    };
+
+#define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
+      desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;            \
+      _toVkSamplerFilter(desc, eSamplerFilter_##FILTER);                \
+      desc.addressModeU = desc.addressModeV = desc.addressModeW =       \
+          _toVkSamplerAddress[eSamplerWrap_##WRAP];                     \
+      VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                 \
+                               &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
+    }
+
+    INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
+
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
+#undef INIT_COMPILED_SAMPLER_STATES
+
+    return eTrue;
+  }
+
+  inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const {
+    if (ahSS >= eCompiledStates_SS_PointRepeat &&
+        ahSS <= eCompiledStates_SS_SmoothWhiteBorder)
+    {
+      return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
+    }
+    niPanicAssert(niFmt("Unknown sampler states '%d'.", ahSS));
+    return _ssCompiled[0];
+  }
 
   VkCommandBuffer BeginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo = {
@@ -538,6 +621,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     if (!aBindings.empty()) {
       VkDescriptorSetLayoutCreateInfo layoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
         .bindingCount = (tU32)aBindings.size(),
         .pBindings = aBindings.data()
       };
@@ -793,6 +877,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   VkCommandBuffer _cmdBuffer = VK_NULL_HANDLE;
   struct sCache {
     tIntPtr _lastPipeline = 0;
+    Ptr<iMaterial> _lastMaterial;
   } _cache;
   VkSemaphore _encoderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
@@ -1423,6 +1508,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
       }
     }
 
+    niCheck(_extensions.find("VK_KHR_push_descriptor") != _extensions.end(), eFalse);
     return eTrue;
   }
 
@@ -1471,6 +1557,8 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
 
     VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
     vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
+
+    niCheck(_InitCompiledSamplerStates(), eFalse);
     return eTrue;
   }
 
@@ -1937,8 +2025,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     Ptr<sVulkanBuffer> _iaBuffer;
     Ptr<sVulkanPipeline> _pipeline;
     Ptr<sVulkanTexture> _texture;
-    VkDescriptorPool _vkDescPool = VK_NULL_HANDLE;
-    VkDescriptorSet _vkDescSet = VK_NULL_HANDLE;
 
     tBool _CreateArrays() {
       {
@@ -1990,69 +2076,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
       return eTrue;
     }
 
-    tBool _CreateDescriptorPool() {
-      VkDescriptorPoolSize poolSizes[2] = {
-        {
-          .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-          .descriptorCount = 1
-        },
-        {
-          .type = VK_DESCRIPTOR_TYPE_SAMPLER,
-          .descriptorCount = 1
-        }
-      };
-
-      VkDescriptorPoolCreateInfo poolInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-        .maxSets = 1,
-        .poolSizeCount = niCountOf(poolSizes),
-        .pPoolSizes = poolSizes
-      };
-
-      VK_CHECK(vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_vkDescPool), eFalse);
-
-      VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .descriptorPool = _vkDescPool,
-        .descriptorSetCount = 1,
-        .pSetLayouts = &_pipeline->_vkDescSetLayout
-      };
-
-      VK_CHECK(vkAllocateDescriptorSets(_device, &allocInfo, &_vkDescSet), eFalse);
-
-      // Update descriptor with texture
-      VkDescriptorImageInfo imageInfo = {
-        .imageView = _texture->_vkView,
-        .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-      };
-
-      VkDescriptorImageInfo samplerInfo = {
-        .sampler = _texture->_vkSampler
-      };
-
-      VkWriteDescriptorSet writes[2] = {
-        {
-          .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-          .dstSet = _vkDescSet,
-          .dstBinding = 0,
-          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-          .descriptorCount = 1,
-          .pImageInfo = &imageInfo
-        },
-        {
-          .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-          .dstSet = _vkDescSet,
-          .dstBinding = 1,
-          .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-          .descriptorCount = 1,
-          .pImageInfo = &samplerInfo
-        }
-      };
-
-      vkUpdateDescriptorSets(_device, niCountOf(writes), writes, 0, nullptr);
-      return eTrue;
-    }
-
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
       _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
@@ -2079,7 +2102,6 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
       niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_CreateTextures(), eFalse);
-      niCheck(_CreateDescriptorPool(), eFalse);
       return eTrue;
     }
 
@@ -2108,18 +2130,52 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
       niCheck(_cmdEncoder->_BeginFrame(_currentFb,_clearColor),;);
       {
         niLetMut cmdBuffer = _cmdEncoder->_cmdBuffer;
-        vkCmdBindDescriptorSets(
-          cmdBuffer,
-          VK_PIPELINE_BIND_POINT_GRAPHICS,
-          _pipeline->_vkPipelineLayout,
-          0, 1, &_vkDescSet,
-          0, nullptr);
         sRecti vp = Recti(0,0,_currentFb._width,_currentFb._height);
         _cmdEncoder->SetViewport(vp);
         _cmdEncoder->SetScissorRect(vp);
         _cmdEncoder->SetPipeline(_pipeline);
         _cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
         _cmdEncoder->SetIndexBuffer(_iaBuffer,0,eGpuIndexType_U32);
+
+        {
+          VkDescriptorImageInfo imageInfo = {
+            .imageView = _texture->_vkView,
+            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+          };
+
+          VkDescriptorImageInfo samplerInfo = {
+            .sampler = _texture->_vkSampler
+          };
+
+          VkWriteDescriptorSet writes[2] = {
+            {
+              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+              .dstSet = VK_NULL_HANDLE, // Push descriptor
+              .dstBinding = 0,
+              .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+              .descriptorCount = 1,
+              .pImageInfo = &imageInfo
+            },
+            {
+              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+              .dstSet = VK_NULL_HANDLE, // Push descriptor
+              .dstBinding = 1,
+              .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+              .descriptorCount = 1,
+              .pImageInfo = &samplerInfo
+            }
+          };
+
+          //niPanicAssert(vkCmdPushDescriptorSetKHR != nullptr);
+          vkCmdPushDescriptorSetKHR(
+            cmdBuffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            _pipeline->_vkPipelineLayout,
+            0,
+            niCountOf(writes),
+            writes);
+        }
+
         _cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
       }
       niCheck(_cmdEncoder->_EndFrame(),;);

@@ -3,7 +3,6 @@
 		<EntryPoints>
 			<EntryPoint name="main" exec="pixel"/>
 		</EntryPoints>
-		<Types/>
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
 		</Inputs>
@@ -11,71 +10,7 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 	</Reflection>
-	<Target target="vkgl45">
-		<![CDATA[#version 450
-
-layout(location = 1) in vec4 IN_1_aInput_color;
-layout(location = 0) out vec4 OUT_0_rval_color;
-
-void main()
-{
-    OUT_0_rval_color = IN_1_aInput_color;
-}
-
-]]>
-	</Target>
-	<Target target="msl2_macos">
-		<![CDATA[#include <metal_stdlib>
-#include <simd/simd.h>
-
-using namespace metal;
-
-struct main0_out
-{
-    float4 OUT_0_rval_color [[color(0)]];
-};
-
-struct main0_in
-{
-    float4 IN_1_aInput_color [[user(locn1)]];
-};
-
-fragment main0_out main0(main0_in in [[stage_in]])
-{
-    main0_out out = {};
-    out.OUT_0_rval_color = in.IN_1_aInput_color;
-    return out;
-}
-
-]]>
-	</Target>
-	<Target target="hlsl5">
-		<![CDATA[static float4 IN_1_aInput_color;
-static float4 OUT_0_rval_color;
-
-struct SPIRV_Cross_Input
-{
-    float4 IN_1_aInput_color : TEXCOORD1;
-};
-
-struct SPIRV_Cross_Output
-{
-    float4 OUT_0_rval_color : SV_Target0;
-};
-
-void frag_main()
-{
-    OUT_0_rval_color = IN_1_aInput_color;
-}
-
-SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
-{
-    IN_1_aInput_color = stage_input.IN_1_aInput_color;
-    frag_main();
-    SPIRV_Cross_Output stage_output;
-    stage_output.OUT_0_rval_color = OUT_0_rval_color;
-    return stage_output;
-}
-]]>
-	</Target>
+	<Target target="glsl_vk46" code_path="clear_ps.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="clear_ps.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="clear_ps.gpufunc.hlsl5"/>
 </GpuFunction>

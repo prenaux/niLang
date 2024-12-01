@@ -1,0 +1,38 @@
+#version 460
+
+struct TestGpuFuncs_TestUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
+layout(set = 1, binding = 0) uniform texture2D IN_1_aTexture;
+layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
+
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 2) in vec2 IN_2_aInput_tex0;
+layout(location = 0) out vec4 OUT_0_rval_color;
+
+void main()
+{
+    TestGpuFuncs_TestUniforms _105 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    TestGpuFuncs_TestUniforms _106;
+    _106.mtxWVP = _105.mtxWVP;
+    _106.alphaRef = _105.alphaRef;
+    _106.padding0 = _105.padding0;
+    _106.padding1 = _105.padding1;
+    _106.padding2 = _105.padding2;
+    _106.materialColor = _105.materialColor;
+    vec4 _131 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
+    if (_131.w < _106.alphaRef)
+    {
+        discard;
+    }
+    OUT_0_rval_color = _131 * IN_1_aInput_color;
+}
+

@@ -3,24 +3,6 @@
 		<EntryPoints>
 			<EntryPoint name="main" exec="vertex"/>
 		</EntryPoints>
-		<Types>
-			<_100 name="gl_PerVertex">
-				<members>
-					<Member name="gl_Position" type="vec4"/>
-					<Member name="gl_PointSize" type="float"/>
-					<Member name="gl_ClipDistance" type="float">
-						<MemberQualifiers>
-							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
-						</MemberQualifiers>
-					</Member>
-					<Member name="gl_CullDistance" type="float">
-						<MemberQualifiers>
-							<Array sizes_len="1" sizes="1" size_literals_len="1" size_literals="1"/>
-						</MemberQualifiers>
-					</Member>
-				</members>
-			</_100>
-		</Types>
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
 			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
@@ -30,98 +12,7 @@
 			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
 	</Reflection>
-	<Target target="vkgl45">
-		<![CDATA[#version 450
-
-layout(location = 0) in vec3 IN_0_aInput_position;
-layout(location = 1) in vec4 IN_1_aInput_color;
-layout(location = 1) out vec4 OUT_1_rval_color;
-layout(location = 2) out vec2 OUT_2_rval_tex0;
-vec2 vec2_Zero;
-
-void main()
-{
-    vec2_Zero = vec2(0.0);
-    gl_Position = vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = IN_1_aInput_color;
-    OUT_2_rval_tex0 = vec2_Zero;
-}
-
-]]>
-	</Target>
-	<Target target="msl2_macos">
-		<![CDATA[#include <metal_stdlib>
-#include <simd/simd.h>
-
-using namespace metal;
-
-struct main0_out
-{
-    float4 OUT_1_rval_color [[user(locn1)]];
-    float2 OUT_2_rval_tex0 [[user(locn2)]];
-    float4 gl_Position [[position]];
-};
-
-struct main0_in
-{
-    float3 IN_0_aInput_position [[attribute(0)]];
-    float4 IN_1_aInput_color [[attribute(1)]];
-};
-
-vertex main0_out main0(main0_in in [[stage_in]])
-{
-    main0_out out = {};
-    float2 vec2_Zero = float2(0.0);
-    out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = in.IN_1_aInput_color;
-    out.OUT_2_rval_tex0 = vec2_Zero;
-    return out;
-}
-
-]]>
-	</Target>
-	<Target target="hlsl5">
-		<![CDATA[static float4 gl_Position;
-static float3 IN_0_aInput_position;
-static float4 IN_1_aInput_color;
-static float4 OUT_1_rval_color;
-static float2 OUT_2_rval_tex0;
-
-struct SPIRV_Cross_Input
-{
-    float3 IN_0_aInput_position : TEXCOORD0;
-    float4 IN_1_aInput_color : TEXCOORD1;
-};
-
-struct SPIRV_Cross_Output
-{
-    float4 OUT_1_rval_color : TEXCOORD1;
-    float2 OUT_2_rval_tex0 : TEXCOORD2;
-    float4 gl_Position : SV_Position;
-};
-
-static float2 vec2_Zero;
-
-void vert_main()
-{
-    vec2_Zero = 0.0f.xx;
-    gl_Position = float4(IN_0_aInput_position, 1.0f);
-    OUT_1_rval_color = IN_1_aInput_color;
-    OUT_2_rval_tex0 = vec2_Zero;
-    gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
-}
-
-SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
-{
-    IN_0_aInput_position = stage_input.IN_0_aInput_position;
-    IN_1_aInput_color = stage_input.IN_1_aInput_color;
-    vert_main();
-    SPIRV_Cross_Output stage_output;
-    stage_output.gl_Position = gl_Position;
-    stage_output.OUT_1_rval_color = OUT_1_rval_color;
-    stage_output.OUT_2_rval_tex0 = OUT_2_rval_tex0;
-    return stage_output;
-}
-]]>
-	</Target>
+	<Target target="glsl_vk46" code_path="clear_vs.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="clear_vs.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="clear_vs.gpufunc.hlsl5"/>
 </GpuFunction>

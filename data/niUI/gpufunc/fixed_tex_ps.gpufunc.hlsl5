@@ -1,0 +1,54 @@
+struct TestGpuFuncs_TestUniforms
+{
+    row_major float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
+{
+    TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+Texture2D<float4> IN_1_aTexture : register(t0);
+SamplerState IN_1_aSS : register(s0);
+
+static float4 IN_1_aInput_color;
+static float2 IN_2_aInput_tex0;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 IN_1_aInput_color : TEXCOORD1;
+    float2 IN_2_aInput_tex0 : TEXCOORD2;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+void frag_main()
+{
+    TestGpuFuncs_TestUniforms _81;
+    _81.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _81.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _81.padding0 = IN_1_aUniforms_v.padding0;
+    _81.padding1 = IN_1_aUniforms_v.padding1;
+    _81.padding2 = IN_1_aUniforms_v.padding2;
+    _81.materialColor = IN_1_aUniforms_v.materialColor;
+    OUT_0_rval_color = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0) * IN_1_aInput_color;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

@@ -11,6 +11,9 @@
 
 // TODO:
 //
+// - [ ] p2: Lint _OP_INC, _OP_PINC, _OP_DEC, _OP_PDEC
+// - [ ] p2: Lint _OP_SHIFTLEQ, _OP_SHIFTREQ, _OP_USHIFTREQ, _OP_BWANDEQ, _OP_BWOREQ, _OP_BWXOREQ
+// - [ ] p2: Lint _OP_SHIFTL, _OP_SHIFTR, _OP_USHIFTR, _OP_BWAND, _OP_BWOR, _OP_BWXOR
 // - [ ] p2: function's this pointer should be undefined if its not set in a table, for example in ::app.queueLoading(function() { ... }) this should resolved to error_code_dangling_this (similar to error_code_dangling_type)
 // - [ ] p2: Add pedantic untyped_parameter, untyped_return_type, untyped_local and untyped_slot (table field) lints that require all function parameter and return types to be typed
 // - [ ] p2: Add a var/any type - as in resolve it - which explicitly states that we accept any type
@@ -765,8 +768,18 @@ function main() {
       ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_muleq" not found]});
       ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_diveq" not found]});
       ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_moduloeq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_inc" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_pinc" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_dec" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_pdec" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_shiftleq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_shiftreq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_ushiftreq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_bwandeq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_bworeq" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_bwxoreq" not found]});
 
-      ::CHECK_EQUAL(6,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(16,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

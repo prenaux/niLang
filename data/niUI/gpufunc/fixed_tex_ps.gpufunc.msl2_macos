@@ -1,0 +1,55 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct TestGpuFuncs_TestUniforms
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct TestGpuFuncs_TestUniforms_1
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_TestGpuFuncs_TestUniforms
+{
+    TestGpuFuncs_TestUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+struct main0_in
+{
+    float4 IN_1_aInput_color [[user(locn1)]];
+    float2 IN_2_aInput_tex0 [[user(locn2)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+{
+    main0_out out = {};
+    TestGpuFuncs_TestUniforms _81;
+    _81.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _81.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _81.padding0 = IN_1_aUniforms.v.padding0;
+    _81.padding1 = IN_1_aUniforms.v.padding1;
+    _81.padding2 = IN_1_aUniforms.v.padding2;
+    _81.materialColor = IN_1_aUniforms.v.materialColor;
+    out.OUT_0_rval_color = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0) * in.IN_1_aInput_color;
+    return out;
+}
+

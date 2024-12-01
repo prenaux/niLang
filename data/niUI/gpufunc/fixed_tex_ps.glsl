@@ -57,8 +57,8 @@ layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
 // type size: 48
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestUniforms { TestGpuFuncs_TestUniforms v; } IN_1_aUniforms;
-layout(set = 0, binding = 1) uniform texture2D IN_1_aTexture;
-layout(set = 0, binding = 2) uniform sampler IN_1_aSS;
+layout(set = 1, binding = 0) uniform texture2D IN_1_aTexture;
+layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
 layout(location = 0) out vec4 OUT_0_rval_color;
 void main(void) {
   TestGpuFuncs_VertexOutput aInput;

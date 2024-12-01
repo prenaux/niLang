@@ -1,0 +1,16 @@
+#version 460
+
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 1) out vec4 OUT_1_rval_color;
+layout(location = 2) out vec2 OUT_2_rval_tex0;
+vec2 vec2_Zero;
+
+void main()
+{
+    vec2_Zero = vec2(0.0);
+    gl_Position = vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_1_aInput_color;
+    OUT_2_rval_tex0 = vec2_Zero;
+}
+

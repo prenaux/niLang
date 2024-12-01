@@ -3,37 +3,6 @@
 		<EntryPoints>
 			<EntryPoint name="main" exec="pixel"/>
 		</EntryPoints>
-		<Types>
-			<_99 name="TestGpuFuncs_TestUniforms">
-				<members>
-					<Member name="mtxWVP" type="mat4">
-						<MemberQualifiers offset="0" matrix_stride="16"/>
-					</Member>
-					<Member name="alphaRef" type="float">
-						<MemberQualifiers offset="64"/>
-					</Member>
-					<Member name="padding0" type="float">
-						<MemberQualifiers offset="68"/>
-					</Member>
-					<Member name="padding1" type="float">
-						<MemberQualifiers offset="72"/>
-					</Member>
-					<Member name="padding2" type="float">
-						<MemberQualifiers offset="76"/>
-					</Member>
-					<Member name="materialColor" type="vec4">
-						<MemberQualifiers offset="80"/>
-					</Member>
-				</members>
-			</_99>
-			<_100 name="UBO_TestGpuFuncs_TestUniforms">
-				<members>
-					<Member name="v" type="_99">
-						<MemberQualifiers offset="0"/>
-					</Member>
-				</members>
-			</_100>
-		</Types>
 		<Inputs>
 			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
 			<Input name="IN_2_aInput_tex0" type="vec2" location="2"/>
@@ -42,147 +11,16 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 		<SeparateImages>
-			<SeparateImage name="IN_1_aTexture" type="texture2D" set="0" binding="1"/>
+			<SeparateImage name="IN_1_aTexture" type="texture2D" set="1" binding="0"/>
 		</SeparateImages>
 		<SeparateSamplers>
-			<SeparateSampler name="IN_1_aSS" type="sampler" set="0" binding="2"/>
+			<SeparateSampler name="IN_1_aSS" type="sampler" set="5" binding="0"/>
 		</SeparateSamplers>
 		<UBOs>
 			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_100" set="0" binding="0"/>
 		</UBOs>
 	</Reflection>
-	<Target target="vkgl45">
-		<![CDATA[#version 450
-
-struct TestGpuFuncs_TestUniforms
-{
-    mat4 mtxWVP;
-    float alphaRef;
-    float padding0;
-    float padding1;
-    float padding2;
-    vec4 materialColor;
-};
-
-uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
-layout(set = 0, binding = 1) uniform texture2D IN_1_aTexture;
-layout(set = 0, binding = 2) uniform sampler IN_1_aSS;
-
-layout(location = 1) in vec4 IN_1_aInput_color;
-layout(location = 2) in vec2 IN_2_aInput_tex0;
-layout(location = 0) out vec4 OUT_0_rval_color;
-
-void main()
-{
-    vec4 _146 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
-    if (_146.w < TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]).alphaRef)
-    {
-        discard;
-    }
-    OUT_0_rval_color = _146 * IN_1_aInput_color;
-}
-
-]]>
-	</Target>
-	<Target target="msl2_macos">
-		<![CDATA[#include <metal_stdlib>
-#include <simd/simd.h>
-
-using namespace metal;
-
-struct TestGpuFuncs_TestUniforms
-{
-    float4x4 mtxWVP;
-    float alphaRef;
-    float padding0;
-    float padding1;
-    float padding2;
-    float4 materialColor;
-};
-
-struct UBO_TestGpuFuncs_TestUniforms
-{
-    TestGpuFuncs_TestUniforms v;
-};
-
-struct main0_out
-{
-    float4 OUT_0_rval_color [[color(0)]];
-};
-
-struct main0_in
-{
-    float4 IN_1_aInput_color [[user(locn1)]];
-    float2 IN_2_aInput_tex0 [[user(locn2)]];
-};
-
-fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
-{
-    main0_out out = {};
-    float4 _146 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
-    if (_146.w < IN_1_aUniforms.v.alphaRef)
-    {
-        discard_fragment();
-    }
-    out.OUT_0_rval_color = _146 * in.IN_1_aInput_color;
-    return out;
-}
-
-]]>
-	</Target>
-	<Target target="hlsl5">
-		<![CDATA[struct TestGpuFuncs_TestUniforms
-{
-    row_major float4x4 mtxWVP;
-    float alphaRef;
-    float padding0;
-    float padding1;
-    float padding2;
-    float4 materialColor;
-};
-
-cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
-{
-    TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
-};
-
-Texture2D<float4> IN_1_aTexture : register(t1);
-SamplerState IN_1_aSS : register(s2);
-
-static float4 IN_1_aInput_color;
-static float2 IN_2_aInput_tex0;
-static float4 OUT_0_rval_color;
-
-struct SPIRV_Cross_Input
-{
-    float4 IN_1_aInput_color : TEXCOORD1;
-    float2 IN_2_aInput_tex0 : TEXCOORD2;
-};
-
-struct SPIRV_Cross_Output
-{
-    float4 OUT_0_rval_color : SV_Target0;
-};
-
-void frag_main()
-{
-    float4 _146 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
-    if (_146.w < IN_1_aUniforms_v.alphaRef)
-    {
-        discard;
-    }
-    OUT_0_rval_color = _146 * IN_1_aInput_color;
-}
-
-SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
-{
-    IN_1_aInput_color = stage_input.IN_1_aInput_color;
-    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
-    frag_main();
-    SPIRV_Cross_Output stage_output;
-    stage_output.OUT_0_rval_color = OUT_0_rval_color;
-    return stage_output;
-}
-]]>
-	</Target>
+	<Target target="glsl_vk46" code_path="texture_alphatest_ps.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="texture_alphatest_ps.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="texture_alphatest_ps.gpufunc.hlsl5"/>
 </GpuFunction>

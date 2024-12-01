@@ -1,0 +1,10 @@
+#version 460
+
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 0) out vec4 OUT_0_rval_color;
+
+void main()
+{
+    OUT_0_rval_color = IN_1_aInput_color;
+}
+

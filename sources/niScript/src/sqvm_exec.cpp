@@ -104,24 +104,12 @@ inline void my_sq_throw() {
                              _ss->GetTypeNameStr(o1),_ss->GetTypeNameStr(o2)));   } \
   }
 
-#define LOCAL_INC_(v, target, a, incr)          \
-  {                                             \
-    ARITH_OP_(v, + , target, a, incr);          \
-    a = target;                                 \
-  }
 #define LOCAL_INC(target, a, incr)              \
   {                                             \
     ARITH_OP( + , target, a, incr);             \
     a = target;                                 \
   }
 
-#define PLOCAL_INC_(v, target, a, incr)         \
-  {                                             \
-    SQObjectPtr trg;                            \
-    ARITH_OP_(v, + , trg, a, incr);             \
-    target = a;                                 \
-    a = trg;                                    \
-  }
 #define PLOCAL_INC(target, a, incr)             \
   {                                             \
     SQObjectPtr trg;                            \

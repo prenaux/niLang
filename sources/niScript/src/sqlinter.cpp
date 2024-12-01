@@ -3573,6 +3573,72 @@ void SQFunctionProto::LintTrace(
     }
   };
 
+  auto op_incdec = [&](const SQInstruction& inst, SQOpcode aOpcode) {
+    SQObjectPtr opSelf, opVal;
+
+    _LTRACE(("op_incdec: iarg1: %s, iarg2: %s, iarg3: %s",
+             IARG1, IARG2, IARG3));
+
+    switch (aOpcode) {
+      case _OP_INC: case _OP_PINC: opVal = _one_; break;
+      case _OP_DEC: case _OP_PDEC: opVal = _minusone_; break;
+      default: opVal = _null_; break;
+    }
+
+    if (IARG3 == 0xFF) {
+      opSelf = sget(IARG1);
+      _LTRACE(("op_incdec: set: self: %s (%s), val: %s",
+               _ObjToString(opSelf), sstr(IARG1),
+               _ObjToString(opVal)));
+      if (IARG1 != IARG0)
+        sset(IARG1, opSelf);
+    }
+    else {
+      opSelf = sget(IARG1);
+      SQObjectPtr opKey = sget(IARG2);
+      _LTRACE(("op_incdec: set key: self: %s (%s), key: %s (%s), val: %s",
+               _ObjToString(opSelf), sstr(IARG1),
+               _ObjToString(opKey), sstr(IARG2),
+               _ObjToString(opVal)));
+
+      if (sq_isnull(opSelf)) {
+        if (_LENABLED(getk_in_null)) {
+          _LINT(key_notfound_getk, _FmtKeyNotFoundMsg(_null_,opKey,_null_));
+        }
+      }
+      else {
+        SQObjectPtr currVal;
+        niLet didGet = aLinter.LintGet(opSelf,opKey,currVal,inst._ext);
+        if (!didGet) {
+          if (_LENABLED(key_notfound_getk) &&
+              (!sq_isnull(opKey) || _LENABLED(null_notfound)))
+          {
+            _LINT(key_notfound_getk, _FmtKeyNotFoundMsg(opSelf,opKey,currVal));
+          }
+        }
+        // NOTE: For typechecking I dont see any reason to check the set portion
+        // of the opcode atm since if it can get it it should be able to set it.
+#if 0
+        else {
+          cString errDesc;
+          // NOTE: We just set the value, skipping the math since this is not a VM this should do for type checking...
+          niLet didSet = aLinter.LintSet(errDesc,opSelf,opKey,opVal,inst._ext);
+          if (!didSet) {
+            if (_LENABLED(key_cant_set) &&
+                (!sq_isnull(opKey) || _LENABLED(null_notfound)))
+            {
+              _LINT(key_cant_set, niFmt(
+                "%s key cant be set in %s: %s.",
+                _ObjToString(opKey), _ObjToString(opSelf),
+                errDesc.empty() ? "not found" : errDesc.Chars()));
+            }
+          }
+        }
+#endif
+      }
+    }
+  };
+
   auto op_lint_hint = [&](const SQInstruction& inst) {
     niLet hint = (eSQLintHint)inst._arg0;
     SQObjectPtr arg1 = sget(IARG1);
@@ -3768,16 +3834,28 @@ void SQFunctionProto::LintTrace(
       case _OP_TYPEOF: op_typeof(inst); break;
       case _OP_LINT_HINT: op_lint_hint(inst); break;
       case _OP_FOREACH: op_foreach(inst); break;
-      case _OP_ADD: op_arith(inst, _OP_ADD); break;
-      case _OP_SUB: op_arith(inst, _OP_SUB); break;
-      case _OP_MUL: op_arith(inst, _OP_MUL); break;
-      case _OP_DIV: op_arith(inst, _OP_DIV); break;
-      case _OP_MODULO: op_arith(inst, _OP_MODULO); break;
-      case _OP_PLUSEQ: op_aritheq(inst, _OP_PLUSEQ); break;
-      case _OP_MINUSEQ: op_aritheq(inst, _OP_MINUSEQ); break;
-      case _OP_MULEQ: op_aritheq(inst, _OP_MUL); break;
-      case _OP_DIVEQ: op_aritheq(inst, _OP_DIV); break;
-      case _OP_MODULOEQ: op_aritheq(inst, _OP_MODULO); break;
+      case _OP_ADD: case _OP_SUB:
+      case _OP_MUL: case _OP_DIV:
+      case _OP_MODULO:
+        op_arith(inst, (SQOpcode)inst.op);
+        break;
+      case _OP_SHIFTL: case _OP_SHIFTR: case _OP_USHIFTR:
+      case _OP_BWAND: case _OP_BWOR: case _OP_BWXOR:
+        op_arith(inst, (SQOpcode)inst.op);
+        break;
+      case _OP_PLUSEQ: case _OP_MINUSEQ:
+      case _OP_MULEQ: case _OP_DIVEQ:
+      case _OP_MODULOEQ:
+        op_aritheq(inst, (SQOpcode)inst.op);
+        break;
+      case _OP_SHIFTLEQ: case _OP_SHIFTREQ: case _OP_USHIFTREQ:
+      case _OP_BWANDEQ: case _OP_BWOREQ: case _OP_BWXOREQ:
+        op_aritheq(inst, (SQOpcode)inst.op);
+        break;
+      case _OP_INC: case _OP_PINC:
+      case _OP_DEC: case _OP_PDEC:
+        op_incdec(inst, (SQOpcode)inst.op);
+        break;
       default: {
         break;
       }

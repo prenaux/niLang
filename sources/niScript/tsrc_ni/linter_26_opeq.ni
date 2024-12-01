@@ -15,6 +15,16 @@ function main() {
   xyz_muleq *= 123; // should fail, xyz doesnt exist
   xyz_diveq /= 123; // should fail, xyz doesnt exist
   xyz_moduloeq %= 123; // should fail, xyz doesnt exist
+  ++xyz_inc; // should fail, xyz doesnt exist
+  xyz_pinc++; // should fail, xyz doesnt exist
+  --xyz_dec; // should fail, xyz doesnt exist
+  xyz_pdec--; // should fail, xyz doesnt exist
+  xyz_shiftleq <<= 123; // should fail, xyz doesnt exist
+  xyz_shiftreq >>= 123; // should fail, xyz doesnt exist
+  xyz_ushiftreq >>>= 123; // should fail, xyz doesnt exist
+  xyz_bwandeq &= 123; // should fail, xyz doesnt exist
+  xyz_bworeq |= 123; // should fail, xyz doesnt exist
+  xyz_bwxoreq ^= 123; // should fail, xyz doesnt exist
 
   abc = 123; // should succeed
   abc -= 123; // should succeed
@@ -22,6 +32,12 @@ function main() {
   abc *= 123; // should succeed
   abc /= 123; // should succeed
   abc %= 123; // should succeed
+  abc >>= 123; // should succeed
+  abc <<= 123; // should succeed
+  abc >>>= 123; // should succeed
+  abc &= 123; // should succeed
+  abc |= 123; // should succeed
+  abc ^= 123; // should succeed
 
   local def = 123;
   def = 123; // should succeed
@@ -30,4 +46,10 @@ function main() {
   def *= 123; // should succeed
   def /= 123; // should succeed
   def %= 123; // should succeed
+  def >>= 123; // should succeed
+  def <<= 123; // should succeed
+  def >>>= 123; // should succeed
+  def &= 123; // should succeed
+  def |= 123; // should succeed
+  def ^= 123; // should succeed
 }

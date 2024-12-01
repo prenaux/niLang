@@ -1,0 +1,35 @@
+#version 460
+
+struct TestGpuFuncs_TestUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 1) out vec4 OUT_1_rval_color;
+layout(location = 2) out vec2 OUT_2_rval_tex0;
+vec2 vec2_Zero;
+
+void main()
+{
+    vec2_Zero = vec2(0.0);
+    TestGpuFuncs_TestUniforms _112 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    TestGpuFuncs_TestUniforms _113;
+    _113.mtxWVP = _112.mtxWVP;
+    _113.alphaRef = _112.alphaRef;
+    _113.padding0 = _112.padding0;
+    _113.padding1 = _112.padding1;
+    _113.padding2 = _112.padding2;
+    _113.materialColor = _112.materialColor;
+    gl_Position = _113.mtxWVP * vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_1_aInput_color * _113.materialColor;
+    OUT_2_rval_tex0 = vec2_Zero;
+}
+

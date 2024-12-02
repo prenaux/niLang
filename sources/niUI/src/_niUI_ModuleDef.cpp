@@ -8401,6 +8401,18 @@ static const ni::sMethodDef iGpuFunction_GetFunctionType = {
 #endif
 };
 
+// Method: GetFunctionBindType
+static const ni::sMethodDef iGpuFunction_GetFunctionBindType = {
+  "GetFunctionBindType",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuFunctionBindType",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuFunction_GetFunctionBindType)
+#else
+  NULL
+#endif
+};
+
 // Method: GetDataTable
 static const ni::sMethodDef iGpuFunction_GetDataTable = {
   "GetDataTable",
@@ -8416,6 +8428,7 @@ static const ni::sMethodDef iGpuFunction_GetDataTable = {
 static const ni::sMethodDef* Methods_iGpuFunction[] = {
 	&iGpuFunction_GetFunctionId,
 	&iGpuFunction_GetFunctionType,
+	&iGpuFunction_GetFunctionBindType,
 	&iGpuFunction_GetDataTable,
 
 };
@@ -37708,6 +37721,24 @@ static const ni::sEnumDef Enum_eGpuFunctionType = {
 	return &Enum_eGpuFunctionType;
 }
 
+// --- eGpuFunctionBindType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionBindType() {
+
+static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
+	{ "None", ni::eGpuFunctionBindType_None },
+	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
+	{ "Material", ni::eGpuFunctionBindType_Material },
+	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
+	{ "Last", ni::eGpuFunctionBindType_Last },
+};
+static const ni::sEnumDef Enum_eGpuFunctionBindType = {
+	"eGpuFunctionBindType",
+  niCountOf(Enum_eGpuFunctionBindType_Values), Enum_eGpuFunctionBindType_Values
+};
+
+	return &Enum_eGpuFunctionBindType;
+}
+
 // --- eGpuPixelFormat ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPixelFormat() {
 
@@ -37775,6 +37806,28 @@ static const ni::sEnumDef Enum_eGpuBlendOp = {
 };
 
 	return &Enum_eGpuBlendOp;
+}
+
+// --- eGLSLVulkanLayoutSets ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanLayoutSets() {
+
+static const ni::sEnumValueDef Enum_eGLSLVulkanLayoutSets_Values[] = {
+	{ "Buffer", ni::eGLSLVulkanLayoutSets_Buffer },
+	{ "Texture2D", ni::eGLSLVulkanLayoutSets_Texture2D },
+	{ "TextureCube", ni::eGLSLVulkanLayoutSets_TextureCube },
+	{ "Texture3D", ni::eGLSLVulkanLayoutSets_Texture3D },
+	{ "TextureShadow", ni::eGLSLVulkanLayoutSets_TextureShadow },
+	{ "Sampler", ni::eGLSLVulkanLayoutSets_Sampler },
+	{ "SamplerShadow", ni::eGLSLVulkanLayoutSets_SamplerShadow },
+	{ "AccelStruct", ni::eGLSLVulkanLayoutSets_AccelStruct },
+	{ "Last", ni::eGLSLVulkanLayoutSets_Last },
+};
+static const ni::sEnumDef Enum_eGLSLVulkanLayoutSets = {
+	"eGLSLVulkanLayoutSets",
+  niCountOf(Enum_eGLSLVulkanLayoutSets_Values), Enum_eGLSLVulkanLayoutSets_Values
+};
+
+	return &Enum_eGLSLVulkanLayoutSets;
 }
 
 // --- eGraphicsCaptureFlags ---
@@ -39732,9 +39785,11 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGpuBufferMemoryMode(),
   GetEnumDef_eGpuBufferUsageFlags(),
   GetEnumDef_eGpuFunctionType(),
+  GetEnumDef_eGpuFunctionBindType(),
   GetEnumDef_eGpuPixelFormat(),
   GetEnumDef_eGpuBlendFactor(),
   GetEnumDef_eGpuBlendOp(),
+  GetEnumDef_eGLSLVulkanLayoutSets(),
   GetEnumDef_eGraphicsCaptureFlags(),
   GetEnumDef_eImageUsage(),
   GetEnumDef_eImageMapSerializeFlags(),

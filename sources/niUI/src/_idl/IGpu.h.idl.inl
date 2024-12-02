@@ -82,6 +82,13 @@ IDLC_METH_BEGIN(ni,iGpuFunction,GetFunctionType,0)
 	IDLC_RET_FROM_ENUM(eGpuFunctionType,_Ret)
 IDLC_METH_END(ni,iGpuFunction,GetFunctionType,0)
 
+/** ni -> iGpuFunction::GetFunctionBindType/0 **/
+IDLC_METH_BEGIN(ni,iGpuFunction,GetFunctionBindType,0)
+	IDLC_DECL_RETVAR(eGpuFunctionBindType,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuFunction,GetFunctionBindType,0,())
+	IDLC_RET_FROM_ENUM(eGpuFunctionBindType,_Ret)
+IDLC_METH_END(ni,iGpuFunction,GetFunctionBindType,0)
+
 /** ni -> iGpuFunction::GetDataTable/0 **/
 IDLC_METH_BEGIN(ni,iGpuFunction,GetDataTable,0)
 	IDLC_DECL_RETVAR(iDataTable*,_Ret)

@@ -173,6 +173,24 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
+		<enum name="eGpuFunctionBindType">
+			<comments desc="GPU Function bind type "/>
+			<value name="eGpuFunctionBindType_None" value="0 ">
+				<comments desc="No resource bindings "/>
+			</value>
+			<value name="eGpuFunctionBindType_Fixed" value="1 ">
+				<comments desc="Basic fixed-function pipeline, single base channel "/>
+			</value>
+			<value name="eGpuFunctionBindType_Material" value="2 ">
+				<comments desc="Full iMaterial pipeline with channels "/>
+			</value>
+			<value name="eGpuFunctionBindType_Bindless" value="3 ">
+				<comments desc="Global resource arrays "/>
+			</value>
+			<value name="eGpuFunctionBindType_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
 		<interface name="iGpuFunction" uuid1="A9FB33CE-9B16-4E4E-A933-538207420D92" uuid2="0xa9fb33ce,0x9b16,0x4e4e,0xa9,0x33,0x53,0x82,0x07,0x42,0x0d,0x92">
 			<comments desc="GPU Function interface. "/>
 			<parents>
@@ -199,6 +217,17 @@
 				property_name="function_type">
 				<comments desc="Get the function&apos;s type. "/>
 				<return type="eGpuFunctionType" typec="eGpuFunctionType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFunctionBindType"
+				name="GetFunctionBindType"
+				num_parameters="0"
+				property="get"
+				property_name2="functionBindType"
+				property_name="function_bind_type">
+				<comments desc="Get the function&apos;s bind type. "/>
+				<return type="eGpuFunctionBindType" typec="eGpuFunctionBindType" typei="ni::eType_Enum"/>
 			</method>
 			<method
 				const="yes"
@@ -1238,5 +1267,35 @@
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
+		<enum name="eGLSLVulkanLayoutSets">
+			<comments desc=""/>
+			<value name="eGLSLVulkanLayoutSets_Buffer" value="0 ">
+				<comments desc="UBO/SSBO "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_Texture2D" value="1 ">
+				<comments desc="Regular 2D textures "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_TextureCube" value="2 ">
+				<comments desc="Cubemaps "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_Texture3D" value="3 ">
+				<comments desc="Volume textures "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_TextureShadow" value="4 ">
+				<comments desc="Depth compare "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_Sampler" value="5 ">
+				<comments desc="Regular sampling "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_SamplerShadow" value="6 ">
+				<comments desc="Shadow sampling "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_AccelStruct" value="7 ">
+				<comments desc="RT acceleration "/>
+			</value>
+			<value name="eGLSLVulkanLayoutSets_Last" value="8 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
 	</namespace>
 </niIDL>

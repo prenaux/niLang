@@ -320,7 +320,7 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
     return eTrue;
   }
 
-  virtual tU32 __stdcall GetFunctionId() const {
+  virtual tU32 __stdcall GetFunctionId() const niImpl {
     return _id;
   }
 
@@ -330,20 +330,25 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
     return _GetGpuFunctionType(_mtlFunction.functionType);
   }
 
+  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl {
+    // TODO: Actually detect the bind type correctly.
+    return eGpuFunctionBindType_Fixed;
+  }
+
   virtual iDataTable* __stdcall GetDataTable() const niImpl {
     return _datatable;
   }
 
-  iHString* __stdcall GetDeviceResourceName() const {
+  iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
     return eFalse;
   }
-  virtual tBool __stdcall ResetDeviceResource() {
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
     return eTrue;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
+  virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) niImpl {
     return this;
   }
 };

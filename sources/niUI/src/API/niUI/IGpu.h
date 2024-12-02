@@ -153,6 +153,20 @@ enum eGpuFunctionType
   eGpuFunctionType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
+//! GPU Function bind type
+enum eGpuFunctionBindType {
+  //! No resource bindings
+  eGpuFunctionBindType_None = 0,
+  //! Basic fixed-function pipeline, single base channel
+  eGpuFunctionBindType_Fixed = 1,
+  //! Full iMaterial pipeline with channels
+  eGpuFunctionBindType_Material = 2,
+  //! Global resource arrays
+  eGpuFunctionBindType_Bindless = 3,
+  //! \internal
+  eGpuFunctionBindType_Last = 4,
+};
+
 //! GPU Function interface.
 struct iGpuFunction : public iDeviceResource
 {
@@ -165,6 +179,10 @@ struct iGpuFunction : public iDeviceResource
   //! Get the function's type.
   //! {Property}
   virtual eGpuFunctionType __stdcall GetFunctionType() const = 0;
+
+  //! Get the function's bind type.
+  //! {Property}
+  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const = 0;
 
   //! Get the gpu function's datatable.
   //! {Property}
@@ -547,6 +565,32 @@ struct iGraphicsDriverGpu : public iUnknown
 
   //! Synchronize a managed resource from the GPU to the CPU memory.
   virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
+};
+
+//===========================================================================
+//
+//  Vulkan interfaces
+//
+//===========================================================================
+enum eGLSLVulkanLayoutSets {
+  //! UBO/SSBO
+  eGLSLVulkanLayoutSets_Buffer = 0,
+  //! Regular 2D textures
+  eGLSLVulkanLayoutSets_Texture2D = 1,
+  //! Cubemaps
+  eGLSLVulkanLayoutSets_TextureCube = 2,
+  //! Volume textures
+  eGLSLVulkanLayoutSets_Texture3D = 3,
+  //! Depth compare
+  eGLSLVulkanLayoutSets_TextureShadow = 4,
+  //! Regular sampling
+  eGLSLVulkanLayoutSets_Sampler = 5,
+  //! Shadow sampling
+  eGLSLVulkanLayoutSets_SamplerShadow = 6,
+  //! RT acceleration
+  eGLSLVulkanLayoutSets_AccelStruct = 7,
+  //! \internal
+  eGLSLVulkanLayoutSets_Last = 8,
 };
 
 }

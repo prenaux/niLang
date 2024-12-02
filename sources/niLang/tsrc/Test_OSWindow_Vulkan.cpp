@@ -30,39 +30,8 @@
 
 namespace ni {
 
-enum eGpuFunctionBindType {
-  //! No resource bindings
-  eGpuFunctionBindType_None = 0,
-  //! Basic fixed-function pipeline
-  eGpuFunctionBindType_Fixed = 1,
-  //! Full material pipeline with channels
-  eGpuFunctionBindType_Material = 2,
-  //! Global resource arrays
-  eGpuFunctionBindType_Bindless = 3,
-  //! \internal
-  eGpuFunctionBindType_Last = 4,
-};
-
-enum eGLSLVulkanLayoutSets {
-  //! UBO/SSBO
-  eGLSLVulkanLayoutSets_Buffer = 0,
-  //! Regular 2D textures
-  eGLSLVulkanLayoutSets_Texture2D = 1,
-  //! Cubemaps
-  eGLSLVulkanLayoutSets_TextureCube = 2,
-  //! Volume textures
-  eGLSLVulkanLayoutSets_Texture3D = 3,
-  //! Depth compare
-  eGLSLVulkanLayoutSets_TextureShadow = 4,
-  //! Regular sampling
-  eGLSLVulkanLayoutSets_Sampler = 5,
-  //! Shadow sampling
-  eGLSLVulkanLayoutSets_SamplerShadow = 6,
-  //! RT acceleration
-  eGLSLVulkanLayoutSets_AccelStruct = 7,
-  //! \internal
-  eGLSLVulkanLayoutSets_Last = 8,
-};
+_HDecl(__vktex_white__);
+_HDecl(__vkbuff_dummy__);
 
 struct FOSWindowVulkan {
 };
@@ -246,54 +215,531 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
   return attrs;
 }
 
-struct sVulkanDriver {
+struct sVulkanTexture;
+struct sVulkanBuffer;
+
+struct sVulkanDriver : public ImplRC<iUnknown> {
+  NN<iGraphics> _graphics;
   VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
-  VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
-  LocalIDGenerator _idGenerator;
 
-  ~sVulkanDriver() {
+  VkInstance _instance = VK_NULL_HANDLE;
+  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
+  typedef astl::map<cString,tU32> tVkExtensionsMap;
+  tVkExtensionsMap _extensions;
+  tBool _enableValidationLayers = eTrue;
+  typedef astl::set<cString> tVkInstanceLayersSet;
+  tVkInstanceLayersSet _instanceLayers;
+  tU32 _queueFamilyIndex = 0;
+
+  LocalIDGenerator _idGenerator;
+  VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
+  Ptr<sVulkanTexture> _whiteTexture;
+  Ptr<sVulkanBuffer> _dummyBuffer;
+
+  sVulkanDriver()
+      : _graphics(as_NN(QueryInterface<iGraphics>(niCreateInstance(niUI,Graphics,niVarNull,niVarNull))))
+  {
+  }
+
+  virtual tBool __stdcall Init(const achar* aAppName) {
+    niCheck(_CreateInstance(aAppName),eFalse);
+    niCheck(_InitPhysicalDevice(),eFalse);
+    niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
+    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
+    niCheck(_CreateLogicalDevice(), eFalse);
+    niCheck(_CreateCommandPool(), eFalse);
+    niCheck(_CreateAllocator(), eFalse);
+    niCheck(_CreateVulkanDriverResources(), eFalse) ;
+    return eTrue;
+  }
+
+  virtual ~sVulkanDriver() {
+    _dummyBuffer = nullptr;
+    _whiteTexture = nullptr;
     niLoop(i,niCountOf(_ssCompiled)) {
       if (_ssCompiled[i]) {
-        vkDestroySampler(_device, _ssCompiled[i], nullptr);
+        vkDestroySampler(_device, _ssCompiled[i],
+                         nullptr);
         _ssCompiled[i] = VK_NULL_HANDLE;
       }
     }
-  }
 
-  tBool _InitCompiledSamplerStates() {
-    VkSamplerCreateInfo desc = {
-      .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-      .compareEnable = VK_FALSE,
-      .minLod = 0.0f,
-      .maxLod = FLT_MAX,
-      .unnormalizedCoordinates = VK_FALSE,
-    };
-
-#define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
-      desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;            \
-      _toVkSamplerFilter(desc, eSamplerFilter_##FILTER);                \
-      desc.addressModeU = desc.addressModeV = desc.addressModeW =       \
-          _toVkSamplerAddress[eSamplerWrap_##WRAP];                     \
-      VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                 \
-                               &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
+    if (_commandPool) {
+      vkDestroyCommandPool(_device, _commandPool, nullptr);
+      _commandPool = VK_NULL_HANDLE;
+    }
+    if (_device) {
+      vkDestroyDevice(_device, nullptr);
+      _device = VK_NULL_HANDLE;
+    }
+    if (_instance) {
+      vkDestroyInstance(_instance, nullptr);
+      _instance = VK_NULL_HANDLE;
     }
 
-    INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
-    INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
-    INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
+    if (_allocator != nullptr) {
+      vmaDestroyAllocator(_allocator);
+      _allocator = nullptr;
+    }
+  }
 
-    INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
-    INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
-    INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
-#undef INIT_COMPILED_SAMPLER_STATES
+  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* /*pUserData*/) {
 
+    switch (severity) {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+      default:
+        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
+        break;
+    }
+    return VK_FALSE;
+  }
+
+  tBool _CreateInstance(const achar* aAppName) {
+    {
+      tU32 layerCount;
+      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+      astl::vector<VkLayerProperties> availableLayers(layerCount);
+      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+      for (const auto& layer : availableLayers) {
+        _instanceLayers.insert(layer.layerName);
+      }
+      {
+        cString o;
+        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
+          if (it != _instanceLayers.begin())
+            o << ", ";
+          o << *it;
+        }
+        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
+      }
+    }
+
+    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+    astl::vector<const char*> layers;
+    if (_enableValidationLayers) {
+      // NOTE: Statically linking directly MoltenVK we cannot use the
+      // validation layer.
+      const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
+      if (!astl::contains(_instanceLayers,validationLayerName)) {
+        _enableValidationLayers = eFalse;
+        niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
+                        validationLayerName));
+      }
+      else {
+        layers.push_back(validationLayerName);
+      }
+    }
+
+    VkApplicationInfo appInfo = {
+      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = nullptr,
+      .pApplicationName = aAppName,
+      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+      .pEngineName = "niVlk",
+      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+      .apiVersion = VK_API_VERSION_1_0
+    };
+
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
+      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
+      .pfnUserCallback = _DebugCallback
+    };
+
+    VkInstanceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .pNext = nullptr,
+      .pApplicationInfo = &appInfo,
+      .enabledLayerCount = (tU32)layers.size(),
+      .ppEnabledLayerNames = layers.data(),
+      .enabledExtensionCount = (tU32)extensions.size(),
+      .ppEnabledExtensionNames = extensions.data()
+    };
+    createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
+
+    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
     return eTrue;
   }
+
+  void _InitDeviceFeatures2(VkPhysicalDevice physicalDevice) {
+    // Initialize structures to query ray tracing and mesh shader features
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {};
+    rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = {};
+    accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+    rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
+
+    VkPhysicalDeviceMeshShaderFeaturesEXT meshShaderFeatures = {};
+    meshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+    accelerationStructureFeatures.pNext = &meshShaderFeatures;
+
+    VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
+    deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    deviceFeatures2.pNext = &rayTracingPipelineFeatures;
+
+    // Query the physical device features
+    vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
+
+    // Determine support for ray tracing and mesh shaders
+    bool isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
+    if (isRayTracingSupported) {
+      VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingProps = {};
+      rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+
+      VkPhysicalDeviceProperties2 deviceProps2 = {};
+      deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+      deviceProps2.pNext = &rayTracingProps;
+
+      vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
+
+      niLog(Info, niFmt(
+        "Vulkan Ray Tracing Properties:\n"
+        // Size in bytes of the shader group handle.
+        "  shaderGroupHandleSize: %u\n"
+        // Maximum number of levels of ray recursion allowed in a trace command.
+        "  maxRayRecursionDepth: %u\n"
+        // Maximum stride in bytes allowed between shader groups in the shader binding table.
+        "  maxShaderGroupStride: %u\n"
+        // Required alignment in bytes for the base of the shader binding table.
+        "  shaderGroupBaseAlignment: %u\n"
+        // Size in bytes of the shader group handle for capture and replay.
+        "  shaderGroupHandleCaptureReplaySize: %u",
+        rayTracingProps.shaderGroupHandleSize,
+        rayTracingProps.maxRayRecursionDepth,
+        rayTracingProps.maxShaderGroupStride,
+        rayTracingProps.shaderGroupBaseAlignment,
+        rayTracingProps.shaderGroupHandleCaptureReplaySize));
+    }
+    else {
+      niLog(Info, "Vulkan Ray Tracing not supported.");
+    }
+
+    if (meshShaderFeatures.meshShader) {
+      VkPhysicalDeviceMeshShaderPropertiesEXT meshShaderProps = {};
+      meshShaderProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+
+      VkPhysicalDeviceProperties2 deviceProps2 = {};
+      deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+      deviceProps2.pNext = &meshShaderProps;
+
+      vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
+
+      niLog(Info, niFmt(
+        "Vulkan Mesh Shader Properties:\n"
+        // Maximum total count of task work groups.
+        "  maxTaskWorkGroupTotalCount: %d\n"
+        // Maximum count of task work groups in each dimension.
+        "  maxTaskWorkGroupCount: %s\n"
+        // Maximum number of task shader invocations in a single work group.
+        "  maxTaskWorkGroupInvocations: %d\n"
+        // Maximum size of task work group in each dimension.
+        "  maxTaskWorkGroupSize: %s\n"
+        // Maximum size in bytes of the task payload.
+        "  maxTaskPayloadSize: %d\n"
+        // Maximum size in bytes of task shared memory.
+        "  maxTaskSharedMemorySize: %d\n"
+        // Maximum total count of mesh work groups.
+        "  maxMeshWorkGroupTotalCount: %d\n"
+        // Maximum count of mesh work groups in each dimension.
+        "  maxMeshWorkGroupCount: %s\n"
+        // Maximum number of mesh shader invocations in a single work group.
+        "  maxMeshWorkGroupInvocations: %d\n"
+        // Maximum size of mesh work group in each dimension.
+        "  maxMeshWorkGroupSize: %s\n"
+        // Maximum size in bytes of mesh shared memory.
+        "  maxMeshSharedMemorySize: %d\n"
+        // Maximum number of mesh output vertices.
+        "  maxMeshOutputVertices: %d\n"
+        // Maximum number of mesh output primitives.
+        "  maxMeshOutputPrimitives: %d\n"
+        // Maximum number of mesh output layers.
+        "  maxMeshOutputLayers: %d\n"
+        // Maximum number of mesh multiview views.
+        "  maxMeshMultiviewViewCount: %d\n"
+        // Granularity of mesh output per vertex.
+        "  meshOutputPerVertexGranularity: %d\n"
+        // Granularity of mesh output per primitive.
+        "  meshOutputPerPrimitiveGranularity: %d",
+        meshShaderProps.maxTaskWorkGroupTotalCount,
+        Vec3i(meshShaderProps.maxTaskWorkGroupCount[0], meshShaderProps.maxTaskWorkGroupCount[1], meshShaderProps.maxTaskWorkGroupCount[2]),
+        meshShaderProps.maxTaskWorkGroupInvocations,
+        Vec3i(meshShaderProps.maxTaskWorkGroupSize[0], meshShaderProps.maxTaskWorkGroupSize[1], meshShaderProps.maxTaskWorkGroupSize[2]),
+        meshShaderProps.maxTaskPayloadSize,
+        meshShaderProps.maxTaskSharedMemorySize,
+        meshShaderProps.maxMeshWorkGroupTotalCount,
+        Vec3i(meshShaderProps.maxMeshWorkGroupCount[0], meshShaderProps.maxMeshWorkGroupCount[1], meshShaderProps.maxMeshWorkGroupCount[2]),
+        meshShaderProps.maxMeshWorkGroupInvocations,
+        Vec3i(meshShaderProps.maxMeshWorkGroupSize[0], meshShaderProps.maxMeshWorkGroupSize[1], meshShaderProps.maxMeshWorkGroupSize[2]),
+        meshShaderProps.maxMeshSharedMemorySize,
+        meshShaderProps.maxMeshOutputVertices,
+        meshShaderProps.maxMeshOutputPrimitives,
+        meshShaderProps.maxMeshOutputLayers,
+        meshShaderProps.maxMeshMultiviewViewCount,
+        meshShaderProps.meshOutputPerVertexGranularity,
+        meshShaderProps.meshOutputPerPrimitiveGranularity));
+    }
+    else {
+      niLog(Info, "Vulkan Mesh shader not supported.");
+    }
+
+    if (meshShaderFeatures.taskShader) {
+      niLog(Info, "Vulkan Task shader supported.");
+    }
+    else {
+      niLog(Info, "Vulkan Task shader not supported.");
+    }
+  }
+
+  tBool _InitPhysicalDevice() {
+    tU32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+    niCheck(deviceCount > 0, eFalse);
+
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, &_physicalDevice);
+
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(_physicalDevice, &props);
+    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
+    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.driverVersion),
+                     VK_VERSION_MINOR(props.driverVersion),
+                     VK_VERSION_PATCH(props.driverVersion)));
+    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
+                     VK_VERSION_MAJOR(props.apiVersion),
+                     VK_VERSION_MINOR(props.apiVersion),
+                     VK_VERSION_PATCH(props.apiVersion)));
+
+    // Descriptor Set Limits
+    niLog(Info,niFmt(
+      "Vulkan Descriptor Set Limits:\n"
+      // The maximum number of descriptor sets that can be bound at one time.
+      // Useful to know to optimize descriptor set usage and avoid exceeding device limits.
+      "  maxBoundDescriptorSets: %d\n"
+      // The maximum number of samplers in a descriptor set.
+      // Important for determining how many textures can be accessed in a single shader.
+      "  maxDescriptorSetSamplers: %d\n"
+      // The maximum number of uniform buffers in a descriptor set.
+      // Determines how many uniform buffers can be used for sharing data with shaders.
+      "  maxDescriptorSetUniformBuffers: %d\n"
+      // The maximum number of storage buffers in a descriptor set.
+      // Impacts how much storage data you can access in shaders for operations like compute.
+      "  maxDescriptorSetStorageBuffers: %d\n"
+      // The maximum number of sampled images that can be included in a descriptor set.
+      // Important for managing large sets of textures in rendering.
+      "  maxDescriptorSetSampledImages: %d\n"
+      // The maximum number of storage images in a descriptor set.
+      // Affects image writing in compute and fragment shaders.
+      "  maxDescriptorSetStorageImages: %d\n"
+      // The maximum number of samplers per stage (e.g., vertex, fragment).
+      // Helps avoid exceeding the per-stage sampler limit, which can impact shader resource layout.
+      "  maxPerStageDescriptorSamplers: %d",
+      props.limits.maxBoundDescriptorSets,
+      props.limits.maxDescriptorSetSamplers,
+      props.limits.maxDescriptorSetUniformBuffers,
+      props.limits.maxDescriptorSetStorageBuffers,
+      props.limits.maxDescriptorSetSampledImages,
+      props.limits.maxDescriptorSetStorageImages,
+      props.limits.maxPerStageDescriptorSamplers));
+
+    // Vertex Input Limits
+    niLog(Info,niFmt(
+      "Vulkan Vertex Input Limits:\n"
+      // The maximum number of vertex input attributes.
+      // Important for defining complex vertex formats, such as those involving multiple components.
+      "  maxVertexInputAttributes: %d\n"
+      // The maximum number of vertex input bindings.
+      // Limits the number of vertex buffers that can be used in a single pipeline.
+      "  maxVertexInputBindings: %d",
+      props.limits.maxVertexInputAttributes,
+      props.limits.maxVertexInputBindings));
+
+    // Push Constants and Buffers
+    niLog(Info,niFmt(
+      "Vulkan Push Constants and Buffers:\n"
+      // The maximum size (in bytes) of push constants.
+      // Push constants are a fast way to provide data to shaders, so this determines how much data can be passed in this way.
+      "  maxPushConstantsSize: %d\n"
+      // The maximum size of a uniform buffer.
+      // Impacts how much uniform data (e.g., transformation matrices, material properties) can be shared with shaders.
+      "  maxUniformBufferRange: %d\n"
+      // The maximum size of a storage buffer.
+      // Useful for determining the size of data that can be read and written in compute shaders.
+      "  maxStorageBufferRange: %d",
+      props.limits.maxPushConstantsSize,
+      props.limits.maxUniformBufferRange,
+      props.limits.maxStorageBufferRange));
+
+    // Image and Memory Alignment
+    niLog(Info,niFmt(
+      "Vulkan Image and Memory Alignment:\n"
+      // The alignment required between buffers and images in memory.
+      // Affects how resources are allocated to ensure correct alignment for performance.
+      "  bufferImageGranularity: %llu\n"
+      // The maximum dimensions of a 2D image (width and height).
+      // Important for determining the largest texture resolution supported by the device.
+      "  maxImageDimension2D: %d\n"
+      // The maximum number of layers in an image array.
+      // Important for applications that need array textures, such as cube maps or layered rendering.
+      "  maxImageArrayLayers: %d",
+      props.limits.bufferImageGranularity,
+      props.limits.maxImageDimension2D,
+      props.limits.maxImageArrayLayers));
+
+    // Framebuffer Limits
+    niLog(Info,niFmt(
+      "Vulkan Framebuffer Limits:\n"
+      // The maximum width of a framebuffer.
+      // Important for determining the resolution limits for rendering targets.
+      "  maxFramebufferWidth: %d\n"
+      // The maximum height of a framebuffer.
+      // Helps in deciding the render target resolution.
+      "  maxFramebufferHeight: %d\n"
+      // The maximum number of color attachments in a framebuffer.
+      // Limits the number of color outputs possible, affecting advanced rendering techniques like MRT (multiple render targets).
+      "  maxColorAttachments: %d",
+      props.limits.maxFramebufferWidth,
+      props.limits.maxFramebufferHeight,
+      props.limits.maxColorAttachments));
+
+    // Compute Shader Limits
+    niLog(Info,niFmt(
+      "Vulkan Compute Shader Limits:\n"
+      // The maximum number of workgroups in each dimension for compute shaders.
+      // Important for understanding how to best structure large compute workloads.
+      "  maxComputeWorkGroupCount: %s\n"
+      // The maximum number of workgroup invocations in compute shaders.
+      // Limits the number of compute shader threads that can run concurrently within a workgroup.
+      "  maxComputeWorkGroupInvocations: %d",
+      Vec3i(props.limits.maxComputeWorkGroupCount[0],
+            props.limits.maxComputeWorkGroupCount[1],
+            props.limits.maxComputeWorkGroupCount[2]),
+      props.limits.maxComputeWorkGroupInvocations));
+
+    // Sampler Limits
+    niLog(Info,niFmt(
+      "Vulkan Sampler Limits:\n"
+      // The maximum anisotropy value for samplers.
+      // Useful for determining the level of texture quality possible when using anisotropic filtering.
+      "  maxSamplerAnisotropy: %g",
+      props.limits.maxSamplerAnisotropy));
+
+    // Ray tracing & mesh shaders detection
+    _InitDeviceFeatures2(_physicalDevice);
+
+    // Get extensions
+    {
+      tU32 extensionCount = 0;
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
+      astl::vector<VkExtensionProperties> extensions(extensionCount);
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
+      for (const auto& extension : extensions) {
+        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
+      }
+      {
+        cString o;
+        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
+          if (it != _extensions.begin())
+            o << ", ";
+          o << it->first << "=" << it->second;
+        }
+        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
+      }
+    }
+
+    niCheck(_extensions.find("VK_KHR_push_descriptor") != _extensions.end(), eFalse);
+    return eTrue;
+  }
+
+  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
+    tU32 queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+    astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    niLog(Info,"Vulkan Queue Families:");
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      niLog(Info,niFmt("  Family %d:", i));
+      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
+      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
+      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
+    }
+
+    for (tU32 i = 0; i < queueFamilyCount; i++) {
+      if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        aQueueFamilyIndex = i;
+        return eTrue;
+      }
+    }
+
+    return eFalse;
+  }
+
+  tBool _CreateLogicalDevice() {
+    tF32 queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .queueCount = 1,
+      .pQueuePriorities = &queuePriority
+    };
+
+    VkDeviceCreateInfo createInfo = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .queueCreateInfoCount = 1,
+      .pQueueCreateInfos = &queueCreateInfo,
+      .enabledExtensionCount = 0,
+      .enabledLayerCount = 0
+    };
+
+    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
+    vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
+    return eTrue;
+  }
+
+  tBool _CreateCommandPool() {
+    VkCommandPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .queueFamilyIndex = _queueFamilyIndex,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+    };
+
+    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
+    return eTrue;
+  }
+
+  tBool _CreateAllocator() {
+    VmaAllocatorCreateInfo allocatorInfo = {};
+    allocatorInfo.physicalDevice = _physicalDevice;
+    allocatorInfo.device = _device;
+    allocatorInfo.instance = _instance;
+    VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
+    return eTrue;
+  }
+
+  tBool _CreateVulkanDriverResources();
 
   inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const {
     if (ahSS >= eCompiledStates_SS_PointRepeat &&
@@ -555,6 +1001,11 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
     return _functionType;
   }
 
+  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl {
+    // TODO: Actually detect the bind type correctly.
+    return eGpuFunctionBindType_Fixed;
+  }
+
   virtual iDataTable* __stdcall GetDataTable() const niImpl {
     return nullptr;
   }
@@ -611,6 +1062,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
   astl::vector<VkDescriptorSetLayout> _vkDescSetLayouts;
   VkDescriptorSetLayout _vkDescSetEmptyLayout;
+  eGpuFunctionBindType _gpufuncBindType = eGpuFunctionBindType_None;
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
@@ -749,8 +1201,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
 
   tBool _CreateVulkanPipeline(
     iHString* ahspName,
-    const iGpuPipelineDesc* apDesc,
-    eGpuFunctionBindType aBindType)
+    const iGpuPipelineDesc* apDesc)
   {
     niCheckIsOK(apDesc,eFalse);
     _hspName = ahspName;
@@ -758,7 +1209,43 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
 
     niLet vkDevice = _driver->_device;
 
-    switch (aBindType) {
+    // Shaders
+    VkPipelineShaderStageCreateInfo shaderStages[2] = {};
+    sVulkanFunction* vs = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
+    niCheck(vs, eFalse);
+    sVulkanFunction* ps = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
+    niCheck(ps, eFalse);
+
+    // Check that pipeline gpu functions use compatible bind types
+    {
+      niLet vsFuncBindType = vs->GetFunctionBindType();
+      niLet psFuncBindType = ps->GetFunctionBindType();
+      if (vsFuncBindType != psFuncBindType &&
+          vsFuncBindType != eGpuFunctionBindType_None &&
+          psFuncBindType != eGpuFunctionBindType_None)
+      {
+        niError(niFmt(
+          "Incompatible gpu function bind types: vertex='%d', pixel='%d'",
+          vsFuncBindType, psFuncBindType));
+        return eFalse;
+      }
+      _gpufuncBindType = ni::Max(vsFuncBindType,psFuncBindType);
+    }
+
+    shaderStages[0] = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_VERTEX_BIT,
+      .module = vs->_vkShaderModule,
+      .pName = "main"
+    };
+    shaderStages[1] = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+      .module = ps->_vkShaderModule,
+      .pName = "main"
+    };
+
+    switch (_gpufuncBindType) {
       case eGpuFunctionBindType_None: {
         break;
       }
@@ -767,7 +1254,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         break;
       }
       default: {
-        niError(niFmt("Unknown bind type '%d'.", aBindType));
+        niError(niFmt("Unknown bind type '%d'.", _gpufuncBindType));
         return eFalse;
       }
     }
@@ -880,25 +1367,6 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .pAttachments = &colorBlendAttachment,
     };
 
-    // Shaders
-    VkPipelineShaderStageCreateInfo shaderStages[2] = {};
-    sVulkanFunction* vs = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
-    sVulkanFunction* ps = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
-    niCheck(vs && ps, eFalse);
-
-    shaderStages[0] = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_VERTEX_BIT,
-      .module = vs->_vkShaderModule,
-      .pName = "main"
-    };
-    shaderStages[1] = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-      .module = ps->_vkShaderModule,
-      .pName = "main"
-    };
-
     // TODO: Setup from RT0/DS
     VkFormat swapChainFormat = VK_FORMAT_B8G8R8A8_UNORM;
     VkPipelineRenderingCreateInfo renderingInfo = {
@@ -943,13 +1411,12 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
 static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
   ain_nn<sVulkanDriver> aDriver,
   iHString* ahspName,
-  const iGpuPipelineDesc* apDesc,
-  eGpuFunctionBindType aBindType)
+  const iGpuPipelineDesc* apDesc)
 {
   niCheckIsOK(apDesc,nullptr);
   NN<sVulkanPipeline> pipeline = MakeNN<sVulkanPipeline>(aDriver);
   niCheck(
-    pipeline->_CreateVulkanPipeline(ahspName,apDesc,aBindType),
+    pipeline->_CreateVulkanPipeline(ahspName,apDesc),
     nullptr);
   return pipeline;
 }
@@ -977,11 +1444,7 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTriangle(ain_nn<sVulkanDriver> 
   pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
   pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
 
-  return CreateVulkanGpuPipeline(
-    aDriver,
-    _H("triangle_pipeline"),
-    pipelineDesc,
-    {});
+  return CreateVulkanGpuPipeline(aDriver,_H("triangle_pipeline"),pipelineDesc);
 }
 
 static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(
@@ -1009,19 +1472,16 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(
   pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
   pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
 
-  return CreateVulkanGpuPipeline(
-    aDriver,
-    _H("texture_pipeline"),
-    pipelineDesc,
-    eGpuFunctionBindType_Fixed);
+  return CreateVulkanGpuPipeline(aDriver,_H("texture_pipeline"),pipelineDesc);
 }
 
 struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   nn<sVulkanDriver> _driver; // TODO: weakptr
   VkCommandBuffer _cmdBuffer = VK_NULL_HANDLE;
   struct sCache {
-    tIntPtr _lastPipeline = 0;
-    Ptr<iMaterial> _lastMaterial;
+    sMaterialDesc _lastMaterial;
+    Ptr<sVulkanPipeline> _lastPipeline = nullptr;
+    Ptr<sVulkanBuffer> _lastBuffer = nullptr;
   } _cache;
   VkSemaphore _encoderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
@@ -1150,11 +1610,11 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
     niCheck(apPipeline != nullptr,;);
-    if (_cache._lastPipeline == (tIntPtr)apPipeline)
+    if ((tIntPtr)_cache._lastPipeline.raw_ptr() == (tIntPtr)apPipeline)
       return;
     sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
     vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
-    _cache._lastPipeline = (tIntPtr)apPipeline;
+    _cache._lastPipeline = (sVulkanPipeline*)apPipeline;
   }
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
@@ -1172,15 +1632,18 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
-    niPanicUnreachable("NOT IMPLEMENTED");
+    niCheck(anBinding == 0, ;);
+    _cache._lastBuffer = (sVulkanBuffer*)apBuffer;
   }
 
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
-    niPanicUnreachable("NOT IMPLEMENTED");
+    niCheck(anBinding < eMaterialChannel_Last, ;);
+    _cache._lastMaterial.mChannels[anBinding].mTexture = apTexture;
   }
 
   virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl {
-    niPanicUnreachable("NOT IMPLEMENTED");
+    niCheck(anBinding < eMaterialChannel_Last, ;);
+    _cache._lastMaterial.mChannels[anBinding].mhSS = ahSS;
   }
 
   virtual tBool __stdcall StreamVertexBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
@@ -1235,8 +1698,12 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     vkCmdSetBlendConstants(_cmdBuffer, &aColor.x);
   }
 
+  tBool _DoBindFixedDescLayout();
+  tBool _BindGpuFunction();
+
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
+    niCheck(_BindGpuFunction(),eFalse);
     vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDrawIndexed(_cmdBuffer, anNumIndices, 1, anFirstIndex, 0, 0);
     return eTrue;
@@ -1244,6 +1711,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
+    niCheck(_BindGpuFunction(),eFalse);
     vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
     return eTrue;
@@ -1265,6 +1733,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   tU32 _width = 0, _height = 0;
   const tHStringPtr _name;
   const tTextureFlags _flags = eTextureFlags_Default;
+  eGpuPixelFormat _pixelFormat = eGpuPixelFormat_None;
 
   sVulkanTexture(ain_nn<sVulkanDriver> aDriver, iHString* ahspName)
       : _driver(aDriver)
@@ -1320,8 +1789,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   virtual iPixelFormat* __stdcall GetPixelFormat() const override {
-    niPanicUnreachable("NOT IMPLEMENTED");
-    return nullptr;
+    return _GetIPixelFormat(_driver->_graphics,_pixelFormat);
   }
 
   virtual tU32 __stdcall GetNumMipMaps() const override {
@@ -1336,7 +1804,8 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     return nullptr;
   }
 
-  tBool Create(tU32 aWidth, tU32 aHeight, const tPtr apData) {
+  tBool _CreateTextureRGBA8(tU32 aWidth, tU32 aHeight, const tPtr apData) {
+    _pixelFormat = eGpuPixelFormat_RGBA8;
     _width = aWidth;
     _height = aHeight;
 
@@ -1490,280 +1959,174 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 };
 
-struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> {
+tBool sVulkanDriver::_CreateVulkanDriverResources() {
+  VkSamplerCreateInfo desc = {
+    .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+    .compareEnable = VK_FALSE,
+    .minLod = 0.0f,
+    .maxLod = FLT_MAX,
+    .unnormalizedCoordinates = VK_FALSE,
+  };
+
+#define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
+    desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;              \
+    _toVkSamplerFilter(desc, eSamplerFilter_##FILTER);                  \
+    desc.addressModeU = desc.addressModeV = desc.addressModeW =         \
+        _toVkSamplerAddress[eSamplerWrap_##WRAP];                       \
+    VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                   \
+                             &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
+  }
+
+  INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
+  INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
+  INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
+  INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
+
+  INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
+  INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
+  INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
+  INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
+#undef INIT_COMPILED_SAMPLER_STATES
+
+  _whiteTexture = as_NN(niNew sVulkanTexture(as_nn(this),_HC(__vktex_white__)));
+  const tU32 pixel[1] = {0xFFFFFFFF};
+  niCheck(_whiteTexture->_CreateTextureRGBA8(1,1,(tPtr)pixel),eFalse);
+
+  _dummyBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+  niCheck(_dummyBuffer->Create(1024),eFalse);
+  {
+    tPtr data = _dummyBuffer->Lock(0,1024,eLock_Discard);
+    ni::MemZero(data,1024);
+    _dummyBuffer->Unlock();
+  }
+
+  return eTrue;
+}
+
+tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
+  niLet& mat = _cache._lastMaterial;
+  niLet pipeline = _cache._lastPipeline;
+
+  {
+    sVulkanBuffer* buffer = _cache._lastBuffer.raw_ptr();
+    if (!buffer) {
+      buffer = _driver->_dummyBuffer.raw_ptr();
+    }
+    VkDescriptorBufferInfo bufferInfo = {
+      .buffer = buffer->_vkBuffer,
+      .offset = 0,
+      .range = VK_WHOLE_SIZE
+    };
+    astl::vector<VkWriteDescriptorSet> writes;
+    writes.emplace_back(VkWriteDescriptorSet {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = VK_NULL_HANDLE, // Push descriptor
+        .dstBinding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = 1,
+        .pBufferInfo = &bufferInfo
+      });
+    vkCmdPushDescriptorSetKHR(
+      _cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      pipeline->_vkPipelineLayout,
+      eGLSLVulkanLayoutSets_Buffer,
+      writes.size(),writes.data());
+  }
+
+  {
+    sVulkanTexture* texture = (sVulkanTexture*)_cache._lastMaterial.mChannels[0].mTexture.raw_ptr();
+    if (!texture) {
+      texture = _driver->_whiteTexture.raw_ptr();
+    }
+    VkDescriptorImageInfo imageInfo = {
+      .imageView = texture->_vkView,
+      .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    };
+    astl::vector<VkWriteDescriptorSet> writes;
+    writes.emplace_back(VkWriteDescriptorSet {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = VK_NULL_HANDLE, // Push descriptor
+        .dstBinding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+        .descriptorCount = 1,
+        .pImageInfo = &imageInfo
+      });
+    vkCmdPushDescriptorSetKHR(
+      _cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      pipeline->_vkPipelineLayout,
+      eGLSLVulkanLayoutSets_Texture2D,
+      writes.size(),writes.data());
+  }
+
+  {
+    tIntPtr hSS = _cache._lastMaterial.mChannels[0].mhSS;
+    VkDescriptorImageInfo samplerInfo = {
+      .sampler = _driver->_GetVkSamplerState(hSS)
+    };
+    astl::vector<VkWriteDescriptorSet> writes;
+    writes.emplace_back(VkWriteDescriptorSet {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = VK_NULL_HANDLE, // Push descriptor
+        .dstBinding = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+        .descriptorCount = 1,
+        .pImageInfo = &samplerInfo
+      });
+    vkCmdPushDescriptorSetKHR(
+      _cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      pipeline->_vkPipelineLayout,
+      eGLSLVulkanLayoutSets_Sampler,
+      writes.size(),writes.data());
+  }
+
+  return eTrue;
+}
+
+tBool sVulkanCommandEncoder::_BindGpuFunction() {
+  niLet pipeline = _cache._lastPipeline;
+  if (pipeline->_gpufuncBindType == eGpuFunctionBindType_Fixed) {
+    return _DoBindFixedDescLayout();
+  }
+  return eTrue;
+}
+
+struct sVulkanWindowSink : public ImplRC<iMessageHandler> {
   const tU32 _threadId;
   iOSWindow* _w;
   Ptr<iOSXMetalAPI> _metalAPI;
-  VkInstance _instance = VK_NULL_HANDLE;
-  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
-  typedef astl::map<cString,tU32> tVkExtensionsMap;
-  tVkExtensionsMap _extensions;
-  tBool _enableValidationLayers = eTrue;
-  typedef astl::set<cString> tVkInstanceLayersSet;
-  tVkInstanceLayersSet _instanceLayers;
-  tU32 _queueFamilyIndex = 0;
+  Ptr<sVulkanDriver> _driver;
   sVulkanFramebuffer _currentFb;
 
   sVulkanWindowSink(iOSWindow* aWindow)
       : _threadId(ni::ThreadGetCurrentThreadID())
       , _w(aWindow)
+      , _driver(niNew sVulkanDriver())
   {
   }
 
   ~sVulkanWindowSink() {
     this->Cleanup();
+    _currentFb.Destroy(_driver->_device);
+    _driver = nullptr;
   }
 
   tU64 __stdcall GetThreadID() const {
     return _threadId;
   }
 
-  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-    VkDebugUtilsMessageTypeFlagsEXT type,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* /*pUserData*/) {
-
-    switch (severity) {
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      default:
-        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-    }
-    return VK_FALSE;
-  }
-
-  tBool _CreateInstance(const achar* aAppName) {
-    {
-      tU32 layerCount;
-      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-      astl::vector<VkLayerProperties> availableLayers(layerCount);
-      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-      for (const auto& layer : availableLayers) {
-        _instanceLayers.insert(layer.layerName);
-      }
-      {
-        cString o;
-        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
-          if (it != _instanceLayers.begin())
-            o << ", ";
-          o << *it;
-        }
-        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
-      }
-    }
-
-    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
-    astl::vector<const char*> layers;
-    if (_enableValidationLayers) {
-      // NOTE: Statically linking directly MoltenVK we cannot use the
-      // validation layer.
-      const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
-      if (!astl::contains(_instanceLayers,validationLayerName)) {
-        _enableValidationLayers = eFalse;
-        niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
-                        validationLayerName));
-      }
-      else {
-        layers.push_back(validationLayerName);
-      }
-    }
-
-    VkApplicationInfo appInfo = {
-      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-      .pNext = nullptr,
-      .pApplicationName = aAppName,
-      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pEngineName = "niVlk",
-      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .apiVersion = VK_API_VERSION_1_0
-    };
-
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
-      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
-                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
-                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
-      .pfnUserCallback = _DebugCallback
-    };
-
-    VkInstanceCreateInfo createInfo = {
-      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-      .pNext = nullptr,
-      .pApplicationInfo = &appInfo,
-      .enabledLayerCount = (tU32)layers.size(),
-      .ppEnabledLayerNames = layers.data(),
-      .enabledExtensionCount = (tU32)extensions.size(),
-      .ppEnabledExtensionNames = extensions.data()
-    };
-    createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
-
-    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
-    return eTrue;
-  }
-
-  tBool _InitPhysicalDevice() {
-    tU32 deviceCount = 0;
-    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
-    niCheck(deviceCount > 0, eFalse);
-
-    vkEnumeratePhysicalDevices(_instance, &deviceCount, &_physicalDevice);
-
-    VkPhysicalDeviceProperties props;
-    vkGetPhysicalDeviceProperties(_physicalDevice, &props);
-    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
-    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.driverVersion),
-                     VK_VERSION_MINOR(props.driverVersion),
-                     VK_VERSION_PATCH(props.driverVersion)));
-    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.apiVersion),
-                     VK_VERSION_MINOR(props.apiVersion),
-                     VK_VERSION_PATCH(props.apiVersion)));
-
-    // Get extensions
-    {
-      tU32 extensionCount = 0;
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
-      astl::vector<VkExtensionProperties> extensions(extensionCount);
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
-      for (const auto& extension : extensions) {
-        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
-      }
-      {
-        cString o;
-        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
-          if (it != _extensions.begin())
-            o << ", ";
-          o << it->first << "=" << it->second;
-        }
-        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
-      }
-    }
-
-    niCheck(_extensions.find("VK_KHR_push_descriptor") != _extensions.end(), eFalse);
-    return eTrue;
-  }
-
-  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
-    tU32 queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
-    astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
-
-    niLog(Info,"Vulkan Queue Families:");
-    for (tU32 i = 0; i < queueFamilyCount; i++) {
-      niLog(Info,niFmt("  Family %d:", i));
-      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
-      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
-    }
-
-    for (tU32 i = 0; i < queueFamilyCount; i++) {
-      if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-        aQueueFamilyIndex = i;
-        return eTrue;
-      }
-    }
-
-    return eFalse;
-  }
-
-  tBool _CreateLogicalDevice() {
-    tF32 queuePriority = 1.0f;
-    VkDeviceQueueCreateInfo queueCreateInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-      .queueFamilyIndex = _queueFamilyIndex,
-      .queueCount = 1,
-      .pQueuePriorities = &queuePriority
-    };
-
-    VkDeviceCreateInfo createInfo = {
-      .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-      .queueCreateInfoCount = 1,
-      .pQueueCreateInfos = &queueCreateInfo,
-      .enabledExtensionCount = 0,
-      .enabledLayerCount = 0
-    };
-
-    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
-    vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
-
-    niCheck(_InitCompiledSamplerStates(), eFalse);
-    return eTrue;
-  }
-
-  tBool _CreateCommandPool() {
-    VkCommandPoolCreateInfo poolInfo = {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-      .queueFamilyIndex = _queueFamilyIndex,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
-    };
-
-    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
-    return eTrue;
-  }
-
-  tBool _CreateAllocator() {
-    VmaAllocatorCreateInfo allocatorInfo = {};
-    allocatorInfo.physicalDevice = _physicalDevice;
-    allocatorInfo.device = _device;
-    allocatorInfo.instance = _instance;
-    VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
-    return eTrue;
-  }
-
-  virtual void Cleanup() {
-    _currentFb.Destroy(_device);
-
-    if (_commandPool) {
-      vkDestroyCommandPool(_device, _commandPool, nullptr);
-      _commandPool = VK_NULL_HANDLE;
-    }
-    if (_device) {
-      vkDestroyDevice(_device, nullptr);
-      _device = VK_NULL_HANDLE;
-    }
-    if (_instance) {
-      vkDestroyInstance(_instance, nullptr);
-      _instance = VK_NULL_HANDLE;
-    }
-
-    if (_allocator != nullptr) {
-      vmaDestroyAllocator(_allocator);
-      _allocator = nullptr;
-    }
-  }
-
   virtual tBool __stdcall Init(const achar* aAppName) {
     osxMetalSetDefaultDevice();
     _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_w);
     niCheck(_metalAPI.IsOK(),eFalse);
-
-    niCheck(_CreateInstance(aAppName),eFalse);
-    niCheck(_InitPhysicalDevice(),eFalse);
-    niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
-    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
-    niCheck(_CreateLogicalDevice(), eFalse);
-    niCheck(_CreateCommandPool(), eFalse);
-    niCheck(_CreateAllocator(), eFalse);
-
-    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
-
+    niCheck(_driver->Init(aAppName),eFalse);
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device), eFalse);
     return eTrue;
+  }
+
+  virtual void Cleanup() {
   }
 
   tBool PresentAndCommit() {
@@ -1772,8 +2135,8 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
   }
 
   tBool BeginFrame() {
-    _currentFb.Destroy(_device);
-    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _device), eFalse);
+    _currentFb.Destroy(_driver->_device);
+    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device), eFalse);
     return eTrue;
   }
   virtual void Draw() = 0;
@@ -1847,7 +2210,7 @@ struct sVulkanWindowSink : public sVulkanDriver, public ImplRC<iMessageHandler> 
         }
         break;
       case eOSWindowMessage_MouseWheel:
-        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
+        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %g, %g\n"),a.GetFloatValue(),b.GetFloatValue()));
         break;
       case eOSWindowMessage_LostFocus: {
         niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
@@ -1904,7 +2267,7 @@ TEST_FIXTURE(FOSWindowVulkan,Clear) {
 
     tBool Init(const achar* aAppName) niImpl {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(_driver)), eFalse);
       return eTrue;
     }
 
@@ -1973,7 +2336,7 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
 
     tBool _CreateArrays() {
       cFVFDescription fvfDesc(sVertexPA::eFVF);
-      _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+      _vaBuffer = niNew sVulkanBuffer(as_nn(_driver), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
       niCheck(
         _vaBuffer->Create(3 * fvfDesc.GetStride()),
         eFalse);
@@ -1990,9 +2353,9 @@ TEST_FIXTURE(FOSWindowVulkan,Triangle) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(_driver)), eFalse);
       niCheck(_CreateArrays(), eFalse);
-      _pipeline = _CreateVulkanPipelineTriangle(as_nn(this));
+      _pipeline = _CreateVulkanPipelineTriangle(as_nn(_driver));
       return eTrue;
     }
 
@@ -2069,7 +2432,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
     tBool _CreateArrays() {
       {
         cFVFDescription fvfDesc(sVertexPA::eFVF);
-        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+        _vaBuffer = niNew sVulkanBuffer(as_nn(_driver), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
         niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
         sVertexPA* pVerts = (sVertexPA*)_vaBuffer->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFF0000FF}; // Bottom Left - Red
@@ -2079,7 +2442,7 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
         _vaBuffer->Unlock();
       }
       {
-        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
+        _iaBuffer = niNew sVulkanBuffer(as_nn(_driver), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
         niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
         tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
@@ -2091,8 +2454,8 @@ TEST_FIXTURE(FOSWindowVulkan,Square) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
-      _pipeline = _CreateVulkanPipelineTriangle(as_nn(this));
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(_driver)), eFalse);
+      _pipeline = _CreateVulkanPipelineTriangle(as_nn(_driver));
       niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       return eTrue;
@@ -2169,12 +2532,11 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
     Ptr<sVulkanBuffer> _iaBuffer;
     Ptr<sVulkanPipeline> _pipeline;
     Ptr<sVulkanTexture> _texture;
-    Ptr<sVulkanBuffer> _dummyBuffer;
 
     tBool _CreateArrays() {
       {
         cFVFDescription fvfDesc(sVertexPAT1::eFVF);
-        _vaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
+        _vaBuffer = niNew sVulkanBuffer(as_nn(_driver), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
         niCheck(_vaBuffer->Create(4 * fvfDesc.GetStride()), eFalse);
         sVertexPAT1* pVerts = (sVertexPAT1*)_vaBuffer->Lock(0, 4, eLock_Discard);
         pVerts[0] = {{-0.5f, -0.5f, 0.0f}, 0xFFFFFFFF, {0.0f, 0.0f}}; // TL (White)
@@ -2184,36 +2546,24 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
         _vaBuffer->Unlock();
       }
       {
-        _iaBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
+        _iaBuffer = niNew sVulkanBuffer(as_nn(_driver), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Index);
         niCheck(_iaBuffer->Create(6 * sizeof(tU32)), eFalse);
         tU32* pIndices = (tU32*)_iaBuffer->Lock(0, 6, eLock_Discard);
         pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2; // First triangle
         pIndices[3] = 2; pIndices[4] = 3; pIndices[5] = 0; // Second triangle
         _iaBuffer->Unlock();
       }
-      {
-        _dummyBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
-        niCheck(_dummyBuffer->Create(1024),eFalse);
-        {
-          tPtr data = _dummyBuffer->Lock(0,1024,eLock_Discard);
-          ni::MemZero(data,1024);
-          _dummyBuffer->Unlock();
-        }
-      }
       return eTrue;
     }
 
     tBool _CreateTextures() {
-      QPtr<iGraphics>graphics = niCreateInstance(niUI,Graphics,niVarNull,niVarNull);
-      niCheck(graphics.IsOK(),eFalse);
-
       Ptr<iFile> fp = niFileOpenBin2H(A_jpg);
       niCheck(fp.IsOK(),eFalse);
-      QPtr<iBitmap2D> bmp = graphics->LoadBitmap(fp);
+      QPtr<iBitmap2D> bmp = _driver->_graphics->LoadBitmap(fp);
       niCheck(bmp.IsOK(),eFalse);
       // Make sure its RGBA
       {
-        Ptr<iPixelFormat> pxf = graphics->CreatePixelFormat("R8G8B8A8");
+        Ptr<iPixelFormat> pxf = _driver->_graphics->CreatePixelFormat("R8G8B8A8");
         bmp = bmp->CreateConvertedFormat(pxf);
         niCheck(bmp.IsOK(),eFalse);
       }
@@ -2223,8 +2573,8 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
                   bmp->GetHeight(),
                   bmp->GetPixelFormat()->GetFormat()));
 
-      _texture = niNew sVulkanTexture(as_nn(this), _H(fp->GetSourcePath()));
-      niCheck(_texture->Create(
+      _texture = niNew sVulkanTexture(as_nn(_driver), _H(fp->GetSourcePath()));
+      niCheck(_texture->_CreateTextureRGBA8(
         bmp->GetWidth(), bmp->GetHeight(), bmp->GetData()), eFalse);
 
       return eTrue;
@@ -2232,8 +2582,8 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
 
     tBool Init(const achar* aAppName) override {
       niCheck(sVulkanWindowSink::Init(aAppName), eFalse);
-      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(this)), eFalse);
-      _pipeline = _CreateVulkanPipelineTexture(as_nn(this));
+      _cmdEncoder = niCheckNN(_cmdEncoder, _CreateVulkanCommandEncoder(as_nn(_driver)), eFalse);
+      _pipeline = _CreateVulkanPipelineTexture(as_nn(_driver));
       niCheckIsOK(_pipeline, eFalse);
       niCheck(_CreateArrays(), eFalse);
       niCheck(_CreateTextures(), eFalse);
@@ -2271,130 +2621,8 @@ TEST_FIXTURE(FOSWindowVulkan,Texture) {
         _cmdEncoder->SetPipeline(_pipeline);
         _cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
         _cmdEncoder->SetIndexBuffer(_iaBuffer,0,eGpuIndexType_U32);
-
-        //niPanicAssert(vkCmdPushDescriptorSetKHR != nullptr);
-#if 0
-        VkDescriptorBufferInfo bufferInfo = {
-          .buffer = _dummyBuffer->_vkBuffer,
-          .offset = 0,
-          .range = VK_WHOLE_SIZE
-        };
-
-        VkDescriptorImageInfo imageInfo = {
-          .imageView = _texture->_vkView,
-          .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        };
-
-        VkDescriptorImageInfo samplerInfo = {
-          .sampler = _vkSampler
-        };
-
-        VkWriteDescriptorSet writes[3] = {
-          // Set 0 - Buffer
-          {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = 0,  // Set number
-            .dstBinding = 0,
-            .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-            .descriptorCount = 1,
-            .pBufferInfo = &bufferInfo
-          },
-          // Set 1 - Texture
-          {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = 1,
-            .dstBinding = 0,
-            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-            .descriptorCount = 1,
-            .pImageInfo = &imageInfo
-          },
-          // Set 5 - Sampler
-          {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = 5,
-            .dstBinding = 0,
-            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-            .descriptorCount = 1,
-            .pImageInfo = &samplerInfo
-          }
-        };
-
-        vkCmdPushDescriptorSetKHR(
-          commandBuffer,
-          VK_PIPELINE_BIND_POINT_GRAPHICS,
-          _pipelineLayout,
-          0, // First set
-          3, // Number of descriptor writes
-          writes
-        );
-#else
-        {
-          VkDescriptorBufferInfo bufferInfo = {
-            .buffer = _dummyBuffer->_vkBuffer,
-            .offset = 0,
-            .range = VK_WHOLE_SIZE
-          };
-          astl::vector<VkWriteDescriptorSet> writes;
-          writes.emplace_back(VkWriteDescriptorSet {
-              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-              .dstSet = VK_NULL_HANDLE, // Push descriptor
-              .dstBinding = 0,
-              .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-              .descriptorCount = 1,
-              .pBufferInfo = &bufferInfo
-            });
-          vkCmdPushDescriptorSetKHR(
-            cmdBuffer,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            _pipeline->_vkPipelineLayout,
-            eGLSLVulkanLayoutSets_Buffer,
-            writes.size(),writes.data());
-        }
-
-        {
-          VkDescriptorImageInfo imageInfo = {
-            .imageView = _texture->_vkView,
-            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-          };
-          astl::vector<VkWriteDescriptorSet> writes;
-          writes.emplace_back(VkWriteDescriptorSet {
-              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-              .dstSet = VK_NULL_HANDLE, // Push descriptor
-              .dstBinding = 0,
-              .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-              .descriptorCount = 1,
-              .pImageInfo = &imageInfo
-            });
-          vkCmdPushDescriptorSetKHR(
-            cmdBuffer,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            _pipeline->_vkPipelineLayout,
-            eGLSLVulkanLayoutSets_Texture2D,
-            writes.size(),writes.data());
-        }
-
-        {
-          VkDescriptorImageInfo samplerInfo = {
-            .sampler = _texture->_vkSampler
-          };
-          astl::vector<VkWriteDescriptorSet> writes;
-          writes.emplace_back(VkWriteDescriptorSet {
-              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-              .dstSet = VK_NULL_HANDLE, // Push descriptor
-              .dstBinding = 1,
-              .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-              .descriptorCount = 1,
-              .pImageInfo = &samplerInfo
-            });
-          vkCmdPushDescriptorSetKHR(
-            cmdBuffer,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            _pipeline->_vkPipelineLayout,
-            eGLSLVulkanLayoutSets_Sampler,
-            writes.size(),writes.data());
-        }
-#endif
-
+        _cmdEncoder->SetTexture(_texture,0);
+        _cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat,0);
         _cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
       }
       niCheck(_cmdEncoder->_EndFrame(),;);

@@ -322,9 +322,8 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
 #define LOAD_FIXED_GPUFUNC(TYPE,VAR,PATH) {                             \
       tHStringPtr hspPath = _H("niUI://gpufunc/fixed_" #PATH ".gpufunc.xml"); \
-      niLet dtFunc = niCheckNN(dtFunc,LoadDataTable(niHStr(hspPath)),eFalse); \
       VAR = niCheckNN(                                                  \
-        VAR, gpuDriver->CreateGpuFunction(hspPath,eGpuFunctionType_##TYPE,dtFunc), \
+        VAR, gpuDriver->CreateGpuFunction(eGpuFunctionType_##TYPE,hspPath), \
         eFalse);                                                        \
     }
 
@@ -341,12 +340,12 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
       tHStringPtr hspVfPath = _H("niUI://gpufunc/clear_vs.gpufunc.xml");
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspVfPath)),eFalse);
       niLet vertexGpuFun = niCheckNN(vertexGpuFun, gpuDriver->CreateGpuFunction(
-        hspVfPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
+        eGpuFunctionType_Vertex,hspVfPath),eFalse);
 
       tHStringPtr hspPfPath = _H("niUI://gpufunc/clear_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPfPath)),eFalse);
       niLet pixelGpuFun = niCheckNN(pixelGpuFun, gpuDriver->CreateGpuFunction(
-        hspPfPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+        eGpuFunctionType_Pixel,hspPfPath),eFalse);
 
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, gpuDriver->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexClearRects::eFVF);
@@ -628,15 +627,7 @@ iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphics
 }
 
 /////////////////////////////////////////////////////////////////
-NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar* aaszSource) {
-  NN<iDataTable> dtFunc = AsNN(ni::GetLang()->CreateDataTable("GpuFunction"));
-  dtFunc->SetHString("target",apGpuDriver->GetGpuFunctionTarget());
-  dtFunc->SetString("source",aaszSource);
-  return dtFunc;
-}
-
-/////////////////////////////////////////////////////////////////
-iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
+static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString* ahspTarget) {
   if (!apDT)
     return nullptr;
 
@@ -644,7 +635,6 @@ iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
   if (!StrEq(dtName,"Shader") &&
       !StrEq(dtName,"Target") &&
       !StrEq(dtName,"GpuFunction") &&
-      !StrEq(dtName,"GpuFunctionTarget") &&
       !StrEq(dtName,"GpuLibrary"))
     return nullptr;
 
@@ -654,12 +644,57 @@ iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget) {
     return apDT;
   }
   niLoop(i,apDT->GetNumChildren()) {
-    iDataTable* foundDT = FindGpuFunctionDT(apDT->GetChildFromIndex(i), ahspTarget);
+    iDataTable* foundDT = GpuFunctionDT_FindTarget(apDT->GetChildFromIndex(i), ahspTarget);
     if (foundDT)
       return foundDT;
   }
   return nullptr;
 }
+
+/////////////////////////////////////////////////////////////////
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget) {
+  niLet dtRoot = niCheckNN_(
+    dtRoot,LoadDataTable(aURL),
+    niFmt("Can't load gpufunc datatable from '%s'.",aURL),
+    nullptr);
+  niLet dtTarget = niCheckNN_(
+    dtTarget,GpuFunctionDT_FindTarget(dtRoot,ahspTarget),
+    niFmt("Can't find gpufunc target '%s' datatable from '%s'.",ahspTarget,aURL),
+    nullptr);
+
+  niLet dataPI = dtTarget->GetPropertyIndex("_data");
+  if (dataPI == eInvalidHandle) {
+    niLet codePath = dtTarget->GetString("code_path");
+    if (!codePath.empty()) {
+      niLet foundCodePath = ni::GetLang()->URLFindFilePath(codePath.c_str(),aURL,nullptr);
+      niLet fpCode = niCheckNN_(
+        dtTarget,ni::GetLang()->URLOpen(foundCodePath.c_str()),
+        niFmt("Can't load gpufunc target '%s' code from '%s' in datatable '%s'.",ahspTarget,codePath,aURL),
+        nullptr);
+      dtTarget->SetIUnknown("code_fp",fpCode);
+    }
+    else {
+      niError(niFmt("Can't find gpufunc target '%s' code in datatable '%s'.",ahspTarget,aURL));
+      return nullptr;
+    }
+  }
+
+  return dtTarget;
+}
+
+/////////////////////////////////////////////////////////////////
+cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT) {
+  if (aDT->HasProperty("_data")) {
+    return aDT->GetString("_data");
+  }
+  else if (aDT->HasProperty("code_fp")) {
+    NN<iFile> fpCode = niCheckNN(fpCode,QueryInterface<iFile>(aDT->GetIUnknown("code_fp")),AZEROSTR);
+    return fpCode->ReadString();
+  }
+  return AZEROSTR;
+}
+
+
 
 static tU32 _VertexFormatToFixedGpuVertexFormat(tFVF aFVF) {
   switch (aFVF) {

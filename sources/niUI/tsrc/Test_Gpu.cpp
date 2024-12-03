@@ -122,16 +122,10 @@ struct GpuTriangle : public GpuCanvasBase {
       _vaBuffer->Unlock();
     }
     {
-      tHStringPtr hspPath = _H("test/gpufunc/triangle_vs.gpufunc.xml");
-      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
       _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
-        hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
-    }
-    {
-      tHStringPtr hspPath = _H("test/gpufunc/triangle_ps.gpufunc.xml");
-      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
+        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
-        hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
     }
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
@@ -210,14 +204,10 @@ struct GpuSquare : public GpuCanvasBase {
     }
 
     {
-      tHStringPtr hspPath = _H("test/gpufunc/triangle_vs.gpufunc.xml");
-      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
-      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
-    }
-    {
-      tHStringPtr hspPath = _H("test/gpufunc/triangle_ps.gpufunc.xml");
-      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
-      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -299,18 +289,10 @@ struct GpuTexture : public GpuCanvasBase {
     }
 
     {
-      tHStringPtr hspPath = _H("test/gpufunc/texture_vs.gpufunc.xml");
-      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
-      _vertexGpuFun = niCheckNN(
-        _vertexGpuFun,
-        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
-    }
-    {
-      tHStringPtr hspPath = _H("test/gpufunc/texture_ps.gpufunc.xml");
-      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
-      _pixelGpuFun = niCheckNN(
-        _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+      _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
+          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -415,18 +397,10 @@ struct GpuTexAlphaBase : public GpuCanvasBase {
     niCheck(InitUniformBuffer(),eFalse);
 
     {
-      tHStringPtr hspPath = _H("test/gpufunc/texture_alphatest_vs.gpufunc.xml");
-      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspPath)),eFalse);
-      _vertexGpuFun = niCheckNN(
-        _vertexGpuFun,
-        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Vertex,dtVertex),eFalse);
-    }
-    {
-      tHStringPtr hspPath = _H("test/gpufunc/texture_alphatest_ps.gpufunc.xml");
-      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPath)),eFalse);
-      _pixelGpuFun = niCheckNN(
-        _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(hspPath,eGpuFunctionType_Pixel,dtPixel),eFalse);
+      _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Vertex,_H("test/gpufunc/texture_alphatest_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_alphatest_ps.gpufunc.xml")),eFalse);
     }
 
     {

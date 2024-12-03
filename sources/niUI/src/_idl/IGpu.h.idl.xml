@@ -1213,14 +1213,9 @@
 				<comments desc="Get the gpu function target. "/>
 				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createGpuFunction" name="CreateGpuFunction" num_parameters="3">
+			<method java_name="createGpuFunction" name="CreateGpuFunction" num_parameters="2">
 				<comments desc="Create a new GPU function. "/>
 				<return type="Ptr&lt;iGpuFunction&gt;" typec="Ptr&lt;iGpuFunction&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					name="ahspName"
-					type="iHString *"
-					typec="iHString*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aType"
 					type="eGpuFunctionType"
@@ -1228,9 +1223,9 @@
 					typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
-					name="apGpuFunctionDT"
-					type="iDataTable *"
-					typec="iDataTable*"
+					name="ahspPath"
+					type="iHString *"
+					typec="iHString*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="createGpuPipelineDesc" name="CreateGpuPipelineDesc" num_parameters="0">

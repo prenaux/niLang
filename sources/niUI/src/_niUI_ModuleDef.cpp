@@ -9443,15 +9443,14 @@ static const ni::sMethodDef iGraphicsDriverGpu_GetGpuFunctionTarget = {
 };
 
 // Method: CreateGpuFunction
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuFunction_Parameters[3] = { 
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuFunction_Parameters[2] = { 
   { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }, 
-  { "apGpuFunctionDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
+  { "ahspPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
 }; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuFunction = {
   "CreateGpuFunction",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "Ptr<iGpuFunction>",
-  3, iGraphicsDriverGpu_CreateGpuFunction_Parameters,
+  2, iGraphicsDriverGpu_CreateGpuFunction_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGraphicsDriverGpu_CreateGpuFunction)
 #else

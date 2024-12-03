@@ -600,18 +600,16 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,GetGpuFunctionTarget,0)
 	IDLC_RET_FROM_INTF(iHString,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,GetGpuFunctionTarget,0)
 
-/** ni -> iGraphicsDriverGpu::CreateGpuFunction/3 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuFunction,3)
-	IDLC_DECL_VAR(iHString*,ahspName)
-	IDLC_BUF_TO_INTF(iHString,ahspName)
+/** ni -> iGraphicsDriverGpu::CreateGpuFunction/2 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuFunction,2)
 	IDLC_DECL_VAR(eGpuFunctionType,aType)
 	IDLC_BUF_TO_ENUM(eGpuFunctionType,aType)
-	IDLC_DECL_VAR(iDataTable*,apGpuFunctionDT)
-	IDLC_BUF_TO_INTF(iDataTable,apGpuFunctionDT)
+	IDLC_DECL_VAR(iHString*,ahspPath)
+	IDLC_BUF_TO_INTF(iHString,ahspPath)
 	IDLC_DECL_RETVAR(Ptr<iGpuFunction>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuFunction,3,(ahspName,aType,apGpuFunctionDT))
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateGpuFunction,2,(aType,ahspPath))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuFunction,3)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateGpuFunction,2)
 
 /** ni -> iGraphicsDriverGpu::CreateGpuPipelineDesc/0 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateGpuPipelineDesc,0)

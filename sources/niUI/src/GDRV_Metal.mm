@@ -267,23 +267,15 @@ static inline eGpuFunctionType _GetGpuFunctionType(MTLFunctionType aFuncType) {
 struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
   const tU32 _id;
   tHStringPtr _hspName;
-  Ptr<iDataTable> _datatable;
+  NN<iDataTable> _datatable = niDeferredInit(NN<iDataTable>);
   id<MTLFunction> _mtlFunction;
 
   sMetalFunction(tU32 anID) : _id(anID) {}
 
-  tBool _Compile(id<MTLDevice> aDevice, iHString* ahspName, iDataTable* apDTRoot) {
-    niCheckIsOK(apDTRoot,eFalse);
-    _hspName = ahspName;
-    _datatable = niCheckNN(_datatable,FindGpuFunctionDT(apDTRoot,_GetGpuFunctionTarget()),eFalse);
-
-    cString source;
-    if (_datatable->HasProperty("source")) {
-      source = _datatable->GetString("source");
-    }
-    else if (_datatable->HasProperty("_data")) {
-      source = _datatable->GetString("_data");
-    }
+  tBool _CreateMTLFunction(id<MTLDevice> aDevice, iHString* ahspPath) {
+    _hspName = ahspPath;
+    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetGpuFunctionTarget()),eFalse);
+    cString source = GpuFunctionDT_GetSourceText(_datatable);
     niCheck(source.IsNotEmpty(),eFalse);
 
 #if 0
@@ -316,7 +308,7 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
       return eFalse;
     }
 
-    _MTLSetLabel(_mtlFunction,niHStr(ahspName));
+    _MTLSetLabel(_mtlFunction,niHStr(_hspName));
     return eTrue;
   }
 
@@ -1546,21 +1538,21 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return _GetGpuFunctionTarget();
   }
 
-  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(iHString* ahspName, eGpuFunctionType aType, iDataTable* apGpuFunctionDT) niImpl {
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) niImpl {
     niLet newId = mIDGenerator.AllocID();
     NN<sMetalFunction> func = MakeNN<sMetalFunction>(newId);
-    if (!func->_Compile(mMetalDevice, ahspName, apGpuFunctionDT)) {
+    if (!func->_CreateMTLFunction(mMetalDevice, ahspPath)) {
       mIDGenerator.FreeID(newId);
       niError(niFmt(
         "Can't create gpu function '%s': Compilation failed.",
-        ahspName));
+        ahspPath));
       return nullptr;
     }
     if (func->GetFunctionType() != aType) {
       mIDGenerator.FreeID(newId);
       niError(niFmt(
         "Can't create gpu function '%s': Expected function type '%s' but got '%s'.",
-        ahspName,
+        ahspPath,
         niEnumToChars(eGpuFunctionType,aType),
         niEnumToChars(eGpuFunctionType,func->GetFunctionType())));
       return nullptr;

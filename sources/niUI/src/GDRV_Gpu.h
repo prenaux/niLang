@@ -164,8 +164,8 @@ sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA);
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage);
 iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
 
-NN<iDataTable> CreateGpuFunctionDT(iGraphicsDriverGpu* apGpuDriver, const achar* aaszSource);
-iDataTable* FindGpuFunctionDT(iDataTable* apDT, const iHString* ahspTarget);
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget);
+cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT);
 
 tFixedGpuPipelineId GetFixedGpuPipelineId(
   eGpuPixelFormat aRT0Format,

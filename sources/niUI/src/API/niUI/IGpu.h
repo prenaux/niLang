@@ -551,7 +551,7 @@ struct iGraphicsDriverGpu : public iUnknown
   //! {Property}
   virtual iHString* __stdcall GetGpuFunctionTarget() const = 0;
   //! Create a new GPU function.
-  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(iHString* ahspName, eGpuFunctionType aType, iDataTable* apGpuFunctionDT) = 0;
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) = 0;
 
   //! Create a new GPU pipeline description.
   virtual Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() = 0;

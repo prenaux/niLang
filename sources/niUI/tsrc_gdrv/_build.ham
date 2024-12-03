@@ -1,0 +1,18 @@
+if [ SubDirOnce TOP niUI tsrc_gdrv ] = 1 { return ; }
+if ! $(TARGET_FEATURE_EXE) { return ; }
+
+tkDefTest Test_niUI_GDRV : 1.0.0 ;
+niImportModuleLibs niUnitTest ;
+niImportModuleDll niLang ;
+niImportModuleDll_niUI ;
+
+SRC = [ tkPkgSrc ] ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
+
+DEPENDS Run_ci : [ runInDir Test_niUI_GDRV ] ;
+
+# Dependencies
+tkDepends Test_niUI_GDRV : niLang : TOP niLang src ;
+tkDepends Test_niUI_GDRV : niUI : TOP niUI src ;
+tkDepends Test_niUI_GDRV : niUnitTest : TOP niUnitTest src ;

@@ -9,5 +9,6 @@ SubDir TOP niUI ;
 
 SubInclude TOP niUI src ;
 SubInclude TOP niUI tsrc ;
+SubInclude TOP niUI tsrc_gdrv ;
 SubInclude TOP niUI tsrc_ni ;
 SubInclude TOP niUI java ;

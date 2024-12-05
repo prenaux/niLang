@@ -18,6 +18,9 @@ niExportFunc(iUnknown*) New_GraphicsDriver_GL2(const Var& avarA, const Var&);
 #ifdef GDRV_METAL
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var&);
 #endif
+#ifdef GDRV_VULKAN
+niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var&);
+#endif
 
 //--------------------------------------------------------------------------------------------
 //
@@ -46,6 +49,9 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
 #endif
 #ifdef GDRV_METAL
       _RegisterGraphicsDriver("Metal",New_GraphicsDriver_Metal);
+#endif
+#ifdef GDRV_VULKAN
+      _RegisterGraphicsDriver("Vulkan",New_GraphicsDriver_Vulkan);
 #endif
     }
   }

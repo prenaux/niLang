@@ -21,6 +21,10 @@
 #include "Graphics.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
+// For the Vulkan driver, needs to be implemented in an objective-c file
+#define niVulkanOSXMetal_Implement
+#include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+
 #if defined niOSX || defined niIOSMac
 #define METAL_MAC
 #else

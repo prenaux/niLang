@@ -691,7 +691,18 @@ cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT) {
     NN<iFile> fpCode = niCheckNN(fpCode,QueryInterface<iFile>(aDT->GetIUnknown("code_fp")),AZEROSTR);
     return fpCode->ReadString();
   }
+  niError("No source text in gpufunction datatable.");
   return AZEROSTR;
+}
+
+/////////////////////////////////////////////////////////////////
+Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT) {
+  if (aDT->HasProperty("code_fp")) {
+    NN<iFile> fpCode = niCheckNN(fpCode,QueryInterface<iFile>(aDT->GetIUnknown("code_fp")),nullptr);
+    return fpCode;
+  }
+  niError("No source binary data in gpufunction datatable.");
+  return nullptr;
 }
 
 

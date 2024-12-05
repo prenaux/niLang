@@ -10,6 +10,7 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 	</Reflection>
+	<Target target="spv_vk12" code_path="triangle_ps.gpufunc.spv_vk12"/>
 	<Target target="glsl_vk46" code_path="triangle_ps.gpufunc.glsl_vk46"/>
 	<Target target="msl2_macos" code_path="triangle_ps.gpufunc.msl2_macos"/>
 	<Target target="hlsl5" code_path="triangle_ps.gpufunc.hlsl5"/>

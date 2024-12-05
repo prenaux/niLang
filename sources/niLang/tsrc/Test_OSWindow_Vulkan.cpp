@@ -1736,7 +1736,6 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;
   VkImageView _vkView = VK_NULL_HANDLE;
-  VkSampler _vkSampler = VK_NULL_HANDLE;
   tU32 _width = 0, _height = 0;
   const tHStringPtr _name;
   const tTextureFlags _flags = eTextureFlags_Default;
@@ -1749,10 +1748,6 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   ~sVulkanTexture() {
-    if (_vkSampler) {
-      vkDestroySampler(_driver->_device, _vkSampler, nullptr);
-      _vkSampler = VK_NULL_HANDLE;
-    }
     if (_vkView) {
       vkDestroyImageView(_driver->_device, _vkView, nullptr);
       _vkView = VK_NULL_HANDLE;
@@ -1939,29 +1934,6 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     };
 
     VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
-
-    // Create sampler
-    VkSamplerCreateInfo samplerInfo = {
-      .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-      .magFilter = VK_FILTER_LINEAR,
-      .minFilter = VK_FILTER_LINEAR,
-      .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-      .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      .mipLodBias = 0.0f,
-      .anisotropyEnable = VK_FALSE,
-      .maxAnisotropy = 1.0f,
-      .compareEnable = VK_FALSE,
-      .compareOp = VK_COMPARE_OP_ALWAYS,
-      .minLod = 0.0f,
-      .maxLod = 0.0f,
-      .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-      .unnormalizedCoordinates = VK_FALSE
-    };
-
-    VK_CHECK(vkCreateSampler(_driver->_device, &samplerInfo, nullptr, &_vkSampler), eFalse);
-
     return eTrue;
   }
 };

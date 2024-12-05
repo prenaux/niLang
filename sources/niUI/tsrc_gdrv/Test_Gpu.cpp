@@ -1,96 +1,23 @@
 #include "stdafx.h"
-#include <niLang/Math/MathRect.h>
-#include <niUI/IGpu.h>
-#include <niLang/Utils/DataTableUtils.h>
+#include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
 using namespace ni;
 
 namespace {
 
-struct FGpu {
-};
-
-struct GpuCanvasBase : public ni::cWidgetSinkImpl<> {
-  struct MainGpuCanvas : public ni::cWidgetSinkImpl<> {
-    WeakPtr<GpuCanvasBase> _parent;
-    MainGpuCanvas(GpuCanvasBase* aParent) : _parent(aParent) {}
-    tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
-      QPtr<GpuCanvasBase> p = _parent;
-      p->_DrawMain(apCanvas);
-      return eFalse;
-    }
-  };
-
-  TEST_CONSTRUCTOR(GpuCanvasBase) {
-    niDebugFmt(("GpuCanvasBase::GpuCanvasBase"));
-  }
-  ~GpuCanvasBase() {
-    niDebugFmt(("GpuCanvasBase::~GpuCanvasBase"));
-  }
-
+struct sFGpu_Base : public sFGDRV_Base {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
 
-  tBool __stdcall OnSinkAttached() niImpl {
-    QPtr<iGraphicsDriverGpu> driverGpu = mpWidget->GetUIContext()->GetGraphics()->GetDriver();
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) override {
+    QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
     CHECK_RET(niIsOK(driverGpu),eFalse);
     _driverGpu = AsNN(driverGpu.raw_ptr());
-
-    CHECK_RET(_Init(),eFalse);
-
-    Ptr<iWidget> main = mpWidget->GetUIContext()->CreateWidgetRaw("MyCanvas",mpWidget);
-    main->AddSink(niNew MainGpuCanvas(this));
-    main->SetDockStyle(eWidgetDockStyle_DockFill);
-    main->SetIgnoreInput(eTrue);
-
-    niLog(Info,niFmt("Animation: %z.",mbAnimated));
     return eTrue;
   }
-
-  tBool mbAnimated = eTrue;
-  tF64 mfAnimationTime = 0.0;
-  void _ToggleAnimation() {
-    mbAnimated = !mbAnimated;
-    niLog(Info,niFmt("Toggled animation: %z.",mbAnimated));
-  }
-
-  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niOverride {
-    if (mbAnimated) {
-      mfAnimationTime += ni::GetLang()->GetFrameTime();
-    }
-    return eFalse;
-  }
-
-  tBool __stdcall OnLeftClickDown(const sVec2f& avMousePos, const sVec2f& avNCMousePos) niImpl {
-    _ToggleAnimation();
-    return eFalse;
-  }
-  tBool __stdcall OnKeyDown(eKey aKey, tU32 aKeyMod) niImpl {
-    if (aKey == eKey_Space) {
-      _ToggleAnimation();
-    }
-    return eFalse;
-  }
-
-  virtual tBool _Init() { return eTrue; }
-  virtual void _DrawMain(iCanvas* apCanvas) = 0;
 };
 
-struct GpuClear : public GpuCanvasBase {
-  NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
-
-  TEST_CONSTRUCTOR_BASE(GpuClear,GpuCanvasBase) {
-    //_vaBuffer = AsNN(_driverGpu->
-  }
-
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    // ... That's not really a clear operation ...
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-  }
-};
-TEST_FIXTURE_WIDGET(FGpu,GpuClear);
-
-struct GpuTriangle : public GpuCanvasBase {
+struct sFGpu_Triangle : public sFGpu_Base {
   typedef sVertexPA tVertexFmt;
 
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -98,10 +25,13 @@ struct GpuTriangle : public GpuCanvasBase {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  TEST_CONSTRUCTOR_BASE(GpuTriangle,GpuCanvasBase) {
-  }
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
-  tBool _Init() niImpl {
+    QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
+    CHECK_RET(niIsOK(driverGpu),eFalse);
+    _driverGpu = AsNN(driverGpu.raw_ptr());
+
     {
       _vaBuffer = niCheckNN(
         _vaBuffer,
@@ -139,21 +69,19 @@ struct GpuTriangle : public GpuCanvasBase {
     return eTrue;
   }
 
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-    apCanvas->Flush(); // submit in the current command encoder
-
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    return eTrue;
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuTriangle);
+TEST_CLASS(FGpu,Triangle);
 
-struct GpuSquare : public GpuCanvasBase {
+struct sFGpu_Square : public sFGpu_Base {
   typedef sVertexPA tVertexFmt;
 
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -162,10 +90,9 @@ struct GpuSquare : public GpuCanvasBase {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  TEST_CONSTRUCTOR_BASE(GpuSquare,GpuCanvasBase) {
-  }
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
-  tBool _Init() niImpl {
     {
       _vaBuffer = niCheckNN(
         _vaBuffer,
@@ -223,22 +150,20 @@ struct GpuSquare : public GpuCanvasBase {
     return eTrue;
   }
 
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-    apCanvas->Flush(); // submit in the current command encoder
-
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuSquare);
+TEST_CLASS(FGpu,Square);
 
-struct GpuTexture : public GpuCanvasBase {
+struct sFGpu_Texture : public sFGpu_Base {
   typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -247,10 +172,9 @@ struct GpuTexture : public GpuCanvasBase {
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
   NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
 
-  TEST_CONSTRUCTOR_BASE(GpuTexture,GpuCanvasBase) {
-  }
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
-  tBool _Init() niImpl {
     {
       _vaBuffer = niCheckNN(
         _vaBuffer,
@@ -307,19 +231,16 @@ struct GpuTexture : public GpuCanvasBase {
 
     {
       Ptr<iFile> fp;
-      fp = mpWidget->GetGraphics()->OpenBitmapFile("test/tex/earth_d.jpg");
-      _texture = AsNN(mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default));
+      fp = _graphics->OpenBitmapFile("test/tex/earth_d.jpg");
+      _texture = AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
     }
 
     return eTrue;
   }
 
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-    apCanvas->Flush(); // submit in the current command encoder
-
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
@@ -328,11 +249,12 @@ struct GpuTexture : public GpuCanvasBase {
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuTexture);
+TEST_CLASS(FGpu,Texture);
 
-struct GpuTexAlphaBase : public GpuCanvasBase {
+struct sFGpu_TexAlphaBase : public sFGpu_Base {
   typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -341,15 +263,16 @@ struct GpuTexAlphaBase : public GpuCanvasBase {
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
   NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
 
-  TEST_CONSTRUCTOR_BASE(GpuTexAlphaBase,GpuCanvasBase) {
-  }
-
   virtual tBool InitUniformBuffer() = 0;
   virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) = 0;
 
-  tBool _Init() niImpl {
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    _clearTimer = -1.0; // fixed clear color
+
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
+
     {
-      niLetMut wnd = UnitTest::GetTestAppContext()->_window;
+      niLetMut wnd = _window;
       // Make a square window so that when we're rotating the square it doesnt
       // look too stretched. We're drawing it directly in clip space which is
       // [-1;1] from the left to the right of our application window.
@@ -415,18 +338,16 @@ struct GpuTexAlphaBase : public GpuCanvasBase {
 
     {
       Ptr<iFile> fp;
-      fp = mpWidget->GetGraphics()->OpenBitmapFile("test/tex/tree.dds");
-      _texture = AsNN(mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default));
+      fp = _graphics->OpenBitmapFile("test/tex/tree.dds");
+      _texture = AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
     }
 
     return eTrue;
   }
 
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-    apCanvas->Flush(); // submit in the current command encoder
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
@@ -436,16 +357,22 @@ struct GpuTexAlphaBase : public GpuCanvasBase {
     cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothMirror, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
   }
 };
 
-struct GpuTexAlphaUBuffer : public GpuTexAlphaBase {
+struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
   NN<iGpuBuffer> _uBuffer = niDeferredInit(NN<iGpuBuffer>);
 
-  TEST_CONSTRUCTOR_BASE(GpuTexAlphaUBuffer,GpuTexAlphaBase) {
+  sFGpu_TexAlphaUBuffer() {
   }
 
-  virtual tBool InitUniformBuffer() {
+  virtual tBool BeforePaint(UnitTest::TestResults& testResults_) override {
+    CHECK_RET(sFGpu_TexAlphaBase::BeforePaint(testResults_),eFalse);
+    return eTrue;
+  }
+
+  virtual tBool InitUniformBuffer() override {
     TestGpuFuncs_TestUniforms ubInit;
     _uBuffer = niCheckNN(
       _uBuffer,
@@ -458,58 +385,48 @@ struct GpuTexAlphaUBuffer : public GpuTexAlphaBase {
       eFalse);
     return eTrue;
   }
-  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) {
+  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) override {
     niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
       0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
     {
-      niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;
+      niLet cosTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
       uBuffer->materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
       uBuffer->alphaRef = cosTime - 0.05f; // 0.05 so that we have a full "no alpha test" mode
-      MatrixRotationZ(uBuffer->mtxWVP,WrapRad((tF32)mfAnimationTime*0.1f));
+      MatrixRotationZ(uBuffer->mtxWVP,WrapRad((tF32)_animationTime*0.1f));
     }
     _uBuffer->Unlock();
     aCmdEncoder->SetUniformBuffer(_uBuffer, 0, 0);
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuTexAlphaUBuffer);
+TEST_CLASS(FGpu,TexAlphaUBuffer);
 
-struct GpuTexAlphaStream : public GpuTexAlphaBase {
-  TEST_CONSTRUCTOR_BASE(GpuTexAlphaStream,GpuTexAlphaBase) {
-  }
-
+struct sFGpu_TexAlphaStream : public sFGpu_TexAlphaBase {
   virtual tBool InitUniformBuffer() {
     return eTrue;
   }
   virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) {
     TestGpuFuncs_TestUniforms u;
-    niLet cosTime = ni::Cos<tF32>((tF32)mfAnimationTime * 2.0f) * 0.5f + 0.5f;
+    niLet cosTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
     u.materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
     u.alphaRef = cosTime - 0.05f;
-    MatrixRotationZ(u.mtxWVP,WrapRad((tF32)mfAnimationTime*0.1f));
+    MatrixRotationZ(u.mtxWVP,WrapRad((tF32)_animationTime*0.1f));
     aCmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuTexAlphaStream);
+TEST_CLASS(FGpu,TexAlphaStream);
 
-struct GpuClearRects : public GpuCanvasBase {
-  TEST_CONSTRUCTOR_BASE(GpuClearRects,GpuCanvasBase) {
-  }
-
-  tBool _Init() niImpl {
+struct sFGpu_ClearRects : public sFGpu_Base {
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
     return eTrue;
   }
 
-  void _DrawMain(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFFFFFFFF);
-    apCanvas->Flush(); // submit in the current command encoder
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    niLetMut ctx = _graphicsContext;
+    niLetMut gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),eFalse);
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuCtx->GetCommandEncoder());
 
-    QPtr<iGraphicsContextGpu> gpuContext = mpWidget->GetGraphicsContext();
-    niPanicAssert(gpuContext.IsOK());
-    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
-
-    niLetMut ctx = mpWidget->GetGraphicsContext();
-    niLetMut gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),;);
     niLet w = ctx->GetWidth();
     niLet h = ctx->GetHeight();
 
@@ -541,8 +458,9 @@ struct GpuClearRects : public GpuCanvasBase {
     gpuCtx->ClearBuffersRect(
       eClearBuffersFlags_ColorDepthStencil,
       Rectf(50,50,500,500), 0xFFFF0000, 0.0f);
+    return eTrue;
   }
 };
-TEST_FIXTURE_WIDGET(FGpu,GpuClearRects);
+TEST_CLASS(FGpu,ClearRects);
 
 }

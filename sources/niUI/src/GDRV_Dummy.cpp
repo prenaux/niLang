@@ -338,10 +338,6 @@ struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
     return 0;
   }
 
-  /////////////////////////////////////////////
-  virtual tBool __stdcall GetIsInitialized() const {
-    return eTrue;
-  }
 
   /////////////////////////////////////////////
   virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) {

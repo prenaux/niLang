@@ -1215,7 +1215,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   }
 
   /////////////////////////////////////////////
-  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const {
+  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const niImpl {
     switch (aCaps) {
       case eGraphicsCaps_Resize:
       case eGraphicsCaps_MultiContext:
@@ -1256,11 +1256,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const {
     return eGraphicsDriverImplFlags_IndexArrayObject|
         eGraphicsDriverImplFlags_VertexArrayObject;
-  }
-
-  /////////////////////////////////////////////
-  virtual tBool __stdcall GetIsInitialized() const {
-    return eTrue;
   }
 
   /////////////////////////////////////////////
@@ -1306,12 +1301,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
       aFlags);
   }
 
-  virtual tBool __stdcall ClearTextureRect(iTexture* apTexture, tU32 anLevel, const sRecti& aRect, tU32 anColor)  {
-    return eTrue;
-  }
-  virtual tBool __stdcall ClearTextureRectf(iTexture* apTexture, tU32 anLevel, const sRecti& aRect, const sColor4f& aColor)  {
-    return eTrue;
-  }
   virtual tBool __stdcall BlitBitmapToTexture(iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
     niCheckSilent(niIsOK(apSrc),eFalse);
     niCheckSilent(niIsOK(apDest),eFalse);
@@ -1389,9 +1378,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apFile) {
     niError("Legacy shaders not supported.");
     return nullptr;
-  }
-  virtual tBool __stdcall IsShader(iFile* apFile) const {
-    return eFalse;
   }
 
   /////////////////////////////////////////////

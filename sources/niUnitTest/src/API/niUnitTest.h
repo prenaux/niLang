@@ -223,7 +223,7 @@ struct iTestClass {
   virtual ~iTestClass() {}
   const ni::achar* m_testName = AZEROSTR;
 
-  niFnV(void) Start(UnitTest::TestResults& testResults_) = 0;
+  niFnV(ni::tBool) Start(UnitTest::TestResults& testResults_) = 0;
   //! \return eTrue to continue, eFalse to stop execution.
   niFnV(ni::tBool) Step(UnitTest::TestResults& testResults_) = 0;
   niFnV(void) End(UnitTest::TestResults& testResults_) = 0;
@@ -231,25 +231,34 @@ struct iTestClass {
 
 #define TEST_CLASS_EX(Fixture, Name, List)                              \
   class Test##Fixture##Name : public UnitTest::Test {                   \
-  public:                                                               \
+   public:                                                              \
    Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
-  private:                                                              \
+   private:                                                             \
    mutable UnitTest::iTestClass* _mt;                                   \
    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
      this->m_numSteps = ni::eInvalidHandle;                             \
      _mt = new s##Fixture##_##Name();                                   \
      _mt->m_testName = this->m_testName;                                \
-     _mt->Start(testResults_);                                          \
+     if (!_mt->Start(testResults_)) {                                   \
+       testResults_.OnTestFailure(                                      \
+         __FILE__, __LINE__, m_testName,                                \
+         niFmt("Cant start class fixture: " #Fixture "-" #Name));       \
+       _mt->End(testResults_);                                          \
+       delete _mt;                                                      \
+       _mt = nullptr;                                                   \
+     }                                                                  \
    }                                                                    \
    virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
-     if (!_mt->Step(testResults_)) {                                    \
+     if (_mt && !_mt->Step(testResults_)) {                             \
        this->m_numSteps = 0;                                            \
      }                                                                  \
    }                                                                    \
    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-     _mt->End(testResults_);                                            \
-     delete _mt;                                                        \
-     _mt = NULL;                                                        \
+     if (_mt) {                                                         \
+       _mt->End(testResults_);                                          \
+       delete _mt;                                                      \
+       _mt = nullptr;                                                   \
+     }                                                                  \
    }                                                                    \
   } test##Fixture##Name##Instance;                                      \
   UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);

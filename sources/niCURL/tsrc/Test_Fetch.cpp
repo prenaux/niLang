@@ -60,10 +60,11 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
     return curl.non_null();
   }
 
-  niFn(void) Start(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) Start(UnitTest::TestResults& testResults_) niImpl {
     _curl = this->CreateCURL();
     _mq = as_NN(ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()));
     _request = this->CreateRequest(testResults_);
+    return eTrue;
   }
 
   niFn(tBool) Step(UnitTest::TestResults& testResults_) niImpl {

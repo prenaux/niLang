@@ -10,9 +10,14 @@
 
 namespace ni {
 
-struct FGDRV {
+struct FGDRV_WindowHandler;
+
+struct sFGDRV_Base : public UnitTest::iTestClass {
   // test stuff
   tBool _isInteractive = eFalse;
+  tU32 _testStepCount = 0;
+  tBool _animated = eTrue;
+  tF64 _animationTime = 0.0;
 
   // graphics driver config
   tHStringPtr _gdrvName;
@@ -27,23 +32,18 @@ struct FGDRV {
   NN<iOSWindow> _window = niDeferredInit(NN<iOSWindow>);
   NN<iGraphics> _graphics = niDeferredInit(NN<iGraphics>);
   NN<iGraphicsContext> _graphicsContext = niDeferredInit(NN<iGraphicsContext>);
+  NN<iMessageHandler> _windowHandler = niDeferredInit(NN<iMessageHandler>);
 
-  tBool _InitTest(const achar* aTestName);
-  void _Invalidate();
-  virtual ~FGDRV();
-};
+  // UnitTest::iTestClass
+  niFn(tBool) Start(UnitTest::TestResults& testResults_) niImpl;
+  niFn(tBool) Step(UnitTest::TestResults& testResults_) niImpl;
+  niFn(void) End(UnitTest::TestResults& testResults_) niImpl;
 
-struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
-  const tU64 _threadId;
-  FGDRV* _context;
-
-  FGDRV_WindowHandler(FGDRV* aContext);
-
-  tU64 __stdcall GetThreadID() const niImpl;
-
-  virtual void OnPaint();
-  virtual void _Paint() final;
-  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& a, const Var& b) override;
+  // Test stuff
+  virtual tBool OnInit(UnitTest::TestResults& testResults_);
+  virtual tBool BeforePaint(UnitTest::TestResults& testResults_);
+  virtual tBool AfterPaint(UnitTest::TestResults& testResults_);
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_);
 };
 
 }

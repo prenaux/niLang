@@ -20,6 +20,7 @@
 			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_100" set="0" binding="0"/>
 		</UBOs>
 	</Reflection>
+	<Target target="spv_vk12" code_path="texture_alphatest_ps.gpufunc.spv_vk12"/>
 	<Target target="glsl_vk46" code_path="texture_alphatest_ps.gpufunc.glsl_vk46"/>
 	<Target target="msl2_macos" code_path="texture_alphatest_ps.gpufunc.msl2_macos"/>
 	<Target target="hlsl5" code_path="texture_alphatest_ps.gpufunc.hlsl5"/>

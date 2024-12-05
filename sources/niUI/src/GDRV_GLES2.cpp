@@ -3540,11 +3540,6 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
         eGraphicsDriverImplFlags_VertexArrayObject;
   }
 
-  /////////////////////////////////////////////
-  virtual tBool __stdcall GetIsInitialized() const {
-    return eTrue;
-  }
-
   ///////////////////////////////////////////////
   tBool _CheckRenderTargetSupport(const eBitmapType aType, const tTextureFlags aFlags) {
     if (niFlagIs(aFlags,eTextureFlags_RenderTarget) || niFlagIs(aFlags,eTextureFlags_DepthStencil))

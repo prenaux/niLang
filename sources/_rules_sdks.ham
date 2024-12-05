@@ -225,6 +225,9 @@ rule niUI_LinkLibs_Deps {
       TargetLinkFlags $(<) : -DELAYLOAD:mf.dll -DELAYLOAD:mfplat.dll -DELAYLOAD:mfreadwrite.dll -DELAYLOAD:Shlwapi.dll -DELAYLOAD:Ole32.dll ;
     }
   }
+  if $(OSX) = 1 {
+    Vulkan_LinkLibs $(<) ;
+  }
 }
 
 rule niUI_LinkLibs {

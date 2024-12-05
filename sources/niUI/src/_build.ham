@@ -28,6 +28,10 @@ if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
   SubDirHdrs $(SUBDIR) theoraplayer ;
 }
 
+if $(OSX) = 1 {
+  Vulkan_Hdrs ;
+}
+
 SubDirHdrs $(SUBDIR) ft include ;
 
 ### API #################################################################

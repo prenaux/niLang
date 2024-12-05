@@ -17,10 +17,6 @@
 #include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
 #include "../../niUI/tsrc/data/A.jpg.hxx"
 #include "../../niUI/src/API/niUI/IGraphics.h"
-#include "../../../data/test/gpufunc/triangle_vs_gpufunc_spv_vk12.h"
-#include "../../../data/test/gpufunc/triangle_ps_gpufunc_spv_vk12.h"
-#include "../../../data/test/gpufunc/texture_vs_gpufunc_spv_vk12.h"
-#include "../../../data/test/gpufunc/texture_ps_gpufunc_spv_vk12.h"
 #include "../../niUI/src/API/niUI/IGpu.h"
 #include <niLang/Utils/IDGenerator.h>
 
@@ -39,6 +35,13 @@ struct FOSWindowVulkan {
 static const tU32 knMaxFramesInFlight = 2;
 
 #define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
+
+#define NISH_VULKAN_TARGET spv_vk12
+
+_HDecl(NISH_VULKAN_TARGET);
+static __forceinline iHString* _GetVulkanGpuFunctionTarget() {
+  return _HC(NISH_VULKAN_TARGET);
+}
 
 static const VkBlendFactor _ToVkBlendFactor[] = {
   VK_BLEND_FACTOR_ZERO,                      // eGpuBlendFactor_Zero
@@ -959,6 +962,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
 
 struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
   nn<sVulkanDriver> _driver;
+  NN<iDataTable> _datatable = niDeferredInit(NN<iDataTable>);
   const eGpuFunctionType _functionType;
   const tU32 _id;
   tHStringPtr _hspName;
@@ -980,13 +984,26 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
     }
   }
 
-  tBool _Compile(VkDevice aDevice, iHString* ahspName, const tPtr apData, tSize aSize) {
-    _hspName = ahspName;
+  tBool _Compile(VkDevice aDevice, iHString* ahspPath) {
+    _hspName = ahspPath;
+    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetVulkanGpuFunctionTarget()),eFalse);
+    NN<iFile> spvData = niCheckNN_(
+      spvData,GpuFunctionDT_GetSourceData(_datatable),
+      niFmt("Can't get gpufunc data for target '%s' in '%s'.",_GetVulkanGpuFunctionTarget(),ahspPath),
+      eFalse);
+
+    spvData->SeekSet(0);
+    astl::vector<tU8> data;
+    data.resize(spvData->GetSize());
+    if (spvData->ReadRaw((tPtr)data.data(),data.size()) != data.size()) {
+      niError(niFmt("Can't read gpufunc data for target '%s' in '%s'.",_GetVulkanGpuFunctionTarget(),ahspPath));
+      return eFalse;
+    }
 
     VkShaderModuleCreateInfo createInfo = {
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-      .codeSize = aSize,
-      .pCode = (tU32*)apData
+      .codeSize = data.size(),
+      .pCode = (tU32*)data.data()
     };
 
     VK_CHECK(vkCreateShaderModule(aDevice, &createInfo, nullptr, &_vkShaderModule), eFalse);
@@ -1026,25 +1043,23 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
 
 static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
   ain_nn<sVulkanDriver> aDriver,
-  iHString* ahspName,
   eGpuFunctionType aType,
-  const tPtr apData,
-  tSize aSize)
+  iHString* ahspPath)
 {
   niLet newId = aDriver->_idGenerator.AllocID();
   NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver,aType,newId);
-  if (!func->_Compile(aDriver->_device, ahspName, apData, aSize)) {
+  if (!func->_Compile(aDriver->_device,ahspPath)) {
     aDriver->_idGenerator.FreeID(newId);
     niError(niFmt(
       "Can't create gpu function '%s': Compilation failed.",
-      ahspName));
+      ahspPath));
     return nullptr;
   }
   if (func->GetFunctionType() != aType) {
     aDriver->_idGenerator.FreeID(newId);
     niError(niFmt(
       "Can't create gpu function '%s': Expected function type '%s' but got '%s'.",
-      ahspName,
+      ahspPath,
       (tU32)aType, (tU32)func->GetFunctionType()
       // niEnumToChars(eGpuFunctionType,aType),
       // niEnumToChars(eGpuFunctionType,func->GetFunctionType())
@@ -1424,17 +1439,13 @@ static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
 static Ptr<sVulkanPipeline> _CreateVulkanPipelineTriangle(ain_nn<sVulkanDriver> aDriver) {
   NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
     aDriver,
-    _H("triangle_vs_gpufunc_spv_vk12"),
     eGpuFunctionType_Vertex,
-    triangle_vs_gpufunc_spv_vk12_DATA,
-    triangle_vs_gpufunc_spv_vk12_DATA_SIZE), nullptr);
+    _H("test/gpufunc/triangle_vs.gpufunc.xml")), nullptr);
 
   NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
     aDriver,
-    _H("triangle_ps_gpufunc_spv_vk12"),
     eGpuFunctionType_Pixel,
-    triangle_ps_gpufunc_spv_vk12_DATA,
-    triangle_ps_gpufunc_spv_vk12_DATA_SIZE), nullptr);
+    _H("test/gpufunc/triangle_ps.gpufunc.xml")), nullptr);
 
   niLetMut pipelineDesc = _CreateGpuPipelineDesc();
   niCheckIsOK(pipelineDesc, nullptr);
@@ -1452,17 +1463,13 @@ static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(
 {
   NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
     aDriver,
-    _H("texture_vs_gpufunc_spv_vk12"),
     eGpuFunctionType_Vertex,
-    texture_vs_gpufunc_spv_vk12_DATA,
-    texture_vs_gpufunc_spv_vk12_DATA_SIZE), nullptr);
+    _H("test/gpufunc/texture_vs.gpufunc.xml")), nullptr);
 
   NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
     aDriver,
-    _H("texture_ps_gpufunc_spv_vk12"),
     eGpuFunctionType_Pixel,
-    texture_ps_gpufunc_spv_vk12_DATA,
-    texture_ps_gpufunc_spv_vk12_DATA_SIZE), nullptr);
+    _H("test/gpufunc/texture_ps.gpufunc.xml")), nullptr);
 
   niLetMut pipelineDesc = _CreateGpuPipelineDesc();
   niCheckIsOK(pipelineDesc, nullptr);

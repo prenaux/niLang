@@ -166,6 +166,7 @@ iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
 
 Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget);
 cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT);
+Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT);
 
 tFixedGpuPipelineId GetFixedGpuPipelineId(
   eGpuPixelFormat aRT0Format,

@@ -55,12 +55,14 @@ struct sFGpu_Triangle : public sFGpu_Base {
       verts[2] = {{ -0.5f,  -0.5f, 0.0f}, 0xFF0000FF}; // Blue, BL
       _vaBuffer->Unlock();
     }
+
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
         eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
         eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
     }
+
     {
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexFmt::eFVF);
@@ -70,6 +72,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
       _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
     }
+
     return eTrue;
   }
 
@@ -90,12 +93,52 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
-    cmdEncoder->SetViewport(Recti(
-      _graphicsContext->GetWidth()/3,_graphicsContext->GetHeight()/3,
-      _graphicsContext->GetWidth()/4,_graphicsContext->GetHeight()/4));
+
+    niLet w = _graphicsContext->GetWidth();
+    niLet h = _graphicsContext->GetHeight();
+    niLet w2 = w/2;
+    niLet h2 = h/2;
+
+    // Red, TL
+    cmdEncoder->SetViewport(Recti(0,0,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFFFF0000,1.0f);
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // Green, TR
+    cmdEncoder->SetViewport(Recti(w2,0,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFF00FF00,1.0f);
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // Blue, BR
+    cmdEncoder->SetViewport(Recti(w2,h2,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFF0000FF,1.0f);
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // White, BL
+    cmdEncoder->SetViewport(Recti(0,h2,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFFFFFFFF,1.0f);
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
     return eTrue;
   }
 };
@@ -106,16 +149,81 @@ struct sFGpu_TriangleScissor : public sFGpu_Triangle {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
-    cmdEncoder->SetScissorRect(Recti(
-      _graphicsContext->GetWidth()/3,_graphicsContext->GetHeight()/3,
-      _graphicsContext->GetWidth()/4,_graphicsContext->GetHeight()/4));
+
+    niLet w = _graphicsContext->GetWidth();
+    niLet h = _graphicsContext->GetHeight();
+    cmdEncoder->SetScissorRect(Recti(w/3,h/3,w/4,h/4));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
     return eTrue;
   }
 };
 TEST_CLASS(FGpu,TriangleScissor);
+
+struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+
+    niLet w = _graphicsContext->GetWidth();
+    niLet h = _graphicsContext->GetHeight();
+    niLet w2 = w/2; niLet h2 = h/2;
+
+    // Red, TL
+    cmdEncoder->SetViewport(Recti(0,0,w2,h2));
+    cmdEncoder->SetScissorRect(Recti(0,0,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFFFF0000,1.0f);
+    cmdEncoder->SetScissorRect(Recti(w/6,h/6,w/8,h/8));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // Green, TR
+    cmdEncoder->SetViewport(Recti(w2,0,w2,h2));
+    cmdEncoder->SetScissorRect(Recti(w2,0,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFF00FF00,1.0f);
+    cmdEncoder->SetScissorRect(Recti(w2+(w/6),h/6,w/8,h/8));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // Blue, BR
+    cmdEncoder->SetViewport(Recti(w2,h2,w2,h2));
+    cmdEncoder->SetScissorRect(Recti(w2,h2,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFF0000FF,1.0f);
+    cmdEncoder->SetScissorRect(Recti(w2+(w/6),h2+(h/6),w/8,h/8));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    // White, BL
+    cmdEncoder->SetViewport(Recti(0,h2,w2,h2));
+    cmdEncoder->SetScissorRect(Recti(0,h2,w2,h2));
+    gpuContext->ClearBuffersRect(
+      eClearBuffersFlags_ColorDepthStencil,
+      Rectf(0,0,(tF32)w,(tF32)h),
+      0xFFFFFFFF,1.0f);
+    cmdEncoder->SetScissorRect(Recti(w/6,h2+(h/6),w/8,h/8));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,TriangleViewportScissor);
 
 struct sFGpu_Square : public sFGpu_Base {
   typedef sVertexPA tVertexFmt;

@@ -68,7 +68,7 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexPA_fixed_pa_vs(TestGpuFuncs_VertexP
 
 // Vertex Shader main: TestGpuFuncs_VertexPA_fixed_pa_vs
 layout(location = 0) in vec3 IN_0_aInput_position;
-layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 4) in vec4 IN_4_aInput_color;
 // type size: 48
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestUniforms { TestGpuFuncs_TestUniforms v; } IN_1_aUniforms;
 // layout() in vec4 gl_Position;
@@ -79,7 +79,7 @@ void main(void) {
   TestGpuFuncs_VertexPA aInput;
   TestGpuFuncs_TestUniforms aUniforms;
   aInput.position = IN_0_aInput_position;
-  aInput.color = IN_1_aInput_color;
+  aInput.color = IN_4_aInput_color;
   aUniforms = IN_1_aUniforms.v;
   TestGpuFuncs_VertexOutput _rval_ = TestGpuFuncs_VertexPA_fixed_pa_vs(aInput, aUniforms);
   gl_Position = _rval_.position;

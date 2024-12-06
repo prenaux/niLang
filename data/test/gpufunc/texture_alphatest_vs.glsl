@@ -61,8 +61,8 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexPAT1_texture_alphatest_vs(TestGpuFu
 
 // Vertex Shader main: TestGpuFuncs_VertexPAT1_texture_alphatest_vs
 layout(location = 0) in vec3 IN_0_aInput_position;
-layout(location = 1) in vec4 IN_1_aInput_color;
-layout(location = 2) in vec2 IN_2_aInput_tex0;
+layout(location = 4) in vec4 IN_4_aInput_color;
+layout(location = 5) in vec2 IN_5_aInput_tex0;
 // type size: 48
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestUniforms { TestGpuFuncs_TestUniforms v; } IN_1_aUniforms;
 // layout() in vec4 gl_Position;
@@ -72,8 +72,8 @@ void main(void) {
   TestGpuFuncs_VertexPAT1 aInput;
   TestGpuFuncs_TestUniforms aUniforms;
   aInput.position = IN_0_aInput_position;
-  aInput.color = IN_1_aInput_color;
-  aInput.tex0 = IN_2_aInput_tex0;
+  aInput.color = IN_4_aInput_color;
+  aInput.tex0 = IN_5_aInput_tex0;
   aUniforms = IN_1_aUniforms.v;
   TestGpuFuncs_VertexOutput _rval_ = TestGpuFuncs_VertexPAT1_texture_alphatest_vs(aInput, aUniforms);
   gl_Position = _rval_.position;

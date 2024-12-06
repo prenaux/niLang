@@ -59,7 +59,7 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexPA_triangle_vs(TestGpuFuncs_VertexP
 
 // Vertex Shader main: TestGpuFuncs_VertexPA_triangle_vs
 layout(location = 0) in vec3 IN_0_aInput_position;
-layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 4) in vec4 IN_4_aInput_color;
 // layout() in vec4 gl_Position;
 layout(location = 1) out vec4 OUT_1_rval_color;
 layout(location = 2) out vec2 OUT_2_rval_tex0;
@@ -67,7 +67,7 @@ void main(void) {
   lib_shader_initialize();
   TestGpuFuncs_VertexPA aInput;
   aInput.position = IN_0_aInput_position;
-  aInput.color = IN_1_aInput_color;
+  aInput.color = IN_4_aInput_color;
   TestGpuFuncs_VertexOutput _rval_ = TestGpuFuncs_VertexPA_triangle_vs(aInput);
   gl_Position = _rval_.position;
   OUT_1_rval_color = _rval_.color;

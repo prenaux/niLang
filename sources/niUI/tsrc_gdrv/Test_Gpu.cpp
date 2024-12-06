@@ -10,6 +10,7 @@ struct sFGpu_Base : public sFGDRV_Base {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
 
   virtual tBool OnInit(UnitTest::TestResults& testResults_) override {
+    CHECK_RET(sFGDRV_Base::OnInit(testResults_),eFalse);
     QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
     CHECK_RET(niIsOK(driverGpu),eFalse);
     _driverGpu = AsNN(driverGpu.raw_ptr());
@@ -43,12 +44,15 @@ struct sFGpu_Triangle : public sFGpu_Base {
         eFalse);
       tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      // center of the screen is at 0.0
-      // left x = -1,  right x =  1
-      //  top y =  1, bottom y = -1
-      verts[0] = {{ -0.5f,  -0.5f, 0.0f}, 0xFFFF0000}; // Red
-      verts[1] = {{  0.5f,  -0.5f, 0.0f}, 0xFF00FF00}; // Green
-      verts[2] = {{  0.0f,   0.5f, 0.0f}, 0xFF0000FF}; // Blue
+      // NDC (Normalized Device Coordinates - Clip Space):
+      // - the origin (0.0,0.0) is at the center of the screen
+      // - x points right
+      // - y points up
+      // - left x = -1,  right x =  1
+      // -  top y =  1, bottom y = -1
+      verts[0] = {{  0.0f,   0.5f, 0.0f}, 0xFFFF0000}; // Red, TC
+      verts[1] = {{  0.5f,  -0.5f, 0.0f}, 0xFF00FF00}; // Green, BR
+      verts[2] = {{ -0.5f,  -0.5f, 0.0f}, 0xFF0000FF}; // Blue, BL
       _vaBuffer->Unlock();
     }
     {
@@ -69,7 +73,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) override {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -80,6 +84,38 @@ struct sFGpu_Triangle : public sFGpu_Base {
   }
 };
 TEST_CLASS(FGpu,Triangle);
+
+struct sFGpu_TriangleViewport : public sFGpu_Triangle {
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetViewport(Recti(
+      _graphicsContext->GetWidth()/3,_graphicsContext->GetHeight()/3,
+      _graphicsContext->GetWidth()/4,_graphicsContext->GetHeight()/4));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,TriangleViewport);
+
+struct sFGpu_TriangleScissor : public sFGpu_Triangle {
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetScissorRect(Recti(
+      _graphicsContext->GetWidth()/3,_graphicsContext->GetHeight()/3,
+      _graphicsContext->GetWidth()/4,_graphicsContext->GetHeight()/4));
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,TriangleScissor);
 
 struct sFGpu_Square : public sFGpu_Base {
   typedef sVertexPA tVertexFmt;
@@ -104,14 +140,10 @@ struct sFGpu_Square : public sFGpu_Base {
         eFalse);
       tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      // center of the screen is at 0.0
-      // left x = -1,  right x =  1
-      //  top y =  1, bottom y = -1
-      // this a regular "math grid" with the x axis going right and y axis going up
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, 0xFFFF0000}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, 0xFF00FF00}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, 0xFF0000FF}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, 0xFFFFFFFF}; // White
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, 0xFFFF0000}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, 0xFF00FF00}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, 0xFF0000FF}; // Blue, BR
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, 0xFFFFFFFF}; // White, BL
       _vaBuffer->Unlock();
     }
     {
@@ -186,14 +218,10 @@ struct sFGpu_Texture : public sFGpu_Base {
         eFalse);
       tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      // center of the screen is at 0.0
-      // left x = -1,  right x =  1
-      //  top y =  1, bottom y = -1
-      // this a regular "math grid" with the x axis going right and y axis going up
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue, BR
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White, BL
       _vaBuffer->Unlock();
     }
     {
@@ -291,14 +319,10 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
         eFalse);
       tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      // center of the screen is at 0.0
-      // left x = -1,  right x =  1
-      //  top y =  1, bottom y = -1
-      // this a regular "math grid" with the x axis going right and y axis going up
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {3.0f,0.0f}}; // Green
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {3.0f,3.0f}}; // Blue
-      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,3.0f}}; // White
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {3.0f,0.0f}}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {3.0f,3.0f}}; // Blue, BR
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,3.0f}}; // White, BL
       _vaBuffer->Unlock();
     }
     {
@@ -390,9 +414,8 @@ struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
       0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
     {
-      niLet cosTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
-      uBuffer->materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
-      uBuffer->alphaRef = cosTime - 0.05f; // 0.05 so that we have a full "no alpha test" mode
+      uBuffer->materialColor = sVec4f::One() * ((1.0f-_pingpongTime)+0.1f) * 3.0f;
+      uBuffer->alphaRef = _pingpongTime - 0.05f; // 0.05 so that we have a full "no alpha test" mode
       MatrixRotationZ(uBuffer->mtxWVP,WrapRad((tF32)_animationTime*0.1f));
     }
     _uBuffer->Unlock();
@@ -407,9 +430,8 @@ struct sFGpu_TexAlphaStream : public sFGpu_TexAlphaBase {
   }
   virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) {
     TestGpuFuncs_TestUniforms u;
-    niLet cosTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
-    u.materialColor = sVec4f::One() * ((1.0f-cosTime)+0.1f) * 3.0f;
-    u.alphaRef = cosTime - 0.05f;
+    u.materialColor = sVec4f::One() * ((1.0f-_pingpongTime)+0.1f) * 3.0f;
+    u.alphaRef = _pingpongTime - 0.05f;
     MatrixRotationZ(u.mtxWVP,WrapRad((tF32)_animationTime*0.1f));
     aCmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
   }

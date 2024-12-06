@@ -16,14 +16,14 @@ cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
 
 static float4 gl_Position;
 static float3 IN_0_aInput_position;
-static float4 IN_1_aInput_color;
+static float4 IN_4_aInput_color;
 static float4 OUT_1_rval_color;
 static float2 OUT_2_rval_tex0;
 
 struct SPIRV_Cross_Input
 {
     float3 IN_0_aInput_position : TEXCOORD0;
-    float4 IN_1_aInput_color : TEXCOORD1;
+    float4 IN_4_aInput_color : TEXCOORD4;
 };
 
 struct SPIRV_Cross_Output
@@ -46,7 +46,7 @@ void vert_main()
     _113.padding2 = IN_1_aUniforms_v.padding2;
     _113.materialColor = IN_1_aUniforms_v.materialColor;
     gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _113.mtxWVP);
-    OUT_1_rval_color = IN_1_aInput_color * _113.materialColor;
+    OUT_1_rval_color = IN_4_aInput_color * _113.materialColor;
     OUT_2_rval_tex0 = vec2_Zero;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
@@ -54,7 +54,7 @@ void vert_main()
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 {
     IN_0_aInput_position = stage_input.IN_0_aInput_position;
-    IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    IN_4_aInput_color = stage_input.IN_4_aInput_color;
     vert_main();
     SPIRV_Cross_Output stage_output;
     stage_output.gl_Position = gl_Position;

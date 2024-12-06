@@ -18,6 +18,7 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
   tU32 _testStepCount = 0;
   tBool _animated = eTrue;
   tF64 _animationTime = 0.0;
+  tF32 _pingpongTime = 0.0;
 
   // graphics driver config
   tHStringPtr _gdrvName;

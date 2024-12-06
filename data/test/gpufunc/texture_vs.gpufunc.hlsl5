@@ -1,15 +1,15 @@
 static float4 gl_Position;
 static float3 IN_0_aInput_position;
-static float4 IN_1_aInput_color;
-static float2 IN_2_aInput_tex0;
+static float4 IN_4_aInput_color;
+static float2 IN_5_aInput_tex0;
 static float4 OUT_1_rval_color;
 static float2 OUT_2_rval_tex0;
 
 struct SPIRV_Cross_Input
 {
     float3 IN_0_aInput_position : TEXCOORD0;
-    float4 IN_1_aInput_color : TEXCOORD1;
-    float2 IN_2_aInput_tex0 : TEXCOORD2;
+    float4 IN_4_aInput_color : TEXCOORD4;
+    float2 IN_5_aInput_tex0 : TEXCOORD5;
 };
 
 struct SPIRV_Cross_Output
@@ -22,16 +22,16 @@ struct SPIRV_Cross_Output
 void vert_main()
 {
     gl_Position = float4(IN_0_aInput_position, 1.0f);
-    OUT_1_rval_color = IN_1_aInput_color;
-    OUT_2_rval_tex0 = IN_2_aInput_tex0;
+    OUT_1_rval_color = IN_4_aInput_color;
+    OUT_2_rval_tex0 = IN_5_aInput_tex0;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
 {
     IN_0_aInput_position = stage_input.IN_0_aInput_position;
-    IN_1_aInput_color = stage_input.IN_1_aInput_color;
-    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
+    IN_4_aInput_color = stage_input.IN_4_aInput_color;
+    IN_5_aInput_tex0 = stage_input.IN_5_aInput_tex0;
     vert_main();
     SPIRV_Cross_Output stage_output;
     stage_output.gl_Position = gl_Position;

@@ -214,6 +214,7 @@ tBool sFGDRV_Base::Step(UnitTest::TestResults& testResults_) {
 }
 
 tBool sFGDRV_Base::OnInit(UnitTest::TestResults& testResults_) {
+  _window->SetTitle(niFmt("%s (%s)", m_testName, _graphics->GetDriver()->GetName()));
   return eTrue;
 }
 
@@ -240,6 +241,7 @@ tBool sFGDRV_Base::AfterPaint(UnitTest::TestResults& testResults_) {
   ni::GetLang()->UpdateFrameTime(ni::TimerInSeconds());
   if (this->_animated) {
     this->_animationTime += ni::GetLang()->GetFrameTime();
+    this->_pingpongTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
   }
 
   return eTrue;

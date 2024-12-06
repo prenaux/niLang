@@ -87,7 +87,6 @@ struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFla
   sGLContext(iGraphics* apGraphics)
       : tGraphicsContextBase(apGraphics)
   {
-    mrectScissor = mrectViewport = sRecti::Null();
     mnSyncCounter = 0;
   }
 
@@ -96,26 +95,18 @@ struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFla
 #endif
 
   ///////////////////////////////////////////////
-  void __stdcall SetViewport(const sRecti& aVal) niImpl {
+  void __stdcall SetViewport(const sRecti& aVal) override {
     mrectViewport = aVal;
     mnSyncCounter++;
   }
-  sRecti __stdcall GetViewport() const niImpl {
-    return mrectViewport;
-  }
 
   ///////////////////////////////////////////////
-  void __stdcall SetScissorRect(const sRecti& aVal) niImpl {
+  void __stdcall SetScissorRect(const sRecti& aVal) override {
     mrectScissor = aVal;
     mnSyncCounter++;
   }
-  sRecti __stdcall GetScissorRect() const niImpl {
-    return mrectScissor;
-  }
 
   tU32 mnSyncCounter;
-  sRecti mrectScissor;
-  sRecti mrectViewport;
 };
 
 static tU32 _kNumGL2TexUpload = 0;

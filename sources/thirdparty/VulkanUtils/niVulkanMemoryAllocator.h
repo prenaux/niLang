@@ -31,6 +31,9 @@
 #define VMA_DEBUG_LOG(format, ...)
 #endif
 
+#define VMA_LEAK_LOG_FORMAT(format, ...) niWarning(niFmt("VMA_LEAK: " format, __VA_ARGS__))
+#define VMA_ASSERT_LEAK(expr) niPanicAssert(expr) // if (!(expr)) { niWarning(niFmt("VMA_ASSERT_LEAK: " #expr)); }
+
 struct NiVmaMutex {
 	NiVmaMutex() {}
 	~NiVmaMutex() {}

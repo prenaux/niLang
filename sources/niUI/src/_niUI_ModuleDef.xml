@@ -10601,33 +10601,78 @@
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
-		<enum name="eGLSLVulkanLayoutSets">
+		<enum name="eGLSLVulkanDescriptorSet">
 			<comments desc=""/>
-			<value name="eGLSLVulkanLayoutSets_Buffer" value="0 ">
-				<comments desc="UBO/SSBO "/>
+			<value name="eGLSLVulkanDescriptorSet_Buffer" value="0 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_Texture2D" value="1 ">
-				<comments desc="Regular 2D textures "/>
+			<value name="eGLSLVulkanDescriptorSet_Texture2D" value="1 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_TextureCube" value="2 ">
-				<comments desc="Cubemaps "/>
+			<value name="eGLSLVulkanDescriptorSet_TextureCube" value="2 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_Texture3D" value="3 ">
-				<comments desc="Volume textures "/>
+			<value name="eGLSLVulkanDescriptorSet_Texture3D" value="3 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_TextureShadow" value="4 ">
-				<comments desc="Depth compare "/>
+			<value name="eGLSLVulkanDescriptorSet_TextureShadow" value="4 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_Sampler" value="5 ">
-				<comments desc="Regular sampling "/>
+			<value name="eGLSLVulkanDescriptorSet_Sampler" value="5 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_SamplerShadow" value="6 ">
-				<comments desc="Shadow sampling "/>
+			<value name="eGLSLVulkanDescriptorSet_SamplerShadow" value="6 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_AccelStruct" value="7 ">
-				<comments desc="RT acceleration "/>
+			<value name="eGLSLVulkanDescriptorSet_AccelStruct" value="7 ">
+				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanLayoutSets_Last" value="8 ">
+			<value name="eGLSLVulkanDescriptorSet_Last" value="8 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGLSLVulkanVertexInputLayout">
+			<comments desc=""/>
+			<value name="eGLSLVulkanVertexInputLayout_Position" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Weights" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Indices" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Normal" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_ColorA" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex0" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex1" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex2" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex3" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex4" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex5" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex6" value="11 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex7" value="12 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Last" value="13">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

@@ -37807,26 +37807,53 @@ static const ni::sEnumDef Enum_eGpuBlendOp = {
 	return &Enum_eGpuBlendOp;
 }
 
-// --- eGLSLVulkanLayoutSets ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanLayoutSets() {
+// --- eGLSLVulkanDescriptorSet ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanDescriptorSet() {
 
-static const ni::sEnumValueDef Enum_eGLSLVulkanLayoutSets_Values[] = {
-	{ "Buffer", ni::eGLSLVulkanLayoutSets_Buffer },
-	{ "Texture2D", ni::eGLSLVulkanLayoutSets_Texture2D },
-	{ "TextureCube", ni::eGLSLVulkanLayoutSets_TextureCube },
-	{ "Texture3D", ni::eGLSLVulkanLayoutSets_Texture3D },
-	{ "TextureShadow", ni::eGLSLVulkanLayoutSets_TextureShadow },
-	{ "Sampler", ni::eGLSLVulkanLayoutSets_Sampler },
-	{ "SamplerShadow", ni::eGLSLVulkanLayoutSets_SamplerShadow },
-	{ "AccelStruct", ni::eGLSLVulkanLayoutSets_AccelStruct },
-	{ "Last", ni::eGLSLVulkanLayoutSets_Last },
+static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
+	{ "Buffer", ni::eGLSLVulkanDescriptorSet_Buffer },
+	{ "Texture2D", ni::eGLSLVulkanDescriptorSet_Texture2D },
+	{ "TextureCube", ni::eGLSLVulkanDescriptorSet_TextureCube },
+	{ "Texture3D", ni::eGLSLVulkanDescriptorSet_Texture3D },
+	{ "TextureShadow", ni::eGLSLVulkanDescriptorSet_TextureShadow },
+	{ "Sampler", ni::eGLSLVulkanDescriptorSet_Sampler },
+	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
+	{ "AccelStruct", ni::eGLSLVulkanDescriptorSet_AccelStruct },
+	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
 };
-static const ni::sEnumDef Enum_eGLSLVulkanLayoutSets = {
-	"eGLSLVulkanLayoutSets",
-  niCountOf(Enum_eGLSLVulkanLayoutSets_Values), Enum_eGLSLVulkanLayoutSets_Values
+static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {
+	"eGLSLVulkanDescriptorSet",
+  niCountOf(Enum_eGLSLVulkanDescriptorSet_Values), Enum_eGLSLVulkanDescriptorSet_Values
 };
 
-	return &Enum_eGLSLVulkanLayoutSets;
+	return &Enum_eGLSLVulkanDescriptorSet;
+}
+
+// --- eGLSLVulkanVertexInputLayout ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanVertexInputLayout() {
+
+static const ni::sEnumValueDef Enum_eGLSLVulkanVertexInputLayout_Values[] = {
+	{ "Position", ni::eGLSLVulkanVertexInputLayout_Position },
+	{ "Weights", ni::eGLSLVulkanVertexInputLayout_Weights },
+	{ "Indices", ni::eGLSLVulkanVertexInputLayout_Indices },
+	{ "Normal", ni::eGLSLVulkanVertexInputLayout_Normal },
+	{ "ColorA", ni::eGLSLVulkanVertexInputLayout_ColorA },
+	{ "Tex0", ni::eGLSLVulkanVertexInputLayout_Tex0 },
+	{ "Tex1", ni::eGLSLVulkanVertexInputLayout_Tex1 },
+	{ "Tex2", ni::eGLSLVulkanVertexInputLayout_Tex2 },
+	{ "Tex3", ni::eGLSLVulkanVertexInputLayout_Tex3 },
+	{ "Tex4", ni::eGLSLVulkanVertexInputLayout_Tex4 },
+	{ "Tex5", ni::eGLSLVulkanVertexInputLayout_Tex5 },
+	{ "Tex6", ni::eGLSLVulkanVertexInputLayout_Tex6 },
+	{ "Tex7", ni::eGLSLVulkanVertexInputLayout_Tex7 },
+	{ "Last", ni::eGLSLVulkanVertexInputLayout_Last },
+};
+static const ni::sEnumDef Enum_eGLSLVulkanVertexInputLayout = {
+	"eGLSLVulkanVertexInputLayout",
+  niCountOf(Enum_eGLSLVulkanVertexInputLayout_Values), Enum_eGLSLVulkanVertexInputLayout_Values
+};
+
+	return &Enum_eGLSLVulkanVertexInputLayout;
 }
 
 // --- eGraphicsCaptureFlags ---
@@ -39788,7 +39815,8 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGpuPixelFormat(),
   GetEnumDef_eGpuBlendFactor(),
   GetEnumDef_eGpuBlendOp(),
-  GetEnumDef_eGLSLVulkanLayoutSets(),
+  GetEnumDef_eGLSLVulkanDescriptorSet(),
+  GetEnumDef_eGLSLVulkanVertexInputLayout(),
   GetEnumDef_eGraphicsCaptureFlags(),
   GetEnumDef_eImageUsage(),
   GetEnumDef_eImageMapSerializeFlags(),

@@ -32,7 +32,7 @@ namespace ni {
 _HDecl(__vktex_white__);
 _HDecl(__vkbuff_dummy__);
 
-static const tU32 knVulkanMaxFramesInFlight = 2;
+static const tU32 knVulkanMaxFramesInFlight = 1;
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
@@ -1728,7 +1728,6 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
     tFixedGpuPipelineId _lastFixedPipeline = 0;
   } _cache;
-  VkSemaphore _encoderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
   tBool _beganFrame = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
@@ -1749,11 +1748,6 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
       vkDestroyFence(_driver->_device, _encoderInFlightFence, nullptr);
       _encoderInFlightFence = VK_NULL_HANDLE;
     }
-    if (_encoderFinishedSemaphore) {
-      vkDestroySemaphore(_driver->_device, _encoderFinishedSemaphore, nullptr);
-      _encoderFinishedSemaphore = VK_NULL_HANDLE;
-    }
-
     if (_cmdBuffer) {
       vkFreeCommandBuffers(_driver->_device, _driver->_commandPool, 1, &_cmdBuffer);
       _cmdBuffer = VK_NULL_HANDLE;
@@ -1776,18 +1770,10 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
     VK_CHECK(vkAllocateCommandBuffers(_driver->_device, &allocInfo, &_cmdBuffer),eFalse);
 
-    VkSemaphoreCreateInfo semaphoreInfo = {
-      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
-    };
-
     VkFenceCreateInfo fenceInfo = {
       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-      .flags = VK_FENCE_CREATE_SIGNALED_BIT  // Start signaled so first frame doesn't wait
     };
-
-    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_encoderFinishedSemaphore), eFalse);
     VK_CHECK(vkCreateFence(_driver->_device, &fenceInfo, nullptr, &_encoderInFlightFence), eFalse);
-
     return eTrue;
   }
 
@@ -1854,20 +1840,17 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     VkSubmitInfo submitInfo = {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
       .waitSemaphoreCount = 0,
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &_encoderFinishedSemaphore,
+      .signalSemaphoreCount = 0,
       .commandBufferCount = 1,
       .pCommandBuffers = &_cmdBuffer
     };
 
-    VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
-
-    return eTrue;
-  }
-
-  tBool WaitForInFlightFence() {
-    VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
+    // TODO: The usage of the fence here is suboptimal since we just wait for
+    // the queue to be finished before continuing which waiting tons of CPU
+    // cycles. But we want to get all the other bits right first.
     VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence), eFalse);
+    VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
+    VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
     return eTrue;
   }
 
@@ -2147,6 +2130,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
                      const tU32 anLevel,
                      const sRecti& aDestRect)
   {
+    if (anLevel != 0) // TODO: Implement mipmaps
+      return;
+
     const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
     const tU32 bpr = apBmpLevel->GetPitch();
     const tU32 startOffset = (aDestRect.y * bpr) + (aDestRect.x * bpp);
@@ -2525,12 +2511,8 @@ struct sVulkanContextBase :
   void _EndFrame() {
     if (!_beganFrame)
       return;
-    niDefer {
-      _beganFrame = eFalse;
-    };
-
-    niLet frameData = _cmdEncoder->_EndFrame();
-    _currentFrame = (_currentFrame + 1) % _frameMaxInFlight;
+    _cmdEncoder->_EndFrame();
+    _beganFrame = eFalse;
   }
 
   virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
@@ -2635,10 +2617,7 @@ struct sVulkanContextBase :
 
   virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
     _EndFrame();
-    // TODO: Remove this... we need to have a proper "OnFrameCompleted"
-    // handler to get rid of this. Something similar to Metal's
-    // addCompletedHandler
-    vkDeviceWaitIdle(_driver->_device);
+    _currentFrame = (_currentFrame + 1) % _frameMaxInFlight;
     return eTrue;
   }
 

@@ -13,16 +13,16 @@ struct main0_out
 struct main0_in
 {
     float3 IN_0_aInput_position [[attribute(0)]];
-    float4 IN_1_aInput_color [[attribute(1)]];
-    float2 IN_2_aInput_tex0 [[attribute(2)]];
+    float4 IN_4_aInput_color [[attribute(4)]];
+    float2 IN_5_aInput_tex0 [[attribute(5)]];
 };
 
 vertex main0_out main0(main0_in in [[stage_in]])
 {
     main0_out out = {};
     out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = in.IN_1_aInput_color;
-    out.OUT_2_rval_tex0 = in.IN_2_aInput_tex0;
+    out.OUT_1_rval_color = in.IN_4_aInput_color;
+    out.OUT_2_rval_tex0 = in.IN_5_aInput_tex0;
     return out;
 }
 

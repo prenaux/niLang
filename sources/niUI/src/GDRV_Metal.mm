@@ -1660,6 +1660,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   id<MTLRenderCommandEncoder> _cmdEncoder;
   astl::vector<NN<sMetalEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
+  tU32 _currentWidth = 1, _currentHeight = 1;
   Ptr<sMetalBuffer> _indexBuffer;
   tU32 _indexOffset = 0;
   eGpuIndexType _indexType = eGpuIndexType_U32;
@@ -1682,10 +1683,18 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return _frames[_currentFrame];
   }
 
-  void _BeginFrame(id<MTLRenderCommandEncoder> aNewEncoder, tU32 aCurrentFrame) {
+  void _BeginFrame(
+    id<MTLRenderCommandEncoder> aNewEncoder,
+    tU32 aCurrentFrame,
+    tU32 aCurrentWidth, tU32 aCurrentHeight,
+    ain<sRecti> aViewport,
+    ain<sRecti> aScissor)
+  {
     niPanicAssert(_cmdEncoder == nil);
     _cmdEncoder = aNewEncoder;
     _currentFrame = aCurrentFrame;
+    _currentWidth = aCurrentWidth;
+    _currentHeight = aCurrentHeight;
     if (_frames[_currentFrame]->IsInUse()) {
       niWarning(niFmt("Waiting for frame %d completion...",_currentFrame));
       _frames[_currentFrame]->_WaitCompletion();
@@ -1693,6 +1702,11 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     _frames[_currentFrame]->StartFrame(
       ni::GetLang()->GetFrameNumber(),_currentFrame);
     _cache = sCache();
+
+    {
+      this->SetViewport(aViewport);
+      this->SetScissorRect(aScissor);
+    }
   }
 
   Ptr<sMetalEncoderFrameData> _EndFrame() {
@@ -1834,9 +1848,6 @@ struct cMetalContextBase :
                                 iRunnable,iGraphicsContextGpu> >
 {
   cMetalGraphicsDriver* mpParent;
-  MTLViewport mViewport;
-  MTLScissorRect mScissorRect;
-
   NN<sMetalCommandEncoder> mCmdEncoder;
 
   eGpuPixelFormat mRT0Format;
@@ -1895,9 +1906,13 @@ struct cMetalContextBase :
       mDSFormat = eGpuPixelFormat_None;
     }
 
-    mCmdEncoder->_BeginFrame(_NewRenderCommandEncoder(),mnCurrentFrame);
-    // niDebugFmt(("... _BeginFrame: %d (inFlight: %d)", ni::GetLang()->GetFrameNumber(), mnCurrentFrame));
-    return eTrue;
+    mCmdEncoder->_BeginFrame(
+      _NewRenderCommandEncoder(),mnCurrentFrame,
+      this->GetWidth(),this->GetHeight(),
+      mrectViewport,mrectScissor);
+
+      // niDebugFmt(("... _BeginFrame: %d (inFlight: %d)", ni::GetLang()->GetFrameNumber(), mnCurrentFrame));
+      return eTrue;
   }
 
   inline void _EndFrame() {
@@ -2019,8 +2034,8 @@ struct cMetalContextBase :
       cmdStateCache._lastPipeline = rpId;
     }
 
-    [cmdEncoder setViewport:mViewport];
-    [cmdEncoder setScissorRect:mScissorRect];
+    mCmdEncoder->SetViewport(mrectViewport);
+    mCmdEncoder->SetScissorRect(mrectScissor);
 
     TestGpuFuncs_TestUniforms fixedUniforms;
     {
@@ -2058,46 +2073,6 @@ struct cMetalContextBase :
   /////////////////////////////////////////////
   virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
     return NULL;
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetViewport(const sRecti& aVal) {
-    if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
-      mViewport.originX = 0;
-      mViewport.originY = 0;
-      mViewport.width = this->GetWidth();
-      mViewport.height = this->GetHeight();
-    }
-    else {
-      mViewport.originX = aVal.x;
-      mViewport.originY = aVal.y;
-      mViewport.width = aVal.GetWidth();
-      mViewport.height = aVal.GetHeight();
-    }
-    mViewport.znear = 0.0f;
-    mViewport.zfar = 1.0f;
-  }
-  virtual sRecti __stdcall GetViewport() const {
-    return Recti(mViewport.originX,mViewport.originY,mViewport.width,mViewport.height);
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetScissorRect(const sRecti& aVal) {
-    if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
-      mScissorRect.x = 0;
-      mScissorRect.y = 0;
-      mScissorRect.width = this->GetWidth();
-      mScissorRect.height = this->GetHeight();
-    }
-    else {
-      mScissorRect.x = aVal.x;
-      mScissorRect.y = aVal.y;
-      mScissorRect.width = aVal.GetWidth();
-      mScissorRect.height = aVal.GetHeight();
-    }
-  }
-  virtual sRecti __stdcall GetScissorRect() const {
-    return Recti(mScissorRect.x,mScissorRect.y,mScissorRect.width,mScissorRect.height);
   }
 };
 

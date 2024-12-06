@@ -13,6 +13,8 @@ struct sGraphicsContext : public BASE {
   sMaterialDesc* mpMaterialDesc = NULL;
   Ptr<iTexture> mptrRT[MAXRT];
   Ptr<iTexture> mptrDS;
+  sRecti mrectViewport = sRecti::Null();
+  sRecti mrectScissor = sRecti::Null();
 
   sGraphicsContext(iGraphics* g) {
     mptrFS = g->CreateFixedStates();
@@ -131,7 +133,34 @@ struct sGraphicsContext : public BASE {
     }
     return apDOMat->mChannels[aChannel];
   }
+
+  /////////////////////////////////////////////
+  virtual void __stdcall SetViewport(const sRecti& aVal) override {
+    if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
+      mrectViewport = Recti(0,0,this->GetWidth(),this->GetHeight());
+    }
+    else {
+      mrectViewport = aVal;
+    }
+  }
+  virtual sRecti __stdcall GetViewport() const niFinal {
+    return mrectViewport;
+  }
+
+  /////////////////////////////////////////////
+  virtual void __stdcall SetScissorRect(const sRecti& aVal) override {
+    if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
+      mrectScissor = Recti(0,0,this->GetWidth(),this->GetHeight());
+    }
+    else {
+      mrectScissor = aVal;
+    }
+  }
+  virtual sRecti __stdcall GetScissorRect() const niFinal {
+    return mrectScissor;
+  }
 };
+
 } // end of namespace ni
 
 #endif // __GDRV_UTILS_H_6F26F773_DB4F_2B46_9A99_2CF5575B8468__

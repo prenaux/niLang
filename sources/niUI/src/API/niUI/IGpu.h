@@ -572,25 +572,35 @@ struct iGraphicsDriverGpu : public iUnknown
 //  Vulkan interfaces
 //
 //===========================================================================
-enum eGLSLVulkanLayoutSets {
-  //! UBO/SSBO
-  eGLSLVulkanLayoutSets_Buffer = 0,
-  //! Regular 2D textures
-  eGLSLVulkanLayoutSets_Texture2D = 1,
-  //! Cubemaps
-  eGLSLVulkanLayoutSets_TextureCube = 2,
-  //! Volume textures
-  eGLSLVulkanLayoutSets_Texture3D = 3,
-  //! Depth compare
-  eGLSLVulkanLayoutSets_TextureShadow = 4,
-  //! Regular sampling
-  eGLSLVulkanLayoutSets_Sampler = 5,
-  //! Shadow sampling
-  eGLSLVulkanLayoutSets_SamplerShadow = 6,
-  //! RT acceleration
-  eGLSLVulkanLayoutSets_AccelStruct = 7,
+enum eGLSLVulkanDescriptorSet {
+  eGLSLVulkanDescriptorSet_Buffer = 0,
+  eGLSLVulkanDescriptorSet_Texture2D = 1,
+  eGLSLVulkanDescriptorSet_TextureCube = 2,
+  eGLSLVulkanDescriptorSet_Texture3D = 3,
+  eGLSLVulkanDescriptorSet_TextureShadow = 4,
+  eGLSLVulkanDescriptorSet_Sampler = 5,
+  eGLSLVulkanDescriptorSet_SamplerShadow = 6,
+  eGLSLVulkanDescriptorSet_AccelStruct = 7,
   //! \internal
-  eGLSLVulkanLayoutSets_Last = 8,
+  eGLSLVulkanDescriptorSet_Last niMaybeUnused = 8,
+};
+
+enum eGLSLVulkanVertexInputLayout {
+  eGLSLVulkanVertexInputLayout_Position = 0,
+  eGLSLVulkanVertexInputLayout_Weights = 1,
+  eGLSLVulkanVertexInputLayout_Indices = 2,
+  eGLSLVulkanVertexInputLayout_Normal = 3,
+  eGLSLVulkanVertexInputLayout_ColorA = 4,
+  eGLSLVulkanVertexInputLayout_Tex0 = 5,
+  eGLSLVulkanVertexInputLayout_Tex1 = 6,
+  eGLSLVulkanVertexInputLayout_Tex2 = 7,
+  eGLSLVulkanVertexInputLayout_Tex3 = 8,
+  eGLSLVulkanVertexInputLayout_Tex4 = 9,
+  eGLSLVulkanVertexInputLayout_Tex5 = 10,
+  eGLSLVulkanVertexInputLayout_Tex6 = 11,
+  eGLSLVulkanVertexInputLayout_Tex7 = 12,
+  //! \internal
+  eGLSLVulkanVertexInputLayout_Last niMaybeUnused = 13
 };
 
 }

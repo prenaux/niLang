@@ -5,7 +5,7 @@
 		</EntryPoints>
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
+			<Input name="IN_4_aInput_color" type="vec4" location="4"/>
 		</Inputs>
 		<Outputs>
 			<Output name="OUT_1_rval_color" type="vec4" location="1"/>

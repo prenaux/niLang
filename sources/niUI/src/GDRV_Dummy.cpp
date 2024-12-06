@@ -134,8 +134,6 @@ struct cDummyGraphicsContext :
   Ptr<iOSWindow> mptrWindow;
   tU32 mnSwapInterval;
   tTextureFlags mnBBFlags;
-  sRecti mrectViewport;
-  sRecti mrectScissor;
 
   cDummyGraphicsContext(
       iGraphicsDriver* apParent,
@@ -221,22 +219,6 @@ struct cDummyGraphicsContext :
 
   /////////////////////////////////////////////
   virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetViewport(const sRecti& aVal) {
-    mrectViewport = aVal;
-  }
-  virtual sRecti __stdcall GetViewport() const {
-    return mrectViewport;
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetScissorRect(const sRecti& aVal) {
-    mrectScissor = aVal;
-  }
-  virtual sRecti __stdcall GetScissorRect() const {
-    return mrectScissor;
   }
 };
 

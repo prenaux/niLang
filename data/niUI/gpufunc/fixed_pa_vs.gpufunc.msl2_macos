@@ -38,7 +38,7 @@ struct main0_out
 struct main0_in
 {
     float3 IN_0_aInput_position [[attribute(0)]];
-    float4 IN_1_aInput_color [[attribute(1)]];
+    float4 IN_4_aInput_color [[attribute(4)]];
 };
 
 vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]])
@@ -53,7 +53,7 @@ vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestU
     _113.padding2 = IN_1_aUniforms.v.padding2;
     _113.materialColor = IN_1_aUniforms.v.materialColor;
     out.gl_Position = _113.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = in.IN_1_aInput_color * _113.materialColor;
+    out.OUT_1_rval_color = in.IN_4_aInput_color * _113.materialColor;
     out.OUT_2_rval_tex0 = vec2_Zero;
     return out;
 }

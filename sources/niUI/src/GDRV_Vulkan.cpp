@@ -25,6 +25,7 @@
 
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
+#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
 namespace ni {
 
@@ -33,7 +34,7 @@ _HDecl(__vkbuff_dummy__);
 
 static const tU32 knVulkanMaxFramesInFlight = 2;
 
-#define VULKAN_TRACE(aFmt) niDebugFmt(aFmt)
+#define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
 #define NISH_VULKAN_TARGET spv_vk12
 
@@ -140,107 +141,81 @@ niCAssert(niCountOf(_toVkSamplerAddress) == eSamplerWrap_Last);
 
 static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
-  tU32 location = 0;
-  tU32 offset = 0;
+  cFVFDescription fvfDesc(aFVF);
 
-  if (eFVF_HasPosition(aFVF)) {
+  if (fvfDesc.HasPosition()) {
     attrs.push_back({
-        .location = location++,
+        .location = eGLSLVulkanVertexInputLayout_Position,
         .binding = 0,
         .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = offset
+        .offset = (uint32_t)fvfDesc.GetPositionOffset()
       });
-    offset += sizeof(sVec3f);
 
-    if (eFVF_HasWeights(aFVF)) {
-      const tU32 numWeights = eFVF_NumWeights(aFVF);
-      switch (numWeights) {
-        case 1:
-          attrs.push_back({
-              .location = location++,
-              .binding = 0,
-              .format = VK_FORMAT_R32_SFLOAT,
-              .offset = offset
-            });
-          offset += sizeof(tF32);
-          break;
-        case 2:
-          attrs.push_back({
-              .location = location++,
-              .binding = 0,
-              .format = VK_FORMAT_R32G32_SFLOAT,
-              .offset = offset
-            });
-          offset += sizeof(tF32) * 2;
-          break;
-        case 3:
-          attrs.push_back({
-              .location = location++,
-              .binding = 0,
-              .format = VK_FORMAT_R32G32B32_SFLOAT,
-              .offset = offset
-            });
-          offset += sizeof(tF32) * 3;
-          break;
-        case 4:
-          attrs.push_back({
-              .location = location++,
-              .binding = 0,
-              .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-              .offset = offset
-            });
-          offset += sizeof(tF32) * 4;
-          break;
-        default:
-          niPanicUnreachable(niFmt("Unexpected number of vertex weights '%d'.",numWeights));
-          break;
-      }
+    if (fvfDesc.HasWeights4()) {
+      attrs.push_back({
+          .location = eGLSLVulkanVertexInputLayout_Weights,
+          .binding = 0,
+          .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+          .offset = (uint32_t)fvfDesc.GetWeightsOffset()
+        });
     }
   }
 
-  if (niFlagIs(aFVF,eFVF_Indices)) {
+  if (fvfDesc.HasIndices()) {
     attrs.push_back({
-        .location = location++,
+        .location = eGLSLVulkanVertexInputLayout_Indices,
         .binding = 0,
         .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .offset = offset
+        .offset = (uint32_t)fvfDesc.GetIndicesOffset()
       });
-    offset += sizeof(tU32);
   }
 
-  if (niFlagIs(aFVF,eFVF_Normal)) {
+  if (fvfDesc.HasNormal()) {
     attrs.push_back({
-        .location = location++,
+        .location = eGLSLVulkanVertexInputLayout_Normal,
         .binding = 0,
         .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = offset
+        .offset = (uint32_t)fvfDesc.GetNormalOffset()
       });
-    offset += sizeof(sVec3f);
   }
 
-  if (niFlagIs(aFVF,eFVF_ColorA)) {
+  if (fvfDesc.HasColorA()) {
     attrs.push_back({
-        .location = location++,
+        .location = eGLSLVulkanVertexInputLayout_ColorA,
         .binding = 0,
         .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .offset = offset
+        .offset = (uint32_t)fvfDesc.GetColorAOffset()
       });
-    offset += sizeof(tU32);
   }
 
-  for (tU32 i = 0; i < eFVF_TexNumCoo(aFVF); ++i) {
+  for (tU32 i = 0; i < fvfDesc.GetNumTexCoos(); ++i) {
+    const tU32 dim = fvfDesc.GetTexCooDim(i);
+    VkFormat format;
+    switch (dim) {
+      case 1:
+        format = VK_FORMAT_R32_SFLOAT;
+        break;
+      case 2:
+        format = VK_FORMAT_R32G32_SFLOAT;
+        break;
+      case 3:
+        format = VK_FORMAT_R32G32B32_SFLOAT;
+        break;
+      case 4:
+        format = VK_FORMAT_R32G32B32A32_SFLOAT;
+        break;
+      default:
+        continue;
+    }
     attrs.push_back({
-        .location = location++,
+        .location = eGLSLVulkanVertexInputLayout_Tex0 + i,
         .binding = 0,
-        .format = VK_FORMAT_R32G32_SFLOAT,
-        .offset = offset
+        .format = format,
+        .offset = fvfDesc.GetTexCooOffset(i)
       });
-    offset += sizeof(sVec2f);
   }
-
   return attrs;
 }
-
 struct sVulkanTexture;
 struct sVulkanBuffer;
 
@@ -265,7 +240,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   Ptr<sVulkanBuffer> _dummyBuffer;
 
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
-  NN<iFixedGpuPipelines> _fixedPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
+  Ptr<iFixedGpuPipelines> _fixedPipelines;
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
@@ -285,6 +260,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   virtual ~sVulkanDriver() {
+    _fixedPipelines = nullptr;
+
     _dummyBuffer = nullptr;
     niLoop(i,niCountOf(_ssCompiled)) {
       if (_ssCompiled[i]) {
@@ -594,6 +571,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       props.limits.maxDescriptorSetSampledImages,
       props.limits.maxDescriptorSetStorageImages,
       props.limits.maxPerStageDescriptorSamplers));
+    niCheck(props.limits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
 
     // Vertex Input Limits
     niLog(Info,niFmt(
@@ -606,6 +584,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  maxVertexInputBindings: %d",
       props.limits.maxVertexInputAttributes,
       props.limits.maxVertexInputBindings));
+    niCheck(props.limits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
 
     // Push Constants and Buffers
     niLog(Info,niFmt(
@@ -1366,7 +1345,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         .bindingCount = 1,
         .pBindings = &bufferBinding
       };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &bufferLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanLayoutSets_Buffer]), eFalse);
+      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &bufferLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Buffer]), eFalse);
     }
 
     // Texture layout
@@ -1384,7 +1363,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         .bindingCount = 1,
         .pBindings = &textureBinding
       };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanLayoutSets_Texture2D]), eFalse);
+      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Texture2D]), eFalse);
     }
 
     // Sampler layout
@@ -1402,7 +1381,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         .bindingCount = 1,
         .pBindings = &samplerBinding
       };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &samplerLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanLayoutSets_Sampler]), eFalse);
+      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &samplerLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Sampler]), eFalse);
     }
 
     // Pipeline layout
@@ -1747,12 +1726,14 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     sMaterialDesc _lastMaterial;
     Ptr<sVulkanPipeline> _lastPipeline = nullptr;
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
+    tFixedGpuPipelineId _lastFixedPipeline = 0;
   } _cache;
   VkSemaphore _encoderFinishedSemaphore = VK_NULL_HANDLE;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
   tBool _beganFrame = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
+  tU32 _currentWidth = 1, _currentHeight = 1;
 
   sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
@@ -1812,6 +1793,8 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   tBool _BeginFrame(
     const sVulkanFramebuffer& aFB,
+    ain<sRecti> aViewport,
+    ain<sRecti> aScissor,
     ain<sVec4f> aClearColor = Vec4f(1,0,1,0),
     ain<tF32> aClearDepth = 1.0f,
     ain<tU32> aClearStencil = 0)
@@ -1819,6 +1802,8 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     niCheck(_beganFrame == eFalse, eFalse);
     _beganFrame = eTrue;
     _cache = sCache {};
+    _currentWidth = aFB._width;
+    _currentHeight = aFB._height;
 
     vkResetCommandBuffer(_cmdBuffer, 0);
 
@@ -1851,6 +1836,8 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     };
 
     vkCmdBeginRendering(_cmdBuffer, &renderingInfo);
+    this->SetViewport(aViewport);
+    this->SetScissorRect(aScissor);
     return eTrue;
   }
 
@@ -1884,13 +1871,22 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
+  void _DoBindPipeline(iGpuPipeline* apPipeline, tFixedGpuPipelineId aFixedPipelineId) {
+    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
+    vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
+    _cache._lastPipeline = (sVulkanPipeline*)apPipeline;
+    _cache._lastFixedPipeline = aFixedPipelineId;
+  }
+
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
     niCheck(apPipeline != nullptr,;);
     if ((tIntPtr)_cache._lastPipeline.raw_ptr() == (tIntPtr)apPipeline)
       return;
-    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
-    vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
-    _cache._lastPipeline = (sVulkanPipeline*)apPipeline;
+    _DoBindPipeline(apPipeline,0);
+  }
+
+  void __stdcall _SetFixedPipeline(iGpuPipeline* apPipeline, tFixedGpuPipelineId aFixedPipelineId) {
+    _DoBindPipeline(apPipeline,aFixedPipelineId);
   }
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
@@ -1949,9 +1945,9 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual void __stdcall SetViewport(const sRecti& aRect) niImpl {
     VkViewport viewport = {
       .x = (float)aRect.x,
-      .y = (float)aRect.y,
+      .y = (float)(aRect.y + aRect.GetHeight()),
       .width = (float)aRect.GetWidth(),
-      .height = (float)aRect.GetHeight(),
+      .height = (float)-aRect.GetHeight(),
       .minDepth = 0.0f,
       .maxDepth = 1.0f
     };
@@ -2390,7 +2386,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
       _cmdBuffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       pipeline->_vkPipelineLayout,
-      eGLSLVulkanLayoutSets_Buffer,
+      eGLSLVulkanDescriptorSet_Buffer,
       writes.size(),writes.data());
   }
 
@@ -2416,7 +2412,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
       _cmdBuffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       pipeline->_vkPipelineLayout,
-      eGLSLVulkanLayoutSets_Texture2D,
+      eGLSLVulkanDescriptorSet_Texture2D,
       writes.size(),writes.data());
   }
 
@@ -2438,7 +2434,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
       _cmdBuffer,
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       pipeline->_vkPipelineLayout,
-      eGLSLVulkanLayoutSets_Sampler,
+      eGLSLVulkanDescriptorSet_Sampler,
       writes.size(),writes.data());
   }
 
@@ -2467,8 +2463,6 @@ struct sVulkanContextBase :
   tBool _beganFrame = eFalse;
   tU32 _currentFrame = 0;
   const tU32 _frameMaxInFlight;
-  sRecti _viewportRect;
-  sRecti _scissorRect;
   sVulkanFramebuffer _currentFb;
 
   sVulkanContextBase(ain<nn<sVulkanDriver>> aDriver, const tU32 aFrameMaxInFlight)
@@ -2498,7 +2492,7 @@ struct sVulkanContextBase :
     return _driver->_graphics;
   }
   virtual iGraphicsDriver* __stdcall GetDriver() const {
-    return nullptr;
+    return _driver;
   }
 
   virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() niImpl {
@@ -2524,7 +2518,7 @@ struct sVulkanContextBase :
       _dsFormat = eGpuPixelFormat_None;
     }
 
-    niCheck(_cmdEncoder->_BeginFrame(_currentFb),eFalse);
+    niCheck(_cmdEncoder->_BeginFrame(_currentFb,mrectViewport,mrectScissor),eFalse);
     return eTrue;
   }
 
@@ -2559,8 +2553,84 @@ struct sVulkanContextBase :
   }
 
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
-    niPanicUnreachable("Unimplemented");
-    return eFalse;
+    niCheckSilent(niIsOK(apDrawOp), eFalse);
+
+    // niAssert(mbBeganFrame);
+    if (!_beganFrame) {
+      niCheck(_BeginFrame(),eFalse);
+    }
+
+    niLet doCapture = _driver->_drawOpCapture.IsOK();
+    niDefer {
+      if (doCapture) {
+        _driver->_drawOpCapture->EndCaptureDrawOp(this,apDrawOp,sVec4i::Zero());
+      }
+    };
+    if (doCapture) {
+      if (!_driver->_drawOpCapture->BeginCaptureDrawOp(this,apDrawOp,sVec4i::Zero()))
+        return eTrue;
+    }
+
+    iVertexArray* va = apDrawOp->GetVertexArray();
+    if (!va) {
+      return eFalse;
+    }
+
+    VULKAN_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
+    niLet fvf = va->GetFVF();
+    niLet pDOMatDesc = (const sMaterialDesc*)apDrawOp->GetMaterial()->GetDescStructPtr();
+
+    iGpuFunction* funcVertex = _driver->_fixedPipelines->GetFixedGpuFuncVertex(fvf);
+    iGpuFunction* funcPixel = _driver->_fixedPipelines->GetFixedGpuFuncPixel(*pDOMatDesc);
+    const tFixedGpuPipelineId rpId = GetFixedGpuPipelineId(
+      _rt0Format, _dsFormat,
+      fvf,
+      _GetBlendMode(pDOMatDesc),
+      (eCompiledStates)_GetRS(pDOMatDesc),
+      (eCompiledStates)_GetDS(pDOMatDesc),
+      funcVertex, funcPixel);
+    niCheck(rpId != 0, eFalse);
+
+    niLetMut& cmdStateCache = _cmdEncoder->_cache;
+    if (rpId != cmdStateCache._lastFixedPipeline) {
+      iGpuPipeline* pipeline = _driver->_fixedPipelines->GetRenderPipeline(
+        _driver, rpId,
+        funcVertex, funcPixel).raw_ptr();
+      if (!pipeline) {
+        niError("Can't get the pipeline.");
+        return eFalse;
+      }
+      _cmdEncoder->_SetFixedPipeline(pipeline,rpId);
+    }
+
+    _cmdEncoder->SetViewport(mrectViewport);
+    _cmdEncoder->SetScissorRect(mrectScissor);
+
+    TestGpuFuncs_TestUniforms fixedUniforms;
+    {
+      const sMaterialChannel& chBase = _GetChannel(pDOMatDesc, eMaterialChannel_Base);
+      const sMaterialChannel& chOpacity = _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);
+      _cmdEncoder->SetTexture(chBase.mTexture, 0);
+      _cmdEncoder->SetSamplerState(chBase.mhSS, 0);
+
+      if (pDOMatDesc->mFlags & eMaterialFlags_DiffuseModulate ||
+          !chBase.mTexture.raw_ptr())
+      {
+        fixedUniforms.materialColor = chBase.mColor;
+      }
+      else {
+        fixedUniforms.materialColor = sColor4f::White();
+      }
+      fixedUniforms.alphaRef = chOpacity.mColor.w;
+    }
+
+    {
+      sMatrixf mtxVP = this->GetFixedStates()->GetViewProjectionMatrix();
+      fixedUniforms.mtxWVP = apDrawOp->GetMatrix() * mtxVP;
+      _cmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,sizeof(fixedUniforms),0);
+    }
+
+    return DrawOperationSubmitGpuDrawCall(_cmdEncoder,apDrawOp);
   }
 
   virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
@@ -2575,22 +2645,6 @@ struct sVulkanContextBase :
   /////////////////////////////////////////////
   virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
     return NULL;
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetViewport(const sRecti& aVal) {
-    _viewportRect = aVal;
-  }
-  virtual sRecti __stdcall GetViewport() const {
-    return _viewportRect;
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetScissorRect(const sRecti& aVal) {
-    _scissorRect = aVal;
-  }
-  virtual sRecti __stdcall GetScissorRect() const {
-    return _scissorRect;
   }
 };
 
@@ -2697,11 +2751,9 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
   niUnused(aBackBufferFlags);
   niUnused(aaszBBFormat);
   niUnused(aaszDSFormat);
-
-  if (_fixedPipelines.raw_ptr() == nullptr) {
+  if (!_fixedPipelines.IsOK()) {
     _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
   }
-
   return niNew sVulkanContextWindow(
     as_nn(this),knVulkanMaxFramesInFlight,apWindow);
 }

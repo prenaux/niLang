@@ -5,8 +5,8 @@
 		</EntryPoints>
 		<Inputs>
 			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
-			<Input name="IN_1_aInput_color" type="vec4" location="1"/>
-			<Input name="IN_2_aInput_tex0" type="vec2" location="2"/>
+			<Input name="IN_4_aInput_color" type="vec4" location="4"/>
+			<Input name="IN_5_aInput_tex0" type="vec2" location="5"/>
 		</Inputs>
 		<Outputs>
 			<Output name="OUT_1_rval_color" type="vec4" location="1"/>

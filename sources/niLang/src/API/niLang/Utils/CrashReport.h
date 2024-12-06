@@ -5,6 +5,10 @@
 #include "../Types.h"
 #include "../StringDef.h"
 
+#if defined __cplusplus
+#include <exception> // for std::set_terminate
+#endif
+
 namespace ni {
 /** \addtogroup niLang
  * @{

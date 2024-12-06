@@ -800,7 +800,9 @@ struct sLinter {
         return eFalse;
       }
       if (sq_type(v) != OT_INTEGER) {
-        _LINTERNAL_WARNING("__lint value is not an integer or boolean.");
+        _LINTERNAL_WARNING(niFmt(
+          "__lint value '%s' for key '%s' is not an integer or boolean.",
+          _ObjToString(v), _ObjToString(k)));
         return eFalse;
       }
       return EnableFromName(

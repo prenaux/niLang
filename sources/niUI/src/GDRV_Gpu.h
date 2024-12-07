@@ -164,7 +164,7 @@ sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA);
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage);
 iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
 
-Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget);
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpuFunctionBindType* apOutBindType);
 cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT);
 Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT);
 

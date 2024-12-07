@@ -652,11 +652,30 @@ static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString
 }
 
 /////////////////////////////////////////////////////////////////
-Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget) {
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpuFunctionBindType* apOutBindType) {
   niLet dtRoot = niCheckNN_(
     dtRoot,LoadDataTable(aURL),
     niFmt("Can't load gpufunc datatable from '%s'.",aURL),
     nullptr);
+
+  if (apOutBindType) {
+    *apOutBindType = eGpuFunctionBindType_None;
+    niLet dtReflection = niCheckNN(dtReflection,dtRoot->GetChild("Reflection"),nullptr);
+    niLoop(i,dtReflection->GetNumChildren()) {
+      niLet dtChild = dtReflection->GetChildFromIndex(i);
+      niLet name = dtChild->GetName();
+      if ((StrEq(name,"SeparateImages") ||
+           StrEq(name,"UBOs")) &&
+          (dtChild->GetNumChildren() > 0)) {
+        *apOutBindType = eGpuFunctionBindType_Fixed;
+        break;
+      }
+    }
+    niDebugFmt((
+      "... GpuFunctionDT_Load: url: %s, target: %s, bindType: %d",
+      aURL, ahspTarget, niEnumToChars(eGpuFunctionBindType,*apOutBindType)));
+  }
+
   niLet dtTarget = niCheckNN_(
     dtTarget,GpuFunctionDT_FindTarget(dtRoot,ahspTarget),
     niFmt("Can't find gpufunc target '%s' datatable from '%s'.",ahspTarget,aURL),
@@ -966,8 +985,7 @@ struct sGpuStream : public ImplRC<iGpuStream> {
   tBool _AllocateNextChunk() {
     niLet chunk = niCheckNN(chunk, _driver->CreateGpuBuffer(
       nullptr, _chunkSize,
-      eGpuBufferMemoryMode_Shared, _usageFlags),
-                            eFalse);
+      eGpuBufferMemoryMode_Shared, _usageFlags),eFalse);
     _chunks.push_back(chunk);
     return eTrue;
   }

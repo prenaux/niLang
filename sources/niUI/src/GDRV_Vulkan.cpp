@@ -25,6 +25,8 @@
 
 #if defined niOSX
 #include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+#elif defined niLinux
+#include <niLang/Platforms/Linux/linuxgl.h>
 #endif
 
 #include "GDRV_Gpu.h"
@@ -41,6 +43,9 @@ static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
+#ifdef niLinux
+  VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#endif
 };
 static const tU32 knVkRequiredDeviceExtensionsCount = niCountOf(_vkRequiredDeviceExtensions);
 static const tU32 knVulkanMaxDescriptorSets = 10000;
@@ -361,7 +366,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
     }
 
-    astl::vector<const char*> extensions = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+    astl::vector<const char*> extensions = {
+      VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+    };
+
+#if defined niLinux
+    extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+#endif
+
     astl::vector<const char*> layers;
     if (_enableValidationLayers) {
       // NOTE: Statically linking directly MoltenVK we cannot use the
@@ -1037,57 +1050,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
   virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl;
   //// iGraphicsDriverGpu ///////////////////////////////
-
-};
-
-struct sVulkanFramebuffer {
-  VkImage _image = VK_NULL_HANDLE;
-  VkImageView _view = VK_NULL_HANDLE;
-  tU32 _width = 0;
-  tU32 _height = 0;
-
-#if defined niOSX || defined niIOS
-  tBool CreateFromMetalAPI(iOSXMetalAPI* apMetalAPI, VkDevice aDevice) {
-    niCheck(osxVkCreateImageForMetalAPI(apMetalAPI,aDevice,nullptr,&_image),eFalse);
-    niLet viewSize = apMetalAPI->GetViewSize();
-    _width = viewSize.x;
-    _height = viewSize.y;
-
-    VkImageViewCreateInfo viewInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = _image,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      .format = VK_FORMAT_B8G8R8A8_UNORM,
-      .components = {
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY
-      },
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      }
-    };
-
-    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view), eFalse);
-    return eTrue;
-  }
-#endif
-
-  void Destroy(VkDevice device) {
-    if (_view) {
-      vkDestroyImageView(device, _view, nullptr);
-      _view = VK_NULL_HANDLE;
-    }
-    if (_image) {
-      vkDestroyImage(device, _image, nullptr);
-      _image = VK_NULL_HANDLE;
-    }
-  }
 };
 
 static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
@@ -1253,6 +1215,7 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
   const tU32 _id;
   tHStringPtr _hspName;
   VkShaderModule _vkShaderModule = VK_NULL_HANDLE;
+  eGpuFunctionBindType _bindType;
 
   sVulkanFunction(
     ain_nn<sVulkanDriver> aDriver,
@@ -1272,7 +1235,7 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
 
   tBool _Compile(VkDevice aDevice, iHString* ahspPath) {
     _hspName = ahspPath;
-    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetVulkanGpuFunctionTarget()),eFalse);
+    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetVulkanGpuFunctionTarget(),&_bindType),eFalse);
     NN<iFile> spvData = niCheckNN_(
       spvData,GpuFunctionDT_GetSourceData(_datatable),
       niFmt("Can't get gpufunc data for target '%s' in '%s'.",_GetVulkanGpuFunctionTarget(),ahspPath),
@@ -1305,8 +1268,7 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
   }
 
   virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl {
-    // TODO: Actually detect the bind type correctly.
-    return eGpuFunctionBindType_Fixed;
+    return _bindType;
   }
 
   virtual iDataTable* __stdcall GetDataTable() const niImpl {
@@ -1883,6 +1845,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   astl::vector<Ptr<sVulkanBuffer>> _trackedBuffers;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
+  tBool _inFrame = eFalse;;
 
   sVulkanEncoderFrameData(ain<nn<sVulkanDriver>> aDriver) {
     _stream = CreateGpuStream(
@@ -1904,24 +1867,35 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     }
   }
 
-  void OnFrameCompleted(VkDevice aDevice) {
+  void OnBeginFrame(VkDevice aDevice) {
+    niUnused(aDevice);
+    niPanicAssert(_inFrame == eFalse);
+    _inFrame = eTrue;
+  }
+
+  void OnEndFrame(VkDevice aDevice) {
     niLet& lastBlock = _stream->GetLastBlock();
-    niDebugFmt((
-      "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
-      _trackedBuffers.size(),_stream->GetNumBlocks(),
-      lastBlock.mOffset,lastBlock.mSize,
-      _descriptorPool._numAllocated));
+
+    // niDebugFmt((
+    //   "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
+    //   _trackedBuffers.size(),_stream->GetNumBlocks(),
+    //   lastBlock.mOffset,lastBlock.mSize,
+    //   _descriptorPool._numAllocated));
+
     niLoop(i,_trackedBuffers.size()) {
       _trackedBuffers[i]->_Untrack();
     }
     _trackedBuffers.clear();
     _stream->Reset();
     _descriptorPool.ResetDescriptorPool(aDevice);
+    _inFrame = eFalse;
     _eventFrameCompleted.Signal();
   }
 
   void WaitFrameCompleted() {
-    _eventFrameCompleted.InfiniteWait();
+    if (_inFrame) {
+      _eventFrameCompleted.InfiniteWait();
+    }
   }
 };
 
@@ -1935,10 +1909,9 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     tFixedGpuPipelineId _lastFixedPipeline = 0;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
-  tBool _beganFrame = eFalse;
+  tBool _beganCmdBuffer = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
-  tU32 _currentWidth = 1, _currentHeight = 1;
 
   sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
@@ -1987,19 +1960,13 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
-  tBool _BeginFrame(
-    const sVulkanFramebuffer& aFB,
-    ain<sRecti> aViewport,
-    ain<sRecti> aScissor,
-    ain<sVec4f> aClearColor = Vec4f(1,0,1,0),
-    ain<tF32> aClearDepth = 1.0f,
-    ain<tU32> aClearStencil = 0)
+  tBool _BeginCmdBuffer()
   {
-    niCheck(_beganFrame == eFalse, eFalse);
-    _beganFrame = eTrue;
+    niCheck(_beganCmdBuffer == eFalse, eFalse);
+    niDebugAssert(_cmdBuffer != VK_NULL_HANDLE);
+
+    _beganCmdBuffer = eTrue;
     _cache = sCache {};
-    _currentWidth = aFB._width;
-    _currentHeight = aFB._height;
 
     vkResetCommandBuffer(_cmdBuffer, 0);
 
@@ -2009,6 +1976,21 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     };
 
     VK_CHECK(vkBeginCommandBuffer(_cmdBuffer, &beginInfo), eFalse);
+    return eTrue;
+  }
+
+  tBool _BeginRendering(
+    ain<VkImage> aImage,
+    ain<VkImageView> aImageView,
+    ain<tU32> anWidth,
+    ain<tU32> anHeight,
+    ain<sRecti> aViewport,
+    ain<sRecti> aScissor,
+    ain<sVec4f> aClearColor = Vec4f(1,0,1,0),
+    ain<tF32> aClearDepth = 1.0f,
+    ain<tU32> aClearStencil = 0)
+  {
+    niDebugAssert(_beganCmdBuffer);
 
     VkClearValue clearColorValue = {};
     static_assert(sizeof(clearColorValue) == sizeof(sVec4f));
@@ -2016,41 +1998,53 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
     VkRenderingAttachmentInfo colorAttachment{
       .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-      .imageView = aFB._view,
+      .imageView = aImageView,
       .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
       .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
       .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
       .clearValue = clearColorValue
     };
 
-    VkRenderingInfo renderingInfo{
+    VkRenderingInfoKHR renderingInfo{
       .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-      .renderArea = {{0, 0}, {aFB._width, aFB._height}},
+      .renderArea = {{0, 0}, {anWidth, anHeight}},
       .layerCount = 1,
       .colorAttachmentCount = 1,
       .pColorAttachments = &colorAttachment
     };
 
-    vkCmdBeginRendering(_cmdBuffer, &renderingInfo);
+    vkCmdBeginRenderingKHR(_cmdBuffer, &renderingInfo);
+    _GetCurrentFrame()->OnBeginFrame(_driver->_device);
     this->SetViewport(aViewport);
     this->SetScissorRect(aScissor);
     return eTrue;
   }
 
-  tBool _EndFrame() {
-    niCheck(_beganFrame == eTrue, eFalse);
-    niDefer {
-      _beganFrame = eFalse;
-    };
+  void _EndRendering() {
+    vkCmdEndRenderingKHR(_cmdBuffer);
+  }
 
-    vkCmdEndRendering(_cmdBuffer);
+  tBool _EndCmdBufferAndSubmit(
+    VkSemaphore aImageAvailableSemaphore,
+    VkSemaphore aRendererFinishedSemaphore)
+  {
+    niCheck(_beganCmdBuffer == eTrue, eFalse);
+    niDefer {
+      _beganCmdBuffer = eFalse;
+    };
 
     VK_CHECK(vkEndCommandBuffer(_cmdBuffer), eFalse);
 
+    VkPipelineStageFlags waitStages[] = {
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+    };
     VkSubmitInfo submitInfo = {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .waitSemaphoreCount = 0,
-      .signalSemaphoreCount = 0,
+      .waitSemaphoreCount = 1,
+      .pWaitSemaphores = &aImageAvailableSemaphore,
+      .pWaitDstStageMask = waitStages,
+      .signalSemaphoreCount = 1,
+      .pSignalSemaphores = &aRendererFinishedSemaphore,
       .commandBufferCount = 1,
       .pCommandBuffers = &_cmdBuffer
     };
@@ -2061,7 +2055,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence), eFalse);
     VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
     VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
-    _GetCurrentFrame()->OnFrameCompleted(_driver->_device);
+    _GetCurrentFrame()->OnEndFrame(_driver->_device);
     return eTrue;
   }
 
@@ -2167,7 +2161,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
     niCheck(_BindGpuFunction(),eFalse);
-    vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
+    vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDrawIndexed(_cmdBuffer, anNumIndices, 1, anFirstIndex, 0, 0);
     return eTrue;
   }
@@ -2175,7 +2169,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
     niCheck(_BindGpuFunction(),eFalse);
-    vkCmdSetPrimitiveTopology(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
+    vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
     return eTrue;
   }
@@ -2603,6 +2597,15 @@ tBool sVulkanCommandEncoder::_BindGpuFunction() {
   return eTrue;
 }
 
+struct sVulkanSurface {
+  VkImage _image = VK_NULL_HANDLE;
+  VkImageView _imageView = VK_NULL_HANDLE;
+
+  tBool __stdcall IsOK() const {
+    return _imageView != VK_NULL_HANDLE;
+  }
+};
+
 struct sVulkanContextBase :
     public sGraphicsContext<1,ni::ImplRC<
                              iGraphicsContextRT,
@@ -2610,14 +2613,13 @@ struct sVulkanContextBase :
                              iGraphicsContext,
                              iGraphicsContextGpu> >
 {
+  const tU32 _frameMaxInFlight;
   nn<sVulkanDriver> _driver;
   NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
-  eGpuPixelFormat _rt0Format;
-  eGpuPixelFormat _dsFormat;
+  eGpuPixelFormat _rt0Format = eGpuPixelFormat_None;
+  eGpuPixelFormat _dsFormat = eGpuPixelFormat_None;
   tBool _beganFrame = eFalse;
-  tU32 _currentFrame = 0;
-  const tU32 _frameMaxInFlight;
-  sVulkanFramebuffer _currentFb;
+  tU64 _frameCounter = 0;
 
   sVulkanContextBase(ain<nn<sVulkanDriver>> aDriver, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(aDriver->_graphics)
@@ -2631,15 +2633,8 @@ struct sVulkanContextBase :
     this->Invalidate();
   }
 
-  tBool __stdcall _CreateContextBase() {
-    return eTrue;
-  }
-
   virtual tBool __stdcall IsOK() const {
     return mptrRT[0].IsOK();
-  }
-
-  virtual void __stdcall Invalidate() {
   }
 
   virtual iGraphics* __stdcall GetGraphics() const {
@@ -2651,37 +2646,12 @@ struct sVulkanContextBase :
 
   virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() niImpl {
     if (!_beganFrame) {
-      _BeginFrame();
+      niCheck(_BeginFrame(),nullptr);
     }
     return _cmdEncoder;
   }
 
-  virtual tBool _UpdateFrameBuffer() = 0;
-
-  virtual tBool _BeginFrame() {
-    niCheck(_UpdateFrameBuffer(),eFalse);
-
-    niPanicAssert(_beganFrame == eFalse);
-    _beganFrame = eTrue;
-
-    _rt0Format = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
-    if (mptrDS.IsOK()) {
-      _dsFormat = _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
-    }
-    else {
-      _dsFormat = eGpuPixelFormat_None;
-    }
-
-    niCheck(_cmdEncoder->_BeginFrame(_currentFb,mrectViewport,mrectScissor),eFalse);
-    return eTrue;
-  }
-
-  void _EndFrame() {
-    if (!_beganFrame)
-      return;
-    _cmdEncoder->_EndFrame();
-    _beganFrame = eFalse;
-  }
+  virtual tBool _BeginFrame() = 0;
 
   virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
     niUnused(anStencil);
@@ -2705,7 +2675,6 @@ struct sVulkanContextBase :
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
 
-    // niAssert(mbBeganFrame);
     if (!_beganFrame) {
       niCheck(_BeginFrame(),eFalse);
     }
@@ -2783,22 +2752,16 @@ struct sVulkanContextBase :
     return DrawOperationSubmitGpuDrawCall(_cmdEncoder,apDrawOp);
   }
 
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
-    _EndFrame();
-    _currentFrame = (_currentFrame + 1) % _frameMaxInFlight;
-    return eTrue;
-  }
-
   /////////////////////////////////////////////
   virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
-    return NULL;
+    return nullptr;
   }
 };
 
-struct sVulkanContextWindow : public sVulkanContextBase {
+#if defined niOSX
+struct sVulkanContextWindowMetal : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
 
-#if defined niOSX
   Ptr<iOSXMetalAPI> _metalAPI;
   tBool _PlatformInit() {
     osxMetalSetDefaultDevice();
@@ -2812,23 +2775,12 @@ struct sVulkanContextWindow : public sVulkanContextBase {
   void _PlatformInvalidate() {
     _metalAPI = nullptr;
   }
-  tBool _PlatformPresent() {
-    _metalAPI->DrawablePresent();
-    return eTrue;
-  }
-  tBool _PlatformUpdateFrameBuffer() {
+  tBool _PlatformUpdateFrameBuffer(tU32 anWidth, tU32 anNewHeight) {
+    _currentFb.Destroy(_driver->_device);
     return _currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device);
   }
-//#elif defined niLinux
-#else
-  //#error "Unsupported Vulkan platform."
-  tBool _PlatformInit() { return eFalse; }
-  void _PlatformInvalidate() {}
-  tBool _PlatformPresent() { return eFalse; }
-  tBool _PlatformUpdateFrameBuffer() { return eFalse; }
-#endif
 
-  sVulkanContextWindow(
+  sVulkanContextWindowMetal(
     ain<nn<sVulkanDriver>> aDriver,
     const tU32 aFrameMaxInFlight,
     iOSWindow* apWindow)
@@ -2849,12 +2801,12 @@ struct sVulkanContextWindow : public sVulkanContextBase {
     }
   }
 
-  virtual ~sVulkanContextWindow() {
+  virtual ~sVulkanContextWindowMetal() {
     this->Invalidate();
   }
 
   void __stdcall Invalidate() niImpl {
-    _currentFb.Destroy(_driver->_device);
+    _currentFb.DestroyFrameBuffer(_driver->_device);
     _PlatformInvalidate();
     _window = nullptr;
   }
@@ -2863,8 +2815,8 @@ struct sVulkanContextWindow : public sVulkanContextBase {
     if (!_window.IsOK()) {
       return eFalse;
     }
-    niCheck(sVulkanContextBase::Display(aFlags,aRect),eFalse);
-    niCheck(_PlatformPresent(),eFalse);
+    this->_EndFrame();
+    _metalAPI->DrawablePresent();
     return eTrue;
   }
 
@@ -2872,6 +2824,8 @@ struct sVulkanContextWindow : public sVulkanContextBase {
     iGraphics* g = _driver->_graphics;
     const tU32 w = _window->GetClientSize().x;
     const tU32 h = _window->GetClientSize().y;
+
+    niCheck(_PlatformResizeContext(),eFalse);
 
     ni::SafeInvalidate(mptrRT[0].ptr());
     mptrRT[0] = niNew sVulkanTexture(
@@ -2896,6 +2850,7 @@ struct sVulkanContextWindow : public sVulkanContextBase {
       mptrDS->GetPixelFormat()->GetFormat(),
       GetViewport(),
       GetScissorRect()));
+
     return eTrue;
   }
 
@@ -2903,15 +2858,439 @@ struct sVulkanContextWindow : public sVulkanContextBase {
     if (!_window.IsOK()) {
       return eFalse;
     }
-    _currentFb.Destroy(_driver->_device);
     const sVec2i newSize = _window->GetClientSize();
     if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
       _DoResizeContext();
     }
-    niCheck(_PlatformUpdateFrameBuffer(), eFalse);
+    niCheck(_PlatformUpdateFrameBuffer(newSize.x,newSize.y), eFalse);
+    return eTrue;
+  }
+
+  VkImage _image = VK_NULL_HANDLE;
+  VkImageView _view = VK_NULL_HANDLE;
+  tU32 _width = 0;
+  tU32 _height = 0;
+
+#if defined niOSX || defined niIOS
+  tBool CreateFromMetalAPI(iOSXMetalAPI* apMetalAPI, VkDevice aDevice) {
+    niCheck(osxVkCreateImageForMetalAPI(apMetalAPI,aDevice,nullptr,&_image),eFalse);
+    niLet viewSize = apMetalAPI->GetViewSize();
+    _width = viewSize.x;
+    _height = viewSize.y;
+
+    VkImageViewCreateInfo viewInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      .image = _image,
+      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .format = VK_FORMAT_B8G8R8A8_UNORM,
+      .components = {
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY
+      },
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      }
+    };
+
+    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view), eFalse);
+    return eTrue;
+  }
+#endif
+
+  void DestroyFrameBuffer(VkDevice device) {
+    if (_view) {
+      vkDestroyImageView(device, _view, nullptr);
+      _view = VK_NULL_HANDLE;
+    }
+    if (_image) {
+      vkDestroyImage(device, _image, nullptr);
+      _image = VK_NULL_HANDLE;
+    }
+  }
+};
+#endif
+
+#if defined niLinuxDesktop
+struct sVulkanContextWindowX11 : public sVulkanContextBase {
+  Ptr<iOSWindow> _window;
+  VkSurfaceKHR _surface = VK_NULL_HANDLE;
+  VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
+
+  VkSemaphore _imageAvailableSemaphore = VK_NULL_HANDLE;
+  VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
+
+  uint32_t _currentImageIndex = 0;
+
+  // Store swapchain images, image views, and format
+  astl::vector<VkImage> _swapchainImages;
+  astl::vector<VkImageView> _swapchainImageViews;
+  VkFormat _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
+  VkExtent2D _swapchainExtent = {0,0};
+
+  sVulkanContextWindowX11(
+    ain<nn<sVulkanDriver>> aDriver,
+    const tU32 aFrameMaxInFlight,
+    iOSWindow* apWindow)
+      : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+  {
+    _window = apWindow;
+  }
+
+  ~sVulkanContextWindowX11() {
+    this->Invalidate();
+  }
+
+  tBool _CreateContextWindowX11() {
+    VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+    };
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
+    niCheck(_CreateSurface(), eFalse);
+    niCheck(_CreateSwapChain(), eFalse);
+    niCheck(_DoResizeContext(), eFalse);
+    return eTrue;
+  }
+
+  void __stdcall Invalidate() niImpl {
+    // Wait for the device to finish all operations before destroying objects.
+    vkDeviceWaitIdle(_driver->_device);
+    _DestroySwapChainResources();
+    if (_renderFinishedSemaphore) {
+      vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
+      _renderFinishedSemaphore = VK_NULL_HANDLE;
+    }
+    if (_surface != VK_NULL_HANDLE) {
+      vkDestroySurfaceKHR(_driver->_instance, _surface, nullptr);
+      _surface = VK_NULL_HANDLE;
+    }
+    _window = nullptr;
+  }
+
+  tBool _CreateSurface() {
+    sOSWindowXWinHandles xwinHandles = {};
+    niCheck(linuxGetOSWindowXWinHandles(_window,xwinHandles),eFalse);
+
+    VkXlibSurfaceCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+      .dpy = xwinHandles._display,
+      .window = xwinHandles._window
+    };
+
+    VK_CHECK(vkCreateXlibSurfaceKHR(
+      _driver->_instance,
+      &createInfo,
+      nullptr,
+      &_surface),
+      eFalse);
+
+    return eTrue;
+  }
+
+  tBool _CreateSwapChain() {
+    VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+    };
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore), eFalse);
+
+    VkSurfaceCapabilitiesKHR capabilities;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+      _driver->_physicalDevice,
+      _surface,
+      &capabilities);
+
+    // We assume we can use our chosen format and present mode directly
+    _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
+
+    VkSwapchainCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+      .surface = _surface,
+      .minImageCount = capabilities.minImageCount,
+      .imageFormat = _swapchainImageFormat,
+      .imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+      .imageExtent = capabilities.currentExtent,
+      .imageArrayLayers = 1,
+      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+      .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      .preTransform = capabilities.currentTransform,
+      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .presentMode = VK_PRESENT_MODE_FIFO_KHR,
+      .clipped = VK_TRUE
+    };
+
+    VK_CHECK(vkCreateSwapchainKHR(_driver->_device, &createInfo, nullptr, &_swapchain), eFalse);
+    _swapchainExtent = capabilities.currentExtent;
+
+    // Retrieve swapchain images
+    uint32_t imageCount = 0;
+    vkGetSwapchainImagesKHR(_driver->_device, _swapchain, &imageCount, nullptr);
+    _swapchainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_driver->_device, _swapchain, &imageCount, _swapchainImages.data());
+
+    // Create image views for each swapchain image
+    _swapchainImageViews.resize(imageCount);
+    for (uint32_t i = 0; i < imageCount; i++) {
+      VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = _swapchainImages[i],
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = _swapchainImageFormat,
+        .components = {
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY
+        },
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_swapchainImageViews[i]), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  void _DestroySwapChainResources() {
+    if (_imageAvailableSemaphore) {
+      vkDestroySemaphore(_driver->_device, _imageAvailableSemaphore, nullptr);
+      _imageAvailableSemaphore = VK_NULL_HANDLE;
+    }
+
+    // Destroy all swapchain image views
+    for (auto iv : _swapchainImageViews) {
+      if (iv != VK_NULL_HANDLE) {
+        vkDestroyImageView(_driver->_device, iv, nullptr);
+      }
+    }
+    _swapchainImageViews.clear();
+
+    if (_swapchain != VK_NULL_HANDLE) {
+      vkDestroySwapchainKHR(_driver->_device, _swapchain, nullptr);
+      _swapchain = VK_NULL_HANDLE;
+    }
+
+    _swapchainImages.clear();
+  }
+
+  tBool _RecreateSwapchain() {
+    vkDeviceWaitIdle(_driver->_device);
+
+    _DestroySwapChainResources();
+
+    if (!_CreateSwapChain()) {
+      niError("Failed to recreate swapchain.");
+      return eFalse;
+    }
+
+    if (!_DoResizeContext()) {
+      niError("Failed to resize context after recreating swapchain.");
+      return eFalse;
+    }
+
+    return eTrue;
+  }
+
+  tBool __stdcall _DoResizeContext() {
+    iGraphics* g = _driver->_graphics;
+    const tU32 w = _swapchainExtent.width;
+    const tU32 h = _swapchainExtent.height;
+
+    ni::SafeInvalidate(mptrRT[0].ptr());
+    mptrRT[0] = niNew sVulkanTexture(
+      _driver,_H("Vulkan_MainRT"),
+      w,h,eGpuPixelFormat_RGBA8,
+      eTextureFlags_RenderTarget|eTextureFlags_Surface);
+    _rt0Format = _GetClosestGpuPixelFormatForRT(
+      mptrRT[0]->GetPixelFormat()->GetFormat());
+
+    ni::SafeInvalidate(mptrDS.ptr());
+    mptrDS = niNew sVulkanTexture(
+      _driver,_H("Vulkan_MainDS"),
+      w,h,eGpuPixelFormat_D32,
+      eTextureFlags_RenderTarget|eTextureFlags_Surface);
+    if (mptrDS.IsOK()) {
+      _dsFormat = _GetClosestGpuPixelFormatForDS(
+        mptrDS->GetPixelFormat()->GetFormat());
+    }
+    else {
+      _dsFormat = eGpuPixelFormat_None;
+    }
+
+    SetViewport(sRecti(0,0,w,h));
+    SetScissorRect(sRecti(0,0,w,h));
+
+    niLog(Info, niFmt(
+      "Vulkan Context - Resized [%p]: %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
+      (tIntPtr)this,
+      w,h,
+      mptrRT[0]->GetPixelFormat()->GetFormat(),
+      mptrDS->GetPixelFormat()->GetFormat(),
+      GetViewport(),
+      GetScissorRect()));
+
+    return eTrue;
+  }
+
+  tBool _BeginFrame() niImpl {
+    niPanicAssert(_beganFrame == eFalse);
+    _beganFrame = eTrue;
+
+    const sVec2i newSize = _window->GetClientSize();
+    if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
+      if (!_RecreateSwapchain()) {
+        niError("Failed to recreate swapchain after detecting window size change.");
+        return eFalse;
+      }
+    }
+
+    VkResult acquireRes = vkAcquireNextImageKHR(
+      _driver->_device,
+      _swapchain,
+      UINT64_MAX,
+      _imageAvailableSemaphore,
+      VK_NULL_HANDLE,
+      &_currentImageIndex);
+    if (acquireRes == VK_ERROR_OUT_OF_DATE_KHR || acquireRes == VK_SUBOPTIMAL_KHR) {
+      if (!_RecreateSwapchain()) {
+        niError("Failed to recreate swapchain after AcquireNextImage out-of-date.");
+        return eFalse;
+      }
+      VK_CHECK(vkAcquireNextImageKHR(
+        _driver->_device,
+        _swapchain,
+        UINT64_MAX,
+        _imageAvailableSemaphore,
+        VK_NULL_HANDLE,
+        &_currentImageIndex),
+      eFalse);
+    }
+    else {
+      VK_CHECK(acquireRes, eFalse);
+    }
+
+    niLet currentImage = _swapchainImages[_currentImageIndex];
+    niLet currentImageView = _swapchainImageViews[_currentImageIndex];
+
+    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+
+    // Transition the image from UNDEFINED to COLOR_ATTACHMENT_OPTIMAL (or
+    // another suitable layout) here using vkCmdPipelineBarrier.  This must
+    // happen before any rendering commands.
+    {
+      VkImageMemoryBarrier barrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = currentImage,
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      vkCmdPipelineBarrier(
+        _cmdEncoder->_cmdBuffer,
+        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Source stage
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // Destination stage
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &barrier
+      );
+    }
+
+    niCheck(_cmdEncoder->_BeginRendering(
+      currentImage,currentImageView,
+      this->GetWidth(),this->GetHeight(),
+      mrectViewport,mrectScissor),eFalse);
+    return eTrue;
+  }
+
+  void _TransitionImageLayout(VkCommandBuffer aCmdBuffer) {
+    VkImage image = _swapchainImages[_currentImageIndex];
+
+    VkImageMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = image,
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      }
+    };
+
+    VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = 0;
+
+    vkCmdPipelineBarrier(
+      aCmdBuffer,
+      sourceStage,
+      destinationStage,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier
+    );
+  }
+
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
+    niCheck(_beganFrame,eFalse);
+    _beganFrame = eFalse;
+
+    _cmdEncoder->_EndRendering();
+    _TransitionImageLayout(_cmdEncoder->_cmdBuffer);
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
+      _imageAvailableSemaphore,
+      _renderFinishedSemaphore),eFalse);
+
+    VkPresentInfoKHR presentInfo = {
+      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+      .waitSemaphoreCount = 1,
+      .pWaitSemaphores = &_renderFinishedSemaphore,
+      .swapchainCount = 1,
+      .pSwapchains = &_swapchain,
+      .pImageIndices = &_currentImageIndex,
+    };
+
+    VkResult presentRes = vkQueuePresentKHR(_driver->_graphicsQueue, &presentInfo);
+    if (presentRes == VK_ERROR_OUT_OF_DATE_KHR || presentRes == VK_SUBOPTIMAL_KHR) {
+      if (!_RecreateSwapchain()) {
+        niError("Failed to recreate swapchain after Present out-of-date.");
+        return eFalse;
+      }
+    }
+    else {
+      VK_CHECK(presentRes, eFalse);
+    }
+
+    ++_frameCounter;
     return eTrue;
   }
 };
+#endif
 
 iGraphicsContext* sVulkanDriver::CreateContextForWindow(
   iOSWindow* apWindow,
@@ -2928,8 +3307,16 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
   if (!_fixedPipelines.IsOK()) {
     _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
   }
-  return niNew sVulkanContextWindow(
-    as_nn(this),knVulkanMaxFramesInFlight,apWindow);
+
+#if defined niLinuxDesktop
+  Ptr<sVulkanContextWindowX11> gc = niCheckNN(gc, niNew sVulkanContextWindowX11(
+    as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
+  niCheck(gc->_CreateContextWindowX11(),nullptr);
+#else
+#error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"
+#endif
+
+  return gc.GetRawAndSetNull();
 }
 
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {

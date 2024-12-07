@@ -39,11 +39,11 @@ _HDecl(__vkbuff_dummy__);
 static const tU32 knVulkanMaxFramesInFlight = 1;
 static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
 static const char* const _vkRequiredDeviceExtensions[] = {
-  VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME,
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
 };
 static const tU32 knVkRequiredDeviceExtensionsCount = niCountOf(_vkRequiredDeviceExtensions);
+static const tU32 knVulkanMaxDescriptorSets = 10000;
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
@@ -1436,6 +1436,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     _vkDescSetLayouts.resize(6); // Space for sets 0-5
 
     niLet stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    niLet layoutFlags = 0;
 
     // Initialize all with empty layouts
     {
@@ -1461,7 +1462,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       };
       VkDescriptorSetLayoutCreateInfo bufferLayoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
+        .flags = layoutFlags,
         .bindingCount = 1,
         .pBindings = &bufferBinding
       };
@@ -1479,7 +1480,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       };
       VkDescriptorSetLayoutCreateInfo textureLayoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
+        .flags = layoutFlags,
         .bindingCount = 1,
         .pBindings = &textureBinding
       };
@@ -1497,7 +1498,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       };
       VkDescriptorSetLayoutCreateInfo samplerLayoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
+        .flags = layoutFlags,
         .bindingCount = 1,
         .pBindings = &samplerBinding
       };
@@ -1726,12 +1727,162 @@ static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
   return pipeline;
 }
 
+struct sVulkanDescriptorPool {
+  VkDescriptorPool _descPool = VK_NULL_HANDLE;
+  tU32 _numAllocated = 0;
+
+  tBool _CreateDescriptorPool(VkDevice aDevice) {
+    VkDescriptorPoolSize poolSizes[] = {
+      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, knVulkanMaxDescriptorSets},
+      {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, knVulkanMaxDescriptorSets},
+      {VK_DESCRIPTOR_TYPE_SAMPLER, knVulkanMaxDescriptorSets}
+    };
+
+    VkDescriptorPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+      .flags = 0, // No FREE_DESCRIPTOR_SET_BIT = linear allocation
+      .maxSets = knVulkanMaxDescriptorSets,
+      .poolSizeCount = niCountOf(poolSizes),
+      .pPoolSizes = poolSizes
+    };
+
+    VK_CHECK(vkCreateDescriptorPool(aDevice, &poolInfo, nullptr, &_descPool), eFalse);
+    return eTrue;
+  }
+
+  void Destroy(VkDevice aDevice) {
+    if (_descPool) {
+      vkDestroyDescriptorPool(aDevice, _descPool, nullptr);
+      _descPool = VK_NULL_HANDLE;
+    }
+  }
+
+  VkDescriptorSet AllocateDescriptorSet(VkDevice aDevice, VkDescriptorSetLayout aLayout) {
+    if (!_descPool) {
+      niCheck(_CreateDescriptorPool(aDevice),VK_NULL_HANDLE);
+    }
+
+    VkDescriptorSetAllocateInfo allocInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      .descriptorPool = _descPool,
+      .descriptorSetCount = 1,
+      .pSetLayouts = &aLayout
+    };
+
+    VkDescriptorSet descSet;
+    VK_CHECK(vkAllocateDescriptorSets(
+      aDevice, &allocInfo, &descSet), VK_NULL_HANDLE);
+    ++_numAllocated;
+    return descSet;
+  }
+
+  void ResetDescriptorPool(VkDevice aDevice) {
+    if (_descPool) {
+      vkResetDescriptorPool(aDevice, _descPool, 0);
+    }
+    _numAllocated = 0;
+  }
+
+  tBool PushDescriptorBuffer(
+    VkDevice aDevice,
+    VkCommandBuffer aCmdBuffer,
+    ain<nn<sVulkanPipeline>> apPipeline,
+    tU32 aSetIndex,
+    VkBuffer aBuffer,
+    VkDeviceSize aOffset = 0,
+    VkDeviceSize aRange = VK_WHOLE_SIZE)
+  {
+    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+
+    VkDescriptorBufferInfo bufferInfo = {
+      .buffer = aBuffer,
+      .offset = aOffset,
+      .range = aRange
+    };
+
+    VkWriteDescriptorSet writes[] = {{
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = descSet,
+        .dstBinding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = 1,
+        .pBufferInfo = &bufferInfo
+      }};
+
+    vkUpdateDescriptorSets(aDevice,niCountOf(writes),writes,0,nullptr);
+    vkCmdBindDescriptorSets(
+      aCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
+      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    return eTrue;
+  }
+
+  tBool PushDescriptorImage(
+    VkDevice aDevice,
+    VkCommandBuffer aCmdBuffer,
+    ain<nn<sVulkanPipeline>> apPipeline,
+    tU32 aSetIndex,
+    VkImageView aImageView,
+    VkImageLayout aImageLayout)
+  {
+    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+
+    VkDescriptorImageInfo imageInfo = {
+      .imageView = aImageView,
+      .imageLayout = aImageLayout
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = descSet,
+      .dstBinding = 0,
+      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+      .descriptorCount = 1,
+      .pImageInfo = &imageInfo
+    };
+    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkCmdBindDescriptorSets(
+      aCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
+      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    return eTrue;
+  }
+
+  tBool PushDescriptorSampler(
+    VkDevice aDevice,
+    VkCommandBuffer aCmdBuffer,
+    ain<nn<sVulkanPipeline>> apPipeline,
+    tU32 aSetIndex,
+    VkSampler aSampler)
+  {
+    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+
+    VkDescriptorImageInfo samplerInfo = {
+      .sampler = aSampler
+    };
+
+    VkWriteDescriptorSet writes[] = {{
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = descSet,
+        .dstBinding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+        .descriptorCount = 1,
+        .pImageInfo = &samplerInfo
+      }};
+    vkUpdateDescriptorSets(aDevice,niCountOf(writes),writes,0,nullptr);
+    vkCmdBindDescriptorSets(
+      aCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
+      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    return eTrue;
+  }
+};
+
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
-  ThreadEvent _event = ThreadEvent(eFalse);
+  ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
   astl::vector<Ptr<sVulkanBuffer>> _trackedBuffers;
   Ptr<iGpuStream> _stream;
-  tU32 _frameNumber = 0;
-  tU32 _frameInFlight = 0;
+  sVulkanDescriptorPool _descriptorPool;
 
   sVulkanEncoderFrameData(ain<nn<sVulkanDriver>> aDriver) {
     _stream = CreateGpuStream(
@@ -1741,17 +1892,11 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
       eGpuBufferUsageFlags_Uniform);
   }
 
-  void StartFrame(const tU32 anFrameNumber, const tU32 anCurrentFrame) {
-    niPanicAssert(!IsInUse());
-    _frameNumber = anFrameNumber;
-    _frameInFlight = anCurrentFrame;
+  void Destroy(VkDevice aDevice) {
+    _descriptorPool.Destroy(aDevice);
   }
 
-  tBool IsInUse() {
-    return _frameNumber != 0;
-  }
-
-  void _TrackBuffer(iGpuBuffer* apBuffer) {
+  void TrackBuffer(iGpuBuffer* apBuffer) {
     sVulkanBuffer* buffer = (sVulkanBuffer*)apBuffer;
     if (!buffer->_tracked && buffer->_modifiedSize) {
       _trackedBuffers.push_back(buffer);
@@ -1759,24 +1904,24 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     }
   }
 
-  void _WaitCompletion() {
-    _event.InfiniteWait();
-  }
-
-  void OnFrameCompleted() {
+  void OnFrameCompleted(VkDevice aDevice) {
     niLet& lastBlock = _stream->GetLastBlock();
-    // niDebugFmt((
-    //   "... OnFrameCompleted: sVulkanEncoderFrameData{_frameNumber=%d,_frameInFlight=%d,_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d}",
-    //   _frameNumber,_frameInFlight,
-    //   _trackedBuffers.size(),_stream->GetNumBlocks(),
-    //   lastBlock.mOffset,lastBlock.mSize));
+    niDebugFmt((
+      "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
+      _trackedBuffers.size(),_stream->GetNumBlocks(),
+      lastBlock.mOffset,lastBlock.mSize,
+      _descriptorPool._numAllocated));
     niLoop(i,_trackedBuffers.size()) {
       _trackedBuffers[i]->_Untrack();
     }
     _trackedBuffers.clear();
     _stream->Reset();
-    _event.Signal();
-    _frameNumber = 0;
+    _descriptorPool.ResetDescriptorPool(aDevice);
+    _eventFrameCompleted.Signal();
+  }
+
+  void WaitFrameCompleted() {
+    _eventFrameCompleted.InfiniteWait();
   }
 };
 
@@ -1805,6 +1950,10 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   ~sVulkanCommandEncoder() {
+    niLoop(i,_frames.size()) {
+      _frames[i]->WaitFrameCompleted();
+      _frames[i]->Destroy(_driver->_device);
+    }
     if (_encoderInFlightFence) {
       vkDestroyFence(_driver->_device, _encoderInFlightFence, nullptr);
       _encoderInFlightFence = VK_NULL_HANDLE;
@@ -1912,6 +2061,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence), eFalse);
     VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
     VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
+    _GetCurrentFrame()->OnFrameCompleted(_driver->_device);
     return eTrue;
   }
 
@@ -2408,33 +2558,19 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 
 tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
   niLet& mat = _cache._lastMaterial;
-  niLet pipeline = _cache._lastPipeline;
+  niLet pipeline = as_nn(_cache._lastPipeline);
+  niLet device = _driver->_device;
+  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
 
   {
     sVulkanBuffer* buffer = _cache._lastBuffer.raw_ptr();
     if (!buffer) {
       buffer = _driver->_dummyBuffer.raw_ptr();
     }
-    VkDescriptorBufferInfo bufferInfo = {
-      .buffer = buffer->_vkBuffer,
-      .offset = 0,
-      .range = VK_WHOLE_SIZE
-    };
-    astl::vector<VkWriteDescriptorSet> writes;
-    writes.emplace_back(VkWriteDescriptorSet {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = VK_NULL_HANDLE, // Push descriptor
-        .dstBinding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1,
-        .pBufferInfo = &bufferInfo
-      });
-    vkCmdPushDescriptorSetKHR(
-      _cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,
-      pipeline->_vkPipelineLayout,
-      eGLSLVulkanDescriptorSet_Buffer,
-      writes.size(),writes.data());
+    niCheck(descPool.PushDescriptorBuffer(
+      device,_cmdBuffer,
+      pipeline,eGLSLVulkanDescriptorSet_Buffer,
+      buffer->_vkBuffer),eFalse);
   }
 
   {
@@ -2442,47 +2578,18 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
     if (!texture) {
       texture = (sVulkanTexture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
     }
-    VkDescriptorImageInfo imageInfo = {
-      .imageView = texture->_vkView,
-      .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-    };
-    astl::vector<VkWriteDescriptorSet> writes;
-    writes.emplace_back(VkWriteDescriptorSet {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = VK_NULL_HANDLE, // Push descriptor
-        .dstBinding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-        .descriptorCount = 1,
-        .pImageInfo = &imageInfo
-      });
-    vkCmdPushDescriptorSetKHR(
-      _cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,
-      pipeline->_vkPipelineLayout,
-      eGLSLVulkanDescriptorSet_Texture2D,
-      writes.size(),writes.data());
+    niCheck(descPool.PushDescriptorImage(
+      device,_cmdBuffer,
+      pipeline,eGLSLVulkanDescriptorSet_Texture2D,
+      texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
   }
 
   {
     tIntPtr hSS = _cache._lastMaterial.mChannels[0].mhSS;
-    VkDescriptorImageInfo samplerInfo = {
-      .sampler = _driver->_GetVkSamplerState(hSS)
-    };
-    astl::vector<VkWriteDescriptorSet> writes;
-    writes.emplace_back(VkWriteDescriptorSet {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = VK_NULL_HANDLE, // Push descriptor
-        .dstBinding = 1,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-        .descriptorCount = 1,
-        .pImageInfo = &samplerInfo
-      });
-    vkCmdPushDescriptorSetKHR(
-      _cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,
-      pipeline->_vkPipelineLayout,
-      eGLSLVulkanDescriptorSet_Sampler,
-      writes.size(),writes.data());
+    niCheck(descPool.PushDescriptorSampler(
+      device,_cmdBuffer,
+      pipeline,eGLSLVulkanDescriptorSet_Sampler,
+      _driver->_GetVkSamplerState(hSS)),eFalse);
   }
 
   return eTrue;

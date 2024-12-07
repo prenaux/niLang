@@ -40,6 +40,7 @@ using namespace ni;
 #  define GDRV_GL2
 #elif defined niLinux
 #  define GDRV_GL2
+#  define GDRV_VULKAN
 #else
 #  error "No Graphics driver set for this platform."
 #endif

@@ -51,6 +51,11 @@
 #	endif
 #endif
 
+// Note: Undef those so we get an error at compile time, not a crash at
+// run-time. Thanks. - We rely on Vulkan 1.2 core atm.
+#undef VK_VERSION_1_3
+#undef VK_VERSION_1_4
+
 #ifdef __cplusplus
 extern "C" {
 #endif

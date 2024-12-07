@@ -6,7 +6,7 @@
 //
 // This is a different implementation that works with "any" Vulkan SDK and is limited to the enums we care about.
 //
-#include <vulkan/vulkan.h>
+#include "niVulkan.h"
 #include <niLang/StringDef.h>
 
 namespace ni_vulkan {

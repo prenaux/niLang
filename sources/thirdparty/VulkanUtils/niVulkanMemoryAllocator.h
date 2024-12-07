@@ -2,7 +2,7 @@
 #ifndef __NIVULKANMEMORYALLOCATOR_H_EFF909D3_8022_9942_8018_4478EF411760__
 #define __NIVULKANMEMORYALLOCATOR_H_EFF909D3_8022_9942_8018_4478EF411760__
 
-#include <niLang/Types.h>
+#include "niVulkan.h"
 #include <niLang/Utils/ThreadImpl.h>
 
 #ifdef niVulkanMemoryAllocator_Implement

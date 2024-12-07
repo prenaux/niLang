@@ -2,7 +2,7 @@
 #ifndef __NIVULKANOSXMETAL_H_107EB1C6_87D2_4D40_81D7_6FCC02168685__
 #define __NIVULKANOSXMETAL_H_107EB1C6_87D2_4D40_81D7_6FCC02168685__
 
-#include <vulkan/vulkan.h>
+#include "niVulkan.h"
 #include <niLang/Platforms/OSX/osxMetal.h>
 
 #ifdef niVulkanOSXMetal_Implement

@@ -25,11 +25,22 @@
 #elif defined niLinux
 #define niVulkan_Volk
 
+#if defined niLinuxDesktop
+#define VK_USE_PLATFORM_XLIB_KHR
+#endif
+
+
 #ifdef niVulkan_Implement
 #define VOLK_IMPLEMENTATION
 #endif
+
 #include "volk/volk.h"
 
+//===========================================================================
+// Unknown platform
+//===========================================================================
+#else
+#error "Unknown Vulkan platform."
 #endif
 
 //===========================================================================

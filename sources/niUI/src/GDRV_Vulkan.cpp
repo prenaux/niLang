@@ -17,11 +17,15 @@
 #include <niUI/IGpu.h>
 #include <niLang/Utils/IDGenerator.h>
 
-#include <vulkan/vulkan.h>
+#define niVulkan_Implement
+#include "../../thirdparty/VulkanUtils/niVulkan.h"
 #define niVulkanMemoryAllocator_Implement
 #include "../../thirdparty/VulkanUtils/niVulkanMemoryAllocator.h"
 #include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
+
+#if defined niOSX
 #include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+#endif
 
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
@@ -33,6 +37,13 @@ _HDecl(__vktex_white__);
 _HDecl(__vkbuff_dummy__);
 
 static const tU32 knVulkanMaxFramesInFlight = 1;
+static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
+static const char* const _vkRequiredDeviceExtensions[] = {
+  VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME,
+  VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
+  VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
+};
+static const tU32 knVkRequiredDeviceExtensionsCount = niCountOf(_vkRequiredDeviceExtensions);
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
@@ -108,24 +119,28 @@ static const VkPrimitiveTopology _ToVkPrimitiveTopology[] = {
 };
 niCAssert(niCountOf(_ToVkPrimitiveTopology) == eGraphicsPrimitiveType_Last);
 
-static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
-
-void _toVkSamplerFilter(VkSamplerCreateInfo& desc, eSamplerFilter aFilter) {
+static void _toVkSamplerFilter(VkSamplerCreateInfo& desc, eSamplerFilter aFilter, const VkPhysicalDeviceFeatures& aFeatures) {
   switch(aFilter) {
     case eSamplerFilter_Smooth: {
       desc.minFilter = VK_FILTER_LINEAR;
       desc.magFilter = VK_FILTER_LINEAR;
       desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-      desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
-      desc.anisotropyEnable = VK_TRUE;
+      if (aFeatures.samplerAnisotropy) {
+        desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
+        desc.anisotropyEnable = VK_TRUE;
+      }
+      else {
+        desc.maxAnisotropy = 1.0f;
+        desc.anisotropyEnable = VK_FALSE;
+      }
       break;
     }
     case eSamplerFilter_Point: {
       desc.minFilter = VK_FILTER_NEAREST;
       desc.magFilter = VK_FILTER_NEAREST;
       desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-      desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
-      desc.anisotropyEnable = VK_TRUE;
+      desc.maxAnisotropy = 1.0f;
+      desc.anisotropyEnable = VK_FALSE;
       break;
     }
   }
@@ -227,7 +242,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkCommandPool _commandPool = VK_NULL_HANDLE;
 
   VkInstance _instance = VK_NULL_HANDLE;
-  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE; // This object will be implicitly destroyed when the VkInstance is destroyed.
+  VkPhysicalDeviceFeatures _physicalDeviceFeatures = {};
+  // VkPhysicalDevice will be implicitly destroyed when the VkInstance is destroyed.
+  VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
   typedef astl::map<cString,tU32> tVkExtensionsMap;
   tVkExtensionsMap _extensions;
   tBool _enableValidationLayers = eTrue;
@@ -275,6 +292,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       vkDestroyCommandPool(_device, _commandPool, nullptr);
       _commandPool = VK_NULL_HANDLE;
     }
+
+    if (_allocator != nullptr) {
+      vmaDestroyAllocator(_allocator);
+      _allocator = nullptr;
+    }
+
     if (_device) {
       vkDestroyDevice(_device, nullptr);
       _device = VK_NULL_HANDLE;
@@ -282,11 +305,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     if (_instance) {
       vkDestroyInstance(_instance, nullptr);
       _instance = VK_NULL_HANDLE;
-    }
-
-    if (_allocator != nullptr) {
-      vmaDestroyAllocator(_allocator);
-      _allocator = nullptr;
     }
   }
 
@@ -320,6 +338,10 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   tBool _CreateInstance(const achar* aAppName) {
+#ifdef niVulkan_Volk
+    VK_CHECK(volkInitialize(),eFalse);
+#endif
+
     {
       tU32 layerCount;
       vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -362,7 +384,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .pEngineName = "niVlk",
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .apiVersion = VK_API_VERSION_1_0
+      .apiVersion = VK_API_VERSION_1_2
     };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
@@ -388,6 +410,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
 
     VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
+#ifdef niVulkan_Volk
+    volkLoadInstance(_instance);
+#endif
     return eTrue;
   }
 
@@ -540,6 +565,41 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
                      VK_VERSION_MINOR(props.apiVersion),
                      VK_VERSION_PATCH(props.apiVersion)));
 
+    // Query and log device features
+    vkGetPhysicalDeviceFeatures(_physicalDevice, &_physicalDeviceFeatures);
+    niLog(Info,niFmt(
+      "Vulkan Physical Device Features:\n"
+      // Geometry features
+      "  geometryShader: %y\n"
+      "  tessellationShader: %y\n"
+      // Rendering features
+      "  depthBiasClamp: %y\n"
+      "  fillModeNonSolid: %y\n"
+      "  depthClamp: %y\n"
+      "  depthBounds: %y\n"
+      "  wideLines: %y\n"
+      "  largePoints: %y\n"
+      // Texture features
+      "  samplerAnisotropy: %y\n"
+      "  textureCompressionBC: %y\n"
+      "  textureCompressionETC2: %y\n"
+      "  textureCompressionASTC_LDR: %y\n",
+      // Geometry features
+      (tBool)!!_physicalDeviceFeatures.geometryShader,
+      (tBool)!!_physicalDeviceFeatures.tessellationShader,
+      // Rendering features
+      (tBool)!!_physicalDeviceFeatures.depthBiasClamp,
+      (tBool)!!_physicalDeviceFeatures.fillModeNonSolid,
+      (tBool)!!_physicalDeviceFeatures.depthClamp,
+      (tBool)!!_physicalDeviceFeatures.depthBounds,
+      (tBool)!!_physicalDeviceFeatures.wideLines,
+      (tBool)!!_physicalDeviceFeatures.largePoints,
+      // Texture features
+      (tBool)!!_physicalDeviceFeatures.samplerAnisotropy,
+      (tBool)!!_physicalDeviceFeatures.textureCompressionBC,
+      (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
+      (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
+
     // Descriptor Set Limits
     niLog(Info,niFmt(
       "Vulkan Descriptor Set Limits:\n"
@@ -571,7 +631,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       props.limits.maxDescriptorSetSampledImages,
       props.limits.maxDescriptorSetStorageImages,
       props.limits.maxPerStageDescriptorSamplers));
-    niCheck(props.limits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
 
     // Vertex Input Limits
     niLog(Info,niFmt(
@@ -584,7 +643,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  maxVertexInputBindings: %d",
       props.limits.maxVertexInputAttributes,
       props.limits.maxVertexInputBindings));
-    niCheck(props.limits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
 
     // Push Constants and Buffers
     niLog(Info,niFmt(
@@ -679,7 +737,18 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
     }
 
-    niCheck(_extensions.find("VK_KHR_push_descriptor") != _extensions.end(), eFalse);
+    // Check requirements
+    niCheck(props.limits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
+    niCheck(props.limits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
+
+    // Check extensions
+    for (tU32 i = 0; i < knVkRequiredDeviceExtensionsCount; ++i) {
+      if (_extensions.find(_vkRequiredDeviceExtensions[i]) == _extensions.end()) {
+        niError(niFmt("Required device extension '%s' not found.", _vkRequiredDeviceExtensions[i]));
+        return eFalse;
+      }
+    }
+
     return eTrue;
   }
 
@@ -718,14 +787,39 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .pQueuePriorities = &queuePriority
     };
 
+    VkPhysicalDeviceFeatures2 features2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
+    };
+    vkGetPhysicalDeviceFeatures2(_physicalDevice, &features2);
+
+    // Enable base features
+    features2.features.samplerAnisotropy = _physicalDeviceFeatures.samplerAnisotropy;
+
+    // Enable dynamic rendering
+    VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES,
+      .dynamicRendering = VK_TRUE
+    };
+    features2.pNext = &dynamicRenderingFeatures;
+
+    // Enable dynamic states
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extDynamicStateFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
+      .extendedDynamicState = VK_TRUE
+    };
+    dynamicRenderingFeatures.pNext = &extDynamicStateFeatures;
+
+    // Create the device
     VkDeviceCreateInfo createInfo = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .queueCreateInfoCount = 1,
       .pQueueCreateInfos = &queueCreateInfo,
-      .enabledExtensionCount = 0,
-      .enabledLayerCount = 0
+      .enabledExtensionCount = knVkRequiredDeviceExtensionsCount,
+      .ppEnabledExtensionNames = _vkRequiredDeviceExtensions,
+      .enabledLayerCount = 0,
+      .pEnabledFeatures = nullptr,
+      .pNext = &features2,
     };
-
     VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
     vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
     return eTrue;
@@ -747,6 +841,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
+#ifdef niVulkan_Volk
+    VmaVulkanFunctions vmaVulkanFuncs {
+      .vkGetInstanceProcAddr = vkGetInstanceProcAddr,
+      .vkGetDeviceProcAddr = vkGetDeviceProcAddr
+    };
+    allocatorInfo.pVulkanFunctions = &vmaVulkanFuncs;
+#endif
     VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
     return eTrue;
   }
@@ -945,6 +1046,7 @@ struct sVulkanFramebuffer {
   tU32 _width = 0;
   tU32 _height = 0;
 
+#if defined niOSX || defined niIOS
   tBool CreateFromMetalAPI(iOSXMetalAPI* apMetalAPI, VkDevice aDevice) {
     niCheck(osxVkCreateImageForMetalAPI(apMetalAPI,aDevice,nullptr,&_image),eFalse);
     niLet viewSize = apMetalAPI->GetViewSize();
@@ -974,6 +1076,7 @@ struct sVulkanFramebuffer {
     VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view), eFalse);
     return eTrue;
   }
+#endif
 
   void Destroy(VkDevice device) {
     if (_view) {
@@ -1310,6 +1413,23 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     }
   }
 
+  tBool _CreateNoneDescSetLayout() {
+    niLet vkDevice = _driver->_device;
+    niPanicAssert(_vkDescSetLayouts.empty());
+    VkPipelineLayoutCreateInfo layoutInfo = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      .setLayoutCount = 0,
+      .pushConstantRangeCount = 0,
+      .pPushConstantRanges = nullptr
+    };
+    if (!_vkDescSetLayouts.empty()) {
+      layoutInfo.setLayoutCount = _vkDescSetLayouts.size();
+      layoutInfo.pSetLayouts = _vkDescSetLayouts.data();
+    }
+    VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
+    return eTrue;
+  }
+
   tBool _CreateFixedDescSetLayout() {
     niLet vkDevice = _driver->_device;
     niPanicAssert(_vkDescSetLayouts.empty());
@@ -1445,6 +1565,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
 
     switch (_gpufuncBindType) {
       case eGpuFunctionBindType_None: {
+        niCheck(_CreateNoneDescSetLayout(),eFalse);
         break;
       }
       case eGpuFunctionBindType_Fixed: {
@@ -1456,21 +1577,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         return eFalse;
       }
     }
-
-    // Pipeline layout
-    {
-      VkPipelineLayoutCreateInfo layoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
-        .pushConstantRangeCount = 0,
-        .pPushConstantRanges = nullptr
-      };
-      if (!_vkDescSetLayouts.empty()) {
-        layoutInfo.setLayoutCount = _vkDescSetLayouts.size();
-        layoutInfo.pSetLayouts = _vkDescSetLayouts.data();
-      }
-      VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
-    }
+    niPanicAssert(_vkPipelineLayout != nullptr);
 
     // Vertex input
     const cFVFDescription fvfDesc(_desc->GetFVF());
@@ -1617,52 +1724,6 @@ static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
     pipeline->_CreateVulkanPipeline(ahspName,apDesc),
     nullptr);
   return pipeline;
-}
-
-static Ptr<sVulkanPipeline> _CreateVulkanPipelineTriangle(ain_nn<sVulkanDriver> aDriver) {
-  NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
-    aDriver,
-    eGpuFunctionType_Vertex,
-    _H("test/gpufunc/triangle_vs.gpufunc.xml")), nullptr);
-
-  NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
-    aDriver,
-    eGpuFunctionType_Pixel,
-    _H("test/gpufunc/triangle_ps.gpufunc.xml")), nullptr);
-
-  niLetMut pipelineDesc = _CreateGpuPipelineDesc();
-  niCheckIsOK(pipelineDesc, nullptr);
-
-  pipelineDesc->SetFVF(sVertexPA::eFVF);
-  pipelineDesc->SetColorFormat(0, eGpuPixelFormat_BGRA8);
-  pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
-  pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
-
-  return CreateVulkanGpuPipeline(aDriver,_H("triangle_pipeline"),pipelineDesc);
-}
-
-static Ptr<sVulkanPipeline> _CreateVulkanPipelineTexture(
-  ain_nn<sVulkanDriver> aDriver)
-{
-  NN<sVulkanFunction> vs = niCheckNN(vs,CreateVulkanGpuFunction(
-    aDriver,
-    eGpuFunctionType_Vertex,
-    _H("test/gpufunc/texture_vs.gpufunc.xml")), nullptr);
-
-  NN<sVulkanFunction> ps = niCheckNN(ps,CreateVulkanGpuFunction(
-    aDriver,
-    eGpuFunctionType_Pixel,
-    _H("test/gpufunc/texture_ps.gpufunc.xml")), nullptr);
-
-  niLetMut pipelineDesc = _CreateGpuPipelineDesc();
-  niCheckIsOK(pipelineDesc, nullptr);
-
-  pipelineDesc->SetFVF(sVertexPAT1::eFVF);
-  pipelineDesc->SetColorFormat(0, eGpuPixelFormat_BGRA8);
-  pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vs);
-  pipelineDesc->SetFunction(eGpuFunctionType_Pixel, ps);
-
-  return CreateVulkanGpuPipeline(aDriver,_H("texture_pipeline"),pipelineDesc);
 }
 
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
@@ -2316,7 +2377,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 
 #define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
     desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;              \
-    _toVkSamplerFilter(desc, eSamplerFilter_##FILTER);                  \
+    _toVkSamplerFilter(desc, eSamplerFilter_##FILTER, _physicalDeviceFeatures); \
     desc.addressModeU = desc.addressModeV = desc.addressModeW =         \
         _toVkSamplerAddress[eSamplerWrap_##WRAP];                       \
     VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                   \
@@ -2629,7 +2690,36 @@ struct sVulkanContextBase :
 
 struct sVulkanContextWindow : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
+
+#if defined niOSX
   Ptr<iOSXMetalAPI> _metalAPI;
+  tBool _PlatformInit() {
+    osxMetalSetDefaultDevice();
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_window);
+    if (!_metalAPI.IsOK()) {
+      niError("Can't get metal api for iOSWindow.");
+      return eFalse;
+    }
+    return eTrue;
+  }
+  void _PlatformInvalidate() {
+    _metalAPI = nullptr;
+  }
+  tBool _PlatformPresent() {
+    _metalAPI->DrawablePresent();
+    return eTrue;
+  }
+  tBool _PlatformUpdateFrameBuffer() {
+    return _currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device);
+  }
+//#elif defined niLinux
+#else
+  //#error "Unsupported Vulkan platform."
+  tBool _PlatformInit() { return eFalse; }
+  void _PlatformInvalidate() {}
+  tBool _PlatformPresent() { return eFalse; }
+  tBool _PlatformUpdateFrameBuffer() { return eFalse; }
+#endif
 
   sVulkanContextWindow(
     ain<nn<sVulkanDriver>> aDriver,
@@ -2639,10 +2729,8 @@ struct sVulkanContextWindow : public sVulkanContextBase {
   {
     _window = apWindow;
 
-    osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_window);
-    if (!_metalAPI.IsOK()) {
-      niError("Can't get metal api for iOSWindow.");
+    if (!_PlatformInit()) {
+      niError("Platform initialization failed.");
       this->Invalidate();
       return;
     }
@@ -2660,7 +2748,7 @@ struct sVulkanContextWindow : public sVulkanContextBase {
 
   void __stdcall Invalidate() niImpl {
     _currentFb.Destroy(_driver->_device);
-    _metalAPI = nullptr;
+    _PlatformInvalidate();
     _window = nullptr;
   }
 
@@ -2669,7 +2757,7 @@ struct sVulkanContextWindow : public sVulkanContextBase {
       return eFalse;
     }
     niCheck(sVulkanContextBase::Display(aFlags,aRect),eFalse);
-    _metalAPI->DrawablePresent();
+    niCheck(_PlatformPresent(),eFalse);
     return eTrue;
   }
 
@@ -2713,7 +2801,7 @@ struct sVulkanContextWindow : public sVulkanContextBase {
     if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
       _DoResizeContext();
     }
-    niCheck(_currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device), eFalse);
+    niCheck(_PlatformUpdateFrameBuffer(), eFalse);
     return eTrue;
   }
 };

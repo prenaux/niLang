@@ -11,8 +11,9 @@ case "$HAM_BIN_LOA" in
     ham-brew-install molten-vk "bin/MoltenVKShaderConverter"
     ham-brew-install vulkan-tools "bin/vulkaninfo"
     ham-brew-install vulkan-profiles "share/vulkan/explicit_layer.d/VkLayer_khronos_profiles.json"
+    ham-brew-install vulkan-validationlayers "share/vulkan/explicit_layer.d/VkLayer_khronos_validation.json"
     export VULKAN_SDK_INCDIR="$(ham-brew-installdir vulkan-headers include)"
-    export VK_LAYER_PATH="$(ham-brew-installdir vulkan-profiles)/share/vulkan/explicit_layer.d"
+    export VK_LAYER_PATH="$(ham-brew-installdir vulkan-validationlayers)/share/vulkan/explicit_layer.d"
     # MoltenVK specific
     export VULKAN_SDK_MOLTENVK_INCDIR="$(ham-brew-installdir molten-vk include)"
     export VULKAN_SDK_MOLTENVK_LIBDIR="$(ham-brew-installdir molten-vk lib)"
@@ -28,6 +29,8 @@ case "$HAM_BIN_LOA" in
     fi
     export VULKAN_SDK_INCDIR="/usr/include"
     export VK_LAYER_PATH="/usr/share/vulkan/explicit_layer.d"
+    ham_os_package_syslib_check_and_install share "vulkan/explicit_layer.d/VkLayer_khronos_validation.json" apt:vulkan-validationlayers vulkan-validation-layers
+    ham_os_package_syslib_check_and_install bin "vkconfig" apt:vulkan-tools vulkan-devel
     ;;
   *)
     complain vulkan_sdk "Unsupported arch '$HAM_BIN_LOA'."
@@ -38,8 +41,8 @@ pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- vulkan_sdk ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  if [ ! -e "$VK_LAYER_PATH/VkLayer_khronos_profiles.json" ]; then
-    complain vulkan_sdk "Cant find VK_LAYER_PATH '$VK_LAYER_PATH/VkLayer_khronos_profiles.json'." && return 1
+  if [ ! -e "$VK_LAYER_PATH/VkLayer_khronos_validation.json" ]; then
+    complain vulkan_sdk "Cant find VK_LAYER_PATH '$VK_LAYER_PATH/VkLayer_khronos_validation.json'." && return 1
   fi
 
   VER="$VER

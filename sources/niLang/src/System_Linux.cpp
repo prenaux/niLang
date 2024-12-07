@@ -593,6 +593,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     }
     dll_glXMakeCurrent(mpDisplay, None, nullptr);
     dll_glXDestroyContext(mpDisplay, mpGLX);
+    mpGLX = nullptr;
     return eTrue;
   }
   tBool __stdcall _GLMakeCurrentContext() {
@@ -609,6 +610,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   void __stdcall Invalidate() {
+    _GLDestroyContext();
     if (mCursor != None) {
       dll_XUndefineCursor(mpDisplay,mHandle);
       if (mCursor != mCursorNone) {

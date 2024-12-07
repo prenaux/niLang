@@ -9,6 +9,7 @@
 #include <niLang/Utils/TimerSleep.h>
 #include <niLang/STL/scope_guard.h>
 #include <niLang/Utils/DLLLoader.h>
+#include <niLang/Platforms/Linux/linuxgl.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -1208,7 +1209,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   void _HandleKeyEvent(XEvent* e) {
     const KeyCode xkeycode = e->xkey.keycode;
+
+    EA_DISABLE_GCC_WARNING(-Wtautological-compare)
+    EA_DISABLE_CLANG_WARNING(-Wtautological-compare)
     const eKey scode = ((xkeycode >= 0) && (xkeycode < 256)) ? mXKeyToScan[xkeycode] : eKey_Unknown;
+    EA_RESTORE_CLANG_WARNING()
+    EA_RESTORE_GCC_WARNING()
 
     auto sendKey = [&]() {
       if (scode != eKey_Unknown) {
@@ -1367,6 +1373,17 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   niEndClass(cLinuxWindow);
 };
+
+niExportFunc(tBool) linuxGetOSWindowXWinHandles(iOSWindow* apWindow, sOSWindowXWinHandles& aOut) {
+  niCheckIsOK(apWindow,eFalse);
+  cLinuxWindow* pWindow = static_cast<cLinuxWindow*>(apWindow);
+  aOut._display = pWindow->mpDisplay;
+  aOut._visual = (tXWinVisual)pWindow->mpVisual;
+  aOut._window = pWindow->mHandle;
+  aOut._gc = pWindow->mGC;
+  aOut._screen = pWindow->mnScreen;
+  return eTrue;
+}
 
 niExportFunc(tBool) linuxglCreateContext(iOSWindow* apWindow) {
   cLinuxWindow* w = (cLinuxWindow*)apWindow;

@@ -613,6 +613,21 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
       (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
 
+    niLog(Info,niFmt(
+      "Vulkan Buffer Alignment Properties:\n"
+      "  minUniformBufferOffsetAlignment: %llu\n"
+      "  minStorageBufferOffsetAlignment: %llu\n"
+      "  minTexelBufferOffsetAlignment: %llu\n"
+      "  optimalBufferCopyOffsetAlignment: %llu\n"
+      "  optimalBufferCopyRowPitchAlignment: %llu\n"
+      "  nonCoherentAtomSize: %llu",
+      props.limits.minUniformBufferOffsetAlignment,
+      props.limits.minStorageBufferOffsetAlignment,
+      props.limits.minTexelBufferOffsetAlignment,
+      props.limits.optimalBufferCopyOffsetAlignment,
+      props.limits.optimalBufferCopyRowPitchAlignment,
+      props.limits.nonCoherentAtomSize));
+
     // Descriptor Set Limits
     niLog(Info,niFmt(
       "Vulkan Descriptor Set Limits:\n"
@@ -1751,7 +1766,7 @@ struct sVulkanDescriptorPool {
     ain<nn<sVulkanPipeline>> apPipeline,
     tU32 aSetIndex,
     VkBuffer aBuffer,
-    VkDeviceSize aOffset = 0,
+    VkDeviceSize aOffset,
     VkDeviceSize aRange = VK_WHOLE_SIZE)
   {
     niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
@@ -1906,6 +1921,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     sMaterialDesc _lastMaterial;
     Ptr<sVulkanPipeline> _lastPipeline = nullptr;
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
+    tU32 _lastBufferOffset = 0;
     tFixedGpuPipelineId _lastFixedPipeline = 0;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
@@ -2104,6 +2120,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(anBinding == 0, ;);
     _cache._lastBuffer = (sVulkanBuffer*)apBuffer;
+    _cache._lastBufferOffset = anOffset;
   }
 
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
@@ -2568,13 +2585,17 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
 
   {
     sVulkanBuffer* buffer = _cache._lastBuffer.raw_ptr();
-    if (!buffer) {
+    tU32 bufferOffset = 0;
+    if (buffer) {
+      bufferOffset = _cache._lastBufferOffset;
+    }
+    else {
       buffer = _driver->_dummyBuffer.raw_ptr();
     }
     niCheck(descPool.PushDescriptorBuffer(
       device,_cmdBuffer,
       pipeline,eGLSLVulkanDescriptorSet_Buffer,
-      buffer->_vkBuffer),eFalse);
+      buffer->_vkBuffer,bufferOffset),eFalse);
   }
 
   {

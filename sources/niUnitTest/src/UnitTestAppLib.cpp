@@ -52,13 +52,17 @@ void TestAppSetCurrentTestWidgetSink(iWidgetSink* apSink, ni::tBool abInteractiv
   else if (abInteractive && !GetTestAppContext()->_config.windowShow) {
     // No sink set so this is the first run, show the window
     if (ni::GetProperty("ni.app.windowMaximized","false").Bool()) {
-      GetTestAppContext()->_window->SetShow(eOSWindowShowFlags_Show|eOSWindowShowFlags_Maximize);
+      appContext->_window->SetShow(
+        eOSWindowShowFlags_Show|eOSWindowShowFlags_Maximize);
     }
     else {
-      GetTestAppContext()->_window->SetShow(eOSWindowShowFlags_Show);
+      appContext->_window->SetShow(eOSWindowShowFlags_Show);
     }
-    GetTestAppContext()->_window->ActivateWindow();
-    GetTestAppContext()->_window->SetTitle(UnitTest::TestRunner_GetCurrentTestName());
+    appContext->_window->ActivateWindow();
+    appContext->_window->SetTitle(niFmt(
+      "%s (%s)",
+      UnitTest::TestRunner_GetCurrentTestName(),
+      appContext->_graphics->GetDriver()->GetName()));
   }
   currentSink = niGetIfOK(apSink);
   if (currentSink.IsOK()) {

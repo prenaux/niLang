@@ -428,6 +428,7 @@ struct cImageGraphicsContext : public ni::ImplRC<iGraphicsContext>
     Ptr<iTexture> rt = mptrImage->GrabTexture(eImageUsage_Target, sRecti::Null());
     Ptr<iTexture> ds = mptrImage->GrabTexture(eImageUsage_DepthStencil, sRecti::Null());
     mptrGraphicsContext = apGraphics->CreateContextForRenderTargets(rt,NULL,NULL,NULL,ds);
+    niCheckIsOK(mptrGraphicsContext,;);
     const tF32 fOrthoProjectionOffset = ultof(mptrGraphicsContext->GetDriver()->GetCaps(eGraphicsCaps_OrthoProjectionOffset));
     mptrGraphicsContext->GetFixedStates()->SetCameraViewMatrix(sMatrixf::Identity());
     mptrGraphicsContext->GetFixedStates()->SetCameraProjectionMatrix(MatrixProjection2D(

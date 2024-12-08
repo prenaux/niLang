@@ -12,11 +12,11 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
     TopLeftCanvas(RTBase* aParent) : _parent(aParent) {}
     tBool __stdcall OnSinkAttached() niImpl {
       Ptr<iImage> ptrImage = mpWidget->GetGraphics()->CreateImage(512,512);
-      niAssert(ptrImage.IsOK());
+      niPanicAssert(ptrImage.IsOK());
       Ptr<iGraphicsContext> ptrGC = mpWidget->GetGraphics()->CreateImageGraphicsContext(ptrImage);
-      niAssert(ptrGC.IsOK());
+      niPanicAssert(ptrGC.IsOK());
       Ptr<iCanvas> ptrCanvas = mpWidget->GetGraphics()->CreateCanvas(ptrGC,NULL);
-      niAssert(ptrCanvas.IsOK());
+      niPanicAssert(ptrCanvas.IsOK());
       mpWidget->SetCanvas(ptrCanvas);
       return eTrue;
     }
@@ -35,11 +35,11 @@ struct RTBase : public ni::cWidgetSinkImpl<> {
     BotLeftCanvas(RTBase* aParent) : _parent(aParent) {}
     tBool __stdcall OnSinkAttached() niImpl {
       Ptr<iImage> ptrImage = mpWidget->GetGraphics()->CreateImage(512,512);
-      niAssert(ptrImage.IsOK());
+      niPanicAssert(ptrImage.IsOK());
       Ptr<iGraphicsContext> ptrGC = mpWidget->GetGraphics()->CreateImageGraphicsContext(ptrImage);
-      niAssert(ptrGC.IsOK());
+      niPanicAssert(ptrGC.IsOK());
       Ptr<iCanvas> ptrCanvas = mpWidget->GetGraphics()->CreateCanvas(ptrGC,NULL);
-      niAssert(ptrCanvas.IsOK());
+      niPanicAssert(ptrCanvas.IsOK());
       mpWidget->SetCanvas(ptrCanvas);
       return eTrue;
     }

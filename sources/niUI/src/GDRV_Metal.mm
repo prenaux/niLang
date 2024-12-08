@@ -1078,7 +1078,7 @@ static iGraphicsContext* New_MetalContextWindow(
 static iGraphicsContextRT* New_MetalContextRT(
   cMetalGraphicsDriver* apParent,
   const tU32 aFrameMaxInFlight,
- iTexture* apRT,
+  iTexture* apRT,
   iTexture* apDS);
 
 struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu>
@@ -1214,8 +1214,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
   {
     niCheckIsOK(apRT0,NULL);
-    niCheckIsOK(apDS,NULL);
-
     Ptr<iGraphicsContextRT> ctx = New_MetalContextRT(this, 1, apRT0, apDS);
     niCheck(ctx.IsOK(),NULL);
     return ctx.GetRawAndSetNull();
@@ -1600,7 +1598,7 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& av
 //
 //----------------------------------------------------------------------------
 struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
-  ThreadEvent _event = ThreadEvent(eFalse);
+  ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
   astl::vector<Ptr<sMetalBuffer>> _trackedBuffers;
   Ptr<iGpuStream> _stream;
   tU32 _frameNumber = 0;
@@ -1620,10 +1618,6 @@ struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
     _frameInFlight = anCurrentFrame;
   }
 
-  void OnFrameCompleted() {
-    _frameNumber = 0;
-  }
-
   tBool IsInUse() {
     return _frameNumber != 0;
   }
@@ -1637,7 +1631,7 @@ struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
   }
 
   void _WaitCompletion() {
-    _event.InfiniteWait();
+    _eventFrameCompleted.InfiniteWait();
   }
 
   virtual Var __stdcall Run() niImpl {
@@ -1652,8 +1646,8 @@ struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
     }
     _trackedBuffers.clear();
     _stream->Reset();
-    _event.Signal();
-    this->OnFrameCompleted();
+    _frameNumber = 0;
+    _eventFrameCompleted.Signal();
     return niVarNull;
   }
 };
@@ -1847,8 +1841,8 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 struct cMetalContextBase :
     public sGraphicsContext<1,ni::ImplRC<
                                 iGraphicsContextRT,
-                                eImplFlags_DontInherit1,iGraphicsContext,
-                                iRunnable,iGraphicsContextGpu> >
+                                eImplFlags_DontInherit1,
+                                iGraphicsContext,iGraphicsContextGpu> >
 {
   cMetalGraphicsDriver* mpParent;
   NN<sMetalCommandEncoder> mCmdEncoder;
@@ -1860,11 +1854,6 @@ struct cMetalContextBase :
 
   tU32 mnCurrentFrame = 0;
   const tU32 mFrameMaxInFlight;
-  ThreadSem mFrameSem = ThreadSem(0);
-  virtual ni::Var __stdcall Run() niImpl {
-    mFrameSem.Signal();
-    return niVarNull;
-  }
 
   cMetalContextBase(cMetalGraphicsDriver* apParent, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(apParent->GetGraphics())
@@ -1873,7 +1862,6 @@ struct cMetalContextBase :
   {
     mpParent = apParent;
     niAssert(mpParent != NULL);
-    mFrameSem.Signal(mFrameMaxInFlight);
   }
 
   virtual id<MTLRenderCommandEncoder> __stdcall _NewRenderCommandEncoder() = 0;
@@ -1898,9 +1886,6 @@ struct cMetalContextBase :
     niPanicAssert(mbBeganFrame == eFalse);
     mbBeganFrame = eTrue;
 
-    // wait on the previous N frames to be completed
-    mFrameSem.InfiniteWait();
-
     mRT0Format = _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
     if (mptrDS.IsOK()) {
       mDSFormat = _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
@@ -1923,7 +1908,6 @@ struct cMetalContextBase :
       return;
     }
     _AddCompletedHandler(mCmdEncoder->_EndFrame());
-    _AddCompletedHandler(this);
     _EndCommandEncoder();
     mnCurrentFrame = (mnCurrentFrame + 1) % mFrameMaxInFlight;
     mbBeganFrame = eFalse;

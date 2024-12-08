@@ -274,12 +274,14 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
   tHStringPtr _hspName;
   NN<iDataTable> _datatable = niDeferredInit(NN<iDataTable>);
   id<MTLFunction> _mtlFunction;
+  eGpuFunctionBindType _bindType = eGpuFunctionBindType_None;
 
   sMetalFunction(tU32 anID) : _id(anID) {}
 
   tBool _CreateMTLFunction(id<MTLDevice> aDevice, iHString* ahspPath) {
     _hspName = ahspPath;
-    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetGpuFunctionTarget()),eFalse);
+    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(
+      niHStr(ahspPath),_GetGpuFunctionTarget(),&_bindType),eFalse);
     cString source = GpuFunctionDT_GetSourceText(_datatable);
     niCheck(source.IsNotEmpty(),eFalse);
 

@@ -1049,9 +1049,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   /////////////////////////////////////////////
   virtual iGraphicsContext* __stdcall CreateContextForWindow(iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat, tU32 anSwapInterval, tTextureFlags aBackBufferFlags) niImpl;
-  virtual iGraphicsContextRT* __stdcall CreateContextForRenderTargets(iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS) niImpl {
-    return nullptr;
-  }
+  virtual iGraphicsContextRT* __stdcall CreateContextForRenderTargets(iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS) niImpl;
   //// iGraphicsDriver ///////////////////////////////
 
   //// iGraphicsDriverGpu ///////////////////////////////
@@ -3329,6 +3327,73 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
 #error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"
 #endif
 
+  return gc.GetRawAndSetNull();
+}
+
+struct sVulkanContextRT : public sVulkanContextBase {
+  sVulkanContextRT(
+    ain<nn<sVulkanDriver>> aDriver,
+    const tU32 aFrameMaxInFlight,
+    iTexture* apRT0,
+    iTexture* apDS)
+      : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+  {
+  }
+
+  virtual ~sVulkanContextRT() {
+    this->Invalidate();
+  }
+
+  tBool _CreateContextRT(iTexture* apRT0, iTexture* apDS) {
+    niCheckIsOK(apRT0,eFalse);
+    mptrRT[0] = apRT0;
+    _rt0Format = _GetClosestGpuPixelFormatForRT(
+      apRT0->GetPixelFormat()->GetFormat());
+
+    if (apDS) {
+      mptrDS = apDS;
+      _dsFormat = _GetClosestGpuPixelFormatForDS(
+        apDS->GetPixelFormat()->GetFormat());
+    }
+
+    SetViewport(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
+    SetScissorRect(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
+    return eTrue;
+  }
+
+  tBool _BeginFrame() niImpl {
+    niPanicAssert(_beganFrame == eFalse);
+    _beganFrame = eTrue;
+
+    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+    sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
+    niCheck(_cmdEncoder->_BeginRendering(
+      rt0->_vkImage,rt0->_vkView,
+      this->GetWidth(),this->GetHeight(),
+      mrectViewport,mrectScissor),eFalse);
+    return eTrue;
+  }
+
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
+    niCheck(_beganFrame,eFalse);
+    _beganFrame = eFalse;
+    _cmdEncoder->_EndRendering();
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
+      VK_NULL_HANDLE,VK_NULL_HANDLE),eFalse);
+    return eTrue;
+  }
+};
+
+iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
+  iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
+{
+  if (!_fixedPipelines.IsOK()) {
+    _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
+  }
+
+  Ptr<sVulkanContextRT> gc = niNew sVulkanContextRT(
+    as_nn(this),knVulkanMaxFramesInFlight,apRT0,apDS);
+  niCheck(gc->_CreateContextRT(apRT0,apDS),nullptr);
   return gc.GetRawAndSetNull();
 }
 

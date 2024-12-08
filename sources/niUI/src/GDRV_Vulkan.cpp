@@ -2040,14 +2040,24 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     };
     VkSubmitInfo submitInfo = {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &aImageAvailableSemaphore,
       .pWaitDstStageMask = waitStages,
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &aRendererFinishedSemaphore,
       .commandBufferCount = 1,
       .pCommandBuffers = &_cmdBuffer
     };
+    if (aImageAvailableSemaphore) {
+      submitInfo.waitSemaphoreCount = 1;
+      submitInfo.pWaitSemaphores = &aImageAvailableSemaphore;
+    }
+    else {
+      submitInfo.waitSemaphoreCount = 0;
+    }
+    if (aRendererFinishedSemaphore) {
+      submitInfo.signalSemaphoreCount = 1;
+      submitInfo.pSignalSemaphores = &aRendererFinishedSemaphore;
+    }
+    else {
+      submitInfo.signalSemaphoreCount = 0;
+    }
 
     // TODO: The usage of the fence here is suboptimal since we just wait for
     // the queue to be finished before continuing which waiting tons of CPU
@@ -2651,6 +2661,38 @@ struct sVulkanContextBase :
     return _cmdEncoder;
   }
 
+  tBool __stdcall _ResizeContextRTDS(const achar* aKind, ain<tU32> w, ain<tU32> h) {
+    iGraphics* g = _driver->_graphics;
+    ni::SafeInvalidate(mptrRT[0].ptr());
+    mptrRT[0] = niNew sVulkanTexture(
+      _driver,HFmt("Vulkan_MainRT_%s_%p",aKind,(tIntPtr)this),
+      w,h,eGpuPixelFormat_RGBA8,
+      eTextureFlags_RenderTarget|eTextureFlags_Surface);
+    _rt0Format = _GetClosestGpuPixelFormatForRT(
+      mptrRT[0]->GetPixelFormat()->GetFormat());
+
+    ni::SafeInvalidate(mptrDS.ptr());
+    mptrDS = niNew sVulkanTexture(
+      _driver,HFmt("Vulkan_MainDS_%s_%p",aKind,(tIntPtr)this),
+      w,h,eGpuPixelFormat_D32,
+      eTextureFlags_RenderTarget|eTextureFlags_Surface);
+    _dsFormat = _GetClosestGpuPixelFormatForDS(
+      mptrDS->GetPixelFormat()->GetFormat());
+
+    SetViewport(sRecti(0,0,w,h));
+    SetScissorRect(sRecti(0,0,w,h));
+
+    niLog(Info, niFmt(
+      "Vulkan Context Resized: %s (%p), %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
+      aKind,
+      (tIntPtr)this,w,h,
+      mptrRT[0]->GetPixelFormat()->GetFormat(),
+      mptrDS->GetPixelFormat()->GetFormat(),
+      GetViewport(),
+      GetScissorRect()));
+    return eTrue;
+  }
+
   virtual tBool _BeginFrame() = 0;
 
   virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
@@ -2761,24 +2803,13 @@ struct sVulkanContextBase :
 #if defined niOSX
 struct sVulkanContextWindowMetal : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
-
   Ptr<iOSXMetalAPI> _metalAPI;
-  tBool _PlatformInit() {
-    osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_window);
-    if (!_metalAPI.IsOK()) {
-      niError("Can't get metal api for iOSWindow.");
-      return eFalse;
-    }
-    return eTrue;
-  }
-  void _PlatformInvalidate() {
-    _metalAPI = nullptr;
-  }
-  tBool _PlatformUpdateFrameBuffer(tU32 anWidth, tU32 anNewHeight) {
-    _currentFb.Destroy(_driver->_device);
-    return _currentFb.CreateFromMetalAPI(_metalAPI, _driver->_device);
-  }
+  VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
+  struct {
+    VkImage _image = VK_NULL_HANDLE;
+    VkImageView _imageView = VK_NULL_HANDLE;
+    sVec2i _size = Vec2i(1,1);
+  } _surface;
 
   sVulkanContextWindowMetal(
     ain<nn<sVulkanDriver>> aDriver,
@@ -2787,100 +2818,85 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
       : sVulkanContextBase(aDriver,aFrameMaxInFlight)
   {
     _window = apWindow;
-
-    if (!_PlatformInit()) {
-      niError("Platform initialization failed.");
-      this->Invalidate();
-      return;
-    }
-
-    if (!_DoResizeContext()) {
-      niError("Can't do the initial context initialization.");
-      this->Invalidate();
-      return;
-    }
   }
 
   virtual ~sVulkanContextWindowMetal() {
     this->Invalidate();
   }
 
+  tBool _ResizeContextRTDS(ain<sVec2i> aNewSize) {
+    return static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+      "WindowMetal",aNewSize.x,aNewSize.y);
+  }
+
+  tBool _CreateContextWindowMetal() {
+    niCheckIsOK(_window,eFalse);
+    osxMetalSetDefaultDevice();
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_window);
+    if (!_metalAPI.IsOK()) {
+      niError("Can't get metal api for iOSWindow.");
+      return eFalse;
+    }
+    VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+    };
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
+    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device),eFalse);
+    return eTrue;
+  }
+
   void __stdcall Invalidate() niImpl {
-    _currentFb.DestroyFrameBuffer(_driver->_device);
-    _PlatformInvalidate();
+    // Wait for the device to finish all operations before destroying objects.
+    vkDeviceWaitIdle(_driver->_device);
+    _DestroySurface(_driver->_device);
+    if (_renderFinishedSemaphore) {
+      vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
+      _renderFinishedSemaphore = VK_NULL_HANDLE;
+    }
+    _metalAPI = nullptr;
     _window = nullptr;
   }
 
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
-    if (!_window.IsOK()) {
-      return eFalse;
-    }
-    this->_EndFrame();
+  tBool _BeginFrame() niImpl {
+    niPanicAssert(_beganFrame == eFalse);
+    _beganFrame = eTrue;
+
+    // Get the next view
+    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device),eFalse);
+
+    // Begin buffer and rendering
+    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+    niCheck(_cmdEncoder->_BeginRendering(
+      _surface._image,_surface._imageView,
+      this->GetWidth(),this->GetHeight(),
+      mrectViewport,mrectScissor),eFalse);
+
+    return eTrue;
+  }
+
+  tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
+    niCheckIsOK(_window,eFalse);
+    niCheck(_beganFrame,eFalse);
+    _beganFrame = eFalse;
+    _cmdEncoder->_EndRendering();
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
+      VK_NULL_HANDLE,
+      _renderFinishedSemaphore),eFalse);
     _metalAPI->DrawablePresent();
     return eTrue;
   }
 
-  tBool __stdcall _DoResizeContext() {
-    iGraphics* g = _driver->_graphics;
-    const tU32 w = _window->GetClientSize().x;
-    const tU32 h = _window->GetClientSize().y;
+  tBool _UpdateSurfaceFromMetalAPI(VkDevice aDevice) {
+    _DestroySurface(aDevice);
 
-    niCheck(_PlatformResizeContext(),eFalse);
-
-    ni::SafeInvalidate(mptrRT[0].ptr());
-    mptrRT[0] = niNew sVulkanTexture(
-      _driver,_H("Vulkan_MainRT"),
-      w,h,eGpuPixelFormat_RGBA8,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
-
-    ni::SafeInvalidate(mptrDS.ptr());
-    mptrDS = niNew sVulkanTexture(
-      _driver,_H("Vulkan_MainDS"),
-      w,h,eGpuPixelFormat_D32,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
-
-    SetViewport(sRecti(0,0,w,h));
-    SetScissorRect(sRecti(0,0,w,h));
-
-    niLog(Info, niFmt(
-      "Vulkan Context - Resized [%p]: %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
-      (tIntPtr)this,
-      w,h,
-      mptrRT[0]->GetPixelFormat()->GetFormat(),
-      mptrDS->GetPixelFormat()->GetFormat(),
-      GetViewport(),
-      GetScissorRect()));
-
-    return eTrue;
-  }
-
-  virtual tBool __stdcall _UpdateFrameBuffer() niImpl {
-    if (!_window.IsOK()) {
-      return eFalse;
-    }
-    const sVec2i newSize = _window->GetClientSize();
-    if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
-      _DoResizeContext();
-    }
-    niCheck(_PlatformUpdateFrameBuffer(newSize.x,newSize.y), eFalse);
-    return eTrue;
-  }
-
-  VkImage _image = VK_NULL_HANDLE;
-  VkImageView _view = VK_NULL_HANDLE;
-  tU32 _width = 0;
-  tU32 _height = 0;
-
-#if defined niOSX || defined niIOS
-  tBool CreateFromMetalAPI(iOSXMetalAPI* apMetalAPI, VkDevice aDevice) {
-    niCheck(osxVkCreateImageForMetalAPI(apMetalAPI,aDevice,nullptr,&_image),eFalse);
-    niLet viewSize = apMetalAPI->GetViewSize();
-    _width = viewSize.x;
-    _height = viewSize.y;
+    niCheck(osxVkCreateImageForMetalAPI(
+      _metalAPI,aDevice,nullptr,&_surface._image),eFalse);
+    niLet viewSize = _metalAPI->GetViewSize();
+    _surface._size = Vec2i(viewSize.x,viewSize.y);
 
     VkImageViewCreateInfo viewInfo = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = _image,
+      .image = _surface._image,
       .viewType = VK_IMAGE_VIEW_TYPE_2D,
       .format = VK_FORMAT_B8G8R8A8_UNORM,
       .components = {
@@ -2898,19 +2914,25 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
       }
     };
 
-    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_view), eFalse);
+    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_surface._imageView), eFalse);
+
+    if ((!mptrRT[0].raw_ptr()) ||
+        (_surface._size.x != this->GetWidth()) ||
+        (_surface._size.y != this->GetHeight()))
+    {
+      niCheck(_ResizeContextRTDS(_surface._size),eFalse);
+    }
     return eTrue;
   }
-#endif
 
-  void DestroyFrameBuffer(VkDevice device) {
-    if (_view) {
-      vkDestroyImageView(device, _view, nullptr);
-      _view = VK_NULL_HANDLE;
+  void _DestroySurface(VkDevice device) {
+    if (_surface._imageView) {
+      vkDestroyImageView(device, _surface._imageView, nullptr);
+      _surface._imageView = VK_NULL_HANDLE;
     }
-    if (_image) {
-      vkDestroyImage(device, _image, nullptr);
-      _image = VK_NULL_HANDLE;
+    if (_surface._image) {
+      vkDestroyImage(device, _surface._image, nullptr);
+      _surface._image = VK_NULL_HANDLE;
     }
   }
 };
@@ -2946,6 +2968,11 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     this->Invalidate();
   }
 
+  tBool _ResizeContextRTDS() {
+    return static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+      "WindowX11",_swapchainExtent.width,_swapchainExtent.height);
+  }
+
   tBool _CreateContextWindowX11() {
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
@@ -2953,7 +2980,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
     niCheck(_CreateSurface(), eFalse);
     niCheck(_CreateSwapChain(), eFalse);
-    niCheck(_DoResizeContext(), eFalse);
+    niCheck(_ResizeContextRTDS(), eFalse);
     return eTrue;
   }
 
@@ -3092,51 +3119,10 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
       return eFalse;
     }
 
-    if (!_DoResizeContext()) {
+    if (!_ResizeContextRTDS()) {
       niError("Failed to resize context after recreating swapchain.");
       return eFalse;
     }
-
-    return eTrue;
-  }
-
-  tBool __stdcall _DoResizeContext() {
-    iGraphics* g = _driver->_graphics;
-    const tU32 w = _swapchainExtent.width;
-    const tU32 h = _swapchainExtent.height;
-
-    ni::SafeInvalidate(mptrRT[0].ptr());
-    mptrRT[0] = niNew sVulkanTexture(
-      _driver,_H("Vulkan_MainRT"),
-      w,h,eGpuPixelFormat_RGBA8,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
-    _rt0Format = _GetClosestGpuPixelFormatForRT(
-      mptrRT[0]->GetPixelFormat()->GetFormat());
-
-    ni::SafeInvalidate(mptrDS.ptr());
-    mptrDS = niNew sVulkanTexture(
-      _driver,_H("Vulkan_MainDS"),
-      w,h,eGpuPixelFormat_D32,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
-    if (mptrDS.IsOK()) {
-      _dsFormat = _GetClosestGpuPixelFormatForDS(
-        mptrDS->GetPixelFormat()->GetFormat());
-    }
-    else {
-      _dsFormat = eGpuPixelFormat_None;
-    }
-
-    SetViewport(sRecti(0,0,w,h));
-    SetScissorRect(sRecti(0,0,w,h));
-
-    niLog(Info, niFmt(
-      "Vulkan Context - Resized [%p]: %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
-      (tIntPtr)this,
-      w,h,
-      mptrRT[0]->GetPixelFormat()->GetFormat(),
-      mptrDS->GetPixelFormat()->GetFormat(),
-      GetViewport(),
-      GetScissorRect()));
 
     return eTrue;
   }
@@ -3257,6 +3243,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
   }
 
   virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
+    niCheckIsOK(_window,eFalse);
     niCheck(_beganFrame,eFalse);
     _beganFrame = eFalse;
 
@@ -3308,7 +3295,12 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
     _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
   }
 
-#if defined niLinuxDesktop
+#if defined niOSX
+  Ptr<sVulkanContextWindowMetal> gc = niCheckNN(
+    gc, niNew sVulkanContextWindowMetal(
+      as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
+  niCheck(gc->_CreateContextWindowMetal(),nullptr);
+#elif defined niLinuxDesktop
   Ptr<sVulkanContextWindowX11> gc = niCheckNN(gc, niNew sVulkanContextWindowX11(
     as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
   niCheck(gc->_CreateContextWindowX11(),nullptr);

@@ -188,28 +188,25 @@ iGraphicsContext* __stdcall cGraphics::CreateContextForWindow(
 iGraphicsContextRT* __stdcall cGraphics::CreateContextForRenderTargets(
   iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
 {
-  if (!mptrDrv.IsOK()) {
-    niWarning(_A("Driver not initialized."));
-    return NULL;
-  }
+  niCheckIsOK(mptrDrv,nullptr);
 
   Ptr<iGraphicsContextRT> ctx = mptrDrv->CreateContextForRenderTargets(
       apRT0, apRT1, apRT2, apRT3, apDS);
   if (!ctx.IsOK()) {
-    niError(_A("Can't initialize the graphics driver context."));
+    niError("Can't create graphics driver render targets context.");
     return NULL;
   }
 
   if (!niIsOK(ctx->GetFixedStates())) {
-    niError(_A("No valid fixed states."));
+    niError("No valid fixed states.");
     return NULL;
   }
   if (apRT0 && !niIsOK(ctx->GetRenderTarget(0))) {
-    niError(_A("No valid main render target."));
+    niError("No valid main render target.");
     return NULL;
   }
   if (apDS && !niIsOK(ctx->GetDepthStencil())) {
-    niError(_A("No valid depth stencil."));
+    niError("No valid depth stencil.");
     return NULL;
   }
 

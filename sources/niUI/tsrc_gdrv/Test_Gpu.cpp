@@ -26,7 +26,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
     QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
@@ -312,7 +312,7 @@ struct sFGpu_Texture : public sFGpu_Base {
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
   NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
     {
@@ -375,7 +375,7 @@ struct sFGpu_Texture : public sFGpu_Base {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -592,5 +592,48 @@ struct sFGpu_ClearRects : public sFGpu_Base {
   }
 };
 TEST_CLASS(FGpu,ClearRects);
+
+struct sFGpu_RenderTarget : public sFGpu_Texture {
+  NN<iTexture> _rtTex = niDeferredInit(NN<iTexture>);
+  NN<iGraphicsContext> _rtGC = niDeferredInit(NN<iGraphicsContext>);
+
+  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Texture::OnInit(testResults_),eFalse);
+    _rtTex = niCheckNN(_rtTex,_graphics->CreateTexture(
+      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",1,
+      256,256,0,eTextureFlags_RenderTarget),eFalse);
+    _rtGC = niCheckNN(_rtGC,_graphics->CreateContextForRenderTargets(
+      _rtTex,nullptr,nullptr,nullptr,nullptr),eFalse);
+    return eTrue;
+  }
+
+  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    {
+      QPtr<iGraphicsContextGpu> gpuRT = _rtGC;
+      niPanicAssert(gpuRT.IsOK());
+      _rtGC->ClearBuffers(eClearBuffersFlags_ColorDepthStencil,0xFFFF0000,1.0f,0);
+      NN<iGpuCommandEncoder> rtEncoder = AsNN(gpuRT->GetCommandEncoder());
+      rtEncoder->SetPipeline(_pipeline);
+      rtEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+      rtEncoder->SetTexture(nullptr, 0); // bind the "white texture"
+      rtEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
+      rtEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+      rtEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+      _rtGC->Display(eGraphicsDisplayFlags_Skip,sRecti::Null());
+    }
+
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->SetTexture(_rtTex, 0); // bind the render target
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,RenderTarget);
 
 }

@@ -2979,6 +2979,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
   astl::vector<VkImageView> _swapchainImageViews;
   VkFormat _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
   VkExtent2D _swapchainExtent = {0,0};
+  sVec2i _swapchainWindowSize = sVec2i::Zero();
 
   sVulkanContextWindowX11(
     ain<nn<sVulkanDriver>> aDriver,
@@ -3109,6 +3110,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
       VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_swapchainImageViews[i]), eFalse);
     }
 
+    _swapchainWindowSize = _window->GetSize();
     return eTrue;
   }
 
@@ -3132,10 +3134,12 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     }
 
     _swapchainImages.clear();
+    _swapchainWindowSize = sVec2i::Zero();
   }
 
-  tBool _RecreateSwapchain() {
+  tBool _RecreateSwapchain(const achar* aaszReason) {
     vkDeviceWaitIdle(_driver->_device);
+    niInfo(niFmt("Recreating vulkan swapchain: %s.", aaszReason));
 
     _DestroySwapChainResources();
 
@@ -3156,10 +3160,14 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     niPanicAssert(_beganFrame == eFalse);
     _beganFrame = eTrue;
 
-    const sVec2i newSize = _window->GetClientSize();
-    if ((newSize.x != this->GetWidth()) || (newSize.y != this->GetHeight())) {
-      if (!_RecreateSwapchain()) {
-        niError("Failed to recreate swapchain after detecting window size change.");
+    // Note: Detect window size changes as VK_ERROR_OUT_OF_DATE_KHR &
+    // VK_SUBOPTIMAL_KHR are not reliabily returned by all platforms and
+    // drivers. The size of the window might be different from the surface's
+    // size depending on the window manager, contents scaling, etc, so we only
+    // compare it against itself and not against the surface size.
+    if (_swapchainWindowSize != _window->GetSize()) {
+      if (!_RecreateSwapchain("swapchain window size changed")) {
+        niError("Failed to recreate swapchain after swapchain window size changed.");
         return eFalse;
       }
     }
@@ -3171,22 +3179,27 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
       _imageAvailableSemaphore,
       VK_NULL_HANDLE,
       &_currentImageIndex);
-    if (acquireRes == VK_ERROR_OUT_OF_DATE_KHR || acquireRes == VK_SUBOPTIMAL_KHR) {
-      if (!_RecreateSwapchain()) {
-        niError("Failed to recreate swapchain after AcquireNextImage out-of-date.");
-        return eFalse;
+    if (acquireRes != VK_SUCCESS) {
+      niLoop(i,5) {
+        if (acquireRes == VK_ERROR_OUT_OF_DATE_KHR || acquireRes == VK_SUBOPTIMAL_KHR) {
+          if (!_RecreateSwapchain(niFmt("vkAcquireNextImageKHR(try:%s) -> %s",i,ni_vulkan::VkResultToString(acquireRes)))) {
+            niError("Failed to recreate swapchain after AcquireNextImage out-of-date.");
+            return eFalse;
+          }
+          acquireRes = vkAcquireNextImageKHR(
+            _driver->_device,
+            _swapchain,
+            UINT64_MAX,
+            _imageAvailableSemaphore,
+            VK_NULL_HANDLE,
+            &_currentImageIndex);
+          if (acquireRes == VK_SUCCESS)
+            break;
+        }
+        else {
+          VK_CHECK(acquireRes, eFalse);
+        }
       }
-      VK_CHECK(vkAcquireNextImageKHR(
-        _driver->_device,
-        _swapchain,
-        UINT64_MAX,
-        _imageAvailableSemaphore,
-        VK_NULL_HANDLE,
-        &_currentImageIndex),
-      eFalse);
-    }
-    else {
-      VK_CHECK(acquireRes, eFalse);
     }
 
     niLet currentImage = _swapchainImages[_currentImageIndex];
@@ -3289,7 +3302,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
 
     VkResult presentRes = vkQueuePresentKHR(_driver->_graphicsQueue, &presentInfo);
     if (presentRes == VK_ERROR_OUT_OF_DATE_KHR || presentRes == VK_SUBOPTIMAL_KHR) {
-      if (!_RecreateSwapchain()) {
+      if (!_RecreateSwapchain(niFmt("vkQueuePresentKHR -> %s",ni_vulkan::VkResultToString(presentRes)))) {
         niError("Failed to recreate swapchain after Present out-of-date.");
         return eFalse;
       }

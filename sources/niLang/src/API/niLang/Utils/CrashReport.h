@@ -4,6 +4,10 @@
 // SPDX-License-Identifier: MIT
 #include "../Types.h"
 #include "../StringDef.h"
+#ifndef niNoExceptions
+#include <exception>
+#endif
+
 
 #if defined __cplusplus
 #include <exception> // for std::set_terminate
@@ -50,7 +54,9 @@ static inline void __niCrashReportModuleInstall()
 {
   // niPrintln("__niCrashReportModuleInstall");
 
+#ifndef niNoExceptions
   std::set_terminate(cpp_terminate_handler);
+#endif
 
 #ifdef niWindows
   _set_error_mode(_OUT_TO_STDERR);

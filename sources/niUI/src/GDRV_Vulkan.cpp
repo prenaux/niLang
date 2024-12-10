@@ -38,8 +38,8 @@ namespace ni {
 _HDecl(__vktex_white__);
 _HDecl(__vkbuff_dummy__);
 
-static const tU32 knVulkanMaxFramesInFlight = 1;
-static tF32 kfVulkanSamplerFilterAnisotropy = 8.0f;
+niLetK knVulkanMaxFramesInFlight = 1_u32;
+niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
@@ -47,15 +47,15 @@ static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 #endif
 };
-static const tU32 knVkRequiredDeviceExtensionsCount = niCountOf(_vkRequiredDeviceExtensions);
-static const tU32 knVulkanMaxDescriptorSets = 10000;
+niLetK knVkRequiredDeviceExtensionsCount = (tU32)niCountOf(_vkRequiredDeviceExtensions);
+niLetK knVulkanMaxDescriptorSets = 10000_u32;
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
 #define NISH_VULKAN_TARGET spv_vk12
 
 _HDecl(NISH_VULKAN_TARGET);
-static __forceinline iHString* _GetVulkanGpuFunctionTarget() {
+static niInline iHString* _GetVulkanGpuFunctionTarget() {
   return _HC(NISH_VULKAN_TARGET);
 }
 
@@ -236,7 +236,6 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
   }
   return attrs;
 }
-struct sVulkanTexture;
 struct sVulkanBuffer;
 
 struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu> {
@@ -259,7 +258,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
-  Ptr<sVulkanBuffer> _dummyBuffer;
+  Ptr<sVulkanBuffer> _dummyUniformBuffer;
 
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
   Ptr<iFixedGpuPipelines> _fixedPipelines;
@@ -284,7 +283,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual ~sVulkanDriver() {
     _fixedPipelines = nullptr;
 
-    _dummyBuffer = nullptr;
+    _dummyUniformBuffer = nullptr;
     niLoop(i,niCountOf(_ssCompiled)) {
       if (_ssCompiled[i]) {
         vkDestroySampler(_device, _ssCompiled[i],
@@ -977,16 +976,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) niImpl {
     niCheckSilent(niIsOK(apFormat),eFalse);
 
-    eGpuPixelFormat gpufmt;
-    if (niFlagIs(aFlags,eTextureFlags_DepthStencil)) {
-      gpufmt = _GetClosestGpuPixelFormatForDS(apFormat->GetPixelFormat()->GetFormat());
-    }
-    else if (niFlagIs(aFlags,eTextureFlags_RenderTarget)) {
-      gpufmt = _GetClosestGpuPixelFormatForRT(apFormat->GetPixelFormat()->GetFormat());
-    }
-    else {
-      gpufmt = _GetClosestGpuPixelFormatForTexture(apFormat->GetPixelFormat()->GetFormat());
-    }
+    niLet gpufmt = _GetClosestGpuPixelFormatForTexture(apFormat->GetPixelFormat()->GetFormat(),aFlags);
 
     // TODO: For now all eGpuPixelFormat are supported by Vulkan but that
     // might not always be the case. Eventually we should validate this.
@@ -1087,7 +1077,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   tU32 _lockOffset = 0, _lockSize = 0;
   tU32 _modifiedOffset = 0, _modifiedSize = 0;
   eLock _lockMode;
-  tBool _tracked = eFalse;
+  tBool _boundModifiedBuffer = eFalse;
 
   sVulkanBuffer(
     ain_nn<sVulkanDriver> aDriver,
@@ -1137,7 +1127,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   void _Untrack() {
     // niDebugFmt(("... Unbind: %p: [ms:%d,me:%d].", (tIntPtr)this, _modifiedStart,_modifiedEnd));
     _modifiedOffset = _modifiedSize = 0;
-    _tracked = eFalse;
+    _boundModifiedBuffer = eFalse;
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
@@ -1186,7 +1176,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     else if ((_lockOffset < (_modifiedOffset+_modifiedSize)) &&
              (_lockOffset+_lockSize) > _modifiedOffset)
     {
-      if (_tracked) {
+      if (_boundModifiedBuffer) {
         // TODO: The lock should fail in this case and return nullptr? We
         // should not allow submitted buffers to be modified?
         niWarning(niFmt(
@@ -1218,6 +1208,279 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
 
   virtual tBool __stdcall GetIsLocked() const niImpl {
     return _lockSize != 0;
+  }
+};
+
+struct sVulkanTexture : public ImplRC<iTexture> {
+  nn<sVulkanDriver> _driver;
+  VkImage _vkImage = VK_NULL_HANDLE;
+  VmaAllocation _vmaAllocation;
+  VkImageView _vkView = VK_NULL_HANDLE;
+  tU32 _width = 0, _height = 0;
+  const tHStringPtr _name;
+  const tTextureFlags _flags = eTextureFlags_Default;
+  eGpuPixelFormat _pixelFormat = eGpuPixelFormat_None;
+
+  sVulkanTexture(
+    ain_nn<sVulkanDriver> aDriver, iHString* ahspName,
+    tU32 anWidth, tU32 anHeight, eGpuPixelFormat aGpuPixelFormat,
+    tTextureFlags aFlags)
+      : _driver(aDriver)
+      , _name(ahspName)
+      , _width(anWidth)
+      , _height(anHeight)
+      , _flags(aFlags)
+      , _pixelFormat(aGpuPixelFormat)
+  {
+    if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
+      _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
+    }
+  }
+
+  ~sVulkanTexture() {
+    this->Invalidate();
+  }
+
+  virtual void __stdcall Invalidate() override {
+    if (_driver->_graphics->GetTextureDeviceResourceManager()) {
+      _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
+    }
+    if (_vkView) {
+      vkDestroyImageView(_driver->_device, _vkView, nullptr);
+      _vkView = VK_NULL_HANDLE;
+    }
+    if (_vkImage) {
+      vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
+      _vkImage = VK_NULL_HANDLE;
+    }
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const override {
+    return _name;
+  }
+
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall ResetDeviceResource() override {
+    return eTrue;
+  }
+
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
+    return this;
+  }
+
+  virtual eBitmapType __stdcall GetType() const override {
+    return eBitmapType_2D;
+  }
+
+  virtual tU32 __stdcall GetWidth() const override {
+    return _width;
+  }
+
+  virtual tU32 __stdcall GetHeight() const override {
+    return _height;
+  }
+
+  virtual tU32 __stdcall GetDepth() const override {
+    return 1;
+  }
+
+  virtual iPixelFormat* __stdcall GetPixelFormat() const override {
+    return _GetIPixelFormat(_driver->_graphics,_pixelFormat);
+  }
+
+  virtual tU32 __stdcall GetNumMipMaps() const override {
+    return 1;
+  }
+
+  virtual tTextureFlags __stdcall GetFlags() const override {
+    return _flags;
+  }
+
+  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override {
+    return nullptr;
+  }
+
+  tBool _CreateVulkanTexture() {
+    niPanicAssert(_vkImage == VK_NULL_HANDLE && _vkView == VK_NULL_HANDLE);
+
+    VkImageCreateInfo imageInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = _GetVulkanPixelFormat(_pixelFormat),
+      .extent = {_width, _height, 1},
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+    };
+    if (niFlagIs(_flags,eTextureFlags_RenderTarget)) {
+      imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    }
+    else if (niFlagIs(_flags,eTextureFlags_DepthStencil)) {
+      imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    }
+
+    VmaAllocationCreateInfo allocInfo = {
+      .usage = VMA_MEMORY_USAGE_GPU_ONLY
+    };
+
+    VK_CHECK(vmaCreateImage(
+      _driver->_allocator, &imageInfo, &allocInfo,
+      &_vkImage, &_vmaAllocation, nullptr), eFalse);
+
+    // Create image view
+    VkImageViewCreateInfo viewInfo = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      .image = _vkImage,
+      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .format = imageInfo.format,
+      .components = {
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY,
+        VK_COMPONENT_SWIZZLE_IDENTITY
+      },
+      .subresourceRange = {
+        .aspectMask = niFlagIs(_flags,eTextureFlags_DepthStencil) ?
+        VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      }
+    };
+
+    VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
+    return eTrue;
+  }
+
+  void _UploadTexture(const iBitmap2D* apBmpLevel,
+                      const tU32 anLevel,
+                      const sRecti& aDestRect)
+  {
+    if (anLevel != 0) // TODO: Implement mipmaps
+      return;
+
+    const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
+    const tU32 bpr = apBmpLevel->GetPitch();
+    const tU32 startOffset = (aDestRect.y * bpr) + (aDestRect.x * bpp);
+    const tPtr bytes = (tPtr)(apBmpLevel->GetData()+startOffset);
+
+    // Create staging buffer
+    VkBuffer stagingBuffer;
+    VmaAllocation stagingAlloc;
+
+    VkBufferCreateInfo bufferInfo = {
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = aDestRect.GetWidth() * aDestRect.GetHeight() * bpp,
+      .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+    };
+
+    VmaAllocationCreateInfo stagingAllocInfo = {
+      .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
+    };
+
+    VK_CHECK(vmaCreateBuffer(
+      _driver->_allocator, &bufferInfo, &stagingAllocInfo,
+      &stagingBuffer, &stagingAlloc, nullptr), ;);
+    niDefer {
+      vmaDestroyBuffer(_driver->_allocator, stagingBuffer, stagingAlloc);
+    };
+
+    // Copy data to staging
+    void* data;
+    VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), ;);
+    for (tU32 y = 0; y < aDestRect.GetHeight(); ++y) {
+      memcpy(
+        (tU8*)data + (y * aDestRect.GetWidth() * bpp),
+        (tU8*)bytes + (y * bpr),
+        aDestRect.GetWidth() * bpp);
+    }
+    vmaUnmapMemory(_driver->_allocator, stagingAlloc);
+
+    // Transition image layout for copy
+    VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
+
+    VkImageMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = _vkImage,
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = anLevel,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      },
+      .srcAccessMask = 0,
+      .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT
+    };
+
+    vkCmdPipelineBarrier(
+      cmdBuf,
+      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+      VK_PIPELINE_STAGE_TRANSFER_BIT,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier);
+
+    // Copy buffer to image
+    VkBufferImageCopy region = {
+      .bufferOffset = 0,
+      .bufferRowLength = 0,
+      .bufferImageHeight = 0,
+      .imageSubresource = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .mipLevel = anLevel,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      },
+      .imageOffset = {
+        aDestRect.x,
+        aDestRect.y,
+        0
+      },
+      .imageExtent = {
+        (tU32)aDestRect.GetWidth(),
+        (tU32)aDestRect.GetHeight(),
+        1
+      }
+    };
+
+    vkCmdCopyBufferToImage(
+      cmdBuf,
+      stagingBuffer,
+      _vkImage,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      1,
+      &region);
+
+    // Transition to shader read
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+    vkCmdPipelineBarrier(
+      cmdBuf,
+      VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier);
+
+    _driver->EndSingleTimeCommands(cmdBuf);
   }
 };
 
@@ -1758,7 +2021,7 @@ struct sVulkanDescriptorPool {
     _numAllocated = 0;
   }
 
-  tBool PushDescriptorBuffer(
+  tBool PushDescriptorUniformBuffer(
     VkDevice aDevice,
     VkCommandBuffer aCmdBuffer,
     ain<nn<sVulkanPipeline>> apPipeline,
@@ -1856,6 +2119,8 @@ struct sVulkanDescriptorPool {
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
   astl::vector<Ptr<sVulkanBuffer>> _trackedBuffers;
+  astl::vector<Ptr<sVulkanTexture>> _trackedTextures;
+  astl::vector<Ptr<sVulkanPipeline>> _trackedPipelines;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
   tBool _inFrame = eFalse;;
@@ -1872,12 +2137,25 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     _descriptorPool.Destroy(aDevice);
   }
 
-  void TrackBuffer(iGpuBuffer* apBuffer) {
-    sVulkanBuffer* buffer = (sVulkanBuffer*)apBuffer;
-    if (!buffer->_tracked && buffer->_modifiedSize) {
-      _trackedBuffers.push_back(buffer);
-      buffer->_tracked = eTrue;
+  niInline sVulkanBuffer* BindBuffer(iGpuBuffer* apBuffer) {
+    niLet buffer = (sVulkanBuffer*)apBuffer; // Note: Bind() is a noop so we dont call it
+    if (!buffer->_boundModifiedBuffer && buffer->_modifiedSize) {
+      buffer->_boundModifiedBuffer = eTrue;
     }
+    _trackedBuffers.push_back(buffer);
+    return buffer;
+  }
+
+  niInline sVulkanTexture* BindTexture(iTexture* apTexture) {
+    sVulkanTexture* texture = (sVulkanTexture*)apTexture; // Note: Bind() is a noop so we dont call it
+    _trackedTextures.push_back(texture);
+    return texture;
+  }
+
+  niInline sVulkanPipeline* BindPipeline(iGpuPipeline* apPipeline) {
+    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline; // Note: Bind() is a noop so we dont call it
+    _trackedPipelines.push_back(pipeline);
+    return pipeline;
   }
 
   void OnBeginFrame(VkDevice aDevice) {
@@ -1890,8 +2168,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     niLet& lastBlock = _stream->GetLastBlock();
 
     // niDebugFmt((
-    //   "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
-    //   _trackedBuffers.size(),_stream->GetNumBlocks(),
+    //   "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_trackedTextures=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
+    //   _trackedBuffers.size(),_trackedTextures.size(),_stream->GetNumBlocks(),
     //   lastBlock.mOffset,lastBlock.mSize,
     //   _descriptorPool._numAllocated));
 
@@ -1899,6 +2177,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
       _trackedBuffers[i]->_Untrack();
     }
     _trackedBuffers.clear();
+    _trackedTextures.clear();
+    _trackedPipelines.clear();
     _stream->Reset();
     _descriptorPool.ResetDescriptorPool(aDevice);
     _inFrame = eFalse;
@@ -2086,7 +2366,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   void _DoBindPipeline(iGpuPipeline* apPipeline, tFixedGpuPipelineId aFixedPipelineId) {
     sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
     vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
-    _cache._lastPipeline = (sVulkanPipeline*)apPipeline;
+    _cache._lastPipeline = _GetCurrentFrame()->BindPipeline(apPipeline);
     _cache._lastFixedPipeline = aFixedPipelineId;
   }
 
@@ -2103,7 +2383,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(apBuffer != nullptr, ;);
-    sVulkanBuffer* buffer = (sVulkanBuffer*)apBuffer;
+    sVulkanBuffer* buffer = _GetCurrentFrame()->BindBuffer(apBuffer);
     VkBuffer vertexBuffers[] = {buffer->_vkBuffer};
     VkDeviceSize offsets[] = {anOffset};
     vkCmdBindVertexBuffers(_cmdBuffer, anBinding, 1, vertexBuffers, offsets);
@@ -2111,19 +2391,19 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, eGpuIndexType aIndexType) niImpl {
     niCheck(apBuffer != nullptr, ;);
-    sVulkanBuffer* indexBuffer = (sVulkanBuffer*)apBuffer;
+    sVulkanBuffer* indexBuffer = _GetCurrentFrame()->BindBuffer(apBuffer);
     vkCmdBindIndexBuffer(_cmdBuffer, indexBuffer->_vkBuffer, anOffset, _ToVkIndexType[aIndexType]);
   }
 
   virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
     niCheck(anBinding == 0, ;);
-    _cache._lastBuffer = (sVulkanBuffer*)apBuffer;
+    _cache._lastBuffer = _GetCurrentFrame()->BindBuffer(apBuffer);
     _cache._lastBufferOffset = anOffset;
   }
 
   virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
     niCheck(anBinding < eMaterialChannel_Last, ;);
-    _cache._lastMaterial.mChannels[anBinding].mTexture = apTexture;
+    _cache._lastMaterial.mChannels[anBinding].mTexture = _GetCurrentFrame()->BindTexture(apTexture);
   }
 
   virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl {
@@ -2206,280 +2486,6 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriv
   return cmdEncoder;
 }
 
-struct sVulkanTexture : public ImplRC<iTexture> {
-  nn<sVulkanDriver> _driver;
-  VkImage _vkImage = VK_NULL_HANDLE;
-  VmaAllocation _vmaAllocation;
-  VkImageView _vkView = VK_NULL_HANDLE;
-  tU32 _width = 0, _height = 0;
-  const tHStringPtr _name;
-  const tTextureFlags _flags = eTextureFlags_Default;
-  eGpuPixelFormat _pixelFormat = eGpuPixelFormat_None;
-
-  sVulkanTexture(
-    ain_nn<sVulkanDriver> aDriver, iHString* ahspName,
-    tU32 anWidth, tU32 anHeight, eGpuPixelFormat aGpuPixelFormat,
-    tTextureFlags aFlags)
-      : _driver(aDriver)
-      , _name(ahspName)
-      , _width(anWidth)
-      , _height(anHeight)
-      , _flags(aFlags)
-      , _pixelFormat(aGpuPixelFormat)
-  {
-    if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
-      _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
-    }
-  }
-
-  ~sVulkanTexture() {
-    this->Invalidate();
-  }
-
-  virtual void __stdcall Invalidate() override {
-    if (_driver->_graphics->GetTextureDeviceResourceManager()) {
-      _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
-    }
-    if (_vkView) {
-      vkDestroyImageView(_driver->_device, _vkView, nullptr);
-      _vkView = VK_NULL_HANDLE;
-    }
-    if (_vkImage) {
-      vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
-      _vkImage = VK_NULL_HANDLE;
-    }
-  }
-
-  virtual iHString* __stdcall GetDeviceResourceName() const override {
-    return _name;
-  }
-
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
-    return eFalse;
-  }
-
-  virtual tBool __stdcall ResetDeviceResource() override {
-    return eTrue;
-  }
-
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
-    return this;
-  }
-
-  virtual eBitmapType __stdcall GetType() const override {
-    return eBitmapType_2D;
-  }
-
-  virtual tU32 __stdcall GetWidth() const override {
-    return _width;
-  }
-
-  virtual tU32 __stdcall GetHeight() const override {
-    return _height;
-  }
-
-  virtual tU32 __stdcall GetDepth() const override {
-    return 1;
-  }
-
-  virtual iPixelFormat* __stdcall GetPixelFormat() const override {
-    return _GetIPixelFormat(_driver->_graphics,_pixelFormat);
-  }
-
-  virtual tU32 __stdcall GetNumMipMaps() const override {
-    return 1;
-  }
-
-  virtual tTextureFlags __stdcall GetFlags() const override {
-    return _flags;
-  }
-
-  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override {
-    return nullptr;
-  }
-
-  tBool _CreateVulkanTexture() {
-    niPanicAssert(_vkImage == VK_NULL_HANDLE && _vkView == VK_NULL_HANDLE);
-
-    VkImageCreateInfo imageInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-      .imageType = VK_IMAGE_TYPE_2D,
-      .format = _GetVulkanPixelFormat(_pixelFormat),
-      .extent = {_width, _height, 1},
-      .mipLevels = 1,
-      .arrayLayers = 1,
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .tiling = VK_IMAGE_TILING_OPTIMAL,
-      .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
-    };
-
-    if (niFlagIs(_flags,eTextureFlags_RenderTarget)) {
-      imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    }
-    else if (niFlagIs(_flags,eTextureFlags_DepthStencil)) {
-      imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    }
-
-    VmaAllocationCreateInfo allocInfo = {
-      .usage = VMA_MEMORY_USAGE_GPU_ONLY
-    };
-
-    VK_CHECK(vmaCreateImage(
-      _driver->_allocator, &imageInfo, &allocInfo,
-      &_vkImage, &_vmaAllocation, nullptr), eFalse);
-
-    // Create image view
-    VkImageViewCreateInfo viewInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = _vkImage,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      .format = imageInfo.format,
-      .components = {
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY
-      },
-      .subresourceRange = {
-        .aspectMask = niFlagIs(_flags,eTextureFlags_DepthStencil) ?
-        VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      }
-    };
-
-    VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
-    return eTrue;
-  }
-
-  void UploadTexture(const iBitmap2D* apBmpLevel,
-                     const tU32 anLevel,
-                     const sRecti& aDestRect)
-  {
-    if (anLevel != 0) // TODO: Implement mipmaps
-      return;
-
-    const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
-    const tU32 bpr = apBmpLevel->GetPitch();
-    const tU32 startOffset = (aDestRect.y * bpr) + (aDestRect.x * bpp);
-    const tPtr bytes = (tPtr)(apBmpLevel->GetData()+startOffset);
-
-    // Create staging buffer
-    VkBuffer stagingBuffer;
-    VmaAllocation stagingAlloc;
-
-    VkBufferCreateInfo bufferInfo = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = aDestRect.GetWidth() * aDestRect.GetHeight() * bpp,
-      .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-    };
-
-    VmaAllocationCreateInfo stagingAllocInfo = {
-      .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
-    };
-
-    VK_CHECK(vmaCreateBuffer(
-      _driver->_allocator, &bufferInfo, &stagingAllocInfo,
-      &stagingBuffer, &stagingAlloc, nullptr), ;);
-    niDefer {
-      vmaDestroyBuffer(_driver->_allocator, stagingBuffer, stagingAlloc);
-    };
-
-    // Copy data to staging
-    void* data;
-    VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), ;);
-    for (tU32 y = 0; y < aDestRect.GetHeight(); ++y) {
-      memcpy(
-        (tU8*)data + (y * aDestRect.GetWidth() * bpp),
-        (tU8*)bytes + (y * bpr),
-        aDestRect.GetWidth() * bpp);
-    }
-    vmaUnmapMemory(_driver->_allocator, stagingAlloc);
-
-    // Transition image layout for copy
-    VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
-
-    VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = _vkImage,
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = anLevel,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      },
-      .srcAccessMask = 0,
-      .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT
-    };
-
-    vkCmdPipelineBarrier(
-      cmdBuf,
-      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-      VK_PIPELINE_STAGE_TRANSFER_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
-
-    // Copy buffer to image
-    VkBufferImageCopy region = {
-      .bufferOffset = 0,
-      .bufferRowLength = 0,
-      .bufferImageHeight = 0,
-      .imageSubresource = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .mipLevel = anLevel,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      },
-      .imageOffset = {
-        aDestRect.x,
-        aDestRect.y,
-        0
-      },
-      .imageExtent = {
-        (tU32)aDestRect.GetWidth(),
-        (tU32)aDestRect.GetHeight(),
-        1
-      }
-    };
-
-    vkCmdCopyBufferToImage(
-      cmdBuf,
-      stagingBuffer,
-      _vkImage,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      1,
-      &region);
-
-    // Transition to shader read
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-    vkCmdPipelineBarrier(
-      cmdBuf,
-      VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
-
-    _driver->EndSingleTimeCommands(cmdBuf);
-  }
-};
-
 iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) {
   VULKAN_TRACE(("sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
                 ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
@@ -2490,7 +2496,7 @@ iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType
     as_nn(this),
     ahspName,
     anWidth,anHeight,
-    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat()),
+    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
     aFlags) };
   niCheck(tex->_CreateVulkanTexture(),nullptr);
   return tex.GetRawAndSetNull();
@@ -2527,7 +2533,7 @@ tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
   }
 
   if (tex->_vkImage) {
-    tex->UploadTexture(srcBmp, anDestLevel, aDestRect);
+    tex->_UploadTexture(srcBmp, anDestLevel, aDestRect);
   }
 
   VULKAN_TRACE(("BlitBitmapToTexture %s %s %s",
@@ -2564,12 +2570,12 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
   INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
 #undef INIT_COMPILED_SAMPLER_STATES
 
-  _dummyBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Vertex);
-  niCheck(_dummyBuffer->Create(1024),eFalse);
+  _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
+  niCheck(_dummyUniformBuffer->Create(1024),eFalse);
   {
-    tPtr data = _dummyBuffer->Lock(0,1024,eLock_Discard);
+    tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
     ni::MemZero(data,1024);
-    _dummyBuffer->Unlock();
+    _dummyUniformBuffer->Unlock();
   }
 
   return eTrue;
@@ -2588,9 +2594,9 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
       bufferOffset = _cache._lastBufferOffset;
     }
     else {
-      buffer = _driver->_dummyBuffer.raw_ptr();
+      buffer = _driver->_dummyUniformBuffer.raw_ptr();
     }
-    niCheck(descPool.PushDescriptorBuffer(
+    niCheck(descPool.PushDescriptorUniformBuffer(
       device,_cmdBuffer,
       pipeline,eGLSLVulkanDescriptorSet_Buffer,
       buffer->_vkBuffer,bufferOffset),eFalse);
@@ -3367,6 +3373,33 @@ struct sVulkanContextRT : public sVulkanContextBase {
 
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
+
+    // Add image transition
+    VkImageMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = rt0->_vkImage,
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      }
+    };
+
+    vkCmdPipelineBarrier(
+      _cmdEncoder->_cmdBuffer,
+      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier);
+
     niCheck(_cmdEncoder->_BeginRendering(
       rt0->_vkImage,rt0->_vkView,
       this->GetWidth(),this->GetHeight(),
@@ -3378,6 +3411,36 @@ struct sVulkanContextRT : public sVulkanContextBase {
     niCheck(_beganFrame,eFalse);
     _beganFrame = eFalse;
     _cmdEncoder->_EndRendering();
+
+    // Add transition to shader read
+    sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
+    VkImageMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = rt0->_vkImage,
+      .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1
+      },
+      .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
+    };
+
+    vkCmdPipelineBarrier(
+      _cmdEncoder->_cmdBuffer,
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier);
+
     niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
       VK_NULL_HANDLE,VK_NULL_HANDLE),eFalse);
     return eTrue;

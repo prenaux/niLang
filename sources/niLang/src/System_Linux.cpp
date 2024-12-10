@@ -416,11 +416,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     mCursor = None;
     mCursorNone = None;
     mnCursorShape = 0;
-    mvPrevMousePos = sVec2i::Zero();
+    mvPrevMousePos = ni::Vec2<tI32>(eInvalidHandle,eInvalidHandle);
     mvPrevMouseDelta = sVec2i::Zero();
     mbDropTarget = eFalse;
     mfRefreshTimer = -1;
     mptrMT = tMessageHandlerSinkLst::Create();
+    mnEatRelativeMouseMove = 0;
 
     // Init XWindow display
     {
@@ -933,15 +934,40 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     // TODO: IMPLEMENT
     return 0;
   }
+  Window _GetRootWindow() const {
+    Display* display = _GetDisplay();
+    return DefaultRootWindow(display);
+  }
   virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl {
-    // TODO: IMPLEMENT
+    dll_XWarpPointer(_GetDisplay(), None, _GetWindow(),
+                 0, 0, 0, 0,
+                 avCursorPos.x, avCursorPos.y);
   }
   virtual void __stdcall SetCursorCapture(tBool abCapture) niImpl {
-    // TODO: IMPLEMENT
+    if (mbMouseCapture == abCapture)
+      return;
+    if (abCapture) {
+      int grabStatus = dll_XGrabPointer(_GetDisplay(), _GetWindow(), True, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
+                                      GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+      if (grabStatus == GrabSuccess) {
+        SetCursor(ni::eOSCursor_None);
+        mnEatRelativeMouseMove = 10;
+      }
+      else {
+        niLog(Info, "X11_XGrabPointer failed to grab the mouse pointer.");
+      }
+    }
+    else {
+      if (mbMouseCapture) {
+        dll_XUngrabPointer(_GetDisplay(), CurrentTime);
+        // It's not worth it to restore the previous cursor unless we implement custom cursors
+        SetCursor(ni::eOSCursor_Arrow);
+      }
+    }
+    mbMouseCapture = abCapture;
   }
   virtual tBool __stdcall GetCursorCapture() const niImpl {
-    // TODO: IMPLEMENT
-    return eFalse;
+    return mbMouseCapture;
   }
 
   ///////////////////////////////////////////////
@@ -1068,7 +1094,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
       case MotionNotify:
         {
-          _HandleMouseMove(e->xmotion.x,e->xmotion.y);
+            _HandleMouseMove(e->xmotion.x,e->xmotion.y);
           break;
         }
 
@@ -1143,12 +1169,32 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   void _HandleMouseMove(int x, int y) {
-    sVec2i vMousePos { x, y };
-    sVec2i vRelMove = vMousePos-mvPrevMousePos;
-    if (_SendMessage(eOSWindowMessage_MouseMove,vMousePos,vRelMove)) {
-      mvPrevMousePos = vMousePos;
-      return;
+    sVec2i vMousePos = sVec2i(x, y);
+    sVec2i vRelMove = mvPrevMousePos - vMousePos;
+    if (mbMouseCapture) {
+      if (vRelMove != sVec2i::Zero()) {
+        // niDebugFmt(("vRelMove: X=%d, Y=%d", vRelMove.x, vRelMove.y));
+        if (mnEatRelativeMouseMove <= 0) {
+          _SendMessage(ni::eOSWindowMessage_RelativeMouseMove, vRelMove);
+        }
+        else {
+          --mnEatRelativeMouseMove;
+        }
+      }
+
+      const int centerX = mRect.GetWidth() / 2;
+      const int centerY = mRect.GetHeight() / 2;
+
+      // we reset to the center of the screen to achieve infinite relative positions
+      // beyond the edges of the screen
+      SetCursorPosition(sVec2i(centerX, centerY));
     }
+    else {
+      if (vRelMove != sVec2i::Zero()) {
+        _SendMessage(ni::eOSWindowMessage_MouseMove, vMousePos, vRelMove);
+      }
+    }
+
     mvPrevMousePos = vMousePos;
   }
   void _HandleMouseWheel(int aDelta) {
@@ -1331,6 +1377,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   tBool                mbMouseCapture;
   tOSWindowStyleFlags  mnStyle;
   Atom                 WM_DELETE_WINDOW; /* "close-window" protocol atom */
+  tI32                 mnEatRelativeMouseMove;
 
   Display* mpDisplay;
   Visual*  mpVisual;

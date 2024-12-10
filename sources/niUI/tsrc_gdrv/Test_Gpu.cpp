@@ -9,7 +9,7 @@ namespace {
 struct sFGpu_Base : public sFGDRV_Base {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) override {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGDRV_Base::OnInit(testResults_),eFalse);
     QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
     CHECK_RET(niIsOK(driverGpu),eFalse);
@@ -26,7 +26,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
     QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
@@ -76,7 +76,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) override {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -89,7 +89,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
 TEST_CLASS(FGpu,Triangle);
 
 struct sFGpu_TriangleViewport : public sFGpu_Triangle {
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -145,7 +145,7 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
 TEST_CLASS(FGpu,TriangleViewport);
 
 struct sFGpu_TriangleScissor : public sFGpu_Triangle {
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -163,7 +163,7 @@ struct sFGpu_TriangleScissor : public sFGpu_Triangle {
 TEST_CLASS(FGpu,TriangleScissor);
 
 struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -234,7 +234,7 @@ struct sFGpu_Square : public sFGpu_Base {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
     {
@@ -290,7 +290,7 @@ struct sFGpu_Square : public sFGpu_Base {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -402,7 +402,7 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
   virtual tBool InitUniformBuffer() = 0;
   virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) = 0;
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
     _clearTimer = -1.0; // fixed clear color
 
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
@@ -478,7 +478,7 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -499,12 +499,12 @@ struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
   sFGpu_TexAlphaUBuffer() {
   }
 
-  virtual tBool BeforePaint(UnitTest::TestResults& testResults_) override {
+  virtual tBool BeforePaint(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGpu_TexAlphaBase::BeforePaint(testResults_),eFalse);
     return eTrue;
   }
 
-  virtual tBool InitUniformBuffer() override {
+  virtual tBool InitUniformBuffer() niOverride {
     TestGpuFuncs_TestUniforms ubInit;
     _uBuffer = niCheckNN(
       _uBuffer,
@@ -517,7 +517,7 @@ struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
       eFalse);
     return eTrue;
   }
-  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) override {
+  virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) niOverride {
     niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
       0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
@@ -547,12 +547,12 @@ struct sFGpu_TexAlphaStream : public sFGpu_TexAlphaBase {
 TEST_CLASS(FGpu,TexAlphaStream);
 
 struct sFGpu_ClearRects : public sFGpu_Base {
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     niLetMut ctx = _graphicsContext;
     niLetMut gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),eFalse);
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuCtx->GetCommandEncoder());
@@ -597,7 +597,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
   NN<iTexture> _rtTex = niDeferredInit(NN<iTexture>);
   NN<iGraphicsContext> _rtGC = niDeferredInit(NN<iGraphicsContext>);
 
-  virtual tBool OnInit(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
     CHECK_RET(sFGpu_Texture::OnInit(testResults_),eFalse);
     _rtTex = niCheckNN(_rtTex,_graphics->CreateTexture(
       _H("rtTex"),eBitmapType_2D,"R8G8B8A8",1,
@@ -607,7 +607,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
     return eTrue;
   }
 
-  virtual tBool OnPaint(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
     {
       QPtr<iGraphicsContextGpu> gpuRT = _rtGC;
       niPanicAssert(gpuRT.IsOK());

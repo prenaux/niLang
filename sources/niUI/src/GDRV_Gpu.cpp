@@ -4,6 +4,7 @@
 #include "GDRV_Utils.h"
 #include <niLang/Utils/DataTableUtils.h>
 #include <niLang/Utils/IDGenerator.h>
+#include "Image.h"
 
 namespace ni {
 
@@ -28,7 +29,14 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
 }
 
 /////////////////////////////////////////////////////////////////
-eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat) {
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat, tTextureFlags aTexFlags) {
+  if (niFlagIs(aTexFlags,eTextureFlags_DepthStencil)) {
+    return _GetClosestGpuPixelFormatForDS(aTexFormat);
+  }
+  else if (niFlagIs(aTexFlags,eTextureFlags_RenderTarget)) {
+    return _GetClosestGpuPixelFormatForRT(aTexFormat);
+  }
+
   // Depth formats
   if (ni::StrEq(aTexFormat,"D16")) {
     return eGpuPixelFormat_D16;

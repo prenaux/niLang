@@ -23,6 +23,7 @@ using namespace ni;
 
 #define USE_X11_IM
 
+static const int XA_CARDINAL = ((Atom) 6);
 static const int MOUSE_WARP_DELAY = 200;
 static const int knMinXwinWidth = 20;
 static const int knMinXwinHeight = 20;
@@ -187,7 +188,7 @@ struct sX11System : public Impl_HeapAlloc {
   struct sX11Monitor {
     tIntPtr mHandle;
     cString mstrName;
-    sRecti mRect;
+    sRecti mrectMonitor;
     tOSMonitorFlags mFlags;
   };
   astl::vector<sX11Monitor> mvMonitors;
@@ -224,7 +225,7 @@ struct sX11System : public Impl_HeapAlloc {
     m.mstrName.Format(_A("Screen%d"), screen);
 
     Screen* scr = ScreenOfDisplay(display, screen);
-    m.mRect = ni::sRecti(0, 0, scr->width, scr->height);
+    m.mrectMonitor = ni::sRecti(0, 0, scr->width, scr->height);
 
     m.mFlags = 0;
     if (screen == DefaultScreen(display)) {
@@ -236,7 +237,7 @@ struct sX11System : public Impl_HeapAlloc {
       "X11: Monitor %d: ID:%X name:'%s' rect:%s flags:%d\n",
       mvMonitors.size()-1,
       m.mHandle, m.mstrName.Chars(),
-      m.mRect,
+      m.mrectMonitor,
       m.mFlags));
   }
 
@@ -276,8 +277,7 @@ struct sX11System : public Impl_HeapAlloc {
     }
   }
 
-  void SetHints(Display* disp, Window win, int screen,
-                int x, int y, int w, int h, tU32 flags)
+  void SetHints(Display* disp, Window win, int screen, int w, int h, tU32 flags)
   {
     XSizeHints *hints;
 
@@ -403,7 +403,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
     mbRequestedClose = eFalse;
     mnStyle = eOSWindowStyleFlags_Regular;
-    mRect.Set(5,5,105,105);
+    mrectWindow.Set(5,5,105,105);
     mbOwnedHandle = eFalse;
     mbIsActive = eFalse;
     mbMouseOverClient = eFalse;
@@ -460,16 +460,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       tU32 mask = CWBackPixel | CWBorderPixel /*| CWColormap*/;
 
       // Create the window
-      mHandle = dll_XCreateWindow(mpDisplay, DefaultRootWindow(mpDisplay),
-                              mRect.x,mRect.y,
-                              mRect.GetWidth(),
-                              mRect.GetHeight(),
-                              0,
-                              CopyFromParent,
-                              InputOutput,
-                              mpVisual,
-                              mask,
-                              &attr);
+      mHandle = dll_XCreateWindow(
+        mpDisplay, DefaultRootWindow(mpDisplay),
+        mrectWindow.x,mrectWindow.y,mrectWindow.GetWidth(),mrectWindow.GetHeight(),
+        0,
+        CopyFromParent,
+        InputOutput,
+        mpVisual,
+        mask,
+        &attr);
       niCheck(mHandle != 0,;);
 
       // Set the window's title
@@ -724,7 +723,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   virtual void __stdcall _UpdateStyle() {
     sX11System* x11 = _GetX11System();
     x11->SetHints(mpDisplay,mHandle,mnScreen,
-                  mRect.x,mRect.y,mRect.GetWidth(),mRect.GetHeight(),
+                  mrectWindow.GetWidth(),mrectWindow.GetHeight(),
                   mnStyle);
   }
 
@@ -755,41 +754,53 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
   virtual void __stdcall SetPosition(const sVec2i& avPos) niImpl {
     sRecti rect = GetRect();
-    rect.SetTopLeft(avPos);
+    // niDebugFmt(("... cLinuxWindow::SetPosition: rect: %s, avPos: %s", rect, avPos));
+    rect.MoveTo(avPos);
     SetRect(rect);
   }
   virtual sVec2i __stdcall GetPosition() const niImpl {
-    return sVec2i::Zero();
+    return mrectWindow.GetTopLeft();
   }
   virtual void __stdcall SetRect(const sRecti& aRect) niImpl {
     niCheckSilent(mHandle,;);
 
-    mRect = aRect;
-    if (mRect.GetWidth() <= knMinXwinWidth) {
-      mRect.SetWidth(knMinXwinWidth);
+    mrectWindow = aRect;
+    if (mrectWindow.GetWidth() <= knMinXwinWidth) {
+      mrectWindow.SetWidth(knMinXwinWidth);
     }
-    if (mRect.GetHeight() <= knMinXwinHeight) {
-      mRect.SetHeight(knMinXwinHeight);
+    if (mrectWindow.GetHeight() <= knMinXwinHeight) {
+      mrectWindow.SetHeight(knMinXwinHeight);
     }
 
+    // niDebugFmt(("... cLinuxWindow::SetRect: mrectWindow: %s, aRect: %s", mrectWindow, aRect));
     dll_XMoveResizeWindow(mpDisplay,mHandle,
-                      mRect.x,mRect.y,
-                      mRect.GetWidth(),mRect.GetHeight());
+                          mrectWindow.x,mrectWindow.y,
+                          mrectWindow.GetWidth(),mrectWindow.GetHeight());
 
     this->_UpdateStyle();
   }
+
   virtual sRecti __stdcall GetRect() const niImpl {
-    return mRect;
+    return mrectWindow;
   }
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl {
-    // TODO: Implement correctly
-    SetSize(avSize);
+    auto contentsScale = this->GetContentsScale();
+    auto newSize = Vec2i(
+      (tI32)((tF32)avSize.x * contentsScale),
+      (tI32)((tF32)avSize.y * contentsScale)
+    );
+    SetSize(newSize);
   }
   virtual sVec2i __stdcall GetClientSize() const niImpl {
-    // TODO: Implement correctly
-    return GetSize();
+    auto invContentsScale = ni::FDiv(1.0f, this->GetContentsScale());
+    auto size = GetSize();
+    auto clientSize = Vec2i(
+      (tI32)((tF32)size.x * invContentsScale),
+      (tI32)((tF32)size.y * invContentsScale)
+    );
+    return clientSize;
   }
 
   ///////////////////////////////////////////////
@@ -849,7 +860,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   void __stdcall CenterWindow() niImpl {
-    // TODO: IMPLEMENT
+    const tU32 nMonitor = GetMonitor();
+    if (nMonitor == eInvalidHandle) {
+      niWarning(niFmt("Can't center window: can't get monitor of window %x.", (tIntPtr)mHandle));
+      return;
+    }
+    const sRecti monitorRect = ni::GetLang()->GetMonitorRect(nMonitor);
+    const sRecti rect = CenterRect(monitorRect, this->GetSize());
+    // niDebugFmt(("... CenterWindow: (%d) %s -> %s", nMonitor, monitorRect, rect));
+    SetRect(rect);
   }
 
   ///////////////////////////////////////////////
@@ -1089,20 +1108,37 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         break;
 
       case ConfigureNotify:
-        {
-          sRecti oldRect = mRect;
-          mRect.x = e->xconfigure.x;
-          mRect.y = e->xconfigure.y;
-          mRect.SetWidth(e->xconfigure.width);
-          mRect.SetHeight(e->xconfigure.height);
-          if (mRect.GetTopLeft() != oldRect.GetTopLeft()) {
+        if (e->xconfigure.window == mHandle) {
+          const sRecti oldRect = mrectWindow;
+          const sRecti deco = _GetDecorationSizes();
+          const sRecti xconfigRect = Recti(
+            e->xconfigure.x,
+            e->xconfigure.y,
+            e->xconfigure.width,
+            e->xconfigure.height);
+          // Note/Todo: It isn't clear in the documentation whether this is
+          // one border or both (left&right) and the WM I tested all have this
+          // value at zero.
+          //
+          // https://tronche.com/gui/x/xlib/events/window-state-change/configure.html
+          const auto xconfigBorder = e->xconfigure.border_width;
+          mrectWindow.x = xconfigRect.x;
+          // didnt find any documentation stating this but the y position is
+          // offset by the window title's height so we adjust it so that it
+          // matches our expecations.
+          mrectWindow.y = xconfigRect.y-deco.GetTop();
+          mrectWindow.SetWidth(xconfigRect.GetWidth()+xconfigBorder);
+          mrectWindow.SetHeight(xconfigRect.GetHeight()+xconfigBorder);
+          // niDebugFmt(("... ConfigureNotify: %s, old: %s, decorations: %s, xconfigRect: %s, xconfigBorder: %s",
+          //             mrectWindow, oldRect, _GetDecorationSizes(), xconfigRect, xconfigBorder));
+          if (mrectWindow.GetTopLeft() != oldRect.GetTopLeft()) {
             _SendMessage(eOSWindowMessage_Move);
           }
-          if (mRect.GetSize() != oldRect.GetSize()) {
+          if (mrectWindow.GetSize() != oldRect.GetSize()) {
             _SendMessage(eOSWindowMessage_Size);
           }
-          break;
         }
+        break;
 
       case ClientMessage: {
         if ((e->xclient.format == 32) && (e->xclient.data.l[0] == WM_DELETE_WINDOW)) {
@@ -1294,7 +1330,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   tBool                mbOwnedHandle;
   Ptr<tMessageHandlerSinkLst> mptrMT;
   tBool                mbIsActive;
-  sRecti               mRect;
+  sRecti               mrectWindow;
   sVec2i               mvPrevMousePos;
   sVec2i               mvPrevMouseDelta;
   tBool                mbRequestedClose;
@@ -1370,6 +1406,39 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       return isDoubleClick;
     }
   } mDoubleClick[3];
+
+  // (borderLeft,titleHeight,borderRight,borderBottom)
+  sRecti _GetDecorationSizes() const {
+    // (borderLeft,titleHeight,borderRight,borderBottom)
+    sRecti dec = sRecti::Null();
+    if (!mHandle) return dec;
+
+    // Try to get _NET_FRAME_EXTENTS property
+    Atom frameExtents = dll_XInternAtom(mpDisplay, "_NET_FRAME_EXTENTS", True);
+    if (frameExtents != None) {
+      Atom actualType;
+      int actualFormat;
+      unsigned long numItems;
+      unsigned long bytesAfter;
+      long* extents = nullptr;
+
+      int status = dll_XGetWindowProperty(
+        mpDisplay, mHandle, frameExtents, 0, 4, False,
+        XA_CARDINAL, &actualType, &actualFormat, &numItems, &bytesAfter,
+        (unsigned char**)&extents);
+      if (status == Success && extents && numItems >= 4) {
+        dec.SetLeft(extents[0]);    // left border
+        dec.SetTop(extents[2]);     // title height
+        dec.SetRight(extents[1]);   // right border
+        dec.SetBottom(extents[3]);  // bottom border
+      }
+      if (extents) {
+        dll_XFree(extents);
+      }
+    }
+
+    return dec;
+  }
 
   niEndClass(cLinuxWindow);
 };
@@ -1454,7 +1523,7 @@ const achar* cLang::GetMonitorName(tU32 anIndex) const {
 sRecti cLang::GetMonitorRect(tU32 anIndex) const {
   sX11System* x11 = _GetX11System();
   niCheckSilent(anIndex < x11->mvMonitors.size(),sRecti::Null());
-  return x11->mvMonitors[anIndex].mRect;
+  return x11->mvMonitors[anIndex].mrectMonitor;
 }
 tOSMonitorFlags cLang::GetMonitorFlags(tU32 anIndex) const {
   sX11System* x11 = _GetX11System();

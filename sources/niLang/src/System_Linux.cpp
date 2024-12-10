@@ -1030,6 +1030,9 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   ///////////////////////////////////////////////
   void _NextEvent(void)
   {
+    if (!mpDisplay || !mHandle)
+      return;
+
     XEvent event;
     XEvent *e = &event;
     dll_XNextEvent(mpDisplay, e);

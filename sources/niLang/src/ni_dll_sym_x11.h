@@ -1,3 +1,5 @@
+#include "niLang/Utils/DLLLoader.h"
+#include <X11/Xlib.h>
 NI_DLL_PROC(int, __cdecl, XClearWindow, (Display* a, Window b));
 NI_DLL_PROC(int, __cdecl, XMapRaised, (Display* a, Window b));
 NI_DLL_PROC(XSizeHints*, __cdecl, XAllocSizeHints, (void));
@@ -40,6 +42,16 @@ NI_DLL_PROC(void, __cdecl, XSetICFocus, (XIC ic));
 NI_DLL_PROC(int, __cdecl, XSelectInput, (Display* a, Window b, long event_mask));
 NI_DLL_PROC(Status, __cdecl, XSetWMProtocols, (Display* a, Window b, Atom* protocols, int count));
 NI_DLL_PROC(int, __cdecl, XScreenCount, (Display* a));
+NI_DLL_PROC(int, __cdecl, XGrabPointer, (Display* display, Window window, Bool owner, unsigned int mask, int pMode, int kMode, Window confinedTo, Cursor curso, Time time));
+NI_DLL_PROC(int, __cdecl, XUngrabPointer, (Display* display, Time time));
+NI_DLL_PROC(void, __cdecl, XWarpPointer, (Display* display, Window src_w, Window dest_w, int src_x, int src_y, unsigned int src_width, unsigned int src_height, int dest_x,
+                int dest_y));
+NI_DLL_PROC(void, __cdecl, XFlush, (Display* display));
+NI_DLL_PROC(void, __cdecl, XSetInputFocus, (Display *display, Window focus, int revert_to, Time time));
+NI_DLL_PROC(Bool, __cdecl, XQueryPointer, (Display *display, Window w, Window *root_return, int *child_return, int *root_x_return, int *root_y_return, int *win_x_return, int *win_y_return, unsigned int *mask_return));
+NI_DLL_PROC(Status, __cdecl, XSendEvent, (Display *display, Window w, Bool propagate, long event_mask, XEvent *event_send));
+NI_DLL_PROC(Bool, __cdecl, XTranslateCoordinates, (Display *display, Window src_w, Window dest_w, int src_x, int src_y, int *dest_x_return, int *dest_y_return, Window *child_return));
+NI_DLL_PROC(Window, __cdecl, XDefaultRootWindow, (Display *display));
 
 NI_DLL_PROC(char*, __cdecl, XResourceManagerString, (Display*));
 NI_DLL_PROC(XrmDatabase, __cdecl, XrmGetStringDatabase, (const char*));

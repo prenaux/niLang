@@ -25,7 +25,7 @@ struct sGpuVertexAttribute {
 
 eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat);
 eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat);
-eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat);
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat, tTextureFlags aTexFlags);
 iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat);
 
 const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode);

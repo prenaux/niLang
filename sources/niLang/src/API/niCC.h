@@ -159,8 +159,11 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niStaticAssertExprType(EXPR, TYPE) \
   static_assert(astl::is_same_v<decltype(EXPR), TYPE>)
 
+#define niInline __forceinline
+
 #define niLet const auto
 #define niLetMut auto
+#define niLocal auto
 // "compile time constant (k)" let
 #define niLetK static constexpr auto
 

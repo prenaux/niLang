@@ -72,6 +72,39 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
           case eKey_K:
             w->SetCursorCapture(!w->GetCursorCapture());
             break;
+          case eKey_n0:
+            w->CenterWindow();
+            break;
+          case eKey_n1:
+            niDebugFmt(("... SetPosition: curr rect: %s", w->GetRect()));
+            w->SetPosition(Vec2i(10,5));
+            niDebugFmt(("... SetPosition: new rect: %s", w->GetRect()));
+            break;
+          case eKey_n2:
+            niDebugFmt(("... SetPosition: curr rect: %s", w->GetRect()));
+            w->SetPosition(Vec2i(0,0));
+            niDebugFmt(("... SetPosition: new rect: %s", w->GetRect()));
+            break;
+          case eKey_n3:
+            niDebugFmt(("... SetSize: curr rect: %s", w->GetRect()));
+            w->SetSize(Vec2i(640,480));
+            niDebugFmt(("... SetSize: new rect: %s, client size: %s, size: %s", w->GetRect(), w->GetClientSize(), w->GetSize()));
+            break;
+          case eKey_n4:
+            niDebugFmt(("... SetClientSize: curr rect: %s", w->GetRect()));
+            w->SetClientSize(Vec2i(640,480));
+            niDebugFmt(("... SetClientSize: new rect: %s, client size: %s, size: %s", w->GetRect(), w->GetClientSize(), w->GetSize()));
+            break;
+          case eKey_n5:
+            niDebugFmt(("... SetSize noop: curr rect: %s", w->GetRect()));
+            w->SetSize(w->GetSize());
+            niDebugFmt(("... SetSize noop: new rect: %s, client size: %s, size: %s", w->GetRect(), w->GetClientSize(), w->GetSize()));
+            break;
+          case eKey_n6:
+            niDebugFmt(("... SetClientSize noop: curr rect: %s", w->GetRect()));
+            w->SetClientSize(w->GetClientSize());
+            niDebugFmt(("... SetClientSize noop: new rect: %s, client size: %s, size: %s", w->GetRect(), w->GetClientSize(), w->GetClientSize()));
+            break;
         }
         break;
       case eOSWindowMessage_KeyUp:

@@ -45,3 +45,5 @@ NI_DLL_PROC(char*, __cdecl, XResourceManagerString, (Display*));
 NI_DLL_PROC(XrmDatabase, __cdecl, XrmGetStringDatabase, (const char*));
 NI_DLL_PROC(void, __cdecl, XrmDestroyDatabase, (XrmDatabase));
 NI_DLL_PROC(Bool, __cdecl, XrmGetResource, (XrmDatabase,const char*,const char*,char**,XrmValue*));
+
+NI_DLL_PROC(int, __cdecl, XGetWindowProperty, (Display*, Window, Atom, long, long, Bool, Atom, Atom*, int*, unsigned long*, unsigned long*, unsigned char**));

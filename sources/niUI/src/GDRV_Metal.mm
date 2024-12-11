@@ -892,15 +892,7 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
       , mnFlags(anFlags)
   {
     niPanicAssert(niIsOK(apPxf));
-    if (niFlagIs(anFlags,eTextureFlags_DepthStencil)) {
-      mGpuPxf = _GetClosestGpuPixelFormatForDS(apPxf->GetFormat());
-    }
-    else if (niFlagIs(anFlags,eTextureFlags_RenderTarget)) {
-      mGpuPxf = _GetClosestGpuPixelFormatForRT(apPxf->GetFormat());
-    }
-    else {
-      mGpuPxf = _GetClosestGpuPixelFormatForTexture(apPxf->GetFormat());
-    }
+    mGpuPxf = _GetClosestGpuPixelFormatForTexture(apPxf->GetFormat(),anFlags);
     Ptr<iPixelFormat> texPxf = _GetIPixelFormat(apGraphics,mGpuPxf);
     if (!texPxf.IsOK()) {
       niError(niFmt("Can't get compatible gpu pixel format for '%s'.", apPxf->GetFormat()));
@@ -1267,16 +1259,8 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) {
     niCheckSilent(niIsOK(apFormat),eFalse);
 
-    eGpuPixelFormat gpufmt;
-    if (niFlagIs(aFlags,eTextureFlags_DepthStencil)) {
-      gpufmt = _GetClosestGpuPixelFormatForDS(apFormat->GetPixelFormat()->GetFormat());
-    }
-    else if (niFlagIs(aFlags,eTextureFlags_RenderTarget)) {
-      gpufmt = _GetClosestGpuPixelFormatForRT(apFormat->GetPixelFormat()->GetFormat());
-    }
-    else {
-      gpufmt = _GetClosestGpuPixelFormatForTexture(apFormat->GetPixelFormat()->GetFormat());
-    }
+    niLet gpufmt = _GetClosestGpuPixelFormatForTexture(
+      apFormat->GetPixelFormat()->GetFormat(),aFlags);
 
     // TODO: For now all eGpuPixelFormat are supported by metal, but that
     // might not always be the case. Eventually we should validate this.

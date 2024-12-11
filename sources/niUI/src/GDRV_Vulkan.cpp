@@ -159,6 +159,76 @@ static const VkSamplerAddressMode _toVkSamplerAddress[] = {
 };
 niCAssert(niCountOf(_toVkSamplerAddress) == eSamplerWrap_Last);
 
+static VkCompareOp _ToVkCompareOp(eGraphicsCompare aCompare) {
+  niCheck(aCompare < eGraphicsCompare_Last, VK_COMPARE_OP_ALWAYS);
+  static const VkCompareOp _toVkCompareOp[] = {
+    VK_COMPARE_OP_NEVER,
+    VK_COMPARE_OP_EQUAL,
+    VK_COMPARE_OP_NOT_EQUAL,
+    VK_COMPARE_OP_LESS,
+    VK_COMPARE_OP_LESS_OR_EQUAL,
+    VK_COMPARE_OP_GREATER,
+    VK_COMPARE_OP_GREATER_OR_EQUAL,
+    VK_COMPARE_OP_ALWAYS,
+  };
+  niCAssert(niCountOf(_toVkCompareOp) == eGraphicsCompare_Last);
+  return _toVkCompareOp[aCompare];
+}
+
+static VkStencilOp _ToVkStencilOp(eStencilOp aOp) {
+  niCheck(aOp < eStencilOp_Last, VK_STENCIL_OP_KEEP);
+  static const VkStencilOp _toVkStencilOp[] = {
+    VK_STENCIL_OP_KEEP,
+    VK_STENCIL_OP_ZERO,
+    VK_STENCIL_OP_REPLACE,
+    VK_STENCIL_OP_INCREMENT_AND_WRAP,
+    VK_STENCIL_OP_DECREMENT_AND_WRAP,
+    VK_STENCIL_OP_INCREMENT_AND_CLAMP,
+    VK_STENCIL_OP_DECREMENT_AND_CLAMP,
+    VK_STENCIL_OP_INVERT,
+  };
+  niCAssert(niCountOf(_toVkStencilOp) == eStencilOp_Last);
+  return _toVkStencilOp[aOp];
+}
+
+niLetK _vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
+
+static VkCullModeFlags _ToVkCullMode(eCullingMode aCullMode) {
+  niCheck(aCullMode < eCullingMode_Last, VK_CULL_MODE_NONE);
+  static const VkCullModeFlags _toVkCullMode[] = {
+    VK_CULL_MODE_NONE,              // eCullingMode_None
+    VK_CULL_MODE_BACK_BIT,          // eCullingMode_CW
+    VK_CULL_MODE_FRONT_BIT,         // eCullingMode_CCW
+  };
+  niCAssert(niCountOf(_toVkCullMode) == eCullingMode_Last);
+  return _toVkCullMode[aCullMode];
+}
+
+static VkColorComponentFlags _ToVkColorWriteMask(eColorWriteMask aMask) {
+  switch (aMask) {
+    case eColorWriteMask_None:
+      return 0;
+    case eColorWriteMask_Alpha:
+      return VK_COLOR_COMPONENT_A_BIT;
+    case eColorWriteMask_Red:
+      return VK_COLOR_COMPONENT_R_BIT;
+    case eColorWriteMask_Green:
+      return VK_COLOR_COMPONENT_G_BIT;
+    case eColorWriteMask_Blue:
+      return VK_COLOR_COMPONENT_B_BIT;
+    case eColorWriteMask_RGB:
+      return VK_COLOR_COMPONENT_R_BIT |
+          VK_COLOR_COMPONENT_G_BIT |
+          VK_COLOR_COMPONENT_B_BIT;
+    case eColorWriteMask_All:
+      return VK_COLOR_COMPONENT_R_BIT |
+          VK_COLOR_COMPONENT_G_BIT |
+          VK_COLOR_COMPONENT_B_BIT |
+          VK_COLOR_COMPONENT_A_BIT;
+  }
+  return 0;
+}
+
 static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
   cFVFDescription fvfDesc(aFVF);
@@ -1863,33 +1933,73 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     };
 
     // Rasterization
-    // TODO: Apply from rasterizer states
+    const sRasterizerStatesDesc* rs = (const sRasterizerStatesDesc*)
+        _driver->GetGraphics()->GetCompiledRasterizerStates(
+          _desc->GetRasterizerStates())->GetDescStructPtr();
+
     VkPipelineRasterizationStateCreateInfo rasterizer = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
       .depthClampEnable = VK_FALSE,
       .rasterizerDiscardEnable = VK_FALSE,
-      .polygonMode = VK_POLYGON_MODE_FILL,
-      .cullMode = VK_CULL_MODE_NONE,
-      .frontFace = VK_FRONT_FACE_CLOCKWISE,
+      .polygonMode = (rs->mbWireframe ?
+                      VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL),
+      .cullMode = _ToVkCullMode(rs->mCullingMode),
+      .frontFace = _vkFrontFace,
       .depthBiasEnable = VK_FALSE,
       .lineWidth = 1.0f
     };
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment = {
+      .blendEnable = VK_FALSE,
+      .colorWriteMask = _ToVkColorWriteMask(rs->mColorWriteMask)
+    };
+
+    // Depth stencil
+    VkPipelineDepthStencilStateCreateInfo depthStencil = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
+    };
+    {
+      const sDepthStencilStatesDesc* ds = (const sDepthStencilStatesDesc*)
+          _driver->GetGraphics()->GetCompiledDepthStencilStates(
+            _desc->GetDepthStencilStates())->GetDescStructPtr();
+      // Depth
+      depthStencil.depthTestEnable = ds->mbDepthTest;
+      depthStencil.depthWriteEnable = ds->mbDepthTestWrite;
+      depthStencil.depthCompareOp = _ToVkCompareOp(ds->mDepthTestCompare);
+      // Stencil
+      depthStencil.stencilTestEnable = (ds->mStencilMode != eStencilMode_None);
+      if (depthStencil.stencilTestEnable) {
+        depthStencil.front = {
+          .failOp = _ToVkStencilOp(ds->mStencilFrontFail),
+          .passOp = _ToVkStencilOp(ds->mStencilFrontPassDepthPass),
+          .depthFailOp = _ToVkStencilOp(ds->mStencilFrontPassDepthFail),
+          .compareOp = _ToVkCompareOp(ds->mStencilFrontCompare),
+          .compareMask = ds->mnStencilMask,
+          .writeMask = ds->mnStencilMask,
+          .reference = (tU32)ds->mnStencilRef
+        };
+        if (ds->mStencilMode == eStencilMode_TwoSided) {
+          depthStencil.back = {
+            .failOp = _ToVkStencilOp(ds->mStencilBackFail),
+            .passOp = _ToVkStencilOp(ds->mStencilBackPassDepthPass),
+            .depthFailOp = _ToVkStencilOp(ds->mStencilBackPassDepthFail),
+            .compareOp = _ToVkCompareOp(ds->mStencilBackCompare),
+            .compareMask = ds->mnStencilMask,
+            .writeMask = ds->mnStencilMask,
+            .reference = (tU32)ds->mnStencilRef
+          };
+        }
+        else {
+          depthStencil.back = depthStencil.front;
+        }
+      }
+    }
 
     // Multisampling
     VkPipelineMultisampleStateCreateInfo multisampling = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
       .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
       .sampleShadingEnable = VK_FALSE,
-    };
-
-    // Color blend attachment
-    // TODO: Apply from rasterizer states
-    VkPipelineColorBlendAttachmentState colorBlendAttachment = {
-      .blendEnable = VK_FALSE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-      VK_COLOR_COMPONENT_G_BIT |
-      VK_COLOR_COMPONENT_B_BIT |
-      VK_COLOR_COMPONENT_A_BIT
     };
 
     // Setup blend mode if specified
@@ -1911,12 +2021,15 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .pAttachments = &colorBlendAttachment,
     };
 
-    // TODO: Setup from RT0/DS
-    VkFormat swapChainFormat = VK_FORMAT_B8G8R8A8_UNORM;
+    VkFormat colorFormat = _GetVulkanPixelFormat(_desc->GetColorFormat(0));
+    VkFormat depthFormat = _GetVulkanPixelFormat(_desc->GetDepthFormat());
     VkPipelineRenderingCreateInfo renderingInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
       .colorAttachmentCount = 1,
-      .pColorAttachmentFormats = &swapChainFormat
+      .pColorAttachmentFormats = &colorFormat,
+      .depthAttachmentFormat = depthFormat,
+      // TODO: Stencil format
+      .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
     };
 
     // Create the pipeline
@@ -1930,7 +2043,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .pDynamicState = &dynamicState,
       .pRasterizationState = &rasterizer,
       .pMultisampleState = &multisampling,
-      .pDepthStencilState = nullptr,
+      .pDepthStencilState = &depthStencil,
       .pColorBlendState = &colorBlending,
       .layout = _vkPipelineLayout,
       .renderPass = VK_NULL_HANDLE,
@@ -1938,8 +2051,6 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .pNext = &renderingInfo
     };
 
-    // TODO: Apply iRasterizerStates / sRasterizerStatesDesc
-    // TODO: Apply iDepthStencilStates / sDepthStencilStatesDesc
     VK_CHECK(vkCreateGraphicsPipelines(
       vkDevice, VK_NULL_HANDLE, 1,
       &pipelineInfo, nullptr, &_vkPipeline), eFalse);
@@ -2274,8 +2385,10 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   tBool _BeginRendering(
-    ain<VkImage> aImage,
-    ain<VkImageView> aImageView,
+    ain<VkImage> aColorImage,
+    ain<VkImageView> aColorImageView,
+    ain<VkImage> aDepthImage,
+    ain<VkImageView> aDepthImageView,
     ain<tU32> anWidth,
     ain<tU32> anHeight,
     ain<sRecti> aViewport,
@@ -2286,27 +2399,43 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   {
     niDebugAssert(_beganCmdBuffer);
 
-    VkClearValue clearColorValue = {};
-    static_assert(sizeof(clearColorValue) == sizeof(sVec4f));
-    ((sVec4f&)clearColorValue.color) = aClearColor;
-
-    VkRenderingAttachmentInfo colorAttachment{
-      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-      .imageView = aImageView,
-      .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-      .clearValue = clearColorValue
-    };
-
-    VkRenderingInfoKHR renderingInfo{
+    VkRenderingInfoKHR renderingInfo {
       .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
       .renderArea = {{0, 0}, {anWidth, anHeight}},
       .layerCount = 1,
-      .colorAttachmentCount = 1,
-      .pColorAttachments = &colorAttachment
+      .colorAttachmentCount = 0,
+      .pDepthAttachment = nullptr
     };
 
+    VkRenderingAttachmentInfo colorAttachment {
+      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+      .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+    };
+    if (aColorImageView != VK_NULL_HANDLE) {
+      VkClearValue clearColorValue = {};
+      static_assert(sizeof(clearColorValue) == sizeof(sVec4f));
+      ((sVec4f&)clearColorValue.color) = aClearColor;
+      colorAttachment.imageView = aColorImageView;
+      colorAttachment.clearValue = clearColorValue;
+      renderingInfo.pColorAttachments = &colorAttachment;
+      renderingInfo.colorAttachmentCount = 1;
+    }
+
+    VkRenderingAttachmentInfo depthAttachment = {
+      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+      .imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
+    };
+    if (aDepthImageView != VK_NULL_HANDLE) {
+      VkClearValue clearDepthValue = {};
+      clearDepthValue.depthStencil = {aClearDepth, aClearStencil};
+      depthAttachment.imageView = aDepthImageView;
+      depthAttachment.clearValue = clearDepthValue;
+      renderingInfo.pDepthAttachment = &depthAttachment;
+    }
     vkCmdBeginRenderingKHR(_cmdBuffer, &renderingInfo);
     _GetCurrentFrame()->OnBeginFrame(_driver->_device);
     this->SetViewport(aViewport);
@@ -2831,10 +2960,12 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
   Ptr<iOSXMetalAPI> _metalAPI;
   VkSemaphore _renderFinishedSemaphore = VK_NULL_HANDLE;
   struct {
-    VkImage _image = VK_NULL_HANDLE;
-    VkImageView _imageView = VK_NULL_HANDLE;
+    VkImage _colorImage = VK_NULL_HANDLE;
+    VkImageView _colorImageView = VK_NULL_HANDLE;
+    VkImage _depthImage = VK_NULL_HANDLE;
+    VkImageView _depthImageView = VK_NULL_HANDLE;
     sVec2i _size = Vec2i(1,1);
-  } _surface;
+  } _metalSurface;
 
   sVulkanContextWindowMetal(
     ain<nn<sVulkanDriver>> aDriver,
@@ -2862,6 +2993,7 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
       niError("Can't get metal api for iOSWindow.");
       return eFalse;
     }
+
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
@@ -2892,7 +3024,8 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     // Begin buffer and rendering
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     niCheck(_cmdEncoder->_BeginRendering(
-      _surface._image,_surface._imageView,
+      _metalSurface._colorImage,_metalSurface._colorImageView,
+      _metalSurface._depthImage,_metalSurface._depthImageView,
       this->GetWidth(),this->GetHeight(),
       mrectViewport,mrectScissor),eFalse);
 
@@ -2915,49 +3048,89 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     _DestroySurface(aDevice);
 
     niCheck(osxVkCreateImageForMetalAPI(
-      _metalAPI,aDevice,nullptr,&_surface._image),eFalse);
+      _metalAPI,aDevice,nullptr,60,
+      &_metalSurface._colorImage,
+      &_metalSurface._depthImage),eFalse);
     niLet viewSize = _metalAPI->GetViewSize();
-    _surface._size = Vec2i(viewSize.x,viewSize.y);
+    _metalSurface._size = Vec2i(viewSize.x,viewSize.y);
 
-    VkImageViewCreateInfo viewInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = _surface._image,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      .format = VK_FORMAT_B8G8R8A8_UNORM,
-      .components = {
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY
-      },
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      }
-    };
+    // niDebugFmt((
+    //   "... _UpdateSurfaceFromMetalAPI: color: %s, depth: %s, size: %s",
+    //   (tIntPtr)_metalSurface._colorImage,
+    //   (tIntPtr)_metalSurface._depthImage,
+    //   _metalSurface._size));
 
-    VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_surface._imageView), eFalse);
+    if (_metalSurface._colorImage) {
+      VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = _metalSurface._colorImage,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_B8G8R8A8_UNORM,
+        .components = {
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY
+        },
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_metalSurface._colorImageView), eFalse);
+    }
+
+    if (_metalSurface._depthImage) {
+      VkImageViewCreateInfo depthViewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = _metalSurface._depthImage,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_D32_SFLOAT,
+        .components = {
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY,
+          VK_COMPONENT_SWIZZLE_IDENTITY
+        },
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      VK_CHECK(vkCreateImageView(aDevice, &depthViewInfo, nullptr, &_metalSurface._depthImageView), eFalse);
+    }
 
     if ((!mptrRT[0].raw_ptr()) ||
-        (_surface._size.x != this->GetWidth()) ||
-        (_surface._size.y != this->GetHeight()))
+        (_metalSurface._size.x != this->GetWidth()) ||
+        (_metalSurface._size.y != this->GetHeight()))
     {
-      niCheck(_ResizeContextRTDS(_surface._size),eFalse);
+      niCheck(_ResizeContextRTDS(_metalSurface._size),eFalse);
     }
     return eTrue;
   }
 
   void _DestroySurface(VkDevice device) {
-    if (_surface._imageView) {
-      vkDestroyImageView(device, _surface._imageView, nullptr);
-      _surface._imageView = VK_NULL_HANDLE;
+    if (_metalSurface._depthImageView) {
+      vkDestroyImageView(device, _metalSurface._depthImageView, nullptr);
+      _metalSurface._depthImageView = VK_NULL_HANDLE;
     }
-    if (_surface._image) {
-      vkDestroyImage(device, _surface._image, nullptr);
-      _surface._image = VK_NULL_HANDLE;
+    if (_metalSurface._depthImage) {
+      vkDestroyImage(device, _metalSurface._depthImage, nullptr);
+      _metalSurface._depthImage = VK_NULL_HANDLE;
+    }
+    if (_metalSurface._colorImageView) {
+      vkDestroyImageView(device, _metalSurface._colorImageView, nullptr);
+      _metalSurface._colorImageView = VK_NULL_HANDLE;
+    }
+    if (_metalSurface._colorImage) {
+      vkDestroyImage(device, _metalSurface._colorImage, nullptr);
+      _metalSurface._colorImage = VK_NULL_HANDLE;
     }
   }
 };
@@ -3386,35 +3559,64 @@ struct sVulkanContextRT : public sVulkanContextBase {
 
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
+    if (rt0) {
+      VkImageMemoryBarrier colorBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = rt0->_vkImage,
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      vkCmdPipelineBarrier(
+        _cmdEncoder->_cmdBuffer,
+        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &colorBarrier);
+    }
 
-    // Add image transition
-    VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = rt0->_vkImage,
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      }
-    };
-
-    vkCmdPipelineBarrier(
-      _cmdEncoder->_cmdBuffer,
-      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
+    sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
+    if (ds) {
+      VkImageMemoryBarrier depthBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = ds->_vkImage,
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        }
+      };
+      vkCmdPipelineBarrier(
+        _cmdEncoder->_cmdBuffer,
+        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &depthBarrier);
+    }
 
     niCheck(_cmdEncoder->_BeginRendering(
-      rt0->_vkImage,rt0->_vkView,
+      rt0?rt0->_vkImage:VK_NULL_HANDLE,
+      rt0?rt0->_vkView:VK_NULL_HANDLE,
+      ds?ds->_vkImage:VK_NULL_HANDLE,
+      ds?ds->_vkView:VK_NULL_HANDLE,
       this->GetWidth(),this->GetHeight(),
       mrectViewport,mrectScissor),eFalse);
     return eTrue;
@@ -3427,32 +3629,62 @@ struct sVulkanContextRT : public sVulkanContextBase {
 
     // Add transition to shader read
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
-    VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = rt0->_vkImage,
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      },
-      .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
-    };
+    if (rt0) {
+      VkImageMemoryBarrier colorBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = rt0->_vkImage,
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        },
+        .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
+      };
+      vkCmdPipelineBarrier(
+        _cmdEncoder->_cmdBuffer,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &colorBarrier);
+    }
 
-    vkCmdPipelineBarrier(
-      _cmdEncoder->_cmdBuffer,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
+    sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
+    if (ds) {
+      VkImageMemoryBarrier depthBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = ds->_vkImage,
+        .subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1
+        },
+        .srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+        .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
+      };
+      vkCmdPipelineBarrier(
+        _cmdEncoder->_cmdBuffer,
+        VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &depthBarrier);
+    }
 
     niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
       VK_NULL_HANDLE,VK_NULL_HANDLE),eFalse);

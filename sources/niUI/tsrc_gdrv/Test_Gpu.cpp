@@ -636,4 +636,109 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
 };
 TEST_CLASS(FGpu,RenderTarget);
 
+struct sFGpu_DepthTest : public sFGpu_Base {
+  typedef sVertexPA tVertexFmt;
+
+  NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
+
+    {
+      _vaBuffer = niCheckNN(
+        _vaBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("GpuSquare_VA"),
+          sizeof(tVertexFmt)*12,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex),
+        eFalse);
+      tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+
+      // depth goes from 0.0f (near/front) to 1.0f (far/back)
+      niLet znear = 0.0f + 0.1f;
+      niLet zfar = 1.0f - 0.1f;
+      niLet zmid = ((zfar-znear)/2.0f) + znear;
+
+      tU32 i = 0;
+
+      // middle
+      verts[i++] = {{ -0.5f,   0.5f, zmid}, 0xFFFF0000}; // Red, TL
+      verts[i++] = {{  0.5f,   0.5f, zmid}, 0xFF00FF00}; // Green, TR
+      verts[i++] = {{  0.5f,  -0.5f, zmid}, 0xFF0000FF}; // Blue, BR
+      verts[i++] = {{ -0.5f,  -0.5f, zmid}, 0xFFFFFFFF}; // White, BL
+
+      // front - purple - bottom right of middle
+      verts[i++]  = {{ -0.3f + 0.5f,   0.3f - 0.5f, znear}, 0xFF800080}; // TL
+      verts[i++]  = {{  0.3f + 0.5f,   0.3f - 0.5f, znear}, 0xFF800080}; // TR
+      verts[i++] = {{  0.3f + 0.5f,  -0.3f - 0.5f, znear}, 0xFF800080}; // BR
+      verts[i++] = {{ -0.3f + 0.5f,  -0.3f - 0.5f, znear}, 0xFF800080}; // BL
+
+      // back - yellow - top left of middle
+      verts[i++] = {{ -0.3f - 0.5f,   0.3f + 0.5f, zfar}, 0xFFFFFF00}; // TL
+      verts[i++] = {{  0.3f - 0.5f,   0.3f + 0.5f, zfar}, 0xFFFFFF00}; // TR
+      verts[i++] = {{  0.3f - 0.5f,  -0.3f + 0.5f, zfar}, 0xFFFFFF00}; // BR
+      verts[i++] = {{ -0.3f - 0.5f,  -0.3f + 0.5f, zfar}, 0xFFFFFF00}; // BL
+
+      _vaBuffer->Unlock();
+    }
+    {
+      _iaBuffer = niCheckNN(
+        _iaBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("GpuSquare_IA"),
+          sizeof(tU32)*18,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index),
+        eFalse);
+      tU32* inds = (tU32*)_iaBuffer->Lock(0, _iaBuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0; inds[1] = 1; inds[2] = 2;
+      inds[3] = 2; inds[4] = 3; inds[5] = 0;
+      inds[6] = 4; inds[7] = 5; inds[8] = 6;
+      inds[9] = 6; inds[10] = 7; inds[11] = 4;
+      inds[12] = 8; inds[13] = 9; inds[14] = 10;
+      inds[15] = 10; inds[16] = 11; inds[17] = 8;
+      _iaBuffer->Unlock();
+    }
+
+    {
+      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
+    }
+
+    {
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexFmt::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
+      pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthTestAndWrite);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuSquare_Pipeline"),pipelineDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,18,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,DepthTest);
+
 }

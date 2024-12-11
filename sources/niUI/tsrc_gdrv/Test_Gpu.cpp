@@ -803,4 +803,103 @@ struct sFGpu_DepthTestRenderTarget : public sFGpu_Texture {
 };
 TEST_CLASS(FGpu,DepthTestRenderTarget);
 
+// Note: This is kind of shitty but does the job for now. Resize the window to
+// see the different mipmaps, it should change color as mipmaps.dds has a
+// different color for each mipmap level. Ideally we'd show all the mip levels
+// like a "texture viewer" of sort, that requires a new shader that I cant be
+// bothered to write right now.
+struct sFGpu_TextureMipMaps : public sFGpu_Base {
+  typedef tVertexCanvas tVertexFmt;
+
+  NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
+  NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
+  tF32 _scale = 1.0f;
+
+  tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
+
+    // Create quad scaled larger to show mips
+    {
+      _vaBuffer = niCheckNN(
+        _vaBuffer,
+        _driverGpu->CreateGpuBuffer(_H("GpuTextureMip_VA"),
+                                    sizeof(tVertexFmt)*4,
+                                    eGpuBufferMemoryMode_Shared,
+                                    eGpuBufferUsageFlags_Vertex),
+        eFalse);
+
+      tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      verts[0] = {{ -2.0f,  2.0f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}};
+      verts[1] = {{  2.0f,  2.0f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {8.0f,0.0f}};
+      verts[2] = {{  2.0f, -2.0f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {8.0f,8.0f}};
+      verts[3] = {{ -2.0f, -2.0f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,8.0f}};
+      _vaBuffer->Unlock();
+    }
+
+    {
+      _iaBuffer = niCheckNN(
+        _iaBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("GpuTexture_IA"),
+          sizeof(tU32)*6,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index),
+        eFalse);
+      tU32* inds = (tU32*)_iaBuffer->Lock(0, _iaBuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0; inds[1] = 1; inds[2] = 2;
+      inds[3] = 2; inds[4] = 3; inds[5] = 0;
+      _iaBuffer->Unlock();
+    }
+
+    {
+      _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
+          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+    }
+
+    {
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexFmt::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTexture_Pipeline"),pipelineDesc), eFalse);
+    }
+
+    {
+      _texture = niCheckNN(
+        _texture,
+        _graphics->CreateTextureFromRes(
+          _H("test/tex/mipmaps.dds"),
+          nullptr,
+          eTextureFlags_Default),
+      eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer,0,0);
+    cmdEncoder->SetTexture(_texture, 0);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,TextureMipMaps);
+
 }

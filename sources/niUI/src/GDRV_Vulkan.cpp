@@ -1286,19 +1286,23 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;
   VkImageView _vkView = VK_NULL_HANDLE;
-  tU32 _width = 0, _height = 0;
+  const tU32 _width = 0;
+  const tU32 _height = 0;
+  const tU32 _numMipMaps = 0;
   const tHStringPtr _name;
   const tTextureFlags _flags = eTextureFlags_Default;
   eGpuPixelFormat _pixelFormat = eGpuPixelFormat_None;
 
   sVulkanTexture(
     ain_nn<sVulkanDriver> aDriver, iHString* ahspName,
-    tU32 anWidth, tU32 anHeight, eGpuPixelFormat aGpuPixelFormat,
+    tU32 anWidth, tU32 anHeight, tU32 anNumMipMaps,
+    eGpuPixelFormat aGpuPixelFormat,
     tTextureFlags aFlags)
       : _driver(aDriver)
       , _name(ahspName)
       , _width(anWidth)
       , _height(anHeight)
+      , _numMipMaps(anNumMipMaps)
       , _flags(aFlags)
       , _pixelFormat(aGpuPixelFormat)
   {
@@ -1362,7 +1366,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   virtual tU32 __stdcall GetNumMipMaps() const override {
-    return 1;
+    return _numMipMaps;
   }
 
   virtual tTextureFlags __stdcall GetFlags() const override {
@@ -1381,7 +1385,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .imageType = VK_IMAGE_TYPE_2D,
       .format = _GetVulkanPixelFormat(_pixelFormat),
       .extent = {_width, _height, 1},
-      .mipLevels = 1,
+      .mipLevels = 1+_numMipMaps,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
@@ -1420,7 +1424,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
         .aspectMask = niFlagIs(_flags,eTextureFlags_DepthStencil) ?
         VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,
         .baseMipLevel = 0,
-        .levelCount = 1,
+        .levelCount = 1+_numMipMaps,
         .baseArrayLayer = 0,
         .layerCount = 1
       }
@@ -1434,9 +1438,6 @@ struct sVulkanTexture : public ImplRC<iTexture> {
                       const tU32 anLevel,
                       const sRecti& aDestRect)
   {
-    if (anLevel != 0) // TODO: Implement mipmaps
-      return;
-
     const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
     const tU32 bpr = apBmpLevel->GetPitch();
     const tU32 startOffset = (aDestRect.y * bpr) + (aDestRect.x * bpp);
@@ -1552,6 +1553,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
 
     _driver->EndSingleTimeCommands(cmdBuf);
   }
+
 };
 
 struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
@@ -2620,7 +2622,7 @@ iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType
   Ptr<sVulkanTexture> tex { niNew sVulkanTexture(
     as_nn(this),
     ahspName,
-    anWidth,anHeight,
+    anWidth,anHeight,anNumMipMaps,
     _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
     aFlags) };
   niCheck(tex->_CreateVulkanTexture(),nullptr);
@@ -2816,7 +2818,7 @@ struct sVulkanContextBase :
     ni::SafeInvalidate(mptrRT[0].ptr());
     mptrRT[0] = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainRT_%s_%p",aKind,(tIntPtr)this),
-      w,h,eGpuPixelFormat_RGBA8,
+      w,h,0,eGpuPixelFormat_RGBA8,
       eTextureFlags_RenderTarget|eTextureFlags_Surface);
     _rt0Format = _GetClosestGpuPixelFormatForRT(
       mptrRT[0]->GetPixelFormat()->GetFormat());
@@ -2824,7 +2826,7 @@ struct sVulkanContextBase :
     ni::SafeInvalidate(mptrDS.ptr());
     mptrDS = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainDS_%s_%p",aKind,(tIntPtr)this),
-      w,h,eGpuPixelFormat_D32,
+      w,h,0,eGpuPixelFormat_D32,
       eTextureFlags_RenderTarget|eTextureFlags_Surface);
     _dsFormat = _GetClosestGpuPixelFormatForDS(
       mptrDS->GetPixelFormat()->GetFormat());

@@ -201,5 +201,8 @@ tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream, iGpuCommandEncoder* ap
 tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, eGpuIndexType aIndexType);
 tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding);
 
+nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics, tIntPtr ahRS);
+nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(nn<iGraphics> aGraphics, tIntPtr ahDS);
+
 }
 #endif // __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__

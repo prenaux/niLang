@@ -1095,4 +1095,23 @@ tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* a
   return eTrue;
 }
 
+/////////////////////////////////////////////////////////////////
+nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics, tIntPtr ahRS) {
+  iRasterizerStates* pRS = aGraphics->GetCompiledRasterizerStates(ahRS);
+  if (!pRS) {
+    pRS = aGraphics->GetCompiledRasterizerStates(eCompiledStates_RS_NoCullingFilled);
+  }
+  return as_nn((const sRasterizerStatesDesc*)pRS->GetDescStructPtr());
+}
+
+nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(nn<iGraphics> aGraphics, tIntPtr ahDS) {
+  iDepthStencilStates* pDS = aGraphics->GetCompiledDepthStencilStates(ahDS);
+  if (!pDS) {
+    pDS = aGraphics->GetCompiledDepthStencilStates(
+      eCompiledStates_DS_NoDepthTest);
+  }
+  return as_nn((const sDepthStencilStatesDesc*)pDS->GetDescStructPtr());
+}
+
+
 }

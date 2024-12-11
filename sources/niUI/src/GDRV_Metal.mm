@@ -2183,6 +2183,9 @@ struct cMetalContextRT : public cMetalContextBase
       passDesc.depthAttachment.loadAction = MTLLoadActionLoad;
       passDesc.depthAttachment.storeAction = MTLStoreActionStore;
     }
+    else {
+      passDesc.depthAttachment.texture = nil;
+    }
 
     _commandEncoder = [_commandBuffer renderCommandEncoderWithDescriptor:passDesc];
     [_commandBuffer enqueue];

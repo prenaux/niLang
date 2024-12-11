@@ -1835,6 +1835,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     _desc = niCheckNN(_desc,apDesc->Clone(),eFalse);
 
     niLet vkDevice = _driver->_device;
+    niLet graphics = as_nn(_driver->GetGraphics());
 
     // Shaders
     VkPipelineShaderStageCreateInfo shaderStages[2] = {};
@@ -1933,10 +1934,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     };
 
     // Rasterization
-    const sRasterizerStatesDesc* rs = (const sRasterizerStatesDesc*)
-        _driver->GetGraphics()->GetCompiledRasterizerStates(
-          _desc->GetRasterizerStates())->GetDescStructPtr();
-
+    niLet rs = GetGpuRasterizerDesc(graphics,_desc->GetRasterizerStates());
     VkPipelineRasterizationStateCreateInfo rasterizer = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
       .depthClampEnable = VK_FALSE,
@@ -1959,9 +1957,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
     };
     {
-      const sDepthStencilStatesDesc* ds = (const sDepthStencilStatesDesc*)
-          _driver->GetGraphics()->GetCompiledDepthStencilStates(
-            _desc->GetDepthStencilStates())->GetDescStructPtr();
+      niLet ds = GetGpuDepthStencilDesc(graphics,_desc->GetDepthStencilStates());
       // Depth
       depthStencil.depthTestEnable = ds->mbDepthTest;
       depthStencil.depthWriteEnable = ds->mbDepthTestWrite;
@@ -3548,6 +3544,10 @@ struct sVulkanContextRT : public sVulkanContextBase {
         apDS->GetPixelFormat()->GetFormat());
     }
 
+    // niDebugFmt((
+    //   "... sVulkanContextRT::_CreateContextRT: rt0: %p, ds: %p",
+    //   (tIntPtr)apRT0,(tIntPtr)apDS));
+
     SetViewport(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
     SetScissorRect(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
     return eTrue;
@@ -3556,6 +3556,10 @@ struct sVulkanContextRT : public sVulkanContextBase {
   tBool _BeginFrame() niImpl {
     niPanicAssert(_beganFrame == eFalse);
     _beganFrame = eTrue;
+
+    // niDebugFmt((
+    //   "... sVulkanContextRT::_BeginFrame: rt0: %p, ds: %p",
+    //   (tIntPtr)mptrRT[0].ptr(),(tIntPtr)mptrDS.ptr()));
 
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();

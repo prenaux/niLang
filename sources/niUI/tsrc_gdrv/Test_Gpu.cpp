@@ -382,7 +382,7 @@ struct sFGpu_Texture : public sFGpu_Base {
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetTexture(_texture, 0);
-    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
     return eTrue;
@@ -532,7 +532,7 @@ struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
 };
 TEST_CLASS(FGpu,TexAlphaUBuffer);
 
-struct sFGpu_TexAlphaStream : public sFGpu_TexAlphaBase {
+struct sFGpu_TexAlphaUStream : public sFGpu_TexAlphaBase {
   virtual tBool InitUniformBuffer() {
     return eTrue;
   }
@@ -544,7 +544,7 @@ struct sFGpu_TexAlphaStream : public sFGpu_TexAlphaBase {
     aCmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
   }
 };
-TEST_CLASS(FGpu,TexAlphaStream);
+TEST_CLASS(FGpu,TexAlphaUStream);
 
 struct sFGpu_ClearRects : public sFGpu_Base {
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
@@ -616,7 +616,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
       rtEncoder->SetPipeline(_pipeline);
       rtEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
       rtEncoder->SetTexture(nullptr, 0); // bind the "white texture"
-      rtEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
+      rtEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
       rtEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
       rtEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
       _rtGC->Display(eGraphicsDisplayFlags_Skip,sRecti::Null());
@@ -636,7 +636,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
 };
 TEST_CLASS(FGpu,RenderTarget);
 
-struct sFGpu_DepthTest : public sFGpu_Base {
+struct sTest_DepthTest {
   typedef sVertexPA tVertexFmt;
 
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -645,13 +645,14 @@ struct sFGpu_DepthTest : public sFGpu_Base {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
-    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
-
+  niFn(tBool) OnInit(
+    UnitTest::TestResults& testResults_,
+    ain<nn<iGraphicsDriverGpu>> aDriverGpu)
+  {
     {
       _vaBuffer = niCheckNN(
         _vaBuffer,
-        _driverGpu->CreateGpuBuffer(
+        aDriverGpu->CreateGpuBuffer(
           _H("GpuSquare_VA"),
           sizeof(tVertexFmt)*12,
           eGpuBufferMemoryMode_Shared,
@@ -690,7 +691,7 @@ struct sFGpu_DepthTest : public sFGpu_Base {
     {
       _iaBuffer = niCheckNN(
         _iaBuffer,
-        _driverGpu->CreateGpuBuffer(
+        aDriverGpu->CreateGpuBuffer(
           _H("GpuSquare_IA"),
           sizeof(tU32)*18,
           eGpuBufferMemoryMode_Shared,
@@ -708,29 +709,30 @@ struct sFGpu_DepthTest : public sFGpu_Base {
     }
 
     {
-      _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
+      _vertexGpuFun = niCheckNN(_vertexGpuFun, aDriverGpu->CreateGpuFunction(
         eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
-      _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
+      _pixelGpuFun = niCheckNN(_pixelGpuFun, aDriverGpu->CreateGpuFunction(
         eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
     }
 
     {
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, aDriverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexFmt::eFVF);
       pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthTestAndWrite);
-      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuSquare_Pipeline"),pipelineDesc), eFalse);
+      _pipeline = niCheckNN(_pipeline, aDriverGpu->CreateGpuPipeline(_H("GpuSquare_Pipeline"),pipelineDesc), eFalse);
     }
 
     return eTrue;
   }
 
-  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
-    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
-    niPanicAssert(gpuContext.IsOK());
+  niFn(tBool) OnPaint(
+    UnitTest::TestResults& testResults_,
+    ain<nn<iGraphicsContextGpu>> gpuContext
+  ) {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
@@ -739,6 +741,66 @@ struct sFGpu_DepthTest : public sFGpu_Base {
     return eTrue;
   }
 };
+
+struct sFGpu_DepthTest : public sFGpu_Base {
+  sTest_DepthTest _testDepthTest;
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(_testDepthTest.OnInit(testResults_, _driverGpu),eFalse);
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    CHECK_RET(_testDepthTest.OnPaint(testResults_,gpuContext.non_null()),eFalse);
+    return eTrue;
+  }
+};
 TEST_CLASS(FGpu,DepthTest);
+
+struct sFGpu_DepthTestRenderTarget : public sFGpu_Texture {
+  sTest_DepthTest _testDepthTest;
+  NN<iTexture> _rtTex = niDeferredInit(NN<iTexture>);
+  NN<iTexture> _dsTex = niDeferredInit(NN<iTexture>);
+  NN<iGraphicsContext> _rtGC = niDeferredInit(NN<iGraphicsContext>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
+    CHECK_RET(sFGpu_Texture::OnInit(testResults_),eFalse);
+    CHECK_RET(_testDepthTest.OnInit(testResults_, _driverGpu),eFalse);
+    _rtTex = niCheckNN(_rtTex,_graphics->CreateTexture(
+      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",1,
+      256,256,0,eTextureFlags_RenderTarget),eFalse);
+    _dsTex = niCheckNN(_rtTex,_graphics->CreateTexture(
+      _H("dsTex"),eBitmapType_2D,"D32",1,
+      256,256,0,eTextureFlags_DepthStencil),eFalse);
+    _rtGC = niCheckNN(_rtGC,_graphics->CreateContextForRenderTargets(
+      _rtTex,nullptr,nullptr,nullptr,_dsTex),eFalse);
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
+    {
+      QPtr<iGraphicsContextGpu> gpuRT = _rtGC;
+      niPanicAssert(gpuRT.IsOK());
+      _rtGC->ClearBuffers(eClearBuffersFlags_ColorDepthStencil,0xFFFF0000,1.0f,0);
+      CHECK_RET(_testDepthTest.OnPaint(testResults_,gpuRT.non_null()),eFalse);
+      _rtGC->Display(eGraphicsDisplayFlags_Skip,sRecti::Null());
+    }
+
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->SetTexture(_rtTex, 0); // bind the render target as texture
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    return eTrue;
+  }
+};
+TEST_CLASS(FGpu,DepthTestRenderTarget);
 
 }

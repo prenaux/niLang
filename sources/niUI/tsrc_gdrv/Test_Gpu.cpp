@@ -600,7 +600,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niImpl {
     CHECK_RET(sFGpu_Texture::OnInit(testResults_),eFalse);
     _rtTex = niCheckNN(_rtTex,_graphics->CreateTexture(
-      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",1,
+      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",0,
       256,256,0,eTextureFlags_RenderTarget),eFalse);
     _rtGC = niCheckNN(_rtGC,_graphics->CreateContextForRenderTargets(
       _rtTex,nullptr,nullptr,nullptr,nullptr),eFalse);
@@ -770,10 +770,10 @@ struct sFGpu_DepthTestRenderTarget : public sFGpu_Texture {
     CHECK_RET(sFGpu_Texture::OnInit(testResults_),eFalse);
     CHECK_RET(_testDepthTest.OnInit(testResults_, _driverGpu),eFalse);
     _rtTex = niCheckNN(_rtTex,_graphics->CreateTexture(
-      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",1,
+      _H("rtTex"),eBitmapType_2D,"R8G8B8A8",0,
       256,256,0,eTextureFlags_RenderTarget),eFalse);
     _dsTex = niCheckNN(_rtTex,_graphics->CreateTexture(
-      _H("dsTex"),eBitmapType_2D,"D32",1,
+      _H("dsTex"),eBitmapType_2D,"D32",0,
       256,256,0,eTextureFlags_DepthStencil),eFalse);
     _rtGC = niCheckNN(_rtGC,_graphics->CreateContextForRenderTargets(
       _rtTex,nullptr,nullptr,nullptr,_dsTex),eFalse);

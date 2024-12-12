@@ -1,0 +1,31 @@
+#version 460
+
+struct TestGpuFuncs_TestUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 3) out vec3 OUT_3_rval_normal;
+
+void main()
+{
+    TestGpuFuncs_TestUniforms _85 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    TestGpuFuncs_TestUniforms _86;
+    _86.mtxWVP = _85.mtxWVP;
+    _86.alphaRef = _85.alphaRef;
+    _86.padding0 = _85.padding0;
+    _86.padding1 = _85.padding1;
+    _86.padding2 = _85.padding2;
+    _86.materialColor = _85.materialColor;
+    vec4 _121 = vec4(IN_0_aInput_position, 1.0);
+    gl_Position = _86.mtxWVP * _121;
+    OUT_3_rval_normal = normalize(_121.xyz);
+}
+

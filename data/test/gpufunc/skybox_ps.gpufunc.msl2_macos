@@ -1,0 +1,22 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+struct main0_in
+{
+    float3 IN_3_aInput_normal [[user(locn3)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], texturecube<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+{
+    main0_out out = {};
+    out.OUT_0_rval_color = IN_1_aTexture.sample(IN_1_aSS, in.IN_3_aInput_normal);
+    return out;
+}
+

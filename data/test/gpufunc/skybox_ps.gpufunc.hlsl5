@@ -1,0 +1,29 @@
+TextureCube<float4> IN_1_aTexture : register(t0);
+SamplerState IN_1_aSS : register(s0);
+
+static float3 IN_3_aInput_normal;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float3 IN_3_aInput_normal : TEXCOORD3;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+void frag_main()
+{
+    OUT_0_rval_color = IN_1_aTexture.Sample(IN_1_aSS, IN_3_aInput_normal);
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_3_aInput_normal = stage_input.IN_3_aInput_normal;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

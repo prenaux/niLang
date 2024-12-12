@@ -1,0 +1,57 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct TestGpuFuncs_TestUniforms
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct TestGpuFuncs_TestUniforms_1
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_TestGpuFuncs_TestUniforms
+{
+    TestGpuFuncs_TestUniforms_1 v;
+};
+
+struct main0_out
+{
+    float3 OUT_3_rval_normal [[user(locn3)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    float3 IN_0_aInput_position [[attribute(0)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(0)]])
+{
+    main0_out out = {};
+    TestGpuFuncs_TestUniforms _86;
+    _86.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _86.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _86.padding0 = IN_1_aUniforms.v.padding0;
+    _86.padding1 = IN_1_aUniforms.v.padding1;
+    _86.padding2 = IN_1_aUniforms.v.padding2;
+    _86.materialColor = IN_1_aUniforms.v.materialColor;
+    float4 _121 = float4(in.IN_0_aInput_position, 1.0);
+    out.gl_Position = _86.mtxWVP * _121;
+    out.OUT_3_rval_normal = fast::normalize(_121.xyz);
+    return out;
+}
+

@@ -311,7 +311,7 @@ static tBool _VulkanTransitionImageLayout(
   VkCommandBuffer aCmdBuffer, VkImage aImage,
   VkImageLayout aOldLayout, VkImageLayout aNewLayout,
   tU32 aBaseMipLevel = 0,
-  tU32 aLevelCount = 1)
+  tU32 aBaseArrayLayer = 0)
 {
   VkImageMemoryBarrier barrier{};
   barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -322,8 +322,8 @@ static tBool _VulkanTransitionImageLayout(
   barrier.image = aImage;
   barrier.subresourceRange = {
     .baseMipLevel = aBaseMipLevel,
-    .levelCount = aLevelCount,
-    .baseArrayLayer = 0,
+    .levelCount = 1,
+    .baseArrayLayer = aBaseArrayLayer,
     .layerCount = 1
   };
 
@@ -623,6 +623,11 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     meshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
     accelerationStructureFeatures.pNext = &meshShaderFeatures;
 
+    VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
+    };
+    meshShaderFeatures.pNext = &robustness2Features;
+
     VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
     deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
     deviceFeatures2.pNext = &rayTracingPipelineFeatures;
@@ -738,6 +743,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     else {
       niLog(Info, "Vulkan Task shader not supported.");
     }
+
+    niLog(Info, niFmt(
+      "Vulkan Robustness2 Features:\n"
+      "  robustBufferAccess2: %y\n"
+      "  robustImageAccess2: %y\n"
+      "  nullDescriptor: %y",
+      (tBool)!!robustness2Features.robustBufferAccess2,
+      (tBool)!!robustness2Features.robustImageAccess2,
+      (tBool)!!robustness2Features.nullDescriptor));
   }
 
   tBool _InitPhysicalDevice() {
@@ -1404,14 +1418,19 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   const tHStringPtr _name;
   const tTextureFlags _flags = eTextureFlags_Default;
   eGpuPixelFormat _pixelFormat = eGpuPixelFormat_None;
+  eBitmapType _type;
+  astl::vector<Ptr<sVulkanTexture>> _subTexs;
+  tU32 _subTexId = 0;
 
   sVulkanTexture(
     ain_nn<sVulkanDriver> aDriver, iHString* ahspName,
+    eBitmapType aType,
     tU32 anWidth, tU32 anHeight, tU32 anNumMipMaps,
     eGpuPixelFormat aGpuPixelFormat,
     tTextureFlags aFlags)
       : _driver(aDriver)
       , _name(ahspName)
+      , _type(aType)
       , _width(anWidth)
       , _height(anHeight)
       , _numMipMaps(anNumMipMaps)
@@ -1428,16 +1447,19 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   virtual void __stdcall Invalidate() override {
-    if (_driver->_graphics->GetTextureDeviceResourceManager()) {
-      _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
-    }
+    _subTexs.clear();
     if (_vkView) {
       vkDestroyImageView(_driver->_device, _vkView, nullptr);
       _vkView = VK_NULL_HANDLE;
     }
-    if (_vkImage) {
-      vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
-      _vkImage = VK_NULL_HANDLE;
+    if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
+      if (_driver->_graphics->GetTextureDeviceResourceManager()) {
+        _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
+      }
+      if (_vkImage) {
+        vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
+        _vkImage = VK_NULL_HANDLE;
+      }
     }
   }
 
@@ -1458,7 +1480,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   virtual eBitmapType __stdcall GetType() const override {
-    return eBitmapType_2D;
+    return _type;
   }
 
   virtual tU32 __stdcall GetWidth() const override {
@@ -1486,7 +1508,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   }
 
   virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override {
-    return nullptr;
+    if (anIndex >= _subTexs.size())
+      return nullptr;
+    return _subTexs[anIndex];
   }
 
   tBool _CreateVulkanTexture() {
@@ -1505,6 +1529,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
     };
+
     if (niFlagIs(_flags,eTextureFlags_RenderTarget)) {
       imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     }
@@ -1512,19 +1537,48 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     }
 
+    switch (_type) {
+      case eBitmapType_2D: {
+        break;
+      }
+      case eBitmapType_Cube: {
+        imageInfo.flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+        imageInfo.arrayLayers = 6;
+        break;
+      }
+      default: {
+        niError(niFmt("Unsupported bitmap type '%d' for image creation.",_type));
+        return eFalse;
+      }
+    }
+
     VmaAllocationCreateInfo allocInfo = {
       .usage = VMA_MEMORY_USAGE_GPU_ONLY
     };
-
     VK_CHECK(vmaCreateImage(
       _driver->_allocator, &imageInfo, &allocInfo,
       &_vkImage, &_vmaAllocation, nullptr), eFalse);
+
+    if (_type == eBitmapType_Cube) {
+      _subTexs.resize(6);
+      niLoop(i,6) {
+        _subTexs[i] = niNew sVulkanTexture(
+          _driver,
+          _name,
+          eBitmapType_2D,
+          _width,_height,GetNumMipMaps(),
+          _pixelFormat,
+          eTextureFlags_SubTexture|eTextureFlags_Surface);
+        _subTexs[i]->_vkImage = _vkImage;
+        _subTexs[i]->_vmaAllocation = _vmaAllocation;
+        _subTexs[i]->_subTexId = i;
+      }
+    }
 
     // Create image view
     VkImageViewCreateInfo viewInfo = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
       .image = _vkImage,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
       .format = imageInfo.format,
       .components = {
         VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -1537,10 +1591,25 @@ struct sVulkanTexture : public ImplRC<iTexture> {
         VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,
         .baseMipLevel = 0,
         .levelCount = 1+_numMipMaps,
-        .baseArrayLayer = 0,
-        .layerCount = 1
+        .baseArrayLayer = 0
       }
     };
+    switch (_type) {
+      case eBitmapType_2D: {
+        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        viewInfo.subresourceRange.layerCount = 1;
+        break;
+      }
+      case eBitmapType_Cube: {
+        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+        viewInfo.subresourceRange.layerCount = 6;
+        break;
+      }
+      default: {
+        niError(niFmt("Unsupported bitmap type '%d' for view creation.",_type));
+        return eFalse;
+      }
+    }
 
     VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
     return eTrue;
@@ -1593,7 +1662,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       cmdBuf,_vkImage,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      anLevel),eFalse);
+      anLevel,_subTexId),eFalse);
 
     // Copy buffer to image
     VkBufferImageCopy region = {
@@ -1603,7 +1672,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       .imageSubresource = {
         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
         .mipLevel = anLevel,
-        .baseArrayLayer = 0,
+        .baseArrayLayer = _subTexId,
         .layerCount = 1
       },
       .imageOffset = {
@@ -1631,7 +1700,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       cmdBuf,_vkImage,
       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      anLevel),eFalse);
+      anLevel,_subTexId),eFalse);
 
     _driver->EndSingleTimeCommands(cmdBuf);
     return eTrue;
@@ -1862,7 +1931,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &bufferLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Buffer]), eFalse);
     }
 
-    // Texture layout
+    // Texture2D layout
     {
       VkDescriptorSetLayoutBinding textureBinding = {
         .binding = 0,
@@ -1878,6 +1947,24 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
         .pBindings = &textureBinding
       };
       VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Texture2D]), eFalse);
+    }
+
+    // TextureCube layout
+    {
+      VkDescriptorSetLayoutBinding textureBinding = {
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+        .descriptorCount = 1,
+        .stageFlags = stageFlags,
+        .pImmutableSamplers = nullptr
+      };
+      VkDescriptorSetLayoutCreateInfo textureLayoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .flags = layoutFlags,
+        .bindingCount = 1,
+        .pBindings = &textureBinding
+      };
+      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_TextureCube]), eFalse);
     }
 
     // Sampler layout
@@ -2701,11 +2788,12 @@ iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType
                 ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
   Ptr<iPixelFormat> pxf = _graphics->CreatePixelFormat(aaszFormat);
   niCheck(pxf.IsOK(),nullptr);
+  niCheck(aType == eBitmapType_2D || aType == eBitmapType_Cube,nullptr);
 
   Ptr<sVulkanTexture> tex { niNew sVulkanTexture(
     as_nn(this),
     ahspName,
-    anWidth,anHeight,anNumMipMaps,
+    aType,anWidth,anHeight,anNumMipMaps,
     _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
     aFlags) };
   niCheck(tex->_CreateVulkanTexture(),nullptr);
@@ -2817,10 +2905,29 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
     if (!texture) {
       texture = (sVulkanTexture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
     }
-    niCheck(descPool.PushDescriptorImage(
-      device,_cmdBuffer,
-      pipeline,eGLSLVulkanDescriptorSet_Texture2D,
-      texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+    switch (texture->GetType()) {
+      case eBitmapType_Cube: {
+        niCheck(descPool.PushDescriptorImage(
+          device,_cmdBuffer,
+          pipeline,eGLSLVulkanDescriptorSet_TextureCube,
+          texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+        break;
+      }
+      case eBitmapType_2D: {
+        niCheck(descPool.PushDescriptorImage(
+          device,_cmdBuffer,
+          pipeline,eGLSLVulkanDescriptorSet_Texture2D,
+          texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+        break;
+      }
+      default: {
+        niError(niFmt(
+          "Can't bind texture '%s' (type:%d), invalid type.",
+          texture->GetDeviceResourceName(),
+          texture->GetType()));
+        return eFalse;
+      }
+    }
   }
 
   {
@@ -2837,7 +2944,8 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
 tBool sVulkanCommandEncoder::_BindGpuFunction() {
   niLet pipeline = _cache._lastPipeline;
   if (pipeline->_gpufuncBindType == eGpuFunctionBindType_Fixed) {
-    return _DoBindFixedDescLayout();
+    niCheck(_DoBindFixedDescLayout(),eFalse);
+    return eTrue;
   }
   return eTrue;
 }
@@ -2901,7 +3009,7 @@ struct sVulkanContextBase :
     ni::SafeInvalidate(mptrRT[0].ptr());
     mptrRT[0] = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainRT_%s_%p",aKind,(tIntPtr)this),
-      w,h,0,eGpuPixelFormat_RGBA8,
+      eBitmapType_2D,w,h,0,eGpuPixelFormat_RGBA8,
       eTextureFlags_RenderTarget|eTextureFlags_Surface);
     _rt0Format = _GetClosestGpuPixelFormatForRT(
       mptrRT[0]->GetPixelFormat()->GetFormat());
@@ -2909,7 +3017,7 @@ struct sVulkanContextBase :
     ni::SafeInvalidate(mptrDS.ptr());
     mptrDS = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainDS_%s_%p",aKind,(tIntPtr)this),
-      w,h,0,eGpuPixelFormat_D32,
+      eBitmapType_2D,w,h,0,eGpuPixelFormat_D32,
       eTextureFlags_DepthStencil|eTextureFlags_Surface);
     _dsFormat = _GetClosestGpuPixelFormatForDS(
       mptrDS->GetPixelFormat()->GetFormat());

@@ -1,0 +1,23 @@
+<GpuFunction ver="3" name="skybox_ps" exec="pixel">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="pixel"/>
+		</EntryPoints>
+		<Inputs>
+			<Input name="IN_3_aInput_normal" type="vec3" location="3"/>
+		</Inputs>
+		<Outputs>
+			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
+		</Outputs>
+		<SeparateImages>
+			<SeparateImage name="IN_1_aTexture" type="textureCube" set="2" binding="0"/>
+		</SeparateImages>
+		<SeparateSamplers>
+			<SeparateSampler name="IN_1_aSS" type="sampler" set="5" binding="0"/>
+		</SeparateSamplers>
+	</Reflection>
+	<Target target="spv_vk12" code_path="skybox_ps.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="skybox_ps.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="skybox_ps.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="skybox_ps.gpufunc.hlsl5"/>
+</GpuFunction>

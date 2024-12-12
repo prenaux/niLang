@@ -1,0 +1,20 @@
+<GpuFunction ver="3" name="skybox_vs" exec="vertex">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="vertex"/>
+		</EntryPoints>
+		<Inputs>
+			<Input name="IN_0_aInput_position" type="vec3" location="0"/>
+		</Inputs>
+		<Outputs>
+			<Output name="OUT_3_rval_normal" type="vec3" location="3"/>
+		</Outputs>
+		<UBOs>
+			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_80" set="0" binding="0"/>
+		</UBOs>
+	</Reflection>
+	<Target target="spv_vk12" code_path="skybox_vs.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="skybox_vs.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="skybox_vs.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="skybox_vs.gpufunc.hlsl5"/>
+</GpuFunction>

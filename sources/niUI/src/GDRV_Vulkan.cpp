@@ -306,6 +306,118 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
   }
   return attrs;
 }
+
+static tBool _VulkanTransitionImageLayout(
+  VkCommandBuffer aCmdBuffer, VkImage aImage,
+  VkImageLayout aOldLayout, VkImageLayout aNewLayout,
+  tU32 aBaseMipLevel = 0,
+  tU32 aLevelCount = 1)
+{
+  VkImageMemoryBarrier barrier{};
+  barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  barrier.oldLayout = aOldLayout;
+  barrier.newLayout = aNewLayout;
+  barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.image = aImage;
+  barrier.subresourceRange = {
+    .baseMipLevel = aBaseMipLevel,
+    .levelCount = aLevelCount,
+    .baseArrayLayer = 0,
+    .layerCount = 1
+  };
+
+  if (aOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ||
+      aNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+  {
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+  }
+  else {
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  }
+
+  VkPipelineStageFlags sourceStage;
+  VkPipelineStageFlags destinationStage;
+
+  switch (aOldLayout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      barrier.srcAccessMask = 0;
+      sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+      barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+      break;
+    default:
+      niError(niFmt("Unsupported old layout transition '%s'.",ni_vulkan::VkImageLayoutToString(aOldLayout)));
+      return eFalse;
+  }
+
+  switch (aNewLayout) {
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      break;
+      break;
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+      barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+      destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+      break;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+      barrier.dstAccessMask = 0;
+      destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+      break;
+    default:
+      niError(niFmt("Unsupported new layout transition '%s'.",ni_vulkan::VkImageLayoutToString(aNewLayout)));
+      return eFalse;
+  }
+
+  if ((aOldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+       aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
+      (aOldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+       (aNewLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ||
+        aNewLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ||
+        aNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) ||
+      (aOldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
+       (aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ||
+        aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) ||
+      (aOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL &&
+       (aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
+  ) {
+    vkCmdPipelineBarrier(
+      aCmdBuffer,
+      sourceStage, destinationStage,
+      0,
+      0, nullptr,
+      0, nullptr,
+      1, &barrier
+    );
+    return eTrue;
+  }
+  else {
+    niError(niFmt("Unsupported layout transition '%s' -> '%s'.",
+                  ni_vulkan::VkImageLayoutToString(aOldLayout),
+                  ni_vulkan::VkImageLayoutToString(aNewLayout)));
+    return eFalse;
+  }
+}
+
 struct sVulkanBuffer;
 
 struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu> {
@@ -1434,9 +1546,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     return eTrue;
   }
 
-  void _UploadTexture(const iBitmap2D* apBmpLevel,
-                      const tU32 anLevel,
-                      const sRecti& aDestRect)
+  tBool _UploadTexture(const iBitmap2D* apBmpLevel,
+                       const tU32 anLevel,
+                       const sRecti& aDestRect)
   {
     const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
     const tU32 bpr = apBmpLevel->GetPitch();
@@ -1459,14 +1571,14 @@ struct sVulkanTexture : public ImplRC<iTexture> {
 
     VK_CHECK(vmaCreateBuffer(
       _driver->_allocator, &bufferInfo, &stagingAllocInfo,
-      &stagingBuffer, &stagingAlloc, nullptr), ;);
+      &stagingBuffer, &stagingAlloc, nullptr), eFalse);
     niDefer {
       vmaDestroyBuffer(_driver->_allocator, stagingBuffer, stagingAlloc);
     };
 
     // Copy data to staging
     void* data;
-    VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), ;);
+    VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), eFalse);
     for (tU32 y = 0; y < aDestRect.GetHeight(); ++y) {
       memcpy(
         (tU8*)data + (y * aDestRect.GetWidth() * bpp),
@@ -1477,33 +1589,11 @@ struct sVulkanTexture : public ImplRC<iTexture> {
 
     // Transition image layout for copy
     VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
-
-    VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = _vkImage,
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = anLevel,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      },
-      .srcAccessMask = 0,
-      .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT
-    };
-
-    vkCmdPipelineBarrier(
-      cmdBuf,
-      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-      VK_PIPELINE_STAGE_TRANSFER_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
+    niCheck(_VulkanTransitionImageLayout(
+      cmdBuf,_vkImage,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      anLevel),eFalse);
 
     // Copy buffer to image
     VkBufferImageCopy region = {
@@ -1537,21 +1627,14 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       &region);
 
     // Transition to shader read
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-    vkCmdPipelineBarrier(
-      cmdBuf,
-      VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier);
+    niCheck(_VulkanTransitionImageLayout(
+      cmdBuf,_vkImage,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      anLevel),eFalse);
 
     _driver->EndSingleTimeCommands(cmdBuf);
+    return eTrue;
   }
 
 };
@@ -2827,7 +2910,7 @@ struct sVulkanContextBase :
     mptrDS = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainDS_%s_%p",aKind,(tIntPtr)this),
       w,h,0,eGpuPixelFormat_D32,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
+      eTextureFlags_DepthStencil|eTextureFlags_Surface);
     _dsFormat = _GetClosestGpuPixelFormatForDS(
       mptrDS->GetPixelFormat()->GetFormat());
 
@@ -2979,8 +3062,10 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
   }
 
   tBool _ResizeContextRTDS(ain<sVec2i> aNewSize) {
-    return static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+    tBool resizedContextRTDS = static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
       "WindowMetal",aNewSize.x,aNewSize.y);
+    niCheck(resizedContextRTDS,eFalse);
+    return eTrue;
   }
 
   tBool _CreateContextWindowMetal() {
@@ -3166,8 +3251,14 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
   }
 
   tBool _ResizeContextRTDS() {
-    return static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+    niLet resizedContextRTDS = static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
       "WindowX11",_swapchainExtent.width,_swapchainExtent.height);
+    niCheck(resizedContextRTDS,eFalse);
+    niLet dsTex = (sVulkanTexture*)mptrDS.raw_ptr();
+    if (dsTex) {
+      niCheck(dsTex->_CreateVulkanTexture(),eFalse);
+    }
+    return eTrue;
   }
 
   tBool _CreateContextWindowX11() {
@@ -3313,6 +3404,9 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     niInfo(niFmt("Recreating vulkan swapchain: %s.", aaszReason));
 
     _DestroySwapChainResources();
+    if (mptrDS.IsOK()) {
+      mptrDS->Invalidate();
+    }
 
     if (!_CreateSwapChain()) {
       niError("Failed to recreate swapchain.");
@@ -3381,74 +3475,26 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     // Transition the image from UNDEFINED to COLOR_ATTACHMENT_OPTIMAL (or
     // another suitable layout) here using vkCmdPipelineBarrier.  This must
     // happen before any rendering commands.
-    {
-      VkImageMemoryBarrier barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = currentImage,
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
-      };
-      vkCmdPipelineBarrier(
-        _cmdEncoder->_cmdBuffer,
-        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Source stage
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // Destination stage
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &barrier
-      );
+    niCheck(_VulkanTransitionImageLayout(
+      _cmdEncoder->_cmdBuffer,currentImage,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
+
+    sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
+    if (ds && ds->_vkImage) {
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,ds->_vkImage,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
     }
 
     niCheck(_cmdEncoder->_BeginRendering(
       currentImage,currentImageView,
+      ds ? ds->_vkImage : VK_NULL_HANDLE,
+      ds ? ds->_vkView : VK_NULL_HANDLE,
       this->GetWidth(),this->GetHeight(),
       mrectViewport,mrectScissor),eFalse);
     return eTrue;
-  }
-
-  void _TransitionImageLayout(VkCommandBuffer aCmdBuffer) {
-    VkImage image = _swapchainImages[_currentImageIndex];
-
-    VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = image,
-      .subresourceRange = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .baseMipLevel = 0,
-        .levelCount = 1,
-        .baseArrayLayer = 0,
-        .layerCount = 1
-      }
-    };
-
-    VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-
-    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    barrier.dstAccessMask = 0;
-
-    vkCmdPipelineBarrier(
-      aCmdBuffer,
-      sourceStage,
-      destinationStage,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier
-    );
   }
 
   virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
@@ -3457,7 +3503,19 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     _beganFrame = eFalse;
 
     _cmdEncoder->_EndRendering();
-    _TransitionImageLayout(_cmdEncoder->_cmdBuffer);
+    niCheck(_VulkanTransitionImageLayout(
+      _cmdEncoder->_cmdBuffer,_swapchainImages[_currentImageIndex],
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),eFalse);
+
+    sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
+    if (ds && ds->_vkImage) {
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,ds->_vkImage,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+    }
+
     niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
       _imageAvailableSemaphore,
       _renderFinishedSemaphore),eFalse);
@@ -3566,56 +3624,18 @@ struct sVulkanContextRT : public sVulkanContextBase {
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      VkImageMemoryBarrier colorBarrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = rt0->_vkImage,
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
-      };
-      vkCmdPipelineBarrier(
-        _cmdEncoder->_cmdBuffer,
-        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &colorBarrier);
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,rt0->_vkImage,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
     }
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
-      VkImageMemoryBarrier depthBarrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = ds->_vkImage,
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
-      };
-      vkCmdPipelineBarrier(
-        _cmdEncoder->_cmdBuffer,
-        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &depthBarrier);
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,ds->_vkImage,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
     }
 
     niCheck(_cmdEncoder->_BeginRendering(
@@ -3636,60 +3656,18 @@ struct sVulkanContextRT : public sVulkanContextBase {
     // Add transition to shader read
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      VkImageMemoryBarrier colorBarrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = rt0->_vkImage,
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        },
-        .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-        .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
-      };
-      vkCmdPipelineBarrier(
-        _cmdEncoder->_cmdBuffer,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &colorBarrier);
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,rt0->_vkImage,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
     }
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
-      VkImageMemoryBarrier depthBarrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-        .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = ds->_vkImage,
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        },
-        .srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-        .dstAccessMask = VK_ACCESS_SHADER_READ_BIT
-      };
-      vkCmdPipelineBarrier(
-        _cmdEncoder->_cmdBuffer,
-        VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &depthBarrier);
+      niCheck(_VulkanTransitionImageLayout(
+        _cmdEncoder->_cmdBuffer,ds->_vkImage,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
     }
 
     niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(

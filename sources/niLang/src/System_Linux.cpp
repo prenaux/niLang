@@ -786,21 +786,10 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl {
-    auto contentsScale = this->GetContentsScale();
-    auto newSize = Vec2i(
-      (tI32)((tF32)avSize.x * contentsScale),
-      (tI32)((tF32)avSize.y * contentsScale)
-    );
-    SetSize(newSize);
+    SetSize(avSize);
   }
   virtual sVec2i __stdcall GetClientSize() const niImpl {
-    auto invContentsScale = ni::FDiv(1.0f, this->GetContentsScale());
-    auto size = GetSize();
-    auto clientSize = Vec2i(
-      (tI32)((tF32)size.x * invContentsScale),
-      (tI32)((tF32)size.y * invContentsScale)
-    );
-    return clientSize;
+    return GetSize();
   }
 
   ///////////////////////////////////////////////

@@ -43,7 +43,7 @@ niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
-#ifdef niLinux
+#if defined niVulkan_UseSurfaceKHR
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 #endif
 };
@@ -551,9 +551,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
     };
 
-#if defined niLinux
+#if defined niVulkan_UseSurfaceKHR
     extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+#  if defined niWindows
+    extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#  elif defined niLinux
     extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+#  else
+#    error "Unknown Vulkan with SurfaceKHR platform."
+#  endif
 #endif
 
     astl::vector<const char*> layers;
@@ -755,7 +761,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   tBool _InitPhysicalDevice() {
-    tU32 deviceCount = 0;
+    uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
     niCheck(deviceCount > 0, eFalse);
 
@@ -1035,13 +1041,14 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     // Create the device
     VkDeviceCreateInfo createInfo = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .pNext = &features2,
       .queueCreateInfoCount = 1,
       .pQueueCreateInfos = &queueCreateInfo,
+      .enabledLayerCount = 0,
+      .ppEnabledLayerNames = nullptr,
       .enabledExtensionCount = knVkRequiredDeviceExtensionsCount,
       .ppEnabledExtensionNames = _vkRequiredDeviceExtensions,
-      .enabledLayerCount = 0,
       .pEnabledFeatures = nullptr,
-      .pNext = &features2,
     };
     VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
     vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
@@ -1051,8 +1058,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   tBool _CreateCommandPool() {
     VkCommandPoolCreateInfo poolInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .queueFamilyIndex = _queueFamilyIndex,
-      .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
     };
 
     VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
@@ -1090,9 +1098,10 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkCommandBuffer BeginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .pNext = nullptr,
       .commandPool = _commandPool,
-      .commandBufferCount = 1
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1,
     };
 
     VkCommandBuffer cmdBuf;
@@ -1158,6 +1167,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       case eGraphicsCaps_IGpu:
         return 1;
     }
+    return 0;
   }
 
   virtual tBool __stdcall ResetAllCaches() niImpl {
@@ -1587,8 +1597,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
         VK_COMPONENT_SWIZZLE_IDENTITY
       },
       .subresourceRange = {
-        .aspectMask = niFlagIs(_flags,eTextureFlags_DepthStencil) ?
-        VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,
+        .aspectMask = (VkImageAspectFlags)(
+          niFlagIs(_flags,eTextureFlags_DepthStencil) ?
+          VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
         .baseMipLevel = 0,
         .levelCount = 1+_numMipMaps,
         .baseArrayLayer = 0
@@ -1648,7 +1659,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     // Copy data to staging
     void* data;
     VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), eFalse);
-    for (tU32 y = 0; y < aDestRect.GetHeight(); ++y) {
+    for (tU32 y = 0; y < (tU32)aDestRect.GetHeight(); ++y) {
       memcpy(
         (tU8*)data + (y * aDestRect.GetWidth() * bpp),
         (tU8*)bytes + (y * bpr),
@@ -1885,7 +1896,7 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
       .pPushConstantRanges = nullptr
     };
     if (!_vkDescSetLayouts.empty()) {
-      layoutInfo.setLayoutCount = _vkDescSetLayouts.size();
+      layoutInfo.setLayoutCount = (tU32)_vkDescSetLayouts.size();
       layoutInfo.pSetLayouts = _vkDescSetLayouts.data();
     }
     VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
@@ -2203,20 +2214,20 @@ struct sVulkanPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDev
     // Create the pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo = {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      .pNext = &renderingInfo,
       .stageCount = 2,
       .pStages = shaderStages,
       .pVertexInputState = &vertexInputInfo,
       .pInputAssemblyState = &inputAssembly,
       .pViewportState = &viewportState,
-      .pDynamicState = &dynamicState,
       .pRasterizationState = &rasterizer,
       .pMultisampleState = &multisampling,
       .pDepthStencilState = &depthStencil,
       .pColorBlendState = &colorBlending,
+      .pDynamicState = &dynamicState,
       .layout = _vkPipelineLayout,
       .renderPass = VK_NULL_HANDLE,
       .subpass = 0,
-      .pNext = &renderingInfo
     };
 
     VK_CHECK(vkCreateGraphicsPipelines(
@@ -2318,16 +2329,16 @@ struct sVulkanDescriptorPool {
       .range = aRange
     };
 
-    VkWriteDescriptorSet writes[] = {{
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = descSet,
-        .dstBinding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1,
-        .pBufferInfo = &bufferInfo
-      }};
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = descSet,
+      .dstBinding = 0,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+      .pBufferInfo = &bufferInfo,
+    };
 
-    vkUpdateDescriptorSets(aDevice,niCountOf(writes),writes,0,nullptr);
+    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
       aCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
       apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
@@ -2354,8 +2365,8 @@ struct sVulkanDescriptorPool {
       .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
       .dstSet = descSet,
       .dstBinding = 0,
-      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
       .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
       .pImageInfo = &imageInfo
     };
     vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
@@ -2379,15 +2390,15 @@ struct sVulkanDescriptorPool {
       .sampler = aSampler
     };
 
-    VkWriteDescriptorSet writes[] = {{
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = descSet,
-        .dstBinding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-        .descriptorCount = 1,
-        .pImageInfo = &samplerInfo
-      }};
-    vkUpdateDescriptorSets(aDevice,niCountOf(writes),writes,0,nullptr);
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = descSet,
+      .dstBinding = 0,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+      .pImageInfo = &samplerInfo,
+    };
+    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
       aCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
       apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
@@ -2444,8 +2455,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   }
 
   void OnEndFrame(VkDevice aDevice) {
-    niLet& lastBlock = _stream->GetLastBlock();
-
+    // niLet& lastBlock = _stream->GetLastBlock();
     // niDebugFmt((
     //   "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_trackedTextures=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
     //   _trackedBuffers.size(),_trackedTextures.size(),_stream->GetNumBlocks(),
@@ -2880,7 +2890,6 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 }
 
 tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
-  niLet& mat = _cache._lastMaterial;
   niLet pipeline = as_nn(_cache._lastPipeline);
   niLet device = _driver->_device;
   niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
@@ -3005,7 +3014,6 @@ struct sVulkanContextBase :
   }
 
   tBool __stdcall _ResizeContextRTDS(const achar* aKind, ain<tU32> w, ain<tU32> h) {
-    iGraphics* g = _driver->_graphics;
     ni::SafeInvalidate(mptrRT[0].ptr());
     mptrRT[0] = niNew sVulkanTexture(
       _driver,HFmt("Vulkan_MainRT_%s_%p",aKind,(tIntPtr)this),
@@ -3327,8 +3335,8 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
 };
 #endif
 
-#if defined niLinuxDesktop
-struct sVulkanContextWindowX11 : public sVulkanContextBase {
+#if defined niVulkan_UseSurfaceKHR
+struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
   VkSurfaceKHR _surface = VK_NULL_HANDLE;
   VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
@@ -3345,7 +3353,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
   VkExtent2D _swapchainExtent = {0,0};
   sVec2i _swapchainWindowSize = sVec2i::Zero();
 
-  sVulkanContextWindowX11(
+  sVulkanContextWindowSurfaceKHR(
     ain<nn<sVulkanDriver>> aDriver,
     const tU32 aFrameMaxInFlight,
     iOSWindow* apWindow)
@@ -3354,13 +3362,13 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     _window = apWindow;
   }
 
-  ~sVulkanContextWindowX11() {
+  ~sVulkanContextWindowSurfaceKHR() {
     this->Invalidate();
   }
 
   tBool _ResizeContextRTDS() {
     niLet resizedContextRTDS = static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
-      "WindowX11",_swapchainExtent.width,_swapchainExtent.height);
+      "WindowSurfaceKHR",_swapchainExtent.width,_swapchainExtent.height);
     niCheck(resizedContextRTDS,eFalse);
     niLet dsTex = (sVulkanTexture*)mptrDS.raw_ptr();
     if (dsTex) {
@@ -3369,7 +3377,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     return eTrue;
   }
 
-  tBool _CreateContextWindowX11() {
+  tBool _CreateContextWindowSurfaceKHR() {
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
@@ -3395,6 +3403,7 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
     _window = nullptr;
   }
 
+#if defined niLinux
   tBool _CreateSurface() {
     sOSWindowXWinHandles xwinHandles = {};
     niCheck(linuxGetOSWindowXWinHandles(_window,xwinHandles),eFalse);
@@ -3414,6 +3423,29 @@ struct sVulkanContextWindowX11 : public sVulkanContextBase {
 
     return eTrue;
   }
+#elif defined niWindows
+  tBool _CreateSurface() {
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+    HWND hwnd = (HWND)_window->GetHandle();
+
+    VkWin32SurfaceCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+      .hinstance = hInstance,
+      .hwnd = hwnd
+    };
+
+    VK_CHECK(vkCreateWin32SurfaceKHR(
+      _driver->_instance,
+      &createInfo,
+      nullptr,
+      &_surface),
+      eFalse);
+
+    return eTrue;
+  }
+#else
+  #error "Unknown Vulkan SurfaceKHR platform."
+#endif
 
   tBool _CreateSwapChain() {
     VkSemaphoreCreateInfo semaphoreInfo = {
@@ -3675,10 +3707,10 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
     gc, niNew sVulkanContextWindowMetal(
       as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
   niCheck(gc->_CreateContextWindowMetal(),nullptr);
-#elif defined niLinuxDesktop
-  Ptr<sVulkanContextWindowX11> gc = niCheckNN(gc, niNew sVulkanContextWindowX11(
+#elif defined niVulkan_UseSurfaceKHR
+  Ptr<sVulkanContextWindowSurfaceKHR> gc = niCheckNN(gc, niNew sVulkanContextWindowSurfaceKHR(
     as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
-  niCheck(gc->_CreateContextWindowX11(),nullptr);
+  niCheck(gc->_CreateContextWindowSurfaceKHR(),nullptr);
 #else
 #error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"
 #endif

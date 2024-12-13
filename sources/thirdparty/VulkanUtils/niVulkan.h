@@ -27,10 +27,12 @@
 
 #if defined niLinuxDesktop
 #define VK_USE_PLATFORM_XLIB_KHR
+#define niVulkan_UseSurfaceKHR
 #endif
 
 #if defined niWindows
 #define VK_USE_PLATFORM_WIN32_KHR
+#define niVulkan_UseSurfaceKHR
 #endif
 
 #ifdef niVulkan_Implement

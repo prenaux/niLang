@@ -32,6 +32,19 @@ case "$HAM_BIN_LOA" in
     ham_os_package_syslib_check_and_install share "vulkan/explicit_layer.d/VkLayer_khronos_validation.json" apt:vulkan-validationlayers vulkan-validation-layers
     ham_os_package_syslib_check_and_install bin "vkconfig" apt:vulkan-tools vulkan-devel
     ;;
+  nt-x86|nt-x64)
+    export VULKAN_SDK="$HAM_TOOLSET_DIR/nt-x64"
+    export VULKAN_SDK_INCDIR="${VULKAN_SDK}/Include"
+    # Ok... its in Bin on Windows, why not I guess, making it different on
+    # every OS keeps things interesting.
+    export VK_LAYER_PATH="${VULKAN_SDK}/Bin"
+    toolset_check_and_dl_ver vulkan_sdk nt-x64 v1_3_296 || return 1
+    if [ ! -f "$VULKAN_SDK_INCDIR/vulkan/vulkan.h" ]; then
+      log_error "Vulkan SDK install looks like it succeeded but the required file hasnt been found !"
+      return 1
+    fi
+    pathenv_add "${VULKAN_SDK}/Bin"
+    ;;
   *)
     complain vulkan_sdk "Unsupported arch '$HAM_BIN_LOA'."
     return 1

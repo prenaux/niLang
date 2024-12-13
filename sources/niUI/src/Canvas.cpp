@@ -1881,11 +1881,6 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  virtual iDrawOperation* __stdcall GetDrawOperation() const {
-    return mptrDrawOp;
-  }
-
-  ///////////////////////////////////////////////
   inline void _CheckVGPathRenderer() {
     if (!mptrCanvasVGPathRenderer.IsOK()) {
       mptrCanvasVGPathRenderer = niNew sCanvasVGPathTesselatedRenderer(this);

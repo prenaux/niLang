@@ -4190,17 +4190,6 @@
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 			</method>
 			<method
-				const="yes"
-				java_name="getDrawOperation"
-				name="GetDrawOperation"
-				num_parameters="0"
-				property="get"
-				property_name2="drawOperation"
-				property_name="draw_operation">
-				<comments desc="Get the canvas&apos;s draw operation. "/>
-				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method
 				java_name="setColorA"
 				name="SetColorA"
 				num_parameters="1"

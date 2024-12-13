@@ -200,6 +200,7 @@ tBool sFGDRV_Base::Step(UnitTest::TestResults& testResults_) {
     _window->CenterWindow();
     _window->SetShow(eOSWindowShowFlags_Show);
     _window->ActivateWindow();
+    _window->SetRefreshTimer(0.0f);
   }
   {
     sMessageDesc msg;

@@ -17,6 +17,7 @@ case $HAM_OS in
     if [ -z "$SHADER_COMPILE" ]; then
       SHADER_COMPILE=1
     fi
+    TOOLSET_LIST+=(vulkan_sdk)
     ;;
   LINUX*)
     TOOLSET_LIST+=(syslib_libdw syslib_alsa)

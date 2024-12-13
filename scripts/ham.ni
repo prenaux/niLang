@@ -16,10 +16,11 @@ module <- {
     if (_hamPath)
       return _hamPath;
 
-    local hamHome = ::gRootFS.GetAbsolutePath(::gLang.property["ni.dirs.bin"] + "ham");
+    local hamHome = "".setdir(::gLang.property["ni.dirs.ham_home"]);
     if (!::fs.dirExists(hamHome)) {
-      hamHome = ::gRootFS.GetAbsolutePath(
-        ::gLang.property["ni.dirs.bin"] + "../../../ham");
+      hamHome = "".setdir(::gLang.property["ni.dirs.bin"])
+      hamHome = "".adddirback("../../../ham");
+      hamHome = ::gRootFS.GetAbsolutePath(hamHome);
       if (!::fs.dirExists(hamHome)) {
         throw "Can't find ham directory: " + hamHome
       }

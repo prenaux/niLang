@@ -97,14 +97,21 @@ static Ptr<iTime> _GetFileTime(const cString& strFilePath) {
 }
 
 static cString _FindHamPath(cString& hamHome) {
-  hamHome = GetLang()->GetEnv("HAM_HOME");
-  if (hamHome.IsEmpty()) {
-    hamHome = GetRootFS()->GetAbsolutePath(
-        (ni::GetLang()->GetProperty("ni.dirs.bin") + "../../../ham").Chars());
-    SCRIPTCPP_TRACE(("hamHome from ni.dirs.bin: %s", hamHome));
-  }
-  else {
-    SCRIPTCPP_TRACE(("hamHome from envvar: %s", hamHome));
+  // Note: Same logic getHamPath() in ham.ni
+  {
+    cPath hamHomePath;
+    hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.ham_home"));
+    SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.ham_home '%s'.", hamHomePath.c_str()));
+    if (!ni::DirExists(hamHomePath.c_str())) {
+      hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.bin"));
+      hamHomePath.AddDirectoryBack("../../../ham");
+      hamHome = GetRootFS()->GetAbsolutePath(hamHomePath.c_str());
+      SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.bin '%s'.", hamHomePath.c_str()));
+      if (!ni::DirExists(hamHomePath.c_str())) {
+        niWarning(niFmt("Can't find ham home directory '%s'.",hamHome));
+        return AZEROSTR;
+      }
+    }
   }
 
   cPath hamPath;

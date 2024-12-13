@@ -796,6 +796,10 @@ class cString
   const achar* Set(tIntPtr v) { return Set((tI64)v); }
   const achar* Set(tUIntPtr v) { return Set((tU64)v); }
 #endif
+#if defined niTypeLongIsOtherType
+  const achar* Set(signed long v) { return Set((tI64)v); }
+  const achar* Set(unsigned long v) { return Set((tU64)v); }
+#endif
 
 #if niMinFeatures(20)
   const achar* SetDouble(
@@ -890,6 +894,16 @@ class cString
     return *this;
   }
   cString& operator << (tUIntPtr v) {
+    this->append(cString().Set((tU64)v));
+    return *this;
+  }
+#endif
+#if defined niTypeLongIsOtherType
+  cString& operator << (signed long v) {
+    this->append(cString().Set((tI64)v));
+    return *this;
+  }
+  cString& operator << (unsigned long v) {
     this->append(cString().Set((tU64)v));
     return *this;
   }

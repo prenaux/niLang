@@ -89,15 +89,57 @@ enum eFixedGpuDS {
 static_assert(eFixedGpuDS_Last <= niBit(2));
 
 struct sFixedGpuPipelineIdDesc {
-  eGpuPixelFormat rt0 : 4;
-  eGpuPixelFormat ds : 4;
-  eFixedGpuVertexFormat vertexFormat : 4;
-  eBlendMode blendMode : 4;
-  eFixedGpuRS compiledRS : 4;
-  eFixedGpuDS compiledDS : 2;
-  tU32 funcVertex : 20;
-  tU32 funcPixel : 20;
-  tU32 padding : 2;
+  tU64 rt0 : 4;
+  tU64 ds : 4;
+  tU64 vertexFormat : 4;
+  tU64 blendMode : 4;
+  tU64 compiledRS : 4;
+  tU64 compiledDS : 2;
+  tU64 funcVertex : 20;
+  tU64 funcPixel : 20;
+  tU64 padding : 2;
+
+  niInline void SetRT0PixelFormat(eGpuPixelFormat value) {
+    rt0 = static_cast<tU64>(value);
+  }
+  niInline eGpuPixelFormat GetRT0PixelFormat() const {
+    return static_cast<eGpuPixelFormat>(rt0);
+  }
+
+  niInline void SetDSPixelFormat(eGpuPixelFormat value) {
+    ds = static_cast<tU64>(value);
+  }
+  niInline eGpuPixelFormat GetDSPixelFormat() const {
+    return static_cast<eGpuPixelFormat>(ds);
+  }
+
+  niInline void SetVertexFormat(eFixedGpuVertexFormat value) {
+    vertexFormat = static_cast<tU64>(value);
+  }
+  niInline eFixedGpuVertexFormat GetVertexFormat() const {
+    return static_cast<eFixedGpuVertexFormat>(vertexFormat);
+  }
+
+  niInline void SetBlendMode(eBlendMode value) {
+    blendMode = static_cast<tU64>(value);
+  }
+  niInline eBlendMode GetBlendMode() const {
+    return static_cast<eBlendMode>(blendMode);
+  }
+
+  niInline void SetCompiledRS(eFixedGpuRS value) {
+    compiledRS = static_cast<tU64>(value);
+  }
+  niInline eFixedGpuRS GetCompiledRS() const {
+    return static_cast<eFixedGpuRS>(compiledRS);
+  }
+
+  niInline void SetCompiledDS(eFixedGpuDS value) {
+    compiledDS = static_cast<tU64>(value);
+  }
+  niInline eFixedGpuDS GetCompiledDS() const {
+    return static_cast<eFixedGpuDS>(compiledDS);
+  }
 
   tFixedGpuPipelineId ToId() const {
     return *(tFixedGpuPipelineId*)this;
@@ -113,7 +155,8 @@ struct sFixedGpuPipelineIdDesc {
                  compiledRS,compiledDS,
                  funcVertex,funcPixel);
   }
-} niPacked(4);
+
+};
 static_assert(sizeof(sFixedGpuPipelineIdDesc) == sizeof(tU64));
 
 struct iFixedGpuPipelines : public iUnknown {

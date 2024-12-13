@@ -94,21 +94,21 @@ namespace { __forceinline void dummyReallyDisable4786() {} }
 #define niTypeUChar wchar_t
 #define niTypeI8    signed char
 #define niTypeI16   signed short
-#define niTypeI32   signed long
+#define niTypeI32   signed int
 #define niTypeI64   signed __int64
 #define niTypeU8    unsigned char
 #define niTypeU16   unsigned short
-#define niTypeU32   unsigned long
+#define niTypeU32   unsigned int
 #define niTypeU64   unsigned __int64
 #define niTypeF32   float
 #define niTypeF64   double
 #define niTypePtr   niTypeU8*
-#define niTypeSize    size_t
-#define niTypeInt     int
-#define niTypeUInt      unsigned int
+#define niTypeSize  size_t
+#define niTypeInt   int
+#define niTypeUInt  unsigned int
 
-#define niTypeIntIsOtherType
 #define niTypeIntSize 4
+#define niTypeLongIsOtherType
 
 #ifdef ni64 // 64 bits target
 #define niTypeIntPtr  niTypeI64

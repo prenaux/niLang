@@ -230,7 +230,7 @@ class cSocket : public ImplRC<ni::iSocket>
     ::closesocket(aSocket);
   }
   inline void _SetNonBlocking(SOCKET aSocket) {
-    tU32 i = 1;
+    DWORD i = 1;
     ioctlsocket(mSocket, FIONBIO, &i);
   }
 #endif
@@ -578,7 +578,7 @@ class cSocket : public ImplRC<ni::iSocket>
     if (WSASendTo(mSocket,
                   (LPWSABUF)apBuffers,
                   (DWORD)anBufCount,
-                  &sentLength,
+                  (LPDWORD)&sentLength,
                   0,
                   apAddress != NULL ? (struct sockaddr *) & sin : 0,
                   apAddress != NULL ? sizeof (struct sockaddr_in) : 0,

@@ -28,7 +28,7 @@ if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
   SubDirHdrs $(SUBDIR) theoraplayer ;
 }
 
-if $(OSX) = 1 {
+if $(OSX) = 1 || $(WINDOWS) = 1 {
   Vulkan_Hdrs ;
 }
 

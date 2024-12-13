@@ -23,6 +23,7 @@ using namespace ni;
 
 #if defined niWindows
 #  define GDRV_GL2
+#  define GDRV_VULKAN
 #elif defined niOSX
 #  define GDRV_GL2
 #  define GDRV_METAL

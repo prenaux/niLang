@@ -1256,4 +1256,23 @@ TEST_FIXTURE(niCore_String,IntPtrIsOtherType) {
   CHECK_EQUAL(_ASTR("987"), r.Set((uintptr_t)987));
 }
 
+///////////////////////////////////////////////
+// Test the compiler `#ifdef niTypeLongIsOtherType`
+TEST_FIXTURE(niCore_String,LongIsOtherType) {
+  ni::cString r;
+  r << (long)-123;
+  r << ",";
+  r << (unsigned long)789;
+  r << ",";
+  r << -123;
+  r << ",";
+  r << 789;
+  CHECK_EQUAL(_ASTR("-123,789,-123,789"), r);
+
+  CHECK_EQUAL(_ASTR("-123"), r.Set((long)-123));
+  CHECK_EQUAL(_ASTR("789"), r.Set((unsigned)789));
+  CHECK_EQUAL(_ASTR("-123"), r.Set(-123));
+  CHECK_EQUAL(_ASTR("789"), r.Set(789));
+}
+
 } // end of anonymous namespace

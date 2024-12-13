@@ -142,11 +142,12 @@
 // Atomic, ARM, Windows
 #  ifdef _MSC_VER
 #    include <intrin.h>
-#    define SYNC_INT_TYPE long
+#    define SYNC_INT_TYPE int
 #    define SYNC_READ(addr) *addr
 #    define SYNC_WRITE(addr, value) *addr = value
-#    define SYNC_INCREMENT(addr) _InterlockedIncrement(addr)
-#    define SYNC_DECREMENT(addr) _InterlockedDecrement(addr)
+#    define SYNC_INCREMENT(addr) _InterlockedIncrement((long*)(addr))
+#    define SYNC_DECREMENT(addr) _InterlockedDecrement((long*)(addr))
+niCAssert(sizeof(SYNC_INT_TYPE) == sizeof(long));
 
 // Atomic, ARM, iOS
 #  elif defined TARGET_OS_IPHONE
@@ -187,11 +188,12 @@
 // Atomic, X64, Windows
 #  ifdef _MSC_VER
 #    include <intrin.h>
-#    define SYNC_INT_TYPE long
+#    define SYNC_INT_TYPE int
 #    define SYNC_READ(addr) *addr
 #    define SYNC_WRITE(addr, value) *addr = value
-#    define SYNC_INCREMENT(addr) _InterlockedIncrement(addr)
-#    define SYNC_DECREMENT(addr) _InterlockedDecrement(addr)
+#    define SYNC_INCREMENT(addr) _InterlockedIncrement((long*)(addr))
+#    define SYNC_DECREMENT(addr) _InterlockedDecrement((long*)(addr))
+niCAssert(sizeof(SYNC_INT_TYPE) == sizeof(long));
 
 // Atomic, X64, OSX
 #  elif defined(__APPLE__) && defined(__MACH__) // OSX
@@ -241,11 +243,12 @@ NI_LINUX_ATOMIC_INLINE int ni_linux_atomic_swap(int new_value, volatile int *ptr
 // Atomic, X86, Windows
 #  ifdef _MSC_VER
 #    include <intrin.h>
-#    define SYNC_INT_TYPE long
+#    define SYNC_INT_TYPE int
 #    define SYNC_READ(addr) *addr
 #    define SYNC_WRITE(addr, value) *addr = value
-#    define SYNC_INCREMENT(addr) _InterlockedIncrement(addr)
-#    define SYNC_DECREMENT(addr) _InterlockedDecrement(addr)
+#    define SYNC_INCREMENT(addr) _InterlockedIncrement((long*)(addr))
+#    define SYNC_DECREMENT(addr) _InterlockedDecrement((long*)(addr))
+niCAssert(sizeof(SYNC_INT_TYPE) == sizeof(long));
 
 // Atomic, X86, OSX
 #  elif defined(__APPLE__) && defined(__MACH__) // OSX
@@ -335,7 +338,7 @@ static inline SYNC_INT_TYPE _InterlockedDecrement32(SYNC_INT_TYPE* apValue) {
 #  define SYNC_DECREMENT(addr) (--*addr)
 #endif
 
-niCAssert(sizeof(SYNC_INT_TYPE) == 4); /* Should be a 32bit integer */
+niCAssert(sizeof(SYNC_INT_TYPE) == 4); /* Should be a 32bit integer, 4 bytes */
 
 #ifdef __cplusplus
 namespace ni {
@@ -2364,6 +2367,11 @@ template<> inline tU64 FMod(const tU64 a, const tU64 b) {
 }
 #  ifdef niTypeIntIsOtherType
 template<> inline int FMod(const tInt a, const tInt b) {
+  return a % b;
+}
+#  endif
+#  ifdef niTypeLongIsOtherType
+template<> inline long FMod(const long a, const long b) {
   return a % b;
 }
 #  endif

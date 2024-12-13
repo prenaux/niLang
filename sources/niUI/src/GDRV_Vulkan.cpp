@@ -191,7 +191,7 @@ static VkStencilOp _ToVkStencilOp(eStencilOp aOp) {
   return _toVkStencilOp[aOp];
 }
 
-niLetK _vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
+niLetK _vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
 static VkCullModeFlags _ToVkCullMode(eCullingMode aCullMode) {
   niCheck(aCullMode < eCullingMode_Last, VK_CULL_MODE_NONE);

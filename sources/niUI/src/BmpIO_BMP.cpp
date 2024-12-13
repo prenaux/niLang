@@ -17,41 +17,41 @@
 
 typedef struct NI_BITMAPFILEHEADER
 {
-  unsigned long  bfType;
-  unsigned long  bfSize;
-  unsigned short bfReserved1;
-  unsigned short bfReserved2;
-  unsigned long  bfOffBits;
+  tU32 bfType;
+  tU32 bfSize;
+  tU16 bfReserved1;
+  tU16 bfReserved2;
+  tU32 bfOffBits;
 } NI_BITMAPFILEHEADER;
 
 typedef struct NI_BITMAPINFOHEADER
 {
-  unsigned long  biWidth;
-  unsigned long  biHeight;
-  unsigned short biBitCount;
-  unsigned long  biCompression;
+  tU32 biWidth;
+  tU32 biHeight;
+  tU16 biBitCount;
+  tU32 biCompression;
 } NI_BITMAPINFOHEADER;
 
 typedef struct WINBMPINFOHEADER
 {
-  unsigned long  biWidth;
-  unsigned long  biHeight;
-  unsigned short biPlanes;
-  unsigned short biBitCount;
-  unsigned long  biCompression;
-  unsigned long  biSizeImage;
-  unsigned long  biXPelsPerMeter;
-  unsigned long  biYPelsPerMeter;
-  unsigned long  biClrUsed;
-  unsigned long  biClrImportant;
+  tU32 biWidth;
+  tU32 biHeight;
+  tU16 biPlanes;
+  tU16 biBitCount;
+  tU32 biCompression;
+  tU32 biSizeImage;
+  tU32 biXPelsPerMeter;
+  tU32 biYPelsPerMeter;
+  tU32 biClrUsed;
+  tU32 biClrImportant;
 } WINBMPINFOHEADER;
 
 typedef struct OS2BMPINFOHEADER
 {
-  unsigned short biWidth;
-  unsigned short biHeight;
-  unsigned short biPlanes;
-  unsigned short biBitCount;
+  tU16 biWidth;
+  tU16 biHeight;
+  tU16 biPlanes;
+  tU16 biBitCount;
 } OS2BMPINFOHEADER;
 
 

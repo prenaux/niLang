@@ -120,6 +120,18 @@ struct Var : public VarData
     SetUInt(n);
   }
 #endif
+#if defined niTypeLongIsOtherType
+  Var(long n)  {
+    mType = eType_Null;
+    mpPointer = nullptr;
+    SetI64(n);
+  }
+  Var(unsigned long n) {
+    mType = eType_Null;
+    mpPointer = nullptr;
+    SetU64(n);
+  }
+#endif
   Var(std::nullptr_t)  {
     mType = eType_Null;
     mpPointer = nullptr;

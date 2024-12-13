@@ -77,6 +77,11 @@ extern "C" {
 
 #define MY_WINBASEAPI __declspec(dllimport)
 #define MY_WINAPI __stdcall
+// Windows and MSVC are fuckwits: uint32_t is unsigned int, DWORD is unsigned
+// long, both are used thoroughly everywhere in Windows, and even though they
+// are guaranteed to be the same size and are both unsigned, MSVC treats them
+// as different pointer types with great fun ensuing...
+#define MY_DWORD unsigned long
 
 typedef struct _MY_RTL_CRITICAL_SECTION {
   void* DebugInfo;
@@ -87,13 +92,13 @@ typedef struct _MY_RTL_CRITICAL_SECTION {
   void* SpinCount;
 } MY_CRITICAL_SECTION;
 
-MY_WINBASEAPI ni::tU32 MY_WINAPI GetCurrentThreadId();
+MY_WINBASEAPI MY_DWORD MY_WINAPI GetCurrentThreadId();
 
 MY_WINBASEAPI void MY_WINAPI InitializeCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
-MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,ni::tU32 dwSpinCount);
+MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,MY_DWORD dwSpinCount);
 MY_WINBASEAPI void MY_WINAPI EnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
 MY_WINBASEAPI void MY_WINAPI LeaveCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
-MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,ni::tU32 dwSpinCount);
+MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,MY_DWORD dwSpinCount);
 MY_WINBASEAPI void MY_WINAPI DeleteCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
 
 // There's a wrapper here because CreateEvent's definition has been made by nut jobs
@@ -105,9 +110,9 @@ MY_WINBASEAPI int MY_WINAPI ResetEvent(void* hEvent);
 MY_WINBASEAPI void* MY_WINAPI CreateSemaphoreW(struct _SECURITY_ATTRIBUTES* lpSecurityAttr, long lInitialCount, long lMaximumCount, const wchar_t* lpName);
 MY_WINBASEAPI int MY_WINAPI ReleaseSemaphore(void* hObject, long lReleaseCount, long* lpPreviousCount);
 
-MY_WINBASEAPI ni::tU32 MY_WINAPI WaitForSingleObject(void* hHandle,ni::tU32 dwMilliseconds);
+MY_WINBASEAPI MY_DWORD MY_WINAPI WaitForSingleObject(void* hHandle,MY_DWORD dwMilliseconds);
 
-#define MY_STATUS_WAIT_0 ((ni::tU32)0x00000000L)
+#define MY_STATUS_WAIT_0 ((MY_DWORD)0x00000000L)
 #define MY_WAIT_OBJECT_0 ((MY_STATUS_WAIT_0) + 0)
 
 #define MY_INFINITE 0xffffffff

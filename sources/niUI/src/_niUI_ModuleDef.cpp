@@ -3133,18 +3133,6 @@ static const ni::sMethodDef iCanvas_GetHasVertices = {
 #endif
 };
 
-// Method: GetDrawOperation
-static const ni::sMethodDef iCanvas_GetDrawOperation = {
-  "GetDrawOperation",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iCanvas_GetDrawOperation)
-#else
-  NULL
-#endif
-};
-
 // Method: SetColorA
 static const ni::sParameterDef iCanvas_SetColorA_Parameters[1] = { 
   { "anColor", ni::eType_U32, NULL, "tU32" }
@@ -4205,7 +4193,6 @@ static const ni::sMethodDef* Methods_iCanvas[] = {
 	&iCanvas_BlitText,
 	&iCanvas_ResetStates,
 	&iCanvas_GetHasVertices,
-	&iCanvas_GetDrawOperation,
 	&iCanvas_SetColorA,
 	&iCanvas_GetColorA,
 	&iCanvas_SetNormal,

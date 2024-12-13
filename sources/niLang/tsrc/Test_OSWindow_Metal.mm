@@ -9,10 +9,6 @@
 #include <niLang/STL/set.h>
 #include "shaders/_allShaders.osx.metallib.h"
 
-// TODO: Move to niLang/System_Metal.mm or niUI/GDRV_Metal.mm.
-#define niVulkanOSXMetal_Implement
-#include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
-
 // #define TRACE_MOUSE_MOVE
 
 namespace ni {

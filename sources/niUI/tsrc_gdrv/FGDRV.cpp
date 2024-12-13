@@ -147,7 +147,7 @@ tBool sFGDRV_Base::Start(UnitTest::TestResults& testResults_) {
 
   _mq = niCheckNN(_mq,ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()),eFalse);
 
-  _windowHandler = niCheckNN(_mq,niNew FGDRV_WindowHandler(this),eFalse);
+  _windowHandler = niCheckNN(_windowHandler,niNew FGDRV_WindowHandler(this),eFalse);
 
   // Create the window
   _window = niCheckNN(_window,ni::GetLang()->CreateWindow(
@@ -201,10 +201,18 @@ tBool sFGDRV_Base::Step(UnitTest::TestResults& testResults_) {
     _window->SetShow(eOSWindowShowFlags_Show);
     _window->ActivateWindow();
   }
-  if (_window->GetRequestedClose())
+  {
+    sMessageDesc msg;
+    while (_mq->Poll(&msg)) {
+      msg.mptrHandler->HandleMessage(msg.mnMsg, msg.mvarA, msg.mvarB);
+      if (msg.mnMsg == eOSWindowMessage_Paint)
+        break;
+    }
+  }
+  if (_window->GetRequestedClose()) {
     return eFalse;
+  }
   _window->UpdateWindow(eTrue);
-  _mq->PollAndDispatch();
   if (_isInteractive) {
     return eTrue;
   }

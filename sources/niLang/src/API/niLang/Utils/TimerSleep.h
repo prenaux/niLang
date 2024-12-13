@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------------------------------
 
 // Don't include windows.h just for this
-extern "C" __declspec(dllimport) void __stdcall Sleep(ni::tU32 dwMilliseconds);
+extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long dwMilliseconds);
 
 namespace ni {
 

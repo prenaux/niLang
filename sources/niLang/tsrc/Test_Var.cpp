@@ -147,3 +147,32 @@ TEST_FIXTURE(FVar,IntPtrIsOtherType) {
     CHECK_EQUAL((uintptr_t)987,(uintptr_t)v.GetIntValue());
   }
 }
+
+///////////////////////////////////////////////
+// Test the compiler `#ifdef niTypeLongIsOtherType`
+TEST_FIXTURE(FVar,LongIsOtherType) {
+  {
+    Var v((long)-123);
+    Var u = (long)-123;
+    CHECK_EQUAL(v,u);
+    CHECK_EQUAL((long)-123,(long)v.GetI64());
+  }
+  {
+    Var v((unsigned long)789);
+    Var u = (unsigned long)789;
+    CHECK_EQUAL(v,u);
+    CHECK_EQUAL((unsigned long)789,v.GetU64());
+  }
+  {
+    Var v(-123l);
+    Var u = -123l;
+    CHECK_EQUAL(v,u);
+    CHECK_EQUAL(-123l,v.GetI64());
+  }
+  {
+    Var v(789ul);
+    Var u = 789ul;
+    CHECK_EQUAL(v,u);
+    CHECK_EQUAL(789ul,v.GetU64());
+  }
+}

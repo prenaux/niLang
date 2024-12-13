@@ -22,13 +22,16 @@
 //===========================================================================
 // Dynamically loaded Vulkan libraries
 //===========================================================================
-#elif defined niLinux
+#elif defined niLinux || defined niWindows
 #define niVulkan_Volk
 
 #if defined niLinuxDesktop
 #define VK_USE_PLATFORM_XLIB_KHR
 #endif
 
+#if defined niWindows
+#define VK_USE_PLATFORM_WIN32_KHR
+#endif
 
 #ifdef niVulkan_Implement
 #define VOLK_IMPLEMENTATION
@@ -47,8 +50,9 @@
 // Other utilities
 //===========================================================================
 
-// Why is this is a thing? it completely defeats the purposes of named
-// structure initializers.
-EA_DISABLE_CLANG_WARNING(-Wreorder-init-list);
+#ifdef _MSC_VER
+// warning C4324: 'VmaPoolAllocator<VmaBlockMetadata_TLSF::Block>::Item': structure was padded due to alignment specifier
+#pragma warning(disable: 4324)
+#endif
 
 #endif // __NIVULKAN_H_C0346F2C_60B4_EF11_98EE_3D62D2536177__

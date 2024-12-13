@@ -319,7 +319,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
   tBool _CreateFixedGpuPipelines(iGraphicsDriver* apDriver) {
     iGraphics* g = apDriver->GetGraphics();
-    NN<iGraphicsDriverGpu> gpuDriver = niCheckNN(gpuDriver,QueryInterface<iGraphicsDriverGpu>(apDriver),eFalse);
+    NN<iGraphicsDriverGpu> gpuDriver = niCheckNN(gpuDriver,ni::QueryInterface<iGraphicsDriverGpu>(apDriver),eFalse);
 
     {
       _texWhite = niCheckNN(
@@ -903,11 +903,11 @@ Ptr<iGpuPipeline> CreateFixedGpuPipeline(
   NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreateGpuPipelineDesc()};
   sGpuPipelineDesc& desc = *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
   desc.mFVF = _FixedGpuVertexFormatToVertexFormat(idDesc.vertexFormat);
-  desc.mColorFormats[0] = idDesc.rt0;
+  desc.mColorFormats[0] = idDesc.GetRT0PixelFormat();
   desc.mColorFormats[1] = eGpuPixelFormat_None;
   desc.mColorFormats[2] = eGpuPixelFormat_None;
   desc.mColorFormats[3] = eGpuPixelFormat_None;
-  desc.mDepthFormat = idDesc.ds;
+  desc.mDepthFormat = idDesc.GetDSPixelFormat();
   desc.mhRS = _FixedGpuRSToCompiledStatesRS(idDesc.compiledRS);
   desc.mhDS = _FixedGpuDSToCompiledStatesDS(idDesc.compiledDS);
   desc.mptrFuncs[eGpuFunctionType_Vertex] = apFuncVertex;
@@ -1011,7 +1011,7 @@ struct sGpuStream : public ImplRC<iGpuStream> {
       }
 
       niCheck(_AllocateNextChunk(),eFalse);
-      _currentChunk = _chunks.size() - 1;
+      _currentChunk = (tU32)_chunks.size() - 1;
       _currentOffset = 0;
     }
 

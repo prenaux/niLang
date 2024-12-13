@@ -213,13 +213,6 @@ IDLC_METH_BEGIN(ni,iCanvas,GetHasVertices,0)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iCanvas,GetHasVertices,0)
 
-/** ni -> iCanvas::GetDrawOperation/0 **/
-IDLC_METH_BEGIN(ni,iCanvas,GetDrawOperation,0)
-	IDLC_DECL_RETVAR(iDrawOperation*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iCanvas,GetDrawOperation,0,())
-	IDLC_RET_FROM_INTF(iDrawOperation,_Ret)
-IDLC_METH_END(ni,iCanvas,GetDrawOperation,0)
-
 /** ni -> iCanvas::SetColorA/1 **/
 IDLC_METH_BEGIN(ni,iCanvas,SetColorA,1)
 	IDLC_DECL_VAR(tU32,anColor)

@@ -88,10 +88,6 @@ struct iCanvas : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetHasVertices() const = 0;
 
-  //! Get the canvas's draw operation.
-  //! {Property}
-  virtual iDrawOperation* __stdcall GetDrawOperation() const = 0;
-
   //! Set the default color A of the canvas. (default is 0xFFFFFFFF - white)
   //! {Property}
   virtual void __stdcall SetColorA(tU32 anColor) = 0;

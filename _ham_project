@@ -13,10 +13,6 @@ TOOLSET_LIST=(repos)
 case $HAM_OS in
   NT*)
     TOOLSET_LIST+=(dx9sdk2004)
-    # The shader compiler is enabled by default on Windows
-    if [ -z "$SHADER_COMPILE" ]; then
-      SHADER_COMPILE=1
-    fi
     TOOLSET_LIST+=(vulkan_sdk)
     ;;
   LINUX*)

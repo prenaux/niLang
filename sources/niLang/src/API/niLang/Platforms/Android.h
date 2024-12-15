@@ -2,7 +2,7 @@
 #define __ANDROID_H_EB9625B7_E285_431C_9DEE_BFA03F3B7AC2__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#if defined ANDROID
+#if defined __ANDROID__
 
 #include <string.h>
 

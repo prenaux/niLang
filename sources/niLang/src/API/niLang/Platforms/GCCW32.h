@@ -6,10 +6,6 @@
 
 #define niPlatformDetected
 
-#if defined niPragmaPrintPlatformDetected || defined _COMPILER_MSVC_10_X86
-#pragma message("=== Detected MingW")
-#endif
-
 #define niWindows   // OS
 #define niGCC     // Compiler
 #define niMingW32   // Compiler, MingW32 (tested with GCC 3.4.5)

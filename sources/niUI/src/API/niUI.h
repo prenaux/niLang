@@ -34,6 +34,9 @@
 #include "niUI/ICanvas.h"
 #include "niUI/IGraphics.h"
 
+#include "niUI/IAccelerationStructure.h"
+#include "niUI/IGpu.h"
+
 #include "niUI/UIMessages.h"
 #include "niUI/IWidget.h"
 #include "niUI/IWidgetCanvas.h"

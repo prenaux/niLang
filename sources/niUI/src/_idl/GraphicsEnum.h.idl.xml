@@ -64,9 +64,12 @@
 				<comments desc="Return whether or not the driver can do wireframe rendering. "/>
 			</value>
 			<value name="eGraphicsCaps_IGpu" value="19 ">
-				<comments desc="Return whether or not the driver supports the IGpu interfaces. "/>
+				<comments desc="Return whether or not the driver supports the iGpu interfaces. "/>
 			</value>
-			<value name="eGraphicsCaps_Last" value="19 ">
+			<value name="eGraphicsCaps_IRayGpu" value="20 ">
+				<comments desc="Return whether or not the driver supports the iRayGpu interfaces and acceleration structures. "/>
+			</value>
+			<value name="eGraphicsCaps_Last" value="21 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

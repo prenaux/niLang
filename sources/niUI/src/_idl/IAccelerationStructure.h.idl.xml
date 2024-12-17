@@ -1,0 +1,146 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eAccelerationStructureType">
+			<comments desc="Acceleration structure type "/>
+			<value name="eAccelerationStructureType_Primitive" value="0 ">
+				<comments desc="Contains primitive geometry data such as triangle meshes or procedural shapes. This is the &quot;template&quot; geometry that can be instanced multiple times. ">
+					<remark text="Equivalent to Bottom Level AS (BLAS) in Vulkan/DX12 terms. "/>
+				</comments>
+			</value>
+			<value name="eAccelerationStructureType_Instance" value="1 ">
+				<comments desc="Contains instances of primitive or instance acceleration structures, each with its own transform and properties. Can be nested to create complex hierarchies. ">
+					<remark text="Equivalent to Top Level AS (TLAS) in Vulkan/DX12 terms. "/>
+				</comments>
+			</value>
+			<value name="eAccelerationStructureType_Last" value="2 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eAccelerationGeometryFlags">
+			<comments desc="Acceleration structure geometry flags "/>
+			<value name="eAccelerationGeometryFlags_None" value="0 ">
+				<comments desc="No special geometry properties "/>
+			</value>
+			<value name="eAccelerationGeometryFlags_Opaque" value="niBit ( 0 ) ">
+				<comments desc="Geometry is fully opaque, allows skipping any-hit functions "/>
+			</value>
+		</enum>
+		<enum name="eAccelerationInstanceFlags">
+			<comments desc="Acceleration structure instance flags "/>
+			<value name="eAccelerationInstanceFlags_None" value="0 ">
+				<comments desc="No special instance properties "/>
+			</value>
+			<value name="eAccelerationInstanceFlags_DisableCulling" value="niBit ( 0 ) ">
+				<comments desc="Disable face culling for this instance "/>
+			</value>
+			<value name="eAccelerationInstanceFlags_FlipCulling" value="niBit ( 1 ) ">
+				<comments desc="Invert face culling for this instance "/>
+			</value>
+			<value name="eAccelerationInstanceFlags_ForceOpaque" value="niBit ( 2 ) ">
+				<comments desc="Force instance to be opaque, skipping any-hit functions "/>
+			</value>
+			<value name="eAccelerationInstanceFlags_ForceNonOpaque" value="niBit ( 3 ) ">
+				<comments desc="Force instance to be non-opaque, always running any-hit functions "/>
+			</value>
+		</enum>
+		<interface name="iAccelerationStructure" uuid1="B2BFE248-C3BC-EF11-B54B-0B0DAFD3BED1" uuid2="0xb2bfe248,0xc3bc,0xef11,0xb5,0x4b,0x0b,0x0d,0xaf,0xd3,0xbe,0xd1">
+			<comments desc="Acceleration structure interface "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0">
+				<comments desc="Get the structure type "/>
+				<return type="eAccelerationStructureType" typec="eAccelerationStructureType" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="addTriangles" name="AddTriangles" num_parameters="5">
+				<comments desc="Add triangle geometry to primitive acceleration structure. " return="eTrue if geometry was added successfully. ">
+					<params text="apVertices Vertex buffer containing geometry vertices. "/>
+					<params text="apIndices Index buffer containing triangle indices. "/>
+					<params text="aTransform Transform matrix applied to vertices. "/>
+					<params text="aFlags Geometry flags affecting ray traversal behavior. see ni::eAccelerationGeometryFlags. "/>
+					<params text="anHitGroupIndex Index of hit group to use for this geometry. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apVertices"
+					type="iVertexArray *"
+					typec="iVertexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apIndices"
+					type="iIndexArray *"
+					typec="iIndexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTransform"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eAccelerationGeometryFlags_None "
+					name="aFlags"
+					type="tAccelerationGeometryFlags"
+					typec="tAccelerationGeometryFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="anHitGroupIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addInstance" name="AddInstance" num_parameters="6">
+				<comments desc="Add instance to instance acceleration structure. " return="eTrue if instance was added successfully. ">
+					<remark text="Hit group offset selects which pipeline hit group to use for this instance. "/>
+					<remark text="The instance mask allows filtering during ray traversal. "/>
+					<params text="apBLAS Base acceleration structure to instance. "/>
+					<params text="aTransform Instance transform matrix. "/>
+					<params text="anInstanceID Custom ID accessible in hit shaders. "/>
+					<params text="aFlags Instance flags affecting traversal behavior. \see ni::eAccelerationInstanceFlags "/>
+					<params text="anInstanceMask Visibility mask for ray filtering. "/>
+					<params text="anHitGroupOffset Index of the hit group. The return value from iRayGpuFunctionTable::AddHitGroup(). "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apBLAS"
+					type="iAccelerationStructure *"
+					typec="iAccelerationStructure*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTransform"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anInstanceID"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					default="eAccelerationInstanceFlags_None "
+					name="aFlags"
+					type="tAccelerationInstanceFlags"
+					typec="tAccelerationInstanceFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					default="0xFF "
+					name="anInstanceMask"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					default="0 "
+					last="1"
+					name="anHitGroupOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

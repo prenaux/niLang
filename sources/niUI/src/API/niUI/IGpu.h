@@ -9,6 +9,7 @@
 #include <niLang/Math/MathRect.h>
 #include "FVF.h"
 #include "GraphicsEnum.h"
+#include "IAccelerationStructure.h"
 
 namespace ni {
 
@@ -409,6 +410,59 @@ struct iGpuPipeline : public iDeviceResource
   virtual const iGpuPipelineDesc* __stdcall GetDesc() const = 0;
 };
 
+//! Ray function group type for hit functions
+enum eRayGpuFunctionGroupType {
+  //! Hit group for built-in triangle intersection
+  eRayGpuFunctionGroupType_Triangles = 0,
+  //! Hit group with custom intersection function
+  eRayGpuFunctionGroupType_Procedural = 1,
+  //! \internal
+  eRayGpuFunctionGroupType_Last niMaybeUnused = 2,
+  //! \internal
+  eRayGpuFunctionGroupType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+};
+
+//! Ray function table interface
+//! \remark Defines the complete set of functions used in a ray tracing pipeline
+struct iRayGpuFunctionTable : public iUnknown {
+  niDeclareInterfaceUUID(iRayGpuFunctionTable,0xce0a2620,0xc4bc,0xef11,0xb1,0xc9,0x23,0xa8,0x14,0x62,0x0a,0xaf);
+
+  //! Set the ray generation function.
+  //! \remark Only one ray generation function is allowed per pipeline.
+  virtual tBool __stdcall SetRayGenFunction(iGpuFunction* apFunction) = 0;
+  //! Set the miss function
+  //! \remark Optional, at most one miss function per pipeline.
+  virtual tBool __stdcall SetMissFunction(iGpuFunction* apFunction) = 0;
+
+  //! Add a hit function group.
+  //! \param ahspName Name of the hit group. Used for debugging.
+  //! \param aType Type of hit group (triangles or procedural).
+  //! \param apClosestHit Closest hit function.
+  //! \param apAnyHit Optional any-hit function.
+  //! \param apIntersection Optional intersection function for procedural geometry.
+  //! \return Hit group ID, or eInvalidHandle if failed.
+  //! \remark Hit groups are immutable once the pipeline is created.
+  virtual tU32 __stdcall AddHitGroup(
+    iHString* ahspName,
+    eRayGpuFunctionGroupType aType,
+    iGpuFunction* apClosestHit,
+    iGpuFunction* apAnyHit = nullptr,
+    iGpuFunction* apIntersection = nullptr) = 0;
+};
+
+//! Ray tracing gpu pipeline interface
+//! \remark Ray execution order: Generation -> [Intersection -> Any Hit] -> Closest Hit or Miss
+struct iRayGpuPipeline : public iDeviceResource {
+  niDeclareInterfaceUUID(iRayGpuPipeline,0x54c330ff,0xc3bc,0xef11,0x9b,0xeb,0x2d,0x23,0xa2,0x57,0x56,0x3e);
+
+  //! Get ray generation function
+  virtual iGpuFunction* __stdcall GetRayGenFunction() const = 0;
+  //! Get miss function
+  virtual iGpuFunction* __stdcall GetMissFunction() const = 0;
+  //! Get function table
+  virtual iRayGpuFunctionTable* __stdcall GetFunctionTable() const = 0;
+};
+
 struct iGpuCommandEncoder : public iUnknown {
   niDeclareInterfaceUUID(iGpuCommandEncoder,0x055a196d,0x4ae9,0x7648,0xa8,0x6e,0x5e,0x90,0xaf,0xf2,0x16,0xce);
 
@@ -520,6 +574,22 @@ struct iGpuCommandEncoder : public iUnknown {
   //! \param anFirstIndex Index of first index to draw
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) = 0;
   //! @}
+
+ //##########################################################################
+  //! \name Ray Tracing Commands
+  //##########################################################################
+  //! @{
+
+  //! Build acceleration structure
+  virtual tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) = 0;
+
+  //! Dispatch rays
+  virtual tBool __stdcall DispatchRays(
+    iRayGpuPipeline* apPipeline,
+    tU32 anWidth,
+    tU32 anHeight,
+    tU32 anDepth) = 0;
+  //! @}
 };
 
 //! GPU-specific graphics context interface.
@@ -562,9 +632,17 @@ struct iGraphicsDriverGpu : public iUnknown
   //! Compile a GPU pipeline description into a driver handle.
   virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) = 0;
 
-
   //! Synchronize a managed resource from the GPU to the CPU memory.
   virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
+
+  //! Create ray tracing pipeline
+  virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
+    iHString* ahspName,
+    iRayGpuFunctionTable* apFunctionTable) = 0;
+  //! Create acceleration structure
+  virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
+    iHString* ahspName,
+    eAccelerationStructureType aType) = 0;
 };
 
 //===========================================================================
@@ -580,7 +658,7 @@ enum eGLSLVulkanDescriptorSet {
   eGLSLVulkanDescriptorSet_TextureShadow = 4,
   eGLSLVulkanDescriptorSet_Sampler = 5,
   eGLSLVulkanDescriptorSet_SamplerShadow = 6,
-  eGLSLVulkanDescriptorSet_AccelStruct = 7,
+  eGLSLVulkanDescriptorSet_AccelerationStructure = 7,
   //! \internal
   eGLSLVulkanDescriptorSet_Last niMaybeUnused = 8,
 };
@@ -603,5 +681,7 @@ enum eGLSLVulkanVertexInputLayout {
   eGLSLVulkanVertexInputLayout_Last niMaybeUnused = 13
 };
 
-}
+/// EOF //////////////////////////////////////////////////////////////////////////////////////
+/**@}*/
+}; // End of ni
 #endif // __IGPU_H_990FD559_373C_7E4E_8C0C_63859580DB23__

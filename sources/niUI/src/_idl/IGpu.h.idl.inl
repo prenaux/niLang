@@ -363,6 +363,70 @@ IDLC_METH_END(ni,iGpuPipeline,GetDesc,0)
 
 IDLC_END_INTF(ni,iGpuPipeline)
 
+/** interface : iRayGpuFunctionTable **/
+IDLC_BEGIN_INTF(ni,iRayGpuFunctionTable)
+/** ni -> iRayGpuFunctionTable::SetRayGenFunction/1 **/
+IDLC_METH_BEGIN(ni,iRayGpuFunctionTable,SetRayGenFunction,1)
+	IDLC_DECL_VAR(iGpuFunction*,apFunction)
+	IDLC_BUF_TO_INTF(iGpuFunction,apFunction)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuFunctionTable,SetRayGenFunction,1,(apFunction))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRayGpuFunctionTable,SetRayGenFunction,1)
+
+/** ni -> iRayGpuFunctionTable::SetMissFunction/1 **/
+IDLC_METH_BEGIN(ni,iRayGpuFunctionTable,SetMissFunction,1)
+	IDLC_DECL_VAR(iGpuFunction*,apFunction)
+	IDLC_BUF_TO_INTF(iGpuFunction,apFunction)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuFunctionTable,SetMissFunction,1,(apFunction))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRayGpuFunctionTable,SetMissFunction,1)
+
+/** ni -> iRayGpuFunctionTable::AddHitGroup/5 **/
+IDLC_METH_BEGIN(ni,iRayGpuFunctionTable,AddHitGroup,5)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(eRayGpuFunctionGroupType,aType)
+	IDLC_BUF_TO_ENUM(eRayGpuFunctionGroupType,aType)
+	IDLC_DECL_VAR(iGpuFunction*,apClosestHit)
+	IDLC_BUF_TO_INTF(iGpuFunction,apClosestHit)
+	IDLC_DECL_VAR(iGpuFunction*,apAnyHit)
+	IDLC_BUF_TO_INTF(iGpuFunction,apAnyHit)
+	IDLC_DECL_VAR(iGpuFunction*,apIntersection)
+	IDLC_BUF_TO_INTF(iGpuFunction,apIntersection)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuFunctionTable,AddHitGroup,5,(ahspName,aType,apClosestHit,apAnyHit,apIntersection))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iRayGpuFunctionTable,AddHitGroup,5)
+
+IDLC_END_INTF(ni,iRayGpuFunctionTable)
+
+/** interface : iRayGpuPipeline **/
+IDLC_BEGIN_INTF(ni,iRayGpuPipeline)
+/** ni -> iRayGpuPipeline::GetRayGenFunction/0 **/
+IDLC_METH_BEGIN(ni,iRayGpuPipeline,GetRayGenFunction,0)
+	IDLC_DECL_RETVAR(iGpuFunction*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuPipeline,GetRayGenFunction,0,())
+	IDLC_RET_FROM_INTF(iGpuFunction,_Ret)
+IDLC_METH_END(ni,iRayGpuPipeline,GetRayGenFunction,0)
+
+/** ni -> iRayGpuPipeline::GetMissFunction/0 **/
+IDLC_METH_BEGIN(ni,iRayGpuPipeline,GetMissFunction,0)
+	IDLC_DECL_RETVAR(iGpuFunction*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuPipeline,GetMissFunction,0,())
+	IDLC_RET_FROM_INTF(iGpuFunction,_Ret)
+IDLC_METH_END(ni,iRayGpuPipeline,GetMissFunction,0)
+
+/** ni -> iRayGpuPipeline::GetFunctionTable/0 **/
+IDLC_METH_BEGIN(ni,iRayGpuPipeline,GetFunctionTable,0)
+	IDLC_DECL_RETVAR(iRayGpuFunctionTable*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayGpuPipeline,GetFunctionTable,0,())
+	IDLC_RET_FROM_INTF(iRayGpuFunctionTable,_Ret)
+IDLC_METH_END(ni,iRayGpuPipeline,GetFunctionTable,0)
+
+IDLC_END_INTF(ni,iRayGpuPipeline)
+
 /** interface : iGpuCommandEncoder **/
 IDLC_BEGIN_INTF(ni,iGpuCommandEncoder)
 /** ni -> iGpuCommandEncoder::SetPipeline/1 **/
@@ -530,6 +594,30 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DrawIndexed,3)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iGpuCommandEncoder,DrawIndexed,3)
 
+/** ni -> iGpuCommandEncoder::BuildAccelerationStructure/1 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,BuildAccelerationStructure,1)
+	IDLC_DECL_VAR(iAccelerationStructure*,apAS)
+	IDLC_BUF_TO_INTF(iAccelerationStructure,apAS)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,BuildAccelerationStructure,1,(apAS))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,BuildAccelerationStructure,1)
+
+/** ni -> iGpuCommandEncoder::DispatchRays/4 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DispatchRays,4)
+	IDLC_DECL_VAR(iRayGpuPipeline*,apPipeline)
+	IDLC_BUF_TO_INTF(iRayGpuPipeline,apPipeline)
+	IDLC_DECL_VAR(tU32,anWidth)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anWidth)
+	IDLC_DECL_VAR(tU32,anHeight)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anHeight)
+	IDLC_DECL_VAR(tU32,anDepth)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anDepth)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DispatchRays,4,(apPipeline,anWidth,anHeight,anDepth))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iGpuCommandEncoder,DispatchRays,4)
+
 IDLC_END_INTF(ni,iGpuCommandEncoder)
 
 /** interface : iGraphicsContextGpu **/
@@ -644,6 +732,28 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,BlitManagedGpuBufferToSystemMemory,1)
 	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,BlitManagedGpuBufferToSystemMemory,1,(apBuffer))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,BlitManagedGpuBufferToSystemMemory,1)
+
+/** ni -> iGraphicsDriverGpu::CreateRayPipeline/2 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateRayPipeline,2)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(iRayGpuFunctionTable*,apFunctionTable)
+	IDLC_BUF_TO_INTF(iRayGpuFunctionTable,apFunctionTable)
+	IDLC_DECL_RETVAR(Ptr<iRayGpuPipeline>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateRayPipeline,2,(ahspName,apFunctionTable))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateRayPipeline,2)
+
+/** ni -> iGraphicsDriverGpu::CreateAccelerationStructure/2 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateAccelerationStructure,2)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(eAccelerationStructureType,aType)
+	IDLC_BUF_TO_ENUM(eAccelerationStructureType,aType)
+	IDLC_DECL_RETVAR(Ptr<iAccelerationStructure>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateAccelerationStructure,2,(ahspName,aType))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateAccelerationStructure,2)
 
 IDLC_END_INTF(ni,iGraphicsDriverGpu)
 

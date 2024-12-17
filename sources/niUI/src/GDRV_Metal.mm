@@ -1241,6 +1241,8 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
         return 1;
       case eGraphicsCaps_IGpu:
         return 1;
+      case eGraphicsCaps_IRayGpu:
+        return 0;
     }
   }
 
@@ -1558,6 +1560,22 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     niPanicUnreachable("Unimplemented");
     return eFalse;
   }
+
+  Ptr<iRayGpuPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
+    iHString* ahspName,
+    iRayGpuFunctionTable* apFunctionTable)
+  {
+    niError("Ray tracing not implemented in Metal.");
+    return nullptr;
+  }
+
+  Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure(
+    iHString* ahspName,
+    eAccelerationStructureType aType)
+  {
+    niError("Ray tracing not implemented in Metal.");
+    return nullptr;
+  }
 };
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& avarB) {
@@ -1814,6 +1832,19 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
      vertexStart:anFirstVertex
      vertexCount:anVertexCount];
     return eTrue;
+  }
+
+  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall DispatchRays(
+    iRayGpuPipeline* apPipeline,
+    tU32 anWidth,
+    tU32 anHeight,
+    tU32 anDepth)
+  {
+    return eFalse;
   }
 };
 

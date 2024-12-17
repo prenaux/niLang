@@ -29,6 +29,7 @@
 #include "_idl/Colors.h.idl.inl"
 #include "_idl/FVF.h.idl.inl"
 #include "_idl/GraphicsEnum.h.idl.inl"
+#include "_idl/IAccelerationStructure.h.idl.inl"
 #include "_idl/IBitmap2D.h.idl.inl"
 #include "_idl/IBitmap3D.h.idl.inl"
 #include "_idl/IBitmapBase.h.idl.inl"
@@ -100,6 +101,89 @@
 
 namespace ni {
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iAccelerationStructure wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iAccelerationStructure() {
+
+// Method: GetType
+static const ni::sMethodDef iAccelerationStructure_GetType = {
+  "GetType",
+  0|ni::eType_Enum, NULL, "eAccelerationStructureType",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iAccelerationStructure_GetType)
+#else
+  NULL
+#endif
+};
+
+// Method: AddTriangles
+static const ni::sParameterDef iAccelerationStructure_AddTriangles_Parameters[5] = { 
+  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*" }, 
+  { "apIndices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tAccelerationGeometryFlags" }, 
+  { "anHitGroupIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iAccelerationStructure_AddTriangles = {
+  "AddTriangles",
+  0|ni::eType_I8, NULL, "tBool",
+  5, iAccelerationStructure_AddTriangles_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iAccelerationStructure_AddTriangles)
+#else
+  NULL
+#endif
+};
+
+// Method: AddInstance
+static const ni::sParameterDef iAccelerationStructure_AddInstance_Parameters[6] = { 
+  { "apBLAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iAccelerationStructure), "iAccelerationStructure*" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "anInstanceID", ni::eType_U32, NULL, "tU32" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tAccelerationInstanceFlags" }, 
+  { "anInstanceMask", ni::eType_U8, NULL, "tU8" }, 
+  { "anHitGroupOffset", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iAccelerationStructure_AddInstance = {
+  "AddInstance",
+  0|ni::eType_I8, NULL, "tBool",
+  6, iAccelerationStructure_AddInstance_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iAccelerationStructure_AddInstance)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iAccelerationStructure[] = {
+	&iAccelerationStructure_GetType,
+	&iAccelerationStructure_AddTriangles,
+	&iAccelerationStructure_AddInstance,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iAccelerationStructure[] = {
+  &niGetInterfaceUUID(iDeviceResource),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iAccelerationStructure = {
+  niGetInterfaceID(iAccelerationStructure),
+  &niGetInterfaceUUID(iAccelerationStructure),
+  1,
+  Parents_iAccelerationStructure,
+  niCountOf(Methods_iAccelerationStructure),Methods_iAccelerationStructure,
+  NULL
+};
+
+	return &InterfaceDef_iAccelerationStructure;
+}
+
+// End of iAccelerationStructure wrapper
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -8981,6 +9065,155 @@ static const ni::sInterfaceDef InterfaceDef_iGpuPipeline = {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+// iRayGpuFunctionTable wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayGpuFunctionTable() {
+
+// Method: SetRayGenFunction
+static const ni::sParameterDef iRayGpuFunctionTable_SetRayGenFunction_Parameters[1] = { 
+  { "apFunction", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
+}; 
+static const ni::sMethodDef iRayGpuFunctionTable_SetRayGenFunction = {
+  "SetRayGenFunction",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iRayGpuFunctionTable_SetRayGenFunction_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuFunctionTable_SetRayGenFunction)
+#else
+  NULL
+#endif
+};
+
+// Method: SetMissFunction
+static const ni::sParameterDef iRayGpuFunctionTable_SetMissFunction_Parameters[1] = { 
+  { "apFunction", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
+}; 
+static const ni::sMethodDef iRayGpuFunctionTable_SetMissFunction = {
+  "SetMissFunction",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iRayGpuFunctionTable_SetMissFunction_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuFunctionTable_SetMissFunction)
+#else
+  NULL
+#endif
+};
+
+// Method: AddHitGroup
+static const ni::sParameterDef iRayGpuFunctionTable_AddHitGroup_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eRayGpuFunctionGroupType" }, 
+  { "apClosestHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }, 
+  { "apAnyHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }, 
+  { "apIntersection", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
+}; 
+static const ni::sMethodDef iRayGpuFunctionTable_AddHitGroup = {
+  "AddHitGroup",
+  0|ni::eType_U32, NULL, "tU32",
+  5, iRayGpuFunctionTable_AddHitGroup_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuFunctionTable_AddHitGroup)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iRayGpuFunctionTable[] = {
+	&iRayGpuFunctionTable_SetRayGenFunction,
+	&iRayGpuFunctionTable_SetMissFunction,
+	&iRayGpuFunctionTable_AddHitGroup,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iRayGpuFunctionTable[] = {
+  &niGetInterfaceUUID(iUnknown),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iRayGpuFunctionTable = {
+  niGetInterfaceID(iRayGpuFunctionTable),
+  &niGetInterfaceUUID(iRayGpuFunctionTable),
+  1,
+  Parents_iRayGpuFunctionTable,
+  niCountOf(Methods_iRayGpuFunctionTable),Methods_iRayGpuFunctionTable,
+  NULL
+};
+
+	return &InterfaceDef_iRayGpuFunctionTable;
+}
+
+// End of iRayGpuFunctionTable wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iRayGpuPipeline wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayGpuPipeline() {
+
+// Method: GetRayGenFunction
+static const ni::sMethodDef iRayGpuPipeline_GetRayGenFunction = {
+  "GetRayGenFunction",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuPipeline_GetRayGenFunction)
+#else
+  NULL
+#endif
+};
+
+// Method: GetMissFunction
+static const ni::sMethodDef iRayGpuPipeline_GetMissFunction = {
+  "GetMissFunction",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuPipeline_GetMissFunction)
+#else
+  NULL
+#endif
+};
+
+// Method: GetFunctionTable
+static const ni::sMethodDef iRayGpuPipeline_GetFunctionTable = {
+  "GetFunctionTable",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuFunctionTable), "iRayGpuFunctionTable*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayGpuPipeline_GetFunctionTable)
+#else
+  NULL
+#endif
+};
+
+static const ni::sMethodDef* Methods_iRayGpuPipeline[] = {
+	&iRayGpuPipeline_GetRayGenFunction,
+	&iRayGpuPipeline_GetMissFunction,
+	&iRayGpuPipeline_GetFunctionTable,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iRayGpuPipeline[] = {
+  &niGetInterfaceUUID(iDeviceResource),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iRayGpuPipeline = {
+  niGetInterfaceID(iRayGpuPipeline),
+  &niGetInterfaceUUID(iRayGpuPipeline),
+  1,
+  Parents_iRayGpuPipeline,
+  niCountOf(Methods_iRayGpuPipeline),Methods_iRayGpuPipeline,
+  NULL
+};
+
+	return &InterfaceDef_iRayGpuPipeline;
+}
+
+// End of iRayGpuPipeline wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 // iGpuCommandEncoder wrapper
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGpuCommandEncoder() {
@@ -9258,6 +9491,39 @@ static const ni::sMethodDef iGpuCommandEncoder_DrawIndexed = {
 #endif
 };
 
+// Method: BuildAccelerationStructure
+static const ni::sParameterDef iGpuCommandEncoder_BuildAccelerationStructure_Parameters[1] = { 
+  { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iAccelerationStructure), "iAccelerationStructure*" }
+}; 
+static const ni::sMethodDef iGpuCommandEncoder_BuildAccelerationStructure = {
+  "BuildAccelerationStructure",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iGpuCommandEncoder_BuildAccelerationStructure_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuCommandEncoder_BuildAccelerationStructure)
+#else
+  NULL
+#endif
+};
+
+// Method: DispatchRays
+static const ni::sParameterDef iGpuCommandEncoder_DispatchRays_Parameters[4] = { 
+  { "apPipeline", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuPipeline), "iRayGpuPipeline*" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "anDepth", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iGpuCommandEncoder_DispatchRays = {
+  "DispatchRays",
+  0|ni::eType_I8, NULL, "tBool",
+  4, iGpuCommandEncoder_DispatchRays_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGpuCommandEncoder_DispatchRays)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iGpuCommandEncoder[] = {
 	&iGpuCommandEncoder_SetPipeline,
 	&iGpuCommandEncoder_SetVertexBuffer,
@@ -9276,6 +9542,8 @@ static const ni::sMethodDef* Methods_iGpuCommandEncoder[] = {
 	&iGpuCommandEncoder_SetBlendColorConstant,
 	&iGpuCommandEncoder_Draw,
 	&iGpuCommandEncoder_DrawIndexed,
+	&iGpuCommandEncoder_BuildAccelerationStructure,
+	&iGpuCommandEncoder_DispatchRays,
 
 };
 
@@ -9500,6 +9768,38 @@ static const ni::sMethodDef iGraphicsDriverGpu_BlitManagedGpuBufferToSystemMemor
 #endif
 };
 
+// Method: CreateRayPipeline
+static const ni::sParameterDef iGraphicsDriverGpu_CreateRayPipeline_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apFunctionTable", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuFunctionTable), "iRayGpuFunctionTable*" }
+}; 
+static const ni::sMethodDef iGraphicsDriverGpu_CreateRayPipeline = {
+  "CreateRayPipeline",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuPipeline), "Ptr<iRayGpuPipeline>",
+  2, iGraphicsDriverGpu_CreateRayPipeline_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverGpu_CreateRayPipeline)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateAccelerationStructure
+static const ni::sParameterDef iGraphicsDriverGpu_CreateAccelerationStructure_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eAccelerationStructureType" }
+}; 
+static const ni::sMethodDef iGraphicsDriverGpu_CreateAccelerationStructure = {
+  "CreateAccelerationStructure",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iAccelerationStructure), "Ptr<iAccelerationStructure>",
+  2, iGraphicsDriverGpu_CreateAccelerationStructure_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverGpu_CreateAccelerationStructure)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_CreateGpuBuffer,
 	&iGraphicsDriverGpu_CreateGpuBufferFromData,
@@ -9510,6 +9810,8 @@ static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_CreateGpuBlendMode,
 	&iGraphicsDriverGpu_CreateGpuPipeline,
 	&iGraphicsDriverGpu_BlitManagedGpuBufferToSystemMemory,
+	&iGraphicsDriverGpu_CreateRayPipeline,
+	&iGraphicsDriverGpu_CreateAccelerationStructure,
 
 };
 
@@ -37017,6 +37319,7 @@ static const ni::sEnumValueDef Enum_eGraphicsCaps_Values[] = {
 	{ "BlitBackBuffer", ni::eGraphicsCaps_BlitBackBuffer },
 	{ "Wireframe", ni::eGraphicsCaps_Wireframe },
 	{ "IGpu", ni::eGraphicsCaps_IGpu },
+	{ "IRayGpu", ni::eGraphicsCaps_IRayGpu },
 	{ "Last", ni::eGraphicsCaps_Last },
 };
 static const ni::sEnumDef Enum_eGraphicsCaps = {
@@ -37373,6 +37676,55 @@ static const ni::sEnumDef Enum_eCompiledStates = {
 };
 
 	return &Enum_eCompiledStates;
+}
+
+// --- eAccelerationStructureType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eAccelerationStructureType() {
+
+static const ni::sEnumValueDef Enum_eAccelerationStructureType_Values[] = {
+	{ "Primitive", ni::eAccelerationStructureType_Primitive },
+	{ "Instance", ni::eAccelerationStructureType_Instance },
+	{ "Last", ni::eAccelerationStructureType_Last },
+};
+static const ni::sEnumDef Enum_eAccelerationStructureType = {
+	"eAccelerationStructureType",
+  niCountOf(Enum_eAccelerationStructureType_Values), Enum_eAccelerationStructureType_Values
+};
+
+	return &Enum_eAccelerationStructureType;
+}
+
+// --- eAccelerationGeometryFlags ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eAccelerationGeometryFlags() {
+
+static const ni::sEnumValueDef Enum_eAccelerationGeometryFlags_Values[] = {
+	{ "None", ni::eAccelerationGeometryFlags_None },
+	{ "Opaque", ni::eAccelerationGeometryFlags_Opaque },
+};
+static const ni::sEnumDef Enum_eAccelerationGeometryFlags = {
+	"eAccelerationGeometryFlags",
+  niCountOf(Enum_eAccelerationGeometryFlags_Values), Enum_eAccelerationGeometryFlags_Values
+};
+
+	return &Enum_eAccelerationGeometryFlags;
+}
+
+// --- eAccelerationInstanceFlags ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eAccelerationInstanceFlags() {
+
+static const ni::sEnumValueDef Enum_eAccelerationInstanceFlags_Values[] = {
+	{ "None", ni::eAccelerationInstanceFlags_None },
+	{ "DisableCulling", ni::eAccelerationInstanceFlags_DisableCulling },
+	{ "FlipCulling", ni::eAccelerationInstanceFlags_FlipCulling },
+	{ "ForceOpaque", ni::eAccelerationInstanceFlags_ForceOpaque },
+	{ "ForceNonOpaque", ni::eAccelerationInstanceFlags_ForceNonOpaque },
+};
+static const ni::sEnumDef Enum_eAccelerationInstanceFlags = {
+	"eAccelerationInstanceFlags",
+  niCountOf(Enum_eAccelerationInstanceFlags_Values), Enum_eAccelerationInstanceFlags_Values
+};
+
+	return &Enum_eAccelerationInstanceFlags;
 }
 
 // --- eBitmapType ---
@@ -37794,6 +38146,22 @@ static const ni::sEnumDef Enum_eGpuBlendOp = {
 	return &Enum_eGpuBlendOp;
 }
 
+// --- eRayGpuFunctionGroupType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eRayGpuFunctionGroupType() {
+
+static const ni::sEnumValueDef Enum_eRayGpuFunctionGroupType_Values[] = {
+	{ "Triangles", ni::eRayGpuFunctionGroupType_Triangles },
+	{ "Procedural", ni::eRayGpuFunctionGroupType_Procedural },
+	{ "Last", ni::eRayGpuFunctionGroupType_Last },
+};
+static const ni::sEnumDef Enum_eRayGpuFunctionGroupType = {
+	"eRayGpuFunctionGroupType",
+  niCountOf(Enum_eRayGpuFunctionGroupType_Values), Enum_eRayGpuFunctionGroupType_Values
+};
+
+	return &Enum_eRayGpuFunctionGroupType;
+}
+
 // --- eGLSLVulkanDescriptorSet ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanDescriptorSet() {
 
@@ -37805,7 +38173,7 @@ static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
 	{ "TextureShadow", ni::eGLSLVulkanDescriptorSet_TextureShadow },
 	{ "Sampler", ni::eGLSLVulkanDescriptorSet_Sampler },
 	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
-	{ "AccelStruct", ni::eGLSLVulkanDescriptorSet_AccelStruct },
+	{ "AccelerationStructure", ni::eGLSLVulkanDescriptorSet_AccelerationStructure },
 	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
 };
 static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {
@@ -39613,6 +39981,7 @@ static const ni::sObjectTypeDef* ObjectTypes[] = {
 
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoInterfaceDef
 static const ni::sInterfaceDef* Interfaces[] = {
+  GetInterfaceDef_iAccelerationStructure(),
   GetInterfaceDef_iBitmap2D(),
   GetInterfaceDef_iBitmap3D(),
   GetInterfaceDef_iBitmapFormat(),
@@ -39643,6 +40012,8 @@ static const ni::sInterfaceDef* Interfaces[] = {
   GetInterfaceDef_iGpuBlendMode(),
   GetInterfaceDef_iGpuPipelineDesc(),
   GetInterfaceDef_iGpuPipeline(),
+  GetInterfaceDef_iRayGpuFunctionTable(),
+  GetInterfaceDef_iRayGpuPipeline(),
   GetInterfaceDef_iGpuCommandEncoder(),
   GetInterfaceDef_iGraphicsContextGpu(),
   GetInterfaceDef_iGraphicsDriverGpu(),
@@ -39780,6 +40151,9 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eColorWriteMask(),
   GetEnumDef_eGraphicsDisplayFlags(),
   GetEnumDef_eCompiledStates(),
+  GetEnumDef_eAccelerationStructureType(),
+  GetEnumDef_eAccelerationGeometryFlags(),
+  GetEnumDef_eAccelerationInstanceFlags(),
   GetEnumDef_eBitmapType(),
   GetEnumDef_eBitmapCubeFace(),
   GetEnumDef_eBoundingVolumeType(),
@@ -39802,6 +40176,7 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGpuPixelFormat(),
   GetEnumDef_eGpuBlendFactor(),
   GetEnumDef_eGpuBlendOp(),
+  GetEnumDef_eRayGpuFunctionGroupType(),
   GetEnumDef_eGLSLVulkanDescriptorSet(),
   GetEnumDef_eGLSLVulkanVertexInputLayout(),
   GetEnumDef_eGraphicsCaptureFlags(),

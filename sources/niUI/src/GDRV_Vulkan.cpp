@@ -50,6 +50,14 @@ static const char* const _vkRequiredDeviceExtensions[] = {
 niLetK knVkRequiredDeviceExtensionsCount = (tU32)niCountOf(_vkRequiredDeviceExtensions);
 niLetK knVulkanMaxDescriptorSets = 10000_u32;
 
+static const char* _vkRequiredRayTracingExtensions[] = {
+  VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+  VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
+  VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+  VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
+};
+niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
+
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 
 #define NISH_VULKAN_TARGET spv_vk12
@@ -429,6 +437,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   VkInstance _instance = VK_NULL_HANDLE;
   VkPhysicalDeviceFeatures _physicalDeviceFeatures = {};
+  tBool _isRayTracingSupported = eFalse;
   // VkPhysicalDevice will be implicitly destroyed when the VkInstance is destroyed.
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
   typedef astl::map<cString,tU32> tVkExtensionsMap;
@@ -642,11 +651,19 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
 
     // Determine support for ray tracing and mesh shaders
-    bool isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
-    if (isRayTracingSupported) {
+    _isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
+    if (_isRayTracingSupported) {
+      for (const char* ext : _vkRequiredRayTracingExtensions) {
+        if (_extensions.find(ext) == _extensions.end()) {
+          _isRayTracingSupported = false;
+          niLog(Warning, niFmt("Vulkan Ray Tracing disabled because of missing extension '%s'.", ext));
+        }
+      }
+    }
+
+    if (_isRayTracingSupported) {
       VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingProps = {};
       rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
-
       VkPhysicalDeviceProperties2 deviceProps2 = {};
       deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
       deviceProps2.pNext = &rayTracingProps;
@@ -943,9 +960,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  maxSamplerAnisotropy: %g",
       props.limits.maxSamplerAnisotropy));
 
-    // Ray tracing & mesh shaders detection
-    _InitDeviceFeatures2(_physicalDevice);
-
     // Get extensions
     {
       tU32 extensionCount = 0;
@@ -977,6 +991,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         return eFalse;
       }
     }
+
+    // Ray tracing & mesh shaders detection
+    _InitDeviceFeatures2(_physicalDevice);
 
     return eTrue;
   }
@@ -1166,6 +1183,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         return 1;
       case eGraphicsCaps_IGpu:
         return 1;
+      case eGraphicsCaps_IRayGpu:
+        return _isRayTracingSupported ? 1 : 0;
     }
     return 0;
   }
@@ -1258,6 +1277,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl;
   virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
   virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl;
+  virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
+    iHString* ahspName,
+    iRayGpuFunctionTable* apFunctionTable);
+  virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
+    iHString* ahspName,
+    eAccelerationStructureType aType);
   //// iGraphicsDriverGpu ///////////////////////////////
 };
 
@@ -2785,6 +2810,21 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
     return eTrue;
   }
+
+  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) {
+    niCheck(_driver->_isRayTracingSupported,eFalse);
+    return eFalse;
+  }
+
+  virtual tBool __stdcall DispatchRays(
+    iRayGpuPipeline* apPipeline,
+    tU32 anWidth,
+    tU32 anHeight,
+    tU32 anDepth)
+  {
+    niCheck(_driver->_isRayTracingSupported,eFalse);
+    return eFalse;
+  }
 };
 
 static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriver> aDriver) {
@@ -3891,6 +3931,22 @@ Ptr<iGpuPipeline> sVulkanDriver::CreateGpuPipeline(iHString* ahspName, const iGp
 tBool sVulkanDriver::BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) {
   niPanicUnreachable("Unimplemented");
   return eFalse;
+}
+
+Ptr<iRayGpuPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
+  iHString* ahspName,
+  iRayGpuFunctionTable* apFunctionTable)
+{
+  niCheck(_isRayTracingSupported,nullptr);
+  return nullptr;
+}
+
+Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure(
+  iHString* ahspName,
+  eAccelerationStructureType aType)
+{
+  niCheck(_isRayTracingSupported,nullptr);
+  return nullptr;
 }
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var& avarB) {

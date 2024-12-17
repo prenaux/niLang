@@ -775,6 +775,121 @@
 				<return type="const iGpuPipelineDesc *" typec="const iGpuPipelineDesc*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
+		<enum name="eRayGpuFunctionGroupType">
+			<comments desc="Ray function group type for hit functions "/>
+			<value name="eRayGpuFunctionGroupType_Triangles" value="0 ">
+				<comments desc="Hit group for built-in triangle intersection "/>
+			</value>
+			<value name="eRayGpuFunctionGroupType_Procedural" value="1 ">
+				<comments desc="Hit group with custom intersection function "/>
+			</value>
+			<value name="eRayGpuFunctionGroupType_Last" value="2 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iRayGpuFunctionTable" uuid1="CE0A2620-C4BC-EF11-B1C9-23A814620AAF" uuid2="0xce0a2620,0xc4bc,0xef11,0xb1,0xc9,0x23,0xa8,0x14,0x62,0x0a,0xaf">
+			<comments desc="Ray function table interface ">
+				<remark text="Defines the complete set of functions used in a ray tracing pipeline "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="setRayGenFunction" name="SetRayGenFunction" num_parameters="1">
+				<comments desc="Set the ray generation function. ">
+					<remark text="Only one ray generation function is allowed per pipeline. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apFunction"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setMissFunction" name="SetMissFunction" num_parameters="1">
+				<comments desc="Set the miss function ">
+					<remark text="Optional, at most one miss function per pipeline. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apFunction"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addHitGroup" name="AddHitGroup" num_parameters="5">
+				<comments desc="Add a hit function group. " return="Hit group ID, or eInvalidHandle if failed. ">
+					<remark text="Hit groups are immutable once the pipeline is created. "/>
+					<params text="ahspName Name of the hit group. Used for debugging. "/>
+					<params text="aType Type of hit group (triangles or procedural). "/>
+					<params text="apClosestHit Closest hit function. "/>
+					<params text="apAnyHit Optional any-hit function. "/>
+					<params text="apIntersection Optional intersection function for procedural geometry. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="eRayGpuFunctionGroupType"
+					typec="eRayGpuFunctionGroupType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="apClosestHit"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="nullptr "
+					name="apAnyHit"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="nullptr "
+					last="1"
+					name="apIntersection"
+					type="iGpuFunction *"
+					typec="iGpuFunction*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iRayGpuPipeline" uuid1="54C330FF-C3BC-EF11-9BEB-2D23A257563E" uuid2="0x54c330ff,0xc3bc,0xef11,0x9b,0xeb,0x2d,0x23,0xa2,0x57,0x56,0x3e">
+			<comments desc="Ray tracing gpu pipeline interface ">
+				<remark text="Ray execution order: Generation -&gt; [Intersection -&gt; Any Hit] -&gt; Closest Hit or Miss "/>
+			</comments>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getRayGenFunction"
+				name="GetRayGenFunction"
+				num_parameters="0">
+				<comments desc="Get ray generation function "/>
+				<return type="iGpuFunction *" typec="iGpuFunction*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMissFunction"
+				name="GetMissFunction"
+				num_parameters="0">
+				<comments desc="Get miss function "/>
+				<return type="iGpuFunction *" typec="iGpuFunction*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFunctionTable"
+				name="GetFunctionTable"
+				num_parameters="0">
+				<comments desc="Get function table "/>
+				<return type="iRayGpuFunctionTable *" typec="iRayGpuFunctionTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
 		<interface name="iGpuCommandEncoder" uuid1="055A196D-4AE9-7648-A86E-5E90AFF216CE" uuid2="0x055a196d,0x4ae9,0x7648,0xa8,0x6e,0x5e,0x90,0xaf,0xf2,0x16,0xce">
 			<comments desc=""/>
 			<parents>
@@ -1087,6 +1202,41 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
+			<method java_name="buildAccelerationStructure" name="BuildAccelerationStructure" num_parameters="1">
+				<comments desc="Build acceleration structure "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apAS"
+					type="iAccelerationStructure *"
+					typec="iAccelerationStructure*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="dispatchRays" name="DispatchRays" num_parameters="4">
+				<comments desc="Dispatch rays "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apPipeline"
+					type="iRayGpuPipeline *"
+					typec="iRayGpuPipeline*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anHeight"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anDepth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
 		</interface>
 		<interface name="iGraphicsContextGpu" uuid1="0D2FFD6C-887D-3D46-AA18-123B272954E0" uuid2="0x0d2ffd6c,0x887d,0x3d46,0xaa,0x18,0x12,0x3b,0x27,0x29,0x54,0xe0">
 			<comments desc="GPU-specific graphics context interface. "/>
@@ -1261,6 +1411,36 @@
 					typec="iGpuBuffer*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method java_name="createRayPipeline" name="CreateRayPipeline" num_parameters="2">
+				<comments desc="Create ray tracing pipeline "/>
+				<return type="Ptr&lt;iRayGpuPipeline&gt;" typec="Ptr&lt;iRayGpuPipeline&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apFunctionTable"
+					type="iRayGpuFunctionTable *"
+					typec="iRayGpuFunctionTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createAccelerationStructure" name="CreateAccelerationStructure" num_parameters="2">
+				<comments desc="Create acceleration structure "/>
+				<return type="Ptr&lt;iAccelerationStructure&gt;" typec="Ptr&lt;iAccelerationStructure&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eAccelerationStructureType"
+					typec="eAccelerationStructureType"
+					typei="ni::eType_Enum"/>
+			</method>
 		</interface>
 		<enum name="eGLSLVulkanDescriptorSet">
 			<comments desc=""/>
@@ -1285,7 +1465,7 @@
 			<value name="eGLSLVulkanDescriptorSet_SamplerShadow" value="6 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanDescriptorSet_AccelStruct" value="7 ">
+			<value name="eGLSLVulkanDescriptorSet_AccelerationStructure" value="7 ">
 				<comments desc=""/>
 			</value>
 			<value name="eGLSLVulkanDescriptorSet_Last" value="8 ">

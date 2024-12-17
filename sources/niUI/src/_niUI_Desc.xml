@@ -27,6 +27,7 @@
   <include>niUI/src/_idl/Colors.h.idl.xml</include>
   <include>niUI/src/_idl/FVF.h.idl.xml</include>
   <include>niUI/src/_idl/GraphicsEnum.h.idl.xml</include>
+  <include>niUI/src/_idl/IAccelerationStructure.h.idl.xml</include>
   <include>niUI/src/_idl/IBitmap2D.h.idl.xml</include>
   <include>niUI/src/_idl/IBitmap3D.h.idl.xml</include>
   <include>niUI/src/_idl/IBitmapBase.h.idl.xml</include>

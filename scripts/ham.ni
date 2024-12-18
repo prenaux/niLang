@@ -79,6 +79,10 @@ module <- {
       case "osx": {
         break;
       }
+      case "lin": {
+        aPath = aPath.setext("x64")
+        break;
+      }
       default: {
         throw ::format("Unknown platform '%s', can't get exe path '%s'.", ::lang.getHostOS(), aPath)
       }

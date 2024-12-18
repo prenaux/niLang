@@ -72,6 +72,9 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
           case eKey_K:
             w->SetCursorCapture(!w->GetCursorCapture());
             break;
+          case eKey_R:
+            w->RedrawWindow();
+            break;
           case eKey_n0:
             w->CenterWindow();
             break;
@@ -104,6 +107,9 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
             niDebugFmt(("... SetClientSize noop: curr rect: %s", w->GetRect()));
             w->SetClientSize(w->GetClientSize());
             niDebugFmt(("... SetClientSize noop: new rect: %s, client size: %s, size: %s", w->GetRect(), w->GetClientSize(), w->GetClientSize()));
+            break;
+          case eKey_n7:
+            w->SetFocus();
             break;
         }
         break;

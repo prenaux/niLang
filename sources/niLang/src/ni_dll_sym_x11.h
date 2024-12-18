@@ -52,6 +52,12 @@ NI_DLL_PROC(Bool, __cdecl, XQueryPointer, (Display *display, Window w, Window *r
 NI_DLL_PROC(Status, __cdecl, XSendEvent, (Display *display, Window w, Bool propagate, long event_mask, XEvent *event_send));
 NI_DLL_PROC(Bool, __cdecl, XTranslateCoordinates, (Display *display, Window src_w, Window dest_w, int src_x, int src_y, int *dest_x_return, int *dest_y_return, Window *child_return));
 NI_DLL_PROC(Window, __cdecl, XDefaultRootWindow, (Display *display));
+NI_DLL_PROC(Screen*, __cdecl, XScreenOfDisplay, (Display* display, int screen_number));
+NI_DLL_PROC(int, __cdecl, XWidthOfScreen, (Screen* screen));
+NI_DLL_PROC(int, __cdecl, XHeightOfScreen,(Screen* screen));
+NI_DLL_PROC(int, __cdecl, XChangeWindowAttributes, (Display* display, Window w, unsigned long valuemask, XSetWindowAttributes* attributes));
+NI_DLL_PROC(Status, __cdecl, XGetWindowAttributes, (Display* display, Window w, XWindowAttributes* window_attributes_return));
+NI_DLL_PROC(void, __cdecl, XClearArea, (Display *display, Window w, int x, int y, unsigned int width, unsigned int height, Bool exposures));
 
 NI_DLL_PROC(char*, __cdecl, XResourceManagerString, (Display*));
 NI_DLL_PROC(XrmDatabase, __cdecl, XrmGetStringDatabase, (const char*));

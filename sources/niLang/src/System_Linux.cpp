@@ -391,6 +391,14 @@ static sX11System* _GetX11System() {
   return _system;
 }
 
+struct sWindowState {
+    tU32 savedX = 0;
+    tU32 savedY = 0;
+    tU32 savedWidth = 0;
+    tU32 savedHeight = 0;
+    tU32 fullscreenMonitor = eInvalidHandle;
+};
+
 ///////////////////////////////////////////////
 class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
@@ -422,6 +430,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     mfRefreshTimer = -1;
     mptrMT = tMessageHandlerSinkLst::Create();
     mnEatRelativeMouseMove = 0;
+    mWindowState = {0};
 
     // Init XWindow display
     {
@@ -844,8 +853,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   virtual tBool __stdcall RedrawWindow() niImpl {
-    // TODO: IMPLEMENT
-    return eTrue;
+    dll_XClearArea(_GetDisplay(), _GetWindow(), 0, 0, 0, 0, True);
+    return true;
   }
 
   ///////////////////////////////////////////////
@@ -982,31 +991,140 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return false;
   }
 
-  ///////////////////////////////////////////////
+  // This function will get the monitor which has more overlapping
+  // area with the app window.
   virtual tU32 __stdcall GetMonitor() const niImpl {
-    return 0;
+    Display* display = _GetDisplay();
+    if (!display) return eInvalidHandle;
+
+    Window window = _GetWindow();
+    // Check which monitor has the largest intersection with the window
+    sX11System* x11 = _GetX11System();
+    tU32 bestMonitor = eInvalidHandle;
+    tI32 largestArea = 0;
+
+    niLoop(i, x11->mvMonitors.size()) {
+        const sRecti& monitorRect = x11->mvMonitors[i].mRect;
+        if (monitorRect.IntersectRect(mRect)) {
+            const sRecti intersection = monitorRect.ClipRect(mRect);
+            const tI32 area = intersection.GetWidth() * intersection.GetHeight();
+            if (area > largestArea) {
+                largestArea = area;
+                bestMonitor = i;
+            }
+        }
+    }
+
+    return bestMonitor;
+  }
+
+  tBool _GetWindowAttributes(Window window, XWindowAttributes& attrs) const {
+    Display* display = _GetDisplay();
+    if (!display) return eFalse;
+
+    if (dll_XGetWindowAttributes(display, window, &attrs) == 0) {
+        return eFalse;
+    }
+
+    return eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetFullScreen(tU32 anScreenId) niImpl {
-    // TODO: IMPLEMENT
-    return eFalse;
+  tBool __stdcall SetFullScreen(tU32 anMonitor) niImpl {
+    if (mWindowState.fullscreenMonitor == anMonitor)
+      return eTrue;  // Nothing to do.
+
+    mWindowState.fullscreenMonitor = anMonitor;
+    Display* display = _GetDisplay();
+    Window window = _GetWindow();
+
+    if (mWindowState.fullscreenMonitor != eInvalidHandle) {
+      mWindowState.fullscreenMonitor = anMonitor;
+      // Store current window position and size for restoration
+      mWindowState.savedX = mRect.x;
+      mWindowState.savedY = mRect.y;
+      mWindowState.savedWidth = mRect.GetWidth();
+      mWindowState.savedHeight = mRect.GetHeight();
+
+      // Switch to fullscreen
+      sRecti monitorRect = ni::GetLang()->GetMonitorRect(anMonitor);
+
+      Atom wm_state = dll_XInternAtom(display, "_NET_WM_STATE", False);
+      Atom fullscreen = dll_XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+
+      XEvent xev = {0};
+      xev.type = ClientMessage;
+      xev.xclient.window = window;
+      xev.xclient.message_type = wm_state;
+      xev.xclient.format = 32;
+      xev.xclient.data.l[0] = 1; // _NET_WM_STATE_ADD
+      xev.xclient.data.l[1] = fullscreen;
+      xev.xclient.data.l[2] = 0;
+
+      dll_XSendEvent(display, DefaultRootWindow(display), False,
+                     SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+
+      XSetWindowAttributes attSetter;
+      attSetter.override_redirect = True;
+      attSetter.border_pixel = 0;
+      dll_XChangeWindowAttributes(display, window,
+                                  CWOverrideRedirect | CWBorderPixel,
+                                  &attSetter);
+
+      dll_XMoveResizeWindow(display, window, 0, 0,
+                            monitorRect.GetWidth(),
+                            monitorRect.GetHeight());
+    } else {
+      mWindowState.fullscreenMonitor = eInvalidHandle;
+      // Restore windowed mode
+      XEvent xev = {0};
+      xev.type = ClientMessage;
+      xev.xclient.window = window;
+      xev.xclient.message_type = dll_XInternAtom(display, "_NET_WM_STATE", False);
+      xev.xclient.format = 32;
+      xev.xclient.data.l[0] = 0; // _NET_WM_STATE_REMOVE
+      xev.xclient.data.l[1] = dll_XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+
+      dll_XSendEvent(display, DefaultRootWindow(display), False,
+                     SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+
+      XSetWindowAttributes attSetter;
+      attSetter.override_redirect = False;
+      dll_XChangeWindowAttributes(display, window, CWOverrideRedirect, &attSetter);
+
+      // Restore previous window position and size
+      dll_XMoveResizeWindow(display, window,
+                            mWindowState.savedX,
+                            mWindowState.savedY,
+                            mWindowState.savedWidth,
+                            mWindowState.savedHeight);
+    }
+
+    dll_XMapRaised(display, window);
+    dll_XSync(display, False);
+    return true;
   }
   tU32 __stdcall GetFullScreen() const niImpl {
-    // TODO: IMPLEMENT
-    return 1;
+    return mWindowState.fullscreenMonitor;
   }
   tBool __stdcall GetIsMinimized() const niImpl {
-    // TODO: IMPLEMENT
+    XWindowAttributes attrs;
+    if (_GetWindowAttributes(_GetWindow(), attrs)) {
+      return (attrs.map_state == IsUnmapped || attrs.map_state == IsUnviewable);
+    }
     return eFalse;
   }
   tBool __stdcall GetIsMaximized() const niImpl {
-    // TODO: IMPLEMENT
+    XWindowAttributes attrs;
+    if (_GetWindowAttributes(_GetWindow(), attrs)) {
+      return attrs.map_state == IsViewable;
+    }
     return eFalse;
   }
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetFocus() niImpl {
+    dll_XSetInputFocus(_GetDisplay(), _GetWindow(), RevertToParent, CurrentTime);
   }
   virtual tBool __stdcall GetHasFocus() const niImpl {
     return mbIsActive;
@@ -1378,6 +1496,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   tOSWindowStyleFlags  mnStyle;
   Atom                 WM_DELETE_WINDOW; /* "close-window" protocol atom */
   tI32                 mnEatRelativeMouseMove;
+  sWindowState         mWindowState;
 
   Display* mpDisplay;
   Visual*  mpVisual;

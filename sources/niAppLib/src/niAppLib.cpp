@@ -331,6 +331,11 @@ struct AppWindow : public ImplRC<iMessageHandler,eImplFlags_Default,iWidgetSink>
                   !mpContext->_uiContext->GetDrawOpCapture());
                 return ni::eTrue;
               }
+              // trigger a breakpoint
+              case eKey_B|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
+                ni_debug_break();
+                return ni::eTrue;
+              }
             }
           }
         }

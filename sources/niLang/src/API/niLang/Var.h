@@ -27,7 +27,7 @@ struct iFile;
 #if niPragmaPack
 #pragma niPackPush(4)
 #endif
-struct VarData {
+struct niAligned(4) VarData {
   tType mType;
   union {
     tBool mBool;
@@ -77,12 +77,12 @@ struct VarData {
     tU8   mData[niVarDataSize];
     tU32  mDataU32[niVarDataSize/4];
   } niPacked(4);
-} niAligned(4) niPacked(4);
+} niPacked(4);
 #if !defined __INTELLISENSE__
 niCAssert(sizeof(VarData) == 20);
 #endif
 
-struct Var : public VarData
+struct niAligned(4) Var : public VarData
 {
 #ifdef __cplusplus
   bool operator < (const Var& aR) const {
@@ -701,7 +701,7 @@ struct Var : public VarData
   }
 
 #endif // __cplusplus
-} niAligned(4) niPacked(4);
+} niPacked(4);
 #if !defined __INTELLISENSE__
 niCAssert(sizeof(Var) == 20);
 #endif

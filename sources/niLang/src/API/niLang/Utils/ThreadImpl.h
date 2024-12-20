@@ -311,7 +311,7 @@ struct ThreadSem : public Impl_HeapAlloc {
   ThreadSem(tI32 initialCount = 0) {
     niAssert(initialCount >= 0);
 #ifdef niWin32
-    _winSem = CreateSemaphoreW(NULL, initialCount, ni::TypeMax<long>(), NULL);
+    _winSem = CreateSemaphoreW(NULL, initialCount, ni::TypeMax<tI32>(), NULL);
 #elif defined niOSX || defined niIOS
     semaphore_create(mach_task_self(), &_osxSem, SYNC_POLICY_FIFO, initialCount);
 #elif defined niLinux

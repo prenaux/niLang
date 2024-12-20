@@ -22,36 +22,41 @@
 // MSVC++ 6.0  _MSC_VER = 1200
 // MSVC++ 5.0  _MSC_VER = 1100
 
-#if _MSC_VER >= 1700
-#define niCPP11
-#endif
-
-#if _MSC_VER >= 1600
-#define niCPP_Lambda
-#define niOverride override
-#endif
-
 #define niPlatformDetected
 #ifdef niPragmaPrintPlatformDetected
 #pragma message("=== Detected MSVC")
 #endif
 
-#ifdef __JSCC__
-#define niJSCC 1 // OS
-#else
-#define niWindows 1 // OS
+#define niWindows 1
 #define niWin32
 #define niWinDesktop
+
+#ifdef __clang__
+
+#include <stdint.h>
+#define niCLang
+#define niCPP11
+#define niCPP_Lambda
+#define niOverride override
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wstrict-prototypes"
+#pragma clang diagnostic ignored "-Wdeprecated-enum-enum-conversion"
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+
+#else
+
+#if _MSC_VER >= 1700
+#define niCPP11
 #endif
+#if _MSC_VER >= 1600
+#define niCPP_Lambda
+#define niOverride override
+#endif
+
+#endif
+
 #define niMSVC // Compiler
-
-#ifdef __INTEL_COMPILER
-#define niIntelCompiler
-#endif
-
-#ifdef _MSC_FULL_VER
-#define niMSVCProcPack
-#endif
 
 #if defined _UNICODE && !defined UNICODE
 #define UNICODE
@@ -83,10 +88,17 @@ namespace { __forceinline void dummyReallyDisable4786() {} }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Structures packing
+#ifdef niCLang
+#define niPragmaPack 0
+#define niPackPush(x)
+#define niPackPop()
+#define niPacked(x) __attribute__((packed))
+#else
 #define niPragmaPack 1
 #define niPackPush(x) pack(push,x)
 #define niPackPop()  pack(pop)
 #define niPacked(x)
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Types definition

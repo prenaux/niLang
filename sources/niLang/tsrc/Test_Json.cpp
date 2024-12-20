@@ -46,6 +46,4 @@ TEST_FIXTURE(FJson,JSONWriter) {
   Ptr<iFile> file2 = ni::CreateFileDynamicMemory(0, NULL);
   ni::SerializeDataTable("json", eSerializeMode_Write, dt2, file2);
   CHECK_EQUAL(file2->ReadString(), R"""([{"string":"bar","number":123,"isnull":null,"bool":1},{"string":"bar","number":321,"isnull":null,"bool":0}])""");
-
-
 }

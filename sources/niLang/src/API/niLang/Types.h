@@ -37,7 +37,8 @@
 
 #ifndef niCAssert
 #  ifdef __cplusplus
-#    define niCAssert(exp)          typedef char __C_ASSERT__[(exp)?1:-1];
+#    define niCAssert(exp) static_assert(exp)
+//#    define niCAssert(exp) typedef char __C_ASSERT__[(exp)?1:-1];
 #  else
 #    define niCAssert(exp)
 #  endif

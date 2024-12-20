@@ -9,6 +9,7 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
   const tU64 _threadId;
   sFGDRV_Base* _context;
   UnitTest::TestResults* _testResults = nullptr;
+  tU32 _debugKeyMod;
 
   FGDRV_WindowHandler(sFGDRV_Base* aContext)
       : _threadId(ni::ThreadGetCurrentThreadID())
@@ -57,6 +58,15 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
       case eOSWindowMessage_KeyDown:
         niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {
+          case eKey_LControl:
+            niFlagOn(_debugKeyMod,eKeyMod_Control);
+            break;
+          case eKey_LAlt:
+            niFlagOn(_debugKeyMod,eKeyMod_Alt);
+            break;
+          case eKey_LShift:
+            niFlagOn(_debugKeyMod,eKeyMod_Shift);
+            break;
           case eKey_F:
             wnd->SetFullScreen(wnd->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
             break;
@@ -86,10 +96,32 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
             niLog(Info,niFmt("Toggled animation: %z.",_context->_animated));
             break;
           }
+          default: {
+            switch (a.mU32 | _debugKeyMod) {
+              // trigger a breakpoint
+              case eKey_B|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
+                niDebugFmt(("... Trigger Breakpoint ..."));
+                ni_debug_break();
+                break;
+              }
+            }
+            break;
+          }
         }
         break;
       case eOSWindowMessage_KeyUp:
         niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        switch (a.mU32) {
+          case eKey_LControl:
+            niFlagOff(_debugKeyMod,eKeyMod_Control);
+            break;
+          case eKey_LAlt:
+            niFlagOff(_debugKeyMod,eKeyMod_Alt);
+            break;
+          case eKey_LShift:
+            niFlagOff(_debugKeyMod,eKeyMod_Shift);
+            break;
+        }
         break;
       case eOSWindowMessage_KeyChar:
         niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));

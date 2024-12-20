@@ -391,14 +391,6 @@ static sX11System* _GetX11System() {
   return _system;
 }
 
-struct sWindowState {
-    tU32 savedX = 0;
-    tU32 savedY = 0;
-    tU32 savedWidth = 0;
-    tU32 savedHeight = 0;
-    tU32 fullscreenMonitor = eInvalidHandle;
-};
-
 ///////////////////////////////////////////////
 class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowLinux> {
   niBeginClass(cLinuxWindow);
@@ -430,7 +422,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     mfRefreshTimer = -1;
     mptrMT = tMessageHandlerSinkLst::Create();
     mnEatRelativeMouseMove = 0;
-    mWindowState = {0};
+    mWindowFullscreenState = {};
 
     // Init XWindow display
     {
@@ -1004,9 +996,9 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     tI32 largestArea = 0;
 
     niLoop(i, x11->mvMonitors.size()) {
-        const sRecti& monitorRect = x11->mvMonitors[i].mRect;
-        if (monitorRect.IntersectRect(mRect)) {
-            const sRecti intersection = monitorRect.ClipRect(mRect);
+        const sRecti& monitorRect = x11->mvMonitors[i].mrectMonitor;
+        if (monitorRect.IntersectRect(mrectWindow)) {
+            const sRecti intersection = monitorRect.ClipRect(mrectWindow);
             const tI32 area = intersection.GetWidth() * intersection.GetHeight();
             if (area > largestArea) {
                 largestArea = area;
@@ -1031,20 +1023,20 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   tBool __stdcall SetFullScreen(tU32 anMonitor) niImpl {
-    if (mWindowState.fullscreenMonitor == anMonitor)
+    if (mWindowFullscreenState.fullscreenMonitor == anMonitor)
       return eTrue;  // Nothing to do.
 
-    mWindowState.fullscreenMonitor = anMonitor;
+    mWindowFullscreenState.fullscreenMonitor = anMonitor;
     Display* display = _GetDisplay();
     Window window = _GetWindow();
 
-    if (mWindowState.fullscreenMonitor != eInvalidHandle) {
-      mWindowState.fullscreenMonitor = anMonitor;
+    if (mWindowFullscreenState.fullscreenMonitor != eInvalidHandle) {
+      mWindowFullscreenState.fullscreenMonitor = anMonitor;
       // Store current window position and size for restoration
-      mWindowState.savedX = mRect.x;
-      mWindowState.savedY = mRect.y;
-      mWindowState.savedWidth = mRect.GetWidth();
-      mWindowState.savedHeight = mRect.GetHeight();
+      mWindowFullscreenState.savedX = mrectWindow.x;
+      mWindowFullscreenState.savedY = mrectWindow.y;
+      mWindowFullscreenState.savedWidth = mrectWindow.GetWidth();
+      mWindowFullscreenState.savedHeight = mrectWindow.GetHeight();
 
       // Switch to fullscreen
       sRecti monitorRect = ni::GetLang()->GetMonitorRect(anMonitor);
@@ -1075,7 +1067,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
                             monitorRect.GetWidth(),
                             monitorRect.GetHeight());
     } else {
-      mWindowState.fullscreenMonitor = eInvalidHandle;
+      mWindowFullscreenState.fullscreenMonitor = eInvalidHandle;
       // Restore windowed mode
       XEvent xev = {0};
       xev.type = ClientMessage;
@@ -1094,10 +1086,10 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
       // Restore previous window position and size
       dll_XMoveResizeWindow(display, window,
-                            mWindowState.savedX,
-                            mWindowState.savedY,
-                            mWindowState.savedWidth,
-                            mWindowState.savedHeight);
+                            mWindowFullscreenState.savedX,
+                            mWindowFullscreenState.savedY,
+                            mWindowFullscreenState.savedWidth,
+                            mWindowFullscreenState.savedHeight);
     }
 
     dll_XMapRaised(display, window);
@@ -1105,7 +1097,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return true;
   }
   tU32 __stdcall GetFullScreen() const niImpl {
-    return mWindowState.fullscreenMonitor;
+    return mWindowFullscreenState.fullscreenMonitor;
   }
   tBool __stdcall GetIsMinimized() const niImpl {
     XWindowAttributes attrs;
@@ -1300,8 +1292,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         }
       }
 
-      const int centerX = mRect.GetWidth() / 2;
-      const int centerY = mRect.GetHeight() / 2;
+      const int centerX = mrectWindow.GetWidth() / 2;
+      const int centerY = mrectWindow.GetHeight() / 2;
 
       // we reset to the center of the screen to achieve infinite relative positions
       // beyond the edges of the screen
@@ -1496,7 +1488,6 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   tOSWindowStyleFlags  mnStyle;
   Atom                 WM_DELETE_WINDOW; /* "close-window" protocol atom */
   tI32                 mnEatRelativeMouseMove;
-  sWindowState         mWindowState;
 
   Display* mpDisplay;
   Visual*  mpVisual;
@@ -1564,6 +1555,14 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       return isDoubleClick;
     }
   } mDoubleClick[3];
+
+  struct sWindowFullscreenState {
+    tU32 savedX = 0;
+    tU32 savedY = 0;
+    tU32 savedWidth = 0;
+    tU32 savedHeight = 0;
+    tU32 fullscreenMonitor = eInvalidHandle;
+  } mWindowFullscreenState;
 
   // (borderLeft,titleHeight,borderRight,borderBottom)
   sRecti _GetDecorationSizes() const {

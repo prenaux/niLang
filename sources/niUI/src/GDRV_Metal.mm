@@ -1561,7 +1561,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return eFalse;
   }
 
-  Ptr<iRayGpuPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
+  Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
     iHString* ahspName,
     iRayGpuFunctionTable* apFunctionTable)
   {
@@ -1569,7 +1569,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return nullptr;
   }
 
-  Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure(
+  Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
     iHString* ahspName,
     eAccelerationStructureType aType)
   {

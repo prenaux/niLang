@@ -521,12 +521,11 @@ tBool cMaterial::SerializeRead(iDataTableReadStack* apDT, iHString* ahspBasePath
         // texture
         {
           niProfileBlock(cMaterial_SerializeRead_Channel_Texture);
-          Ptr<iTexture> ptrTex = GetChannelTexture(c);
-          tHStringPtr hspTex = apDT->GetHStringDefault(
-            "texture",
-            ptrTex.IsOK()?ptrTex->GetDeviceResourceName():_H("").raw_ptr());
+          // force to load the texture from datatable, make sure it will
+          // clear the old texture if it didn't have channel texture setup
+          tHStringPtr hspTex = apDT->GetHString("texture");
           if (!HStringIsEmpty(hspTex)) {
-            ptrTex = mptrGraphics->CreateTextureFromRes(hspTex, ahspBasePath, eTextureFlags_Default);
+            Ptr<iTexture> ptrTex = mptrGraphics->CreateTextureFromRes(hspTex, ahspBasePath, eTextureFlags_Default);
             SetChannelTexture(c,ptrTex);
           }
           else {

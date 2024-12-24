@@ -26,6 +26,8 @@
 #  elif defined niIOS
 #    import <OpenGLES/ES2/gl.h>
 #    import <OpenGLES/ES2/glext.h>
+#  define SUPPORT_PROFILE_ARB1 0
+#  define SUPPORT_PROFILE_ARB1_NV 0
 #  elif defined ANDROID
 #    include <GLES2/gl2.h>
 #  elif defined niQNX

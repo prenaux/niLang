@@ -9,6 +9,7 @@
 #include <niLang/Utils/TimerSleep.h>
 
 #include "Lang.h"
+#include "niLang/Math/MathVec2.h"
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -790,6 +791,8 @@ niExportJSCC(void) niJSCC_WndInputMouseWheel(tF32 deltaY) {
 const tI32 MAX_TOUCHES = 10;
 static ni::sVec2f  _lastTouchPosition[MAX_TOUCHES] = {{}};
 static ni::tIntPtr _touches[MAX_TOUCHES] = {};
+static ni::tF32 _pinchInitialDistance = 0;
+static ni::tF32 _pinchLastScale = 1;
 
 static tI32 _GetFingerIndexFromTouch(tIntPtr touch) {
   for (tI32 i = 0; i < MAX_TOUCHES; ++i) {
@@ -823,6 +826,40 @@ static tI32 _CountNumTouches() {
   return count;
 }
 
+// touchState 0 = down; 1 = move; 2 = up
+static ni::tBool _HandlePinch(sJSCCWindow* wnd, ni::tU32 touchState) {
+  astl::vector<ni::tIntPtr> touches;
+  for (int i = 0; i < 10; ++i) {
+    if (_touches[i]) {
+      touches.push_back(i);
+    }
+  }
+  ni::eGestureState state;
+  if (touches.size() != 2) {
+    if (touches.size() < 2 && touchState == 2 && _pinchInitialDistance != 0) {
+      wnd->_SendMessage(eOSWindowMessage_Pinch, _pinchLastScale, ni::eGestureState_Ended);
+      _pinchInitialDistance = 0;
+      _pinchLastScale = 1;
+      return ni::eTrue;
+    }
+    return ni::eFalse;
+  }
+
+  ni::sVec2f touch0 = _lastTouchPosition[touches[0]];
+  ni::sVec2f touch1 = _lastTouchPosition[touches[1]];
+  ni::tF32 distance = ni::VecDistance(touch0, touch1);
+  if (touchState == 0) {
+    _pinchInitialDistance = distance;
+    _pinchLastScale = 1;
+    wnd->_SendMessage(eOSWindowMessage_Pinch, 1, ni::eGestureState_Began);
+  }
+  else if (touchState == 1) {
+    _pinchLastScale = distance / _pinchInitialDistance;
+    wnd->_SendMessage(eOSWindowMessage_Pinch, _pinchLastScale, ni::eGestureState_Updated);
+  }
+  return ni::eTrue;
+}
+
 niExportJSCC(void) niJSCC_WndInputFingerMove(
     ni::tI32 fingerIdentifier,
     ni::tF32 x, ni::tF32 y, ni::tF32 pressure)
@@ -834,16 +871,18 @@ niExportJSCC(void) niJSCC_WndInputFingerMove(
   const tI32 fingerIndex = _GetFingerIndexFromTouch(fingerIdentifier);
   if (fingerIndex >= 0) {
     const sVec3f v = Vec3f(x,y,pressure);
-    TRACE_JSCC_FINGER(("... JSCC: FingerMove: %d, %s", fingerIndex, v));
-    wnd->_SendMessage(eOSWindowMessage_FingerMove,fingerIndex,Vec3f(x,y,pressure));
-    {
-      const ni::tF32 relativeMoveSpeedScale = wnd->GetContentsScale();
-      const ni::sVec2f delta = (Vec2f(x,y) - _lastTouchPosition[fingerIndex]) * relativeMoveSpeedScale;
-      const sVec3f rv = Vec3f(delta.x,delta.y,pressure);
+    const ni::tF32 relativeMoveSpeedScale = wnd->GetContentsScale();
+    const ni::sVec2f delta = (Vec2f(x,y) - _lastTouchPosition[fingerIndex]) * relativeMoveSpeedScale;
+    const sVec3f rv = Vec3f(delta.x,delta.y,pressure);
+    _lastTouchPosition[fingerIndex] = Vec2f(x,y);
+
+    if (!_HandlePinch(wnd, 1)) {
+      TRACE_JSCC_FINGER(("... JSCC: FingerMove: %d, %s", fingerIndex, v));
+      wnd->_SendMessage(eOSWindowMessage_FingerMove,fingerIndex,Vec3f(x,y,pressure));
+
       TRACE_JSCC_FINGER(("... JSCC: FingerRelativeMove: %d, %s", fingerIndex, rv));
       wnd->_SendMessage(eOSWindowMessage_FingerRelativeMove,fingerIndex, rv);
     }
-    _lastTouchPosition[fingerIndex] = Vec2f(x,y);
   }
 }
 niExportJSCC(void) niJSCC_WndInputFingerPress(
@@ -859,8 +898,10 @@ niExportJSCC(void) niJSCC_WndInputFingerPress(
     const tI32 fingerIndex = _AddNewTouch(fingerIdentifier);
     if (fingerIndex >= 0) {
       _lastTouchPosition[fingerIndex] = Vec2(v.ptr());
-      TRACE_JSCC_FINGER(("... JSCC: FingerDown: %d, %s", fingerIndex, v));
-      wnd->_SendMessage(eOSWindowMessage_FingerDown, fingerIndex, v);
+      if (!_HandlePinch(wnd, 0)) {
+        TRACE_JSCC_FINGER(("... JSCC: FingerDown: %d, %s", fingerIndex, v));
+        wnd->_SendMessage(eOSWindowMessage_FingerDown, fingerIndex, v);
+      }
     }
   }
   else {
@@ -871,6 +912,7 @@ niExportJSCC(void) niJSCC_WndInputFingerPress(
       wnd->_SendMessage(eOSWindowMessage_FingerUp, fingerIndex, v);
       _RemoveFingerIndex(fingerIndex);
     }
+    _HandlePinch(wnd, 2);
   }
 }
 #endif

@@ -1343,91 +1343,152 @@
 				const="yes"
 				java_name="getType"
 				name="GetType"
-				num_parameters="0">
-				<comments desc="Get the structure type "/>
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the acceleration structure type. "/>
 				<return type="eAccelerationStructureType" typec="eAccelerationStructureType" typei="ni::eType_Enum"/>
 			</method>
-			<method java_name="addTriangles" name="AddTriangles" num_parameters="5">
-				<comments desc="Add triangle geometry to primitive acceleration structure. " return="eTrue if geometry was added successfully. ">
-					<params text="apVertices Vertex buffer containing geometry vertices. "/>
-					<params text="apIndices Index buffer containing triangle indices. "/>
-					<params text="aTransform Transform matrix applied to vertices. "/>
-					<params text="aFlags Geometry flags affecting ray traversal behavior. see ni::eAccelerationGeometryFlags. "/>
-					<params text="anHitGroupIndex Index of hit group to use for this geometry. "/>
-				</comments>
+			<method java_name="addTriangles" name="AddTriangles" num_parameters="7">
+				<comments desc="Add non-indexed triangle geometry to primitive acceleration structure. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apVertices"
-					type="iVertexArray *"
-					typec="iVertexArray*"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="apIndices"
-					type="iIndexArray *"
-					typec="iIndexArray*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+					name="anVertexOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anVertexStride"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anVertexCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
 				<parameter
 					name="aTransform"
 					type="const sMatrixf &amp;"
 					typec="const sMatrixf&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
-					default="eAccelerationGeometryFlags_None "
 					name="aFlags"
 					type="tAccelerationGeometryFlags"
 					typec="tAccelerationGeometryFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
-					default="0 "
 					last="1"
-					name="anHitGroupIndex"
+					name="anHitGroup"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="addInstance" name="AddInstance" num_parameters="6">
-				<comments desc="Add instance to instance acceleration structure. " return="eTrue if instance was added successfully. ">
-					<remark text="Hit group offset selects which pipeline hit group to use for this instance. "/>
-					<remark text="The instance mask allows filtering during ray traversal. "/>
-					<params text="apBLAS Base acceleration structure to instance. "/>
-					<params text="aTransform Instance transform matrix. "/>
-					<params text="anInstanceID Custom ID accessible in hit shaders. "/>
-					<params text="aFlags Instance flags affecting traversal behavior. \see ni::eAccelerationInstanceFlags "/>
-					<params text="anInstanceMask Visibility mask for ray filtering. "/>
-					<params text="anHitGroupOffset Index of the hit group. The return value from iRayGpuFunctionTable::AddHitGroup(). "/>
-				</comments>
+			<method java_name="addTrianglesIndexed" name="AddTrianglesIndexed" num_parameters="11">
+				<comments desc="Add indexed triangle geometry to primitive acceleration structure. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
-					name="apBLAS"
-					type="iAccelerationStructure *"
-					typec="iAccelerationStructure*"
+					name="apVertices"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anVertexOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anVertexStride"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anVertexCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apIndices"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anIndexOffset"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anIndexType"
+					type="eGpuIndexType"
+					typec="eGpuIndexType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anIndexCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
 				<parameter
 					name="aTransform"
 					type="const sMatrixf &amp;"
 					typec="const sMatrixf&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="anInstanceID"
+					name="aFlags"
+					type="tAccelerationGeometryFlags"
+					typec="tAccelerationGeometryFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anHitGroup"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addProceduralAABBs" name="AddProceduralAABBs" num_parameters="7">
+				<comments desc="Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes. ">
+					<remark text="s The hit group must include an intersection shader for the procedural geometry. "/>
+					<remark text="s AABB format: float[6] = {minX,minY,minZ,maxX,maxY,maxZ}, \see ni::cAABBf "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apAABBs"
+					type="iGpuBuffer *"
+					typec="iGpuBuffer*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anAABBOffset"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
 				<parameter
-					default="eAccelerationInstanceFlags_None "
+					name="anAABBStride"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anAABBCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aTransform"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
 					name="aFlags"
-					type="tAccelerationInstanceFlags"
-					typec="tAccelerationInstanceFlags"
+					type="tAccelerationGeometryFlags"
+					typec="tAccelerationGeometryFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
-					default="0xFF "
-					name="anInstanceMask"
-					type="tU8"
-					typec="tU8"
-					typei="ni::eType_U8"/>
-				<parameter
-					default="0 "
 					last="1"
-					name="anHitGroupOffset"
+					name="anHitGroup"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
@@ -10901,6 +10962,10 @@
 					type="iRayGpuFunctionTable *"
 					typec="iRayGpuFunctionTable*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createRayFunctionTable" name="CreateRayFunctionTable" num_parameters="0">
+				<comments desc="Create ray tracing function table. "/>
+				<return type="Ptr&lt;iRayGpuFunctionTable&gt;" typec="Ptr&lt;iRayGpuFunctionTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="createAccelerationStructure" name="CreateAccelerationStructure" num_parameters="2">
 				<comments desc="Create acceleration structure "/>

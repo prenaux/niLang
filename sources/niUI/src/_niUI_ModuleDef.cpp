@@ -111,7 +111,7 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iAccelerationStructure() 
 // Method: GetType
 static const ni::sMethodDef iAccelerationStructure_GetType = {
   "GetType",
-  0|ni::eType_Enum, NULL, "eAccelerationStructureType",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eAccelerationStructureType",
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iAccelerationStructure_GetType)
@@ -121,17 +121,19 @@ static const ni::sMethodDef iAccelerationStructure_GetType = {
 };
 
 // Method: AddTriangles
-static const ni::sParameterDef iAccelerationStructure_AddTriangles_Parameters[5] = { 
-  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*" }, 
-  { "apIndices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*" }, 
+static const ni::sParameterDef iAccelerationStructure_AddTriangles_Parameters[7] = { 
+  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
   { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
   { "aFlags", ni::eType_Enum, NULL, "tAccelerationGeometryFlags" }, 
-  { "anHitGroupIndex", ni::eType_U32, NULL, "tU32" }
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iAccelerationStructure_AddTriangles = {
   "AddTriangles",
   0|ni::eType_I8, NULL, "tBool",
-  5, iAccelerationStructure_AddTriangles_Parameters,
+  7, iAccelerationStructure_AddTriangles_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iAccelerationStructure_AddTriangles)
 #else
@@ -139,21 +141,47 @@ static const ni::sMethodDef iAccelerationStructure_AddTriangles = {
 #endif
 };
 
-// Method: AddInstance
-static const ni::sParameterDef iAccelerationStructure_AddInstance_Parameters[6] = { 
-  { "apBLAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iAccelerationStructure), "iAccelerationStructure*" }, 
+// Method: AddTrianglesIndexed
+static const ni::sParameterDef iAccelerationStructure_AddTrianglesIndexed_Parameters[11] = { 
+  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
+  { "apIndices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anIndexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }, 
+  { "anIndexCount", ni::eType_U32, NULL, "tU32" }, 
   { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
-  { "anInstanceID", ni::eType_U32, NULL, "tU32" }, 
-  { "aFlags", ni::eType_Enum, NULL, "tAccelerationInstanceFlags" }, 
-  { "anInstanceMask", ni::eType_U8, NULL, "tU8" }, 
-  { "anHitGroupOffset", ni::eType_U32, NULL, "tU32" }
+  { "aFlags", ni::eType_Enum, NULL, "tAccelerationGeometryFlags" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }
 }; 
-static const ni::sMethodDef iAccelerationStructure_AddInstance = {
-  "AddInstance",
+static const ni::sMethodDef iAccelerationStructure_AddTrianglesIndexed = {
+  "AddTrianglesIndexed",
   0|ni::eType_I8, NULL, "tBool",
-  6, iAccelerationStructure_AddInstance_Parameters,
+  11, iAccelerationStructure_AddTrianglesIndexed_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iAccelerationStructure_AddInstance)
+  XCALL_CIMPL(iAccelerationStructure_AddTrianglesIndexed)
+#else
+  NULL
+#endif
+};
+
+// Method: AddProceduralAABBs
+static const ni::sParameterDef iAccelerationStructure_AddProceduralAABBs_Parameters[7] = { 
+  { "apAABBs", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anAABBOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anAABBStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anAABBCount", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tAccelerationGeometryFlags" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iAccelerationStructure_AddProceduralAABBs = {
+  "AddProceduralAABBs",
+  0|ni::eType_I8, NULL, "tBool",
+  7, iAccelerationStructure_AddProceduralAABBs_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iAccelerationStructure_AddProceduralAABBs)
 #else
   NULL
 #endif
@@ -162,7 +190,8 @@ static const ni::sMethodDef iAccelerationStructure_AddInstance = {
 static const ni::sMethodDef* Methods_iAccelerationStructure[] = {
 	&iAccelerationStructure_GetType,
 	&iAccelerationStructure_AddTriangles,
-	&iAccelerationStructure_AddInstance,
+	&iAccelerationStructure_AddTrianglesIndexed,
+	&iAccelerationStructure_AddProceduralAABBs,
 
 };
 
@@ -9784,6 +9813,18 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateRayPipeline = {
 #endif
 };
 
+// Method: CreateRayFunctionTable
+static const ni::sMethodDef iGraphicsDriverGpu_CreateRayFunctionTable = {
+  "CreateRayFunctionTable",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuFunctionTable), "Ptr<iRayGpuFunctionTable>",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverGpu_CreateRayFunctionTable)
+#else
+  NULL
+#endif
+};
+
 // Method: CreateAccelerationStructure
 static const ni::sParameterDef iGraphicsDriverGpu_CreateAccelerationStructure_Parameters[2] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
@@ -9811,6 +9852,7 @@ static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_CreateGpuPipeline,
 	&iGraphicsDriverGpu_BlitManagedGpuBufferToSystemMemory,
 	&iGraphicsDriverGpu_CreateRayPipeline,
+	&iGraphicsDriverGpu_CreateRayFunctionTable,
 	&iGraphicsDriverGpu_CreateAccelerationStructure,
 
 };

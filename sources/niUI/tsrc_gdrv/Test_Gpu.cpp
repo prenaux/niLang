@@ -992,7 +992,6 @@ struct sFGpu_TextureCube : public sFGpu_Base {
 
       // Create cube with size from first face
       niLet cubeSize = faces[0]->GetWidth();
-      niLet cubePxf = faces[0]->GetPixelFormat();
       Ptr<iBitmapCube> bmpCube = _graphics->CreateBitmapCube(
         cubeSize,"R8G8B8A8");
       niCheck(niIsOK(bmpCube),eFalse);

@@ -1426,6 +1426,10 @@
 					typec="iRayGpuFunctionTable*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method java_name="createRayFunctionTable" name="CreateRayFunctionTable" num_parameters="0">
+				<comments desc="Create ray tracing function table. "/>
+				<return type="Ptr&lt;iRayGpuFunctionTable&gt;" typec="Ptr&lt;iRayGpuFunctionTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
 			<method java_name="createAccelerationStructure" name="CreateAccelerationStructure" num_parameters="2">
 				<comments desc="Create acceleration structure "/>
 				<return type="Ptr&lt;iAccelerationStructure&gt;" typec="Ptr&lt;iAccelerationStructure&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>

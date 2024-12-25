@@ -1,0 +1,9 @@
+<GpuFunction ver="3" name="triangle_rmiss" exec="rmiss">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="rmiss"/>
+		</EntryPoints>
+	</Reflection>
+	<Target target="spv_vk12" code_path="triangle_rmiss.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="triangle_rmiss.gpufunc.glsl_vk46"/>
+</GpuFunction>

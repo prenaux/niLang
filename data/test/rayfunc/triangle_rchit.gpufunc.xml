@@ -1,0 +1,9 @@
+<GpuFunction ver="3" name="triangle_rchit" exec="rchit">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="rchit"/>
+		</EntryPoints>
+	</Reflection>
+	<Target target="spv_vk12" code_path="triangle_rchit.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="triangle_rchit.gpufunc.glsl_vk46"/>
+</GpuFunction>

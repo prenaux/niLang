@@ -1,0 +1,15 @@
+<GpuFunction ver="3" name="triangle_rgen" exec="rgen">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="rgen"/>
+		</EntryPoints>
+		<Images>
+			<Image name="IN_1_aOutputImage" type="image2D" writeonly="1" set="8" binding="0"/>
+		</Images>
+		<AccelerationStructures>
+			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>
+		</AccelerationStructures>
+	</Reflection>
+	<Target target="spv_vk12" code_path="triangle_rgen.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="triangle_rgen.gpufunc.glsl_vk46"/>
+</GpuFunction>

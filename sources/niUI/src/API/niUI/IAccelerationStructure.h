@@ -7,8 +7,8 @@
 
 namespace ni {
 
-struct iVertexArray;
-struct iIndexArray;
+struct iGpuBuffer;
+enum eGpuIndexType;
 
 /** \addtogroup niUI
  * @{
@@ -64,40 +64,45 @@ typedef tU32 tAccelerationInstanceFlags;
 struct iAccelerationStructure : public iDeviceResource {
   niDeclareInterfaceUUID(iAccelerationStructure,0xb2bfe248,0xc3bc,0xef11,0xb5,0x4b,0x0b,0x0d,0xaf,0xd3,0xbe,0xd1);
 
-  //! Get the structure type
+  //! Get the acceleration structure type.
+  //! {Property}
   virtual eAccelerationStructureType __stdcall GetType() const = 0;
 
-  //! Add triangle geometry to primitive acceleration structure.
-  //! \param apVertices Vertex buffer containing geometry vertices.
-  //! \param apIndices Index buffer containing triangle indices.
-  //! \param aTransform Transform matrix applied to vertices.
-  //! \param aFlags Geometry flags affecting ray traversal behavior. see ni::eAccelerationGeometryFlags.
-  //! \param anHitGroupIndex Index of hit group to use for this geometry.
-  //! \return eTrue if geometry was added successfully.
+  //! Add non-indexed triangle geometry to primitive acceleration structure.
   virtual tBool __stdcall AddTriangles(
-    iVertexArray* apVertices,
-    iIndexArray* apIndices,
+    iGpuBuffer* apVertices,
+    tU32 anVertexOffset,
+    tU32 anVertexStride,
+    tU32 anVertexCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags = eAccelerationGeometryFlags_None,
-    tU32 anHitGroupIndex = 0) = 0;
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroup) = 0;
 
-  //! Add instance to instance acceleration structure.
-  //! \param apBLAS Base acceleration structure to instance.
-  //! \param aTransform Instance transform matrix.
-  //! \param anInstanceID Custom ID accessible in hit shaders.
-  //! \param aFlags Instance flags affecting traversal behavior. \see ni::eAccelerationInstanceFlags
-  //! \param anInstanceMask Visibility mask for ray filtering.
-  //! \param anHitGroupOffset Index of the hit group. The return value from iRayGpuFunctionTable::AddHitGroup().
-  //! \return eTrue if instance was added successfully.
-  //! \remark Hit group offset selects which pipeline hit group to use for this instance.
-  //! \remark The instance mask allows filtering during ray traversal.
-  virtual tBool __stdcall AddInstance(
-    iAccelerationStructure* apBLAS,
+  //! Add indexed triangle geometry to primitive acceleration structure.
+  virtual tBool __stdcall AddTrianglesIndexed(
+    iGpuBuffer* apVertices,
+    tU32 anVertexOffset,
+    tU32 anVertexStride,
+    tU32 anVertexCount,
+    iGpuBuffer* apIndices,
+    tU32 anIndexOffset,
+    eGpuIndexType anIndexType,
+    tU32 anIndexCount,
     const sMatrixf& aTransform,
-    tU32 anInstanceID,
-    tAccelerationInstanceFlags aFlags = eAccelerationInstanceFlags_None,
-    tU8 anInstanceMask = 0xFF,
-    tU32 anHitGroupOffset = 0) = 0;
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroup) = 0;
+
+  //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
+  //! \remarks The hit group must include an intersection shader for the procedural geometry.
+  //! \remarks AABB format: float[6] = {minX,minY,minZ,maxX,maxY,maxZ}, \see ni::cAABBf
+  virtual tBool __stdcall AddProceduralAABBs(
+    iGpuBuffer* apAABBs,
+    tU32 anAABBOffset,
+    tU32 anAABBStride,
+    tU32 anAABBCount,
+    const sMatrixf& aTransform,
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroup) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

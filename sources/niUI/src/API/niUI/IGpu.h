@@ -639,6 +639,10 @@ struct iGraphicsDriverGpu : public iUnknown
   virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
     iHString* ahspName,
     iRayGpuFunctionTable* apFunctionTable) = 0;
+
+  //! Create ray tracing function table.
+  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() = 0;
+
   //! Create acceleration structure
   virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
     iHString* ahspName,

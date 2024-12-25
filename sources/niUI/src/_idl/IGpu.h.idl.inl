@@ -744,6 +744,13 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateRayPipeline,2)
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,CreateRayPipeline,2)
 
+/** ni -> iGraphicsDriverGpu::CreateRayFunctionTable/0 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateRayFunctionTable,0)
+	IDLC_DECL_RETVAR(Ptr<iRayGpuFunctionTable>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateRayFunctionTable,0,())
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateRayFunctionTable,0)
+
 /** ni -> iGraphicsDriverGpu::CreateAccelerationStructure/2 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateAccelerationStructure,2)
 	IDLC_DECL_VAR(iHString*,ahspName)

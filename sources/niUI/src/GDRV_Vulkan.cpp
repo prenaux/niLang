@@ -1280,6 +1280,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
     iHString* ahspName,
     iRayGpuFunctionTable* apFunctionTable);
+  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable();
   virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
     iHString* ahspName,
     eAccelerationStructureType aType);
@@ -3937,6 +3938,11 @@ Ptr<iRayGpuPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
   iHString* ahspName,
   iRayGpuFunctionTable* apFunctionTable)
 {
+  niCheck(_isRayTracingSupported,nullptr);
+  return nullptr;
+}
+
+Ptr<iRayGpuFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable() {
   niCheck(_isRayTracingSupported,nullptr);
   return nullptr;
 }

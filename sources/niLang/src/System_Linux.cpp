@@ -811,25 +811,25 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
+virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
     niCheckSilent(mHandle,eFalse);
 
-    // How many events are available in the queue.
-    dll_XSync(mpDisplay, False);
-    int events = dll_XEventsQueued(mpDisplay, QueuedAlready);
+    int events = dll_XEventsQueued(mpDisplay, QueuedAfterFlush);
     if (events > 0) {
-      // Limit amount of events we read at once
-      if (events > 5)
-        events = 5;
-      // Process events
-      while(events) {
+      // we stop processing events if it spends more than the average frame rate
+      const double maxProcessingTime = (1.0 / ni::GetLang()->GetAverageFrameRate()) * 1000.0;
+      double startTime = ni::GetLang()->TimerInSeconds() * 1000.0;
+      double currentTime = startTime;
+
+      while(events && ( currentTime - startTime) < maxProcessingTime) {
         _NextEvent();
         events--;
+        currentTime = ni::GetLang()->TimerInSeconds() * 1000.0;
       }
     }
 
     if (!mbIsActive) {
-      return eFalse;
+        return eFalse;
     }
 
     // TODO: IMPLEMENT
@@ -940,9 +940,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return DefaultRootWindow(display);
   }
   virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl {
-    dll_XWarpPointer(_GetDisplay(), None, _GetWindow(),
+
+    Display* display = _GetDisplay();
+    dll_XWarpPointer(display, None, _GetWindow(),
                  0, 0, 0, 0,
                  avCursorPos.x, avCursorPos.y);
+    dll_XSync(display, False);
   }
   virtual void __stdcall SetCursorCapture(tBool abCapture) niImpl {
     if (mbMouseCapture == abCapture)
@@ -952,7 +955,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
                                       GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
       if (grabStatus == GrabSuccess) {
         SetCursor(ni::eOSCursor_None);
-        mnEatRelativeMouseMove = 10;
+        mnEatRelativeMouseMove = 2;
       }
       else {
         niLog(Info, "X11_XGrabPointer failed to grab the mouse pointer.");
@@ -966,6 +969,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       }
     }
     mbMouseCapture = abCapture;
+
+    dll_XSync(_GetDisplay(), eFalse);
   }
   virtual tBool __stdcall GetCursorCapture() const niImpl {
     return mbMouseCapture;
@@ -1280,10 +1285,10 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   void _HandleMouseMove(int x, int y) {
     sVec2i vMousePos = sVec2i(x, y);
-    sVec2i vRelMove = mvPrevMousePos - vMousePos;
+    sVec2i vRelMove = vMousePos - mvPrevMousePos;
+
     if (mbMouseCapture) {
       if (vRelMove != sVec2i::Zero()) {
-        // niDebugFmt(("vRelMove: X=%d, Y=%d", vRelMove.x, vRelMove.y));
         if (mnEatRelativeMouseMove <= 0) {
           _SendMessage(ni::eOSWindowMessage_RelativeMouseMove, vRelMove);
         }
@@ -1292,12 +1297,19 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         }
       }
 
+      // Only recenters when mouse goes away too much from the center
       const int centerX = mrectWindow.GetWidth() / 2;
       const int centerY = mrectWindow.GetHeight() / 2;
+      const int threshold = 200; // Distance from center before recentering
 
-      // we reset to the center of the screen to achieve infinite relative positions
-      // beyond the edges of the screen
-      SetCursorPosition(sVec2i(centerX, centerY));
+      const int distFromCenterX = abs(x - centerX);
+      const int distFromCenterY = abs(y - centerY);
+
+      if (distFromCenterX > threshold || distFromCenterY > threshold) {
+        SetCursorPosition(sVec2i(centerX, centerY));
+        mnEatRelativeMouseMove = 2; // Skip one frame after recentering
+        vMousePos = sVec2i(centerX, centerY);
+      }
     }
     else {
       if (vRelMove != sVec2i::Zero()) {

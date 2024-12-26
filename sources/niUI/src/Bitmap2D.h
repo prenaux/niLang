@@ -25,7 +25,7 @@ class cBitmap2D : public ImplRC<iBitmap2D,
   tBool __stdcall IsOK() const;
 
   tTextureFlags __stdcall GetFlags() const;
-  iBitmap2D* __stdcall Lock(enum eLock aLock, tU32 anLevel, tU32 anFaceSlice);
+  iBitmap2D* __stdcall Lock(eLock aLock, tU32 anLevel, tU32 anFaceSlice);
   void __stdcall Unlock();
   tBool __stdcall GetIsLocked() const;
 

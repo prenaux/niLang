@@ -9,7 +9,6 @@
 namespace ni {
 
 struct iGpuBuffer;
-enum eGpuIndexType;
 
 /** \addtogroup niUI
  * @{

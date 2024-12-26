@@ -454,6 +454,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
   Ptr<iFixedGpuPipelines> _fixedPipelines;
 
+  tU32 _minUniformBufferOffsetAlignment;
+
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
   {
@@ -831,6 +833,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
       (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
 
+    _minUniformBufferOffsetAlignment = props.limits.minUniformBufferOffsetAlignment;
     niLog(Info,niFmt(
       "Vulkan Buffer Alignment Properties:\n"
       "  minUniformBufferOffsetAlignment: %llu\n"
@@ -839,7 +842,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  optimalBufferCopyOffsetAlignment: %llu\n"
       "  optimalBufferCopyRowPitchAlignment: %llu\n"
       "  nonCoherentAtomSize: %llu",
-      props.limits.minUniformBufferOffsetAlignment,
+      _minUniformBufferOffsetAlignment,
       props.limits.minStorageBufferOffsetAlignment,
       props.limits.minTexelBufferOffsetAlignment,
       props.limits.optimalBufferCopyOffsetAlignment,
@@ -2446,7 +2449,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
       aDriver,
       eGpuBufferUsageFlags_Vertex|
       eGpuBufferUsageFlags_Index|
-      eGpuBufferUsageFlags_Uniform);
+      eGpuBufferUsageFlags_Uniform,
+      aDriver->_minUniformBufferOffsetAlignment);
   }
 
   void Destroy(VkDevice aDevice) {

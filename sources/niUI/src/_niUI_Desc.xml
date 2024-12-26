@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <module name='niUI'
-        version='1,0,0' 
+        version='1,0,0'
         desc='UI module'
         author='niLang Authors'
         copyright='(c) 2022 The niLang Authors'
@@ -27,6 +27,7 @@
   <include>niUI/src/_idl/Colors.h.idl.xml</include>
   <include>niUI/src/_idl/FVF.h.idl.xml</include>
   <include>niUI/src/_idl/GraphicsEnum.h.idl.xml</include>
+  <include>niUI/src/_idl/GpuEnum.h.idl.xml</include>
   <include>niUI/src/_idl/IAccelerationStructure.h.idl.xml</include>
   <include>niUI/src/_idl/IBitmap2D.h.idl.xml</include>
   <include>niUI/src/_idl/IBitmap3D.h.idl.xml</include>

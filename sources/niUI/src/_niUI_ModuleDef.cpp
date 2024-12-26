@@ -29,6 +29,7 @@
 #include "_idl/Colors.h.idl.inl"
 #include "_idl/FVF.h.idl.inl"
 #include "_idl/GraphicsEnum.h.idl.inl"
+#include "_idl/GpuEnum.h.idl.inl"
 #include "_idl/IAccelerationStructure.h.idl.inl"
 #include "_idl/IBitmap2D.h.idl.inl"
 #include "_idl/IBitmap3D.h.idl.inl"
@@ -37720,6 +37721,236 @@ static const ni::sEnumDef Enum_eCompiledStates = {
 	return &Enum_eCompiledStates;
 }
 
+// --- eGpuIndexType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuIndexType() {
+
+static const ni::sEnumValueDef Enum_eGpuIndexType_Values[] = {
+	{ "U16", ni::eGpuIndexType_U16 },
+	{ "U32", ni::eGpuIndexType_U32 },
+	{ "Last", ni::eGpuIndexType_Last },
+};
+static const ni::sEnumDef Enum_eGpuIndexType = {
+	"eGpuIndexType",
+  niCountOf(Enum_eGpuIndexType_Values), Enum_eGpuIndexType_Values
+};
+
+	return &Enum_eGpuIndexType;
+}
+
+// --- eGpuBufferMemoryMode ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferMemoryMode() {
+
+static const ni::sEnumValueDef Enum_eGpuBufferMemoryMode_Values[] = {
+	{ "Shared", ni::eGpuBufferMemoryMode_Shared },
+	{ "Private", ni::eGpuBufferMemoryMode_Private },
+	{ "Managed", ni::eGpuBufferMemoryMode_Managed },
+	{ "Last", ni::eGpuBufferMemoryMode_Last },
+};
+static const ni::sEnumDef Enum_eGpuBufferMemoryMode = {
+	"eGpuBufferMemoryMode",
+  niCountOf(Enum_eGpuBufferMemoryMode_Values), Enum_eGpuBufferMemoryMode_Values
+};
+
+	return &Enum_eGpuBufferMemoryMode;
+}
+
+// --- eGpuBufferUsageFlags ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferUsageFlags() {
+
+static const ni::sEnumValueDef Enum_eGpuBufferUsageFlags_Values[] = {
+	{ "Vertex", ni::eGpuBufferUsageFlags_Vertex },
+	{ "Index", ni::eGpuBufferUsageFlags_Index },
+	{ "Uniform", ni::eGpuBufferUsageFlags_Uniform },
+	{ "Storage", ni::eGpuBufferUsageFlags_Storage },
+	{ "Indirect", ni::eGpuBufferUsageFlags_Indirect },
+	{ "TransferSrc", ni::eGpuBufferUsageFlags_TransferSrc },
+	{ "TransferDst", ni::eGpuBufferUsageFlags_TransferDst },
+	{ "Last", ni::eGpuBufferUsageFlags_Last },
+};
+static const ni::sEnumDef Enum_eGpuBufferUsageFlags = {
+	"eGpuBufferUsageFlags",
+  niCountOf(Enum_eGpuBufferUsageFlags_Values), Enum_eGpuBufferUsageFlags_Values
+};
+
+	return &Enum_eGpuBufferUsageFlags;
+}
+
+// --- eGpuFunctionType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionType() {
+
+static const ni::sEnumValueDef Enum_eGpuFunctionType_Values[] = {
+	{ "Vertex", ni::eGpuFunctionType_Vertex },
+	{ "Pixel", ni::eGpuFunctionType_Pixel },
+	{ "Compute", ni::eGpuFunctionType_Compute },
+	{ "Mesh", ni::eGpuFunctionType_Mesh },
+	{ "Task", ni::eGpuFunctionType_Task },
+	{ "RayGeneration", ni::eGpuFunctionType_RayGeneration },
+	{ "RayIntersection", ni::eGpuFunctionType_RayIntersection },
+	{ "RayAnyHit", ni::eGpuFunctionType_RayAnyHit },
+	{ "RayClosestHit", ni::eGpuFunctionType_RayClosestHit },
+	{ "RayMiss", ni::eGpuFunctionType_RayMiss },
+	{ "Last", ni::eGpuFunctionType_Last },
+};
+static const ni::sEnumDef Enum_eGpuFunctionType = {
+	"eGpuFunctionType",
+  niCountOf(Enum_eGpuFunctionType_Values), Enum_eGpuFunctionType_Values
+};
+
+	return &Enum_eGpuFunctionType;
+}
+
+// --- eGpuFunctionBindType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionBindType() {
+
+static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
+	{ "None", ni::eGpuFunctionBindType_None },
+	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
+	{ "Material", ni::eGpuFunctionBindType_Material },
+	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
+	{ "Last", ni::eGpuFunctionBindType_Last },
+};
+static const ni::sEnumDef Enum_eGpuFunctionBindType = {
+	"eGpuFunctionBindType",
+  niCountOf(Enum_eGpuFunctionBindType_Values), Enum_eGpuFunctionBindType_Values
+};
+
+	return &Enum_eGpuFunctionBindType;
+}
+
+// --- eGpuPixelFormat ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPixelFormat() {
+
+static const ni::sEnumValueDef Enum_eGpuPixelFormat_Values[] = {
+	{ "None", ni::eGpuPixelFormat_None },
+	{ "BGRA8", ni::eGpuPixelFormat_BGRA8 },
+	{ "RGBA8", ni::eGpuPixelFormat_RGBA8 },
+	{ "RGBA16F", ni::eGpuPixelFormat_RGBA16F },
+	{ "R16F", ni::eGpuPixelFormat_R16F },
+	{ "R32F", ni::eGpuPixelFormat_R32F },
+	{ "D32", ni::eGpuPixelFormat_D32 },
+	{ "D16", ni::eGpuPixelFormat_D16 },
+	{ "D24S8", ni::eGpuPixelFormat_D24S8 },
+	{ "Last", ni::eGpuPixelFormat_Last },
+};
+static const ni::sEnumDef Enum_eGpuPixelFormat = {
+	"eGpuPixelFormat",
+  niCountOf(Enum_eGpuPixelFormat_Values), Enum_eGpuPixelFormat_Values
+};
+
+	return &Enum_eGpuPixelFormat;
+}
+
+// --- eGpuBlendFactor ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBlendFactor() {
+
+static const ni::sEnumValueDef Enum_eGpuBlendFactor_Values[] = {
+	{ "Zero", ni::eGpuBlendFactor_Zero },
+	{ "One", ni::eGpuBlendFactor_One },
+	{ "SrcColor", ni::eGpuBlendFactor_SrcColor },
+	{ "InvSrcColor", ni::eGpuBlendFactor_InvSrcColor },
+	{ "SrcAlpha", ni::eGpuBlendFactor_SrcAlpha },
+	{ "InvSrcAlpha", ni::eGpuBlendFactor_InvSrcAlpha },
+	{ "DstAlpha", ni::eGpuBlendFactor_DstAlpha },
+	{ "InvDstAlpha", ni::eGpuBlendFactor_InvDstAlpha },
+	{ "DstColor", ni::eGpuBlendFactor_DstColor },
+	{ "InvDstColor", ni::eGpuBlendFactor_InvDstColor },
+	{ "SrcAlphaSat", ni::eGpuBlendFactor_SrcAlphaSat },
+	{ "BlendColorConstant", ni::eGpuBlendFactor_BlendColorConstant },
+	{ "InvBlendColorConstant", ni::eGpuBlendFactor_InvBlendColorConstant },
+	{ "Last", ni::eGpuBlendFactor_Last },
+};
+static const ni::sEnumDef Enum_eGpuBlendFactor = {
+	"eGpuBlendFactor",
+  niCountOf(Enum_eGpuBlendFactor_Values), Enum_eGpuBlendFactor_Values
+};
+
+	return &Enum_eGpuBlendFactor;
+}
+
+// --- eGpuBlendOp ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBlendOp() {
+
+static const ni::sEnumValueDef Enum_eGpuBlendOp_Values[] = {
+	{ "Add", ni::eGpuBlendOp_Add },
+	{ "Subtract", ni::eGpuBlendOp_Subtract },
+	{ "ReverseSubtract", ni::eGpuBlendOp_ReverseSubtract },
+	{ "Min", ni::eGpuBlendOp_Min },
+	{ "Max", ni::eGpuBlendOp_Max },
+	{ "Last", ni::eGpuBlendOp_Last },
+};
+static const ni::sEnumDef Enum_eGpuBlendOp = {
+	"eGpuBlendOp",
+  niCountOf(Enum_eGpuBlendOp_Values), Enum_eGpuBlendOp_Values
+};
+
+	return &Enum_eGpuBlendOp;
+}
+
+// --- eRayGpuFunctionGroupType ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eRayGpuFunctionGroupType() {
+
+static const ni::sEnumValueDef Enum_eRayGpuFunctionGroupType_Values[] = {
+	{ "Triangles", ni::eRayGpuFunctionGroupType_Triangles },
+	{ "Procedural", ni::eRayGpuFunctionGroupType_Procedural },
+	{ "Last", ni::eRayGpuFunctionGroupType_Last },
+};
+static const ni::sEnumDef Enum_eRayGpuFunctionGroupType = {
+	"eRayGpuFunctionGroupType",
+  niCountOf(Enum_eRayGpuFunctionGroupType_Values), Enum_eRayGpuFunctionGroupType_Values
+};
+
+	return &Enum_eRayGpuFunctionGroupType;
+}
+
+// --- eGLSLVulkanDescriptorSet ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanDescriptorSet() {
+
+static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
+	{ "Buffer", ni::eGLSLVulkanDescriptorSet_Buffer },
+	{ "Texture2D", ni::eGLSLVulkanDescriptorSet_Texture2D },
+	{ "TextureCube", ni::eGLSLVulkanDescriptorSet_TextureCube },
+	{ "Texture3D", ni::eGLSLVulkanDescriptorSet_Texture3D },
+	{ "TextureShadow", ni::eGLSLVulkanDescriptorSet_TextureShadow },
+	{ "Sampler", ni::eGLSLVulkanDescriptorSet_Sampler },
+	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
+	{ "AccelerationStructure", ni::eGLSLVulkanDescriptorSet_AccelerationStructure },
+	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
+};
+static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {
+	"eGLSLVulkanDescriptorSet",
+  niCountOf(Enum_eGLSLVulkanDescriptorSet_Values), Enum_eGLSLVulkanDescriptorSet_Values
+};
+
+	return &Enum_eGLSLVulkanDescriptorSet;
+}
+
+// --- eGLSLVulkanVertexInputLayout ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanVertexInputLayout() {
+
+static const ni::sEnumValueDef Enum_eGLSLVulkanVertexInputLayout_Values[] = {
+	{ "Position", ni::eGLSLVulkanVertexInputLayout_Position },
+	{ "Weights", ni::eGLSLVulkanVertexInputLayout_Weights },
+	{ "Indices", ni::eGLSLVulkanVertexInputLayout_Indices },
+	{ "Normal", ni::eGLSLVulkanVertexInputLayout_Normal },
+	{ "ColorA", ni::eGLSLVulkanVertexInputLayout_ColorA },
+	{ "Tex0", ni::eGLSLVulkanVertexInputLayout_Tex0 },
+	{ "Tex1", ni::eGLSLVulkanVertexInputLayout_Tex1 },
+	{ "Tex2", ni::eGLSLVulkanVertexInputLayout_Tex2 },
+	{ "Tex3", ni::eGLSLVulkanVertexInputLayout_Tex3 },
+	{ "Tex4", ni::eGLSLVulkanVertexInputLayout_Tex4 },
+	{ "Tex5", ni::eGLSLVulkanVertexInputLayout_Tex5 },
+	{ "Tex6", ni::eGLSLVulkanVertexInputLayout_Tex6 },
+	{ "Tex7", ni::eGLSLVulkanVertexInputLayout_Tex7 },
+	{ "Last", ni::eGLSLVulkanVertexInputLayout_Last },
+};
+static const ni::sEnumDef Enum_eGLSLVulkanVertexInputLayout = {
+	"eGLSLVulkanVertexInputLayout",
+  niCountOf(Enum_eGLSLVulkanVertexInputLayout_Values), Enum_eGLSLVulkanVertexInputLayout_Values
+};
+
+	return &Enum_eGLSLVulkanVertexInputLayout;
+}
+
 // --- eAccelerationStructureType ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eAccelerationStructureType() {
 
@@ -38021,236 +38252,6 @@ static const ni::sEnumDef Enum_eGeometryOptimizeFlags = {
 };
 
 	return &Enum_eGeometryOptimizeFlags;
-}
-
-// --- eGpuIndexType ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuIndexType() {
-
-static const ni::sEnumValueDef Enum_eGpuIndexType_Values[] = {
-	{ "U16", ni::eGpuIndexType_U16 },
-	{ "U32", ni::eGpuIndexType_U32 },
-	{ "Last", ni::eGpuIndexType_Last },
-};
-static const ni::sEnumDef Enum_eGpuIndexType = {
-	"eGpuIndexType",
-  niCountOf(Enum_eGpuIndexType_Values), Enum_eGpuIndexType_Values
-};
-
-	return &Enum_eGpuIndexType;
-}
-
-// --- eGpuBufferMemoryMode ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferMemoryMode() {
-
-static const ni::sEnumValueDef Enum_eGpuBufferMemoryMode_Values[] = {
-	{ "Shared", ni::eGpuBufferMemoryMode_Shared },
-	{ "Private", ni::eGpuBufferMemoryMode_Private },
-	{ "Managed", ni::eGpuBufferMemoryMode_Managed },
-	{ "Last", ni::eGpuBufferMemoryMode_Last },
-};
-static const ni::sEnumDef Enum_eGpuBufferMemoryMode = {
-	"eGpuBufferMemoryMode",
-  niCountOf(Enum_eGpuBufferMemoryMode_Values), Enum_eGpuBufferMemoryMode_Values
-};
-
-	return &Enum_eGpuBufferMemoryMode;
-}
-
-// --- eGpuBufferUsageFlags ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBufferUsageFlags() {
-
-static const ni::sEnumValueDef Enum_eGpuBufferUsageFlags_Values[] = {
-	{ "Vertex", ni::eGpuBufferUsageFlags_Vertex },
-	{ "Index", ni::eGpuBufferUsageFlags_Index },
-	{ "Uniform", ni::eGpuBufferUsageFlags_Uniform },
-	{ "Storage", ni::eGpuBufferUsageFlags_Storage },
-	{ "Indirect", ni::eGpuBufferUsageFlags_Indirect },
-	{ "TransferSrc", ni::eGpuBufferUsageFlags_TransferSrc },
-	{ "TransferDst", ni::eGpuBufferUsageFlags_TransferDst },
-	{ "Last", ni::eGpuBufferUsageFlags_Last },
-};
-static const ni::sEnumDef Enum_eGpuBufferUsageFlags = {
-	"eGpuBufferUsageFlags",
-  niCountOf(Enum_eGpuBufferUsageFlags_Values), Enum_eGpuBufferUsageFlags_Values
-};
-
-	return &Enum_eGpuBufferUsageFlags;
-}
-
-// --- eGpuFunctionType ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionType() {
-
-static const ni::sEnumValueDef Enum_eGpuFunctionType_Values[] = {
-	{ "Vertex", ni::eGpuFunctionType_Vertex },
-	{ "Pixel", ni::eGpuFunctionType_Pixel },
-	{ "Compute", ni::eGpuFunctionType_Compute },
-	{ "Mesh", ni::eGpuFunctionType_Mesh },
-	{ "Task", ni::eGpuFunctionType_Task },
-	{ "RayGeneration", ni::eGpuFunctionType_RayGeneration },
-	{ "RayIntersection", ni::eGpuFunctionType_RayIntersection },
-	{ "RayAnyHit", ni::eGpuFunctionType_RayAnyHit },
-	{ "RayClosestHit", ni::eGpuFunctionType_RayClosestHit },
-	{ "RayMiss", ni::eGpuFunctionType_RayMiss },
-	{ "Last", ni::eGpuFunctionType_Last },
-};
-static const ni::sEnumDef Enum_eGpuFunctionType = {
-	"eGpuFunctionType",
-  niCountOf(Enum_eGpuFunctionType_Values), Enum_eGpuFunctionType_Values
-};
-
-	return &Enum_eGpuFunctionType;
-}
-
-// --- eGpuFunctionBindType ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionBindType() {
-
-static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
-	{ "None", ni::eGpuFunctionBindType_None },
-	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
-	{ "Material", ni::eGpuFunctionBindType_Material },
-	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
-	{ "Last", ni::eGpuFunctionBindType_Last },
-};
-static const ni::sEnumDef Enum_eGpuFunctionBindType = {
-	"eGpuFunctionBindType",
-  niCountOf(Enum_eGpuFunctionBindType_Values), Enum_eGpuFunctionBindType_Values
-};
-
-	return &Enum_eGpuFunctionBindType;
-}
-
-// --- eGpuPixelFormat ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuPixelFormat() {
-
-static const ni::sEnumValueDef Enum_eGpuPixelFormat_Values[] = {
-	{ "None", ni::eGpuPixelFormat_None },
-	{ "BGRA8", ni::eGpuPixelFormat_BGRA8 },
-	{ "RGBA8", ni::eGpuPixelFormat_RGBA8 },
-	{ "RGBA16F", ni::eGpuPixelFormat_RGBA16F },
-	{ "R16F", ni::eGpuPixelFormat_R16F },
-	{ "R32F", ni::eGpuPixelFormat_R32F },
-	{ "D32", ni::eGpuPixelFormat_D32 },
-	{ "D16", ni::eGpuPixelFormat_D16 },
-	{ "D24S8", ni::eGpuPixelFormat_D24S8 },
-	{ "Last", ni::eGpuPixelFormat_Last },
-};
-static const ni::sEnumDef Enum_eGpuPixelFormat = {
-	"eGpuPixelFormat",
-  niCountOf(Enum_eGpuPixelFormat_Values), Enum_eGpuPixelFormat_Values
-};
-
-	return &Enum_eGpuPixelFormat;
-}
-
-// --- eGpuBlendFactor ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBlendFactor() {
-
-static const ni::sEnumValueDef Enum_eGpuBlendFactor_Values[] = {
-	{ "Zero", ni::eGpuBlendFactor_Zero },
-	{ "One", ni::eGpuBlendFactor_One },
-	{ "SrcColor", ni::eGpuBlendFactor_SrcColor },
-	{ "InvSrcColor", ni::eGpuBlendFactor_InvSrcColor },
-	{ "SrcAlpha", ni::eGpuBlendFactor_SrcAlpha },
-	{ "InvSrcAlpha", ni::eGpuBlendFactor_InvSrcAlpha },
-	{ "DstAlpha", ni::eGpuBlendFactor_DstAlpha },
-	{ "InvDstAlpha", ni::eGpuBlendFactor_InvDstAlpha },
-	{ "DstColor", ni::eGpuBlendFactor_DstColor },
-	{ "InvDstColor", ni::eGpuBlendFactor_InvDstColor },
-	{ "SrcAlphaSat", ni::eGpuBlendFactor_SrcAlphaSat },
-	{ "BlendColorConstant", ni::eGpuBlendFactor_BlendColorConstant },
-	{ "InvBlendColorConstant", ni::eGpuBlendFactor_InvBlendColorConstant },
-	{ "Last", ni::eGpuBlendFactor_Last },
-};
-static const ni::sEnumDef Enum_eGpuBlendFactor = {
-	"eGpuBlendFactor",
-  niCountOf(Enum_eGpuBlendFactor_Values), Enum_eGpuBlendFactor_Values
-};
-
-	return &Enum_eGpuBlendFactor;
-}
-
-// --- eGpuBlendOp ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuBlendOp() {
-
-static const ni::sEnumValueDef Enum_eGpuBlendOp_Values[] = {
-	{ "Add", ni::eGpuBlendOp_Add },
-	{ "Subtract", ni::eGpuBlendOp_Subtract },
-	{ "ReverseSubtract", ni::eGpuBlendOp_ReverseSubtract },
-	{ "Min", ni::eGpuBlendOp_Min },
-	{ "Max", ni::eGpuBlendOp_Max },
-	{ "Last", ni::eGpuBlendOp_Last },
-};
-static const ni::sEnumDef Enum_eGpuBlendOp = {
-	"eGpuBlendOp",
-  niCountOf(Enum_eGpuBlendOp_Values), Enum_eGpuBlendOp_Values
-};
-
-	return &Enum_eGpuBlendOp;
-}
-
-// --- eRayGpuFunctionGroupType ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eRayGpuFunctionGroupType() {
-
-static const ni::sEnumValueDef Enum_eRayGpuFunctionGroupType_Values[] = {
-	{ "Triangles", ni::eRayGpuFunctionGroupType_Triangles },
-	{ "Procedural", ni::eRayGpuFunctionGroupType_Procedural },
-	{ "Last", ni::eRayGpuFunctionGroupType_Last },
-};
-static const ni::sEnumDef Enum_eRayGpuFunctionGroupType = {
-	"eRayGpuFunctionGroupType",
-  niCountOf(Enum_eRayGpuFunctionGroupType_Values), Enum_eRayGpuFunctionGroupType_Values
-};
-
-	return &Enum_eRayGpuFunctionGroupType;
-}
-
-// --- eGLSLVulkanDescriptorSet ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanDescriptorSet() {
-
-static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
-	{ "Buffer", ni::eGLSLVulkanDescriptorSet_Buffer },
-	{ "Texture2D", ni::eGLSLVulkanDescriptorSet_Texture2D },
-	{ "TextureCube", ni::eGLSLVulkanDescriptorSet_TextureCube },
-	{ "Texture3D", ni::eGLSLVulkanDescriptorSet_Texture3D },
-	{ "TextureShadow", ni::eGLSLVulkanDescriptorSet_TextureShadow },
-	{ "Sampler", ni::eGLSLVulkanDescriptorSet_Sampler },
-	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
-	{ "AccelerationStructure", ni::eGLSLVulkanDescriptorSet_AccelerationStructure },
-	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
-};
-static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {
-	"eGLSLVulkanDescriptorSet",
-  niCountOf(Enum_eGLSLVulkanDescriptorSet_Values), Enum_eGLSLVulkanDescriptorSet_Values
-};
-
-	return &Enum_eGLSLVulkanDescriptorSet;
-}
-
-// --- eGLSLVulkanVertexInputLayout ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eGLSLVulkanVertexInputLayout() {
-
-static const ni::sEnumValueDef Enum_eGLSLVulkanVertexInputLayout_Values[] = {
-	{ "Position", ni::eGLSLVulkanVertexInputLayout_Position },
-	{ "Weights", ni::eGLSLVulkanVertexInputLayout_Weights },
-	{ "Indices", ni::eGLSLVulkanVertexInputLayout_Indices },
-	{ "Normal", ni::eGLSLVulkanVertexInputLayout_Normal },
-	{ "ColorA", ni::eGLSLVulkanVertexInputLayout_ColorA },
-	{ "Tex0", ni::eGLSLVulkanVertexInputLayout_Tex0 },
-	{ "Tex1", ni::eGLSLVulkanVertexInputLayout_Tex1 },
-	{ "Tex2", ni::eGLSLVulkanVertexInputLayout_Tex2 },
-	{ "Tex3", ni::eGLSLVulkanVertexInputLayout_Tex3 },
-	{ "Tex4", ni::eGLSLVulkanVertexInputLayout_Tex4 },
-	{ "Tex5", ni::eGLSLVulkanVertexInputLayout_Tex5 },
-	{ "Tex6", ni::eGLSLVulkanVertexInputLayout_Tex6 },
-	{ "Tex7", ni::eGLSLVulkanVertexInputLayout_Tex7 },
-	{ "Last", ni::eGLSLVulkanVertexInputLayout_Last },
-};
-static const ni::sEnumDef Enum_eGLSLVulkanVertexInputLayout = {
-	"eGLSLVulkanVertexInputLayout",
-  niCountOf(Enum_eGLSLVulkanVertexInputLayout_Values), Enum_eGLSLVulkanVertexInputLayout_Values
-};
-
-	return &Enum_eGLSLVulkanVertexInputLayout;
 }
 
 // --- eGraphicsCaptureFlags ---
@@ -40193,6 +40194,17 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eColorWriteMask(),
   GetEnumDef_eGraphicsDisplayFlags(),
   GetEnumDef_eCompiledStates(),
+  GetEnumDef_eGpuIndexType(),
+  GetEnumDef_eGpuBufferMemoryMode(),
+  GetEnumDef_eGpuBufferUsageFlags(),
+  GetEnumDef_eGpuFunctionType(),
+  GetEnumDef_eGpuFunctionBindType(),
+  GetEnumDef_eGpuPixelFormat(),
+  GetEnumDef_eGpuBlendFactor(),
+  GetEnumDef_eGpuBlendOp(),
+  GetEnumDef_eRayGpuFunctionGroupType(),
+  GetEnumDef_eGLSLVulkanDescriptorSet(),
+  GetEnumDef_eGLSLVulkanVertexInputLayout(),
   GetEnumDef_eAccelerationStructureType(),
   GetEnumDef_eAccelerationGeometryFlags(),
   GetEnumDef_eAccelerationInstanceFlags(),
@@ -40210,17 +40222,6 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eGeometryType(),
   GetEnumDef_eGeometryCreateFlags(),
   GetEnumDef_eGeometryOptimizeFlags(),
-  GetEnumDef_eGpuIndexType(),
-  GetEnumDef_eGpuBufferMemoryMode(),
-  GetEnumDef_eGpuBufferUsageFlags(),
-  GetEnumDef_eGpuFunctionType(),
-  GetEnumDef_eGpuFunctionBindType(),
-  GetEnumDef_eGpuPixelFormat(),
-  GetEnumDef_eGpuBlendFactor(),
-  GetEnumDef_eGpuBlendOp(),
-  GetEnumDef_eRayGpuFunctionGroupType(),
-  GetEnumDef_eGLSLVulkanDescriptorSet(),
-  GetEnumDef_eGLSLVulkanVertexInputLayout(),
   GetEnumDef_eGraphicsCaptureFlags(),
   GetEnumDef_eImageUsage(),
   GetEnumDef_eImageMapSerializeFlags(),

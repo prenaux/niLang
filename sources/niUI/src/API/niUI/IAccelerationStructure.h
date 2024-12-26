@@ -4,6 +4,7 @@
 #include <niLang/Types.h>
 #include <niLang/IDeviceResource.h>
 #include <niLang/IHString.h>
+#include "GpuEnum.h"
 
 namespace ni {
 

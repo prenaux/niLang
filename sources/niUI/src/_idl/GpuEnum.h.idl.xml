@@ -1,0 +1,303 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eGpuIndexType">
+			<comments desc="GPU Index type "/>
+			<value name="eGpuIndexType_U16" value="0 ">
+				<comments desc="16-bit unsigned integer "/>
+			</value>
+			<value name="eGpuIndexType_U32" value="1 ">
+				<comments desc="32-bit unsigned integer "/>
+			</value>
+			<value name="eGpuIndexType_Last" value="2 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBufferMemoryMode">
+			<comments desc="GPU Buffer memory mode "/>
+			<value name="eGpuBufferMemoryMode_Shared" value="0 ">
+				<comments desc="Default shared memory between CPU &amp; GPU, best for dynamic resources that are updated frequently by the CPU. "/>
+			</value>
+			<value name="eGpuBufferMemoryMode_Private" value="1 ">
+				<comments desc="Memory only accessible by GPU, optimal for static resources that won&apos;t change after initialization. ">
+					<remark text="Lock() with private buffers always fails and return nullptr. You should use CreateGpuBufferFromData to initialize them. "/>
+				</comments>
+			</value>
+			<value name="eGpuBufferMemoryMode_Managed" value="2 ">
+				<comments desc="Defines a synchronized memory pair for a resource, with one copy in system memory and another in video memory. Managed resources benefit from fast CPU and GPU access to each copy of the resource, with minimal API calls needed to synchronize these copies. ">
+					<remark text="Lock() returns a pointer to the system memory, Unlock synchronizes it with the GPU. "/>
+					<remark text="To copy the GPU version of the buffer to the system memory you must use iGraphicsDriverGpu::BlitGpuBufferToSystemMemory(). "/>
+				</comments>
+			</value>
+			<value name="eGpuBufferMemoryMode_Last" value="3 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBufferUsageFlags">
+			<comments desc="GPU Buffer usage flags "/>
+			<value name="eGpuBufferUsageFlags_Vertex" value="niBit ( 0 ) ">
+				<comments desc="Can be used as vertex buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Index" value="niBit ( 1 ) ">
+				<comments desc="Can be used as index buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Uniform" value="niBit ( 2 ) ">
+				<comments desc="Can be used as uniform buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Storage" value="niBit ( 3 ) ">
+				<comments desc="Can be used as storage buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Indirect" value="niBit ( 4 ) ">
+				<comments desc="Can be used as indirect buffer "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_TransferSrc" value="niBit ( 5 ) ">
+				<comments desc="Source for transfer operations "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_TransferDst" value="niBit ( 6 ) ">
+				<comments desc="Destination for transfer operations "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_Last" value="8 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuFunctionType">
+			<comments desc="GPU Function type "/>
+			<value name="eGpuFunctionType_Vertex" value="0 ">
+				<comments desc="Vertex function "/>
+			</value>
+			<value name="eGpuFunctionType_Pixel" value="1 ">
+				<comments desc="Pixel/Fragment function "/>
+			</value>
+			<value name="eGpuFunctionType_Compute" value="2 ">
+				<comments desc="Compute function "/>
+			</value>
+			<value name="eGpuFunctionType_Mesh" value="3 ">
+				<comments desc="Mesh function "/>
+			</value>
+			<value name="eGpuFunctionType_Task" value="4 ">
+				<comments desc="Task/Amplification function "/>
+			</value>
+			<value name="eGpuFunctionType_RayGeneration" value="5 ">
+				<comments desc="Ray generation function "/>
+			</value>
+			<value name="eGpuFunctionType_RayIntersection" value="6 ">
+				<comments desc="Ray intersection function "/>
+			</value>
+			<value name="eGpuFunctionType_RayAnyHit" value="7 ">
+				<comments desc="Ray any hit function "/>
+			</value>
+			<value name="eGpuFunctionType_RayClosestHit" value="8 ">
+				<comments desc="Ray closest hit function "/>
+			</value>
+			<value name="eGpuFunctionType_RayMiss" value="9 ">
+				<comments desc="Ray miss function "/>
+			</value>
+			<value name="eGpuFunctionType_Last" value="10 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuFunctionBindType">
+			<comments desc="GPU Function bind type "/>
+			<value name="eGpuFunctionBindType_None" value="0 ">
+				<comments desc="No resource bindings "/>
+			</value>
+			<value name="eGpuFunctionBindType_Fixed" value="1 ">
+				<comments desc="Basic fixed-function pipeline, single base channel "/>
+			</value>
+			<value name="eGpuFunctionBindType_Material" value="2 ">
+				<comments desc="Full iMaterial pipeline with channels "/>
+			</value>
+			<value name="eGpuFunctionBindType_Bindless" value="3 ">
+				<comments desc="Global resource arrays "/>
+			</value>
+			<value name="eGpuFunctionBindType_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuPixelFormat">
+			<comments desc="GPU Pixel format "/>
+			<value name="eGpuPixelFormat_None" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_BGRA8" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_RGBA8" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_RGBA16F" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_R16F" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_R32F" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_D32" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_D16" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_D24S8" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuPixelFormat_Last" value="9 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBlendFactor">
+			<comments desc="GPU Blend factor "/>
+			<value name="eGpuBlendFactor_Zero" value="0 ">
+				<comments desc="(0, 0, 0, 0) "/>
+			</value>
+			<value name="eGpuBlendFactor_One" value="1 ">
+				<comments desc="(1, 1, 1, 1) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcColor" value="2 ">
+				<comments desc="(Rs, Gs, Bs, As) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvSrcColor" value="3 ">
+				<comments desc="(1-Rs, 1-Gs, 1-Bs, 1-As) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcAlpha" value="4 ">
+				<comments desc="(As, As, As, As) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvSrcAlpha" value="5 ">
+				<comments desc="(1-As, 1-As, 1-As, 1-As) "/>
+			</value>
+			<value name="eGpuBlendFactor_DstAlpha" value="6 ">
+				<comments desc="(Ad, Ad, Ad, Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvDstAlpha" value="7 ">
+				<comments desc="(1-Ad, 1-Ad, 1-Ad, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_DstColor" value="8 ">
+				<comments desc="(Rd, Gd, Bd, Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_InvDstColor" value="9 ">
+				<comments desc="(1-Rd, 1-Gd, 1-Bd, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_SrcAlphaSat" value="10 ">
+				<comments desc="(f, f, f, 1) where f = min(As, 1-Ad) "/>
+			</value>
+			<value name="eGpuBlendFactor_BlendColorConstant" value="11 ">
+				<comments desc="Constant blend color "/>
+			</value>
+			<value name="eGpuBlendFactor_InvBlendColorConstant" value="12 ">
+				<comments desc="1 - Constant blend color "/>
+			</value>
+			<value name="eGpuBlendFactor_Last" value="13 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGpuBlendOp">
+			<comments desc="GPU Blend operation "/>
+			<value name="eGpuBlendOp_Add" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Subtract" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_ReverseSubtract" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Min" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Max" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGpuBlendOp_Last" value="5 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eRayGpuFunctionGroupType">
+			<comments desc="Ray function group type for hit functions "/>
+			<value name="eRayGpuFunctionGroupType_Triangles" value="0 ">
+				<comments desc="Hit group for built-in triangle intersection "/>
+			</value>
+			<value name="eRayGpuFunctionGroupType_Procedural" value="1 ">
+				<comments desc="Hit group with custom intersection function "/>
+			</value>
+			<value name="eRayGpuFunctionGroupType_Last" value="2 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGLSLVulkanDescriptorSet">
+			<comments desc=""/>
+			<value name="eGLSLVulkanDescriptorSet_Buffer" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Texture2D" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_TextureCube" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Texture3D" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_TextureShadow" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Sampler" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_SamplerShadow" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_AccelerationStructure" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Last" value="8 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eGLSLVulkanVertexInputLayout">
+			<comments desc=""/>
+			<value name="eGLSLVulkanVertexInputLayout_Position" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Weights" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Indices" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Normal" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_ColorA" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex0" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex1" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex2" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex3" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex4" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex5" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex6" value="11 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Tex7" value="12 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanVertexInputLayout_Last" value="13">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+	</namespace>
+</niIDL>

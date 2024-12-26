@@ -1569,6 +1569,11 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     return nullptr;
   }
 
+  Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() {
+    niError("Ray tracing not implemented in Metal.");
+    return nullptr;
+  }
+
   Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
     iHString* ahspName,
     eAccelerationStructureType aType)

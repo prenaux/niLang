@@ -437,6 +437,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   VkInstance _instance = VK_NULL_HANDLE;
   VkPhysicalDeviceFeatures _physicalDeviceFeatures = {};
+  VkPhysicalDeviceLimits _deviceLimits = {};
   tBool _isRayTracingSupported = eFalse;
   // VkPhysicalDevice will be implicitly destroyed when the VkInstance is destroyed.
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
@@ -453,8 +454,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
   Ptr<iFixedGpuPipelines> _fixedPipelines;
-
-  tU32 _minUniformBufferOffsetAlignment;
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
@@ -833,7 +832,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
       (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
 
-    _minUniformBufferOffsetAlignment = props.limits.minUniformBufferOffsetAlignment;
+    _deviceLimits = props.limits;
     niLog(Info,niFmt(
       "Vulkan Buffer Alignment Properties:\n"
       "  minUniformBufferOffsetAlignment: %llu\n"
@@ -842,12 +841,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  optimalBufferCopyOffsetAlignment: %llu\n"
       "  optimalBufferCopyRowPitchAlignment: %llu\n"
       "  nonCoherentAtomSize: %llu",
-      _minUniformBufferOffsetAlignment,
-      props.limits.minStorageBufferOffsetAlignment,
-      props.limits.minTexelBufferOffsetAlignment,
-      props.limits.optimalBufferCopyOffsetAlignment,
-      props.limits.optimalBufferCopyRowPitchAlignment,
-      props.limits.nonCoherentAtomSize));
+      _deviceLimits.minUniformBufferOffsetAlignment,
+      _deviceLimits.minStorageBufferOffsetAlignment,
+      _deviceLimits.minTexelBufferOffsetAlignment,
+      _deviceLimits.optimalBufferCopyOffsetAlignment,
+      _deviceLimits.optimalBufferCopyRowPitchAlignment,
+      _deviceLimits.nonCoherentAtomSize));
 
     // Descriptor Set Limits
     niLog(Info,niFmt(
@@ -873,13 +872,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum number of samplers per stage (e.g., vertex, fragment).
       // Helps avoid exceeding the per-stage sampler limit, which can impact shader resource layout.
       "  maxPerStageDescriptorSamplers: %d",
-      props.limits.maxBoundDescriptorSets,
-      props.limits.maxDescriptorSetSamplers,
-      props.limits.maxDescriptorSetUniformBuffers,
-      props.limits.maxDescriptorSetStorageBuffers,
-      props.limits.maxDescriptorSetSampledImages,
-      props.limits.maxDescriptorSetStorageImages,
-      props.limits.maxPerStageDescriptorSamplers));
+      _deviceLimits.maxBoundDescriptorSets,
+      _deviceLimits.maxDescriptorSetSamplers,
+      _deviceLimits.maxDescriptorSetUniformBuffers,
+      _deviceLimits.maxDescriptorSetStorageBuffers,
+      _deviceLimits.maxDescriptorSetSampledImages,
+      _deviceLimits.maxDescriptorSetStorageImages,
+      _deviceLimits.maxPerStageDescriptorSamplers));
 
     // Vertex Input Limits
     niLog(Info,niFmt(
@@ -890,8 +889,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum number of vertex input bindings.
       // Limits the number of vertex buffers that can be used in a single pipeline.
       "  maxVertexInputBindings: %d",
-      props.limits.maxVertexInputAttributes,
-      props.limits.maxVertexInputBindings));
+      _deviceLimits.maxVertexInputAttributes,
+      _deviceLimits.maxVertexInputBindings));
 
     // Push Constants and Buffers
     niLog(Info,niFmt(
@@ -905,9 +904,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum size of a storage buffer.
       // Useful for determining the size of data that can be read and written in compute shaders.
       "  maxStorageBufferRange: %d",
-      props.limits.maxPushConstantsSize,
-      props.limits.maxUniformBufferRange,
-      props.limits.maxStorageBufferRange));
+      _deviceLimits.maxPushConstantsSize,
+      _deviceLimits.maxUniformBufferRange,
+      _deviceLimits.maxStorageBufferRange));
 
     // Image and Memory Alignment
     niLog(Info,niFmt(
@@ -921,9 +920,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum number of layers in an image array.
       // Important for applications that need array textures, such as cube maps or layered rendering.
       "  maxImageArrayLayers: %d",
-      props.limits.bufferImageGranularity,
-      props.limits.maxImageDimension2D,
-      props.limits.maxImageArrayLayers));
+      _deviceLimits.bufferImageGranularity,
+      _deviceLimits.maxImageDimension2D,
+      _deviceLimits.maxImageArrayLayers));
 
     // Framebuffer Limits
     niLog(Info,niFmt(
@@ -937,9 +936,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum number of color attachments in a framebuffer.
       // Limits the number of color outputs possible, affecting advanced rendering techniques like MRT (multiple render targets).
       "  maxColorAttachments: %d",
-      props.limits.maxFramebufferWidth,
-      props.limits.maxFramebufferHeight,
-      props.limits.maxColorAttachments));
+      _deviceLimits.maxFramebufferWidth,
+      _deviceLimits.maxFramebufferHeight,
+      _deviceLimits.maxColorAttachments));
 
     // Compute Shader Limits
     niLog(Info,niFmt(
@@ -950,10 +949,10 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum number of workgroup invocations in compute shaders.
       // Limits the number of compute shader threads that can run concurrently within a workgroup.
       "  maxComputeWorkGroupInvocations: %d",
-      Vec3i(props.limits.maxComputeWorkGroupCount[0],
-            props.limits.maxComputeWorkGroupCount[1],
-            props.limits.maxComputeWorkGroupCount[2]),
-      props.limits.maxComputeWorkGroupInvocations));
+      Vec3i(_deviceLimits.maxComputeWorkGroupCount[0],
+            _deviceLimits.maxComputeWorkGroupCount[1],
+            _deviceLimits.maxComputeWorkGroupCount[2]),
+      _deviceLimits.maxComputeWorkGroupInvocations));
 
     // Sampler Limits
     niLog(Info,niFmt(
@@ -961,7 +960,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       // The maximum anisotropy value for samplers.
       // Useful for determining the level of texture quality possible when using anisotropic filtering.
       "  maxSamplerAnisotropy: %g",
-      props.limits.maxSamplerAnisotropy));
+      _deviceLimits.maxSamplerAnisotropy));
 
     // Get extensions
     {
@@ -984,8 +983,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     }
 
     // Check requirements
-    niCheck(props.limits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
-    niCheck(props.limits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
+    niCheck(_deviceLimits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
+    niCheck(_deviceLimits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
 
     // Check extensions
     for (tU32 i = 0; i < knVkRequiredDeviceExtensionsCount; ++i) {
@@ -2450,7 +2449,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
       eGpuBufferUsageFlags_Vertex|
       eGpuBufferUsageFlags_Index|
       eGpuBufferUsageFlags_Uniform,
-      aDriver->_minUniformBufferOffsetAlignment);
+      aDriver->_deviceLimits.minUniformBufferOffsetAlignment);
   }
 
   void Destroy(VkDevice aDevice) {

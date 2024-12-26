@@ -2,9 +2,9 @@
 #define __ITEXTURE_28471243_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-namespace ni {
+#include "GraphicsEnum.h"
 
-enum eLock;
+namespace ni {
 
 /** \addtogroup niUI
  * @{

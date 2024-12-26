@@ -3,12 +3,11 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include <niLang/IDeviceResource.h>
+#include "GraphicsEnum.h"
 
 namespace ni {
 
 struct iIndexArray;
-enum eLock;
-enum eGraphicsPrimitiveType;
 
 /** \addtogroup niUI
  * @{

@@ -16,34 +16,56 @@ module <- {
     if (_hamPath)
       return _hamPath;
 
-    local hamHome = "".setdir(::gLang.property["ni.dirs.ham_home"]);
-    if (!::fs.dirExists(hamHome)) {
+    local function tryHomePath(string aHamHome) string {
+      local hamPath = "".setdir(aHamHome).adddirback("bin").SetFile("ham");
+      if (::fs.fileExists(hamPath)) {
+        return ::gRootFS.GetAbsolutePath(hamPath)
+      }
+      return ::LINT_AS_TYPE("string",null)
+    }
+
+    local hamHome
+    if (!_hamPath) {
+      hamHome = "".setdir(::gLang.property["ni.dirs.ham_home"]);
+      if (::fs.dirExists(hamHome)) {
+        _hamPath = tryHomePath(hamHome)
+      }
+    }
+
+    if (!_hamPath) {
       hamHome = "".setdir(::gLang.property["ni.dirs.bin"])
-      hamHome = "".adddirback("../../../ham");
-      hamHome = ::gRootFS.GetAbsolutePath(hamHome);
-      if (!::fs.dirExists(hamHome)) {
-        throw "Can't find ham directory: " + hamHome
+      hamHome = hamHome.adddirback("../../../../ham");
+      if (::fs.dirExists(hamHome)) {
+        _hamPath = tryHomePath(hamHome)
+      }
+    }
+    if (!_hamPath) {
+      hamHome = "".setdir(::gLang.property["ni.dirs.bin"])
+      hamHome = hamHome.adddirback("../../../ham");
+      if (::fs.dirExists(hamHome)) {
+        _hamPath = tryHomePath(hamHome)
+      }
+    }
+    if (!_hamPath) {
+      hamHome = "".setdir(::gLang.property["ni.dirs.bin"])
+      hamHome = hamHome.adddirback("../../ham");
+      if (::fs.dirExists(hamHome)) {
+        _hamPath = tryHomePath(hamHome)
       }
     }
 
-    local hamPath = "".setdir(hamHome).adddirback("bin").SetFile("ham");
-    if (!::fs.fileExists(hamPath)) {
-      local hamHomeEnv = ::gLang.env["HAM_HOME"];
-      if (hamHomeEnv.?len()) {
-        hamHome = ::gRootFS.GetAbsolutePath(hamHomeEnv);
-        hamPath = "".setdir(hamHome).adddirback("bin").SetFile("ham")
-        if (!::gRootFS.FileExists(hamPath,::eFileAttrFlags.AllFiles)) {
-          throw "Can't find ham executable in HAM_HOME env: " + hamHome
-        }
-      }
-      else {
-        throw "Can't find ham executable in: " + hamHome
+    if (!_hamPath) {
+      hamHome = ::gLang.env["HAM_HOME"];
+      if (::fs.dirExists(hamHome)) {
+        _hamPath = tryHomePath(hamHome);
       }
     }
 
-    _hamHome = "".setdir(hamHome);
-    _hamPath = hamPath;
-    return hamPath;
+    if (!_hamPath) {
+      throw "Can't find ham executable."
+    }
+    _hamHome = "".setdir(::gRootFS.GetAbsolutePath(hamHome));
+    return _hamPath;
   }
 
   function getHamHome() {

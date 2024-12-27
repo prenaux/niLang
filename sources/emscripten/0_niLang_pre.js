@@ -765,6 +765,16 @@ var NIAPP = _moduleLib('NIAPP', {
       width *= contentsScale;
       height *= contentsScale;
     }
+    else {
+      if (width > height) {
+        height = height / width * maxTextureSize;
+        width = maxTextureSize;
+      }
+      else {
+        width = width / height * maxTextureSize;
+        height = maxTextureSize;
+      }
+    }
 
     if ((NIAPP_CONFIG.maxWidth && NIAPP_CONFIG.maxHeight) &&
       (width > NIAPP_CONFIG.maxWidth || height > NIAPP_CONFIG.maxHeight)) {

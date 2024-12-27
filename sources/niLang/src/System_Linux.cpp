@@ -30,6 +30,8 @@ static const int knMinXwinHeight = 20;
 static const int knMaxXwinWidth = 50000;
 static const int knMaxXwinHeight = 50000;
 
+#define X11_MAX_MESSAGES_PER_FRAME 100
+
 ////////////////////////////////////////////////////////////////////////////
 // ni_dll_load_glx
 #define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS)
@@ -416,7 +418,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     mCursor = None;
     mCursorNone = None;
     mnCursorShape = 0;
-    mvPrevMousePos = ni::Vec2<tI32>(eInvalidHandle,eInvalidHandle);
+    mvPrevMousePos = Vec2i(eInvalidHandle,eInvalidHandle);
     mvPrevMouseDelta = sVec2i::Zero();
     mbDropTarget = eFalse;
     mfRefreshTimer = -1;
@@ -811,21 +813,18 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   }
 
   ///////////////////////////////////////////////
-virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
+  virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
     niCheckSilent(mHandle,eFalse);
 
     int events = dll_XEventsQueued(mpDisplay, QueuedAfterFlush);
-    if (events > 0) {
-      // we stop processing events if it spends more than the average frame rate
-      const double maxProcessingTime = (1.0 / ni::GetLang()->GetAverageFrameRate()) * 1000.0;
-      double startTime = ni::GetLang()->TimerInSeconds() * 1000.0;
-      double currentTime = startTime;
-
-      while(events && ( currentTime - startTime) < maxProcessingTime) {
-        _NextEvent();
-        events--;
-        currentTime = ni::GetLang()->TimerInSeconds() * 1000.0;
-      }
+    tU32 numProcessMessages = 0;
+    while(events > 0) {
+      _NextEvent();
+      events--;
+      // we allow maximum a limited number of messages
+      ++numProcessMessages;
+      if (numProcessMessages > X11_MAX_MESSAGES_PER_FRAME)
+        break;
     }
 
     if (!mbIsActive) {
@@ -845,8 +844,8 @@ virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
   }
 
   virtual tBool __stdcall RedrawWindow() niImpl {
-    dll_XClearArea(_GetDisplay(), _GetWindow(), 0, 0, 0, 0, True);
-    return true;
+    // TODO: IMPLEMENT if necessary
+    return eTrue;
   }
 
   ///////////////////////////////////////////////
@@ -1284,19 +1283,19 @@ virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
   }
 
   void _HandleMouseMove(int x, int y) {
-    sVec2i vMousePos = sVec2i(x, y);
+    sVec2i vMousePos = Vec2i(x, y);
     sVec2i vRelMove = vMousePos - mvPrevMousePos;
 
-    if (mbMouseCapture) {
-      if (vRelMove != sVec2i::Zero()) {
-        if (mnEatRelativeMouseMove <= 0) {
-          _SendMessage(ni::eOSWindowMessage_RelativeMouseMove, vRelMove);
-        }
-        else {
-          --mnEatRelativeMouseMove;
-        }
+    if (vRelMove != sVec2i::Zero()) {
+      if (mnEatRelativeMouseMove <= 0) {
+        _SendMessage(ni::eOSWindowMessage_RelativeMouseMove, vRelMove);
       }
+      else {
+        --mnEatRelativeMouseMove;
+      }
+    }
 
+    if (mbMouseCapture) {
       // Only recenters when mouse goes away too much from the center
       const int centerX = mrectWindow.GetWidth() / 2;
       const int centerY = mrectWindow.GetHeight() / 2;
@@ -1306,9 +1305,9 @@ virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
       const int distFromCenterY = abs(y - centerY);
 
       if (distFromCenterX > threshold || distFromCenterY > threshold) {
-        SetCursorPosition(sVec2i(centerX, centerY));
+        SetCursorPosition(Vec2i(centerX, centerY));
         mnEatRelativeMouseMove = 2; // Skip one frame after recentering
-        vMousePos = sVec2i(centerX, centerY);
+        vMousePos = Vec2i(centerX, centerY);
       }
     }
     else {

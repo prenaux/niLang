@@ -16,6 +16,7 @@
 #include <emscripten/key_codes.h>
 
 #include <EGL/egl.h>
+#include <GLES2/gl2.h>
 
 using namespace ni;
 
@@ -180,7 +181,7 @@ struct sJSCCWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default> {
 
     const EGLint eglContextAttribList[] =
     {
-	    EGL_CONTEXT_CLIENT_VERSION, 2,
+	    EGL_CONTEXT_CLIENT_VERSION, 3, // Using WebGL 2.0 here
 	    EGL_NONE
     };
 
@@ -203,6 +204,11 @@ struct sJSCCWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default> {
 
     {
       auto ret = eglMakeCurrent(egldisplay, eglsurface, eglsurface, eglcontext);
+
+      GLint maxTextureSize;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+      mnMaxTextureSize = maxTextureSize;
+
       if (ret == EGL_FALSE) {
         niError(niFmt("eglMakeCurrent failed:%s\n", ret));
         return;
@@ -513,6 +519,7 @@ struct sJSCCWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default> {
   tBool                       mbDropTarget;
   tBool                       mbIsActive;
   tF32                        mfRefreshTimer;
+  tU32                        mnMaxTextureSize;
 
   sVec2i mvPrevMousePos = {eInvalidHandle,eInvalidHandle};
   sRecti mRect;
@@ -710,6 +717,12 @@ niExportJSCC(int) niJSCC_RunCommand(const char* aCmd) {
     return pConsole->RunCommand(aCmd);
   }
   return eFalse;
+}
+
+niExportJSCC(int) niJSCC_GetMaxTextureSize() {
+  TRACE_JSCC_CAPI(("... GetMaxTextureSize"));
+  CHECK_WINDOW(eFalse);
+  return wnd->mnMaxTextureSize;
 }
 
 niExportJSCC(int) niJSCC_HasWindow() {

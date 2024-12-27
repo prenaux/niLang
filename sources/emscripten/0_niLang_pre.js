@@ -188,6 +188,7 @@ var NIAPP_CAPI = _moduleLib('NIAPP_CAPI', {
     w('SetProperty', z, [s, s]);
     w('GetProperty', s, [s]);
     w('RunCommand', n, [s]);
+    w('GetMaxTextureSize', n, []);
     // Window notification
     w('HasWindow', n, []);
     w('WndNotifyResize', z, [n, n, n]);
@@ -757,8 +758,13 @@ var NIAPP = _moduleLib('NIAPP', {
       }
     }
 
-    width *= contentsScale;
-    height *= contentsScale;
+    var maxTextureSize = NIAPP_CAPI.GetMaxTextureSize();
+    console.log("... NIAPP.GetMaxTextureSize: ", maxTextureSize);
+
+    if (width * contentsScale <= maxTextureSize && height * contentsScale <= maxTextureSize) {
+      width *= contentsScale;
+      height *= contentsScale;
+    }
 
     if ((NIAPP_CONFIG.maxWidth && NIAPP_CONFIG.maxHeight) &&
       (width > NIAPP_CONFIG.maxWidth || height > NIAPP_CONFIG.maxHeight)) {

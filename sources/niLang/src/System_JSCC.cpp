@@ -790,7 +790,7 @@ niExportJSCC(void) niJSCC_WndInputMouseWheel(tF32 deltaY) {
 ///////////////////////////////////////////////
 const tI32 MAX_TOUCHES = 10;
 static ni::sVec2f  _lastTouchPosition[MAX_TOUCHES] = {{}};
-static ni::tIntPtr _touches[MAX_TOUCHES] = {};
+static ni::tIntPtr _touches[MAX_TOUCHES] = { -1000 };
 static ni::tF32 _pinchInitialDistance = 0;
 static ni::tF32 _pinchLastScale = 1;
 
@@ -802,9 +802,27 @@ static tI32 _GetFingerIndexFromTouch(tIntPtr touch) {
   }
   return -1;
 }
+
+static tI32 _CountNumTouches() {
+  int count = 0;
+  for (int i = 0; i < MAX_TOUCHES; ++i) {
+    if (_touches[i] != -1) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 static tI32 _AddNewTouch(tIntPtr touch) {
+  // init touches with -1, we can't use 0 as invalid number here, on android 0 is the first touch id;
+  if (_touches[0] == -1000) {
+    for (tI32 i = 0; i < MAX_TOUCHES; ++i) {
+      _touches[i] = -1;
+    }
+  }
+
   for (tI32 i = 0; i < MAX_TOUCHES; ++i) {
-    if (!_touches[i]) {
+    if (_touches[i] == -1) {
       _touches[i] = touch;
       return i;
     }
@@ -813,30 +831,21 @@ static tI32 _AddNewTouch(tIntPtr touch) {
 }
 static tI32 _RemoveFingerIndex(const int fingerIndex) {
   niAssert(fingerIndex < MAX_TOUCHES);
-  _touches[fingerIndex] = 0;
+  _touches[fingerIndex] = -1;
   return -1;
-}
-static tI32 _CountNumTouches() {
-  int count = 0;
-  for (int i = 0; i < MAX_TOUCHES; ++i) {
-    if (_touches[i]) {
-      ++count;
-    }
-  }
-  return count;
 }
 
 // touchState 0 = down; 1 = move; 2 = up
 static ni::tBool _HandlePinch(sJSCCWindow* wnd, ni::tU32 touchState) {
   astl::vector<ni::tIntPtr> touches;
   for (int i = 0; i < 10; ++i) {
-    if (_touches[i]) {
+    if (_touches[i] != -1) {
       touches.push_back(i);
     }
   }
   ni::eGestureState state;
   if (touches.size() != 2) {
-    if (touches.size() < 2 && touchState == 2 && _pinchInitialDistance != 0) {
+    if (touchState == 2 && _pinchInitialDistance != 0) {
       wnd->_SendMessage(eOSWindowMessage_Pinch, _pinchLastScale, ni::eGestureState_Ended);
       _pinchInitialDistance = 0;
       _pinchLastScale = 1;

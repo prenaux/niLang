@@ -1057,6 +1057,34 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
     dynamicRenderingFeatures.pNext = &extDynamicStateFeatures;
 
+    // Ray tracing extensions
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+      .rayTracingPipeline = VK_TRUE
+    };
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+      .accelerationStructure = VK_TRUE,
+    };
+    if (_isRayTracingSupported) {
+      extDynamicStateFeatures.pNext = &rayTracingPipelineFeatures;
+      rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
+    }
+
+    // Gather the required extensions
+    astl::vector<const char*> requiredExtensions;
+    {
+      requiredExtensions.reserve(knVkRequiredDeviceExtensionsCount+knVkRequiredRayTracingExtensionsCount);
+      niLoop(i,knVkRequiredDeviceExtensionsCount) {
+        requiredExtensions.push_back(_vkRequiredDeviceExtensions[i]);
+      }
+      if (_isRayTracingSupported) {
+        niLoop(i,knVkRequiredRayTracingExtensionsCount) {
+          requiredExtensions.push_back(_vkRequiredRayTracingExtensions[i]);
+        }
+      }
+    }
+
     // Create the device
     VkDeviceCreateInfo createInfo = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
@@ -1065,8 +1093,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .pQueueCreateInfos = &queueCreateInfo,
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
-      .enabledExtensionCount = knVkRequiredDeviceExtensionsCount,
-      .ppEnabledExtensionNames = _vkRequiredDeviceExtensions,
+      .enabledExtensionCount = (tU32)requiredExtensions.size(),
+      .ppEnabledExtensionNames = requiredExtensions.data(),
       .pEnabledFeatures = nullptr,
     };
     VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);

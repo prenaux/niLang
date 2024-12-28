@@ -20,6 +20,3 @@ if ( $(EMSCRIPTEN) = 1 ) {
     --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten Test_niSound_pre.js ] ]
   ;
 }
-
-# Dependencies
-tkDepends Test_niSound : niSound : TOP niSound src ;

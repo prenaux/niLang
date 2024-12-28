@@ -21,9 +21,3 @@ if ( $(EMSCRIPTEN) = 1 ) {
     --pre-js [ FQuote [ FDirName $(TOP_DIR) emscripten niUI_fonts_cjk.js ] ]
   ;
 }
-
-# Dependencies
-tkDepends Test_niUI : niLang : TOP niLang src ;
-tkDepends Test_niUI : niUI : TOP niUI src ;
-tkDepends Test_niUI : niUnitTest : TOP niUnitTest src ;
-tkDepends Test_niUI : niAppLib : TOP niAppLib src ;

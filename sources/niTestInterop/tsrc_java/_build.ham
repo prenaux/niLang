@@ -19,6 +19,3 @@ JAR = [ niBuildJar $(SRC)
 : $(JAR_JUNIT3)
 :
 : junit.textui.TestRunner ] ;
-
-tkDepends Test_niTestInterop_java : niLang_jvm : TOP niLang java ;
-tkDepends Test_niTestInterop_java : niLang : TOP niLang src ;

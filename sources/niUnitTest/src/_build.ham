@@ -9,6 +9,3 @@ niImportModuleHdrs niUI ;
 SRC = [ tkPkgSrc ] ;
 
 tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) ;
-
-# Dependencies
-tkDepends niUnitTest : niAppLib : TOP niAppLib src ;

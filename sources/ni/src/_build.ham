@@ -37,11 +37,3 @@ if $(HAS_NIW) = 1 {
   runInDir niw ;
   BUILD_SRC = [ tkBuildPackage $(SRC) : minsz : $(CHK_SOURCES) ] ;
 }
-
-### DEPENDENCIES #####################################################
-tkDepends ni : niLang : TOP niLang ;
-tkDepends ni : niScript : TOP niScript ;
-if $(HAS_NIW) = 1 {
-  tkDepends niw : niLang : TOP niLang ;
-  tkDepends niw : niScript : TOP niScript ;
-}

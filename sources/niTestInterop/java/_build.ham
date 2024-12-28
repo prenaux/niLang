@@ -15,5 +15,3 @@ SRC =
 
 JAR = [ niBuildJar $(SRC) : niLang_jvm : : pkgsrc ] ;
 DEPENDS $(JAR) : [ niGenJava niTestInterop ] ;
-
-tkDepends $(PACKAGE) : niTestInterop : TOP niTestInterop src ;

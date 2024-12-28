@@ -19,8 +19,3 @@ SRC = [ tkPkgSrc ] ;
 runInDir nicgc ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch minsz exc : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
-
-### DEPENDENCIES #####################################################
-tkDepends nicgc : niLang : TOP niLang ;
-tkDepends nicgc : niCURL : TOP niCURL ;
-SubInclude TOP nicgc src mojoshader ;

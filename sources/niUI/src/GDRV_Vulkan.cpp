@@ -1066,9 +1066,14 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
       .accelerationStructure = VK_TRUE,
     };
+    VkPhysicalDeviceBufferDeviceAddressFeaturesKHR bufferDeviceAddressFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
+      .bufferDeviceAddress = VK_TRUE,
+    };
     if (_isRayTracingSupported) {
       extDynamicStateFeatures.pNext = &rayTracingPipelineFeatures;
       rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
+      accelerationStructureFeatures.pNext = &bufferDeviceAddressFeatures;
     }
 
     // Gather the required extensions
@@ -1119,6 +1124,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
+    if (_isRayTracingSupported) {
+      allocatorInfo.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+    }
 #ifdef niVulkan_Volk
     VmaVulkanFunctions vmaVulkanFuncs {
       .vkGetInstanceProcAddr = vkGetInstanceProcAddr,
@@ -1365,6 +1373,10 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
       .usage = _ToVkBufferUsageFlags(_usage)
     };
 
+    if (_driver->_isRayTracingSupported) {
+      bufferInfo.usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+    }
+
     VmaAllocationCreateInfo allocInfo = {};
     switch (_memMode) {
       case eGpuBufferMemoryMode_Shared:
@@ -1470,6 +1482,14 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
 
   virtual tBool __stdcall GetIsLocked() const niImpl {
     return _lockSize != 0;
+  }
+
+  VkDeviceAddress _GetDeviceAddress() const {
+    VkBufferDeviceAddressInfo info = {
+      .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+      .buffer = _vkBuffer
+    };
+    return vkGetBufferDeviceAddress(_driver->_device, &info);
   }
 };
 
@@ -2865,6 +2885,257 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriv
   return cmdEncoder;
 }
 
+struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
+  nn<sVulkanDriver> _driver;
+  tHStringPtr _name;
+  eAccelerationStructureType _type;
+  VkAccelerationStructureKHR _as = VK_NULL_HANDLE;
+  VkBuffer _buffer = VK_NULL_HANDLE;
+  VmaAllocation _allocation = nullptr;
+
+  sVulkanAccelerationStructure(
+    ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName,
+    eAccelerationStructureType aType)
+      : _driver(aDriver)
+      , _name(ahspName)
+      , _type(aType)
+  {}
+
+  ~sVulkanAccelerationStructure() {
+    if (_as) {
+      vkDestroyAccelerationStructureKHR(_driver->_device, _as, nullptr);
+    }
+    if (_buffer) {
+      vmaDestroyBuffer(_driver->_allocator, _buffer, _allocation);
+    }
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return eFalse;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual eAccelerationStructureType __stdcall GetType() const niImpl {
+    return _type;
+  }
+
+  virtual tBool __stdcall AddTriangles(
+    iGpuBuffer* apVertexBuffer,
+    tU32 anVertexOffset,
+    tU32 anVertexStride,
+    tU32 anVertexCount,
+    const sMatrixf& amtxTransform,
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroupId) niImpl
+  {
+    VkAccelerationStructureGeometryKHR geometry = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
+      .geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR,
+      .flags = (VkGeometryFlagsKHR)(
+        niFlagIs(aFlags,eAccelerationGeometryFlags_Opaque) ?
+        VK_GEOMETRY_OPAQUE_BIT_KHR : 0),
+    };
+
+    geometry.geometry.triangles = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
+      .vertexFormat = VK_FORMAT_R32G32B32_SFLOAT,
+      .vertexData = {
+        .deviceAddress = ((sVulkanBuffer*)apVertexBuffer)->_GetDeviceAddress() +
+        anVertexOffset
+      },
+      .vertexStride = anVertexStride,
+      .maxVertex = anVertexCount
+    };
+
+    VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
+      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
+      .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+      .geometryCount = 1,
+      .pGeometries = &geometry
+    };
+
+    // Get size requirements
+    VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+    };
+
+    vkGetAccelerationStructureBuildSizesKHR(
+      _driver->_device,
+      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+      &buildInfo, &anVertexCount, &sizeInfo);
+
+    // Create buffer
+    VkBufferCreateInfo bufferInfo = {
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = sizeInfo.accelerationStructureSize,
+      .usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR |
+      VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+    };
+
+    VmaAllocationCreateInfo allocInfo = {
+      .usage = VMA_MEMORY_USAGE_GPU_ONLY
+    };
+
+    niCheck(vmaCreateBuffer(_driver->_allocator, &bufferInfo, &allocInfo,
+                            &_buffer, &_allocation, nullptr) == VK_SUCCESS, eFalse);
+
+    VkAccelerationStructureCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
+      .buffer = _buffer,
+      .size = sizeInfo.accelerationStructureSize,
+      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR
+    };
+
+    niCheck(vkCreateAccelerationStructureKHR(_driver->_device, &createInfo,
+                                             nullptr, &_as) == VK_SUCCESS, eFalse);
+
+    return eTrue;
+  }
+
+  virtual tBool __stdcall AddTrianglesIndexed(
+    iGpuBuffer* apVertices,
+    tU32 anVertexOffset,
+    tU32 anVertexStride,
+    tU32 anVertexCount,
+    iGpuBuffer* apIndices,
+    tU32 anIndexOffset,
+    eGpuIndexType anIndexType,
+    tU32 anIndexCount,
+    const sMatrixf& aTransform,
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroup) {
+    niError("Not implemented.");
+    return eFalse;
+  }
+
+  //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
+  //! \remarks The hit group must include an intersection shader for the procedural geometry.
+  //! \remarks AABB format: float[6] = {minX,minY,minZ,maxX,maxY,maxZ}, \see ni::cAABBf
+  virtual tBool __stdcall AddProceduralAABBs(
+    iGpuBuffer* apAABBs,
+    tU32 anAABBOffset,
+    tU32 anAABBStride,
+    tU32 anAABBCount,
+    const sMatrixf& aTransform,
+    tAccelerationGeometryFlags aFlags,
+    tU32 anHitGroup) {
+    niError("Not implemented.");
+    return eFalse;
+  }
+};
+
+struct sVulkanRayFunctionTable : public ImplRC<iRayGpuFunctionTable> {
+  nn<sVulkanDriver> _driver;
+  NN<iGpuFunction> _rayGen = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _miss = niDeferredInit(NN<iGpuFunction>);
+  struct sHitGroup {
+    tHStringPtr _name;
+    eRayGpuFunctionGroupType _type;
+    Ptr<iGpuFunction> _closestHit;
+    Ptr<iGpuFunction> _anyHit;
+    Ptr<iGpuFunction> _intersection;
+  };
+  astl::vector<sHitGroup> _hitGroups;
+
+  sVulkanRayFunctionTable(ain<nn<sVulkanDriver>> aDriver) : _driver(aDriver) {}
+
+  virtual tBool __stdcall SetRayGenFunction(iGpuFunction* apFunction) niImpl {
+    _rayGen = niCheckNN(_rayGen,apFunction,eFalse);
+    return eTrue;
+  }
+
+  virtual tBool __stdcall SetMissFunction(iGpuFunction* apFunction) niImpl {
+    _miss = niCheckNN(_miss,apFunction,eFalse);
+    return eTrue;
+  }
+
+  virtual tU32 __stdcall AddHitGroup(
+    iHString* ahspName,
+    eRayGpuFunctionGroupType aType,
+    iGpuFunction* apClosestHit,
+    iGpuFunction* apAnyHit,
+    iGpuFunction* apIntersection) niImpl
+  {
+    niCheckIsOK(apClosestHit,eInvalidHandle);
+    _hitGroups.push_back({
+        ._name = ahspName,
+        ._type = aType,
+        ._closestHit = apClosestHit,
+        ._anyHit = apAnyHit,
+        ._intersection = apIntersection
+      });
+    return (tU32)_hitGroups.size()-1;
+  }
+};
+
+struct sVulkanRayPipeline : public ImplRC<iRayGpuPipeline,eImplFlags_DontInherit1,iDeviceResource> {
+  nn<sVulkanDriver> _driver;
+  tHStringPtr _name;
+  NN<sVulkanRayFunctionTable> _functionTable;
+  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _pipeline = VK_NULL_HANDLE;
+
+  sVulkanRayPipeline(
+    ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName,
+    ain<nn<sVulkanRayFunctionTable>> apFunctionTable)
+      : _driver(aDriver)
+      , _name(ahspName)
+      , _functionTable(apFunctionTable)
+  {}
+
+  ~sVulkanRayPipeline() {
+    if (_pipeline) {
+      vkDestroyPipeline(_driver->_device, _pipeline, nullptr);
+    }
+    if (_pipelineLayout) {
+      vkDestroyPipelineLayout(_driver->_device, _pipelineLayout, nullptr);
+    }
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual iGpuFunction* __stdcall GetRayGenFunction() const niImpl {
+    return _functionTable->_rayGen;
+  }
+
+  virtual iGpuFunction* __stdcall GetMissFunction() const niImpl {
+    return _functionTable->_miss;
+  }
+
+  virtual iRayGpuFunctionTable* __stdcall GetFunctionTable() const niImpl {
+    return _functionTable;
+  }
+};
+
 iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) {
   VULKAN_TRACE(("sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
                 ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
@@ -3970,12 +4241,16 @@ Ptr<iRayGpuPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
   iRayGpuFunctionTable* apFunctionTable)
 {
   niCheck(_isRayTracingSupported,nullptr);
-  return nullptr;
+  niCheckIsOK(apFunctionTable,nullptr);
+  Ptr<sVulkanRayPipeline> as = niNew sVulkanRayPipeline(
+    as_nn(this),ahspName,as_nn((sVulkanRayFunctionTable*)apFunctionTable));
+  return as;
 }
 
 Ptr<iRayGpuFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable() {
   niCheck(_isRayTracingSupported,nullptr);
-  return nullptr;
+  Ptr<sVulkanRayFunctionTable> rayFT = niNew sVulkanRayFunctionTable(as_nn(this));
+  return rayFT;
 }
 
 Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure(
@@ -3983,7 +4258,8 @@ Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure
   eAccelerationStructureType aType)
 {
   niCheck(_isRayTracingSupported,nullptr);
-  return nullptr;
+  Ptr<sVulkanAccelerationStructure> as = niNew sVulkanAccelerationStructure(as_nn(this),ahspName,aType);
+  return as;
 }
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var& avarB) {

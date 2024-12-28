@@ -14411,8 +14411,8 @@ VkResult VmaAllocator_T::CheckCorruption(uint32_t memoryTypeBits)
 VkResult VmaAllocator_T::AllocateVulkanMemory(const VkMemoryAllocateInfo* pAllocateInfo, VkDeviceMemory* pMemory)
 {
     AtomicTransactionalIncrement<VMA_ATOMIC_UINT32> deviceMemoryCountIncrement;
-    const uint64_t prevDeviceMemoryCount = deviceMemoryCountIncrement.Increment(&m_DeviceMemoryCount);
 #if VMA_DEBUG_DONT_EXCEED_MAX_MEMORY_ALLOCATION_COUNT
+    const uint64_t prevDeviceMemoryCount = deviceMemoryCountIncrement.Increment(&m_DeviceMemoryCount);
     if(prevDeviceMemoryCount >= m_PhysicalDeviceProperties.limits.maxMemoryAllocationCount)
     {
         return VK_ERROR_TOO_MANY_OBJECTS;

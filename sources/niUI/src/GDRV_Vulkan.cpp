@@ -1385,7 +1385,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     _DestroyBuffer();
   }
 
-  tBool _CreateBuffer(tU32 anSize) {
+  tBool _CreateBuffer(tU32 anSize, tU32 anMinAlignment) {
     VkBufferCreateInfo bufferInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .size = anSize,
@@ -1410,9 +1410,17 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
         break;
     }
 
-    VK_CHECK(vmaCreateBuffer(
-      _driver->_allocator, &bufferInfo, &allocInfo,
-      &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
+    if (anMinAlignment) {
+      VK_CHECK(vmaCreateBufferWithAlignment(
+        _driver->_allocator, &bufferInfo, &allocInfo,
+        anMinAlignment,
+        &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
+    }
+    else {
+      VK_CHECK(vmaCreateBuffer(
+        _driver->_allocator, &bufferInfo, &allocInfo,
+        &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
+    }
 
     return eTrue;
   }
@@ -3018,7 +3026,7 @@ struct sVulkanScratchBuffer {
       aDriver,
       eGpuBufferMemoryMode_Private,
       eGpuBufferUsageFlags_Storage);
-    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize),eFalse);
+    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize,256),eFalse);
     return eTrue;
   }
 };
@@ -3129,7 +3137,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       &buildInfo, &primCount, &_asSizeInfo);
 
     // Create buffer
-    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize),eFalse);
+    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,256),eFalse);
 
     // Create the acceleration structure
     VkAccelerationStructureCreateInfoKHR createInfo = {
@@ -3769,7 +3777,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 #undef INIT_COMPILED_SAMPLER_STATES
 
   _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
-  niCheck(_dummyUniformBuffer->_CreateBuffer(1024),eFalse);
+  niCheck(_dummyUniformBuffer->_CreateBuffer(1024,0),eFalse);
   {
     tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
     ni::MemZero(data,1024);
@@ -4721,7 +4729,8 @@ iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
 
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
-  niCheck(buffer->_CreateBuffer(anSize),nullptr);
+  // TODO: Alignment should be a parameter or coming from a device cap
+  niCheck(buffer->_CreateBuffer(anSize,256),nullptr);
   return buffer;
 }
 
@@ -4738,7 +4747,8 @@ Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromData(iHString* ahspName, iFile
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niCheck(apData != nullptr, nullptr);
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
-  niCheck(buffer->_CreateBuffer(anSize),nullptr);
+  // TODO: Alignment should be a parameter or coming from a device cap
+  niCheck(buffer->_CreateBuffer(anSize,256),nullptr);
   {
     niLet data = buffer->Lock(0,anSize,eLock_Discard);
     niCheck(data != nullptr,nullptr);

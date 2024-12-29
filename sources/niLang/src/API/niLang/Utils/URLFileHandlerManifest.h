@@ -8,13 +8,7 @@
 
 namespace ni {
 
-#ifndef TRACE_URLHANDLER_MANIFEST
-#  ifdef _DEBUG
-#    define TRACE_URLHANDLER_MANIFEST(X) niDebugFmt(X)
-#  else
-#    define TRACE_URLHANDLER_MANIFEST(X)
-#  endif
-#endif
+#define TRACE_URLHANDLER_MANIFEST(X) //niDebugFmt(X)
 
 struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
  private:

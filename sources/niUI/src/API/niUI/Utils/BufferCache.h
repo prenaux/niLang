@@ -130,8 +130,8 @@ struct BufferCache
 
     if (static_cast<TDERIVED*>(this)->_Upload(mvEls.data(),upBase,upCount)) {
       mnBaseEl = mnCurrentEl;
-      niAssert(baseEl <= ni::TypeMax<tI32>());
-      niAssert(numPending <= ni::TypeMax<tI32>());
+      niAssert(baseEl <= (tU32)ni::TypeMax<tI32>());
+      niAssert(numPending <= (tU32)ni::TypeMax<tI32>());
       return Vec2i((tI32)baseEl, (tI32)numPending);
     }
     else {

@@ -145,7 +145,7 @@ class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
 
   ///////////////////////////////////////////////
   virtual tU32 __stdcall GetNumPages() const {
-    return mvPages.size();
+    return (tU32)mvPages.size();
   }
 
   ///////////////////////////////////////////////
@@ -160,7 +160,7 @@ class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
 
   ///////////////////////////////////////////////
   virtual tU32 __stdcall GetNumImages() const {
-    return mvImages.size();
+    return (tU32)mvImages.size();
   }
   virtual iOverlay* __stdcall GetImage(tU32 anIndex) const {
     niCheckSilent(anIndex < mvImages.size(),NULL);

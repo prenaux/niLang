@@ -569,8 +569,6 @@ tBool cFontTTF::RenderGlyph(sFontGlyph* baseGlyph, tU32 anBaseSize, tBool abDist
     }
 
     renderedBmp = mpGraphics->CreateBitmap2D(glyph->GetWidth()/SDF_scaler,glyph->GetHeight()/SDF_scaler,"A8");
-    const tU32 nWidth = renderedBmp->GetWidth()*SDF_scaler;
-    const tU32 nHeight = renderedBmp->GetHeight()*SDF_scaler;
 
     const int w = glyph->bmp->GetWidth();
     const int h = glyph->bmp->GetHeight();
@@ -619,8 +617,6 @@ tBool cFontTTF::RenderGlyph(sFontGlyph* baseGlyph, tU32 anBaseSize, tBool abDist
       IMAGE_PIXELFORMAT);
     bmp->Clear(NULL);
 
-    const tU32 bpp = 4; // ARGB8888
-    const tU32 pitch = bmp->GetPitch();
     const tU32 destYOffset = TTF_GLYPH_PADDING;
 
     // niDebugFmt(("... GLYPH %3d (%c), sz:%d as:%d de:%d h:%d lead:%s : %d : %d : %g, %dx%d, [%d,%d,%d,%d]",

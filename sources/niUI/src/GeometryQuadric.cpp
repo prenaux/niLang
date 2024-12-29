@@ -40,7 +40,7 @@ struct sQuadStrip {
     mCurrentVertex.color = anColor;
   }
   tU32 GetNumVertices() const {
-    return mvVertices.size();
+    return (tU32)mvVertices.size();
   }
   tU32 GetNumQuads() const {
     return (GetNumVertices()-2)/2;
@@ -1083,7 +1083,7 @@ void Geosphere_Build(Mesh& mesh, int basetype, float radius, int segs, int hemi,
       break;
   }
 
-  for (face=0; face<nsections; face++) {
+  for (face=0; face<(int)nsections; face++) {
     for (row=0; row<segs; row++) {
       for (column=0; column<=row; column++) {
         a = find_vert_index (basetype, segs, face, row, column);

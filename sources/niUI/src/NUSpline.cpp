@@ -88,7 +88,7 @@ tBool cNUSpline::RemoveNode(tU32 anIndex)
 ///////////////////////////////////////////////
 tU32 cNUSpline::GetNumNodes() const
 {
-  return mvNodes.size();
+  return (tU32)mvNodes.size();
 }
 
 ///////////////////////////////////////////////

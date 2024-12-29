@@ -19,7 +19,7 @@ inline tBool InitScriptVMForDebugUI() {
   return eTrue;
 }
 
-#define niInitScriptVMForDebugUI(UICONTEXT) ni::InitScriptVMForDebugUI()
+#define niInitScriptVMForDebugUI() ni::InitScriptVMForDebugUI()
 } // namespace ni
 
 #endif

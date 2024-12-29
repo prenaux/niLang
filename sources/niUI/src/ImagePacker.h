@@ -62,7 +62,9 @@ class cImagePacker : public ImplRC<iUnknown>
   iImage* __stdcall GetImage() const {
     return mptrImage;
   }
-  tU32 __stdcall GetNumRects() const { return mvRects.size(); }
+  tU32 __stdcall GetNumRects() const {
+    return (tU32)mvRects.size();
+  }
   sRecti __stdcall GetRect(tU32 anIndex) const {
     if (anIndex >= mvRects.size()) return sRecti::Null();
     return mvRects[anIndex];

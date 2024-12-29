@@ -17,7 +17,7 @@ struct FFont {
 
 TEST_FIXTURE(FFont,IconFontBase) {
   Ptr<iFont> font = graphics->LoadFont(_H("fas"));
-  CHECK_EQUAL(font.IsOK(), eTrue);
+  CHECK(font.IsOK());
 
   niDebugFmt(("... font %s loaded, %s", font->GetName(), font->GetFamilyName()));
   const tBool isFontAwesomeFontFamily = _ASTR(niHStr(font->GetFamilyName())).icontains("Font Awesome");
@@ -28,7 +28,7 @@ TEST_FIXTURE(FFont,IconFontBase) {
 
   niDebugFmt(("... font %s has %d glyphs", font->GetName(), glyphs->size()));
   {
-    int c = 0;
+    tSize c = 0;
     for (auto& glyph : *glyphs) {
       niDebugFmt(("... glyph: index: %d, codepoint: 0x%x, name: %s",
                   glyph.first, glyph.second,
@@ -55,7 +55,7 @@ TEST_FIXTURE(FFont,IconFontBase) {
 
 TEST_FIXTURE(FFont,OSFonts) {
   Ptr<tStringCMap> osFonts = graphics->EnumOSFonts();
-  CHECK_EQUAL(osFonts.IsOK(), eTrue);
+  CHECK(osFonts.IsOK());
   CHECK(osFonts->size() > 0);
 
   niDebugFmt(("... osFonts: found %d", osFonts->size()));

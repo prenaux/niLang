@@ -207,8 +207,9 @@ enum eGLSLVulkanDescriptorSet {
   eGLSLVulkanDescriptorSet_Sampler = 5,
   eGLSLVulkanDescriptorSet_SamplerShadow = 6,
   eGLSLVulkanDescriptorSet_AccelerationStructure = 7,
+  eGLSLVulkanDescriptorSet_Image2D = 8,
   //! \internal
-  eGLSLVulkanDescriptorSet_Last niMaybeUnused = 8,
+  eGLSLVulkanDescriptorSet_Last niMaybeUnused = 9,
 };
 
 enum eGLSLVulkanVertexInputLayout {

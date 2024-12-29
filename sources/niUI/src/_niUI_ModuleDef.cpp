@@ -37765,6 +37765,7 @@ static const ni::sEnumValueDef Enum_eGpuBufferUsageFlags_Values[] = {
 	{ "Indirect", ni::eGpuBufferUsageFlags_Indirect },
 	{ "TransferSrc", ni::eGpuBufferUsageFlags_TransferSrc },
 	{ "TransferDst", ni::eGpuBufferUsageFlags_TransferDst },
+	{ "AccelerationStructureBuildInput", ni::eGpuBufferUsageFlags_AccelerationStructureBuildInput },
 	{ "Last", ni::eGpuBufferUsageFlags_Last },
 };
 static const ni::sEnumDef Enum_eGpuBufferUsageFlags = {

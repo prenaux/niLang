@@ -44,7 +44,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
           _H("RayTriangle_VB"),
           sizeof(tVertexFmt)*3,
           eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Vertex),
+          eGpuBufferUsageFlags_Vertex|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
         eFalse);
 
       tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);

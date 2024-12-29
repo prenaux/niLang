@@ -282,7 +282,7 @@ class cMaterialLibrary : public ImplRC<ni::iMaterialLibrary,eImplFlags_Default>
 
   ///////////////////////////////////////////////
   virtual ni::tU32 __stdcall GetNumMaterials() const {
-    return mvMaterials.size();
+    return (tU32)mvMaterials.size();
   }
   ///////////////////////////////////////////////
   virtual ni::iMaterial* __stdcall GetMaterial(ni::tU32 anIndex) const {
@@ -459,7 +459,7 @@ class cMaterialLibrary : public ImplRC<ni::iMaterialLibrary,eImplFlags_Default>
       {
         apFile->WriteLE32(_kfccMatLib1);
         // write the number of textures
-        apFile->WriteLE32(mapTexs.size());
+        apFile->WriteLE32((tU32)mapTexs.size());
         // write the textures
         niLoopit(tTextureMap::iterator,it,mapTexs) {
           sTexture& t = it->second;

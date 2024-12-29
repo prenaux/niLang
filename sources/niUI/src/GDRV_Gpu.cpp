@@ -938,7 +938,7 @@ tBool DrawOperationSubmitGpuDrawCall(
   iVertexArray* va = apDrawOp->GetVertexArray();
   iIndexArray* ia = apDrawOp->GetIndexArray();
   const sVec2i fvfAndStride = GetVertexArrayFvfAndStride(va);
-  const tFVF fvf = (tFVF)fvfAndStride.x;
+  //const tFVF fvf = (tFVF)fvfAndStride.x;
   const tU32 fvfStride = (tU32)fvfAndStride.y;
 
   const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();

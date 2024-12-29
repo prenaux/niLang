@@ -269,7 +269,7 @@ struct Icons : public VGBase {
     fontIcons->SetSizeAndResolution(Vec2f(32,32),32,mpWidget->GetUIContext()->GetContentsScale());
 
     const tF32 ascent = fontIcons->GetAscent();
-    const tF32 descent = fontIcons->GetDescent();
+    // const tF32 descent = fontIcons->GetDescent();
     const tF32 height = fontIcons->GetHeight();
     sVec2f pos = Vec2f(50,50);
     tU32 gi = fontIcons->GetGlyphIndexFromName("magnifying-glass");

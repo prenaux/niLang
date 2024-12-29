@@ -61,6 +61,8 @@ enum eGpuBufferUsageFlags
   eGpuBufferUsageFlags_TransferSrc = niBit(5),
   //! Destination for transfer operations
   eGpuBufferUsageFlags_TransferDst = niBit(6),
+  //! Might be used as an acceleration structure's build input
+  eGpuBufferUsageFlags_AccelerationStructureBuildInput = niBit(7),
 
   //! \internal
   eGpuBufferUsageFlags_Last niMaybeUnused = 8,

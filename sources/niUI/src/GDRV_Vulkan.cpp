@@ -1336,6 +1336,7 @@ static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_Indirect)) vkUsage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferSrc)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferDst)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_AccelerationStructureBuildInput)) vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
   return vkUsage;
 }
 
@@ -1368,7 +1369,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
     }
   }
 
-  tBool Create(tU32 anSize) {
+  tBool _CreateBuffer(tU32 anSize) {
     VkBufferCreateInfo bufferInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .size = anSize,
@@ -1794,8 +1795,25 @@ struct sVulkanTexture : public ImplRC<iTexture> {
     _driver->EndSingleTimeCommands(cmdBuf);
     return eTrue;
   }
-
 };
+
+iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) {
+  VULKAN_TRACE((
+    "sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
+    ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
+  Ptr<iPixelFormat> pxf = _graphics->CreatePixelFormat(aaszFormat);
+  niCheck(pxf.IsOK(),nullptr);
+  niCheck(aType == eBitmapType_2D || aType == eBitmapType_Cube,nullptr);
+
+  Ptr<sVulkanTexture> tex { niNew sVulkanTexture(
+    as_nn(this),
+    ahspName,
+    aType,anWidth,anHeight,anNumMipMaps,
+    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
+    aFlags) };
+  niCheck(tex->_CreateVulkanTexture(),nullptr);
+  return tex.GetRawAndSetNull();
+}
 
 struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
   nn<sVulkanDriver> _driver;
@@ -2588,6 +2606,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   tBool _beganCmdBuffer = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
+  Ptr<sVulkanBuffer> _scratchBuffer;
 
   sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
@@ -2636,8 +2655,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
-  tBool _BeginCmdBuffer()
-  {
+  tBool _BeginCmdBuffer() {
     niCheck(_beganCmdBuffer == eFalse, eFalse);
     niDebugAssert(_cmdBuffer != VK_NULL_HANDLE);
 
@@ -2879,10 +2897,20 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
-  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) {
-    niCheck(_driver->_isRayTracingSupported,eFalse);
-    return eFalse;
+  tBool _EnsureScratchBuffer(VkDeviceSize aRequiredSize) {
+    if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
+      return eTrue;
+    }
+
+    _scratchBuffer = niNew sVulkanBuffer(
+      _driver,
+      eGpuBufferMemoryMode_Private,
+      eGpuBufferUsageFlags_Storage);
+    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize),eFalse);
+    return eTrue;
   }
+
+  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS);
 
   virtual tBool __stdcall DispatchRays(
     iRayGpuPipeline* apPipeline,
@@ -2908,6 +2936,9 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   VkAccelerationStructureKHR _as = VK_NULL_HANDLE;
   VkBuffer _buffer = VK_NULL_HANDLE;
   VmaAllocation _allocation = nullptr;
+  VkAccelerationStructureGeometryKHR _geometry = {};
+  tU32 _vertexCount = 0;
+  tU32 _vertexOffset = 0;
 
   sVulkanAccelerationStructure(
     ain<nn<sVulkanDriver>> aDriver,
@@ -2928,7 +2959,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
-    return eFalse;
+    return _as != VK_NULL_HANDLE;
   }
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
@@ -2957,7 +2988,10 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     tAccelerationGeometryFlags aFlags,
     tU32 anHitGroupId) niImpl
   {
-    VkAccelerationStructureGeometryKHR geometry = {
+    _vertexCount = anVertexCount;
+    _vertexOffset = anVertexOffset;
+
+    _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
       .geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR,
       .flags = (VkGeometryFlagsKHR)(
@@ -2965,7 +2999,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
         VK_GEOMETRY_OPAQUE_BIT_KHR : 0),
     };
 
-    geometry.geometry.triangles = {
+    _geometry.geometry.triangles = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
       .vertexFormat = VK_FORMAT_R32G32B32_SFLOAT,
       .vertexData = {
@@ -2973,7 +3007,8 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
         anVertexOffset
       },
       .vertexStride = anVertexStride,
-      .maxVertex = anVertexCount
+      .maxVertex = _vertexCount,
+      .indexType = VK_INDEX_TYPE_NONE_KHR,
     };
 
     VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
@@ -2981,7 +3016,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
       .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
       .geometryCount = 1,
-      .pGeometries = &geometry
+      .pGeometries = &_geometry
     };
 
     // Get size requirements
@@ -3458,22 +3493,77 @@ struct sVulkanRayPipeline :
   }
 };
 
-iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) {
-  VULKAN_TRACE((
-    "sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
-    ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
-  Ptr<iPixelFormat> pxf = _graphics->CreatePixelFormat(aaszFormat);
-  niCheck(pxf.IsOK(),nullptr);
-  niCheck(aType == eBitmapType_2D || aType == eBitmapType_Cube,nullptr);
+// TODO: We should check whether the AS has already been built and rebuild or
+// refit instead if it already built. We certainly need to update the API to
+// do this sanely since rebuild vs refit cannot be inferred without the user's
+// input.
+tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationStructure* apAS) {
+  niCheck(_driver->_isRayTracingSupported,eFalse);
+  niCheckIsOK(apAS,eFalse);
 
-  Ptr<sVulkanTexture> tex { niNew sVulkanTexture(
-    as_nn(this),
-    ahspName,
-    aType,anWidth,anHeight,anNumMipMaps,
-    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
-    aFlags) };
-  niCheck(tex->_CreateVulkanTexture(),nullptr);
-  return tex.GetRawAndSetNull();
+  sVulkanAccelerationStructure* as = (sVulkanAccelerationStructure*)apAS;
+
+  // Base build info
+  niLet primCount = as->_vertexCount/3;
+  VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
+    .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
+    .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
+    .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+    .geometryCount = 1,
+    .pGeometries = &as->_geometry
+  };
+
+  // Get scratch buffer size and ensure it's available
+  {
+    VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+    };
+    const tU32 maxPrimCount = primCount;
+    vkGetAccelerationStructureBuildSizesKHR(
+      _driver->_device,
+      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+      &buildInfo, &maxPrimCount, &sizeInfo);
+
+    niCheck(_EnsureScratchBuffer(sizeInfo.buildScratchSize),eFalse);
+  }
+
+  // Setup build command
+  buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+  buildInfo.dstAccelerationStructure = as->_as;
+  buildInfo.scratchData.deviceAddress = _scratchBuffer->_GetDeviceAddress();
+
+  VkAccelerationStructureBuildRangeInfoKHR buildRange = {
+    .primitiveCount = primCount,
+    .primitiveOffset = as->_vertexOffset,
+    .firstVertex = 0,
+    .transformOffset = 0
+  };
+  const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
+
+  // Issue build command
+  vkCmdBuildAccelerationStructuresKHR(
+    _cmdBuffer,
+    1,
+    &buildInfo,
+    &pBuildRanges);
+
+  // Add memory barrier
+  VkMemoryBarrier barrier = {
+    .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+    .srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
+    .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
+  };
+
+  vkCmdPipelineBarrier(
+    _cmdBuffer,
+    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+    VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+    0,
+    1, &barrier,
+    0, nullptr,
+    0, nullptr);
+
+  return eTrue;
 }
 
 tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
@@ -3545,7 +3635,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 #undef INIT_COMPILED_SAMPLER_STATES
 
   _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
-  niCheck(_dummyUniformBuffer->Create(1024),eFalse);
+  niCheck(_dummyUniformBuffer->_CreateBuffer(1024),eFalse);
   {
     tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
     ni::MemZero(data,1024);
@@ -4497,7 +4587,7 @@ iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
 
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
-  niCheck(buffer->Create(anSize),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize),nullptr);
   return buffer;
 }
 
@@ -4514,7 +4604,7 @@ Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromData(iHString* ahspName, iFile
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niCheck(apData != nullptr, nullptr);
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
-  niCheck(buffer->Create(anSize),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize),nullptr);
   {
     niLet data = buffer->Lock(0,anSize,eLock_Discard);
     niCheck(data != nullptr,nullptr);

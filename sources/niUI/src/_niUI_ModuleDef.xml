@@ -1347,6 +1347,9 @@
 			<value name="eGpuBufferUsageFlags_TransferDst" value="niBit ( 6 ) ">
 				<comments desc="Destination for transfer operations "/>
 			</value>
+			<value name="eGpuBufferUsageFlags_AccelerationStructureBuildInput" value="niBit ( 7 ) ">
+				<comments desc="Might be used as an acceleration structure&apos;s build input "/>
+			</value>
 			<value name="eGpuBufferUsageFlags_Last" value="8 ">
 				<comments desc="\internal "/>
 			</value>

@@ -61,11 +61,12 @@ enum eGpuBufferUsageFlags
   eGpuBufferUsageFlags_TransferSrc = niBit(5),
   //! Destination for transfer operations
   eGpuBufferUsageFlags_TransferDst = niBit(6),
-  //! Might be used as an acceleration structure's build input
-  eGpuBufferUsageFlags_AccelerationStructureBuildInput = niBit(7),
-
-  //! \internal
-  eGpuBufferUsageFlags_Last niMaybeUnused = 8,
+  //! Can used as an acceleration structure storage buffer
+  eGpuBufferUsageFlags_AccelerationStructureStorage = niBit(7),
+  //! Can used as an acceleration structure's build input
+  eGpuBufferUsageFlags_AccelerationStructureBuildInput = niBit(8),
+  //! Can be used as ray function binding table
+  eGpuBufferUsageFlags_RayFunctionBindingTable = niBit(9),
   //! \internal
   eGpuBufferUsageFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

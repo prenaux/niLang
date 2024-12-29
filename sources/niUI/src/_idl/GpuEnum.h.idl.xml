@@ -55,11 +55,14 @@
 			<value name="eGpuBufferUsageFlags_TransferDst" value="niBit ( 6 ) ">
 				<comments desc="Destination for transfer operations "/>
 			</value>
-			<value name="eGpuBufferUsageFlags_AccelerationStructureBuildInput" value="niBit ( 7 ) ">
-				<comments desc="Might be used as an acceleration structure&apos;s build input "/>
+			<value name="eGpuBufferUsageFlags_AccelerationStructureStorage" value="niBit ( 7 ) ">
+				<comments desc="Can used as an acceleration structure storage buffer "/>
 			</value>
-			<value name="eGpuBufferUsageFlags_Last" value="8 ">
-				<comments desc="\internal "/>
+			<value name="eGpuBufferUsageFlags_AccelerationStructureBuildInput" value="niBit ( 8 ) ">
+				<comments desc="Can used as an acceleration structure&apos;s build input "/>
+			</value>
+			<value name="eGpuBufferUsageFlags_RayFunctionBindingTable" value="niBit ( 9 ) ">
+				<comments desc="Can be used as ray function binding table "/>
 			</value>
 		</enum>
 		<enum name="eGpuFunctionType">

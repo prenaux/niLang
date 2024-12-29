@@ -595,7 +595,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .pNext = nullptr,
       .pApplicationName = aAppName,
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pEngineName = "niVlk",
+      .pEngineName = "niUI",
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
       .apiVersion = VK_API_VERSION_1_2
     };
@@ -3017,7 +3017,7 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriv
 struct sVulkanScratchBuffer {
   Ptr<sVulkanBuffer> _scratchBuffer;
 
-  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, VkDeviceSize aRequiredSize) {
+  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, VkDeviceSize aRequiredSize, tU32 aMinAlignment) {
     if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
       return eTrue;
     }
@@ -3026,7 +3026,7 @@ struct sVulkanScratchBuffer {
       aDriver,
       eGpuBufferMemoryMode_Private,
       eGpuBufferUsageFlags_Storage);
-    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize,256),eFalse);
+    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize,aMinAlignment),eFalse);
     return eTrue;
   }
 };
@@ -3137,7 +3137,8 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       &buildInfo, &primCount, &_asSizeInfo);
 
     // Create buffer
-    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,256),eFalse);
+    niCheck(_asStorage._CreateBuffer(
+      _asSizeInfo.accelerationStructureSize,0),eFalse);
 
     // Create the acceleration structure
     VkAccelerationStructureCreateInfoKHR createInfo = {
@@ -3186,8 +3187,11 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer) {
     niCheck(_asHandle != VK_NULL_HANDLE, eFalse);
 
-    niLet alignedScratchSize = ni::AlignSize((tU32)_asSizeInfo.buildScratchSize,(tU32)256);
-    niCheck(_scratchBuffer._EnsureScratchBuffer(_driver,alignedScratchSize),eFalse);
+    niCheck(_scratchBuffer._EnsureScratchBuffer(
+      _driver,
+      _asSizeInfo.buildScratchSize,
+      _driver->_accelStructProps.minAccelerationStructureScratchOffsetAlignment),
+            eFalse);
 
     // Base build info
     niLet primCount = _vertexCount/3;
@@ -3294,44 +3298,27 @@ struct sVulkanRayFunctionTable : public ImplRC<iRayGpuFunctionTable> {
   }
 };
 
-// TODO: Maybe that'll become iRayGpuFunctionTable in the future. Or we call it iRayGpuFunctionTableBuffer? We shall see...
 struct sVulkanRayFunctionTableBuffer {
   VkBuffer _sbtBuffer = VK_NULL_HANDLE;
   VmaAllocation _sbtAllocation = nullptr;
-  VkStridedDeviceAddressRegionKHR _rgenRegion = {};
-  VkStridedDeviceAddressRegionKHR _missRegion = {};
-  VkStridedDeviceAddressRegionKHR _hitRegion = {};
-  VkStridedDeviceAddressRegionKHR _callRegion = {};
+  VkStridedDeviceAddressRegionKHR _stridedRegion = {};
 
   tBool _CreateSBT(
     ain<nn<sVulkanDriver>> aDriver,
-    ain<nn<sVulkanRayFunctionTable>> aFuncTable,
-    VkPipeline aPipeline
+    tU32 anNumHandles,
+    tPtr aHandleStorage
   )
   {
-    niLet vk = aDriver->_device;
-
     // Get shader group handles
-    niLet groupCount = 2 + (tU32)aFuncTable->_hitGroups.size(); // rgen + miss + hit groups
     niLet handleSize = aDriver->_rayTracingProps.shaderGroupHandleSize;
     niLet handleSizeAligned = (tU32)ni::AlignSize(
       handleSize,
       aDriver->_rayTracingProps.shaderGroupHandleAlignment);
 
-    astl::vector<tU8> handles(groupCount * handleSize);
-    VK_CHECK(vkGetRayTracingShaderGroupHandlesKHR(
-      vk, aPipeline, 0, groupCount, (tU32)handles.size(), handles.data()), eFalse);
-
     // Calculate required size for SBT
-    niLet rgenSize = handleSizeAligned;
-    niLet missSize = handleSizeAligned;
-    niLet hitSize = handleSizeAligned * aFuncTable->_hitGroups.size();
-    niLet totalSize = rgenSize + missSize + hitSize;
-
-    // Create buffer for SBT
     VkBufferCreateInfo bufferInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = totalSize,
+      .size = anNumHandles * handleSizeAligned,
       .usage = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
       VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
     };
@@ -3341,65 +3328,42 @@ struct sVulkanRayFunctionTableBuffer {
       .usage = VMA_MEMORY_USAGE_CPU_TO_GPU,
     };
 
-    niCheck(vmaCreateBuffer(aDriver->_allocator, &bufferInfo, &allocInfo,
-                            &_sbtBuffer, &_sbtAllocation, nullptr) == VK_SUCCESS, eFalse);
+    niCheck(vmaCreateBufferWithAlignment(
+      aDriver->_allocator, &bufferInfo, &allocInfo,
+      aDriver->_rayTracingProps.shaderGroupBaseAlignment,
+      &_sbtBuffer, &_sbtAllocation, nullptr) == VK_SUCCESS, eFalse);
 
     // Get buffer address
     VkBufferDeviceAddressInfo addressInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
       .buffer = _sbtBuffer
     };
-    niLet sbtAddress = vkGetBufferDeviceAddress(vk, &addressInfo);
+    _stridedRegion = {
+      .deviceAddress = vkGetBufferDeviceAddress(aDriver->_device, &addressInfo),
+      .stride = handleSizeAligned,
+      .size = handleSizeAligned * anNumHandles
+    };
 
-    // Copy handles to SBT
     void* data;
     vmaMapMemory(aDriver->_allocator, _sbtAllocation, &data);
-    {
-      tU8* dst = (tU8*)data;
-      // RGen
-      memcpy(dst, handles.data(), handleSize);
-      _rgenRegion = {
-        .deviceAddress = sbtAddress,
-        .stride = handleSizeAligned,
-        .size = handleSizeAligned
-      };
-
-      // Miss
-      dst = (tU8*)data + rgenSize;
-      memcpy(dst, handles.data() + handleSize, handleSize);
-      _missRegion = {
-        .deviceAddress = sbtAddress + rgenSize,
-        .stride = handleSizeAligned,
-        .size = handleSizeAligned
-      };
-
-      // Hit Groups
-      dst = (tU8*)data + rgenSize + missSize;
-      for (tU32 i = 0; i < aFuncTable->_hitGroups.size(); ++i) {
-        memcpy(dst + i * handleSizeAligned,
-               handles.data() + (i + 2) * handleSize,
-               handleSize);
-      }
-      _hitRegion = {
-        .deviceAddress = sbtAddress + rgenSize + missSize,
-        .stride = handleSize,
-        .size = hitSize
-      };
-
-      // Call region (unused)
-      _callRegion = {};
+    niLocal dst = static_cast<tPtr>(data);
+    for (tU32 i = 0; i < anNumHandles; i++) {
+      memcpy(dst + i * handleSizeAligned,
+             aHandleStorage + i * handleSize,
+             handleSize);
     }
     vmaUnmapMemory(aDriver->_allocator, _sbtAllocation);
 
     return eTrue;
   }
 
-  void Destroy(ain<nn<sVulkanDriver>> aDriver) {
+  void _DestroySBT(ain<nn<sVulkanDriver>> aDriver) {
     if (_sbtBuffer) {
       vmaDestroyBuffer(aDriver->_allocator, _sbtBuffer, _sbtAllocation);
       _sbtBuffer = VK_NULL_HANDLE;
       _sbtAllocation = nullptr;
     }
+    _stridedRegion = {};
   }
 };
 
@@ -3410,7 +3374,10 @@ struct sVulkanRayPipeline :
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   NN<sVulkanRayFunctionTable> _functionTable;
-  sVulkanRayFunctionTableBuffer _functionTableBuffer;
+  sVulkanRayFunctionTableBuffer _rgenTable;
+  sVulkanRayFunctionTableBuffer _missTable;
+  sVulkanRayFunctionTableBuffer _hitTable;
+  sVulkanRayFunctionTableBuffer _callableTable;
 
   sVulkanRayPipeline(
     ain<nn<sVulkanDriver>> aDriver,
@@ -3423,7 +3390,10 @@ struct sVulkanRayPipeline :
 
   ~sVulkanRayPipeline() {
     _DestroyDescSetLayouts(_driver);
-    _functionTableBuffer.Destroy(_driver);
+    _rgenTable._DestroySBT(_driver);
+    _missTable._DestroySBT(_driver);
+    _hitTable._DestroySBT(_driver);
+    _callableTable._DestroySBT(_driver);
     _DestroyPipeline(_driver);
   }
 
@@ -3507,6 +3477,12 @@ struct sVulkanRayPipeline :
     astl::vector<VkPipelineShaderStageCreateInfo> stages;
     astl::vector<VkRayTracingShaderGroupCreateInfoKHR> groups;
 
+    tU32 sbtNumRgenHandles = 0;
+    tU32 sbtNumMissHandles = 0;
+    tU32 sbtNumHitHandles = 0;
+    // TODO: Do we need callable gpufunc for anything?
+    const tU32 sbtNumCallableHandles = 0;
+
     // Ray gen
     {
       stages.push_back({
@@ -3523,6 +3499,7 @@ struct sVulkanRayPipeline :
           .anyHitShader = VK_SHADER_UNUSED_KHR,
           .intersectionShader = VK_SHADER_UNUSED_KHR
         });
+      ++sbtNumRgenHandles;
     }
 
     // Miss
@@ -3541,6 +3518,7 @@ struct sVulkanRayPipeline :
           .anyHitShader = VK_SHADER_UNUSED_KHR,
           .intersectionShader = VK_SHADER_UNUSED_KHR
         });
+      ++sbtNumMissHandles;
     }
 
     // Hit groups
@@ -3554,6 +3532,7 @@ struct sVulkanRayPipeline :
                 .module = hitGroup._closestHit->_vkShaderModule,
                 .pName = "main"
                 });
+        ++sbtNumHitHandles;
       }
 
       tU32 anyHitIndex = VK_SHADER_UNUSED_KHR;
@@ -3565,6 +3544,7 @@ struct sVulkanRayPipeline :
                 .module = hitGroup._anyHit->_vkShaderModule,
                 .pName = "main"
                 });
+        ++sbtNumHitHandles;
       }
 
       tU32 intersectionIndex = VK_SHADER_UNUSED_KHR;
@@ -3576,6 +3556,7 @@ struct sVulkanRayPipeline :
                 .module = hitGroup._intersection->_vkShaderModule,
                 .pName = "main"
                 });
+        ++sbtNumHitHandles;
       }
 
       groups.push_back({
@@ -3604,7 +3585,55 @@ struct sVulkanRayPipeline :
       1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
 
     // Create the SBT
-    niCheck(_functionTableBuffer._CreateSBT(_driver, _functionTable, _vkPipeline), eFalse);
+    niLet handleSize = _driver->_rayTracingProps.shaderGroupHandleSize;
+    niLet sbtNumHandles = sbtNumRgenHandles + sbtNumMissHandles + sbtNumHitHandles;
+    astl::vector<tU8> handles(sbtNumHandles * handleSize);
+    VK_CHECK(vkGetRayTracingShaderGroupHandlesKHR(
+      vk, _vkPipeline, 0, sbtNumHandles,
+      (tU32)handles.size(), handles.data()), eFalse);
+
+    tU32 groupHandleOffset = 0; // offset in terms of groups, not bytes
+
+    // RayGen SBT
+    if (sbtNumRgenHandles > 0) {
+      _rgenTable._CreateSBT(
+        _driver,
+        sbtNumRgenHandles,
+        handles.data() + groupHandleOffset * handleSize
+      );
+      groupHandleOffset += sbtNumRgenHandles;
+    }
+
+    // Miss SBT
+    if (sbtNumMissHandles > 0) {
+      _missTable._CreateSBT(
+        _driver,
+        sbtNumMissHandles,
+        handles.data() + groupHandleOffset * handleSize
+      );
+      groupHandleOffset += sbtNumMissHandles;
+    }
+
+    // Hit SBT
+    if (sbtNumHitHandles > 0) {
+      _hitTable._CreateSBT(
+        _driver,
+        sbtNumHitHandles,
+        handles.data() + groupHandleOffset * handleSize
+      );
+      groupHandleOffset += sbtNumHitHandles;
+    }
+
+    // Callable SBT
+    if (sbtNumCallableHandles > 0) {
+      _callableTable._CreateSBT(
+        _driver,
+        sbtNumCallableHandles,
+        handles.data() + groupHandleOffset * handleSize
+      );
+      groupHandleOffset += sbtNumCallableHandles;
+    }
+
     return eTrue;
   }
 
@@ -3674,36 +3703,36 @@ tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationS
 tBool __stdcall sVulkanCommandEncoder::DispatchRays(iRayGpuPipeline* apPipeline, tU32 anWidth, tU32 anHeight, tU32 anDepth) {
   niCheck(_driver->_isRayTracingSupported,eFalse);
   niCheckIsOK(apPipeline,eFalse);
-  niCheckIsOK(_cache._lastAS,eFalse);
-  niCheckIsOK(_cache._lastOutputImage,eFalse);
+  // niCheckIsOK(_cache._lastAS,eFalse);
+  // niCheckIsOK(_cache._lastOutputImage,eFalse);
 
   nn<sVulkanRayPipeline> pipeline = as_nn((sVulkanRayPipeline*)apPipeline);
   vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline->_vkPipeline);
 
   // Bind acceleration structure
-  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
-  niCheck(descPool.PushDescriptorAccelerationStructure(
-    _driver->_device,
-    _cmdBuffer,
-    pipeline,
-    eGLSLVulkanDescriptorSet_AccelerationStructure,
-    _cache._lastAS->_asHandle),eFalse);
+  // niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
+  // niCheck(descPool.PushDescriptorAccelerationStructure(
+  //   _driver->_device,
+  //   _cmdBuffer,
+  //   pipeline,
+  //   eGLSLVulkanDescriptorSet_AccelerationStructure,
+  //   _cache._lastAS->_asHandle),eFalse);
 
   // Bind output image
-  niCheck(descPool.PushDescriptorStorageImage(
-    _driver->_device,
-    _cmdBuffer,
-    pipeline,
-    eGLSLVulkanDescriptorSet_Image2D,
-    _cache._lastOutputImage->_vkView,
-    VK_IMAGE_LAYOUT_GENERAL),eFalse);
+  // niCheck(descPool.PushDescriptorStorageImage(
+  //   _driver->_device,
+  //   _cmdBuffer,
+  //   pipeline,
+  //   eGLSLVulkanDescriptorSet_Image2D,
+  //   _cache._lastOutputImage->_vkView,
+  //   VK_IMAGE_LAYOUT_GENERAL),eFalse);
 
   vkCmdTraceRaysKHR(
     _cmdBuffer,
-    &pipeline->_functionTableBuffer._rgenRegion,
-    &pipeline->_functionTableBuffer._missRegion,
-    &pipeline->_functionTableBuffer._hitRegion,
-    &pipeline->_functionTableBuffer._callRegion,
+    &pipeline->_rgenTable._stridedRegion,
+    &pipeline->_missTable._stridedRegion,
+    &pipeline->_hitTable._stridedRegion,
+    &pipeline->_callableTable._stridedRegion,
     anWidth, anHeight, anDepth);
   return eTrue;
 }
@@ -4730,7 +4759,7 @@ iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
-  niCheck(buffer->_CreateBuffer(anSize,256),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
   return buffer;
 }
 
@@ -4748,7 +4777,7 @@ Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tP
   niCheck(apData != nullptr, nullptr);
   niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
-  niCheck(buffer->_CreateBuffer(anSize,256),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
   {
     niLet data = buffer->Lock(0,anSize,eLock_Discard);
     niCheck(data != nullptr,nullptr);

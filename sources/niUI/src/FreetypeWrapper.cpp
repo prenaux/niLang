@@ -113,8 +113,8 @@ niExportFunc(FT_Face) MyFT_Face_Open(FT_Library aLib, iFile* apFile)
   stm->memory = aLib->memory;
   stm->read = MyFT_Stream_IoFunc;
   stm->close = MyFT_Stream_Close;
-  stm->pos = (size_t)apFile->Tell();
-  stm->size = (size_t)apFile->GetSize();
+  stm->pos = apFile->Tell();
+  stm->size = apFile->GetSize();
 
   FT_Face face = NULL;
   FT_Open_Args args;

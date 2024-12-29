@@ -376,7 +376,7 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
   }
 
   tU32 __stdcall GetNumDrawOperations() const {
-    return mvDrawOps.size();
+    return (tU32)mvDrawOps.size();
   }
 
   iDrawOperation* __stdcall Begin() {

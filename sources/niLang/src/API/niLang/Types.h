@@ -729,17 +729,45 @@ namespace ni {
 #define niAlignedType(t,x) t niAligned(x)
 
 #ifdef __cplusplus
+//! Computes additional padding needed to align an offset to the specified alignment.
+//! \param align The alignment requirement.
+//! \param offset The offset to align.
+//! \return The number of padding bytes needed.
+//! \remark Use this when you need to know how much padding to add between
+//!         fields in a structure or between elements in a buffer, rather than
+//!         the final aligned position.
 template <typename T>
 inline const T AlignComputePadding(const T align, const T offset) {
   return (align - (offset % align)) % align;
 }
+
+//! Aligns an offset to the specified alignment.
+//! \param align The alignment requirement.
+//! \param offset The offset to align.
+//! \return The aligned offset.
+//! \remark Use this when working with offsets within structures or buffers,
+//!         such as positioning fields within a structure or calculating
+//!         buffer offsets.  It ensures the returned offset points to a
+//!         properly aligned position.
 template <typename T>
 inline const T AlignOffset(const T align, const T offset) {
   return offset + ((align - (offset % align)) % align);
 }
-#endif
 
-#define niAlignTo(size, alignment) (((size) + (alignment) - 1) & ~((alignment) - 1))
+//! Aligns a size to the specified alignment.
+//! \param size The size to align.
+//! \param alignment The alignment requirement.
+//! \return The aligned size.
+//! \remark Use this when working with overall sizes of structures or buffers,
+//!         such as allocating aligned memory or calculating the total size
+//!         needed for an aligned structure. The difference from AlignOffset
+//!         is that this works with sizes (lengths) rather than positions in
+//!         memory.
+template <typename T>
+inline const T AlignSize(const T size, const T alignment) {
+  return ((size) + (alignment) - 1) & ~((alignment) - 1);
+}
+#endif
 
 #ifndef niThreadLocal
 #  if defined __GNUC__ || defined __SUNPRO_C  || defined __xlC__

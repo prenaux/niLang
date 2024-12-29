@@ -34,6 +34,7 @@
 #include "niUI/ICanvas.h"
 #include "niUI/IGraphics.h"
 
+#include "niUI/GpuEnum.h"
 #include "niUI/IAccelerationStructure.h"
 #include "niUI/IGpu.h"
 

@@ -1542,7 +1542,10 @@
 			<value name="eGLSLVulkanDescriptorSet_AccelerationStructure" value="7 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanDescriptorSet_Last" value="8 ">
+			<value name="eGLSLVulkanDescriptorSet_Image2D" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Last" value="9 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

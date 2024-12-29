@@ -37914,6 +37914,7 @@ static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
 	{ "Sampler", ni::eGLSLVulkanDescriptorSet_Sampler },
 	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
 	{ "AccelerationStructure", ni::eGLSLVulkanDescriptorSet_AccelerationStructure },
+	{ "Image2D", ni::eGLSLVulkanDescriptorSet_Image2D },
 	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
 };
 static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {

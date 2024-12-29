@@ -448,7 +448,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   tU32 _queueFamilyIndex = 0;
 
   tBool _isRayTracingSupported = eFalse;
-  VkPhysicalDeviceRayTracingPipelinePropertiesKHR _rayTracingProps;
+  VkPhysicalDeviceRayTracingPipelinePropertiesKHR _rayTracingProps = {};
+  VkPhysicalDeviceAccelerationStructurePropertiesKHR _accelStructProps = {};
 
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
@@ -667,6 +668,11 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     if (_isRayTracingSupported) {
       _rayTracingProps = {};
       _rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+
+      _accelStructProps = {};
+      _accelStructProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
+      _rayTracingProps.pNext = &_accelStructProps;
+
       VkPhysicalDeviceProperties2 deviceProps2 = {};
       deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
       deviceProps2.pNext = &_rayTracingProps;
@@ -690,6 +696,17 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         _rayTracingProps.maxShaderGroupStride,
         _rayTracingProps.shaderGroupBaseAlignment,
         _rayTracingProps.shaderGroupHandleCaptureReplaySize));
+
+      niLog(Info, niFmt(
+        "Vulkan Acceleration Structure Properties:\n"
+        "  minAccelerationStructureScratchOffsetAlignment: %u\n"
+        "  maxGeometryCount: %u\n"
+        "  maxInstanceCount: %u\n"
+        "  maxPrimitiveCount: %u",
+        _accelStructProps.minAccelerationStructureScratchOffsetAlignment,
+        _accelStructProps.maxGeometryCount,
+        _accelStructProps.maxInstanceCount,
+        _accelStructProps.maxPrimitiveCount));
     }
     else {
       niLog(Info, "Vulkan Ray Tracing not supported.");
@@ -1173,17 +1190,18 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return cmdBuf;
   }
 
-  void EndSingleTimeCommands(VkCommandBuffer cmdBuf) {
+  void EndSingleTimeCommands(VkCommandBuffer cmdBuf, tBool abSubmit) {
     vkEndCommandBuffer(cmdBuf);
 
-    VkSubmitInfo submitInfo = {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .commandBufferCount = 1,
-      .pCommandBuffers = &cmdBuf
-    };
-
-    vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_graphicsQueue);
+    if (abSubmit) {
+      VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &cmdBuf
+      };
+      vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+      vkQueueWaitIdle(_graphicsQueue);
+    }
 
     vkFreeCommandBuffers(_device, _commandPool, 1, &cmdBuf);
   }
@@ -1336,7 +1354,9 @@ static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_Indirect)) vkUsage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferSrc)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferDst)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_AccelerationStructureStorage)) vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR;
   if (niFlagIs(aUsage,eGpuBufferUsageFlags_AccelerationStructureBuildInput)) vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+  if (niFlagIs(aUsage,eGpuBufferUsageFlags_RayFunctionBindingTable)) vkUsage |= VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR;
   return vkUsage;
 }
 
@@ -1362,11 +1382,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   {}
 
   ~sVulkanBuffer() {
-    if (_vkBuffer) {
-      vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
-      _vkBuffer = VK_NULL_HANDLE;
-      _vmaAllocation = nullptr;
-    }
+    _DestroyBuffer();
   }
 
   tBool _CreateBuffer(tU32 anSize) {
@@ -1399,6 +1415,14 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
       &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
 
     return eTrue;
+  }
+
+  void _DestroyBuffer() {
+    if (_vkBuffer) {
+      vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
+      _vkBuffer = VK_NULL_HANDLE;
+      _vmaAllocation = nullptr;
+    }
   }
 
   void _Untrack() {
@@ -1492,7 +1516,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
       .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
       .buffer = _vkBuffer
     };
-    return vkGetBufferDeviceAddress(_driver->_device, &info);
+    return vkGetBufferDeviceAddressKHR(_driver->_device, &info);
   }
 };
 
@@ -1792,7 +1816,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
       anLevel,_subTexId),eFalse);
 
-    _driver->EndSingleTimeCommands(cmdBuf);
+    _driver->EndSingleTimeCommands(cmdBuf,eTrue);
     return eTrue;
   }
 };
@@ -1967,31 +1991,38 @@ struct sVulkanDescSetLayouts {
   }
 };
 
-struct sVulkanPipeline :
+struct sVulkanPipeline : public sVulkanDescSetLayouts {
+  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _vkPipeline = VK_NULL_HANDLE;
+
+  void _DestroyPipeline(ain<nn<sVulkanDriver>> aDriver) {
+    if (_vkPipeline) {
+      vkDestroyPipeline(aDriver->_device, _vkPipeline, nullptr);
+      _vkPipeline = VK_NULL_HANDLE;
+    }
+    if (_vkPipelineLayout) {
+      vkDestroyPipelineLayout(aDriver->_device, _vkPipelineLayout, nullptr);
+      _vkPipelineLayout = VK_NULL_HANDLE;
+    }
+  }
+};
+
+struct sVulkanRasterPipeline :
       public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDeviceResource>,
-      public sVulkanDescSetLayouts
+      public sVulkanPipeline
 {
   nn<sVulkanDriver> _driver; // TODO: Should be a weakptr
   tHStringPtr _hspName;
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
   eGpuFunctionBindType _gpufuncBindType = eGpuFunctionBindType_None;
-  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
-  VkPipeline _vkPipeline = VK_NULL_HANDLE;
 
-  sVulkanPipeline(ain<nn<sVulkanDriver>> aDriver)
+  sVulkanRasterPipeline(ain<nn<sVulkanDriver>> aDriver)
       : _driver(aDriver)
   {}
 
-  ~sVulkanPipeline() {
+  ~sVulkanRasterPipeline() {
     _DestroyDescSetLayouts(_driver);
-    if (_vkPipeline) {
-      vkDestroyPipeline(_driver->_device, _vkPipeline, nullptr);
-      _vkPipeline = VK_NULL_HANDLE;
-    }
-    if (_vkPipelineLayout) {
-      vkDestroyPipelineLayout(_driver->_device, _vkPipelineLayout, nullptr);
-      _vkPipelineLayout = VK_NULL_HANDLE;
-    }
+    _DestroyPipeline(_driver);
   }
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
@@ -2352,13 +2383,13 @@ struct sVulkanPipeline :
   }
 };
 
-static Ptr<sVulkanPipeline> __stdcall CreateVulkanGpuPipeline(
+static Ptr<sVulkanRasterPipeline> __stdcall CreateVulkanRasterPipeline(
   ain_nn<sVulkanDriver> aDriver,
   iHString* ahspName,
   const iGpuPipelineDesc* apDesc)
 {
   niCheckIsOK(apDesc,nullptr);
-  NN<sVulkanPipeline> pipeline = MakeNN<sVulkanPipeline>(aDriver);
+  NN<sVulkanRasterPipeline> pipeline = MakeNN<sVulkanRasterPipeline>(aDriver);
   niCheck(
     pipeline->_CreateVulkanPipeline(ahspName,apDesc),
     nullptr);
@@ -2514,13 +2545,76 @@ struct sVulkanDescriptorPool {
       apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
+
+  tBool PushDescriptorAccelerationStructure(
+    VkDevice aDevice,
+    VkCommandBuffer aCmdBuffer,
+    ain<nn<sVulkanPipeline>> apPipeline,
+    tU32 aSetIndex,
+    VkAccelerationStructureKHR aAS)
+  {
+    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+
+    VkWriteDescriptorSetAccelerationStructureKHR asInfo = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
+      .accelerationStructureCount = 1,
+      .pAccelerationStructures = &aAS
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .pNext = &asInfo,
+      .dstSet = descSet,
+      .dstBinding = 0,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
+    };
+
+    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkCmdBindDescriptorSets(
+      aCmdBuffer,VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    return eTrue;
+  }
+
+  tBool PushDescriptorStorageImage(
+    VkDevice aDevice,
+    VkCommandBuffer aCmdBuffer,
+    ain<nn<sVulkanPipeline>> apPipeline,
+    tU32 aSetIndex,
+    VkImageView aImageView,
+    VkImageLayout aImageLayout)
+  {
+    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+
+    VkDescriptorImageInfo imageInfo = {
+      .imageView = aImageView,
+      .imageLayout = aImageLayout
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = descSet,
+      .dstBinding = 0,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+      .pImageInfo = &imageInfo
+    };
+    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkCmdBindDescriptorSets(
+      aCmdBuffer,VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    return eTrue;
+  }
 };
 
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
   astl::vector<Ptr<sVulkanBuffer>> _trackedBuffers;
   astl::vector<Ptr<sVulkanTexture>> _trackedTextures;
-  astl::vector<Ptr<sVulkanPipeline>> _trackedPipelines;
+  astl::vector<Ptr<sVulkanRasterPipeline>> _trackedPipelines;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
   tBool _inFrame = eFalse;;
@@ -2553,8 +2647,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     return texture;
   }
 
-  niInline sVulkanPipeline* BindPipeline(iGpuPipeline* apPipeline) {
-    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline; // Note: Bind() is a noop so we dont call it
+  niInline sVulkanRasterPipeline* BindRasterPipeline(iGpuPipeline* apPipeline) {
+    sVulkanRasterPipeline* pipeline = (sVulkanRasterPipeline*)apPipeline; // Note: Bind() is a noop so we dont call it
     _trackedPipelines.push_back(pipeline);
     return pipeline;
   }
@@ -2592,21 +2686,24 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   }
 };
 
+struct sVulkanAccelerationStructure;
+
 struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   nn<sVulkanDriver> _driver;
   VkCommandBuffer _cmdBuffer = VK_NULL_HANDLE;
   struct sCache {
     sMaterialDesc _lastMaterial;
-    Ptr<sVulkanPipeline> _lastPipeline = nullptr;
+    Ptr<sVulkanRasterPipeline> _lastRasterPipeline = nullptr;
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
     tU32 _lastBufferOffset = 0;
     tFixedGpuPipelineId _lastFixedPipeline = 0;
+    Ptr<sVulkanAccelerationStructure> _lastAS = nullptr;
+    Ptr<sVulkanTexture> _lastOutputImage = nullptr;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
   tBool _beganCmdBuffer = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
-  Ptr<sVulkanBuffer> _scratchBuffer;
 
   sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
@@ -2782,15 +2879,15 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   void _DoBindPipeline(iGpuPipeline* apPipeline, tFixedGpuPipelineId aFixedPipelineId) {
-    sVulkanPipeline* pipeline = (sVulkanPipeline*)apPipeline;
+    sVulkanRasterPipeline* pipeline = static_cast<sVulkanRasterPipeline*>(apPipeline);
     vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
-    _cache._lastPipeline = _GetCurrentFrame()->BindPipeline(apPipeline);
+    _cache._lastRasterPipeline = _GetCurrentFrame()->BindRasterPipeline(apPipeline);
     _cache._lastFixedPipeline = aFixedPipelineId;
   }
 
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
     niCheck(apPipeline != nullptr,;);
-    if ((tIntPtr)_cache._lastPipeline.raw_ptr() == (tIntPtr)apPipeline)
+    if ((tIntPtr)_cache._lastRasterPipeline.raw_ptr() == (tIntPtr)apPipeline)
       return;
     _DoBindPipeline(apPipeline,0);
   }
@@ -2897,30 +2994,10 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
-  tBool _EnsureScratchBuffer(VkDeviceSize aRequiredSize) {
-    if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
-      return eTrue;
-    }
-
-    _scratchBuffer = niNew sVulkanBuffer(
-      _driver,
-      eGpuBufferMemoryMode_Private,
-      eGpuBufferUsageFlags_Storage);
-    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize),eFalse);
-    return eTrue;
-  }
-
-  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS);
-
-  virtual tBool __stdcall DispatchRays(
-    iRayGpuPipeline* apPipeline,
-    tU32 anWidth,
-    tU32 anHeight,
-    tU32 anDepth)
-  {
-    niCheck(_driver->_isRayTracingSupported,eFalse);
-    return eFalse;
-  }
+  void __stdcall SetAccelerationStructure(iAccelerationStructure* apAS);
+  void __stdcall SetRayTracingOutput(iTexture* apOutputImage);
+  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) niImpl;
+  tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, tU32 anWidth, tU32 anHeight, tU32 anDepth) niImpl;
 };
 
 static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriver> aDriver) {
@@ -2929,16 +3006,35 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriv
   return cmdEncoder;
 }
 
+struct sVulkanScratchBuffer {
+  Ptr<sVulkanBuffer> _scratchBuffer;
+
+  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, VkDeviceSize aRequiredSize) {
+    if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
+      return eTrue;
+    }
+
+    _scratchBuffer = niNew sVulkanBuffer(
+      aDriver,
+      eGpuBufferMemoryMode_Private,
+      eGpuBufferUsageFlags_Storage);
+    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize),eFalse);
+    return eTrue;
+  }
+};
+
 struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   eAccelerationStructureType _type;
-  VkAccelerationStructureKHR _as = VK_NULL_HANDLE;
-  VkBuffer _buffer = VK_NULL_HANDLE;
-  VmaAllocation _allocation = nullptr;
+  VkAccelerationStructureKHR _asHandle = VK_NULL_HANDLE;
+  VkAccelerationStructureBuildSizesInfoKHR _asSizeInfo = {};
+  sVulkanBuffer _asStorage;
+  tU64 _asDeviceAddress = 0;
   VkAccelerationStructureGeometryKHR _geometry = {};
   tU32 _vertexCount = 0;
-  tU32 _vertexOffset = 0;
+  // TODO: This should be shared somewhere...
+  sVulkanScratchBuffer _scratchBuffer;
 
   sVulkanAccelerationStructure(
     ain<nn<sVulkanDriver>> aDriver,
@@ -2947,19 +3043,18 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       : _driver(aDriver)
       , _name(ahspName)
       , _type(aType)
+      , _asStorage(aDriver,eGpuBufferMemoryMode_Private,eGpuBufferUsageFlags_AccelerationStructureStorage)
   {}
 
   ~sVulkanAccelerationStructure() {
-    if (_as) {
-      vkDestroyAccelerationStructureKHR(_driver->_device, _as, nullptr);
+    if (_asHandle) {
+      vkDestroyAccelerationStructureKHR(_driver->_device, _asHandle, nullptr);
     }
-    if (_buffer) {
-      vmaDestroyBuffer(_driver->_allocator, _buffer, _allocation);
-    }
+    _asStorage._DestroyBuffer();
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
-    return _as != VK_NULL_HANDLE;
+    return _asHandle != VK_NULL_HANDLE;
   }
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
@@ -2988,8 +3083,11 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     tAccelerationGeometryFlags aFlags,
     tU32 anHitGroupId) niImpl
   {
+    // TODO: This only allows one geometry, allow more.
+    niCheck(_asHandle == VK_NULL_HANDLE, eFalse);
+    niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
+    niCheck(anVertexCount >= 3, eFalse);
     _vertexCount = anVertexCount;
-    _vertexOffset = anVertexOffset;
 
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3015,44 +3113,33 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
       .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
       .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+      .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
       .geometryCount = 1,
       .pGeometries = &_geometry
     };
 
     // Get size requirements
-    VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {
+    _asSizeInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
     };
-
+    tU32 primCount = anVertexCount/3;
     vkGetAccelerationStructureBuildSizesKHR(
       _driver->_device,
       VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-      &buildInfo, &anVertexCount, &sizeInfo);
+      &buildInfo, &primCount, &_asSizeInfo);
 
     // Create buffer
-    VkBufferCreateInfo bufferInfo = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = sizeInfo.accelerationStructureSize,
-      .usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR |
-      VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-    };
+    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize),eFalse);
 
-    VmaAllocationCreateInfo allocInfo = {
-      .usage = VMA_MEMORY_USAGE_GPU_ONLY
-    };
-
-    niCheck(vmaCreateBuffer(_driver->_allocator, &bufferInfo, &allocInfo,
-                            &_buffer, &_allocation, nullptr) == VK_SUCCESS, eFalse);
-
+    // Create the acceleration structure
     VkAccelerationStructureCreateInfoKHR createInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
-      .buffer = _buffer,
-      .size = sizeInfo.accelerationStructureSize,
+      .buffer = _asStorage._vkBuffer,
+      .size = _asSizeInfo.accelerationStructureSize,
       .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR
     };
-
     niCheck(vkCreateAccelerationStructureKHR(_driver->_device, &createInfo,
-                                             nullptr, &_as) == VK_SUCCESS, eFalse);
+                                             nullptr, &_asHandle) == VK_SUCCESS, eFalse);
 
     return eTrue;
   }
@@ -3086,6 +3173,60 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     tU32 anHitGroup) {
     niError("Not implemented.");
     return eFalse;
+  }
+
+  tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer) {
+    niCheck(_asHandle != VK_NULL_HANDLE, eFalse);
+
+    niLet alignedScratchSize = ni::AlignSize((tU32)_asSizeInfo.buildScratchSize,(tU32)256);
+    niCheck(_scratchBuffer._EnsureScratchBuffer(_driver,alignedScratchSize),eFalse);
+
+    // Base build info
+    niLet primCount = _vertexCount/3;
+    VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
+      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
+      .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+      .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
+      .dstAccelerationStructure = _asHandle,
+      .geometryCount = 1,
+      .pGeometries = &_geometry,
+      .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
+    };
+
+    // Setup build command
+    VkAccelerationStructureBuildRangeInfoKHR buildRange = {
+      .primitiveCount = primCount,
+      .primitiveOffset = 0,
+      .firstVertex = 0,
+      .transformOffset = 0
+    };
+    const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
+
+    // Issue build command
+    vkCmdBuildAccelerationStructuresKHR(
+      aCmdBuffer,
+      1,
+      &buildInfo,
+      &pBuildRanges);
+
+    // Add memory barrier
+    VkMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+      .srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
+      .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
+    };
+
+    vkCmdPipelineBarrier(
+      aCmdBuffer,
+      VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+      VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+      0,
+      1, &barrier,
+      0, nullptr,
+      0, nullptr);
+
+    return eTrue;
   }
 };
 
@@ -3256,13 +3397,12 @@ struct sVulkanRayFunctionTableBuffer {
 
 struct sVulkanRayPipeline :
       public ImplRC<iRayGpuPipeline,eImplFlags_DontInherit1,iDeviceResource>,
-      public sVulkanDescSetLayouts
+      public sVulkanPipeline
 {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   NN<sVulkanRayFunctionTable> _functionTable;
-  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
-  VkPipeline _vkPipeline = VK_NULL_HANDLE;
+  sVulkanRayFunctionTableBuffer _functionTableBuffer;
 
   sVulkanRayPipeline(
     ain<nn<sVulkanDriver>> aDriver,
@@ -3275,14 +3415,8 @@ struct sVulkanRayPipeline :
 
   ~sVulkanRayPipeline() {
     _DestroyDescSetLayouts(_driver);
-    if (_vkPipeline) {
-      vkDestroyPipeline(_driver->_device, _vkPipeline, nullptr);
-      _vkPipeline = VK_NULL_HANDLE;
-    }
-    if (_vkPipelineLayout) {
-      vkDestroyPipelineLayout(_driver->_device, _vkPipelineLayout, nullptr);
-      _vkPipelineLayout = VK_NULL_HANDLE;
-    }
+    _functionTableBuffer.Destroy(_driver);
+    _DestroyPipeline(_driver);
   }
 
   tBool _CreateRayNoTextureDescSetLayout() {
@@ -3461,6 +3595,8 @@ struct sVulkanRayPipeline :
       vk, VK_NULL_HANDLE, VK_NULL_HANDLE,
       1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
 
+    // Create the SBT
+    niCheck(_functionTableBuffer._CreateSBT(_driver, _functionTable, _vkPipeline), eFalse);
     return eTrue;
   }
 
@@ -3493,6 +3629,14 @@ struct sVulkanRayPipeline :
   }
 };
 
+void __stdcall sVulkanCommandEncoder::SetAccelerationStructure(iAccelerationStructure* apAS) {
+  _cache._lastAS = (sVulkanAccelerationStructure*)apAS;
+}
+
+void __stdcall sVulkanCommandEncoder::SetRayTracingOutput(iTexture* apOutputImage) {
+  _cache._lastOutputImage = (sVulkanTexture*)apOutputImage;
+}
+
 // TODO: We should check whether the AS has already been built and rebuild or
 // refit instead if it already built. We certainly need to update the API to
 // do this sanely since rebuild vs refit cannot be inferred without the user's
@@ -3502,67 +3646,57 @@ tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationS
   niCheckIsOK(apAS,eFalse);
 
   sVulkanAccelerationStructure* as = (sVulkanAccelerationStructure*)apAS;
-
-  // Base build info
-  niLet primCount = as->_vertexCount/3;
-  VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
-    .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
-    .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
-    .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
-    .geometryCount = 1,
-    .pGeometries = &as->_geometry
+  tBool submitCommand = eFalse;
+  VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
+  niDefer {
+    _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
   };
-
-  // Get scratch buffer size and ensure it's available
+  niCheck(as->_BuildAccelerationStructure(cmdBuffer),eFalse);
   {
-    VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
-    };
-    const tU32 maxPrimCount = primCount;
-    vkGetAccelerationStructureBuildSizesKHR(
-      _driver->_device,
-      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-      &buildInfo, &maxPrimCount, &sizeInfo);
-
-    niCheck(_EnsureScratchBuffer(sizeInfo.buildScratchSize),eFalse);
+		VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
+		accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+		accelerationDeviceAddressInfo.accelerationStructure = as->_asHandle;
+		as->_asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
   }
+  submitCommand = eTrue;
+  return eTrue;
+}
 
-  // Setup build command
-  buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
-  buildInfo.dstAccelerationStructure = as->_as;
-  buildInfo.scratchData.deviceAddress = _scratchBuffer->_GetDeviceAddress();
+// TODO: Wtf are we passing the pipeline as parameter here.
+tBool __stdcall sVulkanCommandEncoder::DispatchRays(iRayGpuPipeline* apPipeline, tU32 anWidth, tU32 anHeight, tU32 anDepth) {
+  niCheck(_driver->_isRayTracingSupported,eFalse);
+  niCheckIsOK(apPipeline,eFalse);
+  niCheckIsOK(_cache._lastAS,eFalse);
+  niCheckIsOK(_cache._lastOutputImage,eFalse);
 
-  VkAccelerationStructureBuildRangeInfoKHR buildRange = {
-    .primitiveCount = primCount,
-    .primitiveOffset = as->_vertexOffset,
-    .firstVertex = 0,
-    .transformOffset = 0
-  };
-  const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
+  nn<sVulkanRayPipeline> pipeline = as_nn((sVulkanRayPipeline*)apPipeline);
+  vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline->_vkPipeline);
 
-  // Issue build command
-  vkCmdBuildAccelerationStructuresKHR(
+  // Bind acceleration structure
+  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
+  niCheck(descPool.PushDescriptorAccelerationStructure(
+    _driver->_device,
     _cmdBuffer,
-    1,
-    &buildInfo,
-    &pBuildRanges);
+    pipeline,
+    eGLSLVulkanDescriptorSet_AccelerationStructure,
+    _cache._lastAS->_asHandle),eFalse);
 
-  // Add memory barrier
-  VkMemoryBarrier barrier = {
-    .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
-    .srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
-    .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
-  };
-
-  vkCmdPipelineBarrier(
+  // Bind output image
+  niCheck(descPool.PushDescriptorStorageImage(
+    _driver->_device,
     _cmdBuffer,
-    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-    VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
-    0,
-    1, &barrier,
-    0, nullptr,
-    0, nullptr);
+    pipeline,
+    eGLSLVulkanDescriptorSet_Image2D,
+    _cache._lastOutputImage->_vkView,
+    VK_IMAGE_LAYOUT_GENERAL),eFalse);
 
+  vkCmdTraceRaysKHR(
+    _cmdBuffer,
+    &pipeline->_functionTableBuffer._rgenRegion,
+    &pipeline->_functionTableBuffer._missRegion,
+    &pipeline->_functionTableBuffer._hitRegion,
+    &pipeline->_functionTableBuffer._callRegion,
+    anWidth, anHeight, anDepth);
   return eTrue;
 }
 
@@ -3646,7 +3780,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 }
 
 tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
-  niLet pipeline = as_nn(_cache._lastPipeline);
+  niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet device = _driver->_device;
   niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
 
@@ -3707,7 +3841,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
 }
 
 tBool sVulkanCommandEncoder::_BindGpuFunction() {
-  niLet pipeline = _cache._lastPipeline;
+  niLet pipeline = _cache._lastRasterPipeline;
   if (pipeline->_gpufuncBindType == eGpuFunctionBindType_Fixed) {
     niCheck(_DoBindFixedDescLayout(),eFalse);
     return eTrue;
@@ -4641,7 +4775,7 @@ Ptr<iGpuBlendMode> sVulkanDriver::CreateGpuBlendMode() {
 
 Ptr<iGpuPipeline> sVulkanDriver::CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) {
   niCheckIsOK(apDesc,nullptr);
-  return CreateVulkanGpuPipeline(as_nn(this),ahspName,apDesc);
+  return CreateVulkanRasterPipeline(as_nn(this),ahspName,apDesc);
 }
 
 tBool sVulkanDriver::BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) {

@@ -603,20 +603,16 @@ IDLC_METH_BEGIN(ni,iGpuCommandEncoder,BuildAccelerationStructure,1)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iGpuCommandEncoder,BuildAccelerationStructure,1)
 
-/** ni -> iGpuCommandEncoder::DispatchRays/4 **/
-IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DispatchRays,4)
+/** ni -> iGpuCommandEncoder::DispatchRays/2 **/
+IDLC_METH_BEGIN(ni,iGpuCommandEncoder,DispatchRays,2)
 	IDLC_DECL_VAR(iRayGpuPipeline*,apPipeline)
 	IDLC_BUF_TO_INTF(iRayGpuPipeline,apPipeline)
-	IDLC_DECL_VAR(tU32,anWidth)
-	IDLC_BUF_TO_BASE(ni::eType_U32,anWidth)
-	IDLC_DECL_VAR(tU32,anHeight)
-	IDLC_BUF_TO_BASE(ni::eType_U32,anHeight)
-	IDLC_DECL_VAR(tU32,anDepth)
-	IDLC_BUF_TO_BASE(ni::eType_U32,anDepth)
+	IDLC_DECL_VAR(iTexture*,apOutputImage)
+	IDLC_BUF_TO_INTF(iTexture,apOutputImage)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DispatchRays,4,(apPipeline,anWidth,anHeight,anDepth))
+	IDLC_METH_CALL(_Ret,ni,iGpuCommandEncoder,DispatchRays,2,(apPipeline,apOutputImage))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iGpuCommandEncoder,DispatchRays,4)
+IDLC_METH_END(ni,iGpuCommandEncoder,DispatchRays,2)
 
 IDLC_END_INTF(ni,iGpuCommandEncoder)
 

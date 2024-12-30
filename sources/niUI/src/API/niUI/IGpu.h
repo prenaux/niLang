@@ -318,7 +318,7 @@ struct iGpuCommandEncoder : public iUnknown {
   //! @}
 
   //##########################################################################
-  //! \name
+  //! \name Streamed Resources
   //##########################################################################
   //! @{
 
@@ -399,11 +399,7 @@ struct iGpuCommandEncoder : public iUnknown {
   virtual tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) = 0;
 
   //! Dispatch rays
-  virtual tBool __stdcall DispatchRays(
-    iRayGpuPipeline* apPipeline,
-    tU32 anWidth,
-    tU32 anHeight,
-    tU32 anDepth) = 0;
+  virtual tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, iTexture* apOutputImage) = 0;
   //! @}
 };
 

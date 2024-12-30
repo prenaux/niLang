@@ -1843,12 +1843,7 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eFalse;
   }
 
-  virtual tBool __stdcall DispatchRays(
-    iRayGpuPipeline* apPipeline,
-    tU32 anWidth,
-    tU32 anHeight,
-    tU32 anDepth)
-  {
+  virtual tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, iTexture* apOutputImage) {
     return eFalse;
   }
 };

@@ -2554,7 +2554,7 @@ struct sVulkanDescriptorPool {
     return eTrue;
   }
 
-  tBool PushDescriptorAccelerationStructure(
+  tBool PushRayDescriptorAccelerationStructure(
     VkDevice aDevice,
     VkCommandBuffer aCmdBuffer,
     ain<nn<sVulkanPipeline>> apPipeline,
@@ -2586,7 +2586,7 @@ struct sVulkanDescriptorPool {
     return eTrue;
   }
 
-  tBool PushDescriptorStorageImage(
+  tBool PushRayDescriptorStorageImage(
     VkDevice aDevice,
     VkCommandBuffer aCmdBuffer,
     ain<nn<sVulkanPipeline>> apPipeline,
@@ -2695,6 +2695,64 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
 };
 
 struct sVulkanAccelerationStructure;
+struct sVulkanRayPipeline;
+
+struct sVulkanRenderingInfo {
+  VkRenderingInfoKHR _renderingInfo = {};
+  VkRenderingAttachmentInfo _colorAttachment = {};
+  VkClearValue _clearColorValue = {};
+  VkRenderingAttachmentInfo _depthAttachment = {};
+  VkClearValue _clearDepthValue = {};
+
+  void _UpdateRenderingInfo(
+    ain<VkImage> aColorImage,
+    ain<VkImageView> aColorImageView,
+    ain<VkImage> aDepthImage,
+    ain<VkImageView> aDepthImageView,
+    ain<tU32> anWidth,
+    ain<tU32> anHeight,
+    ain<sRecti> aViewport,
+    ain<sRecti> aScissor,
+    ain<sVec4f> aClearColor,
+    ain<tF32> aClearDepth,
+    ain<tU32> aClearStencil)
+  {
+    _renderingInfo = {
+      .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+      .renderArea = {{0, 0}, {anWidth, anHeight}},
+      .layerCount = 1,
+      .colorAttachmentCount = 0,
+      .pDepthAttachment = nullptr
+    };
+
+    _colorAttachment = {
+      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+      .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+    };
+    if (aColorImageView != VK_NULL_HANDLE) {
+      static_assert(sizeof(_colorAttachment.clearValue) == sizeof(sVec4f));
+      ((sVec4f&)_colorAttachment.clearValue.color) = aClearColor;
+      _colorAttachment.imageView = aColorImageView;
+      _renderingInfo.pColorAttachments = &_colorAttachment;
+      _renderingInfo.colorAttachmentCount = 1;
+    }
+
+    _depthAttachment = {
+      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+      .imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
+    };
+    if (aDepthImageView != VK_NULL_HANDLE) {
+      _depthAttachment.clearValue = {};
+      _depthAttachment.clearValue.depthStencil = {aClearDepth, aClearStencil};
+      _depthAttachment.imageView = aDepthImageView;
+      _renderingInfo.pDepthAttachment = &_depthAttachment;
+    }
+  }
+};
 
 struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   nn<sVulkanDriver> _driver;
@@ -2706,12 +2764,12 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     tU32 _lastBufferOffset = 0;
     tFixedGpuPipelineId _lastFixedPipeline = 0;
     Ptr<sVulkanAccelerationStructure> _lastAS = nullptr;
-    Ptr<sVulkanTexture> _lastOutputImage = nullptr;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
-  tBool _beganCmdBuffer = eFalse;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
   tU32 _currentFrame = 0;
+  tBool _beganCmdBuffer = eFalse;
+  sVulkanRenderingInfo _renderingInfo;
 
   sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
@@ -2775,6 +2833,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     };
 
     VK_CHECK(vkBeginCommandBuffer(_cmdBuffer, &beginInfo), eFalse);
+    _GetCurrentFrame()->OnBeginFrame(_driver->_device);
     return eTrue;
   }
 
@@ -2792,49 +2851,26 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     ain<tU32> aClearStencil = 0)
   {
     niDebugAssert(_beganCmdBuffer);
-
-    VkRenderingInfoKHR renderingInfo {
-      .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-      .renderArea = {{0, 0}, {anWidth, anHeight}},
-      .layerCount = 1,
-      .colorAttachmentCount = 0,
-      .pDepthAttachment = nullptr
-    };
-
-    VkRenderingAttachmentInfo colorAttachment {
-      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-      .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-    };
-    if (aColorImageView != VK_NULL_HANDLE) {
-      VkClearValue clearColorValue = {};
-      static_assert(sizeof(clearColorValue) == sizeof(sVec4f));
-      ((sVec4f&)clearColorValue.color) = aClearColor;
-      colorAttachment.imageView = aColorImageView;
-      colorAttachment.clearValue = clearColorValue;
-      renderingInfo.pColorAttachments = &colorAttachment;
-      renderingInfo.colorAttachmentCount = 1;
-    }
-
-    VkRenderingAttachmentInfo depthAttachment = {
-      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-      .imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
-    };
-    if (aDepthImageView != VK_NULL_HANDLE) {
-      VkClearValue clearDepthValue = {};
-      clearDepthValue.depthStencil = {aClearDepth, aClearStencil};
-      depthAttachment.imageView = aDepthImageView;
-      depthAttachment.clearValue = clearDepthValue;
-      renderingInfo.pDepthAttachment = &depthAttachment;
-    }
-    vkCmdBeginRenderingKHR(_cmdBuffer, &renderingInfo);
-    _GetCurrentFrame()->OnBeginFrame(_driver->_device);
+    _renderingInfo._UpdateRenderingInfo(
+      aColorImage,
+      aColorImageView,
+      aDepthImage,
+      aDepthImageView,
+      anWidth,
+      anHeight,
+      aViewport,
+      aScissor,
+      aClearColor,
+      aClearDepth,
+      aClearStencil);
+    vkCmdBeginRenderingKHR(_cmdBuffer, &_renderingInfo._renderingInfo);
     this->SetViewport(aViewport);
     this->SetScissorRect(aScissor);
     return eTrue;
+  }
+
+  void _ResumeRendering() {
+    vkCmdBeginRenderingKHR(_cmdBuffer, &_renderingInfo._renderingInfo);
   }
 
   void _EndRendering() {
@@ -3002,10 +3038,9 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     return eTrue;
   }
 
-  void __stdcall SetAccelerationStructure(iAccelerationStructure* apAS);
-  void __stdcall SetRayTracingOutput(iTexture* apOutputImage);
+  void _DoBindRayPipeline(ain<nn<sVulkanRayPipeline>> apPipeline);
   tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) niImpl;
-  tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, tU32 anWidth, tU32 anHeight, tU32 anDepth) niImpl;
+  tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, iTexture* apOutputImage) niImpl;
 };
 
 static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriver> aDriver) {
@@ -3666,12 +3701,10 @@ struct sVulkanRayPipeline :
   }
 };
 
-void __stdcall sVulkanCommandEncoder::SetAccelerationStructure(iAccelerationStructure* apAS) {
-  _cache._lastAS = (sVulkanAccelerationStructure*)apAS;
-}
-
-void __stdcall sVulkanCommandEncoder::SetRayTracingOutput(iTexture* apOutputImage) {
-  _cache._lastOutputImage = (sVulkanTexture*)apOutputImage;
+void sVulkanCommandEncoder::_DoBindRayPipeline(ain<nn<sVulkanRayPipeline>> aRayPipeline) {
+  vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, aRayPipeline->_vkPipeline);
+  _cache._lastRasterPipeline = nullptr;
+  _cache._lastFixedPipeline = 0;
 }
 
 // TODO: We should check whether the AS has already been built and rebuild or
@@ -3696,44 +3729,75 @@ tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationS
 		as->_asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
   }
   submitCommand = eTrue;
+  // TODO: HACK: Obviously super gross, but enough for our first "Ray tracing triangle"
+  _cache._lastAS = as;
   return eTrue;
 }
 
 // TODO: Wtf are we passing the pipeline as parameter here.
-tBool __stdcall sVulkanCommandEncoder::DispatchRays(iRayGpuPipeline* apPipeline, tU32 anWidth, tU32 anHeight, tU32 anDepth) {
+tBool __stdcall sVulkanCommandEncoder::DispatchRays(
+  iRayGpuPipeline* apPipeline, iTexture* apOutputImage)
+{
   niCheck(_driver->_isRayTracingSupported,eFalse);
   niCheckIsOK(apPipeline,eFalse);
-  // niCheckIsOK(_cache._lastAS,eFalse);
-  // niCheckIsOK(_cache._lastOutputImage,eFalse);
+  niCheckIsOK(_cache._lastAS,eFalse);
+  niCheckIsOK(apOutputImage,eFalse);
+  niCheck(apOutputImage->GetFlags()&eTextureFlags_RenderTarget,eFalse);
 
   nn<sVulkanRayPipeline> pipeline = as_nn((sVulkanRayPipeline*)apPipeline);
-  vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline->_vkPipeline);
+  sVulkanTexture* outputTex = (sVulkanTexture*)apOutputImage;
+
+  // End current rendering pass if any
+  _EndRendering();
+
+  // Transition output image to general layout for storage
+  niCheck(_VulkanTransitionImageLayout(
+    _cmdBuffer,
+    outputTex->_vkImage,
+    VK_IMAGE_LAYOUT_UNDEFINED,
+    VK_IMAGE_LAYOUT_GENERAL),eFalse);
+
+  _DoBindRayPipeline(pipeline);
 
   // Bind acceleration structure
-  // niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
-  // niCheck(descPool.PushDescriptorAccelerationStructure(
-  //   _driver->_device,
-  //   _cmdBuffer,
-  //   pipeline,
-  //   eGLSLVulkanDescriptorSet_AccelerationStructure,
-  //   _cache._lastAS->_asHandle),eFalse);
+  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
+  niCheck(descPool.PushRayDescriptorAccelerationStructure(
+    _driver->_device,
+    _cmdBuffer,
+    pipeline,
+    eGLSLVulkanDescriptorSet_AccelerationStructure,
+    _cache._lastAS->_asHandle),eFalse);
 
   // Bind output image
-  // niCheck(descPool.PushDescriptorStorageImage(
-  //   _driver->_device,
-  //   _cmdBuffer,
-  //   pipeline,
-  //   eGLSLVulkanDescriptorSet_Image2D,
-  //   _cache._lastOutputImage->_vkView,
-  //   VK_IMAGE_LAYOUT_GENERAL),eFalse);
+  niCheck(descPool.PushRayDescriptorStorageImage(
+    _driver->_device,
+    _cmdBuffer,
+    pipeline,
+    eGLSLVulkanDescriptorSet_Image2D,
+    outputTex->_vkView,
+    VK_IMAGE_LAYOUT_GENERAL),eFalse);
 
+  // Dispatch rays
   vkCmdTraceRaysKHR(
     _cmdBuffer,
     &pipeline->_rgenTable._stridedRegion,
     &pipeline->_missTable._stridedRegion,
     &pipeline->_hitTable._stridedRegion,
     &pipeline->_callableTable._stridedRegion,
-    anWidth, anHeight, anDepth);
+    apOutputImage->GetWidth(),
+    apOutputImage->GetHeight(),
+    1);
+
+  // Transition output image back to shader read
+  niCheck(_VulkanTransitionImageLayout(
+    _cmdBuffer,
+    outputTex->_vkImage,
+    VK_IMAGE_LAYOUT_GENERAL,
+    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+
+  // Resume rendering pass
+  _ResumeRendering();
+
   return eTrue;
 }
 

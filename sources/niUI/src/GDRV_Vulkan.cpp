@@ -1025,14 +1025,16 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
 
-    niLog(Info,"Vulkan Queue Families:");
+    niLog(Info, "Vulkan Queue Families:");
     for (tU32 i = 0; i < queueFamilyCount; i++) {
-      niLog(Info,niFmt("  Family %d:", i));
-      niLog(Info,niFmt("    Queue Count: %d", queueFamilies[i].queueCount));
-      niLog(Info,niFmt("    Graphics: %s", (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Compute: %s", (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Transfer: %s", (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No"));
-      niLog(Info,niFmt("    Sparse: %s", (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No"));
+      niLog(Info, niFmt(
+        "  Family %d: Queue Count: %d, Flags: 0x%X, Graphics: %y, Compute: %y, Transfer: %y, Sparse: %y",
+        i, queueFamilies[i].queueCount,
+        queueFamilies[i].queueFlags,
+        (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT),
+        (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT),
+        (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT),
+        (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)));
     }
 
     for (tU32 i = 0; i < queueFamilyCount; i++) {

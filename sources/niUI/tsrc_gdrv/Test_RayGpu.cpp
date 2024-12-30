@@ -32,6 +32,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   NN<iGpuFunction> _rayHitFun = niDeferredInit(NN<iGpuFunction>);
   NN<iRayGpuFunctionTable> _rayFuncTable = niDeferredInit(NN<iRayGpuFunctionTable>);
   NN<iRayGpuPipeline> _rayPipeline = niDeferredInit(NN<iRayGpuPipeline>);
+  NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFRayGpu_Base::OnInit(testResults_),eFalse);
@@ -105,6 +106,13 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         eFalse);
     }
 
+    // Create our output image
+    {
+      _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
+        _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
+        256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
     return eTrue;
   }
 
@@ -116,13 +124,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
     // Build/update acceleration structure
     cmdEncoder->BuildAccelerationStructure(_accelStructure);
 
-    // Launch ray tracing
-    cmdEncoder->DispatchRays(
-      _rayPipeline,
-      // Launch 1 ray per pixel
-      _graphicsContext->GetWidth(),
-      _graphicsContext->GetHeight(),
-      1);
+    // Launch ray tracing, one ray per pixel
+    cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);
 
     return eTrue;
   }

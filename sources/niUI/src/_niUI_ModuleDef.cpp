@@ -9537,16 +9537,14 @@ static const ni::sMethodDef iGpuCommandEncoder_BuildAccelerationStructure = {
 };
 
 // Method: DispatchRays
-static const ni::sParameterDef iGpuCommandEncoder_DispatchRays_Parameters[4] = { 
+static const ni::sParameterDef iGpuCommandEncoder_DispatchRays_Parameters[2] = { 
   { "apPipeline", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayGpuPipeline), "iRayGpuPipeline*" }, 
-  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
-  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
-  { "anDepth", ni::eType_U32, NULL, "tU32" }
+  { "apOutputImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_DispatchRays = {
   "DispatchRays",
   0|ni::eType_I8, NULL, "tBool",
-  4, iGpuCommandEncoder_DispatchRays_Parameters,
+  2, iGpuCommandEncoder_DispatchRays_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_DispatchRays)
 #else

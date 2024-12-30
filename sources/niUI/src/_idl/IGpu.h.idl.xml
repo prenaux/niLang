@@ -988,7 +988,7 @@
 					typec="iAccelerationStructure*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="dispatchRays" name="DispatchRays" num_parameters="4">
+			<method java_name="dispatchRays" name="DispatchRays" num_parameters="2">
 				<comments desc="Dispatch rays "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -997,21 +997,11 @@
 					typec="iRayGpuPipeline*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="anWidth"
-					type="tU32"
-					typec="tU32"
-					typei="ni::eType_U32"/>
-				<parameter
-					name="anHeight"
-					type="tU32"
-					typec="tU32"
-					typei="ni::eType_U32"/>
-				<parameter
 					last="1"
-					name="anDepth"
-					type="tU32"
-					typec="tU32"
-					typei="ni::eType_U32"/>
+					name="apOutputImage"
+					type="iTexture *"
+					typec="iTexture*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 		<interface name="iGraphicsContextGpu" uuid1="0D2FFD6C-887D-3D46-AA18-123B272954E0" uuid2="0x0d2ffd6c,0x887d,0x3d46,0xaa,0x18,0x12,0x3b,0x27,0x29,0x54,0xe0">

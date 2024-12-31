@@ -1548,13 +1548,15 @@ void StackWalker::OnOutput(LPCSTR buffer)
 }
 
 struct MyStackWalker : public StackWalker {
+  const ni::tU32 _skipToStackIndex;
   ni::tU32 _stackIndex;
   ni::cString* _output;
   ni::tBool _showAll;
 
-  MyStackWalker()
+  MyStackWalker(ni::tU32 anSkipToIndex)
       : StackWalker(OptionsAll & ~SymUseSymSrv)
       , _showAll(eTrue)
+      , _skipToStackIndex(anSkipToIndex)
   {
     _output = NULL;
     _stackIndex = 0;
@@ -1578,12 +1580,14 @@ struct MyStackWalker : public StackWalker {
       if (entry.moduleName[0] == 0)
         MyStrCpy(entry.moduleName, STACKWALK_MAX_NAMELEN, "noModule");
 
-      _StackCatEntry(
-        *_output, _stackIndex,
-        entry.lineFileName, entry.lineNumber,
-        entry.name,
-        entry.moduleName, entry.offset,
-        eTrue);
+      if (_stackIndex > _skipToStackIndex) {
+        _StackCatEntry(
+          *_output, _stackIndex-_skipToStackIndex,
+          entry.lineFileName, entry.lineNumber,
+          entry.name,
+          entry.moduleName, entry.offset,
+          eTrue);
+      }
 
       _stackIndex++;
     }
@@ -1596,7 +1600,7 @@ struct MyStackWalker : public StackWalker {
 };
 
 namespace ni {
-niExportFuncCPP(cString&) ni_stack_get_current(cString& aOutput, void* apExp, int) {
+niExportFuncCPP(cString&) ni_stack_get_current(cString& aOutput, void* apExp, int anSkipToIndex) {
   EXCEPTION_POINTERS* pExp = (EXCEPTION_POINTERS*)apExp;
   if (pExp) {
     EXCEPTION_RECORD *pRecord = pExp->ExceptionRecord;
@@ -1652,7 +1656,8 @@ niExportFuncCPP(cString&) ni_stack_get_current(cString& aOutput, void* apExp, in
                      nExcAddr,nExcAddr);
   }
 
-  MyStackWalker walker;
+  // +1 to skip walker.ShowCallstack()
+  MyStackWalker walker((tU32)ni::Max(anSkipToIndex,0)+1);
   walker.Reset(aOutput);
   if (pExp) {
     walker.ShowCallstack(GetCurrentThread(), pExp->ContextRecord);

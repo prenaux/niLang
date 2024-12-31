@@ -78,7 +78,7 @@ niExportFunc(void) _StackCatEntry(cString& aOutput, tInt frameIndex, const achar
 
 #ifdef HAS_CODE_SNIPPET
   if (abIncludeCodeSnippet && niStringIsOK(file)) {
-    _StackCatCodeSnippet(aOutput, file, line, "    ", 5);
+    _StackCatCodeSnippet(aOutput, file, line, "    ", 1);
   }
 #endif
 }

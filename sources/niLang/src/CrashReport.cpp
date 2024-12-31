@@ -41,6 +41,9 @@ niExportFunc(int) ni_get_show_fatal_error_message_box() {
   return _bShowFatalErrorMessageBox;
 }
 
+// Disable: warning C4251: 'ni::sPanicException::_desc': 'ni::cString' needs to have dll-interface to be used by clients of 'ni::sPanicException'
+EA_DISABLE_VC_WARNING(4251);
+
 struct __ni_module_export sPanicException : public iPanicException {
   sPanicException(const iHString* aKind, const cString&& aDesc) noexcept
       : _kind(aKind), _desc(astl::move(aDesc))
@@ -98,7 +101,8 @@ static void _FormatThrowMessage(
           hasMsg?(exceptionMsg[StrSize(exceptionMsg)-1]=='\n'?_A(""):_A("\n")):_A("")),
     -1, -1);
   fmt.append("--- CALLSTACK ------------------\n");
-  ni_stack_get_current(fmt,nullptr,2); // 1 to skip _FormatThrowMessage and its caller
+  // skip 2, _FormatThrowMessage and its caller
+  ni_stack_get_current(fmt,nullptr,2);
 }
 
 #ifdef niJSCC

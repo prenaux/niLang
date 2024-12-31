@@ -1,9 +1,16 @@
 #version 450
-// Module: lib:shader
+// DO IMPORTS BEGIN TestGpuFuncs
+// MODULE BEGIN lib:shader
+// MODULE PROLOGUE BEGIN lib:shader
+mat4 nil_Mat4x3ToMat4x4(mat4x3 m) { return mat4(vec4(m[0], 0), vec4(m[1], 0), vec4(m[2], 0), vec4(m[3], 1)); }
+mat4 nil_Mat3x4ToMat4x4(mat3x4 m) { return mat4(vec4(m[0]), vec4(m[1]), vec4(m[2]), vec4(0,0,0,1)); }
+// MODULE PROLOGUE END lib:shader
 // FunctionFwd: lib:shader
 // Function: lib:shader
+// MODULE END lib:shader
+// DO IMPORTS END TestGpuFuncs
 
-// Module: TestGpuFuncs
+// MODULE BEGIN TestGpuFuncs
 
 // Type: PixelOutput
 struct TestGpuFuncs_PixelOutput {
@@ -39,6 +46,7 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_VertexOutputPN_skybox_ps(TestGpuFuncs_Vert
 }
 
 // Function: TestGpuFuncs
+// MODULE END TestGpuFuncs
 
 // Pixel Shader main: TestGpuFuncs_VertexOutputPN_skybox_ps
 layout(location = 0) in vec4 IN_0_aInput_position;

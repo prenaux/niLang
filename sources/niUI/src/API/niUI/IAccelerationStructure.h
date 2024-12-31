@@ -103,6 +103,15 @@ struct iAccelerationStructure : public iDeviceResource {
     const sMatrixf& aTransform,
     tAccelerationGeometryFlags aFlags,
     tU32 anHitGroup) = 0;
+
+  //! Add an instance.
+  virtual tBool __stdcall AddInstance(
+    iAccelerationStructure* apAS,
+    const sMatrixf& aTransform,
+    tU32 anInstanceId,
+    tU8 anMask,
+    tU32 anHitGroup,
+    tAccelerationInstanceFlags aFlags) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

@@ -188,11 +188,32 @@ static const ni::sMethodDef iAccelerationStructure_AddProceduralAABBs = {
 #endif
 };
 
+// Method: AddInstance
+static const ni::sParameterDef iAccelerationStructure_AddInstance_Parameters[6] = { 
+  { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iAccelerationStructure), "iAccelerationStructure*" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "anInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anMask", ni::eType_U8, NULL, "tU8" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tAccelerationInstanceFlags" }
+}; 
+static const ni::sMethodDef iAccelerationStructure_AddInstance = {
+  "AddInstance",
+  0|ni::eType_I8, NULL, "tBool",
+  6, iAccelerationStructure_AddInstance_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iAccelerationStructure_AddInstance)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iAccelerationStructure[] = {
 	&iAccelerationStructure_GetType,
 	&iAccelerationStructure_AddTriangles,
 	&iAccelerationStructure_AddTrianglesIndexed,
 	&iAccelerationStructure_AddProceduralAABBs,
+	&iAccelerationStructure_AddInstance,
 
 };
 

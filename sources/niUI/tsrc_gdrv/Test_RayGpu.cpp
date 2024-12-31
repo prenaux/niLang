@@ -24,7 +24,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   typedef sVertexPA tVertexFmt;
 
   NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iAccelerationStructure> _accelStructure = niDeferredInit(NN<iAccelerationStructure>);
+  NN<iAccelerationStructure> _primitiveAS = niDeferredInit(NN<iAccelerationStructure>);
+  NN<iAccelerationStructure> _instanceAS = niDeferredInit(NN<iAccelerationStructure>);
 
   // Ray tracing pipeline and shaders
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -92,18 +93,37 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
     // Create acceleration structure
     {
-      _accelStructure = niCheckNN(_accelStructure,
+      _primitiveAS = niCheckNN(
+        _primitiveAS,
         _driverGpu->CreateAccelerationStructure(
           _H("RayTriangle_AS"),
           eAccelerationStructureType_Primitive),
         eFalse);
 
-      niCheck(_accelStructure->AddTriangles(
+      niCheck(_primitiveAS->AddTriangles(
         _vertexBuffer,0,sizeof(tVertexFmt),3,
         sMatrixf::Identity(),
         eAccelerationGeometryFlags_Opaque,
         0),
         eFalse);
+    }
+
+    {
+      _instanceAS = niCheckNN(
+        _instanceAS,
+        _driverGpu->CreateAccelerationStructure(
+          _H("RayTriangle_InstanceAS"),
+          eAccelerationStructureType_Instance),
+        eFalse);
+
+      niCheck(_instanceAS->AddInstance(
+        _primitiveAS,
+        sMatrixf::Identity(), // Transform
+        0,                    // Instance ID
+        0xFF,                // Mask
+        0,                   // Hit group offset
+        eAccelerationInstanceFlags_None),
+              eFalse);
     }
 
     // Create our output image
@@ -122,7 +142,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
 
     // Build/update acceleration structure
-    cmdEncoder->BuildAccelerationStructure(_accelStructure);
+    cmdEncoder->BuildAccelerationStructure(_primitiveAS);
+    cmdEncoder->BuildAccelerationStructure(_instanceAS);
 
     // Launch ray tracing, one ray per pixel
     cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);

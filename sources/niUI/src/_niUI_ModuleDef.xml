@@ -1804,6 +1804,41 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
+			<method java_name="addInstance" name="AddInstance" num_parameters="6">
+				<comments desc="Add an instance. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apAS"
+					type="iAccelerationStructure *"
+					typec="iAccelerationStructure*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aTransform"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anInstanceId"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anMask"
+					type="tU8"
+					typec="tU8"
+					typei="ni::eType_U8"/>
+				<parameter
+					name="anHitGroup"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tAccelerationInstanceFlags"
+					typec="tAccelerationInstanceFlags"
+					typei="ni::eType_Enum"/>
+			</method>
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niUI/src/_idl/IBitmap2D.h.idl.xml">

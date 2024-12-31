@@ -347,6 +347,7 @@ static tBool _VulkanTransitionImageLayout(
   VkPipelineStageFlags sourceStage;
   VkPipelineStageFlags destinationStage;
 
+  // Source layout transitions
   switch (aOldLayout) {
     case VK_IMAGE_LAYOUT_UNDEFINED:
       barrier.srcAccessMask = 0;
@@ -364,11 +365,17 @@ static tBool _VulkanTransitionImageLayout(
       barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
       sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
       break;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+      sourceStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
+      break;
     default:
-      niError(niFmt("Unsupported old layout transition '%s'.",ni_vulkan::VkImageLayoutToString(aOldLayout)));
+      niError(niFmt("Unsupported old layout transition '%s'.",
+                    ni_vulkan::VkImageLayoutToString(aOldLayout)));
       return eFalse;
   }
 
+  // Destination layout transitions
   switch (aNewLayout) {
     case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
       barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -377,7 +384,6 @@ static tBool _VulkanTransitionImageLayout(
     case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
       barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
       destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      break;
       break;
     case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
       barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
@@ -391,23 +397,32 @@ static tBool _VulkanTransitionImageLayout(
       barrier.dstAccessMask = 0;
       destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
       break;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+      destinationStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
+      break;
     default:
-      niError(niFmt("Unsupported new layout transition '%s'.",ni_vulkan::VkImageLayoutToString(aNewLayout)));
+      niError(niFmt("Unsupported new layout transition '%s'.",
+                    ni_vulkan::VkImageLayoutToString(aNewLayout)));
       return eFalse;
   }
 
-  if ((aOldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-       aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
-      (aOldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+  // Add valid transition combinations
+  if ((aOldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
        (aNewLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ||
         aNewLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ||
-        aNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) ||
+        aNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ||
+        aNewLayout == VK_IMAGE_LAYOUT_GENERAL)) ||
+      (aOldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+       aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
       (aOldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
        (aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ||
         aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) ||
       (aOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL &&
-       (aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
-  ) {
+       aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
+      (aOldLayout == VK_IMAGE_LAYOUT_GENERAL &&
+       aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
+  {
     vkCmdPipelineBarrier(
       aCmdBuffer,
       sourceStage, destinationStage,
@@ -1655,6 +1670,9 @@ struct sVulkanTexture : public ImplRC<iTexture> {
 
     if (niFlagIs(_flags,eTextureFlags_RenderTarget)) {
       imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+      if (_driver->_isRayTracingSupported) {
+        imageInfo.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
+      }
     }
     else if (niFlagIs(_flags,eTextureFlags_DepthStencil)) {
       imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -3078,6 +3096,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   tU64 _asDeviceAddress = 0;
   VkAccelerationStructureGeometryKHR _geometry = {};
   tU32 _vertexCount = 0;
+  Ptr<sVulkanBuffer> _instanceBuffer;
   // TODO: This should be shared somewhere...
   sVulkanScratchBuffer _scratchBuffer;
 
@@ -3221,6 +3240,94 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     return eFalse;
   }
 
+  virtual tBool __stdcall AddInstance(
+    iAccelerationStructure* apAS,
+    const sMatrixf& aTransform,
+    tU32 anInstanceId,
+    tU8 anMask,
+    tU32 anHitGroupOffset,
+    tAccelerationInstanceFlags aFlags) niImpl
+  {
+    niCheck(_type == eAccelerationStructureType_Instance,eFalse);
+    niCheckIsOK(apAS,eFalse);
+    niCheck(apAS->GetType() == eAccelerationStructureType_Primitive,eFalse);
+
+    // Create geometry for instance
+    _geometry = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
+      .geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR,
+      .flags = VK_GEOMETRY_OPAQUE_BIT_KHR
+    };
+
+    // Create instance data
+    VkAccelerationStructureInstanceKHR instance = {
+      .transform = {
+        aTransform._11, aTransform._21, aTransform._31, aTransform._41,
+        aTransform._12, aTransform._22, aTransform._32, aTransform._42,
+        aTransform._13, aTransform._23, aTransform._33, aTransform._43,
+      },
+      .instanceCustomIndex = anInstanceId,
+      .mask = anMask,
+      .instanceShaderBindingTableRecordOffset = anHitGroupOffset,
+      .flags = (VkGeometryInstanceFlagsKHR)aFlags,
+      .accelerationStructureReference = ((sVulkanAccelerationStructure*)apAS)->_asDeviceAddress
+    };
+
+    // Create instance buffer
+    _instanceBuffer = ni::MakeNN<sVulkanBuffer>(
+      _driver,
+      eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_AccelerationStructureBuildInput);
+    niCheck(_instanceBuffer->_CreateBuffer(sizeof(instance),16),eFalse);
+
+    // Upload instance data
+    {
+      tPtr data = _instanceBuffer->Lock(0,sizeof(instance),eLock_Discard);
+      niDebugAssert(data != nullptr);
+      ni::MemCopy(data, (tPtr)&instance, sizeof(instance));
+      _instanceBuffer->Unlock();
+    }
+
+    _geometry.geometry.instances = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR,
+      .arrayOfPointers = VK_FALSE,
+      .data = { .deviceAddress = _instanceBuffer->_GetDeviceAddress() }
+    };
+
+    VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
+      .type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR,
+      .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+      .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
+      .geometryCount = 1,
+      .pGeometries = &_geometry
+    };
+
+    tU32 primCount = 1;
+    _asSizeInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+    };
+    vkGetAccelerationStructureBuildSizesKHR(
+      _driver->_device,
+      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+      &buildInfo,
+      &primCount,
+      &_asSizeInfo);
+    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,0),eFalse);
+
+    VkAccelerationStructureCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
+      .buffer = _asStorage._vkBuffer,
+      .size = _asSizeInfo.accelerationStructureSize,
+      .type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR
+    };
+
+    VK_CHECK(vkCreateAccelerationStructureKHR(
+      _driver->_device, &createInfo, nullptr, &_asHandle),eFalse);
+
+    return eTrue;
+  }
+
   tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer) {
     niCheck(_asHandle != VK_NULL_HANDLE, eFalse);
 
@@ -3231,10 +3338,11 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
             eFalse);
 
     // Base build info
-    niLet primCount = _vertexCount/3;
     VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
-      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
+      .type = (_type == eAccelerationStructureType_Instance) ?
+      VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR :
+      VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
       .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
       .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
       .dstAccelerationStructure = _asHandle,
@@ -3243,9 +3351,10 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
     };
 
-    // Setup build command
+    // Setup build range
     VkAccelerationStructureBuildRangeInfoKHR buildRange = {
-      .primitiveCount = primCount,
+      .primitiveCount = (_type == eAccelerationStructureType_Instance) ?
+      1 : (_vertexCount/3),
       .primitiveOffset = 0,
       .firstVertex = 0,
       .transformOffset = 0
@@ -3254,10 +3363,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
 
     // Issue build command
     vkCmdBuildAccelerationStructuresKHR(
-      aCmdBuffer,
-      1,
-      &buildInfo,
-      &pBuildRanges);
+      aCmdBuffer, 1, &buildInfo, &pBuildRanges);
 
     // Add memory barrier
     VkMemoryBarrier barrier = {
@@ -3732,7 +3838,9 @@ tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationS
   }
   submitCommand = eTrue;
   // TODO: HACK: Obviously super gross, but enough for our first "Ray tracing triangle"
-  _cache._lastAS = as;
+  if (as->_type == eAccelerationStructureType_Instance) {
+    _cache._lastAS = as;
+  }
   return eTrue;
 }
 

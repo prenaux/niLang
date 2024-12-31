@@ -2724,7 +2724,7 @@ struct sVulkanRenderingInfo {
   VkRenderingAttachmentInfo _depthAttachment = {};
   VkClearValue _clearDepthValue = {};
 
-  void _UpdateRenderingInfo(
+  void _BeginRenderingInfo(
     ain<VkImage> aColorImage,
     ain<VkImageView> aColorImageView,
     ain<VkImage> aDepthImage,
@@ -2770,6 +2770,15 @@ struct sVulkanRenderingInfo {
       _depthAttachment.clearValue.depthStencil = {aClearDepth, aClearStencil};
       _depthAttachment.imageView = aDepthImageView;
       _renderingInfo.pDepthAttachment = &_depthAttachment;
+    }
+  }
+
+  void _ResumeRenderingInfo() {
+    if (_colorAttachment.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR) {
+      _colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    }
+    if (_depthAttachment.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR) {
+      _depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
     }
   }
 };
@@ -2871,7 +2880,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     ain<tU32> aClearStencil = 0)
   {
     niDebugAssert(_beganCmdBuffer);
-    _renderingInfo._UpdateRenderingInfo(
+    _renderingInfo._BeginRenderingInfo(
       aColorImage,
       aColorImageView,
       aDepthImage,
@@ -2890,6 +2899,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 
   void _ResumeRendering() {
+    _renderingInfo._ResumeRenderingInfo();
     vkCmdBeginRenderingKHR(_cmdBuffer, &_renderingInfo._renderingInfo);
   }
 

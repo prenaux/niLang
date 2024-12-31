@@ -7,15 +7,10 @@ struct lib_shader_RayPayload
     float hitT;
 };
 
-layout(location = 0) rayPayloadEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
-
-vec4 vec4_Zero;
-vec4 vec4_Black;
+layout(location = 0) rayPayloadInEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
 
 void main()
 {
-    vec4_Zero = vec4(0.0);
-    vec4_Black = vec4_Zero;
-    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4_Black, 0.0);
+    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4(0.0, 1.0, 1.0, 0.0), 0.0);
 }
 

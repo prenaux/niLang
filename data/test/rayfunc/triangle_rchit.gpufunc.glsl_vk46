@@ -7,7 +7,7 @@ struct lib_shader_RayPayload
     float hitT;
 };
 
-layout(location = 0) rayPayloadEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
+layout(location = 0) rayPayloadInEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
 
 void main()
 {

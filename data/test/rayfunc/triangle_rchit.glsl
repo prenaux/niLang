@@ -1,6 +1,5 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
-
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
 // MODULE PROLOGUE BEGIN lib:shader
@@ -35,7 +34,7 @@ struct lib_shader_RayPayload {
   vec4 color;
   float hitT;
 };
-layout(location = 0) rayPayloadEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
+layout(location = 0) rayPayloadInEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
 // Type: RayTransforms
 struct lib_shader_RayTransforms {
   mat4 objectToWorld;

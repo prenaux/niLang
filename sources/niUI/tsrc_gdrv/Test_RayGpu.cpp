@@ -23,9 +23,19 @@ struct sFRayGpu_Base : public sFGDRV_Base {
 struct sFRayGpu_Triangle : public sFRayGpu_Base {
   typedef sVertexPA tVertexFmt;
 
+  // Display resources
+  NN<iGpuBuffer> _displayVABuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _displayIABuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuFunction> _displayVertexGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _displayPixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuPipeline> _displayPipeline = niDeferredInit(NN<iGpuPipeline>);
+  NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
+
+  // Primitive and acceleration structures
   NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _indexBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iAccelerationStructure> _primitiveAS = niDeferredInit(NN<iAccelerationStructure>);
-  NN<iAccelerationStructure> _instanceAS = niDeferredInit(NN<iAccelerationStructure>);
+  Ptr<iAccelerationStructure> _instanceAS;
 
   // Ray tracing pipeline and shaders
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -52,10 +62,28 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
       tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      verts[0] = {{  0.0f,   0.5f, 0.0f}, 0xFFFF0000}; // Red, TC
-      verts[1] = {{  0.5f,  -0.5f, 0.0f}, 0xFF00FF00}; // Green, BR
-      verts[2] = {{ -0.5f,  -0.5f, 0.0f}, 0xFF0000FF}; // Blue, BL
+      verts[0] = {{  0.0f,   0.5f, 1.0f}, 0xFFFF0000}; // Red, TC
+      verts[1] = {{  0.5f,  -0.5f, 1.0f}, 0xFF00FF00}; // Green, BR
+      verts[2] = {{ -0.5f,  -0.5f, 1.0f}, 0xFF0000FF}; // Blue, BL
       _vertexBuffer->Unlock();
+    }
+
+    {
+      _indexBuffer = niCheckNN(
+        _indexBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RayTriangle_IB"),
+          sizeof(tU32)*3,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
+        eFalse);
+      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0;
+      inds[1] = 1;
+      inds[2] = 2;
+      _indexBuffer->Unlock();
     }
 
     // Create ray tracing shaders
@@ -100,30 +128,13 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
           eAccelerationStructureType_Primitive),
         eFalse);
 
-      niCheck(_primitiveAS->AddTriangles(
-        _vertexBuffer,0,sizeof(tVertexFmt),3,
+      niCheck(_primitiveAS->AddTrianglesIndexed(
+        _vertexBuffer,0,sizeof(sVec3f),3,
+        _indexBuffer,0,eGpuIndexType_U32,3,
         sMatrixf::Identity(),
         eAccelerationGeometryFlags_Opaque,
         0),
         eFalse);
-    }
-
-    {
-      _instanceAS = niCheckNN(
-        _instanceAS,
-        _driverGpu->CreateAccelerationStructure(
-          _H("RayTriangle_InstanceAS"),
-          eAccelerationStructureType_Instance),
-        eFalse);
-
-      niCheck(_instanceAS->AddInstance(
-        _primitiveAS,
-        sMatrixf::Identity(), // Transform
-        0,                    // Instance ID
-        0xFF,                // Mask
-        0,                   // Hit group offset
-        eAccelerationInstanceFlags_None),
-              eFalse);
     }
 
     // Create our output image
@@ -131,6 +142,58 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
       _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
         _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
         256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
+    // Setup fullscreen quad
+    _displayVABuffer = niCheckNN(
+      _displayVABuffer,
+      _driverGpu->CreateGpuBuffer(
+        _H("RayDisplay_VA"),
+        sizeof(tVertexCanvas)*4,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Vertex),
+      eFalse);
+    tVertexCanvas* verts = (tVertexCanvas*)_displayVABuffer->Lock(0, _displayVABuffer->GetSize(), eLock_Discard);
+    niCheck(verts != nullptr, eFalse);
+    verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
+    verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
+    verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
+    verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
+    _displayVABuffer->Unlock();
+
+    _displayIABuffer = niCheckNN(
+      _displayIABuffer,
+      _driverGpu->CreateGpuBuffer(
+        _H("RayDisplay_IA"),
+        sizeof(tU32)*6,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Index),
+      eFalse);
+    tU32* inds = (tU32*)_displayIABuffer->Lock(0, _displayIABuffer->GetSize(), eLock_Discard);
+    niCheck(inds != nullptr, eFalse);
+    inds[0] = 0; inds[1] = 1; inds[2] = 2;
+    inds[3] = 2; inds[4] = 3; inds[5] = 0;
+    _displayIABuffer->Unlock();
+
+    // Setup display pipeline
+    _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
+      eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+    _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
+      eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+
+    NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+    pipelineDesc->SetFVF(tVertexCanvas::eFVF);
+    pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+    pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+    pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
+    pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
+    _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
+
+    {
+      Ptr<iFile> fp;
+      fp = _graphics->OpenBitmapFile("test/tex/earth_d.jpg");
+      _texture = AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
     }
 
     return eTrue;
@@ -143,10 +206,39 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
     // Build/update acceleration structure
     cmdEncoder->BuildAccelerationStructure(_primitiveAS);
-    cmdEncoder->BuildAccelerationStructure(_instanceAS);
+    {
+      // TODO: HACK: Because this API is wrong, we need the primitiveAS to be
+      // built before we instantiate it.
+      if (!_instanceAS.IsOK()) {
+        _instanceAS = niCheckNN(
+          _instanceAS,
+          _driverGpu->CreateAccelerationStructure(
+            _H("RayTriangle_InstanceAS"),
+            eAccelerationStructureType_Instance),
+          eFalse);
+        niCheck(_instanceAS->AddInstance(
+          _primitiveAS,
+          sMatrixf::Identity(), // Transform
+          0,                    // Instance ID
+          0xFF,                // Mask
+          0,                   // Hit group offset
+          eAccelerationInstanceFlags_None),
+                eFalse);
+      }
+      cmdEncoder->BuildAccelerationStructure(_instanceAS);
+    }
 
     // Launch ray tracing, one ray per pixel
     cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);
+
+    // Display ray traced result
+    cmdEncoder->SetPipeline(_displayPipeline);
+    cmdEncoder->SetVertexBuffer(_displayVABuffer, 0, 0);
+    cmdEncoder->SetTexture(_rayOutputImage, 0);
+    //cmdEncoder->SetTexture(_texture, 0); // for debugging display...
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
 
     return eTrue;
   }

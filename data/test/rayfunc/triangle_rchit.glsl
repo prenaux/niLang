@@ -66,7 +66,7 @@ lib_shader_RayPayload TestGpuFuncs_triangle_rchit(lib_shader_RayHitInfo aHitInfo
 
 // Function: TestGpuFuncs
 lib_shader_RayPayload TestGpuFuncs_triangle_rchit(lib_shader_RayHitInfo aHitInfo, lib_shader_RayGeometryIds aIds, lib_shader_RayObjectParams aObject, lib_shader_RayWorldParams aWorld, lib_shader_RayParams aRay, lib_shader_RayTransforms aTransforms) {
-  vec4 _tmp_1 = vec4(1.0,0.0,0.0,1.0);
+  vec4 _tmp_1 = vec4(0.0,1.0,0.0,1.0);
   float _tmp_6 = aHitInfo.hitT;
   return lib_shader_RayPayload_new(_tmp_1, _tmp_6);
 }

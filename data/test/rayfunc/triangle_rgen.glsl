@@ -26,8 +26,6 @@ struct lib_shader_RayWorkDimensions {
 };
 // TypeStaticFwd: RayFlags
 uint uint_None;
-// TypeStaticFwd: Vec3
-vec3 vec3_Zero;
 // TypeStaticFwd: Vec4
 vec4 vec4_Zero;
 vec4 vec4_Black;
@@ -40,10 +38,6 @@ lib_shader_RayPayload lib_shader_traceSimpleRay(accelerationStructureEXT aAS, li
 void uint_static_initialize() {
   // TypeStatic: RayFlags
   uint_None = 0;
-}
-void vec3_static_initialize() {
-  // TypeStatic: Vec3
-  vec3_Zero = vec3(0.0,0.0,0.0);
 }
 void vec4_static_initialize() {
   // TypeStatic: Vec4
@@ -73,7 +67,6 @@ lib_shader_RayPayload lib_shader_traceSimpleRay(accelerationStructureEXT aAS, li
 // ModuleInitialize: lib_shader
 void lib_shader_initialize() {
   uint_static_initialize();
-  vec3_static_initialize();
   vec4_static_initialize();
 }
 // MODULE END lib:shader
@@ -88,14 +81,19 @@ void TestGpuFuncs_triangle_rgen(accelerationStructureEXT aAS, writeonly image2D 
 void TestGpuFuncs_triangle_rgen(accelerationStructureEXT aAS, writeonly image2D aOutputImage, lib_shader_RayWorkDimensions aLaunch) {
   uvec2 coords = (aLaunch.launchId.xy);
   uvec2 dims = (aLaunch.launchSize.xy);
-  vec2 uv = (vec2(coords)/vec2(dims));
-  vec3 _tmp_8 = vec3_Zero;
-  vec3 _tmp_9 = normalize(vec3(((uv.x * 2.0) - 1.0),(((1.0 - uv.y) * 2.0) - 1.0),-1.0));
-  float _tmp_q = 0.001;
-  float _tmp_r = 100.0;
-  lib_shader_RayDesc ray = lib_shader_RayDesc_new(_tmp_8, _tmp_9, _tmp_q, _tmp_r) /*SKIPPED COPY VALUETYPE: newed*/;
+  vec2 pixelCenter = (vec2(coords)+0.5);
+  vec2 uv = (pixelCenter/vec2(dims));
+  vec3 origin = vec3(0.0,0.0,-1.0);
+  vec3 target = vec3(((uv.x * 2.0) - 1.0),(((1.0 - uv.y) * 2.0) - 1.0),1.0);
+  vec3 dir = normalize((target-origin));
+  vec3 _tmp_v = origin;
+  vec3 _tmp_w = dir;
+  float _tmp_x = 0.001;
+  float _tmp_y = 1000.0;
+  lib_shader_RayDesc ray = lib_shader_RayDesc_new(_tmp_v, _tmp_w, _tmp_x, _tmp_y) /*SKIPPED COPY VALUETYPE: newed*/;
   lib_shader_RayPayload payload = lib_shader_traceSimpleRay(aAS,ray,lib_shader_RayPayload_new_default());
-  imageStore(aOutputImage,ivec2(coords),payload.color);
+  vec4 outColor = payload.color;
+  imageStore(aOutputImage,ivec2(coords),outColor);
 }
 // MODULE END TestGpuFuncs
 

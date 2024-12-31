@@ -11,6 +11,6 @@ layout(location = 0) rayPayloadInEXT lib_shader_RayPayload nil_builtin_RAY_PAYLO
 
 void main()
 {
-    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4(1.0, 0.0, 0.0, 1.0), gl_RayTmaxEXT);
+    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4(0.0, 1.0, 0.0, 1.0), gl_RayTmaxEXT);
 }
 

@@ -48,44 +48,6 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFRayGpu_Base::OnInit(testResults_),eFalse);
 
-    // Create vertex buffer with triangle geometry
-    {
-      _vertexBuffer = niCheckNN(
-        _vertexBuffer,
-        _driverGpu->CreateGpuBuffer(
-          _H("RayTriangle_VB"),
-          sizeof(tVertexFmt)*3,
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Vertex|
-          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
-        eFalse);
-
-      tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
-      niCheck(verts != nullptr, eFalse);
-      verts[0] = {{  0.0f,   0.5f, 1.0f}, 0xFFFF0000}; // Red, TC
-      verts[1] = {{  0.5f,  -0.5f, 1.0f}, 0xFF00FF00}; // Green, BR
-      verts[2] = {{ -0.5f,  -0.5f, 1.0f}, 0xFF0000FF}; // Blue, BL
-      _vertexBuffer->Unlock();
-    }
-
-    {
-      _indexBuffer = niCheckNN(
-        _indexBuffer,
-        _driverGpu->CreateGpuBuffer(
-          _H("RayTriangle_IB"),
-          sizeof(tU32)*3,
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Index|
-          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
-        eFalse);
-      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
-      niCheck(inds != nullptr, eFalse);
-      inds[0] = 0;
-      inds[1] = 1;
-      inds[2] = 2;
-      _indexBuffer->Unlock();
-    }
-
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
@@ -119,6 +81,44 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         eFalse);
     }
 
+    // Create vertex buffer with triangle geometry
+    {
+      _vertexBuffer = niCheckNN(
+        _vertexBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RayTriangle_VB"),
+          sizeof(tVertexFmt)*3,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
+        eFalse);
+
+      tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      verts[0] = {{  0.0f,   0.5f, 0.3f}, 0xFFFF0000}; // Red, TC
+      verts[1] = {{  0.5f,  -0.5f, 0.3f}, 0xFF00FF00}; // Green, BR
+      verts[2] = {{ -0.5f,  -0.5f, 0.3f}, 0xFF0000FF}; // Blue, BL
+      _vertexBuffer->Unlock();
+    }
+
+    {
+      _indexBuffer = niCheckNN(
+        _indexBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RayTriangle_IB"),
+          sizeof(tU32)*3,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
+        eFalse);
+      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0;
+      inds[1] = 1;
+      inds[2] = 2;
+      _indexBuffer->Unlock();
+    }
+
     // Create acceleration structure
     {
       _primitiveAS = niCheckNN(
@@ -129,7 +129,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         eFalse);
 
       niCheck(_primitiveAS->AddTrianglesIndexed(
-        _vertexBuffer,0,sizeof(sVec3f),3,
+        _vertexBuffer,0,sizeof(tVertexFmt),3,
         _indexBuffer,0,eGpuIndexType_U32,3,
         sMatrixf::Identity(),
         eAccelerationGeometryFlags_Opaque,

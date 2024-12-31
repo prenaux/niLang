@@ -33,7 +33,7 @@ lib_shader_RayPayload TestGpuFuncs_triangle_rmiss();
 
 // Function: TestGpuFuncs
 lib_shader_RayPayload TestGpuFuncs_triangle_rmiss() {
-  vec4 _tmp_1 = vec4(0.0,1.0,1.0,0.0);
+  vec4 _tmp_1 = vec4(0.0,0.5,0.8,0.0);
   float _tmp_6 = 0.0;
   return lib_shader_RayPayload_new(_tmp_1, _tmp_6);
 }

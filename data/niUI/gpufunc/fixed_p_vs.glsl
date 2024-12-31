@@ -1,9 +1,15 @@
 #version 450
-// Module: lib:shader
-// FunctionFwd: lib:shader
-// TypeMeth: Vec2
+// DO IMPORTS BEGIN TestGpuFuncs
+// MODULE BEGIN lib:shader
+// MODULE PROLOGUE BEGIN lib:shader
+mat4 nil_Mat4x3ToMat4x4(mat4x3 m) { return mat4(vec4(m[0], 0), vec4(m[1], 0), vec4(m[2], 0), vec4(m[3], 1)); }
+mat4 nil_Mat3x4ToMat4x4(mat3x4 m) { return mat4(vec4(m[0]), vec4(m[1]), vec4(m[2]), vec4(0,0,0,1)); }
+// MODULE PROLOGUE END lib:shader
+// TypeStaticFwd: Vec2
 vec2 vec2_Zero;
+// FunctionFwd: lib:shader
 void vec2_static_initialize() {
+  // TypeStatic: Vec2
   vec2_Zero = vec2(0.0,0.0);
 }
 // Function: lib:shader
@@ -11,8 +17,10 @@ void vec2_static_initialize() {
 void lib_shader_initialize() {
   vec2_static_initialize();
 }
+// MODULE END lib:shader
+// DO IMPORTS END TestGpuFuncs
 
-// Module: TestGpuFuncs
+// MODULE BEGIN TestGpuFuncs
 
 // Type: TestUniforms
 struct TestGpuFuncs_TestUniforms {
@@ -64,6 +72,7 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexP_fixed_p_vs(TestGpuFuncs_VertexP a
 }
 
 // Function: TestGpuFuncs
+// MODULE END TestGpuFuncs
 
 // Vertex Shader main: TestGpuFuncs_VertexP_fixed_p_vs
 layout(location = 0) in vec3 IN_0_aInput_position;

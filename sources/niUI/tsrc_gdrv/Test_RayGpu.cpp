@@ -9,27 +9,90 @@ namespace {
 struct sFRayGpu_Base : public sFGDRV_Base {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
 
-  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFGDRV_Base::OnInit(testResults_),eFalse);
-    QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
-    CHECK_RET(niIsOK(driverGpu),eFalse);
-    _driverGpu = AsNN(driverGpu.raw_ptr());
-    CHECK_RET(_graphics->GetDriver()->GetCaps(eGraphicsCaps_IRayGpu) != 0,eFalse);
-    return eTrue;
-  }
-};
-
-// clear ; ham pass1 && ham Run_Test_niUI_GDRV FIXTURE=FRayGpu,Triangle A2=-Drenderer=Vulkan BUILD=da
-struct sFRayGpu_Triangle : public sFRayGpu_Base {
-  typedef sVertexPA tVertexFmt;
-
   // Display resources
   NN<iGpuBuffer> _displayVABuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _displayIABuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuFunction> _displayVertexGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _displayPixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _displayPipeline = niDeferredInit(NN<iGpuPipeline>);
-  NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
+  NN<iTexture> _textureEarth = niDeferredInit(NN<iTexture>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFGDRV_Base::OnInit(testResults_),eFalse);
+    QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
+    CHECK_RET(niIsOK(driverGpu),eFalse);
+    _driverGpu = AsNN(driverGpu.raw_ptr());
+    CHECK_RET(_graphics->GetDriver()->GetCaps(eGraphicsCaps_IRayGpu) != 0,eFalse);
+
+
+    // Setup display quad
+    _displayVABuffer = niCheckNN(
+      _displayVABuffer,
+      _driverGpu->CreateGpuBuffer(
+        _H("RayDisplay_VA"),
+        sizeof(tVertexCanvas)*4,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Vertex),
+      eFalse);
+    tVertexCanvas* verts = (tVertexCanvas*)_displayVABuffer->Lock(0, _displayVABuffer->GetSize(), eLock_Discard);
+    niCheck(verts != nullptr, eFalse);
+    verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
+    verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
+    verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
+    verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
+    _displayVABuffer->Unlock();
+
+    _displayIABuffer = niCheckNN(
+      _displayIABuffer,
+      _driverGpu->CreateGpuBuffer(
+        _H("RayDisplay_IA"),
+        sizeof(tU32)*6,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Index),
+      eFalse);
+    tU32* inds = (tU32*)_displayIABuffer->Lock(0, _displayIABuffer->GetSize(), eLock_Discard);
+    niCheck(inds != nullptr, eFalse);
+    inds[0] = 0; inds[1] = 1; inds[2] = 2;
+    inds[3] = 2; inds[4] = 3; inds[5] = 0;
+    _displayIABuffer->Unlock();
+
+    // Setup display pipeline
+    _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
+      eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+    _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
+      eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+
+    NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+    pipelineDesc->SetFVF(tVertexCanvas::eFVF);
+    pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+    pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+    pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
+    pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
+    _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
+
+    {
+      Ptr<iFile> fp;
+      fp = _graphics->OpenBitmapFile("test/tex/earth_d.jpg");
+      _textureEarth = AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
+    }
+
+    return eTrue;
+  }
+
+  void DisplayTexture(iGpuCommandEncoder* cmdEncoder, iTexture* texture) {
+    cmdEncoder->SetPipeline(_displayPipeline);
+    cmdEncoder->SetVertexBuffer(_displayVABuffer, 0, 0);
+    cmdEncoder->SetTexture(texture, 0);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+  }
+};
+
+// clear ; ham pass1 && ham Run_Test_niUI_GDRV FIXTURE=FRayGpu,Triangle A2=-Drenderer=Vulkan BUILD=da
+struct sFRayGpu_Triangle : public sFRayGpu_Base {
+  typedef sVertexPA tVertexFmt;
 
   // Primitive and acceleration structures
   NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
@@ -144,58 +207,6 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         256,256,0,eTextureFlags_RenderTarget),eFalse);
     }
 
-    // Setup fullscreen quad
-    _displayVABuffer = niCheckNN(
-      _displayVABuffer,
-      _driverGpu->CreateGpuBuffer(
-        _H("RayDisplay_VA"),
-        sizeof(tVertexCanvas)*4,
-        eGpuBufferMemoryMode_Shared,
-        eGpuBufferUsageFlags_Vertex),
-      eFalse);
-    tVertexCanvas* verts = (tVertexCanvas*)_displayVABuffer->Lock(0, _displayVABuffer->GetSize(), eLock_Discard);
-    niCheck(verts != nullptr, eFalse);
-    verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
-    verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
-    verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
-    verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
-    _displayVABuffer->Unlock();
-
-    _displayIABuffer = niCheckNN(
-      _displayIABuffer,
-      _driverGpu->CreateGpuBuffer(
-        _H("RayDisplay_IA"),
-        sizeof(tU32)*6,
-        eGpuBufferMemoryMode_Shared,
-        eGpuBufferUsageFlags_Index),
-      eFalse);
-    tU32* inds = (tU32*)_displayIABuffer->Lock(0, _displayIABuffer->GetSize(), eLock_Discard);
-    niCheck(inds != nullptr, eFalse);
-    inds[0] = 0; inds[1] = 1; inds[2] = 2;
-    inds[3] = 2; inds[4] = 3; inds[5] = 0;
-    _displayIABuffer->Unlock();
-
-    // Setup display pipeline
-    _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
-    _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
-
-    NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
-    pipelineDesc->SetFVF(tVertexCanvas::eFVF);
-    pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
-    pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-    pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-    pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
-    _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
-
-    {
-      Ptr<iFile> fp;
-      fp = _graphics->OpenBitmapFile("test/tex/earth_d.jpg");
-      _texture = AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
-    }
-
     return eTrue;
   }
 
@@ -231,14 +242,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
     // Launch ray tracing, one ray per pixel
     cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);
 
-    // Display ray traced result
-    cmdEncoder->SetPipeline(_displayPipeline);
-    cmdEncoder->SetVertexBuffer(_displayVABuffer, 0, 0);
-    cmdEncoder->SetTexture(_rayOutputImage, 0);
-    //cmdEncoder->SetTexture(_texture, 0); // for debugging display...
-    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
-    cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    DisplayTexture(cmdEncoder,_rayOutputImage);
 
     return eTrue;
   }

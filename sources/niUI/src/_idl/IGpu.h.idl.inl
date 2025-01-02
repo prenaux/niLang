@@ -747,16 +747,23 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateRayFunctionTable,0)
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverGpu,CreateRayFunctionTable,0)
 
-/** ni -> iGraphicsDriverGpu::CreateAccelerationStructure/2 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateAccelerationStructure,2)
+/** ni -> iGraphicsDriverGpu::CreateAccelerationStructurePrimitives/1 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateAccelerationStructurePrimitives,1)
 	IDLC_DECL_VAR(iHString*,ahspName)
 	IDLC_BUF_TO_INTF(iHString,ahspName)
-	IDLC_DECL_VAR(eAccelerationStructureType,aType)
-	IDLC_BUF_TO_ENUM(eAccelerationStructureType,aType)
-	IDLC_DECL_RETVAR(Ptr<iAccelerationStructure>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateAccelerationStructure,2,(ahspName,aType))
+	IDLC_DECL_RETVAR(Ptr<iAccelerationStructurePrimitives>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateAccelerationStructurePrimitives,1,(ahspName))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverGpu,CreateAccelerationStructure,2)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateAccelerationStructurePrimitives,1)
+
+/** ni -> iGraphicsDriverGpu::CreateAccelerationStructureInstances/1 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverGpu,CreateAccelerationStructureInstances,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(Ptr<iAccelerationStructureInstances>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverGpu,CreateAccelerationStructureInstances,1,(ahspName))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverGpu,CreateAccelerationStructureInstances,1)
 
 IDLC_END_INTF(ni,iGraphicsDriverGpu)
 

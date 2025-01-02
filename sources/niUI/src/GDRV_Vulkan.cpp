@@ -1367,11 +1367,10 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl;
   virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
     iHString* ahspName,
-    iRayGpuFunctionTable* apFunctionTable);
-  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable();
-  virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
-    iHString* ahspName,
-    eAccelerationStructureType aType);
+    iRayGpuFunctionTable* apFunctionTable) niImpl;
+  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() niImpl;
+  virtual Ptr<iAccelerationStructurePrimitives> __stdcall CreateAccelerationStructurePrimitives(iHString* ahspName) niImpl;
+  virtual Ptr<iAccelerationStructureInstances> __stdcall CreateAccelerationStructureInstances(iHString* ahspName) niImpl;
   //// iGraphicsDriverGpu ///////////////////////////////
 };
 
@@ -2734,7 +2733,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   }
 };
 
-struct sVulkanAccelerationStructure;
+struct sVulkanAccelerationStructureInstances;
 struct sVulkanRayPipeline;
 
 struct sVulkanRenderingInfo {
@@ -2812,7 +2811,7 @@ struct sVulkanCommandEncoder : public ImplRC<iGpuCommandEncoder> {
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
     tU32 _lastBufferOffset = 0;
     tFixedGpuPipelineId _lastFixedPipeline = 0;
-    Ptr<sVulkanAccelerationStructure> _lastAS = nullptr;
+    Ptr<sVulkanAccelerationStructureInstances> _lastAS = nullptr;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
   astl::vector<NN<sVulkanEncoderFrameData>> _frames;
@@ -3116,35 +3115,103 @@ struct sVulkanScratchBuffer {
   }
 };
 
-struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
+struct sVulkanAccelerationStructureBase {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
-  eAccelerationStructureType _type;
   VkAccelerationStructureKHR _asHandle = VK_NULL_HANDLE;
   VkAccelerationStructureBuildSizesInfoKHR _asSizeInfo = {};
   sVulkanBuffer _asStorage;
   tU64 _asDeviceAddress = 0;
   VkAccelerationStructureGeometryKHR _geometry = {};
-  tU32 _vertexCount = 0;
-  Ptr<sVulkanBuffer> _instanceBuffer;
-  // TODO: This should be shared somewhere...
-  sVulkanScratchBuffer _scratchBuffer;
+  tU32 _primitiveCount = 0;
+  sVulkanScratchBuffer _scratchBuffer; // TODO: This should be shared somewhere?
 
-  sVulkanAccelerationStructure(
+  sVulkanAccelerationStructureBase(
     ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName,
-    eAccelerationStructureType aType)
+    iHString* ahspName)
       : _driver(aDriver)
       , _name(ahspName)
-      , _type(aType)
       , _asStorage(aDriver,eGpuBufferMemoryMode_Shared,eGpuBufferUsageFlags_AccelerationStructureStorage)
   {}
 
-  ~sVulkanAccelerationStructure() {
+  ~sVulkanAccelerationStructureBase() {
     if (_asHandle) {
       vkDestroyAccelerationStructureKHR(_driver->_device, _asHandle, nullptr);
     }
     _asStorage._DestroyBuffer();
+  }
+
+  tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer, VkAccelerationStructureTypeKHR aVkType) {
+    niCheck(_asHandle != VK_NULL_HANDLE, eFalse);
+
+    niCheck(_scratchBuffer._EnsureScratchBuffer(
+      _driver,
+      _asSizeInfo.buildScratchSize,
+      _driver->_accelStructProps.minAccelerationStructureScratchOffsetAlignment),
+            eFalse);
+
+    // Base build info
+    VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
+      .type = aVkType,
+      .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+      .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
+      .dstAccelerationStructure = _asHandle,
+      .geometryCount = 1,
+      .pGeometries = &_geometry,
+      .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
+    };
+
+    // Setup build range
+    VkAccelerationStructureBuildRangeInfoKHR buildRange = {
+      .primitiveCount = _primitiveCount,
+      .primitiveOffset = 0,
+      .firstVertex = 0,
+      .transformOffset = 0
+    };
+    const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
+
+    // Issue build command
+    vkCmdBuildAccelerationStructuresKHR(
+      aCmdBuffer, 1, &buildInfo, &pBuildRanges);
+
+    // Add memory barrier
+    VkMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+      .srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
+      .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
+    };
+
+    vkCmdPipelineBarrier(
+      aCmdBuffer,
+      VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+      VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+      0,
+      1, &barrier,
+      0, nullptr,
+      0, nullptr);
+
+    {
+      VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
+      accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+      accelerationDeviceAddressInfo.accelerationStructure = _asHandle;
+      _asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
+    }
+
+    return eTrue;
+  }
+};
+
+struct sVulkanAccelerationStructurePrimitives : public ImplRC<
+  iAccelerationStructurePrimitives,eImplFlags_DontInherit1,iAccelerationStructure>, public sVulkanAccelerationStructureBase
+{
+  sVulkanAccelerationStructurePrimitives(
+    ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName)
+      : sVulkanAccelerationStructureBase(aDriver,ahspName)
+  {}
+
+  ~sVulkanAccelerationStructurePrimitives() {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
@@ -3165,7 +3232,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
   }
 
   virtual eAccelerationStructureType __stdcall GetType() const niImpl {
-    return _type;
+    return eAccelerationStructureType_Primitives;
   }
 
   virtual tBool __stdcall AddTriangles(
@@ -3174,14 +3241,14 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     tU32 anVertexStride,
     tU32 anVertexCount,
     const sMatrixf& amtxTransform,
-    tAccelerationGeometryFlags aFlags,
+    tAccelerationStructurePrimitiveFlags aFlags,
     tU32 anHitGroupId) niImpl
   {
     // TODO: This only allows one geometry, allow more.
     niCheck(_asHandle == VK_NULL_HANDLE, eFalse);
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
-    _vertexCount = anVertexCount;
+    _primitiveCount = anVertexCount/3;
 
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3197,7 +3264,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
         anVertexOffset
       },
       .vertexStride = anVertexStride,
-      .maxVertex = _vertexCount,
+      .maxVertex = anVertexCount,
       .indexType = VK_INDEX_TYPE_NONE_KHR,
     };
 
@@ -3247,15 +3314,15 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     eGpuIndexType anIndexType,
     tU32 anIndexCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags,
-    tU32 anHitGroup)
+    tAccelerationStructurePrimitiveFlags aFlags,
+    tU32 anHitGroup) niImpl
   {
     // TODO: This only allows one geometry, allow more.
     niCheck(_asHandle == VK_NULL_HANDLE, eFalse);
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
     niCheck(anIndexCount >= 3, eFalse);
-    _vertexCount = anVertexCount;
+    _primitiveCount = 1; // TODO: This is no bueno, should increment or keep track of things...
 
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3271,7 +3338,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
         anVertexOffset
       },
       .vertexStride = anVertexStride,
-      .maxVertex = _vertexCount,
+      .maxVertex = anVertexCount,
       .indexType = _ToVkIndexType[anIndexType],
       .indexData = {
         .deviceAddress = ((sVulkanBuffer*)apIndexBuffer)->_GetDeviceAddress() +
@@ -3324,26 +3391,59 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
     tU32 anAABBStride,
     tU32 anAABBCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags,
-    tU32 anHitGroup) {
+    tAccelerationStructurePrimitiveFlags aFlags,
+    tU32 anHitGroup) niImpl {
     niError("Not implemented.");
     return eFalse;
   }
+};
+
+struct sVulkanAccelerationStructureInstances : public ImplRC<
+  iAccelerationStructureInstances,eImplFlags_DontInherit1,iAccelerationStructure>, public sVulkanAccelerationStructureBase
+{
+  Ptr<sVulkanBuffer> _instanceBuffer;
+
+  sVulkanAccelerationStructureInstances(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
+      : sVulkanAccelerationStructureBase(aDriver,ahspName)
+  {}
+
+  ~sVulkanAccelerationStructureInstances() {
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _asHandle != VK_NULL_HANDLE;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual eAccelerationStructureType __stdcall GetType() const niImpl {
+    return eAccelerationStructureType_Instances;
+  }
 
   virtual tBool __stdcall AddInstance(
-    iAccelerationStructure* apPrimitiveAS,
+    iAccelerationStructurePrimitives* apPrimitiveAS,
     const sMatrixf& aTransform,
     tU32 anInstanceId,
     tU8 anMask,
     tU32 anHitGroupOffset,
-    tAccelerationInstanceFlags aFlags) niImpl
+    tAccelerationStructureInstanceFlags aFlags) niImpl
   {
-    niCheck(_type == eAccelerationStructureType_Instance,eFalse);
     niCheckIsOK(apPrimitiveAS,eFalse);
-    niCheck(apPrimitiveAS->GetType() == eAccelerationStructureType_Primitive,eFalse);
 
-    niLet primitiveAS = static_cast<sVulkanAccelerationStructure*>(apPrimitiveAS);
+    niLet primitiveAS = static_cast<sVulkanAccelerationStructurePrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
+    _primitiveCount = 1; // TODO: This is no bueno, should increment or keep track of things...
 
     // Create geometry for instance
     _geometry = {
@@ -3397,7 +3497,6 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       .pGeometries = &_geometry
     };
 
-    tU32 primCount = 1;
     _asSizeInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
     };
@@ -3405,7 +3504,7 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
       _driver->_device,
       VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
       &buildInfo,
-      &primCount,
+      &_primitiveCount,
       &_asSizeInfo);
     niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,0),eFalse);
 
@@ -3418,69 +3517,6 @@ struct sVulkanAccelerationStructure : public ImplRC<iAccelerationStructure> {
 
     VK_CHECK(vkCreateAccelerationStructureKHR(
       _driver->_device, &createInfo, nullptr, &_asHandle),eFalse);
-
-    return eTrue;
-  }
-
-  tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer) {
-    niCheck(_asHandle != VK_NULL_HANDLE, eFalse);
-
-    niCheck(_scratchBuffer._EnsureScratchBuffer(
-      _driver,
-      _asSizeInfo.buildScratchSize,
-      _driver->_accelStructProps.minAccelerationStructureScratchOffsetAlignment),
-            eFalse);
-
-    // Base build info
-    VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
-      .type = (_type == eAccelerationStructureType_Instance) ?
-      VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR :
-      VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR,
-      .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
-      .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
-      .dstAccelerationStructure = _asHandle,
-      .geometryCount = 1,
-      .pGeometries = &_geometry,
-      .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
-    };
-
-    // Setup build range
-    VkAccelerationStructureBuildRangeInfoKHR buildRange = {
-      .primitiveCount = (_type == eAccelerationStructureType_Instance) ?
-      1 : (_vertexCount/3),
-      .primitiveOffset = 0,
-      .firstVertex = 0,
-      .transformOffset = 0
-    };
-    const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
-
-    // Issue build command
-    vkCmdBuildAccelerationStructuresKHR(
-      aCmdBuffer, 1, &buildInfo, &pBuildRanges);
-
-    // Add memory barrier
-    VkMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
-      .srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
-      .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
-    };
-
-    vkCmdPipelineBarrier(
-      aCmdBuffer,
-      VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-      VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
-      0,
-      1, &barrier,
-      0, nullptr,
-      0, nullptr);
-
-    {
-      VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
-      accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
-      accelerationDeviceAddressInfo.accelerationStructure = _asHandle;
-      _asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
-    }
 
     return eTrue;
   }
@@ -3924,18 +3960,30 @@ tBool __stdcall sVulkanCommandEncoder::BuildAccelerationStructure(iAccelerationS
   niCheck(_driver->_isRayTracingSupported,eFalse);
   niCheckIsOK(apAS,eFalse);
 
-  sVulkanAccelerationStructure* as = (sVulkanAccelerationStructure*)apAS;
   tBool submitCommand = eFalse;
   VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
   niDefer {
     _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
   };
-  niCheck(as->_BuildAccelerationStructure(cmdBuffer),eFalse);
-  submitCommand = eTrue;
-  // TODO: HACK: Obviously super gross, but enough for our first "Ray tracing triangle"
-  if (as->_type == eAccelerationStructureType_Instance) {
-    _cache._lastAS = as;
+
+  switch (apAS->GetType()) {
+    case eAccelerationStructureType_Primitives: {
+      sVulkanAccelerationStructurePrimitives* asPrimitives = static_cast<sVulkanAccelerationStructurePrimitives*>(apAS);
+      niCheck(asPrimitives->_BuildAccelerationStructure(
+        cmdBuffer,VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR),eFalse);
+      submitCommand = eTrue;
+      break;
+    }
+    case eAccelerationStructureType_Instances: {
+      sVulkanAccelerationStructureInstances* asInstances = static_cast<sVulkanAccelerationStructureInstances*>(apAS);
+      niCheck(asInstances->_BuildAccelerationStructure(
+        cmdBuffer,VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR),eFalse);
+      submitCommand = eTrue;
+      _cache._lastAS = asInstances;
+      break;
+    }
   }
+
   return eTrue;
 }
 
@@ -5109,12 +5157,19 @@ Ptr<iRayGpuFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable() {
   return rayFT;
 }
 
-Ptr<iAccelerationStructure> __stdcall sVulkanDriver::CreateAccelerationStructure(
-  iHString* ahspName,
-  eAccelerationStructureType aType)
+Ptr<iAccelerationStructurePrimitives> __stdcall sVulkanDriver::CreateAccelerationStructurePrimitives(
+  iHString* ahspName)
 {
   niCheck(_isRayTracingSupported,nullptr);
-  Ptr<sVulkanAccelerationStructure> as = niNew sVulkanAccelerationStructure(as_nn(this),ahspName,aType);
+  Ptr<sVulkanAccelerationStructurePrimitives> as = niNew sVulkanAccelerationStructurePrimitives(as_nn(this),ahspName);
+  return as;
+}
+
+Ptr<iAccelerationStructureInstances> __stdcall sVulkanDriver::CreateAccelerationStructureInstances(
+  iHString* ahspName)
+{
+  niCheck(_isRayTracingSupported,nullptr);
+  Ptr<sVulkanAccelerationStructureInstances> as = niNew sVulkanAccelerationStructureInstances(as_nn(this),ahspName);
   return as;
 }
 

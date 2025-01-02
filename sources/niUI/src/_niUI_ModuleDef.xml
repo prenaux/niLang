@@ -1604,12 +1604,12 @@
 	<namespace name="ni" source="niUI/src/_idl/IAccelerationStructure.h.idl.xml">
 		<enum name="eAccelerationStructureType">
 			<comments desc="Acceleration structure type "/>
-			<value name="eAccelerationStructureType_Primitive" value="0 ">
+			<value name="eAccelerationStructureType_Primitives" value="0 ">
 				<comments desc="Contains primitive geometry data such as triangle meshes or procedural shapes. This is the &quot;template&quot; geometry that can be instanced multiple times. ">
 					<remark text="Equivalent to Bottom Level AS (BLAS) in Vulkan/DX12 terms. "/>
 				</comments>
 			</value>
-			<value name="eAccelerationStructureType_Instance" value="1 ">
+			<value name="eAccelerationStructureType_Instances" value="1 ">
 				<comments desc="Contains instances of primitive or instance acceleration structures, each with its own transform and properties. Can be nested to create complex hierarchies. ">
 					<remark text="Equivalent to Top Level AS (TLAS) in Vulkan/DX12 terms. "/>
 				</comments>
@@ -1618,30 +1618,30 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
-		<enum name="eAccelerationGeometryFlags">
-			<comments desc="Acceleration structure geometry flags "/>
-			<value name="eAccelerationGeometryFlags_None" value="0 ">
-				<comments desc="No special geometry properties "/>
+		<enum name="eAccelerationStructurePrimitiveFlags">
+			<comments desc="Acceleration structure primitive flags "/>
+			<value name="eAccelerationStructurePrimitiveFlags_None" value="0 ">
+				<comments desc="No special properties "/>
 			</value>
-			<value name="eAccelerationGeometryFlags_Opaque" value="niBit ( 0 ) ">
-				<comments desc="Geometry is fully opaque, allows skipping any-hit functions "/>
+			<value name="eAccelerationStructurePrimitiveFlags_Opaque" value="niBit ( 0 ) ">
+				<comments desc="Primitive is fully opaque, allows skipping any-hit functions "/>
 			</value>
 		</enum>
-		<enum name="eAccelerationInstanceFlags">
+		<enum name="eAccelerationStructureInstanceFlags">
 			<comments desc="Acceleration structure instance flags "/>
-			<value name="eAccelerationInstanceFlags_None" value="0 ">
+			<value name="eAccelerationStructureInstanceFlags_None" value="0 ">
 				<comments desc="No special instance properties "/>
 			</value>
-			<value name="eAccelerationInstanceFlags_DisableCulling" value="niBit ( 0 ) ">
+			<value name="eAccelerationStructureInstanceFlags_DisableCulling" value="niBit ( 0 ) ">
 				<comments desc="Disable face culling for this instance "/>
 			</value>
-			<value name="eAccelerationInstanceFlags_FlipCulling" value="niBit ( 1 ) ">
+			<value name="eAccelerationStructureInstanceFlags_FlipCulling" value="niBit ( 1 ) ">
 				<comments desc="Invert face culling for this instance "/>
 			</value>
-			<value name="eAccelerationInstanceFlags_ForceOpaque" value="niBit ( 2 ) ">
+			<value name="eAccelerationStructureInstanceFlags_ForceOpaque" value="niBit ( 2 ) ">
 				<comments desc="Force instance to be opaque, skipping any-hit functions "/>
 			</value>
-			<value name="eAccelerationInstanceFlags_ForceNonOpaque" value="niBit ( 3 ) ">
+			<value name="eAccelerationStructureInstanceFlags_ForceNonOpaque" value="niBit ( 3 ) ">
 				<comments desc="Force instance to be non-opaque, always running any-hit functions "/>
 			</value>
 		</enum>
@@ -1661,6 +1661,12 @@
 				<comments desc="Get the acceleration structure type. "/>
 				<return type="eAccelerationStructureType" typec="eAccelerationStructureType" typei="ni::eType_Enum"/>
 			</method>
+		</interface>
+		<interface name="iAccelerationStructurePrimitives" uuid1="0E6F721F-4934-4F1F-9B11-834C1AF0CA8C" uuid2="0x0e6f721f,0x4934,0x4f1f,0x9b,0x11,0x83,0x4c,0x1a,0xf0,0xca,0x8c">
+			<comments desc="Primitives acceleration structure interface "/>
+			<parents>
+				<parent name="iAccelerationStructure"/>
+			</parents>
 			<method java_name="addTriangles" name="AddTriangles" num_parameters="7">
 				<comments desc="Add non-indexed triangle geometry to primitive acceleration structure. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
@@ -1691,8 +1697,8 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aFlags"
-					type="tAccelerationGeometryFlags"
-					typec="tAccelerationGeometryFlags"
+					type="tAccelerationStructurePrimitiveFlags"
+					typec="tAccelerationStructurePrimitiveFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
@@ -1751,8 +1757,8 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aFlags"
-					type="tAccelerationGeometryFlags"
-					typec="tAccelerationGeometryFlags"
+					type="tAccelerationStructurePrimitiveFlags"
+					typec="tAccelerationStructurePrimitiveFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
@@ -1794,8 +1800,8 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aFlags"
-					type="tAccelerationGeometryFlags"
-					typec="tAccelerationGeometryFlags"
+					type="tAccelerationStructurePrimitiveFlags"
+					typec="tAccelerationStructurePrimitiveFlags"
 					typei="ni::eType_Enum"/>
 				<parameter
 					last="1"
@@ -1804,13 +1810,19 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
+		</interface>
+		<interface name="iAccelerationStructureInstances" uuid1="2C39CDFA-1C1B-40F5-A9E4-CB657DDA6899" uuid2="0x2c39cdfa,0x1c1b,0x40f5,0xa9,0xe4,0xcb,0x65,0x7d,0xda,0x68,0x99">
+			<comments desc="Instances acceleration structure interface "/>
+			<parents>
+				<parent name="iAccelerationStructure"/>
+			</parents>
 			<method java_name="addInstance" name="AddInstance" num_parameters="6">
 				<comments desc="Add an instance. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apAS"
-					type="iAccelerationStructure *"
-					typec="iAccelerationStructure*"
+					type="iAccelerationStructurePrimitives *"
+					typec="iAccelerationStructurePrimitives*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="aTransform"
@@ -1835,8 +1847,8 @@
 				<parameter
 					last="1"
 					name="aFlags"
-					type="tAccelerationInstanceFlags"
-					typec="tAccelerationInstanceFlags"
+					type="tAccelerationStructureInstanceFlags"
+					typec="tAccelerationStructureInstanceFlags"
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
@@ -11079,20 +11091,25 @@
 				<comments desc="Create ray tracing function table. "/>
 				<return type="Ptr&lt;iRayGpuFunctionTable&gt;" typec="Ptr&lt;iRayGpuFunctionTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createAccelerationStructure" name="CreateAccelerationStructure" num_parameters="2">
-				<comments desc="Create acceleration structure "/>
-				<return type="Ptr&lt;iAccelerationStructure&gt;" typec="Ptr&lt;iAccelerationStructure&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			<method java_name="createAccelerationStructurePrimitives" name="CreateAccelerationStructurePrimitives" num_parameters="1">
+				<comments desc="Create a primitives acceleration structure "/>
+				<return type="Ptr&lt;iAccelerationStructurePrimitives&gt;" typec="Ptr&lt;iAccelerationStructurePrimitives&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
+					last="1"
 					name="ahspName"
 					type="iHString *"
 					typec="iHString*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createAccelerationStructureInstances" name="CreateAccelerationStructureInstances" num_parameters="1">
+				<comments desc="Create a instances acceleration structure "/>
+				<return type="Ptr&lt;iAccelerationStructureInstances&gt;" typec="Ptr&lt;iAccelerationStructureInstances&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
-					name="aType"
-					type="eAccelerationStructureType"
-					typec="eAccelerationStructureType"
-					typei="ni::eType_Enum"/>
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

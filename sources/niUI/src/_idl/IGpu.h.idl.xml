@@ -1196,20 +1196,25 @@
 				<comments desc="Create ray tracing function table. "/>
 				<return type="Ptr&lt;iRayGpuFunctionTable&gt;" typec="Ptr&lt;iRayGpuFunctionTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createAccelerationStructure" name="CreateAccelerationStructure" num_parameters="2">
-				<comments desc="Create acceleration structure "/>
-				<return type="Ptr&lt;iAccelerationStructure&gt;" typec="Ptr&lt;iAccelerationStructure&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			<method java_name="createAccelerationStructurePrimitives" name="CreateAccelerationStructurePrimitives" num_parameters="1">
+				<comments desc="Create a primitives acceleration structure "/>
+				<return type="Ptr&lt;iAccelerationStructurePrimitives&gt;" typec="Ptr&lt;iAccelerationStructurePrimitives&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
+					last="1"
 					name="ahspName"
 					type="iHString *"
 					typec="iHString*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createAccelerationStructureInstances" name="CreateAccelerationStructureInstances" num_parameters="1">
+				<comments desc="Create a instances acceleration structure "/>
+				<return type="Ptr&lt;iAccelerationStructureInstances&gt;" typec="Ptr&lt;iAccelerationStructureInstances&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
-					name="aType"
-					type="eAccelerationStructureType"
-					typec="eAccelerationStructureType"
-					typei="ni::eType_Enum"/>
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

@@ -19,46 +19,46 @@ enum eAccelerationStructureType {
   //! Contains primitive geometry data such as triangle meshes or procedural shapes.
   //! This is the "template" geometry that can be instanced multiple times.
   //! \remark Equivalent to Bottom Level AS (BLAS) in Vulkan/DX12 terms.
-  eAccelerationStructureType_Primitive = 0,
+  eAccelerationStructureType_Primitives = 0,
   //! Contains instances of primitive or instance acceleration structures, each with
   //! its own transform and properties. Can be nested to create complex hierarchies.
   //! \remark Equivalent to Top Level AS (TLAS) in Vulkan/DX12 terms.
-  eAccelerationStructureType_Instance = 1,
+  eAccelerationStructureType_Instances = 1,
   //! \internal
   eAccelerationStructureType_Last niMaybeUnused = 2,
   //! \internal
   eAccelerationStructureType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
-//! Acceleration structure geometry flags
-enum eAccelerationGeometryFlags {
-  //! No special geometry properties
-  eAccelerationGeometryFlags_None = 0,
-  //! Geometry is fully opaque, allows skipping any-hit functions
-  eAccelerationGeometryFlags_Opaque = niBit(0),
+//! Acceleration structure primitive flags
+enum eAccelerationStructurePrimitiveFlags {
+  //! No special properties
+  eAccelerationStructurePrimitiveFlags_None = 0,
+  //! Primitive is fully opaque, allows skipping any-hit functions
+  eAccelerationStructurePrimitiveFlags_Opaque = niBit(0),
   //! \internal
-  eAccelerationGeometryFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+  eAccelerationStructurePrimitiveFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
-//! \see ni::eAccelerationGeometryFlags
-typedef tU32 tAccelerationGeometryFlags;
+//! \see ni::eAccelerationStructurePrimitiveFlags
+typedef tU32 tAccelerationStructurePrimitiveFlags;
 
 //! Acceleration structure instance flags
-enum eAccelerationInstanceFlags {
+enum eAccelerationStructureInstanceFlags {
   //! No special instance properties
-  eAccelerationInstanceFlags_None = 0,
+  eAccelerationStructureInstanceFlags_None = 0,
   //! Disable face culling for this instance
-  eAccelerationInstanceFlags_DisableCulling = niBit(0),
+  eAccelerationStructureInstanceFlags_DisableCulling = niBit(0),
   //! Invert face culling for this instance
-  eAccelerationInstanceFlags_FlipCulling = niBit(1),
+  eAccelerationStructureInstanceFlags_FlipCulling = niBit(1),
   //! Force instance to be opaque, skipping any-hit functions
-  eAccelerationInstanceFlags_ForceOpaque = niBit(2),
+  eAccelerationStructureInstanceFlags_ForceOpaque = niBit(2),
   //! Force instance to be non-opaque, always running any-hit functions
-  eAccelerationInstanceFlags_ForceNonOpaque = niBit(3),
+  eAccelerationStructureInstanceFlags_ForceNonOpaque = niBit(3),
   //! \internal
-  eAccelerationInstanceFlags_ForceDWORD = 0xFFFFFFFF
+  eAccelerationStructureInstanceFlags_ForceDWORD = 0xFFFFFFFF
 };
-//! \see ni::eAccelerationInstanceFlags
-typedef tU32 tAccelerationInstanceFlags;
+//! \see ni::eAccelerationStructureInstanceFlags
+typedef tU32 tAccelerationStructureInstanceFlags;
 
 //! Acceleration structure interface
 struct iAccelerationStructure : public iDeviceResource {
@@ -67,6 +67,11 @@ struct iAccelerationStructure : public iDeviceResource {
   //! Get the acceleration structure type.
   //! {Property}
   virtual eAccelerationStructureType __stdcall GetType() const = 0;
+};
+
+//! Primitives acceleration structure interface
+struct iAccelerationStructurePrimitives : public iAccelerationStructure {
+  niDeclareInterfaceUUID(iAccelerationStructurePrimitives,0x0e6f721f,0x4934,0x4f1f,0x9b,0x11,0x83,0x4c,0x1a,0xf0,0xca,0x8c);
 
   //! Add non-indexed triangle geometry to primitive acceleration structure.
   virtual tBool __stdcall AddTriangles(
@@ -75,7 +80,7 @@ struct iAccelerationStructure : public iDeviceResource {
     tU32 anVertexStride,
     tU32 anVertexCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags,
+    tAccelerationStructurePrimitiveFlags aFlags,
     tU32 anHitGroup) = 0;
 
   //! Add indexed triangle geometry to primitive acceleration structure.
@@ -89,7 +94,7 @@ struct iAccelerationStructure : public iDeviceResource {
     eGpuIndexType anIndexType,
     tU32 anIndexCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags,
+    tAccelerationStructurePrimitiveFlags aFlags,
     tU32 anHitGroup) = 0;
 
   //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
@@ -101,17 +106,22 @@ struct iAccelerationStructure : public iDeviceResource {
     tU32 anAABBStride,
     tU32 anAABBCount,
     const sMatrixf& aTransform,
-    tAccelerationGeometryFlags aFlags,
+    tAccelerationStructurePrimitiveFlags aFlags,
     tU32 anHitGroup) = 0;
+};
+
+//! Instances acceleration structure interface
+struct iAccelerationStructureInstances : public iAccelerationStructure {
+  niDeclareInterfaceUUID(iAccelerationStructureInstances,0x2c39cdfa,0x1c1b,0x40f5,0xa9,0xe4,0xcb,0x65,0x7d,0xda,0x68,0x99);
 
   //! Add an instance.
   virtual tBool __stdcall AddInstance(
-    iAccelerationStructure* apAS,
+    iAccelerationStructurePrimitives* apAS,
     const sMatrixf& aTransform,
     tU32 anInstanceId,
     tU8 anMask,
     tU32 anHitGroup,
-    tAccelerationInstanceFlags aFlags) = 0;
+    tAccelerationStructureInstanceFlags aFlags) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

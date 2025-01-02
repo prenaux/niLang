@@ -391,7 +391,7 @@ struct iGpuCommandEncoder : public iUnknown {
   //! @}
 
  //##########################################################################
-  //! \name Ray Tracing Commands
+  //! \name Ray Tracing Commands (WIP)
   //##########################################################################
   //! @{
 
@@ -454,10 +454,11 @@ struct iGraphicsDriverGpu : public iUnknown
   //! Create ray tracing function table.
   virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() = 0;
 
-  //! Create acceleration structure
-  virtual Ptr<iAccelerationStructure> __stdcall CreateAccelerationStructure(
-    iHString* ahspName,
-    eAccelerationStructureType aType) = 0;
+  //! Create a primitives acceleration structure
+  virtual Ptr<iAccelerationStructurePrimitives> __stdcall CreateAccelerationStructurePrimitives(iHString* ahspName) = 0;
+
+  //! Create a instances acceleration structure
+  virtual Ptr<iAccelerationStructureInstances> __stdcall CreateAccelerationStructureInstances(iHString* ahspName) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

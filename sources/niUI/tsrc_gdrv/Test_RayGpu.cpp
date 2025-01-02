@@ -97,8 +97,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   // Primitive and acceleration structures
   NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _indexBuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iAccelerationStructure> _primitiveAS = niDeferredInit(NN<iAccelerationStructure>);
-  Ptr<iAccelerationStructure> _instanceAS;
+  NN<iAccelerationStructurePrimitives> _primitiveAS = niDeferredInit(NN<iAccelerationStructurePrimitives>);
+  Ptr<iAccelerationStructureInstances> _instanceAS;
 
   // Ray tracing pipeline and shaders
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -186,16 +186,14 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
     {
       _primitiveAS = niCheckNN(
         _primitiveAS,
-        _driverGpu->CreateAccelerationStructure(
-          _H("RayTriangle_AS"),
-          eAccelerationStructureType_Primitive),
+        _driverGpu->CreateAccelerationStructurePrimitives(_H("RayTriangle_AS")),
         eFalse);
 
       niCheck(_primitiveAS->AddTrianglesIndexed(
         _vertexBuffer,0,sizeof(tVertexFmt),3,
         _indexBuffer,0,eGpuIndexType_U32,3,
         sMatrixf::Identity(),
-        eAccelerationGeometryFlags_Opaque,
+        eAccelerationStructurePrimitiveFlags_Opaque,
         0),
         eFalse);
     }
@@ -223,9 +221,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
       if (!_instanceAS.IsOK()) {
         _instanceAS = niCheckNN(
           _instanceAS,
-          _driverGpu->CreateAccelerationStructure(
-            _H("RayTriangle_InstanceAS"),
-            eAccelerationStructureType_Instance),
+          _driverGpu->CreateAccelerationStructureInstances(
+            _H("RayTriangle_InstanceAS")),
           eFalse);
         niCheck(_instanceAS->AddInstance(
           _primitiveAS,
@@ -233,7 +230,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
           0,                    // Instance ID
           0xFF,                // Mask
           0,                   // Hit group offset
-          eAccelerationInstanceFlags_None),
+          eAccelerationStructureInstanceFlags_None),
                 eFalse);
       }
       cmdEncoder->BuildAccelerationStructure(_instanceAS);

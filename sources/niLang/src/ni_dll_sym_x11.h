@@ -65,3 +65,7 @@ NI_DLL_PROC(void, __cdecl, XrmDestroyDatabase, (XrmDatabase));
 NI_DLL_PROC(Bool, __cdecl, XrmGetResource, (XrmDatabase,const char*,const char*,char**,XrmValue*));
 
 NI_DLL_PROC(int, __cdecl, XGetWindowProperty, (Display*, Window, Atom, long, long, Bool, Atom, Atom*, int*, unsigned long*, unsigned long*, unsigned char**));
+NI_DLL_PROC(void, __cdecl, XConvertSelection, (Display* display, Atom selection, Atom target, Atom property, Window requestor, Time time));
+NI_DLL_PROC(void, __cdecl, XSetSelectionOwner, (Display *display, Atom selection, Window owner, Time time));
+NI_DLL_PROC(Window , __cdecl, XGetSelectionOwner, (Display *display, Atom selection));
+NI_DLL_PROC(char*, __cdecl, XGetAtomName, (Display * display, Atom atom));

@@ -5,8 +5,8 @@
 using namespace ni;
 
 //#define TRACE_PAINT
-#define TRACE_MOUSE_MOVE
-#define TRACE_RELATIVE_MOUSE_MOVE
+// #define TRACE_MOUSE_MOVE
+// #define TRACE_RELATIVE_MOUSE_MOVE
 
 namespace {
 
@@ -183,6 +183,7 @@ TEST_FIXTURE(FOSWindow,Create) {
       0,
       eOSWindowStyleFlags_Regular);
     CHECK_RETURN_IF_FAILED(wnd.IsOK());
+    wnd->SetDropTarget(eTrue);
 
     Ptr<sTestWindowSink> sink = niNew sTestWindowSink(wnd);
     wnd->GetMessageHandlers()->AddSink(sink.ptr());

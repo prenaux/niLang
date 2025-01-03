@@ -54,17 +54,9 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
 }
 
 #else
-void _SetSystemClipboard(iDataTable* apDT) {
-  niAssert(apDT && apDT->IsOK());
-}
-Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
-  Ptr<iDataTable> dt = apExistingDT;
-  if (!dt.IsOK()) {
-    dt = ni::CreateDataTable(_A("Clipboard"));
-    dt->SetString(_A("type"),_A("system"));
-  }
-  return dt;
-}
+// Implemented System_Linux.cpp
+extern void _SetSystemClipboard(iDataTable* apDT);
+extern Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT);
 #endif
 
 ///////////////////////////////////////////////

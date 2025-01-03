@@ -5,6 +5,8 @@
 
 using namespace ni;
 
+#ifndef niLinux
+
 #ifdef niWindows
 #include "API/niLang/Platforms/Win32/WinUI.h"
 
@@ -53,20 +55,6 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   return dt;
 }
 
-#else
-void _SetSystemClipboard(iDataTable* apDT) {
-  niAssert(apDT && apDT->IsOK());
-}
-Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
-  Ptr<iDataTable> dt = apExistingDT;
-  if (!dt.IsOK()) {
-    dt = ni::CreateDataTable(_A("Clipboard"));
-    dt->SetString(_A("type"),_A("system"));
-  }
-  return dt;
-}
-#endif
-
 ///////////////////////////////////////////////
 tBool __stdcall cLang::SetClipboard(eClipboardType aType, iDataTable* apDT) {
   niCheck(aType < eClipboardType_Last,eFalse);
@@ -86,3 +74,8 @@ iDataTable* __stdcall cLang::GetClipboard(eClipboardType aType) const {
   }
   return mptrClipboard[aType];
 }
+
+#endif
+
+#endif // niLinux
+

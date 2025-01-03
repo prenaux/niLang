@@ -1,4 +1,5 @@
 #include "API/niLang/Types.h"
+#include "niLang/ILang.h"
 
 #ifdef niLinuxDesktop
 #include "API/niLang/IOSWindow.h"
@@ -17,13 +18,13 @@
 #include <X11/keysym.h>
 #include <X11/cursorfont.h> // default cursors defined here...
 #include <X11/Xresource.h>
+#include <X11/Xatom.h>
 #include <GL/glx.h>
 
 using namespace ni;
 
 #define USE_X11_IM
 
-static const int XA_CARDINAL = ((Atom) 6);
 static const int MOUSE_WARP_DELAY = 200;
 static const int knMinXwinWidth = 20;
 static const int knMinXwinHeight = 20;
@@ -31,6 +32,13 @@ static const int knMaxXwinWidth = 50000;
 static const int knMaxXwinHeight = 50000;
 
 #define X11_MAX_MESSAGES_PER_FRAME 100
+
+#ifndef TRACE_X11_SELECTION
+#define TRACE_X11_SELECTION(X) //niDebugFmt(X)
+#endif
+
+#define X11_SELECTION_PROP_NAME "NILANG_SELECTION"
+#define X11_SELECTION_TIMEOUT_SECS 0.3
 
 ////////////////////////////////////////////////////////////////////////////
 // ni_dll_load_glx
@@ -185,6 +193,8 @@ static struct
   { NoSymbol, eKey_Unknown },
 };
 
+struct cLinuxWindow;
+
 struct sX11System : public Impl_HeapAlloc {
   tBool mbIsLoaded;
   struct sX11Monitor {
@@ -193,8 +203,14 @@ struct sX11System : public Impl_HeapAlloc {
     sRecti mrectMonitor;
     tOSMonitorFlags mFlags;
   };
+
+  Ptr<iDataTable> mpClipboard;
+
   astl::vector<sX11Monitor> mvMonitors;
   tF32 mfContentsScale = 1.0f;
+  // wee need window and display for clipboard synchronization
+
+  Ptr<cLinuxWindow> mpWindow;
 
   sX11System() {
     mbIsLoaded = ni_dll_load_x11();
@@ -402,6 +418,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   {
     sX11System* x11 = _GetX11System();
     niCheck(x11->IsOK(), ;);
+    x11->mpWindow = this;
 
     mbRequestedClose = eFalse;
     mnStyle = eOSWindowStyleFlags_Regular;
@@ -474,7 +491,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         mask,
         &attr);
       niCheck(mHandle != 0,;);
-
+      //
       // Set the window's title
       this->SetTitle("niApp");
 
@@ -1288,6 +1305,112 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
         }
         break;
       }
+
+      case SelectionClear: {
+        TRACE_X11_SELECTION(("... LOST SELECTION OWNERSHIP"));
+        break;
+      }
+
+      case SelectionRequest: {
+        const auto selectionRequest = e->xselectionrequest;
+        TRACE_X11_SELECTION(("... Requestor: 0x%lx", selectionRequest.requestor));
+        XSelectionEvent sev;
+        sev.type = SelectionNotify;
+        sev.requestor = selectionRequest.requestor;
+        sev.selection = selectionRequest.selection;
+        sev.target = selectionRequest.target;
+        sev.property = selectionRequest.property;
+        sev.time = selectionRequest.time;
+
+        // Get clipboard content
+        Ptr<iDataTable> clipboardDT = ni::GetLang()->GetClipboard(eClipboardType_System);
+        if (clipboardDT.IsOK()) {
+          cString clipboard = clipboardDT->GetString("text");
+
+          // THE MORE YOU KNOW: TARGETS is a special type that means "give me all the types that
+          // your current selection supports". The modern pattern X11 apps follow is a client ask us
+          // which types our selection supports and once we send back the types it will call as again
+          // with the final requested type. That is the reason for this if/else.
+          if (selectionRequest.target == dll_XInternAtom(mpDisplay, "TARGETS", False)) {
+            // Handle TARGETS request - advertise supported formats
+            // We support only utf8 text so the property UTF8_STRING is enough
+            Atom targets[] = {
+              dll_XInternAtom(mpDisplay, "TARGETS", False),
+              dll_XInternAtom(mpDisplay, "UTF8_STRING", False),
+            };
+
+            dll_XChangeProperty(mpDisplay, selectionRequest.requestor,
+                                selectionRequest.property, XA_ATOM, 32, PropModeReplace,
+                                (unsigned char*)targets, sizeof(targets)/sizeof(Atom));
+          }
+          // Handle text format requests
+          else if (selectionRequest.target == dll_XInternAtom(mpDisplay, "UTF8_STRING", False))
+          {
+            dll_XChangeProperty(mpDisplay, selectionRequest.requestor,
+                                selectionRequest.property, selectionRequest.target,
+                                8, PropModeReplace,
+                                (unsigned char*)clipboard.c_str(),
+                                clipboard.length());
+          }
+          else {
+            // Unsupported target
+            sev.property = None;
+          }
+
+          dll_XSendEvent(mpDisplay, selectionRequest.requestor, True, NoEventMask, (XEvent*)&sev);
+        }
+        break;
+      }
+
+      case SelectionNotify: {
+        Ptr<iDataTable> clipboardDT = _GetX11System()->mpClipboard;
+        niPanicAssert(clipboardDT.IsOK());
+        const XSelectionEvent sev = e->xselection;
+        if (sev.property != None) {
+          Atom clipboardProp = dll_XInternAtom(mpDisplay, X11_SELECTION_PROP_NAME, False);
+          niDefer {
+            // deleting the property is how you tell the XServer that you
+            // already read the selection
+            dll_XDeleteProperty(mpDisplay, mHandle, clipboardProp);
+          };
+
+          // don't think too much about all this vars, we only use size to retrieve the data
+          // X11 API requieres all the output params to be valid.
+          int format;
+          unsigned long size, dul;
+          Atom type;
+          {
+            // First call to get size
+            unsigned char *prop_ret = NULL;
+            dll_XGetWindowProperty(mpDisplay, mHandle, clipboardProp, 0, 0, False, AnyPropertyType,
+                                   &type, &format, &dul, &size, &prop_ret);
+            dll_XFree(prop_ret);
+          }
+
+          {
+            unsigned char *prop_ret = NULL;
+            // Second call to get the actual value
+            dll_XGetWindowProperty(
+              mpDisplay, mHandle, clipboardProp, 0, size, False, AnyPropertyType,
+              &type, &format, &dul, &dul, &prop_ret);
+
+            // set the text in the clipboard and increment the content_version
+            // so that anyone watching the clipboard can tell that the
+            // content did in fact change
+            clipboardDT->SetString("text",(const char*)prop_ret);
+            clipboardDT->SetInt("content_version",clipboardDT->GetIntDefault("content_version",0)+1);
+
+            TRACE_X11_SELECTION(("External CLIPBOARD content: %s", clipboardDT->GetString("text")));
+
+            dll_XFree(prop_ret);
+          }
+
+        }
+        else {
+          niDebugFmt(("Selection could not be converted"));
+        }
+        break;
+      }
     }
   }
 
@@ -1743,5 +1866,75 @@ tU32 __stdcall cLang::GetNumGameCtrls() const {
 }
 iGameCtrl* __stdcall cLang::GetGameCtrl(tU32 aulIdx) const {
   return NULL;
+}
+
+void _SetSystemClipboard(iDataTable* apDT) {
+  niAssert(apDT && apDT->IsOK());
+
+  // in x11 the real "setter" for the clipboard is done in the SelectionRequest
+  // event. This function just needs to add our window as the owner of the
+  // selection/clipboard
+  const tU32 nTextIndex = apDT->GetPropertyIndex(_A("text"));
+  if (nTextIndex != eInvalidHandle) {
+    if (nTextIndex != eInvalidHandle) {
+      Ptr<cLinuxWindow> x11Window = _GetX11System()->mpWindow;
+      Display* display = x11Window->mpDisplay;
+      if (display) {
+        Window window = x11Window->mHandle;
+        cString text = apDT->GetString("text");
+        TRACE_X11_SELECTION(("Adding the clipboard: %s", text))
+
+        Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
+        dll_XSetSelectionOwner(display, clipboard, window, CurrentTime);
+      }
+    }
+  }
+}
+
+Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
+  TRACE_X11_SELECTION(("_GetSystemClipboard: %p", apExistingDT));
+  Ptr<iDataTable> dt = apExistingDT;
+  if (!dt.IsOK()) {
+    dt = ni::CreateDataTable("Clipboard");
+    dt->SetString("type","system");
+    dt->SetInt("content_version", 0);
+    dt->SetBool("waiting",eFalse);
+  }
+  // in X11 the client will receive the SelectionNotify event when another
+  // client wants to get it's selection/clipboard. So this function will
+  // just return the current clipboard and subscribe to the
+  // selection/clipboard.
+  sX11System* x11 =_GetX11System();
+  Ptr<cLinuxWindow> window = x11->mpWindow;
+  Display* display = window->mpDisplay;
+  Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
+  Window owner = dll_XGetSelectionOwner(display, clipboard);
+  // if our window is the owner we don't need all the x11 mambo jambo
+  // as we already have the clipboard content in mptrClipboard
+  Window windowHandle = window->mHandle;
+  if (owner != windowHandle) {
+    Atom clipboardProp = dll_XInternAtom(display, X11_SELECTION_PROP_NAME, False);
+    Atom utf8 = dll_XInternAtom(display, "UTF8_STRING", False);
+    // this tells the xserver that we want the content of the clipboard
+    // and that we expect it to be a utf8 string
+    dll_XConvertSelection(display, clipboard, utf8, clipboardProp, windowHandle,
+                          CurrentTime);
+
+    const tI64 wasContentVersion = dt->GetIntDefault("content_version",0);
+    tU64 timer = ni::TimerInSeconds();
+    x11->mpClipboard = dt;
+    while(true) {
+      window->_NextEvent();
+      tI64 newContentVersion = dt->GetIntDefault("content_version",0);
+      if (newContentVersion != wasContentVersion)
+        break;
+      if (ni::TimerInSeconds() - timer > X11_SELECTION_TIMEOUT_SECS) {
+        niWarning("Timeout getting the clipboard content");
+        break;
+      }
+    }
+  }
+  TRACE_X11_SELECTION(("GetClipboard DT: %p", dt));
+  return dt;
 }
 #endif

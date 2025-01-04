@@ -1,6 +1,6 @@
 # Overview
 
-niLang is a C++ library engineered to abstract a variety of operating system
+niLang is a C++ library that abstracts a variety of operating system
 functionalities, encompassing window management, input handling for keyboards,
 mice, and gamepads, filesystem operations, threading, socket communication,
 HTTP requests, 2D & 3D rendering, user interfaces, and audio processing.

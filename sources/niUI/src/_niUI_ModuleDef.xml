@@ -29696,6 +29696,24 @@
 				<comments desc="Place the widget in a grid. "/>
 			</value>
 		</enum>
+		<enum name="eWidgetHoverTextStyle">
+			<comments desc="Widget hover style. "/>
+			<value name="eWidgetHoverTextStyle_Default" value="0 ">
+				<comments desc="No docking. "/>
+			</value>
+			<value name="eWidgetHoverTextStyle_SnapLeft" value="1 ">
+				<comments desc="Snap the widget on the left. "/>
+			</value>
+			<value name="eWidgetHoverTextStyle_SnapRight" value="2 ">
+				<comments desc="Snap the widget on the right. "/>
+			</value>
+			<value name="eWidgetHoverTextStyle_SnapTop" value="3 ">
+				<comments desc="Snap the widget on the top. "/>
+			</value>
+			<value name="eWidgetHoverTextStyle_SnapBottom" value="4 ">
+				<comments desc="Snap the widget on the bottom. "/>
+			</value>
+		</enum>
 		<enum name="eWidgetZOrder">
 			<comments desc="Widget ZOrder. ">
 				<remark text="These are the reserved ZOrder, to define a ZOrder explicitly pass a value less that eWidgetZOrder_Max. Zero is the overlay widget, higher values are below it. "/>
@@ -31389,6 +31407,33 @@
 				property_name="hover_text">
 				<comments desc="Get the widget&apos;s hovering text. "/>
 				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHoverTextStyle"
+				name="SetHoverTextStyle"
+				num_parameters="1"
+				property="set"
+				property_name2="hoverTextStyle"
+				property_name="hover_text_style">
+				<comments desc="Set the widget&apos;s hovering text style. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anStyle"
+					type="eWidgetHoverTextStyle"
+					typec="eWidgetHoverTextStyle"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverTextStyle"
+				name="GetHoverTextStyle"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverTextStyle"
+				property_name="hover_text_style">
+				<comments desc="Get the widget&apos;s hovering text style. "/>
+				<return type="eWidgetHoverTextStyle" typec="eWidgetHoverTextStyle" typei="ni::eType_Enum"/>
 			</method>
 			<method java_name="createDefaultHoverWidget" name="CreateDefaultHoverWidget" num_parameters="1">
 				<comments desc="Create a default hover widget (Text only). "/>

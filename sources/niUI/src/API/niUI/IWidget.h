@@ -141,6 +141,23 @@ enum eWidgetDockStyle
   eWidgetDockStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
+//! Widget hover style.
+enum eWidgetHoverTextStyle
+{
+  //! No docking.
+  eWidgetHoverTextStyle_Default = 0,
+  //! Snap the widget on the left.
+  eWidgetHoverTextStyle_SnapLeft = 1,
+  //! Snap the widget on the right.
+  eWidgetHoverTextStyle_SnapRight = 2,
+  //! Snap the widget on the top.
+  eWidgetHoverTextStyle_SnapTop = 3,
+  //! Snap the widget on the bottom.
+  eWidgetHoverTextStyle_SnapBottom = 4,
+  //! \internal
+  eWidgetHoverTextStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+};
+
 //! Widget ZOrder.
 //! \remark These are the reserved ZOrder, to define a ZOrder explicitly
 //!     pass a value less that eWidgetZOrder_Max.
@@ -733,6 +750,12 @@ struct iWidget : public iMessageHandler
   //! Get the widget's hovering text.
   //! {Property}
   virtual iHString* __stdcall GetHoverText() const = 0;
+  //! Set the widget's hovering text style.
+  //! {Property}
+  virtual void __stdcall SetHoverTextStyle(eWidgetHoverTextStyle anStyle) = 0;
+  //! Get the widget's hovering text style.
+  //! {Property}
+  virtual eWidgetHoverTextStyle __stdcall GetHoverTextStyle() const = 0;
   //! Create a default hover widget (Text only).
   virtual ni::iWidget* __stdcall CreateDefaultHoverWidget(ni::iHString* ahspHoverText) = 0;
   //! Show a hover widget.

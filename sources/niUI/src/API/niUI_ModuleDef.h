@@ -231,6 +231,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eVGTransformValue();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eVideoDecoderFlags();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetStyle();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetDockStyle();
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetHoverTextStyle();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetZOrder();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetSerializeFlags();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetAutoLayoutFlags();

@@ -30425,6 +30425,33 @@ static const ni::sMethodDef iWidget_GetHoverText = {
 #endif
 };
 
+// Method: SetHoverTextStyle
+static const ni::sParameterDef iWidget_SetHoverTextStyle_Parameters[1] = { 
+  { "anStyle", ni::eType_Enum, NULL, "eWidgetHoverTextStyle" }
+}; 
+static const ni::sMethodDef iWidget_SetHoverTextStyle = {
+  "SetHoverTextStyle",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
+  1, iWidget_SetHoverTextStyle_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iWidget_SetHoverTextStyle)
+#else
+  NULL
+#endif
+};
+
+// Method: GetHoverTextStyle
+static const ni::sMethodDef iWidget_GetHoverTextStyle = {
+  "GetHoverTextStyle",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eWidgetHoverTextStyle",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iWidget_GetHoverTextStyle)
+#else
+  NULL
+#endif
+};
+
 // Method: CreateDefaultHoverWidget
 static const ni::sParameterDef iWidget_CreateDefaultHoverWidget_Parameters[1] = { 
   { "ahspHoverText", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
@@ -31070,6 +31097,8 @@ static const ni::sMethodDef* Methods_iWidget[] = {
 	&iWidget_GetLocalizedText,
 	&iWidget_SetHoverText,
 	&iWidget_GetHoverText,
+	&iWidget_SetHoverTextStyle,
+	&iWidget_GetHoverTextStyle,
 	&iWidget_CreateDefaultHoverWidget,
 	&iWidget_ShowHoverWidget,
 	&iWidget_ResetHoverWidget,
@@ -39633,6 +39662,24 @@ static const ni::sEnumDef Enum_eWidgetDockStyle = {
 	return &Enum_eWidgetDockStyle;
 }
 
+// --- eWidgetHoverTextStyle ---
+niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetHoverTextStyle() {
+
+static const ni::sEnumValueDef Enum_eWidgetHoverTextStyle_Values[] = {
+	{ "Default", ni::eWidgetHoverTextStyle_Default },
+	{ "SnapLeft", ni::eWidgetHoverTextStyle_SnapLeft },
+	{ "SnapRight", ni::eWidgetHoverTextStyle_SnapRight },
+	{ "SnapTop", ni::eWidgetHoverTextStyle_SnapTop },
+	{ "SnapBottom", ni::eWidgetHoverTextStyle_SnapBottom },
+};
+static const ni::sEnumDef Enum_eWidgetHoverTextStyle = {
+	"eWidgetHoverTextStyle",
+  niCountOf(Enum_eWidgetHoverTextStyle_Values), Enum_eWidgetHoverTextStyle_Values
+};
+
+	return &Enum_eWidgetHoverTextStyle;
+}
+
 // --- eWidgetZOrder ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetZOrder() {
 
@@ -40782,6 +40829,7 @@ static const ni::sEnumDef* Enumerations[] = {
   GetEnumDef_eVideoDecoderFlags(),
   GetEnumDef_eWidgetStyle(),
   GetEnumDef_eWidgetDockStyle(),
+  GetEnumDef_eWidgetHoverTextStyle(),
   GetEnumDef_eWidgetZOrder(),
   GetEnumDef_eWidgetSerializeFlags(),
   GetEnumDef_eWidgetAutoLayoutFlags(),

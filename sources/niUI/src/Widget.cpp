@@ -112,6 +112,7 @@ cWidget::cWidget(cUIContext* pUICtx, iHString* ahspClass, cWidget *pwParent, con
   mrectDockFillNonClient = mRect;
   mptrCanvas = NULL;
   mnInputSubmitFlags = pUICtx->GetDefaultInputSubmitFlags();
+  mHoverTextStyle = ni::eWidgetHoverTextStyle_Default;
 #ifdef USE_CACHED_ABS_RECT
   mrectAbs = mRect;
   mrectAbsClipped = mRect;
@@ -1451,6 +1452,18 @@ void __stdcall cWidget::SetHoverText(iHString* ahspText)
 iHString* __stdcall cWidget::GetHoverText() const
 {
   return mhspHoverText;
+}
+
+///////////////////////////////////////////////
+void __stdcall cWidget::SetHoverTextStyle(eWidgetHoverTextStyle anStyle)
+{
+  mHoverTextStyle = anStyle;
+}
+
+///////////////////////////////////////////////
+eWidgetHoverTextStyle __stdcall cWidget::GetHoverTextStyle() const
+{
+  return mHoverTextStyle;
 }
 
 ///////////////////////////////////////////////
@@ -2814,6 +2827,11 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
     if (nPropertyIndex != eInvalidHandle) {
       SetHoverText(_H(apDT->GetStringFromIndex(nPropertyIndex)));
     }
+    // hover_text
+    nPropertyIndex = apDT->GetPropertyIndex(_A("hover_text_style"));
+    if (nPropertyIndex != eInvalidHandle) {
+      SetHoverTextStyle((eWidgetHoverTextStyle)apDT->GetEnumFromIndex(nPropertyIndex,niEnumExpr(eWidgetHoverTextStyle)));
+    }
     // skin
     nPropertyIndex = apDT->GetPropertyIndex(_A("skin"));
     if (nPropertyIndex != eInvalidHandle) {
@@ -2864,6 +2882,7 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
     RetrieveText(eTrue);
     apDT->SetString(_A("text"),niHStr(mhspText));
     apDT->SetString(_A("hover_text"),niHStr(mhspHoverText));
+    apDT->SetEnum(_A("hover_text_style"),niEnumExpr(eWidgetHoverTextStyle),this->GetHoverTextStyle());
     // apDT->SetString(_A("font"),niHStr(this->GetFont()->GetName()));
     // apDT->SetInt(_A("font_size"),this->GetFont()->GetResolution());
     apDT->SetString(_A("skin"),niHStr(this->GetSkin()));
@@ -2887,6 +2906,7 @@ tBool __stdcall cWidget::SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags
       apDT->SetMetadata(_A("zorder"),_H("enum[*eWidgetZOrder]"));
       apDT->SetMetadata(_A("dock_style"),_H("enum[*eWidgetDockStyle]"));
       apDT->SetMetadata(_A("input_submit_flags"),_H("flags[*eUIInputSubmitFlags]"));
+      apDT->SetMetadata(_A("hover_text_style"),_H("enum[*eWidgetHoverTextStyle]"));
     }
   }
 
@@ -3162,11 +3182,35 @@ tBool __stdcall cWidget::ShowHoverWidget(ni::iWidget* apWidget, const sVec2f& av
   apWidget->SetStyle(apWidget->GetStyle()|eWidgetStyle_Free|eWidgetStyle_Temp);
 
   niFlagOn(this->mStatus,WDGSTATUS_HASHOVERWIDGET);
-  sVec2f vCurPos = avAbsPos;
-  if (mpUICtx->GetCursor()) {
-    vCurPos += mpUICtx->GetCursor()->GetSize();
+
+  sRectf wRect = apWidget->GetRect();
+  sRectf absRect = GetAbsoluteRect();
+  sVec2f vPos = absRect.GetTopLeft();
+  tF32 fPadding = 4;
+  switch (mHoverTextStyle) {
+    case ni::eWidgetHoverTextStyle_Default:
+      vPos = avAbsPos;
+      if (mpUICtx->GetCursor()) {
+        vPos += mpUICtx->GetCursor()->GetSize();
+      }
+      break;
+    case ni::eWidgetHoverTextStyle_SnapLeft:
+      vPos = Vec2f(absRect.GetLeft() - fPadding - wRect.GetWidth(), absRect.GetHeight() * 0.5 - wRect.GetHeight() * 0.5 + absRect.GetTop());
+      break;
+    case ni::eWidgetHoverTextStyle_SnapRight:
+      vPos = Vec2f(absRect.GetRight() + fPadding, absRect.GetHeight() * 0.5 - wRect.GetHeight() * 0.5 + absRect.GetTop());
+      break;
+    case ni::eWidgetHoverTextStyle_SnapTop:
+      vPos = Vec2f(absRect.GetLeft() + absRect.GetWidth() * 0.5 - wRect.GetWidth() * 0.5, absRect.GetTop() - wRect.GetHeight() - fPadding);
+      break;
+    case ni::eWidgetHoverTextStyle_SnapBottom:
+      vPos = Vec2f(absRect.GetLeft() + absRect.GetWidth() * 0.5 - wRect.GetWidth() * 0.5, absRect.GetBottom() + fPadding);
+      break;
+    default:
+      break;
   }
-  apWidget->PopAt(NULL,vCurPos,0);
+
+  apWidget->PopAt(NULL,vPos,0);
   apWidget->SetZOrder(eWidgetZOrder_Overlay);
   return eTrue;
 }

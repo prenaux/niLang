@@ -889,6 +889,20 @@ IDLC_METH_BEGIN(ni,iWidget,GetHoverText,0)
 	IDLC_RET_FROM_INTF(iHString,_Ret)
 IDLC_METH_END(ni,iWidget,GetHoverText,0)
 
+/** ni -> iWidget::SetHoverTextStyle/1 **/
+IDLC_METH_BEGIN(ni,iWidget,SetHoverTextStyle,1)
+	IDLC_DECL_VAR(eWidgetHoverTextStyle,anStyle)
+	IDLC_BUF_TO_ENUM(eWidgetHoverTextStyle,anStyle)
+	IDLC_METH_CALL_VOID(ni,iWidget,SetHoverTextStyle,1,(anStyle))
+IDLC_METH_END(ni,iWidget,SetHoverTextStyle,1)
+
+/** ni -> iWidget::GetHoverTextStyle/0 **/
+IDLC_METH_BEGIN(ni,iWidget,GetHoverTextStyle,0)
+	IDLC_DECL_RETVAR(eWidgetHoverTextStyle,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iWidget,GetHoverTextStyle,0,())
+	IDLC_RET_FROM_ENUM(eWidgetHoverTextStyle,_Ret)
+IDLC_METH_END(ni,iWidget,GetHoverTextStyle,0)
+
 /** ni -> iWidget::CreateDefaultHoverWidget/1 **/
 IDLC_METH_BEGIN(ni,iWidget,CreateDefaultHoverWidget,1)
 	IDLC_DECL_VAR(ni::iHString*,ahspHoverText)

@@ -200,6 +200,9 @@ class cWidget : public ImplRC<iWidget,ni::eImplFlags_DontInherit1,iMessageHandle
   iHString* __stdcall GetLocalizedText() const;
   void __stdcall SetHoverText(iHString* ahspText);
   iHString* __stdcall GetHoverText() const;
+  void __stdcall SetHoverTextStyle(eWidgetHoverTextStyle anStyle);
+  eWidgetHoverTextStyle __stdcall GetHoverTextStyle() const;
+
   tBool __stdcall SetFont(iFont *apFont);
   iFont * __stdcall GetFont() const;
   tBool __stdcall SetDockStyle(eWidgetDockStyle aStyle);
@@ -305,6 +308,7 @@ class cWidget : public ImplRC<iWidget,ni::eImplFlags_DontInherit1,iMessageHandle
   tWidgetAutoLayoutFlags mnAutoLayout;
   tU32 mnInputSubmitFlags;
   tHStringPtr mhspHoverText;
+  eWidgetHoverTextStyle mHoverTextStyle;
 
   struct sContextMenu {
     sRectf     mRect;

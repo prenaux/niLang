@@ -617,6 +617,22 @@ enum eUIMessage
   eUIMessage_ExpressionUpdate = niMessageID('_','U','I','E',0),
   //! @}
 
+  //! \name Root widget messages
+  //! @{
+
+  //! WidgetMouseEnter message
+  //! \param A: Widget that mouse entered
+  //! \param B: mouse position
+  //! \remark Called when expression context updated
+  eUIMessage_WidgetMouseEnter = niMessageID('_','U','I','R',0),
+
+  //!  message
+  //! \param A: Widget that mouse leaves
+  //! \param B: mouse position
+  //! \remark Called when expression context updated
+  eUIMessage_WidgetMouseLeave = niMessageID('_','U','I','R',1),
+  //! @}
+
   //! \name Context
   //! @{
   //! Context messages are sent only to the root widget.

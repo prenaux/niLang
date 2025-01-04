@@ -765,6 +765,20 @@
 					<params text="B: unused "/>
 				</comments>
 			</value>
+			<value name="eUIMessage_WidgetMouseEnter" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;R&apos; , 0 ) ">
+				<comments desc="WidgetMouseEnter message ">
+					<remark text="Called when expression context updated "/>
+					<params text="A: Widget that mouse entered "/>
+					<params text="B: mouse position "/>
+				</comments>
+			</value>
+			<value name="eUIMessage_WidgetMouseLeave" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;R&apos; , 1 ) ">
+				<comments desc="message ">
+					<remark text="Called when expression context updated "/>
+					<params text="A: Widget that mouse leaves "/>
+					<params text="B: mouse position "/>
+				</comments>
+			</value>
 			<value name="eUIMessage_ContextUpdate" value="niMessageID ( &apos;_&apos; , &apos;U&apos; , &apos;I&apos; , &apos;X&apos; , &apos;u&apos; ) ">
 				<comments desc="Sent after the context is updated. ">
 					<params text="A: tF32 FrameTime. "/>

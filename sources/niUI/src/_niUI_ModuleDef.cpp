@@ -40418,6 +40418,8 @@ static const ni::sEnumValueDef Enum_eUIMessage_Values[] = {
 	{ "SerializeFinalize", ni::eUIMessage_SerializeFinalize },
 	{ "UserMessage", ni::eUIMessage_UserMessage },
 	{ "ExpressionUpdate", ni::eUIMessage_ExpressionUpdate },
+	{ "WidgetMouseEnter", ni::eUIMessage_WidgetMouseEnter },
+	{ "WidgetMouseLeave", ni::eUIMessage_WidgetMouseLeave },
 	{ "ContextUpdate", ni::eUIMessage_ContextUpdate },
 	{ "ContextBeforeDraw", ni::eUIMessage_ContextBeforeDraw },
 	{ "ContextAfterDraw", ni::eUIMessage_ContextAfterDraw },

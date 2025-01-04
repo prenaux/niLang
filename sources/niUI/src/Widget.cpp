@@ -1918,6 +1918,12 @@ void cWidget::HandleMessage(const tU32 msg, const Var& A, const Var& B) {
       case eUIMessage_SerializeChildren:
         pThis->SerializeChildren(ni::VarQueryInterface<iDataTable>(A),B.mU32);
         break;
+      case eUIMessage_MouseEnter:
+        pThis->mpUICtx->GetRootWidget()->SendMessage(eUIMessage_WidgetMouseEnter, pThis, A);
+        break;
+      case eUIMessage_MouseLeave:
+        pThis->mpUICtx->GetRootWidget()->SendMessage(eUIMessage_WidgetMouseLeave, pThis, A);
+        break;
       case eUIMessage_Cancel:
       case eUIMessage_Submit:
       case eUIMessage_Cut:

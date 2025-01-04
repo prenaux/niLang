@@ -13,6 +13,7 @@
 #include "DataTableWriteStack.h"
 #include "DataTableReadStack.h"
 #include "DataTablePath.h"
+#include "niLang/IConcurrent.h"
 
 namespace ni {
 
@@ -179,7 +180,7 @@ class cLang : public ImplLocal<iLang>
   cString __stdcall GetAbsoluteDataTablePath(iDataTable* apDT, tU32 anPropIndex);
 
   tBool __stdcall SetClipboard(eClipboardType aType, iDataTable* apDT);
-  iDataTable* __stdcall GetClipboard(eClipboardType aType) const;
+  iDataTable* __stdcall GetClipboard(eClipboardType aType, iCallback* callback = NULL) const;
 
   Ptr<iHString> __stdcall CreateHString(const cString& astrKey);
   tBool __stdcall LoadLocalization(iDataTable* apDT);

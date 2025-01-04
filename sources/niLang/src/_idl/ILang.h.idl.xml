@@ -1839,18 +1839,24 @@
 				const="yes"
 				java_name="getClipboard"
 				name="GetClipboard"
-				num_parameters="1"
+				num_parameters="2"
 				property="get"
 				property_name2="clipboard"
 				property_name="clipboard">
 				<comments desc="Get the data of the specified clipboard. "/>
 				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
-					last="1"
 					name="aType"
 					type="eClipboardType"
 					typec="eClipboardType"
 					typei="ni::eType_Enum"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="callback"
+					type="iCallback *"
+					typec="iCallback*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
 				const="yes"

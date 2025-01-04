@@ -13376,13 +13376,14 @@ static const ni::sMethodDef iLang_SetClipboard = {
 };
 
 // Method: GetClipboard
-static const ni::sParameterDef iLang_GetClipboard_Parameters[1] = { 
-  { "aType", ni::eType_Enum, NULL, "eClipboardType" }
+static const ni::sParameterDef iLang_GetClipboard_Parameters[2] = { 
+  { "aType", ni::eType_Enum, NULL, "eClipboardType" }, 
+  { "callback", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCallback), "iCallback*" }
 }; 
 static const ni::sMethodDef iLang_GetClipboard = {
   "GetClipboard",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*",
-  1, iLang_GetClipboard_Parameters,
+  2, iLang_GetClipboard_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iLang_GetClipboard)
 #else

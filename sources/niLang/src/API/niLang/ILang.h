@@ -611,7 +611,7 @@ struct iLang : public iUnknown
   virtual tBool __stdcall SetClipboard(eClipboardType aType, iDataTable* apDT) = 0;
   //! Get the data of the specified clipboard.
   //! {Property}
-  virtual iDataTable* __stdcall GetClipboard(eClipboardType aType) const = 0;
+  virtual iDataTable* __stdcall GetClipboard(eClipboardType aType, iCallback* callback = NULL) const = 0;
   //! @}
 
   //########################################################################################

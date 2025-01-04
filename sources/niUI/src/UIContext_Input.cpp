@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
+#include "niLang/IConcurrent.h"
+#include "niLang/IDataTable.h"
+#include "niLang/Utils/ConcurrentImpl.h"
 #include "stdafx.h"
 #include "UIContext.h"
 #include "niUI_HString.h"
@@ -192,9 +195,15 @@ void __stdcall cUIContext::_KeyDown(tU32 aKey)
         QPtr<cWidget> target(GetInputMessageTarget());
         if (target.IsOK()) {
           _UIInputTrace(niFmt(_A("### UICONTEXT-INPUT-Copy: %p (ID:%s)."),target.ptr(),niHStr(target->GetID())));
+          niDebugFmt(("### UICONTEXT-INPUT-Copy: %p (ID:%s).",target.ptr(),niHStr(target->GetID())));
+          // this gets the clipboard DT
           ni::Ptr<iDataTable> dt = ni::GetLang()->GetClipboard(eClipboardType_System);
+          // then this will write the selection in there
+          niDebugFmt(("Ctrl + C: %p", (void*)dt.ptr()));
           target->SendMessage(eUIMessage_Copy,dt.ptr(),niVarNull);
-          ni::GetLang()->SetClipboard(eClipboardType_System,dt);
+          niAssert(dt.IsOK());
+          // and this finally sets the clipboard for the rest of the apps
+          ni::GetLang()->SetClipboard(eClipboardType_System,dt.ptr());
         }
       }
       /// Cut ///
@@ -212,8 +221,10 @@ void __stdcall cUIContext::_KeyDown(tU32 aKey)
         QPtr<cWidget> target(GetInputMessageTarget());
         if (target.IsOK()) {
           _UIInputTrace(niFmt(_A("### UICONTEXT-INPUT-Paste: %p (ID:%s)."),target.ptr(),niHStr(target->GetID())));
-          ni::Ptr<iDataTable> dt = ni::GetLang()->GetClipboard(eClipboardType_System);
-          target->SendMessage(eUIMessage_Paste,dt.ptr(),niVarNull);
+          ni::GetLang()->GetClipboard(eClipboardType_System, ni::Callback1(
+            [target](iDataTable* dt) -> tBool {
+            return target->SendMessage(eUIMessage_Paste,dt,niVarNull);
+          }));
         }
       }
       /// Undo ///

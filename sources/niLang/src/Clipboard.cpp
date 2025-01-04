@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "Lang.h"
+#include "niLang/IConcurrent.h"
 
 using namespace ni;
 
@@ -66,11 +67,14 @@ tBool __stdcall cLang::SetClipboard(eClipboardType aType, iDataTable* apDT) {
   return eTrue;
 }
 
-///////////////////////////////////////////////
-iDataTable* __stdcall cLang::GetClipboard(eClipboardType aType) const {
+// GetClipboard can be async so we recieve a callback.
+iDataTable* __stdcall cLang::GetClipboard(eClipboardType aType, iCallback* callback) const {
   niCheck(aType < eClipboardType_Last,NULL);
   if (aType == eClipboardType_System) {
     niThis(cLang)->mptrClipboard[aType] = _GetSystemClipboard(mptrClipboard[aType]);
+  }
+  if (callback) {
+    callback->RunCallback(mptrClipboard[aType], niVarNull);
   }
   return mptrClipboard[aType];
 }

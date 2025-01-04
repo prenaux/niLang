@@ -1136,14 +1136,16 @@ IDLC_METH_BEGIN(ni,iLang,SetClipboard,2)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iLang,SetClipboard,2)
 
-/** ni -> iLang::GetClipboard/1 **/
-IDLC_METH_BEGIN(ni,iLang,GetClipboard,1)
+/** ni -> iLang::GetClipboard/2 **/
+IDLC_METH_BEGIN(ni,iLang,GetClipboard,2)
 	IDLC_DECL_VAR(eClipboardType,aType)
 	IDLC_BUF_TO_ENUM(eClipboardType,aType)
+	IDLC_DECL_VAR(iCallback*,callback)
+	IDLC_BUF_TO_INTF(iCallback,callback)
 	IDLC_DECL_RETVAR(iDataTable*,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iLang,GetClipboard,1,(aType))
+	IDLC_METH_CALL(_Ret,ni,iLang,GetClipboard,2,(aType,callback))
 	IDLC_RET_FROM_INTF(iDataTable,_Ret)
-IDLC_METH_END(ni,iLang,GetClipboard,1)
+IDLC_METH_END(ni,iLang,GetClipboard,2)
 
 /** ni -> iLang::GetNumMonitors/0 **/
 IDLC_METH_BEGIN(ni,iLang,GetNumMonitors,0)

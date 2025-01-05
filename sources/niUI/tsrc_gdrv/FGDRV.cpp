@@ -1,9 +1,13 @@
 #include "stdafx.h"
 #include "FGDRV.h"
+#include <niLang/Utils/Trace.h>
 
 namespace ni {
 
 niLetK knNumStepsInCI = 10;
+
+niDeclareModuleTrace_(Test,TraceOSWindow);
+#define TRACE_OSWINDOW(FMT) niModuleTrace_(Test,TraceOSWindow,FMT)
 
 struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
   const tU64 _threadId;
@@ -31,17 +35,17 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
     iOSWindow* wnd = _context->_window;
     switch (anMsg) {
       case eOSWindowMessage_Close:
-        niDebugFmt((_A("eOSWindowMessage_Close: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_Close: \n"));
         wnd->Invalidate();
         break;
       case eOSWindowMessage_SwitchIn:
-        niDebugFmt((_A("eOSWindowMessage_SwitchIn: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_SwitchIn: \n"));
         break;
       case eOSWindowMessage_SwitchOut:
-        niDebugFmt((_A("eOSWindowMessage_SwitchOut: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_SwitchOut: \n"));
         break;
       case eOSWindowMessage_Paint: {
-        // niDebugFmt((_A("eOSWindowMessage_Paint: \n")));
+        // TRACE_OSWINDOW(("eOSWindowMessage_Paint: \n"));
         if (_context && _testResults) {
           _context->BeforePaint(*_testResults);
           _context->OnPaint(*_testResults);
@@ -50,13 +54,13 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
         break;
       }
       case eOSWindowMessage_Size:
-        niDebugFmt((_A("eOSWindowMessage_Size: %s\n"),_ASZ(wnd->GetSize())));
+        TRACE_OSWINDOW(("eOSWindowMessage_Size: %s\n",_ASZ(wnd->GetSize())));
         break;
       case eOSWindowMessage_Move:
-        niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(wnd->GetPosition())));
+        TRACE_OSWINDOW(("eOSWindowMessage_Move: %s\n",_ASZ(wnd->GetPosition())));
         break;
       case eOSWindowMessage_KeyDown:
-        niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        TRACE_OSWINDOW(("eOSWindowMessage_KeyDown: %d (%s)\n",a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {
           case eKey_LControl:
             niFlagOn(_debugKeyMod,eKeyMod_Control);
@@ -100,7 +104,7 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
             switch (a.mU32 | _debugKeyMod) {
               // trigger a breakpoint
               case eKey_B|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
-                niDebugFmt(("... Trigger Breakpoint ..."));
+                TRACE_OSWINDOW(("... Trigger Breakpoint ..."));
                 ni_debug_break();
                 break;
               }
@@ -110,7 +114,7 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
         }
         break;
       case eOSWindowMessage_KeyUp:
-        niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
+        TRACE_OSWINDOW(("eOSWindowMessage_KeyUp: %d (%s)\n",a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {
           case eKey_LControl:
             niFlagOff(_debugKeyMod,eKeyMod_Control);
@@ -124,16 +128,16 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
         }
         break;
       case eOSWindowMessage_KeyChar:
-        niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
+        TRACE_OSWINDOW(("eOSWindowMessage_KeyChar: %c (%d) \n",a.mU32,a.mU32));
         break;
       case eOSWindowMessage_MouseButtonDown:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
+        TRACE_OSWINDOW(("eOSWindowMessage_MouseButtonDown: %d\n",a.mU32));
         break;
       case eOSWindowMessage_MouseButtonUp:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonUp: %d\n"),a.mU32));
+        TRACE_OSWINDOW(("eOSWindowMessage_MouseButtonUp: %d\n",a.mU32));
         break;
       case eOSWindowMessage_MouseButtonDoubleClick:
-        niDebugFmt((_A("eOSWindowMessage_MouseButtonDoubleClick: %d\n"),a.mU32));
+        TRACE_OSWINDOW(("eOSWindowMessage_MouseButtonDoubleClick: %d\n",a.mU32));
         if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
           //                     wnd->SetFullScreen(!wnd->GetFullScreen());
         }
@@ -142,29 +146,29 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
         }
         break;
       case eOSWindowMessage_MouseWheel:
-        niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
+        TRACE_OSWINDOW(("eOSWindowMessage_MouseWheel: %f, %f\n",a.GetFloatValue(),b.GetFloatValue()));
         break;
       case eOSWindowMessage_LostFocus: {
-        niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_LostFocus: \n"));
         break;
       }
       case eOSWindowMessage_SetFocus:
-        niDebugFmt((_A("eOSWindowMessage_SetFocus: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_SetFocus: \n"));
         break;
       case eOSWindowMessage_Drop:
-        niDebugFmt((_A("eOSWindowMessage_Drop: \n")));
+        TRACE_OSWINDOW(("eOSWindowMessage_Drop: \n"));
         break;
 
       case eOSWindowMessage_RelativeMouseMove:
 #ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
+        TRACE_OSWINDOW(("eOSWindowMessage_RelativeMouseMove: [%d,%d]\n"),
                     a.mV2L[0],a.mV2L[1]));
 #endif
         break;
 
       case eOSWindowMessage_MouseMove:
 #ifdef TRACE_MOUSE_MOVE
-        niDebugFmt((_A("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
+        TRACE_OSWINDOW(("eOSWindowMessage_MouseMove: [%d,%d] [%d,%d] (contentsScale: %g)\n"),
                     a.mV2L[0],a.mV2L[1],
                     b.mV2L[0],b.mV2L[1],
                     wnd->GetContentsScale()));
@@ -185,9 +189,11 @@ tBool sFGDRV_Base::Start(UnitTest::TestResults& testResults_) {
   _window = niCheckNN(_window,ni::GetLang()->CreateWindow(
     nullptr,
     m_testName,
-    sRecti(50,50,400,300),
+    sRecti(50,50,640,480),
     0,
     eOSWindowStyleFlags_Regular),eFalse);
+  _window->SetClientSize(Vec2i(
+    Vec2f(_window->GetClientSize())*_window->GetContentsScale()));
   _window->GetMessageHandlers()->AddSink(_windowHandler);
 
   // Get the graphics driver name, can be set through -Drenderer=NAME
@@ -221,7 +227,7 @@ void sFGDRV_Base::End(UnitTest::TestResults& testResults_) {
 }
 
 tBool sFGDRV_Base::Step(UnitTest::TestResults& testResults_) {
-  // niDebugFmt(("... STEP %s: %d", m_testName, _testStepCount));
+  // TRACE_OSWINDOW(("... STEP %s: %d", m_testName, _testStepCount));
   FGDRV_WindowHandler* windowHandler = (FGDRV_WindowHandler*)_windowHandler.raw_ptr();
   windowHandler->_testResults = &testResults_;
   niDefer {
@@ -284,6 +290,18 @@ tBool sFGDRV_Base::AfterPaint(UnitTest::TestResults& testResults_) {
     this->_animationTime += ni::GetLang()->GetFrameTime();
     this->_pingpongTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
   }
+
+  sVec4i memStats;
+  ni_mem_get_stats(&memStats);
+  cString fpsText = niFmt(
+    "%s (%s) - %gfps %dms %dalloc %dobj",
+    m_testName, _graphics->GetDriver()->GetName(),
+    ni::GetLang()->GetAverageFrameRate(),
+    (ni::GetLang()->GetFrameTime() * 1000.0),
+    memStats.x - memStats.y,
+    memStats.z - memStats.w
+  );
+  this->_window->SetTitle(fpsText.c_str());
 
   return eTrue;
 }

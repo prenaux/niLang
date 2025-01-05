@@ -3123,8 +3123,8 @@ struct sVulkanAccelerationStructureBase {
   sVulkanBuffer _asStorage;
   tU64 _asDeviceAddress = 0;
   VkAccelerationStructureGeometryKHR _geometry = {};
-  tU32 _primitiveCount = 0;
-  sVulkanScratchBuffer _scratchBuffer; // TODO: This should be shared somewhere?
+  VkAccelerationStructureBuildRangeInfoKHR _geometryBuild = {};
+  sVulkanScratchBuffer _scratchBuffer;
 
   sVulkanAccelerationStructureBase(
     ain<nn<sVulkanDriver>> aDriver,
@@ -3139,6 +3139,45 @@ struct sVulkanAccelerationStructureBase {
       vkDestroyAccelerationStructureKHR(_driver->_device, _asHandle, nullptr);
     }
     _asStorage._DestroyBuffer();
+  }
+
+  tBool _CreateAccelerationStructure(VkAccelerationStructureTypeKHR aVkType, ain<VkAccelerationStructureBuildGeometryInfoKHR> aBuildInfo) {
+    niCheck(_asHandle == VK_NULL_HANDLE, eFalse);
+    niCheck(_geometryBuild.primitiveCount > 0, eFalse);
+
+    _asSizeInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+    };
+    vkGetAccelerationStructureBuildSizesKHR(
+      _driver->_device,
+      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+      &aBuildInfo,
+      // pMaxPrimitiveCounts is a pointer to an array of
+      // pBuildInfo->geometryCount uint32_t values defining the number of
+      // primitives built into each geometry.
+      &_geometryBuild.primitiveCount,
+      &_asSizeInfo);
+    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,0),eFalse);
+
+    VkAccelerationStructureCreateInfoKHR createInfo = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
+      .buffer = _asStorage._vkBuffer,
+      .size = _asSizeInfo.accelerationStructureSize,
+      .type = aVkType
+    };
+
+    VK_CHECK(vkCreateAccelerationStructureKHR(
+      _driver->_device, &createInfo, nullptr, &_asHandle),eFalse);
+
+    {
+      VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
+      accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+      accelerationDeviceAddressInfo.accelerationStructure = _asHandle;
+      _asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
+      niCheck(_asDeviceAddress != 0, eFalse);
+    }
+
+    return eTrue;
   }
 
   tBool _BuildAccelerationStructure(VkCommandBuffer aCmdBuffer, VkAccelerationStructureTypeKHR aVkType) {
@@ -3163,13 +3202,7 @@ struct sVulkanAccelerationStructureBase {
     };
 
     // Setup build range
-    VkAccelerationStructureBuildRangeInfoKHR buildRange = {
-      .primitiveCount = _primitiveCount,
-      .primitiveOffset = 0,
-      .firstVertex = 0,
-      .transformOffset = 0
-    };
-    const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &buildRange;
+    const VkAccelerationStructureBuildRangeInfoKHR* pBuildRanges = &_geometryBuild;
 
     // Issue build command
     vkCmdBuildAccelerationStructuresKHR(
@@ -3190,13 +3223,6 @@ struct sVulkanAccelerationStructureBase {
       1, &barrier,
       0, nullptr,
       0, nullptr);
-
-    {
-      VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
-      accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
-      accelerationDeviceAddressInfo.accelerationStructure = _asHandle;
-      _asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
-    }
 
     return eTrue;
   }
@@ -3248,7 +3274,6 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
     niCheck(_asHandle == VK_NULL_HANDLE, eFalse);
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
-    _primitiveCount = anVertexCount/3;
 
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3264,8 +3289,15 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
         anVertexOffset
       },
       .vertexStride = anVertexStride,
-      .maxVertex = anVertexCount,
+      .maxVertex = anVertexCount-1,
       .indexType = VK_INDEX_TYPE_NONE_KHR,
+    };
+
+    _geometryBuild = {
+      .primitiveCount = anVertexCount/3,
+      .primitiveOffset = 0,
+      .firstVertex = 0,
+      .transformOffset = 0
     };
 
     VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
@@ -3276,30 +3308,8 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
       .geometryCount = 1,
       .pGeometries = &_geometry
     };
-
-    // Get size requirements
-    _asSizeInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
-    };
-    tU32 primCount = anVertexCount/3;
-    vkGetAccelerationStructureBuildSizesKHR(
-      _driver->_device,
-      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-      &buildInfo, &primCount, &_asSizeInfo);
-
-    // Create buffer
-    niCheck(_asStorage._CreateBuffer(
-      _asSizeInfo.accelerationStructureSize,0),eFalse);
-
-    // Create the acceleration structure
-    VkAccelerationStructureCreateInfoKHR createInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
-      .buffer = _asStorage._vkBuffer,
-      .size = _asSizeInfo.accelerationStructureSize,
-      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR
-    };
-    niCheck(vkCreateAccelerationStructureKHR(_driver->_device, &createInfo,
-                                             nullptr, &_asHandle) == VK_SUCCESS, eFalse);
+    niCheck(_CreateAccelerationStructure(
+      VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, buildInfo),eFalse);
 
     return eTrue;
   }
@@ -3322,7 +3332,6 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
     niCheck(anIndexCount >= 3, eFalse);
-    _primitiveCount = 1; // TODO: This is no bueno, should increment or keep track of things...
 
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3338,12 +3347,19 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
         anVertexOffset
       },
       .vertexStride = anVertexStride,
-      .maxVertex = anVertexCount,
+      .maxVertex = anVertexCount-1,
       .indexType = _ToVkIndexType[anIndexType],
       .indexData = {
         .deviceAddress = ((sVulkanBuffer*)apIndexBuffer)->_GetDeviceAddress() +
         anIndexOffset
       },
+    };
+
+    _geometryBuild = {
+      .primitiveCount = anIndexCount/3,
+      .primitiveOffset = 0,
+      .firstVertex = 0,
+      .transformOffset = 0
     };
 
     VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
@@ -3354,30 +3370,8 @@ struct sVulkanAccelerationStructurePrimitives : public ImplRC<
       .geometryCount = 1,
       .pGeometries = &_geometry
     };
-
-    // Get size requirements
-    _asSizeInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
-    };
-    tU32 primCount = anVertexCount/3;
-    vkGetAccelerationStructureBuildSizesKHR(
-      _driver->_device,
-      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-      &buildInfo, &primCount, &_asSizeInfo);
-
-    // Create buffer
-    niCheck(_asStorage._CreateBuffer(
-      _asSizeInfo.accelerationStructureSize,0),eFalse);
-
-    // Create the acceleration structure
-    VkAccelerationStructureCreateInfoKHR createInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
-      .buffer = _asStorage._vkBuffer,
-      .size = _asSizeInfo.accelerationStructureSize,
-      .type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR
-    };
-    niCheck(vkCreateAccelerationStructureKHR(_driver->_device, &createInfo,
-                                             nullptr, &_asHandle) == VK_SUCCESS, eFalse);
+    niCheck(_CreateAccelerationStructure(
+      VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, buildInfo),eFalse);
 
     return eTrue;
   }
@@ -3443,13 +3437,15 @@ struct sVulkanAccelerationStructureInstances : public ImplRC<
 
     niLet primitiveAS = static_cast<sVulkanAccelerationStructurePrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
-    _primitiveCount = 1; // TODO: This is no bueno, should increment or keep track of things...
 
     // Create geometry for instance
     _geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
       .geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR,
       .flags = VK_GEOMETRY_OPAQUE_BIT_KHR
+    };
+    _geometryBuild = {
+      .primitiveCount = 1
     };
 
     // Create instance data
@@ -3496,27 +3492,8 @@ struct sVulkanAccelerationStructureInstances : public ImplRC<
       .geometryCount = 1,
       .pGeometries = &_geometry
     };
-
-    _asSizeInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
-    };
-    vkGetAccelerationStructureBuildSizesKHR(
-      _driver->_device,
-      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-      &buildInfo,
-      &_primitiveCount,
-      &_asSizeInfo);
-    niCheck(_asStorage._CreateBuffer(_asSizeInfo.accelerationStructureSize,0),eFalse);
-
-    VkAccelerationStructureCreateInfoKHR createInfo = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
-      .buffer = _asStorage._vkBuffer,
-      .size = _asSizeInfo.accelerationStructureSize,
-      .type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR
-    };
-
-    VK_CHECK(vkCreateAccelerationStructureKHR(
-      _driver->_device, &createInfo, nullptr, &_asHandle),eFalse);
+    niCheck(_CreateAccelerationStructure(
+      VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, buildInfo),eFalse);
 
     return eTrue;
   }

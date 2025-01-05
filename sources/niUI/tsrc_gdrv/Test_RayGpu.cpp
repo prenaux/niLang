@@ -96,9 +96,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
   // Primitive and acceleration structures
   NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iGpuBuffer> _indexBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iAccelerationStructurePrimitives> _primitiveAS = niDeferredInit(NN<iAccelerationStructurePrimitives>);
-  Ptr<iAccelerationStructureInstances> _instanceAS;
+  NN<iAccelerationStructureInstances> _instanceAS = niDeferredInit(NN<iAccelerationStructureInstances>);
 
   // Ray tracing pipeline and shaders
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -164,24 +163,6 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
       _vertexBuffer->Unlock();
     }
 
-    {
-      _indexBuffer = niCheckNN(
-        _indexBuffer,
-        _driverGpu->CreateGpuBuffer(
-          _H("RayTriangle_IB"),
-          sizeof(tU32)*3,
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Index|
-          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
-        eFalse);
-      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
-      niCheck(inds != nullptr, eFalse);
-      inds[0] = 0;
-      inds[1] = 1;
-      inds[2] = 2;
-      _indexBuffer->Unlock();
-    }
-
     // Create acceleration structure
     {
       _primitiveAS = niCheckNN(
@@ -189,13 +170,24 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         _driverGpu->CreateAccelerationStructurePrimitives(_H("RayTriangle_AS")),
         eFalse);
 
-      niCheck(_primitiveAS->AddTrianglesIndexed(
+      niCheck(_primitiveAS->AddTriangles(
         _vertexBuffer,0,sizeof(tVertexFmt),3,
-        _indexBuffer,0,eGpuIndexType_U32,3,
         sMatrixf::Identity(),
         eAccelerationStructurePrimitiveFlags_Opaque,
-        0),
+        0), eFalse);
+
+      _instanceAS = niCheckNN(
+        _instanceAS,
+        _driverGpu->CreateAccelerationStructureInstances(
+          _H("RayTriangle_InstanceAS")),
         eFalse);
+      niCheck(_instanceAS->AddInstance(
+        _primitiveAS,
+        sMatrixf::Identity(), // Transform
+        0,                    // Instance ID
+        0xFF,                // Mask
+        0,                   // Hit group offset
+        eAccelerationStructureInstanceFlags_None), eFalse);
     }
 
     // Create our output image
@@ -215,26 +207,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
     // Build/update acceleration structure
     cmdEncoder->BuildAccelerationStructure(_primitiveAS);
-    {
-      // TODO: HACK: Because this API is wrong, we need the primitiveAS to be
-      // built before we instantiate it.
-      if (!_instanceAS.IsOK()) {
-        _instanceAS = niCheckNN(
-          _instanceAS,
-          _driverGpu->CreateAccelerationStructureInstances(
-            _H("RayTriangle_InstanceAS")),
-          eFalse);
-        niCheck(_instanceAS->AddInstance(
-          _primitiveAS,
-          sMatrixf::Identity(), // Transform
-          0,                    // Instance ID
-          0xFF,                // Mask
-          0,                   // Hit group offset
-          eAccelerationStructureInstanceFlags_None),
-                eFalse);
-      }
-      cmdEncoder->BuildAccelerationStructure(_instanceAS);
-    }
+    cmdEncoder->BuildAccelerationStructure(_instanceAS);
 
     // Launch ray tracing, one ray per pixel
     cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);
@@ -245,5 +218,154 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   }
 };
 TEST_CLASS(FRayGpu,Triangle);
+
+struct sFRayGpu_Square : public sFRayGpu_Base {
+  typedef sVertexPA tVertexFmt;
+
+  // Primitive and acceleration structures
+  NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _indexBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iAccelerationStructurePrimitives> _primitiveAS = niDeferredInit(NN<iAccelerationStructurePrimitives>);
+  NN<iAccelerationStructureInstances> _instanceAS = niDeferredInit(NN<iAccelerationStructureInstances>);
+
+  // Ray tracing pipeline and shaders
+  NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayMissFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayHitFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iRayGpuFunctionTable> _rayFuncTable = niDeferredInit(NN<iRayGpuFunctionTable>);
+  NN<iRayGpuPipeline> _rayPipeline = niDeferredInit(NN<iRayGpuPipeline>);
+  NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFRayGpu_Base::OnInit(testResults_),eFalse);
+
+    // Create ray tracing shaders
+    {
+      _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+
+      _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+
+      _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+    }
+
+    // Create ray tracing pipeline
+    {
+      _rayFuncTable = niCheckNN(_rayFuncTable, _driverGpu->CreateRayFunctionTable(), eFalse);
+      _rayFuncTable->SetRayGenFunction(_rayGenFun);
+      _rayFuncTable->SetMissFunction(_rayMissFun);
+
+      // Add hit group for squares
+      niLet hitGroupId = _rayFuncTable->AddHitGroup(
+        _H("square"),
+        eRayGpuFunctionGroupType_Triangles,
+        _rayHitFun,
+        nullptr, // No any-hit shader
+        nullptr  // No intersection shader (using built-in square intersection)
+      );
+      niCheck(hitGroupId != eInvalidHandle, eFalse);
+
+      _rayPipeline = niCheckNN(_rayPipeline,
+        _driverGpu->CreateRayPipeline(_H("RaySquare_Pipeline"), _rayFuncTable),
+        eFalse);
+    }
+
+    // Create vertex buffer with square geometry
+    {
+      _vertexBuffer = niCheckNN(
+        _vertexBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RaySquare_VB"),
+          sizeof(tVertexFmt)*4,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
+        eFalse);
+
+      tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      // 25 degree-ish rotated square
+      verts[0] = {{ -0.35f,  0.6f, 0.3f}, 0xFFFF0000}; // Red, TL
+      verts[1] = {{  0.6f,   0.35f, 0.3f}, 0xFF00FF00}; // Green, TR
+      verts[2] = {{  0.35f, -0.6f, 0.3f}, 0xFF0000FF}; // Blue, BR
+      verts[3] = {{ -0.6f,  -0.35f, 0.3f}, 0xFFFFFFFF}; // White, BL
+      _vertexBuffer->Unlock();
+    }
+
+    {
+      _indexBuffer = niCheckNN(
+        _indexBuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RaySquare_IB"),
+          sizeof(tU32)*6,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index|
+          eGpuBufferUsageFlags_AccelerationStructureBuildInput),
+        eFalse);
+      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0; inds[1] = 1; inds[2] = 2;
+      inds[3] = 2; inds[4] = 3; inds[5] = 0;
+      _indexBuffer->Unlock();
+    }
+
+    // Create acceleration structure
+    {
+      _primitiveAS = niCheckNN(
+        _primitiveAS,
+        _driverGpu->CreateAccelerationStructurePrimitives(_H("RaySquare_AS")),
+        eFalse);
+
+      niCheck(_primitiveAS->AddTrianglesIndexed(
+        _vertexBuffer,0,sizeof(tVertexFmt),4,
+        _indexBuffer,0,eGpuIndexType_U32,6,
+        sMatrixf::Identity(),
+        eAccelerationStructurePrimitiveFlags_Opaque,
+        0), eFalse);
+
+      _instanceAS = niCheckNN(
+        _instanceAS,
+        _driverGpu->CreateAccelerationStructureInstances(
+          _H("RaySquare_InstanceAS")),
+        eFalse);
+      niCheck(_instanceAS->AddInstance(
+        _primitiveAS,
+        sMatrixf::Identity(), // Transform
+        0,                    // Instance ID
+        0xFF,                // Mask
+        0,                   // Hit group offset
+        eAccelerationStructureInstanceFlags_None), eFalse);
+    }
+
+    // Create our output image
+    {
+      _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
+        _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
+        256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+
+    // Build/update acceleration structure
+    cmdEncoder->BuildAccelerationStructure(_primitiveAS);
+    cmdEncoder->BuildAccelerationStructure(_instanceAS);
+
+    // Launch ray tracing, one ray per pixel
+    cmdEncoder->DispatchRays(_rayPipeline,_rayOutputImage);
+
+    DisplayTexture(cmdEncoder,_rayOutputImage);
+
+    return eTrue;
+  }
+};
+TEST_CLASS(FRayGpu,Square);
 
 }

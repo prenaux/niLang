@@ -52,7 +52,7 @@
 #define SUPPORT_PROFILE_METAL 1
 #endif
 
-#if !defined __JSCC__ && !defined ANDROID && !defined IOS && !defined __QNX__
+#if !defined __JSCC__ && !defined ANDROID && !defined niIOS && !defined __QNX__
 #ifndef SUPPORT_PROFILE_GLSL120
 #define SUPPORT_PROFILE_GLSL120 1
 #endif

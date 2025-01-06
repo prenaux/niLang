@@ -27,7 +27,7 @@ using namespace ni;
 #elif defined niOSX
 #  define GDRV_GL2
 #  define GDRV_METAL
-#  define GDRV_VULKAN
+// #  define GDRV_VULKAN
 #elif defined niIOSMac
 #  define GDRV_METAL
 #elif defined niIOS

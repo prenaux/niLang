@@ -699,6 +699,15 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     return eTrue;
   }
   virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {
+    // we ensure that all the pressed keys have been unpressed
+    // to avoid them getting stuck
+    niLoop(i, niCountOf(mKeyPressed)) {
+      if (mKeyPressed[mXKeyToScan[i]]) {
+        mKeyPressed[i] = eFalse;
+        _SendMessage(eOSWindowMessage_KeyUp, mXKeyToScan[i]);
+      }
+    }
+
     _SendMessage(eOSWindowMessage_SwitchOut,anReason);
     return eTrue;
   }
@@ -1182,12 +1191,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
       case FocusIn:
         mbIsActive = eTrue;
-        _SendMessage(eOSWindowMessage_SwitchIn);
+        SwitchIn(eOSWindowMessage_LostFocus);
         break;
 
       case FocusOut:
         mbIsActive = eFalse;
-        _SendMessage(eOSWindowMessage_SwitchOut);
+        SwitchOut(eOSWindowMessage_SetFocus);
         break;
 
       case ButtonPress:

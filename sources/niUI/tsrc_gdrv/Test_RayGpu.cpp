@@ -43,7 +43,6 @@ struct sFRayGpu_Base : public sFGDRV_Base {
     _driverGpu = AsNN(driverGpu.raw_ptr());
     CHECK_RET(_graphics->GetDriver()->GetCaps(eGraphicsCaps_IRayGpu) != 0,eFalse);
 
-
     // Setup display quad
     _displayVABuffer = niCheckNN(
       _displayVABuffer,
@@ -114,7 +113,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
   typedef sVertexPA tVertexFmt;
 
   // Primitive and acceleration structures
-  NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _triangleVB = niDeferredInit(NN<iGpuBuffer>);
   NN<iAccelerationStructurePrimitives> _primitiveAS = niDeferredInit(NN<iAccelerationStructurePrimitives>);
   NN<iAccelerationStructureInstances> _instanceAS = niDeferredInit(NN<iAccelerationStructureInstances>);
 
@@ -164,8 +163,8 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
 
     // Create vertex buffer with triangle geometry
     {
-      _vertexBuffer = niCheckNN(
-        _vertexBuffer,
+      _triangleVB = niCheckNN(
+        _triangleVB,
         _driverGpu->CreateGpuBuffer(
           _H("RayTriangle_VB"),
           sizeof(tVertexFmt)*3,
@@ -174,12 +173,12 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
           eGpuBufferUsageFlags_AccelerationStructureBuildInput),
         eFalse);
 
-      tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
+      tVertexFmt* verts = (tVertexFmt*)_triangleVB->Lock(0, _triangleVB->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
       verts[0] = {{  0.0f,   0.5f, 0.3f}, 0xFFFF0000}; // Red, TC
       verts[1] = {{  0.5f,  -0.5f, 0.3f}, 0xFF00FF00}; // Green, BR
       verts[2] = {{ -0.5f,  -0.5f, 0.3f}, 0xFF0000FF}; // Blue, BL
-      _vertexBuffer->Unlock();
+      _triangleVB->Unlock();
     }
 
     // Create acceleration structure
@@ -190,7 +189,7 @@ struct sFRayGpu_Triangle : public sFRayGpu_Base {
         eFalse);
 
       niCheck(_primitiveAS->AddTriangles(
-        _vertexBuffer,0,sizeof(tVertexFmt),3,
+        _triangleVB,0,sizeof(tVertexFmt),3,
         sMatrixf::Identity(),
         eAccelerationStructurePrimitiveFlags_Opaque,
         0), eFalse);
@@ -242,8 +241,8 @@ struct sFRayGpu_Square : public sFRayGpu_Base {
   typedef sVertexPA tVertexFmt;
 
   // Primitive and acceleration structures
-  NN<iGpuBuffer> _vertexBuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iGpuBuffer> _indexBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _squareVB = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _squareIB = niDeferredInit(NN<iGpuBuffer>);
   NN<iAccelerationStructurePrimitives> _primitiveAS = niDeferredInit(NN<iAccelerationStructurePrimitives>);
   NN<iAccelerationStructureInstances> _instanceAS = niDeferredInit(NN<iAccelerationStructureInstances>);
 
@@ -293,8 +292,8 @@ struct sFRayGpu_Square : public sFRayGpu_Base {
 
     // Create vertex buffer with square geometry
     {
-      _vertexBuffer = niCheckNN(
-        _vertexBuffer,
+      _squareVB = niCheckNN(
+        _squareVB,
         _driverGpu->CreateGpuBuffer(
           _H("RaySquare_VB"),
           sizeof(tVertexFmt)*4,
@@ -303,19 +302,19 @@ struct sFRayGpu_Square : public sFRayGpu_Base {
           eGpuBufferUsageFlags_AccelerationStructureBuildInput),
         eFalse);
 
-      tVertexFmt* verts = (tVertexFmt*)_vertexBuffer->Lock(0, _vertexBuffer->GetSize(), eLock_Discard);
+      tVertexFmt* verts = (tVertexFmt*)_squareVB->Lock(0, _squareVB->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
       // 25 degree-ish rotated square
       verts[0] = {{ -0.35f,  0.6f, 0.3f}, 0xFFFF0000}; // Red, TL
       verts[1] = {{  0.6f,   0.35f, 0.3f}, 0xFF00FF00}; // Green, TR
       verts[2] = {{  0.35f, -0.6f, 0.3f}, 0xFF0000FF}; // Blue, BR
       verts[3] = {{ -0.6f,  -0.35f, 0.3f}, 0xFFFFFFFF}; // White, BL
-      _vertexBuffer->Unlock();
+      _squareVB->Unlock();
     }
 
     {
-      _indexBuffer = niCheckNN(
-        _indexBuffer,
+      _squareIB = niCheckNN(
+        _squareIB,
         _driverGpu->CreateGpuBuffer(
           _H("RaySquare_IB"),
           sizeof(tU32)*6,
@@ -323,11 +322,11 @@ struct sFRayGpu_Square : public sFRayGpu_Base {
           eGpuBufferUsageFlags_Index|
           eGpuBufferUsageFlags_AccelerationStructureBuildInput),
         eFalse);
-      tU32* inds = (tU32*)_indexBuffer->Lock(0, _indexBuffer->GetSize(), eLock_Discard);
+      tU32* inds = (tU32*)_squareIB->Lock(0, _squareIB->GetSize(), eLock_Discard);
       niCheck(inds != nullptr, eFalse);
       inds[0] = 0; inds[1] = 1; inds[2] = 2;
       inds[3] = 2; inds[4] = 3; inds[5] = 0;
-      _indexBuffer->Unlock();
+      _squareIB->Unlock();
     }
 
     // Create acceleration structure
@@ -338,8 +337,8 @@ struct sFRayGpu_Square : public sFRayGpu_Base {
         eFalse);
 
       niCheck(_primitiveAS->AddTrianglesIndexed(
-        _vertexBuffer,0,sizeof(tVertexFmt),4,
-        _indexBuffer,0,eGpuIndexType_U32,6,
+        _squareVB,0,sizeof(tVertexFmt),4,
+        _squareIB,0,eGpuIndexType_U32,6,
         sMatrixf::Identity(),
         eAccelerationStructurePrimitiveFlags_Opaque,
         0), eFalse);

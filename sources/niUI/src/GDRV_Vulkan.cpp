@@ -24,6 +24,9 @@
 #include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
 
 #if defined niOSX
+// NOTE: Vulkan on macOS/iOS fails to link because MoltenVK doesnt have the
+// ray tracing extensions. Its (very?) low priority atm since we use Metal on
+// those platforms anyway and this was more of a debugging/testing thing.
 #include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
 #elif defined niLinux
 #include <niLang/Platforms/Linux/linuxgl.h>

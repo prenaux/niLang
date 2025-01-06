@@ -2,6 +2,25 @@
 #include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
+//
+// TODO:
+// - [ ] p0: FRayGpu-TriangleSquare: Multiple geometries & instances, one triangle and a square side by sidea
+// - [ ] p0: FRayGpu-UpdateInstance: Triangle & square rotating
+// - [ ] p0: Sphere intersection shader
+// - [ ] p0: Visualize: one colour per instance (use hashToColor / rainbowColor to generate that from the instance id)
+// - [ ] p0: Visualize: triangles with barycentric coordinate
+// - [ ] p1: Checkerboard floor
+// - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
+// - [ ] p1: One reflective sphere on checkerboard floor
+// - [ ] p1: Ref PT cornell box white-furnace sky
+// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive square should be the light source
+// - [ ] p1: Visualize: base color
+// - [ ] p1: Visualize: normals
+// - [ ] p1: Visualize: worldspace position
+// - [ ] p2: Textured cube
+// - [ ] p2: Visualize: tex coordinates
+//
+
 using namespace ni;
 
 namespace {

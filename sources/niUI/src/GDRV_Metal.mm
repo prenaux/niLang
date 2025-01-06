@@ -21,10 +21,12 @@
 #include "Graphics.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
+#ifdef GDRV_VULKAN
 // For the Vulkan driver, needs to be implemented in an objective-c file
 #define niVulkan_Include
 #define niVulkanOSXMetal_Implement
 #include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+#endif
 
 #if defined niOSX || defined niIOSMac
 #define METAL_MAC
@@ -376,7 +378,14 @@ static MTLPixelFormat _GetMTLPixelFormat(eGpuPixelFormat aFmt) {
     case eGpuPixelFormat_D16:
       return MTLPixelFormatDepth16Unorm;
     case eGpuPixelFormat_D24S8:
+#if defined niIOS
+      // TODO: We never really use the stencil buffer on our end. But still
+      // this isnt nice. iOS (and most mobile platforms) requires a third "S8"
+      // only buffer to do the stencil buffer.
+      return MTLPixelFormatDepth32Float;
+#else
       return MTLPixelFormatDepth24Unorm_Stencil8;
+#endif
   }
   return MTLPixelFormatInvalid;
 }
@@ -745,7 +754,12 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDevi
         break;
       }
       case eGpuBufferMemoryMode_Managed: {
+#ifdef niIOS
+        // TODO: Confirm that this is equivalent for our purposes.
+        resOptions = MTLResourceStorageModeShared;
+#else
         resOptions = MTLResourceStorageModeManaged;
+#endif
         break;
       }
       case eGpuBufferMemoryMode_Private: {
@@ -826,12 +840,14 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDevi
   virtual tBool __stdcall Unlock() niImpl {
     if (!GetIsLocked())
       return eFalse;
+#if !defined niIOS
     if (_memMode == eGpuBufferMemoryMode_Managed &&
         _lockMode != eLock_ReadOnly)
     {
       [_mtlBuffer
        didModifyRange:NSMakeRange(_lockOffset,_lockSize)];
     }
+#endif
     _lockOffset = _lockSize = 0;
     return eTrue;
   }

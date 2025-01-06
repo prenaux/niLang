@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Check-out ham
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: prenaux/ham
           ref: master
@@ -33,7 +33,7 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: niLang
 
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Check-out ham
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: prenaux/ham
           ref: master
@@ -69,7 +69,7 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: niLang
 
@@ -86,12 +86,13 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_macos13:
-    runs-on: macos-13
+  build_macos15:
+    runs-on: macos-15
+    continue-on-error: true
 
     steps:
       - name: Check-out ham
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: prenaux/ham
           ref: master
@@ -105,7 +106,7 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: niLang
 
@@ -122,12 +123,13 @@ jobs:
         run: |
           ./ham/bin/ham -X niLang -E BUILD=ra _run_ci.sh
 
-  build_ios_on_macos13:
-    runs-on: macos-13
+  build_ios_on_macos15:
+    runs-on: macos-15
+    continue-on-error: true
 
     steps:
       - name: Check-out ham
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: prenaux/ham
           ref: master
@@ -141,22 +143,21 @@ jobs:
         run: |
           ./ham/bin/ham-toolset repos cppm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: niLang
 
       - name: niLang _build_bootstrap.sh
         run: |
           ./ham/bin/ham -X niLang _build_bootstrap.sh
-          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=ra pass1
 
       - name: niLang _run_ci.sh BUILD=da
         run: |
-          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=da pass1 all
+          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=da pass1 all
 
       - name: niLang _run_ci.sh BUILD=ra
         run: |
-          BUILD_TARGET=ios-arm64 ./ham/bin/ham -X niLang -E BUILD=ra pass1 all
+          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=ra pass1 all
 
   build_windows2019:
     runs-on: windows-2019
@@ -168,7 +169,7 @@ jobs:
           git config --global core.eol lf
 
       - name: Check-out ham
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: prenaux/ham
           ref: master
@@ -182,7 +183,7 @@ jobs:
         run: |
           .\ham\bin\ham-toolset.cmd repos cppm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: niLang
 

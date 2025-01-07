@@ -193,8 +193,6 @@ static struct
   { NoSymbol, eKey_Unknown },
 };
 
-struct cLinuxWindow;
-
 struct sX11System : public Impl_HeapAlloc {
   tBool mbIsLoaded;
   struct sX11Monitor {
@@ -208,7 +206,7 @@ struct sX11System : public Impl_HeapAlloc {
   tF32 mfContentsScale = 1.0f;
 
   // we need the window to pump events when waiting for the clipboard
-  Ptr<cLinuxWindow> mpWindow;
+  WeakPtr<iOSWindow> mwWindow;
 
   sX11System() {
     mbIsLoaded = ni_dll_load_x11();
@@ -416,7 +414,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   {
     sX11System* x11 = _GetX11System();
     niCheck(x11->IsOK(), ;);
-    x11->mpWindow = this;
+    x11->mwWindow = this;
 
     mbRequestedClose = eFalse;
     mnStyle = eOSWindowStyleFlags_Regular;
@@ -1886,15 +1884,14 @@ void _SetSystemClipboard(iDataTable* apDT) {
   const tU32 nTextIndex = apDT->GetPropertyIndex(_A("text"));
   if (nTextIndex != eInvalidHandle) {
     if (nTextIndex != eInvalidHandle) {
-      Ptr<cLinuxWindow> x11Window = _GetX11System()->mpWindow;
-      Display* display = x11Window->mpDisplay;
+      QPtr<cLinuxWindow> window = _GetX11System()->mwWindow;
+      Display* display = window->mpDisplay;
       if (display) {
-        Window window = x11Window->mHandle;
         cString text = apDT->GetString("text");
         TRACE_X11_SELECTION(("Adding the clipboard: %s", text))
 
         Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
-        dll_XSetSelectionOwner(display, clipboard, window, CurrentTime);
+        dll_XSetSelectionOwner(display, clipboard, window->mHandle, CurrentTime);
       }
     }
   }
@@ -1911,7 +1908,7 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   }
 
   sX11System* x11 =_GetX11System();
-  Ptr<cLinuxWindow> window = x11->mpWindow;
+  QPtr<cLinuxWindow> window = _GetX11System()->mwWindow;
   Display* display = window->mpDisplay;
   Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
   Window owner = dll_XGetSelectionOwner(display, clipboard);

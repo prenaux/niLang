@@ -247,7 +247,7 @@ static int ParseToolsCommandLine(const achar* aProcessCmdLine,
   processCmdLine.Trim();
 
   const tI32 parametersPos = ni::CmdLineGetParametersPos(processCmdLine);
-  if (parametersPos <= 0 || parametersPos == processCmdLine.size()) {
+  if (parametersPos <= 0 || parametersPos == (tI32)processCmdLine.size()) {
     return eInvalidHandle; // no parameters
   }
 

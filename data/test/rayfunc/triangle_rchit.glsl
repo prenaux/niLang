@@ -1,5 +1,6 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
+#extension GL_EXT_shader_image_load_formatted : enable
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
 // MODULE PROLOGUE BEGIN lib:shader

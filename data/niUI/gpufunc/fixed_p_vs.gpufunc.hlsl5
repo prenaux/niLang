@@ -31,11 +31,8 @@ struct SPIRV_Cross_Output
     float4 gl_Position : SV_Position;
 };
 
-static float2 vec2_Zero;
-
 void vert_main()
 {
-    vec2_Zero = 0.0f.xx;
     TestGpuFuncs_TestUniforms _106;
     _106.mtxWVP = IN_1_aUniforms_v.mtxWVP;
     _106.alphaRef = IN_1_aUniforms_v.alphaRef;
@@ -45,7 +42,7 @@ void vert_main()
     _106.materialColor = IN_1_aUniforms_v.materialColor;
     gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _106.mtxWVP);
     OUT_1_rval_color = _106.materialColor;
-    OUT_2_rval_tex0 = vec2_Zero;
+    OUT_2_rval_tex0 = 0.0f.xx;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
 

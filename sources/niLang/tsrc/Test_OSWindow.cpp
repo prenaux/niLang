@@ -15,6 +15,7 @@ struct FOSWindow {
 
 struct sTestWindowSink : public ImplRC<iMessageHandler> {
   iOSWindow* w;
+  Ptr<iDataTable> _clipboardDT;
   sTestWindowSink(iOSWindow* _w) : w(_w) {}
 
   tU64 __stdcall GetThreadID() const {
@@ -45,12 +46,14 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
       case eOSWindowMessage_Move:
         niDebugFmt((_A("eOSWindowMessage_Move: %s\n"),_ASZ(w->GetPosition())));
         break;
+
       case eOSWindowMessage_KeyDown:
         niDebugFmt((_A("eOSWindowMessage_KeyDown: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {
           case eKey_F:
             w->SetFullScreen(w->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
             break;
+
           case eKey_Z:
             w->SetCursorPosition(sVec2i::Zero());
             break;
@@ -78,6 +81,25 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
           case eKey_n0:
             w->CenterWindow();
             break;
+
+          case eKey_O: {
+            if (!_clipboardDT.IsOK()) {
+              _clipboardDT = ni::CreateDataTable("Clipboard");
+            }
+            _clipboardDT->SetString("text","Hello World from Test_OSWindow");
+            niCheck_(
+              ni::GetLang()->SetClipboard(eClipboardType_System,_clipboardDT),
+              "CopyClipboard",;);
+            niDebugFmt(("... Copied Clipboard: '%s'", _clipboardDT->GetString("text")));
+            break;
+          }
+          case eKey_P: {
+            _clipboardDT = ni::GetLang()->GetClipboard(eClipboardType_System);
+            niCheck_(_clipboardDT.IsOK(),"PasteClipboard",;);
+            niDebugFmt(("... Pasted Clipboard: '%s'", _clipboardDT->GetString("text")));
+            break;
+          }
+
           case eKey_n1:
             niDebugFmt(("... SetPosition: curr rect: %s", w->GetRect()));
             w->SetPosition(Vec2i(10,5));
@@ -113,12 +135,14 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
             break;
         }
         break;
+
       case eOSWindowMessage_KeyUp:
         niDebugFmt((_A("eOSWindowMessage_KeyUp: %d (%s)\n"),a.mU32,niEnumToChars(eKey,a.mU32)));
         break;
       case eOSWindowMessage_KeyChar:
         niDebugFmt((_A("eOSWindowMessage_KeyChar: %c (%d) \n"),a.mU32,a.mU32));
         break;
+
       case eOSWindowMessage_MouseButtonDown:
         niDebugFmt((_A("eOSWindowMessage_MouseButtonDown: %d\n"),a.mU32));
         break;
@@ -137,6 +161,7 @@ struct sTestWindowSink : public ImplRC<iMessageHandler> {
       case eOSWindowMessage_MouseWheel:
         niDebugFmt((_A("eOSWindowMessage_MouseWheel: %f, %f\n"),a.GetFloatValue(),b.GetFloatValue()));
         break;
+
       case eOSWindowMessage_LostFocus: {
         niDebugFmt((_A("eOSWindowMessage_LostFocus: \n")));
         break;

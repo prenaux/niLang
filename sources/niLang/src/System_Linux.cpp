@@ -1361,7 +1361,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       }
 
       case SelectionNotify: {
-        Ptr<iDataTable> clipboardDT = ni::GetLang()->GetClipboard(eClipboardType_System);
+        Ptr<iDataTable> clipboardDT = _GetSystemClipboardDT();
         niPanicAssert(clipboardDT.IsOK());
         const XSelectionEvent sev = e->xselection;
         if (sev.property != None) {
@@ -1603,6 +1603,18 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
     }
 
     sendKey();
+  }
+
+  Ptr<iDataTable> _GetSystemClipboardDT() {
+    Ptr<iDataTable> dt = GetLangImpl()->mptrClipboard[eClipboardType_System];
+    if (!dt.IsOK()) {
+      dt = ni::CreateDataTable("Clipboard");
+      dt->SetString("type", "system");
+      dt->SetInt("content_version", 0);
+      return dt;
+    }
+
+    return dt;
   }
 
   inline Display* _GetDisplay() const { return (Display*)mpDisplay; }
@@ -1898,13 +1910,6 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
     return dt;
   }
 
-  // this is necessary because SelectionNotify event wants the DT.
-  // If we don't have this guard every call to GetClipboard will
-  // trigger the loop bellow waiting for the clipboard.
-  if (dt->GetBool("lock") == eTrue) {
-    return dt;
-  }
-
   sX11System* x11 =_GetX11System();
   Ptr<cLinuxWindow> window = x11->mpWindow;
   Display* display = window->mpDisplay;
@@ -1914,7 +1919,6 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   // as we already have the clipboard content in mptrClipboard
   Window windowHandle = window->mHandle;
   if (owner != windowHandle) {
-    dt->SetBool("lock", eTrue);
     Atom clipboardProp = dll_XInternAtom(display, X11_SELECTION_PROP_NAME, False);
     Atom utf8 = dll_XInternAtom(display, "UTF8_STRING", False);
     // this tells the xserver that we want the content of the clipboard
@@ -1935,7 +1939,6 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
         break;
       }
     }
-    dt->SetBool("lock", eFalse);
   }
   TRACE_X11_SELECTION(("GetClipboard DT: %p", dt));
   return dt;

@@ -206,7 +206,7 @@ struct sX11System : public Impl_HeapAlloc {
   tF32 mfContentsScale = 1.0f;
 
   // we need the window to pump events when waiting for the clipboard
-  WeakPtr<iOSWindow> mwWindow;
+  WeakPtr<iOSWindow> mwLastActiveWindow;
 
   sX11System() {
     mbIsLoaded = ni_dll_load_x11();
@@ -414,8 +414,6 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
   {
     sX11System* x11 = _GetX11System();
     niCheck(x11->IsOK(), ;);
-    x11->mwWindow = this;
-
     mbRequestedClose = eFalse;
     mnStyle = eOSWindowStyleFlags_Regular;
     mrectWindow.Set(5,5,105,105);
@@ -708,6 +706,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
+    _GetX11System()->mwLastActiveWindow = this;
     _SendMessage(eOSWindowMessage_SwitchIn,anReason);
     return eTrue;
   }
@@ -1204,12 +1203,12 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
       case FocusIn:
         mbIsActive = eTrue;
-        SwitchIn(eOSWindowMessage_LostFocus);
+        SwitchIn(eOSWindowMessage_SetFocus);
         break;
 
       case FocusOut:
         mbIsActive = eFalse;
-        SwitchOut(eOSWindowMessage_SetFocus);
+        SwitchOut(eOSWindowMessage_LostFocus);
         break;
 
       case ButtonPress:
@@ -1883,17 +1882,23 @@ void _SetSystemClipboard(iDataTable* apDT) {
   // selection/clipboard
   const tU32 nTextIndex = apDT->GetPropertyIndex(_A("text"));
   if (nTextIndex != eInvalidHandle) {
-    if (nTextIndex != eInvalidHandle) {
-      QPtr<cLinuxWindow> window = _GetX11System()->mwWindow;
+    QPtr<cLinuxWindow> window = _GetX11System()->mwLastActiveWindow;
+    if (!window.IsOK()) {
+      niWarning("No active window to set the clipboard.");
+    }
+    else {
       Display* display = window->mpDisplay;
       if (display) {
         cString text = apDT->GetString("text");
-        TRACE_X11_SELECTION(("Adding the clipboard: %s", text))
+        TRACE_X11_SELECTION(("Adding the clipboard: %s", text));
 
         Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
         dll_XSetSelectionOwner(display, clipboard, window->mHandle, CurrentTime);
       }
     }
+  }
+  else {
+    niWarning("No 'text' property in the clipboard property.");
   }
 }
 
@@ -1908,35 +1913,41 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   }
 
   sX11System* x11 =_GetX11System();
-  QPtr<cLinuxWindow> window = _GetX11System()->mwWindow;
-  Display* display = window->mpDisplay;
-  Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
-  Window owner = dll_XGetSelectionOwner(display, clipboard);
-  // if our window is the owner we don't need all the x11 mambo jambo
-  // as we already have the clipboard content in mptrClipboard
-  Window windowHandle = window->mHandle;
-  if (owner != windowHandle) {
-    Atom clipboardProp = dll_XInternAtom(display, X11_SELECTION_PROP_NAME, False);
-    Atom utf8 = dll_XInternAtom(display, "UTF8_STRING", False);
-    // this tells the xserver that we want the content of the clipboard
-    // and that we expect it to be a utf8 string
-    dll_XConvertSelection(display, clipboard, utf8, clipboardProp, windowHandle,
-                          CurrentTime);
+  QPtr<cLinuxWindow> window = _GetX11System()->mwLastActiveWindow;
+  if (!window.IsOK()) {
+    niWarning("No active window to get the clipboard.");
+  }
+  else {
+    Display* display = window->mpDisplay;
+    Atom clipboard = dll_XInternAtom(display, "CLIPBOARD", False);
+    Window owner = dll_XGetSelectionOwner(display, clipboard);
+    // if our window is the owner we don't need all the x11 mambo jambo
+    // as we already have the clipboard content in mptrClipboard
+    Window windowHandle = window->mHandle;
+    if (owner != windowHandle) {
+      Atom clipboardProp = dll_XInternAtom(display, X11_SELECTION_PROP_NAME, False);
+      Atom utf8 = dll_XInternAtom(display, "UTF8_STRING", False);
+      // this tells the xserver that we want the content of the clipboard
+      // and that we expect it to be a utf8 string
+      dll_XConvertSelection(display, clipboard, utf8, clipboardProp, windowHandle,
+                            CurrentTime);
 
-    const tI64 wasContentVersion = dt->GetIntDefault("content_version",0);
-    tU64 timer = ni::TimerInSeconds();
-    // blocks until the window gets the clipboard content or a timeout occurs
-    while(true) {
-      window->UpdateWindow(eTrue);
-      tI64 newContentVersion = dt->GetIntDefault("content_version",0);
-      if (newContentVersion != wasContentVersion)
-        break;
-      if (ni::TimerInSeconds() - timer > X11_SELECTION_TIMEOUT_SECS) {
-        niWarning("Timeout getting the clipboard content");
-        break;
+      const tI64 wasContentVersion = dt->GetIntDefault("content_version",0);
+      tU64 timer = ni::TimerInSeconds();
+      // blocks until the window gets the clipboard content or a timeout occurs
+      while(true) {
+        window->UpdateWindow(eTrue);
+        tI64 newContentVersion = dt->GetIntDefault("content_version",0);
+        if (newContentVersion != wasContentVersion)
+          break;
+        if (ni::TimerInSeconds() - timer > X11_SELECTION_TIMEOUT_SECS) {
+          niWarning("Timeout getting the clipboard content");
+          break;
+        }
       }
     }
   }
+
   TRACE_X11_SELECTION(("GetClipboard DT: %p", dt));
   return dt;
 }

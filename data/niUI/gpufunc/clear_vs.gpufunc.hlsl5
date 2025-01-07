@@ -17,14 +17,11 @@ struct SPIRV_Cross_Output
     float4 gl_Position : SV_Position;
 };
 
-static float2 vec2_Zero;
-
 void vert_main()
 {
-    vec2_Zero = 0.0f.xx;
     gl_Position = float4(IN_0_aInput_position, 1.0f);
     OUT_1_rval_color = IN_4_aInput_color;
-    OUT_2_rval_tex0 = vec2_Zero;
+    OUT_2_rval_tex0 = 0.0f.xx;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
 

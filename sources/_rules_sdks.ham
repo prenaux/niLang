@@ -87,7 +87,12 @@ rule Vulkan_LinkLibs {
 # NI_VIDEO_USE_*
 #######################################################################
 if $(NO_THREADS) = 1 {
-  ECHO "I/NO_THREADS, no video player." ;
+  if $(EMSCRIPTEN) = 1 {
+    NI_VIDEO_USE_IPCAM = 1 ;
+  }
+  else {
+    ECHO "I/NO_THREADS, no video player." ;
+  }
 }
 else {
   NI_VIDEO_USE_IPCAM ?= 1 ;

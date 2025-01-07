@@ -720,6 +720,74 @@ var NIAPP = _moduleLib('NIAPP', {
     console.log(msg);
   },
 
+  videos: {},
+
+  CreateVideoElement: function CreateVideoElement(src, w, h) {
+    if (!(src in this.videos)) {
+
+      var video = document.createElement('video');
+      // video.src = src; // Replace with your video URL
+      video.width = w;
+      video.height = h;
+      video.crossOrigin = 'anonymous';
+      video.autoplay = true;
+      video.muted = true;
+      // video.loop = true;
+      // video.muted = true; // Required for autoplay in modern browsers
+      this.videos[src] = { video: video, hls: null };
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = src;
+        video.play();
+      } else if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          video.play();
+        });
+        this.videos[src].hls = hls;
+      }
+
+      console.log("CreateVideoElement: " + src + " w:" + w + " h:" + h);
+    }
+  },
+
+  ReleaseVideoElement: function ReleaseVideoElement(src) {
+    const v = this.videos[src];
+    if (v) {
+      console.log('ReleaseVideoElement: ' + src);
+      const video = v.video;
+      // Pause and reset the video playback
+      video.pause();
+      video.currentTime = 0;
+
+      // Detach the HLS.js media (disconnect HLS.js from the video element)
+      const hls = v.hls;
+      if (hls) {
+        hls.detachMedia();
+        hls.destroy();  // This destroys the HLS.js instance and releases resources
+      }
+
+      video.remove();  // This removes the video from the DOM
+      delete this.videos[src];
+
+      console.log('HLS.js stopped, and resources have been released');
+    }
+  },
+
+  UpdateVideo: function UpdateVideo(src, id) {
+    const v = this.videos[src];
+    if (v) {
+      const video = v.video;
+      if (video && video.readyState >= video.HAVE_CURRENT_DATA) {
+        const canvas = Module['canvas'];
+        const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        gl.bindTexture(gl.TEXTURE_2D, GL.textures[id]);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, video.videoWidth, video.videoHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, video);
+      }
+    }
+  },
+
   NotifyHost: function NotifyHost(aCmdLine) {
     aCmdLine = aCmdLine ? aCmdLine.trim() : "";
     if (!aCmdLine.length)

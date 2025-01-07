@@ -4,7 +4,7 @@
 #include "VideoUtils.h"
 
 #if NI_VIDEO_USE_IPCAM
-#include <niCURL.h>
+
 #include <niLang/Utils/TimerSleep.h>
 #include <niLang/Utils/ConcurrentImpl.h>
 
@@ -35,6 +35,8 @@
     Decoding = green (0,1,0)
     Unknown = pink (1,0,1)
 */
+#ifndef __JSCC__
+#include <niCURL.h>
 struct cVideoDecoderIpcam : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
 {
   niBeginClass(cVideoDecoderIpcam);
@@ -425,6 +427,174 @@ struct cVideoDecoderIpcam : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_D
 
   niEndClass(cVideoDecoderIpcam);
 };
+#else
+
+#include <emscripten.h>
+
+struct cVideoDecoderIpcam : public ni::ImplRC<ni::iVideoDecoder,ni::eImplFlags_Default>
+{
+  niBeginClass(cVideoDecoderIpcam);
+
+  ///////////////////////////////////////////////
+  cVideoDecoderIpcam(iGraphics* apGraphics, iHString* ahspName, iFile* apFile, tVideoDecoderFlags aFlags)
+      : mFlags(aFlags)
+      , mptrGraphics(apGraphics)
+      , mbUpdateOnBind(eTrue)
+  {
+    niCheckIsOK(apFile,;);
+    mpTargetTexture = NULL;
+
+    ni::Ptr<ni::iDataTable> dt = ni::GetLang()->CreateDataTable("ipcam");
+    if (!ni::GetLang()->SerializeDataTable("xml", ni::eSerializeMode_Read, dt, apFile)) {
+      niError("Can't read ipcam datatable.");
+      return;
+    }
+
+    mnWidth = dt->GetIntDefault("width",640);
+    mnHeight = dt->GetIntDefault("height",480);
+    mnFPS = dt->GetIntDefault("fps",10);
+
+    if (niFlagIs(mFlags,eVideoDecoderFlags_TargetTexture)) {
+      Ptr<iTexture> ptrTex = mptrGraphics->CreateTexture(
+          NULL,
+          eBitmapType_2D,
+          "R8G8B8A8",
+          0,
+          mnWidth, mnHeight, 0,
+          eTextureFlags_Dynamic|eTextureFlags_Overlay);
+      if (!ptrTex.IsOK()) {
+        niError(niFmt("Can't create target texture for ipcam  ipcam '%s'.",
+                      apFile->GetSourcePath()));
+        return;
+      }
+
+      mpTargetTexture = niNew sVideoDecoderTexture(apGraphics,ahspName,this,ptrTex);
+    }
+
+    mstrURL = dt->GetStringDefault("url","");
+    if (mstrURL.empty()) {
+      niError("No source URL specified.");
+      return;
+    }
+
+    EM_ASM({ NIAPP.CreateVideoElement(UTF8ToString($0),$1,$2); },mstrURL.Chars(), mnWidth, mnHeight);
+    niLog(Info,niFmt("Initialized ipcam: %s, width: %d, height: %d.", mstrURL, mnWidth, mnHeight));
+  }
+
+  ///////////////////////////////////////////////
+  ~cVideoDecoderIpcam() {
+    IPCAM_TRACE(("Destroying ipcam %p: %s, width: %d, height: %d.", (tIntPtr)this, mstrURL, mnWidth, mnHeight));
+    niSafeDelete(mpTargetTexture);
+    Invalidate();
+  }
+
+  void _StopDecoding() {
+    EM_ASM({ NIAPP.ReleaseVideoElement(UTF8ToString($0)); },mstrURL.Chars());
+  }
+
+  ///////////////////////////////////////////////
+  void __stdcall Invalidate() {
+    _StopDecoding();
+  }
+
+  ///////////////////////////////////////////////
+  ni::tBool __stdcall IsOK() const {
+    niClassIsOK(cVideoDecoderIpcam);
+    return mstrURL.IsNotEmpty();
+  }
+
+  ///////////////////////////////////////////////
+  virtual const achar* __stdcall GetVideoDecoderName() const {
+    return _A("Ipcam");
+  }
+
+  ///////////////////////////////////////////////
+  virtual tF64 __stdcall GetVideoFps() const {
+    return ni::FDiv(1.0,(tF64)mnFPS);
+  }
+
+  ///////////////////////////////////////////////
+  virtual tF64 __stdcall GetLength() const {
+    return 0;
+  }
+  virtual void __stdcall SetTime(tF64 afTime) {
+  }
+  virtual tF64 __stdcall GetTime() const {
+    return 0;
+  }
+  virtual void __stdcall SetPause(tBool abPause) {
+    mbPaused = abPause;
+    if (mbPaused) {
+      _StopDecoding();
+    }
+  }
+  virtual tBool __stdcall GetPause() const {
+    return mbPaused;
+  }
+  virtual void __stdcall SetNumLoops(tU32 anNumLoops) {
+  }
+  virtual tU32 __stdcall GetNumLoops() const {
+    return 0;
+  }
+  virtual void __stdcall SetSpeed(tF32 afSpeed) {
+  }
+  virtual tF32 __stdcall GetSpeed() const {
+    return 1;
+  }
+
+  ///////////////////////////////////////////////
+  virtual tVideoDecoderFlags __stdcall GetFlags() const {
+    return mFlags;
+  }
+  virtual iTexture* __stdcall GetTargetTexture() {
+    return mpTargetTexture;
+  }
+  virtual iBitmap2D* __stdcall GetTargetBitmap() {
+    return NULL;
+  }
+
+  ///////////////////////////////////////////////
+  virtual tU32 __stdcall GetNumSoundTracks() const {
+    return 0;
+  }
+  virtual iUnknown* __stdcall GetSoundTrackData(tU32 anNumTrack) {
+    return NULL;
+  }
+
+  ///////////////////////////////////////////////
+  tBool mbUpdateOnBind;
+  virtual void __stdcall SetUpdateOnBind(tBool abUpdateOnBind) niImpl {
+    mbUpdateOnBind = abUpdateOnBind;
+  }
+  virtual tBool __stdcall GetUpdateOnBind() const {
+    return mbUpdateOnBind;
+  }
+
+  ///////////////////////////////////////////////
+  virtual tBool __stdcall Update(tBool abUpdateTarget, tF32 afFrameTime) {
+    if (!mbPaused) {
+      QPtr<iGLTexture> glTexture(mpTargetTexture);
+      if (glTexture.IsOK() && glTexture->GetGLHandle() > 0) {
+        EM_ASM({ NIAPP.UpdateVideo(UTF8ToString($0),$1); },
+               mstrURL.Chars(), glTexture->GetGLHandle());
+      }
+    }
+    return eTrue;
+  }
+
+  cString                  mstrURL;
+  tU32                     mnWidth;
+  tU32                     mnHeight;
+  tU32                     mnFPS;
+  Ptr<iGraphics>           mptrGraphics;
+  const tVideoDecoderFlags mFlags;
+  sVideoDecoderTexture*    mpTargetTexture;
+  tBool                    mbPaused;
+  void*                    mVideoData;
+
+  niEndClass(cVideoDecoderIpcam);
+};
+#endif
 
 iVideoDecoder* CreateVideoDecoder_Ipcam(iGraphics* apGraphics, iHString* ahspName, iFile* apFile, tVideoDecoderFlags aFlags) {
   return niNew cVideoDecoderIpcam(apGraphics,ahspName,apFile,aFlags);

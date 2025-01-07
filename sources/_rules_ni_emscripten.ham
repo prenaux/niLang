@@ -8,6 +8,7 @@ LINKFLAGS +=
   -s EXPORTED_FUNCTIONS='["_main","_malloc"]'
   -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","callMain","UTF8ToString","lengthBytesUTF8","stringToUTF8"]'
   --pre-js [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_pre.js ] ]
+  --post-js [ FQuote [ FDirName $(WORK) niLang sources emscripten hls.min.js ] ]
   --post-js [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_post.js ] ]
   --shell-file [ FQuote [ FDirName $(WORK) niLang sources emscripten 0_niLang_shell.html ] ]
   -s USE_WEBGL2=1

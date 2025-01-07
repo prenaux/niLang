@@ -850,6 +850,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       "  largePoints: %y\n"
       // Texture features
       "  samplerAnisotropy: %y\n"
+      "  shaderStorageImageReadWithoutFormat: %y\n"
+      "  shaderStorageImageWriteWithoutFormat: %y\n"
       "  textureCompressionBC: %y\n"
       "  textureCompressionETC2: %y\n"
       "  textureCompressionASTC_LDR: %y\n",
@@ -865,6 +867,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       (tBool)!!_physicalDeviceFeatures.largePoints,
       // Texture features
       (tBool)!!_physicalDeviceFeatures.samplerAnisotropy,
+      (tBool)!!_physicalDeviceFeatures.shaderStorageImageReadWithoutFormat,
+      (tBool)!!_physicalDeviceFeatures.shaderStorageImageWriteWithoutFormat,
       (tBool)!!_physicalDeviceFeatures.textureCompressionBC,
       (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
       (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
@@ -1080,6 +1084,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
     vkGetPhysicalDeviceFeatures2(_physicalDevice, &features2);
     features2.features.samplerAnisotropy = _physicalDeviceFeatures.samplerAnisotropy;
+    features2.features.shaderStorageImageReadWithoutFormat = VK_TRUE;
+    features2.features.shaderStorageImageWriteWithoutFormat = VK_TRUE;
 
     // === RASTER FEATURES SETUP ===
     VkPhysicalDevice8BitStorageFeatures storage8BitFeatures = {

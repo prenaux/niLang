@@ -1,5 +1,6 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
+#extension GL_EXT_shader_image_load_formatted : enable
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
 // MODULE PROLOGUE BEGIN lib:shader
@@ -91,15 +92,14 @@ void TestGpuFuncs_triangle_rgen(accelerationStructureEXT aAS, writeonly image2D 
   float _tmp_x = 0.001;
   float _tmp_y = 1000.0;
   lib_shader_RayDesc ray = lib_shader_RayDesc_new(_tmp_v, _tmp_w, _tmp_x, _tmp_y) /*SKIPPED COPY VALUETYPE: newed*/;
-  lib_shader_RayPayload payload = lib_shader_traceSimpleRay(aAS,ray,lib_shader_RayPayload_new_default());
-  vec4 outColor = payload.color;
-  imageStore(aOutputImage,ivec2(coords),outColor);
+  lib_shader_RayPayload payload = lib_shader_traceSimpleRay(aAS,ray,lib_shader_RayPayload_new_default()) /*SKIPPED COPY VALUETYPE: funcret*/;
+  imageStore(aOutputImage,ivec2(coords),payload.color);
 }
 // MODULE END TestGpuFuncs
 
 // Ray Shader main: TestGpuFuncs_triangle_rgen
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
-layout(set = 8, binding = 0,rgba8) uniform writeonly image2D IN_1_aOutputImage;
+layout(set = 8, binding = 0) uniform writeonly image2D IN_1_aOutputImage;
 void main(void) {
   lib_shader_initialize();
   lib_shader_RayWorkDimensions aLaunch;

@@ -34,11 +34,11 @@ static const int knMaxXwinHeight = 50000;
 #define X11_MAX_MESSAGES_PER_FRAME 100
 
 #ifndef TRACE_X11_SELECTION
-#define TRACE_X11_SELECTION(X) //niDebugFmt(X)
+#define TRACE_X11_SELECTION(X) // niDebugFmt(X)
 #endif
 
 #define X11_SELECTION_PROP_NAME "NILANG_SELECTION"
-#define X11_SELECTION_TIMEOUT_SECS 0.3
+#define X11_SELECTION_TIMEOUT_SECS 1.0
 
 ////////////////////////////////////////////////////////////////////////////
 // ni_dll_load_glx
@@ -204,12 +204,10 @@ struct sX11System : public Impl_HeapAlloc {
     tOSMonitorFlags mFlags;
   };
 
-  Ptr<iDataTable> mpClipboard;
-
   astl::vector<sX11Monitor> mvMonitors;
   tF32 mfContentsScale = 1.0f;
-  // wee need window and display for clipboard synchronization
 
+  // we need the window to pump events when waiting for the clipboard
   Ptr<cLinuxWindow> mpWindow;
 
   sX11System() {
@@ -1363,7 +1361,7 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
       }
 
       case SelectionNotify: {
-        Ptr<iDataTable> clipboardDT = _GetX11System()->mpClipboard;
+        Ptr<iDataTable> clipboardDT = ni::GetLang()->GetClipboard(eClipboardType_System);
         niPanicAssert(clipboardDT.IsOK());
         const XSelectionEvent sev = e->xselection;
         if (sev.property != None) {
@@ -1404,7 +1402,6 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::
 
             dll_XFree(prop_ret);
           }
-
         }
         else {
           niDebugFmt(("Selection could not be converted"));
@@ -1898,12 +1895,16 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
     dt = ni::CreateDataTable("Clipboard");
     dt->SetString("type","system");
     dt->SetInt("content_version", 0);
-    dt->SetBool("waiting",eFalse);
+    return dt;
   }
-  // in X11 the client will receive the SelectionNotify event when another
-  // client wants to get it's selection/clipboard. So this function will
-  // just return the current clipboard and subscribe to the
-  // selection/clipboard.
+
+  // this is necessary because SelectionNotify event wants the DT.
+  // If we don't have this guard every call to GetClipboard will
+  // trigger the loop bellow waiting for the clipboard.
+  if (dt->GetBool("lock") == eTrue) {
+    return dt;
+  }
+
   sX11System* x11 =_GetX11System();
   Ptr<cLinuxWindow> window = x11->mpWindow;
   Display* display = window->mpDisplay;
@@ -1913,6 +1914,7 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   // as we already have the clipboard content in mptrClipboard
   Window windowHandle = window->mHandle;
   if (owner != windowHandle) {
+    dt->SetBool("lock", eTrue);
     Atom clipboardProp = dll_XInternAtom(display, X11_SELECTION_PROP_NAME, False);
     Atom utf8 = dll_XInternAtom(display, "UTF8_STRING", False);
     // this tells the xserver that we want the content of the clipboard
@@ -1922,9 +1924,9 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
 
     const tI64 wasContentVersion = dt->GetIntDefault("content_version",0);
     tU64 timer = ni::TimerInSeconds();
-    x11->mpClipboard = dt;
+    // blocks until the window gets the clipboard content or a timeout occurs
     while(true) {
-      window->_NextEvent();
+      window->UpdateWindow(eTrue);
       tI64 newContentVersion = dt->GetIntDefault("content_version",0);
       if (newContentVersion != wasContentVersion)
         break;
@@ -1933,6 +1935,7 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
         break;
       }
     }
+    dt->SetBool("lock", eFalse);
   }
   TRACE_X11_SELECTION(("GetClipboard DT: %p", dt));
   return dt;

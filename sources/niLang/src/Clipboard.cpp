@@ -52,6 +52,26 @@ Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
   dt->SetString(_A("text"),strText.Chars());
   return dt;
 }
+#elif defined niJSCC
+#include <emscripten.h>
+
+void _SetSystemClipboard(iDataTable* apDT) {
+  niAssert(apDT && apDT->IsOK());
+  const tU32 nTextIndex = apDT->GetPropertyIndex(_A("text"));
+  if (nTextIndex != eInvalidHandle) {
+    cString text = apDT->GetStringFromIndex(nTextIndex);
+    EM_ASM({ navigator.clipboard.writeText(UTF8ToString($0)); }, text.Chars());
+  }
+}
+
+Ptr<iDataTable> _GetSystemClipboard(iDataTable* apExistingDT) {
+  Ptr<iDataTable> dt = apExistingDT;
+  if (!dt.IsOK()) {
+    dt = ni::CreateDataTable(_A("Clipboard"));
+    dt->SetString(_A("type"),_A("system"));
+  }
+  return dt;
+}
 
 #else
 // Implemented System_Linux.cpp

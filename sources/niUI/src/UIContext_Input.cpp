@@ -6,6 +6,32 @@
 #include "niUI_HString.h"
 #include <niLang/STL/utils.h>
 
+#include "niLang/Utils/ConcurrentImpl.h"
+#ifdef niJSCC
+#include <emscripten.h>
+static tU32 mnAsyncID = 0;
+static astl::map<tU32, Ptr<iCallback>> mvAsyncCalls;
+
+tU32 __PushJSCall(Ptr<iCallback> call) {
+  ++mnAsyncID;
+  mvAsyncCalls[mnAsyncID] = call;
+  return mnAsyncID;
+}
+
+void __PopJSCall(tU32 id, const Var& avarA = niVarNull, const Var& avarB = niVarNull) {
+  Ptr<iCallback> call = mvAsyncCalls[id];
+  if (call.IsOK()) {
+    call->RunCallback(avarA, avarB);
+    mvAsyncCalls.erase(id);
+  }
+}
+
+niExportJSCC(void) niJSCC_CallbackString(int id, const char* v1, const char* v2) {
+  __PopJSCall(id, v1, v2);
+}
+
+#endif
+
 ///////////////////////////////////////////////
 static inline tBool __stdcall _UIInputSendMsg(cWidget* apWidget,
                                               tU32 anID,
@@ -212,8 +238,26 @@ void __stdcall cUIContext::_KeyDown(tU32 aKey)
         QPtr<cWidget> target(GetInputMessageTarget());
         if (target.IsOK()) {
           _UIInputTrace(niFmt(_A("### UICONTEXT-INPUT-Paste: %p (ID:%s)."),target.ptr(),niHStr(target->GetID())));
+#ifdef niJSCC
+          Ptr<iCallback> callback = ni::Callback2([target] (const Var& varA, const Var& varB) -> tBool {
+            ni::Ptr<iDataTable> dt = ni::GetLang()->GetClipboard(eClipboardType_System);
+            dt->SetString("text", VarGetChars(varA));
+            target->SendMessage(eUIMessage_Paste,dt.ptr(),niVarNull);
+            return eTrue;
+          });
+
+          tU32 id = __PushJSCall(callback);
+          EM_ASM({
+              navigator.clipboard.readText().then(text => {
+                  Module.ccall('niJSCC_CallbackString', null, ['number','string', 'string'], [$0, text, null]);
+                }).catch(err => {
+                    console.error("Failed to read clipboard:", err);
+                  });
+            },id);
+#else
           ni::Ptr<iDataTable> dt = ni::GetLang()->GetClipboard(eClipboardType_System);
           target->SendMessage(eUIMessage_Paste,dt.ptr(),niVarNull);
+#endif
         }
       }
       /// Undo ///

@@ -9,7 +9,6 @@
 #include <niLang/Math/MathRect.h>
 #include "FVF.h"
 #include "GraphicsEnum.h"
-#include "IAccelerationStructure.h"
 #include "GpuEnum.h"
 
 namespace ni {
@@ -237,47 +236,6 @@ struct iGpuPipeline : public iDeviceResource
   virtual const iGpuPipelineDesc* __stdcall GetDesc() const = 0;
 };
 
-//! Ray function table interface
-//! \remark Defines the complete set of functions used in a ray tracing pipeline
-struct iRayGpuFunctionTable : public iUnknown {
-  niDeclareInterfaceUUID(iRayGpuFunctionTable,0xce0a2620,0xc4bc,0xef11,0xb1,0xc9,0x23,0xa8,0x14,0x62,0x0a,0xaf);
-
-  //! Set the ray generation function.
-  //! \remark Only one ray generation function is allowed per pipeline.
-  virtual tBool __stdcall SetRayGenFunction(iGpuFunction* apFunction) = 0;
-  //! Set the miss function
-  //! \remark Optional, at most one miss function per pipeline.
-  virtual tBool __stdcall SetMissFunction(iGpuFunction* apFunction) = 0;
-
-  //! Add a hit function group.
-  //! \param ahspName Name of the hit group. Used for debugging.
-  //! \param aType Type of hit group (triangles or procedural).
-  //! \param apClosestHit Closest hit function.
-  //! \param apAnyHit Optional any-hit function.
-  //! \param apIntersection Optional intersection function for procedural geometry.
-  //! \return Hit group ID, or eInvalidHandle if failed.
-  //! \remark Hit groups are immutable once the pipeline is created.
-  virtual tU32 __stdcall AddHitGroup(
-    iHString* ahspName,
-    eRayGpuFunctionGroupType aType,
-    iGpuFunction* apClosestHit,
-    iGpuFunction* apAnyHit = nullptr,
-    iGpuFunction* apIntersection = nullptr) = 0;
-};
-
-//! Ray tracing gpu pipeline interface
-//! \remark Ray execution order: Generation -> [Intersection -> Any Hit] -> Closest Hit or Miss
-struct iRayGpuPipeline : public iDeviceResource {
-  niDeclareInterfaceUUID(iRayGpuPipeline,0x54c330ff,0xc3bc,0xef11,0x9b,0xeb,0x2d,0x23,0xa2,0x57,0x56,0x3e);
-
-  //! Get ray generation function
-  virtual iGpuFunction* __stdcall GetRayGenFunction() const = 0;
-  //! Get miss function
-  virtual iGpuFunction* __stdcall GetMissFunction() const = 0;
-  //! Get function table
-  virtual iRayGpuFunctionTable* __stdcall GetFunctionTable() const = 0;
-};
-
 struct iGpuCommandEncoder : public iUnknown {
   niDeclareInterfaceUUID(iGpuCommandEncoder,0x055a196d,0x4ae9,0x7648,0xa8,0x6e,0x5e,0x90,0xaf,0xf2,0x16,0xce);
 
@@ -389,18 +347,6 @@ struct iGpuCommandEncoder : public iUnknown {
   //! \param anFirstIndex Index of first index to draw
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) = 0;
   //! @}
-
- //##########################################################################
-  //! \name Ray Tracing Commands (WIP)
-  //##########################################################################
-  //! @{
-
-  //! Build acceleration structure
-  virtual tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) = 0;
-
-  //! Dispatch rays
-  virtual tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, iTexture* apOutputImage) = 0;
-  //! @}
 };
 
 //! GPU-specific graphics context interface.
@@ -442,23 +388,6 @@ struct iGraphicsDriverGpu : public iUnknown
 
   //! Compile a GPU pipeline description into a driver handle.
   virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) = 0;
-
-  //! Synchronize a managed resource from the GPU to the CPU memory.
-  virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) = 0;
-
-  //! Create ray tracing pipeline
-  virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
-    iHString* ahspName,
-    iRayGpuFunctionTable* apFunctionTable) = 0;
-
-  //! Create ray tracing function table.
-  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() = 0;
-
-  //! Create a primitives acceleration structure
-  virtual Ptr<iAccelerationStructurePrimitives> __stdcall CreateAccelerationStructurePrimitives(iHString* ahspName) = 0;
-
-  //! Create a instances acceleration structure
-  virtual Ptr<iAccelerationStructureInstances> __stdcall CreateAccelerationStructureInstances(iHString* ahspName) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

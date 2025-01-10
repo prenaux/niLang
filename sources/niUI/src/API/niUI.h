@@ -35,8 +35,8 @@
 #include "niUI/IGraphics.h"
 
 #include "niUI/GpuEnum.h"
-#include "niUI/IAccelerationStructure.h"
 #include "niUI/IGpu.h"
+#include "niUI/IRay.h"
 
 #include "niUI/UIMessages.h"
 #include "niUI/IWidget.h"

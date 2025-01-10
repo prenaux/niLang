@@ -1257,7 +1257,7 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
         return 1;
       case eGraphicsCaps_IGpu:
         return 1;
-      case eGraphicsCaps_IRayGpu:
+      case eGraphicsCaps_IRay:
         return 0;
     }
   }
@@ -1571,38 +1571,6 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl {
     return ni::_CreateGpuBlendMode();
   }
-
-  virtual tBool BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl {
-    niPanicUnreachable("Unimplemented");
-    return eFalse;
-  }
-
-  Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(
-    iHString* ahspName,
-    iRayGpuFunctionTable* apFunctionTable)
-  {
-    niError("Ray tracing not implemented in Metal.");
-    return nullptr;
-  }
-
-  Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() {
-    niError("Ray tracing not implemented in Metal.");
-    return nullptr;
-  }
-
-  Ptr<iAccelerationStructurePrimitives> __stdcall CreateAccelerationStructurePrimitives(
-    iHString* ahspName)
-  {
-    niError("Ray tracing not implemented in Metal.");
-    return nullptr;
-  }
-
-  Ptr<iAccelerationStructureInstances> __stdcall CreateAccelerationStructureInstances(
-    iHString* ahspName)
-  {
-    niError("Ray tracing not implemented in Metal.");
-    return nullptr;
-  }
 };
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& avarB) {
@@ -1859,14 +1827,6 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
      vertexStart:anFirstVertex
      vertexCount:anVertexCount];
     return eTrue;
-  }
-
-  tBool __stdcall BuildAccelerationStructure(iAccelerationStructure* apAS) {
-    return eFalse;
-  }
-
-  virtual tBool __stdcall DispatchRays(iRayGpuPipeline* apPipeline, iTexture* apOutputImage) {
-    return eFalse;
   }
 };
 

@@ -58,8 +58,8 @@ enum eGraphicsCaps
   eGraphicsCaps_Wireframe               = 18,
   //! Return whether or not the driver supports the iGpu interfaces.
   eGraphicsCaps_IGpu                    = 19,
-  //! Return whether or not the driver supports the iRayGpu interfaces and acceleration structures.
-  eGraphicsCaps_IRayGpu                 = 20,
+  //! Return whether or not the driver supports the iRay interfaces.
+  eGraphicsCaps_IRay                    = 20,
   //! \internal
   eGraphicsCaps_Last niMaybeUnused = 21,
   //! \internal

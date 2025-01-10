@@ -62,9 +62,9 @@ enum eGpuBufferUsageFlags
   //! Destination for transfer operations
   eGpuBufferUsageFlags_TransferDst = niBit(6),
   //! Can used as an acceleration structure storage buffer
-  eGpuBufferUsageFlags_AccelerationStructureStorage = niBit(7),
+  eGpuBufferUsageFlags_RayStorage = niBit(7),
   //! Can used as an acceleration structure's build input
-  eGpuBufferUsageFlags_AccelerationStructureBuildInput = niBit(8),
+  eGpuBufferUsageFlags_RayBuildInput = niBit(8),
   //! Can be used as ray function binding table
   eGpuBufferUsageFlags_RayFunctionBindingTable = niBit(9),
   //! \internal
@@ -184,18 +184,6 @@ enum eGpuBlendOp {
   eGpuBlendOp_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
-//! Ray function group type for hit functions
-enum eRayGpuFunctionGroupType {
-  //! Hit group for built-in triangle intersection
-  eRayGpuFunctionGroupType_Triangles = 0,
-  //! Hit group with custom intersection function
-  eRayGpuFunctionGroupType_Procedural = 1,
-  //! \internal
-  eRayGpuFunctionGroupType_Last niMaybeUnused = 2,
-  //! \internal
-  eRayGpuFunctionGroupType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-
 //===========================================================================
 //
 //  Vulkan interfaces
@@ -209,7 +197,7 @@ enum eGLSLVulkanDescriptorSet {
   eGLSLVulkanDescriptorSet_TextureShadow = 4,
   eGLSLVulkanDescriptorSet_Sampler = 5,
   eGLSLVulkanDescriptorSet_SamplerShadow = 6,
-  eGLSLVulkanDescriptorSet_AccelerationStructure = 7,
+  eGLSLVulkanDescriptorSet_RayInstances = 7,
   eGLSLVulkanDescriptorSet_Image2D = 8,
   //! \internal
   eGLSLVulkanDescriptorSet_Last niMaybeUnused = 9,

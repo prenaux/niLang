@@ -55,10 +55,10 @@
 			<value name="eGpuBufferUsageFlags_TransferDst" value="niBit ( 6 ) ">
 				<comments desc="Destination for transfer operations "/>
 			</value>
-			<value name="eGpuBufferUsageFlags_AccelerationStructureStorage" value="niBit ( 7 ) ">
+			<value name="eGpuBufferUsageFlags_RayStorage" value="niBit ( 7 ) ">
 				<comments desc="Can used as an acceleration structure storage buffer "/>
 			</value>
-			<value name="eGpuBufferUsageFlags_AccelerationStructureBuildInput" value="niBit ( 8 ) ">
+			<value name="eGpuBufferUsageFlags_RayBuildInput" value="niBit ( 8 ) ">
 				<comments desc="Can used as an acceleration structure&apos;s build input "/>
 			</value>
 			<value name="eGpuBufferUsageFlags_RayFunctionBindingTable" value="niBit ( 9 ) ">
@@ -218,18 +218,6 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
-		<enum name="eRayGpuFunctionGroupType">
-			<comments desc="Ray function group type for hit functions "/>
-			<value name="eRayGpuFunctionGroupType_Triangles" value="0 ">
-				<comments desc="Hit group for built-in triangle intersection "/>
-			</value>
-			<value name="eRayGpuFunctionGroupType_Procedural" value="1 ">
-				<comments desc="Hit group with custom intersection function "/>
-			</value>
-			<value name="eRayGpuFunctionGroupType_Last" value="2 ">
-				<comments desc="\internal "/>
-			</value>
-		</enum>
 		<enum name="eGLSLVulkanDescriptorSet">
 			<comments desc=""/>
 			<value name="eGLSLVulkanDescriptorSet_Buffer" value="0 ">
@@ -253,7 +241,7 @@
 			<value name="eGLSLVulkanDescriptorSet_SamplerShadow" value="6 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanDescriptorSet_AccelerationStructure" value="7 ">
+			<value name="eGLSLVulkanDescriptorSet_RayInstances" value="7 ">
 				<comments desc=""/>
 			</value>
 			<value name="eGLSLVulkanDescriptorSet_Image2D" value="8 ">

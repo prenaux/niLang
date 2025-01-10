@@ -272,6 +272,9 @@ struct opt_raw_ptr : public astl::optional<T> {
   opt_raw_ptr& operator=(std::nullptr_t) = delete;
 };
 
+using eastl::nullopt;
+using nullopt_t = eastl::nullopt_t;
+
 template <typename T>
 using opt_mut = opt_raw_ptr<T*>;
 #ifdef niCCScriptMode

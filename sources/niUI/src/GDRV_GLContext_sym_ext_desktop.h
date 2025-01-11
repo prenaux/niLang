@@ -8,18 +8,18 @@ TSGL_EXT_PROC(void, glDeleteBuffers, (GLsizei n, const GLuint* buffers));
 
 TSGL_EXT_PROC(void, glActiveTexture, (GLenum texture));
 
-TSGL_EXT_PROC(GLhandle, glCreateShaderObject, (GLenum));
-TSGL_EXT_PROC(GLhandle, glCreateProgramObject, (void));
-TSGL_EXT_PROC(void, glDeleteObject, (GLhandle obj));
-TSGL_EXT_PROC(void, glAttachObject, (GLhandle program, GLhandle obj));
-TSGL_EXT_PROC(void, glUseProgramObject, (GLhandle program));
+TSGL_ARB_EXT_PROC(GLhandle, glCreateShaderObject, (GLenum));
+TSGL_ARB_EXT_PROC(GLhandle, glCreateProgramObject, (void));
+TSGL_ARB_EXT_PROC(void, glDeleteObject, (GLhandle obj));
+TSGL_ARB_EXT_PROC(void, glAttachObject, (GLhandle program, GLhandle obj));
+TSGL_ARB_EXT_PROC(void, glUseProgramObject, (GLhandle program));
+TSGL_ARB_EXT_PROC(void, glGetObjectParameteriv, (GLhandle shader, GLenum pname, GLint* params));
+TSGL_ARB_EXT_PROC(void, glGetInfoLog, (GLhandle object, GLsizei maxLength, GLsizei* length, GLchar* infoLog));
 
 TSGL_EXT_PROC(GLuint, glCreateShader, (GLenum type));
 TSGL_EXT_PROC(void, glShaderSource, (GLuint shader, GLsizei count, const char* const* src, const GLint* length));
 TSGL_EXT_PROC(void, glCompileShader, (GLuint shader));
-TSGL_EXT_PROC(void, glGetObjectParameteriv, (GLhandle shader, GLenum pname, GLint* params));
 TSGL_EXT_PROC(void, glAttachShader, (GLuint program, GLuint shader));
-TSGL_EXT_PROC(void, glGetInfoLog, (GLhandle object, GLsizei maxLength, GLsizei* length, GLchar* infoLog));
 TSGL_EXT_PROC(void, glLinkProgram, (GLuint program));
 TSGL_EXT_PROC(int, glGetUniformLocation, (GLuint program, const char* name));
 TSGL_EXT_PROC(void, glUniform1f, (GLint location, GLfloat v0));

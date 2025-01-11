@@ -33,6 +33,7 @@
 #include "niUI/IImage.h"
 #include "niUI/ICanvas.h"
 #include "niUI/IGraphics.h"
+#include "niUI/IJpegWriter.h"
 
 #include "niUI/GpuEnum.h"
 #include "niUI/IAccelerationStructure.h"

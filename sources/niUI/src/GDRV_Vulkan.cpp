@@ -3220,15 +3220,9 @@ struct sVulkanRayASDesc {
   tHStringPtr _name;
   sVulkanScratchBuffer _scratchBuffer;
 
-  struct sGeometry {
-    VkAccelerationStructureGeometryKHR _geometry = {};
-    VkAccelerationStructureBuildRangeInfoKHR _buildRangeInfo = {};
-    Ptr<sVulkanBuffer> _vertexBuffer;
-    Ptr<sVulkanBuffer> _indexBuffer;
-  };
-  astl::vector<sGeometry> _geometries;
-  astl::vector<const VkAccelerationStructureGeometryKHR*> _geometryPtrs;
-  astl::vector<const VkAccelerationStructureBuildRangeInfoKHR*> _buildRangeInfoPtrs;
+  astl::vector<VkAccelerationStructureGeometryKHR> _vkGeometries;
+  astl::vector<VkAccelerationStructureBuildRangeInfoKHR> _vkBuildInfos;
+  astl::vector<NN<sVulkanBuffer>> _buffers;
   astl::vector<uint32_t> _geometryPrimitiveCounts;
 
   sVulkanRayASDesc(
@@ -3247,13 +3241,15 @@ struct sVulkanRayASDesc {
     ain<opt_mut<sVulkanBuffer>> aVertexBuffer,
     ain<opt_mut<sVulkanBuffer>> aIndexBuffer)
   {
-    sGeometry& r = _geometries.emplace_back();
-    r._geometry = aGeom;
-    r._buildRangeInfo = aBuildRangeInfo;
-    _geometryPtrs.emplace_back(&r._geometry);
-    _buildRangeInfoPtrs.emplace_back(&r._buildRangeInfo);
-    _geometryPrimitiveCounts.emplace_back(r._buildRangeInfo.primitiveCount);
-    return (tU32)(_geometries.size()-1);
+    _vkGeometries.emplace_back(aGeom);
+    _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    if (aVertexBuffer.has_value()) {
+      _buffers.emplace_back(aVertexBuffer.value());
+    }
+    if (aIndexBuffer.has_value()) {
+      _buffers.emplace_back(aIndexBuffer.value());
+    }
+    return (tU32)(_vkGeometries.size()-1);
   }
 
   tBool _CreateAccelerationStructure(
@@ -3263,7 +3259,13 @@ struct sVulkanRayASDesc {
   )
   {
     niDebugAssert(aAS._asHandle == VK_NULL_HANDLE);
-    niCheck(!_geometries.empty(), eFalse);
+    niCheck(!_vkGeometries.empty(), eFalse);
+    niLet numGeometries = (tU32)_vkGeometries.size();
+
+    _geometryPrimitiveCounts.resize(numGeometries);
+    niLoop(i,numGeometries) {
+      _geometryPrimitiveCounts[i] = _vkBuildInfos[i].primitiveCount;
+    }
 
     VkAccelerationStructureBuildGeometryInfoKHR buildInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
@@ -3278,8 +3280,8 @@ struct sVulkanRayASDesc {
         VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR
       ),
       .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
-      .geometryCount = (uint32_t)_geometryPtrs.size(),
-      .ppGeometries = _geometryPtrs.data()
+      .geometryCount = numGeometries,
+      .pGeometries = _vkGeometries.data()
     };
 
     aAS._asSizeInfo = {
@@ -3324,6 +3326,8 @@ struct sVulkanRayASDesc {
     tBool abUpdate)
   {
     niCheck(aAS._asHandle != VK_NULL_HANDLE, eFalse);
+    niCheck(!_vkGeometries.empty(), eFalse);
+    niLet numGeometries = (tU32)_vkGeometries.size();
 
     niCheck(_scratchBuffer._EnsureScratchBuffer(
       _driver,
@@ -3340,14 +3344,15 @@ struct sVulkanRayASDesc {
                VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR :
                VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR),
       .dstAccelerationStructure = aAS._asHandle,
-      .geometryCount = 1,
-      .ppGeometries = _geometryPtrs.data(),
+      .geometryCount = numGeometries,
+      .pGeometries = _vkGeometries.data(),
       .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
     };
 
     // Issue build command
+    niLet madness = _vkBuildInfos.data();
     vkCmdBuildAccelerationStructuresKHR(
-      aCmdBuffer, 1, &buildInfo, _buildRangeInfoPtrs.data());
+      aCmdBuffer, 1, &buildInfo, &madness);
 
     // Add memory barrier
     VkMemoryBarrier barrier = {
@@ -3399,7 +3404,7 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
   }
 
   virtual tU32 __stdcall GetNumPrimitives() const {
-    return (tU32)_geometries.size();
+    return (tU32)_vkGeometries.size();
   }
 
   virtual tBool __stdcall AddTriangles(
@@ -3546,7 +3551,7 @@ struct tVulkanRayInstancesDesc : public ImplRC<
   }
 
   virtual tU32 __stdcall GetNumInstances() const {
-    return (tU32)_geometries.size();
+    return (tU32)_vkGeometries.size();
   }
 
   virtual tBool __stdcall AddInstance(

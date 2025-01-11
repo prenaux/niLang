@@ -3,9 +3,9 @@
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
 //
-// TODO:
-// - [ ] p0: FRay-TriangleSquare: Multiple geometries & instances, one triangle and a square side by sidea
-// - [ ] p0: FRay-UpdateInstance: Triangle & square rotating
+// TODO (1/18):
+// - [ ] p0: FRay-Instances: Multiple instances, four triangles (one per instance)
+// - [ ] p0: FRay-UpdateInstances: Triangle & quad rotating
 // - [ ] p0: Sphere intersection shader
 // - [ ] p0: Visualize: one colour per instance (use hashToColor / rainbowColor to generate that from the instance id)
 // - [ ] p0: Visualize: triangles with barycentric coordinate
@@ -13,14 +13,15 @@
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
 // - [ ] p1: One reflective sphere on checkerboard floor
 // - [ ] p1: Ref PT cornell box white-furnace sky
-// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive square should be the light source
+// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive quad should be the light source
 // - [ ] p1: Visualize: base color
 // - [ ] p1: Visualize: normals
 // - [ ] p1: Visualize: worldspace position
+// - [ ] p2: Add dynamic primitive AS
+// - [ ] p2: Compact static primitives AS
 // - [ ] p2: Textured cube
 // - [ ] p2: Visualize: tex coordinates
-// - [ ] p2: Compact static primitives AS
-// - [ ] p2: Add dynamic primitive AS
+// - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
 //
 
 using namespace ni;
@@ -182,13 +183,13 @@ struct sFRay_Base : public sFGDRV_Base {
       tVertexTri* verts = (tVertexTri*)quadVB->Lock(0, quadVB->GetSize(), eLock_Discard);
       niPanicAssert(verts != nullptr);
       // Red, TL
-      verts[0] = {{ -0.35f*afSize, 0.6f*afSize, aPos.z}, 0xFFFF0000};
+      verts[0] = {{ -0.35f*afSize+aPos.x, 0.6f*afSize+aPos.y, aPos.z}, 0xFFFF0000};
       // Green, TR
-      verts[1] = {{  0.6f*afSize, 0.35f*afSize, aPos.z}, 0xFF00FF00};
+      verts[1] = {{  0.6f*afSize+aPos.x, 0.35f*afSize+aPos.y, aPos.z}, 0xFF00FF00};
       // Blue, BR
-      verts[2] = {{  0.35f*afSize, -0.6f*afSize, aPos.z}, 0xFF0000FF};
+      verts[2] = {{  0.35f*afSize+aPos.x, -0.6f*afSize+aPos.y, aPos.z}, 0xFF0000FF};
       // White, BL
-      verts[3] = {{ -0.6f*afSize, -0.35f*afSize, aPos.z}, 0xFFFFFFFF};
+      verts[3] = {{ -0.6f*afSize+aPos.x, -0.35f*afSize+aPos.y, aPos.z}, 0xFFFFFFFF};
       quadVB->Unlock();
     }
     return quadVB;
@@ -269,9 +270,6 @@ struct sFRay_Triangle : public sFRay_Base {
         eFalse);
     }
 
-    // Create vertex buffer with triangle geometry
-    niLet triangleVB = MakeTriVB(1.0f,Vec3f(0,0,0.3f));
-
     // Create acceleration structure
     {
       niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
@@ -281,6 +279,8 @@ struct sFRay_Triangle : public sFRay_Base {
         _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Triangle")),
         eFalse);
 
+      // Add a triangle
+      niLet triangleVB = MakeTriVB(1.0f,Vec3f(0,0,0.3f));
       niCheck(prDesc->AddTriangles(
         triangleVB,0,sizeof(tVertexTri),3,
         sMatrixf::Identity(),
@@ -336,7 +336,7 @@ struct sFRay_Triangle : public sFRay_Base {
 };
 TEST_CLASS(FRay,Triangle);
 
-struct sFRay_Square : public sFRay_Base {
+struct sFRay_Quad : public sFRay_Base {
   typedef sVertexPA tVertexTri;
 
   // Ray tracing pipeline and shaders
@@ -369,24 +369,20 @@ struct sFRay_Square : public sFRay_Base {
       _rayFuncTable->SetRayGenFunction(_rayGenFun);
       _rayFuncTable->SetMissFunction(_rayMissFun);
 
-      // Add hit group for squares
+      // Add hit group for quads
       niLet hitGroupId = _rayFuncTable->AddHitGroup(
-        _H("square"),
+        _H("quad"),
         eRayFunctionGroupType_Triangles,
         _rayHitFun,
         nullptr, // No any-hit shader
-        nullptr  // No intersection shader (using built-in square intersection)
+        nullptr  // No intersection shader (using built-in quad intersection)
       );
       niCheck(hitGroupId != eInvalidHandle, eFalse);
 
       _rayPipeline = niCheckNN(_rayPipeline,
-        _driverRay->CreateRayPipeline(_H("RaySquare_Pipeline"), _rayFuncTable),
+        _driverRay->CreateRayPipeline(_H("RayQuad_Pipeline"), _rayFuncTable),
         eFalse);
     }
-
-    // Create vertex buffer with square geometry
-    niLet squareVB = MakeQuadVB(1.0f, Vec3f(0,0,0.3f));
-    niLet squareIB = MakeQuadIB(1);
 
     // Create acceleration structure
     {
@@ -394,12 +390,14 @@ struct sFRay_Square : public sFRay_Base {
 
       niLet prDesc = niCheckNN(
         prDesc,
-        _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Square")),
+        _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Quad")),
         eFalse);
 
+      niLet quadVB = MakeQuadVB(1.0f, Vec3f(0,0,0.3f));
+      niLet quadIB = MakeQuadIB(1);
       niCheck(prDesc->AddTrianglesIndexed(
-        squareVB,0,sizeof(tVertexTri),4,
-        squareIB,0,eGpuIndexType_U32,6,
+        quadVB,0,sizeof(tVertexTri),4,
+        quadIB,0,eGpuIndexType_U32,6,
         sMatrixf::Identity(),
         eRayPrimitiveFlags_Opaque,
         0), eFalse);
@@ -410,7 +408,7 @@ struct sFRay_Square : public sFRay_Base {
       {
         niLet instDesc = niCheckNN(
           instDesc,
-          _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Square")),
+          _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Quad")),
           eFalse);
 
         niCheck(instDesc->AddInstance(
@@ -422,7 +420,7 @@ struct sFRay_Square : public sFRay_Base {
           eRayInstanceFlags_None), eFalse);
 
         _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
-          _H("RayInstances_Square"),instDesc), eFalse);
+          _H("RayInstances_Quad"),instDesc), eFalse);
       }
     }
 
@@ -451,6 +449,143 @@ struct sFRay_Square : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,Square);
+TEST_CLASS(FRay,Quad);
+
+struct sFRay_TriangleQuad : public sFRay_Base {
+  typedef sVertexPA tVertexTri;
+
+  // Ray tracing pipeline and shaders
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+  NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayMissFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayHitFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iRayFunctionTable> _rayFuncTable = niDeferredInit(NN<iRayFunctionTable>);
+  NN<iRayPipeline> _rayPipeline = niDeferredInit(NN<iRayPipeline>);
+  NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+
+    // Create ray tracing shaders
+    {
+      _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+
+      _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+
+      _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+    }
+
+    // Create ray tracing pipeline
+    {
+      _rayFuncTable = niCheckNN(_rayFuncTable, _driverRay->CreateRayFunctionTable(), eFalse);
+      _rayFuncTable->SetRayGenFunction(_rayGenFun);
+      _rayFuncTable->SetMissFunction(_rayMissFun);
+
+      // Add hit group for quads
+      niLet hitGroupId = _rayFuncTable->AddHitGroup(
+        _H("quad"),
+        eRayFunctionGroupType_Triangles,
+        _rayHitFun,
+        nullptr, // No any-hit shader
+        nullptr  // No intersection shader (using built-in quad intersection)
+      );
+      niCheck(hitGroupId != eInvalidHandle, eFalse);
+
+      _rayPipeline = niCheckNN(_rayPipeline,
+        _driverRay->CreateRayPipeline(_H("RayQuad_Pipeline"), _rayFuncTable),
+        eFalse);
+    }
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+
+      niLet prDesc = niCheckNN(
+        prDesc,
+        _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Quad")),
+        eFalse);
+
+      {
+        niLet triangleVB = MakeTriVB(0.5f,Vec3f(-0.25f,0.35f,0.3f));
+        niCheck(prDesc->AddTriangles(
+          triangleVB,0,sizeof(tVertexTri),3,
+          sMatrixf::Identity(),
+          eRayPrimitiveFlags_Opaque,
+          0), eFalse);
+      }
+
+      {
+        niLet triangleVB = MakeTriVB(0.5f,Vec3f(-0.25f,-0.35f,0.3f));
+        niLet triangleIB = MakeTriIB(1);
+        niCheck(prDesc->AddTrianglesIndexed(
+          triangleVB,0,sizeof(tVertexTri),3,
+          triangleIB,0,eGpuIndexType_U32,3,
+          sMatrixf::Identity(),
+          eRayPrimitiveFlags_Opaque,
+          0), eFalse);
+      }
+
+      {
+        niLet quadVB = MakeQuadVB(0.5f, Vec3f(0.25f,0,0.3f));
+        niLet quadIB = MakeQuadIB(1);
+        niCheck(prDesc->AddTrianglesIndexed(
+          quadVB,0,sizeof(tVertexTri),4,
+          quadIB,0,eGpuIndexType_U32,6,
+          sMatrixf::Identity(),
+          eRayPrimitiveFlags_Opaque,
+          0), eFalse);
+      }
+
+      niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayPrimitives(
+        _H("RayPrimitives_Triangle"),prDesc), eFalse);
+
+      {
+        niLet instDesc = niCheckNN(
+          instDesc,
+          _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Quad")),
+          eFalse);
+
+        niCheck(instDesc->AddInstance(
+          primitiveAS,
+          sMatrixf::Identity(), // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None), eFalse);
+
+        _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+          _H("RayInstances_Quad"),instDesc), eFalse);
+      }
+    }
+
+    // Create our output image
+    {
+      _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
+        _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
+        256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+    rayEncoder->SetRayOutputImage(_rayOutputImage);
+    rayEncoder->SetRayPipeline(_rayPipeline);
+    rayEncoder->DispatchRays(_rayOutputImage->GetWidth(),_rayOutputImage->GetHeight(),1);
+
+    DisplayTexture(gpuEncoder,_rayOutputImage);
+    return eTrue;
+  }
+};
+TEST_CLASS(FRay,TriangleQuad);
 
 }

@@ -28,6 +28,12 @@ using namespace ni;
 namespace {
 
 struct sFRay_Base : public sFGDRV_Base {
+  typedef sVertexPA tVertexTri;
+  tU32 _numTriVB = 0;
+  tU32 _numTriIB = 0;
+  tU32 _numQuadVB = 0;
+  tU32 _numQuadIB = 0;
+
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
   NN<iGraphicsDriverRay> _driverRay = niDeferredInit(NN<iGraphicsDriverRay>);
 
@@ -117,11 +123,106 @@ struct sFRay_Base : public sFGDRV_Base {
     cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
   }
+
+  NN<iGpuBuffer> MakeTriVB(tF32 afSize, ain<sVec3f> aPos) {
+    niLet triVB = AsNN(_driverGpu->CreateGpuBuffer(
+        HFmt("TriVB_%d",_numTriVB++),
+        sizeof(tVertexTri)*3,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Vertex|
+        eGpuBufferUsageFlags_RayBuildInput));
+    {
+      niLet w = afSize/2.0f;
+      tVertexTri* verts = (tVertexTri*)triVB->Lock(0, triVB->GetSize(), eLock_Discard);
+      niPanicAssert(verts != nullptr);
+      // Red, TC
+      verts[0] = {{ aPos.x, w+aPos.y, aPos.z}, 0xFFFF0000};
+      // Green, BR
+      verts[1] = {{ w+aPos.x, -w+aPos.y, aPos.z}, 0xFF00FF00};
+      // Blue, BL
+      verts[2] = {{ -w+aPos.x, -w+aPos.y, aPos.z}, 0xFF0000FF};
+      triVB->Unlock();
+    }
+    return triVB;
+  }
+
+  NN<iGpuBuffer> MakeTriIB(tU32 aNumTris) {
+    niLet triIB = AsNN(_driverGpu->CreateGpuBuffer(
+        HFmt("TriIB_%d",_numTriIB++),
+        sizeof(tU32)*aNumTris*6,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Index|
+        eGpuBufferUsageFlags_RayBuildInput));
+    tU32 baseIndex = 0;
+    {
+      tU32* inds = (tU32*)triIB->Lock(0, triIB->GetSize(), eLock_Discard);
+      niPanicAssert(inds != nullptr);
+      niLoop(i,aNumTris) {
+        inds[0] = baseIndex+0;
+        inds[1] = baseIndex+1;
+        inds[2] = baseIndex+2;
+        inds += 3;
+        baseIndex += 3;
+      }
+      triIB->Unlock();
+    }
+    return triIB;
+  }
+
+  // 25 degree-ish rotated quad
+  NN<iGpuBuffer> MakeQuadVB(tF32 afSize, ain<sVec3f> aPos) {
+    // Create vertex buffer with quad geometry
+    niLet quadVB = AsNN(_driverGpu->CreateGpuBuffer(
+      HFmt("QuadVB_%d",_numQuadVB++),
+      sizeof(tVertexTri)*4,
+      eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_Vertex|
+      eGpuBufferUsageFlags_RayBuildInput));
+    {
+      tVertexTri* verts = (tVertexTri*)quadVB->Lock(0, quadVB->GetSize(), eLock_Discard);
+      niPanicAssert(verts != nullptr);
+      // Red, TL
+      verts[0] = {{ -0.35f*afSize, 0.6f*afSize, aPos.z}, 0xFFFF0000};
+      // Green, TR
+      verts[1] = {{  0.6f*afSize, 0.35f*afSize, aPos.z}, 0xFF00FF00};
+      // Blue, BR
+      verts[2] = {{  0.35f*afSize, -0.6f*afSize, aPos.z}, 0xFF0000FF};
+      // White, BL
+      verts[3] = {{ -0.6f*afSize, -0.35f*afSize, aPos.z}, 0xFFFFFFFF};
+      quadVB->Unlock();
+    }
+    return quadVB;
+  }
+
+  NN<iGpuBuffer> MakeQuadIB(tU32 aNumQuads) {
+    niLet quadIB = AsNN(_driverGpu->CreateGpuBuffer(
+        HFmt("QuadIB_%d",_numQuadIB++),
+        sizeof(tU32)*aNumQuads*6,
+        eGpuBufferMemoryMode_Shared,
+        eGpuBufferUsageFlags_Index|
+        eGpuBufferUsageFlags_RayBuildInput));
+    tU32 baseIndex = 0;
+    {
+      tU32* inds = (tU32*)quadIB->Lock(0, quadIB->GetSize(), eLock_Discard);
+      niPanicAssert(inds != nullptr);
+      niLoop(i,aNumQuads) {
+        inds[0] = baseIndex+0;
+        inds[1] = baseIndex+1;
+        inds[2] = baseIndex+2;
+        inds[3] = baseIndex+2;
+        inds[4] = baseIndex+3;
+        inds[5] = baseIndex+0;
+        inds += 6;
+        baseIndex += 4;
+      }
+      quadIB->Unlock();
+    }
+    return quadIB;
+  }
 };
 
 // clear ; ham pass1 && ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
 struct sFRay_Triangle : public sFRay_Base {
-  typedef sVertexPA tVertexFmt;
 
   // Ray tracing instances, pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
@@ -169,23 +270,7 @@ struct sFRay_Triangle : public sFRay_Base {
     }
 
     // Create vertex buffer with triangle geometry
-    niLet triangleVB = niCheckNN(
-      triangleVB,
-      _driverGpu->CreateGpuBuffer(
-        _H("RayTriangle_VB"),
-        sizeof(tVertexFmt)*3,
-        eGpuBufferMemoryMode_Shared,
-        eGpuBufferUsageFlags_Vertex|
-        eGpuBufferUsageFlags_RayBuildInput),
-      eFalse);
-    {
-      tVertexFmt* verts = (tVertexFmt*)triangleVB->Lock(0, triangleVB->GetSize(), eLock_Discard);
-      niCheck(verts != nullptr, eFalse);
-      verts[0] = {{  0.0f,   0.5f, 0.3f}, 0xFFFF0000}; // Red, TC
-      verts[1] = {{  0.5f,  -0.5f, 0.3f}, 0xFF00FF00}; // Green, BR
-      verts[2] = {{ -0.5f,  -0.5f, 0.3f}, 0xFF0000FF}; // Blue, BL
-      triangleVB->Unlock();
-    }
+    niLet triangleVB = MakeTriVB(1.0f,Vec3f(0,0,0.3f));
 
     // Create acceleration structure
     {
@@ -197,7 +282,7 @@ struct sFRay_Triangle : public sFRay_Base {
         eFalse);
 
       niCheck(prDesc->AddTriangles(
-        triangleVB,0,sizeof(tVertexFmt),3,
+        triangleVB,0,sizeof(tVertexTri),3,
         sMatrixf::Identity(),
         eRayPrimitiveFlags_Opaque,
         0), eFalse);
@@ -252,7 +337,7 @@ struct sFRay_Triangle : public sFRay_Base {
 TEST_CLASS(FRay,Triangle);
 
 struct sFRay_Square : public sFRay_Base {
-  typedef sVertexPA tVertexFmt;
+  typedef sVertexPA tVertexTri;
 
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
@@ -300,43 +385,8 @@ struct sFRay_Square : public sFRay_Base {
     }
 
     // Create vertex buffer with square geometry
-    niLet squareVB = niCheckNN(
-      squareVB,
-      _driverGpu->CreateGpuBuffer(
-        _H("RaySquare_VB"),
-        sizeof(tVertexFmt)*4,
-        eGpuBufferMemoryMode_Shared,
-        eGpuBufferUsageFlags_Vertex|
-        eGpuBufferUsageFlags_RayBuildInput),
-      eFalse);
-    {
-
-      tVertexFmt* verts = (tVertexFmt*)squareVB->Lock(0, squareVB->GetSize(), eLock_Discard);
-      niCheck(verts != nullptr, eFalse);
-      // 25 degree-ish rotated square
-      verts[0] = {{ -0.35f,  0.6f, 0.3f}, 0xFFFF0000}; // Red, TL
-      verts[1] = {{  0.6f,   0.35f, 0.3f}, 0xFF00FF00}; // Green, TR
-      verts[2] = {{  0.35f, -0.6f, 0.3f}, 0xFF0000FF}; // Blue, BR
-      verts[3] = {{ -0.6f,  -0.35f, 0.3f}, 0xFFFFFFFF}; // White, BL
-      squareVB->Unlock();
-    }
-
-    niLet squareIB = niCheckNN(
-      squareIB,
-      _driverGpu->CreateGpuBuffer(
-        _H("RaySquare_IB"),
-        sizeof(tU32)*6,
-        eGpuBufferMemoryMode_Shared,
-        eGpuBufferUsageFlags_Index|
-        eGpuBufferUsageFlags_RayBuildInput),
-      eFalse);
-    {
-      tU32* inds = (tU32*)squareIB->Lock(0, squareIB->GetSize(), eLock_Discard);
-      niCheck(inds != nullptr, eFalse);
-      inds[0] = 0; inds[1] = 1; inds[2] = 2;
-      inds[3] = 2; inds[4] = 3; inds[5] = 0;
-      squareIB->Unlock();
-    }
+    niLet squareVB = MakeQuadVB(1.0f, Vec3f(0,0,0.3f));
+    niLet squareIB = MakeQuadIB(1);
 
     // Create acceleration structure
     {
@@ -348,7 +398,7 @@ struct sFRay_Square : public sFRay_Base {
         eFalse);
 
       niCheck(prDesc->AddTrianglesIndexed(
-        squareVB,0,sizeof(tVertexFmt),4,
+        squareVB,0,sizeof(tVertexTri),4,
         squareIB,0,eGpuIndexType_U32,6,
         sMatrixf::Identity(),
         eRayPrimitiveFlags_Opaque,

@@ -436,21 +436,6 @@ inline EA_CONSTEXPR ni::Nonnull<T> MakeNN(Args&&... args) {
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
 }
 
-template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNN(T* p) {
-  return ni::Nonnull<T>{p};
-}
-
-template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNN(Ptr<T>&& p) {
-  return p.non_null();
-}
-
-template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNN(QPtr<T>&& p) {
-  return p.non_null();
-}
-
 typedef ni::cString tStr;
 typedef const achar* tChars;
 typedef achar* tMutChars;
@@ -472,129 +457,217 @@ inline NN_mut<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
 }
 
 //##################################################################
-// as_nn, as_NN, as_opt, as_Opt
+// AsNN, as_nn, as_maybe_null
 //##################################################################
+template<typename TTo, typename TFrom>
+concept ConvertiblePointer = !std::is_same_v<TTo,TFrom> && std::derived_from<TTo,TFrom>;
 
 template <typename T>
-inline ni::Nonnull<T> as_NN(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline ni::Nonnull<T> AsNN(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p) {
-    ni_throw_panic(
-      _HC(panic_NN_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_NN_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{p};
 }
 
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline ni::Nonnull<TTo> AsNN(TFrom* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p) {
+    ni_throw_panic(_HC(panic_NN_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{static_cast<TTo*>(p)};
+}
+
 template <typename T>
-inline ni::Nonnull<T> as_NN(
+inline ni::Nonnull<T> AsNN(
   const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_NN_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_NN_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{p.raw_ptr()};
 }
 
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline ni::Nonnull<TTo> AsNN(
+  const Ptr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_NN_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{static_cast<TTo*>(p.raw_ptr())};
+}
+
 template <typename T>
-inline ni::Nonnull<T> as_NN(
+inline ni::Nonnull<T> AsNN(
   const QPtr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_NN_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_NN_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{p.raw_ptr()};
 }
 
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline ni::Nonnull<TTo> AsNN(
+  const QPtr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_NN_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{static_cast<TTo*>(p.raw_ptr())};
+}
+
 template <typename T>
-inline niConstExpr ni::Nonnull<T> as_NN(const astl::non_null<T*> p) {
+inline niConstExpr ni::Nonnull<T> AsNN(const astl::non_null<T*> p) {
   return ni::Nonnull<T>{p};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline niConstExpr ni::Nonnull<TTo> AsNN(const astl::non_null<TFrom*> p) {
+  return ni::Nonnull<TTo>{static_cast<TTo*>(p.get())};
 }
 
 template <typename T>
 inline astl::non_null<T*> as_nn(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p) {
-    ni_throw_panic(
-      _HC(panic_nn_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_nn_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p;
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline astl::non_null<TTo*> as_nn(TFrom* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p) {
+    ni_throw_panic(_HC(panic_nn_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  TTo* rp = static_cast<TTo*>(p);
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
 inline astl::non_null<T*> as_nn(
   const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_nn_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_nn_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
-  T* rp = p;
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  T* rp = p.raw_ptr();
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline astl::non_null<TTo*> as_nn(
+  const Ptr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_nn_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  TTo* rp = static_cast<TTo*>(p.raw_ptr());
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
 inline astl::non_null<T*> as_nn(
   const QPtr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_nn_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_nn_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
-  T* rp = p;
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  T* rp = p.raw_ptr();
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline astl::non_null<TTo*> as_nn(
+  const QPtr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_nn_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  TTo* rp = static_cast<TTo*>(p.raw_ptr());
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
 inline nn_mut<T> as_nn(
   const opt_mut<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
-    ni_throw_panic(
-      _HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p.value();
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline nn_mut<TTo> as_nn(
+  const opt_mut<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  TTo* rp = static_cast<TTo*>(p.value());
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
 inline astl::non_null<T*> as_nn(
   const astl::shared_non_null<T>& v, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   T* rp = v.raw_ptr().get();
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline astl::non_null<TTo*> as_nn(
+  const astl::shared_non_null<TFrom>& v, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  TTo* rp = static_cast<TTo*>(v.raw_ptr().get());
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
 inline astl::non_null<T*> as_nn(
   const astl::unique_non_null<T>& v, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   T* rp = v.raw_ptr().get();
-  return
-    typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+  return typename astl::non_null<T*>::tUnsafeUncheckedInitializer{astl::move(rp)};
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline astl::non_null<TTo*> as_nn(
+  const astl::unique_non_null<TFrom>& v, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  TTo* rp = static_cast<TTo*>(v.raw_ptr().get());
+  return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{astl::move(rp)};
 }
 
 template <typename T>
-inline ni::opt<T> as_opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  return typename ni::opt<T>{p};
+inline T* as_maybe_null(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return p;
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline TTo* as_maybe_null(TFrom* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return static_cast<TTo*>(p);
 }
 
 template <typename T>
-inline ni::Opt<T> as_Opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  return typename ni::Opt<T>{p};
+inline T* as_maybe_null(const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return p.raw_ptr();
 }
 
-template <typename I, typename T>
-inline ni::Opt<I> as_Opt(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  return typename ni::Opt<I>{p};
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline TTo* as_maybe_null(const Ptr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return static_cast<TTo*>(p.raw_ptr());
 }
 
 template <typename T>
-inline ni::Opt<T> as_Opt(const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  return typename ni::Opt<T>{p.raw_ptr};
+inline T* as_maybe_null(const QPtr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return p.raw_ptr();
 }
 
-template <typename I, typename T>
-inline ni::Opt<I> as_Opt(const Ptr<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
-  return typename ni::Opt<I>{p.raw_ptr};
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline TTo* as_maybe_null(const QPtr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return static_cast<TTo*>(p.raw_ptr());
+}
+
+template <typename T>
+inline T* as_maybe_null(const opt_mut<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return p.has_value() ? p.value() : nullptr;
+}
+
+template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
+inline TTo* as_maybe_null(const opt_mut<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  return p.has_value() ? static_cast<TTo*>(p.value()) : nullptr;
 }
 
 //##################################################################

@@ -1136,7 +1136,7 @@ struct sLinter {
       return _null_;
     }
 
-    niLet hspType = as_NN(_stringhval(aType));
+    niLet hspType = AsNN(_stringhval(aType));
 
     // Reserved type names
     if (hspType == _HC(__this__)) {
@@ -1277,7 +1277,7 @@ struct sLinter {
         return true;
       }
       case eScriptType_String: {
-        niLet hspSwz = as_NN(_stringhval(aKey));
+        niLet hspSwz = AsNN(_stringhval(aKey));
         niLet swzChars = hspSwz->GetChars();
         niLet swzLen = hspSwz->GetLength();
 
@@ -1395,7 +1395,7 @@ struct sLinter {
         return true;
       }
       case eScriptType_String: {
-        niLet hspSwz = as_NN(_stringhval(aKey));
+        niLet hspSwz = AsNN(_stringhval(aKey));
         const achar* p = hspSwz->GetChars();
         if (*p != '_') {
           if (ni::StrEq(p,"right") ||
@@ -3296,7 +3296,7 @@ void SQFunctionProto::LintTrace(
       case eScriptType_IUnknown: {
         QPtr<iLintFuncCall> lintFuncCall = _iunknown(tocall);
         if (lintFuncCall.IsOK()) {
-          niLet ret = call_lint_func(as_NN(lintFuncCall));
+          niLet ret = call_lint_func(AsNN(lintFuncCall));
           set_call_ret("call_lint_func", ret);
         }
         else {

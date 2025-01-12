@@ -62,7 +62,7 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
 
   niFn(tBool) Start(UnitTest::TestResults& testResults_) niImpl {
     _curl = this->CreateCURL();
-    _mq = as_NN(ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()));
+    _mq = AsNN(ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()));
     _request = this->CreateRequest(testResults_);
     return eTrue;
   }

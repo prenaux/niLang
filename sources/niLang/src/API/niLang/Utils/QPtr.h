@@ -77,6 +77,11 @@ struct QPtr {
     ni::AddRef(mPtr);
   }
 
+  QPtr(const astl::non_null<T*>& aP) {
+    mPtr = niConstCast(T*, aP.raw_ptr());
+    ni::AddRef(mPtr);
+  }
+
   QPtr(const Var& aV) {
     mPtr = VarQueryInterface<T>(aV);
     if (mPtr) ni::AddRef(mPtr);
@@ -234,6 +239,11 @@ struct QPtr {
   ni::Nonnull<const T>& non_null_const() const {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<const T>&, *this);
+  }
+
+  ni::Nonnull<T>& value() const {
+    niPanicAssert(mPtr != nullptr);
+    return niCCast(Nonnull<T>&, *this);
   }
 
   T* raw_ptr() const { return const_cast<T*>(mPtr); }

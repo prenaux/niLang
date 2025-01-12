@@ -115,8 +115,8 @@ inline tF64 RandFloatRange(tF64 aMin, tF64 aMax, int4* aPRNG = ni_prng_global())
 }
 
 //! Return a random number with a normal distribution.
-inline tF32 RandN(tF32 sigma, int4* aPRNG = ni_prng_global()) {
-#define ONE_OVER_SIGMA_EXP (1.0f / 0.7975f)
+inline tF32 RandNormal(tF32 sigma, int4* aPRNG = ni_prng_global()) {
+  constexpr float ONE_OVER_SIGMA_EXP = (1.0f / 0.7975f);
   float y;
 
   do {

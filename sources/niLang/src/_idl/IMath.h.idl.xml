@@ -3263,6 +3263,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixTextureOffset"
 				min_features="15"
 				name="MatrixTextureOffset"
@@ -3287,6 +3288,7 @@
 					typei="ni::eType_I32"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixTextureOffset2"
 				min_features="15"
 				name="MatrixTextureOffset2"
@@ -3645,6 +3647,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixViewport"
 				min_features="15"
 				name="MatrixViewport"
@@ -3673,6 +3676,7 @@
 					typei="ni::eType_F32"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixAdjustViewport"
 				min_features="15"
 				name="MatrixAdjustViewport"
@@ -3705,6 +3709,7 @@
 					typei="ni::eType_F32"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixDecomposeGetTranslation"
 				min_features="15"
 				name="MatrixDecomposeGetTranslation"
@@ -3719,6 +3724,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixDecomposeGetZYX"
 				min_features="15"
 				name="MatrixDecomposeGetZYX"
@@ -3733,6 +3739,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixDecomposeGetQuat"
 				min_features="15"
 				name="MatrixDecomposeGetQuat"
@@ -3747,6 +3754,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixDecomposeGetScale"
 				min_features="15"
 				name="MatrixDecomposeGetScale"
@@ -3761,6 +3769,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixCompose"
 				min_features="15"
 				name="MatrixCompose"
@@ -3785,6 +3794,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				const="yes"
 				java_name="matrixComposeQ"
 				min_features="15"
 				name="MatrixComposeQ"
@@ -6273,7 +6283,11 @@
 					typec="tF64"
 					typei="ni::eType_F64"/>
 			</method>
-			<method java_name="probSum" name="ProbSum" num_parameters="1">
+			<method
+				const="yes"
+				java_name="probSum"
+				name="ProbSum"
+				num_parameters="1">
 				<comments desc=""/>
 				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
 				<parameter
@@ -6283,7 +6297,11 @@
 					typec="tF64CVec*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="probNormalize" name="ProbNormalize" num_parameters="1">
+			<method
+				const="yes"
+				java_name="probNormalize"
+				name="ProbNormalize"
+				num_parameters="1">
 				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -6293,7 +6311,11 @@
 					typec="tF64CVec*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="probSampleBuildAliasMethodArrays" name="ProbSampleBuildAliasMethodArrays" num_parameters="3">
+			<method
+				const="yes"
+				java_name="probSampleBuildAliasMethodArrays"
+				name="ProbSampleBuildAliasMethodArrays"
+				num_parameters="3">
 				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -6313,7 +6335,11 @@
 					typec="tU32CVec*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="probSampleAliasMethod" name="ProbSampleAliasMethod" num_parameters="3">
+			<method
+				const="yes"
+				java_name="probSampleAliasMethod"
+				name="ProbSampleAliasMethod"
+				num_parameters="3">
 				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter

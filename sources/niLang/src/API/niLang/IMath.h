@@ -475,9 +475,9 @@ struct iMath : public iUnknown
   //! Transpose a matrix.
   virtual sMatrixf __stdcall MatrixTranspose3x3(const sMatrixf& M) const = 0;
   //! Texture offset matrix.
-  virtual sMatrixf __stdcall MatrixTextureOffset(tF32 fBias, tI32 nTexW, tI32 nTexH) = 0;
+  virtual sMatrixf __stdcall MatrixTextureOffset(tF32 fBias, tI32 nTexW, tI32 nTexH) const = 0;
   //! Texture offset matrix that takes in account a bit depth.
-  virtual sMatrixf __stdcall MatrixTextureOffset2(tF32 fBias, tI32 nTexW, tI32 nTexH, tI32 nDepthBits) = 0;
+  virtual sMatrixf __stdcall MatrixTextureOffset2(tF32 fBias, tI32 nTexW, tI32 nTexH, tI32 nDepthBits) const = 0;
   //! Get the forward vector of a matrix.
   virtual sVec3f __stdcall MatrixGetForward(const sMatrixf& M) const = 0;
   //! Get the up vector of a matrix.
@@ -527,25 +527,25 @@ struct iMath : public iUnknown
   //!                               * inverse(MatrixContextVP)
   //!                               * MatrixVirtualVP
   //! \remark MinZ/MaxZ is usually 0/1
-  virtual sMatrixf __stdcall MatrixViewport(const sVec4f& aVP, tF32 afMinZ, tF32 afMaxZ) = 0;
+  virtual sMatrixf __stdcall MatrixViewport(const sVec4f& aVP, tF32 afMinZ, tF32 afMaxZ) const = 0;
 
   //! Compute a matrix that will compensate the projection matrix to fit into a viewport which is different of the context/physical viewport.
   //! \remark FinalProj = Proj * MatrixAdjustViewport(...)
   //! \remark MinZ/MaxZ is usually 0/1
-  virtual sMatrixf __stdcall MatrixAdjustViewport(const sVec4f& aContextVP, const sVec4f& aVirtualVP, tF32 afMinZ, tF32 afMaxZ) = 0;
+  virtual sMatrixf __stdcall MatrixAdjustViewport(const sVec4f& aContextVP, const sVec4f& aVirtualVP, tF32 afMinZ, tF32 afMaxZ) const = 0;
 
   //! Get the translation part of a matrix.
-  virtual sVec3f __stdcall MatrixDecomposeGetTranslation(const sMatrixf& aMatrix) = 0;
+  virtual sVec3f __stdcall MatrixDecomposeGetTranslation(const sMatrixf& aMatrix) const = 0;
   //! Get the rotation part of a matrix as euler angle in the Z*Y*X rotation order.
-  virtual sVec3f __stdcall MatrixDecomposeGetZYX(const sMatrixf& aMatrix) = 0;
+  virtual sVec3f __stdcall MatrixDecomposeGetZYX(const sMatrixf& aMatrix) const = 0;
   //! Get the rotation part of a matrix as a quaternion.
-  virtual sQuatf __stdcall MatrixDecomposeGetQuat(const sMatrixf& aMatrix) = 0;
+  virtual sQuatf __stdcall MatrixDecomposeGetQuat(const sMatrixf& aMatrix) const = 0;
   //! Get the local scaling part of a matrix (x,y,z,handness)
-  virtual sVec4f __stdcall MatrixDecomposeGetScale(const sMatrixf& aMatrix) = 0;
+  virtual sVec4f __stdcall MatrixDecomposeGetScale(const sMatrixf& aMatrix) const = 0;
   //! Build a matrix from a translation, zyx euler rotation and scale.
-  virtual sMatrixf __stdcall MatrixCompose(const sVec3f& aT, const sVec3f& aZYX, const sVec4f& aS) = 0;
+  virtual sMatrixf __stdcall MatrixCompose(const sVec3f& aT, const sVec3f& aZYX, const sVec4f& aS) const = 0;
   //! Build a matrix from a translation, rotation quaternion and scale.
-  virtual sMatrixf __stdcall MatrixComposeQ(const sVec3f& aT, const sQuatf& aQ, const sVec4f& aS) = 0;
+  virtual sMatrixf __stdcall MatrixComposeQ(const sVec3f& aT, const sQuatf& aQ, const sVec4f& aS) const = 0;
 #endif
   //! @}
 
@@ -794,10 +794,10 @@ struct iMath : public iUnknown
   //########################################################################################
   //! @{
 
-  virtual tF64 __stdcall ProbSum(tF64CVec* apProbs) = 0;
-  virtual tBool __stdcall ProbNormalize(tF64CVec* apProbs) = 0;
-  virtual tBool __stdcall ProbSampleBuildAliasMethodArrays(const tF64CVec* apProbs, tF64CVec* apAMQ, tU32CVec* apAMA) = 0;
-  virtual tBool __stdcall ProbSampleAliasMethod(tU32CVec* apResults, const tF64CVec* apAMQ, const tU32CVec* apAMA) = 0;
+  virtual tF64 __stdcall ProbSum(tF64CVec* apProbs) const = 0;
+  virtual tBool __stdcall ProbNormalize(tF64CVec* apProbs) const = 0;
+  virtual tBool __stdcall ProbSampleBuildAliasMethodArrays(const tF64CVec* apProbs, tF64CVec* apAMQ, tU32CVec* apAMA) const = 0;
+  virtual tBool __stdcall ProbSampleAliasMethod(tU32CVec* apResults, const tF64CVec* apAMQ, const tU32CVec* apAMA) const = 0;
   //! @}
 };
 

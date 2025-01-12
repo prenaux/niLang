@@ -33,8 +33,8 @@ template <typename T>
 inline tBool TriangleIsDegenerate(const sVec3<T>& avA, const sVec3<T>& avB, const sVec3<T>& avC);
 
 template <typename T>
-inline tBool TriangleIntersectAABB(const sVec3<T>& vAABBMin, const sVec3<T>& vAABBMax,
-                                   const sVec3<T>& A, const sVec3<T>& B, const sVec3<T>& C);
+inline tBool TriangleIntersectAABB(const sVec3<T>& A, const sVec3<T>& B, const sVec3<T>& C,
+                                   const sVec3<T>& vAABBMin, const sVec3<T>& vAABBMax);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Use code of:
@@ -594,8 +594,8 @@ inline int triBoxOverlap(T boxcenter[3], T boxhalfsize[3], T triverts[3][3])
 #undef Z
 
 template <typename T>
-inline tBool TriangleIntersectAABB(const sVec3<T>& vAABBMin, const sVec3<T>& vAABBMax,
-                                   const sVec3<T>& A, const sVec3<T>& B, const sVec3<T>& C)
+inline tBool TriangleIntersectAABB(const sVec3<T>& A, const sVec3<T>& B, const sVec3<T>& C,
+                                   const sVec3<T>& vAABBMin, const sVec3<T>& vAABBMax)
 {
   sVec3<T> vAABBCenter = (vAABBMin + vAABBMax) / 2.0f;
   sVec3<T> vHalfSize = (vAABBMax - vAABBMin) / 2.0f;

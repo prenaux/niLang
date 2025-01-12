@@ -17,10 +17,10 @@ namespace ni {
 
 ///////////////////////////////////////////////
 template <class T>
-void MathUtilMatrixFromQuat(T &r11, T &r12, T &r13,
-                            T &r21, T &r22, T &r23,
-                            T &r31, T &r32, T &r33,
-                            const sQuat<T> &q)
+void MatrixFromQuat(T &r11, T &r12, T &r13,
+                    T &r21, T &r22, T &r23,
+                    T &r31, T &r32, T &r33,
+                    const sQuat<T> &q)
 {
   T x, y, z, w, wx, wy, wz, xx, xy, xz, yy, yz, zz;
 
@@ -57,7 +57,7 @@ void MathUtilMatrixFromQuat(T &r11, T &r12, T &r13,
 
 ///////////////////////////////////////////////
 template <class T>
-void MathUtilPostTranslate(sMatrix<T> &m, const T tx, const T ty, const T tz)
+void MatrixPostTranslate(sMatrix<T> &m, const T tx, const T ty, const T tz)
 {
   m._11 += m._14 * tx; m._21 += m._24 * tx; m._31 += m._34 * tx; m._41 += m._44 * tx;
   m._12 += m._14 * ty; m._22 += m._24 * ty; m._32 += m._34 * ty; m._42 += m._44 * ty;
@@ -66,12 +66,12 @@ void MathUtilPostTranslate(sMatrix<T> &m, const T tx, const T ty, const T tz)
 
 ///////////////////////////////////////////////
 template <class T>
-void MathUtilPostRotateQuat(sMatrix<T> &m, const sQuat<T> &q)
+void MatrixPostRotateQuat(sMatrix<T> &m, const sQuat<T> &q)
 {
   T t1, t2;
   T r11, r12, r13, r21, r22, r23, r31, r32, r33;
 
-  MathUtilMatrixFromQuat(r11, r12, r13,
+  MatrixFromQuat(r11, r12, r13,
                          r21, r22, r23,
                          r31, r32, r33,
                          q);
@@ -99,12 +99,12 @@ void MathUtilPostRotateQuat(sMatrix<T> &m, const sQuat<T> &q)
 
 ///////////////////////////////////////////////
 template <class T>
-void MathUtilPostRotateQuatInverse(sMatrix<T> &m, const sQuat<T> &q)
+void MatrixPostRotateQuatInverse(sMatrix<T> &m, const sQuat<T> &q)
 {
   T t1, t2;
   T r11, r12, r13, r21, r22, r23, r31, r32, r33;
 
-  MathUtilMatrixFromQuat(r11, r21, r31,
+  MatrixFromQuat(r11, r21, r31,
                          r12, r22, r32,
                          r13, r23, r33,
                          q);
@@ -130,13 +130,105 @@ void MathUtilPostRotateQuatInverse(sMatrix<T> &m, const sQuat<T> &q)
   m._43 =  t1 * r13 + t2 * r23 + m._43 * r33;
 }
 
+
 ///////////////////////////////////////////////
 template <class T>
-void MathUtilPostScale(sMatrix<T> &m, const T sx, const T sy, const T sz)
+void MatrixPostRotateMatrix(sMatrix<T>& m, const sMatrix<T>& r) {
+  T t1, t2;
+  const T r11 = r._11, r12 = r._12, r13 = r._13;
+  const T r21 = r._22, r22 = r._22, r23 = r._23;
+  const T r31 = r._32, r32 = r._32, r33 = r._33;
+
+  t1 = m._11;
+  t2 = m._12;
+  m._11 = t1 * r11 + t2 * r21 + m._13 * r31;
+  m._12 = t1 * r12 + t2 * r22 + m._13 * r32;
+  m._13 = t1 * r13 + t2 * r23 + m._13 * r33;
+
+  t1 = m._21;
+  t2 = m._22;
+  m._21 = t1 * r11 + t2 * r21 + m._23 * r31;
+  m._22 = t1 * r12 + t2 * r22 + m._23 * r32;
+  m._23 = t1 * r13 + t2 * r23 + m._23 * r33;
+
+  t1 = m._31;
+  t2 = m._32;
+  m._31 = t1 * r11 + t2 * r21 + m._33 * r31;
+  m._32 = t1 * r12 + t2 * r22 + m._33 * r32;
+  m._33 = t1 * r13 + t2 * r23 + m._33 * r33;
+
+  t1 = m._41;
+  t2 = m._42;
+  m._41 = t1 * r11 + t2 * r21 + m._43 * r31;
+  m._42 = t1 * r12 + t2 * r22 + m._43 * r32;
+  m._43 = t1 * r13 + t2 * r23 + m._43 * r33;
+}
+
+///////////////////////////////////////////////
+template <class T>
+void MatrixPostRotateZ(sMatrix<T>& m, const T aAngle) {
+  const T cosAngle = T(cos(aAngle));
+  const T sinAngle = T(sin(aAngle));
+
+  const T r11 = cosAngle, r12 = -sinAngle;
+  const T r21 = sinAngle, r22 = cosAngle;
+
+  T t1, t2;
+  t1 = m._11;
+  t2 = m._12;
+  m._11 = t1 * r11 + t2 * r21;
+  m._12 = t1 * r12 + t2 * r22;
+
+  t1 = m._21;
+  t2 = m._22;
+  m._21 = t1 * r11 + t2 * r21;
+  m._22 = t1 * r12 + t2 * r22;
+
+  t1 = m._31;
+  t2 = m._32;
+  m._31 = t1 * r11 + t2 * r21;
+  m._32 = t1 * r12 + t2 * r22;
+
+  t1 = m._41;
+  t2 = m._42;
+  m._41 = t1 * r11 + t2 * r21;
+  m._42 = t1 * r12 + t2 * r22;
+}
+
+///////////////////////////////////////////////
+template <class T>
+void MatrixPostScale(sMatrix<T> &m, const T sx, const T sy, const T sz)
 {
   m._11 *= sx; m._21 *= sx; m._31 *= sx; m._41 *= sx;
   m._12 *= sy; m._22 *= sy; m._32 *= sy; m._42 *= sy;
   m._13 *= sz; m._23 *= sz; m._33 *= sz; m._43 *= sz;
+}
+
+///////////////////////////////////////////////
+template <class T>
+void MatrixPostScaleX(sMatrix<T>& m, const T sx) {
+  m._11 *= sx;
+  m._21 *= sx;
+  m._31 *= sx;
+  m._41 *= sx;
+}
+
+///////////////////////////////////////////////
+template <class T>
+void MatrixPostScaleY(sMatrix<T>& m, const T sy) {
+  m._12 *= sy;
+  m._22 *= sy;
+  m._32 *= sy;
+  m._42 *= sy;
+}
+
+///////////////////////////////////////////////
+template <class T>
+void MatrixPostScaleZ(sMatrix<T>& m, const T sz) {
+  m._13 *= sz;
+  m._23 *= sz;
+  m._33 *= sz;
+  m._43 *= sz;
 }
 
 ///////////////////////////////////////////////
@@ -152,16 +244,16 @@ sMatrix<T>& MatrixAffineTransformation(sMatrix<T>& Out,
   if (pRotation)
   {
     if (pRotationCenter)
-      MathUtilPostTranslate(Out, -pRotationCenter->x, -pRotationCenter->y, -pRotationCenter->z);
+      MatrixPostTranslate(Out, -pRotationCenter->x, -pRotationCenter->y, -pRotationCenter->z);
 
-    MathUtilPostRotateQuat(Out, *pRotation);
+    MatrixPostRotateQuat(Out, *pRotation);
 
     if (pRotationCenter)
-      MathUtilPostTranslate(Out, pRotationCenter->x, pRotationCenter->y, pRotationCenter->z);
+      MatrixPostTranslate(Out, pRotationCenter->x, pRotationCenter->y, pRotationCenter->z);
   }
 
   if (pTranslation)
-    MathUtilPostTranslate(Out, pTranslation->x, pTranslation->y, pTranslation->z);
+    MatrixPostTranslate(Out, pTranslation->x, pTranslation->y, pTranslation->z);
 
   return Out;
 }
@@ -834,7 +926,7 @@ ni::sMatrix<T>& MatrixRotationAxis(ni::sMatrix<T>& Out, const ni::sVec3<T>& V, T
 template <typename T>
 sMatrix<T>& MatrixRotationQuat(sMatrix<T>& Out, const sQuat<T>& Q)
 {
-  MathUtilMatrixFromQuat(
+  MatrixFromQuat(
       Out._11, Out._12, Out._13,
       Out._21, Out._22, Out._23,
       Out._31, Out._32, Out._33,
@@ -1068,24 +1160,24 @@ sMatrix<T>& MatrixTransformation(sMatrix<T>& Out,
   {
     if (pScalingCenter)
     {
-      MathUtilPostScale(Out, -pScalingCenter->x, -pScalingCenter->y, -pScalingCenter->z);
+      MatrixPostScale(Out, -pScalingCenter->x, -pScalingCenter->y, -pScalingCenter->z);
     }
 
     if (pScalingRotation)
     {
-      MathUtilPostRotateQuatInverse(Out, *pScalingRotation);
+      MatrixPostRotateQuatInverse(Out, *pScalingRotation);
     }
 
-    MathUtilPostScale(Out, pScaling->x, pScaling->y, pScaling->z);
+    MatrixPostScale(Out, pScaling->x, pScaling->y, pScaling->z);
 
     if (pScalingRotation)
     {
-      MathUtilPostRotateQuat(Out, *pScalingRotation);
+      MatrixPostRotateQuat(Out, *pScalingRotation);
     }
 
     if (pScalingCenter)
     {
-      MathUtilPostScale(Out, pScalingCenter->x, pScalingCenter->y, pScalingCenter->z);
+      MatrixPostScale(Out, pScalingCenter->x, pScalingCenter->y, pScalingCenter->z);
     }
   }
 
@@ -1093,20 +1185,20 @@ sMatrix<T>& MatrixTransformation(sMatrix<T>& Out,
   {
     if (pRotationCenter)
     {
-      MathUtilPostTranslate(Out, -pRotationCenter->x, -pRotationCenter->y, -pRotationCenter->z);
+      MatrixPostTranslate(Out, -pRotationCenter->x, -pRotationCenter->y, -pRotationCenter->z);
     }
 
-    MathUtilPostRotateQuat(Out, *pRotation);
+    MatrixPostRotateQuat(Out, *pRotation);
 
     if (pRotationCenter)
     {
-      MathUtilPostTranslate(Out, pRotationCenter->x, pRotationCenter->y, pRotationCenter->z);
+      MatrixPostTranslate(Out, pRotationCenter->x, pRotationCenter->y, pRotationCenter->z);
     }
   }
 
   if (pTranslation)
   {
-    MathUtilPostTranslate(Out, pTranslation->x, pTranslation->y, pTranslation->z);
+    MatrixPostTranslate(Out, pTranslation->x, pTranslation->y, pTranslation->z);
   }
 
   return Out;

@@ -128,6 +128,25 @@ IDLC_METH_BEGIN(ni,iRayInstancesDesc,AddInstance,6)
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iRayInstancesDesc,AddInstance,6)
 
+/** ni -> iRayInstancesDesc::UpdateInstance/6 **/
+IDLC_METH_BEGIN(ni,iRayInstancesDesc,UpdateInstance,6)
+	IDLC_DECL_VAR(tU32,anInstanceIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInstanceIndex)
+	IDLC_DECL_VAR(sMatrixf,aTransform)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer,aTransform)
+	IDLC_DECL_VAR(tU32,anInstanceId)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anInstanceId)
+	IDLC_DECL_VAR(tU8,anMask)
+	IDLC_BUF_TO_BASE(ni::eType_U8,anMask)
+	IDLC_DECL_VAR(tU32,anHitGroup)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anHitGroup)
+	IDLC_DECL_VAR(tRayInstanceFlags,aFlags)
+	IDLC_BUF_TO_ENUM(tRayInstanceFlags,aFlags)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayInstancesDesc,UpdateInstance,6,(anInstanceIndex,aTransform,anInstanceId,anMask,anHitGroup,aFlags))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iRayInstancesDesc,UpdateInstance,6)
+
 IDLC_END_INTF(ni,iRayInstancesDesc)
 
 /** interface : iRayInstances **/

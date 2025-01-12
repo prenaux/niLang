@@ -19117,9 +19117,30 @@ static const ni::sMethodDef iRayInstancesDesc_AddInstance = {
 #endif
 };
 
+// Method: UpdateInstance
+static const ni::sParameterDef iRayInstancesDesc_UpdateInstance_Parameters[6] = { 
+  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "anInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anMask", ni::eType_U8, NULL, "tU8" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tRayInstanceFlags" }
+}; 
+static const ni::sMethodDef iRayInstancesDesc_UpdateInstance = {
+  "UpdateInstance",
+  0|ni::eType_I8, NULL, "tBool",
+  6, iRayInstancesDesc_UpdateInstance_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayInstancesDesc_UpdateInstance)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iRayInstancesDesc[] = {
 	&iRayInstancesDesc_GetNumInstances,
 	&iRayInstancesDesc_AddInstance,
+	&iRayInstancesDesc_UpdateInstance,
 
 };
 

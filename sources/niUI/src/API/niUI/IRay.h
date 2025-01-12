@@ -115,6 +115,16 @@ struct iRayInstancesDesc : public iDeviceResource {
     tU8 anMask,
     tU32 anHitGroup,
     tRayInstanceFlags aFlags) = 0;
+
+  //! Update an instance.
+  //! \remark Valid only for eRayType_Instances
+  virtual tBool __stdcall UpdateInstance(
+    tU32 anInstanceIndex,
+    const sMatrixf& aTransform,
+    tU32 anInstanceId,
+    tU8 anMask,
+    tU32 anHitGroup,
+    tRayInstanceFlags aFlags) = 0;
 };
 
 //! Ray instances acceleration structure interface

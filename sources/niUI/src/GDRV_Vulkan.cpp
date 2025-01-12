@@ -3219,7 +3219,6 @@ struct sVulkanRayASDesc {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   sVulkanScratchBuffer _scratchBuffer;
-
   astl::vector<VkAccelerationStructureGeometryKHR> _vkGeometries;
   astl::vector<VkAccelerationStructureBuildRangeInfoKHR> _vkBuildInfos;
   astl::vector<NN<sVulkanBuffer>> _buffers;
@@ -3235,22 +3234,39 @@ struct sVulkanRayASDesc {
   ~sVulkanRayASDesc() {
   }
 
-  tU32 _AddGeometry(
+  tU32 _AddTrianglesVkGeometry(
     ain<VkAccelerationStructureGeometryKHR> aGeom,
     ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
-    ain<opt_mut<sVulkanBuffer>> aVertexBuffer,
-    ain<opt_mut<sVulkanBuffer>> aIndexBuffer)
+    ain<nn<sVulkanBuffer>> aVertexBuffer,
+    ain<QPtr<sVulkanBuffer>> aIndexBuffer)
   {
+    niDebugAssert(aGeom.geometry.triangles.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR);
     _vkGeometries.emplace_back(aGeom);
     _vkBuildInfos.emplace_back(aBuildRangeInfo);
-    if (aVertexBuffer.has_value()) {
-      _buffers.emplace_back(aVertexBuffer.value());
-    }
+    _buffers.emplace_back(aVertexBuffer);
     if (aIndexBuffer.has_value()) {
       _buffers.emplace_back(aIndexBuffer.value());
     }
     return (tU32)(_vkGeometries.size()-1);
   }
+
+  void _SetInstancesVkGeometry(
+    ain<VkAccelerationStructureGeometryKHR> aGeom,
+    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo)
+  {
+    niDebugAssert(aGeom.geometry.instances.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR);
+    if (_vkGeometries.empty()) {
+      _vkGeometries.emplace_back(aGeom);
+      _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    }
+    else {
+      _vkGeometries[0] = aGeom;
+      _vkBuildInfos[0] = aBuildRangeInfo;
+    }
+    niDebugAssert(_vkGeometries.size() == 1);
+  }
+
+  virtual tBool __stdcall _FinalizeAddGeometries() = 0;
 
   tBool _CreateAccelerationStructure(
     sVulkanRayBase& aAS,
@@ -3259,6 +3275,9 @@ struct sVulkanRayASDesc {
   )
   {
     niDebugAssert(aAS._asHandle == VK_NULL_HANDLE);
+
+    niCheck(_FinalizeAddGeometries(),eFalse);
+
     niCheck(!_vkGeometries.empty(), eFalse);
     niLet numGeometries = (tU32)_vkGeometries.size();
 
@@ -3418,6 +3437,9 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
   {
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
+    niCheckIsOK(apVertexBuffer, eFalse);
+
+    niLet vertexBuffer = as_nn<sVulkanBuffer>(apVertexBuffer);
 
     VkAccelerationStructureGeometryKHR geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3429,7 +3451,7 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
       .vertexFormat = VK_FORMAT_R32G32B32_SFLOAT,
       .vertexData = {
-        .deviceAddress = ((sVulkanBuffer*)apVertexBuffer)->_GetDeviceAddress() +
+        .deviceAddress = vertexBuffer->_GetDeviceAddress() +
         anVertexOffset
       },
       .vertexStride = anVertexStride,
@@ -3443,10 +3465,10 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
       .firstVertex = 0,
       .transformOffset = 0
     };
-    niCheck(_AddGeometry(
+    niCheck(_AddTrianglesVkGeometry(
       geometry,buildRangeInfo,
-      (sVulkanBuffer*)apVertexBuffer,
-      nullopt) != eInvalidHandle, eFalse);
+      vertexBuffer,
+      nullptr) != eInvalidHandle, eFalse);
 
     return eTrue;
   }
@@ -3467,6 +3489,11 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
     niCheck(anIndexCount >= 3, eFalse);
+    niCheckIsOK(apVertexBuffer, eFalse);
+    niCheckIsOK(apIndexBuffer, eFalse);
+
+    niLet vertexBuffer = as_nn<sVulkanBuffer>(apVertexBuffer);
+    niLet indexBuffer = as_nn<sVulkanBuffer>(apIndexBuffer);
 
     VkAccelerationStructureGeometryKHR geometry = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
@@ -3497,17 +3524,14 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
       .transformOffset = 0
     };
 
-    niCheck(_AddGeometry(
+    niCheck(_AddTrianglesVkGeometry(
       geometry,buildRangeInfo,
-      (sVulkanBuffer*)apVertexBuffer,
-      (sVulkanBuffer*)apIndexBuffer) != eInvalidHandle, eFalse);
+      vertexBuffer,
+      indexBuffer) != eInvalidHandle, eFalse);
 
     return eTrue;
   }
 
-  //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
-  //! \remarks The hit group must include an intersection shader for the procedural geometry.
-  //! \remarks AABB format: float[6] = {minX,minY,minZ,maxX,maxY,maxZ}, \see ni::cAABBf
   virtual tBool __stdcall AddProceduralAABBs(
     iGpuBuffer* apAABBs,
     tU32 anAABBOffset,
@@ -3519,16 +3543,25 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
     niError("Not implemented.");
     return eFalse;
   }
+
+  virtual tBool __stdcall _FinalizeAddGeometries() {
+    // noop for primitives acceleration structures
+    return eTrue;
+  }
 };
 
 struct tVulkanRayInstancesDesc : public ImplRC<
   iRayInstancesDesc,eImplFlags_DontInherit1,iDeviceResource>, public sVulkanRayASDesc
 {
   Ptr<sVulkanBuffer> _instanceBuffer;
+  static constexpr tU32 kInitialInstanceCapacity = 8;
+  astl::vector<VkAccelerationStructureInstanceKHR> _vkInstances;
 
   tVulkanRayInstancesDesc(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
       : sVulkanRayASDesc(aDriver,ahspName)
-  {}
+  {
+    _vkInstances.reserve(kInitialInstanceCapacity);
+  }
 
   ~tVulkanRayInstancesDesc() {
   }
@@ -3551,73 +3584,84 @@ struct tVulkanRayInstancesDesc : public ImplRC<
   }
 
   virtual tU32 __stdcall GetNumInstances() const {
-    return (tU32)_vkGeometries.size();
+    return (tU32)_vkInstances.size();
   }
 
   virtual tBool __stdcall AddInstance(
     iRayPrimitives* apPrimitiveAS,
-    const sMatrixf& aTransform,
+    ain<sMatrixf> aTransform,
     tU32 anInstanceId,
     tU8 anMask,
     tU32 anHitGroupOffset,
     tRayInstanceFlags aFlags) niImpl
   {
     niCheckIsOK(apPrimitiveAS,eFalse);
-
     niLet primitiveAS = static_cast<tVulkanRayPrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
-
-    // Create geometry for instance
-    VkAccelerationStructureGeometryKHR geometry = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
-      .geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR,
-      .flags = VK_GEOMETRY_OPAQUE_BIT_KHR
-    };
-    VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {
-      .primitiveCount = 1
-    };
-
-    // Create instance data
     VkAccelerationStructureInstanceKHR instance = {
-      .transform = {
+      .accelerationStructureReference = primitiveAS->_asDeviceAddress
+    };
+    _vkInstances.emplace_back(instance);
+    niDebugAssert(
+      UpdateInstance((tU32)_vkInstances.size()-1,aTransform,anInstanceId,anMask,anHitGroupOffset,aFlags));
+    return eTrue;
+  }
+
+  virtual tBool __stdcall UpdateInstance(
+    tU32 anInstanceIndex,
+    ain<sMatrixf> aTransform,
+    tU32 anInstanceId,
+    tU8 anMask,
+    tU32 anHitGroupOffset,
+    tRayInstanceFlags aFlags) niImpl
+  {
+    niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
+    niLocal& instance = _vkInstances[anInstanceIndex];
+    instance.transform = {
         aTransform._11, aTransform._21, aTransform._31, aTransform._41,
         aTransform._12, aTransform._22, aTransform._32, aTransform._42,
         aTransform._13, aTransform._23, aTransform._33, aTransform._43,
-      },
-      .instanceCustomIndex = anInstanceId,
-      .mask = anMask,
-      .instanceShaderBindingTableRecordOffset = anHitGroupOffset,
-      // TODO: From tAccelerationInstanceFlags aFlags
-      .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR,
-      .accelerationStructureReference = primitiveAS->_asDeviceAddress
-    };
+      };
+    instance.instanceCustomIndex = anInstanceId;
+    instance.mask = anMask;
+    instance.instanceShaderBindingTableRecordOffset = anHitGroupOffset;
+    instance.flags = _ToVkAccelerationStructureInstanceFlags(aFlags);
+    return eTrue;
+  }
 
-    // Create instance buffer
+  virtual tBool __stdcall _FinalizeAddGeometries() niImpl {
+    niCheck(!_vkInstances.empty(),eFalse);
+
     _instanceBuffer = ni::MakeNN<sVulkanBuffer>(
       _driver,
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_RayBuildInput);
-    niCheck(_instanceBuffer->_CreateBuffer(sizeof(instance),16),eFalse);
-
-    // Upload instance data
+    niCheck(_instanceBuffer->_CreateBuffer(
+      (tU32)_vkInstances.size() * sizeof(VkAccelerationStructureInstanceKHR), 16),
+      eFalse);
     {
-      tPtr data = _instanceBuffer->Lock(0,sizeof(instance),eLock_Discard);
+      tPtr data = _instanceBuffer->Lock(0, _instanceBuffer->GetSize(), eLock_Discard);
       niDebugAssert(data != nullptr);
-      ni::MemCopy(data, (tPtr)&instance, sizeof(instance));
+      ni::MemCopy(data, (tPtr)_vkInstances.data(), _vkInstances.size() * sizeof(VkAccelerationStructureInstanceKHR));
       _instanceBuffer->Unlock();
     }
 
+    VkAccelerationStructureGeometryKHR geometry = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
+      .geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR,
+      .flags = VK_GEOMETRY_OPAQUE_BIT_KHR,
+    };
     geometry.geometry.instances = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR,
       .arrayOfPointers = VK_FALSE,
       .data = { .deviceAddress = _instanceBuffer->_GetDeviceAddress() }
     };
 
-    niCheck(_AddGeometry(
-      geometry,buildRangeInfo,
-      nullopt,
-      nullopt) != eInvalidHandle, eFalse);
+    VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {
+      .primitiveCount = (tU32)_vkInstances.size()
+    };
 
+    _SetInstancesVkGeometry(geometry, buildRangeInfo);
     return eTrue;
   }
 };
@@ -3669,9 +3713,9 @@ struct sVulkanRayFunctionTable : public ImplRC<iRayFunctionTable> {
     _hitGroups.push_back({
         ._name = ahspName,
         ._type = aType,
-        ._closestHit = AsNN((sVulkanFunction*)apClosestHit),
-        ._anyHit = (sVulkanFunction*)apAnyHit,
-        ._intersection = (sVulkanFunction*)apIntersection
+        ._closestHit = AsNN<sVulkanFunction>(apClosestHit),
+        ._anyHit = as_maybe_null<sVulkanFunction>(apAnyHit),
+        ._intersection = as_maybe_null<sVulkanFunction>(apIntersection)
       });
     return (tU32)_hitGroups.size()-1;
   }
@@ -4129,9 +4173,9 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
   niCheckIsOK(_cache._lastRayInstances,eFalse);
   niCheckIsOK(_cache._lastRayOutputImage,eFalse);
 
-  nn<sVulkanRayPipeline> pipeline = as_nn(static_cast<sVulkanRayPipeline*>(_cache._lastRayPipeline.raw_ptr()));
-  nn<tVulkanRayInstances> instancesAS = as_nn(static_cast<tVulkanRayInstances*>(_cache._lastRayInstances.raw_ptr()));
-  nn<sVulkanTexture> outputTex = as_nn(static_cast<sVulkanTexture*>(_cache._lastRayOutputImage.raw_ptr()));
+  nn<sVulkanRayPipeline> pipeline = as_nn<sVulkanRayPipeline>(_cache._lastRayPipeline);
+  nn<tVulkanRayInstances> instancesAS = as_nn<tVulkanRayInstances>(_cache._lastRayInstances);
+  nn<sVulkanTexture> outputTex = as_nn<sVulkanTexture>(_cache._lastRayOutputImage);
 
   // End current rendering pass if any
   _EndRendering();
@@ -4360,7 +4404,7 @@ struct sVulkanContextBase :
       : tGraphicsContextBase(aDriver->_graphics)
       , _driver(aDriver)
       , _frameMaxInFlight(aFrameMaxInFlight)
-      , _cmdEncoder(as_NN(_CreateVulkanCommandEncoder(_driver)))
+      , _cmdEncoder(AsNN(_CreateVulkanCommandEncoder(_driver)))
   {
   }
 

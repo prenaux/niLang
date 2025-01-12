@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include <niLang/Math/Math.h>
 
 //
 // TODO (1/18):
-// - [ ] p0: FRay-Instances: Multiple instances, four triangles (one per instance)
-// - [ ] p0: FRay-UpdateInstances: Triangle & quad rotating
 // - [ ] p0: Sphere intersection shader
 // - [ ] p0: Visualize: one colour per instance (use hashToColor / rainbowColor to generate that from the instance id)
 // - [ ] p0: Visualize: triangles with barycentric coordinate
@@ -21,6 +20,7 @@
 // - [ ] p2: Compact static primitives AS
 // - [ ] p2: Textured cube
 // - [ ] p2: Visualize: tex coordinates
+// - [x] p0: FRay-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
 // - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
 //
 
@@ -587,5 +587,145 @@ struct sFRay_TriangleQuad : public sFRay_Base {
   }
 };
 TEST_CLASS(FRay,TriangleQuad);
+
+struct sFRay_Instances : public sFRay_Base {
+  typedef sVertexPA tVertexTri;
+
+  // Ray tracing pipeline and shaders
+  NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayMissFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayHitFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iRayFunctionTable> _rayFuncTable = niDeferredInit(NN<iRayFunctionTable>);
+  NN<iRayPipeline> _rayPipeline = niDeferredInit(NN<iRayPipeline>);
+  NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
+
+  // Instances
+  struct sInstanceDef {
+    sVec3f _pos;
+  };
+  astl::array<sInstanceDef,4> _instances = {
+    Vec3f(-0.25f,0.35f,0.35f),
+    Vec3f( 0.25f,0.35f,0.35f),
+    Vec3f(-0.25f,-0.35f,0.35f),
+    Vec3f( 0.25f,-0.35f,0.35f),
+  };
+  NN<iRayBuildEncoder> _rayBuildEncoder = niDeferredInit(NN<iRayBuildEncoder>);
+  NN<iRayInstancesDesc> _instancesDesc = niDeferredInit(NN<iRayInstancesDesc>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+
+    // Create ray tracing shaders
+    {
+      _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+
+      _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+
+      _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+    }
+
+    // Create ray tracing pipeline
+    {
+      _rayFuncTable = niCheckNN(_rayFuncTable, _driverRay->CreateRayFunctionTable(), eFalse);
+      _rayFuncTable->SetRayGenFunction(_rayGenFun);
+      _rayFuncTable->SetMissFunction(_rayMissFun);
+
+      // Add hit group for quads
+      niLet hitGroupId = _rayFuncTable->AddHitGroup(
+        _H("quad"),
+        eRayFunctionGroupType_Triangles,
+        _rayHitFun,
+        nullptr, // No any-hit shader
+        nullptr  // No intersection shader (using built-in quad intersection)
+      );
+      niCheck(hitGroupId != eInvalidHandle, eFalse);
+
+      _rayPipeline = niCheckNN(_rayPipeline,
+        _driverRay->CreateRayPipeline(_H("RayQuad_Pipeline"), _rayFuncTable),
+        eFalse);
+    }
+
+    // Create acceleration structure
+    {
+      _rayBuildEncoder = niCheckNN(_rayBuildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+
+      niLet prDesc = niCheckNN(
+        prDesc,
+        _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Quad")),
+        eFalse);
+
+      niLet triangleVB = MakeTriVB(0.5f,sVec3f::Zero());
+      niCheck(prDesc->AddTriangles(
+        triangleVB,0,sizeof(tVertexTri),3,
+        sMatrixf::Identity(),
+        eRayPrimitiveFlags_Opaque,
+        0), eFalse);
+      niLet primitiveAS = niCheckNN(primitiveAS, _rayBuildEncoder->BuildRayPrimitives(
+        _H("RayPrimitives_Triangle"),prDesc), eFalse);
+
+      _instancesDesc = niCheckNN(
+        _instancesDesc,
+        _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Quad")),
+        eFalse);
+
+      niLoop(i,_instances.size()) {
+        sMatrixf mtx = sMatrixf::Identity();
+        mtx = MatrixTranslation(_instances[i]._pos);
+        niCheck(_instancesDesc->AddInstance(
+          primitiveAS,
+          mtx,                  // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None), eFalse);
+      }
+    }
+
+    // Create our output image
+    {
+      _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
+        _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
+        256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
+
+    niLoop(i,_instances.size()) {
+      sMatrixf mtx = sMatrixf::Identity();
+      mtx = MatrixRotationZ(WrapRad(_animationTime)) *
+          MatrixTranslation(_instances[i]._pos);
+      niPanicAssert(
+        _instancesDesc->UpdateInstance(
+          i,
+          mtx,                  // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None));
+    }
+    niLet instanceAS = niCheckNN(instanceAS, _rayBuildEncoder->BuildRayInstances(
+      nullptr,_instancesDesc), eFalse);
+
+    rayEncoder->SetRayInstances(instanceAS);
+    rayEncoder->SetRayOutputImage(_rayOutputImage);
+    rayEncoder->SetRayPipeline(_rayPipeline);
+    rayEncoder->DispatchRays(_rayOutputImage->GetWidth(),_rayOutputImage->GetHeight(),1);
+
+    DisplayTexture(gpuEncoder,_rayOutputImage);
+    return eTrue;
+  }
+};
+TEST_CLASS(FRay,Instances);
 
 }

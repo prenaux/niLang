@@ -5,8 +5,7 @@
 
 //
 // TODO (1/18):
-// - [ ] p0: Sphere intersection shader
-// - [ ] p0: Visualize: one colour per instance (use hashToColor / rainbowColor to generate that from the instance id)
+// - [ ] p0: Sphere intersection shader, visualize the sphere's normal?
 // - [ ] p0: Visualize: triangles with barycentric coordinate
 // - [ ] p1: Checkerboard floor
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
@@ -22,6 +21,7 @@
 // - [ ] p2: Visualize: tex coordinates
 // - [x] p0: FRay-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
 // - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
+// - [x] p0: Visualize: one colour per instance index & custom instance id
 //
 
 using namespace ni;
@@ -588,8 +588,10 @@ struct sFRay_TriangleQuad : public sFRay_Base {
 };
 TEST_CLASS(FRay,TriangleQuad);
 
-struct sFRay_Instances : public sFRay_Base {
+struct sFRay_InstancesBase : public sFRay_Base {
   typedef sVertexPA tVertexTri;
+
+  const tHStringPtr _rchitPath;
 
   // Ray tracing pipeline and shaders
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -612,6 +614,10 @@ struct sFRay_Instances : public sFRay_Base {
   NN<iRayBuildEncoder> _rayBuildEncoder = niDeferredInit(NN<iRayBuildEncoder>);
   NN<iRayInstancesDesc> _instancesDesc = niDeferredInit(NN<iRayInstancesDesc>);
 
+  sFRay_InstancesBase(iHString* ahspRChitPath)
+      : _rchitPath(ahspRChitPath)
+  {}
+
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
 
@@ -624,7 +630,7 @@ struct sFRay_Instances : public sFRay_Base {
         eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _rchitPath), eFalse);
     }
 
     // Create ray tracing pipeline
@@ -677,7 +683,7 @@ struct sFRay_Instances : public sFRay_Base {
         niCheck(_instancesDesc->AddInstance(
           primitiveAS,
           mtx,                  // Transform
-          0,                    // Instance ID
+          i*10,                 // Custom Instance Id
           0xFF,                 // Mask
           0,                    // Hit group offset
           eRayInstanceFlags_None), eFalse);
@@ -702,17 +708,9 @@ struct sFRay_Instances : public sFRay_Base {
     NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
 
     niLoop(i,_instances.size()) {
-      sMatrixf mtx = sMatrixf::Identity();
-      mtx = MatrixRotationZ(WrapRad(_animationTime)) *
-          MatrixTranslation(_instances[i]._pos);
-      niPanicAssert(
-        _instancesDesc->UpdateInstance(
-          i,
-          mtx,                  // Transform
-          0,                    // Instance ID
-          0xFF,                 // Mask
-          0,                    // Hit group offset
-          eRayInstanceFlags_None));
+      niPanicAssert(_instancesDesc->UpdateInstanceTransform(
+        i,MatrixRotationZ(WrapRad(_animationTime)) *
+        MatrixTranslation(_instances[i]._pos)));
     }
     niLet instanceAS = niCheckNN(instanceAS, _rayBuildEncoder->BuildRayInstances(
       nullptr,_instancesDesc), eFalse);
@@ -726,6 +724,26 @@ struct sFRay_Instances : public sFRay_Base {
     return eTrue;
   }
 };
+
+struct sFRay_Instances : public sFRay_InstancesBase {
+  sFRay_Instances()
+      : sFRay_InstancesBase(_H("test/rayfunc/triangle_rchit.gpufunc.xml"))
+  {}
+};
 TEST_CLASS(FRay,Instances);
+
+struct sFRay_InstancesIndex : public sFRay_InstancesBase {
+  sFRay_InstancesIndex()
+      : sFRay_InstancesBase(_H("test/rayfunc/triangle_instanceindex_rchit.gpufunc.xml"))
+  {}
+};
+TEST_CLASS(FRay,InstancesIndex);
+
+struct sFRay_InstancesId : public sFRay_InstancesBase {
+  sFRay_InstancesId()
+      : sFRay_InstancesBase(_H("test/rayfunc/triangle_instanceid_rchit.gpufunc.xml"))
+  {}
+};
+TEST_CLASS(FRay,InstancesId);
 
 }

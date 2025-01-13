@@ -3590,7 +3590,7 @@ struct tVulkanRayInstancesDesc : public ImplRC<
   virtual tBool __stdcall AddInstance(
     iRayPrimitives* apPrimitiveAS,
     ain<sMatrixf> aTransform,
-    tU32 anInstanceId,
+    tU32 anCustomInstanceId,
     tU8 anMask,
     tU32 anHitGroupOffset,
     tRayInstanceFlags aFlags) niImpl
@@ -3603,14 +3603,14 @@ struct tVulkanRayInstancesDesc : public ImplRC<
     };
     _vkInstances.emplace_back(instance);
     niDebugAssert(
-      UpdateInstance((tU32)_vkInstances.size()-1,aTransform,anInstanceId,anMask,anHitGroupOffset,aFlags));
+      UpdateInstance((tU32)_vkInstances.size()-1,aTransform,anCustomInstanceId,anMask,anHitGroupOffset,aFlags));
     return eTrue;
   }
 
   virtual tBool __stdcall UpdateInstance(
     tU32 anInstanceIndex,
     ain<sMatrixf> aTransform,
-    tU32 anInstanceId,
+    tU32 anCustomInstanceId,
     tU8 anMask,
     tU32 anHitGroupOffset,
     tRayInstanceFlags aFlags) niImpl
@@ -3618,14 +3618,28 @@ struct tVulkanRayInstancesDesc : public ImplRC<
     niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
     niLocal& instance = _vkInstances[anInstanceIndex];
     instance.transform = {
-        aTransform._11, aTransform._21, aTransform._31, aTransform._41,
-        aTransform._12, aTransform._22, aTransform._32, aTransform._42,
-        aTransform._13, aTransform._23, aTransform._33, aTransform._43,
-      };
-    instance.instanceCustomIndex = anInstanceId;
+      aTransform._11, aTransform._21, aTransform._31, aTransform._41,
+      aTransform._12, aTransform._22, aTransform._32, aTransform._42,
+      aTransform._13, aTransform._23, aTransform._33, aTransform._43,
+    };
+    instance.instanceCustomIndex = anCustomInstanceId;
     instance.mask = anMask;
     instance.instanceShaderBindingTableRecordOffset = anHitGroupOffset;
     instance.flags = _ToVkAccelerationStructureInstanceFlags(aFlags);
+    return eTrue;
+  }
+
+  virtual tBool __stdcall UpdateInstanceTransform(
+    tU32 anInstanceIndex,
+    ain<sMatrixf> aTransform) niImpl
+  {
+    niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
+    niLocal& instance = _vkInstances[anInstanceIndex];
+    instance.transform = {
+      aTransform._11, aTransform._21, aTransform._31, aTransform._41,
+      aTransform._12, aTransform._22, aTransform._32, aTransform._42,
+      aTransform._13, aTransform._23, aTransform._33, aTransform._43,
+    };
     return eTrue;
   }
 

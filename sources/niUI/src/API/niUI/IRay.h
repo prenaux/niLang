@@ -54,7 +54,6 @@ struct iRayPrimitivesDesc : public iDeviceResource {
   virtual tU32 __stdcall GetNumPrimitives() const = 0;
 
   //! Add non-indexed triangle geometry to primitive acceleration structure.
-  //! \remark Valid only for eRayType_Primitives
   virtual tBool __stdcall AddTriangles(
     iGpuBuffer* apVertices,
     tU32 anVertexOffset,
@@ -65,7 +64,6 @@ struct iRayPrimitivesDesc : public iDeviceResource {
     tU32 anHitGroup) = 0;
 
   //! Add indexed triangle geometry to primitive acceleration structure.
-  //! \remark Valid only for eRayType_Primitives
   virtual tBool __stdcall AddTrianglesIndexed(
     iGpuBuffer* apVertices,
     tU32 anVertexOffset,
@@ -82,7 +80,6 @@ struct iRayPrimitivesDesc : public iDeviceResource {
   //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
   //! \remarks The hit group must include an intersection shader for the procedural geometry.
   //! \remarks AABB is an array of ni::cAABBf
-  //! \remark Valid only for eRayType_Primitives
   virtual tBool __stdcall AddProceduralAABBs(
     iGpuBuffer* apAABBs,
     tU32 anAABBOffset,
@@ -107,24 +104,27 @@ struct iRayInstancesDesc : public iDeviceResource {
   virtual tU32 __stdcall GetNumInstances() const = 0;
 
   //! Add an instance.
-  //! \remark Valid only for eRayType_Instances
   virtual tBool __stdcall AddInstance(
     iRayPrimitives* apAS,
     const sMatrixf& aTransform,
-    tU32 anInstanceId,
+    tU32 anCustomInstanceId,
     tU8 anMask,
     tU32 anHitGroup,
     tRayInstanceFlags aFlags) = 0;
 
   //! Update an instance.
-  //! \remark Valid only for eRayType_Instances
   virtual tBool __stdcall UpdateInstance(
     tU32 anInstanceIndex,
     const sMatrixf& aTransform,
-    tU32 anInstanceId,
+    tU32 anCustomInstanceId,
     tU8 anMask,
     tU32 anHitGroup,
     tRayInstanceFlags aFlags) = 0;
+
+  //! Update an instance's transform.
+  virtual tBool __stdcall UpdateInstanceTransform(
+    tU32 anInstanceIndex,
+    const sMatrixf& aTransform) = 0;
 };
 
 //! Ray instances acceleration structure interface

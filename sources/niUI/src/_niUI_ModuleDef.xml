@@ -20489,9 +20489,7 @@
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
 			</method>
 			<method java_name="addTriangles" name="AddTriangles" num_parameters="7">
-				<comments desc="Add non-indexed triangle geometry to primitive acceleration structure. ">
-					<remark text="Valid only for eRayType_Primitives "/>
-				</comments>
+				<comments desc="Add non-indexed triangle geometry to primitive acceleration structure. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apVertices"
@@ -20531,9 +20529,7 @@
 					typei="ni::eType_U32"/>
 			</method>
 			<method java_name="addTrianglesIndexed" name="AddTrianglesIndexed" num_parameters="11">
-				<comments desc="Add indexed triangle geometry to primitive acceleration structure. ">
-					<remark text="Valid only for eRayType_Primitives "/>
-				</comments>
+				<comments desc="Add indexed triangle geometry to primitive acceleration structure. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apVertices"
@@ -20596,7 +20592,6 @@
 				<comments desc="Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes. ">
 					<remark text="s The hit group must include an intersection shader for the procedural geometry. "/>
 					<remark text="s AABB is an array of ni::cAABBf "/>
-					<remark text="Valid only for eRayType_Primitives "/>
 				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -20660,9 +20655,7 @@
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
 			</method>
 			<method java_name="addInstance" name="AddInstance" num_parameters="6">
-				<comments desc="Add an instance. ">
-					<remark text="Valid only for eRayType_Instances "/>
-				</comments>
+				<comments desc="Add an instance. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apAS"
@@ -20675,7 +20668,7 @@
 					typec="const sMatrixf&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="anInstanceId"
+					name="anCustomInstanceId"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
@@ -20697,9 +20690,7 @@
 					typei="ni::eType_Enum"/>
 			</method>
 			<method java_name="updateInstance" name="UpdateInstance" num_parameters="6">
-				<comments desc="Update an instance. ">
-					<remark text="Valid only for eRayType_Instances "/>
-				</comments>
+				<comments desc="Update an instance. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="anInstanceIndex"
@@ -20712,7 +20703,7 @@
 					typec="const sMatrixf&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 				<parameter
-					name="anInstanceId"
+					name="anCustomInstanceId"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
@@ -20732,6 +20723,21 @@
 					type="tRayInstanceFlags"
 					typec="tRayInstanceFlags"
 					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="updateInstanceTransform" name="UpdateInstanceTransform" num_parameters="2">
+				<comments desc="Update an instance&apos;s transform. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anInstanceIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aTransform"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 		<interface name="iRayInstances" uuid1="B03F4031-C4B2-48F8-890C-1891F252AD73" uuid2="0xb03f4031,0xc4b2,0x48f8,0x89,0x0c,0x18,0x91,0xf2,0x52,0xad,0x73">

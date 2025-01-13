@@ -19101,7 +19101,7 @@ static const ni::sMethodDef iRayInstancesDesc_GetNumInstances = {
 static const ni::sParameterDef iRayInstancesDesc_AddInstance_Parameters[6] = { 
   { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "iRayPrimitives*" }, 
   { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
-  { "anInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" }, 
   { "anMask", ni::eType_U8, NULL, "tU8" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tRayInstanceFlags" }
@@ -19121,7 +19121,7 @@ static const ni::sMethodDef iRayInstancesDesc_AddInstance = {
 static const ni::sParameterDef iRayInstancesDesc_UpdateInstance_Parameters[6] = { 
   { "anInstanceIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
-  { "anInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" }, 
   { "anMask", ni::eType_U8, NULL, "tU8" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tRayInstanceFlags" }
@@ -19137,10 +19137,27 @@ static const ni::sMethodDef iRayInstancesDesc_UpdateInstance = {
 #endif
 };
 
+// Method: UpdateInstanceTransform
+static const ni::sParameterDef iRayInstancesDesc_UpdateInstanceTransform_Parameters[2] = { 
+  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
+}; 
+static const ni::sMethodDef iRayInstancesDesc_UpdateInstanceTransform = {
+  "UpdateInstanceTransform",
+  0|ni::eType_I8, NULL, "tBool",
+  2, iRayInstancesDesc_UpdateInstanceTransform_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayInstancesDesc_UpdateInstanceTransform)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iRayInstancesDesc[] = {
 	&iRayInstancesDesc_GetNumInstances,
 	&iRayInstancesDesc_AddInstance,
 	&iRayInstancesDesc_UpdateInstance,
+	&iRayInstancesDesc_UpdateInstanceTransform,
 
 };
 

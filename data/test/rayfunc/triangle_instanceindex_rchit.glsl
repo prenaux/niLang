@@ -49,6 +49,8 @@ struct lib_shader_RayWorldParams {
 // TypeMethFwd: RayPayload
 lib_shader_RayPayload lib_shader_RayPayload_new(vec4 a_color, float a_hitT);
 // FunctionFwd: lib:shader
+uint lib_shader_HashJenkins(uint aStartX);
+vec3 lib_shader_UIntToHashColor(uint i);
 // TypeMeth: RayPayload
 lib_shader_RayPayload lib_shader_RayPayload_new(vec4 a_color, float a_hitT) {
   lib_shader_RayPayload t;
@@ -57,23 +59,38 @@ lib_shader_RayPayload lib_shader_RayPayload_new(vec4 a_color, float a_hitT) {
   return t;
 }
 // Function: lib:shader
+uint lib_shader_HashJenkins(uint aStartX) {
+  uint x = aStartX;
+  x = (x + (x << 10));
+  x = (x ^ (x >> 6));
+  x = (x + (x << 3));
+  x = (x ^ (x >> 11));
+  x = (x + (x << 15));
+  return x;
+}
+vec3 lib_shader_UIntToHashColor(uint i) {
+  uint hash = lib_shader_HashJenkins(i);
+  return vec3((float(((hash >> 0) & 255)) / 255.0),(float(((hash >> 8) & 255)) / 255.0),(float(((hash >> 16) & 255)) / 255.0));
+}
 // MODULE END lib:shader
 // DO IMPORTS END TestGpuFuncs
 
 // MODULE BEGIN TestGpuFuncs
 
 // FunctionFwd: TestGpuFuncs
-lib_shader_RayPayload TestGpuFuncs_triangle_rchit(lib_shader_RayHitInfo aHitInfo, lib_shader_RayGeometryIds aIds, lib_shader_RayObjectParams aObject, lib_shader_RayWorldParams aWorld, lib_shader_RayParams aRay, lib_shader_RayTransforms aTransforms);
+lib_shader_RayPayload TestGpuFuncs_triangle_instanceindex_rchit(lib_shader_RayHitInfo aHitInfo, lib_shader_RayGeometryIds aIds, lib_shader_RayObjectParams aObject, lib_shader_RayWorldParams aWorld, lib_shader_RayParams aRay, lib_shader_RayTransforms aTransforms);
 
 // Function: TestGpuFuncs
-lib_shader_RayPayload TestGpuFuncs_triangle_rchit(lib_shader_RayHitInfo aHitInfo, lib_shader_RayGeometryIds aIds, lib_shader_RayObjectParams aObject, lib_shader_RayWorldParams aWorld, lib_shader_RayParams aRay, lib_shader_RayTransforms aTransforms) {
-  vec4 _tmp_1 = vec4(0.0,1.0,0.0,1.0);
-  float _tmp_6 = aHitInfo.hitT;
-  return lib_shader_RayPayload_new(_tmp_1, _tmp_6);
+lib_shader_RayPayload TestGpuFuncs_triangle_instanceindex_rchit(lib_shader_RayHitInfo aHitInfo, lib_shader_RayGeometryIds aIds, lib_shader_RayObjectParams aObject, lib_shader_RayWorldParams aWorld, lib_shader_RayParams aRay, lib_shader_RayTransforms aTransforms) {
+  vec3 instanceColor = lib_shader_UIntToHashColor((aIds.instanceIndex + 1));
+  vec3 _tmp_7 = instanceColor;
+  vec4 _tmp_5 = vec4(_tmp_7.x,_tmp_7.y,_tmp_7.z,1.0);
+  float _tmp_8 = aHitInfo.hitT;
+  return lib_shader_RayPayload_new(_tmp_5, _tmp_8);
 }
 // MODULE END TestGpuFuncs
 
-// Ray Shader main: TestGpuFuncs_triangle_rchit
+// Ray Shader main: TestGpuFuncs_triangle_instanceindex_rchit
 void main(void) {
   lib_shader_RayHitInfo aHitInfo;
   lib_shader_RayGeometryIds aIds;
@@ -96,7 +113,7 @@ void main(void) {
   aRay.incomingRayFlags = gl_IncomingRayFlagsEXT;
   aTransforms.objectToWorld = nil_Mat4x3ToMat4x4(gl_ObjectToWorldEXT);
   aTransforms.worldToObject = nil_Mat4x3ToMat4x4(gl_WorldToObjectEXT);
-  lib_shader_RayPayload _rval_ = TestGpuFuncs_triangle_rchit(aHitInfo, aIds, aObject, aWorld, aRay, aTransforms);
+  lib_shader_RayPayload _rval_ = TestGpuFuncs_triangle_instanceindex_rchit(aHitInfo, aIds, aObject, aWorld, aRay, aTransforms);
   nil_builtin_RAY_PAYLOAD_0 = _rval_;
 }
 

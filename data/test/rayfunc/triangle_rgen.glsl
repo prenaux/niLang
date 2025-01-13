@@ -22,7 +22,7 @@ struct lib_shader_RayPayload {
 layout(location = 0) rayPayloadEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
 // Type: RayWorkDimensions
 struct lib_shader_RayWorkDimensions {
-  uvec3 launchId;
+  uvec3 launchIndex;
   uvec3 launchSize;
 };
 // TypeStaticFwd: RayFlags
@@ -80,7 +80,7 @@ void TestGpuFuncs_triangle_rgen(accelerationStructureEXT aAS, writeonly image2D 
 
 // Function: TestGpuFuncs
 void TestGpuFuncs_triangle_rgen(accelerationStructureEXT aAS, writeonly image2D aOutputImage, lib_shader_RayWorkDimensions aLaunch) {
-  uvec2 coords = (aLaunch.launchId.xy);
+  uvec2 coords = (aLaunch.launchIndex.xy);
   uvec2 dims = (aLaunch.launchSize.xy);
   vec2 pixelCenter = (vec2(coords)+0.5);
   vec2 uv = (pixelCenter/vec2(dims));
@@ -103,7 +103,7 @@ layout(set = 8, binding = 0) uniform writeonly image2D IN_1_aOutputImage;
 void main(void) {
   lib_shader_initialize();
   lib_shader_RayWorkDimensions aLaunch;
-  aLaunch.launchId = gl_LaunchIDEXT;
+  aLaunch.launchIndex = gl_LaunchIDEXT;
   aLaunch.launchSize = gl_LaunchSizeEXT;
   TestGpuFuncs_triangle_rgen(IN_1_aAS, IN_1_aOutputImage, aLaunch);
 }

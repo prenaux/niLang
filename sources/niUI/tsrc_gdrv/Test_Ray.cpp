@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
-#include <niLang/Math/Math.h>
+#include <niLang/Math/MathLib.h>
 
 //
 // TODO (1/18):

@@ -18943,24 +18943,24 @@ static const ni::sInterfaceDef InterfaceDef_iPixelFormat = {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// iRayPrimitivesDesc wrapper
+// iRayTrianglePrimitivesDesc wrapper
 //////////////////////////////////////////////////////////////////////////////////////////////
-niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayPrimitivesDesc() {
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayTrianglePrimitivesDesc() {
 
 // Method: GetNumPrimitives
-static const ni::sMethodDef iRayPrimitivesDesc_GetNumPrimitives = {
+static const ni::sMethodDef iRayTrianglePrimitivesDesc_GetNumPrimitives = {
   "GetNumPrimitives",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
   0, NULL,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRayPrimitivesDesc_GetNumPrimitives)
+  XCALL_CIMPL(iRayTrianglePrimitivesDesc_GetNumPrimitives)
 #else
   NULL
 #endif
 };
 
 // Method: AddTriangles
-static const ni::sParameterDef iRayPrimitivesDesc_AddTriangles_Parameters[7] = { 
+static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTriangles_Parameters[7] = { 
   { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
   { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
   { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
@@ -18969,19 +18969,19 @@ static const ni::sParameterDef iRayPrimitivesDesc_AddTriangles_Parameters[7] = {
   { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
 }; 
-static const ni::sMethodDef iRayPrimitivesDesc_AddTriangles = {
+static const ni::sMethodDef iRayTrianglePrimitivesDesc_AddTriangles = {
   "AddTriangles",
   0|ni::eType_I8, NULL, "tBool",
-  7, iRayPrimitivesDesc_AddTriangles_Parameters,
+  7, iRayTrianglePrimitivesDesc_AddTriangles_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRayPrimitivesDesc_AddTriangles)
+  XCALL_CIMPL(iRayTrianglePrimitivesDesc_AddTriangles)
 #else
   NULL
 #endif
 };
 
 // Method: AddTrianglesIndexed
-static const ni::sParameterDef iRayPrimitivesDesc_AddTrianglesIndexed_Parameters[11] = { 
+static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTrianglesIndexed_Parameters[11] = { 
   { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
   { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
   { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
@@ -18994,19 +18994,63 @@ static const ni::sParameterDef iRayPrimitivesDesc_AddTrianglesIndexed_Parameters
   { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
 }; 
-static const ni::sMethodDef iRayPrimitivesDesc_AddTrianglesIndexed = {
+static const ni::sMethodDef iRayTrianglePrimitivesDesc_AddTrianglesIndexed = {
   "AddTrianglesIndexed",
   0|ni::eType_I8, NULL, "tBool",
-  11, iRayPrimitivesDesc_AddTrianglesIndexed_Parameters,
+  11, iRayTrianglePrimitivesDesc_AddTrianglesIndexed_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRayPrimitivesDesc_AddTrianglesIndexed)
+  XCALL_CIMPL(iRayTrianglePrimitivesDesc_AddTrianglesIndexed)
 #else
   NULL
 #endif
 };
 
-// Method: AddProceduralAABBs
-static const ni::sParameterDef iRayPrimitivesDesc_AddProceduralAABBs_Parameters[7] = { 
+static const ni::sMethodDef* Methods_iRayTrianglePrimitivesDesc[] = {
+	&iRayTrianglePrimitivesDesc_GetNumPrimitives,
+	&iRayTrianglePrimitivesDesc_AddTriangles,
+	&iRayTrianglePrimitivesDesc_AddTrianglesIndexed,
+
+};
+
+//// Interface description //////////////////////////////////
+static const ni::tUUID* Parents_iRayTrianglePrimitivesDesc[] = {
+  &niGetInterfaceUUID(iDeviceResource),
+};
+
+static const ni::sInterfaceDef InterfaceDef_iRayTrianglePrimitivesDesc = {
+  niGetInterfaceID(iRayTrianglePrimitivesDesc),
+  &niGetInterfaceUUID(iRayTrianglePrimitivesDesc),
+  1,
+  Parents_iRayTrianglePrimitivesDesc,
+  niCountOf(Methods_iRayTrianglePrimitivesDesc),Methods_iRayTrianglePrimitivesDesc,
+  NULL
+};
+
+	return &InterfaceDef_iRayTrianglePrimitivesDesc;
+}
+
+// End of iRayTrianglePrimitivesDesc wrapper
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// iRayProceduralPrimitivesDesc wrapper
+//////////////////////////////////////////////////////////////////////////////////////////////
+niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayProceduralPrimitivesDesc() {
+
+// Method: GetNumPrimitives
+static const ni::sMethodDef iRayProceduralPrimitivesDesc_GetNumPrimitives = {
+  "GetNumPrimitives",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayProceduralPrimitivesDesc_GetNumPrimitives)
+#else
+  NULL
+#endif
+};
+
+// Method: AddAABBs
+static const ni::sParameterDef iRayProceduralPrimitivesDesc_AddAABBs_Parameters[7] = { 
   { "apAABBs", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
   { "anAABBOffset", ni::eType_U32, NULL, "tU32" }, 
   { "anAABBStride", ni::eType_U32, NULL, "tU32" }, 
@@ -19015,43 +19059,41 @@ static const ni::sParameterDef iRayPrimitivesDesc_AddProceduralAABBs_Parameters[
   { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
 }; 
-static const ni::sMethodDef iRayPrimitivesDesc_AddProceduralAABBs = {
-  "AddProceduralAABBs",
+static const ni::sMethodDef iRayProceduralPrimitivesDesc_AddAABBs = {
+  "AddAABBs",
   0|ni::eType_I8, NULL, "tBool",
-  7, iRayPrimitivesDesc_AddProceduralAABBs_Parameters,
+  7, iRayProceduralPrimitivesDesc_AddAABBs_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRayPrimitivesDesc_AddProceduralAABBs)
+  XCALL_CIMPL(iRayProceduralPrimitivesDesc_AddAABBs)
 #else
   NULL
 #endif
 };
 
-static const ni::sMethodDef* Methods_iRayPrimitivesDesc[] = {
-	&iRayPrimitivesDesc_GetNumPrimitives,
-	&iRayPrimitivesDesc_AddTriangles,
-	&iRayPrimitivesDesc_AddTrianglesIndexed,
-	&iRayPrimitivesDesc_AddProceduralAABBs,
+static const ni::sMethodDef* Methods_iRayProceduralPrimitivesDesc[] = {
+	&iRayProceduralPrimitivesDesc_GetNumPrimitives,
+	&iRayProceduralPrimitivesDesc_AddAABBs,
 
 };
 
 //// Interface description //////////////////////////////////
-static const ni::tUUID* Parents_iRayPrimitivesDesc[] = {
+static const ni::tUUID* Parents_iRayProceduralPrimitivesDesc[] = {
   &niGetInterfaceUUID(iDeviceResource),
 };
 
-static const ni::sInterfaceDef InterfaceDef_iRayPrimitivesDesc = {
-  niGetInterfaceID(iRayPrimitivesDesc),
-  &niGetInterfaceUUID(iRayPrimitivesDesc),
+static const ni::sInterfaceDef InterfaceDef_iRayProceduralPrimitivesDesc = {
+  niGetInterfaceID(iRayProceduralPrimitivesDesc),
+  &niGetInterfaceUUID(iRayProceduralPrimitivesDesc),
   1,
-  Parents_iRayPrimitivesDesc,
-  niCountOf(Methods_iRayPrimitivesDesc),Methods_iRayPrimitivesDesc,
+  Parents_iRayProceduralPrimitivesDesc,
+  niCountOf(Methods_iRayProceduralPrimitivesDesc),Methods_iRayProceduralPrimitivesDesc,
   NULL
 };
 
-	return &InterfaceDef_iRayPrimitivesDesc;
+	return &InterfaceDef_iRayProceduralPrimitivesDesc;
 }
 
-// End of iRayPrimitivesDesc wrapper
+// End of iRayProceduralPrimitivesDesc wrapper
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -19361,17 +19403,33 @@ static const ni::sInterfaceDef InterfaceDef_iRayPipeline = {
 //////////////////////////////////////////////////////////////////////////////////////////////
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayBuildEncoder() {
 
-// Method: BuildRayPrimitives
-static const ni::sParameterDef iRayBuildEncoder_BuildRayPrimitives_Parameters[2] = { 
+// Method: BuildRayTrianglePrimitives
+static const ni::sParameterDef iRayBuildEncoder_BuildRayTrianglePrimitives_Parameters[2] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
-  { "apPrimitivesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitivesDesc), "iRayPrimitivesDesc*" }
+  { "apPrimitivesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayTrianglePrimitivesDesc), "iRayTrianglePrimitivesDesc*" }
 }; 
-static const ni::sMethodDef iRayBuildEncoder_BuildRayPrimitives = {
-  "BuildRayPrimitives",
+static const ni::sMethodDef iRayBuildEncoder_BuildRayTrianglePrimitives = {
+  "BuildRayTrianglePrimitives",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "Ptr<iRayPrimitives>",
-  2, iRayBuildEncoder_BuildRayPrimitives_Parameters,
+  2, iRayBuildEncoder_BuildRayTrianglePrimitives_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iRayBuildEncoder_BuildRayPrimitives)
+  XCALL_CIMPL(iRayBuildEncoder_BuildRayTrianglePrimitives)
+#else
+  NULL
+#endif
+};
+
+// Method: BuildRayProceduralPrimitives
+static const ni::sParameterDef iRayBuildEncoder_BuildRayProceduralPrimitives_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apPrimitivesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayProceduralPrimitivesDesc), "iRayProceduralPrimitivesDesc*" }
+}; 
+static const ni::sMethodDef iRayBuildEncoder_BuildRayProceduralPrimitives = {
+  "BuildRayProceduralPrimitives",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "Ptr<iRayPrimitives>",
+  2, iRayBuildEncoder_BuildRayProceduralPrimitives_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iRayBuildEncoder_BuildRayProceduralPrimitives)
 #else
   NULL
 #endif
@@ -19394,7 +19452,8 @@ static const ni::sMethodDef iRayBuildEncoder_BuildRayInstances = {
 };
 
 static const ni::sMethodDef* Methods_iRayBuildEncoder[] = {
-	&iRayBuildEncoder_BuildRayPrimitives,
+	&iRayBuildEncoder_BuildRayTrianglePrimitives,
+	&iRayBuildEncoder_BuildRayProceduralPrimitives,
 	&iRayBuildEncoder_BuildRayInstances,
 
 };
@@ -19547,16 +19606,31 @@ static const ni::sMethodDef iGraphicsDriverRay_CreateRayFunctionTable = {
 #endif
 };
 
-// Method: CreateRayPrimitivesDesc
-static const ni::sParameterDef iGraphicsDriverRay_CreateRayPrimitivesDesc_Parameters[1] = { 
+// Method: CreateRayTrianglePrimitivesDesc
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
 }; 
-static const ni::sMethodDef iGraphicsDriverRay_CreateRayPrimitivesDesc = {
-  "CreateRayPrimitivesDesc",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitivesDesc), "Ptr<iRayPrimitivesDesc>",
-  1, iGraphicsDriverRay_CreateRayPrimitivesDesc_Parameters,
+static const ni::sMethodDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc = {
+  "CreateRayTrianglePrimitivesDesc",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayTrianglePrimitivesDesc), "Ptr<iRayTrianglePrimitivesDesc>",
+  1, iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc_Parameters,
 #ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iGraphicsDriverRay_CreateRayPrimitivesDesc)
+  XCALL_CIMPL(iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc)
+#else
+  NULL
+#endif
+};
+
+// Method: CreateRayProceduralPrimitivesDesc
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc_Parameters[1] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc = {
+  "CreateRayProceduralPrimitivesDesc",
+  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayProceduralPrimitivesDesc), "Ptr<iRayProceduralPrimitivesDesc>",
+  1, iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc)
 #else
   NULL
 #endif
@@ -19592,7 +19666,8 @@ static const ni::sMethodDef iGraphicsDriverRay_CreateRayBuildEncoder = {
 static const ni::sMethodDef* Methods_iGraphicsDriverRay[] = {
 	&iGraphicsDriverRay_CreateRayPipeline,
 	&iGraphicsDriverRay_CreateRayFunctionTable,
-	&iGraphicsDriverRay_CreateRayPrimitivesDesc,
+	&iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc,
+	&iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc,
 	&iGraphicsDriverRay_CreateRayInstancesDesc,
 	&iGraphicsDriverRay_CreateRayBuildEncoder,
 
@@ -40382,7 +40457,8 @@ static const ni::sInterfaceDef* Interfaces[] = {
   GetInterfaceDef_iOcclusionQuery(),
   GetInterfaceDef_iOverlay(),
   GetInterfaceDef_iPixelFormat(),
-  GetInterfaceDef_iRayPrimitivesDesc(),
+  GetInterfaceDef_iRayTrianglePrimitivesDesc(),
+  GetInterfaceDef_iRayProceduralPrimitivesDesc(),
   GetInterfaceDef_iRayPrimitives(),
   GetInterfaceDef_iRayInstancesDesc(),
   GetInterfaceDef_iRayInstances(),

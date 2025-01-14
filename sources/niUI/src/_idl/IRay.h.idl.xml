@@ -27,8 +27,8 @@
 				<comments desc="Force instance to be non-opaque, always running any-hit functions "/>
 			</value>
 		</enum>
-		<interface name="iRayPrimitivesDesc" uuid1="2D88524D-3D15-455C-9D13-3F95F90B8619" uuid2="0x2d88524d,0x3d15,0x455c,0x9d,0x13,0x3f,0x95,0xf9,0x0b,0x86,0x19">
-			<comments desc="Acceleration structure primitives description interface "/>
+		<interface name="iRayTrianglePrimitivesDesc" uuid1="2D88524D-3D15-455C-9D13-3F95F90B8619" uuid2="0x2d88524d,0x3d15,0x455c,0x9d,0x13,0x3f,0x95,0xf9,0x0b,0x86,0x19">
+			<comments desc="Acceleration structure triangle primitives description interface "/>
 			<parents>
 				<parent name="iDeviceResource"/>
 			</parents>
@@ -40,7 +40,7 @@
 				property="get"
 				property_name2="numPrimitives"
 				property_name="num_primitives">
-				<comments desc="Get the number of primitives in the builder. "/>
+				<comments desc="Get the number of triangle primitives in the builder. "/>
 				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
 			</method>
 			<method java_name="addTriangles" name="AddTriangles" num_parameters="7">
@@ -143,10 +143,27 @@
 					typec="tU32"
 					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="addProceduralAABBs" name="AddProceduralAABBs" num_parameters="7">
+		</interface>
+		<interface name="iRayProceduralPrimitivesDesc" uuid1="DBD1F420-C45C-473A-833C-555930F31363" uuid2="0xdbd1f420,0xc45c,0x473a,0x83,0x3c,0x55,0x59,0x30,0xf3,0x13,0x63">
+			<comments desc="Acceleration structure procedural primitives description interface "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getNumPrimitives"
+				name="GetNumPrimitives"
+				num_parameters="0"
+				property="get"
+				property_name2="numPrimitives"
+				property_name="num_primitives">
+				<comments desc="Get the number of procedural primitives in the builder. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addAABBs" name="AddAABBs" num_parameters="7">
 				<comments desc="Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes. ">
 					<remark text="s The hit group must include an intersection shader for the procedural geometry. "/>
-					<remark text="s AABB is an array of ni::cAABBf "/>
+					<remark text="s apAABBs is an array of ni::cAABBf "/>
 				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -418,8 +435,8 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method java_name="buildRayPrimitives" name="BuildRayPrimitives" num_parameters="2">
-				<comments desc="Build a primitives acceleration structure. "/>
+			<method java_name="buildRayTrianglePrimitives" name="BuildRayTrianglePrimitives" num_parameters="2">
+				<comments desc="Build a triangle primitives acceleration structure. "/>
 				<return type="Ptr&lt;iRayPrimitives&gt;" typec="Ptr&lt;iRayPrimitives&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="ahspName"
@@ -429,8 +446,23 @@
 				<parameter
 					last="1"
 					name="apPrimitivesDesc"
-					type="iRayPrimitivesDesc *"
-					typec="iRayPrimitivesDesc*"
+					type="iRayTrianglePrimitivesDesc *"
+					typec="iRayTrianglePrimitivesDesc*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="buildRayProceduralPrimitives" name="BuildRayProceduralPrimitives" num_parameters="2">
+				<comments desc="Build a procedural primitives acceleration structure. "/>
+				<return type="Ptr&lt;iRayPrimitives&gt;" typec="Ptr&lt;iRayPrimitives&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apPrimitivesDesc"
+					type="iRayProceduralPrimitivesDesc *"
+					typec="iRayProceduralPrimitivesDesc*"
 					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method java_name="buildRayInstances" name="BuildRayInstances" num_parameters="2">
@@ -529,9 +561,19 @@
 				<comments desc="Create ray tracing function table. "/>
 				<return type="Ptr&lt;iRayFunctionTable&gt;" typec="Ptr&lt;iRayFunctionTable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createRayPrimitivesDesc" name="CreateRayPrimitivesDesc" num_parameters="1">
-				<comments desc="Creates a ray primitives acceleration structure description. "/>
-				<return type="Ptr&lt;iRayPrimitivesDesc&gt;" typec="Ptr&lt;iRayPrimitivesDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			<method java_name="createRayTrianglePrimitivesDesc" name="CreateRayTrianglePrimitivesDesc" num_parameters="1">
+				<comments desc="Creates a ray triangle primitives acceleration structure description. "/>
+				<return type="Ptr&lt;iRayTrianglePrimitivesDesc&gt;" typec="Ptr&lt;iRayTrianglePrimitivesDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createRayProceduralPrimitivesDesc" name="CreateRayProceduralPrimitivesDesc" num_parameters="1">
+				<comments desc="Creates a ray procedural primitives acceleration structure description. "/>
+				<return type="Ptr&lt;iRayProceduralPrimitivesDesc&gt;" typec="Ptr&lt;iRayProceduralPrimitivesDesc&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
 					name="ahspName"

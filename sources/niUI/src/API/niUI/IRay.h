@@ -10,6 +10,8 @@ namespace ni {
 
 struct iGpuBuffer;
 struct iGpuCommandEncoder;
+struct iGpuFunction;
+struct iTexture;
 
 /** \addtogroup niUI
  * @{
@@ -45,11 +47,11 @@ enum eRayInstanceFlags {
 //! \see ni::eRayInstanceFlags
 typedef tU32 tRayInstanceFlags;
 
-//! Acceleration structure primitives description interface
-struct iRayPrimitivesDesc : public iDeviceResource {
-  niDeclareInterfaceUUID(iRayPrimitivesDesc,0x2d88524d,0x3d15,0x455c,0x9d,0x13,0x3f,0x95,0xf9,0x0b,0x86,0x19);
+//! Acceleration structure triangle primitives description interface
+struct iRayTrianglePrimitivesDesc : public iDeviceResource {
+  niDeclareInterfaceUUID(iRayTrianglePrimitivesDesc,0x2d88524d,0x3d15,0x455c,0x9d,0x13,0x3f,0x95,0xf9,0x0b,0x86,0x19);
 
-  //! Get the number of primitives in the builder.
+  //! Get the number of triangle primitives in the builder.
   //! {Property}
   virtual tU32 __stdcall GetNumPrimitives() const = 0;
 
@@ -76,11 +78,20 @@ struct iRayPrimitivesDesc : public iDeviceResource {
     const sMatrixf& aTransform,
     tRayPrimitiveFlags aFlags,
     tU32 anHitGroup) = 0;
+};
+
+//! Acceleration structure procedural primitives description interface
+struct iRayProceduralPrimitivesDesc : public iDeviceResource {
+  niDeclareInterfaceUUID(iRayProceduralPrimitivesDesc,0xdbd1f420,0xc45c,0x473a,0x83,0x3c,0x55,0x59,0x30,0xf3,0x13,0x63);
+
+  //! Get the number of procedural primitives in the builder.
+  //! {Property}
+  virtual tU32 __stdcall GetNumPrimitives() const = 0;
 
   //! Add procedural geometry to primitive acceleration structure using axis-aligned bounding boxes.
   //! \remarks The hit group must include an intersection shader for the procedural geometry.
-  //! \remarks AABB is an array of ni::cAABBf
-  virtual tBool __stdcall AddProceduralAABBs(
+  //! \remarks apAABBs is an array of ni::cAABBf
+  virtual tBool __stdcall AddAABBs(
     iGpuBuffer* apAABBs,
     tU32 anAABBOffset,
     tU32 anAABBStride,
@@ -186,8 +197,11 @@ struct iRayPipeline : public iDeviceResource {
 struct iRayBuildEncoder : public iUnknown {
   niDeclareInterfaceUUID(iRayBuildEncoder,0xcdacd218,0xd73c,0x4713,0x85,0xb1,0xc4,0xdb,0x17,0x01,0x6f,0xe9);
 
-  //! Build a primitives acceleration structure.
-  virtual Ptr<iRayPrimitives> __stdcall BuildRayPrimitives(iHString* ahspName, iRayPrimitivesDesc* apPrimitivesDesc) = 0;
+  //! Build a triangle primitives acceleration structure.
+  virtual Ptr<iRayPrimitives> __stdcall BuildRayTrianglePrimitives(iHString* ahspName, iRayTrianglePrimitivesDesc* apPrimitivesDesc) = 0;
+
+  //! Build a procedural primitives acceleration structure.
+  virtual Ptr<iRayPrimitives> __stdcall BuildRayProceduralPrimitives(iHString* ahspName, iRayProceduralPrimitivesDesc* apPrimitivesDesc) = 0;
 
   //! Build an instances acceleration structure.
   virtual Ptr<iRayInstances> __stdcall BuildRayInstances(iHString* ahspName, iRayInstancesDesc* apInstancesDesc) = 0;
@@ -220,8 +234,11 @@ struct iGraphicsDriverRay : public iUnknown
   //! Create ray tracing function table.
   virtual Ptr<iRayFunctionTable> __stdcall CreateRayFunctionTable() = 0;
 
-  //! Creates a ray primitives acceleration structure description.
-  virtual Ptr<iRayPrimitivesDesc> __stdcall CreateRayPrimitivesDesc(iHString* ahspName) = 0;
+  //! Creates a ray triangle primitives acceleration structure description.
+  virtual Ptr<iRayTrianglePrimitivesDesc> __stdcall CreateRayTrianglePrimitivesDesc(iHString* ahspName) = 0;
+
+  //! Creates a ray procedural primitives acceleration structure description.
+  virtual Ptr<iRayProceduralPrimitivesDesc> __stdcall CreateRayProceduralPrimitivesDesc(iHString* ahspName) = 0;
 
   //! Creates a ray instances acceleration structure description.
   virtual Ptr<iRayInstancesDesc> __stdcall CreateRayInstancesDesc(iHString* ahspName) = 0;

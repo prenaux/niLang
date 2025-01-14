@@ -14,17 +14,17 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
-/** interface : iRayPrimitivesDesc **/
-IDLC_BEGIN_INTF(ni,iRayPrimitivesDesc)
-/** ni -> iRayPrimitivesDesc::GetNumPrimitives/0 **/
-IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,GetNumPrimitives,0)
+/** interface : iRayTrianglePrimitivesDesc **/
+IDLC_BEGIN_INTF(ni,iRayTrianglePrimitivesDesc)
+/** ni -> iRayTrianglePrimitivesDesc::GetNumPrimitives/0 **/
+IDLC_METH_BEGIN(ni,iRayTrianglePrimitivesDesc,GetNumPrimitives,0)
 	IDLC_DECL_RETVAR(tU32,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRayPrimitivesDesc,GetNumPrimitives,0,())
+	IDLC_METH_CALL(_Ret,ni,iRayTrianglePrimitivesDesc,GetNumPrimitives,0,())
 	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
-IDLC_METH_END(ni,iRayPrimitivesDesc,GetNumPrimitives,0)
+IDLC_METH_END(ni,iRayTrianglePrimitivesDesc,GetNumPrimitives,0)
 
-/** ni -> iRayPrimitivesDesc::AddTriangles/7 **/
-IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddTriangles,7)
+/** ni -> iRayTrianglePrimitivesDesc::AddTriangles/7 **/
+IDLC_METH_BEGIN(ni,iRayTrianglePrimitivesDesc,AddTriangles,7)
 	IDLC_DECL_VAR(iGpuBuffer*,apVertices)
 	IDLC_BUF_TO_INTF(iGpuBuffer,apVertices)
 	IDLC_DECL_VAR(tU32,anVertexOffset)
@@ -40,12 +40,12 @@ IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddTriangles,7)
 	IDLC_DECL_VAR(tU32,anHitGroup)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anHitGroup)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRayPrimitivesDesc,AddTriangles,7,(apVertices,anVertexOffset,anVertexStride,anVertexCount,aTransform,aFlags,anHitGroup))
+	IDLC_METH_CALL(_Ret,ni,iRayTrianglePrimitivesDesc,AddTriangles,7,(apVertices,anVertexOffset,anVertexStride,anVertexCount,aTransform,aFlags,anHitGroup))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRayPrimitivesDesc,AddTriangles,7)
+IDLC_METH_END(ni,iRayTrianglePrimitivesDesc,AddTriangles,7)
 
-/** ni -> iRayPrimitivesDesc::AddTrianglesIndexed/11 **/
-IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddTrianglesIndexed,11)
+/** ni -> iRayTrianglePrimitivesDesc::AddTrianglesIndexed/11 **/
+IDLC_METH_BEGIN(ni,iRayTrianglePrimitivesDesc,AddTrianglesIndexed,11)
 	IDLC_DECL_VAR(iGpuBuffer*,apVertices)
 	IDLC_BUF_TO_INTF(iGpuBuffer,apVertices)
 	IDLC_DECL_VAR(tU32,anVertexOffset)
@@ -69,12 +69,23 @@ IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddTrianglesIndexed,11)
 	IDLC_DECL_VAR(tU32,anHitGroup)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anHitGroup)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRayPrimitivesDesc,AddTrianglesIndexed,11,(apVertices,anVertexOffset,anVertexStride,anVertexCount,apIndices,anIndexOffset,anIndexType,anIndexCount,aTransform,aFlags,anHitGroup))
+	IDLC_METH_CALL(_Ret,ni,iRayTrianglePrimitivesDesc,AddTrianglesIndexed,11,(apVertices,anVertexOffset,anVertexStride,anVertexCount,apIndices,anIndexOffset,anIndexType,anIndexCount,aTransform,aFlags,anHitGroup))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRayPrimitivesDesc,AddTrianglesIndexed,11)
+IDLC_METH_END(ni,iRayTrianglePrimitivesDesc,AddTrianglesIndexed,11)
 
-/** ni -> iRayPrimitivesDesc::AddProceduralAABBs/7 **/
-IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddProceduralAABBs,7)
+IDLC_END_INTF(ni,iRayTrianglePrimitivesDesc)
+
+/** interface : iRayProceduralPrimitivesDesc **/
+IDLC_BEGIN_INTF(ni,iRayProceduralPrimitivesDesc)
+/** ni -> iRayProceduralPrimitivesDesc::GetNumPrimitives/0 **/
+IDLC_METH_BEGIN(ni,iRayProceduralPrimitivesDesc,GetNumPrimitives,0)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayProceduralPrimitivesDesc,GetNumPrimitives,0,())
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iRayProceduralPrimitivesDesc,GetNumPrimitives,0)
+
+/** ni -> iRayProceduralPrimitivesDesc::AddAABBs/7 **/
+IDLC_METH_BEGIN(ni,iRayProceduralPrimitivesDesc,AddAABBs,7)
 	IDLC_DECL_VAR(iGpuBuffer*,apAABBs)
 	IDLC_BUF_TO_INTF(iGpuBuffer,apAABBs)
 	IDLC_DECL_VAR(tU32,anAABBOffset)
@@ -90,11 +101,11 @@ IDLC_METH_BEGIN(ni,iRayPrimitivesDesc,AddProceduralAABBs,7)
 	IDLC_DECL_VAR(tU32,anHitGroup)
 	IDLC_BUF_TO_BASE(ni::eType_U32,anHitGroup)
 	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRayPrimitivesDesc,AddProceduralAABBs,7,(apAABBs,anAABBOffset,anAABBStride,anAABBCount,aTransform,aFlags,anHitGroup))
+	IDLC_METH_CALL(_Ret,ni,iRayProceduralPrimitivesDesc,AddAABBs,7,(apAABBs,anAABBOffset,anAABBStride,anAABBCount,aTransform,aFlags,anHitGroup))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iRayPrimitivesDesc,AddProceduralAABBs,7)
+IDLC_METH_END(ni,iRayProceduralPrimitivesDesc,AddAABBs,7)
 
-IDLC_END_INTF(ni,iRayPrimitivesDesc)
+IDLC_END_INTF(ni,iRayProceduralPrimitivesDesc)
 
 /** interface : iRayPrimitives **/
 IDLC_BEGIN_INTF(ni,iRayPrimitives)
@@ -230,16 +241,27 @@ IDLC_END_INTF(ni,iRayPipeline)
 
 /** interface : iRayBuildEncoder **/
 IDLC_BEGIN_INTF(ni,iRayBuildEncoder)
-/** ni -> iRayBuildEncoder::BuildRayPrimitives/2 **/
-IDLC_METH_BEGIN(ni,iRayBuildEncoder,BuildRayPrimitives,2)
+/** ni -> iRayBuildEncoder::BuildRayTrianglePrimitives/2 **/
+IDLC_METH_BEGIN(ni,iRayBuildEncoder,BuildRayTrianglePrimitives,2)
 	IDLC_DECL_VAR(iHString*,ahspName)
 	IDLC_BUF_TO_INTF(iHString,ahspName)
-	IDLC_DECL_VAR(iRayPrimitivesDesc*,apPrimitivesDesc)
-	IDLC_BUF_TO_INTF(iRayPrimitivesDesc,apPrimitivesDesc)
+	IDLC_DECL_VAR(iRayTrianglePrimitivesDesc*,apPrimitivesDesc)
+	IDLC_BUF_TO_INTF(iRayTrianglePrimitivesDesc,apPrimitivesDesc)
 	IDLC_DECL_RETVAR(Ptr<iRayPrimitives>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iRayBuildEncoder,BuildRayPrimitives,2,(ahspName,apPrimitivesDesc))
+	IDLC_METH_CALL(_Ret,ni,iRayBuildEncoder,BuildRayTrianglePrimitives,2,(ahspName,apPrimitivesDesc))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iRayBuildEncoder,BuildRayPrimitives,2)
+IDLC_METH_END(ni,iRayBuildEncoder,BuildRayTrianglePrimitives,2)
+
+/** ni -> iRayBuildEncoder::BuildRayProceduralPrimitives/2 **/
+IDLC_METH_BEGIN(ni,iRayBuildEncoder,BuildRayProceduralPrimitives,2)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_VAR(iRayProceduralPrimitivesDesc*,apPrimitivesDesc)
+	IDLC_BUF_TO_INTF(iRayProceduralPrimitivesDesc,apPrimitivesDesc)
+	IDLC_DECL_RETVAR(Ptr<iRayPrimitives>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iRayBuildEncoder,BuildRayProceduralPrimitives,2,(ahspName,apPrimitivesDesc))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iRayBuildEncoder,BuildRayProceduralPrimitives,2)
 
 /** ni -> iRayBuildEncoder::BuildRayInstances/2 **/
 IDLC_METH_BEGIN(ni,iRayBuildEncoder,BuildRayInstances,2)
@@ -318,14 +340,23 @@ IDLC_METH_BEGIN(ni,iGraphicsDriverRay,CreateRayFunctionTable,0)
 	IDLC_RET_FROM_INTF(,_Ret)
 IDLC_METH_END(ni,iGraphicsDriverRay,CreateRayFunctionTable,0)
 
-/** ni -> iGraphicsDriverRay::CreateRayPrimitivesDesc/1 **/
-IDLC_METH_BEGIN(ni,iGraphicsDriverRay,CreateRayPrimitivesDesc,1)
+/** ni -> iGraphicsDriverRay::CreateRayTrianglePrimitivesDesc/1 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverRay,CreateRayTrianglePrimitivesDesc,1)
 	IDLC_DECL_VAR(iHString*,ahspName)
 	IDLC_BUF_TO_INTF(iHString,ahspName)
-	IDLC_DECL_RETVAR(Ptr<iRayPrimitivesDesc>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverRay,CreateRayPrimitivesDesc,1,(ahspName))
+	IDLC_DECL_RETVAR(Ptr<iRayTrianglePrimitivesDesc>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverRay,CreateRayTrianglePrimitivesDesc,1,(ahspName))
 	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iGraphicsDriverRay,CreateRayPrimitivesDesc,1)
+IDLC_METH_END(ni,iGraphicsDriverRay,CreateRayTrianglePrimitivesDesc,1)
+
+/** ni -> iGraphicsDriverRay::CreateRayProceduralPrimitivesDesc/1 **/
+IDLC_METH_BEGIN(ni,iGraphicsDriverRay,CreateRayProceduralPrimitivesDesc,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(Ptr<iRayProceduralPrimitivesDesc>,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iGraphicsDriverRay,CreateRayProceduralPrimitivesDesc,1,(ahspName))
+	IDLC_RET_FROM_INTF(,_Ret)
+IDLC_METH_END(ni,iGraphicsDriverRay,CreateRayProceduralPrimitivesDesc,1)
 
 /** ni -> iGraphicsDriverRay::CreateRayInstancesDesc/1 **/
 IDLC_METH_BEGIN(ni,iGraphicsDriverRay,CreateRayInstancesDesc,1)

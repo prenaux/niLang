@@ -1378,7 +1378,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   //// iGraphicsDriverRay ///////////////////////////////
   Ptr<iRayPipeline> __stdcall CreateRayPipeline(iHString* ahspName, iRayFunctionTable* apFunctionTable) niImpl;
   Ptr<iRayFunctionTable> __stdcall CreateRayFunctionTable() niImpl;
-  Ptr<iRayPrimitivesDesc> __stdcall CreateRayPrimitivesDesc(iHString* ahspName) niImpl;
+  Ptr<iRayTrianglePrimitivesDesc> __stdcall CreateRayTrianglePrimitivesDesc(iHString* ahspName) niImpl;
+  Ptr<iRayProceduralPrimitivesDesc> __stdcall CreateRayProceduralPrimitivesDesc(iHString* ahspName) niImpl;
   Ptr<iRayInstancesDesc> __stdcall CreateRayInstancesDesc(iHString* ahspName) niImpl;
   Ptr<iRayBuildEncoder> __stdcall CreateRayBuildEncoder() niImpl;
   //// iGraphicsDriverRay ///////////////////////////////
@@ -3234,50 +3235,6 @@ struct sVulkanRayASDesc {
   ~sVulkanRayASDesc() {
   }
 
-  tU32 _AddTrianglesVkGeometry(
-    ain<VkAccelerationStructureGeometryKHR> aGeom,
-    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
-    ain<nn<sVulkanBuffer>> aVertexBuffer,
-    ain<QPtr<sVulkanBuffer>> aIndexBuffer)
-  {
-    niDebugAssert(aGeom.geometry.triangles.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR);
-    _vkGeometries.emplace_back(aGeom);
-    _vkBuildInfos.emplace_back(aBuildRangeInfo);
-    _buffers.emplace_back(aVertexBuffer);
-    if (aIndexBuffer.has_value()) {
-      _buffers.emplace_back(aIndexBuffer.value());
-    }
-    return (tU32)(_vkGeometries.size()-1);
-  }
-
-  tU32 _AddAABBVkGeometry(
-    ain<VkAccelerationStructureGeometryKHR> aGeom,
-    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
-    ain<nn<sVulkanBuffer>> aAABBBuffer)
-  {
-    niDebugAssert(aGeom.geometry.aabbs.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR);
-    _vkGeometries.emplace_back(aGeom);
-    _vkBuildInfos.emplace_back(aBuildRangeInfo);
-    _buffers.emplace_back(aAABBBuffer);
-    return (tU32)(_vkGeometries.size()-1);
-  }
-
-  void _SetInstancesVkGeometry(
-    ain<VkAccelerationStructureGeometryKHR> aGeom,
-    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo)
-  {
-    niDebugAssert(aGeom.geometry.instances.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR);
-    if (_vkGeometries.empty()) {
-      _vkGeometries.emplace_back(aGeom);
-      _vkBuildInfos.emplace_back(aBuildRangeInfo);
-    }
-    else {
-      _vkGeometries[0] = aGeom;
-      _vkBuildInfos[0] = aBuildRangeInfo;
-    }
-    niDebugAssert(_vkGeometries.size() == 1);
-  }
-
   virtual tBool __stdcall _FinalizeAddGeometries() = 0;
 
   tBool _CreateAccelerationStructure(
@@ -3405,22 +3362,22 @@ struct sVulkanRayASDesc {
   }
 };
 
-struct tVulkanRayPrimitivesDesc : public ImplRC<
-  iRayPrimitivesDesc,eImplFlags_DontInherit1,iDeviceResource>, public sVulkanRayASDesc
+struct sVulkanRayTrianglePrimitivesDesc
+    : public ImplRC<iRayTrianglePrimitivesDesc,eImplFlags_DontInherit1,iDeviceResource>
+    , public sVulkanRayASDesc
 {
-  tVulkanRayPrimitivesDesc(
+  sVulkanRayTrianglePrimitivesDesc(
     ain<nn<sVulkanDriver>> aDriver,
     iHString* ahspName)
       : sVulkanRayASDesc(aDriver,ahspName)
   {}
 
-  ~tVulkanRayPrimitivesDesc() {
+  ~sVulkanRayTrianglePrimitivesDesc() {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
     return eTrue;
   }
-
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
@@ -3436,6 +3393,22 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
 
   virtual tU32 __stdcall GetNumPrimitives() const {
     return (tU32)_vkGeometries.size();
+  }
+
+  tU32 _AddTrianglesVkGeometry(
+    ain<VkAccelerationStructureGeometryKHR> aGeom,
+    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
+    ain<nn<sVulkanBuffer>> aVertexBuffer,
+    ain<QPtr<sVulkanBuffer>> aIndexBuffer)
+  {
+    niDebugAssert(aGeom.geometry.triangles.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR);
+    _vkGeometries.emplace_back(aGeom);
+    _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    _buffers.emplace_back(aVertexBuffer);
+    if (aIndexBuffer.has_value()) {
+      _buffers.emplace_back(aIndexBuffer.value());
+    }
+    return (tU32)(_vkGeometries.size()-1);
   }
 
   virtual tBool __stdcall AddTriangles(
@@ -3544,7 +3517,58 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
     return eTrue;
   }
 
-  virtual tBool __stdcall AddProceduralAABBs(
+  virtual tBool __stdcall _FinalizeAddGeometries() {
+    // noop for primitives acceleration structures
+    return eTrue;
+  }
+};
+
+struct sVulkanRayProceduralPrimitivesDesc
+    : public ImplRC<iRayProceduralPrimitivesDesc,eImplFlags_DontInherit1,iDeviceResource>
+    , public sVulkanRayASDesc
+{
+  sVulkanRayProceduralPrimitivesDesc(
+    ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName)
+      : sVulkanRayASDesc(aDriver,ahspName)
+  {}
+
+  ~sVulkanRayProceduralPrimitivesDesc() {
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return eTrue;
+  }
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  virtual tU32 __stdcall GetNumPrimitives() const {
+    return (tU32)_vkGeometries.size();
+  }
+
+  tU32 _AddAABBVkGeometry(
+    ain<VkAccelerationStructureGeometryKHR> aGeom,
+    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
+    ain<nn<sVulkanBuffer>> aAABBBuffer)
+  {
+    niDebugAssert(aGeom.geometry.aabbs.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR);
+    _vkGeometries.emplace_back(aGeom);
+    _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    _buffers.emplace_back(aAABBBuffer);
+    return (tU32)(_vkGeometries.size()-1);
+  }
+
+  virtual tBool __stdcall AddAABBs(
     iGpuBuffer* apAABBBuffer,
     tU32 anAABBOffset,
     tU32 anAABBStride,
@@ -3593,20 +3617,22 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
   }
 };
 
-struct tVulkanRayInstancesDesc : public ImplRC<
+struct sVulkanRayInstancesDesc : public ImplRC<
   iRayInstancesDesc,eImplFlags_DontInherit1,iDeviceResource>, public sVulkanRayASDesc
 {
   Ptr<sVulkanBuffer> _instanceBuffer;
   static constexpr tU32 kInitialInstanceCapacity = 8;
   astl::vector<VkAccelerationStructureInstanceKHR> _vkInstances;
+  astl::vector<NN<iRayPrimitives>> _primitives;
 
-  tVulkanRayInstancesDesc(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
+  sVulkanRayInstancesDesc(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
       : sVulkanRayASDesc(aDriver,ahspName)
   {
     _vkInstances.reserve(kInitialInstanceCapacity);
+    _primitives.reserve(kInitialInstanceCapacity);
   }
 
-  ~tVulkanRayInstancesDesc() {
+  ~sVulkanRayInstancesDesc() {
   }
 
   virtual tBool __stdcall IsOK() const niImpl {
@@ -3630,6 +3656,22 @@ struct tVulkanRayInstancesDesc : public ImplRC<
     return (tU32)_vkInstances.size();
   }
 
+  void _SetInstancesVkGeometry(
+    ain<VkAccelerationStructureGeometryKHR> aGeom,
+    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo)
+  {
+    niDebugAssert(aGeom.geometry.instances.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR);
+    if (_vkGeometries.empty()) {
+      _vkGeometries.emplace_back(aGeom);
+      _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    }
+    else {
+      _vkGeometries[0] = aGeom;
+      _vkBuildInfos[0] = aBuildRangeInfo;
+    }
+    niDebugAssert(_vkGeometries.size() == 1);
+  }
+
   virtual tBool __stdcall AddInstance(
     iRayPrimitives* apPrimitiveAS,
     ain<sMatrixf> aTransform,
@@ -3639,6 +3681,7 @@ struct tVulkanRayInstancesDesc : public ImplRC<
     tRayInstanceFlags aFlags) niImpl
   {
     niCheckIsOK(apPrimitiveAS,eFalse);
+    _primitives.push_back(as_nn(apPrimitiveAS));
     niLet primitiveAS = static_cast<tVulkanRayPrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
     VkAccelerationStructureInstanceKHR instance = {
@@ -3729,7 +3772,6 @@ struct sVulkanRayFunctionTable : public ImplRC<iRayFunctionTable> {
   NN<sVulkanFunction> _miss = niDeferredInit(NN<sVulkanFunction>);
   struct sHitGroup {
     tHStringPtr _name;
-    eRayFunctionGroupType _type;
     NN<sVulkanFunction> _closestHit;
     Ptr<sVulkanFunction> _anyHit;
     Ptr<sVulkanFunction> _intersection;
@@ -3769,7 +3811,6 @@ struct sVulkanRayFunctionTable : public ImplRC<iRayFunctionTable> {
     }
     _hitGroups.push_back({
         ._name = ahspName,
-        ._type = aType,
         ._closestHit = AsNN<sVulkanFunction>(apClosestHit),
         ._anyHit = as_maybe_null<sVulkanFunction>(apAnyHit),
         ._intersection = as_maybe_null<sVulkanFunction>(apIntersection)
@@ -4155,7 +4196,7 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
       : _driver(aDriver)
   {}
 
-  Ptr<iRayPrimitives> __stdcall BuildRayPrimitives(iHString* ahspName, iRayPrimitivesDesc* apPrimitivesDesc) niImpl {
+  Ptr<iRayPrimitives> __stdcall BuildRayTrianglePrimitives(iHString* ahspName, iRayTrianglePrimitivesDesc* apPrimitivesDesc) niImpl {
     niCheck(_driver->_isRayTracingSupported,nullptr);
     niCheckIsOK(apPrimitivesDesc,nullptr);
 
@@ -4165,7 +4206,30 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
       _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
     };
 
-    niLet primitivesDesc = static_cast<tVulkanRayPrimitivesDesc*>(apPrimitivesDesc);
+    niLet primitivesDesc = static_cast<sVulkanRayTrianglePrimitivesDesc*>(apPrimitivesDesc);
+
+    NN<tVulkanRayPrimitives> primitivesAS = MakeNN<tVulkanRayPrimitives>(_driver,ahspName);
+    niCheck(primitivesDesc->_CreateAccelerationStructure(
+      *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+
+    niCheck(primitivesDesc->_BuildAccelerationStructure(
+      *primitivesAS, cmdBuffer, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+    submitCommand = eTrue;
+
+    return primitivesAS;
+  }
+
+  Ptr<iRayPrimitives> __stdcall BuildRayProceduralPrimitives(iHString* ahspName, iRayProceduralPrimitivesDesc* apPrimitivesDesc) niImpl {
+    niCheck(_driver->_isRayTracingSupported,nullptr);
+    niCheckIsOK(apPrimitivesDesc,nullptr);
+
+    tBool submitCommand = eFalse;
+    VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
+    niDefer {
+      _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
+    };
+
+    niLet primitivesDesc = static_cast<sVulkanRayProceduralPrimitivesDesc*>(apPrimitivesDesc);
 
     NN<tVulkanRayPrimitives> primitivesAS = MakeNN<tVulkanRayPrimitives>(_driver,ahspName);
     niCheck(primitivesDesc->_CreateAccelerationStructure(
@@ -4188,7 +4252,7 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
       _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
     };
 
-    niLet instancesDesc = static_cast<tVulkanRayInstancesDesc*>(apInstancesDesc);
+    niLet instancesDesc = static_cast<sVulkanRayInstancesDesc*>(apInstancesDesc);
 
     NN<tVulkanRayInstances> instancesAS = MakeNN<tVulkanRayInstances>(_driver,ahspName);
     niCheck(instancesDesc->_CreateAccelerationStructure(
@@ -5384,15 +5448,21 @@ Ptr<iRayFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable() {
   return rayFT;
 }
 
-Ptr<iRayPrimitivesDesc> __stdcall sVulkanDriver::CreateRayPrimitivesDesc(iHString* ahspName) {
+Ptr<iRayTrianglePrimitivesDesc> __stdcall sVulkanDriver::CreateRayTrianglePrimitivesDesc(iHString* ahspName) {
   niCheck(_isRayTracingSupported,nullptr);
-  Ptr<tVulkanRayPrimitivesDesc> as = MakeNN<tVulkanRayPrimitivesDesc>(as_nn(this),ahspName);
+  Ptr<sVulkanRayTrianglePrimitivesDesc> as = MakeNN<sVulkanRayTrianglePrimitivesDesc>(as_nn(this),ahspName);
+  return as;
+}
+
+Ptr<iRayProceduralPrimitivesDesc> __stdcall sVulkanDriver::CreateRayProceduralPrimitivesDesc(iHString* ahspName) {
+  niCheck(_isRayTracingSupported,nullptr);
+  Ptr<sVulkanRayProceduralPrimitivesDesc> as = MakeNN<sVulkanRayProceduralPrimitivesDesc>(as_nn(this),ahspName);
   return as;
 }
 
 Ptr<iRayInstancesDesc> __stdcall sVulkanDriver::CreateRayInstancesDesc(iHString* ahspName) {
   niCheck(_isRayTracingSupported,nullptr);
-  Ptr<tVulkanRayInstancesDesc> as = MakeNN<tVulkanRayInstancesDesc>(as_nn(this),ahspName);
+  Ptr<sVulkanRayInstancesDesc> as = MakeNN<sVulkanRayInstancesDesc>(as_nn(this),ahspName);
   return as;
 }
 

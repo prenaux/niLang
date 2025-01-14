@@ -1,0 +1,9 @@
+<GpuFunction ver="3" name="sphere_rint" exec="rint">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="rint"/>
+		</EntryPoints>
+	</Reflection>
+	<Target target="spv_vk12" code_path="sphere_rint.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="sphere_rint.gpufunc.glsl_vk46"/>
+</GpuFunction>

@@ -2,6 +2,7 @@
 #include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
+#include <niUI/Utils/AABB.h>
 
 //
 // TODO (1/18):
@@ -752,5 +753,134 @@ struct sFRay_InstancesBary : public sFRay_InstancesBase {
   {}
 };
 TEST_CLASS(FRay,InstancesBary);
+
+struct sFRay_IntSphere : public sFRay_Base {
+  // Ray tracing pipeline and shaders
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+  NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayMissFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayHitFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _rayIntFun = niDeferredInit(NN<iGpuFunction>); // Intersection shader
+  NN<iRayFunctionTable> _rayFuncTable = niDeferredInit(NN<iRayFunctionTable>);
+  NN<iRayPipeline> _rayPipeline = niDeferredInit(NN<iRayPipeline>);
+  NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
+
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+
+    // Create ray tracing shaders
+    {
+      _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+
+      _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+
+      _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_bary_rchit.gpufunc.xml")), eFalse);
+
+      _rayIntFun = niCheckNN(_rayIntFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayIntersection, _H("test/rayfunc/sphere_rint.gpufunc.xml")), eFalse);
+    }
+
+    // Create ray tracing pipeline
+    {
+      _rayFuncTable = niCheckNN(_rayFuncTable, _driverRay->CreateRayFunctionTable(), eFalse);
+      _rayFuncTable->SetRayGenFunction(_rayGenFun);
+      _rayFuncTable->SetMissFunction(_rayMissFun);
+
+      // Add hit group for sphere with intersection shader
+      niLet hitGroupId = _rayFuncTable->AddHitGroup(
+        _H("sphere"),
+        eRayFunctionGroupType_Procedural, // Use procedural intersection
+        _rayHitFun,
+        nullptr,   // No any-hit shader
+        _rayIntFun // Use our sphere intersection shader
+      );
+      niCheck(hitGroupId != eInvalidHandle, eFalse);
+
+      _rayPipeline = niCheckNN(_rayPipeline,
+        _driverRay->CreateRayPipeline(_H("RaySphere_Pipeline"), _rayFuncTable),
+        eFalse);
+    }
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+
+      niLet prDesc = niCheckNN(
+        prDesc,
+        _driverRay->CreateRayPrimitivesDesc(_H("RayPrimitivesDesc_Sphere")),
+        eFalse);
+
+      // Create a procedural AABB for the sphere
+      niLet aabb = cAABBf(
+        Vec3f(-0.5f,-0.5f,-0.5f),
+        Vec3f(0.5f,0.5f,0.5f));
+
+      niLet aabbBuffer = niCheckNN(
+        aabbBuffer,
+        _driverGpu->CreateGpuBufferFromDataRaw(
+          _H("SphereAABB"),
+          (tPtr)&aabb,
+          sizeof(cAABBf),
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_RayBuildInput),
+        eFalse);
+
+      niCheck(prDesc->AddProceduralAABBs(
+        aabbBuffer,0,sizeof(cAABBf),1,
+        sMatrixf::Identity(),
+        eRayPrimitiveFlags_Opaque,
+        0), eFalse);
+
+      niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayPrimitives(
+        _H("RayPrimitives_Sphere"),prDesc), eFalse);
+
+      {
+        niLet instDesc = niCheckNN(
+          instDesc,
+          _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Sphere")),
+          eFalse);
+
+        niCheck(instDesc->AddInstance(
+          primitiveAS,
+          sMatrixf::Identity(), // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None), eFalse);
+
+        _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+          _H("RayInstances_Sphere"),instDesc), eFalse);
+      }
+    }
+
+    // Create output image
+    {
+      _rayOutputImage = niCheckNN(_rayOutputImage,_graphics->CreateTexture(
+        _H("rayOutputImage"),eBitmapType_2D,"R8G8B8A8",0,
+        256,256,0,eTextureFlags_RenderTarget),eFalse);
+    }
+
+    return eTrue;
+  }
+
+  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+    rayEncoder->SetRayOutputImage(_rayOutputImage);
+    rayEncoder->SetRayPipeline(_rayPipeline);
+    rayEncoder->DispatchRays(_rayOutputImage->GetWidth(),_rayOutputImage->GetHeight(),1);
+
+    DisplayTexture(gpuEncoder,_rayOutputImage);
+    return eTrue;
+  }
+};
+TEST_CLASS(FRay,IntSphere);
 
 }

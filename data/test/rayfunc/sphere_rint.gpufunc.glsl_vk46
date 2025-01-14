@@ -1,0 +1,39 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+struct lib_shader_RayHitPayload
+{
+    vec2 baryCoord;
+};
+
+hitAttributeEXT lib_shader_RayHitPayload _hitAttributeEXT_RayHitPayload;
+
+void main()
+{
+    float _358;
+    do
+    {
+        float _284 = dot(gl_ObjectRayOriginEXT, gl_ObjectRayDirectionEXT);
+        float _296 = (_284 * _284) - (dot(gl_ObjectRayOriginEXT, gl_ObjectRayOriginEXT) - 0.0900000035762786865234375);
+        if (_296 < 0.0)
+        {
+            _358 = -1.0;
+            break;
+        }
+        _358 = (-_284) - sqrt(_296);
+        break;
+    } while(false);
+    vec3 _241 = normalize(gl_ObjectRayOriginEXT + (gl_ObjectRayDirectionEXT * _358));
+    vec2 _362;
+    if (_358 > 0.0)
+    {
+        bool _262 = reportIntersectionEXT(_358, 0u);
+        _362 = vec2((atan(_241.z, _241.x) * 0.159155070781707763671875) + 0.5, (asin(_241.y) * 0.31831014156341552734375) + 0.5);
+    }
+    else
+    {
+        _362 = vec2(0.0);
+    }
+    _hitAttributeEXT_RayHitPayload = lib_shader_RayHitPayload(_362);
+}
+

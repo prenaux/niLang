@@ -3250,6 +3250,18 @@ struct sVulkanRayASDesc {
     return (tU32)(_vkGeometries.size()-1);
   }
 
+  tU32 _AddAABBVkGeometry(
+    ain<VkAccelerationStructureGeometryKHR> aGeom,
+    ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
+    ain<nn<sVulkanBuffer>> aAABBBuffer)
+  {
+    niDebugAssert(aGeom.geometry.aabbs.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR);
+    _vkGeometries.emplace_back(aGeom);
+    _vkBuildInfos.emplace_back(aBuildRangeInfo);
+    _buffers.emplace_back(aAABBBuffer);
+    return (tU32)(_vkGeometries.size()-1);
+  }
+
   void _SetInstancesVkGeometry(
     ain<VkAccelerationStructureGeometryKHR> aGeom,
     ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo)
@@ -3533,15 +3545,46 @@ struct tVulkanRayPrimitivesDesc : public ImplRC<
   }
 
   virtual tBool __stdcall AddProceduralAABBs(
-    iGpuBuffer* apAABBs,
+    iGpuBuffer* apAABBBuffer,
     tU32 anAABBOffset,
     tU32 anAABBStride,
     tU32 anAABBCount,
     const sMatrixf& aTransform,
     tRayPrimitiveFlags aFlags,
-    tU32 anHitGroup) niImpl {
-    niError("Not implemented.");
-    return eFalse;
+    tU32 anHitGroup) niImpl
+  {
+    niCheckIsOK(apAABBBuffer, eFalse);
+    niCheck(anAABBCount > 0,eFalse);
+
+    niLet aabbBuffer = as_nn<sVulkanBuffer>(apAABBBuffer);
+
+    VkAccelerationStructureGeometryKHR geometry = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
+      .geometryType = VK_GEOMETRY_TYPE_AABBS_KHR,
+      .flags = VK_GEOMETRY_OPAQUE_BIT_KHR,
+    };
+
+    geometry.geometry.aabbs = {
+      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR,
+      .data = {
+        .deviceAddress = aabbBuffer->_GetDeviceAddress() + anAABBOffset
+      },
+      .stride = anAABBStride
+    };
+
+    VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {
+      .primitiveCount = anAABBCount,
+      .primitiveOffset = 0,
+      .firstVertex = 0,
+      .transformOffset = 0
+    };
+
+    niCheck(_AddAABBVkGeometry(
+      geometry,
+      buildRangeInfo,
+      aabbBuffer) != eInvalidHandle, eFalse);
+
+    return eTrue;
   }
 
   virtual tBool __stdcall _FinalizeAddGeometries() {
@@ -3997,7 +4040,9 @@ struct sVulkanRayPipeline :
 
       groups.push_back({
           .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
-          .type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR,
+          .type = ((intersectionIndex != VK_SHADER_UNUSED_KHR) ?
+                   VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR :
+                   VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR),
           .generalShader = VK_SHADER_UNUSED_KHR,
           .closestHitShader = closestHitIndex,
           .anyHitShader = anyHitIndex,

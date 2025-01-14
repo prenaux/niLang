@@ -19,11 +19,11 @@ struct lib_shader_RayHitInfo {
   float hitT;
   uint hitKind;
 };
-hitAttributeEXT vec2 _hitAttributeEXT_baryCoord;
 // Type: RayHitPayload
 struct lib_shader_RayHitPayload {
   vec2 baryCoord;
 };
+hitAttributeEXT lib_shader_RayHitPayload _hitAttributeEXT_RayHitPayload;
 // Type: RayPayload
 struct lib_shader_RayPayload {
   vec4 color;
@@ -69,7 +69,7 @@ void main(void) {
   aIds.instanceIndex = uint(gl_InstanceID);
   aIds.customInstanceId = uint(gl_InstanceCustomIndexEXT);
   aIds.geometryIndex = uint(gl_GeometryIndexEXT);
-  aHitPayload.baryCoord = _hitAttributeEXT_baryCoord;
+  aHitPayload.baryCoord = _hitAttributeEXT_RayHitPayload.baryCoord;
   lib_shader_RayPayload _rval_ = TestGpuFuncs_triangle_bary_rchit(aHitInfo, aIds, aHitPayload);
   nil_builtin_RAY_PAYLOAD_0 = _rval_;
 }

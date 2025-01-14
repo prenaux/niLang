@@ -7,11 +7,16 @@ struct lib_shader_RayPayload
     float hitT;
 };
 
-hitAttributeEXT vec2 _hitAttributeEXT_baryCoord;
+struct lib_shader_RayHitPayload
+{
+    vec2 baryCoord;
+};
+
+hitAttributeEXT lib_shader_RayHitPayload _hitAttributeEXT_RayHitPayload;
 layout(location = 0) rayPayloadInEXT lib_shader_RayPayload nil_builtin_RAY_PAYLOAD_0;
 
 void main()
 {
-    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4(_hitAttributeEXT_baryCoord, 0.0, 1.0), gl_RayTmaxEXT);
+    nil_builtin_RAY_PAYLOAD_0 = lib_shader_RayPayload(vec4(_hitAttributeEXT_RayHitPayload.baryCoord, 0.0, 1.0), gl_RayTmaxEXT);
 }
 

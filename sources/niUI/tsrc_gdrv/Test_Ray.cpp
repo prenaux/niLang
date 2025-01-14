@@ -6,7 +6,6 @@
 //
 // TODO (1/18):
 // - [ ] p0: Sphere intersection shader, visualize the sphere's normal?
-// - [ ] p0: Visualize: triangles with barycentric coordinate
 // - [ ] p1: Checkerboard floor
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
 // - [ ] p1: One reflective sphere on checkerboard floor
@@ -22,6 +21,7 @@
 // - [x] p0: FRay-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
 // - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
 // - [x] p0: Visualize: one colour per instance index & custom instance id
+// - [x] p0: Visualize: triangles with barycentric coordinate
 //
 
 using namespace ni;
@@ -745,5 +745,12 @@ struct sFRay_InstancesId : public sFRay_InstancesBase {
   {}
 };
 TEST_CLASS(FRay,InstancesId);
+
+struct sFRay_InstancesBary : public sFRay_InstancesBase {
+  sFRay_InstancesBary()
+      : sFRay_InstancesBase(_H("test/rayfunc/triangle_bary_rchit.gpufunc.xml"))
+  {}
+};
+TEST_CLASS(FRay,InstancesBary);
 
 }

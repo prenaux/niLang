@@ -6,7 +6,6 @@
 
 //
 // TODO (1/18):
-// - [ ] p0: Sphere intersection shader, visualize the sphere's normal?
 // - [ ] p1: Checkerboard floor
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
 // - [ ] p1: One reflective sphere on checkerboard floor
@@ -21,6 +20,8 @@
 // - [ ] p2: Visualize: tex coordinates
 // - [x] p0: FRay-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
 // - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
+// - [x] p0: Mixed sphere intersection shader with triangles
+// - [x] p0: Sphere intersection shader, visualize the sphere's normal?
 // - [x] p0: Visualize: one colour per instance index & custom instance id
 // - [x] p0: Visualize: triangles with barycentric coordinate
 //

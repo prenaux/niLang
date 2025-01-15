@@ -6,7 +6,7 @@
 #define MATH_IMPL_FORWARDS 0
 #define MATH_IMPL_BEGIN namespace ni {
 #define MATH_IMPL_END }
-#define MATH_IMPL_FN niInline niFn
+#define MATH_IMPL_FN(TYPE) niInlineFn(TYPE)
 #define MATH_IMPL_CONST_OVR
 #include "MathImpl.h"
 

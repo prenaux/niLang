@@ -171,6 +171,7 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niFnS(TYPE) [[nodiscard]] static TYPE __stdcall
 #define niFnV(TYPE) [[nodiscard]] virtual TYPE __stdcall
 #define niExportFn(TYPE) extern __ni_module_export TYPE __ni_export_call_decl
+#define niInlineFn(TYPE) [[nodiscard]] niInline TYPE __stdcall
 
 // Force lambda inlining, needed on MSVC...
 #ifdef _MSC_VER

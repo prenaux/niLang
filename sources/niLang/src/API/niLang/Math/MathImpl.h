@@ -54,7 +54,13 @@ MATH_IMPL_BEGIN;
     ++pData;                                        \
   }
 
+//----------------------------------------------------------------------------
+//
+// Section: MATH_IMPL_FORWARDS
+//
+//----------------------------------------------------------------------------
 #if MATH_IMPL_FORWARDS == 1
+
 ///////////////////////////////////////////////
 MATH_IMPL_FN(tF64) Sqrt(tF64 v) MATH_IMPL_CONST_OVR
 {
@@ -238,7 +244,7 @@ MATH_IMPL_FN(tI32) RandIntRange(tI32 aMin, tI32 aMax) MATH_IMPL_CONST_OVR
 ///////////////////////////////////////////////
 MATH_IMPL_FN(tF32) RandFloat() MATH_IMPL_CONST_OVR
 {
-  return ni::RandFloat();
+  return (tF32)ni::RandFloat();
 }
 
 ///////////////////////////////////////////////
@@ -365,7 +371,195 @@ MATH_IMPL_FN(tF64) CycleCos(tF64 aX, tF64 aMin, tF64 aMax) MATH_IMPL_CONST_OVR {
 MATH_IMPL_FN(tF64) CycleCardinal(tF64 aX, tF64 aMin, tF64 aMax, tF64 a) MATH_IMPL_CONST_OVR {
   return ni::CycleCardinal(aX,aMin,aMax,a);
 }
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) WrapFloat(tF32 aX, tF32 aMin, tF32 aMax) MATH_IMPL_CONST_OVR
+{
+  return ni::WrapFloat(aX,aMin,aMax);
+}
+
+MATH_IMPL_FN(tI32) WrapInt(tI32 aX, tI32 aMin, tI32 aMax) MATH_IMPL_CONST_OVR
+{
+  return ni::WrapInt(aX,aMin,aMax);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) WrapRad(tF32 aX) MATH_IMPL_CONST_OVR
+{
+  return ni::WrapRad(aX);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) WrapRad2(tF32 aX) MATH_IMPL_CONST_OVR
+{
+  return ni::WrapRad2(aX);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) GetAngleFromPoints2D(const sVec2f& aStartPos, const sVec2f&  aGoalPos) MATH_IMPL_CONST_OVR
+{
+  return ni::GetAngleFromPoints2D(aStartPos,aGoalPos);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(sVec2f) GetAngleFromPoints3D(const sVec3f& aStartPos, const sVec3f& aGoalPos) MATH_IMPL_CONST_OVR
+{
+  return ni::GetAngleFromPoints3D(aStartPos,aGoalPos);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) GetAngularDifference(tF32 afA, tF32 afB) MATH_IMPL_CONST_OVR
+{
+  return ni::GetAngularDifference(afA,afB);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(eClassify) ClassifyPoint(const sPlanef& plane, const sVec3f& point) MATH_IMPL_CONST_OVR
+{
+  return ni::ClassifyPoint(plane,point);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) IsPointInsideEdge(const sVec3f& A, const sVec3f& B, const sVec3f& P) MATH_IMPL_CONST_OVR
+{
+  return ni::IsPointInsideEdge(A,B,P);
+}
+
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) PlaneDot(const sPlanef& P, const sVec4f& V) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneDot(P,V);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) PlaneDotCoord(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneDotCoord(P,V);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) PlaneDotNormal(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneDotNormal(P,V);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) PlaneDistance(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneDistance(P,V);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(ePlaneType) PlaneType(const sPlanef& Plane) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneType(Plane);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(ePlaneType) PlaneMaxType(const sPlanef& Plane) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneMaxType(Plane);
+}
+
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) PlaneIntersectSphere(const sPlanef& plane, const sVec3f& avCenter, const tF32 afRadius) MATH_IMPL_CONST_OVR
+{
+  return ni::PlaneIntersectSphere(plane,avCenter,afRadius);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(sVec3f) GetScreenPosition(const sVec3f& avPos, const sMatrixf& mtxVP, const sRectf& aRect) MATH_IMPL_CONST_OVR {
+  return ni::GetScreenPosition(avPos,mtxVP,aRect);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) MatrixIsIdentity(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixIsIdentity(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) MatrixDeterminant2(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixDeterminant2(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) MatrixDeterminant3(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixDeterminant3(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) MatrixDeterminant(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixDeterminant(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) MatrixGetHandeness(const sMatrixf& M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixGetHandeness(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(sVec3f) MatrixDecomposeYawPitchRoll(const sMatrixf& M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixDecomposeYawPitchRoll(M);
+}
+
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) MatrixIsNormal(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixIsNormal(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) MatrixIsOrthogonal(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixIsOrthogonal(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) MatrixIsOrthoNormal(const sMatrixf &M) MATH_IMPL_CONST_OVR
+{
+  return ni::MatrixIsOrthoNormal(M);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tBool) QuatIsIdentity(const sQuatf &Q) MATH_IMPL_CONST_OVR
+{
+  return ni::QuatIsIdentity(Q);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) QuatDot(const sQuatf &Q1, const sQuatf &Q2) MATH_IMPL_CONST_OVR
+{
+  return ni::QuatDot(Q1,Q2);
+}
+
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) QuatLength(const sQuatf &Q) MATH_IMPL_CONST_OVR
+{
+  return ni::QuatLength(Q);
+}
+
+///////////////////////////////////////////////
+MATH_IMPL_FN(tF32) QuatLengthSq(const sQuatf &Q) MATH_IMPL_CONST_OVR
+{
+  return ni::QuatLengthSq(Q);
+}
 #endif // #if MATH_IMPL_FORWARDS == 1
+
+//----------------------------------------------------------------------------
+//
+// Section: iMath functions
+//
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 MATH_IMPL_FN(sVec3f) RandomDirection(const sVec3f& vN) MATH_IMPL_CONST_OVR
@@ -917,12 +1111,6 @@ MATH_IMPL_FN(sMatrixf) MatrixIdentity() MATH_IMPL_CONST_OVR
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) MatrixIsIdentity(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixIsIdentity(M);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sMatrixf) MatrixAdd(const sMatrixf &aLeft, const sMatrixf &aRight) MATH_IMPL_CONST_OVR
 {
   return aLeft+aRight;
@@ -958,30 +1146,6 @@ MATH_IMPL_FN(sMatrixf) MatrixMultiply(const sMatrixf &M1, const sMatrixf &M2) MA
 {
   sMatrixf ret;
   return ni::MatrixMultiply(ret,M1,M2);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) MatrixDeterminant2(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixDeterminant2(M);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) MatrixDeterminant3(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixDeterminant3(M);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) MatrixDeterminant(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixDeterminant(M);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) MatrixGetHandeness(const sMatrixf& M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixGetHandeness(M);
 }
 
 ///////////////////////////////////////////////
@@ -1132,12 +1296,6 @@ MATH_IMPL_FN(sMatrixf) MatrixRotationYawPitchRoll(tF32 yaw, tF32 pitch, tF32 rol
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(sVec3f) MatrixDecomposeYawPitchRoll(const sMatrixf& M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixDecomposeYawPitchRoll(M);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sMatrixf) MatrixScaling(const sVec3f &V) MATH_IMPL_CONST_OVR
 {
   sMatrixf ret;
@@ -1250,24 +1408,6 @@ MATH_IMPL_FN(sMatrixf) MatrixSetTranslation(const sMatrixf &M, const sVec3f &V) 
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) MatrixIsNormal(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixIsNormal(M);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) MatrixIsOrthogonal(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixIsOrthogonal(M);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) MatrixIsOrthoNormal(const sMatrixf &M) MATH_IMPL_CONST_OVR
-{
-  return ni::MatrixIsOrthoNormal(M);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sMatrixf) MatrixSetRotation(const sMatrixf &In, const sMatrixf &RotM) MATH_IMPL_CONST_OVR
 {
   sMatrixf v = In;
@@ -1334,12 +1474,6 @@ MATH_IMPL_FN(sQuatf) QuatIdentity() MATH_IMPL_CONST_OVR
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) QuatIsIdentity(const sQuatf &Q) MATH_IMPL_CONST_OVR
-{
-  return ni::QuatIsIdentity(Q);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sQuatf) QuatAdd(const sQuatf &aLeft, const sQuatf &aRight) MATH_IMPL_CONST_OVR
 {
   return aLeft+aRight;
@@ -1378,12 +1512,6 @@ MATH_IMPL_FN(sQuatf) QuatConjugate(const sQuatf &Q) MATH_IMPL_CONST_OVR
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) QuatDot(const sQuatf &Q1, const sQuatf &Q2) MATH_IMPL_CONST_OVR
-{
-  return ni::QuatDot(Q1,Q2);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sQuatf) QuatExp(const sQuatf &Q) MATH_IMPL_CONST_OVR
 {
   sQuatf ret;
@@ -1395,18 +1523,6 @@ MATH_IMPL_FN(sQuatf) QuatInverse(const sQuatf &Q) MATH_IMPL_CONST_OVR
 {
   sQuatf ret;
   return ni::QuatInverse(ret,Q);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) QuatLength(const sQuatf &Q) MATH_IMPL_CONST_OVR
-{
-  return ni::QuatLength(Q);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) QuatLengthSq(const sQuatf &Q) MATH_IMPL_CONST_OVR
-{
-  return ni::QuatLengthSq(Q);
 }
 
 ///////////////////////////////////////////////
@@ -1516,59 +1632,6 @@ MATH_IMPL_FN(sVec3f) QuatToEuler(const sQuatf &Q) MATH_IMPL_CONST_OVR
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) WrapFloat(tF32 aX, tF32 aMin, tF32 aMax) MATH_IMPL_CONST_OVR
-{
-  return ni::WrapFloat(aX,aMin,aMax);
-}
-
-MATH_IMPL_FN(tI32) WrapInt(tI32 aX, tI32 aMin, tI32 aMax) MATH_IMPL_CONST_OVR
-{
-  return ni::WrapInt(aX,aMin,aMax);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) WrapRad(tF32 aX) MATH_IMPL_CONST_OVR
-{
-  return ni::WrapRad(aX);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) WrapRad2(tF32 aX) MATH_IMPL_CONST_OVR
-{
-  return ni::WrapRad2(aX);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) GetAngleFromPoints2D(const sVec2f& aStartPos, const sVec2f&  aGoalPos) MATH_IMPL_CONST_OVR
-{
-  return ni::GetAngleFromPoints2D(aStartPos,aGoalPos);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(sVec2f) GetAngleFromPoints3D(const sVec3f& aStartPos, const sVec3f& aGoalPos) MATH_IMPL_CONST_OVR
-{
-  return ni::GetAngleFromPoints3D(aStartPos,aGoalPos);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) GetAngularDifference(tF32 afA, tF32 afB) MATH_IMPL_CONST_OVR
-{
-  return ni::GetAngularDifference(afA,afB);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(eClassify) ClassifyPoint(const sPlanef& plane, const sVec3f& point) MATH_IMPL_CONST_OVR
-{
-  return ni::ClassifyPoint(plane,point);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) IsPointInsideEdge(const sVec3f& A, const sVec3f& B, const sVec3f& P) MATH_IMPL_CONST_OVR
-{
-  return ni::IsPointInsideEdge(A,B,P);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sVec3f) ClosestPointOnLine(const sVec3f& A, const sVec3f& B, const sVec3f& P) MATH_IMPL_CONST_OVR
 {
   sVec3f ret;
@@ -1580,30 +1643,6 @@ MATH_IMPL_FN(sVec3f) ClosestPointOnTriangle(const sVec3f& A, const sVec3f& B, co
 {
   sVec3f ret;
   return ni::ClosestPointOnTriangle(ret,A,B,C,P);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) PlaneDot(const sPlanef& P, const sVec4f& V) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneDot(P,V);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) PlaneDotCoord(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneDotCoord(P,V);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) PlaneDotNormal(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneDotNormal(P,V);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tF32) PlaneDistance(const sPlanef& P, const sVec3f& V) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneDistance(P,V);
 }
 
 ///////////////////////////////////////////////
@@ -1678,18 +1717,6 @@ MATH_IMPL_FN(sVec3f) PlaneClosest(const sPlanef& P, const sVec3f& A) MATH_IMPL_C
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(ePlaneType) PlaneType(const sPlanef& Plane) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneType(Plane);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(ePlaneType) PlaneMaxType(const sPlanef& Plane) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneMaxType(Plane);
-}
-
-///////////////////////////////////////////////
 MATH_IMPL_FN(sMatrixf) PlaneExtractCoordinateSystem(const sPlanef& Plane, const sVec3f& avFwdDir) MATH_IMPL_CONST_OVR
 {
   sMatrixf ret;
@@ -1697,17 +1724,6 @@ MATH_IMPL_FN(sMatrixf) PlaneExtractCoordinateSystem(const sPlanef& Plane, const 
                                                 eFalse,
                                                 (avFwdDir==sVec3f::Zero())?NULL:&avFwdDir,
                                                 NULL);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(tBool) PlaneIntersectSphere(const sPlanef& plane, const sVec3f& avCenter, const tF32 afRadius) MATH_IMPL_CONST_OVR
-{
-  return ni::PlaneIntersectSphere(plane,avCenter,afRadius);
-}
-
-///////////////////////////////////////////////
-MATH_IMPL_FN(sVec3f) GetScreenPosition(const sVec3f& avPos, const sMatrixf& mtxVP, const sRectf& aRect) MATH_IMPL_CONST_OVR {
-  return ni::GetScreenPosition(avPos,mtxVP,aRect);
 }
 
 ///////////////////////////////////////////////

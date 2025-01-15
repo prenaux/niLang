@@ -728,7 +728,7 @@ struct sFRay_InstancesBase : public sFRay_Base {
 
     niLoop(i,_instances.size()) {
       niPanicAssert(_instancesDesc->UpdateInstanceTransform(
-        i,MatrixRotationZ(WrapRad(_animationTime)) *
+        i,MatrixRotationZ(WrapRad((tF32)_animationTime)) *
         MatrixTranslation(_instances[i]._pos)));
     }
     niLet instanceAS = niCheckNN(instanceAS, _rayBuildEncoder->BuildRayInstances(

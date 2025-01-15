@@ -338,22 +338,22 @@ sMatrix<T>& MatrixInverse(sMatrix<T>& aOut, const sMatrix<T>& aIn, T* apDet = NU
   }
 
   const tF64 fInvDet = 1.0/fDet;
-  aOut(0,0) = (+ pIn[ 5]*fB5 - pIn[ 6]*fB4 + pIn[ 7]*fB3) * fInvDet;
-  aOut(1,0) = (- pIn[ 4]*fB5 + pIn[ 6]*fB2 - pIn[ 7]*fB1) * fInvDet;
-  aOut(2,0) = (+ pIn[ 4]*fB4 - pIn[ 5]*fB2 + pIn[ 7]*fB0) * fInvDet;
-  aOut(3,0) = (- pIn[ 4]*fB3 + pIn[ 5]*fB1 - pIn[ 6]*fB0) * fInvDet;
-  aOut(0,1) = (- pIn[ 1]*fB5 + pIn[ 2]*fB4 - pIn[ 3]*fB3) * fInvDet;
-  aOut(1,1) = (+ pIn[ 0]*fB5 - pIn[ 2]*fB2 + pIn[ 3]*fB1) * fInvDet;
-  aOut(2,1) = (- pIn[ 0]*fB4 + pIn[ 1]*fB2 - pIn[ 3]*fB0) * fInvDet;
-  aOut(3,1) = (+ pIn[ 0]*fB3 - pIn[ 1]*fB1 + pIn[ 2]*fB0) * fInvDet;
-  aOut(0,2) = (+ pIn[13]*fA5 - pIn[14]*fA4 + pIn[15]*fA3) * fInvDet;
-  aOut(1,2) = (- pIn[12]*fA5 + pIn[14]*fA2 - pIn[15]*fA1) * fInvDet;
-  aOut(2,2) = (+ pIn[12]*fA4 - pIn[13]*fA2 + pIn[15]*fA0) * fInvDet;
-  aOut(3,2) = (- pIn[12]*fA3 + pIn[13]*fA1 - pIn[14]*fA0) * fInvDet;
-  aOut(0,3) = (- pIn[ 9]*fA5 + pIn[10]*fA4 - pIn[11]*fA3) * fInvDet;
-  aOut(1,3) = (+ pIn[ 8]*fA5 - pIn[10]*fA2 + pIn[11]*fA1) * fInvDet;
-  aOut(2,3) = (- pIn[ 8]*fA4 + pIn[ 9]*fA2 - pIn[11]*fA0) * fInvDet;
-  aOut(3,3) = (+ pIn[ 8]*fA3 - pIn[ 9]*fA1 + pIn[10]*fA0) * fInvDet;
+  aOut(0,0) = (T)((+ pIn[ 5]*fB5 - pIn[ 6]*fB4 + pIn[ 7]*fB3) * fInvDet);
+  aOut(1,0) = (T)((- pIn[ 4]*fB5 + pIn[ 6]*fB2 - pIn[ 7]*fB1) * fInvDet);
+  aOut(2,0) = (T)((+ pIn[ 4]*fB4 - pIn[ 5]*fB2 + pIn[ 7]*fB0) * fInvDet);
+  aOut(3,0) = (T)((- pIn[ 4]*fB3 + pIn[ 5]*fB1 - pIn[ 6]*fB0) * fInvDet);
+  aOut(0,1) = (T)((- pIn[ 1]*fB5 + pIn[ 2]*fB4 - pIn[ 3]*fB3) * fInvDet);
+  aOut(1,1) = (T)((+ pIn[ 0]*fB5 - pIn[ 2]*fB2 + pIn[ 3]*fB1) * fInvDet);
+  aOut(2,1) = (T)((- pIn[ 0]*fB4 + pIn[ 1]*fB2 - pIn[ 3]*fB0) * fInvDet);
+  aOut(3,1) = (T)((+ pIn[ 0]*fB3 - pIn[ 1]*fB1 + pIn[ 2]*fB0) * fInvDet);
+  aOut(0,2) = (T)((+ pIn[13]*fA5 - pIn[14]*fA4 + pIn[15]*fA3) * fInvDet);
+  aOut(1,2) = (T)((- pIn[12]*fA5 + pIn[14]*fA2 - pIn[15]*fA1) * fInvDet);
+  aOut(2,2) = (T)((+ pIn[12]*fA4 - pIn[13]*fA2 + pIn[15]*fA0) * fInvDet);
+  aOut(3,2) = (T)((- pIn[12]*fA3 + pIn[13]*fA1 - pIn[14]*fA0) * fInvDet);
+  aOut(0,3) = (T)((- pIn[ 9]*fA5 + pIn[10]*fA4 - pIn[11]*fA3) * fInvDet);
+  aOut(1,3) = (T)((+ pIn[ 8]*fA5 - pIn[10]*fA2 + pIn[11]*fA1) * fInvDet);
+  aOut(2,3) = (T)((- pIn[ 8]*fA4 + pIn[ 9]*fA2 - pIn[11]*fA0) * fInvDet);
+  aOut(3,3) = (T)((+ pIn[ 8]*fA3 - pIn[ 9]*fA1 + pIn[10]*fA0) * fInvDet);
   return aOut;
 }
 

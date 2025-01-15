@@ -71,14 +71,14 @@ lib_shader_RayHitPayload TestGpuFuncs_sphere_rint(lib_shader_RayObjectParams aOb
   vec3 rdir = aObject.objectRayDirection;
   float hit = TestGpuFuncs_sphereIntersect(center,radius,rorig,rdir);
   lib_shader_RayHitPayload payload = lib_shader_RayHitPayload_new_default() /*SKIPPED COPY VALUETYPE: newed*/;
-  vec3 hitPos = (rorig+(rdir*hit));
-  vec3 normal = normalize((hitPos-center));
-  float PI = 3.14159;
-  float longitude = ((atan(normal.z, normal.x) / (2.0 * PI)) + 0.5);
-  float latitude = ((asin(normal.y) / PI) + 0.5);
-  bool _tmp_V = (hit > 0.0);
-  if (_tmp_V) {
+  bool _tmp_y = (hit > 0.0);
+  if (_tmp_y) {
     reportIntersectionEXT(hit,0);
+    vec3 hitPos = (rorig+(rdir*hit));
+    vec3 normal = normalize((hitPos-center));
+    float PI = 3.14159;
+    float longitude = ((atan(normal.z, normal.x) / (2.0 * PI)) + 0.5);
+    float latitude = ((asin(normal.y) / PI) + 0.5);
     payload.baryCoord = vec2(longitude,latitude);
   }
   return payload;

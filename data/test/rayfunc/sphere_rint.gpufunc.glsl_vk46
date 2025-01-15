@@ -23,12 +23,12 @@ void main()
         _358 = (-_284) - sqrt(_296);
         break;
     } while(false);
-    vec3 _241 = normalize(gl_ObjectRayOriginEXT + (gl_ObjectRayDirectionEXT * _358));
     vec2 _362;
     if (_358 > 0.0)
     {
-        bool _262 = reportIntersectionEXT(_358, 0u);
-        _362 = vec2((atan(_241.z, _241.x) * 0.159155070781707763671875) + 0.5, (asin(_241.y) * 0.31831014156341552734375) + 0.5);
+        bool _238 = reportIntersectionEXT(_358, 0u);
+        vec3 _247 = normalize(gl_ObjectRayOriginEXT + (gl_ObjectRayDirectionEXT * _358));
+        _362 = vec2((atan(_247.z, _247.x) * 0.159155070781707763671875) + 0.5, (asin(_247.y) * 0.31831014156341552734375) + 0.5);
     }
     else
     {

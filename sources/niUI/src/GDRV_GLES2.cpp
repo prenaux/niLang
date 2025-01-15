@@ -30,11 +30,11 @@ static GLint knGLSamplerFilterAnisotropy = 8;
 
 // #define GL_DEBUG_MISSING_MIPMAPS 4
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Cache
+// Section: Cache
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 enum eGLCache
 {
   eGLCache_Context,
@@ -78,11 +78,11 @@ struct sGLCache : public sStateCache {
   eMaterialChannel  _tuChannel[GLDRV_MAX_TEXTURE_UNIT];
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Context
+// Section: Context
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> > {
   sGLContext(iGraphics* apGraphics)
       : tGraphicsContextBase(apGraphics)
@@ -133,11 +133,11 @@ const tU32 eTextureFlags_DontOwnGLHandles = niBit(31);
 const tU32 eTextureFlags_MainRT = niBit(30);
 const tU32 eTextureFlags_MainDS = niBit(29);
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Utils
+// Section: Utils
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // "GL_ARB_shader_texture_lod" (texture2D/Cube/3DLod in pixel shader - its supported in vertex shaders only by default ^^)
 static eMOJOSHADERTextureLod hasTextureLod = eMOJOSHADERTextureLod_None;
 // "OES_standard_derivatives"
@@ -568,11 +568,11 @@ static tBool GL2_InitializeExt() {
   return eTrue;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  States
+// Section: States
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 static inline GLenum GL_Compare(eGraphicsCompare cmp) {
   switch (cmp) {
     case eGraphicsCompare_Never: return GL_NEVER;
@@ -862,12 +862,11 @@ static void GL_ApplyRasterizerStates(sGLCache& aCache, const sRasterizerStatesDe
   // TODO: Depth Bias ? //
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  MojoShaders
+// Section: MojoShaders
 //
-//--------------------------------------------------------------------------------------------
-
+//----------------------------------------------------------------------------
 struct iMojoShader : public iShader {
   niDeclareInterfaceUUID(iMojoShader,0x27897b00,0x0c78,0x4815,0x92,0x2e,0x17,0x38,0x5f,0xef,0x23,0x97);
   virtual MOJOSHADER_glShader* __stdcall GetShader() const = 0;
@@ -1316,11 +1315,11 @@ tBool Mojo_ApplyPixelShader(
   return eTrue;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Textures
+// Section: Textures
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct sGL2TextureFormat
 {
   GLenum kind;
@@ -2451,11 +2450,11 @@ struct sGL2TextureCube : public sGL2TextureBase
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  GL Occlusion Queries
+// Section: GL Occlusion Queries
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #ifdef USE_OQ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -2568,11 +2567,11 @@ class cGL2OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
 
 #endif
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  OpenGL Buffer
+// Section: OpenGL Buffer
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct sGLVertexArrayData : public ImplRC<iVertexArray,eImplFlags_DontInherit1,iDeviceResource> {
   __forceinline const GLenum GetBufferTarget() const { return GL_ARRAY_BUFFER; }
   __forceinline const tPtr GetBufferData() const { return (tPtr)mVertices.data(); }
@@ -2867,11 +2866,11 @@ struct sGLIndexArray32 : public sGLBufferImpl<sGLIndexArray32Data> {
   tU32                    mnMaxVertexIndex;
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// Graphics Context
+// Section: Graphics Context
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cGL2ContextWindow : public sGLContext
 {
   niBeginClass(cGL2ContextWindow);
@@ -3278,11 +3277,11 @@ static tBool GL2_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlip
   return eTrue;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Fixed Pipeline Shader Library
+// Section: Fixed Pipeline Shader Library
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 static tBool GL2_ApplyMaterialChannel(
@@ -3343,11 +3342,11 @@ static tBool GL2_ApplyMaterialChannel(
   return eTrue;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// GLES2GraphicsDriver
+// Section: GLES2GraphicsDriver
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 const achar* GL2Drv_GetName() { return _A("GL2"); }
 const achar* GL2Drv_GetDesc() { return _A("GL2 Graphics Driver"); }
 

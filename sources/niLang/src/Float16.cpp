@@ -10,9 +10,9 @@
 //     Florian Kainz <kainz@ilm.com>
 //     Rod Bogart <rgb@ilm.com>
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//   cFloat16 -- a 16-bit floating point number class:
+// Section: cFloat16 -- a 16-bit floating point number class:
 //
 //   Type cFloat16 can represent positive and negative numbers, whose
 //   magnitude is between roughly 6.1e-5 and 6.5e+4, with a relative
@@ -54,11 +54,11 @@
 //       alignof (tU32) == alignof (tF32)
 //       sizeof (tU16) == 2
 //
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// Implementation --
+// Section: Implementation --
 //
 // Representation of a tF32:
 //
@@ -165,7 +165,7 @@
 //   and store the results in a table.  Later, all conversions can be
 //   done using only simple table lookups.
 //
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 union uF32
 {

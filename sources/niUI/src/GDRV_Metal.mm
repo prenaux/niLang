@@ -254,7 +254,7 @@ static MTLVertexDescriptor* _CreateMetalVertDescForFVFAndGpuVertexAttibutes(
 
 //----------------------------------------------------------------------------
 //
-// GpuFunction
+// Section: GpuFunction
 //
 //----------------------------------------------------------------------------
 static inline eGpuFunctionType _GetGpuFunctionType(MTLFunctionType aFuncType) {
@@ -354,11 +354,11 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
   }
 };
 
-//-------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// States & Shaders
+// Section: States & Shaders
 //
-//-------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 static MTLPixelFormat _GetMTLPixelFormat(eGpuPixelFormat aFmt) {
   switch (aFmt) {
     case eGpuPixelFormat_None:
@@ -722,11 +722,11 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDevi
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// MetalBuffer
+// Section: MetalBuffer
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource> {
   id<MTLBuffer> _mtlBuffer;
   eGpuBufferMemoryMode _memMode;
@@ -870,11 +870,11 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDevi
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// MetalTexture
+// Section: MetalTexture
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource>
 {
   iGraphics* mpGraphics;
@@ -1069,11 +1069,11 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// MetalGraphicsDriver
+// Section: MetalGraphicsDriver
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 static iGraphicsContext* New_MetalContextWindow(
   struct cMetalGraphicsDriver* apParent,
   const tU32 aFrameMaxInFlight,
@@ -1591,7 +1591,7 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& av
 
 //----------------------------------------------------------------------------
 //
-// sMetalCommandEncoder
+// Section: sMetalCommandEncoder
 //
 //----------------------------------------------------------------------------
 struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
@@ -1830,11 +1830,11 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// MetalContextWindow
+// Section: MetalContextWindow
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct cMetalContextBase :
     public sGraphicsContext<1,ni::ImplRC<
                                 iGraphicsContextRT,

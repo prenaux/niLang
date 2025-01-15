@@ -7,11 +7,11 @@
 #include <niLang/STL/utils.h>
 #include "API/niUI/Utils/AABB.h"
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Draw Operation implementation.
+// Section: Draw Operation implementation.
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 //! Draw operation implementation.
 class cDrawOperation : public ImplRC<iDrawOperation>
@@ -308,11 +308,11 @@ tDrawOperationFlags __stdcall cDrawOperation::GetFlags() const
   return mFlags;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Draw Operation Set
+// Section: Draw Operation Set
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef astl::vector<Ptr<iDrawOperation> >   tDrawOperationLst;
 typedef tDrawOperationLst::iterator          tDrawOperationLstIt;
@@ -450,11 +450,11 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
   niEndClass(cDrawOperationSet);
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cGraphics
+// Section: cGraphics
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 iDrawOperation* __stdcall cGraphics::CreateDrawOperation() {

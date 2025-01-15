@@ -26,11 +26,11 @@ static const tF32 _kfMarkerAlpha = 0.7f;
 #define DRAGGING_ALPHA  3
 #define DRAGGING_B    4
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Widget ColorPicker implementation.
+// Section: Widget ColorPicker implementation.
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cWidgetColorPicker : public ni::cWidgetSinkImpl<ni::iWidgetColorPicker>
 {
   niBeginClass(cWidgetColorPicker);

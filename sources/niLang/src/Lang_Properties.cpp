@@ -623,11 +623,11 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
   _ParseCmdLineProperties(props,ni::GetCurrentOSProcessCmdLine());
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// cLang
+// Section: cLang
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #define CHECK_SYSTEM_PROPERTIES()               \
   niAssert(mptrSystemProperties.IsOK());
 

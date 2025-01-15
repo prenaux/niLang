@@ -6,12 +6,12 @@
 
 #include "SVGPathTokenizer.h"
 
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 const char cSVGPathTokenizer::s_commands[]   = "+-MmZzLlHhVvCcSsQqTtAaFfPp";
 const char cSVGPathTokenizer::s_numeric[]    = ".Ee0123456789";
 const char cSVGPathTokenizer::s_separators[] = " ,\t\n\r";
 
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 cSVGPathTokenizer::cSVGPathTokenizer()
     : m_path(0), m_last_command(0), m_last_number(0.0), mbError(eFalse)
 {
@@ -20,8 +20,7 @@ cSVGPathTokenizer::cSVGPathTokenizer()
   InitCharMask(m_separators_mask, s_separators);
 }
 
-
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 void cSVGPathTokenizer::SetPathString(const char* str)
 {
   m_path = str;
@@ -29,8 +28,7 @@ void cSVGPathTokenizer::SetPathString(const char* str)
   m_last_number = 0.0;
 }
 
-
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 void cSVGPathTokenizer::InitCharMask(char* mask, const char* char_set)
 {
   memset(mask, 0, 256/8);
@@ -41,8 +39,7 @@ void cSVGPathTokenizer::InitCharMask(char* mask, const char* char_set)
   }
 }
 
-
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 tBool cSVGPathTokenizer::Next()
 {
   if (mbError || m_path == 0)
@@ -77,9 +74,7 @@ tBool cSVGPathTokenizer::Next()
   return ParseNumber();
 }
 
-
-
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 tF32 cSVGPathTokenizer::Next(char cmd)
 {
   if (mbError)
@@ -99,8 +94,7 @@ tF32 cSVGPathTokenizer::Next(char cmd)
   return LastNumber();
 }
 
-
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 tBool cSVGPathTokenizer::ParseNumber()
 {
   char buf[256]; // Should be enough for any number

@@ -30,6 +30,11 @@ using namespace ni;
 
 namespace {
 
+//----------------------------------------------------------------------------
+//
+// Section: sFRay_Base
+//
+//----------------------------------------------------------------------------
 struct sFRay_Base : public sFGDRV_Base {
   typedef sVertexPA tVertexTri;
   tU32 _numTriVB = 0;
@@ -224,7 +229,14 @@ struct sFRay_Base : public sFGDRV_Base {
   }
 };
 
+//----------------------------------------------------------------------------
+//
+// Section: Basic tests
+//
+//----------------------------------------------------------------------------
+//
 // clear ; ham pass1 && ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
+//
 struct sFRay_Triangle : public sFRay_Base {
 
   // Ray tracing instances, pipeline and shaders
@@ -590,6 +602,11 @@ struct sFRay_TriangleQuad : public sFRay_Base {
 };
 TEST_CLASS(FRay,TriangleQuad);
 
+//----------------------------------------------------------------------------
+//
+// Section: Instances tests
+//
+//----------------------------------------------------------------------------
 struct sFRay_InstancesBase : public sFRay_Base {
   typedef sVertexPA tVertexTri;
 
@@ -755,6 +772,11 @@ struct sFRay_InstancesBary : public sFRay_InstancesBase {
 };
 TEST_CLASS(FRay,InstancesBary);
 
+//----------------------------------------------------------------------------
+//
+// Section: Interesection tests
+//
+//----------------------------------------------------------------------------
 struct sFRay_IntSphere : public sFRay_Base {
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);

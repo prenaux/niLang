@@ -6395,11 +6395,11 @@ Ptr<Op> Evaluator::_CreateOperation(const achar* aaszName, eMathExprTokenType aO
 #undef EndOp
 #undef AddOp
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// cLang
+// Section: cLang
 //
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #include "Lang.h"
 
 iExpressionContext* cLang::CreateExpressionContext() {

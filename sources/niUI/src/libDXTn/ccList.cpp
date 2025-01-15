@@ -418,9 +418,9 @@ void ccList::SortAlpha()
 }
 
 
-//-------------------------------------------------------------------
-// ccHashNode stuff follows - new functionality for faster searches
-//-------------------------------------------------------------------
+//----------------------------------------------------------------------------
+// Section: ccHashNode stuff follows - new functionality for faster searches
+//----------------------------------------------------------------------------
 
 unsigned long CalcHash(const char *String)
 {

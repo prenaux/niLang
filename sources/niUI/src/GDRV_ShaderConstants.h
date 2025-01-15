@@ -6,14 +6,14 @@
 
 namespace ni {
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Generic Shader Constants Buffer
+// Section: Generic Shader Constants Buffer
 //
 //  Implemented inline so that we can use it in the shader compiler without
 //  having a dependency on the module
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cShaderConstants :
     public ImplRC<iShaderConstants,eImplFlags_DontInherit1,iSerializable>,
     public sShaderConstantsDesc

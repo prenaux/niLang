@@ -182,11 +182,9 @@ class cSoundMixerSoftware3D : public ImplRC<iSoundMixer3D,eImplFlags_Default>
     return chan[nchan].cone_dir;
   }
 
-  //--------------------------------------------------------------------------------------------
-  //
-  //  Listener
-  //
-  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------
+  // Section: Listener
+  //--------------------------------------------------------------------------
   struct sListener {
     sListener() {
       pos = sVec3f::Zero();
@@ -271,12 +269,9 @@ class cSoundMixerSoftware3D : public ImplRC<iSoundMixer3D,eImplFlags_Default>
     return mListener.doppler_scale;
   }
 
-  //--------------------------------------------------------------------------------------------
-  //
-  //  3D Mixer
-  //
-  //--------------------------------------------------------------------------------------------
-
+  //--------------------------------------------------------------------------
+  // Section: 3D Mixer
+  //--------------------------------------------------------------------------
   void Compute3D(tI32& anOutVolume, // volume, is a scale of the current absolute volume
                  tI32& anOutPan,    // panning...
                  tF32& afOutPitch,  // pitch, scale of the frequency

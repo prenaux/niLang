@@ -8,11 +8,11 @@
 #include "Graphics.h"
 #include "GDRV_Utils.h"
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// DummyTexture
+// Section: DummyTexture
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource>
 {
   WeakPtr<iGraphics> mwGraphics;
@@ -122,11 +122,11 @@ struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
 };
 
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// DummyGraphicsContext
+// Section: DummyGraphicsContext
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct cDummyGraphicsContext :
     public sGraphicsContext<4,ni::ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> >
 {
@@ -222,12 +222,11 @@ struct cDummyGraphicsContext :
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// DummyGraphicsDriver
+// Section: DummyGraphicsDriver
 //
-//--------------------------------------------------------------------------------------------
-
+//----------------------------------------------------------------------------
 struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
 {
   iGraphics* mpGraphics;

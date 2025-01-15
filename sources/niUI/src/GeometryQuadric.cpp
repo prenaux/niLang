@@ -449,11 +449,11 @@ QuadricDisk(iGraphics* apGraphics, tGeometryCreateFlags aFlags, tFVF aFVF,
 }
 
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Geosphere
+// Section: Geosphere
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 struct Mesh {
   Mesh(tPtr apVerts, tU32 anNumVerts, tU32 anVertStride, tIndex* apInds, tU32 anNumFaces) {
     _verts = apVerts;

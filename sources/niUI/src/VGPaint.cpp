@@ -11,11 +11,11 @@
 
 typedef sTimedLerp<tF32CVec,tF32,sTimedLerp_GetKeyTimeStaticCast<tF32,tF32> > tTimedLerp;
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Gradient Table
+// Section: Gradient Table
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 template<class GradientF>
 class gradient_reflect_polymorphic_wrapper : public ImplRC<iAGGGradientPolymorphicWrapperBase>
 {
@@ -238,11 +238,11 @@ sAGGGradientTable AGGGetGradientTable(const iVGGradientTable* apTable)
                            niStaticCast(const cVGGradientTable*,apTable)->mTable);
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Paint Solid
+// Section: Paint Solid
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cVGPaintSolid : public ImplRC<iVGPaint>
 {
  public:
@@ -280,11 +280,11 @@ class cVGPaintSolid : public ImplRC<iVGPaint>
   sColor4f  mColor;
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Paint Image
+// Section: Paint Image
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cVGPaintImage : public ImplRC<iVGPaintImage,eImplFlags_DontInherit1,iVGPaint>
 {
  public:
@@ -410,11 +410,11 @@ class cVGPaintImage : public ImplRC<iVGPaintImage,eImplFlags_DontInherit1,iVGPai
   eVGWrapType    mWrapType;
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Paint Gradient
+// Section: Paint Gradient
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cVGPaintGradient : public ImplRC<iVGPaintGradient,eImplFlags_DontInherit1,iVGPaint>
 {
  public:
@@ -547,11 +547,11 @@ class cVGPaintGradient : public ImplRC<iVGPaintGradient,eImplFlags_DontInherit1,
   eVGPaintUnits         mUnits;
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  UI
+// Section: UI
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 Ptr<iVGGradientTable> __stdcall cGraphics::CreateVGGradientTable(tU32 anSize) {

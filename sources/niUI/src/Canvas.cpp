@@ -66,11 +66,11 @@ struct sGraphicsCanvasStates {
   }
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Line quad
+// Section: Line quad
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 static __forceinline void ProjectLineQuad(sVec3f view[4], sVec3f proj[4], const sMatrixf& amtxProj, const sRectf& aVP) {
   niLoop(j,4) {
@@ -406,11 +406,11 @@ static __forceinline void _GetCirclePointXY(sVec3f& aOut, const sVec3f& avCenter
   aOut.z = avCenter.z;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  VGPathDraw
+// Section: VGPathDraw
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #define VG_SS_DEFAULT_FILTER eCompiledStates_SS_PointClamp
 
 struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer> {

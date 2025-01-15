@@ -390,7 +390,7 @@ iOSProcessManager* cLang::GetProcessManager() const {
 
 //--------------------------------------------------------------------------------------------
 //
-// ni::GetLang
+// Section: ni::GetLang
 //
 //--------------------------------------------------------------------------------------------
 #include "API/niLang/Utils/CrashReport.h"

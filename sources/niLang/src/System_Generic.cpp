@@ -29,11 +29,11 @@ cGameCtrlAcc* __stdcall GetGenericGameCtrlAcc() {
 }
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cOSWindowGeneric implementation
+// Section: cOSWindowGeneric implementation
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cOSWindowGeneric : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,iOSWindowGeneric>
 {
   niBeginClass(cOSWindowGeneric);
@@ -393,11 +393,11 @@ niExportFunc(iUnknown*) New_niLang_OSWindowGeneric(const Var&, const Var&) {
 }
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Generic system platform stuff
+// Section: Generic system platform stuff
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #if defined niAndroid || defined niIOS || defined niJSCC || defined niQNX
 
 #include "Lang.h"

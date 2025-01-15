@@ -393,7 +393,7 @@ static bool FTOutlineToPath(const FT_Outline& outline,
   return true;
 }
 
-//------------------------------------------------------------------------
+///////////////////////////////////////////////
 static bool GetTTFGlyphPath(
   FT_Face face,
   unsigned glyph_index,

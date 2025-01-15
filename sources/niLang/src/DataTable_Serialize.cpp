@@ -21,11 +21,11 @@ static const achar* kXMLCDataProperty = "_data";
 static const achar* kXMLInnerTextProperty = "_inner";
 static const ni::tU32 _knZipCompressionMode = 6;
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Binary serialization
+// Section: Binary serialization
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef tSize (*tpfnReadDataTable)(iFile*, iDataTable*);
 typedef tSize (*tpfnWriteDataTable)(iFile*, iDataTable*);
@@ -129,12 +129,11 @@ static tSize _ReadDataTableRawZip(iFile* apFile, iDataTable* apTable)
   return (tSize)(apFile->Tell()-nPos);
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
+// Section: DataTableSerialize
 //
-//
-//--------------------------------------------------------------------------------------------
-
+//----------------------------------------------------------------------------
 struct sDataTableSerializeVersion {
   const achar* const  ext;
   const tU32      ver;
@@ -205,11 +204,11 @@ tSize DataTableSerialize_Read(iFile* apFile, iDataTable* apTable)
   return ret;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Read/Write XML
+// Section: Read/Write XML
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #if niMinFeatures(20)
 
 static const achar* const _kaszXMLIndent = _A("\t");
@@ -453,12 +452,11 @@ static tSize DataTableSerialize_ReadXML(iFile* apFile, iDataTable* apTable)
 }
 #endif
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Read/Write Json
+// Section: Read/Write Json
 //
-//--------------------------------------------------------------------------------------------
-
+//----------------------------------------------------------------------------
 struct sJsonParserSinkDT : public ImplRC<ni::iJsonParserSink> {
 
   sJsonParserSinkDT(astl::non_null<iDataTable*> apRootDT)

@@ -1485,11 +1485,11 @@ tBool __stdcall cDataTable::_FindChildDataTable(iDataTable* apThis, iDataTable* 
   return ni::eFalse;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Path properties
+// Section: Path properties
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 cString __stdcall cLang::GetAbsoluteDataTablePath(iDataTable* apDT, tU32 anPropIndex)
 {
   niCheck(niIsOK(apDT),AZEROSTR);

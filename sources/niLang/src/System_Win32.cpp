@@ -967,11 +967,11 @@ static void _RegisterWindow(cOSWindowWindows* apWin);
 static void _UnregisterWindow(cOSWindowWindows* apWin);
 static void _UnstickWindows();
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Window implementation
+// Section: Window implementation
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cThreadedWindow : public ni::ImplRC<ni::iUnknown>
 {
  public:
@@ -2839,11 +2839,11 @@ static LRESULT CALLBACK _StaticWndProc(HWND hWnd, UINT message, WPARAM wParam, L
   }
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cLang implementation
+// Section: cLang implementation
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 static BOOL CALLBACK _MonitorEnumProc(
     HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
 

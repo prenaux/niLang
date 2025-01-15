@@ -22,11 +22,11 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var&);
 niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var&);
 #endif
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Main
+// Section: Main
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 static inline void _RegisterGraphicsDriver(const achar* aName, tpfnCreateObjectInstance apfnCreateInstance) {
   astl::upsert(

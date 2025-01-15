@@ -77,11 +77,11 @@ typedef DWORD (WINAPI * tpfnXInputGetBatteryInformation)(
                                                          );
 static tpfnXInputGetBatteryInformation _pfnXInputGetBatteryInformation = NULL;
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cXInputGameCtrl implementation
+// Section: cXInputGameCtrl implementation
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cXInputGameCtrl : public ImplRC<iGameCtrl>
 {
   const tU32 mnIndex;
@@ -353,11 +353,11 @@ class cXInputGameCtrl : public ImplRC<iGameCtrl>
   //// iGameCtrl /////////////////////////////
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cOSWindowGeneric implementation
+// Section: cOSWindowGeneric implementation
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 tBool __stdcall XInputGameCtrls_Startup() {
   if (_xinputInitCount != 0)
     return eTrue;

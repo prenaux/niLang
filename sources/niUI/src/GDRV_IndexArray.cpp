@@ -4,11 +4,11 @@
 #include "stdafx.h"
 #include "Graphics.h"
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Generic Index Array
+// Section: Generic Index Array
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 class cGenericIndexArray : public ImplRC<iIndexArray>
 {
   niBeginClass(cGenericIndexArray);
@@ -111,11 +111,11 @@ tPtr _GetGenericIndexArrayMemPtr(iIndexArray* apIA) {
   return (tPtr)((cGenericIndexArray*)apIA)->mpMem;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  cGraphics
+// Section: cGraphics
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 iIndexArray* __stdcall cGraphics::CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) {

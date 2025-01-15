@@ -1128,11 +1128,11 @@ iTexture* __stdcall cBitmap2D::GetSubTexture(tU32 anIndex) const
   return NULL;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-// _BlitResample
+// Section: BlitResample
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 #define RESAMPLE_PXF "R8G8B8A8"
 
 // The algorithm requires the pixel format to be 32 bits wide;
@@ -1347,9 +1347,9 @@ static __forceinline int _ResampleExpandY_C(ni::tU8 *dstpix, const ni::tU8 *srcp
   return 0;
 }
 
-//---------------------------------------------------------------------
-// ResampleSmooth
-//---------------------------------------------------------------------
+//----------------------------------------------------------------------------
+// Section: ResampleSmooth
+//----------------------------------------------------------------------------
 static __forceinline int _ResampleSmooth(
   ni::tU8 *dstpix, const ni::tU8 *srcpix, int dstwidth,
   int srcwidth, int dstheight, int srcheight, long dstpitch, long srcpitch)

@@ -217,8 +217,6 @@ sRecti cImagePacker::_DoInsert(const sRecti& aRect, iBitmap2D *apSrc, tBool abFi
   return sRecti::Null();
 }
 
-//-----------------------------------------------------------------------
-
 tBool cImagePacker::MinimumFit(sRecti aSrc,sRecti aDest)
 {
   if ((aDest.GetWidth()-aSrc.GetWidth())    < mlMinHole &&
@@ -227,8 +225,6 @@ tBool cImagePacker::MinimumFit(sRecti aSrc,sRecti aDest)
 
   return false;
 }
-
-//-----------------------------------------------------------------------
 
 tBool cImagePacker::GetIsFull() const
 {

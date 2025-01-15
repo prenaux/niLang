@@ -130,9 +130,7 @@ class ccList : public ccMinList
 };
 
 
-//-------------------------------------------------------------------
 // Hash values are maintained for faster searches
-//-------------------------------------------------------------------
 unsigned long CalcHash(const char *String);
 
 class ccHashNodePtr;

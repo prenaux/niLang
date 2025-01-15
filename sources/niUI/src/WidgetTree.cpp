@@ -18,11 +18,11 @@ class cWidgetTreeNode;
 
 #define niFlagEq(n,p,x) (niFlagIs(n,x) == niFlagIs(p,x))
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Tree Node
+// Section: Tree Node
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 const tF32 _kfTabOffset = 16.0f;
 const tF32 _kfTextHeightMargin = 4.0f;
 const tF32 _kfTextLeftMargin = 2.0f;
@@ -843,11 +843,11 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   niEndClass(cWidgetTreeNode);
 };
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
-//  Tree
+// Section: Tree
 //
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // const tU32 _knTimerProcessLeftClickUp = eWidgetSystemTimer_Last+1;
 // const tF32 _kfTimerTimeProcessLeftClickUp = 0.5f;
 const tF32 _kfLeftMargin = 2;

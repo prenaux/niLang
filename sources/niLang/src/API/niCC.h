@@ -166,6 +166,7 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niLocal auto
 // "compile time constant (k)" let
 #define niLetK static constexpr auto
+#define niVar auto
 
 #define niFn(TYPE) [[nodiscard]] TYPE __stdcall
 #define niFnS(TYPE) [[nodiscard]] static TYPE __stdcall
@@ -740,6 +741,18 @@ static_assert(std::is_same<
 #define niCheckNNSilent(V, EXPR, RET)         \
   niCheckNNIfNull(V, EXPR) {                  \
     return RET;                               \
+  }
+
+#define niLetNN(V, EXPR, RET)                   \
+  niLet V = niCheckNNIfNull(V, EXPR) {          \
+    niError("niCheckNN '" #EXPR "' failed.");   \
+    return RET;                                 \
+  }
+
+#define niVarNN(V, EXPR, RET)                   \
+  niVar V = niCheckNNIfNull(V, EXPR) {          \
+    niError("niCheckNN '" #EXPR "' failed.");   \
+    return RET;                                 \
   }
 
 //##################################################################

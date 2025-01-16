@@ -13,11 +13,11 @@
 
 using namespace ni;
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  sFutureImmediate
+// Section: sFutureImmediate
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct sFutureImmediate : public ImplRC<iFuture> {
   Var mValue;
   sFutureImmediate(const Var& aValue) : mValue(aValue) {}
@@ -28,11 +28,11 @@ struct sFutureImmediate : public ImplRC<iFuture> {
   Var __stdcall GetValue() const { return mValue; }
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  sFutureValue
+// Section: sFutureValue
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture> {
   Var mValue;
   SyncCounter mCanceled;
@@ -108,11 +108,11 @@ struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture
   }
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  sExecutorImmediate
+// Section: sExecutorImmediate
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct sExecutorImmediate : public ImplRC<iExecutor> {
   tBool __stdcall Execute(iRunnable* aRunnable) {
     niAssert(niIsOK(aRunnable));
@@ -134,11 +134,11 @@ struct sExecutorImmediate : public ImplRC<iExecutor> {
   }
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  RunnableQueue
+// Section: RunnableQueue
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct RunnableQueue : public ImplRC<iRunnableQueue> {
   __sync_mutex();
   const tU32 _maxItems;
@@ -267,11 +267,11 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
 #endif
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  MessageDesc
+// Section: MessageDesc
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct sMessageDescImpl : public ImplRC<iMessageDesc>
 {
   sMessageDesc _desc;
@@ -290,7 +290,7 @@ struct sMessageDescImpl : public ImplRC<iMessageDesc>
   virtual tU32 __stdcall GetID() const {
     return _desc.mnMsg;
   }
-  virtual const Var& __stdcall GetA() const {
+   virtual const Var& __stdcall GetA() const {
     return _desc.mvarA;
   }
   virtual const Var& __stdcall GetB() const {
@@ -298,11 +298,11 @@ struct sMessageDescImpl : public ImplRC<iMessageDesc>
   }
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  MessageQueue
+// Section: MessageQueue
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 // Called by MessageQueue::Invalidate
 static void _Unregister_MessageQueue(struct MessageQueue* mq);
 
@@ -442,11 +442,11 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
   }
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  sFutureRunnable
+// Section: sFutureRunnable
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct ExecutorCooperative;
 
 struct sFutureCooperativeRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
@@ -498,11 +498,11 @@ struct sFutureCooperativeRunnable : public ImplRC<iFuture,eImplFlags_Default,iRu
   tBool __stdcall Wait(tU32 anMs);
 };
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  ExecutorCooperative
+// Section: ExecutorCooperative
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 struct ExecutorCooperative : public ImplRC<iExecutor> {
   ni::SyncCounter    _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
   Ptr<RunnableQueue> _queue;
@@ -634,11 +634,11 @@ tBool __stdcall sFutureCooperativeRunnable::Wait(tU32 anMs) {
   return mbIsDone;
 }
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  sFutureRunnable
+// Section: sFutureRunnable
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 #if !defined niNoThreads
 
 struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
@@ -684,11 +684,11 @@ struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
 
 #endif
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  ExecutorThreadPool
+// Section: ExecutorThreadPool
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 #if !defined niNoThreads
 
 static tpfnConcurrentThreadCallback _pfnConcurrentThreadStart = NULL;
@@ -958,11 +958,11 @@ iExecutor* New_ExecutorThreadPool(tI32 anNumThreads) {
 }
 #endif
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  ThreadRun
+// Section: ThreadRun
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 #if !defined niNoThreads
 
 struct sThreadRun : public ImplRC<iFuture> {
@@ -1046,11 +1046,11 @@ struct sThreadRun : public ImplRC<iFuture> {
 };
 #endif
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  Concurrent factory implementation
+// Section: Concurrent factory implementation
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 
 struct sConcurrent : public ImplRC<iConcurrent> {
   const tU64 _mainThreadID;
@@ -1281,11 +1281,11 @@ niExportFunc(iUnknown*) New_niLang_Concurrent(const Var& avarA, const Var& avarB
 
 }
 
-//===========================================================================
+//----------------------------------------------------------------------------
 //
-//  MessageHandler DispatchWrapper
+// Section: MessageHandler DispatchWrapper
 //
-//===========================================================================
+//----------------------------------------------------------------------------
 
 static const ni::sParameterDef iMessageHandler_HandleMessage_Parameters[3] = {
 	{ "anMsg", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" },

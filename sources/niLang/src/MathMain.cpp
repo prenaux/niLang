@@ -27,7 +27,8 @@ class cMath : public ImplLocal<iMath>
 #define MATH_IMPL_FORWARDS 1
 #define MATH_IMPL_BEGIN
 #define MATH_IMPL_END
-#define MATH_IMPL_FN(T) T __stdcall
+#define MATH_IMPL_FN(T) [[nodiscard]] T __stdcall
+#define MATH_IMPL_FN_VOID void __stdcall
 #define MATH_IMPL_CONST_OVR const niImpl
   #include "API/niLang/Math/MathImpl.h"
   //// iMath ////////////////////////////////////

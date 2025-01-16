@@ -1,5 +1,4 @@
 #if defined MATH_IMPL_INCLUDE_DEPS || defined MATH_IMPL_INCLUDE_ONLY
-#include <niCC.h>
 #include "MathFPU.h"
 #include "MathVec2.h"
 #include "MathVec3.h"
@@ -37,6 +36,10 @@
 
 #ifndef MATH_IMPL_FN
 #error "MATH_IMPL_FN should be defined before including MathImpl.h"
+#endif
+
+#ifndef MATH_IMPL_FN_VOID
+#error "MATH_IMPL_FN_VOID should be defined before including MathImpl.h"
 #endif
 
 #ifndef MATH_IMPL_CONST_OVR
@@ -224,7 +227,7 @@ MATH_IMPL_FN(tF64) BlendIntoAccumulator(tF64 accumulator, tF64 newValue, tF64 sm
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) RandSeed(tU32 ulSeed) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID RandSeed(tU32 ulSeed) MATH_IMPL_CONST_OVR
 {
   ni::RandSeed(ulSeed);
 }
@@ -738,13 +741,13 @@ MATH_IMPL_FN(sVec2f) Vec2TransformNormal(const sVec2f &aVec, const sMatrixf &aMa
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) Vec2TransformCoordArray(tVec2fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID Vec2TransformCoordArray(tVec2fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
 {
   MATH_IMPL_TRANSFORM(Vec2f,apVecs,VecTransformCoord);
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) Vec2TransformNormalArray(tVec2fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID Vec2TransformNormalArray(tVec2fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
 {
   MATH_IMPL_TRANSFORM(Vec2f,apVecs,VecTransformNormal);
 }
@@ -912,13 +915,13 @@ MATH_IMPL_FN(sVec3f) Vec3TransformNormal(const sVec3f &aVec, const sMatrixf &aMa
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) Vec3TransformCoordArray(tVec3fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID Vec3TransformCoordArray(tVec3fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
 {
   MATH_IMPL_TRANSFORM(Vec3f,apVecs,VecTransformCoord);
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) Vec3TransformNormalArray(tVec3fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID Vec3TransformNormalArray(tVec3fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
 {
   MATH_IMPL_TRANSFORM(Vec3f,apVecs,VecTransformNormal);
 }
@@ -1099,7 +1102,7 @@ MATH_IMPL_FN(sVec4f) Vec4Transform(const sVec4f &aVec, const sMatrixf &aMatrix) 
 }
 
 ///////////////////////////////////////////////
-MATH_IMPL_FN(void) Vec4TransformArray(tVec4fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
+MATH_IMPL_FN_VOID Vec4TransformArray(tVec4fCVec *apVecs, const sMatrixf &aMatrix) MATH_IMPL_CONST_OVR
 {
   MATH_IMPL_TRANSFORM(Vec4f,apVecs,VecTransform);
 }

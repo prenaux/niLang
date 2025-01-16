@@ -20,6 +20,9 @@ struct iRunnable : public iUnknown {
   virtual Var __stdcall Run() = 0;
 };
 
+//! Runnable smart pointer vector.
+typedef tInterfaceCVec<iRunnable> tRunnablePtrCVec;
+
 //! Callback interface.
 //! \remark A callback is similar to a runnable excepted that it accepts up to
 //!         two parameters. If it used as a runnable both parameters are set
@@ -29,6 +32,9 @@ struct iCallback : public iRunnable {
 
   virtual Var __stdcall RunCallback(const Var& avarA, const Var& avarB) = 0;
 };
+
+//! Callback smart pointer vector.
+typedef tInterfaceCVec<iCallback> tCallbackPtrCVec;
 
 //! Runnable queue interface.
 struct iRunnableQueue : public iUnknown {

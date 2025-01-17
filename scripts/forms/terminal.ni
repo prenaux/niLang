@@ -17,7 +17,10 @@ mColors <- {
 
 function OnSinkAttached(w,a,b) {
   mListBox = w.FindWidget("ID_Log");
-  mListBox.max_num_items = 0xFFFF
+  // TODO: The performance of the listbox dont scale well with the number of
+  // items we should profile & fix that. There's likely a foreach (items)
+  // somewhere in there that shouldn't be necessary...
+  mListBox.max_num_items = 500; //0xFFFF
 
   local lastLogs = ::GatherLastLogs(200);
   addMessage(::eLogFlags.Info, "... added last logs: " + lastLogs.GetSize())

@@ -7009,7 +7009,7 @@ static const ni::sParameterDef iExpressionContext_GetEnumDef_Parameters[1] = {
 }; 
 static const ni::sMethodDef iExpressionContext_GetEnumDef = {
   "GetEnumDef",
-  ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sEnumDef*",
+  0|ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sEnumDef*",
   1, iExpressionContext_GetEnumDef_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iExpressionContext_GetEnumDef)
@@ -7024,7 +7024,7 @@ static const ni::sParameterDef iExpressionContext_SetDefaultEnumDef_Parameters[1
 }; 
 static const ni::sMethodDef iExpressionContext_SetDefaultEnumDef = {
   "SetDefaultEnumDef",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "void",
+  0|ni::eType_Null, NULL, "void",
   1, iExpressionContext_SetDefaultEnumDef_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iExpressionContext_SetDefaultEnumDef)
@@ -7036,7 +7036,7 @@ static const ni::sMethodDef iExpressionContext_SetDefaultEnumDef = {
 // Method: GetDefaultEnumDef
 static const ni::sMethodDef iExpressionContext_GetDefaultEnumDef = {
   "GetDefaultEnumDef",
-  ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sEnumDef*",
+  0|ni::eTypeFlags_Constant|ni::eType_Null|ni::eTypeFlags_Pointer, NULL, "const sEnumDef*",
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iExpressionContext_GetDefaultEnumDef)

@@ -471,6 +471,8 @@ static void __stdcall _ImportInitialize() {
   if (niIsOK(_ptrImportFileSystems))
     return;
 
+  static tBool _traceImportInitialize = ni::GetProperty("niScript.TraceImportInitialize").Bool(eFalse);
+
   _ptrImportFileSystems = tInterfaceCVec<iFileSystem>::Create();
   // This is to avoid Release() when the app exists, the object will 'leak'
   // but the OS takes care of reclaiming the memory. Without this the app
@@ -497,7 +499,9 @@ static void __stdcall _ImportInitialize() {
           Ptr<iFileSystem> scriptsDirFS = ni::GetLang()->CreateFileSystemDir(
               scriptsDirPath.Chars(),ni::eFileSystemRightsFlags_ReadOnly);
           _ptrImportFileSystems->Add(scriptsDirFS.ptr());
-          niInfo(niFmt("ScriptVM _ImportInitialize: Registered scripts dir '%s'.",scriptsDirPath));
+          if (_traceImportInitialize) {
+            niInfo(niFmt("ScriptVM _ImportInitialize: Registered scripts dir '%s'.",scriptsDirPath));
+          }
         }
         else {
           niWarning(niFmt("ScriptVM _ImportInitialize: scripts dir doesnt exist '%s'.",scriptsDirPath));
@@ -507,7 +511,7 @@ static void __stdcall _ImportInitialize() {
         niWarning("ScriptVM _ImportInitialize: No root file system to add as default import file system.");
       }
     }
-    else {
+    else if (_traceImportInitialize) {
       niInfo(niFmt("ScriptVM _ImportInitialize: Skipped initialization in player mode."));
     }
   }

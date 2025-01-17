@@ -5841,10 +5841,7 @@
 				const="yes"
 				java_name="getEnumDef"
 				name="GetEnumDef"
-				num_parameters="1"
-				property="get"
-				property_name2="enumDef"
-				property_name="enum_def">
+				num_parameters="1">
 				<comments desc="Get the specified enumeration. "/>
 				<return type="const sEnumDef *" typec="const sEnumDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
 				<parameter
@@ -5854,13 +5851,7 @@
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method
-				java_name="setDefaultEnumDef"
-				name="SetDefaultEnumDef"
-				num_parameters="1"
-				property="set"
-				property_name2="defaultEnumDef"
-				property_name="default_enum_def">
+			<method java_name="setDefaultEnumDef" name="SetDefaultEnumDef" num_parameters="1">
 				<comments desc="Set the default enumeration definition. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
@@ -5874,10 +5865,7 @@
 				const="yes"
 				java_name="getDefaultEnumDef"
 				name="GetDefaultEnumDef"
-				num_parameters="0"
-				property="get"
-				property_name2="defaultEnumDef"
-				property_name="default_enum_def">
+				num_parameters="0">
 				<comments desc="Get the default enumeration definition. "/>
 				<return type="const sEnumDef *" typec="const sEnumDef*" typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
 			</method>

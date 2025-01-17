@@ -207,13 +207,10 @@ struct iExpressionContext : public iUnknown
   //! Add an enumeration definition.
   virtual tBool __stdcall AddEnumDef(const sEnumDef* apEnumDef) = 0;
   //! Get the specified enumeration.
-  //! {Property}
   virtual const sEnumDef* __stdcall GetEnumDef(const achar* aaszName) const = 0;
   //! Set the default enumeration definition.
-  //! {Property}
   virtual void __stdcall SetDefaultEnumDef(const sEnumDef* apEnumDef) = 0;
   //! Get the default enumeration definition.
-  //! {Property}
   virtual const sEnumDef* __stdcall GetDefaultEnumDef() const = 0;
   //! Get an enumeration value string.
   //! \remark Uses the registered enumerations.

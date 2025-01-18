@@ -196,7 +196,7 @@ TEST_FIXTURE(FCoro,OnStack) {
 }
 
 TEST_FIXTURE(FCoro,Generator) {
-  niLetMut g = ni::CreateGenerator(hello_coro());
+  niVar g = ni::CreateGenerator(hello_coro());
   niDebugFmt(("... Generator created"));
   while (!g->IsDone()) {
     niDebugFmt((".. Run(): '%s'", g->Run()));
@@ -205,7 +205,7 @@ TEST_FIXTURE(FCoro,Generator) {
 }
 
 TEST_FIXTURE(FCoro,GeneratorLambda) {
-  niLetMut g = ni::CreateGenerator([]() -> ni::CoVarGenerator {
+  niVar g = ni::CreateGenerator([]() -> ni::CoVarGenerator {
     niDefer {
       niDebugFmt(("... coro_lambda deferred"));
     };

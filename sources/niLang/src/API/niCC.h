@@ -162,11 +162,8 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niInline __forceinline
 
 #define niLet const auto
-#define niLetMut auto
-#define niLocal auto
-// "compile time constant (k)" let
-#define niLetK static constexpr auto
 #define niVar auto
+#define niLetK static constexpr auto // "compile time constant (k)" let
 
 #define niFn(TYPE) [[nodiscard]] TYPE __stdcall
 #define niFnS(TYPE) [[nodiscard]] static TYPE __stdcall

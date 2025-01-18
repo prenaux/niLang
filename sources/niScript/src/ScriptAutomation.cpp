@@ -473,7 +473,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
     SQObjectPtr objTable = _null_;
     if (aIID == niGetInterfaceUUID(iUnknown)) {
       objTable = SQTable::Create();
-      niLetMut table = as_nn(_table(objTable));
+      niVar table = as_nn(_table(objTable));
       table->SetDebugName(ni::GetLang()->GetInterfaceName(niGetInterfaceUUID(iUnknown)));
       niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc, ain_nn_mut<iHString> ahspRetType) {
         return RegisterSQRegFunction(table, SQRegFunction { .name = aName, .f = aFunc, .rettype = ahspRetType });
@@ -491,7 +491,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
     else {
       const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(aIID);
       objTable = SQTable::Create();
-      niLetMut table = _table(objTable);
+      niVar table = _table(objTable);
       table->SetDebugName(ni::GetLang()->GetInterfaceName(aIID));
       if (!pInterfaceDef)  {
         niWarning(niFmt(_A("Can't get definition of interface '%s' {%s}."),

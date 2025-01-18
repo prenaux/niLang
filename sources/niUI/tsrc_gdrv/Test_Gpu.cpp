@@ -408,7 +408,7 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
 
     {
-      niLetMut wnd = _window;
+      niVar wnd = _window;
       // Make a square window so that when we're rotating the square it doesnt
       // look too stretched. We're drawing it directly in clip space which is
       // [-1;1] from the left to the right of our application window.
@@ -518,7 +518,7 @@ struct sFGpu_TexAlphaUBuffer : public sFGpu_TexAlphaBase {
     return eTrue;
   }
   virtual void UpdateUniformBuffer(ain<nn<iGpuCommandEncoder>> aCmdEncoder) niOverride {
-    niLetMut uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
+    niVar uBuffer = (TestGpuFuncs_TestUniforms*)_uBuffer->Lock(
       0, _uBuffer->GetSize(), eLock_Discard);
     niCheck(uBuffer != nullptr,;);
     {
@@ -553,8 +553,8 @@ struct sFGpu_ClearRects : public sFGpu_Base {
   }
 
   niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niImpl {
-    niLetMut ctx = _graphicsContext;
-    niLetMut gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),eFalse);
+    niVar ctx = _graphicsContext;
+    niVar gpuCtx = niCheckNN(gpuCtx,QueryInterface<iGraphicsContextGpu>(ctx),eFalse);
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuCtx->GetCommandEncoder());
 
     niLet w = ctx->GetWidth();
@@ -1053,10 +1053,10 @@ struct sFGpu_TextureCube : public sFGpu_Base {
 
     // Setup view matrix that only rotates (no translation for skybox)
     TestGpuFuncs_TestUniforms u;
-    niLocal rotY = sMatrixf::Identity();
-    niLocal rotX = sMatrixf::Identity();
-    niLocal view = sMatrixf::Identity();
-    niLocal persp = sMatrixf::Identity();
+    niVar rotY = sMatrixf::Identity();
+    niVar rotX = sMatrixf::Identity();
+    niVar view = sMatrixf::Identity();
+    niVar persp = sMatrixf::Identity();
     MatrixRotationY(rotY,(tF32)_animationTime * 0.3f);
     MatrixRotationX(rotX,ni::Sin((tF32)_animationTime) * niPi4f);
     MatrixLookAtLH(view,sVec3f::Zero(),sVec3f::ZAxis(),sVec3f::YAxis());

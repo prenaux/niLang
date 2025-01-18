@@ -3702,7 +3702,7 @@ struct sVulkanRayInstancesDesc : public ImplRC<
     tRayInstanceFlags aFlags) niImpl
   {
     niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
-    niLocal& instance = _vkInstances[anInstanceIndex];
+    niVar& instance = _vkInstances[anInstanceIndex];
     instance.transform = {
       aTransform._11, aTransform._21, aTransform._31, aTransform._41,
       aTransform._12, aTransform._22, aTransform._32, aTransform._42,
@@ -3720,7 +3720,7 @@ struct sVulkanRayInstancesDesc : public ImplRC<
     ain<sMatrixf> aTransform) niImpl
   {
     niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
-    niLocal& instance = _vkInstances[anInstanceIndex];
+    niVar& instance = _vkInstances[anInstanceIndex];
     instance.transform = {
       aTransform._11, aTransform._21, aTransform._31, aTransform._41,
       aTransform._12, aTransform._22, aTransform._32, aTransform._42,
@@ -3868,7 +3868,7 @@ struct sVulkanRayFunctionTableBuffer {
 
     void* data;
     vmaMapMemory(aDriver->_allocator, _sbtAllocation, &data);
-    niLocal dst = static_cast<tPtr>(data);
+    niVar dst = static_cast<tPtr>(data);
     for (tU32 i = 0; i < anNumHandles; i++) {
       memcpy(dst + i * handleSizeAligned,
              aHandleStorage + i * handleSize,
@@ -4311,7 +4311,7 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
     VK_IMAGE_LAYOUT_GENERAL),eFalse);
 
   // Bind acceleration structure
-  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
+  niVar& descPool = _GetCurrentFrame()->_descriptorPool;
   niCheck(descPool.PushDescriptorAccelerationStructure(
     _driver->_device,
     _cmdBuffer,
@@ -4432,7 +4432,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet device = _driver->_device;
-  niLetMut& descPool = _GetCurrentFrame()->_descriptorPool;
+  niVar& descPool = _GetCurrentFrame()->_descriptorPool;
 
   {
     sVulkanBuffer* buffer = _cache._lastBuffer.raw_ptr();
@@ -4643,7 +4643,7 @@ struct sVulkanContextBase :
       funcVertex, funcPixel);
     niCheck(rpId != 0, eFalse);
 
-    niLetMut& cmdStateCache = _cmdEncoder->_cache;
+    niVar& cmdStateCache = _cmdEncoder->_cache;
     if (rpId != cmdStateCache._lastFixedPipeline) {
       iGpuPipeline* pipeline = _driver->_fixedPipelines->GetRenderPipeline(
         _driver, rpId,

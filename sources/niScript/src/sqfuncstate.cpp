@@ -251,7 +251,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
     switch (i.op) {
       case _OP_RETURN: {
         if (_parent && i._arg0 != 0xFF && prevInst.op == _OP_CALL && _returnexp < size-1) {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_TAILCALL;
           pi._ext = i._ext;
           LOG_OP_TRANSFORM();
@@ -264,7 +264,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
             prevInst._arg0 == i._arg2 &&
             !IsLocal(prevInst._arg0))
         {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_GETK;
           pi._arg2 = (unsigned char)i._arg1;
           pi._arg0 = i._arg0;
@@ -281,7 +281,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
             prevInst._arg0 == i._arg1 &&
             !IsLocal(prevInst._arg0))
         {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_PREPCALLK;
           pi._arg0 = i._arg0;
           pi._arg2 = i._arg2;
@@ -299,7 +299,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
             prevInst._arg0 == i._arg1 &&
             !IsLocal(prevInst._arg0))
         {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_APPENDARRAY;
           pi._arg0 = i._arg0;
           pi._arg1 = pi._arg1;
@@ -318,7 +318,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
              prevInst.op == _OP_BWOR || prevInst.op == _OP_BWXOR || prevInst.op == _OP_BWAND) &&
             (prevInst._arg0 == i._arg1))
         {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi._arg0 = i._arg0;
           pi._ext |= i._ext; // we're keeping the previous opcode, we must preserve its _ext aswell
           _optimization = false;
@@ -327,7 +327,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
         }
 
         if (prevInst.op == _OP_MOVE) {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_DMOVE;
           pi._arg2 = i._arg0;
           pi._arg3 = (unsigned char)i._arg1;
@@ -342,7 +342,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
       case _OP_EQ: case _OP_NE: case _OP_G: case _OP_GE: case _OP_L: case _OP_LE:
       case _OP_SPACESHIP: {
         if (prevInst.op == _OP_LOAD && prevInst._arg0 == i._arg1 && !IsLocal(prevInst._arg0)) {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = i.op;
           pi._arg0 = i._arg0;
           pi._arg2 = i._arg2;
@@ -359,7 +359,7 @@ void SQFuncState::AddInstruction(const SQInstruction& i)
         if ((prevInst.op == _OP_LOADNULL && prevInst._arg0 == i._arg0-1) ||
             (prevInst.op == _OP_LOADNULLS && prevInst._arg0+prevInst._arg1 == i._arg0))
         {
-          niLetMut& pi = _instructions[piIdx];
+          niVar& pi = _instructions[piIdx];
           pi.op = _OP_LOADNULLS;
           pi._arg1 = (prevInst.op == _OP_LOADNULL ? 2 : prevInst._arg1+1);
           pi._ext = i._ext;

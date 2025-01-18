@@ -1314,7 +1314,7 @@ struct SQCompiler {
   void SetTypeofArg2(int aStartCondInst, int aArg2) {
     const int numInsts = (int)_fs->_instructions.size();
     for (int i = aStartCondInst; i < numInsts; ++i) {
-      niLetMut& inst = _fs->_instructions[i];
+      niVar& inst = _fs->_instructions[i];
       if (inst.op == _OP_TYPEOF) {
         inst._arg2 = aArg2;
       }

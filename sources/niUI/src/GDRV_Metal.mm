@@ -1983,7 +1983,7 @@ struct cMetalContextBase :
         return eTrue;
     }
 
-    niLetMut& cmdStateCache = mCmdEncoder->_cache;
+    niVar& cmdStateCache = mCmdEncoder->_cache;
     niLet cmdEncoder = mCmdEncoder->_cmdEncoder;
 
     iVertexArray* va = apDrawOp->GetVertexArray();

@@ -1040,7 +1040,7 @@ struct sLinter {
     ain<LintClosure> aClosure,
     const SQObjectPtr& aThis)
   {
-    niLetMut pathCursor = niHStr(ahspPath);
+    niVar pathCursor = niHStr(ahspPath);
     // Start at this module
     SQObjectPtr curr = aClosure._thisModule;
     // or start at root?
@@ -1166,7 +1166,7 @@ struct sLinter {
     SQObjectPtr resolvedType = _null_;
     // Interface types
     if (_IsInterfaceTypeNameByConvention(typeStrChars)) {
-      niLetMut foundInterfaceDef = this->FindInterfaceDef(hspType);
+      niVar foundInterfaceDef = this->FindInterfaceDef(hspType);
       if (!foundInterfaceDef.has_value()) {
         resolvedType = niNew sScriptTypeErrorCode(
           this->_ss, _HC(error_code_cant_find_interface_def),
@@ -1870,7 +1870,7 @@ struct sLinter {
   }
 
   static bool LintTypeObjCanAssign(const SQObjectPtr& aFromTypeObj, const SQObjectPtr& aToTypeObj) {
-    niLetMut fromType = _GetResolvedObjType(aFromTypeObj);
+    niVar fromType = _GetResolvedObjType(aFromTypeObj);
     niLet toType = _GetResolvedObjType(aToTypeObj);
     if (_LintTypeCanAssign(fromType, toType)) {
       if (fromType == eScriptType_InterfaceDef && toType == eScriptType_InterfaceDef) {
@@ -1911,7 +1911,7 @@ struct sLinter {
     niPanicAssert(sq_istable(roottable));
 
     // Script code import
-    niLetMut fp = niCheckNNSilent(
+    niVar fp = niCheckNNSilent(
       fp,
       ImportFileOpen(aModuleName),
       niNew sScriptTypeErrorCode(
@@ -3158,7 +3158,7 @@ void SQFunctionProto::LintTrace(
           }
         }
         else {
-          niLetMut optionalParams = 0;
+          niVar optionalParams = 0;
           niLoop(i, paramssize) {
             niLet paramName = _stringval(func._parameters[i]._name);
             if (paramName[0] == '_') {
@@ -3414,7 +3414,7 @@ void SQFunctionProto::LintTrace(
       _LINTERNAL_ERROR(niFmt("lint_typeof_restore: Outside of a if/switch scope, '%s'.",aReason));
     }
     else {
-      niLetMut& typeofs = scopes.top()._typeofs;
+      niVar& typeofs = scopes.top()._typeofs;
       niLoop(i,typeofs.size()) {
         niLet typeof = typeofs[i];
         niLet typeofObj = typeof->_obj;

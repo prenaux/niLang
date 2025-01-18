@@ -752,6 +752,39 @@
 				<comments desc=""/>
 			</value>
 		</enum>
+		<struct name="sVertexP">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPA">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPAT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPN">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNA">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNAT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNT2">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNAT2">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPB4INT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPB4INAT1">
+			<comments desc=""/>
+		</struct>
 		<enum name="eVertexStreamIndex">
 			<comments desc=""/>
 			<value name="eVertexStreamIndex_Position" value="0 ">
@@ -9761,6 +9794,9 @@
 				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
+		<struct name="sGpuBlendModeDesc">
+			<comments desc="GPU Blend mode description "/>
+		</struct>
 		<interface name="iGpuBlendMode" uuid1="979BDA0B-8876-294F-83DE-AD0BDC159833" uuid2="0x979bda0b,0x8876,0x294f,0x83,0xde,0xad,0x0b,0xdc,0x15,0x98,0x33">
 			<comments desc="GPU Blend mode interface "/>
 			<parents>
@@ -9931,6 +9967,9 @@
 				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
 			</method>
 		</interface>
+		<struct name="sGpuPipelineDesc">
+			<comments desc="Gpu pipeline storage description. "/>
+		</struct>
 		<interface name="iGpuPipelineDesc" uuid1="BD30DCB2-8309-B84A-A59F-F4A1086DC905" uuid2="0xbd30dcb2,0x8309,0xb84a,0xa5,0x9f,0xf4,0xa1,0x08,0x6d,0xc9,0x05">
 			<comments desc="Gpu pipeline desc interface. "/>
 			<parents>
@@ -15567,6 +15606,9 @@
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niUI/src/_idl/IGraphicsStates.h.idl.xml">
+		<struct name="sSamplerStatesDesc">
+			<comments desc="Sampler states description structure. "/>
+		</struct>
 		<interface
 			name="iSamplerStates"
 			serialize="1"
@@ -15777,6 +15819,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sDepthStencilStatesDesc">
+			<comments desc="Depth stencil states description structure. "/>
+		</struct>
 		<interface
 			name="iDepthStencilStates"
 			serialize="1"
@@ -16248,6 +16293,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sRasterizerStatesDesc">
+			<comments desc="Rasterizer states description structure. "/>
+		</struct>
 		<interface
 			name="iRasterizerStates"
 			serialize="1"
@@ -16400,6 +16448,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sFixedStatesDesc">
+			<comments desc="Graphics fixed pipeline states description structure. "/>
+		</struct>
 		<interface
 			name="iFixedStates"
 			serialize="1"
@@ -17929,6 +17980,12 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
+		<struct name="sMaterialChannel">
+			<comments desc="Material channel "/>
+		</struct>
+		<struct name="sMaterialDesc">
+			<comments desc="Material description structure. "/>
+		</struct>
 		<interface name="iMaterial" uuid1="3D0F9569-2D97-4EFD-ABE2-853FBFAFBC88" uuid2="0x3d0f9569,0x2d97,0x4efd,0xab,0xe2,0x85,0x3f,0xbf,0xaf,0xbc,0x88">
 			<comments desc="Material interface. "/>
 			<parents>
@@ -21097,6 +21154,9 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
+		<struct name="sShaderConstantsDesc">
+			<comments desc="Shader constants buffer description structure. "/>
+		</struct>
 		<interface name="iShaderConstants" uuid1="4450DC53-E4B1-4BC3-8CD3-EC396B36C2D7" uuid2="0x4450dc53,0xe4b1,0x4bc3,0x8c,0xd3,0xec,0x39,0x6b,0x36,0xc2,0xd7">
 			<comments desc="Shader constants buffer. ">
 				<remark text="All sizes and offsets are expressed in register (sVec4f/l) unit. "/>
@@ -21532,6 +21592,9 @@
 					typei="ni::eType_U32"/>
 			</method>
 		</interface>
+		<struct name="sShaderDesc">
+			<comments desc="Shader description structure. "/>
+		</struct>
 		<interface name="iShader" uuid1="D33A0C21-AD8F-4A61-A132-C0CD95F9864D" uuid2="0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d">
 			<comments desc="Shader interface. "/>
 			<parents>
@@ -22431,6 +22494,9 @@
 				<comments desc="The transform uses a scaling factor. "/>
 			</value>
 		</enum>
+		<struct name="sTransformDesc">
+			<comments desc="Transform description structure. "/>
+		</struct>
 		<interface name="iTransform" uuid1="2B890822-2BFF-426D-A646-51691C1649B4" uuid2="0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4">
 			<comments desc="iTransform is the interface for positionning and orienting. "/>
 			<parents>

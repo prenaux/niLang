@@ -282,6 +282,9 @@
 				</comments>
 			</value>
 		</enum>
+		<struct name="sSocketBuffer">
+			<comments desc="Socket buffer structure "/>
+		</struct>
 		<interface name="iSocket" uuid1="9262952D-F667-47A9-8147-25C59FBB367D" uuid2="0x9262952d,0xf667,0x47a9,0x81,0x47,0x25,0xc5,0x9f,0xbb,0x36,0x7d">
 			<comments desc="Network socket interface. "/>
 			<parents>

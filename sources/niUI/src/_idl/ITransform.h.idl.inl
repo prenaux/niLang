@@ -14,6 +14,9 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sTransformDesc **/
+/** sTransformDesc -> NO AUTOMATION **/
+
 /** interface : iTransform **/
 IDLC_BEGIN_INTF(ni,iTransform)
 /** ni -> iTransform::GetDescStructPtr/0 **/

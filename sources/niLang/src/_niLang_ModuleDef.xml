@@ -550,6 +550,9 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
+		<struct name="sMessageDesc">
+			<comments desc=""/>
+		</struct>
 		<interface name="iMessageDesc" uuid1="EBA551C4-82A5-4269-AC3E-A175F5A04FFD" uuid2="0xeba551c4,0x82a5,0x4269,0xac,0x3e,0xa1,0x75,0xf5,0xa0,0x4f,0xfd">
 			<comments desc="Message description interface. "/>
 			<parents>
@@ -7812,6 +7815,12 @@
 					typei="ni::eType_Size"/>
 			</method>
 		</interface>
+		<struct name="sReadBufferFromFile">
+			<comments desc=""/>
+		</struct>
+		<struct name="sWriteBufferToFile">
+			<comments desc=""/>
+		</struct>
 	</namespace>
 	<namespace name="ni" source="niLang/src/_idl/IFileSystem.h.idl.xml">
 		<enum name="eFileSystemRightsFlags">
@@ -11193,6 +11202,12 @@
 					typec="tInt"/>
 			</method>
 		</interface>
+		<struct name="sPropertyString">
+			<comments desc=""/>
+		</struct>
+		<struct name="sPropertyBool">
+			<comments desc=""/>
+		</struct>
 	</namespace>
 	<namespace name="ni" source="niLang/src/_idl/IMath.h.idl.xml">
 		<enum name="eClassify">
@@ -21298,6 +21313,9 @@
 				</comments>
 			</value>
 		</enum>
+		<struct name="sSocketBuffer">
+			<comments desc="Socket buffer structure "/>
+		</struct>
 		<interface name="iSocket" uuid1="9262952D-F667-47A9-8147-25C59FBB367D" uuid2="0x9262952d,0xf667,0x47a9,0x81,0x47,0x25,0xc5,0x9f,0xbb,0x36,0x7d">
 			<comments desc="Network socket interface. "/>
 			<parents>
@@ -23593,6 +23611,24 @@
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niLang/src/_idl/ObjModel.h.idl.xml">
+		<struct name="sConstantDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sEnumValueDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sEnumDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sParameterDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sMethodDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sInterfaceDef">
+			<comments desc=""/>
+		</struct>
 		<interface name="iObjectTypeDef" uuid1="C26D991E-E51F-4D84-866A-E77FAFD1B8E2" uuid2="0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2">
 			<comments desc="Object type definition interface. "/>
 			<parents>

@@ -2225,5 +2225,11 @@
 					typec="tInt"/>
 			</method>
 		</interface>
+		<struct name="sPropertyString">
+			<comments desc=""/>
+		</struct>
+		<struct name="sPropertyBool">
+			<comments desc=""/>
+		</struct>
 	</namespace>
 </niIDL>

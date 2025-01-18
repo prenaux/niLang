@@ -139,6 +139,9 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
+		<struct name="sMessageDesc">
+			<comments desc=""/>
+		</struct>
 		<interface name="iMessageDesc" uuid1="EBA551C4-82A5-4269-AC3E-A175F5A04FFD" uuid2="0xeba551c4,0x82a5,0x4269,0xac,0x3e,0xa1,0x75,0xf5,0xa0,0x4f,0xfd">
 			<comments desc="Message description interface. "/>
 			<parents>

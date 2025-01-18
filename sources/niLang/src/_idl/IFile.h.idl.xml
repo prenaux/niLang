@@ -1869,5 +1869,11 @@
 					typei="ni::eType_Size"/>
 			</method>
 		</interface>
+		<struct name="sReadBufferFromFile">
+			<comments desc=""/>
+		</struct>
+		<struct name="sWriteBufferToFile">
+			<comments desc=""/>
+		</struct>
 	</namespace>
 </niIDL>

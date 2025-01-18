@@ -14,6 +14,24 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sConstantDef **/
+/** sConstantDef -> NO AUTOMATION **/
+
+/** struct : sEnumValueDef **/
+/** sEnumValueDef -> NO AUTOMATION **/
+
+/** struct : sEnumDef **/
+/** sEnumDef -> NO AUTOMATION **/
+
+/** struct : sParameterDef **/
+/** sParameterDef -> NO AUTOMATION **/
+
+/** struct : sMethodDef **/
+/** sMethodDef -> NO AUTOMATION **/
+
+/** struct : sInterfaceDef **/
+/** sInterfaceDef -> NO AUTOMATION **/
+
 /** interface : iObjectTypeDef **/
 IDLC_BEGIN_INTF(ni,iObjectTypeDef)
 /** ni -> iObjectTypeDef::GetName/0 **/

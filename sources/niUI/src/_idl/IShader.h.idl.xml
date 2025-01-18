@@ -54,6 +54,9 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
+		<struct name="sShaderConstantsDesc">
+			<comments desc="Shader constants buffer description structure. "/>
+		</struct>
 		<interface name="iShaderConstants" uuid1="4450DC53-E4B1-4BC3-8CD3-EC396B36C2D7" uuid2="0x4450dc53,0xe4b1,0x4bc3,0x8c,0xd3,0xec,0x39,0x6b,0x36,0xc2,0xd7">
 			<comments desc="Shader constants buffer. ">
 				<remark text="All sizes and offsets are expressed in register (sVec4f/l) unit. "/>
@@ -489,6 +492,9 @@
 					typei="ni::eType_U32"/>
 			</method>
 		</interface>
+		<struct name="sShaderDesc">
+			<comments desc="Shader description structure. "/>
+		</struct>
 		<interface name="iShader" uuid1="D33A0C21-AD8F-4A61-A132-C0CD95F9864D" uuid2="0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d">
 			<comments desc="Shader interface. "/>
 			<parents>

@@ -14,6 +14,9 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sShaderConstantsDesc **/
+/** sShaderConstantsDesc -> NO AUTOMATION **/
+
 /** interface : iShaderConstants **/
 IDLC_BEGIN_INTF(ni,iShaderConstants)
 /** ni -> iShaderConstants::Clone/0 **/
@@ -239,6 +242,9 @@ IDLC_METH_BEGIN(ni,iShaderConstants,GetConstantMetadata,1)
 IDLC_METH_END(ni,iShaderConstants,GetConstantMetadata,1)
 
 IDLC_END_INTF(ni,iShaderConstants)
+
+/** struct : sShaderDesc **/
+/** sShaderDesc -> NO AUTOMATION **/
 
 /** interface : iShader **/
 IDLC_BEGIN_INTF(ni,iShader)

@@ -1354,5 +1354,11 @@ IDLC_METH_END(ni,iLang,CreateSocket,2)
 /** ni -> iLang::CloseSocketHandle/1 -> NO AUTOMATION **/
 IDLC_END_INTF(ni,iLang)
 
+/** struct : sPropertyString **/
+/** sPropertyString -> NO AUTOMATION **/
+
+/** struct : sPropertyBool **/
+/** sPropertyBool -> NO AUTOMATION **/
+
 IDLC_END_NAMESPACE()
 // EOF //

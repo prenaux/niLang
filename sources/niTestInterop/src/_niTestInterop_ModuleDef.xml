@@ -55,6 +55,9 @@
 				<comments desc="Combines all flags. "/>
 			</value>
 		</enum>
+		<struct automation="yes" name="sTestInterop">
+			<comments desc="Test interop struct. "/>
+		</struct>
 		<interface name="iTestInteropObject" uuid1="488DA121-4087-4D75-957A-74A8C6070703" uuid2="0x488da121,0x4087,0x4d75,0x95,0x7a,0x74,0xa8,0xc6,0x07,0x07,0x03">
 			<comments desc="Test interop object "/>
 			<parents>

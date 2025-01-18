@@ -14,5 +14,38 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sVertexP **/
+/** sVertexP -> NO AUTOMATION **/
+
+/** struct : sVertexPA **/
+/** sVertexPA -> NO AUTOMATION **/
+
+/** struct : sVertexPAT1 **/
+/** sVertexPAT1 -> NO AUTOMATION **/
+
+/** struct : sVertexPN **/
+/** sVertexPN -> NO AUTOMATION **/
+
+/** struct : sVertexPNA **/
+/** sVertexPNA -> NO AUTOMATION **/
+
+/** struct : sVertexPNT1 **/
+/** sVertexPNT1 -> NO AUTOMATION **/
+
+/** struct : sVertexPNAT1 **/
+/** sVertexPNAT1 -> NO AUTOMATION **/
+
+/** struct : sVertexPNT2 **/
+/** sVertexPNT2 -> NO AUTOMATION **/
+
+/** struct : sVertexPNAT2 **/
+/** sVertexPNAT2 -> NO AUTOMATION **/
+
+/** struct : sVertexPB4INT1 **/
+/** sVertexPB4INT1 -> NO AUTOMATION **/
+
+/** struct : sVertexPB4INAT1 **/
+/** sVertexPB4INAT1 -> NO AUTOMATION **/
+
 IDLC_END_NAMESPACE()
 // EOF //

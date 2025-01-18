@@ -1,5 +1,23 @@
 <niIDL>
 	<namespace name="ni">
+		<struct name="sConstantDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sEnumValueDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sEnumDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sParameterDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sMethodDef">
+			<comments desc=""/>
+		</struct>
+		<struct name="sInterfaceDef">
+			<comments desc=""/>
+		</struct>
 		<interface name="iObjectTypeDef" uuid1="C26D991E-E51F-4D84-866A-E77FAFD1B8E2" uuid2="0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2">
 			<comments desc="Object type definition interface. "/>
 			<parents>

@@ -14,6 +14,9 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sSamplerStatesDesc **/
+/** sSamplerStatesDesc -> NO AUTOMATION **/
+
 /** interface : iSamplerStates **/
 IDLC_BEGIN_INTF(ni,iSamplerStates)
 /** ni -> iSamplerStates::Copy/1 **/
@@ -138,6 +141,9 @@ IDLC_METH_BEGIN(ni,iSamplerStates,SerializeDataTable,2)
 IDLC_METH_END(ni,iSamplerStates,SerializeDataTable,2)
 
 IDLC_END_INTF(ni,iSamplerStates)
+
+/** struct : sDepthStencilStatesDesc **/
+/** sDepthStencilStatesDesc -> NO AUTOMATION **/
 
 /** interface : iDepthStencilStates **/
 IDLC_BEGIN_INTF(ni,iDepthStencilStates)
@@ -408,6 +414,9 @@ IDLC_METH_END(ni,iDepthStencilStates,SerializeDataTable,2)
 
 IDLC_END_INTF(ni,iDepthStencilStates)
 
+/** struct : sRasterizerStatesDesc **/
+/** sRasterizerStatesDesc -> NO AUTOMATION **/
+
 /** interface : iRasterizerStates **/
 IDLC_BEGIN_INTF(ni,iRasterizerStates)
 /** ni -> iRasterizerStates::Copy/1 **/
@@ -500,6 +509,9 @@ IDLC_METH_BEGIN(ni,iRasterizerStates,SerializeDataTable,2)
 IDLC_METH_END(ni,iRasterizerStates,SerializeDataTable,2)
 
 IDLC_END_INTF(ni,iRasterizerStates)
+
+/** struct : sFixedStatesDesc **/
+/** sFixedStatesDesc -> NO AUTOMATION **/
 
 /** interface : iFixedStates **/
 IDLC_BEGIN_INTF(ni,iFixedStates)

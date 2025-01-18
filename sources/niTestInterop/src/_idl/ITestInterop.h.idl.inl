@@ -14,6 +14,10 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sTestInterop **/
+IDLC_BEGIN_STRUCT(ni,sTestInterop)
+IDLC_END_STRUCT(ni,sTestInterop)
+
 /** interface : iTestInteropObject **/
 IDLC_BEGIN_INTF(ni,iTestInteropObject)
 /** ni -> iTestInteropObject::SetNumItems/1 **/

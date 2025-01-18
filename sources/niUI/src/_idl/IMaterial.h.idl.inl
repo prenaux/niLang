@@ -14,6 +14,12 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sMaterialChannel **/
+/** sMaterialChannel -> NO AUTOMATION **/
+
+/** struct : sMaterialDesc **/
+/** sMaterialDesc -> NO AUTOMATION **/
+
 /** interface : iMaterial **/
 IDLC_BEGIN_INTF(ni,iMaterial)
 /** ni -> iMaterial::GetGraphics/0 **/

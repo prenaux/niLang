@@ -1,5 +1,8 @@
 <niIDL>
 	<namespace name="ni">
+		<struct name="sSamplerStatesDesc">
+			<comments desc="Sampler states description structure. "/>
+		</struct>
 		<interface
 			name="iSamplerStates"
 			serialize="1"
@@ -210,6 +213,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sDepthStencilStatesDesc">
+			<comments desc="Depth stencil states description structure. "/>
+		</struct>
 		<interface
 			name="iDepthStencilStates"
 			serialize="1"
@@ -681,6 +687,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sRasterizerStatesDesc">
+			<comments desc="Rasterizer states description structure. "/>
+		</struct>
 		<interface
 			name="iRasterizerStates"
 			serialize="1"
@@ -833,6 +842,9 @@
 					typei="ni::eType_Enum"/>
 			</method>
 		</interface>
+		<struct name="sFixedStatesDesc">
+			<comments desc="Graphics fixed pipeline states description structure. "/>
+		</struct>
 		<interface
 			name="iFixedStates"
 			serialize="1"

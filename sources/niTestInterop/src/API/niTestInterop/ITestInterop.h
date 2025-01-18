@@ -43,6 +43,7 @@ enum eTestInteropFlags
 typedef tU32 tTestInteropFlags;
 
 //! Test interop struct.
+//! {Automation}
 struct sTestInterop
 {
   tU32 mnInt;

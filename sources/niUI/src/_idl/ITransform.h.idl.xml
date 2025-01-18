@@ -36,6 +36,9 @@
 				<comments desc="The transform uses a scaling factor. "/>
 			</value>
 		</enum>
+		<struct name="sTransformDesc">
+			<comments desc="Transform description structure. "/>
+		</struct>
 		<interface name="iTransform" uuid1="2B890822-2BFF-426D-A646-51691C1649B4" uuid2="0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4">
 			<comments desc="iTransform is the interface for positionning and orienting. "/>
 			<parents>

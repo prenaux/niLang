@@ -14,5 +14,11 @@
 IDLC_BEGIN_NAMESPACE()
 
 /** NAMESPACE : ni **/
+/** struct : sScriptCppModuleCache **/
+/** sScriptCppModuleCache -> NO AUTOMATION **/
+
+/** struct : sScriptCppStats **/
+/** sScriptCppStats -> NO AUTOMATION **/
+
 IDLC_END_NAMESPACE()
 // EOF //

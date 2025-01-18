@@ -119,6 +119,9 @@ IDLC_METH_END(ni,iMessageHandler,HandleMessage,3)
 
 IDLC_END_INTF(ni,iMessageHandler)
 
+/** struct : sMessageDesc **/
+/** sMessageDesc -> NO AUTOMATION **/
+
 /** interface : iMessageDesc **/
 IDLC_BEGIN_INTF(ni,iMessageDesc)
 /** ni -> iMessageDesc::GetHandler/0 **/

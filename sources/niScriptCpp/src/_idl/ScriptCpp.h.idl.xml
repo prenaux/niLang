@@ -1,3 +1,10 @@
 <niIDL>
-	<namespace name="ni"/>
+	<namespace name="ni">
+		<struct name="sScriptCppModuleCache">
+			<comments desc=""/>
+		</struct>
+		<struct name="sScriptCppStats">
+			<comments desc=""/>
+		</struct>
+	</namespace>
 </niIDL>

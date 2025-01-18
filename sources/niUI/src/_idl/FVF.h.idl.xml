@@ -127,6 +127,39 @@
 				<comments desc=""/>
 			</value>
 		</enum>
+		<struct name="sVertexP">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPA">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPAT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPN">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNA">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNAT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNT2">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPNAT2">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPB4INT1">
+			<comments desc=""/>
+		</struct>
+		<struct name="sVertexPB4INAT1">
+			<comments desc=""/>
+		</struct>
 		<enum name="eVertexStreamIndex">
 			<comments desc=""/>
 			<value name="eVertexStreamIndex_Position" value="0 ">

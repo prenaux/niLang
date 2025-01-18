@@ -1295,5 +1295,11 @@ IDLC_METH_END(ni,iBufferDecoder,DecodeBuffer,4)
 
 IDLC_END_INTF(ni,iBufferDecoder)
 
+/** struct : sReadBufferFromFile **/
+/** sReadBufferFromFile -> NO AUTOMATION **/
+
+/** struct : sWriteBufferToFile **/
+/** sWriteBufferToFile -> NO AUTOMATION **/
+
 IDLC_END_NAMESPACE()
 // EOF //

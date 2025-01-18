@@ -103,6 +103,9 @@ IDLC_METH_END(ni,iRemoteAddressIPv4,GetHostName,0)
 
 IDLC_END_INTF(ni,iRemoteAddressIPv4)
 
+/** struct : sSocketBuffer **/
+/** sSocketBuffer -> NO AUTOMATION **/
+
 /** interface : iSocket **/
 IDLC_BEGIN_INTF(ni,iSocket)
 /** ni -> iSocket::GetHandle/0 **/

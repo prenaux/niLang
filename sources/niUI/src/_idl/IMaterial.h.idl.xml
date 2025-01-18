@@ -141,6 +141,12 @@
 				<comments desc="\internal "/>
 			</value>
 		</enum>
+		<struct name="sMaterialChannel">
+			<comments desc="Material channel "/>
+		</struct>
+		<struct name="sMaterialDesc">
+			<comments desc="Material description structure. "/>
+		</struct>
 		<interface name="iMaterial" uuid1="3D0F9569-2D97-4EFD-ABE2-853FBFAFBC88" uuid2="0x3d0f9569,0x2d97,0x4efd,0xab,0xe2,0x85,0x3f,0xbf,0xaf,0xbc,0x88">
 			<comments desc="Material interface. "/>
 			<parents>

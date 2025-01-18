@@ -98,6 +98,9 @@ IDLC_METH_END(ni,iGpuFunction,GetDataTable,0)
 
 IDLC_END_INTF(ni,iGpuFunction)
 
+/** struct : sGpuBlendModeDesc **/
+/** sGpuBlendModeDesc -> NO AUTOMATION **/
+
 /** interface : iGpuBlendMode **/
 IDLC_BEGIN_INTF(ni,iGpuBlendMode)
 /** ni -> iGpuBlendMode::Copy/1 **/
@@ -204,6 +207,9 @@ IDLC_METH_BEGIN(ni,iGpuBlendMode,GetDescStructPtr,0)
 IDLC_METH_END(ni,iGpuBlendMode,GetDescStructPtr,0)
 
 IDLC_END_INTF(ni,iGpuBlendMode)
+
+/** struct : sGpuPipelineDesc **/
+/** sGpuPipelineDesc -> NO AUTOMATION **/
 
 /** interface : iGpuPipelineDesc **/
 IDLC_BEGIN_INTF(ni,iGpuPipelineDesc)

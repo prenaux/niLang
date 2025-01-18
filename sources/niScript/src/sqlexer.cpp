@@ -139,7 +139,7 @@ SQLexer::~SQLexer()
   _keywords->_CollectableRelease();
 }
 
-SQLexer::SQLexer(ain_nn_mut<iHString> ahspSourceName, ain<tChars> aaszSourceCode)
+SQLexer::SQLexer(ain<nn<iHString>> ahspSourceName, ain<tChars> aaszSourceCode)
     : _sourceName(ahspSourceName)
     , _sourceIt(niStringIsOK(aaszSourceCode) ? aaszSourceCode : AZEROSTR)
 {

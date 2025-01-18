@@ -58,7 +58,7 @@ typedef Ptr<iHString> tHStringPtr;
 //! Get the string in a HString. Returns an empty string if the HString is null.
 inline const achar* HStringGetStringEmpty(const iHString* ahsp) { return ahsp?ahsp->GetChars():_A(""); }
 //! Get the string in a HString. Returns an null string if the HString is null.
-inline const achar* HStringGetStringNull(const iHString* ahsp)  { return ahsp?ahsp->GetChars():NULL; }
+inline const achar* HStringGetStringNull(const iHString* ahsp) { return ahsp?ahsp->GetChars():NULL; }
 //! Check if an HString is valid and not empty.
 inline tBool HStringIsNotEmpty(const iHString* apStr) { return apStr && apStr->GetLength()>0; }
 //! Check if an HString is valid and empty.

@@ -138,7 +138,7 @@ struct SQObjectPtr : public SQObject
     _VarDataSetType(_var,OT_STRING);
     _VarDataSetAddRef(_var,(ni::iUnknown*)ahspString.raw_ptr());
   }
-  __forceinline SQObjectPtr(ain_nn_mut<iHString> pString)
+  __forceinline SQObjectPtr(ain<nn<iHString>> pString)
   {
     _VarDataSetType(_var,OT_STRING);
     _VarDataSetAddRef(_var,pString);

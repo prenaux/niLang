@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#define niCCScriptMode
 #include "../src/API/niLang.h"
 #include "../../niUnitTest/src/API/niUnitTest.h"
 

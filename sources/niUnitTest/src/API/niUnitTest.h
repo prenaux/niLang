@@ -3,8 +3,6 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-// XXX: Here because of legacy code
-#define niCCAllowUnsafePtr
 #include <niCC.h>
 
 /** \addtogroup niUnitTest

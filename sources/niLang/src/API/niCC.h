@@ -4,13 +4,10 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#if !defined niCCAllowUnsafePtr
-  // Strongly encouraged as it enforce safe usage of ni::Ptr & ni::QPtr.
-  #define niNoUnsafePtr
+#if defined niCCStrict
+// Strongly encouraged as it enforce safe usage of ni::Ptr & ni::QPtr.
+#  define niNoUnsafePtr
 #endif
-
-// Makes the default types and member functions mutable by default.
-// #define niCCScriptMode
 
 #include <niLang/Types.h>
 #include <niLang/STL/string.h>
@@ -31,15 +28,9 @@ EA_DISABLE_GCC_WARNING(-Wignored-attributes);
 EA_DISABLE_GCC_WARNING(-Wattributes);
 EA_DISABLE_CLANG_WARNING(-Wignored-attributes);
 
-#if !defined niCCNoStrictWarnings
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wc++11-narrowing);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wconversion-null);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-fallthrough);
-#if !defined niCCNoStrictImplicitConversionWarnings
-EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wfloat-conversion);
-EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-float-conversion);
-EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-int-conversion);
-#endif
 #if !defined niCCNoStrictOverrideWarnings
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Winconsistent-missing-override);
 #endif
@@ -54,8 +45,12 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wsometimes-uninitialized);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wuninitialized);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wreturn-type);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-but-set-variable);
-// clang-format on
+#if defined niCCStrict
+EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wfloat-conversion);
+EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-float-conversion);
+EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-int-conversion);
 #endif
+// clang-format on
 
 #ifdef __cplusplus
   #if __cplusplus == 199711L
@@ -218,48 +213,16 @@ T* Decay(const T* ptr) {
   }
 
 template <typename T>
-using nn_mut = astl::non_null<T*>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using nn = nn_mut<T>;
-#else
-template <typename T>
-using nn = astl::non_null<const T*>;
-#endif
+using nn = astl::non_null<T*>;
 
 template <typename T>
-using unn_mut = astl::unique_non_null<T>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using unn = unn_mut<T>;
-#else
-template <typename T>
-using unn = astl::unique_non_null<const T>;
-#endif
+using unn = astl::unique_non_null<T>;
 
 template <typename T>
-using snn_mut = astl::shared_non_null<T>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using snn = snn_mut<T>;
-#else
-template <typename T>
-using snn = astl::shared_non_null<const T>;
-#endif
+using snn = astl::shared_non_null<T>;
 
 template <typename T>
-using NN_mut = ni::Nonnull<T>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using NN = NN_mut<T>;
-#else
-template <typename T>
-using NN = ni::Nonnull<const T>;
-#endif
+using NN = ni::Nonnull<T>;
 
 template <typename T>
 struct opt_raw_ptr : public astl::optional<T> {
@@ -275,25 +238,10 @@ using eastl::nullopt;
 using nullopt_t = eastl::nullopt_t;
 
 template <typename T>
-using opt_mut = opt_raw_ptr<T*>;
-#ifdef niCCScriptMode
-template <typename T>
 using opt = opt_raw_ptr<T*>;
-#else
-template <typename T>
-using opt = opt_raw_ptr<const T*>;
-#endif
 
 template <typename T>
-using Opt_mut = ni::QPtr<T>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using Opt = Opt_mut<T>;
-#else
-template <typename T>
-using Opt = ni::QPtr<const T>;
-#endif
+using Opt = ni::QPtr<T>;
 
 // primary template handles types that have no nested ::type member:
 template <typename T, typename = void>
@@ -361,31 +309,16 @@ static_assert(astl::is_same_v<ain<sVec4f>, const sVec4f&>);
 static_assert(astl::is_same_v<ain<sMatrixf>, const sMatrixf&>);
 static_assert(astl::is_same_v<ain<QPtr<iUnknown>>, const QPtr<iUnknown>&>);
 static_assert(sizeof(ain<nn<iUnknown>>) == sizeof(void*));
-static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(void*));
 
 static_assert(astl::is_same_v<amove<sVec2f>, sVec2f&&>);
 static_assert(astl::is_same_v<aout<sVec2f>, sVec2f&>);
 
 static_assert(sizeof(ain<nn<iUnknown>>) == sizeof(const nn<iUnknown>));
-static_assert(sizeof(ain<nn_mut<iUnknown>>) == sizeof(const nn_mut<iUnknown>));
 
 // Not allowed as input types
 // static_assert(astl::is_same_v<ain<NN<iUnknown>>, const nn<iUnknown>>);
-// static_assert(astl::is_same_v<ain<NN_mut<iUnknown>>, const nn_mut<iUnknown>>);
 // static_assert(astl::is_same_v<ain<Ptr<iUnknown>>, const Ptr<iUnknown>&>);
 // static_assert(astl::is_same_v<ain<WeakPtr<iUnknown>>, const WeakPtr<iUnknown>&>);
-
-// ain_nn_mut doesnt need ain since we know its a trivial pointer sized constructor
-template <typename T>
-using ain_nn_mut = ain<astl::non_null<T*>>;
-
-#ifdef niCCScriptMode
-template <typename T>
-using ain_nn = ain_nn_mut<T>;
-#else
-template <typename T>
-using ain_nn = ain<astl::non_null<const T*>>;
-#endif
 
 namespace details {
 template <class T, class U>
@@ -421,12 +354,12 @@ constexpr T narrow_cast(U u) noexcept(false) {
 }
 
 template <typename T, typename... Args>
-unn_mut<T> make_unn(Args&&... args) {
+unn<T> make_unn(Args&&... args) {
   return astl::as_non_null(astl::make_unique<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
-snn_mut<T> make_snn(Args&&... args) {
+snn<T> make_snn(Args&&... args) {
   return astl::as_non_null(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
 
@@ -446,13 +379,11 @@ inline tStr Fmt(ain<tChars> aFmt, Args&&... args) {
   return s;
 }
 
-// XXX: iHString is in fact always immutable, but a most legacy APIs just use
-// iHString* instead of const iHString* so we use NN_mut.
 template <typename... Args>
-inline NN_mut<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
+inline NN<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
   tStr s;
   s.Format(aFmt, astl::forward<Args>(args)...);
-  return ni::GetLang()->CreateHString(s.c_str()).non_null();
+  return ni::GetLang()->CreateHString(s).non_null();
 }
 
 //##################################################################
@@ -582,8 +513,7 @@ inline astl::non_null<TTo*> as_nn(
 }
 
 template <typename T>
-inline nn_mut<T> as_nn(
-  const opt_mut<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline nn<T> as_nn(const opt<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
     ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
   }
@@ -592,8 +522,8 @@ inline nn_mut<T> as_nn(
 }
 
 template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
-inline nn_mut<TTo> as_nn(
-  const opt_mut<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline nn<TTo> as_nn(
+  const opt<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   if (!p.has_value()) {
     ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR, ASTL_SOURCE_LOCATION_ARG_CALL);
   }
@@ -660,12 +590,12 @@ inline TTo* as_maybe_null(const QPtr<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_
 }
 
 template <typename T>
-inline T* as_maybe_null(const opt_mut<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline T* as_maybe_null(const opt<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   return p.has_value() ? p.value() : nullptr;
 }
 
 template <typename TTo, typename TFrom> requires ConvertiblePointer<TTo,TFrom>
-inline TTo* as_maybe_null(const opt_mut<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+inline TTo* as_maybe_null(const opt<TFrom>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
   return p.has_value() ? static_cast<TTo*>(p.value()) : nullptr;
 }
 
@@ -858,14 +788,13 @@ inline constexpr ni::tSize operator"" _sz(unsigned long long aVal) { return stat
 //##################################################################
 namespace ni {
 
-// iHString's usage in the APIs is always mutable.
-typedef NN_mut<iHString> tHStringNN;
+typedef NN<iHString> tHStringNN;
 
 #undef niDefConstHString_
-#define niDefConstHString_(VARNAME,STRING)                        \
-  __forceinline ni::nn_mut<ni::iHString> GetHString_##VARNAME() { \
-    static ni::NN_mut<ni::iHString> _hstr_##VARNAME = _H(STRING); \
-    return _hstr_##VARNAME;                                       \
+#define niDefConstHString_(VARNAME,STRING)                    \
+  __forceinline ni::nn<ni::iHString> GetHString_##VARNAME() { \
+    static ni::NN<ni::iHString> _hstr_##VARNAME = _H(STRING); \
+    return _hstr_##VARNAME;                                   \
   }
 
 #undef _H

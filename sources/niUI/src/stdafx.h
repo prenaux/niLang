@@ -3,10 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#define niCCScriptMode
-#define niCCAllowUnsafePtr
 #define niCCNoStrictOverrideWarnings
-#define niCCNoStrictImplicitConversionWarnings
 #include <niCC.h>
 
 // #define IMDRAW

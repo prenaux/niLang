@@ -1642,7 +1642,7 @@ struct SQCompiler {
 };
 
 tBool CompileString(
-  ain_nn_mut<iHString> ahspSourceName,
+  ain<nn<iHString>> ahspSourceName,
   ain<tChars> aaszSourceCode,
   aout<sCompileErrors> aErrors,
   aout<SQObjectPtr> aOut)

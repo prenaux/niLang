@@ -14,7 +14,7 @@ enum eReadRawStringMode {
 
 struct SQLexer
 {
-  SQLexer(ain_nn_mut<iHString> ahspSourceName, ain<tChars> aaszSourceCode);
+  SQLexer(ain<nn<iHString>> ahspSourceName, ain<tChars> aaszSourceCode);
   ~SQLexer();
 
   SQObjectPtr Tok2Str(int tok);

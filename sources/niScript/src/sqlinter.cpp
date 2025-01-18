@@ -44,7 +44,7 @@ niExportFuncCPP(cString) StringRepeat(ain<tI32> aN, ain<tChars> aToRepeat) {
 struct iLintFuncCall : public iUnknown {
   niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
 
-  virtual nn_mut<iHString> __stdcall GetName() const = 0;
+  virtual nn<iHString> __stdcall GetName() const = 0;
   // return -1 for varargs
   virtual tI32 __stdcall GetArity() const = 0;
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs) = 0;
@@ -488,7 +488,7 @@ static cString _FmtKeyNotFoundMsg(ain<SQObjectPtr> aObj, ain<SQObjectPtr> aKey, 
   }
 }
 
-static void _TableSetDebugNameFromSourceName(ain_nn_mut<SQTable> aTable, const achar* aBaseName, iHString* ahspSourceName) {
+static void _TableSetDebugNameFromSourceName(ain<nn<SQTable>> aTable, const achar* aBaseName, iHString* ahspSourceName) {
   if (HStringIsNotEmpty(ahspSourceName)) {
     cPath path(niHStr(ahspSourceName));
     niLet fileName = path.GetFileNoExt();
@@ -530,9 +530,9 @@ struct sLintStackEntry {
 struct LintClosure : public ImplRC<iUnknown>
 {
   LintClosure(const SQFunctionProto *func,
-              ain_nn_mut<SQTable> rootTable,
-              ain_nn_mut<SQTable> thisModuleTable,
-              ain_nn_mut<SQTable> thisTable) {
+              ain<nn<SQTable>> rootTable,
+              ain<nn<SQTable>> thisModuleTable,
+              ain<nn<SQTable>> thisTable) {
     _func = func;
     _root = rootTable.raw_ptr();
     _thisModule = thisModuleTable.raw_ptr();
@@ -710,8 +710,8 @@ struct sLinter {
   tU32 _numLintErrors = 0;
   tU32 _numLintWarnings = 0;
 
-  astl::vector<NN_mut<SQTable>> _tables;
-  astl::vector<NN_mut<SQArray>> _arrays;
+  astl::vector<NN<SQTable>> _tables;
+  astl::vector<NN<SQArray>> _arrays;
 
 #define _REG_LINT(KIND) astl::upsert(_lintEnabled,_LKEY(KIND),          \
                                      niFlagIsNot(_LKEY(KIND),eLintFlags_IsPedantic) && \
@@ -756,11 +756,11 @@ struct sLinter {
     _typedefs = _null_;
   }
 
-  NN_mut<SQTable> CreateTable() {
+  NN<SQTable> CreateTable() {
     return _tables.emplace_back(SQTable::Create());
   }
 
-  NN_mut<SQArray> CreateArray(int nsize) {
+  NN<SQArray> CreateArray(int nsize) {
     return _arrays.emplace_back(SQArray::Create(nsize));
   }
 
@@ -960,11 +960,11 @@ struct sLinter {
     table->NewSlot(_H(name), aLintFunc);
   }
 
-  void RegisterLintFunc(SQTable* table, ain_nn_mut<iLintFuncCall> aLintFunc) {
+  void RegisterLintFunc(SQTable* table, ain<nn<iLintFuncCall>> aLintFunc) {
     table->NewSlot(aLintFunc->GetName(), aLintFunc.raw_ptr());
   }
 
-  tBool OverrideDelegateFunc(SQTable* del, ain_nn_mut<iLintFuncCall> aLintFunc) {
+  tBool OverrideDelegateFunc(SQTable* del, ain<nn<iLintFuncCall>> aLintFunc) {
     return del->Set(aLintFunc->GetName(), aLintFunc.raw_ptr());
   }
 
@@ -987,7 +987,7 @@ struct sLinter {
       niFmt("Cant find type uuid '%s' (%s).",aTypeName,aTypeUUID));
   }
 
-  astl::optional<const sInterfaceDef*> FindInterfaceDef(ain_nn_mut<iHString> aInterfaceName) const
+  astl::optional<const sInterfaceDef*> FindInterfaceDef(ain<nn<iHString>> aInterfaceName) const
   {
     niLet interfaceUUID = ni::GetLang()->GetInterfaceUUID(aInterfaceName);
     if (interfaceUUID == kuuidZero)
@@ -1467,7 +1467,7 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceGetInSingleDef(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+  bool _InterfaceGetInSingleDef(ain<nn<const sInterfaceDef>> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
     niLet intfDel = _ss.GetInterfaceDelegate(*apIDef->mUUID);
     if (intfDel == _null_) {
       dest = niNew sScriptTypeErrorCode(
@@ -1495,7 +1495,7 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceGetInParents(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+  bool _InterfaceGetInParents(ain<nn<const sInterfaceDef>> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
     niLoop(i, apIDef->mnNumBases) {
       niLet uuid = apIDef->mpBases[i];
       niPanicAssert(uuid != nullptr);
@@ -1533,7 +1533,7 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceDefGet(ain_nn<sInterfaceDef> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
+  bool _InterfaceDefGet(ain<nn<const sInterfaceDef>> apIDef, const SQObjectPtr &key, SQObjectPtr &dest, int opExt) {
     if (_stringhval(key) == _HC(QueryInterface)) {
       dest = _lintFuncCallQueryInterface;
       return true;
@@ -1894,7 +1894,7 @@ struct sLinter {
   }
 
   // TODO: Dedupe with implementation in cScriptVM::ImportFileOpen
-  Opt_mut<iFile> __stdcall ImportFileOpen(const achar* aaszFile) {
+  QPtr<iFile> __stdcall ImportFileOpen(const achar* aaszFile) {
     return ni::GetLang()->URLOpen(
       (StrFindProtocol(aaszFile) < 0)
       ? (niFmt("script://%s",aaszFile)) // use default 'script' protocol
@@ -2012,13 +2012,13 @@ static SQObjectPtr _MakeLintCallError(ain<sLinter> aLinter, const achar* aMsg) {
 }
 
 struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCallCreateInstance(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2052,13 +2052,13 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCallImport(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2086,13 +2086,13 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCallGetLangDelegate : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCallGetLangDelegate(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2120,13 +2120,13 @@ struct sLintFuncCallGetLangDelegate : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCall_lint_check_type : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCall_lint_check_type(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2168,13 +2168,13 @@ static int lint_lint_check_type(HSQUIRRELVM v)
 }
 
 struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCall_lint_as_type(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2208,7 +2208,7 @@ struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
   sLintFuncCall_root_QueryInterface()
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _HC(QueryInterface);
   }
 
@@ -2267,7 +2267,7 @@ struct sLintFuncCall_this_QueryInterface : public ImplRC<iLintFuncCall> {
   sLintFuncCall_this_QueryInterface()
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _HC(QueryInterface);
   }
 
@@ -2281,13 +2281,13 @@ struct sLintFuncCall_this_QueryInterface : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCall_table_or_array_clone(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2305,7 +2305,7 @@ struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
       // sub tables that get modified might get incorrectly linted. So for 100%
       // correctness it'd be better, however its somewhat of an edge case so
       // we'll leave it for now.
-      NN_mut<SQTable> clonedTable { _table(objThis)->Clone(nullptr) };
+      NN<SQTable> clonedTable { _table(objThis)->Clone(nullptr) };
       return clonedTable.raw_ptr();
     }
     else if (objThisType == eScriptType_Array) {
@@ -2313,7 +2313,7 @@ struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
       // sub tables that get modified might get incorrectly linted. So for 100%
       // correctness it'd be better, however its somewhat of an edge case so
       // we'll leave it for now.
-      NN_mut<SQArray> clonedArray { _array(objThis)->Clone(nullptr) };
+      NN<SQArray> clonedArray { _array(objThis)->Clone(nullptr) };
       return clonedArray.raw_ptr();
     }
     else if (objThisType == eScriptType_ResolvedType) {
@@ -2330,13 +2330,13 @@ struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCall_table_setdelegate(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -2378,13 +2378,13 @@ struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
 };
 
 struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
-  NN_mut<iHString> _name;
+  NN<iHString> _name;
 
   sLintFuncCall_table_getdelegate(iHString* aName)
       : _name(aName)
   {}
 
-  virtual nn_mut<iHString> __stdcall GetName() const {
+  virtual nn<iHString> __stdcall GetName() const {
     return _name;
   }
 
@@ -3222,7 +3222,7 @@ void SQFunctionProto::LintTrace(
       return aLinter.ResolveMethodRetType(*aMeth.pInterfaceDef, *aMeth.pMethodDef);
     };
 
-    auto call_lint_func = [&](ain_nn_mut<iLintFuncCall> aLintFunc) -> SQObjectPtr {
+    auto call_lint_func = [&](ain<nn<iLintFuncCall>> aLintFunc) -> SQObjectPtr {
       niLet arity = aLintFunc->GetArity();
       _LTRACE(("call_lint_func: %s/%d, nargs: %d, stackbase: %d",
                aLintFunc->GetName(), arity, nargs, stackbase));
@@ -3324,11 +3324,11 @@ void SQFunctionProto::LintTrace(
   };
 
   struct sLintScope {
-    astl::vector<NN<sLintTypeofInfo>> _typeofs;
+    astl::vector<NN<const sLintTypeofInfo>> _typeofs;
   };
   astl::stack<sLintScope> scopes;
 
-  auto lint_typeof_eq = [&](ain_nn_mut<sLintTypeofInfo> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
+  auto lint_typeof_eq = [&](ain<nn<sLintTypeofInfo>> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
     niLet& ss = aLinter._ss;
     niLet typeofObj = typeofInfo->_obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure, _null_);
@@ -3443,7 +3443,7 @@ void SQFunctionProto::LintTrace(
     _LTRACE(("op_typeof: typeofObj: %s (%s), target: %s",
              _ObjToString(typeofObj), sstr(IARG1), sstr(IARG0)));
 
-    NN_mut<sLintTypeofInfo> typeofInfo = MakeNN<sLintTypeofInfo>();
+    NN<sLintTypeofInfo> typeofInfo = MakeNN<sLintTypeofInfo>();
     typeofInfo->_obj = typeofObj;
     typeofInfo->_sstr = sstr(IARG1);
 
@@ -3477,7 +3477,7 @@ void SQFunctionProto::LintTrace(
     {
       niLet resolvedTypeLeft = _ObjToResolvedTyped(eqLeft);
       if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
-        NN_mut<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
+        NN<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeLeft->_opcodeInfo) };
         lint_typeof_eq(typeofInfo, eqRight, getlinecol(inst));
       }
     }
@@ -3485,7 +3485,7 @@ void SQFunctionProto::LintTrace(
     {
       niLet resolvedTypeRight = _ObjToResolvedTyped(eqRight);
       if (resolvedTypeRight.IsOK() && resolvedTypeRight->_opcode == _OP_TYPEOF) {
-        NN_mut<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
+        NN<sLintTypeofInfo> typeofInfo { ni::QueryInterface<sLintTypeofInfo>(resolvedTypeRight->_opcodeInfo) };
         lint_typeof_eq(typeofInfo, eqLeft, getlinecol(inst));
       }
     }

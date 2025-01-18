@@ -462,7 +462,7 @@ SQRegFunction SQSharedState::_error_code_default_delegate_funcz[]={
   {0,0}
 };
 
-niExportFuncCPP(int) sqa_pushErrorCode(HSQUIRRELVM v, ain_nn<iHString> ahspKind, ain<tChars> aDesc)
+niExportFuncCPP(int) sqa_pushErrorCode(HSQUIRRELVM v, ain<nn<iHString>> ahspKind, ain<tChars> aDesc)
 {
   cScriptVM* pVM = reinterpret_cast<cScriptVM*>(sq_getforeignptr(v));
   //  niAssert(niIsOK(pVM));

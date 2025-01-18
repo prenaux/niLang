@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#define niCCScriptMode
 #include <niUnitTest.h>
 #include <niUI.h>
 #include <niLang/Utils/ConcurrentImpl.h>

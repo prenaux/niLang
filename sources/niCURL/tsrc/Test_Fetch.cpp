@@ -39,14 +39,14 @@ struct MyFetchSink : public ImplRC<iFetchSink> {
 };
 
 struct sFCURLFetch_Base : public UnitTest::iTestClass {
-  NN_mut<iCURL> _curl = niDeferredInit(NN_mut<iCURL>);
-  NN_mut<iMessageQueue> _mq = niDeferredInit(NN_mut<iMessageQueue>);
+  NN<iCURL> _curl = niDeferredInit(NN<iCURL>);
+  NN<iMessageQueue> _mq = niDeferredInit(NN<iMessageQueue>);
   NN<iFetchRequest> _request = niDeferredInit(NN<iFetchRequest>);
 
   virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) = 0;
   virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) = 0;
 
-  virtual NN_mut<iCURL> CreateCURL() {
+  virtual NN<iCURL> CreateCURL() {
 #ifdef niJSCC
     // We remove any JSCC extension to have a clean test.
     // TODO: This shouldn't be a global module thing ideally.
@@ -96,7 +96,7 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
 
 struct sFCURLFetch_Get : public sFCURLFetch_Base {
   virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) niImpl {
-    NN_mut<tStringCVec> requestHeaders { tStringCVec::Create() };
+    NN<tStringCVec> requestHeaders { tStringCVec::Create() };
     requestHeaders->push_back("X-Ni-Header: HdrNarf");
 
     Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
@@ -150,7 +150,7 @@ struct sFCURLFetch_Post : public sFCURLFetch_Base {
 TEST_CLASS(sFCURLFetch_Post);
 
 struct sFCURLFetch_GetJson : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_GetJson() : sFCURLFetch_Base("FCURLFetch-GetJson", __FILE__, __LINE__) {
   }
@@ -186,12 +186,12 @@ TEST_CLASS(sFCURLFetch_GetJson);
 #ifdef niJSCC
 
 struct sFCURLFetch_JSCC_OverrideNull : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_JSCC_OverrideNull() : sFCURLFetch_Base("FCURLFetch-JSCC_OverrideNull", __FILE__, __LINE__) {
   }
 
-  virtual NN_mut<iCURL> CreateCURL() niImpl {
+  virtual NN<iCURL> CreateCURL() niImpl {
     emscripten_run_script(R"""({
       niExtensions = {
         niCURL: {
@@ -228,12 +228,12 @@ struct sFCURLFetch_JSCC_OverrideNull : public sFCURLFetch_Base {
 TEST_CLASS(sFCURLFetch_JSCC_OverrideNull);
 
 struct sFCURLFetch_JSCC_OverrideGetJsonWait1s : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_JSCC_OverrideGetJsonWait1s() : sFCURLFetch_Base("FCURLFetch-JSCC_OverrideGetJsonWait1s", __FILE__, __LINE__) {
   }
 
-  virtual NN_mut<iCURL> CreateCURL() niImpl {
+  virtual NN<iCURL> CreateCURL() niImpl {
     emscripten_run_script(R"""({
       niExtensions = {
         niCURL: {
@@ -294,12 +294,12 @@ struct sFCURLFetch_JSCC_OverrideGetJsonWait1s : public sFCURLFetch_Base {
 TEST_CLASS(sFCURLFetch_JSCC_OverrideGetJsonWait1s);
 
 struct sFCURLFetch_JSCC_OverrideGetJsonDirect : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_JSCC_OverrideGetJsonDirect() : sFCURLFetch_Base("FCURLFetch-JSCC_OverrideGetJsonDirect", __FILE__, __LINE__) {
   }
 
-  virtual NN_mut<iCURL> CreateCURL() niImpl {
+  virtual NN<iCURL> CreateCURL() niImpl {
     emscripten_run_script(R"""({
       niExtensions = {
         niCURL: {
@@ -359,12 +359,12 @@ struct sFCURLFetch_JSCC_OverrideGetJsonDirect : public sFCURLFetch_Base {
 TEST_CLASS(sFCURLFetch_JSCC_OverrideGetJsonDirect);
 
 struct sFCURLFetch_JSCC_OverrideSkip : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_JSCC_OverrideSkip() : sFCURLFetch_Base("FCURLFetch-JSCC_OverrideSkip", __FILE__, __LINE__) {
   }
 
-  virtual NN_mut<iCURL> CreateCURL() niImpl {
+  virtual NN<iCURL> CreateCURL() niImpl {
     emscripten_run_script(R"""({
       niExtensions = {
         niCURL: {
@@ -409,12 +409,12 @@ struct sFCURLFetch_JSCC_OverrideSkip : public sFCURLFetch_Base {
 TEST_CLASS(sFCURLFetch_JSCC_OverrideSkip);
 
 struct sFCURLFetch_JSCC_OverrideError : public sFCURLFetch_Base {
-  NN_mut<MyFetchSink> _sink = niDeferredInit(NN_mut<MyFetchSink>);
+  NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
 
   sFCURLFetch_JSCC_OverrideError() : sFCURLFetch_Base("FCURLFetch-JSCC_OverrideError", __FILE__, __LINE__) {
   }
 
-  virtual NN_mut<iCURL> CreateCURL() niImpl {
+  virtual NN<iCURL> CreateCURL() niImpl {
     emscripten_run_script(R"""({
       niExtensions = {
         niCURL: {

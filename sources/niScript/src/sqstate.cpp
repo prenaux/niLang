@@ -27,7 +27,7 @@ SQSharedState::SQSharedState() {
   mbLangDelegatesLocked = eFalse;
 
   niLet createDelegate = [](SQSharedState *ss,SQRegFunction *funcz) -> SQObjectPtr {
-    NN_mut<SQTable> t { SQTable::Create() };
+    NN<SQTable> t { SQTable::Create() };
     RegisterSQRegFunctions(t, funcz);
     return t.raw_ptr();
   };
@@ -160,14 +160,14 @@ Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc) {
   return nc;
 }
 
-tBool RegisterSQRegFunction(ain_nn_mut<SQTable> aTable, ain<SQRegFunction> aRegFunc) {
+tBool RegisterSQRegFunction(ain<nn<SQTable>> aTable, ain<SQRegFunction> aRegFunc) {
   Ptr<SQNativeClosure> nc = CreateSQNativeClosure(aRegFunc);
   niCheckIsOK(nc,eFalse);
   aTable->NewSlot(nc->_name, nc.ptr());
   return eTrue;
 }
 
-tBool RegisterSQRegFunctions(ain_nn_mut<SQTable> aTable, ain<SQRegFunction*> aRegFuncs) {
+tBool RegisterSQRegFunctions(ain<nn<SQTable>> aTable, ain<SQRegFunction*> aRegFuncs) {
   tBool ret = eTrue;
   int i = 0;
   while (niStringIsOK(aRegFuncs[i].name)) {

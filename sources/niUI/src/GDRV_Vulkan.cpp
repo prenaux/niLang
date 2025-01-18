@@ -1413,7 +1413,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   tBool _boundModifiedBuffer = eFalse;
 
   sVulkanBuffer(
-    ain_nn<sVulkanDriver> aDriver,
+    ain<nn<sVulkanDriver>> aDriver,
     eGpuBufferMemoryMode aMemMode,
     tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
@@ -1585,7 +1585,7 @@ struct sVulkanTexture : public ImplRC<iTexture> {
   tU32 _subTexId = 0;
 
   sVulkanTexture(
-    ain_nn<sVulkanDriver> aDriver, iHString* ahspName,
+    ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
     eBitmapType aType,
     tU32 anWidth, tU32 anHeight, tU32 anNumMipMaps,
     eGpuPixelFormat aGpuPixelFormat,
@@ -1901,7 +1901,7 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
   eGpuFunctionBindType _bindType;
 
   sVulkanFunction(
-    ain_nn<sVulkanDriver> aDriver,
+    ain<nn<sVulkanDriver>> aDriver,
     ain<eGpuFunctionType> aFuncType,
     ain<tU32> anID)
       : _driver(aDriver)
@@ -1973,7 +1973,7 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
 };
 
 static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
-  ain_nn<sVulkanDriver> aDriver,
+  ain<nn<sVulkanDriver>> aDriver,
   eGpuFunctionType aType,
   iHString* ahspPath)
 {
@@ -2442,7 +2442,7 @@ struct sVulkanRasterPipeline :
 };
 
 static Ptr<sVulkanRasterPipeline> __stdcall CreateVulkanRasterPipeline(
-  ain_nn<sVulkanDriver> aDriver,
+  ain<nn<sVulkanDriver>> aDriver,
   iHString* ahspName,
   const iGpuPipelineDesc* apDesc)
 {
@@ -3129,7 +3129,7 @@ struct sVulkanCommandEncoder : public ImplRC<
   tBool __stdcall DispatchRays(tU32 anW, tU32 anH, tU32 anD);
 };
 
-static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain_nn<sVulkanDriver> aDriver) {
+static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver) {
   NN<sVulkanCommandEncoder> cmdEncoder = MakeNN<sVulkanCommandEncoder>(aDriver,knVulkanMaxFramesInFlight);
   niCheck(cmdEncoder->_CreateCommandBuffer(), nullptr);
   return cmdEncoder;

@@ -131,7 +131,7 @@ struct sCompileErrors {
 
 // Compile a string to a funcproto object.
 tBool CompileString(
-  ain_nn_mut<iHString> ahspSourceName,
+  ain<nn<iHString>> ahspSourceName,
   ain<tChars> aaszSourceCode,
   aout<sCompileErrors> aErrors,
   aout<SQObjectPtr> aOut);

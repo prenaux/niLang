@@ -2,9 +2,7 @@
 #ifndef __STDAFX_H_F879BEBC_9D3D_44D1_9E25_1D9F87247BF4__
 #define __STDAFX_H_F879BEBC_9D3D_44D1_9E25_1D9F87247BF4__
 
-#define niCCAllowUnsafePtr
 #define niCCNoStrictOverrideWarnings
-#define niCCNoStrictImplicitConversionWarnings
 #include <niCC.h>
 
 #include "API/niScript.h"

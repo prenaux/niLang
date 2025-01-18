@@ -114,8 +114,8 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 #endif
 
 Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc);
-tBool RegisterSQRegFunction(ain_nn_mut<SQTable> aTable, ain<SQRegFunction> aRegFunc);
-tBool RegisterSQRegFunctions(ain_nn_mut<SQTable> aTable, ain<SQRegFunction*> aRegFuncs);
+tBool RegisterSQRegFunction(ain<nn<SQTable>> aTable, ain<SQRegFunction> aRegFunc);
+tBool RegisterSQRegFunctions(ain<nn<SQTable>> aTable, ain<SQRegFunction*> aRegFuncs);
 
 void *sq_vm_malloc(unsigned int size);
 void *sq_vm_realloc(void *p,unsigned int oldsize,unsigned int size);

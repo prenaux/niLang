@@ -475,7 +475,7 @@ const SQObjectPtr& SQSharedState::GetInterfaceDelegate(const tUUID& aIID)
       objTable = SQTable::Create();
       niVar table = as_nn(_table(objTable));
       table->SetDebugName(ni::GetLang()->GetInterfaceName(niGetInterfaceUUID(iUnknown)));
-      niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc, ain_nn_mut<iHString> ahspRetType) {
+      niLet regFunc = [&](ain<tChars> aName, ain<SQFUNCTION> aFunc, ain<nn<iHString>> ahspRetType) {
         return RegisterSQRegFunction(table, SQRegFunction { .name = aName, .f = aFunc, .rettype = ahspRetType });
       };
       niPanicAssert(regFunc("_tostring", iunknown_tostring, _HC(typestr_string)));

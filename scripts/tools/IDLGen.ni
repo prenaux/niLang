@@ -35,6 +35,7 @@
   mConstants = {}
   mNamespaceStack = []
   mInterfaceStack = []
+  mStructStack = []
   mMinFeatures = []
   mInMinFeaturesCount = 0
 
@@ -736,6 +737,7 @@
 
     return ret;
   }
+
   function getPropertyName2(aMeth) {
     function isUpper(c) {
       return c == c.toupper();
@@ -753,10 +755,12 @@
       ret += name.slice(i)
     return ret;
   }
+
   function getJavaName(aMeth) {
     function isUpper(c) {
       return c == c.toupper();
     }
+
     local name = aMeth
     local i = 0
     local ret = "";
@@ -768,31 +772,43 @@
     }
     if (i < name.len())
       ret += name.slice(i)
+
     switch (ret) {
       // reserved keywords
-      case "enum":
-      return "doEnum";
-      case "import":
-      return "doImport";
-      case "package":
-      return "doPackage";
-      case "final":
-      return "doFinal";
-      case "break":
-      return "doBreak";
-      case "continue":
-      return "doContinue";
+      case "enum": {
+        return "doEnum";
+      }
+      case "import": {
+        return "doImport";
+      }
+      case "package": {
+        return "doPackage";
+      }
+      case "final": {
+        return "doFinal";
+      }
+      case "break": {
+        return "doBreak";
+      }
+      case "continue": {
+        return "doContinue";
+      }
       // java.lang.Object final methods
-      case "getClass":
-      return "getClassName";
-      case "notify":
-      return "doNotify";
-      case "notifyAll":
-      return "doNotifyAll";
-      case "wait":
-      return "doWait";
-      default:
-      return ret;
+      case "getClass": {
+        return "getClassName";
+      }
+      case "notify": {
+        return "doNotify";
+      }
+      case "notifyAll": {
+        return "doNotifyAll";
+      }
+      case "wait": {
+        return "doWait";
+      }
+      default: {
+        return ret;
+      }
     }
     return ret;
   }
@@ -980,6 +996,10 @@
         else if (mLine.startswith("niInterface") || mLine.startswith("struct i") || mLine.startswith("interface")) {
           processInterface()
         }
+        // Structures
+        else if (mLine.startswith("struct s")) {
+          processStruct()
+        }
         // Constant variables
         else if (mLine.startswith("const") || mLine.startswith("niConstValue")) {
           processConstVariable()
@@ -1150,7 +1170,6 @@
     else {
       outLine("BD0:"+mLine)
       local blockCount = 1
-      // Parse the methods
       while (1) {
         mLine = readLine()
         if (mLine.find("{") != null)  {
@@ -1303,10 +1322,23 @@
 
       // Parse the methods
       local hasDeclareInterface = false
+      local blockCount = 1
       while (1) {
         mLine = readLine()
         if (processCommentsAndEmptyLines())
           continue;
+
+        if (mLine.find("{") != null)  {
+          ++blockCount
+        }
+        if (mLine.find("}") != null)  {
+          --blockCount
+        }
+        if (blockCount == 0)
+          break
+        if (blockCount < 0) {
+          parserError(startLine,"Unbalanced blocks.")
+        }
 
         if (mLine.contains("DeclareInterfaceUUID")) {
           hasDeclareInterface = true
@@ -1329,7 +1361,7 @@
           continue
         }
         else if (mLine.startswith("virtual") || mLine.startswith("inline")) {
-          processMethod(hasNoAutomation)
+          processMethod(hasNoAutomation,mInterfaceStack.top())
           resetComments()
           continue
         }
@@ -1352,6 +1384,145 @@
       }
 
       mInterfaceStack.pop();
+      dtPop()
+    }
+  }
+
+  ///////////////////////////////////////////////
+  function processStruct()
+  {
+    local startLine = mLineCount
+    local attributes = getCommentsAttributes()
+    local tokens = null
+    local hasNoAutomation = !hasAttribute(attributes,"automation")
+
+    // Parse the name and parents, all must be defined on one line
+    tokens = tokenize(mLine,["{",";",";"])
+    if (!tokens)  parserError(startLine,"Unexpected end of file while parsing struct header.")
+    if (tokens.top() == ";") {
+      // Forward declaration
+      outLine("SFWD:"+mLine)
+    }
+    else {
+      foreach (i,t in tokens) {
+        outLine("IT["+i+"]:"+t)
+      }
+      local name = tokens[1]
+
+      // Struct declaration
+      if (tokens.len() <= 2)
+        parserError(startLine,"Invalid struct declaration.")
+
+      local parents = []
+      if (tokens.len() > 3) {
+        if (tokens[2] != ":")
+          parserError(startLine,"End of line or ':' expected after struct name.")
+        local i = 3;
+        local t
+        while (1) {
+          local parentName = ""
+
+          if (tokens[i++] != "public")
+            parserError(startLine,"'public' expected after struct name.")
+          if (i >= tokens.len())
+            parserError(startLine,"Unexpected end of struct declaration.")
+
+          parentName = tokens[i++]
+          if (i >= tokens.len())
+            parserError(startLine,"Unexpected end of struct declaration.")
+
+          t = tokens[i++]
+
+          if (t == "{" || t == ";") {
+            parents.append(parentName)
+            break
+          }
+
+          if (t == ":") {
+            t = tokens[i++]
+            if (t != ":")
+              parserError(startLine,"'::' expected to list struct's parent namespace declaration.")
+            parentName += "::"+tokens[i++]
+
+            t = tokens[i++]
+            if (t == "{" || t == ";") {
+              parents.append(parentName)
+              break
+            }
+          }
+
+          parents.append(parentName)
+          if (t != ",")
+            parserError(startLine,"comma ',' expected to list struct's parents ('"+t+"') found.")
+        }
+      }
+
+      {
+        local str = name
+        foreach (p in parents) {
+          str += ":"+p
+        }
+        outLine("SDEF:"+str)
+      }
+
+      dtPushNewNameAttrs("struct",name,attributes)
+      dtPushComments(mComments);
+      if (parents.len()) {
+        dtPushNew("parents")
+        foreach (p in parents) {
+          dtPushNewName("parent",p)
+          dtPop()
+        }
+        dtPop()
+      }
+
+      mStructStack.push(name)
+      outInl("/** struct : " + name + " **/");
+
+      if (hasNoAutomation) {
+        outInl("/** " + name + " -> NO AUTOMATION **/")
+        outInl("")
+      }
+      else {
+        outInl("IDLC_BEGIN_STRUCT(" + mNamespaceStack.top() + "," + name + ")")
+      }
+
+      // Parse the methods
+      local hasDeclareStruct = false
+      local blockCount = 1
+      while (1) {
+        mLine = readLine()
+        if (processCommentsAndEmptyLines())
+          continue;
+
+        if (mLine.find("{") != null)  {
+          ++blockCount
+        }
+        if (mLine.find("}") != null)  {
+          --blockCount
+        }
+        if (blockCount == 0)
+          break
+        if (blockCount < 0) {
+          parserError(startLine,"Unbalanced blocks.")
+        }
+
+        if (mLine.startswith("virtual") || mLine.startswith("inline")) {
+          processMethod(hasNoAutomation,mStructStack.top())
+          resetComments()
+          continue
+        }
+
+        if (mSrc.partial_read) {
+          parserError(startLine,"Unexpected end of file while parsing struct.")
+        }
+      }
+
+      if (!hasNoAutomation) {
+        outInl("IDLC_END_STRUCT(" + mNamespaceStack.top() + "," + mStructStack.top() + ")\n\n")
+      }
+
+      mStructStack.pop();
       dtPop()
     }
   }
@@ -1495,7 +1666,7 @@
   }
 
   ///////////////////////////////////////////////
-  function processMethod(aHasNoAutomation)
+  function processMethod(aHasNoAutomation,aInterfaceOrStruct)
   {
     local startLine = mLineCount
     local attributes = getCommentsAttributes()
@@ -1598,10 +1769,15 @@
       parserError(startLine,"Invalid method '"+name+"' declaration, ')' expected.")
 
     local isConst = false
-    if (tokens[i] == "const")
+    if (tokens[i] == "const") {
       isConst = true;
-    else if (tokens[i] != "=" && tokens[i] != ";")
+    }
+    else if (tokens[i] == "{") {
+      skipBlock();
+    }
+    else if (tokens[i] != "=" && tokens[i] != ";") {
       parserError(startLine,"Invalid method '"+name+"' declaration, 'const', '=', or ';' expected, ["+tokens[i]+"] found.")
+    }
 
     /*    outLine("METHOD:"+name)
     outLine("    CONST:"+(isConst?"yes":"no"))
@@ -1671,7 +1847,7 @@
       }
     }
 
-    local inlFmtMethodCmt = mNamespaceStack.top() + " -> " + mInterfaceStack.top() + "::" + name + "/" + params.len();
+    local inlFmtMethodCmt = mNamespaceStack.top() + " -> " + aInterfaceOrStruct + "::" + name + "/" + params.len();
     if (hasNoAutomation) {
       outInl("/** " + inlFmtMethodCmt + " -> NO AUTOMATION **/")
     }
@@ -1693,7 +1869,7 @@
 
       local inlFmtMethodDecl =
         mNamespaceStack.top()+","+
-        mInterfaceStack.top()+","+
+        aInterfaceOrStruct+","+
         name+","+
         params.len();
 

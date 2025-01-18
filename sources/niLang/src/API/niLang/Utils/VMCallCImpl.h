@@ -295,6 +295,9 @@ __forceinline void BufWriteIntf(Var& aVar, Ptr<T>* v) {
 #define IDLC_BEGIN_INTF(NS,NAME)
 #define IDLC_END_INTF(NS,NAME)
 
+#define IDLC_BEGIN_STRUCT(NS,NAME)
+#define IDLC_END_STRUCT(NS,NAME)
+
 #ifdef niVMCall_Export
 #define IDLC_RET_TYPE niExportFunc(ni::tInt)
 #else

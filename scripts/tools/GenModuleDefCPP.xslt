@@ -884,7 +884,7 @@ static const ni::sEnumDef Enum_</xsl:text><xsl:value-of select="@name"/><xsl:tex
 				<xsl:value-of select="@name"/>
 				<xsl:if test="following-sibling::*[not(@deprecated='yes')]/@name">, </xsl:if>
 			</xsl:for-each>
-		<xsl:text>)</xsl:text><xsl:if test="@const='yes'"><xsl:text> const</xsl:text></xsl:if><xsl:text> {</xsl:text>
+		<xsl:text>)</xsl:text><xsl:if test="@const='yes'"><xsl:text> const</xsl:text></xsl:if><xsl:text> niImpl {</xsl:text>
 
 		<xsl:if test="not(return/@type='void')">
       <xsl:call-template name="newline"/>

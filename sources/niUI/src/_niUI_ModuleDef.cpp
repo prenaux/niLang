@@ -1364,7 +1364,7 @@ struct niHidden DispatchWrapper_iBitmapLoader : public ni::ImplAggregate<ni::iBi
 	}
 
   // Method (0): iBitmapLoader::LoadBitmap
-  iBitmapBase * __stdcall LoadBitmap(iGraphics * apGraphics, iFile * apFile) {
+  iBitmapBase * __stdcall LoadBitmap(iGraphics * apGraphics, iFile * apFile) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apGraphics);
@@ -1456,7 +1456,7 @@ struct niHidden DispatchWrapper_iBitmapSaver : public ni::ImplAggregate<ni::iBit
 	}
 
   // Method (0): iBitmapSaver::SaveBitmap
-  tBool __stdcall SaveBitmap(iGraphics * apGraphics, iFile * apFile, iBitmapBase * apBmp, tU32 anCompression) {
+  tBool __stdcall SaveBitmap(iGraphics * apGraphics, iFile * apFile, iBitmapBase * apBmp, tU32 anCompression) niImpl {
     ni::Var _var_;
     ni::Var _params_[4];
     _params_[0] = niIUnknownCast(apGraphics);
@@ -17400,7 +17400,7 @@ struct niHidden DispatchWrapper_iMaterialLibrarySink : public ni::ImplAggregate<
 	}
 
   // Method (0): iMaterialLibrarySink::OnMaterialLibrarySink_MaterialAdded
-  void __stdcall OnMaterialLibrarySink_MaterialAdded(iMaterialLibrary * apLib, iMaterial * apMat) {
+  void __stdcall OnMaterialLibrarySink_MaterialAdded(iMaterialLibrary * apLib, iMaterial * apMat) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apLib);
     _params_[1] = niIUnknownCast(apMat);
@@ -17408,7 +17408,7 @@ struct niHidden DispatchWrapper_iMaterialLibrarySink : public ni::ImplAggregate<
 	}
 
   // Method (1): iMaterialLibrarySink::OnMaterialLibrarySink_MaterialRemoved
-  void __stdcall OnMaterialLibrarySink_MaterialRemoved(iMaterialLibrary * apLib, iMaterial * apMat) {
+  void __stdcall OnMaterialLibrarySink_MaterialRemoved(iMaterialLibrary * apLib, iMaterial * apMat) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apLib);
     _params_[1] = niIUnknownCast(apMat);
@@ -24605,7 +24605,7 @@ struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::ImplAggre
 	}
 
   // Method (0): iVGPathTesselatedRenderer::BeginAddPath
-  void __stdcall BeginAddPath(const iVGStyle * apStyle, tBool abStroke) {
+  void __stdcall BeginAddPath(const iVGStyle * apStyle, tBool abStroke) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCCast(apStyle);
     _params_[1] = abStroke;
@@ -24613,7 +24613,7 @@ struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::ImplAggre
 	}
 
   // Method (1): iVGPathTesselatedRenderer::EndAddPath
-  void __stdcall EndAddPath(const iVGStyle * apStyle, tBool abStroke) {
+  void __stdcall EndAddPath(const iVGStyle * apStyle, tBool abStroke) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCCast(apStyle);
     _params_[1] = abStroke;
@@ -24621,7 +24621,7 @@ struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::ImplAggre
 	}
 
   // Method (2): iVGPathTesselatedRenderer::GetPathApproximationScale
-  tF32 __stdcall GetPathApproximationScale(const iVGStyle * apStyle) const {
+  tF32 __stdcall GetPathApproximationScale(const iVGStyle * apStyle) const niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = niIUnknownCCast(apStyle);
@@ -24634,7 +24634,7 @@ struct niHidden DispatchWrapper_iVGPathTesselatedRenderer : public ni::ImplAggre
 	}
 
   // Method (3): iVGPathTesselatedRenderer::AddPathPolygons
-  void __stdcall AddPathPolygons(iVGPolygonTesselator * apTess, const iVGStyle * apStyle, tBool abStroke) {
+  void __stdcall AddPathPolygons(iVGPolygonTesselator * apTess, const iVGStyle * apStyle, tBool abStroke) niImpl {
     ni::Var _params_[3];
     _params_[0] = niIUnknownCast(apTess);
     _params_[1] = niIUnknownCCast(apStyle);
@@ -28702,7 +28702,7 @@ struct niHidden DispatchWrapper_iWidgetSink : public ni::ImplAggregate<ni::iWidg
 	}
 
   // Method (0): iWidgetSink::OnWidgetSink
-  tBool __stdcall OnWidgetSink(iWidget * apWidget, tU32 nMsg, const ni::Var & varParam0, const ni::Var & varParam1) {
+  tBool __stdcall OnWidgetSink(iWidget * apWidget, tU32 nMsg, const ni::Var & varParam0, const ni::Var & varParam1) niImpl {
     ni::Var _var_;
     ni::Var _params_[4];
     _params_[0] = niIUnknownCast(apWidget);
@@ -34132,14 +34132,14 @@ struct niHidden DispatchWrapper_iWidgetPropertyBox : public ni::ImplAggregate<ni
 	}
 
   // Method (0): iWidgetPropertyBox::SetDataTable
-  void __stdcall SetDataTable(iDataTable * apDT) {
+  void __stdcall SetDataTable(iDataTable * apDT) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apDT);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iWidgetPropertyBox_SetDataTable,0,_params_,1,NULL);
 	}
 
   // Method (1): iWidgetPropertyBox::GetDataTable
-  iDataTable * __stdcall GetDataTable() const {
+  iDataTable * __stdcall GetDataTable() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iWidgetPropertyBox_GetDataTable,1,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iWidgetPropertyBox_GetDataTable.mReturnType,ni::eFalse)) {
@@ -34464,14 +34464,14 @@ struct niHidden DispatchWrapper_iSearchable : public ni::ImplAggregate<ni::iSear
 	}
 
   // Method (0): iSearchable::OnSelect
-  void __stdcall OnSelect(tU32 nIndex) {
+  void __stdcall OnSelect(tU32 nIndex) niImpl {
     ni::Var _params_[1];
     _params_[0] = nIndex;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iSearchable_OnSelect,0,_params_,1,NULL);
 	}
 
   // Method (1): iSearchable::GetCorpus
-  void __stdcall GetCorpus(iSearchContainer * apContainer) {
+  void __stdcall GetCorpus(iSearchContainer * apContainer) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apContainer);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iSearchable_GetCorpus,1,_params_,1,NULL);

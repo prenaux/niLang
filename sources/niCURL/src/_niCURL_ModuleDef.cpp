@@ -548,28 +548,28 @@ struct niHidden DispatchWrapper_iFetchSink : public ni::ImplAggregate<ni::iFetch
 	}
 
   // Method (0): iFetchSink::OnFetchSink_Success
-  void __stdcall OnFetchSink_Success(iFetchRequest * apFetch) {
+  void __stdcall OnFetchSink_Success(iFetchRequest * apFetch) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apFetch);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Success,0,_params_,1,NULL);
 	}
 
   // Method (1): iFetchSink::OnFetchSink_Error
-  void __stdcall OnFetchSink_Error(iFetchRequest * apFetch) {
+  void __stdcall OnFetchSink_Error(iFetchRequest * apFetch) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apFetch);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Error,1,_params_,1,NULL);
 	}
 
   // Method (2): iFetchSink::OnFetchSink_Progress
-  void __stdcall OnFetchSink_Progress(iFetchRequest * apFetch) {
+  void __stdcall OnFetchSink_Progress(iFetchRequest * apFetch) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apFetch);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_Progress,2,_params_,1,NULL);
 	}
 
   // Method (3): iFetchSink::OnFetchSink_ReadyStateChange
-  void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest * apFetch) {
+  void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest * apFetch) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apFetch);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iFetchSink_OnFetchSink_ReadyStateChange,3,_params_,1,NULL);

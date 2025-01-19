@@ -380,7 +380,7 @@ struct niHidden DispatchWrapper_iSoundDriverBufferDataSink : public ni::ImplAggr
 	}
 
   // Method (0): iSoundDriverBufferDataSink::OnSoundDriverBufferDataSink
-  void __stdcall OnSoundDriverBufferDataSink(void * ptr, tU32 size) {
+  void __stdcall OnSoundDriverBufferDataSink(void * ptr, tU32 size) niImpl {
     ni::Var _params_[2];
     _params_[0] = ptr;
     _params_[1] = size;

@@ -431,7 +431,7 @@ struct niHidden DispatchWrapper_iScriptObjectEnumSink : public ni::ImplAggregate
 	}
 
   // Method (0): iScriptObjectEnumSink::OnScriptObjectEnumSinkFound
-  tBool __stdcall OnScriptObjectEnumSinkFound(iScriptVM * apVM, iScriptObject * apKey, iScriptObject * apValue) {
+  tBool __stdcall OnScriptObjectEnumSinkFound(iScriptVM * apVM, iScriptObject * apKey, iScriptObject * apValue) niImpl {
     ni::Var _var_;
     ni::Var _params_[3];
     _params_[0] = niIUnknownCast(apVM);

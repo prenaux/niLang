@@ -1780,33 +1780,33 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (0): iTestInteropSink::OnTestInteropSink_Void
-  void __stdcall OnTestInteropSink_Void() {
+  void __stdcall OnTestInteropSink_Void() niImpl {
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iTestInteropSink_OnTestInteropSink_Void,0,NULL,0,NULL);
 	}
 
   // Method (1): iTestInteropSink::OnTestInteropSink_Void_I32
-  void __stdcall OnTestInteropSink_Void_I32(ni::tI32 v) {
+  void __stdcall OnTestInteropSink_Void_I32(ni::tI32 v) niImpl {
     ni::Var _params_[1];
     _params_[0] = v;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iTestInteropSink_OnTestInteropSink_Void_I32,1,_params_,1,NULL);
 	}
 
   // Method (2): iTestInteropSink::OnTestInteropSink_Void_I64
-  void __stdcall OnTestInteropSink_Void_I64(ni::tI64 v) {
+  void __stdcall OnTestInteropSink_Void_I64(ni::tI64 v) niImpl {
     ni::Var _params_[1];
     _params_[0] = v;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iTestInteropSink_OnTestInteropSink_Void_I64,2,_params_,1,NULL);
 	}
 
   // Method (3): iTestInteropSink::OnTestInteropSink_Void_Ptr
-  void __stdcall OnTestInteropSink_Void_Ptr(ni::tIntPtr v) {
+  void __stdcall OnTestInteropSink_Void_Ptr(ni::tIntPtr v) niImpl {
     ni::Var _params_[1];
     _params_[0] = v;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iTestInteropSink_OnTestInteropSink_Void_Ptr,3,_params_,1,NULL);
 	}
 
   // Method (4): iTestInteropSink::OnTestInteropSink_Var_Var
-  ni::Var __stdcall OnTestInteropSink_Var_Var(const ni::Var & v) {
+  ni::Var __stdcall OnTestInteropSink_Var_Var(const ni::Var & v) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = v;
@@ -1817,7 +1817,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (5): iTestInteropSink::OnTestInteropSink_Vec3f_String
-  sVec3f __stdcall OnTestInteropSink_Vec3f_String(const ni::achar * aaszStr) {
+  sVec3f __stdcall OnTestInteropSink_Vec3f_String(const ni::achar * aaszStr) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aaszStr;
@@ -1830,7 +1830,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (6): iTestInteropSink::OnTestInteropSink_Vec3f_CObject
-  sVec3f __stdcall OnTestInteropSink_Vec3f_CObject(const iTestInteropObject * apObj) {
+  sVec3f __stdcall OnTestInteropSink_Vec3f_CObject(const iTestInteropObject * apObj) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = niIUnknownCCast(apObj);
@@ -1843,7 +1843,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (7): iTestInteropSink::OnTestInteropSink_Vec3f_Object
-  sVec3f __stdcall OnTestInteropSink_Vec3f_Object(iTestInteropObject * apObj) {
+  sVec3f __stdcall OnTestInteropSink_Vec3f_Object(iTestInteropObject * apObj) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apObj);
@@ -1856,7 +1856,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (8): iTestInteropSink::OnTestInteropSink_Object_CObject
-  iTestInteropObject * __stdcall OnTestInteropSink_Object_CObject(const iTestInteropObject * apObj) {
+  iTestInteropObject * __stdcall OnTestInteropSink_Object_CObject(const iTestInteropObject * apObj) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = niIUnknownCCast(apObj);
@@ -1869,7 +1869,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (9): iTestInteropSink::OnTestInteropSink_Object_Object
-  iTestInteropObject * __stdcall OnTestInteropSink_Object_Object(iTestInteropObject * apObj) {
+  iTestInteropObject * __stdcall OnTestInteropSink_Object_Object(iTestInteropObject * apObj) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apObj);
@@ -1882,7 +1882,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (10): iTestInteropSink::OnTestInteropSink_Object_Object2
-  iTestInteropObject * __stdcall OnTestInteropSink_Object_Object2(ni::tU32 a, ni::tF32 b, iTestInteropObject * apObj) {
+  iTestInteropObject * __stdcall OnTestInteropSink_Object_Object2(ni::tU32 a, ni::tF32 b, iTestInteropObject * apObj) niImpl {
     ni::Var _var_;
     ni::Var _params_[3];
     _params_[0] = a;
@@ -1897,7 +1897,7 @@ struct niHidden DispatchWrapper_iTestInteropSink : public ni::ImplAggregate<ni::
 	}
 
   // Method (11): iTestInteropSink::OnTestInteropSink_Object_ObjectVec3f
-  iTestInteropObject * __stdcall OnTestInteropSink_Object_ObjectVec3f(iTestInteropObject * apObj, const ni::sVec3f & c) {
+  iTestInteropObject * __stdcall OnTestInteropSink_Object_ObjectVec3f(iTestInteropObject * apObj, const ni::sVec3f & c) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apObj);

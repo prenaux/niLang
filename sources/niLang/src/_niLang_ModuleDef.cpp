@@ -1804,7 +1804,7 @@ struct niHidden DispatchWrapper_iCommandSink : public ni::ImplAggregate<ni::iCom
 	}
 
   // Method (0): iCommandSink::GetName
-  const achar * __stdcall GetName() const {
+  const achar * __stdcall GetName() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iCommandSink_GetName,0,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iCommandSink_GetName.mReturnType,ni::eFalse)) {
@@ -1815,7 +1815,7 @@ struct niHidden DispatchWrapper_iCommandSink : public ni::ImplAggregate<ni::iCom
 	}
 
   // Method (1): iCommandSink::GetNamespace
-  const achar * __stdcall GetNamespace() const {
+  const achar * __stdcall GetNamespace() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iCommandSink_GetNamespace,1,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iCommandSink_GetNamespace.mReturnType,ni::eFalse)) {
@@ -1826,7 +1826,7 @@ struct niHidden DispatchWrapper_iCommandSink : public ni::ImplAggregate<ni::iCom
 	}
 
   // Method (2): iCommandSink::GetDescription
-  const achar * __stdcall GetDescription() const {
+  const achar * __stdcall GetDescription() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iCommandSink_GetDescription,2,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iCommandSink_GetDescription.mReturnType,ni::eFalse)) {
@@ -1837,7 +1837,7 @@ struct niHidden DispatchWrapper_iCommandSink : public ni::ImplAggregate<ni::iCom
 	}
 
   // Method (3): iCommandSink::OnRun
-  tBool __stdcall OnRun(const tStringCVec * avArgs, iConsole * apConsole) {
+  tBool __stdcall OnRun(const tStringCVec * avArgs, iConsole * apConsole) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = avArgs;
@@ -1994,7 +1994,7 @@ struct niHidden DispatchWrapper_iConsoleSink : public ni::ImplAggregate<ni::iCon
 	}
 
   // Method (0): iConsoleSink::OnConsoleSink_NamespaceVariableChanged
-  void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar * aNamespace, const achar * aaszName, const achar * aaszValue) {
+  void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar * aNamespace, const achar * aaszName, const achar * aaszValue) niImpl {
     ni::Var _params_[3];
     _params_[0] = aNamespace;
     _params_[1] = aaszName;
@@ -2003,7 +2003,7 @@ struct niHidden DispatchWrapper_iConsoleSink : public ni::ImplAggregate<ni::iCon
 	}
 
   // Method (1): iConsoleSink::OnConsoleSink_BeforeRunCommand
-  tBool __stdcall OnConsoleSink_BeforeRunCommand(const achar * aaszCmd) {
+  tBool __stdcall OnConsoleSink_BeforeRunCommand(const achar * aaszCmd) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aaszCmd;
@@ -2016,14 +2016,14 @@ struct niHidden DispatchWrapper_iConsoleSink : public ni::ImplAggregate<ni::iCon
 	}
 
   // Method (2): iConsoleSink::OnConsoleSink_AfterRunCommand
-  void __stdcall OnConsoleSink_AfterRunCommand(const achar * aaszCmd) {
+  void __stdcall OnConsoleSink_AfterRunCommand(const achar * aaszCmd) niImpl {
     ni::Var _params_[1];
     _params_[0] = aaszCmd;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iConsoleSink_OnConsoleSink_AfterRunCommand,2,_params_,1,NULL);
 	}
 
   // Method (3): iConsoleSink::OnConsoleSink_BeforeRunScript
-  tBool __stdcall OnConsoleSink_BeforeRunScript(iScriptingHost * apHost, const achar * aaszCmd) {
+  tBool __stdcall OnConsoleSink_BeforeRunScript(iScriptingHost * apHost, const achar * aaszCmd) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apHost);
@@ -2037,7 +2037,7 @@ struct niHidden DispatchWrapper_iConsoleSink : public ni::ImplAggregate<ni::iCon
 	}
 
   // Method (4): iConsoleSink::OnConsoleSink_AfterRunScript
-  void __stdcall OnConsoleSink_AfterRunScript(iScriptingHost * apHost, const achar * aaszCmd) {
+  void __stdcall OnConsoleSink_AfterRunScript(iScriptingHost * apHost, const achar * aaszCmd) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apHost);
     _params_[1] = aaszCmd;
@@ -3207,14 +3207,14 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (0): iDataTableSink::OnDataTableSink_SetName
-  void __stdcall OnDataTableSink_SetName(iDataTable * apDT) {
+  void __stdcall OnDataTableSink_SetName(iDataTable * apDT) niImpl {
     ni::Var _params_[1];
     _params_[0] = niIUnknownCast(apDT);
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iDataTableSink_OnDataTableSink_SetName,0,_params_,1,NULL);
 	}
 
   // Method (1): iDataTableSink::OnDataTableSink_AddChild
-  void __stdcall OnDataTableSink_AddChild(iDataTable * apDT, iDataTable * apChild) {
+  void __stdcall OnDataTableSink_AddChild(iDataTable * apDT, iDataTable * apChild) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
     _params_[1] = niIUnknownCast(apChild);
@@ -3222,7 +3222,7 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (2): iDataTableSink::OnDataTableSink_RemoveChild
-  void __stdcall OnDataTableSink_RemoveChild(iDataTable * apDT, iDataTable * apChild) {
+  void __stdcall OnDataTableSink_RemoveChild(iDataTable * apDT, iDataTable * apChild) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
     _params_[1] = niIUnknownCast(apChild);
@@ -3230,7 +3230,7 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (3): iDataTableSink::OnDataTableSink_SetProperty
-  void __stdcall OnDataTableSink_SetProperty(iDataTable * apDT, tU32 anProperty) {
+  void __stdcall OnDataTableSink_SetProperty(iDataTable * apDT, tU32 anProperty) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
     _params_[1] = anProperty;
@@ -3238,7 +3238,7 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (4): iDataTableSink::OnDataTableSink_SetMetadata
-  void __stdcall OnDataTableSink_SetMetadata(iDataTable * apDT, tU32 anProperty) {
+  void __stdcall OnDataTableSink_SetMetadata(iDataTable * apDT, tU32 anProperty) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
     _params_[1] = anProperty;
@@ -3246,7 +3246,7 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (5): iDataTableSink::OnDataTableSink_RemoveProperty
-  void __stdcall OnDataTableSink_RemoveProperty(iDataTable * apDT, tU32 anProperty) {
+  void __stdcall OnDataTableSink_RemoveProperty(iDataTable * apDT, tU32 anProperty) niImpl {
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
     _params_[1] = anProperty;
@@ -3254,7 +3254,7 @@ struct niHidden DispatchWrapper_iDataTableSink : public ni::ImplAggregate<ni::iD
 	}
 
   // Method (6): iDataTableSink::OnDataTableSink_GetProperty
-  Var __stdcall OnDataTableSink_GetProperty(iDataTable * apDT, tU32 anProperty) {
+  Var __stdcall OnDataTableSink_GetProperty(iDataTable * apDT, tU32 anProperty) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(apDT);
@@ -6732,7 +6732,7 @@ struct niHidden DispatchWrapper_iExpressionURLResolver : public ni::ImplAggregat
 	}
 
   // Method (0): iExpressionURLResolver::ResolveURL
-  Var __stdcall ResolveURL(const achar * aURL) {
+  Var __stdcall ResolveURL(const achar * aURL) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aURL;
@@ -7216,7 +7216,7 @@ struct niHidden DispatchWrapper_iFileEnumSink : public ni::ImplAggregate<ni::iFi
 	}
 
   // Method (0): iFileEnumSink::OnFound
-  tBool __stdcall OnFound(const achar * aszFile, tU32 aFileAttrs, tI64 anFileSize) {
+  tBool __stdcall OnFound(const achar * aszFile, tU32 aFileAttrs, tI64 anFileSize) niImpl {
     ni::Var _var_;
     ni::Var _params_[3];
     _params_[0] = aszFile;
@@ -9718,7 +9718,7 @@ struct niHidden DispatchWrapper_iURLFileHandler : public ni::ImplAggregate<ni::i
 	}
 
   // Method (0): iURLFileHandler::URLOpen
-  iFile * __stdcall URLOpen(const achar * aURL) {
+  iFile * __stdcall URLOpen(const achar * aURL) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aURL;
@@ -9731,7 +9731,7 @@ struct niHidden DispatchWrapper_iURLFileHandler : public ni::ImplAggregate<ni::i
 	}
 
   // Method (1): iURLFileHandler::URLExists
-  tBool __stdcall URLExists(const achar * aURL) {
+  tBool __stdcall URLExists(const achar * aURL) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aURL;
@@ -10496,7 +10496,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (0): iGameCtrl::Update
-  tBool __stdcall Update() {
+  tBool __stdcall Update() niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_Update,0,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_Update.mReturnType,ni::eFalse)) {
@@ -10507,7 +10507,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (1): iGameCtrl::GetIsConnected
-  tBool __stdcall GetIsConnected() const {
+  tBool __stdcall GetIsConnected() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetIsConnected,1,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetIsConnected.mReturnType,ni::eFalse)) {
@@ -10518,7 +10518,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (2): iGameCtrl::GetName
-  const achar * __stdcall GetName() const {
+  const achar * __stdcall GetName() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetName,2,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetName.mReturnType,ni::eFalse)) {
@@ -10529,7 +10529,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (3): iGameCtrl::GetIndex
-  tU32 __stdcall GetIndex() const {
+  tU32 __stdcall GetIndex() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetIndex,3,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetIndex.mReturnType,ni::eFalse)) {
@@ -10540,7 +10540,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (4): iGameCtrl::GetNumButtons
-  tU32 __stdcall GetNumButtons() const {
+  tU32 __stdcall GetNumButtons() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetNumButtons,4,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetNumButtons.mReturnType,ni::eFalse)) {
@@ -10551,7 +10551,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (5): iGameCtrl::GetButton
-  tF32 __stdcall GetButton(tU32 ulButton) {
+  tF32 __stdcall GetButton(tU32 ulButton) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = ulButton;
@@ -10564,7 +10564,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (6): iGameCtrl::GetNumAxis
-  tU32 __stdcall GetNumAxis() const {
+  tU32 __stdcall GetNumAxis() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetNumAxis,6,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetNumAxis.mReturnType,ni::eFalse)) {
@@ -10575,7 +10575,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (7): iGameCtrl::GetAxis
-  tF32 __stdcall GetAxis(eGameCtrlAxis axis) {
+  tF32 __stdcall GetAxis(eGameCtrlAxis axis) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = (ni::tU32)axis;
@@ -10588,7 +10588,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (8): iGameCtrl::GetCanVibrate
-  tBool __stdcall GetCanVibrate() const {
+  tBool __stdcall GetCanVibrate() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetCanVibrate,8,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetCanVibrate.mReturnType,ni::eFalse)) {
@@ -10599,14 +10599,14 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (9): iGameCtrl::Vibrate
-  void __stdcall Vibrate(const sVec2f & aSpeed) {
+  void __stdcall Vibrate(const sVec2f & aSpeed) niImpl {
     ni::Var _params_[1];
     _params_[0] = aSpeed;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_Vibrate,9,_params_,1,NULL);
 	}
 
   // Method (10): iGameCtrl::GetHasBattery
-  tBool __stdcall GetHasBattery() const {
+  tBool __stdcall GetHasBattery() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetHasBattery,10,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetHasBattery.mReturnType,ni::eFalse)) {
@@ -10617,7 +10617,7 @@ struct niHidden DispatchWrapper_iGameCtrl : public ni::ImplAggregate<ni::iGameCt
 	}
 
   // Method (11): iGameCtrl::GetBatteryLevel
-  tF32 __stdcall GetBatteryLevel() const {
+  tF32 __stdcall GetBatteryLevel() const niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iGameCtrl_GetBatteryLevel,11,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iGameCtrl_GetBatteryLevel.mReturnType,ni::eFalse)) {
@@ -11174,7 +11174,7 @@ struct niHidden DispatchWrapper_iJsonParserSink : public ni::ImplAggregate<ni::i
 	}
 
   // Method (0): iJsonParserSink::OnJsonParserSink_Error
-  void __stdcall OnJsonParserSink_Error(const achar * aaszReason, tU32 anLine, tU32 anCol) {
+  void __stdcall OnJsonParserSink_Error(const achar * aaszReason, tU32 anLine, tU32 anCol) niImpl {
     ni::Var _params_[3];
     _params_[0] = aaszReason;
     _params_[1] = anLine;
@@ -11183,7 +11183,7 @@ struct niHidden DispatchWrapper_iJsonParserSink : public ni::ImplAggregate<ni::i
 	}
 
   // Method (1): iJsonParserSink::OnJsonParserSink_Value
-  void __stdcall OnJsonParserSink_Value(eJsonType aType, const achar * aValue) {
+  void __stdcall OnJsonParserSink_Value(eJsonType aType, const achar * aValue) niImpl {
     ni::Var _params_[2];
     _params_[0] = (ni::tU32)aType;
     _params_[1] = aValue;
@@ -11293,14 +11293,14 @@ struct niHidden DispatchWrapper_iJsonWriterSink : public ni::ImplAggregate<ni::i
 	}
 
   // Method (0): iJsonWriterSink::OnJsonWriterSink_Error
-  void __stdcall OnJsonWriterSink_Error(const achar * aaszReason) {
+  void __stdcall OnJsonWriterSink_Error(const achar * aaszReason) niImpl {
     ni::Var _params_[1];
     _params_[0] = aaszReason;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iJsonWriterSink_OnJsonWriterSink_Error,0,_params_,1,NULL);
 	}
 
   // Method (1): iJsonWriterSink::OnJsonWriterSink_Write
-  tBool __stdcall OnJsonWriterSink_Write(eJsonType aValue, const achar * aaszString) {
+  tBool __stdcall OnJsonWriterSink_Write(eJsonType aValue, const achar * aaszString) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = (ni::tU32)aValue;
@@ -20334,7 +20334,7 @@ struct niHidden DispatchWrapper_iOSProcessEnumSink : public ni::ImplAggregate<ni
 	}
 
   // Method (0): iOSProcessEnumSink::OnOSProcessEnumSink
-  ni::tBool __stdcall OnOSProcessEnumSink(tIntPtr aPID, tIntPtr aParentPID, const ni::achar * aaszExeName) {
+  ni::tBool __stdcall OnOSProcessEnumSink(tIntPtr aPID, tIntPtr aParentPID, const ni::achar * aaszExeName) niImpl {
     ni::Var _var_;
     ni::Var _params_[3];
     _params_[0] = aPID;
@@ -21724,19 +21724,19 @@ struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDr
 	}
 
   // Method (0): iProfDraw::BeginDraw
-  void __stdcall BeginDraw(tBool abTranslucent) {
+  void __stdcall BeginDraw(tBool abTranslucent) niImpl {
     ni::Var _params_[1];
     _params_[0] = abTranslucent;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iProfDraw_BeginDraw,0,_params_,1,NULL);
 	}
 
   // Method (1): iProfDraw::EndDraw
-  void __stdcall EndDraw() {
+  void __stdcall EndDraw() niImpl {
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iProfDraw_EndDraw,1,NULL,0,NULL);
 	}
 
   // Method (2): iProfDraw::DrawRect
-  void __stdcall DrawRect(tF32 x0, tF32 y0, tF32 x1, tF32 y1, tU32 anColor) {
+  void __stdcall DrawRect(tF32 x0, tF32 y0, tF32 x1, tF32 y1, tU32 anColor) niImpl {
     ni::Var _params_[5];
     _params_[0] = x0;
     _params_[1] = y0;
@@ -21747,7 +21747,7 @@ struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDr
 	}
 
   // Method (3): iProfDraw::DrawLine
-  void __stdcall DrawLine(tF32 x0, tF32 y0, tF32 x1, tF32 y1, tU32 anColor) {
+  void __stdcall DrawLine(tF32 x0, tF32 y0, tF32 x1, tF32 y1, tU32 anColor) niImpl {
     ni::Var _params_[5];
     _params_[0] = x0;
     _params_[1] = y0;
@@ -21758,7 +21758,7 @@ struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDr
 	}
 
   // Method (4): iProfDraw::GetTextHeight
-  tF32 __stdcall GetTextHeight() {
+  tF32 __stdcall GetTextHeight() niImpl {
     ni::Var _var_;
     if (((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iProfDraw_GetTextHeight,4,NULL,0,&_var_)) {
       if (VarIsType(&_var_,iProfDraw_GetTextHeight.mReturnType,ni::eFalse)) {
@@ -21769,7 +21769,7 @@ struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDr
 	}
 
   // Method (5): iProfDraw::GetTextWidth
-  tF32 __stdcall GetTextWidth(const achar * aText) {
+  tF32 __stdcall GetTextWidth(const achar * aText) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = aText;
@@ -21782,17 +21782,17 @@ struct niHidden DispatchWrapper_iProfDraw : public ni::ImplAggregate<ni::iProfDr
 	}
 
   // Method (6): iProfDraw::BeginText
-  void __stdcall BeginText() {
+  void __stdcall BeginText() niImpl {
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iProfDraw_BeginText,6,NULL,0,NULL);
 	}
 
   // Method (7): iProfDraw::EndText
-  void __stdcall EndText() {
+  void __stdcall EndText() niImpl {
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iProfDraw_EndText,7,NULL,0,NULL);
 	}
 
   // Method (8): iProfDraw::Text
-  void __stdcall Text(tF32 x, tF32 y, const achar * aText, tU32 anColor) {
+  void __stdcall Text(tF32 x, tF32 y, const achar * aText, tU32 anColor) niImpl {
     ni::Var _params_[4];
     _params_[0] = x;
     _params_[1] = y;
@@ -22718,7 +22718,7 @@ struct niHidden DispatchWrapper_iScriptingHost : public ni::ImplAggregate<ni::iS
 	}
 
   // Method (0): iScriptingHost::EvalString
-  tBool __stdcall EvalString(iHString * ahspContext, const ni::achar * aaszCode) {
+  tBool __stdcall EvalString(iHString * ahspContext, const ni::achar * aaszCode) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(ahspContext);
@@ -22732,7 +22732,7 @@ struct niHidden DispatchWrapper_iScriptingHost : public ni::ImplAggregate<ni::iS
 	}
 
   // Method (1): iScriptingHost::CanEvalImpl
-  tBool __stdcall CanEvalImpl(iHString * ahspContext, iHString * ahspCodeResource) {
+  tBool __stdcall CanEvalImpl(iHString * ahspContext, iHString * ahspCodeResource) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = niIUnknownCast(ahspContext);
@@ -22746,7 +22746,7 @@ struct niHidden DispatchWrapper_iScriptingHost : public ni::ImplAggregate<ni::iS
 	}
 
   // Method (2): iScriptingHost::EvalImpl
-  iUnknown * __stdcall EvalImpl(iHString * ahspContext, iHString * ahspCodeResource, const tUUID & aIID) {
+  iUnknown * __stdcall EvalImpl(iHString * ahspContext, iHString * ahspCodeResource, const tUUID & aIID) niImpl {
     ni::Var _var_;
     ni::Var _params_[3];
     _params_[0] = niIUnknownCast(ahspContext);
@@ -22761,7 +22761,7 @@ struct niHidden DispatchWrapper_iScriptingHost : public ni::ImplAggregate<ni::iS
 	}
 
   // Method (3): iScriptingHost::Service
-  void __stdcall Service(tBool abForceGC) {
+  void __stdcall Service(tBool abForceGC) niImpl {
     ni::Var _params_[1];
     _params_[0] = abForceGC;
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iScriptingHost_Service,3,_params_,1,NULL);
@@ -23743,7 +23743,7 @@ struct niHidden DispatchWrapper_iStringTokenizer : public ni::ImplAggregate<ni::
 	}
 
   // Method (0): iStringTokenizer::GetCharType
-  eStringTokenizerCharType __stdcall GetCharType(tU32 c) {
+  eStringTokenizerCharType __stdcall GetCharType(tU32 c) niImpl {
     ni::Var _var_;
     ni::Var _params_[1];
     _params_[0] = c;
@@ -23756,7 +23756,7 @@ struct niHidden DispatchWrapper_iStringTokenizer : public ni::ImplAggregate<ni::
 	}
 
   // Method (1): iStringTokenizer::OnNewLine
-  void __stdcall OnNewLine() {
+  void __stdcall OnNewLine() niImpl {
     ((ni::iDispatch*)(mprotected_pAggregateParent))->CallMethod(&iStringTokenizer_OnNewLine,1,NULL,0,NULL);
 	}
 
@@ -24315,7 +24315,7 @@ struct niHidden DispatchWrapper_iXmlParserSink : public ni::ImplAggregate<ni::iX
 	}
 
   // Method (0): iXmlParserSink::OnXmlParserSink_Node
-  tBool __stdcall OnXmlParserSink_Node(eXmlParserNodeType aType, const ni::achar * aNameOrData) {
+  tBool __stdcall OnXmlParserSink_Node(eXmlParserNodeType aType, const ni::achar * aNameOrData) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = (ni::tU32)aType;
@@ -24329,7 +24329,7 @@ struct niHidden DispatchWrapper_iXmlParserSink : public ni::ImplAggregate<ni::iX
 	}
 
   // Method (1): iXmlParserSink::OnXmlParserSink_Attribute
-  tBool __stdcall OnXmlParserSink_Attribute(const ni::achar * aName, const ni::achar * aValue) {
+  tBool __stdcall OnXmlParserSink_Attribute(const ni::achar * aName, const ni::achar * aValue) niImpl {
     ni::Var _var_;
     ni::Var _params_[2];
     _params_[0] = aName;

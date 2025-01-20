@@ -467,8 +467,8 @@ function OnPaint(w,a,b) {
 
       if (cc) {
         txt += "* Context:\n"
-        txt += "  - scissor: " + cc.scissor_rect + "\n"
-        txt += "  - viewport: " + cc.viewport + "\n"
+        txt += "  - viewport: " + cc.viewport +
+          ", scissor: " + cc.scissor_rect + "\n"
         txt = appendRTName(txt,cc,0);
         txt = appendRTName(txt,cc,1);
         txt = appendRTName(txt,cc,2);
@@ -479,41 +479,52 @@ function OnPaint(w,a,b) {
       if (cdo) {
         txt += "* DrawOperation:\n"
         txt += "  - Matrix: " + cdo.matrix + "\n"
-        txt += "  - PrimType: " + ::EnumToString(cdo.primitive_type,::eGraphicsPrimitiveType) + "\n"
-        if (cdo.local_bounding_volume) {
-          local bv = cdo.local_bounding_volume;
-          txt += "  - LocalBV: " + bv.min + " : " + bv.max + "\n"
-        }
-        else {
-          txt += "  - LocalBV: None\n"
-        }
+        txt += "  - PrimType: " +
+          ::EnumToString(cdo.primitive_type,::eGraphicsPrimitiveType) +
+          ", numInds: " + cdo.num_indices + " (" + (cdo.num_indices/3) + "tris)" +
+          ", first: " + cdo.first_index +
+          ", baseIndex: " + cdo.base_vertex_index +
+          "\n";
+
+        txt += "  - BV: "
         if (cdo.bounding_volume) {
           local bv = cdo.bounding_volume;
-          txt += "  - WorldBV: " + bv.min + " : " + bv.max + "\n"
+          txt += "world: [" + bv.min + ", " + bv.max + "]"
         }
         else {
-          txt += "  - WorldBV: None\n"
+          txt += "world: None\n"
         }
+        if (cdo.local_bounding_volume) {
+          local bv = cdo.local_bounding_volume;
+          txt += ", local: [" + bv.min + ", " + bv.max + "]"
+        }
+        else {
+          txt += ", local: None"
+        }
+        txt += "\n"
+
         if (cdo.vertex_array) {
-          txt += "  - VA:\t" +
-            ::format("%X",cdo.vertex_array.ToIntPtr()) + " - " +
-            ::EnumToString(cdo.vertex_array.usage,::eArrayUsage) + "\n"
+          txt += "  - VA: fvf: " + ::FlagsToString(cdo.vertex_array.fvf,::eFVF) +
+            ", " + ::format("0x%X",cdo.vertex_array.ToIntPtr()) +
+            ", " + ::EnumToString(cdo.vertex_array.usage,::eArrayUsage) +
+            ", numVerts:" + cdo.vertex_array.num_vertices +
+            "\n"
+        }
+        else {
+          txt += "  - VA: None\n"
         }
         if (cdo.index_array) {
-          txt += "  - IA:\t" +
-            ::format("%X",cdo.index_array.ToIntPtr()) + " - " +
-            ::EnumToString(cdo.index_array.usage,::eArrayUsage) + "\n"
-        }
-        if (cdo.vertex_array) {
-          txt += "  - Vertices: " + cdo.vertex_array.num_vertices + "\n"
-          txt += "  - FVF: " + ::FlagsToString(cdo.vertex_array.fvf,::eFVF)
+          txt += "  - IA:" +
+            ::format("0x%X",cdo.index_array.ToIntPtr()) +
+            ", " + ::EnumToString(cdo.index_array.usage,::eArrayUsage) +
+            ::format(", numInds: %d (%d tris)",
+                     cdo.index_array.num_indices,
+                     cdo.index_array.num_indices/3) +
+            "\n";
         }
         else {
-          txt += "  - Vertices: None\n"
+          txt += "  - IA: None\n"
         }
-        txt += "  - FirstIndex: " + cdo.first_index + "\n"
-        txt += "  - NumIndices: " + cdo.num_indices + " (" + (cdo.num_indices/3) + "tris)\n"
-        txt += "  - BaseVtxIdx: " + cdo.base_vertex_index + "\n"
         txt += getMatText(cdo.material)
       }
       else {

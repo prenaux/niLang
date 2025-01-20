@@ -847,10 +847,10 @@ struct iGraphics : public iUnknown
   //! @}
 };
 
-  template <typename T, typename S>
-  static inline tBool HasShaderProfile(T* apGraphics, S aUnit, iHString* ahspProfileName) {
-    niLoop(i,apGraphics->GetNumShaderProfile((eShaderUnit)aUnit)) {
-      if (apGraphics->GetShaderProfile((eShaderUnit)aUnit,i) == ahspProfileName)
+template <typename T, typename S>
+static inline tBool HasShaderProfile(T* apGraphics, S aUnit, iHString* ahspProfileName) {
+  niLoop(i,apGraphics->GetNumShaderProfile((eShaderUnit)aUnit)) {
+    if (apGraphics->GetShaderProfile((eShaderUnit)aUnit,i) == ahspProfileName)
       return ni::eTrue;
   }
   return ni::eFalse;

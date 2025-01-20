@@ -777,7 +777,7 @@ int AppNativeMainLoop(astl::non_null<AppContext*> apContext) {
 #ifdef niJSCC
   struct _JSCCLoop {
     static void Loop(void* apArgContext) {
-      astl::non_null<AppContext*> context { (AppContext*)apArgContext };
+      astl::non_null<AppContext*> context = astl::as_non_null((AppContext*)apArgContext);
       app::AppUpdate(context);
     };
   };

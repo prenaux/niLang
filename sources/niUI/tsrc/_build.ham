@@ -5,8 +5,10 @@ tkDefTest Test_niUI : 1.0.0 ;
 niImportModuleLibs niAppLib ;
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
-niImportModuleDll niScript ;
 niImportModuleDll_niUI ;
+if ! ( $(EMSCRIPTEN) = 1 ) {
+  niImportModuleDll niScript ;
+}
 
 SRC = [ tkPkgSrc ] ;
 

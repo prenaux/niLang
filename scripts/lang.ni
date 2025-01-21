@@ -1186,15 +1186,17 @@ if (!("main" in ::getroottable())) {
 ::printdebug <- ::vmprintdebug
 
 ::interop <- {
-  function doEval(string path, iid, defaultDelegateTable) iUnknown {
+  function doEval(string path, iid, delegateTable) iUnknown {
     local className = path.GetFileNoExt()
-    local loadedTable = ::Import(path)
+    // Use NewImport because we want a separate table for each instance so
+    // that each have their own this table.
+    local loadedTable = ::NewImport(path)
     local implTable = loadedTable[?className]
     if (!implTable) {
-      if (defaultDelegateTable) {
-        loadedTable.SetDelegate(defaultDelegateTable)
-      }
       implTable = loadedTable
+    }
+    if (delegateTable) {
+      implTable.SetDelegate(delegateTable)
     }
     return ::QueryInterface(implTable,iid)
   }

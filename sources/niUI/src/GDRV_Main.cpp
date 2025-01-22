@@ -79,10 +79,12 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
 #endif
 
     {
-#if defined GDRV_GL2
-      hspDriver = _H("GL2");
+#if defined GDRV_VULKAN
+      hspDriver = _H("Vulkan");
 #elif defined GDRV_METAL
       hspDriver = _H("Metal");
+#elif defined GDRV_GL2
+      hspDriver = _H("GL2");
 #else
       niError("No Auto graphics driver available.");
       return eFalse;

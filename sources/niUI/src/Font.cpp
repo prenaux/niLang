@@ -406,22 +406,24 @@ iFont* __stdcall cGraphics::LoadFontEx(iHString* ahspName, tFontLoadFlags aFlags
 ///////////////////////////////////////////////
 void cGraphics::_RegisterBaseFont(cFont* apFont) {
   niAssert(!apFont->mptrParentFont.IsOK());
-  niLog(Info,niFmt("Registered Base Font '%s' (family: %s, style: %s, filename: %s, filepath: %s)",
-                   apFont->GetName(),
-                   apFont->GetFamilyName(),
-                   apFont->GetStyleName(),
-                   apFont->GetFilePath()));
+  niLog(Info,niFmt(
+    "Registered Base Font '%s' (family: %s, style: %s, filepath: %s)",
+    apFont->GetName(),
+    apFont->GetFamilyName(),
+    apFont->GetStyleName(),
+    apFont->GetFilePath()));
   mmapBaseFonts.Set(apFont->GetName(),apFont);
 }
 tBool cGraphics::_UnregisterBaseFont(iFont* apFont) {
   niLoop(i,mmapBaseFonts.GetSize()) {
     if (mmapBaseFonts.GetItem(i) == apFont) {
       niAssert(!((cFont*)apFont)->mptrParentFont.IsOK());
-      niLog(Info,niFmt("Unregistered Base Font '%s' (family: %s, style: %s, filename: %s, filepath: %s)",
-                       apFont->GetName(),
-                       apFont->GetFamilyName(),
-                       apFont->GetStyleName(),
-                       apFont->GetFilePath()));
+      niLog(Info,niFmt(
+        "Unregistered Base Font '%s' (family: %s, style: %s, filepath: %s)",
+        apFont->GetName(),
+        apFont->GetFamilyName(),
+        apFont->GetStyleName(),
+        apFont->GetFilePath()));
       mmapBaseFonts.EraseIndex(i);
       return eTrue;
     }

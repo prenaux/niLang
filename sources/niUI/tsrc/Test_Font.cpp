@@ -1,6 +1,5 @@
 #include "stdafx.h"
-
-using namespace ni;
+#include "TestCanvasWidgetSink.h"
 
 struct FFont {
   QPtr<iGraphics> graphics;
@@ -64,3 +63,14 @@ TEST_FIXTURE(FFont,OSFonts) {
                 osFont.first, osFont.second));
   }
 }
+
+struct DrawTextIcons : public TestCanvasWidgetSink {
+  TEST_CONSTRUCTOR_BASE(DrawTextIcons,TestCanvasWidgetSink) {
+  }
+
+  void PaintTest(iCanvas* apCanvas) niImpl {
+    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
+    // TODO: Draw actual text with icons in there...
+  }
+};
+TEST_FIXTURE_WIDGET(FFont,DrawTextIcons);

@@ -1025,9 +1025,11 @@ static inline void _PushAttrIcon(
     attrRect.Move(Vec2<tF32>(1,1));
     attrRect.Inflate(Vec2<tF32>(-2,-2));
   }
-  const sColor4f color = (attrs&attrFlag) ?
-      Vec4<tF32>(1.0f,1.0f,1.0f,1.0f) :
-      Vec4<tF32>(0.5f,0.5f,0.5f,1.0f);
+  // const sColor4f color = (attrs&attrFlag) ?
+  //     Vec4<tF32>(1.0f,1.0f,1.0f,1.0f) :
+  //     Vec4<tF32>(0.5f,0.5f,0.5f,1.0f);
+  sColor4f color = apIcon->GetColor();
+  color.w = (attrs&attrFlag) ? 1.0f : 0.35f;
   apIcon->SetColor(color);
   apIcon->SetFiltering(eTrue);
   c->BlitOverlay(attrRect,apIcon);

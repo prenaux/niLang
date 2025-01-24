@@ -184,6 +184,9 @@ mRTViewSink <- {
 }.SetDelegate(mTexViewBaseSink)
 
 function getTexName(t) {
+  if (!::lang.isValid(t))
+    return "[INVALID_TEXTURE]"
+
   local ctxt = "[" + t.device_resource_name + "]"
   {
     local glTexture = t.QueryInterface("iGLTexture")
@@ -604,12 +607,18 @@ function fillTextureList(aForce) {
     list.ClearItems()
     local texs1 = []
     local texs2 = []
+    local invalidCount = 0
     local ucount = 0
     for (local i = 0; i < ::gGraphics.num_textures; ++i) {
       local tex = ::gGraphics.texture_from_index[i]
-      local name = tex.device_resource_name || ""
+      local name = tex.?device_resource_name || ""
       if (!name || name.empty()) {
-        name = "UNNAMED#"+(ucount++)+"-"+tex.width+"x"+tex.height+"x"+tex.depth+"-"+tex.pixel_format.format
+        if (!::lang.isValid(tex)) {
+          name = "INVALID#"+(invalidCount++)
+        }
+        else {
+          name = "UNNAMED#"+(ucount++)+"-"+tex.width+"x"+tex.height+"x"+tex.depth+"-"+tex.pixel_format.format
+        }
         texs2.append(name)
       }
       else {

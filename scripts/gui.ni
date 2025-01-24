@@ -70,11 +70,11 @@
     return _iconFont;
   }
 
-  function loadIconGlyphOverlay(aName) iOverlay {
+  function loadIconGlyphOverlay(aName,_aFont) iOverlay {
     if (!aName) {
       return ::LINT_AS_TYPE("iOverlay",null);
     }
-    local iconFont = this.getIconFont();
+    local iconFont = _aFont ? _aFont : this.getIconFont();
     if (!iconFont) {
       return ::LINT_AS_TYPE("iOverlay",null);
     }
@@ -83,6 +83,21 @@
       return ::LINT_AS_TYPE("iOverlay",null);
     }
     return iconFont.GetGlyphOverlay(glyphIndex);
+  }
+  function setIconGlyph(iWidget aW, string id, string name, bool _filter) {
+    local w = id ? aW.FindWidget(id) : aW
+    if (w) {
+      local wButton = w.QueryInterface("iWidgetButton")
+      if (wButton) {
+        wButton.icon = loadIconGlyphOverlay(name)
+        if (wButton.icon) {
+          wButton.icon.filtering = _filter
+          w.style |= ::eWidgetButtonStyle.IconCenter|
+            ::eWidgetButtonStyle.NoText|::eWidgetButtonStyle.IconFit;
+        }
+      }
+    }
+    return w
   }
 
   function loadIcon(aW,id,name,max,min) {

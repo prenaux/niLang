@@ -153,7 +153,7 @@ void cButtonWidget::Paint_PushButton(const sRectf& aRect, iCanvas* apCanvas)
     else /*if (niFlagIs(nStyle,eWidgetButtonStyle_IconLeft))*/ {
       mrectIcon.SetTopLeft(Vec2<tF32>(rect.Left()+mvIconMargin.Left(),rect.Top()+ycenter));
       mrectIcon.SetSize(size.x,size.y);
-      rect.SetLeft(mrectIcon.GetRight());
+      rect.SetLeft(mrectIcon.GetRight()+mvIconMargin.Right());
     }
     apCanvas->BlitOverlay(mrectIcon,pIcon);
   }

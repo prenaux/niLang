@@ -60,102 +60,157 @@
 #ifdef HAS_CONSOLE_COLORS
 #include <niLang/STL/run_once.h>
 
+using namespace ni;
+
 #if defined niWindows
-enum eWindowsConsoleColors {
-  eWindowsConsoleColors_black,
-  eWindowsConsoleColors_dblue,
-  eWindowsConsoleColors_dgreen,
-  eWindowsConsoleColors_dcyan,
-  eWindowsConsoleColors_dred,
-  eWindowsConsoleColors_dpurple,
-  eWindowsConsoleColors_dgray,
-  eWindowsConsoleColors_dwhite,
-  eWindowsConsoleColors_gray,
-  eWindowsConsoleColors_blue,
-  eWindowsConsoleColors_green,
-  eWindowsConsoleColors_cyan,
-  eWindowsConsoleColors_red,
-  eWindowsConsoleColors_purple,
-  eWindowsConsoleColors_yellow,
-  eWindowsConsoleColors_white
-};
 
-static void _SetWindowsConsoleColors(int back, int fore) {
-  int setback = 0;
+// Tells us whether we have been launched from the explorer (or spawned
+// independantly by another process) or if we inherited a preexisting console.
+static tBool _IsSeparateWindowsConsole() {
+  DWORD procId;
+  DWORD count = GetConsoleProcessList(&procId, 1);
+  ni::GetLang()->SetProperty("ni.log.console_process_count",niFmt("%d",(tU32)count));
+  return (count <= 1);
+}
 
-  if ( back & 0x1 ) setback |= BACKGROUND_BLUE;
-  if ( back & 0x2 ) setback |= BACKGROUND_GREEN;
-  if ( back & 0x4 ) setback |= BACKGROUND_RED;
-  if ( back & 0x8 ) setback |= BACKGROUND_INTENSITY;
+static void _SetWindowsConsoleColors(HANDLE aHandle, const ni::tU32 logType) {
+  static WORD _previousConsoleBgColor = 0;
+  static WORD _previousConsoleFgColor = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+  niRunOnce {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(aHandle, &csbi);
+    _previousConsoleBgColor = csbi.wAttributes & 0xF0;
+    _previousConsoleFgColor = csbi.wAttributes & 0x0F;
+  };
 
-  int setfore = 0;
-  if ( fore & 0x1 ) setfore |= FOREGROUND_BLUE;
-  if ( fore & 0x2 ) setfore |= FOREGROUND_GREEN;
-  if ( fore & 0x4 ) setfore |= FOREGROUND_RED;
-  if ( fore & 0x8 ) setfore |= FOREGROUND_INTENSITY;
-
-  SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), setback | setfore );
+  int back = _previousConsoleBgColor, fore = _previousConsoleFgColor;
+  if (niFlagIs(logType, ni::eLogFlags_Error)) {
+    // back = BACKGROUND_RED;
+    // fore = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+    fore = FOREGROUND_RED | FOREGROUND_INTENSITY;
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Warning)) {
+    fore = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Debug)) {
+    fore = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Info)) {
+    fore = FOREGROUND_BLUE | FOREGROUND_GREEN;
+  }
+  SetConsoleTextAttribute(aHandle, back | fore);
 }
 #endif
 
-static void _SetConsoleColors(ni::cString& final, const ni::tU32 logType, ni::tBool abOverwriteNewLine) {
-  static ni::tBool _coloredOutput;
+static void _AppendPosixConsoleColors(ni::cString& final, const ni::tU32 logType, ni::tBool abOverwriteNewLine) {
+  ni::tBool appendNewLine = ni::eFalse;
+  if (abOverwriteNewLine) {
+    if (final.back() == '\n') {
+      final.resize(final.size()-1);
+      appendNewLine = ni::eTrue;
+    }
+  }
+  if (niFlagIs(logType, ni::eLogFlags_Error)) {
+    // red
+    final << "\033[31m";
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Warning)) {
+    // yellow
+    final << "\033[33m";
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Debug)) {
+    // green
+    final << "\033[32m";
+  }
+  else if (niFlagIs(logType, ni::eLogFlags_Info)) {
+    // cyan
+    final << "\033[36m";
+  }
+  else {
+    // default
+    final << "\033[0m";
+  }
+  if (appendNewLine) {
+    final.appendChar('\n');
+  }
+}
+
+enum class eSetConsoleColorMode : tU32 {
+  BEFORE_LINE,
+  END_OF_LINE,
+  AFTER_FLUSH
+};
+
+static void _SetConsoleColors(ni::cString& final, tBool aIsStdout, const ni::tU32 logType, eSetConsoleColorMode aMode) {
+  static ni::tBool _isTTY = ni::eFalse;
+  static ni::tBool _coloredOutput = ni::eFalse;
   niRunOnce {
-    _coloredOutput = ni::GetLang()->GetProperty("ni.log.colored_output").Bool(isatty(fileno(stdout)));
+    const tBool envNoColor = agetenv("NO_COLOR").Bool(eFalse);
+    ni::GetLang()->SetProperty("ni.log.env_no_color",envNoColor?"yes":"no");
+    if (!envNoColor) {
+      if (isatty(fileno(stdout))) {
+        _isTTY = eTrue;
+      }
+      else {
+        const tBool envInsideEmacs = agetenv("INSIDE_EMACS").IsNotEmpty();
+        ni::GetLang()->SetProperty("ni.log.env_inside_emacs",envInsideEmacs?"yes":"no");
+        _coloredOutput = ni::eTrue;
+      }
+      ni::GetLang()->SetProperty("ni.log.is_tty",_isTTY?"yes":"no");
+    }
+
+    _coloredOutput = ni::GetLang()->GetProperty("ni.log.colored_output").Bool(
+      !envNoColor && (_isTTY || _coloredOutput));
+    ni::GetLang()->SetProperty("ni.log.colored_output",_coloredOutput?"yes":"no");
+
+#ifdef niWindows
+    if (_isTTY && _IsSeparateWindowsConsole())
+    {
+      HWND hwnd = GetConsoleWindow();
+
+      RECT workArea;
+      SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+
+#if 1
+      // Setup the console window size in function of the work area size
+      const auto width = (workArea.right - workArea.left) / 4 * 3;
+      const auto height = (workArea.bottom - workArea.top) / 4 * 3;
+#else
+      // Keep the console window size
+      RECT consoleRect;
+      GetWindowRect(hwnd, &consoleRect);
+      const auto width = consoleRect.right - consoleRect.left;
+      const auto height = consoleRect.bottom - consoleRect.top;
+#endif
+
+      SetWindowPos(hwnd, NULL,
+                   workArea.right - width,  // X pos
+                   workArea.bottom - height,  // Y pos
+                   width, height,
+                   //SWP_NOSIZE |
+                   SWP_NOZORDER);
+    }
+#endif
   }
 
   if (_coloredOutput) {
-#if defined niWindows
-    niUnused(abOverwriteNewLine);
-    switch (logType) {
-      case ni::eLogFlags_Debug:
-        _SetWindowsConsoleColors(0,eWindowsConsoleColors_green);
-        break;
-      case ni::eLogFlags_Info:
-        _SetWindowsConsoleColors(0,eWindowsConsoleColors_cyan);
-        break;
-      case ni::eLogFlags_Warning:
-        _SetWindowsConsoleColors(0,eWindowsConsoleColors_yellow);
-        break;
-      case ni::eLogFlags_Error:
-        _SetWindowsConsoleColors(0,eWindowsConsoleColors_red);
-        break;
-      default:
-        _SetWindowsConsoleColors(0,eWindowsConsoleColors_gray);
-        break;
-    }
-#else
-    ni::tBool appendNewLine = ni::eFalse;
-    if (abOverwriteNewLine) {
-      if (final.back() == '\n') {
-        final.resize(final.size()-1);
-        appendNewLine = ni::eTrue;
+#ifdef niWindows
+    if (_isTTY) {
+      if (aMode == eSetConsoleColorMode::BEFORE_LINE ||
+          aMode == eSetConsoleColorMode::AFTER_FLUSH)
+      {
+        _SetWindowsConsoleColors(GetStdHandle(aIsStdout ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE), logType);
       }
-    }
-    if (niFlagIs(logType, ni::eLogFlags_Error)) {
-      // red
-      final << "\033[31m";
-    }
-    else if (niFlagIs(logType, ni::eLogFlags_Debug)) {
-      // green
-      final << "\033[32m";
-    }
-    else if (niFlagIs(logType, ni::eLogFlags_Warning)) {
-      // yellow
-      final << "\033[33m";
-    }
-    else if (niFlagIs(logType, ni::eLogFlags_Info)) {
-      // cyan
-      final << "\033[36m";
-    }
-    else {
-      // default
-      final << "\033[0m";
-    }
-    if (appendNewLine) {
-      final.appendChar('\n');
+      return;
     }
 #endif
+
+    if (aMode == eSetConsoleColorMode::BEFORE_LINE) {
+      _AppendPosixConsoleColors(final,logType,eFalse);
+    }
+    else if (aMode == eSetConsoleColorMode::END_OF_LINE) {
+      _AppendPosixConsoleColors(final,logType,eTrue);
+    }
   }
 }
 #endif
@@ -184,7 +239,7 @@ niExportFuncCPP(const char*) GetTraceFile(const char* aFile) {
 niExportFuncCPP(ni::cString) GetTraceFunc(const char* aPrettyFunction) {
   ni::cString f = aPrettyFunction;
 
-  size_t index = f.find("(");
+  auto index = f.find("(");
   if (index == ni::cString::npos)
     return f;
 
@@ -508,11 +563,11 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* log
       cString final;
 
 #ifdef HAS_CONSOLE_COLORS
-      _SetConsoleColors(final,logType,eFalse);
+      _SetConsoleColors(final,isStdoutLogtype,logType,eSetConsoleColorMode::BEFORE_LINE);
 #endif // HAS_CONSOLE_COLORS
       ni_log_format_message(final,logType,logFile,logLine,logFunc,logMsg,logTime,_fPrevTime);
 #ifdef HAS_CONSOLE_COLORS
-      _SetConsoleColors(final,0,eTrue);
+      _SetConsoleColors(final,isStdoutLogtype,0,eSetConsoleColorMode::END_OF_LINE);
 #endif
 
       iFile* fpOut = ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(
@@ -524,6 +579,10 @@ niExportFunc(void) ni_log(tLogFlags logType, const char* logMsg, const char* log
         fpOut->WriteString("\n");
       }
       fpOut->Flush();
+
+#ifdef HAS_CONSOLE_COLORS
+      _SetConsoleColors(final,isStdoutLogtype,0,eSetConsoleColorMode::AFTER_FLUSH);
+#endif
     }
 #endif // LOG_STDIO
 

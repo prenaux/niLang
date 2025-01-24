@@ -292,7 +292,7 @@ template <typename T>
 typename T::value_type at_default(const T& aContainer, const size_t aIndex, const typename T::value_type& aDefaultValue) {
   if (aIndex >= aContainer.size())
     return aDefaultValue;
-  return aContainer[aIndex];
+  return aContainer[static_cast<typename T::size_type>(aIndex)];
 }
 
 template <typename T, typename FUN>

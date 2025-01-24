@@ -35,8 +35,9 @@ class cString
  public:
   typedef achar        tChar;
   typedef achar        value_type;
+  typedef tU32         size_type;
   typedef const achar* const_iterator;
-  typedef achar*     iterator;
+  typedef achar*       iterator;
   enum {
     npos = -1
   };

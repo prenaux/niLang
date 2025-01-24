@@ -61,6 +61,30 @@
     return ::gui.loadOverlayEx(aName,::eBlendMode.Additive,true,_aForceReload)
   }
 
+  _iconFont = null
+  function getIconFont() iFont {
+    if (_iconFont == null) {
+      _iconFont = ::gUIContext.root_widget.FindSkinFont(
+        null,null,"IconFont")
+    }
+    return _iconFont;
+  }
+
+  function loadIconGlyphOverlay(aName) iOverlay {
+    if (!aName) {
+      return ::LINT_AS_TYPE("iOverlay",null);
+    }
+    local iconFont = this.getIconFont();
+    if (!iconFont) {
+      return ::LINT_AS_TYPE("iOverlay",null);
+    }
+    local glyphIndex = iconFont.GetGlyphIndexFromName(aName);
+    if (!glyphIndex) {
+      return ::LINT_AS_TYPE("iOverlay",null);
+    }
+    return iconFont.GetGlyphOverlay(glyphIndex);
+  }
+
   function loadIcon(aW,id,name,max,min) {
     local w = id ? aW.FindWidget(id) : aW
     if (w) {

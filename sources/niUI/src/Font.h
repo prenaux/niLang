@@ -24,6 +24,7 @@ struct sFontGlyph {
   sRectf         texCoo;
   tF32           xadv;
   tU32           glyphIndex;
+  Ptr<iOverlay>  overlay;
 
   sFontGlyph()
       : xadv(0)
@@ -123,8 +124,6 @@ class cFont : public ImplRC<iFont>
   tIntPtr __stdcall GetCacheID() const;
 
   tBool __stdcall _UpdateMaterial(ni::tBool abUpdateMaterialStates);
-  sRectf __stdcall GetCharTexCoo(tU32 c) const;
-  iTexture* __stdcall GetTexture();
   iMaterial* __stdcall GetMaterial() const;
 
   tF32 __stdcall GetAdvance(tU32 anChar) const;
@@ -141,6 +140,8 @@ class cFont : public ImplRC<iFont>
     return BlitCharEx(apBmp,anX,anY,(tI32)GetCharWidth(anChar),(tI32)GetCharHeight(anChar),anChar,eBlendMode_Translucent);
   }
   sVec2i __stdcall BlitCharEx(iBitmap2D* apBmp, tI32 anX, tI32 anY, tI32 anW, tI32 anH, tU32 anChar, eBlendMode aBlendMode);
+
+  sRectf __stdcall GetCharTexCoo(tU32 c) const;
   iTexture* __stdcall GetCharTexture(tU32 anChar) const;
   iBitmap2D* __stdcall GetCharBitmap(tU32 anChar) const;
 
@@ -154,9 +155,15 @@ class cFont : public ImplRC<iFont>
   tU32 __stdcall GetGlyphCodePointFromName(const achar* aaszName) const;
 
   sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex, const sVec2f& avOffset, const tF32 afScale) const;
+
+  sRectf __stdcall GetGlyphTexCoo(tU32 anGlyphIndex) const;
+  iTexture* __stdcall GetGlyphTexture(tU32 anGlyphIndex) const;
+  iBitmap2D* __stdcall GetGlyphBitmap(tU32 anGlyphIndex) const;
+  iOverlay* __stdcall GetGlyphOverlay(tU32 anGlyphIndex) const;
   ///////////////////////////////////////////////
 
-  const sFontGlyph* GetGlyph(tU32 anChar, sFontGlyph* apTmpStorage) const;
+  const sFontGlyph* GetGlyphFromCodepoint(tU32 anChar, sFontGlyph* apTmpStorage) const;
+  const sFontGlyph* GetGlyphFromIndex(tU32 anChar, sFontGlyph* apTmpStorage) const;
 
   tF32 GetCharRectWidth(const sRectf& rectTexCoo) const;
   tF32 GetCharRectHeight(const sRectf& rectTexCoo) const;

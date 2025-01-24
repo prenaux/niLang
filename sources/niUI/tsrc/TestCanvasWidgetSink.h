@@ -7,7 +7,7 @@ struct TestCanvasWidgetSink : public ni::cWidgetSinkImpl<> {
   ~TestCanvasWidgetSink() {
   }
 
-  tBool __stdcall OnSinkAttached() niImpl {
+  tBool __stdcall OnSinkAttached() niOverride {
     return eTrue;
   }
 
@@ -17,18 +17,18 @@ struct TestCanvasWidgetSink : public ni::cWidgetSinkImpl<> {
     mbAnimated = !mbAnimated;
   }
 
-  tBool __stdcall OnLeftClickDown(const sVec2f& avMousePos, const sVec2f& avNCMousePos) niImpl {
+  tBool __stdcall OnLeftClickDown(const sVec2f& avMousePos, const sVec2f& avNCMousePos) niOverride {
     _ToggleAnimation();
     return eFalse;
   }
-  tBool __stdcall OnKeyDown(eKey aKey, tU32 aKeyMod) niImpl {
+  tBool __stdcall OnKeyDown(eKey aKey, tU32 aKeyMod) niOverride {
     if (aKey == eKey_Space) {
       _ToggleAnimation();
     }
     return eFalse;
   }
 
-  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niOverride {
     this->PaintTest(apCanvas);
     return eFalse;
   }

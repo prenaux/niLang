@@ -1188,7 +1188,7 @@ tBool __stdcall cFont::CacheRange(tU32 anFirst, tU32 anLast)
 }
 
 ///////////////////////////////////////////////
-const sFontGlyph* cFont::GetGlyph(tU32 anChar, sFontGlyph* apTmpStorage) const {
+const sFontGlyph* cFont::GetGlyphFromCodepoint(tU32 anChar, sFontGlyph* apTmpStorage) const {
   if (mptrTTF.IsOK()) {
     return mptrTTF->RenderCodepoint(anChar,mStates.mnResolution,mStates.mbDistanceField);
   }
@@ -1198,6 +1198,22 @@ const sFontGlyph* cFont::GetGlyph(tU32 anChar, sFontGlyph* apTmpStorage) const {
       anChar = '?';
     const tF32 fontSizeByRes = ni::FDiv(this->mStates.GetWidth(),(tF32)this->mStates.mnResolution);
     apTmpStorage->SetGlyphInBitmap(anChar, GetSize(), fontSizeByRes);
+    apTmpStorage->img = mptrImage;
+    return apTmpStorage;
+  }
+}
+
+///////////////////////////////////////////////
+const sFontGlyph* cFont::GetGlyphFromIndex(tU32 anGlyphIndex, sFontGlyph* apTmpStorage) const {
+  if (mptrTTF.IsOK()) {
+    return mptrTTF->RenderGlyphIndex(anGlyphIndex,mStates.mnResolution,mStates.mbDistanceField);
+  }
+  else {
+    // 16x16 grid of glyphs, max 256 characters, glyphindex is the same as the codepoint
+    if (anGlyphIndex >= 0xFF)
+      anGlyphIndex = '?';
+    const tF32 fontSizeByRes = ni::FDiv(this->mStates.GetWidth(),(tF32)this->mStates.mnResolution);
+    apTmpStorage->SetGlyphInBitmap(anGlyphIndex, GetSize(), fontSizeByRes);
     apTmpStorage->img = mptrImage;
     return apTmpStorage;
   }
@@ -1217,21 +1233,6 @@ tF32 cFont::GetCharRectHeight(const sRectf& rectTexCoo) const
   return mStates.GetHeight()*
       rectTexCoo.GetHeight()*GetTextureHeight()*
       mStates.mfInvResolution;
-}
-
-///////////////////////////////////////////////
-sRectf __stdcall cFont::GetCharTexCoo(tU32 c) const
-{
-  sFontGlyph tg;
-  return GetGlyph(c,&tg)->texCoo;
-}
-
-///////////////////////////////////////////////
-iTexture* __stdcall cFont::GetTexture() {
-  if (!mptrImage.IsOK()) return NULL;
-  iTexture* pTex = mptrImage->GrabTexture(eImageUsage_Source,sRecti::Null());
-  mStates.mptrMaterial->SetChannelTexture(eMaterialChannel_Base,pTex);
-  return pTex;
 }
 
 ///////////////////////////////////////////////
@@ -1262,19 +1263,65 @@ tF32 __stdcall cFont::GetAdvance(tU32 anChar) const {
 }
 
 ///////////////////////////////////////////////
+sRectf __stdcall cFont::GetCharTexCoo(tU32 c) const {
+  sFontGlyph tg;
+  return GetGlyphFromCodepoint(c,&tg)->texCoo;
+}
 iTexture* __stdcall cFont::GetCharTexture(tU32 anChar) const {
   sFontGlyph tg;
-  const sFontGlyph* g = GetGlyph(anChar,&tg);
+  const sFontGlyph* g = GetGlyphFromCodepoint(anChar,&tg);
   if (!g->img.IsOK())
     return NULL;
   return g->img->GrabTexture(eImageUsage_Source,sRecti::Null());
 }
 iBitmap2D* __stdcall cFont::GetCharBitmap(tU32 anChar) const {
   sFontGlyph tg;
-  const sFontGlyph* g = GetGlyph(anChar,&tg);
+  const sFontGlyph* g = GetGlyphFromCodepoint(anChar,&tg);
   if (!g->img.IsOK())
     return NULL;
   return g->img->GrabBitmap(eImageUsage_Source,sRecti::Null());
+}
+
+///////////////////////////////////////////////
+sRectf __stdcall cFont::GetGlyphTexCoo(tU32 anGlyphIndex) const {
+  sFontGlyph tg;
+  return GetGlyphFromIndex(anGlyphIndex,&tg)->texCoo;
+}
+iTexture* __stdcall cFont::GetGlyphTexture(tU32 anGlyphIndex) const {
+  sFontGlyph tg;
+  const sFontGlyph* g = GetGlyphFromIndex(anGlyphIndex,&tg);
+  if (!g->img.IsOK())
+    return NULL;
+  return g->img->GrabTexture(eImageUsage_Source,sRecti::Null());
+}
+iBitmap2D* __stdcall cFont::GetGlyphBitmap(tU32 anGlyphIndex) const {
+  sFontGlyph tg;
+  const sFontGlyph* g = GetGlyphFromIndex(anGlyphIndex,&tg);
+  if (!g->img.IsOK())
+    return NULL;
+  return g->img->GrabBitmap(eImageUsage_Source,sRecti::Null());
+}
+
+iOverlay* __stdcall cFont::GetGlyphOverlay(tU32 anGlyphIndex) const {
+  sFontGlyph tg;
+  const sFontGlyph* g = GetGlyphFromIndex(anGlyphIndex,&tg);
+  if (g->overlay.has_value())
+    return g->overlay;
+  if (!g->img.has_value())
+    return nullptr;
+
+  niLet graphics = niCheckNN(graphics,mpwGraphics,nullptr);
+  niLet glyphTexCoo = g->texCoo;
+  niLet glyphTex = niCheckNN(glyphTex,g->img->GrabTexture(eImageUsage_Source,sRecti::Null()),nullptr);
+  niLet glyphSize = glyphTexCoo.GetSize() * Vec2f((tF32)glyphTex->GetWidth(),(tF32)glyphTex->GetHeight());
+  niLet overlay = niCheckNN(overlay,graphics->CreateOverlayTexture(glyphTex),nullptr);
+  overlay->SetBlendMode(this->GetBlendMode());
+  overlay->SetFiltering(this->GetFiltering());
+  overlay->SetSize(glyphSize);
+  overlay->SetMapping(glyphTexCoo);
+  overlay->SetColor(ULColorToVec4f(mStates.mnColor));
+  const_cast<sFontGlyph*>(g)->overlay = overlay;
+  return g->overlay;
 }
 
 ///////////////////////////////////////////////
@@ -1282,7 +1329,7 @@ sVec2i __stdcall cFont::BlitCharEx(iBitmap2D* apDestBmp, tI32 anX, tI32 anY, tI3
   niCheckIsOK(apDestBmp,sVec2i::Zero());
 
   sFontGlyph tg;
-  const sFontGlyph* g = GetGlyph(anChar,&tg);
+  const sFontGlyph* g = GetGlyphFromCodepoint(anChar,&tg);
   if (!g->img.IsOK())
     return sVec2i::Zero();
 

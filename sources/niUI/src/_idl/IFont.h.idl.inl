@@ -505,6 +505,42 @@ IDLC_METH_BEGIN(ni,iFont,GetGlyphPath,4)
 	IDLC_RET_FROM_BASE(ni::eType_Vec2f,_Ret)
 IDLC_METH_END(ni,iFont,GetGlyphPath,4)
 
+/** ni -> iFont::GetGlyphTexCoo/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphTexCoo,1)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_RETVAR(sRectf,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphTexCoo,1,(anGlyphIndex))
+	IDLC_RET_FROM_BASE(ni::eType_Vec4f,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphTexCoo,1)
+
+/** ni -> iFont::GetGlyphTexture/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphTexture,1)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_RETVAR(iTexture*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphTexture,1,(anGlyphIndex))
+	IDLC_RET_FROM_INTF(iTexture,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphTexture,1)
+
+/** ni -> iFont::GetGlyphBitmap/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphBitmap,1)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_RETVAR(iBitmap2D*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphBitmap,1,(anGlyphIndex))
+	IDLC_RET_FROM_INTF(iBitmap2D,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphBitmap,1)
+
+/** ni -> iFont::GetGlyphOverlay/1 **/
+IDLC_METH_BEGIN(ni,iFont,GetGlyphOverlay,1)
+	IDLC_DECL_VAR(tU32,anGlyphIndex)
+	IDLC_BUF_TO_BASE(ni::eType_U32,anGlyphIndex)
+	IDLC_DECL_RETVAR(iOverlay*,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iFont,GetGlyphOverlay,1,(anGlyphIndex))
+	IDLC_RET_FROM_INTF(iOverlay,_Ret)
+IDLC_METH_END(ni,iFont,GetGlyphOverlay,1)
+
 IDLC_END_INTF(ni,iFont)
 
 IDLC_END_NAMESPACE()

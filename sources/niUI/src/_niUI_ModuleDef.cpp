@@ -7321,6 +7321,66 @@ static const ni::sMethodDef iFont_GetGlyphPath = {
 #endif
 };
 
+// Method: GetGlyphTexCoo
+static const ni::sParameterDef iFont_GetGlyphTexCoo_Parameters[1] = { 
+  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iFont_GetGlyphTexCoo = {
+  "GetGlyphTexCoo",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sRectf",
+  1, iFont_GetGlyphTexCoo_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFont_GetGlyphTexCoo)
+#else
+  NULL
+#endif
+};
+
+// Method: GetGlyphTexture
+static const ni::sParameterDef iFont_GetGlyphTexture_Parameters[1] = { 
+  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iFont_GetGlyphTexture = {
+  "GetGlyphTexture",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
+  1, iFont_GetGlyphTexture_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFont_GetGlyphTexture)
+#else
+  NULL
+#endif
+};
+
+// Method: GetGlyphBitmap
+static const ni::sParameterDef iFont_GetGlyphBitmap_Parameters[1] = { 
+  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iFont_GetGlyphBitmap = {
+  "GetGlyphBitmap",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
+  1, iFont_GetGlyphBitmap_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFont_GetGlyphBitmap)
+#else
+  NULL
+#endif
+};
+
+// Method: GetGlyphOverlay
+static const ni::sParameterDef iFont_GetGlyphOverlay_Parameters[1] = { 
+  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
+}; 
+static const ni::sMethodDef iFont_GetGlyphOverlay = {
+  "GetGlyphOverlay",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
+  1, iFont_GetGlyphOverlay_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iFont_GetGlyphOverlay)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iFont[] = {
 	&iFont_GetName,
 	&iFont_GetFamilyName,
@@ -7379,6 +7439,10 @@ static const ni::sMethodDef* Methods_iFont[] = {
 	&iFont_EnumGlyphs,
 	&iFont_GetGlyphCodePointFromName,
 	&iFont_GetGlyphPath,
+	&iFont_GetGlyphTexCoo,
+	&iFont_GetGlyphTexture,
+	&iFont_GetGlyphBitmap,
+	&iFont_GetGlyphOverlay,
 
 };
 

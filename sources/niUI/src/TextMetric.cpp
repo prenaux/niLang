@@ -15,7 +15,7 @@ tF32 sDisplayGlyph::Compute(
   const tU32 anChar)
 {
   sFontGlyph tg;
-  const sFontGlyph* g = apFont->GetGlyph(anChar,&tg);
+  const sFontGlyph* g = apFont->GetGlyphFromCodepoint(anChar,&tg);
   const sVec2f lead = g->lead * afFontSizeDivByRes;
   tF32 advance = g->xadv * afFontSizeDivByRes;
 

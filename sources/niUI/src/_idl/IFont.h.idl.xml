@@ -895,7 +895,9 @@
 				java_name="getGlyphPath"
 				name="GetGlyphPath"
 				num_parameters="4">
-				<comments desc="Get a glyph&apos;s outline to the specified path. "/>
+				<comments desc="Get a glyph&apos;s outline to the specified path. ">
+					<remark text="This has the side effect of caching the glyph. "/>
+				</comments>
 				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
 				<parameter
 					name="apPath"
@@ -918,6 +920,76 @@
 					type="const tF32"
 					typec="const tF32"
 					typei="ni::eTypeFlags_Constant|ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphTexCoo"
+				name="GetGlyphTexCoo"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphTexCoo"
+				property_name="glyph_tex_coo">
+				<comments desc="Get a glyph&apos;s texture coordinates. ">
+					<remark text="This has the side effect of caching the glyph. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="anGlyphIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphTexture"
+				name="GetGlyphTexture"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphTexture"
+				property_name="glyph_texture">
+				<comments desc="Get the texture in which the specified glyph is cached. "/>
+				<return type="iTexture *" typec="iTexture*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anGlyphIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphBitmap"
+				name="GetGlyphBitmap"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphBitmap"
+				property_name="glyph_bitmap">
+				<comments desc="Get the bitmap in which the specified glyph is cached. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anGlyphIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGlyphOverlay"
+				name="GetGlyphOverlay"
+				num_parameters="1"
+				property="get"
+				property_name2="glyphOverlay"
+				property_name="glyph_overlay">
+				<comments desc="Get the an overlay for the specified glyph. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anGlyphIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
 			</method>
 		</interface>
 	</namespace>

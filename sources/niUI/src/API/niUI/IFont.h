@@ -8,6 +8,7 @@ namespace ni {
 // forward declarations
 struct iCanvas;
 struct iVGPath;
+struct iOverlay;
 
 /** \addtogroup niUI
  * @{
@@ -324,7 +325,22 @@ struct iFont : public iUnknown
   virtual tU32 __stdcall GetGlyphCodePointFromName(const achar* aaszName) const = 0;
 
   //! Get a glyph's outline to the specified path.
+  //! \remark This has the side effect of caching the glyph.
   virtual sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex, const sVec2f& avOffset, const tF32 afScale) const = 0;
+
+  //! Get a glyph's texture coordinates.
+  //! {Property}
+  //! \remark This has the side effect of caching the glyph.
+  virtual sRectf __stdcall GetGlyphTexCoo(tU32 anGlyphIndex) const = 0;
+  //! Get the texture in which the specified glyph is cached.
+  //! {Property}
+  virtual iTexture* __stdcall GetGlyphTexture(tU32 anGlyphIndex) const = 0;
+  //! Get the bitmap in which the specified glyph is cached.
+  //! {Property}
+  virtual iBitmap2D* __stdcall GetGlyphBitmap(tU32 anGlyphIndex) const = 0;
+  //! Get the an overlay for the specified glyph.
+  //! {Property}
+  virtual iOverlay* __stdcall GetGlyphOverlay(tU32 anGlyphIndex) const = 0;
   //! @}
 };
 

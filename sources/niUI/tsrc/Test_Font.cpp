@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TestCanvasWidgetSink.h"
+#include "data/A.jpg.hxx"
 
 struct FFont {
   QPtr<iGraphics> graphics;
@@ -68,9 +69,54 @@ struct DrawTextIcons : public TestCanvasWidgetSink {
   TEST_CONSTRUCTOR_BASE(DrawTextIcons,TestCanvasWidgetSink) {
   }
 
+  NN<iOverlay> _bgPic = niDeferredInit(NN<iOverlay>);
+  NN<iFont> _iconFont = niDeferredInit(NN<iFont>);;
+  NN<iOverlay> _glyphSearch = niDeferredInit(NN<iOverlay>);
+  NN<iOverlay> _glyphHeart = niDeferredInit(NN<iOverlay>);
+
+  niFn(tBool) OnSinkAttached() niImpl {
+    niLet graphics = mpWidget->GetGraphics();
+    niLet fp = niCheckNN(fp,niFileOpenBin2H(A_jpg),eFalse);
+    niLet bmp = niCheckNN(bmp,graphics->LoadBitmap(fp),eFalse);
+    niLet tex = niCheckNN(tex,graphics->CreateTextureFromBitmap(
+      _H(fp->GetSourcePath()),bmp,eTextureFlags_Default),eFalse);
+    _bgPic = niCheckNN(_bgPic,graphics->CreateOverlayTexture(tex),eFalse);
+    _bgPic->SetFiltering(eTrue);
+
+    _iconFont = niCheckNN(_iconFont,graphics->LoadFont(_H("fas")),eFalse);
+    _iconFont->SetSizeAndResolution(Vec2f(64,64),64,mpWidget->GetUIContext()->GetContentsScale());
+
+    _iconFont->SetColor(0xFF0000FF);
+    niLet glyphIndexSearchIcon = _iconFont->GetGlyphIndexFromName("magnifying-glass");
+    _glyphSearch = niCheckNN(_glyphSearch,_iconFont->GetGlyphOverlay(glyphIndexSearchIcon),eFalse);
+
+    _iconFont->SetColor(0xFFFF0000);
+    _glyphHeart = niCheckNN(_glyphHeart,_iconFont->GetGlyphOverlay(_iconFont->GetGlyphIndexFromName("heart")),eFalse);
+
+    return eTrue;
+  }
+
   void PaintTest(iCanvas* apCanvas) niImpl {
-    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF996633);
-    // TODO: Draw actual text with icons in there...
+    apCanvas->BlitFill(apCanvas->GetViewport().ToFloat(), 0xFF222222);
+    apCanvas->BlitOverlay(
+      Rectf(5,5,_bgPic->GetSize().x,_bgPic->GetSize().y),
+      _bgPic);
+
+    apCanvas->BlitOverlay(
+      Rectf(
+        _bgPic->GetSize().x-_glyphSearch->GetSize().x,
+        5,
+        _glyphSearch->GetSize().x,_glyphSearch->GetSize().y),
+      _glyphSearch);
+
+    apCanvas->BlitOverlay(
+      Rectf(
+        (_bgPic->GetSize().x-_glyphHeart->GetSize().x)/2.0f,
+        (_bgPic->GetSize().y-_glyphHeart->GetSize().y)/2.0f,
+        _glyphHeart->GetSize().x,_glyphHeart->GetSize().y),
+      _glyphHeart);
+
+    apCanvas->Flush();
   }
 };
 TEST_FIXTURE_WIDGET(FFont,DrawTextIcons);

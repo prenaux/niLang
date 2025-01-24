@@ -101,7 +101,7 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName) {
      return ni::GetProperty("FIXTURE", aDefaultFixtureName);
   }();
 
-  GetTestAppContext()->_config.drawFPS = 2;
+  GetTestAppContext()->_config.drawFPS = 1;
   GetTestAppContext()->_config.backgroundUpdate = eTrue;
   // Refresh as fast as possible. Without this we'll have a sleep on some
   // platforms to save energy since the window is considered to be inactive.

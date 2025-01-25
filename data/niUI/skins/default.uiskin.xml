@@ -1,8 +1,7 @@
 <UISkin
   name="Default"
   author="David Schuyten"
-  bitmap="niUI://skins/UIDark.png"
-  icon_set="icons/editor">
+  bitmap="niUI://skins/UIDark.png">
 
   <!--***** DEFAULT VALUES ******-->
   <Default>

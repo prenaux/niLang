@@ -1569,7 +1569,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   }
 };
 
-struct sVulkanTexture : public ImplRC<iTexture> {
+struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource> {
   nn<sVulkanDriver> _driver;
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;

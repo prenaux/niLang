@@ -82,7 +82,11 @@
     if (!glyphIndex) {
       return ::LINT_AS_TYPE("iOverlay",null);
     }
-    return iconFont.GetGlyphOverlay(glyphIndex);
+    local icon = iconFont.GetGlyphOverlay(glyphIndex);
+    if (!icon) {
+      return ::LINT_AS_TYPE("iOverlay",null);
+    }
+    return icon.Clone();
   }
   function setIconGlyph(iWidget aW, string id, string name, bool _filter) {
     local w = id ? aW.FindWidget(id) : aW

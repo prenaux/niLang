@@ -155,6 +155,12 @@ void cButtonWidget::Paint_PushButton(const sRectf& aRect, iCanvas* apCanvas)
       mrectIcon.SetSize(size.x,size.y);
       rect.SetLeft(mrectIcon.GetRight()+mvIconMargin.Right());
     }
+
+    if (pFont) {
+      sVec4f iconColor = ULColorToVec4f(pFont->GetColor());
+      iconColor.w = pIcon->GetColor().w;
+      pIcon->SetColor(iconColor);
+    }
     apCanvas->BlitOverlay(mrectIcon,pIcon);
   }
 

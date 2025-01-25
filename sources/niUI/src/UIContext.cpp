@@ -180,11 +180,12 @@ struct sRootSink : public ImplRC<iWidgetSink> {
                       pFont,
                       sRectf(pos),
                       eFontFormatFlags_Border|eFontFormatFlags_CenterH,
-                      niFmt(_A("ID:%s,ZO:%d,DO:%d (%s)"),
+                      niFmt(_A("ID:%s,ZO:%d,DO:%d (%s:%s)"),
                             niHStr(ptrW->GetID()),
                             ptrW->GetZOrder(),
                             ptrW->GetDrawOrder(),
-                            niHStr(ptrW->GetClassName())));
+                            ptrW->GetClassName(),
+                            ptrW->GetSkinClass()));
 
                 }
               }
@@ -227,11 +228,12 @@ struct sRootSink : public ImplRC<iWidgetSink> {
                       pFont,
                       sRectf(pos),
                       eFontFormatFlags_Border|0,
-                      niFmt(_A("(IT) ID:%s.ZO:%d,DO:%d (%s)"),
+                      niFmt(_A("(IT) ID:%s.ZO:%d,DO:%d (%s:%s)"),
                             niHStr(ptrFT->GetID()),
                             ptrFT->GetZOrder(),
                             ptrFT->GetDrawOrder(),
-                            niHStr(ptrFT->GetClassName())));
+                            ptrFT->GetClassName(),
+                            ptrFT->GetSkinClass()));
                 }
 
                 // Mouse message target
@@ -248,12 +250,13 @@ struct sRootSink : public ImplRC<iWidgetSink> {
                   rootCanvas->BlitText(
                       pFont,sRectf(pos),
                       eFontFormatFlags_Border|0,
-                      niFmt(_A("(MT%s) ID:%s.ZO:%d,DO:%d (%s)"),
+                      niFmt(_A("(MT%s) ID:%s.ZO:%d,DO:%d (%s:%s)"),
                             (ptrFT.ptr()==ptrMT.ptr()) ? _A("/IT"):_A(""),
                             niHStr(ptrMT->GetID()),
                             ptrMT->GetZOrder(),
                             ptrMT->GetDrawOrder(),
-                            niHStr(ptrMT->GetClassName())));
+                            ptrMT->GetClassName(),
+                            ptrMT->GetSkinClass()));
 
                   pos = rectAbs.GetBottomRight();
                   rootCanvas->BlitText(

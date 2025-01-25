@@ -20,6 +20,73 @@ struct sToolbarSkin : public ImplRC<ni::iUnknown>
   Ptr<iOverlay> frame;
 };
 
+///////////////////////////////////////////////
+static tBool __stdcall _UpdateWidgetSizeFromText(
+  iWidget* w,
+  tWidgetStyleFlags style,
+  tF32 afMargin,
+  ainout<tF32> afMaxX)
+{
+  tF32 width = afMargin;
+  const char* text = nullptr;
+  QPtr<iWidgetButton> bt = w;
+  if (bt.has_value()) {
+    if (!niFlagIs(style,eWidgetButtonStyle_NoText)) {
+      text = niHStr(w->GetText());
+      if (bt->GetIcon()) {
+        width += ni::Max(bt->GetIconSize().x,bt->GetIcon()->GetSize().x);
+      }
+    }
+  }
+  else {
+    text = niHStr(w->GetText());
+  }
+
+  if (text && *text) {
+    sRectf rectText = w->GetFont()->ComputeTextSize(
+      sRectf::Null(),text,0);
+    width += rectText.GetWidth();
+
+    sVec2f size = w->GetSize();
+    size.x = width;
+    w->SetSize(size);
+    afMaxX = ni::Max(afMaxX, width);
+    return eTrue;
+  }
+  else {
+    return eFalse;
+  }
+}
+
+///////////////////////////////////////////////
+static tF32 __stdcall _UpdateWidgetWidth(iWidget* apGroup, tF32 afMargin) {
+  tF32 fMaxX = afMargin;
+  niLoop(i,apGroup->GetNumChildren()) {
+    iWidget* w = apGroup->GetChildFromIndex(i);
+    if (!w)
+      continue;
+
+    niLet style = w->GetStyle();
+    if (niFlagIs(style,eWidgetStyle_Free) ||
+        niFlagIs(style,eWidgetStyle_NCRelative))
+    {
+      continue;
+    }
+
+    niLet numChildren = w->GetNumChildren();
+    if (numChildren == 0) {
+      _UpdateWidgetSizeFromText(
+        w,style,afMargin,fMaxX);
+    }
+    else {
+      fMaxX = ni::Max(fMaxX, _UpdateWidgetWidth(w,afMargin));
+    }
+  }
+
+  apGroup->SetSize(Vec2(fMaxX,apGroup->GetSize().y));
+  return fMaxX;
+}
+
 //----------------------------------------------------------------------------
 //
 // Section: sWidgetToolbarButton
@@ -344,6 +411,16 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
         }
       }
     } while(bErased);
+    niLoop(i,mvPages.size()) {
+      sPage& p = mvPages[i];
+      niLoop(i,p.wPage->GetNumChildren()) {
+        Ptr<iWidget> group = p.wPage->GetChildFromIndex(i);
+        QPtr<iWidgetToolbarGroup> tbGroup = group;
+        if (tbGroup.has_value()) {
+          tbGroup->SetWidthFromChildren();
+        }
+      }
+    }
     _ActivatePage(mnActivePage);
     _UpdatePagesStatus();
     _ComputeSize();
@@ -729,7 +806,6 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
       return NULL;
     }
     g->SetCommandDestination(aCmdDest);
-    g->SetWidthFromChildren();
 
     UpdateToolbar();
     return w.GetRawAndSetNull();
@@ -923,16 +999,11 @@ class cWidgetToolbarGroup : public ni::cWidgetSinkImpl<ni::iWidgetToolbarGroup>
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetWidthFromChildren() {
-    mpWidget->SetSize(Vec2(1000.0f,mpWidget->GetSize().y));
-    tF32 fMaxX = mpWidget->GetFont()->ComputeTextSize(sRectf::Null(),niHStr(mpWidget->GetText()),eFontFormatFlags_CenterH).GetWidth();
-    niLoop(i,mpWidget->GetNumChildren()) {
-      iWidget* w = mpWidget->GetChildFromIndex(i);
-      if (niIsOK(w) && !niFlagIs(w->GetStyle(),eWidgetStyle_Free) && !niFlagIs(w->GetStyle(),eWidgetStyle_NCRelative)) {
-        fMaxX = ni::Max(fMaxX,w->GetRect().Right());
-      }
-    }
-    fMaxX += skin.frameNormal->GetFrame().Left()+skin.frameNormal->GetFrame().Right();
-    mpWidget->SetSize(Vec2(fMaxX,mpWidget->GetSize().y));
+    _UpdateWidgetWidth(
+      mpWidget,
+      4+
+      skin.frameNormal->GetFrame().Left()+
+      skin.frameNormal->GetFrame().Right());
   }
 
   ///////////////////////////////////////////////

@@ -70,7 +70,7 @@
     return _iconFont;
   }
 
-  function loadIconGlyphOverlay(aName,_aFont) iOverlay {
+  function loadIconGlyph(aName,_aFont) iOverlay {
     if (!aName) {
       return ::LINT_AS_TYPE("iOverlay",null);
     }
@@ -89,7 +89,7 @@
     if (w) {
       local wButton = w.QueryInterface("iWidgetButton")
       if (wButton) {
-        wButton.icon = loadIconGlyphOverlay(name)
+        wButton.icon = loadIconGlyph(name)
         if (wButton.icon) {
           wButton.icon.filtering = _filter
           w.style |= ::eWidgetButtonStyle.IconCenter|
@@ -98,51 +98,6 @@
       }
     }
     return w
-  }
-
-  function loadIcon(aW,id,name,max,min) {
-    local w = id ? aW.FindWidget(id) : aW
-    if (w) {
-      local skinDT = aW.uicontext.skin_data_table[w.skin]
-      if (skinDT) {
-        local iconSet = skinDT.string.icon_set
-        return aW.uicontext.image_map.AddImageFromIconSet(null,iconSet,name,max,min)
-      }
-    }
-  }
-  function loadIconSmall(aW,id,name) {
-    return loadIcon(aW,id,name,32,16)
-  }
-  function loadIconLarge(aW,id,name) {
-    return loadIcon(aW,id,name,64,16)
-  }
-
-  function setIcon(aW,id,name,max,min,filter) {
-    local w = id ? aW.FindWidget(id) : aW
-    if (w) {
-      local skinDT = aW.uicontext.skin_data_table[w.skin]
-      if (skinDT) {
-        local iconSet = skinDT.string.icon_set
-        w.icon = aW.uicontext.image_map.AddImageFromIconSet(null,iconSet,name,max,min)
-        if (w.icon) {
-          w.icon.filtering = filter
-          w.style |= ::eWidgetButtonStyle.IconCenter|::eWidgetButtonStyle.NoText|::eWidgetButtonStyle.IconFit
-        }
-      }
-    }
-    return w
-  }
-  function setIconSmall(aW,id,name) {
-    return setIcon(aW,id,name,32,16,false)
-  }
-  function setIconLarge(aW,id,name) {
-    return setIcon(aW,id,name,128,16,false)
-  }
-  function setIconSmallF(aW,id,name) {
-    return setIcon(aW,id,name,32,16,true)
-  }
-  function setIconLargeF(aW,id,name) {
-    return setIcon(aW,id,name,128,16,true)
   }
 
   function blitFit(aDest,aSrc) {
@@ -479,7 +434,7 @@
     return ::gui.createWidget(aCtx,"ScrollBar",aParent,aRect,aID,0)
   }
 
-  function createDropDown(aButton,aResPath) {
+  function createDropDown(aButton,aResPath) iWidget {
     local c = ::gUIContext.CreateWidgetFromResource(aResPath, ::gUIContext.root_widget, null,null)
     if (!c) {
       throw "Can't create toolbar drop down from '"+aResPath+"'."
@@ -487,7 +442,7 @@
     return createDropDownEx(aButton, c);
   }
 
-  function createDropDownEx(aButton,aWidget) {
+  function createDropDownEx(aButton,iWidget aWidget) iWidget {
     local c = ::gUIContext.CreateWidget(
       "Group",aWidget.parent,
       ::Rect(0,0,100,100),
@@ -533,7 +488,7 @@
 
     c.AddPostSink(postSink)
     aWidget.SetFocus()
-    return aWidget
+    return aWidget;
   }
 
   function initDesktopWidget() {
@@ -633,7 +588,8 @@
       local icon = ::gui.createButton(aUICtx,left,::Rect(0,0,32,32),"","ID_Icon")
       icon.style |= ::eWidgetButtonStyle.IconFit|::eWidgetButtonStyle.NoFrame
       icon.dock_style = ::eWidgetDockStyle.SnapCenter
-      ::gui.setIconLarge(form,"ID_Icon",aIcon)
+      icon.icon_margin = ::Vec4(5,5,5,5)
+      ::gui.setIconGlyph(form,"ID_Icon",aIcon)
     }
 
     // create the label
@@ -649,7 +605,6 @@
     rect.width += iconLeft
 
     // get the form's size
-    local iconSize = 32
     local buttonsWidth = 86*aButtons.len()
     local formWidth;
     if (buttonsWidth > rect.width) {
@@ -662,7 +617,6 @@
 
     // create the buttons
     local buttonsDock = ::gUIContext.CreateWidget("Dummy",bottom,
-                                                  //::Rect(0,0,(iconSize)*aButtons.len(),(iconSize)),0,null)
                                                   ::Rect(0,0,buttonsWidth,bottom.size.y),0,null)
     buttonsDock.dock_style = ::eWidgetDockStyle.SnapCenter
     foreach (bt in aButtons) {
@@ -679,10 +633,10 @@
     form.zorder = ::eWidgetZOrder.TopMost
     form.input_submit_flags = ::eUIInputSubmitFlags.SubmitA
     try {
-      ::gui.setIconSmall(form,"ID_OK","validation")
-      ::gui.setIconSmall(form,"ID_Yes","validation")
-      ::gui.setIconSmall(form,"ID_No","cancel")
-      ::gui.setIconSmall(form,"ID_Cancel","cancel")
+      ::gui.setIconGlyph(form,"ID_OK","check")
+      ::gui.setIconGlyph(form,"ID_Yes","check")
+      ::gui.setIconGlyph(form,"ID_No","xmark-large")
+      ::gui.setIconGlyph(form,"ID_Cancel","xmark-large")
     } catch(e) {}
     return form
   }
@@ -777,10 +731,10 @@
     }
 
     try {
-      ::gui.setIconSmall(form,"ID_OK","validation")
-      ::gui.setIconSmall(form,"ID_Yes","validation")
-      ::gui.setIconSmall(form,"ID_No","cancel")
-      ::gui.setIconSmall(form,"ID_Cancel","cancel")
+      ::gui.setIconGlyph(form,"ID_OK","check")
+      ::gui.setIconGlyph(form,"ID_Yes","check")
+      ::gui.setIconGlyph(form,"ID_No","xmark-large")
+      ::gui.setIconGlyph(form,"ID_Cancel","xmark-large")
     } catch(e) {}
 
     local sink = {
@@ -859,8 +813,8 @@
     }
 
     try {
-      ::gui.setIconSmall(form,"ID_OK","validation")
-      ::gui.setIconSmall(form,"ID_Cancel","cancel")
+      ::gui.setIconGlyph(form,"ID_OK","check")
+      ::gui.setIconGlyph(form,"ID_Cancel","xmark-large")
     } catch(e) {}
 
     local sink = {

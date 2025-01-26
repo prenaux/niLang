@@ -87,6 +87,27 @@ static tF32 __stdcall _UpdateWidgetWidth(iWidget* apGroup, tF32 afMargin) {
   return fMaxX;
 }
 
+static QPtr<iWidgetToolbar> _FindParentToolbar(iWidget* apWidget) {
+  iWidget* p = apWidget ? apWidget->GetParent() : nullptr;
+  for (tU32 i = 0; p && i < 3; ++i) {
+    QPtr<iWidgetToolbar> tb = p;
+    if (tb.has_value()) {
+      return tb;
+    }
+    p = p->GetParent();
+  }
+  return nullptr;
+}
+
+static void _HideAutoHidePages(iWidget* apWidget) {
+  QPtr<iWidgetToolbar> tb = _FindParentToolbar(apWidget);
+  if (tb.has_value()) {
+    if (tb->GetAutoHide()) {
+      tb->SetShowPage(ni::eFalse);
+    }
+  }
+}
+
 //----------------------------------------------------------------------------
 //
 // Section: sWidgetToolbarButton
@@ -183,6 +204,36 @@ struct sWidgetToolbarBars : public ni::cWidgetSinkImpl<>
   }
   virtual tBool __stdcall OnNCRightClickDown(const sVec2f& avMousePos, const sVec2f& avNCMousePos) {
     _HidePages(eTrue);
+    return eFalse;
+  }
+};
+
+//----------------------------------------------------------------------------
+//
+// Section: sWidgetAutoHidePagesSink
+//
+//----------------------------------------------------------------------------
+struct sWidgetAutoHidePagesSink : public ImplRC<iWidgetSink>
+{
+  virtual tBool __stdcall OnWidgetSink(
+    iWidget *apWidget, tU32 anMsg,
+    const ni::Var& aA, const ni::Var& aB) niImpl
+  {
+    switch (anMsg) {
+      case eUIMessage_LeftClickDown: {
+        // niDebugFmt(("... sWidgetAutoHidePagesSink::_LeftClickDown: %s", apWidget->GetID()));
+        _HideAutoHidePages(apWidget);
+        break;
+      }
+      case eUIMessage_NCLeftClickDown: {
+        // niDebugFmt(("... sWidgetAutoHidePagesSink::_NCLeftClickDown: %s", apWidget->GetID()));
+        break;
+      }
+      case eUIMessage_MouseEnter: {
+        // niDebugFmt(("... sWidgetAutoHidePagesSink::_MouseEnter: %s", apWidget->GetID()));
+        break;
+      }
+    }
     return eFalse;
   }
 };
@@ -287,7 +338,10 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
 
  public:
   //! Constructor.
-  cWidgetToolbar() : skin(niNew sToolbarSkin())  {
+  cWidgetToolbar()
+      : skin(niNew sToolbarSkin())
+      , mAutoHidePagesSink(niNew sWidgetAutoHidePagesSink())
+  {
     ZeroMembers();
   }
 
@@ -325,6 +379,7 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
       mwTopBar->SetDockStyle(eWidgetDockStyle_DockTop);
       mwTopBar->SetSkinClass(_H("Toolbar"));
       mwTopBar->AddSink(niNew sWidgetToolbarTopBar(skin));
+      mwTopBar->AddSink(mAutoHidePagesSink);
     }
 
     // Create the bottom bar
@@ -774,6 +829,8 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
     w.cmdDest = aCmdDest;
     w.fWidth = afWidth; // negative width to dock on the left instead of the right
     apWidget->SetParent(mwTopBar);
+    apWidget->RemoveSink(mAutoHidePagesSink);
+    apWidget->AddSink(mAutoHidePagesSink);
     mvTopWidgets.push_back(w);
     UpdateToolbar();
     return ni::eTrue;
@@ -917,6 +974,7 @@ class cWidgetToolbar : public ni::cWidgetSinkImpl<ni::iWidgetToolbar>
   }
 
   Ptr<iMessageHandler> mCommandDestination;
+  NN<sWidgetAutoHidePagesSink> mAutoHidePagesSink = niDeferredInit(NN<sWidgetAutoHidePagesSink>);
 
   niEndClass(cWidgetToolbar);
 };

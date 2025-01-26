@@ -27,7 +27,8 @@ static GLint knGLSamplerFilterAnisotropy = 8;
 
 #include "../../nicgc/src/mojoshader/mojoshader.h"
 #include "FixedShaders.h"
-
+#include "GDRV_Gpu.h"
+#include <niLang/Utils/IDGenerator.h>
 // #define GL_DEBUG_MISSING_MIPMAPS 4
 
 //--------------------------------------------------------------------------------------------
@@ -3363,7 +3364,7 @@ static tBool GL2_ApplyMaterialChannel(
 const achar* GL2Drv_GetName() { return _A("GL2"); }
 const achar* GL2Drv_GetDesc() { return _A("GL2 Graphics Driver"); }
 
-struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
+struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu>
 {
   iGraphics* mpGraphics;
   sGLCache   mCache;
@@ -4524,7 +4525,576 @@ struct cGLES2GraphicsDriver : public ImplRC<iGraphicsDriver>
     }
     // _glFlush();
   }
+
+  //// iGraphicsDriverGpu ///////////////////////////////
+
+  LocalIDGenerator _idGenerator;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
+  virtual Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
+  virtual iHString* __stdcall GetGpuFunctionTarget() const niImpl;
+  virtual Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) niImpl;
+  virtual Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() niImpl;
+  virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl;
+  virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
+  virtual tBool __stdcall BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) niImpl;
+  virtual Ptr<iRayGpuPipeline> __stdcall CreateRayPipeline(iHString* ahspName, iRayGpuFunctionTable* apFunctionTable) niImpl;
+  virtual Ptr<iRayGpuFunctionTable> __stdcall CreateRayFunctionTable() niImpl;
+  virtual Ptr<iAccelerationStructurePrimitives> __stdcall CreateAccelerationStructurePrimitives(iHString* ahspName) niImpl;
+  virtual Ptr<iAccelerationStructureInstances> __stdcall CreateAccelerationStructureInstances(iHString* ahspName) niImpl;
+  //// iGraphicsDriverGpu ///////////////////////////////
+
 };
+
+struct sOpenGLBuffer : public ImplRC<iGpuBuffer, eImplFlags_DontInherit1, iDeviceResource> {
+  tHStringPtr _name;
+  GLuint _glBuffer = GLDRV_INVALID_HANDLE;
+  eGpuBufferMemoryMode _memMode;
+  tGpuBufferUsageFlags _usage;
+  tU32 _lockOffset = 0, _lockSize = 0;
+  tU32 _modifiedOffset = 0, _modifiedSize = 0;
+  tU32 _lockMode = eInvalidHandle;
+  tBool _boundModifiedBuffer = eFalse;
+  astl::vector<tU8> _bufferData;
+  GLenum _bufferTarget = GL_ARRAY_BUFFER;
+
+  sOpenGLBuffer(eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage)
+    : _memMode(aMemMode) , _usage(aUsage) {
+
+    if (niFlagIs(_usage, eGpuBufferUsageFlags_Vertex)) {
+      _bufferTarget = GL_ARRAY_BUFFER;
+    }
+    else if (niFlagIs(_usage, eGpuBufferUsageFlags_Index)) {
+      _bufferTarget = GL_ELEMENT_ARRAY_BUFFER;
+    }
+  }
+
+  ~sOpenGLBuffer() {
+    _DestroyBuffer();
+  }
+
+  tBool _CreateBuffer(tU32 anSize, tU32 anMinAlignment) {
+    glGenBuffers(1, &_glBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _glBuffer);
+
+    GLenum usage = GL_STATIC_DRAW;
+    switch (_memMode) {
+      case eGpuBufferMemoryMode_Shared:
+        usage = GL_DYNAMIC_DRAW;
+        break;
+      case eGpuBufferMemoryMode_Private:
+        usage = GL_STATIC_DRAW;
+        break;
+      case eGpuBufferMemoryMode_Managed:
+        usage = GL_DYNAMIC_DRAW;
+        break;
+    }
+
+    _bufferData.resize(anSize);
+    ni::MemZero(_bufferData.data(), _bufferData.size());
+    glBufferData(_bufferTarget, anSize, _bufferData.data(), usage);
+    return eTrue;
+  }
+
+  void _DestroyBuffer() {
+    if (_glBuffer != GLDRV_INVALID_HANDLE) {
+      glDeleteBuffers(1, &_glBuffer);
+      _glBuffer = GLDRV_INVALID_HANDLE;
+    }
+  }
+
+  void _Untrack() {
+    _modifiedOffset = _modifiedSize = 0;
+    _boundModifiedBuffer = eFalse;
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _glBuffer != GLDRV_INVALID_HANDLE;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    if (_glBuffer == GLDRV_INVALID_HANDLE) return NULL;
+    glBindBuffer(_bufferTarget, _glBuffer);
+    return this;
+  }
+
+  virtual tU32 __stdcall GetSize() const niImpl {
+    // GLint size;
+    // glBindBuffer(_bufferTarget, _glBuffer);
+    // glGetBufferParameteriv(_bufferTarget, GL_BUFFER_SIZE, &size);
+    return _bufferData.size();
+  }
+
+  virtual eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
+    return _memMode;
+  }
+
+  virtual tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
+    return _usage;
+  }
+
+  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) niImpl {
+    niCheck(_memMode != eGpuBufferMemoryMode_Private, nullptr);
+    niCheck(!GetIsLocked(), nullptr);
+
+    _lockMode = aLock;
+    _lockOffset = anOffset;
+    _lockSize = anSize ? anSize : (GetSize() - anOffset);
+
+    if (_modifiedSize == 0) {
+      _modifiedOffset = _lockOffset;
+      _modifiedSize = _lockSize;
+    }
+    else if ((_lockOffset < (_modifiedOffset + _modifiedSize)) &&
+             (_lockOffset + _lockSize) > _modifiedOffset) {
+      if (_boundModifiedBuffer) {
+        niWarning(niFmt(
+          "Lock(%d,%d,%d): %p: [lo:%d,ls:%d] [mo:%d,ms:%d] Locked inflight overlapping area.",
+          anOffset, anSize, aLock,
+          (tIntPtr)this,
+          _lockOffset, _lockSize,
+          _modifiedOffset, _modifiedSize));
+      }
+      const tU32 newStart = ni::Min(_modifiedOffset, _lockOffset);
+      const tU32 newEnd = ni::Max(_modifiedOffset + _modifiedSize,
+                                  _lockOffset + _lockSize);
+      _modifiedOffset = newStart;
+      _modifiedSize = newEnd - newStart;
+    }
+
+    return (tPtr)_bufferData.data() + _lockOffset;
+  }
+
+  virtual tBool __stdcall Unlock() niImpl {
+    if (!GetIsLocked())
+      return eFalse;
+
+    if (!niFlagIs(_lockMode,eLock_ReadOnly)) {
+      _glBindBuffer(_bufferTarget,_glBuffer);
+      _glBufferSubData(_bufferTarget, _lockOffset, _lockSize, _bufferData.data()+_lockOffset);
+      _glBindBuffer(_bufferTarget,0);
+    }
+
+    _lockMode = eInvalidHandle;
+    _lockOffset = _lockSize = 0;
+    return eTrue;
+  }
+
+  virtual tBool __stdcall GetIsLocked() const niImpl {
+    return _lockSize != 0;
+  }
+
+};
+
+#define NISH_OPENGL_TARGET glsl_macos41
+
+_HDecl(NISH_OPENGL_TARGET);
+static niInline iHString* _GetOpenGLGpuFunctionTarget() {
+  return _HC(NISH_OPENGL_TARGET);
+}
+
+struct sOpenGLFunction : public ImplRC<iGpuFunction, eImplFlags_DontInherit1, iDeviceResource> {
+  NN<iDataTable> _datatable = niDeferredInit(NN<iDataTable>);
+  const eGpuFunctionType _functionType;
+  const tU32 _id;
+  tHStringPtr _hspName;
+  GLuint _glShader = 0; // OpenGL ES shader object
+  eGpuFunctionBindType _bindType;
+
+  sOpenGLFunction(
+    ain<eGpuFunctionType> aFuncType,
+    ain<tU32> anID)
+      : _functionType(aFuncType)
+      , _id(anID)
+  {}
+
+  ~sOpenGLFunction() {
+    if (_glShader) {
+      glDeleteShader(_glShader); // Delete the shader object
+      _glShader = 0;
+    }
+  }
+
+  tBool _Compile(iHString* ahspPath) {
+    GLenum type = _GetOpenGLShaderType(_functionType);
+    if (!type) {
+      niError(niFmt("Shader type [%s] is not supported", _functionType));
+      return eFalse;
+    }
+
+    _hspName = ahspPath;
+
+    // GpuFunctionDT_Load(niHStr(ahspPath), _GetOpenGLGpuFunctionTarget(), &_bindType);
+    _datatable = niCheckNN(_datatable, GpuFunctionDT_Load(niHStr(ahspPath), _GetOpenGLGpuFunctionTarget(), &_bindType), eFalse);
+    NN<iFile> glslSource = niCheckNN_(
+      glslSource, GpuFunctionDT_GetSourceData(_datatable),
+      niFmt("Can't get gpufunc data for target '%s' in '%s'.", _GetOpenGLGpuFunctionTarget(), ahspPath),
+      eFalse);
+
+    glslSource->SeekSet(0);
+    astl::vector<tU8> data;
+    data.resize(glslSource->GetSize());
+    if (glslSource->ReadRaw((tPtr)data.data(), data.size()) != data.size()) {
+      niError(niFmt("Can't read gpufunc data for target '%s' in '%s'.", _GetOpenGLGpuFunctionTarget(), ahspPath));
+      return eFalse;
+    }
+
+    // Null-terminate the shader source string
+    data.push_back(0);
+
+    // Create and compile the shader
+    _glShader = glCreateShader(type);
+    if (!_glShader) {
+      niError("Failed to create OpenGL shader.");
+      return eFalse;
+    }
+
+    const char* source = reinterpret_cast<const char*>(data.data());
+    glShaderSource(_glShader, 1, &source, nullptr);
+    glCompileShader(_glShader);
+
+    // Check for compilation errors
+    GLint compileStatus;
+    glGetShaderiv(_glShader, GL_COMPILE_STATUS, &compileStatus);
+    if (compileStatus != GL_TRUE) {
+      GLchar infoLog[1024];
+      glGetShaderInfoLog(_glShader, sizeof(infoLog), nullptr, infoLog);
+      niError(niFmt("Shader compilation failed: %s", infoLog));
+      glDeleteShader(_glShader);
+      _glShader = 0;
+      return eFalse;
+    }
+
+    niDebugFmt(("Shader compilation succeed: %s", ahspPath));
+    return eTrue;
+  }
+
+  virtual tU32 __stdcall GetFunctionId() const niImpl {
+    return _id;
+  }
+
+  virtual eGpuFunctionType __stdcall GetFunctionType() const niImpl {
+    return _functionType;
+  }
+
+  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl {
+    return _bindType;
+  }
+
+  virtual iDataTable* __stdcall GetDataTable() const niImpl {
+    return _datatable;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _hspName;
+  }
+
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+    // Helper function to map eGpuFunctionType to OpenGL ES shader type
+  GLenum _GetOpenGLShaderType(eGpuFunctionType type) const {
+    switch (type) {
+      case eGpuFunctionType_Vertex:   return GL_VERTEX_SHADER;
+      case eGpuFunctionType_Pixel:    return GL_FRAGMENT_SHADER;
+      default:                        return 0;
+    }
+  }
+};
+
+struct sOpenGLRasterPipeline :
+  public ImplRC<iGpuPipeline, eImplFlags_DontInherit1, iDeviceResource>
+{
+  nn<cGLES2GraphicsDriver> _driver; // TODO: Should be a weakptr
+  tHStringPtr _hspName;
+  NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
+  eGpuFunctionBindType _gpufuncBindType = eGpuFunctionBindType_None;
+
+  GLuint _programID = 0;
+  GLuint _vaoID = 0;
+  GLuint _vboID = 0;
+
+  sOpenGLRasterPipeline(ain<nn<cGLES2GraphicsDriver>> aDriver)
+    : _driver(aDriver)
+  {}
+
+  ~sOpenGLRasterPipeline() {
+    _DestroyPipeline();
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _hspName;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+
+  tBool _CreateNoneDescSetLayout() {
+    // In OpenGL, descriptor sets are not used, so this function is a no-op.
+    return eTrue;
+  }
+
+  tBool _CreateFixedDescSetLayout() {
+    // In OpenGL, descriptor sets are not used, so this function is a no-op.
+    return eTrue;
+  }
+
+  tBool _CreateOpenGLPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) {
+    niCheckIsOK(apDesc, eFalse);
+    _hspName = ahspName;
+    _desc = niCheckNN(_desc, apDesc->Clone(), eFalse);
+
+    niLet graphics = as_nn(_driver->GetGraphics());
+
+    // Shaders
+    sOpenGLFunction* vs = (sOpenGLFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
+    niCheck(vs, eFalse);
+    sOpenGLFunction* ps = (sOpenGLFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
+    niCheck(ps, eFalse);
+
+    // Check that pipeline gpu functions use compatible bind types
+    {
+      niLet vsFuncBindType = vs->GetFunctionBindType();
+      niLet psFuncBindType = ps->GetFunctionBindType();
+      if (vsFuncBindType != psFuncBindType &&
+          vsFuncBindType != eGpuFunctionBindType_None &&
+          psFuncBindType != eGpuFunctionBindType_None)
+      {
+        niError(niFmt(
+                  "Incompatible gpu function bind types: vertex='%d', pixel='%d'",
+                  vsFuncBindType, psFuncBindType));
+        return eFalse;
+      }
+      _gpufuncBindType = ni::Max(vsFuncBindType, psFuncBindType);
+    }
+
+    // Create the OpenGL program
+    _programID = glCreateProgram();
+    glAttachShader(_programID, vs->_glShader);
+    glAttachShader(_programID, ps->_glShader);
+    glLinkProgram(_programID);
+
+    // Check for linking errors
+    GLint success;
+    glGetProgramiv(_programID, GL_LINK_STATUS, &success);
+    if (!success) {
+      GLchar infoLog[512];
+      glGetProgramInfoLog(_programID, 512, nullptr, infoLog);
+      niError(niFmt("Shader program linking failed: %s", infoLog));
+      return eFalse;
+    }
+
+    // Vertex input
+    const cFVFDescription fvfDesc(_desc->GetFVF());
+    // glGenVertexArrays(1, &_vaoID);
+    glGenBuffers(1, &_vboID);
+    // glBindVertexArray(_vaoID);
+    glBindBuffer(GL_ARRAY_BUFFER, _vboID);
+
+#if 0
+
+    // Set up vertex attributes
+    niLet vertexAttrs = OpenGL_CreateVertexInputDesc(fvfDesc.GetFVF());
+    for (const auto& attr : vertexAttrs) {
+      glEnableVertexAttribArray(attr.location);
+      glVertexAttribPointer(
+        attr.location,
+        attr.size,
+        attr.type,
+        attr.normalized,
+        fvfDesc.GetStride(),
+        (void*)(uintptr_t)attr.offset);
+    }
+
+    // glBindVertexArray(0);
+
+    // Rasterization
+    niLet rs = GetGpuRasterizerDesc(graphics, _desc->GetRasterizerStates());
+    if (rs->mbWireframe) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    glCullFace(_ToGLCullFace(rs->mCullingMode));
+    // glFrontFace(_glFrontFace);
+
+    // Depth stencil
+    niLet ds = GetGpuDepthStencilDesc(graphics, _desc->GetDepthStencilStates());
+    if (ds->mbDepthTest) {
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(_ToGLCompareFunc(ds->mDepthTestCompare));
+      glDepthMask(ds->mbDepthTestWrite ? GL_TRUE : GL_FALSE);
+    } else {
+      glDisable(GL_DEPTH_TEST);
+    }
+
+    if (ds->mStencilMode != eStencilMode_None) {
+      glEnable(GL_STENCIL_TEST);
+      glStencilFunc(_ToGLCompareFunc(ds->mStencilFrontCompare), ds->mnStencilRef, ds->mnStencilMask);
+      glStencilOp(
+        _ToGLStencilOp(ds->mStencilFrontFail),
+        _ToGLStencilOp(ds->mStencilFrontPassDepthPass),
+        _ToGLStencilOp(ds->mStencilFrontPassDepthFail));
+      if (ds->mStencilMode == eStencilMode_TwoSided) {
+        glStencilFuncSeparate(GL_BACK, _ToGLCompareFunc(ds->mStencilBackCompare), ds->mnStencilRef, ds->mnStencilMask);
+        glStencilOpSeparate(
+          GL_BACK,
+          _ToGLStencilOp(ds->mStencilBackFail),
+          _ToGLStencilOp(ds->mStencilBackPassDepthPass),
+          _ToGLStencilOp(ds->mStencilBackPassDepthFail));
+      }
+    } else {
+      glDisable(GL_STENCIL_TEST);
+    }
+
+    // Blend mode
+    if (_desc->GetBlendMode()) {
+      const sGpuBlendModeDesc* bm = (const sGpuBlendModeDesc*)_desc->GetBlendMode()->GetDescStructPtr();
+      glEnable(GL_BLEND);
+      // glBlendFuncSeparate(
+        // _ToGLBlendFunc(bm->mSrcRGB),
+        // _ToGLBlendFunc(bm->mDstRGB),
+        // _ToGLBlendFunc(bm->mSrcAlpha),
+        // _ToGLBlendFunc(bm->mDstAlpha));
+      // glBlendEquation(_ToGLBlendEquation(bm->mOp));
+    } else {
+      glDisable(GL_BLEND);
+    }
+#endif
+    return eTrue;
+  }
+
+  virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl {
+    return _desc;
+  }
+
+  void _DestroyPipeline() {
+    if (_programID) {
+      glDeleteProgram(_programID);
+      _programID = 0;
+    }
+
+    if (_vaoID) {
+      // glDeleteVertexArrays(1, &_vaoID);
+      _vaoID = 0;
+    }
+    if (_vboID) {
+      glDeleteBuffers(1, &_vboID);
+      _vboID = 0;
+    }
+  }
+};
+
+Ptr<iGpuBuffer> cGLES2GraphicsDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
+  niLet buffer = ni::MakeNN<sOpenGLBuffer>(aMemMode,aUsage);
+  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
+  return buffer;
+}
+
+Ptr<iGpuBuffer> cGLES2GraphicsDriver::CreateGpuBufferFromData(iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
+  niCheckIsOK(apFile,nullptr);
+  astl::vector<tU8> data;
+  data.resize(anSize);
+  if (apFile->ReadRaw(data.data(),anSize) != anSize) {
+    return nullptr;
+  }
+  return this->CreateGpuBufferFromDataRaw(ahspName,data.data(),anSize,aMemMode,aUsage);
+}
+
+Ptr<iGpuBuffer> cGLES2GraphicsDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
+  niCheck(apData != nullptr, nullptr);
+  niLet buffer = ni::MakeNN<sOpenGLBuffer>(aMemMode,aUsage);
+  // TODO: Alignment should be a parameter or coming from a device cap
+  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
+  {
+    niLet data = buffer->Lock(0,anSize,eLock_Discard);
+    niCheck(data != nullptr,nullptr);
+    memcpy(data,apData,anSize);
+    buffer->Unlock();
+  }
+  return buffer;
+}
+
+iHString* cGLES2GraphicsDriver::GetGpuFunctionTarget() const {
+  return _GetOpenGLGpuFunctionTarget();
+}
+
+Ptr<iGpuFunction> cGLES2GraphicsDriver::CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) {
+  niLet newId = _idGenerator.AllocID();
+  NN<sOpenGLFunction> func = ni::MakeNN<sOpenGLFunction>(aType,newId);
+  if (!func->_Compile(ahspPath)) {
+    _idGenerator.FreeID(newId);
+    niError(niFmt("Can't create gpu function '%s': Compilation failed.", ahspPath));
+    return nullptr;
+  }
+  return func;
+}
+
+Ptr<iGpuPipelineDesc> cGLES2GraphicsDriver::CreateGpuPipelineDesc() {
+  return ni::_CreateGpuPipelineDesc();
+}
+
+Ptr<iGpuBlendMode> cGLES2GraphicsDriver::CreateGpuBlendMode() {
+  return ni::_CreateGpuBlendMode();
+}
+
+Ptr<iGpuPipeline> cGLES2GraphicsDriver::CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) {
+  niCheckIsOK(apDesc,nullptr);
+  return nullptr; // CreateVulkanRasterPipeline(as_nn(this),ahspName,apDesc);
+};
+
+tBool cGLES2GraphicsDriver::BlitManagedGpuBufferToSystemMemory(iGpuBuffer* apBuffer) {
+  niPanicUnreachable("BlitManagedGpuBufferToSystemMemory not unimplemented in opengl driver.");
+  return eFalse;
+}
+
+Ptr<iRayGpuPipeline> cGLES2GraphicsDriver::CreateRayPipeline(iHString* ahspName, iRayGpuFunctionTable* apFunctionTable) {
+  niPanicUnreachable("CreateRayPipeline not unimplemented in opengl driver.");
+  return NULL;
+}
+
+Ptr<iRayGpuFunctionTable> cGLES2GraphicsDriver::CreateRayFunctionTable() {
+  niPanicUnreachable("CreateRayFunctionTable not unimplemented in opengl driver.");
+  return NULL;
+}
+
+Ptr<iAccelerationStructurePrimitives> cGLES2GraphicsDriver::CreateAccelerationStructurePrimitives(iHString* ahspName) {
+  niPanicUnreachable("CreateAccelerationStructurePrimitives not unimplemented in opengl driver.");
+  return NULL;
+}
+
+Ptr<iAccelerationStructureInstances> cGLES2GraphicsDriver::CreateAccelerationStructureInstances(iHString* ahspName) {
+  niPanicUnreachable("CreateAccelerationStructureInstances not unimplemented in opengl driver.");
+  return NULL;
+}
 
 static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait) {
   GL_DEBUG_SWAP_BUFFERS();

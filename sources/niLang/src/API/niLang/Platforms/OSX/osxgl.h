@@ -19,7 +19,7 @@ struct sOSXGLConfig {
     alphaBits = 8;
     depthBits = 24;
     stencilBits = 8;
-    glMajor = 2;
+    glMajor = 3;
     glMinor = 0;
     swapInterval = 1;
   }

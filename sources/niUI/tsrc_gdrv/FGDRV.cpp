@@ -193,7 +193,7 @@ tBool sFGDRV_Base::Start(UnitTest::TestResults& testResults_) {
     0,
     eOSWindowStyleFlags_Regular),eFalse);
   _window->SetClientSize(Vec2i(
-    Vec2f(_window->GetClientSize())*_window->GetContentsScale()));
+    Vec2f(_window->GetClientSize())*_window->GetContentsScale() * 0.5));
   _window->GetMessageHandlers()->AddSink(_windowHandler);
 
   // Get the graphics driver name, can be set through -Drenderer=NAME

@@ -19,24 +19,32 @@ using namespace ni;
 #define GDRV_DUMMY
 
 #if defined niWindows
+#  define GDRV_AUTO "Vulkan"
 #  define GDRV_GL2
 #  define GDRV_VULKAN
 #elif defined niOSX
+#  define GDRV_AUTO "Metal"
 #  define GDRV_GL2
 #  define GDRV_METAL
 // #  define GDRV_VULKAN
 #elif defined niIOSMac
+#  define GDRV_AUTO "Metal"
 #  define GDRV_METAL
 #elif defined niIOS
+#  define GDRV_AUTO "Metal"
 #  define GDRV_GL2
 #  define GDRV_METAL
 #elif defined niAndroid
+#  define GDRV_AUTO "GL2"
 #  define GDRV_GL2
 #elif defined niJSCC
+#  define GDRV_AUTO "GL2"
 #  define GDRV_GL2
 #elif defined niQNX
+#  define GDRV_AUTO "GL2"
 #  define GDRV_GL2
 #elif defined niLinux
+#  define GDRV_AUTO "Vulkan"
 #  define GDRV_GL2
 #  define GDRV_VULKAN
 #else

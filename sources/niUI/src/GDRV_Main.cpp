@@ -9,6 +9,10 @@
 #include <niLang/Platforms/Win32/Win32_Redef.h>
 #endif
 
+#if !defined GDRV_AUTO
+#  error "GDRV_AUTO not defined."
+#endif
+
 #ifdef GDRV_DUMMY
 niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&);
 #endif
@@ -69,27 +73,9 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
   }
   else
 #endif
-
   if (StrIEq(niHStr(hspDriver),"Auto")) {
-#if defined niWindows
-    if (GetSystemMetrics(SM_REMOTESESSION)) {
-      // Windows RDP works only with DirectX
-      niLog(Info, "Windows RDP detected.");
-    }
-#endif
-
-    {
-#if defined GDRV_VULKAN
-      hspDriver = _H("Vulkan");
-#elif defined GDRV_METAL
-      hspDriver = _H("Metal");
-#elif defined GDRV_GL2
-      hspDriver = _H("GL2");
-#else
-      niError("No Auto graphics driver available.");
-      return eFalse;
-#endif
-    }
+    hspDriver = _H(GDRV_AUTO);
+    niLog(Info, niFmt("Auto detected graphics driver '%s'.",hspDriver));
   }
 
   {

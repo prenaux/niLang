@@ -178,7 +178,7 @@ module <- {
 
   ///////////////////////////////////////////////
   // Open a file in write mode
-  function fileOpenWrite(aPath,_aAppend)
+  function fileOpenWrite(aPath,_aAppend) iFile
   {
     if (typeof(aPath) == "iunknown") {
       local fp = aPath.QueryInterface("iFile")

@@ -187,13 +187,13 @@ local __lint = {
   }
 
   // Join all elements of an array into a string
-  d.join <- function (aSeparator,aToString) {
+  d.join <- function (aSeparator,_aToString) {
     aSeparator = aSeparator || " ";
-    aToString = aToString || ::lang.toString;
+    _aToString = _aToString || ::lang.toString;
     local r = "";
     local lastValidIndex = this.GetSize()-1;
     foreach (i,v in this) {
-      r += aToString(v);
+      r += _aToString(v);
       if (aSeparator && i != lastValidIndex) {
         r += aSeparator;
       }

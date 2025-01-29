@@ -11,11 +11,15 @@
 #define SQ_TABLE_MAP_VECTOR_MAP  3
 
 //
-// Use a map by default atm, as it provides a stable and sorted ordering of
-// the keys. The advantage of having stable & logically sorted keys does
-// justify the cost for a scripting language IMO.
+// Use a vector_map atm, as it provides a stable and sorted ordering of the
+// keys. It is also significantly faster for read operations in smallish
+// tables which is the overwhelming use case here.
 //
-#define SQ_TABLE_MAP_IMPL SQ_TABLE_MAP_MAP
+#define SQ_TABLE_MAP_IMPL SQ_TABLE_MAP_VECTOR_MAP
+
+#if (SQ_TABLE_MAP_IMPL == SQ_TABLE_MAP_VECTOR_MAP)
+#include <niLang/STL/vector_map.h>
+#endif
 
 ASTL_RAW_ALLOCATOR_IMPL(sqtable);
 #define SQ_TABLE_ALLOCATOR(A,B) ASTL_PAIR_ALLOCATOR(const A,B,sqtable)

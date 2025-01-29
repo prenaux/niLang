@@ -11,10 +11,22 @@
 #include <niLang/IFile.h>
 
 static const char _kTagPart[2] = { 'C', '1' };
-static const char _kTagTail[2] = { 'E', 'D' };
+static const char _kTagClosureBegin[2] = { 'H', 'D' };
+static const char _kTagClosureEnd[2] = { 'E', 'D' };
+static const char _kTagFieldEnd[2] = { 'F', 'E' };
+static const char _kTagTableBegin[2] = { 'T', 'B' };
+static const char _kTagTableEnd[2] = { 'T', 'E' };
+static const char _kTagArrayBegin[2] = { 'A', 'B' };
+static const char _kTagArrayEnd[2] = { 'A', 'E' };
 
 #define SQ_CLOSURESTREAM_PART _kTagPart
-#define SQ_CLOSURESTREAM_TAIL _kTagTail
+#define SQ_CLOSURESTREAM_BEGIN _kTagClosureBegin
+#define SQ_CLOSURESTREAM_END _kTagClosureEnd
+#define SQ_TABLE_BEGIN _kTagTableBegin
+#define SQ_TABLE_END _kTagTableEnd
+#define SQ_ARRAY_BEGIN _kTagArrayBegin
+#define SQ_ARRAY_END _kTagArrayEnd
+#define SQ_FIELD_END _kTagFieldEnd
 
 tU32 TranslateIndex(const SQObjectPtr &idx)
 {
@@ -99,7 +111,11 @@ bool CheckTag(HSQUIRRELVM v,SQWRITEFUNC read, ni::tPtr up, const char tag[2])
   char t[2];
   _CHECK_IO(SafeRead(v,read,up,(tPtr)t,2));
   if (t[0] != tag[0] || t[1] != tag[1]) {
-    v->Raise_MsgError(_A("invalid or corrupted closure stream"));
+    v->Raise_MsgError(niFmt(
+      "invalid or corrupted closure stream, expected [%d,%d] (%c%c) but got [%d,%d] (%c%c).",
+      (tU32)tag[0],(tU32)tag[1],(tU32)tag[0],(tU32)tag[1],
+      (tU32)t[0],(tU32)t[1],(tU32)t[0],(tU32)t[1]
+    ));
     return false;
   }
   return true;
@@ -134,11 +150,21 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
         v->Raise_MsgError("Table already serialized, cyclic structures can't be serialized");
         return false;
       }
+      _CHECK_IO(WriteTag(v,write,up,SQ_TABLE_BEGIN));
       _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
+      tU32 nwritten = 0;
       niLoopit(SQTable::tHMapCIt,it,table->GetHMap()) {
         _CHECK_IO(WriteObject(v,up,write,it->first));
         _CHECK_IO(WriteObject(v,up,write,it->second));
+        ++nwritten;
       }
+      if (nsize != nwritten) {
+        v->Raise_MsgError(niFmt(
+          "Table size mismatch, nsize is %d but serialized %d fields.",
+          nsize, nwritten));
+        return eFalse;
+      }
+      _CHECK_IO(WriteTag(v,write,up,SQ_TABLE_END));
       table->SerializeWriteUnlock();
       break;
     };
@@ -151,10 +177,12 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
         v->Raise_MsgError("Array already serialized, cyclic structures can't be serialized");
         return false;
       }
+      _CHECK_IO(WriteTag(v,write,up,SQ_ARRAY_BEGIN));
       _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
       niLoop(i,nsize) {
         _CHECK_IO(WriteObject(v,up,write,values[i]));
       }
+      _CHECK_IO(WriteTag(v,write,up,SQ_ARRAY_END));
       array->SerializeWriteUnlock();
       break;
     };
@@ -204,6 +232,7 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
     }
     case OT_TABLE: {
       tI32 nsize;
+      _CHECK_IO(CheckTag(v,read,up,SQ_TABLE_BEGIN));
       _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
       o = SQTable::Create();
       SQTable::tHMap& hmap = _table(o)->GetHMap();
@@ -213,16 +242,19 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
         _CHECK_IO(ReadObject(v,up,read,value));
         astl::upsert(hmap,key,value);
       }
+      _CHECK_IO(CheckTag(v,read,up,SQ_TABLE_END));
       break;
     }
     case OT_ARRAY: {
       tI32 nsize;
+      _CHECK_IO(CheckTag(v,read,up,SQ_ARRAY_BEGIN));
       _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
       o = SQArray::Create(nsize);
       SQObjectPtrVec& values = _array(o)->_values;
       niLoop(i,nsize) {
         _CHECK_IO(ReadObject(v,up,read,values[i]));
       }
+      _CHECK_IO(CheckTag(v,read,up,SQ_ARRAY_END));
       break;
     }
     default: {
@@ -237,29 +269,29 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
 
 bool WriteSQClosure(SQClosure* _this, SQVM *v,ni::tPtr up,SQWRITEFUNC write)
 {
-  //_CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_HEAD));
-  //_CHECK_IO(WriteTag(v,write,up,sizeof(SQChar)));
+  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_BEGIN));
   _CHECK_IO(WriteSQFunctionProto(_funcproto(_this->_function),v,up,write));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_TAIL));
+  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_END));
   return true;
 }
 
 bool ReadSQClosure(SQClosure* _this, SQVM *v,ni::tPtr up,SQREADFUNC read)
 {
-  //_CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_HEAD));
-  //_CHECK_IO(CheckTag(v,read,up,sizeof(SQChar)));
+  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_BEGIN));
   _CHECK_IO(ReadSQFunctionProto(_funcproto(_this->_function), v,up,read));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_TAIL));
+  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_END));
   return true;
 }
 
 bool WriteSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQWRITEFUNC write)
 {
-  tI32 i,nsize=(tI32)_this->_literals.size();
+  tI32 i;
   _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
   _CHECK_IO(WriteObject(v,up,write,_this->_sourcename));
   _CHECK_IO(WriteObject(v,up,write,_this->_name));
   _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
+
+  tU32 nsize=(tI32)_this->_literals.size();
   _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
   for(i=0;i<nsize;i++){
     _CHECK_IO(WriteObject(v,up,write,_this->_literals[i]));
@@ -309,7 +341,7 @@ bool WriteSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQWRITEFUN
 
 bool ReadSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQREADFUNC read)
 {
-  tI32 i, nsize = (tI32)_this->_literals.size();
+  tI32 i, nsize;
   SQObjectPtr o;
   _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
   _CHECK_IO(ReadObject(v, up, read, _this->_sourcename));

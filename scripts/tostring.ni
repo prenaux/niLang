@@ -141,7 +141,7 @@
         // hold the partial results of stringifying
         local partial = [];
         foreach (k,el in value) {
-          local keyStr = "" + k + _tableKeyValSep;
+          local keyStr = "" + ::lang.toString(k) + _tableKeyValSep;
           local keyWasLeftCol = _leftCol
           _leftCol += keyStr.len()
           local vstr = str(k,value)

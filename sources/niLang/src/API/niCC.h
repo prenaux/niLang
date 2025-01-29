@@ -9,17 +9,7 @@
 #  define niNoUnsafePtr
 #endif
 
-#include <niLang/Types.h>
-#include <niLang/STL/string.h>
-#include <niLang/STL/memory.h>
-#include <niLang/STL/optional.h>
-#include <niLang/STL/span.h>
-#include <niLang/Utils/Nonnull.h>
-#include <niLang/Math/MathRect.h>
-#include <niLang/ILang.h>  // For _HDecl & _HC
-#include <niLang/STL/source_location.h>
-#include <niLang/STL/run_once.h>
-#include <niLang/STL/scope_guard.h>
+#include <niLang/STL/EASTL/EABase/config/eacompilertraits.h>
 
 // clang-format off
 // This is because we want to allow [[nodiscard]] everywhere and I dont want
@@ -50,7 +40,30 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wfloat-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-float-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-int-conversion);
 #endif
+
+EA_DISABLE_VC_WARNING(
+  // warning C5054: operator '|': deprecated between enumerations of different types
+  5054
+  // warning C4100: 'size': unreferenced formal parameter
+  4100
+  // warning C4244: 'initializing': conversion from 'ni::<unnamed-enum-eTrue>' to 'ni::tBool', possible loss of data
+  4244
+  // warning C4127: conditional expression is constant
+  4127
+)
 // clang-format on
+
+#include <niLang/Types.h>
+#include <niLang/STL/string.h>
+#include <niLang/STL/memory.h>
+#include <niLang/STL/optional.h>
+#include <niLang/STL/span.h>
+#include <niLang/Utils/Nonnull.h>
+#include <niLang/Math/MathRect.h>
+#include <niLang/ILang.h>  // For _HDecl & _HC
+#include <niLang/STL/source_location.h>
+#include <niLang/STL/run_once.h>
+#include <niLang/STL/scope_guard.h>
 
 #ifdef __cplusplus
   #if __cplusplus == 199711L
@@ -799,6 +812,29 @@ typedef NN<iHString> tHStringNN;
 
 #undef _H
 #define _H(STR) ni::GetLang()->CreateHString(STR).non_null()
+
+} // end namespace ni
+
+//##################################################################
+// ToString
+//##################################################################
+namespace ni {
+
+template<typename T>
+concept StringSetConvertible = requires(cString str, T value) {
+  { str.Set(value) } -> std::same_as<void>;
+};
+template<StringSetConvertible T>
+inline cString ToString(T aValue) {
+  cString str;
+  str.Set(aValue);
+  return str;
+}
+
+// To avoid unnecessary copies
+inline const cString& ToString(const cString& aValue) {
+  return aValue;
+}
 
 } // end namespace ni
 #endif  // __NICC_H_2D298329_7F10_164A_B1C3_CF6D0695867A__

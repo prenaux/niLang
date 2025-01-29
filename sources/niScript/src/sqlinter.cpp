@@ -2076,8 +2076,14 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
         return _null_;
       }
       else {
-        return _MakeLintCallError(
-          aLinter,niFmt("First parameter should be the name of the module to load as a literal string but got '%s'.", _ObjToString(objModuleName)));
+        niLet objType = _ObjToString(objModuleName);
+        if (objType.Eq("interface_def<iFile>")) {
+          return _null_;
+        }
+        else {
+          return _MakeLintCallError(
+            aLinter,niFmt("First parameter should be the name of the module to load as a literal string or an iFile but got '%s'.", objType));
+        }
       }
     }
 

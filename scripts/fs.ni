@@ -257,7 +257,13 @@ module <- {
   ///////////////////////////////////////////////
   // Get the temporary directory
   function getTempDir() {
-    local env = ::gLang.GetEnv("TEMP")
+    local env = ::gLang.GetEnv("TEMPDIR")
+    if (!env.?len()) {
+      env = ::gLang.GetEnv("TEMP")
+      if (!env.?len()) {
+        throw "Both TEMP and TEMPDIR envvar are empty."
+      }
+    }
     local dir = "".setdir(env)
     return dir
   }

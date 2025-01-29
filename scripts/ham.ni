@@ -280,6 +280,9 @@ module <- {
     } while(1)
 
     local procRet = proc.WaitForExitCode(invalid);
+    if (abEchoStdout || _debugEchoAll) {
+      curProc.file[1].Flush();
+    }
     return {
       succeeded = procRet.x.toint()
       exitCode = procRet.y.toint()

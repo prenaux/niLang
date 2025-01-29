@@ -4,19 +4,38 @@
 
 ::FIXTURE(["serialize"])
 
-// Infinite loop caused by TextEncodingFormatReadString not trying to read any
-// data when reading an empty serialize. That leads to fp.partial_read never
-// returning true.
 ::TEST("serialize","int", #() {
   local obj = { v = 123 }
-  local fp = ::gLang.CreateFileDynamicMemory(0,"--string--")
+  local tempFile = ::fs.getTempDir().setfile("test-serialize-int.nio")
+  ::dbg("tempFile:" tempFile)
   {
+    local fp = ::fs.fileOpenWrite(tempFile)
     ::SerializeWriteObject(fp,obj);
     local size = fp.GetSize();
     //::CHECK_EQUAL(31,size);
   }
-  fp.SeekSet(0)
   {
+    local fp = ::fs.fileOpenRead(tempFile)
     local loaded = ::SerializeReadObject(fp)
+    ::CHECK_EQUAL(123, loaded.v);
+  }
+})
+
+::TEST("serialize","array", #() {
+  local obj = { v = [1,2,3] }
+  local tempFile = ::fs.getTempDir().setfile("test-serialize-int.nio")
+  ::dbg("tempFile:" tempFile)
+  {
+    local fp = ::fs.fileOpenWrite(tempFile)
+    ::SerializeWriteObject(fp,obj);
+    local size = fp.GetSize();
+    //::CHECK_EQUAL(31,size);
+  }
+  {
+    local fp = ::fs.fileOpenRead(tempFile)
+    local loaded = ::SerializeReadObject(fp)
+    ::CHECK_EQUAL(1, loaded.v[0]);
+    ::CHECK_EQUAL(2, loaded.v[1]);
+    ::CHECK_EQUAL(3, loaded.v[2]);
   }
 })

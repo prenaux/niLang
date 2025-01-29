@@ -144,7 +144,7 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
     }
     case OT_TABLE: {
       SQTable* table = _table(o);
-      const tSize nsize = table->GetHMap().size();
+      tI32 nsize = (tI32)table->GetHMap().size();
       if (!table->SerializeWriteLock()) {
         table->SerializeWriteUnlock();
         v->Raise_MsgError("Table already serialized, cyclic structures can't be serialized");
@@ -152,7 +152,7 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
       }
       _CHECK_IO(WriteTag(v,write,up,SQ_TABLE_BEGIN));
       _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-      tU32 nwritten = 0;
+      tI32 nwritten = 0;
       niLoopit(SQTable::tHMapCIt,it,table->GetHMap()) {
         _CHECK_IO(WriteObject(v,up,write,it->first));
         _CHECK_IO(WriteObject(v,up,write,it->second));
@@ -171,7 +171,7 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
     case OT_ARRAY: {
       SQArray* array = _array(o);
       const SQObjectPtrVec& values = array->_values;
-      const tSize nsize = values.size();
+      tI32 nsize = (tI32)values.size();
       if (!array->SerializeWriteLock()) {
         array->SerializeWriteUnlock();
         v->Raise_MsgError("Array already serialized, cyclic structures can't be serialized");
@@ -235,6 +235,7 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
       _CHECK_IO(CheckTag(v,read,up,SQ_TABLE_BEGIN));
       _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
       o = SQTable::Create();
+      _table(o)->Reserve(nsize);
       SQTable::tHMap& hmap = _table(o)->GetHMap();
       niLoop(i,nsize) {
         SQObjectPtr key, value;
@@ -250,6 +251,7 @@ bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
       _CHECK_IO(CheckTag(v,read,up,SQ_ARRAY_BEGIN));
       _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
       o = SQArray::Create(nsize);
+      _array(o)->Reserve(nsize);
       SQObjectPtrVec& values = _array(o)->_values;
       niLoop(i,nsize) {
         _CHECK_IO(ReadObject(v,up,read,values[i]));
@@ -291,7 +293,7 @@ bool WriteSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQWRITEFUN
   _CHECK_IO(WriteObject(v,up,write,_this->_name));
   _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
 
-  tU32 nsize=(tI32)_this->_literals.size();
+  tI32 nsize=(tI32)_this->_literals.size();
   _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
   for(i=0;i<nsize;i++){
     _CHECK_IO(WriteObject(v,up,write,_this->_literals[i]));

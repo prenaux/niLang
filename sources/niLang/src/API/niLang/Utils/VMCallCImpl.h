@@ -1,3 +1,6 @@
+#pragma once
+#ifndef __VMCALLCIMPL_H_3DF0DAEC_494D_4E10_A04F_6C556452DE12__
+#define __VMCALLCIMPL_H_3DF0DAEC_494D_4E10_A04F_6C556452DE12__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include "../Types.h"
@@ -407,3 +410,4 @@ __forceinline void BufWriteIntf(Var& aVar, Ptr<T>* v) {
 
 /**@}*/
 /**@}*/
+#endif // __VMCALLCIMPL_H_3DF0DAEC_494D_4E10_A04F_6C556452DE12__

@@ -693,11 +693,7 @@ static const achar* _GetLastErrorMessage() {
   return _strLastErr.Chars();
 }
 
-#if defined _DEBUG
-#define TRACE_SET_DPI_AWARE(X) niDebugFmt(X)
-#else
-#define TRACE_SET_DPI_AWARE(X)
-#endif
+#define TRACE_SET_DPI_AWARE(X) //niDebugFmt(X)
 
 #define MY_WINAPI_FUNCPTR(RETTYPE, NAME, PARAMS) \
   typedef RETTYPE (WINAPI *tpfn##NAME) PARAMS; \

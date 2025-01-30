@@ -215,11 +215,20 @@ cString& sqGetCallstack(cString& astrOut, HSQUIRRELVM v, int aLevel)
         astrOut << _A("--- CALLSTACK ------------------\n");
         addedCallstack = true;
       }
-      astrOut << niFmt("%s [%s", (si.funcname ? si.funcname : "unknown"), (si.source ? si.source : "unknown"));
-      if (si.lineCol.x >= 0) {
-        astrOut << niFmt(":%d:%d",si.lineCol.x+pVM->GetErrorLineOffset(),si.lineCol.y);
+      if (StrEq(si.source,"NATIVE")) {
+        astrOut << "NATIVE: " << (si.funcname ? si.funcname : "nofunc");
       }
-      astrOut << "]\n";
+      else {
+        astrOut << (si.source ? si.source : "nofile");
+        if (si.lineCol.x >= 0) {
+          astrOut << niFmt(":%d:%d",si.lineCol.x+pVM->GetErrorLineOffset(),si.lineCol.y);
+        }
+        else {
+          astrOut << ":1:0";
+        }
+        astrOut << ": " << (si.funcname ? si.funcname : "nofunc");
+      }
+      astrOut << "\n";
       level++;
     }
   }

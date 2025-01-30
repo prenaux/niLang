@@ -28,14 +28,14 @@
 #include <niAppLib.h>
 #endif
 #include <niLang/Utils/CmdLine.h>
+#include <niLang/Utils/VMBind.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 using namespace ni;
 
 #include <stdio.h>
 
 _HDecl(REPL_PrintResult);
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-// VM version string.
 
 #if defined NI_CONSOLE && defined NI_WINDOWED
 #error "F/Invalid ni cli mode set, NI_CONSOLE and NI_WINDOWED shouldn't be defined at the same time."
@@ -43,6 +43,7 @@ _HDecl(REPL_PrintResult);
 
 #if defined NI_CONSOLE
 
+// VM version string.
 static const achar* _aszVersion = _A("9.0");
 #ifndef NI_EXE_NAME
 #define NI_EXE_NAME "ni"
@@ -119,17 +120,8 @@ static sOptions* _GetOptions() {
 const iCollection* __stdcall GetArgs() {
   return _GetOptions()->_vArgs;
 }
-IDLC_STATIC_METH_BEGIN(ni,GetArgs,0) {
-  IDLC_DECL_RETVAR(const iCollection*,_Ret);
-  IDLC_STATIC_METH_CALL(_Ret,(void),GetArgs,0,());
-  IDLC_RET_FROM_INTF(ni::iCollection,_Ret);
-} IDLC_STATIC_METH_END(ni,GetArgs,0);
-const ni::sMethodDef kFuncDecl_GetArgs = {
-  "GetArgs",
-  eType_IUnknownPtr|eTypeFlags_Constant, NULL, NULL,
-  0, NULL,
-  VMCall_GetArgs
-};
+const sMethodDef kFuncDecl_GetArgs =
+    vmbind::static_registrar::make_static<GetArgs>("GetArgs");
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 cString GetVersionString() {
@@ -509,15 +501,8 @@ static int _lastCompilerErrorColumn = -1;
 void __stdcall REPL_Close() {
   _bREPLClose = eTrue;
 }
-IDLC_STATIC_METH_BEGIN(ni,REPL_Close,0) {
-  IDLC_STATIC_METH_CALL_VOID(,(void),REPL_Close,0,());
-} IDLC_STATIC_METH_END(ni,REPL_Close,0);
-const ni::sMethodDef kFuncDecl_REPL_Close = {
-  "REPL_Close",
-  eType_Null,NULL,NULL,
-  0,NULL,
-  VMCall_REPL_Close
-};
+const sMethodDef kFuncDecl_REPL_Close =
+    vmbind::static_registrar::make_static<REPL_Close>("REPL_Close");
 
 ///////////////////////////////////////////////
 static Ptr<iCallback> _REPLRunCallback = NULL;
@@ -525,19 +510,8 @@ tBool __stdcall REPL_SetRunCallback(iCallback* apCallback) {
   _REPLRunCallback = apCallback;
   return _REPLRunCallback.IsOK();
 }
-IDLC_STATIC_METH_BEGIN(ni,REPL_SetRunCallback,1) {
-  IDLC_DECL_VAR(iCallback*,aCallback);
-  IDLC_BUF_TO_INTF(iCallback,aCallback);
-  IDLC_DECL_RETVAR(tBool,_Ret);
-  IDLC_STATIC_METH_CALL(_Ret,,REPL_SetRunCallback,1,(aCallback));
-  IDLC_RET_FROM_BASE(eType_Bool,_Ret);
-} IDLC_STATIC_METH_END(ni,REPL_SetRunCallback,1);
-const ni::sMethodDef kFuncDecl_REPL_SetRunCallback = {
-  "REPL_SetRunCallback",
-  eType_I8,NULL,NULL,
-  1,NULL,
-  VMCall_REPL_SetRunCallback
-};
+const sMethodDef kFuncDecl_REPL_SetRunCallback =
+    vmbind::static_registrar::make_static<REPL_SetRunCallback>("REPL_SetRunCallback");
 
 ///////////////////////////////////////////////
 static void REPL_CompilerErrorHandler(HSQUIRRELVM v, const SQChar *desc, const SQChar *source, int line, int column)
@@ -911,34 +885,19 @@ static cString MyWinRegRead(const achar* aaszPath) {
   achar ret[4096] = {0};
   return Windows::WinRegRead(ret,aaszPath);
 }
+const sMethodDef kFuncDecl_WinRegRead =
+    vmbind::static_registrar::make_static<MyWinRegRead>("WinRegRead");
 
-IDLC_STATIC_METH_BEGIN(ni,WinRegWrite,3) {
-  IDLC_DECL_RETVAR(ni::tI8,_Ret);
-  IDLC_DECL_VAR(ni::achar*,path);  IDLC_BUF_TO_BASE(ni::eType_ASZ,path);
-  IDLC_DECL_VAR(ni::achar*,value); IDLC_BUF_TO_BASE(ni::eType_ASZ,value);
-  IDLC_DECL_VAR(ni::achar*,type);  IDLC_BUF_TO_BASE(ni::eType_ASZ,type);
-  IDLC_STATIC_METH_CALL_NS_VOID(_Ret,Windows,WinRegWrite,3,(path,value,type));
-  IDLC_RET_FROM_BASE(ni::eType_I8,_Ret);
-} IDLC_STATIC_METH_END(MsWin,WinRegWrite,3);
-const ni::sMethodDef kFuncDecl_WinRegWrite = {
-  "WinRegWrite",
-  eType_I8,NULL,NULL,
-  3,NULL,
-  VMCall_WinRegWrite
-};
+// redeclare it here because we cant register overloaded functions...
+static ni::tBool __stdcall MyWinRegWrite(const ni::achar* aaszPath,
+                                         const ni::achar* aaszVal,
+                                         const ni::achar* aaszType)
+{
+  return Windows::WinRegWrite(aaszPath,aaszVal,aaszType);
+}
 
-IDLC_STATIC_METH_BEGIN(MsWin,WinRegRead,1) {
-  IDLC_DECL_RETVAR(ni::cString,_Ret);
-  IDLC_DECL_VAR(ni::achar*,path); IDLC_BUF_TO_BASE(ni::eType_ASZ,path);
-  IDLC_STATIC_METH_CALL(_Ret,_,MyWinRegRead,1,(path));
-  IDLC_RET_FROM_BASE(ni::eType_String,_Ret);
-} IDLC_STATIC_METH_END(MsWin,WinRegRead,1);
-const ni::sMethodDef kFuncDecl_WinRegRead = {
-  "WinRegRead",
-  eType_String,NULL,NULL,
-  1,NULL,
-  VMCall_WinRegRead
-};
+const sMethodDef kFuncDecl_WinRegWrite =
+    vmbind::static_registrar::make_static<MyWinRegWrite>("WinRegWrite");
 
 ///////////////////////////////////////////////
 void __stdcall MsWin_ScriptRegister(iScriptVM* apVM) {

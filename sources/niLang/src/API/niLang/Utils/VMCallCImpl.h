@@ -25,6 +25,10 @@ __forceinline void BufRead(const Var& aVar, ni::achar** v) {
   niCAssert(sizeof(achar) == 1 && sizeof(cchar) == sizeof(achar) && sizeof(char) == sizeof(achar));
   *v = const_cast<achar*>(aVar.GetChars());
 }
+__forceinline void BufRead(const Var& aVar, const ni::achar** v) {
+  niCAssert(sizeof(achar) == 1 && sizeof(cchar) == sizeof(achar) && sizeof(char) == sizeof(achar));
+  *v = const_cast<achar*>(aVar.GetChars());
+}
 __forceinline void BufRead(const Var& aVar, ni::cString* v) {
   VarToString(*v,aVar);
 }

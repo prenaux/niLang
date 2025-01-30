@@ -481,6 +481,7 @@ struct niAligned(4) Var : public VarData
       case eType_F64: return (tI64)this->mF64;
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetIntValue);
+        niFallthrough;
       case eType_Null:
         return 0;
     }
@@ -519,6 +520,7 @@ struct niAligned(4) Var : public VarData
       case eType_F64: return (tF64)this->mF64;
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetFloatValue);
+        niFallthrough;
       case eType_Null:
         return 0;
     }
@@ -558,6 +560,7 @@ struct niAligned(4) Var : public VarData
             (tF32)this->mVec2i.y);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec2fValue);
+        niFallthrough;
       case eType_Null:
         return sVec2f::Zero();
     }
@@ -573,6 +576,7 @@ struct niAligned(4) Var : public VarData
             (tI32)this->mVec2f.y);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec2iValue);
+        niFallthrough;
       case eType_Null:
         return sVec2i::Zero();
     }
@@ -604,6 +608,7 @@ struct niAligned(4) Var : public VarData
             (tF32)this->mVec3i.z);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec3fValue);
+        niFallthrough;
       case eType_Null:
         return sVec3f::Zero();
     }
@@ -620,6 +625,7 @@ struct niAligned(4) Var : public VarData
             (tI32)this->mVec3f.z);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec3iValue);
+        niFallthrough;
       case eType_Null:
         return sVec3i::Zero();
     }
@@ -652,6 +658,7 @@ struct niAligned(4) Var : public VarData
             (tF32)this->mVec4i.w);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec4fValue);
+        niFallthrough;
       case eType_Null:
         return sVec4f::Zero();
     }
@@ -669,6 +676,7 @@ struct niAligned(4) Var : public VarData
             (tI32)this->mVec4f.w);
       default:
         VAR_ASSERT_NOT_CONVERTIBLE(GetVec4iValue);
+        niFallthrough;
       case eType_Null:
         return sVec4i::Zero();
     }

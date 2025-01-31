@@ -101,8 +101,9 @@ static void _FormatThrowMessage(
           hasMsg?(exceptionMsg[StrSize(exceptionMsg)-1]=='\n'?_A(""):_A("\n")):_A("")),
     -1, -1);
   fmt.append("--- CALLSTACK ------------------\n");
-  // skip 2, _FormatThrowMessage and its caller
-  ni_stack_get_current(fmt,nullptr,2);
+  // dont skip any stack frame, cause we dont know what happens after code
+  // optimization, its just more confusing than anything else.
+  ni_stack_get_current(fmt,nullptr,0);
 }
 
 #ifdef niJSCC
@@ -133,11 +134,11 @@ niExportFuncCPP(void) ni_throw_panic(
     aKind,
     msg);
   fmt.append("================================\n");
-  #ifdef niJSCC
+#ifdef niJSCC
   JSCC_ConsoleError(fmt.Chars());
-  #else
+#else
   niError(fmt.Chars());
-  #endif
+#endif
   throw sPanicException{aKind,std::move(fmt)};
 #endif
 }

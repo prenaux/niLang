@@ -37880,8 +37880,7 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eGpuFunctionBindType() {
 static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
 	{ "None", ni::eGpuFunctionBindType_None },
 	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
-	{ "Material", ni::eGpuFunctionBindType_Material },
-	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
+	{ "FixedRayInstances", ni::eGpuFunctionBindType_FixedRayInstances },
 	{ "Last", ni::eGpuFunctionBindType_Last },
 };
 static const ni::sEnumDef Enum_eGpuFunctionBindType = {

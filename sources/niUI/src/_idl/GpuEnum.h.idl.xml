@@ -107,15 +107,12 @@
 				<comments desc="No resource bindings "/>
 			</value>
 			<value name="eGpuFunctionBindType_Fixed" value="1 ">
-				<comments desc="Basic fixed-function pipeline, single base channel "/>
+				<comments desc="Basic fixed pipeline, single base channel "/>
 			</value>
-			<value name="eGpuFunctionBindType_Material" value="2 ">
-				<comments desc="Full iMaterial pipeline with channels "/>
+			<value name="eGpuFunctionBindType_FixedRayInstances" value="2 ">
+				<comments desc="Basic fixed pipeline, with ray instances "/>
 			</value>
-			<value name="eGpuFunctionBindType_Bindless" value="3 ">
-				<comments desc="Global resource arrays "/>
-			</value>
-			<value name="eGpuFunctionBindType_Last" value="4 ">
+			<value name="eGpuFunctionBindType_Last" value="3 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

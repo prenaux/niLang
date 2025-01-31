@@ -669,18 +669,24 @@ Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpu
   if (apOutBindType) {
     *apOutBindType = eGpuFunctionBindType_None;
     niLet dtReflection = niCheckNN(dtReflection,dtRoot->GetChild("Reflection"),nullptr);
-    niLoop(i,dtReflection->GetNumChildren()) {
-      niLet dtChild = dtReflection->GetChildFromIndex(i);
-      niLet name = dtChild->GetName();
-      if ((StrEq(name,"SeparateImages") ||
-           StrEq(name,"UBOs")) &&
-          (dtChild->GetNumChildren() > 0)) {
-        *apOutBindType = eGpuFunctionBindType_Fixed;
-        break;
+    niLet dtAccelerationStructures = dtReflection->GetChild("AccelerationStructures");
+    if (dtAccelerationStructures && (dtAccelerationStructures->GetNumChildren() > 0)) {
+      *apOutBindType = eGpuFunctionBindType_FixedRayInstances;
+    }
+    else {
+      niLoop(i,dtReflection->GetNumChildren()) {
+        niLet dtChild = dtReflection->GetChildFromIndex(i);
+        niLet name = dtChild->GetName();
+        if ((StrEq(name,"SeparateImages") ||
+             StrEq(name,"UBOs")) &&
+            (dtChild->GetNumChildren() > 0)) {
+          *apOutBindType = eGpuFunctionBindType_Fixed;
+          break;
+        }
       }
     }
     niDebugFmt((
-      "... GpuFunctionDT_Load: url: %s, target: %s, bindType: %d",
+      "... GpuFunctionDT_Load: url: %s, target: %s, bindType: %s",
       aURL, ahspTarget, niEnumToChars(eGpuFunctionBindType,*apOutBindType)));
   }
 

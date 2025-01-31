@@ -1,0 +1,26 @@
+#version 460
+#extension GL_EXT_ray_query : require
+
+layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
+
+layout(location = 0) out vec4 OUT_0_rval_color;
+rayQueryEXT rayQuery;
+
+void main()
+{
+    vec2 _175 = gl_FragCoord.xy * vec2(0.001953125);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, vec3(0.0, 0.0, -1.0), 0.001000000047497451305389404296875, normalize(vec3((_175.x * 2.0) - 1.0, ((1.0 - _175.y) * 2.0) - 1.0, 1.0) - vec3(0.0, 0.0, -1.0)), 1000.0);
+    bool _194 = rayQueryProceedEXT(rayQuery);
+    uint _195 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    vec4 _243;
+    if (_195 == 1u)
+    {
+        _243 = vec4(0.0, 1.0, 0.0, 1.0);
+    }
+    else
+    {
+        _243 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_195 == 2u));
+    }
+    OUT_0_rval_color = _243;
+}
+

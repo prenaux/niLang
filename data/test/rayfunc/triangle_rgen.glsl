@@ -26,7 +26,7 @@ struct lib_shader_RayWorkDimensions {
   uvec3 launchSize;
 };
 // TypeStaticFwd: RayFlags
-uint uint_None;
+uint lib_shader_RayFlags_None;
 // TypeStaticFwd: Vec4
 vec4 vec4_Zero;
 vec4 vec4_Black;
@@ -36,9 +36,9 @@ lib_shader_RayDesc lib_shader_RayDesc_new(vec3 a_origin, vec3 a_direction, float
 lib_shader_RayPayload lib_shader_RayPayload_new_default();
 // FunctionFwd: lib:shader
 lib_shader_RayPayload lib_shader_traceSimpleRay(accelerationStructureEXT aAS, lib_shader_RayDesc aRay, lib_shader_RayPayload aPayload);
-void uint_static_initialize() {
+void lib_shader_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
-  uint_None = 0;
+  lib_shader_RayFlags_None = 0;
 }
 void vec4_static_initialize() {
   // TypeStatic: Vec4
@@ -63,11 +63,11 @@ lib_shader_RayPayload lib_shader_RayPayload_new_default() {
 }
 // Function: lib:shader
 lib_shader_RayPayload lib_shader_traceSimpleRay(accelerationStructureEXT aAS, lib_shader_RayDesc aRay, lib_shader_RayPayload aPayload) {
-  return (traceRayEXT(aAS, uint_None, 255, 0, 0, 0, aRay.origin, aRay.tMin, aRay.direction, aRay.tMax, 0),nil_builtin_RAY_PAYLOAD_0);
+  return (traceRayEXT(aAS, lib_shader_RayFlags_None, 255, 0, 0, 0, aRay.origin, aRay.tMin, aRay.direction, aRay.tMax, 0),nil_builtin_RAY_PAYLOAD_0);
 }
 // ModuleInitialize: lib_shader
 void lib_shader_initialize() {
-  uint_static_initialize();
+  lib_shader_RayFlags_static_initialize();
   vec4_static_initialize();
 }
 // MODULE END lib:shader

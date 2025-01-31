@@ -58,6 +58,7 @@ static const char* _vkRequiredRayTracingExtensions[] = {
   VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
   VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
   VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
+  VK_KHR_RAY_QUERY_EXTENSION_NAME,
 };
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
@@ -1128,10 +1129,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
       .bufferDeviceAddress = VK_TRUE,
     };
+    VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
+      .rayQuery = VK_TRUE
+    };
     if (_isRayTracingSupported) {
       extDynamicStateFeatures.pNext = &rayTracingPipelineFeatures;
       rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
       accelerationStructureFeatures.pNext = &bufferDeviceAddressFeatures;
+      bufferDeviceAddressFeatures.pNext = &rayQueryFeatures;
     }
 
     // Gather the required extensions
@@ -2113,12 +2119,12 @@ struct sVulkanRasterPipeline :
     return eTrue;
   }
 
-  tBool _CreateFixedDescSetLayout() {
+  tBool _CreateFixedDescSetLayout(tBool abWithRayInstances) {
     niLet vkDevice = _driver->_device;
     niPanicAssert(_vkDescSetLayouts.empty());
 
-    // Initialize all with empty layouts, 6 for sets 0-5
-    niCheck(_CreateEmptyDescSetLayouts(_driver,6),eFalse);
+    // Initialize all with empty layouts
+    niCheck(_CreateEmptyDescSetLayouts(_driver,abWithRayInstances ? 8 : 6),eFalse);
 
     niLet stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     niLet layoutFlags = 0;
@@ -2195,6 +2201,26 @@ struct sVulkanRasterPipeline :
       VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &samplerLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Sampler]), eFalse);
     }
 
+    // Acceleration structure layout
+    if (abWithRayInstances) {
+      VkDescriptorSetLayoutBinding asBinding = {
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
+        .descriptorCount = 1,
+        .stageFlags = stageFlags,
+        .pImmutableSamplers = nullptr
+      };
+      VkDescriptorSetLayoutCreateInfo asLayoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .flags = layoutFlags,
+        .bindingCount = 1,
+        .pBindings = &asBinding
+      };
+      VK_CHECK(vkCreateDescriptorSetLayout(
+        vkDevice, &asLayoutInfo, nullptr,
+        &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_RayInstances]), eFalse);
+    }
+
     // Pipeline layout
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -2261,7 +2287,11 @@ struct sVulkanRasterPipeline :
         break;
       }
       case eGpuFunctionBindType_Fixed: {
-        niCheck(_CreateFixedDescSetLayout(),eFalse);
+        niCheck(_CreateFixedDescSetLayout(eFalse),eFalse);
+        break;
+      }
+      case eGpuFunctionBindType_FixedRayInstances: {
+        niCheck(_CreateFixedDescSetLayout(eTrue),eFalse);
         break;
       }
       default: {
@@ -3104,7 +3134,7 @@ struct sVulkanCommandEncoder : public ImplRC<
     vkCmdSetBlendConstants(_cmdBuffer, &aColor.x);
   }
 
-  tBool _DoBindFixedDescLayout();
+  tBool _DoBindFixedDescLayout(tBool abWithRayInstances);
   tBool _BindGpuFunction();
 
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
@@ -4429,7 +4459,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
   return eTrue;
 }
 
-tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
+tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet device = _driver->_device;
   niVar& descPool = _GetCurrentFrame()->_descriptorPool;
@@ -4487,14 +4517,31 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout() {
       _driver->_GetVkSamplerState(hSS)),eFalse);
   }
 
+  if (abWithRayInstances) {
+    niCheck(_cache._lastRayInstances.has_value(),eFalse);
+    nn<tVulkanRayInstances> instancesAS = as_nn<tVulkanRayInstances>(_cache._lastRayInstances);
+    niCheck(descPool.PushDescriptorAccelerationStructure(
+      _driver->_device,
+      _cmdBuffer,
+      pipeline,
+      eGLSLVulkanDescriptorSet_RayInstances,
+      instancesAS->_asHandle),eFalse);
+  }
+
   return eTrue;
 }
 
 tBool sVulkanCommandEncoder::_BindGpuFunction() {
   niLet pipeline = _cache._lastRasterPipeline;
-  if (pipeline->_gpufuncBindType == eGpuFunctionBindType_Fixed) {
-    niCheck(_DoBindFixedDescLayout(),eFalse);
-    return eTrue;
+  switch (pipeline->_gpufuncBindType) {
+    case eGpuFunctionBindType_Fixed: {
+      niCheck(_DoBindFixedDescLayout(eFalse),eFalse);
+      break;
+    }
+    case eGpuFunctionBindType_FixedRayInstances: {
+      niCheck(_DoBindFixedDescLayout(eTrue),eFalse);
+      break;
+    }
   }
   return eTrue;
 }

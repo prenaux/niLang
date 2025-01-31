@@ -105,14 +105,12 @@ enum eGpuFunctionType
 enum eGpuFunctionBindType {
   //! No resource bindings
   eGpuFunctionBindType_None = 0,
-  //! Basic fixed-function pipeline, single base channel
+  //! Basic fixed pipeline, single base channel
   eGpuFunctionBindType_Fixed = 1,
-  //! Full iMaterial pipeline with channels
-  eGpuFunctionBindType_Material = 2,
-  //! Global resource arrays
-  eGpuFunctionBindType_Bindless = 3,
+  //! Basic fixed pipeline, with ray instances
+  eGpuFunctionBindType_FixedRayInstances = 2,
   //! \internal
-  eGpuFunctionBindType_Last = 4,
+  eGpuFunctionBindType_Last = 3,
 };
 
 //! GPU Pixel format

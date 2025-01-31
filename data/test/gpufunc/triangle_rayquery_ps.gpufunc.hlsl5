@@ -1,0 +1,46 @@
+uniform RaytracingAccelerationStructure IN_1_aAS : register(t0);
+
+static float4 gl_FragCoord;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 gl_FragCoord : SV_Position;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+static RayQuery<RAY_FLAG_NONE> rayQuery;
+
+void frag_main()
+{
+    float2 _175 = gl_FragCoord.xy * 0.001953125f.xx;
+    RayDesc _1ident = {float3(0.0f, 0.0f, -1.0f), 0.001000000047497451305389404296875f, normalize(float3((_175.x * 2.0f) - 1.0f, ((1.0f - _175.y) * 2.0f) - 1.0f, 1.0f) - float3(0.0f, 0.0f, -1.0f)), 1000.0f};
+    rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
+    bool _194 = rayQuery.Proceed();
+    uint _195 = rayQuery.CommittedStatus();
+    float4 _243;
+    if (_195 == 1u)
+    {
+        _243 = float4(0.0f, 1.0f, 0.0f, 1.0f);
+    }
+    else
+    {
+        bool4 _246 = (_195 == 2u).xxxx;
+        _243 = float4(_246.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _246.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _246.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _246.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+    }
+    OUT_0_rval_color = _243;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    gl_FragCoord = stage_input.gl_FragCoord;
+    gl_FragCoord.w = 1.0 / gl_FragCoord.w;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

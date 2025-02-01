@@ -4542,6 +4542,9 @@ tBool sVulkanCommandEncoder::_BindGpuFunction() {
       niCheck(_DoBindFixedDescLayout(eTrue),eFalse);
       break;
     }
+    case eGpuFunctionBindType_None: {
+      break;
+    }
   }
   return eTrue;
 }

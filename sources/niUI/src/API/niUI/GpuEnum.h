@@ -109,8 +109,11 @@ enum eGpuFunctionBindType {
   eGpuFunctionBindType_Fixed = 1,
   //! Basic fixed pipeline, with ray instances
   eGpuFunctionBindType_FixedRayInstances = 2,
+
   //! \internal
-  eGpuFunctionBindType_Last = 3,
+  eGpuFunctionBindType_Last niMaybeUnused = 3,
+  //! \internal
+  eGpuFunctionBindType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! GPU Pixel format

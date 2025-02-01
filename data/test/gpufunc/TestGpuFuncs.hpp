@@ -1,8 +1,8 @@
 #ifndef __TESTGPUFUNCS_NIL_MODULE__
 #define __TESTGPUFUNCS_NIL_MODULE__
+#include <niCC.h>
 
 // Module: TestGpuFuncs
-#include <niCC.h>
 struct TestGpuFuncs_TestUniforms;
 
 // TypeMethFwd: TestUniforms

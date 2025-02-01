@@ -16,14 +16,12 @@ niGlobalCommand(Mem, _A("Show the memory usage."))
   ni_mem_get_stats(&ms);
   o.Format(
     "--- MemStats ---\n"
-    "- current frame : %d\n"
-    "- all/obj allocs: %d / %d\n"
-    "- all/obj free: %d / %d\n"
-    "- all/obj alloced: %d / %d\n",
+    "- current frame: %d\n"
+    "- regular alloc:%d - free:%d = live:%d\n"
+    "- obj alloc:%d - free:%d = live:%d\n",
     ni::GetLang()->GetFrameNumber(),
-    ms.x,ms.z,
-    ms.y,ms.w,
-    ms.x-ms.y,ms.z-ms.w);
+    ms.x,ms.y,ms.x-ms.y,
+    ms.z,ms.w,ms.z-ms.w);
   niLog(Info,o.Chars());
   return eTrue;
 }

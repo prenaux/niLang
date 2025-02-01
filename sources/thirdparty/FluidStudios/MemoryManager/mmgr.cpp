@@ -75,8 +75,6 @@
 // ---------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef USE_MEMORY_TRACKING
-//#include "stdafx.h"
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -742,7 +740,7 @@ void	*mmgrAllocator(const char *sourceFile, const unsigned int sourceLine, const
 
 			if (reservoir == NULL)
 			{
-				std::cout << "Unable to allocate RAM for internal memory tracking data" << std::endl;
+				niPrintln("Unable to allocate RAM for internal memory tracking data");
 				MUTEX_UNLOCK(allocMutex);
 				m_assert(false && "Unable to allocate RAM for internal memory tracking data");
 			}
@@ -827,7 +825,7 @@ void	*mmgrAllocator(const char *sourceFile, const unsigned int sourceLine, const
 
 		if (au->actualAddress == NULL)
 		{
-			std::cout << "Request for allocation failed. Out of memory." << std::endl;
+			niPrintln("Request for allocation failed. Out of memory.");
 			MUTEX_UNLOCK(allocMutex);
 			m_assert(false && "Request for allocation failed. Out of memory.");
 		}
@@ -940,7 +938,7 @@ void	*mmgrReallocator(const char *sourceFile, const unsigned int sourceLine, con
 		m_assert(au != NULL);
 		if (au == NULL)
 		{
-			std::cout << "Request to reallocate RAM that was never allocated" << std::endl;
+			niPrintln("Request to reallocate RAM that was never allocated");
 			MUTEX_UNLOCK(allocMutex);
 			m_assert(false && "Request to reallocate RAM that was never allocated");
 		}
@@ -1007,7 +1005,7 @@ void	*mmgrReallocator(const char *sourceFile, const unsigned int sourceLine, con
 
 		if (!newActualAddress)
 		{
-			std::cout << "Request for reallocation failed. Out of memory." << std::endl;
+			niPrintln("Request for reallocation failed. Out of memory.");
 			MUTEX_UNLOCK(allocMutex);
 			m_assert(false && "Request for reallocation failed. Out of memory.");
 		}
@@ -1158,7 +1156,7 @@ void	mmgrDeallocator(const char *sourceFile, const unsigned int sourceLine, cons
 			m_assert(au != NULL);
 			if (au == NULL)
 			{
-				std::cout << "Request to deallocate RAM that was naver allocated" << std::endl;
+				niPrintln("Request to deallocate RAM that was naver allocated");
 				MUTEX_UNLOCK(allocMutex);
 				m_assert(false && "Request to deallocate RAM that was never allocated");
 			}

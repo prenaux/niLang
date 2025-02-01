@@ -11,6 +11,10 @@ SubDirHdrs $(SUBDIR) mbedtls include ;
 if $(LINUX) = 1 {
   hamToolsetHdrs syslib_libdw : elfutils/libdw.h ;
 }
+if $(WINDOWS) = 1 {
+  # USE_NEDMALLOC = 1 ;
+  USE_MIMALLOC = 1 ;
+}
 
 ### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;
@@ -29,8 +33,45 @@ if $(FEATURES) >= 15 {
   SRC_EXTRA += [ tkPkgSrcSubDir pcre ] ;
 }
 
+### nedmalloc ###
+if $(USE_NEDMALLOC) = 1 {
+  SRC_EXTRA += [ tkPkgSrcSubDir nedmalloc ] ;
+}
+
+### mimalloc ###
+if $(USE_MIMALLOC) = 1 {
+  SRC_EXTRA += [ tkPkgSrcSubDir mimalloc include ] ;
+  SRC_EXTRA += [ tkPkgSrcSubDirLst mimalloc src :
+    alloc.c
+    alloc-aligned.c
+    alloc-posix.c
+    arena.c
+    bitmap.c
+    heap.c
+    init.c
+    libc.c
+    options.c
+    os.c
+    page.c
+    random.c
+    segment.c
+    segment-map.c
+    stats.c
+    prim/prim.c
+  ] ;
+}
+
 IDLS = [ niBuildModuleDef ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti lint : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+if $(USE_MEMORY_TRACKING) = 1 {
+  ObjectDefines $(BUILD_SRC) : USE_MEMORY_TRACKING ;
+}
+if $(USE_NEDMALLOC) = 1 {
+  ObjectDefines $(BUILD_SRC) : USE_NEDMALLOC ;
+}
+if $(USE_MIMALLOC) = 1 {
+  ObjectDefines $(BUILD_SRC) : USE_MIMALLOC ;
+}
 
 ### DEFINITION ##########################################################
 niModule_Begin

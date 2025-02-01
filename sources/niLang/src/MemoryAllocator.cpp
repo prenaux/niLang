@@ -6,30 +6,55 @@
 #include "API/niLang/Utils/Sync.h"
 #include "API/niLang/StringDef.h"
 #include "API/niLang/STL/EASTL/EABase/eabase.h"
+#include "API/niLang/STL/atomic.h"
 #include <stdio.h>
 
 // #define USE_MEMORY_TRACKING
+// #define USE_NEDMALLOC
+// #define USE_MIMALLOC
+// #define USE_BUMPALLOCATOR
 // #define COUNT_WEAK_PTR
 // #define TRACE_WEAK_PTR
+#define COUNT_ALLOCS
 
+// Use FluidStudios for memory tracking
 #if defined USE_MEMORY_TRACKING
+#pragma message("# MemoryAllocator: USE_MEMORY_TRACKING")
+
 // Just include the cpp here so we don't have to add it to the all projects
 #include "../../thirdparty/FluidStudios/MemoryManager/mmgr.cpp"
+#define _CRT_SECURE_NO_WARNINGS 1
+
+// Use ned malloc
+#elif defined USE_NEDMALLOC
+#pragma message("# MemoryAllocator: USE_NEDMALLOC")
+
+#include "nedmalloc/nedmalloc.h"
+
+// Use mimalloc
+#elif defined USE_MIMALLOC
+#pragma message("# MemoryAllocator: USE_MIMALLOC")
+
+#include "mimalloc/include/mimalloc.h"
+
+// Use bump allocator for all allocations
+#elif defined USE_BUMPALLOCATOR
+#pragma message("# MemoryAllocator: USE_BUMPALLOCATOR")
+
+// Use system allocator
+#else
+#pragma message("# MemoryAllocator: system allocator")
+
 #endif
 
-namespace ni {
+#if 0
+#define IF_TRACE_MEM(KIND)                        \
+  static int _count = 0;                          \
+  if ((++_count > 200000) && ((_count % 10000) == 0))
+#endif
 
-#if defined USE_MTUNER
-// using rmem.h
-#define MTUNER_ALLOC(_handle, _ptr, _size, _overhead)                  rmemAlloc((_handle), (_ptr), (uint32_t)(_size), (uint32_t)(_overhead))
-#define MTUNER_ALIGNED_ALLOC(_handle, _ptr, _size, _overhead, _align)  rmemAllocAligned((_handle), (_ptr), (uint32_t)(_size), (uint32_t)(_overhead), (uint32_t)(_align))
-#define MTUNER_REALLOC(_handle, _ptr, _size, _overhead, _prevPtr)      rmemRealloc((_handle), (_ptr), (uint32_t)(_size), (uint32_t)(_overhead), (_prevPtr))
-#define MTUNER_FREE(_handle, _ptr)                                     rmemFree((_handle), (_ptr))
-#else
-#define MTUNER_ALLOC(_handle, _ptr, _size, _overhead)
-#define MTUNER_ALIGNED_ALLOC(_handle, _ptr, _size, _overhead, _align)
-#define MTUNER_REALLOC(_handle, _ptr, _size, _overhead, _prevPtr)
-#define MTUNER_FREE(_handle, _ptr)
+#ifdef niJSCC
+#define ALIGN_ALL_ALLOCS
 #endif
 
 #define MEM_MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -40,8 +65,68 @@ namespace ni {
 #endif
 #define MIN_ALLOC_ALIGNMENT MEM_MAX(VECTORMATH_MIN_ALIGN, EA_PLATFORM_MIN_MALLOC_ALIGNMENT)
 
-#ifdef niJSCC
-#define ALIGN_ALL_ALLOCS
+namespace ni {
+
+#if defined USE_BUMPALLOCATOR
+// This is meant as a reference implementation for a "this is the fastest you
+// can allocate memory" allocator. Or at least it shouldnt have big horrible
+// bottlenecks.
+struct sBumpAllocator {
+  static constexpr size_t CHUNK_SIZE = 64 * 1024 * 1024;
+
+  astl::atomic<char*> current;
+  char* end;
+  __sync_mutex();
+
+  void* alloc_aligned(size_t size, size_t alignment) {
+#if 0
+    return _aligned_malloc(size,alignment);
+#else
+    while (true) {
+      char* old_current = current.load(astl::memory_order_relaxed);
+      char* aligned_ptr = (char*)(((uintptr_t)old_current + alignment - 1) & ~(alignment - 1));
+      char* new_current = aligned_ptr + size;
+
+      if (new_current > end) {
+        __sync_lock();
+        if (old_current != current.load(std::memory_order_relaxed)) continue;
+        current = (char*)::malloc(CHUNK_SIZE);
+        end = current + CHUNK_SIZE;
+        continue;
+      }
+
+      if (current.compare_exchange_weak(old_current, new_current,
+                                        std::memory_order_release,
+                                        std::memory_order_relaxed)) {
+        return aligned_ptr;
+      }
+    }
+#endif
+  }
+
+  void* alloc(size_t size) {
+    return this->alloc_aligned(size, MIN_ALLOC_ALIGNMENT);
+  }
+
+  void* realloc(void* ptr, size_t new_size, size_t alignment) {
+#if 0
+    return _aligned_realloc(ptr,new_size,alignment);
+#else
+    if (!ptr) return alloc_aligned(new_size, alignment);
+    // Always allocate new + copy since we can't safely know the original size
+    void* new_ptr = alloc_aligned(new_size, alignment);
+    // Copy new_size bytes - if this is too much, the original allocation was bigger anyway
+    memcpy(new_ptr, ptr, new_size);
+    return new_ptr;
+#endif
+  }
+
+  void free(void* ptr) {
+    niUnused(ptr);
+    // noop
+  }
+};
+static sBumpAllocator _bumpAllocator;
 #endif
 
 // We always add mpWeakPtr because on 32-bit OS's the header must be 8 bytes
@@ -64,56 +149,19 @@ niCAssert(sizeof(_memZero) == (sizeof(sObjectMemoryHeader) + 8));
 #define CHECK_ZERO_MEMORY() \
   niDebugAssert(((tU32*)_memZero._buffer)[0] == 0 && ((tU32*)_memZero._buffer)[1] == 0)
 
-#if defined(USE_MEMORY_TRACKING)
-
-#define _CRT_SECURE_NO_WARNINGS 1
-
-static __forceinline void* _internal_aligned_malloc(
-  size_t size, size_t align,
-  const char *f, int l, const char *sf)
-{
-	void* pMemAlign = mmgrAllocator(f, l, sf, m_alloc_malloc, align, size);
-
-	// If using MTuner, report allocation to rmem.
-	MTUNER_ALIGNED_ALLOC(0, pMemAlign, size, 0, align);
-
-	// Return handle to allocated memory.
-	return pMemAlign;
-}
-
-static __forceinline void* _internal_malloc(size_t size, const char *f, int l, const char *sf)
-{
-	return _internal_aligned_malloc(size, MIN_ALLOC_ALIGNMENT, f, l, sf);
-}
-
-static __forceinline  void* _internal_realloc(
-  void* ptr, size_t size,
-  const char *f, int l, const char *sf)
-{
-	void* pRealloc = mmgrReallocator(f, l, sf, m_alloc_realloc, size, ptr);
-
-	// If using MTuner, report reallocation to rmem.
-	MTUNER_REALLOC(0, pRealloc, size, 0, ptr);
-
-	// Return handle to reallocated memory.
-	return pRealloc;
-}
-
-static __forceinline void _internal_free(void* ptr, const char *f, int l, const char *sf)
-{
-	// If using MTuner, report free to rmem.
-	MTUNER_FREE(0, ptr);
-
-	mmgrDeallocator(f, l, sf, m_alloc_free, ptr);
-}
-
-#else // defined(USE_MEMORY_TRACKING) || defined(USE_MTUNER)
-
 static __forceinline void* _internal_aligned_malloc(
   size_t size, size_t alignment,
   const char *f, int l, const char *sf)
 {
-#ifdef _MSC_VER
+#if defined USE_MEMORY_TRACKING
+	void* ptr = mmgrAllocator(f, l, sf, m_alloc_malloc, align, size);
+#elif defined USE_NEDMALLOC
+	void* ptr = nedalloc::nedmemalign(alignment, size);
+#elif defined USE_MIMALLOC
+	void* ptr = mi_malloc_aligned(size, alignment);
+#elif defined USE_BUMPALLOCATOR
+	void* ptr = _bumpAllocator.alloc_aligned(size, alignment);
+#elif defined _MSC_VER
 	void* ptr = _aligned_malloc(size, alignment);
 #else
 	void* ptr;
@@ -123,9 +171,6 @@ static __forceinline void* _internal_aligned_malloc(
 		ptr = nullptr;
 	}
 #endif
-
-	MTUNER_ALIGNED_ALLOC(0, ptr, size, 0, alignment);
-
 	return ptr;
 }
 
@@ -138,15 +183,19 @@ static __forceinline void* _internal_malloc(size_t size, const char *f, int l, c
 static __forceinline void* _internal_malloc(size_t size, const char *f, int l, const char *sf)
 {
   niUnused(f); niUnused(l); niUnused(sf);
-
-#ifdef _MSC_VER
+#if defined USE_MEMORY_TRACKING
+	void* ptr = mmgrAllocator(f, l, sf, m_alloc_malloc, MIN_ALLOC_ALIGNMENT, size);
+#elif defined USE_NEDMALLOC
+	void* ptr = nedalloc::nedmalloc(size);
+#elif defined USE_MIMALLOC
+	void* ptr = mi_malloc(size);
+#elif defined USE_BUMPALLOCATOR
+	void* ptr = _bumpAllocator.alloc(size);
+#elif defined _MSC_VER
 	void* ptr = _aligned_malloc(size, MIN_ALLOC_ALIGNMENT);
-	MTUNER_ALIGNED_ALLOC(0, ptr, size, 0, MIN_ALLOC_ALIGNMENT);
 #else
 	void* ptr = malloc(size);
-	MTUNER_ALLOC(0, ptr, size, 0);
 #endif
-
 	return ptr;
 }
 #endif
@@ -156,33 +205,45 @@ static __forceinline void* _internal_realloc(
   const char *f, int l, const char *sf)
 {
   niUnused(f); niUnused(l); niUnused(sf);
-
-#ifdef _MSC_VER
+#if defined USE_MEMORY_TRACKING
+  void* reallocPtr = mmgrReallocator(f, l, sf, m_alloc_realloc, size, ptr);
+#elif defined USE_NEDMALLOC
+	void* reallocPtr = nedalloc::nedrealloc(ptr, size);
+#elif defined USE_MIMALLOC
+	void* reallocPtr = mi_realloc(ptr, size);
+#elif defined USE_BUMPALLOCATOR
+	void* reallocPtr = _bumpAllocator.realloc(ptr, size, MIN_ALLOC_ALIGNMENT);
+#elif defined _MSC_VER
 	void* reallocPtr = _aligned_realloc(ptr, size, MIN_ALLOC_ALIGNMENT);
 #else
 	void* reallocPtr = realloc(ptr, size);
 #endif
-
-	MTUNER_REALLOC(0, reallocPtr, size, 0, ptr);
-
 	return reallocPtr;
 }
 
 static __forceinline void _internal_free(void* ptr, const char *f, int l, const char *sf)
 {
-	MTUNER_FREE(0, ptr);
-
-#ifdef _MSC_VER
+  niUnused(f); niUnused(l); niUnused(sf);
+#if defined USE_MEMORY_TRACKING
+  mmgrDeallocator(f, l, sf, m_alloc_free, ptr);
+#elif defined USE_NEDMALLOC
+  nedalloc::nedfree(ptr);
+#elif defined USE_MIMALLOC
+  mi_free(ptr);
+#elif defined USE_BUMPALLOCATOR
+  _bumpAllocator.free(ptr);
+#elif defined _MSC_VER
 	_aligned_free(ptr);
 #else
 	free(ptr);
 #endif
 }
 
-#endif // defined(USE_MEMORY_TRACKING) || defined(USE_MTUNER)
-
+#ifdef COUNT_ALLOCS
 static SyncCounter _numAlloc(0);
 static SyncCounter _numFree(0);
+static SyncCounter _numRealloc(0);
+#endif
 
 niExportFunc(void*) ni_malloc(size_t size, const char *f, int l, const char *sf)
 {
@@ -190,8 +251,17 @@ niExportFunc(void*) ni_malloc(size_t size, const char *f, int l, const char *sf)
   if (size == 0) {
     return _memZero._buffer;
   }
+#ifdef COUNT_ALLOCS
   _numAlloc.Inc();
-  return _internal_malloc(size,f,l,sf);
+#endif
+  void* r = _internal_malloc(size,f,l,sf);
+#ifdef IF_TRACE_MEM
+  IF_TRACE_MEM(ni_malloc) {
+    niDebugFmt(("... ni_malloc: size: %d, f: %s, l: %d, sf: %s",
+                size, f, l, sf));
+  }
+#endif
+  return r;
 }
 
 niExportFunc(void*) ni_aligned_malloc(size_t size, size_t alignment,const char *f, int l, const char *sf)
@@ -200,8 +270,17 @@ niExportFunc(void*) ni_aligned_malloc(size_t size, size_t alignment,const char *
   if (size == 0) {
     return _memZero._buffer;
   }
+#ifdef COUNT_ALLOCS
   _numAlloc.Inc();
-  return _internal_aligned_malloc(size,alignment,f,l,sf);
+#endif
+  void* r = _internal_aligned_malloc(size,alignment,f,l,sf);
+#ifdef IF_TRACE_MEM
+  IF_TRACE_MEM(ni_aligned_malloc) {
+    niDebugFmt(("... ni_aligned_malloc: size: %d, alignment: %d, f: %s, l: %d, sf: %s",
+                size, alignment, f, l, sf));
+  }
+#endif
+  return r;
 }
 
 niExportFunc(void*) ni_realloc(void* ptr, size_t size, const char *f, int l, const char *sf)
@@ -210,9 +289,18 @@ niExportFunc(void*) ni_realloc(void* ptr, size_t size, const char *f, int l, con
   if ((ptr == nullptr) || (ptr == _memZero._buffer)) {
     return ni_malloc(size, f, l, sf);
   }
-
+#ifdef COUNT_ALLOCS
   _numFree.Inc(); _numAlloc.Inc();
-  return _internal_realloc(ptr,size,f,l,sf);
+  _numRealloc.Inc();
+#endif
+  void* r = _internal_realloc(ptr,size,f,l,sf);
+#ifdef IF_TRACE_MEM
+  IF_TRACE_MEM(ni_realloc) {
+    niDebugFmt(("... ni_realloc: ptr: %p, size: %d, f: %s, l: %d, sf: %s",
+                (tIntPtr)ptr, size, f, l, sf));
+  }
+#endif
+  return r;
 }
 
 niExportFunc(void) ni_free(void* ptr, const char *f, int l, const char *sf)
@@ -221,8 +309,17 @@ niExportFunc(void) ni_free(void* ptr, const char *f, int l, const char *sf)
   if ((ptr == nullptr) || (ptr == _memZero._buffer)) {
     return;
   }
+#ifdef COUNT_ALLOCS
   _numFree.Inc();
+#endif
   _internal_free(ptr,f,l,sf);
+  // tracing in ni_free leads to crashes....
+#if defined IF_TRACE_MEM && 0
+  IF_TRACE_MEM(ni_free) {
+    niDebugFmt(("... ni_free: ptr: %p, f: %s, l: %d, sf: %s",
+                (tIntPtr)ptr, f, l, sf));
+  }
+#endif
 }
 
 #ifdef _DEBUG
@@ -351,14 +448,18 @@ public:
   }
 #endif
 
+#ifdef COUNT_ALLOCS
 static SyncCounter _numObjectAlloc(0);
 static SyncCounter _numObjectFree(0);
+#endif
 
 niExportFunc(void*) ni_object_alloc(size_t anSize, const achar* file, int line, const achar* fun)
 {
   niDebugAssert(anSize > 0);
   CHECK_ZERO_MEMORY();
+#ifdef COUNT_ALLOCS
   _numObjectAlloc.Inc();
+#endif
 
   const tSize nAllocSize = sizeof(sObjectMemoryHeader)+anSize;
   void* p = ni_malloc(nAllocSize, file, line, fun);
@@ -379,7 +480,9 @@ niExportFunc(void*) ni_object_alloc(size_t anSize, const achar* file, int line, 
 
 niExportFunc(void) ni_object_free(void* apObjectPtr, const char* file, int line, const char* fun) {
   CHECK_ZERO_MEMORY();
+#ifdef COUNT_ALLOCS
   _numObjectFree.Inc();
+#endif
 
   sObjectMemoryHeader* basePtr = MEMORY_GET_HEADER(apObjectPtr);
   niDebugAssert((void*)basePtr != (void*)&_memZero);
@@ -438,10 +541,14 @@ niExportFunc(iUnknown*) ni_object_deref_weak_ptr(iUnknown* apWeakPtr) {
 
 niExportFunc(sVec4i*) ni_mem_get_stats(sVec4i* apStats) {
   niPanicAssert(apStats != nullptr);
+#ifdef COUNT_ALLOCS
   apStats->x = _numAlloc.Get();
   apStats->y = _numFree.Get();
   apStats->z = _numObjectAlloc.Get();
   apStats->w = _numObjectFree.Get();
+#else
+  *apStats = sVec4i::Zero();
+#endif
   return apStats;
 }
 

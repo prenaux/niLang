@@ -140,7 +140,7 @@ inline void my_sq_throw() {
 #endif
 
 #define EX_LOOP()                               \
-  const SQInstruction* _i_;                  \
+  const SQInstruction* _i_;                     \
   for (;;)
 
 #define EX_LOOP_INIT()                          \
@@ -149,7 +149,7 @@ inline void my_sq_throw() {
 #define EX_SWITCH()    switch(_i_->op)
 #define EX_BEGIN(NAME) case NAME:
 #define EX_END_CONTINUE()  continue;
-#define EX_END_FALLTHROUGH() niFallthrough;
+#define EX_END_FALLTHROUGH() niFallthrough
 
 ///////////////////////////////////////////////
 bool SQVM::Execute(const SQObjectPtr &aClosure, int target, int nargs, int stackbase,SQObjectPtr &outres)

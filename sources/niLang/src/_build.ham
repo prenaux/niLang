@@ -15,6 +15,10 @@ if $(WINDOWS) = 1 {
   # USE_NEDMALLOC = 1 ;
   USE_MIMALLOC = 1 ;
 }
+if $(OSX) = 1 {
+  # USE_NEDMALLOC = 1 ;
+  USE_MIMALLOC = 1 ;
+}
 
 ### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;

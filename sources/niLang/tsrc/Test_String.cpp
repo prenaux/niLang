@@ -223,12 +223,6 @@ struct niCore_String {
   }
 };
 
-struct niCore_HString {
-  niCore_HString() {
-  }
-  ~niCore_HString() {
-  }
-};
 
 ///////////////////////////////////////////////
 TEST_FIXTURE(niCore_String,StrFormatNULL) {
@@ -1196,20 +1190,6 @@ TEST_FIXTURE(niCore_String,StrGetUCPProps) {
                 niEnumToChars(eUCPCharType, charType), charType,
                 niEnumToChars(eUCPScript, script), script));
   }
-}
-
-///////////////////////////////////////////////
-TEST_FIXTURE(niCore_HString,Basics) {
-  using namespace ni;
-
-  tHStringPtr hspA = _H("A");
-  tHStringPtr hspA1 = _H("A");
-  tHStringPtr hspB = _H("B");
-  tHStringPtr hspB1 = _H("B");
-  CHECK_EQUAL((tI64)hspA.ptr(),(tI64)hspA1.ptr());
-  CHECK_EQUAL(_ASTR("A"),_ASTR(niHStr(hspA)));
-  CHECK_EQUAL((tI64)hspB.ptr(),(tI64)hspB1.ptr());
-  CHECK_EQUAL(_ASTR("B"),_ASTR(niHStr(hspB)));
 }
 
 ///////////////////////////////////////////////

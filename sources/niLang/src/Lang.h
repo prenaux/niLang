@@ -181,7 +181,6 @@ class cLang : public ImplLocal<iLang>
   tBool __stdcall SetClipboard(eClipboardType aType, iDataTable* apDT);
   iDataTable* __stdcall GetClipboard(eClipboardType aType) const;
 
-  Ptr<iHString> __stdcall CreateHString(const cString& astrKey);
   tBool __stdcall LoadLocalization(iDataTable* apDT);
 
   iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort);
@@ -204,14 +203,6 @@ class cLang : public ImplLocal<iLang>
   tU32 mnAverageFPS;
 
   // HString
-  void __stdcall _InvalidateHStringTable();
-
-  // TODO: eastl::intrusive_hashtable might be better for this.
-  typedef astl::hash_map<cString,iHString*> tStringTableHMap;
-  ni::ThreadMutex mmutexHStringTable;
-  niSync tStringTableHMap mmapHStrings;
-  void _UnregisterHString(iHString* apHString);
-
   typedef astl::hstring_hash_map<Ptr<iHString> > tLocalizationMap;
   struct sLocalizationTable {
     sLocalizationTable() {

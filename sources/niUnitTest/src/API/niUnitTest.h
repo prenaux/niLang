@@ -465,14 +465,18 @@ struct UnitTestMemDelta {
   ~UnitTestMemDelta() {
     EndTracking();
   }
-  void EndTracking() {
-    if (_memStart == ni::sVec4i::Zero())
-      return;
+  ni::sVec4i GetCurrentAllocsDelta() {
     ni::sVec4i delta;
     ni_mem_get_stats(&delta);
     delta -= _memStart;
+    return delta;
+  }
+  void EndTracking() {
+    if (_memStart == ni::sVec4i::Zero())
+      return;
+    const ni::sVec4i delta = GetCurrentAllocsDelta();
     ni::ni_log(
-      ni::eLogFlags_Raw,
+      ni::eLogFlags_Info,
       niFmt("MemTracking delta: numAlloc: %d, numFree: %d, numObjectAlloc: %d, numObjectFree: %d",
             delta.x, delta.y, delta.z, delta.w),
       _file, _line, _func);
@@ -482,6 +486,10 @@ struct UnitTestMemDelta {
 
 #define TEST_TRACK_MEMORY_BEGIN() UnitTest::UnitTestMemDelta __memtrack(__FILE__,__LINE__,__FUNCTION__);
 #define TEST_TRACK_MEMORY_END() __memtrack.EndTracking();
+#define TEST_TRACK_MEMORY_EXPECTED_ALLOCS(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().x)
+#define TEST_TRACK_MEMORY_EXPECTED_FREES(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().y)
+#define TEST_TRACK_MEMORY_EXPECTED_OBJ_ALLOCS(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().z)
+#define TEST_TRACK_MEMORY_EXPECTED_OBJ_FREES(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().w)
 }
 
 //----------------------------------------------------------------------------

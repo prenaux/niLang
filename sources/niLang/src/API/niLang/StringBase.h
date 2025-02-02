@@ -9,8 +9,9 @@
 #include "Utils/StringIntToStr.h"
 #include "Utils/SmartPtr.h"
 #include "Utils/Buffer.h"
-#include "STL/memory.h"
 #include "Math/MathFloat.h"
+#include "STL/memory.h"
+#include "STL/string_view.h"
 
 #define niCore_StringBase_CatFormat
 
@@ -88,6 +89,10 @@ class cString
   inline tU32 length()   const { return this->mnLen; }
   inline tU32 size()     const { return length(); }
   inline tBool empty()   const { return this->mnLen == 0; }
+
+  operator astl::string_view() const {
+    return astl::string_view(mpStorage, mnLen);
+  }
 
   const achar at(const tU32 index) const {
     niAssert(index <= length());

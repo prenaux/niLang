@@ -999,15 +999,6 @@ IDLC_METH_BEGIN(ni,iLang,URLFindFilePath,3)
 	IDLC_RET_FROM_BASE(ni::eType_String,_Ret)
 IDLC_METH_END(ni,iLang,URLFindFilePath,3)
 
-/** ni -> iLang::CreateHString/1 **/
-IDLC_METH_BEGIN(ni,iLang,CreateHString,1)
-	IDLC_DECL_VAR(cString,aStr)
-	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer,aStr)
-	IDLC_DECL_RETVAR(Ptr<iHString>,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iLang,CreateHString,1,(aStr))
-	IDLC_RET_FROM_INTF(,_Ret)
-IDLC_METH_END(ni,iLang,CreateHString,1)
-
 /** ni -> iLang::LoadLocalization/1 **/
 IDLC_METH_BEGIN(ni,iLang,LoadLocalization,1)
 	IDLC_DECL_VAR(iDataTable*,apDT)

@@ -1612,16 +1612,6 @@
 					typec="const achar*"
 					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="createHString" name="CreateHString" num_parameters="1">
-				<comments desc="Create a new HString. "/>
-				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					last="1"
-					name="aStr"
-					type="const cString &amp;"
-					typec="const cString&amp;"
-					typei="ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer"/>
-			</method>
 			<method java_name="loadLocalization" name="LoadLocalization" num_parameters="1">
 				<comments desc="Load a localization table. ">
 					<remark text="The table&apos;s format is \&lt;Localization&gt;\&lt;String native=&quot;Hello&quot; fr=&quot;Bonjour&quot; cn=&quot;nihao&quot; /&gt;\&lt;/Localization&gt; "/>

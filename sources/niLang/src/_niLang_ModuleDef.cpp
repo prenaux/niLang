@@ -13147,21 +13147,6 @@ static const ni::sMethodDef iLang_URLFindFilePath = {
 #endif
 };
 
-// Method: CreateHString
-static const ni::sParameterDef iLang_CreateHString_Parameters[1] = { 
-  { "aStr", ni::eTypeFlags_Constant|ni::eType_String|ni::eTypeFlags_Pointer, NULL, "const cString&" }
-}; 
-static const ni::sMethodDef iLang_CreateHString = {
-  "CreateHString",
-  0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "Ptr<iHString>",
-  1, iLang_CreateHString_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iLang_CreateHString)
-#else
-  NULL
-#endif
-};
-
 // Method: LoadLocalization
 static const ni::sParameterDef iLang_LoadLocalization_Parameters[1] = { 
   { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
@@ -13843,7 +13828,6 @@ static const ni::sMethodDef* Methods_iLang[] = {
 	&iLang_URLOpen,
 	&iLang_URLExists,
 	&iLang_URLFindFilePath,
-	&iLang_CreateHString,
 	&iLang_LoadLocalization,
 	&iLang_IsSerializedObject,
 	&iLang_SerializeObject,

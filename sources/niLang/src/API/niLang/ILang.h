@@ -529,12 +529,10 @@ struct iLang : public iUnknown
   //! @}
 
   //########################################################################################
-  //! \name HString & Localization
+  //! \name Localization
   //########################################################################################
   //! @{
 
-  //! Create a new HString.
-  virtual Ptr<iHString> __stdcall CreateHString(const cString& aStr) = 0;
   //! Load a localization table.
   //! \remark The table's format is \<Localization>\<String native="Hello" fr="Bonjour" cn="nihao" />\</Localization>
   virtual tBool __stdcall LoadLocalization(iDataTable* apDT) = 0;
@@ -730,13 +728,16 @@ niExportFunc(ni::iLang*) GetLang();
 #define niGetConstHString(STR)  GetHString_##STR()
 
 #ifdef niNoUnsafePtr
-#define _H(STR)           ni::GetLang()->CreateHString(STR).non_null()
+#define _H(STR)           ni::CreateHStringFromView(STR).non_null()
 #else
-#define _H(STR)           ni::GetLang()->CreateHString(STR)
+#define _H(STR)           ni::CreateHStringFromView(STR)
 #endif
 #define _HC(STR)          niGetConstHString(STR)
 #define _HDecl_(NAME,STR) niDefConstHString_(NAME,STR)
 #define _HDecl(STR)       niDefConstHString(STR)
+
+niExportFuncCPP(Ptr<iHString>) CreateHStringFromView(astl::string_view aStringView);
+niExportFunc(iHString*) CreateHStringForC(const char* aStr, std::size_t aLen);
 
 //! Create an object instance using function linkage
 #define niCreateInstance(MODULE,OBJECT,A,B) New_##MODULE##_##OBJECT(A,B)

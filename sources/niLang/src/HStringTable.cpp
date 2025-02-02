@@ -7,6 +7,9 @@
 #include "API/niLang/Utils/CollectionImpl.h"
 #include "API/niLang/Utils/Sync.h"
 #include "API/niLang/StringLibIt.h"
+#include "API/niLang/STL/string_view.h"
+#include "API/niLang/STL/hash_map.h"
+#include "API/niLang/STL/hash_set.h"
 #include "Lang.h"
 
 using namespace ni;
@@ -19,13 +22,16 @@ niExportFunc(void*) ni_get_vtable_object_iHString() {
   return _HC(HStringVTable);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// cHStringCharIt declaration.
+//----------------------------------------------------------------------------
+//
+// Section: cHStringCharIt
+//
+//----------------------------------------------------------------------------
 class cHStringCharIt : public ImplRC<iHStringCharIt>
 {
   niBeginClass(cHStringCharIt);
 
-  tHStringPtr _hsp;
+  Ptr<iHString> _hsp;
   StrCharIt _it;
 
  public:
@@ -109,22 +115,28 @@ class cHStringCharIt : public ImplRC<iHStringCharIt>
   }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// cHString implementation.
-class cHString :  public ImplRC<iHString,ni::eImplFlags_Default>
-{
-  niBeginClass(cHString);
+//----------------------------------------------------------------------------
+//
+// Section: sHString
+//
+//----------------------------------------------------------------------------
+struct sHString;
 
- public:
-  cHString() {
+static void _UnregisterHStringFromTable(sHString* apHString);
+
+struct sHString :  public ImplRC<iHString,ni::eImplFlags_Default>
+{
+  const achar* maszChars;
+  tU32 mnLength;
+
+  sHString() {
   }
-  ~cHString() {
+  ~sHString() {
     niAssert(maszChars);
-    GetLangImpl()->_UnregisterHString(this);
+    _UnregisterHStringFromTable(this);
   }
 
   tBool __stdcall IsOK() const niImpl {
-    niClassIsOK(cHString);
     return eTrue;
   }
 
@@ -139,13 +151,13 @@ class cHString :  public ImplRC<iHString,ni::eImplFlags_Default>
   }
 
   iHString* __stdcall GetLocalized() const niImpl {
-    return GetLangImpl()->_GetLocalized(NULL,niThis(cHString));
+    return GetLangImpl()->_GetLocalized(NULL,niThis(sHString));
   }
   iHString* __stdcall GetLocalizedEx(iHString* locale) const niImpl {
-    return GetLangImpl()->_GetLocalized(locale,niThis(cHString));
+    return GetLangImpl()->_GetLocalized(locale,niThis(sHString));
   }
   tBool __stdcall IsLocalized(iHString* locale) const niImpl {
-    return GetLangImpl()->_GetLocalized(locale,niThis(cHString)) != this;
+    return GetLangImpl()->_GetLocalized(locale,niThis(sHString)) != this;
   }
 
   tI32 __stdcall Cmp(const iHString* ahspRight) const niImpl {
@@ -174,91 +186,143 @@ class cHString :  public ImplRC<iHString,ni::eImplFlags_Default>
     if (offset+size > mnLength) return NULL;
     return niNew cHStringCharIt(this,offset,size);
   }
-
- public:
-  const achar* maszChars;
-  tU32 mnLength;
-
-  niEndClass(cHString);
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// HStringTable implementation.
+//----------------------------------------------------------------------------
+//
+// Section: sHStringTable
+//
+//----------------------------------------------------------------------------
+#define USE_HSTRING_SINGLE_ALLOC
 
-///////////////////////////////////////////////
-// TODO: This isnt called anywhere atm, ideally we should call it at the program's exit.
-void __stdcall cLang::_InvalidateHStringTable()
-{
-  __sync_local_type_(tStringTableHMap,mapHStrings,HStringTable);
-  while (GetNumLocales()) {
-    ClearLocalization(GetLocale(0));
+struct sHStringTable {
+  __sync_mutex_(HStringTable);
+  typedef astl::hash_map<astl::string_view,sHString*> tStringMap;
+  tStringMap mmapStrings;
+  Ptr<iHString> mAtomEmpty;
+
+  sHStringTable() {
+    mAtomEmpty = CreateHString(astl::string_view("", 0));
   }
-  if (!mapHStrings->empty())
-  {
-    niWarning(niFmt(_A("HStringTable invalidated, still has %d strings inside."),
-                    mapHStrings->size()));
-#ifdef niHStringTable_LogLeakedString
-    tU32 count = 0;
-    for (tStringTableHMap::const_iterator it = mapHStrings->begin();
-         it != mapHStrings->end(); ++it, ++count)
-    {
-      iHString* pHStr = it->second;
-      niWarning(niFmt(_A("string[%d]: %s (%d refs)"),
-                      count,it->first.Chars(),pHStr->GetNumRefs()));
+  ~sHStringTable() {
+    //niAssert(mmapStrings.size() == mmapAtoms.size());
+  }
+
+  sHStringTable(const sHStringTable&) = delete;
+  sHStringTable& operator=(const sHStringTable&) = delete;
+
+  Ptr<sHString> CreateHString(astl::string_view sv) {
+    __sync_lock_(HStringTable);
+
+    auto it = mmapStrings.find(sv);
+    if (it != mmapStrings.end()) {
+      return it->second;
     }
-    niWarning(niFmt(_A("-------------------------")));
+
+#ifdef USE_HSTRING_SINGLE_ALLOC
+    // Single allocation: [sHString object][string data + null terminator]
+    const size_t stringOffset = (sizeof(sHString) + 7) & ~7; // Align to 8 bytes
+    const size_t totalSize = stringOffset + sv.length() + 1;
+    void* mem = ni_object_alloc(totalSize, niSourceLoc);
+
+    // Place the string right after the object
+    achar* internedStr = (achar*)((tPtr)mem + stringOffset);
+    ni::MemCopy((tPtr)internedStr, (tPtr)sv.data(), sv.length());
+    internedStr[sv.length()] = 0;
+
+    // Construct the HString object at start of the allocation
+    Ptr<sHString> hsp = new(mem) sHString();
+    hsp->maszChars = internedStr;
+    hsp->mnLength = (tU32)sv.length();
+#else
+    achar* internedStr = (achar*)niMalloc(sv.length() + 1);
+    ni::MemCopy((tPtr)internedStr, (tPtr)sv.data(), sv.length());
+    internedStr[sv.length()] = 0;
+
+    Ptr<sHString> hsp = niNew sHString();
+    ((sHString*)hsp.ptr())->maszChars = internedStr;
+    ((sHString*)hsp.ptr())->mnLength = (tU32)sv.length();
 #endif
+
+    astl::upsert(mmapStrings, astl::string_view(internedStr, sv.length()), hsp.ptr());
+    return hsp;
   }
+
+  void UnregisterHString(sHString* apHString) {
+    niAssert(apHString != nullptr);
+    __sync_lock_(HStringTable);
+    auto it = mmapStrings.find(astl::string_view(apHString->maszChars, apHString->mnLength));
+    niAssert(it != mmapStrings.end());
+#ifdef USE_HSTRING_SINGLE_ALLOC
+    // we dont need to call the destructor or free here as UnregisterHString
+    // is called from the sHString destructor and is going to release the
+    // whole block with ni_object_free()
+#else
+    niFree((void*)apHString->maszChars);
+#endif
+    mmapStrings.erase(it);
+  }
+};
+
+///////////////////////////////////////////////
+static inline sHStringTable& _GetHStringTable() {
+  static sHStringTable _hstringTableInst;
+  return _hstringTableInst;
 }
 
 ///////////////////////////////////////////////
-tHStringPtr cLang::CreateHString(const cString& astrKey) {
-  Ptr<iHString> hsp;
-  {
-    __sync_local_type_(tStringTableHMap,mapHStrings,HStringTable);
-    tStringTableHMap::iterator it = mapHStrings->find(astrKey);
-    if (it == mapHStrings->end()) {
-      hsp = niNew cHString();
-      it = astl::upsert(*mapHStrings, astrKey, hsp);
-      ((cHString*)hsp.ptr())->maszChars = it->first.Chars();
-      ((cHString*)hsp.ptr())->mnLength = it->first.Length();
-      niDebugAssertMsg(
-        mapHStrings->find(hsp->GetChars()) != mapHStrings->end(),
-        "Can't find string just after adding it, string likely contains a zero before its length.");
-    }
-    else {
-      hsp = (cHString*)it->second;
-    }
+static void _UnregisterHStringFromTable(sHString* apHString) {
+  _GetHStringTable().UnregisterHString(apHString);
+}
+
+namespace ni {
+
+///////////////////////////////////////////////
+niExportFuncCPP(Ptr<iHString>) CreateHStringFromView(astl::string_view aStringView) {
+  if (aStringView.empty()) {
+    return _GetHStringTable().mAtomEmpty;
   }
-  return hsp;
+  return _GetHStringTable().CreateHString(aStringView);
 }
 
 ///////////////////////////////////////////////
-void cLang::_UnregisterHString(iHString* apHString) {
-  __sync_local_type_(tStringTableHMap,mapHStrings,HStringTable);
-  tStringTableHMap::iterator it = mapHStrings->find(apHString->GetChars());
-  niPanicAssert(it != mapHStrings->end());
-  mapHStrings->erase(it);
+niExportFunc(iHString*) CreateHStringForC(const char* aStr, std::size_t aLen) {
+  if (!niStringIsOK(aStr)) {
+    return _GetHStringTable().mAtomEmpty;
+  }
+  if (aLen == 0) {
+    aLen = ni::StrSize(aStr);
+  }
+  Ptr<iHString> hsp = _GetHStringTable().CreateHString(astl::string_view(aStr,aLen));
+  return hsp.GetRawAndSetNull();
 }
+
+}
+
+//----------------------------------------------------------------------------
+//
+// Section: cLang Localization
+//
+//----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
 void __stdcall cLang::SetDefaultLocale(iHString* ahspLocale) {
-  __sync_set_(mhspDefaultLocale,ahspLocale,HStringTable);
+  __sync_set_(mhspDefaultLocale,ahspLocale,Locales);
 }
 iHString* __stdcall cLang::GetDefaultLocale() const {
-  __sync_local_sptr_(iHString,hspDefaultLocale,HStringTable);
+  __sync_local_sptr_(iHString,hspDefaultLocale,Locales);
   return hspDefaultLocale.ptr();
 }
 
 ///////////////////////////////////////////////
 tU32 __stdcall cLang::GetNumLocales() const {
-  __sync_local_type_(tLocalesHMap,mapLocales,HStringTable);
+  __sync_local_type_(tLocalesHMap,mapLocales,Locales);
   return (tU32)mapLocales->size();
 }
 
 ///////////////////////////////////////////////
 iHString* __stdcall cLang::GetLocale(tU32 index) const {
-  __sync_local_type_(tLocalesHMap,mapLocales,HStringTable);
+  __sync_local_type_(tLocalesHMap,mapLocales,Locales);
   tU32 c = 0;
   for (tLocalesHMap::iterator it = mapLocales->begin(); it != mapLocales->end(); ++it) {
     if (c++ == index)
@@ -269,7 +333,7 @@ iHString* __stdcall cLang::GetLocale(tU32 index) const {
 
 ///////////////////////////////////////////////
 tBool __stdcall cLang::ClearLocalization(iHString* locale) {
-  __sync_local_type_(tLocalesHMap,mapLocales,HStringTable);
+  __sync_local_type_(tLocalesHMap,mapLocales,Locales);
   tLocalesHMap::iterator it = mapLocales->find(locale);
   if (it != mapLocales->end()) {
     tLocalizationMap* lmap = &it->second->map;
@@ -303,7 +367,7 @@ cLang::sLocalizationTable* cLang::_GetLocalizationTable(iHString* locale, tBool 
   return NULL;
 }
 tBool __stdcall cLang::SetLocalization(iHString* locale, iHString* native, iHString* localized) {
-  __sync_lock_(HStringTable);
+  __sync_lock_(Locales);
   niCheckSilent(HStringIsNotEmpty(locale) &&
                 HStringIsNotEmpty(native), eFalse);
   sLocalizationTable* ltbl = _GetLocalizationTable(locale,eTrue);
@@ -314,7 +378,7 @@ tBool __stdcall cLang::SetLocalization(iHString* locale, iHString* native, iHStr
   return eTrue;
 }
 tBool __stdcall cLang::SetLocalizationMap(iHString* locale, const tStringCMap* apLocalizationMap) {
-  __sync_lock_(HStringTable);
+  __sync_lock_(Locales);
   niCheckSilent(HStringIsNotEmpty(locale) && niIsOK(apLocalizationMap), eFalse);
   sLocalizationTable* ltbl = _GetLocalizationTable(locale,eTrue);
   if (!ltbl)
@@ -324,14 +388,14 @@ tBool __stdcall cLang::SetLocalizationMap(iHString* locale, const tStringCMap* a
        it != apLocalizationMap->end();
        ++it)
   {
-    tHStringPtr native = CreateHString(it->first);
-    tHStringPtr localized = CreateHString(it->second);
+    Ptr<iHString> native = CreateHStringFromView(it->first);
+    Ptr<iHString> localized = CreateHStringFromView(it->second);
     astl::upsert(*lmap,native,localized);
   }
   return eTrue;
 }
 tU32 __stdcall cLang::GetLocalizationMap(iHString* locale, tStringCMap* apLocalizedMap) const {
-  __sync_lock_(HStringTable);
+  __sync_lock_(Locales);
   niCheckSilent(HStringIsNotEmpty(locale), eFalse);
   const sLocalizationTable* ltbl = _GetLocalizationTable(locale,eFalse);
   if (!ltbl)
@@ -349,10 +413,10 @@ tU32 __stdcall cLang::GetLocalizationMap(iHString* locale, tStringCMap* apLocali
 // return the native string if not localized or invalid locale
 iHString* __stdcall cLang::_GetLocalized(iHString* locale, iHString* native) {
   if (!locale)
-    locale = const_cast<tHStringPtr&>(mhspDefaultLocale).ptr();
+    locale = const_cast<Ptr<iHString>&>(mhspDefaultLocale).ptr();
   if (HStringIsEmpty(locale))
     return native;
-  __sync_lock_(HStringTable);
+  __sync_lock_(Locales);
   sLocalizationTable* ltbl = _GetLocalizationTable(locale,mbMarkMissingLocalization);
   if (!ltbl)
     return native;
@@ -381,7 +445,7 @@ tBool __stdcall cLang::GetMarkMissingLocalization() const {
 
 ///////////////////////////////////////////////
 tStringCVec* __stdcall cLang::GetMissingLocalization(iHString* locale) const {
-  __sync_lock_(HStringTable);
+  __sync_lock_(Locales);
   niCheckSilent(HStringIsNotEmpty(locale), NULL);
   sLocalizationTable* ltbl = _GetLocalizationTable(locale,eFalse);
   if (!ltbl)

@@ -55,6 +55,7 @@ EA_DISABLE_VC_WARNING(
 
 #include <niLang/Types.h>
 #include <niLang/STL/string.h>
+#include <niLang/STL/string_view.h>
 #include <niLang/STL/memory.h>
 #include <niLang/STL/optional.h>
 #include <niLang/STL/span.h>
@@ -396,7 +397,7 @@ template <typename... Args>
 inline NN<iHString> HFmt(ain<tChars> aFmt, Args&&... args) {
   tStr s;
   s.Format(aFmt, astl::forward<Args>(args)...);
-  return ni::GetLang()->CreateHString(s).non_null();
+  return ni::CreateHStringFromView(s).non_null();
 }
 
 //##################################################################
@@ -789,7 +790,7 @@ inline ni::cString operator"" _str(const char* aStr, std::size_t aLen) {
 }
 
 inline ni::tHStringPtr operator"" _hstr(const char* aStr, std::size_t aLen) {
-    return ni::GetLang()->CreateHString(ni::cString(aStr,aLen));
+    return ni::CreateHStringFromView(astl::string_view(aStr,aLen));
 }
 
 inline constexpr ni::tSize operator"" _sz(unsigned long long aVal) { return static_cast<ni::tSize>(aVal); }
@@ -811,7 +812,7 @@ typedef NN<iHString> tHStringNN;
   }
 
 #undef _H
-#define _H(STR) ni::GetLang()->CreateHString(STR).non_null()
+#define _H(STR) ni::CreateHStringFromView(STR).non_null()
 
 } // end namespace ni
 

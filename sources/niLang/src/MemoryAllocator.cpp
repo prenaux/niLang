@@ -67,6 +67,12 @@
 
 namespace ni {
 
+#if defined USE_MIMALLOC
+static void ni_mimalloc_print(const char* aText, void*) {
+  niPrint(aText);
+}
+#endif
+
 #if defined USE_BUMPALLOCATOR
 // This is meant as a reference implementation for a "this is the fastest you
 // can allocate memory" allocator. Or at least it shouldnt have big horrible
@@ -553,8 +559,12 @@ niExportFunc(sVec4i*) ni_mem_get_stats(sVec4i* apStats) {
 }
 
 niExportFunc(void) ni_mem_dump_report() {
-#ifdef USE_MEMORY_TRACKING
+#if defined USE_MEMORY_TRACKING
   mmgrDumpMemoryReport();
+#elif defined USE_MIMALLOC
+  niLog(Info,"--- MIMALLOC REPORT BEGIN ---");
+  mi_stats_print_out(ni_mimalloc_print, nullptr);
+  niLog(Info,"--- MIMALLOC REPORT END ---");
 #endif
 }
 

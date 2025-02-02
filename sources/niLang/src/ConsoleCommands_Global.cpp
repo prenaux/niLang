@@ -23,6 +23,7 @@ niGlobalCommand(Mem, _A("Show the memory usage."))
     ms.x,ms.y,ms.x-ms.y,
     ms.z,ms.w,ms.z-ms.w);
   niLog(Info,o.Chars());
+  ni_mem_dump_report();
   return eTrue;
 }
 

@@ -676,20 +676,20 @@ niExportFunc(void) sq_setcompilererrorhandler(HSQUIRRELVM v,SQCOMPILERERROR f)
   v->_ss->_compilererrorhandler=f;
 }
 
-niExportFunc(SQRESULT) sq_writeclosure(HSQUIRRELVM v,SQWRITEFUNC w,ni::tPtr up)
+niExportFunc(SQRESULT) sq_writeclosure(HSQUIRRELVM v,iFile* apFile)
 {
   SQObjectPtr *o = NULL;
   _GETSAFE_OBJ(_A("sq_writeclosure"), v, -1, OT_CLOSURE,o);
-  if (!WriteSQClosure(_closure(*o),v,up,w))
+  if (!WriteSQFunctionProto(v,as_nn(apFile),_funcproto(_closure(*o)->_function)))
     return SQ_ERROR;
   return SQ_OK;
 }
 
-niExportFunc(SQRESULT) sq_readclosure(HSQUIRRELVM v,SQREADFUNC r,ni::tPtr up)
+niExportFunc(SQRESULT) sq_readclosure(HSQUIRRELVM v,iFile* apFile)
 {
   SQObjectPtr func=SQFunctionProto::Create();
   SQObjectPtr closure=SQClosure::Create(_funcproto(func),_table(v->_roottable));
-  if(!ReadSQClosure(_closure(closure),v,up,r))
+  if (!ReadSQFunctionProto(v,as_nn(apFile),_funcproto(_closure(closure)->_function)))
     return SQ_ERROR;
   v->Push(closure);
   return SQ_OK;

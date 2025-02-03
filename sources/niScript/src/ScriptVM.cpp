@@ -256,24 +256,6 @@ cString& sqGetCallstack(cString& astrOut, HSQUIRRELVM v, int aLevel)
   return astrOut;
 }
 
-#if 0
-static int sqWriteGetSize(ni::tPtr apFile, ni::tPtr apSrc, int size)
-{
-  *((tSize*)apSrc) += size;
-  return size;
-}
-#endif
-
-static int sqWrite(ni::tPtr apFile, ni::tPtr apSrc, int size)
-{
-  return reinterpret_cast<iFile*>(apFile)->WriteRaw(apSrc, size);
-}
-
-static int sqRead(ni::tPtr apFile, ni::tPtr apSrc, int size)
-{
-  return reinterpret_cast<iFile*>(apFile)->ReadRaw(apSrc, size);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Default print functions
 
@@ -1175,8 +1157,7 @@ tBool __stdcall cScriptVM::WriteClosure(iFile* apFile, iScriptObject* apObject)
 
   apFile->WriteLE32(_fccClosure);
   PushObject(apObject);
-  if (!SQ_SUCCEEDED(sq_writeclosure(mptrVM,sqWrite,(ni::tPtr)apFile)))
-  {
+  if (!SQ_SUCCEEDED(sq_writeclosure(mptrVM,apFile))) {
     Pop(1);
     niError(_A("Can't write the closure."));
     return eFalse;
@@ -1202,7 +1183,7 @@ iScriptObject* __stdcall cScriptVM::ReadClosure(iFile* apFile)
     return NULL;
   }
 
-  if (!SQ_SUCCEEDED(sq_readclosure(mptrVM,sqRead,(tPtr)apFile))) {
+  if (!SQ_SUCCEEDED(sq_readclosure(mptrVM,apFile))) {
     niError(_A("Can't read the closure."));
     return NULL;
   }

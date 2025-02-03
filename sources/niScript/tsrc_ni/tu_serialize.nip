@@ -21,9 +21,26 @@
   }
 })
 
+::TEST("serialize","str", #() {
+  local obj = { v = "my super string" }
+  local tempFile = ::fs.getTempDir().setfile("test-serialize-str.nio")
+  ::dbg("tempFile:" tempFile)
+  {
+    local fp = ::fs.fileOpenWrite(tempFile)
+    ::SerializeWriteObject(fp,obj);
+    local size = fp.GetSize();
+    //::CHECK_EQUAL(31,size);
+  }
+  {
+    local fp = ::fs.fileOpenRead(tempFile)
+    local loaded = ::SerializeReadObject(fp)
+    ::CHECK_EQUAL("my super string", loaded.v);
+  }
+})
+
 ::TEST("serialize","array", #() {
-  local obj = { v = [1,2,3] }
-  local tempFile = ::fs.getTempDir().setfile("test-serialize-int.nio")
+  local obj = { v = [1,2,3,"foo","bar",10.20,30.40] }
+  local tempFile = ::fs.getTempDir().setfile("test-serialize-array.nio")
   ::dbg("tempFile:" tempFile)
   {
     local fp = ::fs.fileOpenWrite(tempFile)
@@ -37,5 +54,9 @@
     ::CHECK_EQUAL(1, loaded.v[0]);
     ::CHECK_EQUAL(2, loaded.v[1]);
     ::CHECK_EQUAL(3, loaded.v[2]);
+    ::CHECK_EQUAL("foo", loaded.v[3]);
+    ::CHECK_EQUAL("bar", loaded.v[4]);
+    ::CHECK_CLOSE(10.20, loaded.v[5], 0.001);
+    ::CHECK_CLOSE(30.40, loaded.v[6], 0.001);
   }
 })

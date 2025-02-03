@@ -629,10 +629,6 @@ static int base_GetModuleFileName(HSQUIRRELVM v)
   return 1;
 }
 
-// ::SerializeReadObject(iFile) -> object
-static int sqRead(ni::tPtr apFile, ni::tPtr apSrc, int size) {
-  return reinterpret_cast<iFile*>(apFile)->ReadRaw(apSrc, size);
-}
 static int base_SerializeReadObject(HSQUIRRELVM v) {
   SQObjectPtr o;
   iFile* pIFile;
@@ -644,17 +640,13 @@ static int base_SerializeReadObject(HSQUIRRELVM v) {
   if (!pIFile->GetCanRead()) {
     return sq_throwerror(v,"base_SerializeWriteObject, can't read from the source iFile.");
   }
-  if (!ReadObject(v,(ni::tPtr)pIFile,sqRead,o)) {
+  if (!ReadSQObject(v,as_nn(pIFile),o)) {
     return -1;
   }
   v->Push(o);
   return 1;
 }
 
-// ::SerializeWriteObject(iFile, any) -> written bytes
-static int sqWrite(ni::tPtr apFile, ni::tPtr apSrc, int size) {
-  return reinterpret_cast<iFile*>(apFile)->WriteRaw(apSrc, size);
-}
 static int base_SerializeWriteObject(HSQUIRRELVM v) {
   iFile* pIFile;
   if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,(iUnknown**)&pIFile,niGetInterfaceUUID(iFile))) ||
@@ -667,7 +659,7 @@ static int base_SerializeWriteObject(HSQUIRRELVM v) {
   }
   tSize startPos = pIFile->Tell();
   const SQObjectPtr& o = stack_get(v,3);
-  if (!WriteObject(v,(ni::tPtr)pIFile,sqWrite,o)) {
+  if (!WriteSQObject(v,as_nn(pIFile),o)) {
     return -1;
   }
   v->Push(SQInt(pIFile->Tell()-startPos));
@@ -2268,7 +2260,6 @@ static int closure_SetRoot(HSQUIRRELVM v) {
 static int closure_lint(HSQUIRRELVM v)
 {
   niLet& that = stack_get(v,1);
-  SQInt index = _int(stack_get(v,2));
   if (sq_isclosure(that)) {
     SQClosure *c = _closure(that);
     if (sq_isfuncproto(c->_function)) {
@@ -2277,11 +2268,11 @@ static int closure_lint(HSQUIRRELVM v)
        return 1;
     }
     else {
-      return sq_throwerror(v,"No vm bytecode function in vm closure.");
+      return sq_throwerror(v,"closure_lint: No vm bytecode function in vm closure.");
     }
   }
   else {
-    return sq_throwerror(v,"Can only lint vm bytecode closures.");
+    return sq_throwerror(v,"closure_lint: Can only lint vm bytecode closures.");
   }
 }
 

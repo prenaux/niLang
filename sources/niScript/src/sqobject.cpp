@@ -10,35 +10,26 @@
 #include "ScriptTypes.h"
 #include <niLang/IFile.h>
 
-static const char _kTagPart[2] = { 'C', '1' };
-static const char _kTagClosureBegin[2] = { 'H', 'D' };
-static const char _kTagClosureEnd[2] = { 'E', 'D' };
-static const char _kTagFieldEnd[2] = { 'F', 'E' };
-static const char _kTagTableBegin[2] = { 'T', 'B' };
-static const char _kTagTableEnd[2] = { 'T', 'E' };
-static const char _kTagArrayBegin[2] = { 'A', 'B' };
-static const char _kTagArrayEnd[2] = { 'A', 'E' };
+constexpr tU8 _kTagTypeNull = 'Z';
+constexpr tU8 _kTagTypeInteger = 'I';
+constexpr tU8 _kTagTypeFloat = 'F';
+constexpr tU8 _kTagTypeDouble = 'D';
+constexpr tU8 _kTagTypeTable = 'T';
+constexpr tU8 _kTagTypeArray = 'A';
+constexpr tU8 _kTagTypeClosure = 'C';
+constexpr tU8 _kTagTypeProto = 'P';
+constexpr tU8 _kTagTypeStringShort = 'S'; // < _kLongStringLen chars
+constexpr tU32 _knLongStringLen = 255;
+constexpr tU8 _kTagTypeStringLong = 'X';
 
-#define SQ_CLOSURESTREAM_PART _kTagPart
-#define SQ_CLOSURESTREAM_BEGIN _kTagClosureBegin
-#define SQ_CLOSURESTREAM_END _kTagClosureEnd
-#define SQ_TABLE_BEGIN _kTagTableBegin
-#define SQ_TABLE_END _kTagTableEnd
-#define SQ_ARRAY_BEGIN _kTagArrayBegin
-#define SQ_ARRAY_END _kTagArrayEnd
-#define SQ_FIELD_END _kTagFieldEnd
-
-tU32 TranslateIndex(const SQObjectPtr &idx)
-{
-  switch(_sqtype(idx)){
-    case OT_NULL:
-      return 0;
-    case OT_INTEGER:
-      return (tU32)_int(idx);
-  }
-  niAssertUnreachable("Invalid index type.");
-  return 0;
-}
+constexpr tU8 _kTagFuncProtoHeader = 'h';
+constexpr tU8 _kTagFuncProtoRetAndParams = 'p';
+constexpr tU8 _kTagFuncProtoLiterals = 'r';
+constexpr tU8 _kTagFuncProtoOuters = 'o';
+constexpr tU8 _kTagFuncProtoLocals = 'l';
+constexpr tU8 _kTagFuncProtoLines = 'd';
+constexpr tU8 _kTagFuncProtoInstructions = 'y';
+constexpr tU8 _kTagFuncProtoFunctions = 'x';
 
 const SQChar* SQFunctionProto::GetLocal(SQVM *vm,tU32 stackbase,tU32 nseq,tU32 nop)
 {
@@ -81,81 +72,92 @@ sVec2i SQFunctionProto::GetLineCol(const SQInstruction *curr) const
   return _GetLineCol(_instructions, curr, _lineinfos);
 }
 
-#define _CHECK_IO(exp)  { if(!exp) { v->Raise_MsgError("io error"); return false; } }
+#define _CHECK_IO(exp,reason)  { if(!exp) { v->Raise_MsgError("io error: " reason); return false; } }
 
-bool SafeWrite(HSQUIRRELVM v,SQWRITEFUNC write, ni::tPtr up,ni::tPtr dest,tI32 size)
+static inline bool SafeWrite(SQVM* v, ain<nn<ni::iFile>> fp, ni::tPtr dest, tI32 size)
 {
-  if(write(up,dest,size) != size) {
-    v->Raise_MsgError(_A("io error (write function failure)"));
+  if (fp->WriteRaw(dest,size) != size) {
+    v->Raise_MsgError("io error (write function failure)");
     return false;
   }
   return true;
 }
 
-bool SafeRead(HSQUIRRELVM v,SQWRITEFUNC read, ni::tPtr up,ni::tPtr dest,tI32 size)
+static inline bool SafeRead(SQVM* v, ain<nn<ni::iFile>> fp, ni::tPtr dest, tI32 size)
 {
-  if(size && read(up,dest,size) != size) {
-    v->Raise_MsgError(_A("io error, read function failure, the origin stream could be corrupted/trucated"));
+  if (size && fp->ReadRaw(dest,size) != size) {
+    v->Raise_MsgError("io error, read function failure, the origin stream could be corrupted/trucated");
     return false;
   }
   return true;
 }
 
-bool WriteTag(HSQUIRRELVM v,SQWRITEFUNC write, ni::tPtr up, const char tag[2])
+static inline bool ReadAndCheckTag(SQVM* v, ain<nn<ni::iFile>> fp, ain<tU8> aExpectedTag)
 {
-  return SafeWrite(v,write,up,(tPtr)tag,2);
-}
-
-bool CheckTag(HSQUIRRELVM v,SQWRITEFUNC read, ni::tPtr up, const char tag[2])
-{
-  char t[2];
-  _CHECK_IO(SafeRead(v,read,up,(tPtr)t,2));
-  if (t[0] != tag[0] || t[1] != tag[1]) {
+  niLet readTag = fp->Read8();
+  if (readTag != aExpectedTag) {
     v->Raise_MsgError(niFmt(
-      "invalid or corrupted closure stream, expected [%d,%d] (%c%c) but got [%d,%d] (%c%c).",
-      (tU32)tag[0],(tU32)tag[1],(tU32)tag[0],(tU32)tag[1],
-      (tU32)t[0],(tU32)t[1],(tU32)t[0],(tU32)t[1]
+      "invalid or corrupted closure stream, expected %c (%d) but got %c (%d).",
+      aExpectedTag, aExpectedTag, readTag, readTag
     ));
     return false;
   }
   return true;
 }
 
-bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &o)
+bool WriteSQObject(SQVM* v, ain<nn<ni::iFile>> fp, ain<SQObjectPtr> o)
 {
-  {
-    const SQObjectType t = _sqtype(o);
-    _CHECK_IO(SafeWrite(v,write,up,(tPtr)&t,sizeof(SQObjectType)));
-  }
-  switch(_sqtype(o)){
-    case OT_STRING: {
-      reinterpret_cast<iFile*>(up)->WriteBitsString(_stringval(o));
+  switch (_sqtype(o)) {
+    case OT_NULL: {
+      fp->Write8(_kTagTypeNull);
       break;
     }
-    case OT_INTEGER:
-      _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_int(o),sizeof(SQInt)));break;
-    case OT_FLOAT:
-      _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_float(o),sizeof(SQFloat)));break;
-    case OT_NULL:
+    case OT_INTEGER: {
+      fp->Write8(_kTagTypeInteger);
+      fp->WriteLE32((tU32)_int(o));
       break;
+    }
+    case OT_FLOAT: {
+      fp->Write8(_kTagTypeDouble);
+      fp->WriteF64(_float(o));
+      break;
+    }
+    case OT_STRING: {
+      niLet hstr = _stringhval(o);
+      niLet len = hstr->GetLength();
+      const char* text = hstr->GetChars();
+      if (len < _knLongStringLen) {
+        fp->Write8(_kTagTypeStringShort);
+        fp->Write8((tU8)len);
+        _CHECK_IO(SafeWrite(v,fp,(tPtr)text,len),"write short string");
+      }
+      else {
+        fp->Write8(_kTagTypeStringLong);
+        fp->WriteLE32(len);
+        _CHECK_IO(SafeWrite(v,fp,(tPtr)text,len),"write long string");
+      }
+      break;
+    }
     case OT_CLOSURE: {
-      _CHECK_IO(WriteSQClosure(_closure(o), v, up, write));
+      fp->Write8(_kTagTypeClosure);
+      _CHECK_IO(WriteSQFunctionProto(v, fp, _funcproto(_closure(o)->_function)), "write closure funcproto");
       break;
     }
     case OT_TABLE: {
+      fp->Write8(_kTagTypeTable);
       SQTable* table = _table(o);
-      tI32 nsize = (tI32)table->GetHMap().size();
-      if (!table->SerializeWriteLock()) {
-        table->SerializeWriteUnlock();
+      tU32 nsize = (tU32)table->GetHMap().size();
+      niLet locked = table->SerializeWriteLock();
+      niDefer { table->SerializeWriteUnlock(); };
+      if (!locked) {
         v->Raise_MsgError("Table already serialized, cyclic structures can't be serialized");
         return false;
       }
-      _CHECK_IO(WriteTag(v,write,up,SQ_TABLE_BEGIN));
-      _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-      tI32 nwritten = 0;
+      fp->WriteLE32(nsize);
+      tU32 nwritten = 0;
       niLoopit(SQTable::tHMapCIt,it,table->GetHMap()) {
-        _CHECK_IO(WriteObject(v,up,write,it->first));
-        _CHECK_IO(WriteObject(v,up,write,it->second));
+        _CHECK_IO(WriteSQObject(v,fp,it->first), "write table key");
+        _CHECK_IO(WriteSQObject(v,fp,it->second), "write table value");
         ++nwritten;
       }
       if (nsize != nwritten) {
@@ -164,31 +166,28 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
           nsize, nwritten));
         return eFalse;
       }
-      _CHECK_IO(WriteTag(v,write,up,SQ_TABLE_END));
-      table->SerializeWriteUnlock();
       break;
     };
     case OT_ARRAY: {
+      fp->Write8(_kTagTypeArray);
       SQArray* array = _array(o);
       const SQObjectPtrVec& values = array->_values;
-      tI32 nsize = (tI32)values.size();
-      if (!array->SerializeWriteLock()) {
-        array->SerializeWriteUnlock();
+      tU32 nsize = (tU32)values.size();
+      niLet locked = array->SerializeWriteLock();
+      niDefer { array->SerializeWriteUnlock(); };
+      if (!locked) {
         v->Raise_MsgError("Array already serialized, cyclic structures can't be serialized");
         return false;
       }
-      _CHECK_IO(WriteTag(v,write,up,SQ_ARRAY_BEGIN));
-      _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
+      fp->WriteLE32(nsize);
       niLoop(i,nsize) {
-        _CHECK_IO(WriteObject(v,up,write,values[i]));
+        _CHECK_IO(WriteSQObject(v,fp,values[i]), "write array value");
       }
-      _CHECK_IO(WriteTag(v,write,up,SQ_ARRAY_END));
-      array->SerializeWriteUnlock();
       break;
     };
     default: {
       v->Raise_MsgError(niFmt(
-          "cannot serialize write a '%s'",
+          "cannot serialize write a '%s' (%d)",
           v->_ss->GetTypeNameStr(o), _sqtype(o)));
       return false;
     }
@@ -196,207 +195,256 @@ bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &
   return true;
 }
 
-bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o)
+bool ReadSQObject(SQVM* v, ain<nn<ni::iFile>> fp, aout<SQObjectPtr> o)
 {
-  SQObjectType t;
-  _CHECK_IO(SafeRead(v,read,up,(tPtr)&t,sizeof(SQObjectType)));
-  switch(t) {
-    case OT_STRING: {
-      cString strOut = reinterpret_cast<iFile*>(up)->ReadBitsString();
-      o = _H(strOut);
+  niLet readTag = fp->Read8();
+  switch (readTag) {
+    case _kTagTypeNull: {
+      o = _null_;
       break;
     }
-    case OT_INTEGER: {
-      SQInt i;
-      _CHECK_IO(SafeRead(v,read,up,(tPtr)&i,sizeof(SQInt)));
-      o = i;
+    case _kTagTypeInteger: {
+      static_assert(sizeof(SQInt) == 4);
+      o = (SQInt)fp->ReadLE32();
       break;
     }
-    case OT_FLOAT: {
-      SQFloat f;
-      _CHECK_IO(SafeRead(v,read,up,(tPtr)&f,sizeof(SQFloat)));
-      o = f;
+    case _kTagTypeFloat: {
+      o = (SQFloat)fp->ReadF32();
       break;
     }
-    case OT_NULL: {
-      o=_null_;
+    case _kTagTypeDouble: {
+      static_assert(sizeof(SQFloat) == 8);
+      o = (SQFloat)fp->ReadF64();
       break;
     }
-    case OT_CLOSURE: {
-      SQObjectPtr func=SQFunctionProto::Create();
-      o = SQClosure::Create(_funcproto(func),_table(v->_roottable));
-      if(!ReadSQClosure(_closure(o),v,up,read)) {
-        return false;
+    case _kTagTypeStringShort: {
+      niLet len = fp->Read8();
+      if (len) {
+        char buffer[_knLongStringLen+1];
+        buffer[len] = 0;
+        _CHECK_IO(SafeRead(v,fp,(tPtr)buffer,len),"read short string");
+        _CHECK_IO(
+          buffer[len-1] != 0 && buffer[len] == 0,
+          "read short string, invalid end of string");
+        o = _H(buffer);
+      }
+      else {
+        o = _H("");
       }
       break;
     }
-    case OT_TABLE: {
-      tI32 nsize;
-      _CHECK_IO(CheckTag(v,read,up,SQ_TABLE_BEGIN));
-      _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
+    case _kTagTypeStringLong: {
+      niLet len = fp->ReadLE32();
+      if (len) {
+        astl::vector<char> buffer;
+        buffer.resize(len+1);
+        buffer[len] = 0;
+        _CHECK_IO(SafeRead(v,fp,(tPtr)buffer.data(),len),"read long string");
+        _CHECK_IO(
+          buffer[len-1] != 0 && buffer[len] == 0,
+          "read long string, invalid end of string");
+        o = _H(buffer.data());
+      }
+      else {
+        o = _H("");
+      }
+      break;
+    }
+    case _kTagTypeClosure: {
+      SQObjectPtr func = SQFunctionProto::Create();
+      o = SQClosure::Create(_funcproto(func),_table(v->_roottable));
+      _CHECK_IO(ReadSQFunctionProto(v,fp,_funcproto(_closure(o)->_function)),"read closure");
+      break;
+    }
+    case _kTagTypeTable: {
+      niLet nsize = fp->ReadLE32();
       o = SQTable::Create();
       _table(o)->Reserve(nsize);
       SQTable::tHMap& hmap = _table(o)->GetHMap();
       niLoop(i,nsize) {
         SQObjectPtr key, value;
-        _CHECK_IO(ReadObject(v,up,read,key));
-        _CHECK_IO(ReadObject(v,up,read,value));
+        _CHECK_IO(ReadSQObject(v,fp,key),"read table key");
+        _CHECK_IO(ReadSQObject(v,fp,value),"read table value");
         astl::upsert(hmap,key,value);
       }
-      _CHECK_IO(CheckTag(v,read,up,SQ_TABLE_END));
       break;
     }
-    case OT_ARRAY: {
-      tI32 nsize;
-      _CHECK_IO(CheckTag(v,read,up,SQ_ARRAY_BEGIN));
-      _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
+    case _kTagTypeArray: {
+      niLet nsize = fp->ReadLE32();
       o = SQArray::Create(nsize);
-      _array(o)->Reserve(nsize);
       SQObjectPtrVec& values = _array(o)->_values;
       niLoop(i,nsize) {
-        _CHECK_IO(ReadObject(v,up,read,values[i]));
+        _CHECK_IO(ReadSQObject(v,fp,values[i]),"read array value");
       }
-      _CHECK_IO(CheckTag(v,read,up,SQ_ARRAY_END));
       break;
     }
     default: {
       v->Raise_MsgError(niFmt(
-          "cannot serialize read a '%s' (%d)",
-          v->_ss->GetTypeNameStr(t), (tInt)t));
+        "cannot serialize read tag '%c' (%d)",
+        readTag, readTag));
       return false;
     }
   }
   return true;
 }
 
-bool WriteSQClosure(SQClosure* _this, SQVM *v,ni::tPtr up,SQWRITEFUNC write)
-{
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_BEGIN));
-  _CHECK_IO(WriteSQFunctionProto(_funcproto(_this->_function),v,up,write));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_END));
+bool WriteSQFunctionProto(SQVM *v, ain<nn<ni::iFile>> fp, SQFunctionProto* aProto) {
+  _CHECK_IO(fp->Write8(_kTagFuncProtoHeader), "write tag closure header");
+  _CHECK_IO(WriteSQObject(v,fp,aProto->_sourcename), "write sourcename");
+  _CHECK_IO(WriteSQObject(v,fp,aProto->_name), "write name");
+  _CHECK_IO(fp->WriteLE32(aProto->_stacksize), "write stacksize");
+
+  {
+    _CHECK_IO(fp->Write8(_kTagFuncProtoRetAndParams), "write tag closure ret params");
+    _CHECK_IO(WriteSQObject(v,fp,aProto->_returntype), "write return type");
+    const tU32 nsize = (tU32)aProto->_parameters.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write parameters size");
+    niLoop(i,nsize) {
+      _CHECK_IO(WriteSQObject(v,fp,aProto->_parameters[i]._name), "write param name");
+      _CHECK_IO(WriteSQObject(v,fp,aProto->_parameters[i]._type), "write param type");
+    }
+  }
+
+  {
+    _CHECK_IO(fp->Write8(_kTagFuncProtoLiterals), "write tag closure literals");
+    const tU32 nsize = (tU32)aProto->_literals.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write literals size");
+    niLoop(i,nsize) {
+      _CHECK_IO(WriteSQObject(v,fp,aProto->_literals[i]), "write literal");
+    }
+  }
+
+  {
+    _CHECK_IO(fp->Write8(_kTagFuncProtoOuters), "write tag closure outers");
+    const tU32 nsize = (tU32)aProto->_outervalues.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write outervals size");
+    niLoop(i,nsize) {
+      _CHECK_IO(fp->Write8(aProto->_outervalues[i]._blocal), "write outerval blocal");
+      _CHECK_IO(WriteSQObject(v,fp,aProto->_outervalues[i]._src), "write outerval src");
+    }
+  }
+
+  {
+    _CHECK_IO(fp->Write8(_kTagFuncProtoLocals), "write tag closure locals");
+    const tU32 nsize = (tU32)aProto->_localvarinfos.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write localvars size");
+    niLoop(i,nsize) {
+      SQLocalVarInfo &lvi=aProto->_localvarinfos[i];
+      _CHECK_IO(WriteSQObject(v,fp,lvi._name), "write localvar name");
+      _CHECK_IO(fp->WriteLE32(lvi._pos), "write localvar pos");
+      _CHECK_IO(fp->WriteLE32(lvi._start_op), "write localvar start_op");
+      _CHECK_IO(fp->WriteLE32(lvi._end_op), "write localvar end_op");
+    }
+  }
+
+  {
+    static_assert(sizeof(SQLineInfo) == 12);
+    _CHECK_IO(fp->Write8(_kTagFuncProtoLines), "write tag closure lines");
+    const tU32 nsize = (tU32)aProto->_lineinfos.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write lineinfos size");
+    _CHECK_IO(fp->WriteRaw(aProto->_lineinfos.data(),sizeof(SQLineInfo)*nsize) == sizeof(SQLineInfo)*nsize, "write lineinfos");
+  }
+
+  {
+    static_assert(sizeof(SQInstruction) == 8);
+    _CHECK_IO(fp->Write8(_kTagFuncProtoInstructions), "write tag closure instructions");
+    const tU32 nsize = (tU32)aProto->_instructions.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write instructions size");
+    _CHECK_IO(fp->WriteRaw(aProto->_instructions.data(),sizeof(SQInstruction)*nsize) == sizeof(SQInstruction)*nsize, "write instructions");
+  }
+
+  {
+    _CHECK_IO(fp->Write8(_kTagFuncProtoFunctions), "write tag closure functions");
+    const tU32 nsize = (tU32)aProto->_functions.size();
+    _CHECK_IO(fp->WriteLE32(nsize), "write functions size");
+    niLoop(i,nsize) {
+      _CHECK_IO(WriteSQFunctionProto(v,fp,_funcproto(aProto->_functions[i])), "write function");
+    }
+  }
+
   return true;
 }
 
-bool ReadSQClosure(SQClosure* _this, SQVM *v,ni::tPtr up,SQREADFUNC read)
-{
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_BEGIN));
-  _CHECK_IO(ReadSQFunctionProto(_funcproto(_this->_function), v,up,read));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_END));
-  return true;
-}
-
-bool WriteSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQWRITEFUNC write)
-{
-  tI32 i;
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(WriteObject(v,up,write,_this->_sourcename));
-  _CHECK_IO(WriteObject(v,up,write,_this->_name));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-
-  tI32 nsize=(tI32)_this->_literals.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i=0;i<nsize;i++){
-    _CHECK_IO(WriteObject(v,up,write,_this->_literals[i]));
-  }
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_parameters.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i=0;i<nsize;i++){
-    _CHECK_IO(WriteObject(v,up,write,_this->_parameters[i]._name));
-    _CHECK_IO(WriteObject(v,up,write,_this->_parameters[i]._type));
-  }
-  _CHECK_IO(WriteObject(v,up,write,_this->_returntype));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_outervalues.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i=0;i<nsize;i++){
-    _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_this->_outervalues[i]._blocal,sizeof(bool)));
-    _CHECK_IO(WriteObject(v,up,write,_this->_outervalues[i]._src));
-  }
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_localvarinfos.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i=0;i<nsize;i++){
-    SQLocalVarInfo &lvi=_this->_localvarinfos[i];
-    _CHECK_IO(WriteObject(v,up,write,lvi._name));
-    _CHECK_IO(SafeWrite(v,write,up,(tPtr)&lvi._pos,sizeof(tU32)));
-    _CHECK_IO(SafeWrite(v,write,up,(tPtr)&lvi._start_op,sizeof(tU32)));
-    _CHECK_IO(SafeWrite(v,write,up,(tPtr)&lvi._end_op,sizeof(tU32)));
-  }
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_lineinfos.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_this->_lineinfos[0],sizeof(SQLineInfo)*nsize));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_instructions.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_this->_instructions[0],sizeof(SQInstruction)*nsize));
-  _CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_PART));
-  nsize=(tI32)_this->_functions.size();
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i=0;i<nsize;i++){
-    _CHECK_IO(WriteSQFunctionProto(_funcproto(_this->_functions[i]),v,up,write));
-  }
-  _CHECK_IO(SafeWrite(v,write,up,(tPtr)&_this->_stacksize,sizeof(_this->_stacksize)));
-  return true;
-}
-
-bool ReadSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQREADFUNC read)
-{
-  tI32 i, nsize;
+bool ReadSQFunctionProto(SQVM *v, ain<nn<ni::iFile>> fp, SQFunctionProto* aProto) {
   SQObjectPtr o;
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(ReadObject(v, up, read, _this->_sourcename));
-  _CHECK_IO(ReadObject(v, up, read, _this->_name));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&nsize, sizeof(nsize)));
-  for(i = 0;i < nsize; i++){
-    _CHECK_IO(ReadObject(v, up, read, o));
-    _this->_literals.push_back(o);
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoHeader), "read tag");
+    _CHECK_IO(ReadSQObject(v,fp,aProto->_sourcename), "read sourcename");
+    _CHECK_IO(ReadSQObject(v,fp,aProto->_name), "read name");
+    aProto->_stacksize = fp->ReadLE32();
   }
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&nsize, sizeof(nsize)));
-  for(i = 0; i < nsize; i++){
-    SQFunctionParameter param;
-    _CHECK_IO(ReadObject(v, up, read, param._name));
-    _CHECK_IO(ReadObject(v, up, read, param._type));
-    _this->_parameters.push_back(param);
+
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoRetAndParams), "read tag closure ret params");
+    _CHECK_IO(ReadSQObject(v,fp,aProto->_returntype), "read return type");
+    niLet paramsSize = fp->ReadLE32();
+    niLoop(i,paramsSize) {
+      SQFunctionParameter param;
+      _CHECK_IO(ReadSQObject(v,fp,param._name), "read param name");
+      _CHECK_IO(ReadSQObject(v,fp,param._type), "read param type");
+      aProto->_parameters.push_back(param);
+    }
   }
-  _CHECK_IO(ReadObject(v, up, read, _this->_returntype));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize,sizeof(nsize)));
-  for(i = 0; i < nsize; i++){
-    bool bl;
-    _CHECK_IO(SafeRead(v,read,up, (tPtr)&bl, sizeof(bool)));
-    _CHECK_IO(ReadObject(v, up, read, o));
-    _this->_outervalues.push_back(SQOuterVar(o, bl));
+
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoLiterals), "read tag closure literals");
+    niLet nsize = fp->ReadLE32();
+    niLoop(i,nsize) {
+      _CHECK_IO(ReadSQObject(v,fp,o), "read literal");
+      aProto->_literals.push_back(o);
+    }
   }
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up,(tPtr)&nsize, sizeof(nsize)));
-  for(i = 0; i < nsize; i++){
-    SQLocalVarInfo lvi;
-    _CHECK_IO(ReadObject(v, up, read, lvi._name));
-    _CHECK_IO(SafeRead(v,read,up, (tPtr)&lvi._pos, sizeof(tU32)));
-    _CHECK_IO(SafeRead(v,read,up, (tPtr)&lvi._start_op, sizeof(tU32)));
-    _CHECK_IO(SafeRead(v,read,up, (tPtr)&lvi._end_op, sizeof(tU32)));
-    _this->_localvarinfos.push_back(lvi);
+
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoOuters), "read tag closure outers");
+    niLet outerSize = fp->ReadLE32();
+    aProto->_outervalues.resize(outerSize);
+    niLoop(i,outerSize) {
+      niLet bl = fp->Read8();
+      _CHECK_IO(ReadSQObject(v,fp,o), "read outerval");
+      aProto->_outervalues[i] = SQOuterVar(o,bl);
+    }
   }
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&nsize,sizeof(nsize)));
-  _this->_lineinfos.resize(nsize);
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&_this->_lineinfos[0], sizeof(SQLineInfo)*nsize));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&nsize, sizeof(nsize)));
-  _this->_instructions.resize(nsize);
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&_this->_instructions[0], sizeof(SQInstruction)*nsize));
-  _CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_PART));
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&nsize, sizeof(nsize)));
-  for(i = 0; i < nsize; i++){
-    o = SQFunctionProto::Create();
-    _CHECK_IO(ReadSQFunctionProto(_funcproto(o), v, up, read));
-    _this->_functions.push_back(o);
+
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoLocals), "read tag closure locals");
+    niLet localVarsSize = fp->ReadLE32();
+    aProto->_localvarinfos.resize(localVarsSize);
+    niLoop(i,localVarsSize) {
+      SQLocalVarInfo& lvi = aProto->_localvarinfos[i];
+      _CHECK_IO(ReadSQObject(v,fp,lvi._name), "read localvar name");
+      lvi._pos = fp->ReadLE32();
+      lvi._start_op = fp->ReadLE32();
+      lvi._end_op = fp->ReadLE32();
+    }
   }
-  _CHECK_IO(SafeRead(v,read,up, (tPtr)&_this->_stacksize, sizeof(_this->_stacksize)));
+
+  {
+    static_assert(sizeof(SQLineInfo) == 12);
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoLines), "read tag closure lines");
+    niLet lineInfosSize = fp->ReadLE32();
+    aProto->_lineinfos.resize(lineInfosSize);
+    _CHECK_IO(fp->ReadRaw(aProto->_lineinfos.data(),sizeof(SQLineInfo)*lineInfosSize) == sizeof(SQLineInfo)*lineInfosSize, "read lineinfos");
+  }
+
+  {
+    static_assert(sizeof(SQInstruction) == 8);
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoInstructions), "read tag instructions");
+    niLet instructionsSize = fp->ReadLE32();
+    aProto->_instructions.resize(instructionsSize);
+    _CHECK_IO(fp->ReadRaw(aProto->_instructions.data(),sizeof(SQInstruction)*instructionsSize) == sizeof(SQInstruction)*instructionsSize, "read instructions");
+  }
+
+  {
+    _CHECK_IO(ReadAndCheckTag(v,fp,_kTagFuncProtoFunctions), "read tag closure functions");
+    niLet functionsSize = fp->ReadLE32();
+    aProto->_functions.resize(functionsSize);
+    niLoop(i,functionsSize) {
+      aProto->_functions[i] = SQFunctionProto::Create();
+      _CHECK_IO(ReadSQFunctionProto(v,fp,_funcproto(aProto->_functions[i])), "read function");
+    }
+  }
+
   return true;
 }
 

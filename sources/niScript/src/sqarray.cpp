@@ -9,6 +9,17 @@
 #include "sqclosure.h"
 #include "sqarray.h"
 
+static inline tU32 _TranslateArrayIndex(const SQObjectPtr &idx) {
+  switch(_sqtype(idx)){
+    case OT_NULL:
+      return 0;
+    case OT_INTEGER:
+      return (tU32)_int(idx);
+  }
+  niPanicUnreachable("Invalid index type.");
+  return 0;
+}
+
 ///////////////////////////////////////////////
 SQArray::SQArray(int nsize)
 {
@@ -65,9 +76,8 @@ bool SQArray::Set(const int nidx,const SQObjectPtr &val)
 ///////////////////////////////////////////////
 int SQArray::Next(const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval)
 {
-  unsigned int idx = TranslateIndex(refpos);
-  while (idx < _values.size())
-  {
+  unsigned int idx = _TranslateArrayIndex(refpos);
+  while (idx < _values.size()) {
     //first found
     outkey=(SQInt)idx;
     outval=_values[idx];
@@ -90,13 +100,13 @@ SQArray *SQArray::Clone(tSQDeepCloneGuardSet* apDeepClone)
 ///////////////////////////////////////////////
 int SQArray::Size() const
 {
-  return _values.size();
+  return (int)_values.size();
 }
 
 ///////////////////////////////////////////////
 int SQArray::Capacity() const
 {
-  return _values.capacity();
+  return (int)_values.capacity();
 }
 
 ///////////////////////////////////////////////
@@ -133,7 +143,7 @@ void SQArray::Extend(const SQArray *a)
 void SQArray::Mark(SQCollectable** chain)
 {
   START_MARK();
-  int len = _values.size();
+  int len = (int)_values.size();
   for (int i = 0;i < len; i++) {
     SQGarbageCollector::MarkObject(_values[i], chain);
   }

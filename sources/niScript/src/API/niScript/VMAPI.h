@@ -92,12 +92,7 @@ typedef struct tagSQStackInfos{
 typedef struct SQVM* HSQUIRRELVM;
 typedef SQObject HSQOBJECT;
 typedef int (*SQFUNCTION)(HSQUIRRELVM);
-typedef int (*SQUSERDATARELEASE)(ni::tPtr,int size);
 typedef void (*SQCOMPILERERROR)(HSQUIRRELVM,const SQChar* /*desc*/,const SQChar * /*source*/,int /*line*/,int /*column*/);
-typedef int (*SQWRITEFUNC)(ni::tPtr,ni::tPtr,int);
-typedef int (*SQREADFUNC)(ni::tPtr,ni::tPtr,int);
-
-typedef SQInt (*SQLEXREADFUNC)(ni::tPtr);
 
 /*vm*/
 niExportFunc(SQSharedState*) sq_getss();
@@ -175,8 +170,8 @@ niExportFunc(int) sq_release(SQSharedState& aSS,HSQOBJECT *po);
 niExportFunc(void) sq_resetobject(HSQOBJECT *po);
 
 /*serialization*/
-niExportFunc(SQRESULT) sq_writeclosure(HSQUIRRELVM vm,SQWRITEFUNC writef,ni::tPtr up);
-niExportFunc(SQRESULT) sq_readclosure(HSQUIRRELVM vm,SQREADFUNC readf,ni::tPtr up);
+niExportFunc(SQRESULT) sq_writeclosure(HSQUIRRELVM vm, iFile* apFP);
+niExportFunc(SQRESULT) sq_readclosure(HSQUIRRELVM vm, iFile* apFP);
 
 /*debug*/
 niExportFunc(SQRESULT) sq_stackinfos(HSQUIRRELVM v,int level,SQStackInfos *si);

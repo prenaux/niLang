@@ -317,8 +317,6 @@ struct SQException
   SQObjectPtr _description;
 };
 
-ni::tU32 TranslateIndex(const SQObjectPtr &idx);
-
 SQ_VECTOR_TYPEDEF(SQObjectPtr,SQObjectPtrVec);
 
 SQ_VECTOR_TYPEDEF(int,SQIntVec);
@@ -379,12 +377,10 @@ extern SQObjectPtr _notnull_;
 extern SQObjectPtr _one_;
 extern SQObjectPtr _minusone_;
 
-bool WriteObject(HSQUIRRELVM v,ni::tPtr up,SQWRITEFUNC write,const SQObjectPtr &o);
-bool WriteSQClosure(SQClosure* _this, SQVM *v, ni::tPtr up, SQWRITEFUNC write);
-bool WriteSQFunctionProto(SQFunctionProto* _this, SQVM *v, ni::tPtr up, SQWRITEFUNC write);
+bool WriteSQObject(SQVM* v, ain<nn<ni::iFile>> fp, ain<SQObjectPtr> o);
+bool WriteSQFunctionProto(SQVM *v, ain<nn<ni::iFile>> fp, SQFunctionProto* aProto);
 
-bool ReadObject(HSQUIRRELVM v,ni::tPtr up,SQREADFUNC read,SQObjectPtr &o);
-bool ReadSQClosure(SQClosure* _this, SQVM *v,ni::tPtr up,SQREADFUNC read);
-bool ReadSQFunctionProto(SQFunctionProto* _this, SQVM *v,ni::tPtr up,SQREADFUNC read);
+bool ReadSQObject(SQVM* v, ain<nn<ni::iFile>> fp, aout<SQObjectPtr> o);
+bool ReadSQFunctionProto(SQVM *v, ain<nn<ni::iFile>> fp, SQFunctionProto* aProto);
 
 #endif //_SQOBJECT_H_

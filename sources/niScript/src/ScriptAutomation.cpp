@@ -58,7 +58,6 @@ SQObjectPtr DoImportNative(aout<SQSharedState> aSS, ain<SQObjectPtr> aDestTable,
 static int std_createinstance(HSQUIRRELVM v)
 {
   int top = sq_gettop(v);
-  cScriptVM* pVM = niUnsafeCast(cScriptVM*,sq_getforeignptr(v));
   const achar* aszObjectType = NULL;
   Var varA, varB;
 

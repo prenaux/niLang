@@ -155,17 +155,13 @@ tU64 concurrent_vm_mainthreadid() {
 }
 
 HSQUIRRELVM concurrent_vm_mainvm() {
-  niAssert(concurrent_vm_is_started());
-  if (!concurrent_vm_is_started())
-    return NULL;
+  niCheck(concurrent_vm_is_started(),nullptr);
   return (HSQUIRRELVM)_vmPool->_root->GetHandle();
 }
 
 HSQUIRRELVM concurrent_vm_threadvm(tU64 aThreadID) {
   niAssert(aThreadID != 0);
-  niAssert(concurrent_vm_is_started());
-  if (!concurrent_vm_is_started())
-    return NULL;
+  niCheck(concurrent_vm_is_started(),nullptr);
   iScriptVM* pVM;
   if (aThreadID == _mainThreadID) {
     pVM = _vmPool->_root;

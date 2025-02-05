@@ -48,15 +48,23 @@ tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
 }  // namespace ni
 
 #elif defined niWindows
+
 #include <windows.h>
-#include <wincrypt.h>
+#include <bcrypt.h>
+#pragma comment(lib,"bcrypt.lib")
 #undef GetCurrentTime
 
 namespace ni {
 tBool RandSecureGetBytes(tPtr apOutput, tSize anSize) {
   if (anSize > 0) {
     niPanicAssert(apOutput != nullptr);
-    if (!CryptGenRandom(NULL, anSize, apOutput)) {
+    // NOTE: here we should use STATUS_SUCCESS but we use 0 because including
+    // <ntstatus.h> is a shitshow that dumps tons of warning and not including
+    // windows.h breaks bcrypt.h, so whatever...
+    if (BCryptGenRandom(nullptr,
+                        (PUCHAR)apOutput,
+                        (ULONG)anSize,
+                        BCRYPT_USE_SYSTEM_PREFERRED_RNG) != 0) {
       return eFalse;
     }
   }

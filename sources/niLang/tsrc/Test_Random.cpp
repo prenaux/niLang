@@ -12,6 +12,20 @@ TEST_FIXTURE(FRand,ObjectBase) {
   niLoop(i,10) {
     niDebugFmt(("... rand[%d]: %s", i, ni_prng_next_i32(&randObj)));
   }
+  CHECK_NOT_EQUAL(0, randObj.x);
+  CHECK_NOT_EQUAL(0, randObj.y);
+  CHECK_NOT_EQUAL(0, randObj.z);
+  CHECK_NOT_EQUAL(0, randObj.w);
+}
+
+TEST_FIXTURE(FRand,RandSecureGetBytes) {
+  int4 randBytes = {};
+  CHECK_EQUAL(eTrue, RandSecureGetBytes((tPtr)&randBytes, sizeof(randBytes)));
+  niDebugFmt(("... randBytes: %s", randBytes));
+  CHECK_NOT_EQUAL(0, randBytes.x);
+  CHECK_NOT_EQUAL(0, randBytes.y);
+  CHECK_NOT_EQUAL(0, randBytes.z);
+  CHECK_NOT_EQUAL(0, randBytes.w);
 }
 
 TEST_FIXTURE(FRand,RandInt64) {

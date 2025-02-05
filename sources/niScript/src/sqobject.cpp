@@ -72,7 +72,7 @@ sVec2i SQFunctionProto::GetLineCol(const SQInstruction *curr) const
   return _GetLineCol(_instructions, curr, _lineinfos);
 }
 
-#define _CHECK_IO(exp,reason)  { if(!exp) { v->Raise_MsgError("io error: " reason); return false; } }
+#define _CHECK_IO(exp,reason)  { if(!(exp)) { v->Raise_MsgError("io error: " reason); return false; } }
 
 static inline bool SafeWrite(SQVM* v, ain<nn<ni::iFile>> fp, ni::tPtr dest, tI32 size)
 {

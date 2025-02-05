@@ -4,6 +4,11 @@
 
 namespace ni {
 
+//----------------------------------------------------------------------------
+//
+// Section: sFRay_Base
+//
+//----------------------------------------------------------------------------
 niLetK knNumStepsInCI = 10;
 
 niDeclareModuleTrace_(Test,TraceOSWindow);
@@ -138,12 +143,6 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
         break;
       case eOSWindowMessage_MouseButtonDoubleClick:
         TRACE_OSWINDOW(("eOSWindowMessage_MouseButtonDoubleClick: %d\n",a.mU32));
-        if (a.mU32 == 9 /*ePointerButton_DoubleClickRight*/) {
-          //                     wnd->SetFullScreen(!wnd->GetFullScreen());
-        }
-        else if (a.mU32 == 8 /*ePointerButton_DoubleClickLeft*/) {
-          //                     wnd->SetFullScreen(!wnd->GetFullScreen());
-        }
         break;
       case eOSWindowMessage_MouseWheel:
         TRACE_OSWINDOW(("eOSWindowMessage_MouseWheel: %f, %f\n",a.GetFloatValue(),b.GetFloatValue()));

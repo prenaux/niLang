@@ -224,7 +224,8 @@ struct iRayCommandEncoder : public iUnknown {
 };
 
 struct iGraphicsDriverRay : public iUnknown
-{  niDeclareInterfaceUUID(iGraphicsDriverRay,0xc7f02f1d,0xff59,0x4696,0xa0,0x79,0x29,0x12,0xf9,0x40,0xdf,0x3c);
+{
+  niDeclareInterfaceUUID(iGraphicsDriverRay,0xc7f02f1d,0xff59,0x4696,0xa0,0x79,0x29,0x12,0xf9,0x40,0xdf,0x3c);
 
   //! Create ray tracing pipeline.
   virtual Ptr<iRayPipeline> __stdcall CreateRayPipeline(

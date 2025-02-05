@@ -23,82 +23,154 @@ struct FRayTracer {
 };
 
 struct RayTracerBase : public ni::cWidgetSinkImpl<> {
-  tBool kbTextures;
-  tBool mbAnimated;
+  tBool _noTextures;
+  tBool _animated;
+  tF64 _animTime = 0.0;
+
+  Ptr<iGraphics> _graphics;
+
+  Ptr<iCamera> mptrCamera;
+  tBool _cameraInput;
+  tBool _mouseLook;
+  sVec2f _prevMousePos;
+
+  tBool  _hasInput;
+  sVec3f _cameraMove;
+  sVec2f _cameraLook;
+
+  sMatrixf _prevViewMtx;
+  sMatrixf _prevProjMtx;
+
+  Ptr<iDrawOperationSet> _drawOpSet;
+
+  tU32 _numTriVB = 0;
+  tU32 _numTriIB = 0;
+  tU32 _numQuadVB = 0;
+  tU32 _numQuadIB = 0;
+
+  NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
+  NN<iGraphicsDriverRay> _driverRay = niDeferredInit(NN<iGraphicsDriverRay>);
+
+  NN<iGpuBuffer> _displayVABuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _displayIABuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuFunction> _displayVertexGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _displayPixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuPipeline> _displayPipeline = niDeferredInit(NN<iGpuPipeline>);
 
   TEST_CONSTRUCTOR(RayTracerBase) {
-    kbTextures = (!ni::GetLang()->HasProperty("tests.Textures") ||
-                  ni::GetLang()->GetProperty("tests.Textures").Long());
-
-    mbAnimated = (!ni::GetLang()->HasProperty("tests.Animated") ||
-                  ni::GetLang()->GetProperty("tests.Animated").Long());
-
-    mbCameraInput = eTrue;
-    mbMouseLook = eFalse;
+    _animated = ni::GetProperty("tests.Animated","true").Bool();
+    _noTextures = ni::GetProperty("tests.NoTextures","false").Bool();
+    _cameraInput = eTrue;
+    _mouseLook = eFalse;
   }
   ~RayTracerBase() {
   }
 
-  Ptr<iGraphics> mptrGraphics;
-
-  Ptr<iCamera> mptrCamera;
-  tBool        mbCameraInput;
-  tBool        mbMouseLook;
-  sVec2f    mPrevMousePos;
-
-  tBool        mbHasInput;
-  sVec3f    mMove;
-  sVec2f    mLook;
-
-  sMatrixf                   mmtxPrevView;
-  sMatrixf                   mmtxPrevProj;
-
-  Ptr<iTexture>        _earthBase;
-  Ptr<iTexture>        _earthBump;
-  Ptr<iTexture>        _earthSpec;
-  Ptr<iTexture>        _earthClouds;
-  Ptr<iTexture>        _rustSteel;
-  Ptr<iTexture>        _tree;
-
-  Ptr<iDrawOperationSet> _drawOpSet;
-
   tBool __stdcall OnSinkAttached() niOverride {
     CHECK(_InitializeCamera());
 
-    _drawOpSet = mpWidget->GetGraphics()->CreateDrawOperationSet();
+    _graphics = mpWidget->GetGraphics();
 
+    {
+      QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
+      CHECK_RET(niIsOK(driverGpu),eFalse);
+      _driverGpu = AsNN(driverGpu.raw_ptr());
+    }
+
+    {
+      QPtr<iGraphicsDriverRay> driverRay = _graphics->GetDriver();
+      CHECK_RET(niIsOK(driverRay),eFalse);
+      _driverRay = AsNN(driverRay.raw_ptr());
+    }
+
+    // Setup display quad
+    {
+      _displayVABuffer = niCheckNN(
+        _displayVABuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RayDisplay_VA"),
+          sizeof(tVertexCanvas)*4,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex),
+        eFalse);
+      tVertexCanvas* verts = (tVertexCanvas*)_displayVABuffer->Lock(0, _displayVABuffer->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
+      verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
+      verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
+      verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
+      _displayVABuffer->Unlock();
+
+      _displayIABuffer = niCheckNN(
+        _displayIABuffer,
+        _driverGpu->CreateGpuBuffer(
+          _H("RayDisplay_IA"),
+          sizeof(tU32)*6,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Index),
+        eFalse);
+      tU32* inds = (tU32*)_displayIABuffer->Lock(0, _displayIABuffer->GetSize(), eLock_Discard);
+      niCheck(inds != nullptr, eFalse);
+      inds[0] = 0; inds[1] = 1; inds[2] = 2;
+      inds[3] = 2; inds[4] = 3; inds[5] = 0;
+      _displayIABuffer->Unlock();
+
+      // Setup display pipeline
+      _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+      _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
+      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
+    }
+
+    _drawOpSet = mpWidget->GetGraphics()->CreateDrawOperationSet();
     return eTrue;
   }
 
-  tF64 mfAnimationTime;
   void _ToggleAnimation() {
-    mbAnimated = !mbAnimated;
+    _animated = !_animated;
   }
 
   tBool __stdcall _InitializeCamera() {
     mptrCamera = mpWidget->GetGraphics()->CreateCamera();
     mpWidget->SetStyle(mpWidget->GetStyle()|eWidgetStyle_HoldFocus);
     mpWidget->SetFocus();
-    mbMouseLook = eFalse;
+    _mouseLook = eFalse;
     return eTrue;
   }
 
+  void DisplayTexture(iGpuCommandEncoder* cmdEncoder, iTexture* texture) {
+    cmdEncoder->SetPipeline(_displayPipeline);
+    cmdEncoder->SetVertexBuffer(_displayVABuffer, 0, 0);
+    cmdEncoder->SetTexture(texture, 0);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+  }
+
   void _UpdateCamera() {
-    if (!mbHasInput && mMove == sVec3f::Zero())
+    if (!_hasInput && _cameraMove == sVec3f::Zero())
       return;
 
     const tF32 dt = (tF32)ni::GetLang()->GetFrameTime();
     const tF32 speed = ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
                         kfRunSpeed : kfNormalSpeed);
-    mptrCamera->MoveForward(mMove.z * speed * dt);
-    mptrCamera->MoveUp(mMove.y * speed * dt);
-    mptrCamera->MoveSidewards(mMove.x * speed * dt);
-    mLook = Vec2f(0,0);
-    mbHasInput = eFalse;
+    mptrCamera->MoveForward(_cameraMove.z * speed * dt);
+    mptrCamera->MoveUp(_cameraMove.y * speed * dt);
+    mptrCamera->MoveSidewards(_cameraMove.x * speed * dt);
+    _cameraLook = Vec2f(0,0);
+    _hasInput = eFalse;
   }
 
   tBool __stdcall OnWheel(tF32 afWheel, const sVec2f& avAbsMousePos) niOverride {
-    if (mbMouseLook && mbCameraInput) {
+    if (_mouseLook && _cameraInput) {
       mptrCamera->MoveForward(
           afWheel*0.2f*
           ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
@@ -108,9 +180,9 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool __stdcall OnLeftClickDown(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
-    if (mbCameraInput) {
-      mbMouseLook = eTrue;
-      mPrevMousePos = avNCMP + mpWidget->GetAbsolutePosition();
+    if (_cameraInput) {
+      _mouseLook = eTrue;
+      _prevMousePos = avNCMP + mpWidget->GetAbsolutePosition();
       mpWidget->SetCapture(eTrue);
     }
     return eFalse;
@@ -119,8 +191,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return OnLeftClickDown(avMP,avNCMP);
   }
   tBool __stdcall OnLeftClickUp(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
-    if (mbCameraInput) {
-      mbMouseLook = eFalse;
+    if (_cameraInput) {
+      _mouseLook = eFalse;
       mpWidget->SetCapture(eFalse);
     }
     return eFalse;
@@ -130,10 +202,10 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool __stdcall OnMouseMove(const sVec2f& avMP, const sVec2f& avNCMP) niOverride {
-    if (mbMouseLook) {
+    if (_mouseLook) {
       const sVec2f newPos = (avNCMP + mpWidget->GetAbsolutePosition());
-      sVec2f deltaMove = newPos - mPrevMousePos;
-      mPrevMousePos = newPos;
+      sVec2f deltaMove = newPos - _prevMousePos;
+      _prevMousePos = newPos;
       mptrCamera->AddPitch(-deltaMove.y / 300.0f);
       mptrCamera->AddYaw(-deltaMove.x / 300.0f);
     }
@@ -160,43 +232,43 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
         /// Forward ///
       case eKey_Up:
       case eKey_W: {
-        mMove.z = 1.0;
-        mbHasInput = true;
+        _cameraMove.z = 1.0;
+        _hasInput = true;
         break;
       }
         /// Backward ///
       case eKey_Down:
       case eKey_S: {
-        mMove.z = -1.0;
-        mbHasInput = true;
+        _cameraMove.z = -1.0;
+        _hasInput = true;
         break;
       }
         /// Strafe Left ///
       case eKey_Left:
       case eKey_A: {
-        mMove.x = -1.0;
-        mbHasInput = true;
+        _cameraMove.x = -1.0;
+        _hasInput = true;
         break;
       }
         /// Strafe Right ///
       case eKey_Right:
       case eKey_D: {
-        mMove.x = 1.0;
-        mbHasInput = true;
+        _cameraMove.x = 1.0;
+        _hasInput = true;
         break;
       }
         /// Move Up ///
       case eKey_PgUp:
       case eKey_R: {
-        mMove.y = 1.0;
-        mbHasInput = true;
+        _cameraMove.y = 1.0;
+        _hasInput = true;
         break;
       }
         /// Move Down ///
       case eKey_PgDn:
       case eKey_F: {
-        mMove.y = -1.0;
-        mbHasInput = true;
+        _cameraMove.y = -1.0;
+        _hasInput = true;
         break;
       }
 
@@ -213,19 +285,19 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       case eKey_Down:
       case eKey_W:
       case eKey_S:
-        mMove.z = 0.0;
+        _cameraMove.z = 0.0;
         break;
       case eKey_Left:
       case eKey_Right:
       case eKey_A:
       case eKey_D:
-        mMove.x = 0.0;
+        _cameraMove.x = 0.0;
         break;
       case eKey_PgUp:
       case eKey_PgDn:
       case eKey_R:
       case eKey_F:
-        mMove.y = 0.0;
+        _cameraMove.y = 0.0;
         break;
         // we dont care about the other keys
       default:
@@ -249,8 +321,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
     _UpdateCamera();
 
-    if (mbAnimated) {
-      mfAnimationTime += ni::GetLang()->GetFrameTime();
+    if (_animated) {
+      _animTime += ni::GetLang()->GetFrameTime();
     }
 
     const sVec4f vTime = Vec4f(
@@ -270,7 +342,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
                         cString(mptrCamera->GetPosition()).Chars(),
                         cString(mptrCamera->GetTarget()).Chars(),
                         cString(mptrCamera->GetTargetUp()).Chars(),
-                        mbAnimated);
+                        _animated);
     apCanvas->BlitText(
         mpWidget->GetFont(),
         sRectf(5,5),
@@ -280,32 +352,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eFalse;
   }
 
-  virtual tBool __stdcall LoadEarthTextures() {
-    Ptr<iFile> fp;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/earth_d.jpg"));
-    _earthBase = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_earthBase.IsOK()) return eFalse;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/earth_b.jpg"));
-    _earthBump = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_earthBump.IsOK()) return eFalse;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/earth_s.jpg"));
-    _earthSpec = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_earthSpec.IsOK()) return eFalse;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/earth_clouds_d.jpg"));
-    _earthClouds = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_earthClouds.IsOK()) return eFalse;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/tree.dds"));
-    _tree = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_tree.IsOK()) return eFalse;
-    fp = mpWidget->GetGraphics()->OpenBitmapFile(_A("test/tex/rust_steel.jpg"));
-    _rustSteel = mpWidget->GetGraphics()->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),mpWidget->GetGraphics()->LoadBitmap(fp),eTextureFlags_Default);
-    if (!_rustSteel.IsOK()) return eFalse;
+  virtual tBool __stdcall LoadTextures() {
     return eTrue;
   }
 
@@ -313,7 +360,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     Ptr<iMaterial> mat = mpWidget->GetGraphics()->CreateMaterial();
     mat->SetDepthStencilStates(eCompiledStates_DS_DepthTestAndWrite);
     mat->SetRasterizerStates(eCompiledStates_RS_Filled);
-    if (kbTextures && apTex) {
+    if (_noTextures && apTex) {
       mat->SetChannelTexture(eMaterialChannel_Base,apTex);
     }
     else {
@@ -346,14 +393,15 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool CreateCube(const sVec3f& avCenter, iTexture* apTex, tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f) {
-
+  tBool CreateCube(const sVec3f& avCenter, iTexture* apTex,
+                   tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
+  {
     Ptr<iGeometry> g = mpWidget->GetGraphics()->CreateGeometryPolygonalCube(
         eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
         sVec3f::Zero(),afSize*2.0f,abCW,0xFFFFFFFF,sMatrixf::Identity());
 
     Ptr<iMaterial> mat = CreateMaterial(apTex);
-    if (kbTextures && apTex) {
+    if (_noTextures && apTex) {
       if (abAlpha && apTex->GetPixelFormat()->GetNumABits()) {
         mat->SetFlags(mat->GetFlags()|eMaterialFlags_Transparent);
         mat->SetChannelColor(eMaterialChannel_Opacity,Vec4f(1,1,1,0.1f));
@@ -372,71 +420,36 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool InitScene(tBool abBoxed = eFalse) {
-
-    const tBool bMinimalScene = !!ni::GetLang()->GetProperty("tests.minimal_scene").Long();
-
-    if (!LoadEarthTextures()) return eFalse;
-
-    if (!CreateCube(Vec3(  0.0f,-130.0f,100.0f),_rustSteel,eTrue,eFalse,100.0f))
-      return eFalse;
-
-    if (!bMinimalScene) {
-      if (!CreateCube(Vec3(-25.0f,-20.0f,100.0f),_rustSteel)) return eFalse;
-      if (!CreateCube(Vec3(-30.0f,-10.0f,110.0f),_earthClouds)) return eFalse;
-      if (!CreateCube(Vec3(-30.0f, 10.0f,105.0f),_rustSteel)) return eFalse;
-      if (!CreateCube(Vec3( 25.0f,-20.0f,100.0f),_earthBase)) return eFalse;
-      if (!CreateCube(Vec3( 30.0f,-10.0f,110.0f),_earthBase)) return eFalse;
-    }
-
-    if (!CreateCube(Vec3( 30.0f, 10.0f,105.0f),_earthBase)) return eFalse;
-    if (!CreateCube(Vec3(  0.0f,-15.0f,75.0f),_tree,eTrue,eTrue)) return eFalse;
-
-    if (abBoxed) {
-      if (!CreateCube(Vec3( 0.0f,-232.0f,0.0f),_rustSteel,eFalse,eFalse,500)) return eFalse;
-      if (!CreateSphere(Vec3(-200.0f,-60.0f,-200.0f),_earthBase,35.0f,eTrue)) return eFalse;
-      if (!CreateSphere(Vec3( 200.0f,-60.0f,-200.0f),_earthBase,35.0f,eTrue)) return eFalse;
-      if (!CreateSphere(Vec3( 200.0f,-60.0f, 200.0f),_earthBase,35.0f,eTrue)) return eFalse;
-      if (!CreateSphere(Vec3(-200.0f,-60.0f, 200.0f),_earthBase,35.0f,eTrue)) return eFalse;
-    }
-
-    {
-      const tU32 sphereCount = bMinimalScene ? 1 : 24;
-      const tU32 stacks = bMinimalScene ? 1 : 2;
-      const tF32 sphereDistance = 65.0f;
-      tF32 sphereRad = 0.0f;
-
-      niLoop(j,stacks) {
-        niLoop(i,sphereCount) {
-          sphereRad += (tF32)2.0f*niPif/(tF32)sphereCount;
-          if (!bMinimalScene && ((i+j)&1) == 0)
-            continue;
-          sVec3f p;
-          p.y = -20.0f + (tF32)j*20.0f;
-          p.x = ni::Sin(sphereRad)*sphereDistance;
-          p.z = ni::Cos(sphereRad)*sphereDistance;
-          if (!CreateSphere(p+Vec3(0.0f,0.0f,100.0f),_earthBase,8.0f)) return eFalse;
-        }
-      }
-    }
-
+  tBool InitSceneOneBox(tBool abBoxed = eFalse) {
+    niCheck(CreateCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
     return eTrue;
   }
+
 };
 
-struct Base : public RayTracerBase {
-  TEST_CONSTRUCTOR_BASE(Base,RayTracerBase) {
+struct Triangle : public RayTracerBase {
+  TEST_CONSTRUCTOR_BASE(Triangle,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
     CHECK(RayTracerBase::OnSinkAttached());
-    CHECK(InitScene());
+    CHECK(InitSceneOneBox());
     return eTrue;
   }
 
   tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
     RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+
+    // NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
+    // rayEncoder->SetRayInstances(_instanceAS);
+
+    DisplayTexture(gpuEncoder,nullptr);
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,Base);
+TEST_FIXTURE_WIDGET(FRayTracer,Triangle);

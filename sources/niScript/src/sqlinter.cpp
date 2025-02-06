@@ -670,7 +670,7 @@ SQObjectPtr DoImportNative(aout<SQSharedState> aSS, ain<SQObjectPtr> aDestTable,
   niLoop(i, ptrModuleDef->GetNumConstants()) {
     niLet constDef = ptrModuleDef->GetConstant(i);
     niLet constName = _H(constDef->maszName);
-    niLet& constVal = constDef->mvarValue;
+    //niLet& constVal = constDef->mvarValue;
     SQObjectPtr value = _VarToObj(aSS, constDef->mvarValue);
     if (sqa_getscriptobjtype(value) == eScriptType_ErrorCode) {
       cString moduleLoadingWarning = niFmt(
@@ -1266,7 +1266,7 @@ struct sLinter {
     switch (sqa_getscriptobjtype(aKey)) {
       case eScriptType_Int: {
         niLet idx = _int(aKey);
-        if (idx < 0 || idx >= anVecSize) {
+        if (idx < 0 || idx >= (SQInt)anVecSize) {
           aDest = niNew sScriptTypeErrorCode(
             _ss, _HC(error_code_out_of_range),
             niFmt("index out of range '%d'", idx));
@@ -1742,6 +1742,9 @@ struct sLinter {
     return true;
   }
 
+  EA_DISABLE_VC_WARNING(
+    4702 // warning C4702: unreachable code
+  );
   bool DoLintSet(cString& errDesc, const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val, int opExt)
   {
     // niDebugFmt(("... DoLintSet: '%s' in %s", _ObjToString(key), _ObjToString(self)));
@@ -1840,6 +1843,7 @@ struct sLinter {
       }
     }
   }
+  EA_RESTORE_VC_WARNING();
 
   bool LintSet(cString& errDesc, const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt) {
     bool r = DoLintSet(errDesc,self,key,val,opExt);
@@ -1849,6 +1853,9 @@ struct sLinter {
     return true;
   }
 
+  EA_DISABLE_VC_WARNING(
+    4702 // warning C4702: unreachable code
+  );
   bool LintNewSlot(const SQObjectPtr &self,const SQObjectPtr &key,const SQObjectPtr &val)
   {
     switch(_sqtype(self)) {
@@ -1861,6 +1868,7 @@ struct sLinter {
     }
     return false;
   }
+  EA_RESTORE_VC_WARNING();
 
   static bool _LintTypeCanAssign(ain<eScriptType> aFromType, ain<eScriptType> aToType) {
     if (aFromType != aToType) {
@@ -1921,7 +1929,7 @@ struct sLinter {
     tHStringNN hspSourceName = _H(fp->GetSourcePath());
     if (astl::contains(_scriptImportStack, hspSourceName)) {
       if (_traceImportScript) {
-        niDebugFmt(("%sImportScript: '%s'", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s'", StringRepeat((tU32)_scriptImportStack.size(), "  "), aModuleName));
       }
       return niNew sScriptTypeErrorCode(
         _ss, _HC(error_code_lint_call_error),
@@ -1932,13 +1940,13 @@ struct sLinter {
     tImportMapIt it = _scriptImports.find(aModuleName);
     if (it != _scriptImports.end()) {
       if (_traceImportScriptAlreadyImported) {
-        niDebugFmt(("%sImportScript: '%s', already imported.", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s', already imported.", StringRepeat((tU32)_scriptImportStack.size(), "  "), aModuleName));
       }
       return it->second;
     }
     else {
       if (_traceImportScript) {
-        niDebugFmt(("%sImportScript: '%s'", StringRepeat(_scriptImportStack.size(), "  "), aModuleName));
+        niDebugFmt(("%sImportScript: '%s'", StringRepeat((tU32)_scriptImportStack.size(), "  "), aModuleName));
       }
     }
 
@@ -2191,7 +2199,7 @@ struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
   virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
-    niLet& actualObject = aCallArgs[2];
+    //niLet& actualObject = aCallArgs[2];
 
     if (sqa_getscriptobjtype(expectedTypeArg) != eScriptType_String) {
       return _MakeLintCallError(
@@ -3335,7 +3343,7 @@ void SQFunctionProto::LintTrace(
   astl::stack<sLintScope> scopes;
 
   auto lint_typeof_eq = [&](ain<nn<sLintTypeofInfo>> typeofInfo, const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
-    niLet& ss = aLinter._ss;
+    //niLet& ss = aLinter._ss;
     niLet typeofObj = typeofInfo->_obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure, _null_);
 

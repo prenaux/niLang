@@ -78,9 +78,10 @@ static void _SetWindowsConsoleColors(HANDLE aHandle, const ni::tU32 logType) {
   static WORD _previousConsoleFgColor = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
   niRunOnce {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(aHandle, &csbi);
-    _previousConsoleBgColor = csbi.wAttributes & 0xF0;
-    _previousConsoleFgColor = csbi.wAttributes & 0x0F;
+    if (GetConsoleScreenBufferInfo(aHandle, &csbi)) {
+      _previousConsoleBgColor = csbi.wAttributes & 0xF0;
+      _previousConsoleFgColor = csbi.wAttributes & 0x0F;
+    }
   };
 
   int back = _previousConsoleBgColor, fore = _previousConsoleFgColor;

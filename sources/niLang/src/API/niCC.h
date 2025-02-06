@@ -368,16 +368,24 @@ constexpr T narrow_cast(U u) noexcept(false) {
 }
 
 template <typename T, typename... Args>
+concept IsConstructible = requires(Args&&... args) {
+  new T(std::forward<Args>(args)...);
+};
+
+template <typename T, typename... Args>
+requires IsConstructible<T, Args...>
 unn<T> make_unn(Args&&... args) {
   return astl::as_non_null(astl::make_unique<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
+requires IsConstructible<T, Args...>
 snn<T> make_snn(Args&&... args) {
   return astl::as_non_null(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
+requires IsConstructible<T, Args...>
 inline EA_CONSTEXPR ni::Nonnull<T> MakeNN(Args&&... args) {
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
 }

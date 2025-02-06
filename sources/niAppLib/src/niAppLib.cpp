@@ -15,6 +15,11 @@ niExportJSCC(void) niJSCC_SetMainLoopFn(em_arg_callback_func aFn, void* apArg);
 
 namespace app {
 
+// note: doesnt work if not outside of the functions
+EA_DISABLE_VC_WARNING(
+  4702 // warning C4702: unreachable code
+);
+
 using namespace ni;
 
 AppConfig::AppConfig() {

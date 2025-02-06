@@ -160,7 +160,7 @@ static __forceinline void* _internal_aligned_malloc(
   const char *f, int l, const char *sf)
 {
 #if defined USE_MEMORY_TRACKING
-	void* ptr = mmgrAllocator(f, l, sf, m_alloc_malloc, align, size);
+	void* ptr = mmgrAllocator(f, l, sf, m_alloc_malloc, alignment, size);
 #elif defined USE_NEDMALLOC
 	void* ptr = nedalloc::nedmemalign(alignment, size);
 #elif defined USE_MIMALLOC

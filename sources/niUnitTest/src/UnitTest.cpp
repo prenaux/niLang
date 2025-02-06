@@ -803,7 +803,7 @@ ni::tBool IsRunningInCI() {
   return ni::eFalse;
 }
 
-struct TestRunner {
+struct TestRunner : public ni::Impl_HeapAlloc {
   ni::tF64 startTime;
   TestReporter& reporter;
   const TestList& list;
@@ -911,8 +911,10 @@ struct TestRunner {
     if (curTest) {
       // First time the current test is ran
       if (curTestSteps == 0) {
-        if (!ShouldRun())
-          return curTest != NULL;
+        while (!ShouldRun()) {
+          if (curTest == nullptr)
+            return false;
+        }
         BeforeRun();
         if (curTest->m_numSteps == ni::eInvalidHandle) {
           curTestSteps = 1;

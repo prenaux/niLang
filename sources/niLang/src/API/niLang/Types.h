@@ -1114,9 +1114,9 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char*
 #  define niDebugAssertMsg(exp,msg) niCheckPanicMsg(ni,debug_assert,exp,msg)
 #  define niDebugAssertUnreachable(msg) niPanicUnreachable(msg)
 #else
-#  define niDebugAssert(exp) niAssume(exp)
-#  define niDebugAssertMsg(exp,msg) niAssume(exp)
-#  define niDebugAssertUnreachable(msg) niUnreachable()
+#  define niDebugAssert(exp)
+#  define niDebugAssertMsg(exp,msg)
+#  define niDebugAssertUnreachable(msg)
 #endif
 
 #define niAssert(exp) niDebugAssert(exp)

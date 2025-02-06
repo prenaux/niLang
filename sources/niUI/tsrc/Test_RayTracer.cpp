@@ -11,6 +11,12 @@ using namespace ni;
 //
 // TODO (1/1):
 // - [ ] p0: Ray trace with bary centric coordinates
+// - [ ] p0: Ray trace a sphere with a custom intersection test
+// - [ ] p0: Ray trace a SDF with a union or difference between two SDF
+//  - https://www.youtube.com/watch?v=BNZtUB7yhX4
+//  - https://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/
+//  - https://danielchasehooper.com/posts/code-animated-rick/
+//  - https://github.com/sungiant/sdf
 // - [ ] p1: Checkerboard floor
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
 // - [ ] p1: One reflective sphere on checkerboard floor

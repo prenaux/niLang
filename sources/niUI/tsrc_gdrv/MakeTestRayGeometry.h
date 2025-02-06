@@ -4,6 +4,8 @@
 
 namespace ni {
 
+typedef sVertexPA tVertexTri;
+
 inline NN<iGpuBuffer> MakeTriVB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tF32 afSize, ain<sVec3f> aPos) {
   niLet triVB = AsNN(aGpu->CreateGpuBuffer(
     HFmt("TriVB_%d",anId),

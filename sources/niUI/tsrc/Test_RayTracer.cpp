@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include <niLang/Math/MathRect.h>
+#include "../tsrc_gdrv/MakeTestRayGeometry.h"
+#include <niUI/IGpu.h>
+#include <niUI/IRay.h>
+
+namespace _ {
 
 using namespace ni;
 
@@ -22,6 +27,11 @@ static const tF32 kfNormalSpeed = 64.0f;
 struct FRayTracer {
 };
 
+//----------------------------------------------------------------------------
+//
+// Section: RayTracerBase
+//
+//----------------------------------------------------------------------------
 struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   tBool _noTextures;
   tBool _animated;
@@ -427,13 +437,78 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
 };
 
+//----------------------------------------------------------------------------
+//
+// Section: Triangle
+//
+//----------------------------------------------------------------------------
 struct Triangle : public RayTracerBase {
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+  //NN<iRayInstancesDesc> _instancesDesc = niDeferredInit(NN<iRayInstancesDesc>);
+  NN<iGpuFunction> _triangleRayQueryFun = niDeferredInit(NN<iGpuFunction>);
+
   TEST_CONSTRUCTOR_BASE(Triangle,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
     CHECK(RayTracerBase::OnSinkAttached());
     CHECK(InitSceneOneBox());
+
+    // Create ray tracing shaders
+    {
+      _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
+        eGpuFunctionType_RayGeneration, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
+    }
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      niLet instDesc = niCheckNN(
+        instDesc,
+        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_Triangle")),
+        eFalse);
+
+      // Add a triangle
+      {
+        niLet prDesc = niCheckNN(
+          prDesc,
+          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryTrianglePrimitivesDesc_Triangle")),
+          eFalse);
+
+        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
+        niCheck(prDesc->AddTriangles(
+          triangleVB,0,sizeof(tVertexTri),3,
+          sMatrixf::Identity(),
+          eRayPrimitiveFlags_Opaque,
+          0), eFalse);
+
+        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
+          _H("RayTrianglePrimitives_Triangle"),prDesc), eFalse);
+
+        niCheck(instDesc->AddInstance(
+          primitiveAS,
+          sMatrixf::Identity(), // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None), eFalse);
+      }
+
+      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+        _H("RayInstances_Triangle"),instDesc), eFalse);
+    }
+
+    // Recreate the display pipeline with our shader
+    {
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_triangleRayQueryFun);
+      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_RayQueryTriangle_Pipeline"),pipelineDesc), eFalse);
+    }
+
     return eTrue;
   }
 
@@ -444,12 +519,13 @@ struct Triangle : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-
-    // NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
-    // rayEncoder->SetRayInstances(_instanceAS);
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
 
     DisplayTexture(gpuEncoder,nullptr);
     return eFalse;
   }
 };
 TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
+
+}

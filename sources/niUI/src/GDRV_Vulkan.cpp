@@ -1224,19 +1224,19 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
 
     VkCommandBuffer cmdBuf;
-    vkAllocateCommandBuffers(_device, &allocInfo, &cmdBuf);
+    VK_CHECK(vkAllocateCommandBuffers(_device, &allocInfo, &cmdBuf), VK_NULL_HANDLE);
 
     VkCommandBufferBeginInfo beginInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
     };
 
-    vkBeginCommandBuffer(cmdBuf, &beginInfo);
+    VK_CHECK(vkBeginCommandBuffer(cmdBuf, &beginInfo), VK_NULL_HANDLE);
     return cmdBuf;
   }
 
-  void EndSingleTimeCommands(VkCommandBuffer cmdBuf, tBool abSubmit) {
-    vkEndCommandBuffer(cmdBuf);
+  tBool EndSingleTimeCommands(VkCommandBuffer cmdBuf, tBool abSubmit) {
+    VK_CHECK(vkEndCommandBuffer(cmdBuf), eFalse);
 
     if (abSubmit) {
       VkSubmitInfo submitInfo = {
@@ -1244,11 +1244,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         .commandBufferCount = 1,
         .pCommandBuffers = &cmdBuf
       };
-      vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-      vkQueueWaitIdle(_graphicsQueue);
+      VK_CHECK(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), eFalse);
+      VK_CHECK(vkQueueWaitIdle(_graphicsQueue), eFalse);
     }
 
     vkFreeCommandBuffers(_device, _commandPool, 1, &cmdBuf);
+    return eTrue;
   }
 
   //// iGraphicsDriver ///////////////////////////////
@@ -1830,6 +1831,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
 
     // Transition image layout for copy
     VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
+    niCheck(cmdBuf != VK_NULL_HANDLE, eFalse);
     niCheck(_VulkanTransitionImageLayout(
       cmdBuf,_vkImage,
       VK_IMAGE_LAYOUT_UNDEFINED,
@@ -2698,9 +2700,8 @@ struct sVulkanDescriptorPool {
   }
 };
 
-template<typename T> struct sVulkanRayASImpl;
-typedef sVulkanRayASImpl<iRayPrimitives> tVulkanRayPrimitives;
-typedef sVulkanRayASImpl<iRayInstances> tVulkanRayInstances;
+struct sVulkanRayPrimitives;
+struct sVulkanRayInstances;
 
 struct sVulkanRayPipeline;
 
@@ -2755,9 +2756,9 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     return (sVulkanRayPipeline*)apPipeline;
   }
 
-  niInline tVulkanRayInstances* BindRayInstances(iRayInstances* apInstances) {
+  niInline sVulkanRayInstances* BindRayInstances(iRayInstances* apInstances) {
     _trackedRayInstances.push_back(apInstances);
-    return (tVulkanRayInstances*)apInstances;
+    return (sVulkanRayInstances*)apInstances;
   }
 
   niInline sVulkanTexture* BindRayOutputImage(iTexture* apInstances) {
@@ -3220,32 +3221,6 @@ struct sVulkanRayBase {
   }
 };
 
-template <typename TINTF>
-struct sVulkanRayASImpl : public ImplRC<TINTF>, public sVulkanRayBase {
-  sVulkanRayASImpl(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
-      : sVulkanRayBase(aDriver,ahspName)
-  {}
-
-  virtual tBool __stdcall IsOK() const niImpl {
-    return _asHandle != VK_NULL_HANDLE;
-  }
-
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
-    return _name;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
-    return this;
-  }
-};
-
 struct sVulkanRayASDesc {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
@@ -3647,6 +3622,34 @@ struct sVulkanRayProceduralPrimitivesDesc
   }
 };
 
+struct sVulkanRayPrimitives :
+    public ImplRC<iRayPrimitives,eImplFlags_DontInherit1,iDeviceResource>,
+    public sVulkanRayBase
+{
+  sVulkanRayPrimitives(
+    ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName)
+      : sVulkanRayBase(aDriver,ahspName)
+  {}
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _asHandle != VK_NULL_HANDLE;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
+  }
+};
+
 struct sVulkanRayInstancesDesc : public ImplRC<
   iRayInstancesDesc,eImplFlags_DontInherit1,iDeviceResource>, public sVulkanRayASDesc
 {
@@ -3712,14 +3715,17 @@ struct sVulkanRayInstancesDesc : public ImplRC<
   {
     niCheckIsOK(apPrimitiveAS,eFalse);
     _primitives.push_back(as_nn(apPrimitiveAS));
-    niLet primitiveAS = static_cast<tVulkanRayPrimitives*>(apPrimitiveAS);
+    niLet primitiveAS = static_cast<sVulkanRayPrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
     VkAccelerationStructureInstanceKHR instance = {
       .accelerationStructureReference = primitiveAS->_asDeviceAddress
     };
     _vkInstances.emplace_back(instance);
-    niDebugAssert(
-      UpdateInstance((tU32)_vkInstances.size()-1,aTransform,anCustomInstanceId,anMask,anHitGroupOffset,aFlags));
+    niCheck(
+      UpdateInstance(
+        (tU32)_vkInstances.size()-1,aTransform,
+        anCustomInstanceId,anMask,anHitGroupOffset,aFlags),
+      eFalse);
     return eTrue;
   }
 
@@ -3793,6 +3799,40 @@ struct sVulkanRayInstancesDesc : public ImplRC<
 
     _SetInstancesVkGeometry(geometry, buildRangeInfo);
     return eTrue;
+  }
+};
+
+struct sVulkanRayInstances :
+    public ImplRC<iRayInstances,eImplFlags_DontInherit1,iDeviceResource>,
+    public sVulkanRayBase
+{
+  // We must keep a copy of the primitives AS around as they are referenced by
+  // the instances AS.
+  astl::vector<NN<iRayPrimitives>> _primitives;
+
+  sVulkanRayInstances(
+    ain<nn<sVulkanDriver>> aDriver,
+    ain<astl::vector<NN<iRayPrimitives>>> aPrimitives,
+    iHString* ahspName)
+      : sVulkanRayBase(aDriver,ahspName)
+      , _primitives(aPrimitives)
+  {}
+
+  virtual tBool __stdcall IsOK() const niImpl {
+    return _asHandle != VK_NULL_HANDLE;
+  }
+
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+    return _name;
+  }
+  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
+    return eFalse;
+  }
+  virtual tBool __stdcall ResetDeviceResource() niImpl {
+    return eTrue;
+  }
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+    return this;
   }
 };
 
@@ -4232,13 +4272,14 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
 
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
+    niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
     niDefer {
       _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
     };
 
     niLet primitivesDesc = static_cast<sVulkanRayTrianglePrimitivesDesc*>(apPrimitivesDesc);
 
-    NN<tVulkanRayPrimitives> primitivesAS = MakeNN<tVulkanRayPrimitives>(_driver,ahspName);
+    NN<sVulkanRayPrimitives> primitivesAS = MakeNN<sVulkanRayPrimitives>(_driver,ahspName);
     niCheck(primitivesDesc->_CreateAccelerationStructure(
       *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
 
@@ -4255,13 +4296,14 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
 
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
+    niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
     niDefer {
       _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
     };
 
     niLet primitivesDesc = static_cast<sVulkanRayProceduralPrimitivesDesc*>(apPrimitivesDesc);
 
-    NN<tVulkanRayPrimitives> primitivesAS = MakeNN<tVulkanRayPrimitives>(_driver,ahspName);
+    NN<sVulkanRayPrimitives> primitivesAS = MakeNN<sVulkanRayPrimitives>(_driver,ahspName);
     niCheck(primitivesDesc->_CreateAccelerationStructure(
       *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
 
@@ -4276,15 +4318,18 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
     niCheck(_driver->_isRayTracingSupported,nullptr);
     niCheckIsOK(apInstancesDesc,nullptr);
 
+    niLet instancesDesc = static_cast<sVulkanRayInstancesDesc*>(apInstancesDesc);
+    niCheck(!instancesDesc->_primitives.empty(),nullptr);
+
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
+    niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
     niDefer {
       _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
     };
 
-    niLet instancesDesc = static_cast<sVulkanRayInstancesDesc*>(apInstancesDesc);
-
-    NN<tVulkanRayInstances> instancesAS = MakeNN<tVulkanRayInstances>(_driver,ahspName);
+    NN<sVulkanRayInstances> instancesAS = MakeNN<sVulkanRayInstances>(
+      _driver,instancesDesc->_primitives,ahspName);
     niCheck(instancesDesc->_CreateAccelerationStructure(
       *instancesAS, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, eFalse),nullptr);
 
@@ -4327,7 +4372,7 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
   niCheckIsOK(_cache._lastRayOutputImage,eFalse);
 
   nn<sVulkanRayPipeline> pipeline = as_nn<sVulkanRayPipeline>(_cache._lastRayPipeline);
-  nn<tVulkanRayInstances> instancesAS = as_nn<tVulkanRayInstances>(_cache._lastRayInstances);
+  nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
   nn<sVulkanTexture> outputTex = as_nn<sVulkanTexture>(_cache._lastRayOutputImage);
 
   // End current rendering pass if any
@@ -4519,7 +4564,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
 
   if (abWithRayInstances) {
     niCheck(_cache._lastRayInstances.has_value(),eFalse);
-    nn<tVulkanRayInstances> instancesAS = as_nn<tVulkanRayInstances>(_cache._lastRayInstances);
+    nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
     niCheck(descPool.PushDescriptorAccelerationStructure(
       _driver->_device,
       _cmdBuffer,
@@ -4571,7 +4616,6 @@ struct sVulkanContextBase :
   eGpuPixelFormat _rt0Format = eGpuPixelFormat_None;
   eGpuPixelFormat _dsFormat = eGpuPixelFormat_None;
   tBool _beganFrame = eFalse;
-  tU64 _frameCounter = 0;
 
   sVulkanContextBase(ain<nn<sVulkanDriver>> aDriver, const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(aDriver->_graphics)
@@ -5270,7 +5314,6 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       VK_CHECK(presentRes, eFalse);
     }
 
-    ++_frameCounter;
     return eTrue;
   }
 };

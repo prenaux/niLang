@@ -7,9 +7,9 @@ HTTP requests, 2D & 3D rendering, user interfaces, and audio processing.
 
 In addition, niLang incorporates an automated introspection system for C++
 modules, interfaces, and enums, facilitating seamless interoperability with
-other programming languages. By default, niLang offers integration with
-niScript (a Squirrel scripting language derivative) and the Java Virtual
-Machine (JVM).
+other programming languages. Builtin niLang offers integration with niScript
+(a Squirrel scripting language derivative) and has the foundation for the
+JVM/JNI.
 
 # Setup the environment
 

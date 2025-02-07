@@ -9,10 +9,9 @@ if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niUnitTest ;
   SubInclude TOP niTestInterop ;
   SubInclude TOP ni ;
-  SubInclude TOP nicgc ;
   SubInclude TOP genuuid ;
   SubInclude TOP thirdparty ;
-  DEPENDS build_tools : niLang genuuid ni nicgc ;
+  DEPENDS build_tools : niLang genuuid ni ;
 }
 
 ### UI / Media ###

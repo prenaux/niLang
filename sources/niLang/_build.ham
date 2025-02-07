@@ -2,5 +2,3 @@ SubDir TOP niLang ;
 
 SubInclude TOP niLang src ;
 SubInclude TOP niLang tsrc ;
-SubInclude TOP niLang java ;
-SubInclude TOP niLang tsrc_java ;

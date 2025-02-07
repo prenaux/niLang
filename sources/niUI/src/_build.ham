@@ -13,10 +13,6 @@ if $(NI_VIDEO_USE_IPCAM) = 1 {
   niImportModuleDll niCURL ;
 }
 
-if $(NI_VIDEO_USE_DSHOW) = 1 {
-  SDK_DShow_Hdrs $(BUILD_SRC) ;
-}
-
 if $(NI_VIDEO_USE_OGG) = 1 {
   SubDirHdrs $(SUBDIR) ogg libvorbis include ;
   SubDirHdrs $(SUBDIR) ogg libogg include ;
@@ -111,10 +107,6 @@ if $(NI_VIDEO_USE_OGG) = 1 {
 
 if $(NI_VIDEO_USE_FFMPEG) = 1 {
   ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_FFMPEG=1 ;
-}
-
-if $(NI_VIDEO_USE_DSHOW) = 1 {
-  ObjectDefines $(BUILD_SRC) : NI_VIDEO_USE_DSHOW=1 ;
 }
 
 if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {

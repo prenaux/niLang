@@ -18,39 +18,6 @@ if $(LINUX) = 1 {
 }
 
 #----------------------------------------------------------------------
-#     DX9 SDK
-#----------------------------------------------------------------------
-if $(WINDOWS) = 1 {
-  SDK_DIR_DX9_2004 = [ FDirName $(HAM_HOME) toolsets dx9sdk2004 dist ] ;
-  rule SDK_DX9_2004_Hdrs {
-    SubDirHdrs $(SDK_DIR_DX9_2004) include ;
-  }
-  rule SDK_DX9_2004_LinkLibs {
-    LINKLIBS on $(<) ?= $(LINKLIBS) ;
-    LINKLIBS on $(<) +=
-      [ FQuoteDirName $(SDK_DIR_DX9_2004) lib $(OSPLAT:L) d3dx9.lib ]
-      -NODEFAULTLIB:libcp.lib
-    ;
-  }
-
-  SDK_DIR_DX9_2010 = [ FDirName $(HAM_HOME) toolsets dx9sdk2010 dist ] ;
-  rule SDK_DX9_2010_Hdrs {
-    SubDirHdrs $(SDK_DIR_DX9_2010) include ;
-  }
-  rule SDK_DX9_2010_LinkLibs {
-    LINKLIBS on $(<) ?= $(LINKLIBS) ;
-    LINKLIBS on $(<) +=
-      [ FQuoteDirName $(SDK_DIR_DX9_2010) lib $(OSPLAT:L) d3dx9.lib ]
-    ;
-  }
-
-  SDK_DIR_DSHOW = [ FDirName $(HAM_HOME) toolsets dx9sdk2004 dist ] ;
-  rule SDK_DShow_Hdrs {
-    SubDirHdrs $(SDK_DIR_DSHOW) include ;
-  }
-}
-
-#----------------------------------------------------------------------
 #     MBEDTLS
 #----------------------------------------------------------------------
 MBEDTLS = [ FDirName $(WORK) niLang sources niLang src mbedtls ] ;
@@ -147,7 +114,6 @@ else {
 }
 
 if $(WINDOWS) = 1 {
-  NI_VIDEO_USE_DSHOW ?= 1 ;
   NI_VIDEO_USE_WEBCAM ?= 1 ;
 }
 
@@ -214,9 +180,6 @@ rule niUI_LinkLibs_Deps {
     if ! $(NO_THREADS) = 1 {
       tkLinkLibs $(<) : niUI_theoraplayer : $(2) ;
     }
-  }
-  if $(WINDOWS) = 1 {
-    SDK_DX9_2004_LinkLibs $(<) ;
   }
   if $(NI_VIDEO_USE_WEBCAM) = 1 {
     if $(WINDOWS) = 1 {

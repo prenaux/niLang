@@ -12,7 +12,6 @@ TOOLSET_LIST=(repos)
 # Platform specific toolsets
 case $HAM_OS in
   NT*)
-    TOOLSET_LIST+=(dx9sdk2004)
     TOOLSET_LIST+=(vulkan_sdk)
     ;;
   LINUX*)

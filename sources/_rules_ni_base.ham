@@ -1,21 +1,6 @@
 #----------------------------------------------------------------------
 #     Check toolsets...
 #----------------------------------------------------------------------
-TOOLSET_ERRMSG = "
-I/Example toolset setup command :
-$ . ham-toolset xslt_tools default
-" ;
-
-if ! ( $(FLYMAKE) = 1 ) {
-  if ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__xslt_tools) = 1 ) {
-    EXIT "E/'xslt_tools' toolset not set." $(TOOLSET_ERRMSG) ;
-  }
-}
-else {
-  # Flymake
-  NO_MODULEDEF = 1 ;
-}
-
 if ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_10_x86) = 1 ) &&
    ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_13_x64) = 1 ) &&
    ! ( $(NI_HASH_HAM_IMPORTS_TOOLSETS__msvc_15_x64) = 1 ) &&
@@ -82,7 +67,7 @@ NI_CMD += -I "$(NILANG_SCRIPTS)" ;
 
 if ! $(NI_EXE) || ! [ FExists $(NI_EXE) ] {
   ECHO "W/Can't find Ni executable " $(NI_EXE) " disabled ModuleDef generation." ;
-  NO_MODULEDEF = 1 ;
+  NO_NI_EXE = 1 ;
 }
 
 # This is necessary to support includes where the include file name is the same
@@ -95,9 +80,6 @@ SUBDIRRULES += niHdrGrist ;
 #----------------------------------------------------------------------
 #     IDL generation
 #----------------------------------------------------------------------
-
-rule niBuildModuleDef {
-}
 
 # niImportModuleHdrs MODULENAME : (TOOLKITNAME) : (APIDIRNAME)
 rule niImportModuleHdrs {
@@ -130,84 +112,6 @@ rule niImportModuleDll {
 rule niImportModuleLibs {
   niImportModuleHdrs $(1) : $(2) ;
   tkPkgLinkLibs $(1) : $(2) ;
-}
-
-#----------------------------------------------------------------------
-#     Modules
-#----------------------------------------------------------------------
-
-rule niModule_Begin
-{
-  if ! $(MODXML_CREATE) {
-    if ! [ FExists $(MODXML) ] {
-      MODXML_CREATE = 1 ;
-    }
-    else {
-      MODXML_CREATE = ;
-    }
-  }
-  if $(MODXML_CREATE) {
-    FEcho $(MODXML) : "<?xml version='1.0'?>" : create nl ;
-    FEcho $(MODXML) : "<module name='$(PACKAGE)'" : nl ;
-    FEcho $(MODXML) : "        version='$(VERSION)' " : nl ;
-    for _i in $(<) {
-      FEcho $(MODXML) : "        $(_i)" : nl ;
-    }
-    FEcho $(MODXML) : ">" : nl ;
-  }
-}
-
-rule niModule_Includes
-{
-  if $(MODXML_CREATE) {
-    local SORTED = [ SORTI $(<) ] ;
-    for _i in $(SORTED) {
-      FEcho $(MODXML) : "  <include>$(_i)</include>" : nl ;
-    }
-  }
-}
-
-rule niModule_End
-{
-  if $(MODXML_CREATE) {
-    FEcho $(MODXML) : "</module>" : nl ;
-  }
-  MODXML_CREATE = ;
-}
-
-# niModule_NS Namespace
-rule niModule_NS
-{
-  if $(MODXML_CREATE) {
-    FEcho $(MODXML) : "  <namespace name='$(<)' />" : nl ;
-  }
-}
-
-# niModule_Dep Dependency
-rule niModule_Dep
-{
-  if $(MODXML_CREATE) {
-    FEcho $(MODXML) : "  <dependency name='$(<)' />" : nl ;
-  }
-}
-
-# niModule_WeakDep Dependency
-rule niModule_WeakDep
-{
-  if $(MODXML_CREATE) {
-    FEcho $(MODXML) : "  <dependency name='$(<)' weak='yes'  />" : nl ;
-  }
-}
-
-# niModule_OT [ PROPERTY=VAL ]
-rule niModule_OT
-{
-  if $(MODXML_CREATE) {
-    local o = "  <objecttype " ;
-    o += $(<) ;
-    o += " />" ;
-    FEcho $(MODXML) : $(o) : nl ;
-  }
 }
 
 #----------------------------------------------------------------------

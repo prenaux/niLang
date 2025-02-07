@@ -377,7 +377,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Go to the $WORK folder\ncd \"$PROJECT_DIR/../../../..\"\npwd\necho \"I/Build the debug version\"\n./ham/bin/hamx :niLang BUILD=da BUILD_TARGET=ios-arm64 pass1 all\necho \"I/Build the release version\"\n./ham/bin/hamx :niLang BUILD=ra BUILD_TARGET=ios-arm64 pass1 all\n";
+			shellScript = "# Go to the $WORK folder\ncd \"$PROJECT_DIR/../../../..\"\npwd\necho \"I/Build the debug version\"\n./ham/bin/hamx :niLang BUILD=da BUILD_TARGET=ios-arm64 all\necho \"I/Build the release version\"\n./ham/bin/hamx :niLang BUILD=ra BUILD_TARGET=ios-arm64 all\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

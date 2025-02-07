@@ -15,7 +15,7 @@ echo "I/Build bootstrap..."
 echo "I/Native build..."
 PARAMS=("$@")
 if [ "${#PARAMS[@]}" -eq 0 ]; then
-  PARAMS=(pass1 build_tools all)
+  PARAMS=(build_tools all)
 fi
 (
   set -ex

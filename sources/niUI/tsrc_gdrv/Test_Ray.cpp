@@ -139,7 +139,7 @@ struct sFRay_Base : public sFGDRV_Base {
 //
 //----------------------------------------------------------------------------
 //
-// clear ; ham pass1 && ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
+// clear ; ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
 //
 struct sFRay_Triangle : public sFRay_Base {
 

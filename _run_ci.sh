@@ -6,8 +6,8 @@ source ./_env_ci.sh
 
 export BUILD=${BUILD:-ra}
 (set -ex ;
- ham NO_MODULEDEF=1 pass1 build_tools ;
- ham pass1 all)
+ ham build_tools ;
+ ham all)
 
 if [[ "${GITHUB_ACTIONS}" == "true" ]]; then
   echo "I/Running in GITHUB_ACTIONS..."

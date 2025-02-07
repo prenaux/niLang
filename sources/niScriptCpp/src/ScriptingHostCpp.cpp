@@ -293,7 +293,6 @@ static tBool ScriptCpp_TryCompileSource(
          << " -D " << strSourceAppDirUrl
          << " RTCPP=1"
          << " BUILD=" << ScriptCpp_GetCompileModuleType()
-         << " pass1"
          << " STAMP=" << stamp
          << " " << mc.name
       ;

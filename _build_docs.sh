@@ -7,7 +7,7 @@ HAM_NO_VER_CHECK=1 source _env_ci.sh
 set -e
 
 echo "I/Building modules..."
-ham pass1 && ham modlibs
+ham modlibs
 
 echo "I/Building documentation..."
 mkdir -p "$ODIR"

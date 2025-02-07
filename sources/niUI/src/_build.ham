@@ -34,13 +34,9 @@ if $(LINUX) = 1 || $(OSX) = 1 || $(WINDOWS) = 1 {
 
 SubDirHdrs $(SUBDIR) ft include ;
 
-### API #################################################################
-IDLS = [ niBuildModuleDef ] ;
-
 ### SOURCES #############################################################
 
 SRC = [ tkPkgSrc ] ;
-SRC += [ niGenJNI $(SRC) : niUI ] ;
 
 # CSS Flexbox layout
 NoCare [ FDirName $(WORK) css-layout dist css-layout.h ] ;
@@ -184,43 +180,3 @@ if $(NI_VIDEO_USE_IPCAM) = 1 {
 }
 
 niUI_LinkLibs_Deps $(PKGTARGET) ;
-
-### DEFINITION ##########################################################
-niModule_Begin
-  desc='"UI module"'
-  author='"niLang Authors"'
-  copyright='"(c) 2022 The niLang Authors"'
-  initfunctions='"no"'
-  interfacesheaderpath='"niUI_ModuleDef.h"'
-;
-niModule_Dep "niLang" ;
-niModule_OT name='"Graphics"' desc='"Graphics Object"' type='"ni::iGraphics"' ;
-niModule_OT name='"JpegWriter"' desc='"Jpeg Writer Object"' type='"ni::iJpegWriter"' ;
-niModule_OT name='"JpegReader"' desc='"Jpeg Reader Object"' type='"ni::iJpegReader"' ;
-niModule_OT name='"Intersection"' desc='"Intersection result"' type='"ni::iIntersection"' ;
-niModule_OT name='"Camera"' desc='"Camera"' type='"ni::iCamera"' ;
-niModule_OT name='"NUSpline"' desc='"Non-uniform spline"' type='"ni::iNUSpline"' ;
-niModule_OT name='"UIContext"' ;
-niModule_OT category='"BitmapLoader"' name='"bmp"' type='"ni::iBitmapLoader"' ;
-niModule_OT category='"BitmapSaver"' name='"bmp"' type='"ni::iBitmapSaver"' ;
-niModule_OT category='"BitmapLoader"' name='"jpeg"' type='"ni::iBitmapLoader"' ;
-niModule_OT category='"BitmapSaver"' name='"jpeg"' type='"ni::iBitmapSaver"' ;
-niModule_OT category='"BitmapLoader"' name='"png"' type='"ni::iBitmapLoader"' ;
-niModule_OT category='"BitmapSaver"' name='"png"' type='"ni::iBitmapSaver"' ;
-niModule_OT category='"BitmapLoader"' name='"tga"' type='"ni::iBitmapLoader"' ;
-niModule_OT category='"BitmapSaver"' name='"tga"' type='"ni::iBitmapSaver"' ;
-niModule_OT category='"BitmapLoader"' name='"dds"' type='"ni::iBitmapLoader"' ;
-niModule_Includes $(IDLS) ;
-niModule_End ;
-
-### Dependencies ########################################################
-if $(NI_VIDEO_USE_IPCAM) = 1 {
-  SubInclude TOP niCURL src ;
-}
-if $(NI_VIDEO_USE_OGG) = 1 {
-  SubInclude TOP niUI src ogg ;
-}
-if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
-  SubInclude TOP niUI src theoraplayer ;
-}
-SubInclude TOP nicgc src mojoshader ;

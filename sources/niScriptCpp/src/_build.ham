@@ -3,20 +3,6 @@ if [ SubDirOnce TOP niScriptCpp src ] = 1 { return ; }
 tkDefModuleLib niScriptCpp : 1,0,0 ;
 niImportModuleDll niLang ;
 
-### API #################################################################
-IDLS = [ niBuildModuleDef ] ;
-
 ### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
-
-### DEFINITION ##########################################################
-niModule_Begin
-  moduleinclude=''
-  desc='"niScriptCpp module"'
-  initfunctions='"no"'
-;
-niModule_Dep "niLang" ;
-niModule_OT name='"ScriptingHost"' ;
-niModule_Includes $(IDLS) ;
-niModule_End ;

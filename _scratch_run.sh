@@ -6,21 +6,26 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 #===== PRELUDE END =============
+set -e
 cd "$SCRIPT_DIR"
 
-set -ex
-
-# log_info "Build rgen from glsl"
-# $WORK/Playground/playground_nish @glslang -Od -S rgen --target-env vulkan1.2 -V -o $WORK/niLang/data/test/rayfunc/triangle_rgen.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rgen.glsl @nish -S rgen -n triangle_rgen -t glsl_vk46 $WORK/niLang/data/test/rayfunc/triangle_rgen.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rgen.gpufunc.xml
-
-# log_info "Build rmiss from glsl"
-# $WORK/Playground/playground_nish @glslang -Od -S rmiss --target-env vulkan1.2 -V -o $WORK/niLang/data/test/rayfunc/triangle_rmiss.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rmiss.glsl @nish -S rmiss -n triangle_rmiss -t glsl_vk46 $WORK/niLang/data/test/rayfunc/triangle_rmiss.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rmiss.gpufunc.xml
-
-# log_info "Build rchit from glsl"
-# $WORK/Playground/playground_nish @glslang -Od -S rchit --target-env vulkan1.2 -V -o $WORK/niLang/data/test/rayfunc/triangle_rchit.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rchit.glsl @nish -S rchit -n triangle_rchit -t glsl_vk46 $WORK/niLang/data/test/rayfunc/triangle_rchit.gpufunc.spv_vk12 $WORK/niLang/data/test/rayfunc/triangle_rchit.gpufunc.xml
-
-$WORK/Playground/_build_shaders.sh
+log_info "Compile shaders"
+(
+  set -x
+  cd "$WORK/Playground"
+  # hamx :niLang :Playground ni
+  # ./_build_shaders.sh
+)
 
 log_info "Build and run test case"
-ham pass1
-ham Run_Test_niUI_GDRV FIXTURE=FRayGpu,Triangle A2=-Drenderer=Vulkan BUILD=da
+(
+  set -x
+  cd "$WORK/niLang"
+  # ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
+  # ham Run_Test_niUI_GDRV BUILD=da FIXTURE=FRay,RayQueryTriangle
+  # ham Run_Test_niUI_GDRV BUILD=da FIXTURE=FRay,RayQueryIntSphere
+  # ham Debug_Test_niUI BUILD=da FIXTURE=FRayTracer,Triangle
+  # ham Debug_Test_niUI BUILD=da FIXTURE=FRayTracer,Triangle
+  ham Run_Test_niUI BUILD=ra FIXTURE=FRayTracer,Triangle
+  # ham Run_Test_niUI_GDRV BUILD=ra FIXTURE=FRay,RayQueryTriangle
+)

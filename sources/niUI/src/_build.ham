@@ -37,11 +37,6 @@ SubDirHdrs $(SUBDIR) ft include ;
 
 SRC = [ tkPkgSrc ] ;
 
-# CSS Flexbox layout
-NoCare [ FDirName $(WORK) css-layout dist css-layout.h ] ;
-tkFileCopy [ FGristFiles [ FDirName $(SUBDIR) css-layout.h ] ] : [ FDirName $(WORK) css-layout dist css-layout.h ] ;
-INCLUDES [ FGristFiles UIContext.cpp ] : [ FGristFiles [ FDirName $(SUBDIR) css-layout.h ] ] ;
-
 # Freetype (see ftmodule.h for more infos)
 SRC_EXTRA +=
 [ SrcSubDir $(PACKAGE) : ft autofit : $(OBJDIR) : autofit.c ]

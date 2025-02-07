@@ -10,9 +10,3 @@ if $(TARGET_FEATURE_RTCPP) = 1 {
 if $(TARGET_FEATURE_CONSOLE) {
   SubInclude TOP HelloUI ni ;
 }
-if $(BUILD_JNI) {
-  SubInclude TOP HelloUI java ;
-}
-if $(ANDROID) {
-  SubInclude TOP HelloUI android ;
-}

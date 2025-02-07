@@ -20,10 +20,5 @@ SubInclude TOP niUI ;
 SubInclude TOP niAppLib ;
 SubInclude TOP niSound ;
 
-if $(BUILD_JNI) = 1 {
-  SubInclude TOP jvm ;
-  DEPENDS build_tools : ni-common ni-gen-cpp ;
-}
-
 ### Samples ###
 SubInclude TOP HelloUI ;

@@ -1,9 +1,0 @@
-package ni.niLang;
-
-import ni.types.Pointer;
-import ni.types.annotations.*;
-
-@Namespace("ni")
-@Name("sEnumDef")
-public class SEnumDef extends Pointer {
-}

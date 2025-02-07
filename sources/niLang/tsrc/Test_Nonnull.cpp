@@ -391,7 +391,7 @@ ni::cString Test_niCheckNonnull_FromWeakPtr(
 
 //
 // Run with:
-// $ ham pass1 && ham Run_Test_niLang BUILD=da FIXTURE="FNonnull,niCheckNonnull*"
+//   hamx :niLang Run_Test_niLang BUILD=da FIXTURE="FNonnull,niCheckNonnull*"
 //
 TEST_FIXTURE(FNonnull,niCheckNonnull_MacroVariants) {
   // this test only test that the macros compile correctly

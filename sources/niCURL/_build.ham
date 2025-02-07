@@ -8,6 +8,3 @@ SubDir TOP niCURL ;
 
 SubInclude TOP niCURL src ;
 SubInclude TOP niCURL tsrc ;
-if $(BUILD_JNI) {
-  SubInclude TOP niCURL java ;
-}

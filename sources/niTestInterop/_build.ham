@@ -9,8 +9,3 @@ SubDir TOP niTestInterop ;
 if $(TARGET_FEATURE_CONSOLE) {
   SubInclude TOP niTestInterop src ;
 }
-
-if $(BUILD_JNI) {
-  SubInclude TOP niTestInterop java ;
-  SubInclude TOP niTestInterop tsrc_java ;
-}

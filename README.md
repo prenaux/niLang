@@ -29,7 +29,7 @@ cd niLang
 ## Module and libraries
 
 ```
-ham pass1 modlibs
+ham modlibs
 ```
 
 ## A particular module
@@ -49,7 +49,7 @@ ham BUILD=da MODULENAME
 Build Test\_niLang:
 ```
 BUILD_TARGET=web-js . hat
-ham pass1 && ham Test_niLang
+ham Test_niLang
 ```
 
 Run Test\_niLang:

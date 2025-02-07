@@ -12,6 +12,8 @@ niImportModuleHdrs niScript ;
 tkDefTool ni : 1.0.0 ;
 tkPkgLinkDll niLang ;
 tkPkgLinkDll niScript ;
+niImportModuleDll_niUI ;
+niImportModuleLibs niAppLib ;
 
 SRC = ni_console.cpp ni_repl.cpp ;
 if $(WINDOWS) = 1 {

@@ -24,9 +24,7 @@
 #include <niLang/IOSProcess.h>
 #include <niLang_ModuleDef.h>
 #include <niScript.h>
-#ifdef NI_WINDOWED
 #include <niAppLib.h>
-#endif
 #include <niLang/Utils/CmdLine.h>
 #include <niLang/Utils/VMBind.h>
 
@@ -85,11 +83,9 @@ struct sOptions {
   cString _strEntryPoint = "main.niw";
   // Script Main (by default will try this.main and then ::main function)
   cString _strScriptMain;
-#ifdef NI_WINDOWED
   // Run a hosted app.
   // Remark: This is only for niw so that "ni" doesn't have a dependency on niUI.
   cString _strHostedAppName;
-#endif
 #ifdef NI_REPL
   // REPL.
   tBool _bRunREPL;
@@ -329,13 +325,11 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
           _GetOptions()->_strScriptMain = ni::CmdLineStrCharItReadFile(it,0);
           break;
         }
-#ifdef NI_WINDOWED
         case 'A': {
           _GetOptions()->_strHostedAppName = ni::CmdLineStrCharItReadFile(it,0);
           niDebugFmt(("run as hosted app: %s", _GetOptions()->_strHostedAppName));
           break;
         }
-#endif
 #ifdef NI_REPL
         case 'i': {
           // niDebugFmt(("repl"));
@@ -1200,7 +1194,6 @@ ni_main
       return ret.mU32;
     };
 
-#ifdef NI_WINDOWED
     if (_GetOptions()->_strHostedAppName.IsNotEmpty()) {
       niLog(Info,niFmt("Starting hosted app '%s'.", _GetOptions()->_strHostedAppName));
       ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
@@ -1218,7 +1211,6 @@ ni_main
       nRet = app::AppNativeMainLoop(appContext);
     }
     else
-#endif
     {
       nRet = runMain();
     }

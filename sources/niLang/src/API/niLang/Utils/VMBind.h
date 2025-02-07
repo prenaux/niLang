@@ -15,6 +15,8 @@
  * @{
  */
 
+EA_DISABLE_CLANG_WARNING(-Wc++23-extensions);
+
 namespace ni {
 namespace vmbind {
 
@@ -38,6 +40,22 @@ struct param_traits {
     }                                                         \
   }
 
+// Macro to declare param_traits for enum types
+#define DECLARE_VMBIND_PARAM_ENUM_TRAITS(TYPE, VM_TYPE, TYPE_NAME)  \
+  template<> struct param_traits<TYPE> {                            \
+    static constexpr tType type = VM_TYPE;                          \
+    static constexpr const char* type_name = TYPE_NAME;             \
+    static void read(const Var& aVar, TYPE* value) {                \
+      ni::tU32 tmpVal = 0;                                          \
+      ni::vmcall::BufRead(aVar,&tmpVal);                            \
+      *value = (TYPE)tmpVal;                                        \
+    }                                                               \
+    static void write(Var& aVar, TYPE* value) {                     \
+      ni::tU32 tmpVal = *value;                                     \
+      vmcall::BufWrite(aVar, &tmpVal);                              \
+    }                                                               \
+  }
+
 DECLARE_VMBIND_PARAM_TRAITS(ni::tI8, eType_I8, "tI8");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tU8, eType_U8, "tU8");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tI16, eType_I16, "tI16");
@@ -48,7 +66,7 @@ DECLARE_VMBIND_PARAM_TRAITS(ni::tI64, eType_I64, "tI64");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tU64, eType_U64, "tU64");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tF32, eType_F32, "tF32");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tF64, eType_F64, "tF64");
-DECLARE_VMBIND_PARAM_TRAITS(ni::achar*, eType_ASZ, "const achar*");
+DECLARE_VMBIND_PARAM_TRAITS(const ni::achar*, eType_ASZ, "const achar*");
 DECLARE_VMBIND_PARAM_TRAITS(ni::cString, eType_String, "cString");
 DECLARE_VMBIND_PARAM_TRAITS(ni::sVec2f, eType_Vec2f, "sVec2f");
 DECLARE_VMBIND_PARAM_TRAITS(ni::sVec3f, eType_Vec3f, "sVec3f");
@@ -140,7 +158,7 @@ concept HasInterfaceUUID = requires(T) {
 
 template<typename T>
 concept HasInterfaceID = requires(T) {
-  { T::GetInterfaceID() } -> astl::same_as<const ni::achar*>;
+  { T::_GetInterfaceID() } -> astl::same_as<const ni::achar*>;
 };
 
 // Simple helper to get UUID
@@ -157,7 +175,7 @@ const tUUID* get_interface_uuid() {
 template<typename T>
 const achar* get_type_name() {
   if constexpr (HasInterfaceID<astl::remove_pointer_t<T>>) {
-    return astl::remove_pointer_t<T>::GetInterfaceID();
+    return astl::remove_pointer_t<T>::_GetInterfaceID();
   }
   else {
     return param_traits<T>::type_name;
@@ -228,11 +246,11 @@ struct static_wrapper {
     return eVMRet_OK;
   }
 
-  static sMethodDef make_method_def(const achar* name, function_type f) {
+  static sMethodDef make_method_def(const achar* name, function_type f, tType aRetFlags) {
     function = f;
     return {
       name,
-      param_traits<Ret>::type,
+      param_traits<Ret>::type|aRetFlags,
       get_interface_uuid<Ret>(),
       get_type_name<Ret>(),
       sizeof...(Args),
@@ -252,14 +270,14 @@ typename static_wrapper<Ret, Args...>::function_type static_wrapper<Ret, Args...
 class static_registrar {
  private:
   template<typename R, typename... Args>
-  static sMethodDef make_static_impl(const achar* name, R(*func)(Args...)) {
-    return static_wrapper<R, Args...>::make_method_def(name, func);
+  static sMethodDef make_static_impl(const achar* name, R(*func)(Args...), tType aRetFlags) {
+    return static_wrapper<R, Args...>::make_method_def(name, func, aRetFlags);
   }
 
  public:
   template<auto Function>
-  static sMethodDef make_static(const achar* name) {
-    return make_static_impl(name, Function);
+  static sMethodDef make_static(const achar* name, tType aRetFlags = 0) {
+    return make_static_impl(name, Function, aRetFlags);
   }
 };
 
@@ -271,11 +289,11 @@ struct method_wrapper {
   using args_tuple = eastl::tuple<std::remove_cvref_t<Args>...>;
 
   // Non-const version
-  static sMethodDef make_method_def(const achar* name, method_type m) {
+  static sMethodDef make_method_def(const achar* name, method_type m, tType aRetFlags) {
     method = m;
     return {
       name,
-      param_traits<Ret>::type,
+      param_traits<Ret>::type|aRetFlags,
       get_interface_uuid<Ret>(),
       get_type_name<Ret>(),
       sizeof...(Args),
@@ -285,12 +303,12 @@ struct method_wrapper {
   }
 
   // Const version
-  static sMethodDef make_method_def(const achar* name, const_method_type m) {
+  static sMethodDef make_method_def(const achar* name, const_method_type m, tType aRetFlags) {
     const_method = m;
     is_const = true;
     return {
       name,
-      param_traits<Ret>::type,
+      param_traits<Ret>::type|aRetFlags,
       get_interface_uuid<Ret>(),
       get_type_name<Ret>(),
       sizeof...(Args),
@@ -370,20 +388,20 @@ class interface_def {
  private:
   // Non-const member function
   template<typename R, typename... Args>
-  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...)) {
-    return method_wrapper<Class, R, Args...>::make_method_def(name, m);
+  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...), tType aRetFlags = 0) {
+    return method_wrapper<Class, R, Args...>::make_method_def(name, m, aRetFlags);
   }
 
   // Const member function
   template<typename R, typename... Args>
-  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...) const) {
-    return method_wrapper<Class, R, Args...>::make_method_def(name, m);
+  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...) const, tType aRetFlags = 0) {
+    return method_wrapper<Class, R, Args...>::make_method_def(name, m, aRetFlags);
   }
 
  public:
   template<auto Method>
-  interface_def& method(const achar* name) {
-    methods.push_back(make_method(name, Method));
+  interface_def& method(const achar* name, tType aRetFlags = 0) {
+    methods.push_back(make_method(name, Method, aRetFlags));
     return *this;
   }
 

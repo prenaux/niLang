@@ -153,11 +153,11 @@ jobs:
 
       - name: niLang _run_ci.sh BUILD=da
         run: |
-          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=da pass1 all
+          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=da all
 
       - name: niLang _run_ci.sh BUILD=ra
         run: |
-          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=ra pass1 all
+          ./ham/bin/hamx :niLang BUILD_TARGET=ios-arm64 BUILD=ra all
 
   build_windows2019:
     runs-on: windows-2019

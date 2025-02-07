@@ -1,7 +1,7 @@
 <UISkin
   name="Default"
-  author="David Schuyten"
-  bitmap="niUI://skins/UIDark.png">
+  author="Pierre Renaux"
+  bitmap="niUI://skins/vlk_ui.png">
 
   <!--***** DEFAULT VALUES ******-->
   <Default>
@@ -152,15 +152,19 @@
         pivot = "Vec2(5,19)"
         blendmode="Translucent"
         />
-
     </Cursors>
 
     <Normal>
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="16"
+          />
+        <IconFont
+          path="niUI://fonts/far-400.otf"
+          pixel_size="32"
+          color="RGBA(215,215,215,255)/255"
           />
       </Fonts>
       <Selection
@@ -173,8 +177,6 @@
   <!--***** HOVER *****-->
   <HoverLabel>
     <Normal>
-      <Background
-        color="RGBA(85,102,119,255)/255" />
       <Fonts>
         <Default
           path="Default"
@@ -184,8 +186,9 @@
       </Fonts>
       <Frame
         filtering="true"
-        mapping="Rect(112,109,20,20)"
-        frame="Vec4(4,4,8,8)"
+        mapping="Rect(112,109,16,16)"
+        frame="Vec4(4,4,4,4)"
+        color="RGBA(255,255,255,255)/255"
         blendmode="Translucent"
         />
     </Normal>
@@ -219,7 +222,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="16"
           />
       </Fonts>
@@ -242,21 +245,6 @@
         color="RGBA(43,60,76,255)/255" />
     </Normal>
   </Title>
-
-  <!--***** HOVER *****-->
-  <InfoLabel>
-    <Normal>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(33,50,66,255)/255"
-          pixel_size="16"
-          />
-      </Fonts>
-      <Background
-        color="RGBA(0,0,0,0)/255" />
-    </Normal>
-  </InfoLabel>
 
   <!--***** FORM ******-->
   <Form>
@@ -353,7 +341,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(37,37,37,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -368,7 +356,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(37,37,37,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -383,7 +371,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(0,0,0,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -545,7 +533,7 @@
   <TabButton>
     <Normal>
       <Fonts>
-        <Default path="Default" color="RGBA(175,195,215,255)/255" pixel_size="12" />
+        <Default path="Default" color="RGBA(215,215,215,255)/255" pixel_size="12" />
       </Fonts>
       <Frame
         color="RGBA(0,0,0,0)/255"
@@ -575,7 +563,7 @@
   <FocusTabButton>
     <Normal>
       <Fonts>
-        <Default path="Default" color="RGBA(175,195,215,255)/255" pixel_size="12" />
+        <Default path="Default" color="RGBA(215,215,215,255)/255" pixel_size="12" />
       </Fonts>
       <Frame
         color="RGBA(33,33,33,0)/255"
@@ -878,12 +866,12 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="16"
           />
         <Header
           path="Default"
-          color="RGBA(30,32,34,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="16"
           />
       </Fonts>
@@ -897,9 +885,9 @@
         blendmode="Translucent" />
 
       <Background
-        color="RGBA(30,32,34,255)/255" />
+        color="RGBA(30,32,34,0)/255" />
       <Frame
-        mapping="Vec4(215,4,235,24)"
+        mapping="Rect(109,6,16,16)"
         blendmode="Translucent"
         frame="Vec4(1,1,1,1)" />
       <ArrowUp
@@ -913,12 +901,6 @@
         blendmode="Translucent"
         />
     </Normal>
-    <Focused>
-      <Frame
-        mapping="Vec4(86,25,104,43)"
-        blendmode="Translucent"
-        frame="Vec4(1,1,1,1)" />
-    </Focused>
   </ListBox>
 
   <!--***** LIST BOX ******-->
@@ -927,7 +909,7 @@
       <Fonts>
         <Default
           path="Monospace"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="12"
           />
         <Header
@@ -939,7 +921,7 @@
       <Header
         mapping="Rect(38,26,14,14)"
         frame="Vec4(2,2,2,2)"
-		/>
+		    />
       <HeaderSeparator
         mapping="Rect(232,34,2,16)"
         frame="Vec4(1,2,1,2)"
@@ -947,7 +929,7 @@
       <Background
         color="RGBA(30,32,34,0)/255" />
       <Frame
-        mapping="Rect(108,5,18,18)"
+        mapping="Rect(109,6,16,16)"
         blendmode="Translucent"
         frame="Vec4(1,1,1,1)" />
       <ArrowUp
@@ -969,7 +951,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(185,205,225,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -993,11 +975,11 @@
       <Separator
         color="RGBA(37,37,37,255)/255" />
       <BackNormal
-        color="RGBA(62,62,62,255)/255" />
+        color="RGBA(33,33,33,255)/255" />
       <BackSelected
-        color="RGBA(90,90,90,255)/255" />
-      <LeftMargin
         color="RGBA(62,62,62,255)/255" />
+      <LeftMargin
+        color="RGBA(33,33,33,255)/255" />
       <BackTitle
         color="RGBA(62,62,62,255)/255" />
       <BorderTitle
@@ -1023,7 +1005,7 @@
         <Default
           path="Default"
           pixel_size="16"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           />
       </Fonts>
       <Background
@@ -1245,7 +1227,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="15"
           />
       </Fonts>
@@ -1294,7 +1276,7 @@
       <FirstRow   color="RGBA(37,37,37,255)/255" />
       <SecondRow    color="RGBA(41,42,43,255)/255" />
       <RowHover     color="RGBA(50,50,50,255)/255" />
-      <TextFront    color="RGBA(175,195,215,255)/255" />
+      <TextFront    color="RGBA(215,215,215,255)/255" />
       <TextBack   color="RGBA(0,0,0,0)" />
       <DropBorder   color="RGBA(116,182,208,255)/255" />
       <SelBack    color="RGBA(120,50,50,30)/255" />
@@ -1302,6 +1284,66 @@
       <LastSelBack  color="RGBA(150,50,50,100)/255" />
     </Normal>
   </Tree>
+
+  <!--***** VlkTimeline ******-->
+  <VlkTimeline>
+    <Normal>
+      <EntityText color="RGBA(120,225,85,255)/255" />
+      <EntityBar  color="RGBA(95,215,78,255)/255" />
+
+      <LayerText color="RGBA(215,215,215,255)/255" />
+      <LayerBar  color="RGBA(215,215,215,255)/255" />
+
+      <AnimText color="RGBA(85,120,215,255)/255" />
+      <AnimBar  color="RGBA(95,160,210,255)/255" />
+
+      <ActionText color="RGBA(215,35,65,255)/255" />
+      <ActionBar  color="RGBA(195,35,65,255)/255" /> <!--(185,20,75,255)-->
+
+      <EventText  color="RGBA(190,150,75,255)/255" />
+      <EventBar color="RGBA(190,150,75,255)/255" /> <!-- (185,140,75,255) -->
+
+      <KeysSetText  color="RGBA(0,168,204,255)/255" />
+      <KeysSetBar   color="RGBA(0,168,204,255)/255" />
+      <KeyNormal    color="RGBA(0,48,84,255)/255" />
+      <KeySelected  color="RGBA(224,228,0,255)/255" />
+
+      <SecLine    color="RGBA(30,32,34,255)/255" />
+      <HalfSecLine  color="RGBA(44,46,48,255)/255" />
+      <FiveSecLine  color="RGBA(15,16,17,255)/255" />
+
+      <BarsOverlayHalfSecLine color="RGBA(100,108,116,255)/255" />
+      <BarsOverlaySecLine   color="RGBA(70,74,78,255)/255" />
+      <BarsOverlayFiveSecLine color="RGBA(25,26,27,255)/255" />
+      <BarsOverlayText    color="RGBA(30,32,34,255)/255" />
+      <BarsHoverBackground    color="RGBA(64,64,64,128)/255" />
+
+      <CurTime      color="RGBA(1,1,0,0.9)" />
+
+      <GlobalTime         color="RGBA(1,1,1,0.5)" />
+      <GlobalTimePlaying  color="RGBA(0,1,1,0.5)" />
+      <GlobalTimePaused   color="RGBA(1,1,0,0.5)" />
+
+      <BarsOverlayBackground  color="RGBA(120,125,130,255)/255" />
+      <BarsOverlayBackgroundPlaying color="RGBA(77,141,145,255)/255*1.2" />
+      <BarsOverlayBackgroundPaused color="RGBA(147,151,85,255)/255*1.2" />
+    </Normal>
+  </VlkTimeline>
+
+  <!--***** LABEL *****-->
+  <VlkViewLabel>
+    <Normal>
+      <Fonts>
+        <Default
+          path="Default"
+          color="RGBA(215,215,215,255)/255"
+          pixel_size="14"
+          />
+      </Fonts>
+      <Background
+        color="RGBA(0,0,0,0)/255" />
+    </Normal>
+  </VlkViewLabel>
 
   <!-- ***** Toolbar Background ******-->
   <ToolbarBackground>
@@ -1316,9 +1358,7 @@
       <Background
         color="RGBA(13,107,30,0)/255" />
       <Frame
-        mapping="Rect(219,32,6,20)"
-        frame="Vec4(1,2,1,2)"
-        blendmode="Translucent"
+        color="RGBA(33,33,33,0)/255"
         />
     </Normal>
   </ToolbarBackground>
@@ -1336,14 +1376,13 @@
       <Background
         color="RGBA(62,62,62,255)/255" />
       <Frame
-        mapping="Rect(220,58,33,92)"
-        frame="Vec4(4,2,5,4)"
-        blendmode="Translucent"
+        color="RGBA(62,62,62,255)/255"
+        frame="Vec4(0,2,5,2)"
         />
       <MenuFrame
-        mapping="Rect(212,199,11,28)"
-        frame="Vec4(11,10,11,4)"
-        blendmode="Translucent"
+        color="RGBA(62,62,62,255)/255"
+        size="Vec2(12,28)"
+        frame="Vec4(11,10,11,2)"
         />
     </Normal>
   </Toolbar>
@@ -1354,28 +1393,25 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(215,235,255,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
       <Frame
-        mapping="Rect(180,203,32,24)"
-		frame="Vec4(4,6,4,6)"
-        blendmode="Translucent"
+        color="RGBA(62,62,62,255)/255"
         />
     </Normal>
     <Pressed>
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(215,235,255,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
       <Frame
-        mapping="Rect(180,231,32,24)"
-		frame="Vec4(4,6,4,6)"
-        blendmode="Translucent"
+        color="RGBA(50,50,50,255)/255"
+        frame="Vec4(2,2,2,2)"
         />
     </Pressed>
   </ToolbarMenuButtonNormal>
@@ -1384,38 +1420,35 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(215,235,255,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
       <Frame
-        mapping="Rect(223,203,32,24)"
-		frame="Vec4(4,6,4,6)"
-        blendmode="Translucent"
+        color="RGBA(33,33,33,255)/255"
         />
     </Normal>
     <Pressed>
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(215,235,255,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
       <Frame
-        mapping="Rect(223,231,32,24)"
-		frame="Vec4(4,6,4,6)"
-        blendmode="Translucent"
+        color="RGBA(33,33,33,255)/255"
         />
     </Pressed>
   </ToolbarMenuButtonSelected>
+
   <!--***** TOOLBAR GROUP ******-->
   <ToolbarGroup>
     <Normal>
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -1429,7 +1462,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(200,200,200,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
@@ -1437,7 +1470,6 @@
         mapping="Rect(208,160,22,40)"
         frame="Vec4(4,4,4,22)"
         blendmode="Translucent"
-        color="RGBA(1,1,1,1)"
         />
     </Hover>
   </ToolbarGroup>
@@ -1459,56 +1491,34 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(37,37,37,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="14"
           />
       </Fonts>
       <Frame
-        mapping="Rect(66,69,20,20)"
-        frame="Vec4(3,3,3,3)"
-        filtering="true"
+        color="RGBA(33,33,33,0)/255"
         blendmode="Translucent"
         />
     </Normal>
     <Hover>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(33,50,66,255)/255"
-          pixel_size="14"
-          />
-      </Fonts>
       <Frame
-        mapping="Rect(22,235,20,20)"
-        frame="Vec4(3,3,3,3)"
-        filtering="true"
-        blendmode="Translucent"
+        color="RGBA(50,50,50,0)/255"
         />
     </Hover>
     <Pressed>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(37,37,37,255)/255"
-          pixel_size="14"
-          />
-      </Fonts>
       <Frame
-        mapping="Rect(42,235,20,20)"
-        frame="Vec4(3,3,3,3)"
-        filtering="true"
-        blendmode="Translucent"
+        color="RGBA(11,11,11,0)/255"
         />
     </Pressed>
   </ToolbarButton>
 
-  <!--***** Small Toolbar in the Library for example ******-->
+  <!--***** Small Toolbar in the Vlk Library for example ******-->
   <ToolbarSmallTab>
     <Normal>
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(37,37,37,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="12"
           />
       </Fonts>
@@ -1523,7 +1533,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(33,50,66,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="12"
           />
       </Fonts>
@@ -1538,7 +1548,7 @@
       <Fonts>
         <Default
           path="Default"
-          color="RGBA(37,37,37,255)/255"
+          color="RGBA(215,215,215,255)/255"
           pixel_size="12"
           />
       </Fonts>
@@ -1550,54 +1560,6 @@
         />
     </Pressed>
   </ToolbarSmallTab>
-
-  <!--***** Custom BUTTON ******-->
-  <CustomButton>
-    <Normal>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(250,250,207,255)/255"
-          pixel_size="16"
-          />
-      </Fonts>
-      <Frame
-        mapping="Rect(66,69,20,20)"
-        frame="Vec4(3,3,3,3)"
-        blendmode="Translucent"
-        />
-    </Normal>
-    <Hover>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(33,50,66,255)/255"
-          pixel_size="16"
-          />
-      </Fonts>
-      <Frame
-        mapping="Rect(152,84,20,20)"
-        frame="Vec4(3,3,3,3)"
-        filtering="true"
-        blendmode="Translucent"
-        />
-    </Hover>
-    <Pressed>
-      <Fonts>
-        <Default
-          path="Default"
-          color="RGBA(33,50,66,255)/255"
-          pixel_size="16"
-          />
-      </Fonts>
-      <Frame
-        mapping="Rect(172,84,20,20)"
-        frame="Vec4(4,4,4,4)"
-        filtering="true"
-        blendmode="Translucent"
-        />
-    </Pressed>
-  </CustomButton>
 
   <!--***** PropertyBox ******-->
   <PropertyBoxTree>
@@ -1620,12 +1582,12 @@
       <FirstRow   color="RGBA(37,37,37,255)/255" />
       <SecondRow    color="RGBA(41,42,43,255)/255" />
       <RowHover     color="RGBA(70,70,70,255)/255" />
-      <TextFront    color="RGBA(175,195,215,255)/255" />
+      <TextFront    color="RGBA(215,215,215,255)/255" />
       <TextBack   color="RGBA(0,0,0,0)" />
       <SelTextFront color="RGBA(37,37,37,255)/255" />
       <SelTextBack  color="RGBA(135,155,175,255)/255" />
       <TextBackFocus  color="RGBA(155,175,195,255)/255" />
-      <SelTextBackFocus color="RGBA(175,195,215,255)/255" />
+      <SelTextBackFocus color="RGBA(215,215,215,255)/255" />
       <DropBack     color="RGBA(96,112,128,255)/255" />
       <DropBorder   color="RGBA(0,1,1,1)" />
       <SecSelTextBack color="RGBA(96,112,128,255)/255" />
@@ -1735,7 +1697,7 @@
         <Default
           path="Default"
           pixel_size="16"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           />
       </Fonts>
       <Background
@@ -1761,7 +1723,7 @@
         <Default
           path="Default"
           pixel_size="16"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           />
       </Fonts>
       <Background
@@ -1785,7 +1747,7 @@
         <Default
           path="Default"
           pixel_size="16"
-          color="RGBA(175,195,215,255)/255"
+          color="RGBA(215,215,215,255)/255"
           />
       </Fonts>
       <Background

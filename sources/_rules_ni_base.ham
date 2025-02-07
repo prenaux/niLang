@@ -42,9 +42,6 @@ NILANG_BUILD_SCRIPTS ?= [ FDirName $(NILANG_DIR) scripts tools ] ;
 NI_RA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
 NI_DA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT_DA)$(BUILD_SUFEXE) ] ;
 
-NICGC_RA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) nicgc_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
-NICGC_DA_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) nicgc_$(BUILDEXT_DA)$(BUILD_SUFEXE) ] ;
-
 NI_RA_CMD = $(NI_RA_EXE) ;
 NI_DA_CMD = $(NI_DA_EXE) -e ;
 
@@ -52,12 +49,10 @@ NI_DA_CMD = $(NI_DA_EXE) -e ;
 if $(DEBUG_TOOLS) = 1 {
   NI_CMD = $(NI_DA_CMD) ;
   NI_EXE = $(NI_DA_EXE) ;
-  NICGC_EXE ?= $(NICGC_DA_EXE) ;
 }
 else {
   NI_CMD = $(NI_RA_CMD) ;
   NI_EXE = $(NI_RA_EXE) ;
-  NICGC_EXE ?= $(NICGC_RA_EXE) ;
 }
 
 if $(DEBUG_TOOLS) = 1 {
@@ -112,42 +107,4 @@ rule niImportModuleDll {
 rule niImportModuleLibs {
   niImportModuleHdrs $(1) : $(2) ;
   tkPkgLinkLibs $(1) : $(2) ;
-}
-
-#----------------------------------------------------------------------
-#     Shaders
-#----------------------------------------------------------------------
-if $(SHADER_DEBUG) = 1 {
-  SHADER_CGC1_FLAGS += -d ;
-  SHADER_CGC1_DEFS += -DDEBUG=1 ;
-}
-
-rule niShaderLibraryPath {
-  local SHADERS_OUTPUT_DIR = [ FDirName $(TK_DIR) data $(PACKAGE) shaders ] ;
-  return [ FDirName $(SHADERS_OUTPUT_DIR) $(1:S=.cgl) ] ;
-}
-
-rule niShouldBuildShaderLibrary {
-  local shaderLibraryPath = [ niShaderLibraryPath $(1) ] ;
-  if [ FExists $(shaderLibraryPath) ] {
-    # ECHO "I/Found shader library:" $(shaderLibraryPath) ;
-    return 0 ;
-  }
-  else {
-    ECHO "I/Missing shader library:" $(shaderLibraryPath) ;
-    return 1 ;
-  }
-}
-
-rule niShader {
-  local TARGET_SUFFIX = [ FShaderTargetSuffix $(>) ] ;
-  local SHADERS_OUTPUT_DIR = [ FDirName $(TK_DIR) data $(PACKAGE) shaders ] ;
-  local o = [ shaderObject [ FDirName $(SHADERS_OUTPUT_DIR) $(<:S=$(TARGET_SUFFIX)) ] : [ FDirName $(SUBDIR) shaders $(>) ] : $(3) ] ;
-  DEPENDS $(PACKAGE)_shader_$(o:BS=) : $(o) ;
-  DEPENDS $(PACKAGE)_shaders : $(PACKAGE)_shader_$(o:BS=) ;
-  DEPENDS $(PACKAGE) : $(PACKAGE)_shaders ;
-  # Don't add this since it cant be resolved in other toolkits, which leads to
-  # the shaders to always being rebuilt
-  # DEPENDS $(o) : nicgc ;
-  return $(o) ;
 }

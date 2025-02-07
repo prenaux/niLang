@@ -561,7 +561,6 @@
 					"-llibCURL_ra",
 					"-lniUI_ra",
 					"-lniUI_ogg_ra",
-					"-llibMojoshader_ra",
 					"-lniUI_theoraplayer_ra",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.$(PRODUCT_NAME:rfc1034identifier)";
@@ -600,7 +599,6 @@
 					"-llibCURL_ra",
 					"-lniUI_ra",
 					"-lniUI_ogg_ra",
-					"-llibMojoshader_ra",
 					"-lniUI_theoraplayer_ra",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.$(PRODUCT_NAME:rfc1034identifier)";
@@ -671,7 +669,6 @@
 					"-llibCURL_da",
 					"-lniUI_da",
 					"-lniUI_ogg_da",
-					"-llibMojoshader_da",
 					"-lniUI_theoraplayer_da",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.HelloUI-SwiftUI";
@@ -748,7 +745,6 @@
 					"-llibCURL_ra",
 					"-lniUI_ra",
 					"-lniUI_ogg_ra",
-					"-llibMojoshader_ra",
 					"-lniUI_theoraplayer_ra",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bytecollider.HelloUI-SwiftUI";

@@ -7,9 +7,8 @@ if [ SubDirOnce TOP niUI src ] = 1 { return ; }
 
 tkDefModuleLib niUI : 1,0,0 : niUI ;
 SubDirHdrs $(SUBDIR) API ;
-
 niImportModuleDll niLang ;
-tkPkgLinkLibs libMojoshader ;
+
 if $(NI_VIDEO_USE_IPCAM) = 1 {
   niImportModuleDll niCURL ;
 }
@@ -94,11 +93,6 @@ if ! ( $(EMBEDDED) = 1 ) {
 # PNG
 SRC_EXTRA += [ tkPkgSrcSubDir libpng ] ;
 
-# MojoShader
-if ! $(IOSMAC) {
-  SRC_EXTRA += [ tkPkgSrcSubDir mojoshader ] ;
-}
-
 # Webcam (Escapi)
 if $(WINDOWS) = 1 && $(NI_VIDEO_USE_WEBCAM) = 1 {
   SRC_EXTRA += [ tkPkgSrcSubDir escapi ] ;
@@ -107,45 +101,6 @@ if $(WINDOWS) = 1 && $(NI_VIDEO_USE_WEBCAM) = 1 {
 # AGG
 SRC_EXTRA += [ tkPkgSrcSubDir agg ] ;
 SRC_EXTRA += [ tkPkgSrcSubDir libtess2 ] ;
-
-# Shaders
-rule fixedShaderBase {
-  local o = ;
-  o += [ niShader $(1) : $(2) : $(3) ] ;
-  o += [ niShader $(1)_translucent : $(2) : $(3) eMaterialFlags_Translucent=1 ] ;
-  o += [ niShader $(1)_opacity_translucent : $(2) : $(3) eMaterialChannel_HasOpacity=1 eMaterialFlags_Translucent=1 ] ;
-  o += [ niShader $(1)_distancefield : $(2) : $(3) eMaterialFlags_DistanceField=1 ] ;
-  o += [ niShader $(1)_alphatest : $(2) : $(3) eMaterialFlags_AlphaTest=1 ] ;
-  o += [ niShader $(1)_opacity_alphatest : $(2) : $(3) eMaterialChannel_HasOpacity=1 eMaterialFlags_AlphaTest=1 ] ;
-  o += [ niShader $(1)_base : $(2) : eMaterialChannel_HasBase=1 $(3) ] ;
-  o += [ niShader $(1)_base_translucent : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_Translucent=1 ] ;
-  o += [ niShader $(1)_base_opacity_translucent : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialChannel_HasOpacity=1 eMaterialFlags_Translucent=1 ] ;
-  o += [ niShader $(1)_base_distancefield : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_DistanceField=1 ] ;
-  o += [ niShader $(1)_base_alphatest : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialFlags_AlphaTest=1 ] ;
-  o += [ niShader $(1)_base_opacity_alphatest : $(2) : $(3) eMaterialChannel_HasBase=1 eMaterialChannel_HasOpacity=1 eMaterialFlags_AlphaTest=1 ] ;
-  return $(o) ;
-}
-
-# decal cannot have refraction
-rule fixedShader {
-  local o = ;
-  o += [ fixedShaderBase $(1) : $(2) : $(3) ] ;
-  o += [ fixedShaderBase $(1)_decal : $(2) : $(3) eMaterialFlags_Decal=1 ] ;
-  return $(o) ;
-}
-
-niShader fixed_vs_p : fixed_vs.cgc : eFVF_Position=1 ;
-niShader fixed_vs_pa : fixed_vs.cgc : eFVF_Position=1 eFVF_ColorA=1 ;
-niShader fixed_vs_pn : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 ;
-niShader fixed_vs_pna : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 ;
-niShader fixed_vs_pnt1 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_Tex1=2 ;
-niShader fixed_vs_pnat1 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 ;
-niShader fixed_vs_pnt2 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_Tex1=2 eFVF_Tex2=2 ;
-niShader fixed_vs_pnat2 : fixed_vs.cgc : eFVF_Position=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 eFVF_Tex2=2 ;
-niShader fixed_vs_pb4int1 : fixed_vs.cgc : eFVF_PositionB4=1 eFVF_Indices=1 eFVF_Normal=1 eFVF_Tex1=2 ;
-niShader fixed_vs_pb4inat1 : fixed_vs.cgc : eFVF_PositionB4=1 eFVF_Indices=1 eFVF_Normal=1 eFVF_ColorA=1 eFVF_Tex1=2 ;
-
-fixedShader fixed_ps : fixed_ps.cgc : ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 

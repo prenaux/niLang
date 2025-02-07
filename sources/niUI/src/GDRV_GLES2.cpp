@@ -25,7 +25,6 @@ static GLint knGLSamplerFilterAnisotropy = 8;
 
 #include "GDRV_StateCache.h"
 
-#include "../../nicgc/src/mojoshader/mojoshader.h"
 #include "FixedShaders.h"
 
 // #define GL_DEBUG_MISSING_MIPMAPS 4

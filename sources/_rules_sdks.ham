@@ -169,7 +169,6 @@ rule niUI_Link_CopyDeps {
 
 rule niUI_LinkLibs_Deps {
   niUI_Link_CopyDeps $(<) : $(2) ;
-  tkLinkLibs $(<) : libMojoshader : $(2) ;
   if $(NI_VIDEO_USE_FFMPEG) = 1 {
     if $(FFMPEG_USE_SDK) = 1 {
       if $(WINDOWS) = 1 {

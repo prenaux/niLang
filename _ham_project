@@ -26,15 +26,6 @@ case $HAM_OS in
   *) ;;
 esac
 
-# Shader compiler
-if [ "$SHADER_COMPILE" = "1" ]; then
-  TOOLSET_LIST+=(nicgc)
-  export SHADER_COMPILE=1
-else
-  unset SHADER_COMPILE
-  log_info "No shader compilation."
-fi
-
 # C++ toolsets
 TOOLSET_LIST+=(cppm)
 

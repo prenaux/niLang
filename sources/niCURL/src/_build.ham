@@ -16,3 +16,8 @@ if ! ( $(USE_SYSTEM_LIBCURL) = 1 ) {
 SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 niCURL_LinkLibs_Deps $(PKGTARGET) ;
+
+### Dependencies ########################################################
+if ! ( $(USE_SYSTEM_LIBCURL) = 1 ) {
+  SubInclude TOP niCURL src libCURL ;
+}

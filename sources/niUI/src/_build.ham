@@ -122,3 +122,14 @@ if $(NI_VIDEO_USE_IPCAM) = 1 {
 }
 
 niUI_LinkLibs_Deps $(PKGTARGET) ;
+
+### Dependencies ########################################################
+if $(NI_VIDEO_USE_IPCAM) = 1 {
+  SubInclude TOP niCURL src ;
+}
+if $(NI_VIDEO_USE_OGG) = 1 {
+  SubInclude TOP niUI src ogg ;
+}
+if $(NI_VIDEO_USE_THEORAPLAYER) = 1 {
+  SubInclude TOP niUI src theoraplayer ;
+}

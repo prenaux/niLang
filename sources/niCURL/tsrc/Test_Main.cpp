@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <niLang/Utils/CmdLine.h>
-#include <niLang/Utils/CrashReport.h>
-niCrashReport_DeclareHandler();
+#include <niLang/Utils/MainImpl.h>
 
 niConsoleMain() {
   ni::cString fixtureName = ni::GetProperty("FIXTURE", "");

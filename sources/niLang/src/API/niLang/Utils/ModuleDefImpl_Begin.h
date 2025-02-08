@@ -37,6 +37,10 @@
 #define niModuleDefImpl_GetModule_Register()    \
   niCrashReport_ModuleInstall();
 
+#ifdef niWindows
+#include "../Platforms/Win32/Win32_DelayLoadImpl.h"
+#endif
+
 /**@}*/
 /**@}*/
 

@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include <niLang/Utils/CrashReport.h>
 #include <niUI/Utils/DebugUI.h>
-niCrashReport_DeclareHandler();
+#include <niLang/Utils/MainImpl.h>
 
 niConsoleMain() {
   niAppLib_SetBuildText();

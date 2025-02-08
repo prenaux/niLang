@@ -1,7 +1,6 @@
 #include <niAppLib.h>
 #include <niUI/Utils/DebugUI.h>
-#include <niLang/Utils/CrashReport.h>
-niCrashReport_DeclareHandler();
+#include <niLang/Utils/MainImpl.h>
 #include <niScriptCpp/ScriptCpp.h>
 #include <niScriptCpp_ModuleDef.h>
 

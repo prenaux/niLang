@@ -1,9 +1,6 @@
 #include <niAppLib.h>
 #include <niUI/Utils/DebugUI.h>
-#include <niLang/Utils/CrashReport.h>
-niCrashReport_DeclareHandler();
-#include <niLang/Utils/Asan.h>
-niAsanDefaultOptions();
+#include <niLang/Utils/MainImpl.h>
 
 #define HELLOUI_INCLUDE_DATA
 #include "HelloUI_data.h"

@@ -1227,7 +1227,7 @@ ni_main
 }
 
 #if !defined NI_NO_MAIN
-niCrashReport_DeclareHandler();
+#include <niLang/Utils/MainImpl.h>
 
 #ifdef NI_WINDOWED
 niWindowedMain()

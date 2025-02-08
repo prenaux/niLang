@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <niLang/Utils/CmdLine.h>
-#include <niLang/Utils/CrashReport.h>
+#define niMainImpl_NoCrashReportHandler
+#include <niLang/Utils/MainImpl.h>
 
 #if defined niEmbedded
 // #define EMBEDDED_FIXTURE_NAME "FJSCC-OpenGL"

@@ -38,6 +38,9 @@
       }
     }
     local o = ::gGraphics.CreateOverlayResource(aName)
+    if (!o) {
+      throw "Can't load overlay resource:" + aName
+    }
     o.blend_mode = aBlend
     o.filtering = aFiltered
     return o

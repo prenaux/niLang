@@ -523,9 +523,9 @@ local __lint = {
   ///////////////////////////////////////////////
   function getToolkitDir(aToolkit,_aSubDir) {
     local r = "".setdir(::gLang.property["ni.dirs.work"]);
-    r.adddirback(aToolkit);
+    r = r.adddirback(aToolkit);
     if (_aSubDir.?len()) {
-      r.adddirback(_aSubDir);
+      r = r.adddirback(_aSubDir);
     }
     return r;
   }

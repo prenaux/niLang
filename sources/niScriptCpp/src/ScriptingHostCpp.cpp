@@ -391,31 +391,6 @@ niExportFunc(void) ScriptCpp_CleanupDLLs() {
   _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
 }
 
-static tBool _FindSourcePathAndAppDir(
-    const cString& strSourceFileName,
-    cString& strSourcePath,
-    cString& strAppDir)
-{
-  strAppDir = ni::GetLang()->GetProperty("ni.dirs.scriptcpp_app");
-  if (strAppDir.IsEmpty()) {
-    niError("niScriptCpp 'ni.dirs.scriptcpp_app' property not set.");
-    return eFalse;
-  }
-  cPath pathSourceFileName;
-  pathSourceFileName.SetDirectory(strAppDir.Chars());
-  pathSourceFileName.AddDirectoryBack("sources");
-  pathSourceFileName.AddDirectoryBack(strSourceFileName.RBefore("/").Chars());
-  pathSourceFileName.SetFile(strSourceFileName.RAfter("/").Chars());
-  SCRIPTCPP_TRACE(("Trying source path '%s'", pathSourceFileName.GetPath()));
-  if (ni::GetRootFS()->FileExists(
-        pathSourceFileName.GetPath().Chars(),eFileAttrFlags_AllFiles))
-  {
-    strSourcePath = pathSourceFileName.GetPath();
-    return eTrue;
-  }
-  return eFalse;
-}
-
 static cString _FindModulePath(const cString& strModuleFileName) {
   const cString binDir = ni::GetLang()->GetProperty("ni.dirs.bin");
   if (binDir.IsNotEmpty()) {
@@ -461,47 +436,43 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     );
   }
 
-  // DIR/FILENAME.cpp -> MODULE=DIR, CLASS=FILENAME
-  // MODULE#DIR/FILENAME.cpp -> CLASS=FILENAME
-  // MODULE#CLASS#DIR/FILENAME.cpp
   virtual iUnknown* __stdcall EvalImpl(iHString* ahspContext, iHString* ahspCodeResource, const tUUID& aIID) {
-    cString strClass;
-    cString strResource = niHStr(ahspCodeResource);
-    cString strModule = strResource.Before("/");
-    if (strResource.contains("#")) {
-      astl::vector<cString> toks;
-      StringSplitSep(strResource,"#",&toks);
-      if (toks.size() == 2) {
-        strModule = toks[0];
-        strResource = toks[1];
-        strClass = strResource.RAfter("/").RBefore(".");
-      }
-      else if (toks.size() == 3) {
-        strModule = toks[0];
-        strClass = toks[1];
-        strResource = toks[2];
-      }
-      else {
-        niError(niFmt("Invalid ScriptCpp '#' resource definition '%s'. Expected 2 or 3 part, but got %d.", ahspCodeResource, toks.size()));
-        return NULL;
-      }
-    }
-    else {
-      strClass = strResource.RAfter("/").RBefore(".");
-    }
-    cString strModuleFileName = _GetModuleFileName(strModule);
-    cString strCreateFunctionName = _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
-    cString strSourcePath, strSourceAppDir;
-    if (!_FindSourcePathAndAppDir(
-      strResource.Chars(),strSourcePath,strSourceAppDir))
-    {
-      niError(niFmt("Can't find source path '%s'.", strResource));
-      return nullptr;
+
+#define CHECK_SCRIPTCPP_RES(CHECK,DESC)                     \
+    if (!(CHECK)) {                                         \
+      niError(niFmt(                                        \
+        "Invalid ScriptCpp resource definition '%s'. " DESC \
+        " (Syntax: TOOLKIT/sources/MODULE/path/CLASS.cpp)",  \
+        ahspCodeResource));                                 \
+      return nullptr;                                       \
     }
 
+    const cString strResource = niHStr(ahspCodeResource);
+    CHECK_SCRIPTCPP_RES(strResource.IsNotEmpty(), "Empty.");
+
+    const cString strTkName = strResource.Before("/sources/");
+    CHECK_SCRIPTCPP_RES(strTkName.IsNotEmpty(), "No TOOLKIT.");
+
+    const cString strPath = strResource.After("/sources/");
+    CHECK_SCRIPTCPP_RES(strPath.IsNotEmpty(), "No path after '/sources/'.");
+
+    const cString strModule = strPath.Before("/");
+    CHECK_SCRIPTCPP_RES(strModule.IsNotEmpty(), "No MODULE.");
+
+    const cString strClass = strPath.RAfter("/").RBefore(".");
+    CHECK_SCRIPTCPP_RES(strClass.IsNotEmpty(), "No CLASS.");
+
+    const cString strModuleFileName = _GetModuleFileName(strModule);
+    const cString strCreateFunctionName = _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
+
+    const cString strSourceAppDir = ni::GetToolkitDir(strTkName.c_str());
+    const cString strSourcePath = strSourceAppDir + "sources/" + strPath;
+
     SCRIPTCPP_TRACE((
-      "Context: %s, Resource: %s, UUID: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s",
-      ahspContext, ahspCodeResource, aIID,
+      "Context: %s, UUID: %s, Resource: %s, Toolkit: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s.",
+      ahspContext, aIID,
+      ahspCodeResource,
+      strTkName,
       strModule, strModuleFileName,
       strClass, strCreateFunctionName,
       strSourcePath, strSourceAppDir));
@@ -530,8 +501,8 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
       SCRIPTCPP_TRACE(("ScriptCpp compile disabled. (use -D" SCRIPTCPP_COMPILE_PROPERTY "=1 to enable it)"));
     }
 
+    sScriptCppModuleCache& mc = itModule->second;
     {
-      sScriptCppModuleCache& mc = itModule->second;
       if (!mc.hDLL && !mc.path.IsEmpty()) {
         mc.hDLL = ni_dll_load(mc.path.Chars());
         if (!mc.hDLL) {
@@ -548,17 +519,21 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     }
 
     tpfnNewInstance pfnNewInstance = (tpfnNewInstance)ni_dll_get_proc(
-        itModule->second.hDLL,strCreateFunctionName.Chars());
+        mc.hDLL,strCreateFunctionName.Chars());
     if (!pfnNewInstance) {
-      niError(niFmt("Can't get function '%s' from module file '%s' for code resource '%s'.",
-                    strCreateFunctionName, strModule, ahspCodeResource));
+      niError(niFmt("Can't get function '%s' from module file '%s' (%s) for code resource '%s'.",
+                    strCreateFunctionName,
+                    strModule, mc.path,
+                    ahspCodeResource));
       return NULL;
     }
 
     Ptr<iUnknown> ptrInst = pfnNewInstance();
     if (!ptrInst.IsOK()) {
-      niError(niFmt("Can't create instance with function '%s' from module file '%s' for code resource '%s'.",
-                    strCreateFunctionName, strModule, ahspCodeResource));
+      niError(niFmt("Can't create instance with function '%s' from module file '%s' (%s) for code resource '%s'.",
+                    strCreateFunctionName,
+                    strModule, mc.path,
+                    ahspCodeResource));
       return NULL;
     }
 

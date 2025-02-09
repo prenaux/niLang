@@ -24,7 +24,7 @@ using namespace ni;
 
 _HDecl(TestScriptCpp);
 
-#define TEST_SCRIPTCPP_PATH(PATH) (ni::GetToolkitDir("niLang","sources") + "niScriptCpp/tsrc_module/" PATH).c_str()
+#define TEST_SCRIPTCPP_PATH(PATH) (ni::GetToolkitDir("niLang","sources") + "niScriptCpp_TestModule/" PATH).c_str()
 
 static tBool TouchFile(iFile* apFile) {
   return apFile ? apFile->SetTime(eFileTime_LastWrite,ni::GetLang()->GetCurrentTime()) : eFalse;
@@ -65,9 +65,6 @@ struct FScriptCpp {
       ni::GetLang()->AddScriptingHost(_H("cpp2"),ptrScriptingHost.ptr());
       ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
     };
-    ni::GetLang()->SetProperty(
-      "ni.dirs.scriptcpp_app",
-      ni::GetToolkitDir("niLang").c_str());
   }
   ~FScriptCpp() {
   }
@@ -85,7 +82,7 @@ TEST_FIXTURE(FScriptCpp,uptodate_compile) {
 #endif
   QPtr<iRunnable> runGetTestTag = EvalImpl(
     _HC(TestScriptCpp),
-    _H("Test_niScriptCpp_Module#ScriptCpp_TestModule#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+    _H("niLang/sources/niScriptCpp_TestModule/ScriptCpp_TestModule.cpp"),
     niGetInterfaceUUID(iRunnable));
   CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
   CHECK_EQUAL(_ASTR("Test_ScriptCpp_module"), VarGetString(runGetTestTag->Run()));
@@ -105,7 +102,7 @@ TEST_FIXTURE(FScriptCpp,uptodate_nocompile) {
   CHECK_EQUAL(eFalse, ScriptCpp_GetCompileEnabled());
   QPtr<iRunnable> runGetTestTag = EvalImpl(
     _HC(TestScriptCpp),
-    _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+    _H("niLang/sources/niScriptCpp_TestModule/ScriptCpp_TestModule.cpp"),
     niGetInterfaceUUID(iRunnable));
   CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
   CHECK_EQUAL(_ASTR("Test_ScriptCpp_module"), VarGetString(runGetTestTag->Run()));
@@ -126,7 +123,7 @@ TEST_FIXTURE(FScriptCpp,uptodate_invalid_resource_def) {
 #endif
   QPtr<iRunnable> runGetTestTag = EvalImpl(
     _HC(TestScriptCpp),
-    _H("Foo#Bar#Test_niScriptCpp_Module#ScriptCpp_TestModule#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+    _H("niLang/sources/ScriptCpp_TestModule.cpp"),
     niGetInterfaceUUID(iRunnable));
   CHECK_EQUAL(eFalse,runGetTestTag.IsOK());
   CHECK_EQUAL(wasStats._numUpToDate, currStats._numUpToDate);
@@ -143,7 +140,7 @@ TEST_FIXTURE(FScriptCpp,touched) {
     CHECK_EQUAL(eFalse, ScriptCpp_GetCompileEnabled());
     QPtr<iRunnable> runGetTestTag = EvalImpl(
       _HC(TestScriptCpp),
-      _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+      _H("niLang/sources/niScriptCpp_TestModule/ScriptCpp_TestModule.cpp"),
       niGetInterfaceUUID(iRunnable));
     CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
     // Shouldn't have change since compile isnt enabled
@@ -168,7 +165,7 @@ TEST_FIXTURE(FScriptCpp,touched) {
 #endif
     QPtr<iRunnable> runGetTestTag = EvalImpl(
       _HC(TestScriptCpp),
-      _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
+      _H("niLang/sources/niScriptCpp_TestModule/ScriptCpp_TestModule.cpp"),
       niGetInterfaceUUID(iRunnable));
     CHECK(runGetTestTag.IsOK());
     if (runGetTestTag.IsOK()) {

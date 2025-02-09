@@ -1,6 +1,6 @@
-if [ SubDirOnce TOP niScriptCpp tsrc_module ] = 1 { return ; }
+if [ SubDirOnce TOP niScriptCpp_TestModule ] = 1 { return ; }
 
-tkDefModuleLib Test_niScriptCpp_Module : 1,0,0 : Test_niScriptCpp_Module ;
+tkDefModuleLib niScriptCpp_TestModule : 1,0,0 : niScriptCpp_TestModule ;
 niImportModuleHdrs niScriptCpp ;
 niImportModuleDll  niLang ;
 

@@ -4,6 +4,9 @@ SubDir TOP ;
 SubInclude TOP niLang ;
 SubInclude TOP niCURL ;
 SubInclude TOP niScriptCpp ;
+if $(TARGET_FEATURE_RTCPP) = 1 {
+  SubInclude TOP niScriptCpp_TestModule ;
+}
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
   SubInclude TOP niUnitTest ;

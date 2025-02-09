@@ -6,7 +6,7 @@ tkDefTest Test_niScriptCpp : 1.0.0 ;
 niImportModuleLibs niUnitTest ;
 niImportModuleDll niLang ;
 niImportModuleDll niScriptCpp ;
-tkPkgLinkDll Test_niScriptCpp_Module ;
+tkPkgLinkDll niScriptCpp_TestModule ;
 
 SRC = [ tkPkgSrc ] ;
 

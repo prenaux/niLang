@@ -482,7 +482,7 @@ static void __stdcall _ImportInitialize() {
       ni::Ptr<iFileSystem> rootFS = ni::GetLang()->GetRootFS();
       if (niIsOK(rootFS)) {
         _ptrImportFileSystems->Add(rootFS.ptr());
-        cString scriptsDirPath = ni::GetLang()->GetProperty("ni.dirs.scripts");
+        cString scriptsDirPath = ni::GetToolkitDir("niLang","scripts");
         if (ni::GetLang()->GetRootFS()->FileExists(
                 scriptsDirPath.Chars(),ni::eFileAttrFlags_AllDirectories))
         {
@@ -495,7 +495,7 @@ static void __stdcall _ImportInitialize() {
           }
         }
         else {
-          niWarning(niFmt("ScriptVM _ImportInitialize: scripts dir doesnt exist '%s'.",scriptsDirPath));
+          niWarning(niFmt("ScriptVM _ImportInitialize: niLang scripts dir doesnt exist '%s'.",scriptsDirPath));
         }
       }
       else {

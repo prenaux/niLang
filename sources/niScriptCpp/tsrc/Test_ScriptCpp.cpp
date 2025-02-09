@@ -67,7 +67,7 @@ struct FScriptCpp {
     };
     ni::GetLang()->SetProperty(
       "ni.dirs.scriptcpp_app",
-      ni::GetToolkitDir("niLang",nullptr).c_str());
+      ni::GetToolkitDir("niLang").c_str());
   }
   ~FScriptCpp() {
   }

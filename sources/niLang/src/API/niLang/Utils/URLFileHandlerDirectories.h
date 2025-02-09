@@ -14,7 +14,7 @@ struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
   URLFileHandler_Directories(const astl::vector<cString>& aBaseDirs)
   {
     niLoop(i,aBaseDirs.size()) {
-      niLet& dir = aBaseDirs[i];
+      const auto& dir = aBaseDirs[i];
       // App/data
       {
         cPath path;

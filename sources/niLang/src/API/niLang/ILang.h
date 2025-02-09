@@ -939,7 +939,7 @@ inline iFile* CreateBin2HFile(const unsigned char* data, const int size, const c
 #define niFileOpenBin2H(NAME) CreateBin2HFile(NAME##_DATA, NAME##_DATA_SIZE, "BIN2H_" #NAME)
 
 ///////////////////////////////////////////////
-inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir) {
+inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir = nullptr) {
   cString r = ni::GetLang()->GetProperty("ni.dirs.work");
   if (niStringIsOK(aToolkitName)) {
     r += aToolkitName;

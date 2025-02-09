@@ -1,6 +1,5 @@
 #!/bin/sh
-DIR1=`pwd`
-DIR2="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR1"
 if [ "$BUILD" == "" ]; then
    BUILD=$1
@@ -84,15 +83,15 @@ case $NI_OS in
         ;;
 esac
 
-if [ -e "$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NI_EXE="$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT"
-    export NIW_EXE="$DIR1/$BIN_LOA/niw_$BUILD$BIN_EXT"
-elif [ -e "$DIR1/bin/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NI_EXE="$DIR1/bin/$BIN_LOA/ni_$BUILD$BIN_EXT"
-    export NIW_EXE="$DIR1/bin/$BIN_LOA/niw_$BUILD$BIN_EXT"
-elif [ -e "$DIR2/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NI_EXE="$DIR2/$BIN_LOA/ni_${BUILD}${BIN_EXT}"
-    export NIW_EXE="$DIR2/$BIN_LOA/niw_${BUILD}${BIN_EXT}"
+if [ -e "$SCRIPT_DIR/ni_$BUILD$BIN_EXT" ]; then
+    export NI_EXE="$SCRIPT_DIR/ni_${BUILD}${BIN_EXT}"
+    export NIW_EXE="$SCRIPT_DIR/niw_${BUILD}${BIN_EXT}"
+elif [ -e "$SCRIPT_DIR/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
+    export NI_EXE="$SCRIPT_DIR/$BIN_LOA/ni_${BUILD}${BIN_EXT}"
+    export NIW_EXE="$SCRIPT_DIR/$BIN_LOA/niw_${BUILD}${BIN_EXT}"
+elif [ -e "$WORK/bin/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
+    export NI_EXE="$WORK/bin/$BIN_LOA/ni_$BUILD$BIN_EXT"
+    export NIW_EXE="$WORK/bin/$BIN_LOA/niw_$BUILD$BIN_EXT"
 else
     export NI_EXE="cantfind_ni"
     export NIW_EXE="cantfind_niw"

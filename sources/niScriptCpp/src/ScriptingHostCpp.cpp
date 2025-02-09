@@ -99,7 +99,7 @@ static cString _FindHamPath(cString& hamHome) {
     hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.ham_home"));
     SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.ham_home '%s'.", hamHomePath.c_str()));
     if (!ni::DirExists(hamHomePath.c_str())) {
-      hamHomePath.SetDirectory(ni::GetToolkitDir("ham",nullptr));
+      hamHomePath.SetDirectory(ni::GetToolkitDir("ham"));
       hamHome = GetRootFS()->GetAbsolutePath(hamHomePath.c_str());
       SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.bin '%s'.", hamHomePath.c_str()));
       if (!ni::DirExists(hamHomePath.c_str())) {

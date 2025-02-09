@@ -525,7 +525,7 @@ local __lint = {
     local r = "".setdir(::gLang.property["ni.dirs.work"]);
     r.adddirback(aToolkit);
     if (_aSubDir.?len()) {
-      r.adddirback(aSubDir);
+      r.adddirback(_aSubDir);
     }
     return r;
   }

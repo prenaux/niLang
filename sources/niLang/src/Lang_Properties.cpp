@@ -17,16 +17,6 @@
 #  error "Unknown platform."
 #endif
 
-#ifdef niAndroid
-#define JVM_ONLY
-#endif
-#if defined JVM_ONLY && !defined niJNI
-#  error "JVM_ONLY defined but not niJNI."
-#endif
-#ifdef niJNI
-#  include "API/niLang/Utils/JNIUtils.h"
-#endif
-
 #include "FileFd.h"
 #include "API/niLang/Utils/Path.h"
 #include "API/niLang/Utils/CmdLine.h"
@@ -40,6 +30,8 @@ achar* _AppleGetDirDocs(achar* buffer);
 achar* _AppleGetDirDownloads(achar* buffer);
 cString _AppleGetInfoPlistPropertyValue(const achar* aProperty);
 #endif
+
+static constexpr const char* _kniAppDirName = ".niApp";
 
 ///////////////////////////////////////////////
 static ni::tI32 _GetNumProcessors() {
@@ -105,7 +97,6 @@ niExportFunc(achar*) FixSystemDir(achar* aaszOutput, const achar* aaszBuffer, co
 }
 
 ///////////////////////////////////////////////
-#if !defined JVM_ONLY
 static achar* _GetHomeDir(achar* aaszOutput) {
 #  if defined niIOS || defined niOSX
   achar buffer[AMAX_PATH] = {0};
@@ -125,7 +116,6 @@ static achar* _GetHomeDir(achar* aaszOutput) {
   return FixSystemDir(aaszOutput,strHome.Chars(),NULL,eFalse);
 #  endif
 }
-#endif
 
 ///////////////////////////////////////////////
 static achar* _GetDownloadsDir(achar* aaszOutput) {
@@ -179,238 +169,44 @@ static achar* _GetDocumentsDir(achar* aaszOutput) {
 }
 
 ///////////////////////////////////////////////
-static tBool _DirFromJVM(tStringCMap* props, const achar* aProperty) {
-#ifdef niJNI
+static cString _FindWorkDir(const achar* aaszBinDir) {
   cString v;
-  if (niJVM_HasVM() && niJVM_GetProperty(niJVM_GetCurrentEnv(),v,aProperty)) {
-    cPath path;
-    path.SetDirectory(v.Chars());
-    (*props)[aProperty] = path.GetDirectory();
-    return eTrue;
-  }
-#endif
-  return eFalse;
-}
-
-///////////////////////////////////////////////
-static tBool _CopyFromJVM(tStringCMap* props, const achar* aProperty) {
-#ifdef niJNI
-  cString v;
-  if (niJVM_HasVM() && niJVM_GetProperty(niJVM_GetCurrentEnv(),v,aProperty)) {
-    (*props)[aProperty] = v;
-    return eTrue;
-  }
-#endif
-  return eFalse;
-}
-
-///////////////////////////////////////////////
-#ifdef niJNI
-static tBool _PathFromJVM(tStringCMap* props, const achar* aProperty) {
-  cString v;
-  if (niJVM_HasVM() && niJVM_GetProperty(niJVM_GetCurrentEnv(),v,aProperty)) {
-    cPath path = v.Chars();
-    (*props)[aProperty] = path.GetPath();
-    return eTrue;
-  }
-  return eFalse;
-}
-#endif
-
-///////////////////////////////////////////////
-#ifdef niJNI
-static cString _FindFile(const achar* aaszBinDir, const achar* aaszFileName) {
-  cString v;
-  // absolute path ?
-  {
-    v = aaszFileName;
-    if (ni::FileExists(v.Chars())) {
-      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
-    }
-  }
-  cString fileName = cPath(aaszFileName).GetFile();
-  // in BIN/.. directory
-  {
-    v.clear();
-    v << aaszBinDir << "../" << fileName;
-    if (ni::FileExists(v.Chars())) {
-      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
-    }
-  }
-  // in BIN/ directory
-  {
-    v.clear();
-    v << aaszBinDir << fileName;
-    if (ni::FileExists(v.Chars())) {
-      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
-    }
-  }
-  // in BIN/../../ directory
-  {
-    v.clear();
-    v << aaszBinDir << "../../" << fileName;
-    if (ni::FileExists(v.Chars())) {
-      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
-    }
-  }
-  // in BIN/../../jars/ directory
-  {
-    v.clear();
-    v << aaszBinDir << "../../jars/" << fileName;
-    if (ni::FileExists(v.Chars())) {
-      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
-    }
-  }
-  return AZEROSTR;
-}
-#endif
-
-///////////////////////////////////////////////
-#ifdef niJNI
-static cString _FindPackage(const achar* aaszBinDir, const achar* aPackage) {
-  astl::vector<cString> pkgs;
-  cString v;
-  if (niJVM_GetProperty(niJVM_GetCurrentEnv(),v,"java.class.path")) {
-    if (v.icontains(aPackage)) {
-#  ifdef niWindows
-      StringSplit(v,";",&pkgs);
-#  else
-      StringSplit(v,":",&pkgs);
-#  endif
-      if (pkgs.empty())
-        pkgs.push_back(v);
-      niLoopr(ri,pkgs.size()) {
-        if (pkgs[ri].icontains(aPackage)) {
-          return _FindFile(aaszBinDir,pkgs[ri].Chars());
-        }
-      }
-    }
-    else {
-      return _FindFile(aaszBinDir,aPackage);
-    }
-  }
-  return AZEROSTR;
-}
-#endif
-
-///////////////////////////////////////////////
-static tBool _InitPkgProp(tStringCMap* props, const achar* binDir, const achar* baseName) {
-#ifdef niJNI
-  if (niJVM_HasVM()) {
-    cString v;
-    const cString propPkgName = _ASTR("ni.packages.") + baseName;
-    if (_PathFromJVM(props,propPkgName.Chars())) {
-      return eTrue;
-    }
-    else {
-      const cString pkgName = _ASTR("ni-") + baseName + ".jar";
-      const cString pkg = _FindPackage(binDir,pkgName.Chars());
-      if (pkg.IsNotEmpty()) {
-        (*props)[propPkgName] = pkg;
-        return eTrue;
-      }
-    }
-  }
-#endif
-  return eFalse;
-}
-
-///////////////////////////////////////////////
-#if !defined JVM_ONLY
-static cString _FindDir(const achar* aaszBinDir, const achar* aaszName) {
-  cString v; cPath path;
 
 #if defined niOSX || defined niIOS
 #if defined niOSX
   if (StrEndsWithI(aaszBinDir,"macos/"))
 #endif
   {
-    const cString plistPropName = niFmt("niAppResourceDir.%s",aaszName);
-    const cString resDirName = _AppleGetInfoPlistPropertyValue(plistPropName.c_str());
-    niPanicAssertMsg(!resDirName.IsEmpty(),
-                     niFmt("The property '%s' isnt set in the macOS app's Info.plist.",plistPropName));
-    if (resDirName.IEq("__NONE__")) {
-      return AZEROSTR;
-    }
-    v.clear();
-    v << aaszBinDir;
+    v = aaszBinDir;
 #ifdef niOSX
     v << "../Resources/";
 #else
     v << "/";
 #endif
-    v << resDirName;
     // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
     if (ni::DirExists(v.Chars())) {
-      // GetLang()->MessageBox(NULL, "BLA U", "HAS DATA", eOSMessageBoxFlags_Ok);
-      path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
-      return path.GetDirectory();
+      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
     }
     else {
-      niPanicUnreachable(niFmt("Cant find dir '%s' set for '%s'.", v, plistPropName));
+      niPanicUnreachable(niFmt("Cant find macOS Resources directory '%s'.",v));
       return AZEROSTR;
     }
   }
 #endif
 
-  // in BIN/../../ directory
+  // BINDIR/../../
   {
-    v.clear();
-    v << aaszBinDir << "../../" << aaszName;
+    v = aaszBinDir;
+    v << "../../niLang/data/";
     if (ni::DirExists(v.Chars())) {
-      path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
-      return path.GetDirectory();
+      v = aaszBinDir;
+      v << "../../";
+      return ni::GetRootFS()->GetAbsolutePath(v.Chars());
     }
   }
 
-  // in BIN/ directory
-  {
-    v.clear();
-    v << aaszBinDir << aaszName;
-    if (ni::DirExists(v.Chars())) {
-      path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
-      return path.GetDirectory();
-    }
-  }
-
-  // in BIN/.. directory
-  {
-    v.clear();
-    v << aaszBinDir << "../" << aaszName;
-    if (ni::DirExists(v.Chars())) {
-      path.SetDirectory(ni::GetRootFS()->GetAbsolutePath(v.Chars()).Chars());
-      return path.GetDirectory();
-    }
-  }
-
-  return AZEROSTR;
-}
-#endif
-
-///////////////////////////////////////////////
-static tBool _InitDirProp(tStringCMap* props, const achar* binDir,
-                          const achar* baseName,
-                          const tBool abFindIfNotProp) {
-  const cString propDirName = _ASTR("ni.dirs.") + baseName;
-  if (props->find(propDirName) != props->end())
-    return eTrue;
-
-#ifdef niJNI
-  if (_DirFromJVM(props,propDirName.Chars())) {
-    return eTrue;
-  }
-#endif
-#if !defined JVM_ONLY
-  if (abFindIfNotProp) {
-    const cString dir = _FindDir(binDir,baseName);
-    if (dir.IsNotEmpty()) {
-      (*props)[propDirName] = dir;
-      return eTrue;
-    }
-  }
-#endif
-
-  return eFalse;
+  // By default we return the bin folder
+  return aaszBinDir;
 }
 
 ///////////////////////////////////////////////
@@ -461,45 +257,19 @@ static tBool _ParseCmdLineProperties(tStringCMap* props, const achar* aaszCmdLin
 ///////////////////////////////////////////////
 void cLang::_InitDefaultSystemProperties(tStringCMap* props)
 {
-  //---- JVM -----------------------------------------------------
-#ifdef niJNI
-  if (niJVM_HasVM()) {
-    _CopyFromJVM(props,"java.vm.version");
-    _CopyFromJVM(props,"java.vm.vendor");
-    _CopyFromJVM(props,"java.vm.name");
-    _PathFromJVM(props,"ni.log.xml");
-    _PathFromJVM(props,"ni.log.text");
-    _CopyFromJVM(props,"ni.log.stderr");
-  }
-#endif
-
   //---- NI ------------------------------------------------------
   {
     (*props)["ni.features"] = cString().Set((tI32)niFeatures);
-#ifdef niJNI
-    _CopyFromJVM(props,"ni.build.default");
-#endif
   }
 
   //---- App -----------------------------------------------------
   {
     achar exePathBuff[AMAX_PATH];
     cPath exePath(ni_get_exe_path(exePathBuff));
-    exePath.SetExtension(AZEROSTR);
-    (*props)["ni.app.name"] = exePath.GetFile();
+    (*props)["ni.app.name"] = exePath.GetFileNoExt();
     (*props)["ni.app.version"] = "v0.0.0";
-    // Bin directory
-    if (!_DirFromJVM(props, "ni.dirs.bin")) {
-#if defined JVM_ONLY
-      niAssertUnreachable("E/Can't initialize ni.dirs.bin");
-#else
-      (*props)["ni.dirs.bin"] = exePath.GetDirectory().Chars();
-#endif
-    }
-
-    // Current working directory
-    exePath.SetDirectory(agetcwd().c_str());
-    (*props)["ni.app.cwd"] = exePath.GetDirectory().Chars();
+    (*props)["ni.dirs.bin"] = exePath.GetDirectory();
+    (*props)["ni.dirs.work"] = _FindWorkDir((*props)["ni.dirs.bin"].c_str());
   }
 
   //---- LOA -----------------------------------------------------
@@ -528,94 +298,69 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
 
   //---- User Dirs -----------------------------------------------
   {
-    if (!_DirFromJVM(props,"ni.dirs.home")) {
-#if !defined JVM_ONLY
-      achar tmp[AMAX_PATH];
-      (*props)["ni.dirs.home"] = _GetHomeDir(tmp);
-#else
-      niAssertUnreachable("E/Can't initialize ni.dirs.home.");
-#endif
-    }
+    achar tmp[AMAX_PATH];
 
-    if (!_DirFromJVM(props,"ni.dirs.documents")) {
-      achar tmp[AMAX_PATH];
-      if (_GetDocumentsDir(tmp)) {
-        (*props)["ni.dirs.documents"] =  tmp;
-      }
-      else {
-        if (props->Contains(_ASTR("ni.dirs.home"))) {
-          const cString v = (*props)["ni.dirs.home"] + "Documents/";
-          ni::GetRootFS()->FileMakeDir(v.Chars());
-          if (ni::DirExists(v.Chars())) {
-            (*props)["ni.dirs.documents"] = v.Chars();
-          }
-        }
+    (*props)["ni.dirs.home"] = _GetHomeDir(tmp);
+
+    {
+      const cString v = (*props)["ni.dirs.home"] + _kniAppDirName + "/";
+      ni::GetRootFS()->FileMakeDir(v.Chars());
+      if (ni::DirExists(v.Chars())) {
+        (*props)["ni.dirs.niApp"] = v.Chars();
       }
     }
 
-    if (!_DirFromJVM(props,"ni.dirs.downloads")) {
-      achar tmp[AMAX_PATH];
-      if (_GetDownloadsDir(tmp)) {
-        (*props)["ni.dirs.downloads"] =  tmp;
-      }
-      else {
-        if (props->Contains(_ASTR("ni.dirs.home"))) {
-          const cString v = (*props)["ni.dirs.home"] + "Downloads/";
-          ni::GetRootFS()->FileMakeDir(v.Chars());
-          if (ni::DirExists(v.Chars())) {
-            (*props)["ni.dirs.downloads"] = v.Chars();
-          }
-        }
-      }
+    if (_GetDocumentsDir(tmp)) {
+      (*props)["ni.dirs.documents"] =  tmp;
     }
-
-    if (!_DirFromJVM(props,"ni.dirs.temp")) {
-      achar tmp[AMAX_PATH];
-      if (_GetTempDir(tmp)) {
-        (*props)["ni.dirs.temp"] = tmp;
-      }
-      else if (props->Contains(_ASTR("ni.dirs.home"))) {
-        const cString v = (*props)["ni.dirs.home"] + "niApp/Temp/";
-        ni::GetRootFS()->FileMakeDir(v.Chars());
-        if (ni::DirExists(v.Chars())) {
-          (*props)["ni.dirs.temp"] = v.Chars();
-        }
-      }
-    }
-
-    if (!_DirFromJVM(props,"ni.dirs.logs")) {
-      // niDebugFmt(("... No logs dir from jvm"));
+    else {
       if (props->Contains(_ASTR("ni.dirs.home"))) {
-        const cString v = (*props)["ni.dirs.home"] + "niApp/Logs/";
-        // niDebugFmt(("... Try to create home: %s", v));
+        const cString v = (*props)["ni.dirs.home"] + "Documents/";
         ni::GetRootFS()->FileMakeDir(v.Chars());
         if (ni::DirExists(v.Chars())) {
-          (*props)["ni.dirs.logs"] = v.Chars();
+          (*props)["ni.dirs.documents"] = v.Chars();
         }
       }
     }
 
-    if (!_DirFromJVM(props,"ni.dirs.config")) {
+    if (_GetDownloadsDir(tmp)) {
+      (*props)["ni.dirs.downloads"] =  tmp;
+    }
+    else {
       if (props->Contains(_ASTR("ni.dirs.home"))) {
-        const cString v = (*props)["ni.dirs.home"] + "niApp/Config/";
+        const cString v = (*props)["ni.dirs.home"] + "Downloads/";
         ni::GetRootFS()->FileMakeDir(v.Chars());
         if (ni::DirExists(v.Chars())) {
-          (*props)["ni.dirs.config"] = v.Chars();
+          (*props)["ni.dirs.downloads"] = v.Chars();
         }
       }
     }
-  }
 
-  //---- Data Dirs / Packages ---------------------------------
-  {
-    const cString cwdDir = (*props)["ni.app.cwd"];
-    const cString binDir = (*props)["ni.dirs.bin"];
-    _CopyFromJVM(props,"ni.packages.jars");
-    if (!_InitPkgProp(props, binDir.Chars(), "data")) {
-      _InitDirProp(props, binDir.Chars(), "data", eTrue);
+    if (_GetTempDir(tmp)) {
+      (*props)["ni.dirs.temp"] = tmp;
     }
-    if (!_InitPkgProp(props, binDir.Chars(), "scripts")) {
-      _InitDirProp(props, binDir.Chars(), "scripts", eTrue);
+    else if (props->Contains(_ASTR("ni.dirs.home"))) {
+      const cString v = (*props)["ni.dirs.home"] + _kniAppDirName + "/Temp/";
+      ni::GetRootFS()->FileMakeDir(v.Chars());
+      if (ni::DirExists(v.Chars())) {
+        (*props)["ni.dirs.temp"] = v.Chars();
+      }
+    }
+
+    if (props->Contains(_ASTR("ni.dirs.home"))) {
+      const cString v = (*props)["ni.dirs.home"] + _kniAppDirName + "/Logs/";
+      ni::GetRootFS()->FileMakeDir(v.Chars());
+      if (ni::DirExists(v.Chars())) {
+        (*props)["ni.dirs.logs"] = v.Chars();
+      }
+    }
+
+    if (props->Contains(_ASTR("ni.dirs.home"))) {
+      const cString v = (*props)["ni.dirs.home"] + _kniAppDirName + "/Config/";
+      ni::GetRootFS()->FileMakeDir(v.Chars());
+      if (ni::DirExists(v.Chars())) {
+        (*props)["ni.dirs.config"] = v.Chars();
+      }
     }
   }
 

@@ -356,7 +356,7 @@ void EncodeBlockInvert(tU8* apData, const tInt anSize) {
 
 TEST_FIXTURE(FBufferEncDec,EncInvert) {
   tInt outputCount = 0;
-  const cString pathOut = UnitTest::GetTestOutputFilePath(niFmt("%s_%d.bmp", m_testName, ++outputCount));
+  const cString pathOut = UnitTest::GetTestOutputFilePath(m_testName,niFmt("%s_%d.bmp", m_testName, ++outputCount));
   Ptr<iFile> fpIn = niFileOpenBin2H(montmay12_bmp);
   Ptr<iFile> fpOut = GetRootFS()->FileOpen(pathOut.Chars(),eFileOpenMode_Write);
   fpOut->WriteFile(fpIn->GetFileBase(), 54); // copy the header verbatim

@@ -32,7 +32,7 @@ TEST_FIXTURE(FImgDiff,Basic) {
   const tF64 diffPct = (tF64)numDiff / (tF64)(imgA->GetWidth()*imgA->GetHeight());
   niDebugFmt(("... diffPct: %.1f%%", diffPct*100.0));
 
-  const cString outputPath = UnitTest::GetTestOutputFilePath(niFmt("%s_imgDiff.png", m_testName));
+  const cString outputPath = UnitTest::GetTestOutputFilePath(m_testName,niFmt("%s_imgDiff.png", m_testName));
   graphics->SaveBitmap(outputPath.Chars(), imgDiff);
   niDebugFmt(("... imgDiff saved to: %s", outputPath));
 }

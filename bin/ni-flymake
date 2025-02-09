@@ -3,5 +3,5 @@ CWD=`pwd`
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$CWD"
 . "$SCRIPT_DIR/ni-bash-setenv.sh" ra
-"${NIVM}" -c "$@"
+"${NI_EXE}" -c "$@"
 true

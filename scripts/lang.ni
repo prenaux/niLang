@@ -521,6 +521,16 @@ local __lint = {
   _isEmbedded = null
 
   ///////////////////////////////////////////////
+  function getToolkitDir(aToolkit,_aSubDir) {
+    local r = "".setdir(::gLang.property["ni.dirs.work"]);
+    r.adddirback(aToolkit);
+    if (_aSubDir.?len()) {
+      r.adddirback(aSubDir);
+    }
+    return r;
+  }
+
+  ///////////////////////////////////////////////
   function buildAppModulePath(aName,aAppDir) {
     return "".setdir(aAppDir).adddirback("bin/"+::lang.getLOA()).setfile(::GetModuleFileName(aName));
   }
@@ -531,7 +541,7 @@ local __lint = {
   function loadModuleDef(aName,aAppDir) {
     local mod = ::gLang.module_def[::gLang.module_def_index[aName]]
     if (!mod) {
-      aAppDir = aAppDir || ::gLang.property["ni.dirs.app"];
+      aAppDir = aAppDir || ::gLang.property["ni.dirs.work"];
       local modulePath = buildAppModulePath(aName,aAppDir);
       // ::println("... ::lang.loadModuleDef:" modulePath);
       // Once a native module has been loaded with LoadModuleDef the module is

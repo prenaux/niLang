@@ -11,30 +11,30 @@ namespace ni {
 struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
   astl::vector<cString> _dirs;
 
-  URLFileHandler_Directories(const achar* aAppDir, astl::vector<cString> aToolkits) {
-    niLoop(i,aToolkits.size()) {
-      _AddToolkitDirs(aAppDir, aToolkits[i].c_str());
-    }
-
-    // App/data
-    {
-      cPath path;
-      path.SetDirectory(aAppDir);
-      path.AddDirectoryBack("data");
-      _dirs.push_back(path.GetPath());
-    }
-    // App/scripts
-    {
-      cPath path;
-      path.SetDirectory(aAppDir);
-      path.AddDirectoryBack("scripts");
-      _dirs.push_back(path.GetPath());
-    }
-    // App
-    {
-      cPath path;
-      path.SetDirectory(aAppDir);
-      _dirs.push_back(path.GetPath());
+  URLFileHandler_Directories(const astl::vector<cString>& aBaseDirs)
+  {
+    niLoop(i,aBaseDirs.size()) {
+      niLet& dir = aBaseDirs[i];
+      // App/data
+      {
+        cPath path;
+        path.SetDirectory(dir);
+        path.AddDirectoryBack("data");
+        _dirs.push_back(path.GetPath());
+      }
+      // App/scripts
+      {
+        cPath path;
+        path.SetDirectory(dir);
+        path.AddDirectoryBack("scripts");
+        _dirs.push_back(path.GetPath());
+      }
+      // App
+      {
+        cPath path;
+        path.SetDirectory(dir);
+        _dirs.push_back(path.GetPath());
+      }
     }
   }
 

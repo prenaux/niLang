@@ -10,12 +10,12 @@ using namespace ni;
 static achar const* _URL[] = {
   /* 0 */ "http://bytecollider.com/img/ni-logo.png",
   /* 1 */ "..\\..\\data\\niUI\\error.dds",
-  /* 2 */ "../../data/niUI/error.dds",
+  /* 2 */ "../../niLang/data/niUI/error.dds",
   /* 3 */ "file://img/ni-logo.png",
   /* 4 */ "img/ni-logo.png",
   /* 5 */ "HTTP://BYTECOLLIDER.COM/IMG/NI-LOGO.PNG",
   /* 6 */ "a://foo://bar",
-  /* 7 */ "file://../../data/niUI/error.dds",
+  /* 7 */ "file://../../niLang/data/niUI/error.dds",
   /* 8 */ "/Work/niLang/data/niUI/error.dds",
   /* 9 */ "\\My Work\\www\\bytecollider-2\\static\\img\\ni-logo.png",
 };

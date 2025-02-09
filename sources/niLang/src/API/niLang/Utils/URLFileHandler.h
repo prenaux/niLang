@@ -10,39 +10,6 @@
 namespace ni {
 
 ///////////////////////////////////////////////
-static inline cString GetToolkitBinDir(const achar* aToolkitName, const achar* aSubDir) {
-  cString r = ni::GetRootFS()->GetAbsolutePath(
-    (ni::GetLang()->GetProperty("ni.dirs.bin") +
-     "../../../" + aToolkitName + "/").Chars());
-  if (niStringIsOK(aSubDir)) {
-    r += aSubDir;
-    r += "/";
-  }
-  return r;
-}
-
-///////////////////////////////////////////////
-static inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir) {
-  cString r = ni::GetRootFS()->GetAbsolutePath(
-    (ni::GetLang()->GetProperty("ni.dirs.data") +
-     "../../").Chars());
-  if (niStringIsOK(aToolkitName)) {
-    r += aToolkitName;
-    r += "/";
-  }
-  if (niStringIsOK(aSubDir)) {
-    r += aSubDir;
-    r += "/";
-  }
-  return r;
-}
-
-///////////////////////////////////////////////
-static inline cString GetModuleDataDir(const achar* aToolkitName, const achar* aModuleName) {
-  return GetToolkitDir(aToolkitName,"data") + aModuleName + "/";
-}
-
-///////////////////////////////////////////////
 static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(iFileSystem* apFS, tBool abManifest = eFalse) {
   Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)(abManifest ?
       niCreateInstance(niLang,URLFileHandlerManifestFileSystem,apFS,niVarNull) :

@@ -22,27 +22,27 @@ static cString _GetCurrentDrive() {
 }
 
 TEST_FIXTURE(FFileSystem,GetAbsolutePath) {
-  const cString dataDir = ni::GetLang()->GetProperty("ni.dirs.data");
+  const cString dataDir = ni::GetToolkitDir("niLang","data");
   CHECK(StrIsPathSep(dataDir.back()));
   CHECK(StrIsAbsolutePath(dataDir.Chars()));
 
   {
-    cString abs = ni::GetRootFS()->GetAbsolutePath("../../data/niUI/error.dds");
+    cString abs = ni::GetRootFS()->GetAbsolutePath("../../niLang/data/niUI/error.dds");
     CHECK_EQUAL(dataDir + "niUI/error.dds", abs);
   }
 
   {
-    cString abs = ni::GetRootFS()->GetAbsolutePath("../../data/niUI");
+    cString abs = ni::GetRootFS()->GetAbsolutePath("../../niLang/data/niUI");
     CHECK_EQUAL(dataDir + "niUI", abs);
   }
 
   {
-    cString abs = ni::GetRootFS()->GetAbsolutePath("../../data/niUI/");
+    cString abs = ni::GetRootFS()->GetAbsolutePath("../../niLang/data/niUI/");
     CHECK_EQUAL(dataDir + "niUI/", abs);
   }
 
   {
-    cString abs = ni::GetRootFS()->GetAbsolutePath("./.././../data/niUI/");
+    cString abs = ni::GetRootFS()->GetAbsolutePath("./.././../niLang/data/niUI/");
     CHECK_EQUAL(dataDir + "niUI/", abs);
   }
 
@@ -69,11 +69,11 @@ TEST_FIXTURE(FFileSystem,GetAbsolutePath) {
 }
 
 TEST_FIXTURE(FFileSystem,GetAbsolutePathUnicodePath) {
-  const cString dataDir = ni::GetLang()->GetProperty("ni.dirs.data");
+  const cString dataDir = ni::GetToolkitDir("niLang","data");
   CHECK(StrIsPathSep(dataDir.back()));
   CHECK(StrIsAbsolutePath(dataDir.Chars()));
 
-  cString abs = ni::GetRootFS()->GetAbsolutePath("../../data/你好αβ/error.dds");
+  cString abs = ni::GetRootFS()->GetAbsolutePath("../../niLang/data/你好αβ/error.dds");
 
   CHECK_EQUAL(cString(dataDir + "你好αβ/error.dds"), abs);
 }
@@ -315,8 +315,8 @@ TEST_FIXTURE(FFileSystem,ModuleDataDir) {
 }
 
 TEST_FIXTURE(FFileSystem,GetTime) {
-  const cString filePathA = UnitTest::GetTestOutputFilePath("fs_get_time_a.txt");
-  const cString filePathB = UnitTest::GetTestOutputFilePath("fs_get_time_b.txt");
+  const cString filePathA = UnitTest::GetTestOutputFilePath(m_testName,"fs_get_time_a.txt");
+  const cString filePathB = UnitTest::GetTestOutputFilePath(m_testName,"fs_get_time_b.txt");
   const tI64 currentTimeSecs = ni::GetCurrentTime()->GetUnixTimeSecs();
   CHECK_NOT_EQUAL(0,currentTimeSecs);
 
@@ -347,8 +347,8 @@ TEST_FIXTURE(FFileSystem,GetTime) {
 }
 
 TEST_FIXTURE(FFileSystem,GetTime1) {
-  const cString filePathA = UnitTest::GetTestOutputFilePath("fs_get_time_a.txt");
-  const cString filePathB = UnitTest::GetTestOutputFilePath("fs_get_time_b.txt");
+  const cString filePathA = UnitTest::GetTestOutputFilePath(m_testName,"fs_get_time_a.txt");
+  const cString filePathB = UnitTest::GetTestOutputFilePath(m_testName,"fs_get_time_b.txt");
   const tI64 currentTimeSecs = ni::GetCurrentTime()->GetUnixTimeSecs();
   CHECK_NOT_EQUAL(0,currentTimeSecs);
 

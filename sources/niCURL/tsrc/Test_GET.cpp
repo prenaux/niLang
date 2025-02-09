@@ -317,7 +317,7 @@ TEST_FIXTURE(FCURLGet,GetFileLocal) {
   tBool bCompleted = eFalse;
 
   niDebugFmt(("... D"));
-  cPath testPath = ni::GetLang()->GetProperty("ni.dirs.data").Chars();
+  cPath testPath = ni::GetToolkitDir("niLang","data");
   testPath.RemoveDirectoryBack();
   niDebugFmt(("... E"));
   testPath.AddDirectoryBack("data/niUI");

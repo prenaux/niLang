@@ -583,10 +583,6 @@ local __lint = {
       if (::fs.fileExists(path))
         return path.trimex("\"")
 
-      local path = "".SetDir(::gLang.property["ni.dirs.data"]).AddDirBack("../../installer").setfile(aFile).setext("iss");
-      if (::fs.fileExists(path))
-        return path.trimex("\"")
-
       local path = ::fs.getAbsolutePath("".setfile(aFile).setext("iss"));
       if (::fs.fileExists(path))
         return path.trimex("\"")

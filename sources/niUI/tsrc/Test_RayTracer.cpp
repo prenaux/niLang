@@ -4,6 +4,7 @@
 #include <niUI/IGpu.h>
 #include <niUI/IRay.h>
 
+#if !defined niOSX
 namespace _ {
 
 using namespace ni;
@@ -535,3 +536,4 @@ struct Triangle : public RayTracerBase {
 TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
 
 }
+#endif

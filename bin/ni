@@ -25,5 +25,5 @@ done
 
 (
   # set -x
-  "${NIVM}" "${PARAMS[@]}" "$@"
+  "${NI_EXE}" "${PARAMS[@]}" "$@"
 )

@@ -53,16 +53,14 @@ class TestResults;
 
 _HSymExport(unittest_assert);
 
-static inline ni::cString GetTestInputFilePath(const ni::achar* fn) {
-  ni::cString dir = ni::GetLang()->GetProperty("ni.dirs.data");
-  dir += "tests/";
-  if (!fn)
-    return dir;
-  return dir + fn;
-}
-static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
-  ni::cString dir = ni::GetLang()->GetProperty("ni.dirs.home");
-  dir += "niApp/Tests/";
+static inline ni::cString GetTestOutputFilePath(
+  const ni::achar* aTestName,
+  const ni::achar* fn)
+{
+  ni::cString dir = ni::GetLang()->GetProperty("ni.dirs.niApp");
+  dir += "Tests/";
+  dir += aTestName;
+  dir += "/";
   ni::GetRootFS()->FileMakeDir(dir.Chars());
   if (!fn)
     return dir;
@@ -71,7 +69,7 @@ static inline ni::cString GetTestOutputFilePath(const ni::achar* fn) {
 
 }
 
-#define TEST_FILEPATH(FILENAME) UnitTest::GetTestOutputFilePath(FILENAME).Chars()
+#define TEST_FILEPATH(FILENAME) UnitTest::GetTestOutputFilePath(m_testName,FILENAME).Chars()
 
 //----------------------------------------------------------------------------
 //

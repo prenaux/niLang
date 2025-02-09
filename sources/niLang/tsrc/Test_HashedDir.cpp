@@ -24,7 +24,7 @@ static achar const* _URL[] = {
 struct FHashedDir {
   Ptr<ni::iFileSystem> hashedFS;
   FHashedDir() {
-    cString dir = UnitTest::GetTestOutputFilePath(_hashedDir);
+    cString dir = UnitTest::GetTestOutputFilePath("FHashedDir",_hashedDir);
     ni::GetRootFS()->FileMakeDir(dir.Chars());
     Ptr<iFileSystem> baseFS = ni::GetLang()->CreateFileSystemDir(
       dir.Chars(),

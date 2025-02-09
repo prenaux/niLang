@@ -29,8 +29,8 @@ struct FCURLMJpeg {
   }
 };
 
-tBool __stdcall ReadMjpegPart(iGraphics* apGraphics, iFile* apJpeg, tU32 anPartId) {
-  static cString _basePath = UnitTest::GetTestOutputFilePath("test_curl_mjpeg");
+tBool __stdcall ReadMjpegPart(const char* aTestName, iGraphics* apGraphics, iFile* apJpeg, tU32 anPartId) {
+  static cString _basePath = UnitTest::GetTestOutputFilePath(aTestName,"test_curl_mjpeg");
   cString path;
   tBool bRet = eFalse;
   tOffset headerSize = -1;
@@ -102,10 +102,16 @@ TEST_FIXTURE(FCURLMJpeg,IPCam) {
             case eCURLMessage_ReceivedPart: {
               niDebugFmt(("... Received Part: %d.",numPartReceived));
               ++numPartReceived;
-              if (ReadMjpegPart(_graphics,VarQueryInterface<iFile>(A),numJpegDecoded)) {
+              if (ReadMjpegPart(
+                    m_testName,
+                    _graphics,
+                    VarQueryInterface<iFile>(A),
+                    numJpegDecoded))
+              {
                 ++numJpegDecoded;
               }
-              if (numJpegDecoded >= _kMaxNumFrames || numPartReceived >= _kMaxNumParts) {
+              if (numJpegDecoded >= _kMaxNumFrames ||
+                  numPartReceived >= _kMaxNumParts) {
                 futureValue->Cancel();
               }
               break;

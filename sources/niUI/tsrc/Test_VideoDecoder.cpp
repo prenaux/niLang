@@ -25,9 +25,9 @@ struct IPCam : public ni::cWidgetSinkImpl<> {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    const cString dataDir = ni::GetLang()->GetProperty("ni.dirs.data");
-    tex1 = dataDir + "/test/ipcam/CCTV-01.ipcam";
-    tex2 = dataDir + "/test/ipcam/CCTV-02.ipcam";
+    const cString dataDir = ni::GetToolkitDir("niLang","data");
+    tex1 = dataDir + "test/ipcam/CCTV-01.ipcam";
+    tex2 = dataDir + "test/ipcam/CCTV-02.ipcam";
     niLog(Info, "IPCam::OnSinkAttached");
     return eTrue;
   };

@@ -40,7 +40,7 @@ TEST_FIXTURE(FCrypto,Rand) {
 
   {
     cString s1, s2, s3;
-    const cString pathOut = UnitTest::GetTestOutputFilePath(niFmt("%s_%d.bin", m_testName, ++outputCount));
+    const cString pathOut = UnitTest::GetTestOutputFilePath(m_testName,niFmt("%s_%d.bin", m_testName, ++outputCount));
     {
       Ptr<iFile> fpOut = GetRootFS()->FileOpen(pathOut.Chars(),eFileOpenMode_Write);
       CHECK_EQUAL(10, rnd->RandFile(fpOut, 10));

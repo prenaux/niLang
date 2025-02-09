@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #if defined niAndroid || defined niEmbedded || defined niLinuxDesktop
+
 #include "GetFontFile.h"
 #include <niLang/Utils/FileEnum.h>
 
@@ -30,9 +31,7 @@ cString GetFontsDirectory() {
 #elif defined niMSVC
   return niFmt(_A("%s/toolsets/android/device/system/fonts/"),ni::GetLang()->GetEnv(_A("HAM_HOME")));
 #else
-  cString d = ni::GetLang()->GetProperty("ni.dirs.data");
-  d << "base/fonts/";
-  return d;
+  return ni::GetModuleDataDir("niLang","niUI") + "fonts/";
 #endif
 }
 

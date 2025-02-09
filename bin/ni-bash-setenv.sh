@@ -85,17 +85,17 @@ case $NI_OS in
 esac
 
 if [ -e "$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NIVM="$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT"
-    export NIWVM="$DIR1/$BIN_LOA/niw_$BUILD$BIN_EXT"
+    export NI_EXE="$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT"
+    export NIW_EXE="$DIR1/$BIN_LOA/niw_$BUILD$BIN_EXT"
 elif [ -e "$DIR1/bin/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NIVM="$DIR1/bin/$BIN_LOA/ni_$BUILD$BIN_EXT"
-    export NIWVM="$DIR1/bin/$BIN_LOA/niw_$BUILD$BIN_EXT"
+    export NI_EXE="$DIR1/bin/$BIN_LOA/ni_$BUILD$BIN_EXT"
+    export NIW_EXE="$DIR1/bin/$BIN_LOA/niw_$BUILD$BIN_EXT"
 elif [ -e "$DIR2/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
-    export NIVM="$DIR2/$BIN_LOA/ni_${BUILD}${BIN_EXT}"
-    export NIWVM="$DIR2/$BIN_LOA/niw_${BUILD}${BIN_EXT}"
+    export NI_EXE="$DIR2/$BIN_LOA/ni_${BUILD}${BIN_EXT}"
+    export NIW_EXE="$DIR2/$BIN_LOA/niw_${BUILD}${BIN_EXT}"
 else
-    export NIVM="cantfind_ni"
-    export NIWVM="cantfind_niw"
+    export NI_EXE="cantfind_ni"
+    export NIW_EXE="cantfind_niw"
 fi
 
-# echo "I/NIVM:" $NIVM
+# echo "I/NI_EXE:" $NI_EXE

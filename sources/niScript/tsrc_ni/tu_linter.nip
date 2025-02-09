@@ -594,7 +594,7 @@ function main() {
 
       // all
       {
-        ::CHECK_EQUAL(24,aLintResults.mLogsError,"Expected lint errors.");
+        ::CHECK_EQUAL(25,aLintResults.mLogsError,"Expected lint errors.");
         ::CHECK_EQUAL(11,aLintResults.mLogsWarning,"Expected lint warnings.");
       }
     })

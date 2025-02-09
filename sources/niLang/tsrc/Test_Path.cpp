@@ -34,11 +34,11 @@ TEST_FIXTURE(FPath,IsAbsPath) {
 }
 
 TEST_FIXTURE(FPath,PathRel) {
-  const cString cwd = ni::GetLang()->GetProperty("ni.app.cwd");
-  niDebugFmt(("... cwd: '%s'", cwd));
-  CHECK(!cwd.IsEmpty());
+  const cString binDir = ni::GetLang()->GetProperty("ni.dirs.bin");
+  niDebugFmt(("... binDir: '%s'", binDir));
+  CHECK(!binDir.IsEmpty());
 
-  CHECK_EQUAL(cwd + _ASTR(_kTestPathRel), ni::GetRootFS()->GetAbsolutePath(_kTestPathRel));
+  CHECK_EQUAL(binDir + _ASTR(_kTestPathRel), ni::GetRootFS()->GetAbsolutePath(_kTestPathRel));
 }
 
 TEST_FIXTURE(FPath,PathAbsVol) {

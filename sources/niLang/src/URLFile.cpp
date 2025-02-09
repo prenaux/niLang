@@ -71,11 +71,8 @@ struct URLFileHandler_ManifestFileSystem : public URLFileHandler_Manifest {
   tBool _GetExistingPath(const achar* aURL, cString& aPath) {
     aPath = this->GetPathFromURL(aURL);
 
-    // Test with the data dir first, this should be the most common since the
-    // default URL handler indicates relative paths.
-    const cString dataDir = ni::GetLang()->GetProperty("ni.dirs.data");
-    if (!dataDir.empty()) {
-      const cString testPath = dataDir + aPath;
+    {
+      const cString testPath = _ASTR("data/") + aPath;
       TRACE_FILEHANDLER(("... URLFileHandler_ManifestFileSystem.GetExisting: %s", testPath));
       if (_fileSystem->FileExists(testPath.Chars(), eFileAttrFlags_AllFiles)) {
         aPath = testPath;

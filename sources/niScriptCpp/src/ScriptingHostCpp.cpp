@@ -37,10 +37,6 @@ typedef ni::iUnknown* (__ni_export_call_decl *tpfnNewInstance)();
 #define SCRIPTCPP_BUILD_DA
 #endif
 
-static const achar* _GetBinDir() {
-  return "bin/" niLOA_Bin;
-}
-
 niExportFunc(tBool) ScriptCpp_GetCompileEnabled() {
   return ni::GetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0").Bool();
 }
@@ -103,8 +99,7 @@ static cString _FindHamPath(cString& hamHome) {
     hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.ham_home"));
     SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.ham_home '%s'.", hamHomePath.c_str()));
     if (!ni::DirExists(hamHomePath.c_str())) {
-      hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.bin"));
-      hamHomePath.AddDirectoryBack("../../../ham");
+      hamHomePath.SetDirectory(ni::GetToolkitDir("ham",nullptr));
       hamHome = GetRootFS()->GetAbsolutePath(hamHomePath.c_str());
       SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.bin '%s'.", hamHomePath.c_str()));
       if (!ni::DirExists(hamHomePath.c_str())) {
@@ -303,8 +298,7 @@ static tBool ScriptCpp_TryCompileSource(
   cPath pathOutputNotStamped;
   cPath pathOutput;
   {
-    pathOutput.SetDirectory(strSourceAppDir.Chars());
-    pathOutput.AddDirectoryBack(_GetBinDir());
+    pathOutput.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.bin"));
     pathOutput.SetFile(_GetModuleFileName(mc.name).Chars());
     pathOutputNotStamped = pathOutput;
     // add the stamp
@@ -381,79 +375,59 @@ static void _ScriptCpp_CleanupDLLs(const achar* aDir) {
   SCRIPTCPP_TRACE(("ScriptCpp Cleanup: DLLs: %s", path.GetPath()));
 
   FindFile ff;
-  if (ff.First(path.GetPath().Chars()))
+  if (ff.First(path.GetPath().Chars())) {
     do {
-      path.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
+      path.SetDirectory(aDir);
       path.SetFile(ff.FileName());
       tBool r = ni::GetRootFS()->FileDelete(path.GetPath().Chars());
       niLog(Info, niFmt("ScriptCpp Cleanup: Removing artifact %s: %s",
                         r ? "succeeded" : "failed",
                         path.GetPath()));
     } while(ff.Next());
+  }
 }
 
 niExportFunc(void) ScriptCpp_CleanupDLLs() {
-  _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.app").Chars());
   _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
 }
 
-static const char* _BinDirProps[] = {
-  "ni.dirs.app",
-  "ni.dirs.bin",
-};
-
-static const tBool _IsBinDir(const cString& strBinDir) {
-  return strBinDir.contains("/bin/") || strBinDir.EndsWithI("/MacOS/");
-}
-
-static void _FindSourcePathAndAppDir(
+static tBool _FindSourcePathAndAppDir(
     const cString& strSourceFileName,
     cString& strSourcePath,
     cString& strAppDir)
 {
-  niLoop(i,niCountOf(_BinDirProps)) {
-    strAppDir = ni::GetLang()->GetProperty(_BinDirProps[i]);
-    if (strAppDir.IsEmpty())
-      continue;
-    cPath pathSourceFileName;
-    pathSourceFileName.SetDirectory(strAppDir.Chars());
-    if (_IsBinDir(strAppDir)) {
-      pathSourceFileName.RemoveDirectoryBack();
-      pathSourceFileName.RemoveDirectoryBack();
-      strAppDir = pathSourceFileName.GetDirectory();
-    }
-    pathSourceFileName.AddDirectoryBack("sources");
-    pathSourceFileName.AddDirectoryBack(strSourceFileName.RBefore("/").Chars());
-    pathSourceFileName.SetFile(strSourceFileName.RAfter("/").Chars());
-    SCRIPTCPP_TRACE(("Trying '%s' source path '%s'",
-                 _BinDirProps[i],
-                 pathSourceFileName.GetPath()));
-    if (ni::GetRootFS()->FileExists(pathSourceFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
-      strSourcePath = pathSourceFileName.GetPath();
-      return;
-    }
+  strAppDir = ni::GetLang()->GetProperty("ni.dirs.scriptcpp_app");
+  if (strAppDir.IsEmpty()) {
+    niError("niScriptCpp 'ni.dirs.scriptcpp_app' property not set.");
+    return eFalse;
   }
+  cPath pathSourceFileName;
+  pathSourceFileName.SetDirectory(strAppDir.Chars());
+  pathSourceFileName.AddDirectoryBack("sources");
+  pathSourceFileName.AddDirectoryBack(strSourceFileName.RBefore("/").Chars());
+  pathSourceFileName.SetFile(strSourceFileName.RAfter("/").Chars());
+  SCRIPTCPP_TRACE(("Trying source path '%s'", pathSourceFileName.GetPath()));
+  if (ni::GetRootFS()->FileExists(
+        pathSourceFileName.GetPath().Chars(),eFileAttrFlags_AllFiles))
+  {
+    strSourcePath = pathSourceFileName.GetPath();
+    return eTrue;
+  }
+  return eFalse;
 }
 
 static cString _FindModulePath(const cString& strModuleFileName) {
-  niLoop(i,niCountOf(_BinDirProps)) {
-    cString strAppDir = ni::GetLang()->GetProperty(_BinDirProps[i]);
-    if (strAppDir.IsNotEmpty()) {
-      cPath pathAppModuleFileName;
-      pathAppModuleFileName.SetDirectory(strAppDir.Chars());
-      if (!_IsBinDir(strAppDir)) {
-        pathAppModuleFileName.AddDirectoryBack(_GetBinDir());
-      }
-      pathAppModuleFileName.SetFile(strModuleFileName.Chars());
-      SCRIPTCPP_TRACE(("Trying '%s' module path '%s'",
-                  _BinDirProps[i],
-                  pathAppModuleFileName.GetPath()));
-      if (ni::GetRootFS()->FileExists(pathAppModuleFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
-        return pathAppModuleFileName.GetPath();
-      }
+  const cString binDir = ni::GetLang()->GetProperty("ni.dirs.bin");
+  if (binDir.IsNotEmpty()) {
+    cPath pathAppModuleFileName;
+    pathAppModuleFileName.SetDirectory(binDir.Chars());
+    pathAppModuleFileName.SetFile(strModuleFileName.Chars());
+    SCRIPTCPP_TRACE(("Trying module path '%s'", pathAppModuleFileName.GetPath()));
+    if (ni::GetRootFS()->FileExists(
+          pathAppModuleFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
+      return pathAppModuleFileName.GetPath();
     }
   }
-
   return AZEROSTR;
 }
 
@@ -518,13 +492,19 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     cString strModuleFileName = _GetModuleFileName(strModule);
     cString strCreateFunctionName = _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
     cString strSourcePath, strSourceAppDir;
-    _FindSourcePathAndAppDir(strResource.Chars(),strSourcePath,strSourceAppDir);
+    if (!_FindSourcePathAndAppDir(
+      strResource.Chars(),strSourcePath,strSourceAppDir))
+    {
+      niError(niFmt("Can't find source path '%s'.", strResource));
+      return nullptr;
+    }
 
-    SCRIPTCPP_TRACE(("Context: %s, Resource: %s, UUID: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s",
-                ahspContext, ahspCodeResource, aIID,
-                strModule, strModuleFileName,
-                strClass, strCreateFunctionName,
-                strSourcePath, strSourceAppDir));
+    SCRIPTCPP_TRACE((
+      "Context: %s, Resource: %s, UUID: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s",
+      ahspContext, ahspCodeResource, aIID,
+      strModule, strModuleFileName,
+      strClass, strCreateFunctionName,
+      strSourcePath, strSourceAppDir));
 
     tScriptCppModuleMap::iterator itModule = _modules.find(strModuleFileName);
     if (itModule != _modules.end()) {
@@ -538,7 +518,9 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     }
 
     if (ScriptCpp_GetCompileEnabled()) {
-      if (!ScriptCpp_TryCompileSource(itModule->second,strSourcePath,strSourceAppDir)) {
+      if (!ScriptCpp_TryCompileSource(
+            itModule->second,strSourcePath,strSourceAppDir))
+      {
         niError(niFmt("Can't compile module '%s' for code resource '%s'.",
                       strModule, ahspCodeResource));
         return NULL;

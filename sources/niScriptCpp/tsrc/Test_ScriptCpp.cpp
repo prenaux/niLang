@@ -24,7 +24,7 @@ using namespace ni;
 
 _HDecl(TestScriptCpp);
 
-#define TEST_SCRIPTCPP_PATH(PATH) ("../../sources/niScriptCpp/tsrc_module/" PATH)
+#define TEST_SCRIPTCPP_PATH(PATH) (ni::GetToolkitDir("niLang","sources") + "niScriptCpp/tsrc_module/" PATH).c_str()
 
 static tBool TouchFile(iFile* apFile) {
   return apFile ? apFile->SetTime(eFileTime_LastWrite,ni::GetLang()->GetCurrentTime()) : eFalse;
@@ -65,6 +65,9 @@ struct FScriptCpp {
       ni::GetLang()->AddScriptingHost(_H("cpp2"),ptrScriptingHost.ptr());
       ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
     };
+    ni::GetLang()->SetProperty(
+      "ni.dirs.scriptcpp_app",
+      ni::GetToolkitDir("niLang",nullptr).c_str());
   }
   ~FScriptCpp() {
   }
@@ -142,7 +145,7 @@ TEST_FIXTURE(FScriptCpp,touched) {
       _HC(TestScriptCpp),
       _H("Test_niScriptCpp_Module#niScriptCpp/tsrc_module/ScriptCpp_TestModule.cpp"),
       niGetInterfaceUUID(iRunnable));
-    CHECK(runGetTestTag.IsOK());
+    CHECK_RETURN_IF_FAILED(runGetTestTag.IsOK());
     // Shouldn't have change since compile isnt enabled
     CHECK_EQUAL(_ASTR("Test_ScriptCpp_module"), VarGetString(runGetTestTag->Run()));
     CHECK_EQUAL(wasStats._numUpToDate, currStats._numUpToDate);

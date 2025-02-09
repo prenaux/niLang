@@ -1284,13 +1284,11 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
     // might not always be the case. Eventually we should validate this.
     MTLPixelFormat mtlFormat = _GetMTLPixelFormat(gpufmt);
     NN<iPixelFormat> bmpFormat = niCheckNN(bmpFormat,_GetIPixelFormat(mpGraphics,gpufmt),eFalse);
-    if (bmpFormat->IsSamePixelFormat(apFormat->GetPixelFormat())) {
-      return eTrue;
-    }
-    else {
+    if (!bmpFormat->IsSamePixelFormat(apFormat->GetPixelFormat())) {
       apFormat->SetPixelFormat(bmpFormat);
-      return eFalse;
     }
+
+    return eTrue;
   }
 
   virtual iTexture* __stdcall CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags)  {

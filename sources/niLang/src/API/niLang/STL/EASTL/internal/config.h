@@ -56,6 +56,10 @@
 
 #define EA_COMPILER_CPP14_ENABLED 1
 
+// Note: User literals are a mess in EASTL - generating a bunch of
+// warnings. We can redeclare what we care about in niCC.h.
+#define EASTL_USER_LITERALS_ENABLED 0
+
 // End niLang defines
 
 #ifdef EASTL_USER_CONFIG_HEADER

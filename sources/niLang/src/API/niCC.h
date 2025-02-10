@@ -181,10 +181,12 @@ inline niConstExpr ni::QPtr<T> Create(Args&&... args) {
 #define niInlineFn(TYPE) [[nodiscard]] niInline TYPE __stdcall
 
 // Force lambda inlining, needed on MSVC...
-#ifdef _MSC_VER
-  #define niInlineLambda [[msvc::forceinline]]
+#if defined niCLang || defined niGCC
+#  define niInlineLambda __attribute__((always_inline))
+#elif defined niMSVC
+#  define niInlineLambda [[msvc::forceinline]]
 #else
-  #define niInlineLambda __attribute__((always_inline))
+#  error "E/niCC: C++ Preprocessor: niInlineLambda not defined."
 #endif
 
 // Simple lambdas. XXX: These are not great but typing C++ lambdas is really

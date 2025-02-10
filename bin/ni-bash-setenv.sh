@@ -4,6 +4,9 @@ cd "$DIR1"
 if [ "$BUILD" == "" ]; then
    BUILD=$1
 fi
+if [ -z "$WORK" ]; then
+   WORK="$SCRIPT_DIR/../.."
+fi
 
 if [[ $OS == Windows* ]]; then
   export NI_OS=NT

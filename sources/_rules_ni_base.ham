@@ -33,7 +33,7 @@ if ! ( $(NILANG_BUILD) = 1 ) {
 #     Build tools
 #----------------------------------------------------------------------
 NILANG_DIR ?= $(TK_DIR) ;
-NILANG_BUILD_DIR_BIN ?= [ FDirName $(NILANG_DIR) bin $(BUILD_BIN_LOA) ] ;
+NILANG_BUILD_DIR_BIN ?= [ FDirName $(TK_DIR_BIN) ] ;
 NILANG_SCRIPTS ?= [ FDirName $(NILANG_DIR) scripts ] ;
 NILANG_BUILD_SCRIPTS ?= [ FDirName $(NILANG_DIR) scripts tools ] ;
 

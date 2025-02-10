@@ -1,13 +1,17 @@
+
+NI_RUN_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT)$(BUILD_SUFEXE) ] ;
+NIW_RUN_EXE = [ FDirName $(NILANG_BUILD_DIR_BIN) ni_$(BUILDEXT)$(BUILD_SUFEXE) ] ;
+
 # niRunInDir WHAT : INDIR : PARAMS ;
 rule niRunInDir {
-  runInDir_ Run_$(<) : ni : $(2) : $(3) ;
-  runInDebugger_ Debug_$(<) : ni : $(2) : $(3) ;
+  runInDir_ Run_$(<) : $(NI_RUN_EXE) : $(2) : $(3) ;
+  runInDebugger_ Debug_$(<) : $(NI_RUN_EXE) : $(2) : $(3) ;
   DEPENDS Run_$(<) : $(<) ;
   DEPENDS Debug_$(<) : $(<) ;
 }
 rule niwRunInDir {
-  runInDir_ Run_$(<) : niw : $(2) : $(3) ;
-  runInDebugger_ Debug_$(<) : niw : $(2) : $(3) ;
+  runInDir_ Run_$(<) : $(NIW_RUN_EXE) : $(2) : $(3) ;
+  runInDebugger_ Debug_$(<) : $(NIW_RUN_EXE) : $(2) : $(3) ;
   DEPENDS Run_$(<) : $(<) ;
   DEPENDS Debug_$(<) : $(<) ;
 }
@@ -58,14 +62,14 @@ rule niScript {
     NI_APPSCRIPT on Run_$(TARGET) = $(APPSCRIPT) ;
     NI_APPSCRIPT on Debug_$(TARGET) = $(APPSCRIPT) ;
     niwRunInDir $(TARGET) : $(SUBDIR) : $(SCRIPT_INCS) -A main -e $(2) ;
-    tkDepExe $(TARGET) : niw : niLang ;
+    # tkDepExe $(TARGET) : niw : niLang ;
   }
   else {
     APPSCRIPT = -A niScript -e app.ni -startApp $(2) ;
     NI_APPSCRIPT on Run_$(TARGET) = $(APPSCRIPT) ;
     NI_APPSCRIPT on Debug_$(TARGET) = $(APPSCRIPT) ;
     niwRunInDir $(TARGET) : $(SUBDIR) : $(SCRIPT_INCS) -A niTest -e app.ni -startApp $(2) ;
-    tkDepExe $(TARGET) : niw : niLang ;
+    # tkDepExe $(TARGET) : niw : niLang ;
   }
 
   DEPENDS $(TARGET) : $(SRC) ;

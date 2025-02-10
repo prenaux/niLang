@@ -6,9 +6,7 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 #===== PRELUDE END =============
 
-CWD=`pwd`
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$CWD"
 . "$SCRIPT_DIR/ni-bash-setenv.sh" ra
 
 INCLUDE_DIRS=(

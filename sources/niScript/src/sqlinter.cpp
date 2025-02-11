@@ -1979,7 +1979,7 @@ struct sLinter {
       niLet wasLintEnabled = _lintEnabled;
       SetDefaultLintEnabled();
       _printLogs = _lintPrintImportLint;
-      _funcproto(o)->LintTrace(*this,_table(roottable),_table(moduleThis),_table(moduleThis));
+      _funcproto(o)->_LintTrace(*this,_table(roottable),_table(moduleThis),_table(moduleThis));
       _lintEnabled = wasLintEnabled;
       _printLogs = wasPrintLogs;
     }
@@ -2555,7 +2555,7 @@ void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
   _lintFuncCallQueryInterface = niNew sLintFuncCall_this_QueryInterface();
 }
 
-void SQFunctionProto::LintTrace(
+void SQFunctionProto::_LintTrace(
   sLinter& aLinter,
   SQTable* rootTable,
   SQTable* thisModuleTable,
@@ -3910,7 +3910,7 @@ void SQFunctionProto::LintTrace(
                  _ObjToString(cfproto->_name),
                  _ObjToString(cfclosure->_thisWhenAssigned)));
         sLinter::tLintKindMap wasLintEnabled = aLinter._lintEnabled;
-        cfproto->LintTrace(aLinter,_table(cfclosure->_root),thisModuleTable,_table(cfclosure->_thisWhenAssigned));
+        cfproto->_LintTrace(aLinter,_table(cfclosure->_root),thisModuleTable,_table(cfclosure->_thisWhenAssigned));
         aLinter._lintEnabled = wasLintEnabled;
       }
     }
@@ -3932,9 +3932,13 @@ cString SQInstructionToString(ain<SQInstruction> inst) {
 }
 
 tU32 SQFunctionProto::LintTraceRoot() const {
+  static tBool _noLint = ni::GetProperty("niScript.NoLint").Bool(eFalse);
+  if (_noLint)
+    return 0;
+
   sLinter linter(this->GetSourceName());
   SQObjectPtr moduleThis = linter.CreateTable().raw_ptr();
   _TableSetDebugNameFromSourceName(as_nn(_table(moduleThis)), "modulethis", this->GetSourceName());
-  this->LintTrace(linter,_table(linter._vmroot),_table(moduleThis),_table(moduleThis));
+  this->_LintTrace(linter,_table(linter._vmroot),_table(moduleThis),_table(moduleThis));
   return linter._numLintErrors;
 }

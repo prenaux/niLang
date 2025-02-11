@@ -26,19 +26,19 @@ actions GeneratedWith {
 # nishCompileGlsl_ [ gpufunc targets ] : INPUT.glsl : STAGE : GPU_TARGETS
 rule nishCompileGlsl_ {
   local OUTPUT = [ ListGetFirst $(1) ] ;
-  logInfoVar OUTPUT ;
+  # logInfoVar OUTPUT ;
   local OUT_DIR = $(OUTPUT:D) ;
-  logInfoVar OUT_DIR ;
+  # logInfoVar OUT_DIR ;
   local OUT_GPUFUNC = [ FDirName $(OUT_DIR) $(OUTPUT:B) ] ;
-  logInfoVar OUT_GPUFUNC ;
+  # logInfoVar OUT_GPUFUNC ;
   local BASENAME = $(OUT_GPUFUNC:B) ;
-  logInfoVar BASENAME ;
+  # logInfoVar BASENAME ;
   local INPUT = $(2) ;
-  logInfoVar INPUT ;
+  # logInfoVar INPUT ;
   local STAGE = $(3) ;
-  logInfoVar STAGE ;
+  # logInfoVar STAGE ;
   local GPU_TARGETS = $(4) ;
-  logInfoVar GPU_TARGETS ;
+  # logInfoVar GPU_TARGETS ;
 
   _BASENAME on $(<) = $(BASENAME) ;
   _STAGE on $(<) = $(STAGE) ;
@@ -62,18 +62,16 @@ rule nishCompileGlsl {
   local langOutputs = ;
   for _gpuTarget in $(4) {
     local t = $(1:S=.$(_gpuTarget)) ;
-    logInfoVar t ;
+    # logInfoVar t ;
     langOutputs += $(t) ;
   }
   logInfoVar langOutputs ;
   return [ nishCompileGlsl_ $(1) $(langOutputs) : $(2) : $(3) : $(4) ] ;
 }
 
-actions nishCompileGlsl {
-  set -ex
-  $(NISH_RUN_EXE) \
-    @glslang $(NISH_GLSLANG_OPT_FLAGS) -S $(_STAGE) --target-env vulkan1.2 -V -o "$(_INPUT).spv" "$(_INPUT)"\
-    @spirv-opt $(NISH_SPIRV_OPT_FLAGS) "$(_INPUT).spv" -o "$(_OUT_GPUFUNC).spv_vk12"\
-    @nish -S $(_STAGE) -n "$(_BASENAME)" -t $(_GPU_TARGETS) "$(_OUT_GPUFUNC).spv_vk12" "$(_OUT_GPUFUNC).xml"\
-    @rm "$(_INPUT).spv"
+# nilGenerateGpufunc OUTPUT : GENERATOR_SCRIPT
+rule nilGenerate {
+}
+actions nilGenerate {
+  # ${WORK}/bin/nt-x64/ni_ra.exe -DniScript.NoLint=1 -I${WORK}/niLang/scripts -I${WORK}/Vlk/scripts -I${WORK}/Playground/scripts -e "$WORK/Playground/sources/nilTests/Shader_Base_glsl450.nip" "$WORK/niLang/data/test/gpufunc/TestGpuFuncs.hpp"
 }

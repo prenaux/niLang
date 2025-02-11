@@ -11,6 +11,8 @@ using namespace ni;
 
 //
 // TODO (1/1):
+// - [ ] p0: Ray trace a rotating cube with the camera moving around
+//  - https://youtu.be/kYb4Io7TQp4?si=loEyfkB7XRrjFn-e&t=19
 // - [ ] p0: Ray trace with bary centric coordinates
 // - [ ] p0: Ray trace a sphere with a custom intersection test
 // - [ ] p0: Ray trace a SDF with a union or difference between two SDF

@@ -10,6 +10,19 @@ niImportModuleDll_niUI ;
 
 SRC = [ tkPkgSrc ] ;
 
+GPUFUNC_RAS_TARGETS = glsl_vk46 msl2_macos hlsl5 ;
+GPUFUNC_RT_TARGETS = glsl_vk46 ;
+
+NISH_GPUFUNC_DIR = [ AssertFDirName data_test_gpufunc : $(TK_DIR) data test gpufunc ] ;
+
+DEPENDS $(PACKAGE)_shaders :
+[ nishCompileGlsl
+  [ FDirName $(NISH_GPUFUNC_DIR) triangle_vs.gpufunc.xml ] :
+  [ FDirName $(NISH_GPUFUNC_DIR) triangle_vs.glsl ] :
+  vert : $(GPUFUNC_RAS_TARGETS) ] ;
+
+DEPENDS $(PACKAGE) : $(PACKAGE)_shaders ;
+
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niUI ] ;

@@ -1,6 +1,17 @@
 #version 460
 #extension GL_EXT_ray_query : require
 
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    mat4 cameraInvView;
+    mat4 cameraInvProj;
+};
+
+uniform vec4 UBO_TestGpuFuncs_RayUniforms[9];
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 
 layout(location = 0) out vec4 OUT_0_rval_color;
@@ -8,19 +19,28 @@ rayQueryEXT rayQuery;
 
 void main()
 {
-    vec2 _175 = gl_FragCoord.xy * vec2(0.001953125);
-    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, vec3(0.0, 0.0, -1.0), 0.001000000047497451305389404296875, normalize(vec3((_175.x * 2.0) - 1.0, ((1.0 - _175.y) * 2.0) - 1.0, 1.0) - vec3(0.0, 0.0, -1.0)), 1000.0);
-    bool _194 = rayQueryProceedEXT(rayQuery);
-    uint _195 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
-    vec4 _243;
-    if (_195 == 1u)
+    TestGpuFuncs_RayUniforms _219 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
+    TestGpuFuncs_RayUniforms _220;
+    _220.rtWidth = _219.rtWidth;
+    _220.rtHeight = _219.rtHeight;
+    _220.cameraFarClipPlane = _219.cameraFarClipPlane;
+    _220.padding = _219.padding;
+    _220.cameraInvView = _219.cameraInvView;
+    _220.cameraInvProj = _219.cameraInvProj;
+    vec2 _266 = gl_FragCoord.xy / vec2(_220.rtWidth, _220.rtHeight);
+    vec4 _327 = _220.cameraInvProj * vec4(_266.x, 1.0 - _266.y, 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, vec3(_220.cameraInvView[3].x, _220.cameraInvView[3].y, _220.cameraInvView[3].z), 0.001000000047497451305389404296875, (_220.cameraInvView * vec4(normalize((_327 / vec4(_327.w)).xyz), 0.0)).xyz, _220.cameraFarClipPlane);
+    bool _296 = rayQueryProceedEXT(rayQuery);
+    uint _297 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    vec4 _419;
+    if (_297 == 1u)
     {
-        _243 = vec4(0.0, 1.0, 0.0, 1.0);
+        _419 = vec4(0.0, 1.0, 0.0, 1.0);
     }
     else
     {
-        _243 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_195 == 2u));
+        _419 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_297 == 2u));
     }
-    OUT_0_rval_color = _243;
+    OUT_0_rval_color = _419;
 }
 

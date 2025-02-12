@@ -25,6 +25,13 @@ DEPENDS $(PACKAGE) :
   triangle_rayquery_ps
 ] ;
 
+DEPENDS $(PACKAGE) :
+[ niBuildGpuFuncsHpp $(PACKAGE)_gpufuncs :
+  $(TK_DIR) data test gpufunc :
+  $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
+  TestGpuFuncs.hpp
+] ;
+
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niUI ] ;

@@ -6,6 +6,7 @@
 #include <niUnitTest.h>
 #include <niUI.h>
 #include <niAppLib.h>
+#include <niLang/Math/MathLib.h>
 
 using namespace ni;
 

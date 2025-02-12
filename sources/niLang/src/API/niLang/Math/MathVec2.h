@@ -253,11 +253,6 @@ sVec2<T>& VecNormalize(sVec2<T>& Out, const sVec2<T>& V)
   Out.y = V.y * denom;
   return Out;
 }
-template <class T>
-sVec2<T>* VecNormalize(sVec2<T>* Out, const sVec2<T>* V)
-{
-  return &VecNormalize(*Out,*V);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -295,13 +290,6 @@ sVec4<T>& VecTransform(sVec4<T>& Out,
 
   return Out;
 }
-template <class T>
-sVec4<T>* VecTransform(sVec4<T>* Out,
-                          const sVec2<T>* V,
-                          const sMatrix<T>* M)
-{
-  return &VecTransform(*Out,*V,*M);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -328,13 +316,6 @@ sVec2<T>& VecTransformCoord(sVec2<T>& Out,
 
   return Out;
 }
-template <class T>
-sVec2<T>* VecTransformCoord(sVec2<T>* Out,
-                               const sVec2<T>* V,
-                               const sMatrix<T>* M)
-{
-  return &VecTransformCoord(*Out,*V,*M);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -350,13 +331,6 @@ sVec2<T>& VecTransformNormal(sVec2<T>& Out,
   Out.y = x * M._12 + y * M._22;
 
   return Out;
-}
-template <class T>
-sVec2<T>* VecTransformNormal(sVec2<T>* Out,
-                                const sVec2<T>* V,
-                                const sMatrix<T>* M)
-{
-  return &VecTransformNormal(&Out,&V,&M);
 }
 
 ///////////////////////////////////////////////

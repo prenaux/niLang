@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include <niLang/Math/MathRect.h>
-#include "../tsrc_gdrv/MakeTestRayGeometry.h"
 #include <niUI/IGpu.h>
 #include <niUI/IRay.h>
+#include "../tsrc_gdrv/MakeTestRayGeometry.h"
+#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
 
 #if !defined niOSX
 namespace _ {
@@ -30,8 +30,8 @@ using namespace ni;
 // - [ ] p1: Visualize: worldspace position
 //
 
-static const tF32 kfRunSpeed = 256.0f;
-static const tF32 kfNormalSpeed = 64.0f;
+static const tF32 kfRunSpeed = 2.560f;
+static const tF32 kfNormalSpeed = 1.280f;
 
 struct FRayTracer {
 };
@@ -157,10 +157,20 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     _animated = !_animated;
   }
 
+  void _ResetCamera() {
+    // TODO: Kinda wierd starting point because it aligns with the tiny
+    // default triangle which was setup for NDC. Will reset to something
+    // simpler once we have the full geom.
+    mptrCamera->SetPosition(Vec3f(-2.5f,-0.5f,-3.0f));
+    mptrCamera->SetTarget(mptrCamera->GetPosition() + Vec3f(0,0,1));
+    mptrCamera->SetTargetUp(Vec3f(0,1,0));
+  }
+
   tBool __stdcall _InitializeCamera() {
     mptrCamera = mpWidget->GetGraphics()->CreateCamera();
     mpWidget->SetStyle(mpWidget->GetStyle()|eWidgetStyle_HoldFocus);
     mpWidget->SetFocus();
+    _ResetCamera();
     _mouseLook = eFalse;
     return eTrue;
   }
@@ -242,9 +252,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       }
 
       case eKey_F4: {
-        mptrCamera->SetPosition(Vec3f(0,0,0));
-        mptrCamera->SetTarget(mptrCamera->GetPosition() + Vec3f(0,0,1));
-        mptrCamera->SetTargetUp(Vec3f(0,1,0));
+        _ResetCamera();
         break;
       }
 
@@ -356,12 +364,14 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     ptrFS->SetCameraViewMatrix(wasViewMatrix);
     ptrFS->SetCameraProjectionMatrix(wasProjectionMatrix);
 
-    cString str = niFmt("Driver: %s, POS: %s, TARGET: %s, UP: %s, Animated: %d\n",
+    cString str = niFmt("Driver: %s, POS: %s, TARGET: %s, UP: %s, Animated: %d, VIEW: %s, PROJ: %s\n",
                         mpWidget->GetGraphics()->GetDriver()->GetName(),
                         cString(mptrCamera->GetPosition()).Chars(),
                         cString(mptrCamera->GetTarget()).Chars(),
                         cString(mptrCamera->GetTargetUp()).Chars(),
-                        _animated);
+                        _animated,
+                        mptrCamera->GetViewMatrix(),
+                        mptrCamera->GetProjectionMatrix());
     apCanvas->BlitText(
         mpWidget->GetFont(),
         sRectf(5,5),
@@ -528,6 +538,14 @@ struct Triangle : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvProj = MatrixInverse(mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_instanceAS);
 

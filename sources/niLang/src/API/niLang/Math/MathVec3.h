@@ -156,13 +156,6 @@ sVec3<T>& VecCross(sVec3<T>& Out,
   Out.z = z;
   return Out;
 }
-template <class T>
-sVec3<T>* VecCross(sVec3<T>* Out,
-                      const sVec3<T>* V1,
-                      const sVec3<T>* V2)
-{
-  return &VecCross(*Out,*V1,*V2);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -275,10 +268,6 @@ sVec3<T>& VecNormalize(sVec3<T>& Out, const sVec3<T>& V)
   Out.z = V.z * denom;
   return Out;
 }
-template <class T>
-sVec3<T>* VecNormalize(sVec3<T>* Out, const sVec3<T>* V) {
-  return &VecNormalize(*Out,*V);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -317,13 +306,6 @@ sVec4<T>& VecTransform(sVec4<T>& Out,
 
   return Out;
 }
-template <class T>
-sVec4<T>* VecTransform(sVec4<T>* Out,
-                          const sVec3<T>* V,
-                          const sMatrix<T>* M)
-{
-  return &VecTransform(*Out,*V,*M);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -341,13 +323,6 @@ sVec3<T>& VecTransformCoord(sVec3<T>& Out,
   Out.z = (x * M._13 + y * M._23 + z * M._33 + M._43) * rhw;
   return Out;
 }
-template <class T>
-sVec3<T>* VecTransformCoord(sVec3<T>* Out,
-                               const sVec3<T>* V,
-                               const sMatrix<T>* M)
-{
-  return &VecTransformCoord(*Out,*V,*M);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -364,13 +339,6 @@ sVec3<T>& VecTransformNormal(sVec3<T>& Out,
   Out.z = x * M._13 + y * M._23 + z * M._33;
 
   return Out;
-}
-template <class T>
-sVec3<T>* VecTransformNormal(sVec3<T>* Out,
-                                const sVec3<T>* V,
-                                const sMatrix<T>* M)
-{
-  return &VecTransformNormal(*Out,*V,*M);
 }
 
 ///////////////////////////////////////////////

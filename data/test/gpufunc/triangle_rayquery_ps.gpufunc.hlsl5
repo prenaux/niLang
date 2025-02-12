@@ -1,3 +1,18 @@
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    row_major float4x4 cameraInvView;
+    row_major float4x4 cameraInvProj;
+};
+
+cbuffer UBO_TestGpuFuncs_RayUniforms : register(b0)
+{
+    TestGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
 uniform RaytracingAccelerationStructure IN_1_aAS : register(t0);
 
 static float4 gl_FragCoord;
@@ -17,22 +32,30 @@ static RayQuery<RAY_FLAG_NONE> rayQuery;
 
 void frag_main()
 {
-    float2 _175 = gl_FragCoord.xy * 0.001953125f.xx;
-    RayDesc _1ident = {float3(0.0f, 0.0f, -1.0f), 0.001000000047497451305389404296875f, normalize(float3((_175.x * 2.0f) - 1.0f, ((1.0f - _175.y) * 2.0f) - 1.0f, 1.0f) - float3(0.0f, 0.0f, -1.0f)), 1000.0f};
+    TestGpuFuncs_RayUniforms _220;
+    _220.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _220.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _220.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _220.padding = IN_1_aUniforms_v.padding;
+    _220.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _220.cameraInvProj = IN_1_aUniforms_v.cameraInvProj;
+    float2 _266 = gl_FragCoord.xy / float2(_220.rtWidth, _220.rtHeight);
+    float4 _327 = mul(float4(_266.x, 1.0f - _266.y, 1.0f, 1.0f), _220.cameraInvProj);
+    RayDesc _1ident = {float3(_220.cameraInvView[3].x, _220.cameraInvView[3].y, _220.cameraInvView[3].z), 0.001000000047497451305389404296875f, mul(float4(normalize((_327 / _327.w.xxxx).xyz), 0.0f), _220.cameraInvView).xyz, _220.cameraFarClipPlane};
     rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
-    bool _194 = rayQuery.Proceed();
-    uint _195 = rayQuery.CommittedStatus();
-    float4 _243;
-    if (_195 == 1u)
+    bool _296 = rayQuery.Proceed();
+    uint _297 = rayQuery.CommittedStatus();
+    float4 _419;
+    if (_297 == 1u)
     {
-        _243 = float4(0.0f, 1.0f, 0.0f, 1.0f);
+        _419 = float4(0.0f, 1.0f, 0.0f, 1.0f);
     }
     else
     {
-        bool4 _246 = (_195 == 2u).xxxx;
-        _243 = float4(_246.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _246.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _246.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _246.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _422 = (_297 == 2u).xxxx;
+        _419 = float4(_422.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _422.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _422.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _422.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _243;
+    OUT_0_rval_color = _419;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

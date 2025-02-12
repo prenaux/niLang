@@ -540,10 +540,6 @@ sMatrix<T>& MatrixMultiply(sMatrix<T>& Out, const sMatrix<T>& M1, const sMatrix<
 
   return Out;
 }
-template <typename T>
-sMatrix<T>* MatrixMultiply(sMatrix<T>* Out, const sMatrix<T>* M1, const sMatrix<T>* M2) {
-  return &MatrixMultiply(*Out,*M1,*M2);
-}
 
 ///////////////////////////////////////////////
 template <typename T>

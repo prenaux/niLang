@@ -177,14 +177,6 @@ sVec4<T>& VecCross(sVec4<T>& Out,
   Out.w = w;
   return Out;
 }
-template <class T>
-sVec4<T>* VecCross(sVec4<T>* Out,
-                      const sVec4<T>* V1,
-                      const sVec4<T>* V2,
-                      const sVec4<T>* V3)
-{
-  return &VecCross(*Out,*V1,*V2,*V3);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -301,12 +293,6 @@ sVec4<T>& VecNormalize(sVec4<T>& Out,
   Out.w = V.w * denom;
   return Out;
 }
-template <class T>
-sVec4<T>* VecNormalize(sVec4<T>* Out,
-                          const sVec4<T>* V)
-{
-  return &VecNormalize(*Out,*V);
-}
 
 ///////////////////////////////////////////////
 template <class T>
@@ -345,13 +331,6 @@ sVec4<T>& VecTransform(sVec4<T>& Out,
   Out.w = x * M._14 + y * M._24 + z * M._34 + w * M._44;
 
   return Out;
-}
-template <class T>
-sVec4<T>* VecTransform(sVec4<T>* Out,
-                          const sVec4<T>* V,
-                          const sMatrix<T>* M)
-{
-  return &VecTransform(*Out,*V,*M);
 }
 
 ///////////////////////////////////////////////

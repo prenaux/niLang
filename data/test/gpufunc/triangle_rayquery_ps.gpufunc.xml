@@ -6,6 +6,9 @@
 		<Outputs>
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
+		<UBOs>
+			<UBO name="UBO_TestGpuFuncs_RayUniforms" type="_214" set="0" binding="0"/>
+		</UBOs>
 		<AccelerationStructures>
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>
 		</AccelerationStructures>

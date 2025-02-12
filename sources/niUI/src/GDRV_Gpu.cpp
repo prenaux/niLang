@@ -364,15 +364,15 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 
       pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
-      _pipelineClearColorDepth = niCheckNN(_pipelineClearColorDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearColorDepth = niCheckNN(_pipelineClearColorDepth, gpuDriver->CreateGpuPipeline(_H("pipelineClearColorDepth"),pipelineDesc), eFalse);
 
       pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
-      _pipelineClearColor = niCheckNN(_pipelineClearColor, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearColor = niCheckNN(_pipelineClearColor, gpuDriver->CreateGpuPipeline(_H("pipelineClearColor"),pipelineDesc), eFalse);
 
       pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingColorWriteNone);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
-      _pipelineClearDepth = niCheckNN(_pipelineClearDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearDepth = niCheckNN(_pipelineClearDepth, gpuDriver->CreateGpuPipeline(_H("pipelineClearDepth"),pipelineDesc), eFalse);
     }
 
     return eTrue;

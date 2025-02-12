@@ -135,8 +135,10 @@ using GLhandle = void*;
 #elif defined niOSX
 #  include <niLang/Platforms/OSX/osxgl.h>
 
-#  include <OpenGL/gl.h>
+// #  include <OpenGL/gl.h>
 #  include <OpenGL/glext.h>
+#  include <OpenGL/gl3.h>
+// #  include <OpenGL/gl3ext.h>
 #  define TSGL_DESKTOP
 #  define __TSGL_STATIC_CORE__
 #  define __TSGL_STATIC_EXT__

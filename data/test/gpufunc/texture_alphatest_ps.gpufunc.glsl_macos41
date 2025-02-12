@@ -1,0 +1,32 @@
+#version 410
+
+// Define a uniform block for TestGpuFuncs_TestUniforms
+layout(std140) uniform TestGpuFuncs_TestUniforms {
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform sampler2D IN_1_aTexture;
+
+in vec4 rval_color;
+in vec2 rval_tex1;
+out vec4 OUT_0_rval_color;
+
+void main()
+{
+    // Sample the texture
+    vec4 sampledColor = texture(IN_1_aTexture, rval_tex1);
+
+    // Check if the alpha value is less than alphaRef and discard if true
+    if (sampledColor.w < alphaRef)
+    {
+        discard;
+    }
+
+    // Output the final color
+    OUT_0_rval_color = sampledColor * rval_color;
+}

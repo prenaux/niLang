@@ -1,0 +1,36 @@
+#version 410
+
+struct TestGpuFuncs_TestUniforms {
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+// Uniform buffer object for TestGpuFuncs_TestUniforms
+layout(std140) uniform UBO_TestGpuFuncs {
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+} TestGpuFuncs;
+
+// Sampler for texture
+uniform sampler2D aTexture;
+
+// Input variables from vertex shader
+in vec4 aInput_color;
+in vec2 aInput_tex0;
+
+// Output color
+out vec4 rval_color;
+
+void main()
+{
+    // Sample the texture and multiply by input color
+    rval_color = texture(aTexture, aInput_tex0) * aInput_color;
+}

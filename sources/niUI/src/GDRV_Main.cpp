@@ -15,6 +15,9 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&);
 #ifdef GDRV_GL2
 niExportFunc(iUnknown*) New_GraphicsDriver_GL2(const Var& avarA, const Var&);
 #endif
+#ifdef GDRV_GL3
+niExportFunc(iUnknown*) New_GraphicsDriver_GL3(const Var& avarA, const Var&);
+#endif
 #ifdef GDRV_METAL
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var&);
 #endif
@@ -46,6 +49,9 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
 #endif
 #ifdef GDRV_GL2
       _RegisterGraphicsDriver("GL2",New_GraphicsDriver_GL2);
+#endif
+#ifdef GDRV_GL3
+      _RegisterGraphicsDriver("GL3",New_GraphicsDriver_GL3);
 #endif
 #ifdef GDRV_METAL
       _RegisterGraphicsDriver("Metal",New_GraphicsDriver_Metal);

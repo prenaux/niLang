@@ -1,9 +1,9 @@
 #version 410
 
-layout(location = 1) in vec4 IN_1_aInput_color;
-layout(location = 0) out vec4 OUT_0_rval_color;
+in vec4 outColor;
+out vec4 FragColor;
 
 void main()
 {
-    OUT_0_rval_color = IN_1_aInput_color;
+    FragColor = outColor;
 }

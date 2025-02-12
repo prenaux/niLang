@@ -1,0 +1,30 @@
+#version 410
+
+// Define a uniform block for TestGpuFuncs_TestUniforms
+layout(std140) uniform TestGpuFuncs_TestUniforms {
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 10) in vec4 IN_4_aInput_color;
+layout(location = 1) in vec2 IN_5_aInput_tex0;
+
+out vec4 rval_color;
+out vec2 rval_tex1;
+
+void main()
+{
+    // Transform the position using the WVP matrix
+    gl_Position = mtxWVP * vec4(IN_0_aInput_position, 1.0);
+
+    // Pass through the color multiplied by the material color
+    rval_color = IN_4_aInput_color * materialColor;
+
+    // Pass through the texture coordinates
+    rval_tex1 = IN_5_aInput_tex0;
+}

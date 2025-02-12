@@ -1,0 +1,106 @@
+NISH_RUN_EXE = [ FDirName $(WORK) bin $(BUILD_BIN_LOA) nish_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
+NISH_GLSLANG_OPT_FLAGS = -Os ;
+NISH_SPIRV_OPT_FLAGS = -O ;
+
+# nishGetStageFromEntryPoint ENTRYPOINT
+rule nishGetStageFromEntryPoint {
+  switch $(<) {
+    case *_vert : return vert ;
+    case *_vs : return vert ;
+    case *_frag : return frag ;
+    case *_ps : return frag ;
+    case *_rgen : return rgen ;
+    case *_rint : return rint ;
+    case *_rchit : return rchit ;
+    case *_rahit : return rahit ;
+    case *_rmiss : return rmiss ;
+  }
+}
+
+# nishGetTargetsFromStage stage
+rule nishGetTargetsFromStage {
+  switch $(<) {
+    # ray tracing
+    case r* : return glsl_vk46 ;
+    # rasterization
+    case * : return glsl_vk46 msl2_macos hlsl5 ;
+  }
+}
+
+# nishCompileGlsl TARGET.gpufunc.xml : INPUT.glsl : STAGE : GPU_TARGETS
+rule nishCompileGlsl {
+  local OUTPUT = $(1) ;
+  # logInfoVar OUTPUT ;
+  local OUT_DIR = $(OUTPUT:D) ;
+  # logInfoVar OUT_DIR ;
+  local OUT_GPUFUNC = [ FDirName $(OUT_DIR) $(OUTPUT:B) ] ;
+  # logInfoVar OUT_GPUFUNC ;
+  local BASENAME = $(OUT_GPUFUNC:B) ;
+  # logInfoVar BASENAME ;
+  local INPUT = $(2) ;
+  # logInfoVar INPUT ;
+  local STAGE = $(3) ;
+  # logInfoVar STAGE ;
+  local GPU_TARGETS = $(4) ;
+  # logInfoVar GPU_TARGETS ;
+
+  local langOutputs = ;
+  for _gpuTarget in $(4) {
+    local t = $(1:S=.$(_gpuTarget)) ;
+    # logInfoVar t ;
+    GeneratedWith $(t) : $(OUTPUT) : nishCompileGlsl ;
+    langOutputs += $(t) ;
+  }
+  # logInfoVar langOutputs ;
+
+  _BASENAME on $(<) = $(BASENAME) ;
+  _STAGE on $(<) = $(STAGE) ;
+  _INPUT on $(<) = $(INPUT) ;
+  _OUT_GPUFUNC on $(<) = $(OUT_GPUFUNC) ;
+  _GPU_TARGETS on $(<) = $(GPU_TARGETS:J=,) ;
+
+  DEPENDS $(OUTPUT) : $(INPUT) ;
+  return $(OUTPUT) $(langOutputs) ;
+}
+
+actions nishCompileGlsl {
+  $(NISH_RUN_EXE) \
+    @glslang $(NISH_GLSLANG_OPT_FLAGS) -S $(_STAGE) --target-env vulkan1.2 -V -o "$(_INPUT).spv" "$(_INPUT)"\
+    @spirv-opt $(NISH_SPIRV_OPT_FLAGS) "$(_INPUT).spv" -o "$(_OUT_GPUFUNC).spv_vk12"\
+    @nish -S $(_STAGE) -n "$(_BASENAME)" -t $(_GPU_TARGETS) "$(_OUT_GPUFUNC).spv_vk12" "$(_OUT_GPUFUNC).xml"\
+    @rm "$(_INPUT).spv"
+}
+
+# nishGpuFuncs TARGET : GPUFUNC_DIR : GEN_SCRIPT (in NIL_SHADERS_DIR) : ENTRYPOINTS
+rule niBuildGpuFuncs {
+  local t = $(1) ;
+  local gpuFuncDir = [ AssertFDirName niBuildGpuFuncs : $(2) ] ;
+  local genScript = [ AssertFDirName niBuildGpuFuncs : $(3) ] ;
+  local entryPoints = $(4) ;
+
+  # Generate all gpufunc at once
+  # local genList = ;
+  # for _e in $(entryPoints) {
+  #   genList += [ FDirName $(gpuFuncDir) $(_e:S=.glsl) ] ;
+  # }
+  # niGeneratorScript $(genList) : $(genScript) : $(genList) ;
+
+  for _e in $(entryPoints) {
+    # logInfoVar _e ;
+    local gpuFuncXml = [ FDirName $(gpuFuncDir) $(_e).gpufunc.xml ] ;
+    # logInfoVar gpuFuncXml ;
+    local inputGlsl = [ FDirName $(gpuFuncDir) $(_e).glsl ] ;
+    # logInfoVar inputGlsl ;
+    local stage = [ nishGetStageFromEntryPoint $(_e) ] ;
+    # logInfoVar stage ;
+    local targets = [ nishGetTargetsFromStage $(stage) ] ;
+    # logInfoVar targets ;
+
+    niGeneratorScript $(inputGlsl) : $(genScript) : $(inputGlsl) ;
+
+    local r = [ nishCompileGlsl $(gpuFuncXml) : $(inputGlsl) : $(stage) : $(targets) ] ;
+    DEPENDS $(t) : $(r) ;
+  }
+
+  return $(t) ;
+}

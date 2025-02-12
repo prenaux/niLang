@@ -6,3 +6,4 @@ include [ FDirName $(NILANG_DIR) sources _rules_sdks.ham ] ;
 if $(EMSCRIPTEN) = 1 {
   include [ FDirName $(NILANG_DIR) sources _rules_ni_emscripten.ham ] ;
 }
+include [ FDirName $(NILANG_DIR) sources _rules_gpufunc.ham ] ;

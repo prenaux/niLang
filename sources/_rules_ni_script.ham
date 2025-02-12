@@ -82,3 +82,31 @@ rule niScriptTest {
   DEPENDS tests : $(TARGET) ;
   return $(TARGET) ;
 }
+
+# niGeneratorScript OUTPUT(S) : GENERATOR_SCRIPT : SCRIPT_PARAMETERS
+rule niGeneratorScript {
+  local OUTPUTS = $(1) ;
+  local FIRST_OUTPUT = [ ListGetFirst $(1) ] ;
+  local GENERATOR_SCRIPT = [ AssertFExists niGeneratorScript : $(2) ] ;
+  local SCRIPT_PARAMS = $(3) ;
+  _OUTPUTS on $(<) = $(OUTPUTS) ;
+  _GEN_SCRIPT on $(<) = $(GENERATOR_SCRIPT) ;
+  _SCRIPT_PARAMS on $(<) = $(SCRIPT_PARAMS) ;
+  local FIRST_OUTPUT = [ ListGetFirst $(OUTPUTS) ] ;
+  for _o in $(OUTPUTS) {
+    if $(_o) != $(FIRST_OUTPUT) {
+      GeneratedWith $(_o) : $(FIRST_OUTPUT) : niGeneratorScript ;
+    }
+  }
+
+  DEPENDS $(OUTPUTS) : $(GENERATOR_SCRIPT) ;
+  return $(OUTPUTS) ;
+}
+actions niGeneratorScript {
+  "$(NI_EXE)" -DniScript.NoLint=1\
+    -I"$(WORK)/niLang/scripts"\
+    -I"$(WORK)/Vlk/scripts"\
+    -I"$(WORK)/Playground/scripts"\
+    -e "$(_GEN_SCRIPT)"\
+    $(_SCRIPT_PARAMS)
+}

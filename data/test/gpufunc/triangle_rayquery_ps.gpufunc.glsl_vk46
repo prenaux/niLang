@@ -8,7 +8,7 @@ struct TestGpuFuncs_RayUniforms
     float cameraFarClipPlane;
     float padding;
     mat4 cameraInvView;
-    mat4 cameraInvProj;
+    mat4 cameraInvViewProj;
 };
 
 uniform vec4 UBO_TestGpuFuncs_RayUniforms[9];
@@ -19,28 +19,35 @@ rayQueryEXT rayQuery;
 
 void main()
 {
-    TestGpuFuncs_RayUniforms _219 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
-    TestGpuFuncs_RayUniforms _220;
-    _220.rtWidth = _219.rtWidth;
-    _220.rtHeight = _219.rtHeight;
-    _220.cameraFarClipPlane = _219.cameraFarClipPlane;
-    _220.padding = _219.padding;
-    _220.cameraInvView = _219.cameraInvView;
-    _220.cameraInvProj = _219.cameraInvProj;
-    vec2 _266 = gl_FragCoord.xy / vec2(_220.rtWidth, _220.rtHeight);
-    vec4 _327 = _220.cameraInvProj * vec4(_266.x, 1.0 - _266.y, 1.0, 1.0);
-    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, vec3(_220.cameraInvView[3].x, _220.cameraInvView[3].y, _220.cameraInvView[3].z), 0.001000000047497451305389404296875, (_220.cameraInvView * vec4(normalize((_327 / vec4(_327.w)).xyz), 0.0)).xyz, _220.cameraFarClipPlane);
-    bool _296 = rayQueryProceedEXT(rayQuery);
-    uint _297 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
-    vec4 _419;
-    if (_297 == 1u)
+    TestGpuFuncs_RayUniforms _268 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
+    TestGpuFuncs_RayUniforms _269;
+    _269.rtWidth = _268.rtWidth;
+    _269.rtHeight = _268.rtHeight;
+    _269.cameraFarClipPlane = _268.cameraFarClipPlane;
+    _269.padding = _268.padding;
+    _269.cameraInvView = _268.cameraInvView;
+    _269.cameraInvViewProj = _268.cameraInvViewProj;
+    vec3 _327 = vec3(_269.cameraInvView[3].x, _269.cameraInvView[3].y, _269.cameraInvView[3].z);
+    vec4 _385 = _269.cameraInvViewProj * vec4(((gl_FragCoord.x / _269.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _269.rtHeight) * 2.0), 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, _327, 0.001000000047497451305389404296875, normalize((_385 / vec4(_385.w)).xyz - _327), _269.cameraFarClipPlane);
+    bool _342 = rayQueryProceedEXT(rayQuery);
+    uint _343 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    int _344 = rayQueryGetIntersectionInstanceIdEXT(rayQuery, bool(1));
+    uint _346 = uint(_344) + 1u;
+    uint _421 = _346 + (_346 << uint(10));
+    uint _425 = _421 ^ (_421 >> uint(6));
+    uint _429 = _425 + (_425 << uint(3));
+    uint _433 = _429 ^ (_429 >> uint(11));
+    uint _437 = _433 + (_433 << uint(15));
+    vec4 _511;
+    if (_343 == 1u)
     {
-        _419 = vec4(0.0, 1.0, 0.0, 1.0);
+        _511 = vec4(float((_437 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_437 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_437 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
     }
     else
     {
-        _419 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_297 == 2u));
+        _511 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_343 == 2u));
     }
-    OUT_0_rval_color = _419;
+    OUT_0_rval_color = _511;
 }
 

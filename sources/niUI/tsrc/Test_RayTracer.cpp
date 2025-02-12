@@ -30,8 +30,8 @@ using namespace ni;
 // - [ ] p1: Visualize: worldspace position
 //
 
-static const tF32 kfRunSpeed = 2.560f;
-static const tF32 kfNormalSpeed = 1.280f;
+static const tF32 kfRunSpeed = 256.0f;
+static const tF32 kfNormalSpeed = 64.0f;
 
 struct FRayTracer {
 };
@@ -60,7 +60,15 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   sMatrixf _prevViewMtx;
   sMatrixf _prevProjMtx;
 
-  Ptr<iDrawOperationSet> _drawOpSet;
+  struct sGeometry {
+    NN<iDrawOperation> _drawOp;
+
+    sGeometry(
+      ain<nn<iDrawOperation>> aDop
+    ) : _drawOp(aDop)
+    {}
+  };
+  astl::vector<sGeometry> _geoms;
 
   tU32 _numTriVB = 0;
   tU32 _numTriIB = 0;
@@ -148,8 +156,6 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
       _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
     }
-
-    _drawOpSet = mpWidget->GetGraphics()->CreateDrawOperationSet();
     return eTrue;
   }
 
@@ -359,7 +365,18 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       (tF32)ni::GetLang()->GetFrameTime()
     );
 
-    _drawOpSet->Draw(gc, mptrCamera->GetFrustum());
+    iFrustum* frustum = mptrCamera->GetFrustum();
+    niLoop(i,_geoms.size()) {
+      niLet& geom = _geoms[i];
+      nn<iDrawOperation> dop = geom._drawOp;
+      if (frustum && dop->GetBoundingVolume()) {
+        if (dop->GetBoundingVolume()->IntersectFrustum(NULL,frustum) ==
+            eIntersectionResult_None) {
+          continue; // skip this draw op...
+        }
+      }
+      gc->DrawOperation(dop);
+    }
 
     ptrFS->SetCameraViewMatrix(wasViewMatrix);
     ptrFS->SetCameraProjectionMatrix(wasProjectionMatrix);
@@ -399,7 +416,6 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool CreateSphere(const sVec3f& avCenter, iTexture* apTex, tF32 afSize = 10.0f, tBool abForceTranslucent = eFalse) {
-
     Ptr<iGeometry> g = mpWidget->GetGraphics()->CreateGeometryPolygonalSphere(
         eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
         afSize,16,16,eTrue,0xFFFFFFFF,sMatrixf::Identity());
@@ -410,15 +426,14 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
         mat->GetFlags()|eMaterialFlags_Translucent|eMaterialFlags_Transparent);
     }
 
-    Ptr<iDrawOperation> drawOp = mpWidget->GetGraphics()->CreateDrawOperation();
+    niLet drawOp = niCheckNN(drawOp,mpWidget->GetGraphics()->CreateDrawOperation(),eFalse);
     drawOp->SetVertexArray(g->GetVertexArray());
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
-    sMatrixf mtx;
     drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
     drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
-    drawOp->SetMatrix(MatrixTranslation(mtx,avCenter));
-    _drawOpSet->Insert(drawOp);
+    drawOp->SetMatrix(MatrixTranslation(avCenter));
+    _geoms.emplace_back(sGeometry(drawOp));
     return eTrue;
   }
 
@@ -437,20 +452,33 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       }
     }
 
-    Ptr<iDrawOperation> drawOp = mpWidget->GetGraphics()->CreateDrawOperation();
+    niLet drawOp = niCheckNN(drawOp,mpWidget->GetGraphics()->CreateDrawOperation(),eFalse);
     drawOp->SetVertexArray(g->GetVertexArray());
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
-    sMatrixf mtx;
     drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
     drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
-    drawOp->SetMatrix(MatrixTranslation(mtx,avCenter));
-    _drawOpSet->Insert(drawOp);
+    drawOp->SetMatrix(MatrixTranslation(avCenter));
+    _geoms.emplace_back(sGeometry(drawOp));
     return eTrue;
   }
 
   tBool InitSceneOneBox(tBool abBoxed = eFalse) {
     niCheck(CreateCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+    return eTrue;
+  }
+
+  tBool InitSceneManyBoxes(tBool abBoxed = eFalse) {
+    niCheck(CreateCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+
+    niCheck(CreateCube(Vec3(-25.0f,-20.0f,100.0f),nullptr),eFalse);
+    niCheck(CreateCube(Vec3(-30.0f,-10.0f,110.0f),nullptr),eFalse);
+    niCheck(CreateCube(Vec3(-30.0f, 10.0f,105.0f),nullptr),eFalse);
+    niCheck(CreateCube(Vec3( 25.0f,-20.0f,100.0f),nullptr),eFalse);
+    niCheck(CreateCube(Vec3( 30.0f,-10.0f,110.0f),nullptr),eFalse);
+
+    niCheck(CreateCube(Vec3( 30.0f, 10.0f,105.0f),nullptr),eFalse);
+    niCheck(CreateCube(Vec3(  0.0f,-15.0f,75.0f),nullptr,eTrue,eTrue),eFalse);
     return eTrue;
   }
 
@@ -471,7 +499,8 @@ struct Triangle : public RayTracerBase {
 
   tBool __stdcall OnSinkAttached() niImpl {
     CHECK(RayTracerBase::OnSinkAttached());
-    CHECK(InitSceneOneBox());
+    //CHECK(InitSceneOneBox());
+    CHECK(InitSceneManyBoxes());
 
     // Create ray tracing shaders
     {
@@ -513,6 +542,51 @@ struct Triangle : public RayTracerBase {
           eRayInstanceFlags_None), eFalse);
       }
 
+      // Add all draw operations
+      {
+        niLoop(i,_geoms.size()) {
+          niLet& geom = _geoms[i];
+          nn<iDrawOperation> dop = geom._drawOp;
+          niLet fvfDesc = cFVFDescription(dop->GetVertexArray()->GetFVF());
+          NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
+          NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
+
+          niLet prDesc = niCheckNN(
+            prDesc,
+            _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_PrimDesc_%d",m_testName,i)),
+            eFalse);
+
+          const tU32 firstInd = dop->GetFirstIndex();
+          tU32 numInds = dop->GetNumIndices();
+          if (!numInds) {
+            numInds = dop->GetIndexArray()->GetNumIndices()-firstInd;
+          }
+          niCheck(prDesc->AddTrianglesIndexed(
+            vaBuffer,
+            dop->GetBaseVertexIndex()*fvfDesc.GetStride(),
+            fvfDesc.GetStride(),
+            dop->GetVertexArray()->GetNumVertices(),
+            iaBuffer,
+            firstInd*sizeof(tU32),
+            eGpuIndexType_U32,
+            numInds,
+            sMatrixf::Identity(),
+            eRayPrimitiveFlags_Opaque,
+            0), eFalse);
+
+          niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
+            HFmt("%s_Prim_%d",m_testName,i),prDesc), eFalse);
+
+          niCheck(instDesc->AddInstance(
+            primitiveAS,
+            dop->GetMatrix(),     // Transform
+            0,                    // Instance ID
+            0xFF,                 // Mask
+            0,                    // Hit group offset
+            eRayInstanceFlags_None), eFalse);
+        }
+      }
+
       _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
         _H("RayInstances_Triangle"),instDesc), eFalse);
     }
@@ -542,7 +616,7 @@ struct Triangle : public RayTracerBase {
     u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
     u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvProj = MatrixInverse(mptrCamera->GetProjectionMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 

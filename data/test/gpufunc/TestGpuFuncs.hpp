@@ -27,7 +27,7 @@ struct TestGpuFuncs_RayUniforms {
 
   // Constructor
   TestGpuFuncs_RayUniforms();
-  TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvProj);
+  TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvViewProj);
 
   // Variables
   ni::tF32 rtWidth;
@@ -35,7 +35,7 @@ struct TestGpuFuncs_RayUniforms {
   ni::tF32 cameraFarClipPlane;
   ni::tF32 padding;
   ni::sMatrixf cameraInvView;
-  ni::sMatrixf cameraInvProj;
+  ni::sMatrixf cameraInvViewProj;
 };
 
 // FunctionFwd: TestGpuFuncs
@@ -62,14 +62,14 @@ inline TestGpuFuncs_RayUniforms::TestGpuFuncs_RayUniforms() {
   this->cameraFarClipPlane = (ni::tF32)10000.0;
   this->padding = (ni::tF32)0.0;
   this->cameraInvView = ni::sMatrixf::Identity();
-  this->cameraInvProj = ni::sMatrixf::Identity();
+  this->cameraInvViewProj = ni::sMatrixf::Identity();
 }
-inline TestGpuFuncs_RayUniforms::TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvProj) {
+inline TestGpuFuncs_RayUniforms::TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvViewProj) {
   this->rtWidth = a_rtWidth;
   this->rtHeight = a_rtHeight;
   this->cameraFarClipPlane = a_cameraFarClipPlane;
   this->cameraInvView = a_cameraInvView;
-  this->cameraInvProj = a_cameraInvProj;
+  this->cameraInvViewProj = a_cameraInvViewProj;
 }
 
 // Function: TestGpuFuncs

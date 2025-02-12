@@ -497,6 +497,12 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
       ((tF64)(_fvfStride * anNumVertices))/(1024.0*1024.0)));
   }
 
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl {
+    if (aIID == niGetInterfaceUUID(iGpuBuffer))
+      return _buffer;
+    return BaseImpl::QueryInterface(aIID);
+  }
+
   virtual tBool __stdcall IsOK() const niImpl {
     return _buffer->IsOK();
   }
@@ -566,6 +572,12 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
       ((tF64)(knFixedGpuIndexSize * anNumIndices))/(1024.0*1024.0)));
   }
 
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl {
+    if (aIID == niGetInterfaceUUID(iGpuBuffer))
+      return _buffer;
+    return BaseImpl::QueryInterface(aIID);
+  }
+
   virtual tBool __stdcall IsOK() const niImpl {
     return _buffer->IsOK();
   }
@@ -619,7 +631,7 @@ iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 an
       nullptr,
       fvfStride * anNumVertices,
       eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Vertex);
+      eGpuBufferUsageFlags_Vertex|eGpuBufferUsageFlags_RayBuildInput);
     niCheckIsOK(vaBuffer,nullptr);
     return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage);
   }
@@ -630,7 +642,7 @@ iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphics
     nullptr,
     knFixedGpuIndexSize * anNumIndices,
     eGpuBufferMemoryMode_Shared,
-    eGpuBufferUsageFlags_Index);
+    eGpuBufferUsageFlags_Index|eGpuBufferUsageFlags_RayBuildInput);
   return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
 }
 

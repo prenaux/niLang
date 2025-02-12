@@ -527,8 +527,6 @@ static int _MainEnd(astl::non_null<AppContext*> apContext) {
   // reason the C++ library delete the thread handles before calling the
   // Concurrent object's destructor so the Windows Events wait forever.
   ni::GetConcurrent()->Invalidate();
-  // And this makes sure we use a safe exit method, avoids crashes on exit...
-  ni::GetLang()->Exit(0);
   return 0;
 }
 

@@ -17,8 +17,9 @@ uint lib_shader_RayFlags_None;
 uint lib_shader_RayQueryIntersectionType_CommittedTriangle;
 uint lib_shader_RayQueryIntersectionType_CommittedGenerated;
 // FunctionFwd: lib:shader
+uint lib_shader_HashJenkins(uint aStartX);
+vec3 lib_shader_UIntToHashColor(uint i);
 vec3 lib_shader_Vec3TransformCoord(vec3 v, mat4 m);
-vec3 lib_shader_Vec3TransformNormal(vec3 v, mat4 m);
 void lib_shader_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
   lib_shader_RayFlags_None = 0;
@@ -29,15 +30,23 @@ void lib_shader_RayQueryIntersectionType_static_initialize() {
   lib_shader_RayQueryIntersectionType_CommittedGenerated = 2;
 }
 // Function: lib:shader
-vec3 lib_shader_Vec3TransformCoord(vec3 v, mat4 m) {
-  vec3 _tmp_3 = v;
-  vec4 r = (m * vec4(_tmp_3.x,_tmp_3.y,_tmp_3.z,1.0));
-  return ((r/r.w).xyz);
+uint lib_shader_HashJenkins(uint aStartX) {
+  uint x = aStartX;
+  x = (x + (x << 10));
+  x = (x ^ (x >> 6));
+  x = (x + (x << 3));
+  x = (x ^ (x >> 11));
+  x = (x + (x << 15));
+  return x;
 }
-vec3 lib_shader_Vec3TransformNormal(vec3 v, mat4 m) {
-  vec3 _tmp_c = v;
-  vec4 r = (m * vec4(_tmp_c.x,_tmp_c.y,_tmp_c.z,0.0));
-  return (r.xyz);
+vec3 lib_shader_UIntToHashColor(uint i) {
+  uint hash = lib_shader_HashJenkins(i);
+  return vec3((float(((hash >> 0) & 255)) / 255.0),(float(((hash >> 8) & 255)) / 255.0),(float(((hash >> 16) & 255)) / 255.0));
+}
+vec3 lib_shader_Vec3TransformCoord(vec3 v, mat4 m) {
+  vec3 _tmp_O = v;
+  vec4 r = (m * vec4(_tmp_O.x,_tmp_O.y,_tmp_O.z,1.0));
+  return ((r/r.w).xyz);
 }
 // ModuleInitialize: lib_shader
 void lib_shader_initialize() {
@@ -61,7 +70,7 @@ struct TestGpuFuncs_RayUniforms {
   float cameraFarClipPlane;
   float padding;
   mat4 cameraInvView;
-  mat4 cameraInvProj;
+  mat4 cameraInvViewProj;
 };
 
 // TypeMethFwd: PixelOutput
@@ -79,34 +88,34 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_PixelOutput_new(vec4 a_color) {
 
 // Function: TestGpuFuncs
 TestGpuFuncs_PixelOutput TestGpuFuncs_triangle_rayquery_ps(lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
-  vec2 coords = (aInput.fragCoord.xy);
-  vec2 dims = vec2(aUniforms.rtWidth,aUniforms.rtHeight);
-  vec2 uv = (coords/dims);
-  mat4 _tmp_8 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_8[3][0],_tmp_8[3][1],_tmp_8[3][2]);
-  vec3 target = lib_shader_Vec3TransformCoord(vec3(uv.x,(1.0 - uv.y),1.0),aUniforms.cameraInvProj);
-  vec3 dir = lib_shader_Vec3TransformNormal(normalize(target),aUniforms.cameraInvView);
+  vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
+  mat4 _tmp_l = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_l[3][0],_tmp_l[3][1],_tmp_l[3][2]);
+  vec3 target = lib_shader_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
+  vec3 dir = normalize(((target-(origin.xyz)).xyz));
   rayQueryEXT rayQuery/*__noinit__*/;
   rayQueryInitializeEXT(rayQuery,aAS,lib_shader_RayFlags_None,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
   bool done = rayQueryProceedEXT(rayQuery);
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
-  vec4 _tmp_D;
-  bool _tmp_E = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_E) {
-    _tmp_D = vec4(0.0,1.0,0.0,1.0);
+  vec3 _tmp_J = lib_shader_UIntToHashColor((uint(rayQueryGetIntersectionInstanceIdEXT(rayQuery,true)) + 1));
+  vec4 instanceColor = vec4(_tmp_J.x,_tmp_J.y,_tmp_J.z,1.0);
+  vec4 _tmp_R;
+  bool _tmp_S = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_S) {
+    _tmp_R = instanceColor;
   }
   else {
-    bool _tmp_L = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedGenerated);
-    if (_tmp_L) {
-      _tmp_D = vec4(1.0,0.0,0.0,1.0);
+    bool _tmp_V = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedGenerated);
+    if (_tmp_V) {
+      _tmp_R = vec4(1.0,0.0,0.0,1.0);
     }
     else {
       {
-        _tmp_D = vec4(0.0,0.5,0.8,0.0);
+        _tmp_R = vec4(0.0,0.5,0.8,0.0);
       }
     }
   }
-  return TestGpuFuncs_PixelOutput_new(_tmp_D);
+  return TestGpuFuncs_PixelOutput_new(_tmp_R);
 }
 // MODULE END TestGpuFuncs
 

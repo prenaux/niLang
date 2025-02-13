@@ -81,7 +81,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   NN<iGpuBuffer> _displayVABuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _displayIABuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuFunction> _displayVertexGpuFun = niDeferredInit(NN<iGpuFunction>);
-  NN<iGpuFunction> _displayPixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _displayRayqueryGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _displayPipeline = niDeferredInit(NN<iGpuPipeline>);
 
   TEST_CONSTRUCTOR(RayTracerBase) {
@@ -93,7 +93,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   ~RayTracerBase() {
   }
 
-  tBool __stdcall OnSinkAttached() niOverride {
+  virtual tBool __stdcall OnSinkAttached(iHString* ahspRayqueryGpufuncPath) {
     CHECK(_InitializeCamera());
 
     _graphics = mpWidget->GetGraphics();
@@ -145,15 +145,16 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       // Setup display pipeline
       _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
         eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
-      _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+
+      _displayRayqueryGpuFun = niCheckNN(_displayRayqueryGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,ahspRayqueryGpufuncPath),eFalse);
 
       NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexCanvas::eFVF);
       pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
       pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayPixelGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayRayqueryGpuFun);
       _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
     }
     return eTrue;
@@ -170,6 +171,12 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     mptrCamera->SetPosition(Vec3f(-2.5f,-0.5f,-3.0f));
     mptrCamera->SetTarget(mptrCamera->GetPosition() + Vec3f(0,0,1));
     mptrCamera->SetTargetUp(Vec3f(0,1,0));
+  }
+
+  tF32 _GetCameraSpeed() const {
+    const tF32 speed = ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
+                        kfRunSpeed : kfNormalSpeed);
+    return speed;
   }
 
   tBool __stdcall _InitializeCamera() {
@@ -195,8 +202,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       return;
 
     const tF32 dt = (tF32)ni::GetLang()->GetFrameTime();
-    const tF32 speed = ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
-                        kfRunSpeed : kfNormalSpeed);
+    const tF32 speed = _GetCameraSpeed();
     mptrCamera->MoveForward(_cameraMove.z * speed * dt);
     mptrCamera->MoveUp(_cameraMove.y * speed * dt);
     mptrCamera->MoveSidewards(_cameraMove.x * speed * dt);
@@ -207,9 +213,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   tBool __stdcall OnWheel(tF32 afWheel, const sVec2f& avAbsMousePos) niOverride {
     if (_mouseLook && _cameraInput) {
       mptrCamera->MoveForward(
-          afWheel*0.2f*
-          ((mpWidget->GetUIContext()->GetInputModifiers()&eUIInputModifier_Shift) ?
-           kfRunSpeed : kfNormalSpeed));
+          afWheel*0.2f*_GetCameraSpeed());
     }
     return eFalse;
   }
@@ -491,22 +495,12 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 //----------------------------------------------------------------------------
 struct Triangle : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
-  //NN<iRayInstancesDesc> _instancesDesc = niDeferredInit(NN<iRayInstancesDesc>);
-  NN<iGpuFunction> _triangleRayQueryFun = niDeferredInit(NN<iGpuFunction>);
 
   TEST_CONSTRUCTOR_BASE(Triangle,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached());
-    //CHECK(InitSceneOneBox());
-    CHECK(InitSceneManyBoxes());
-
-    // Create ray tracing shaders
-    {
-      _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
-    }
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
 
     // Create acceleration structure
     {
@@ -591,15 +585,129 @@ struct Triangle : public RayTracerBase {
         _H("RayInstances_Triangle"),instDesc), eFalse);
     }
 
-    // Recreate the display pipeline with our shader
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+    RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+
+    DisplayTexture(gpuEncoder,nullptr);
+    return eFalse;
+  }
+};
+TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
+
+//----------------------------------------------------------------------------
+//
+// Section: ManyBoxes
+//
+//----------------------------------------------------------------------------
+struct ManyBoxes : public RayTracerBase {
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+
+  TEST_CONSTRUCTOR_BASE(ManyBoxes,RayTracerBase) {
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
+    CHECK(InitSceneManyBoxes());
+
+    // Create acceleration structure
     {
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
-      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_triangleRayQueryFun);
-      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_RayQueryTriangle_Pipeline"),pipelineDesc), eFalse);
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      niLet instDesc = niCheckNN(
+        instDesc,
+        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_ManyBoxes")),
+        eFalse);
+
+      // Add a triangle
+      {
+        niLet prDesc = niCheckNN(
+          prDesc,
+          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryManyBoxesPrimitivesDesc_ManyBoxes")),
+          eFalse);
+
+        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
+        niCheck(prDesc->AddTriangles(
+          triangleVB,0,sizeof(tVertexTri),3,
+          sMatrixf::Identity(),
+          eRayPrimitiveFlags_Opaque,
+          0), eFalse);
+
+        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
+          _H("RayTrianglePrimitives_ManyBoxes"),prDesc), eFalse);
+
+        niCheck(instDesc->AddInstance(
+          primitiveAS,
+          sMatrixf::Identity(), // Transform
+          0,                    // Instance ID
+          0xFF,                 // Mask
+          0,                    // Hit group offset
+          eRayInstanceFlags_None), eFalse);
+      }
+
+      // Add all draw operations
+      {
+        niLoop(i,_geoms.size()) {
+          niLet& geom = _geoms[i];
+          nn<iDrawOperation> dop = geom._drawOp;
+          niLet fvfDesc = cFVFDescription(dop->GetVertexArray()->GetFVF());
+          NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
+          NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
+
+          niLet prDesc = niCheckNN(
+            prDesc,
+            _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_PrimDesc_%d",m_testName,i)),
+            eFalse);
+
+          const tU32 firstInd = dop->GetFirstIndex();
+          tU32 numInds = dop->GetNumIndices();
+          if (!numInds) {
+            numInds = dop->GetIndexArray()->GetNumIndices()-firstInd;
+          }
+          niCheck(prDesc->AddTrianglesIndexed(
+            vaBuffer,
+            dop->GetBaseVertexIndex()*fvfDesc.GetStride(),
+            fvfDesc.GetStride(),
+            dop->GetVertexArray()->GetNumVertices(),
+            iaBuffer,
+            firstInd*sizeof(tU32),
+            eGpuIndexType_U32,
+            numInds,
+            sMatrixf::Identity(),
+            eRayPrimitiveFlags_Opaque,
+            0), eFalse);
+
+          niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
+            HFmt("%s_Prim_%d",m_testName,i),prDesc), eFalse);
+
+          niCheck(instDesc->AddInstance(
+            primitiveAS,
+            dop->GetMatrix(),     // Transform
+            0,                    // Instance ID
+            0xFF,                 // Mask
+            0,                    // Hit group offset
+            eRayInstanceFlags_None), eFalse);
+        }
+      }
+
+      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+        _H("RayInstances_ManyBoxes"),instDesc), eFalse);
     }
 
     return eTrue;
@@ -627,7 +735,7 @@ struct Triangle : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
+TEST_FIXTURE_WIDGET(FRayTracer,ManyBoxes);
 
 }
 #endif

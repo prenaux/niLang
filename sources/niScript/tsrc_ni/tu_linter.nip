@@ -752,7 +752,6 @@ function main() {
     function(aLogs, tTestLinter aLintResults) {
       ::EXPECT_LINT_OK(aLogs);
 
-
       ::CHECK_EQUAL(0,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
@@ -780,6 +779,18 @@ function main() {
       ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "xyz_bwxoreq" not found]});
 
       ::CHECK_EQUAL(16,aLintResults.mLogsError,"Expected lint errors.");
+      ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
+    })
+
+  testLinter.check(
+    "linter_27_this_lint_as.ni",
+    function(aLogs, tTestLinter aLintResults) {
+      ::EXPECT_LINT_OK(aLogs);
+
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_callk: "getThatsNotAThing" not found]});
+      ::EXPECTED_LINT(aLogs, 1, {[Error: key_notfound_getk: "laserSaber" not found]});
+
+      ::CHECK_EQUAL(2,aLintResults.mLogsError,"Expected lint errors.");
       ::CHECK_EQUAL(0,aLintResults.mLogsWarning,"Expected lint warnings.");
     })
 

@@ -2432,10 +2432,65 @@ struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
   }
 };
 
+struct sLintFuncCall_lint_this_as_type : public ImplRC<iLintFuncCall> {
+  NN<iHString> _name;
+
+  sLintFuncCall_lint_this_as_type(iHString* aName)
+      : _name(aName)
+  {}
+
+  virtual nn<iHString> __stdcall GetName() const {
+    return _name;
+  }
+
+  virtual tI32 __stdcall GetArity() const {
+    return 1;
+  }
+
+  virtual SQObjectPtr __stdcall LintCall(sLinter& aLinter, const LintClosure& aClosure, ain<astl::vector<SQObjectPtr>> aCallArgs)
+  {
+    niLet& expectedTypeArg = aCallArgs[1];
+    //niLet& actualObject = aCallArgs[2];
+
+    if (sqa_getscriptobjtype(expectedTypeArg) != eScriptType_String) {
+      return _MakeLintCallError(
+        aLinter,niFmt("The parameter should be the expected type name as a literal string but got '%s'.", _ObjToString(expectedTypeArg)));
+    }
+
+    SQObjectPtr newThisType = aLinter.ResolveType(expectedTypeArg, aClosure, aCallArgs[0]);
+    if (sqa_getscriptobjtype(newThisType) == eScriptType_ErrorCode) {
+      return newThisType;
+    }
+
+    const int localthisindex = aLinter.GetLocalIndex(
+      *aClosure._func,_HC(this));
+    niLet& localthisStackEntry = aClosure._stack[localthisindex];
+
+#if 0
+    niDebugFmt((
+      "... LINT_THIS_AS_TYPE: newThisType: %s, localthisStackEntry: %s, %s",
+      _ObjToString(newThisType),
+      _ObjToString(localthisStackEntry._name),
+      _ObjToString(localthisStackEntry._value)));
+#endif
+
+    // HACK: cast away constness shall we?
+    const_cast<sLintStackEntry&>(localthisStackEntry)._value = newThisType;
+    return _null_;
+  }
+};
+
+static int lint_lint_this_as_type(HSQUIRRELVM v)
+{
+  v->Push(_null_);
+  return 1;
+}
+
 // Registered in sqvm.cpp
 SQRegFunction SQSharedState::_lint_funcs[] = {
   {"LINT_AS_TYPE", lint_lint_as_type, 3, "ts."},
   {"LINT_CHECK_TYPE", lint_lint_check_type, 3, "ts.", _HC(typestr_bool)},
+  {"LINT_THIS_AS_TYPE", lint_lint_this_as_type, 2, "ts"},
   {0,0}
 };
 
@@ -2526,6 +2581,7 @@ void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
   RegisterLintFunc(table, MakeNN<sLintFuncCallGetLangDelegate>(_H("GetLangDelegate")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_check_type>(_H("LINT_CHECK_TYPE")));
   RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_as_type>(_H("LINT_AS_TYPE")));
+  RegisterLintFunc(table, MakeNN<sLintFuncCall_lint_this_as_type>(_H("LINT_THIS_AS_TYPE")));
 
   // Some delegate methods to override
   {

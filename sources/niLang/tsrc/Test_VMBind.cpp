@@ -20,25 +20,40 @@ DECLARE_VMBIND_PARAM_ENUM_TRAITS(ni::eFileOpenMode, eType_Enum, "eFileOpenMode")
 //----------------------------------------------------------------------------
 namespace _macro_enums {
 
-#define DECLARE_GPU_INDEX_TYPE(X) \
-    X(U16, 0, ) \
-    X(U32, 1, ) \
-    X(Last, 2, niMaybeUnused)
+#define ENUM_ENTRY(ENUMNAME, NAME, VALUE, ATTR) ENUMNAME##_##NAME ATTR = VALUE,
+#define ENUM_DECLARE_ENUM(MACRO_DEFINITION, ENUMNAME) \
+  enum ENUMNAME {                                     \
+    MACRO_DEFINITION(ENUMNAME,ENUM_ENTRY)             \
+  };
 
-// Generate enum
-#define ENUM_ENTRY(name, value, attr) eGpuIndexType_##name attr = value,
-enum eGpuIndexType {
-    DECLARE_GPU_INDEX_TYPE(ENUM_ENTRY)
-    eGpuIndexType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-#undef ENUM_ENTRY
+#define ENUM_VALUE_DEF(ENUMNAME, name, value, attr) { #name, ENUMNAME##_##name },
+#define ENUM_DECLARE_VALUE_DEFS(MACRO_DEFINITION, ENUMNAME)     \
+  static const ni::sEnumValueDef Enum_##ENUMNAME##_Values[] = { \
+    MACRO_DEFINITION(ENUMNAME, ENUM_VALUE_DEF)                  \
+  };
 
-// Generate reflection
-#define ENUM_VALUE_DEF(name, value, attr) { #name, eGpuIndexType_##name },
-static const ni::sEnumValueDef Enum_eGpuIndexType_Values[] = {
-    DECLARE_GPU_INDEX_TYPE(ENUM_VALUE_DEF)
-};
-#undef ENUM_VALUE_DEF
+#define ENUM_DECLARE_ENUMDEF(MACRO_DEFINITION, ENUMNAME)            \
+  niExportFunc(const ni::sEnumDef*) GetEnumDef_##ENUMNAME() {       \
+    ENUM_DECLARE_VALUE_DEFS(MACRO_DEFINITION, ENUMNAME);            \
+    static const ni::sEnumDef Enum_##ENUMNAME = {                   \
+      #ENUMNAME,                                                    \
+      niCountOf(Enum_##ENUMNAME##_Values), Enum_##ENUMNAME##_Values \
+    };                                                              \
+    return &Enum_##ENUMNAME;                                        \
+  }
+
+#define DECLARE_eFileOpenMode(N,X)              \
+  /*! Read open mode. */                        \
+  X(N, Read, niBit(0), )                        \
+  /*! Write open mode. */                       \
+  X(N, Write, niBit(1), )                       \
+  /*! Append open mode */                       \
+  X(N, Append, niBit(2)|eFileOpenMode_Write, )  \
+  /*! Optimized form random access. */          \
+  X(N, Random, niBit(3), )
+
+ENUM_DECLARE_ENUM(DECLARE_eFileOpenMode, eFileOpenMode);
+ENUM_DECLARE_ENUMDEF(DECLARE_eFileOpenMode, eFileOpenMode);
 
 }
 
@@ -409,20 +424,35 @@ TEST_FIXTURE(FVMBind,InterfaceDef) {
 TEST_FIXTURE(FVMBind,EnumDef) {
   niLet medef = ManualGetEnumDef_eFileOpenMode();
   niLet tedef = _better_enums::GetEnumDef_eFileOpenMode();
+  niLet oedef = _macro_enums::GetEnumDef_eFileOpenMode();
   CHECK_EQUAL(4, medef->mnNumValues);
   CHECK_EQUAL(4, tedef->mnNumValues);
+  CHECK_EQUAL(4, oedef->mnNumValues);
   CHECK_EQUAL(medef->mnNumValues, tedef->mnNumValues);
+  CHECK_EQUAL(medef->mnNumValues, oedef->mnNumValues);
 
   CHECK_EQUAL(eFileOpenMode_Read,_better_enums::eFileOpenMode::Read);
   CHECK_EQUAL(eFileOpenMode_Read|eFileOpenMode_Write,_better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write);
+  CHECK_EQUAL(eFileOpenMode_Read,_macro_enums::eFileOpenMode_Read);
+  CHECK_EQUAL(eFileOpenMode_Read|eFileOpenMode_Write,_macro_enums::eFileOpenMode_Read|_macro_enums::eFileOpenMode_Write);
 
-  //_better_enums::eFileOpenMode bmode = _better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write;
+  ni::eFileOpenMode mmode = (ni::eFileOpenMode)(
+    ni::eFileOpenMode_Read|ni::eFileOpenMode_Write);
+  _better_enums::eFileOpenMode tmode = _better_enums::eFileOpenMode::_from_integral_unchecked(
+    _better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write);
+  _macro_enums::eFileOpenMode omode = (_macro_enums::eFileOpenMode)(
+    _macro_enums::eFileOpenMode_Read|_macro_enums::eFileOpenMode_Write);
+  CHECK_EQUAL((tU32)mmode, (tU32)tmode);
+  CHECK_EQUAL((tU32)mmode, (tU32)omode);
 
   niLoop(i,ni::Min(medef->mnNumValues,tedef->mnNumValues)) {
     niDebugFmt(("... medef[%d]: %s = %d", i, medef->mpValues[i].maszName, medef->mpValues[i].mnValue));
     niDebugFmt(("... tedef[%d]: %s = %d", i, tedef->mpValues[i].maszName, tedef->mpValues[i].mnValue));
     CHECK_EQUAL(medef->mpValues[i].maszName, tedef->mpValues[i].maszName);
     CHECK_EQUAL(medef->mpValues[i].mnValue, tedef->mpValues[i].mnValue);
+    niDebugFmt(("... oedef[%d]: %s = %d", i, oedef->mpValues[i].maszName, oedef->mpValues[i].mnValue));
+    CHECK_EQUAL(medef->mpValues[i].maszName, oedef->mpValues[i].maszName);
+    CHECK_EQUAL(medef->mpValues[i].mnValue, oedef->mpValues[i].mnValue);
   }
 }
 

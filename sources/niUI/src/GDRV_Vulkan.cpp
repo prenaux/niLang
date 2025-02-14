@@ -46,6 +46,7 @@ niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
+  VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
 #if defined niVulkan_UseSurfaceKHR
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 #endif
@@ -470,6 +471,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkPhysicalDeviceRayTracingPipelinePropertiesKHR _rayTracingProps = {};
   VkPhysicalDeviceAccelerationStructurePropertiesKHR _accelStructProps = {};
 
+  tBool _isBindlessSupported = eFalse;
+  VkPhysicalDeviceDescriptorIndexingProperties _descriptorIndexingProps = {};
+
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
   Ptr<sVulkanBuffer> _dummyUniformBuffer;
@@ -666,12 +670,109 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
     meshShaderFeatures.pNext = &robustness2Features;
 
+    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+    };
+    robustness2Features.pNext = &descriptorIndexingFeatures;
+
+    // Query the physical device features
     VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
     deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
     deviceFeatures2.pNext = &rayTracingPipelineFeatures;
-
-    // Query the physical device features
     vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
+
+    // Check bindless support
+    _isBindlessSupported =
+      descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind &&
+      descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind &&
+      descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind &&
+      descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind &&
+      descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending &&
+      descriptorIndexingFeatures.descriptorBindingPartiallyBound &&
+      descriptorIndexingFeatures.runtimeDescriptorArray;
+
+    niLog(Info, niFmt(
+      "Vulkan Descriptor Indexing Features:\n"
+      "  shaderInputAttachmentArrayDynamicIndexing: %y\n"
+      "  shaderUniformTexelBufferArrayDynamicIndexing: %y\n"
+      "  shaderStorageTexelBufferArrayDynamicIndexing: %y\n"
+      "  shaderUniformBufferArrayNonUniformIndexing: %y\n"
+      "  shaderSampledImageArrayNonUniformIndexing: %y\n"
+      "  shaderStorageBufferArrayNonUniformIndexing: %y\n"
+      "  shaderStorageImageArrayNonUniformIndexing: %y\n"
+      "  shaderInputAttachmentArrayNonUniformIndexing: %y\n"
+      "  shaderUniformTexelBufferArrayNonUniformIndexing: %y\n"
+      "  shaderStorageTexelBufferArrayNonUniformIndexing: %y\n"
+      "  descriptorBindingUniformBufferUpdateAfterBind: %y\n"
+      "  descriptorBindingSampledImageUpdateAfterBind: %y\n"
+      "  descriptorBindingStorageImageUpdateAfterBind: %y\n"
+      "  descriptorBindingStorageBufferUpdateAfterBind: %y\n"
+      "  descriptorBindingUniformTexelBufferUpdateAfterBind: %y\n"
+      "  descriptorBindingStorageTexelBufferUpdateAfterBind: %y\n"
+      "  descriptorBindingUpdateUnusedWhilePending: %y\n"
+      "  descriptorBindingPartiallyBound: %y\n"
+      "  descriptorBindingVariableDescriptorCount: %y\n"
+      "  runtimeDescriptorArray: %y\n",
+      (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingPartiallyBound,
+      (tBool)!!descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount,
+      (tBool)!!descriptorIndexingFeatures.runtimeDescriptorArray));
+
+    if (_isBindlessSupported) {
+      if (_extensions.find(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME) == _extensions.end()) {
+        _isBindlessSupported = false;
+        niLog(Warning, niFmt("Vulkan Bindless disabled because of missing extension '%s'.", VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME));
+      }
+    }
+
+    // Log bindless support status
+    if (_isBindlessSupported) {
+      _descriptorIndexingProps = {};
+      _descriptorIndexingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+
+      VkPhysicalDeviceProperties2 deviceProps2 = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+        .pNext = &_descriptorIndexingProps
+      };
+      vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
+
+      niLog(Info, "Vulkan Bindless rendering supported");
+      niLog(Info, niFmt(
+        "Vulkan Descriptor Indexing Properties:\n"
+        "  maxUpdateAfterBindDescriptorsInAllPools: %u\n"
+        "  maxPerStageUpdateAfterBindResources: %u\n"
+        "  maxPerStageDescriptorUpdateAfterBindSamplers: %u\n"
+        "  maxPerStageDescriptorUpdateAfterBindUniformBuffers: %u\n"
+        "  maxPerStageDescriptorUpdateAfterBindStorageBuffers: %u\n"
+        "  maxPerStageDescriptorUpdateAfterBindSampledImages: %u\n"
+        "  maxPerStageDescriptorUpdateAfterBindStorageImages: %u",
+        _descriptorIndexingProps.maxUpdateAfterBindDescriptorsInAllPools,
+        _descriptorIndexingProps.maxPerStageUpdateAfterBindResources,
+        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSamplers,
+        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers,
+        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers,
+        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSampledImages,
+        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageImages));
+    }
+    else {
+      niLog(Info, "Vulkan Bindless rendering not supported");
+    }
 
     // Determine support for ray tracing and mesh shaders
     _isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;

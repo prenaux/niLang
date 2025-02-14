@@ -210,7 +210,7 @@ tBool cNUSpline::UpdateSpline()
   }
 
   mvNodes[0].mvVel = GetStartVel(0);
-  mvNodes.back().mvVel = GetEndVel(mvNodes.size()-1);
+  mvNodes.back().mvVel = GetEndVel((tU32)mvNodes.size()-1);
   mbDirty = eFalse;
 
   if (mType != eNUSplineType_Rounded)
@@ -250,7 +250,7 @@ void cNUSpline::Smooth(tU32 anCount)
       mvNodes[i-1].mvVel = oldVel;
       oldVel = newVel;
     }
-    mvNodes[mvNodes.size()-1].mvVel = GetEndVel(mvNodes.size()-1);
+    mvNodes[mvNodes.size()-1].mvVel = GetEndVel((tU32)mvNodes.size()-1);
     mvNodes[mvNodes.size()-2].mvVel = oldVel;
     if (mType == eNUSplineType_Timed)
       Constrain();
@@ -307,7 +307,7 @@ tSize __stdcall cNUSpline::Serialize(iFile* apFile, eSerializeMode aMode)
         tU32 nSize = 0;
         nSize += apFile->WriteLE32(niMakeVersion(1,0,0));
         nSize += apFile->Write8(mType);
-        nSize += apFile->WriteLE32(mvNodes.size());
+        nSize += apFile->WriteLE32((tU32)mvNodes.size());
         for (tU32 i = 0; i < mvNodes.size(); ++i)
         {
           nSize += apFile->WriteF32Array(mvNodes[i].mvPos.ptr(),3);

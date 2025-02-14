@@ -234,7 +234,7 @@ class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
     }
 
     sPage page;
-    page.packer = _CreateImagePacker(mvPages.size());
+    page.packer = _CreateImagePacker((tU32)mvPages.size());
     if (!page.packer.IsOK()) {
       niError(_A("Can't create the new page's packer."));
       return NULL;
@@ -474,7 +474,7 @@ class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
       // Pages
       niLoop(i,numPages) {
         sPage page;
-        page.packer = _CreateImagePacker(mvPages.size());
+        page.packer = _CreateImagePacker((tU32)mvPages.size());
         if (!page.packer.IsOK()) {
           niError(niFmt(_A("Can't create packer '%d'."),i));
           Clear();
@@ -585,8 +585,8 @@ class cImageMap : public ImplRC<ni::iImageMap,eImplFlags_Default>
       apFile->WriteBitsPackedU32(mnMaxNumPages);
       apFile->WriteBitsPackedU32(mnPageSize);
       apFile->WriteBitsPackedU32(mnPageMipMaps);
-      apFile->WriteBitsPackedU32(mvPages.size());
-      apFile->WriteBitsPackedU32(mmapImages.size());
+      apFile->WriteBitsPackedU32((tU32)mvPages.size());
+      apFile->WriteBitsPackedU32((tU32)mmapImages.size());
       apFile->WriteBitsString(niHStr(mhspPageFormat));
       apFile->EndWriteBits();
       apFile->WriteStringZ(_A("niImageMap"));

@@ -55,7 +55,7 @@ class TimerManager {
   }
 
   tU32 GetNumTimers() const {
-    return mmapTimers.size();
+    return (tU32)mmapTimers.size();
   }
 
   tBool SetTimer(iMessageHandler* apHandler, tU32 anTimerId, tF32 afDuration) {

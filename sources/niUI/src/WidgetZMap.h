@@ -161,7 +161,7 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   {
     tU32 nCount = 0;
     for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend(); ++zit) {
-      nCount += zit->second.size();
+      nCount += (tU32)zit->second.size();
     }
     return nCount;
   }

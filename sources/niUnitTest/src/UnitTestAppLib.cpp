@@ -10,11 +10,12 @@ astl::non_null<app::AppContext*> GetTestAppContext() {
   return _appContext;
 }
 
-static int gTestResults = -1;
 static bool gFinishedTests = false;
 
 struct UnitTestWidgetSink : public cWidgetSinkImpl<>
 {
+  bool _finishedTests = false;
+
   tBool __stdcall OnSinkAttached() niImpl {
     niLog(Info, "UnitTestWidgetSink::OnSinkAttached");
     return eTrue;
@@ -26,12 +27,10 @@ struct UnitTestWidgetSink : public cWidgetSinkImpl<>
   }
 
   tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
-    if (!gFinishedTests) {
+    if (!_finishedTests) {
       if (!UnitTest::TestRunner_RunNext()) {
-        gTestResults = UnitTest::TestRunner_ReportSummary();
-        UnitTest::TestRunner_Shutdown();
         GetTestAppContext()->_window->SetRequestedClose(eTrue);
-        gFinishedTests = true;
+        _finishedTests = true;
       }
     }
 
@@ -139,7 +138,10 @@ int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName) {
   niCatchAll() {
     ni::GetLang()->FatalError("TestAppNativeMainLoop: AppNativeMainLoop: Unhandled exception.");
   }
-  return gTestResults;
+
+  int ret = UnitTest::TestRunner_ReportSummary();
+  UnitTest::TestRunner_Shutdown();
+  return ret;
 }
 
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv) {

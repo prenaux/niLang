@@ -17,42 +17,32 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
   niBeginClass(cDeviceResourceManager);
 
  public:
-  //! Constructor.
-  cDeviceResourceManager(iHString* ahspType)
-  {
-    ZeroMembers();
+  ///////////////////////////////////////////////
+  cDeviceResourceManager(iHString* ahspType) {
     mhspType = ahspType;
+    mvResources.reserve(64);
+    mvFreeList.reserve(16);
   }
 
-  //! Destructor.
-  ~cDeviceResourceManager()
-  {
+  ///////////////////////////////////////////////
+  ~cDeviceResourceManager() {
     Invalidate();
     DRM_TRACE(("DRM[(%p)%s]: Destructed", (tIntPtr)this, mhspType));
   }
 
-  //! Zeros all the class members.
-  void ZeroMembers()
-  {
-  }
-
-  //! Sanity check.
-  tBool __stdcall IsOK() const
-  {
+  ///////////////////////////////////////////////
+  tBool __stdcall IsOK() const {
     niClassIsOK(cDeviceResourceManager);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate()
-  {
+  void __stdcall Invalidate() {
     Clear();
   }
 
   ///////////////////////////////////////////////
-  iHString* __stdcall GetType() const
-  {
-    __sync_lock();
+  iHString* __stdcall GetType() const {
     return mhspType;
   }
 
@@ -60,156 +50,153 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
   void __stdcall Clear()
   {
     __sync_lock();
-    if (!mmapResources.empty())
-    {
-      tResHMap hmap = mmapResources;
-      for (tResHMapIt itM = hmap.begin(); itM != hmap.end(); ++itM) {
-        niWarning(niFmt(_A("Resource type '%s': '%s' not released, invalidated by the manager."), mhspType, itM->first));
-        itM->second->Invalidate();
+    tU32 numInvalidated = 0;
+    astl::vector<iDeviceResource*> resourcesToInvalidate = mvResources;
+    for (iDeviceResource* toInvalidate : resourcesToInvalidate) {
+      if (toInvalidate) {
+        toInvalidate->Invalidate();
+        ++numInvalidated;
       }
-      mmapResources.clear();
     }
-    if (!mlstResources.empty())
-    {
-      niWarning(niFmt(_A("Resource type '%s': %d unnamed resources not released, invalidated by the manager."), mhspType, mlstResources.size()));
-      tResLst lst = mlstResources;
-      for (tResLstIt itL = lst.begin(); itL != lst.end(); ++itL)
-        (*itL)->Invalidate();
-      mlstResources.clear();
+    if (numInvalidated) {
+      niWarning(niFmt(_A("Resource type '%s': %d resources not released and invalidated by the manager."),
+                      mhspType, numInvalidated));
     }
+    mvResources.clear();
     DRM_TRACE(("DRM[(%p)%s]: Cleared", (tIntPtr)this, mhspType));
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetSize() const
-  {
+  tU32 __stdcall GetSize() const {
     __sync_lock();
-    return (tU32)(mmapResources.size()+mlstResources.size());
+    return (tU32)mvResources.size();
   }
 
   ///////////////////////////////////////////////
-  iDeviceResource* __stdcall GetFromName(iHString* ahspName) const
-  {
+  iDeviceResource* __stdcall GetFromName(iHString* ahspName) const {
     __sync_lock();
-    if (HStringIsEmpty(const_cast<iHString*>(ahspName)))
-      return NULL;
-    tResHMapCIt it = mmapResources.find(ahspName);
-    if (it == mmapResources.end())
-      return NULL;
-    return it->second;
+    niLoop(i,mvResources.size()) {
+      iDeviceResource* r = mvResources[i];
+      if (r != nullptr  && r->GetDeviceResourceName() == ahspName)
+        return r;
+    }
+    return nullptr;
   }
 
   ///////////////////////////////////////////////
-  iDeviceResource* __stdcall GetFromIndex(tU32 anIndex) const
-  {
+  iDeviceResource* __stdcall GetFromIndex(tU32 anIndex) const {
     __sync_lock();
-    if (anIndex >= GetSize()) return NULL;
-    tU32 nCount = 0;
-    if (anIndex < mmapResources.size()) {
-      for (tResHMapCIt mit = mmapResources.begin(); mit != mmapResources.end(); ++mit, ++nCount) {
-        if (nCount == anIndex) {
-          return mit->second;
-        }
+    if (anIndex >= mvResources.size())
+      return nullptr;
+    return mvResources[anIndex];
+  }
+
+  ///////////////////////////////////////////////
+  tU32 __stdcall GetIndexFromName(iHString* ahspName) const {
+    __sync_lock();
+    niLoop(i,mvResources.size()) {
+      iDeviceResource* r = mvResources[i];
+      if (r != nullptr && r->GetDeviceResourceName() == ahspName)
+        return i;
+    }
+    return eInvalidHandle;
+  }
+
+  ///////////////////////////////////////////////
+  tU32 __stdcall GetIndexFromResource(iDeviceResource* apResource) const {
+    __sync_lock();
+    if (apResource) {
+      niLoop(i,mvResources.size()) {
+        iDeviceResource* r = mvResources[i];
+        if (r == apResource)
+          return i;
       }
-      niAssertUnreachable("Unreachable code.");
     }
-    else {
-      nCount = (tU32)mmapResources.size();
-    }
-    for (tResLstCIt lit = mlstResources.begin(); lit != mlstResources.end(); ++lit, ++nCount) {
-      if (nCount == anIndex) {
-        return *lit;
-      }
-    }
-    niAssertUnreachable("Unreachable code.");
-    return NULL;
+    return eInvalidHandle;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Register(iDeviceResource* apRes)
+  tU32 __stdcall Register(iDeviceResource* apRes)
   {
     __sync_lock();
-    if (HStringIsNotEmpty(apRes->GetDeviceResourceName()))
-    {
+
+    tHStringPtr resName = apRes->GetDeviceResourceName();
+    if (HStringIsNotEmpty(resName)) {
       if (!niIsOK(apRes)) {
-        niError(niFmt(_A("Can't register invalid resource '%s', named '%s'."),
-                      niHStr(mhspType),
-                      niHStr(apRes->GetDeviceResourceName())));
+        niError(niFmt(
+          "Can't register invalid resource '%s' (%p), named '%s'.",
+          mhspType,
+          (tIntPtr)apRes,
+          apRes->GetDeviceResourceName()));
         return eFalse;
       }
-
       DRM_TRACE(("DRM[(%p)%s]: REGISTER named resource (%p) '%s'",
                  (void*)this,mhspType,(void*)apRes,apRes->GetDeviceResourceName()));
-      tResHMapIt it = mmapResources.find(apRes->GetDeviceResourceName());
-      if (it == mmapResources.end()) {
-        astl::upsert(mmapResources, apRes->GetDeviceResourceName(), apRes);
-        return eTrue;
-      }
-      else if (it->second == apRes) {
-        niWarning(niFmt(_A("Resource type '%s': '%s' overrided itself, skipped."), mhspType, it->first));
-      }
-      else {
-        niWarning(niFmt(_A("Resource type '%s': '%s' overrided."), mhspType, it->first));
-        it->second = apRes;
+
+      const tU32 foundWithSameName = GetIndexFromName(resName);
+      if (foundWithSameName != eInvalidHandle) {
+        niWarning(niFmt(_A("Resource type '%s': name '%s' already found at index '%d'."), mhspType, resName, foundWithSameName));
       }
     }
     else
     {
       if (!niIsOK(apRes)) {
-        niError(niFmt(_A("Can't register invalid unnamed '%s' resource."),
-                      niHStr(mhspType)));
+        niError(niFmt(
+          "Can't register invalid unnamed resource '%s' (%p).",
+          mhspType, (tIntPtr)apRes));
         return eFalse;
       }
       DRM_TRACE(("DRM[(%p)%s]: REGISTER unnamed resource (%p)",
-                 (void*)this,mhspType,(void*)apRes));
-      mlstResources.push_back(apRes);
+                 (void*)this,mhspType,(tIntPtr)apRes));
     }
-    return eTrue;
+
+    tU32 newIndex = eInvalidHandle;
+    if (!mvFreeList.empty()) {
+      newIndex = mvFreeList.back();
+      mvFreeList.pop_back();
+      niPanicAssert(mvResources[newIndex] == nullptr);
+      mvResources[newIndex] = apRes;
+    }
+    else {
+      newIndex = (tU32)mvResources.size();
+      mvResources.emplace_back(apRes);
+    }
+
+    return newIndex;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Unregister(iDeviceResource* apRes)
-  {
+  tBool __stdcall Unregister(iDeviceResource* apRes) {
     __sync_lock();
-    if (HStringIsNotEmpty(apRes->GetDeviceResourceName()))
-    {
-      DRM_TRACE(("DRM[(%p)%s]: Unregister named resource (%p) '%s'",
-                 (void*)this,mhspType,(void*)apRes,apRes->GetDeviceResourceName()));
-      tResHMapIt it = mmapResources.find(apRes->GetDeviceResourceName());
-      if (it == mmapResources.end())
-        return eFalse;
-      if (it->second != apRes) {
-        niWarning(niFmt(
-            "Resource type '%s': '%s' not unregistered, expected '%p' but '%p' is registered there.",
-            mhspType, it->first,
-            (tIntPtr)apRes, (tIntPtr)it->second));
-        return eFalse;
-      }
-      mmapResources.erase(it);
+
+    tHStringPtr resName = apRes->GetDeviceResourceName();
+    const tU32 foundIndex = GetIndexFromResource(apRes);
+    if (foundIndex == eInvalidHandle) {
+      niWarning(niFmt(
+        "Resource type '%s': not unregistered, couldnt find resource (%p) '%s'.",
+        mhspType, (tIntPtr)apRes, resName));
+      return eFalse;
     }
-    else
-    {
-      DRM_TRACE(("DRM[(%p)%s]: Unregister unnamed resource (%p)",
-                 (void*)this,mhspType,(void*)apRes));
-      if (!astl::find_erase(mlstResources,apRes))
-        return eFalse;
+
+    if (HStringIsNotEmpty(resName)) {
+      DRM_TRACE(("DRM[(%p)%s]: Unregistered named resource (%p) '%s' at index '%d'.",
+                 (void*)this,mhspType,(void*)apRes,resName,foundIndex));
     }
+    else {
+      DRM_TRACE(("DRM[(%p)%s]: Unregistered unnamed resource (%p) at index '%d'.",
+                 (void*)this,mhspType,(void*)apRes,foundIndex));
+    }
+
+    mvFreeList.emplace_back(foundIndex);
+    mvResources[foundIndex] = nullptr;
     return eTrue;
   }
 
  private:
-  typedef astl::hstring_hash_map<iDeviceResource*> tResHMap;
-  typedef tResHMap::iterator                       tResHMapIt;
-  typedef tResHMap::const_iterator                 tResHMapCIt;
-  typedef astl::list<iDeviceResource*>             tResLst;
-  typedef tResLst::iterator                        tResLstIt;
-  typedef tResLst::const_iterator                  tResLstCIt;
-
-  tHStringPtr                                      mhspType;
-  tResHMap                                         mmapResources;
-  tResLst                                          mlstResources;
-
   __sync_mutex();
+  tHStringPtr mhspType;
+  astl::vector<iDeviceResource*> mvResources;
+  astl::vector<tU32> mvFreeList;
 
   niEndClass(cDeviceResourceManager);
 };

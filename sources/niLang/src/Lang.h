@@ -248,8 +248,8 @@ class cLang : public ImplLocal<iLang>
   void _StartupModules();
 
   struct sModuleDef {
-    sModuleDef() : mhDLL(NULL) {}
-    tIntPtr mhDLL;
+    sModuleDef() {}
+    tIntPtr mhDLL = 0;
     Ptr<iModuleDef> mptrModuleDef;
   };
   astl::vector<sModuleDef> mvModuleDefs;

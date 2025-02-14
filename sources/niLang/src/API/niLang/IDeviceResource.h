@@ -57,7 +57,10 @@ struct iDeviceResourceManager : public iUnknown
   //! {Property}
   virtual iDeviceResource* __stdcall GetFromIndex(tU32 anIndex) const = 0;
   //! Register a resource in the manager.
-  virtual tBool __stdcall Register(iDeviceResource* apRes) = 0;
+  //! \return A unique index that will not change until the resource is
+  //!         removed from the device resource manager. If the resource cant
+  //!         be registered eInvalidHandle is returned instead.
+  virtual tU32 __stdcall Register(iDeviceResource* apRes) = 0;
   //! Unregister a resource in the manager.
   //! \remark When you unregister a resource in an Invalidate method
   //!         or destructor you need to prevent against double
@@ -71,6 +74,10 @@ struct iDeviceResourceManager : public iUnknown
   //!         to null will still require the device resource manager
   //!         to lookup the resource by pointer which is inefficient.
   virtual tBool __stdcall Unregister(iDeviceResource* apRes) = 0;
+  //! Get the index of the first resource that has the specified name. eInvalidHandle if it cant be found.
+  virtual tU32 __stdcall GetIndexFromName(iHString* ahspName) const = 0;
+  //! Get the index of the specified resource. eInvalidHandle if it cant be found.
+  virtual tU32 __stdcall GetIndexFromResource(iDeviceResource* apResource) const = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

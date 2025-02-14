@@ -44,8 +44,6 @@ class cGraphics : public ImplRC<iGraphics>
   iBitmapFormat* __stdcall CreateBitmapFormat(eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth);
   iBitmapFormat* __stdcall CreateBitmapFormatEx(eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth);
   iBitmapFormat* __stdcall CreateBitmapFormatEmpty();
-  iBitmapBase* __stdcall CreateBitmap(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth);
-  iBitmapBase* __stdcall CreateBitmapEx(iHString* ahspName, eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth);
   iBitmap2D* __stdcall CreateBitmap2DEx(tU32 nW, tU32 nH, iPixelFormat* pPixFmt);
   iBitmap2D* __stdcall CreateBitmap2D(tU32 nW, tU32 nH, const achar* aszPixFmt);
   virtual iBitmap2D* __stdcall CreateBitmap2DMemoryEx(tU32 nW, tU32 nH, iPixelFormat* pFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr);

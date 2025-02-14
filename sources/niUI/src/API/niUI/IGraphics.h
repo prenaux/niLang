@@ -97,11 +97,6 @@ struct iGraphics : public iUnknown
   //! Create a new empty bitmap format.
   virtual iBitmapFormat* __stdcall CreateBitmapFormatEmpty() = 0;
 
-  //! Create a new bitmap.
-  virtual iBitmapBase* __stdcall CreateBitmap(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth) = 0;
-  //! Create a new bitmap.
-  virtual iBitmapBase* __stdcall CreateBitmapEx(iHString* ahspName, eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth) = 0;
-
   //! Create a 2D bitmap.
   //! \remark the given iPixelFormat instance will be release if the creation failed and when
   //!     the bitmap is released.

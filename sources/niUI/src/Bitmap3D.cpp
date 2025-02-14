@@ -68,19 +68,12 @@ inline tU32 GetNumMipMaps3D(tU32 w, tU32 h, tU32 d, tU32 minw, tU32 minh, tU32 m
 // cBitmap3D implementation
 
 ///////////////////////////////////////////////
-cBitmap3D::cBitmap3D(cGraphics* pGraphics, iHString* ahspName, tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool abAllocateData)
+cBitmap3D::cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool abAllocateData)
 {
-  ZeroMembers();
-  mhspName = ahspName;
-  mpGraphics = pGraphics;
+  niPanicAssert(niIsOK(pPixFmt));
   mulWidth = ulW;
   mulHeight = ulH;
   mulDepth = ulD;
-
-  if (!niIsOK(pPixFmt)) {
-    niError(_A("Invalid pixel format."));
-    return;
-  }
   mptrPxf = pPixFmt;
 
   mnRowPitch = mulWidth * mptrPxf->GetBytesPerPixel();
@@ -89,13 +82,8 @@ cBitmap3D::cBitmap3D(cGraphics* pGraphics, iHString* ahspName, tU32 ulW, tU32 ul
 
   if (abAllocateData) {
     mptrData = (tPtr)niMalloc(mnSize);
-    if (!mptrData) {
-      niError(_A("Can't allocate data."));
-      return;
-    }
+    niPanicAssert(mptrData != nullptr);
   }
-
-  mbOK = eTrue;
 }
 
 ///////////////////////////////////////////////
@@ -109,24 +97,9 @@ cBitmap3D::~cBitmap3D()
 }
 
 ///////////////////////////////////////////////
-void cBitmap3D::ZeroMembers()
-{
-  mbOK = eFalse;
-  mpGraphics = NULL;
-  mulWidth = 0;
-  mulHeight = 0;
-  mulDepth = 0;
-  mptrData = NULL;
-  mbFreeData = eFalse;
-  mnRowPitch = 0;
-  mnSlicePitch = 0;
-  mnSize = 0;
-}
-
-///////////////////////////////////////////////
 tBool cBitmap3D::IsOK() const
 {
-  return mbOK;
+  return eTrue;
 }
 
 ///////////////////////////////////////////////
@@ -209,10 +182,9 @@ tBool cBitmap3D::CreateMipMaps(tU32 anNumMipMaps, tBool abCompute)
     _ResizeMipMapsVector(ulNumMipMaps);
 
     // create the first mipmap
-    mvMipMaps[0] = mpGraphics->CreateBitmap3DMemoryEx(
+    mvMipMaps[0] = niNew cBitmap3D(
         GetWidth()>>1,GetHeight()>>1,GetDepth()>>1,
-        GetPixelFormat()->Clone(), 0, 0,
-        NULL, eTrue);
+        GetPixelFormat()->Clone(), eTrue);
     if (!niIsOK(mvMipMaps[0]))
     {
       RemoveMipMaps();
@@ -222,12 +194,11 @@ tBool cBitmap3D::CreateMipMaps(tU32 anNumMipMaps, tBool abCompute)
 
     for (tU32 i = 1; i < GetNumMipMaps(); ++i)
     {
-      mvMipMaps[i] = mpGraphics->CreateBitmap3DMemoryEx(
+      mvMipMaps[i] = niNew cBitmap3D(
           mvMipMaps[i-1]->GetWidth()>>1,
           mvMipMaps[i-1]->GetHeight()>>1,
           mvMipMaps[i-1]->GetHeight()>>1,
-          GetPixelFormat()->Clone(), 0, 0,
-          NULL, eTrue);
+          GetPixelFormat()->Clone(), eTrue);
       if (!niIsOK(mvMipMaps[i]))
       {
         RemoveMipMaps();
@@ -258,8 +229,7 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit aBlitMode) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mpGraphics, NULL,
-                                          mulWidth, mulHeight, mulDepth,
+  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mulWidth, mulHeight, mulDepth,
                                           ptrPxfClone, eTrue);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
@@ -292,8 +262,7 @@ iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* apFmt) const
   niCheckIsOK(apFmt,NULL);
   Ptr<iPixelFormat> ptrPxfClone = apFmt->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mpGraphics, NULL,
-                                          mulWidth, mulHeight, mulDepth,
+  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mulWidth, mulHeight, mulDepth,
                                           ptrPxfClone, eTrue);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
@@ -325,9 +294,8 @@ iBitmapBase* cBitmap3D::CreateGammaCorrected(tF32 factor) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mpGraphics, NULL,
-                                          mulWidth, mulHeight, mulDepth,
-                                          ptrPxfClone, eFalse);
+  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(
+    mulWidth, mulHeight, mulDepth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -406,7 +374,7 @@ tPtr        cBitmap3D::_GetSlicePtr(tU32 anSlice) const
 ///////////////////////////////////////////////
 iBitmap2D*  cBitmap3D::_GetSliceBmp(tU32 anSlice) const
 {
-  return niNew cBitmap2D(mpGraphics,NULL,mulWidth,mulHeight,mptrPxf,
+  return niNew cBitmap2D(mulWidth,mulHeight,mptrPxf,
                          mnRowPitch, _GetSlicePtr(anSlice), eFalse);
 }
 

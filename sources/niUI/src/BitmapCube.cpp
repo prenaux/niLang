@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Graphics.h"
 #include "BitmapCube.h"
+#include "Bitmap2D.h"
 
 #pragma niTodo("Implement invalidate")
 
@@ -11,57 +12,30 @@
 // cBitmapCube implementation
 
 ///////////////////////////////////////////////
-cBitmapCube::cBitmapCube(cGraphics* pGraphics, iHString* ahspName, tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces)
+cBitmapCube::cBitmapCube(tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces)
 {
-  ZeroMembers();
-  mpGraphics = pGraphics;
-  mhspName = ahspName;
+  niPanicAssert(niIsOK(pPixFmt));
   mulWidth = ulW;
-
-  if (!niIsOK(pPixFmt)) {
-    niError(_A("Invalid pixel format."));
-    return;
-  }
   mptrPxf = pPixFmt;
 
-  if (bAllocFaces)
-  {
+  if (bAllocFaces) {
     for (tU32 i = 0; i < 6; ++i) {
-      mptrFaces[i] = mpGraphics->CreateBitmap2DEx(ulW, ulW, mptrPxf);
-      if (!niIsOK(mptrFaces[i])) {
-        niError(niFmt(_A("Can't create face %d."), i));
-        return;
-      }
+      mptrFaces[i] = niNew cBitmap2D(ulW, ulW, mptrPxf);
+      niPanicAssert(mptrFaces[i].IsOK());
     }
   }
-
-  mbOK = eTrue;
 }
 
 ///////////////////////////////////////////////
-cBitmapCube::~cBitmapCube()
-{
-  if (mpGraphics->GetTextureDeviceResourceManager()) {
-    mpGraphics->GetTextureDeviceResourceManager()->Unregister(this);
-  }
+cBitmapCube::~cBitmapCube() {
   for (tU32 i = 0; i < 6; ++i)
     mptrFaces[i] = NULL;
   mptrPxf = NULL;
 }
 
 ///////////////////////////////////////////////
-void cBitmapCube::ZeroMembers()
-{
-  mptrLockedFace = NULL;
-  mbOK = eFalse;
-  mpGraphics = NULL;
-  mulWidth = 0;
-}
-
-///////////////////////////////////////////////
-tBool cBitmapCube::IsOK() const
-{
-  return mbOK;
+tBool cBitmapCube::IsOK() const {
+  return eTrue;
 }
 
 ///////////////////////////////////////////////
@@ -83,9 +57,8 @@ iBitmapCube* __stdcall cBitmapCube::CreateResized(tI32 nW) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  cBitmapCube* pNew = niNew cBitmapCube(mpGraphics, NULL, nW, ptrPxfClone, eFalse);
-  if (!niIsOK(pNew))
-  {
+  cBitmapCube* pNew = niNew cBitmapCube(nW, ptrPxfClone, eFalse);
+  if (!niIsOK(pNew)) {
     niError(_A("Can't create new cube bitmap."));
     return NULL;
   }
@@ -148,7 +121,7 @@ iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit aBlitMode) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, ptrPxfClone, eFalse);
+  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mulWidth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the new cube bitmap."));
     return NULL;
@@ -173,7 +146,7 @@ iBitmapBase* cBitmapCube::CreateConvertedFormat(const iPixelFormat* apFmt) const
   niCheckIsOK(apFmt, NULL);
   Ptr<iPixelFormat> ptrPxfClone = apFmt->Clone();
 
-  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, ptrPxfClone, eFalse);
+  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mulWidth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -197,7 +170,7 @@ iBitmapBase* cBitmapCube::CreateGammaCorrected(float factor) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mpGraphics, NULL, mulWidth, ptrPxfClone, eFalse);
+  Ptr<cBitmapCube> ptrOut = niNew cBitmapCube(mulWidth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;

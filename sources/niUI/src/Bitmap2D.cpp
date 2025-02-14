@@ -6,6 +6,7 @@
 #include "Bitmap2D.h"
 #include "BitmapCube.h"
 #include "BlitClip.h"
+#include "PixelFormatStd.h"
 #include "API/niUI/Utils/ULColorBlend.h"
 
 void BmpUtils_BlitPaletteTo32Bits(tPtr apDest, const tPtr apSrc, const tU32 anNumSrcPixels, const tU32* apPalette) {
@@ -18,13 +19,14 @@ void BmpUtils_BlitPaletteTo32Bits(tPtr apDest, const tPtr apSrc, const tU32 anNu
 
 #define TRACE_BLIT_STRETCH(X) //niDebugFmt(X)
 
-static tBool __stdcall _BlitResample(iGraphics* apGraphics, iBitmap2D* apDst, const sRecti& aDestRect, const iBitmap2D* apSrc, const sRecti& aSrcRect);
+static tBool __stdcall _BlitResample(iBitmap2D* apDst, const sRecti& aDestRect, const iBitmap2D* apSrc, const sRecti& aSrcRect);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
-cBitmap2D::cBitmap2D(cGraphics* pGraphics, iHString* ahspName, tU32 nW, tU32 nH, iPixelFormat* pPixFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr)
+cBitmap2D::cBitmap2D(tU32 nW, tU32 nH, iPixelFormat* pPixFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr)
 {
+  niPanicAssert(niIsOK(pPixFmt));
   mulWidth = 0;
   mulHeight = 0;
   mulPitch = 0;
@@ -32,33 +34,14 @@ cBitmap2D::cBitmap2D(cGraphics* pGraphics, iHString* ahspName, tU32 nW, tU32 nH,
   mpData = NULL;
   mpOldData = NULL;
   mFlags = 0;
-
-  mpwGraphics = pGraphics;
-  mhspName = ahspName;
-
-  if(!niIsOK(pPixFmt))
-  {
-    niError(_A("Invalid pixel format."));
-    return;
-  }
-
   mptrPixFmt = pPixFmt->Clone();
-  if (!_Setup(nW, nH, anPitch, ptrAddr, bFreeAddr)) {
-    niError(_A("Can't setup bitmap."));
-    return;
-  }
+  niPanicAssert(_Setup(nW, nH, anPitch, ptrAddr, bFreeAddr));
 }
 
 ///////////////////////////////////////////////
 cBitmap2D::~cBitmap2D()
 {
   EndUnpackPixels();
-  QPtr<cGraphics> ptrGraphics = mpwGraphics;
-  if (ptrGraphics.IsOK()) {
-    if (ptrGraphics->GetTextureDeviceResourceManager()) {
-      ptrGraphics->GetTextureDeviceResourceManager()->Unregister(this);
-    }
-  }
   RemoveMipMaps();
   if (niFlagIs(mFlags,BMPFLAGS_FREEDATA)) {
     niFree(mpData);
@@ -68,7 +51,7 @@ cBitmap2D::~cBitmap2D()
 ///////////////////////////////////////////////
 tBool cBitmap2D::IsOK() const
 {
-  return (mpData != NULL);
+  return mpData != NULL;
 }
 
 ///////////////////////////////////////////////
@@ -170,10 +153,7 @@ void  cBitmap2D::EndUnpackPixels()
 ///////////////////////////////////////////////
 iBitmapBase* cBitmap2D::Clone(ePixelFormatBlit eBlit) const
 {
-  QPtr<cGraphics> ptrGraphics = mpwGraphics;
-  niCheckIsOK(ptrGraphics,NULL);
-
-  Ptr<cBitmap2D> ptrBmp = niNew cBitmap2D(ptrGraphics, NULL, mulWidth, mulHeight, GetPixelFormat());
+  Ptr<cBitmap2D> ptrBmp = niNew cBitmap2D(mulWidth, mulHeight, GetPixelFormat());
   if (!ptrBmp.IsOK()) {
     niError(_A("Can't create return bitmap."));
     return NULL;
@@ -201,10 +181,7 @@ iBitmapBase* cBitmap2D::Clone(ePixelFormatBlit eBlit) const
 ///////////////////////////////////////////////
 iBitmap2D* cBitmap2D::CreateResizedEx(tI32 nW, tI32 nH, tBool abMipMaps) const
 {
-  QPtr<cGraphics> ptrGraphics = mpwGraphics;
-  niCheckIsOK(ptrGraphics,NULL);
-
-  Ptr<cBitmap2D> ptrBmp = niNew cBitmap2D(ptrGraphics, NULL, nW, nH, GetPixelFormat());
+  Ptr<cBitmap2D> ptrBmp = niNew cBitmap2D(nW, nH, GetPixelFormat());
   if (!ptrBmp.IsOK()) {
     niError(_A("Can't create return bitmap."));
     return NULL;
@@ -240,10 +217,7 @@ iBitmapCube* __stdcall cBitmap2D::CreateCubeBitmap(tU32 anWidth,
                                                    const sVec2i& avPZ, ePixelFormatBlit aBlitPZ,
                                                    const sVec2i& avNZ, ePixelFormatBlit aBlitNZ) const
 {
-  QPtr<cGraphics> ptrGraphics = mpwGraphics;
-  niCheckIsOK(ptrGraphics,NULL);
-
-  Ptr<iBitmapCube> ptrCube = niNew cBitmapCube(ptrGraphics,NULL,anWidth,GetPixelFormat()->Clone());
+  Ptr<iBitmapCube> ptrCube = niNew cBitmapCube(anWidth,GetPixelFormat()->Clone());
   niCheck(ptrCube.IsOK(),NULL);
 
   iBitmap2D* pDst = NULL;
@@ -306,19 +280,14 @@ iBitmapCube* __stdcall cBitmap2D::CreateCubeBitmapCross() const
 ///////////////////////////////////////////////
 iBitmapBase* cBitmap2D::CreateConvertedFormat(const iPixelFormat* pFmt) const
 {
-  QPtr<cGraphics> ptrGraphics = mpwGraphics;
-  niCheckIsOK(ptrGraphics,NULL);
-
-  cBitmap2D* pBmp = niNew cBitmap2D(ptrGraphics, NULL, mulWidth, mulHeight, pFmt->Clone());
-  if (!niIsOK(pBmp))
-  {
+  cBitmap2D* pBmp = niNew cBitmap2D(mulWidth, mulHeight, pFmt->Clone());
+  if (!niIsOK(pBmp)) {
     niSafeRelease(pBmp);
     niError(_A("Can't create return bitmap."));
     return NULL;
   }
 
-  if (!pBmp->Blit(this, 0, 0, 0, 0, mulWidth, mulHeight, ePixelFormatBlit_Normal))
-  {
+  if (!pBmp->Blit(this, 0, 0, 0, 0, mulWidth, mulHeight, ePixelFormatBlit_Normal)) {
     niError(niFmt(_A("Can't blit, pixel format %s."), pBmp->GetPixelFormat()->GetFormat()));
     niSafeRelease(pBmp);
     return NULL;
@@ -406,17 +375,13 @@ tBool cBitmap2D::CreateMipMaps(tU32 anNumMipMaps, tBool abCompute)
   const tBool bAllocMipmaps = (ulNumMipMaps != GetNumMipMaps());
   if (bAllocMipmaps) {
     // niDebugFmt(("... Allocating mipmaps."));
-
-    QPtr<cGraphics> ptrGraphics = mpwGraphics;
-    niCheckIsOK(ptrGraphics,eFalse);
-
     _ResizeMipMapsVector(ulNumMipMaps);
 
     Ptr<iBitmap2D> prevMip = this;
     niLoop(i,GetNumMipMaps()) {
       const tU32 newW = ni::Max(1,prevMip->GetWidth()/2);
       const tU32 newH = ni::Max(1,prevMip->GetHeight()/2);
-      mvMipMaps[i] = ptrGraphics->CreateBitmap2DEx(newW, newH, this->GetPixelFormat());
+      mvMipMaps[i] = niNew cBitmap2D(newW, newH, this->GetPixelFormat());
       if (!niIsOK(mvMipMaps[i])) {
         RemoveMipMaps();
         niWarning(niFmt(_A("Can't create mipmap '%d' (%dx%d)."), i, newW, newH));
@@ -581,11 +546,8 @@ tBool cBitmap2D::BlitStretch(const iBitmap2D* src, tI32 xs, tI32 ys, tI32 xd, tI
                                      src->GetData(),src->GetPitch(),src->GetPixelFormat(),xs,ys,ws,hs);
     }
 
-    QPtr<cGraphics> ptrGraphics = mpwGraphics;
-    niCheckIsOK(ptrGraphics,eFalse);
-
     // Use _BlitResample highest quality resizing if possible
-    if (_BlitResample(ptrGraphics, this, Recti(xd,yd,wd,hd), src, Recti(xs,ys,ws,hs))) {
+    if (_BlitResample(this, Recti(xd,yd,wd,hd), src, Recti(xs,ys,ws,hs))) {
       TRACE_BLIT_STRETCH(("... BlitStretch, Resample"));
       return eTrue;
     }
@@ -925,16 +887,13 @@ tBool cBitmap2D::_Setup(int anW, int anH, tU32 anPitch, tPtr aptrAddr, tBool abF
   mulPitch = anPitch ? anPitch : mulWidth * mptrPixFmt->GetBytesPerPixel();
   mulSize = mptrPixFmt->GetSize(mulWidth,mulHeight,0);
 
-  if (!aptrAddr)
-  {
-    if (!SetMemoryAddress((tPtr)niMalloc(mulSize), eTrue, eInvalidHandle))
-    {
+  if (!aptrAddr) {
+    if (!SetMemoryAddress((tPtr)niMalloc(mulSize), eTrue, eInvalidHandle)) {
       niError(_A("Can't alloc data memory."));
       return eFalse;
     }
   }
-  else
-  {
+  else {
     SetMemoryAddress(aptrAddr, abFreeAddr, eInvalidHandle);
   }
 
@@ -1120,12 +1079,6 @@ tBool __stdcall cBitmap2D::SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 
   niFlagOnIf(mFlags,BMPFLAGS_FREEDATA,abFreeAddr);
   if (anPitch != eInvalidHandle) mulPitch = anPitch;
   return mpData != NULL;
-}
-
-///////////////////////////////////////////////
-iTexture* __stdcall cBitmap2D::GetSubTexture(tU32 anIndex) const
-{
-  return NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -1456,7 +1409,7 @@ static __forceinline int _ResampleSmooth(
 }
 
 ///////////////////////////////////////////////
-static tBool __stdcall _BlitResample(iGraphics* apGraphics, iBitmap2D* apDst, const sRecti& aDestRect, const iBitmap2D* apSrc, const sRecti& aSrcRect)
+static tBool __stdcall _BlitResample(iBitmap2D* apDst, const sRecti& aDestRect, const iBitmap2D* apSrc, const sRecti& aSrcRect)
 {
   niCheck(niIsOK(apSrc),eFalse);
   niCheck(niIsOK(apDst),eFalse);
@@ -1483,7 +1436,8 @@ static tBool __stdcall _BlitResample(iGraphics* apGraphics, iBitmap2D* apDst, co
 
   Ptr<iBitmap2D> src = apSrc;
   if (!_CanResamplePixelFormat(apSrc)) {
-    src = apGraphics->CreateBitmap2D(srcRect.GetWidth(),srcRect.GetHeight(),RESAMPLE_PXF);
+    Ptr<iPixelFormat> pxf = niNew cPixelFormatStd(RESAMPLE_PXF);
+    src = niNew cBitmap2D(srcRect.GetWidth(),srcRect.GetHeight(),pxf);
     src->Blit(apSrc,srcRect.x,srcRect.y,0,0,srcRect.GetWidth(),srcRect.GetHeight());
     sx = 0; sy = 0;
     TRACE_BLIT_STRETCH(("... _BlitResample::Converting Src %s -> %s",
@@ -1493,7 +1447,7 @@ static tBool __stdcall _BlitResample(iGraphics* apGraphics, iBitmap2D* apDst, co
 
   Ptr<iBitmap2D> dst = apDst;
   if (!_CanResamplePixelFormat(apDst)) {
-    dst = apGraphics->CreateBitmap2D(dstRect.GetWidth(),dstRect.GetHeight(),src->GetPixelFormat()->GetFormat());
+    dst = niNew cBitmap2D(dstRect.GetWidth(),dstRect.GetHeight(),src->GetPixelFormat());
     dx = 0; dy = 0;
     TRACE_BLIT_STRETCH(("... _BlitResample::Converted Dst %s -> %s",
                         apDst->GetPixelFormat()->GetFormat(),
@@ -1520,10 +1474,10 @@ static tBool __stdcall _BlitResample(iGraphics* apGraphics, iBitmap2D* apDst, co
   }
 
   if (shouldSwapRB) {
-    tPtr dline = dstData;
-    for (tU32 y = dy; y < dh; ++y) {
+    tPtr dline = dst->GetData() + (dx*4) + (dy*dpitch);
+    for (tU32 y = 0; y < (tU32)dh; ++y) {
       tPtr d = dline;
-      for (tU32 x = 0; x < dw; ++x) {
+      for (tU32 x = 0; x < (tU32)dw; ++x) {
         ni::Swap(d[0],d[2]);
         d += 4;
       }

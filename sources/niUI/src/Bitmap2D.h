@@ -13,13 +13,10 @@ namespace ni {
 class cGraphics;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cBitmap2D : public ImplRC<iBitmap2D,
-                                       eImplFlags_DontInherit1|
-                                       eImplFlags_DontInherit3,
-                                       iBitmapBase,iTexture,iDeviceResource>
+class cBitmap2D : public ImplRC<iBitmap2D,eImplFlags_DontInherit1,iBitmapBase>
 {
  public:
-  cBitmap2D(cGraphics* pGraphics, iHString* ahspName, tU32 nW, tU32 nH, iPixelFormat* pPixFmt, tU32 anPitch = 0, tPtr ptrAddr = NULL, tBool bFreeAddr = eFalse);
+  cBitmap2D(tU32 nW, tU32 nH, iPixelFormat* pPixFmt, tU32 anPitch = 0, tPtr ptrAddr = NULL, tBool bFreeAddr = eFalse);
   virtual ~cBitmap2D();
 
   tBool __stdcall IsOK() const;
@@ -31,9 +28,6 @@ class cBitmap2D : public ImplRC<iBitmap2D,
 
   //! Return the bitmap type.
   eBitmapType __stdcall GetType() const { return eBitmapType_2D; }
-  iHString* __stdcall GetDeviceResourceName() const {
-    return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
-  }
 
   // Infos functions1
   tU32  __stdcall GetWidth() const;
@@ -93,16 +87,13 @@ class cBitmap2D : public ImplRC<iBitmap2D,
   //! Set the memory address.
   tBool __stdcall SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 anPitch);
 
-  iTexture* __stdcall GetSubTexture(tU32 anIndex) const;
-  virtual iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
-
  protected:
   tBool _Setup(int nW, int nH, tU32 anPitch, tPtr ptrAddr = NULL, tBool bFreeAddr = eFalse);
   void _ResizeMipMapsVector(tU32 aulNumMipMaps);
 
  protected:
-  tHStringPtr   mhspName;
-  WeakPtr<cGraphics> mpwGraphics;
+  Ptr<iPixelFormat> mptrPixFmt;
+  astl::vector<Ptr<iBitmap2D>> mvMipMaps;
   tU32      mulWidth;
   tU32      mulHeight;
   tU32      mulPitch;
@@ -110,8 +101,6 @@ class cBitmap2D : public ImplRC<iBitmap2D,
   tU8*      mpData;
   tU8*      mpOldData;
   tU8       mFlags;
-  Ptr<iPixelFormat> mptrPixFmt;
-  astl::vector<Ptr<iBitmap2D> > mvMipMaps;
 };
 } // end of namespace ni
 

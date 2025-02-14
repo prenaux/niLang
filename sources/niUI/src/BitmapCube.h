@@ -5,16 +5,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmapCube declaration
-class cBitmapCube : public ImplRC<iBitmapCube,
-                                         eImplFlags_DontInherit1|
-                                         eImplFlags_DontInherit3,
-                                         iBitmapBase,iTexture,iDeviceResource>
+class cBitmapCube : public ImplRC<iBitmapCube,eImplFlags_DontInherit1,iBitmapBase>
 {
  public:
-  cBitmapCube(cGraphics* pGraphics, iHString* ahspName, tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces = eTrue);
+  cBitmapCube(tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces = eTrue);
   ~cBitmapCube();
-
-  void ZeroMembers();
 
   //// iUnknown /////////////////////////////////
   tBool __stdcall IsOK() const;
@@ -22,9 +17,6 @@ class cBitmapCube : public ImplRC<iBitmapCube,
 
   //// iBitmapCube //////////////////////////////
   eBitmapType __stdcall GetType() const { return eBitmapType_Cube; }
-  iHString* __stdcall GetDeviceResourceName() const {
-    return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
-  }
   iPixelFormat* __stdcall GetPixelFormat() const;
   tU32 __stdcall GetWidth() const;
   tU32 __stdcall GetHeight() const { return GetWidth(); }
@@ -38,29 +30,12 @@ class cBitmapCube : public ImplRC<iBitmapCube,
   iBitmapBase* __stdcall CreateConvertedFormat(const iPixelFormat* pFmt) const;
   iBitmapBase* __stdcall CreateGammaCorrected(float factor) const;
   tBool __stdcall GammaCorrect(float factor);
-
-  tTextureFlags __stdcall GetFlags() const {
-    return eTextureFlags_SystemMemory|
-        eTextureFlags_Dynamic|
-        (GetNumMipMaps()?eTextureFlags_MipMaps:0);
-  }
-
-  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const {
-    if (anIndex >= 6) return NULL;
-    return ni::QueryInterface<iTexture>(mptrFaces[anIndex]);
-  }
-
-  virtual iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
   //// iBitmapCube //////////////////////////////
 
  private:
-  tBool   mbOK;
-  tHStringPtr mhspName;
-  cGraphics*  mpGraphics;
-  tU32    mulWidth;
+  tU32            mulWidth;
   Ptr<iPixelFormat> mptrPxf;
   Ptr<iBitmap2D>  mptrFaces[6];
-  Ptr<iTexture>   mptrLockedFace;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

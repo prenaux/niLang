@@ -288,22 +288,34 @@ struct BitmapLoader_ABM : public ImplRC<iBitmapLoader> {
       niWarning(niFmt("Loading time pixel format conversion '%s' -> '%s'.", storedFormat, bmpFormat->GetPixelFormat()->GetFormat()));
     }
 
-    Ptr<iBitmapBase> bmp = apGraphics->CreateBitmapEx(NULL,type,bmpFormat->GetPixelFormat(),numMips,w,h,d);
-    if (!bmp.IsOK()) {
-      niError(_A("Can't create destination bitmap."));
-      return NULL;
-    }
-
+    Ptr<iBitmapBase> bmp;
     if (type == eBitmapType_2D) {
+      bmp = apGraphics->CreateBitmap2DEx(w,h,bmpFormat->GetPixelFormat());
+      if (!bmp.IsOK()) {
+        niError(_A("Can't create destination 2d bitmap."));
+        return NULL;
+      }
+      if (numMips) {
+        bmp->CreateMipMaps(numMips,eFalse);
+      }
       if (!_Load2D(apGraphics,bmp,apFile,storedPixelFormat,numLevels,loadLevels))
         return NULL;
     }
     else if (type == eBitmapType_Cube) {
+      bmp = apGraphics->CreateBitmapCubeEx(w,bmpFormat->GetPixelFormat());
+      if (!bmp.IsOK()) {
+        niError(_A("Can't create destination cube bitmap."));
+        return NULL;
+      }
+      if (numMips) {
+        bmp->CreateMipMaps(numMips,eFalse);
+      }
       if (!_LoadCube(apGraphics,bmp,apFile,storedPixelFormat,numLevels,loadLevels))
         return NULL;
     }
     else {
-      niAssertUnreachable("Invalid bitmap type");
+      niError(niFmt("Invalid bitmap type '%d'",type));
+      return nullptr;
     }
 
     return bmp.GetRawAndSetNull();

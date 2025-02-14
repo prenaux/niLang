@@ -6,18 +6,11 @@
 namespace ni {
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmap3D declaration
-class cBitmap3D : public ImplRC<iBitmap3D,
-                                       eImplFlags_DontInherit1|
-                                       eImplFlags_DontInherit3,
-                                       iBitmapBase,iTexture,iDeviceResource>
+class cBitmap3D : public ImplRC<iBitmap3D,eImplFlags_DontInherit1,iBitmapBase>
 {
  public:
-  cBitmap3D(cGraphics* pGraphics, iHString* ahspName,
-            tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt,
-            tBool abAllocateData);
+  cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool abAllocateData);
   ~cBitmap3D();
-
-  void ZeroMembers();
 
   //// iUnknown /////////////////////////////////
   tBool __stdcall IsOK() const;
@@ -37,21 +30,6 @@ class cBitmap3D : public ImplRC<iBitmap3D,
   iBitmapBase* __stdcall CreateGammaCorrected(float factor) const;
   tBool __stdcall GammaCorrect(float factor);
   //// iBitmapBase //////////////////////////////
-
-  //// iTexture /////////////////////////////////
-  iHString* __stdcall GetDeviceResourceName() const {
-    return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
-  }
-  tTextureFlags __stdcall GetFlags() const {
-    return eTextureFlags_SystemMemory|
-        eTextureFlags_Dynamic|
-        (GetNumMipMaps()?eTextureFlags_MipMaps:0);
-  }
-  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const {
-    return NULL;
-  }
-  virtual iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
-  //// iTexture /////////////////////////////////
 
   //// iBitmap3D ////////////////////////////////
   tBool __stdcall SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 anRowPitch, tU32 anSlicePitch);
@@ -82,19 +60,16 @@ class cBitmap3D : public ImplRC<iBitmap3D,
   //// iBitmap3D ////////////////////////////////
 
  private:
-  tBool   mbOK;
-  tHStringPtr mhspName;
-  cGraphics*  mpGraphics;
+  Ptr<iPixelFormat> mptrPxf;
+  astl::vector<Ptr<iBitmap3D> > mvMipMaps;
   tU32    mulWidth;
   tU32    mulHeight;
   tU32    mulDepth;
-  tU32        mnSize;
-  tPtr        mptrData;
-  tBool       mbFreeData;
-  tU32        mnRowPitch;
-  tU32        mnSlicePitch;
-  Ptr<iPixelFormat> mptrPxf;
-  astl::vector<Ptr<iBitmap3D> > mvMipMaps;
+  tU32    mnSize;
+  tPtr    mptrData;
+  tU32    mnRowPitch;
+  tU32    mnSlicePitch;
+  tBool   mbFreeData;
 
   tPtr        _GetSlicePtr(tU32 anSlice) const;
   iBitmap2D*  _GetSliceBmp(tU32 anSlice) const;

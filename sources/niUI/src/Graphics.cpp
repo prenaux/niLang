@@ -123,39 +123,6 @@ iPixelFormat* cGraphics::CreatePixelFormat(const achar* aszFormat)
 }
 
 ///////////////////////////////////////////////
-iBitmapBase* __stdcall cGraphics::CreateBitmap(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth)
-{
-  Ptr<iPixelFormat> ptrPixFmt = CreatePixelFormat(aaszFormat);
-  if (!niIsOK(ptrPixFmt)) {
-    niError(niFmt(_A("Can't create pixel format '%s'."), aaszFormat));
-    return NULL;
-  }
-
-  iBitmapBase* pRet = NULL;
-  switch (aType) {
-    case eBitmapType_2D:
-      niCheck(anWidth > 0, NULL);
-      niCheck(anHeight > 0, NULL);
-      pRet = niNew cBitmap2D(this, ahspName, anWidth, anHeight, ptrPixFmt);
-      break;
-    case eBitmapType_Cube:
-      niCheck(anWidth > 0, NULL);
-      pRet = niNew cBitmapCube(this, ahspName, anWidth, ptrPixFmt);
-      break;
-    case eBitmapType_3D:
-      niCheck(anWidth > 0, NULL);
-      niCheck(anHeight > 0, NULL);
-      niCheck(anDepth > 0, NULL);
-      pRet = niNew cBitmap3D(this, ahspName, anWidth, anHeight, anDepth, ptrPixFmt, eTrue);
-      break;
-  }
-  if (pRet && anNumMipMaps) {
-    pRet->CreateMipMaps(anNumMipMaps,eFalse);
-  }
-  return pRet;
-}
-
-///////////////////////////////////////////////
 iBitmapFormat* __stdcall cGraphics::CreateBitmapFormat(eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth)
 {
   Ptr<iBitmapFormat> fmt = New_BitmapFormat(this);
@@ -190,46 +157,11 @@ iBitmapFormat* __stdcall cGraphics::CreateBitmapFormatEmpty()
 }
 
 ///////////////////////////////////////////////
-iBitmapBase* __stdcall cGraphics::CreateBitmapEx(iHString* ahspName, eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth)
-{
-  Ptr<iBitmapBase> bmp = NULL;
-  switch (aType) {
-    case eBitmapType_2D:
-      niCheck(anWidth > 0, NULL);
-      niCheck(anHeight > 0, NULL);
-      bmp = niNew cBitmap2D(this, ahspName, anWidth, anHeight, pFmt);
-      break;
-    case eBitmapType_Cube:
-      niCheck(anWidth > 0, NULL);
-      niCheck(anHeight > 0, NULL);
-      bmp = niNew cBitmapCube(this, ahspName, anWidth, pFmt);
-      break;
-    case eBitmapType_3D:
-      niCheck(anWidth > 0, NULL);
-      niCheck(anHeight > 0, NULL);
-      niCheck(anDepth > 0, NULL);
-      bmp = niNew cBitmap3D(this, ahspName, anWidth, anHeight, anDepth, pFmt, eTrue);
-      break;
-  }
-  if (!bmp.IsOK()) {
-    niError(_A("Can't create bitmap."));
-    return NULL;
-  }
-  if (anNumMipMaps) {
-    if (!bmp->CreateMipMaps(anNumMipMaps,eFalse)) {
-      niError(_A("Can't create the bitmap's mipmaps."));
-      return NULL;
-    }
-  }
-  return bmp.GetRawAndSetNull();
-}
-
-///////////////////////////////////////////////
 iBitmap2D* cGraphics::CreateBitmap2DEx(tU32 nW, tU32 nH, iPixelFormat* pPixFmt)
 {
   niAssert(nW > 0 && nH > 0);
   niCheckSilent(nW > 0 && nH > 0, NULL);
-  return niNew cBitmap2D(this, NULL, nW, nH, pPixFmt);
+  return niNew cBitmap2D(nW, nH, pPixFmt);
 }
 
 ///////////////////////////////////////////////
@@ -244,7 +176,7 @@ iBitmap2D* cGraphics::CreateBitmap2D(tU32 nW, tU32 nH, const achar* aszPixFmt)
     return NULL;
   }
 
-  return niNew cBitmap2D(this, NULL, nW, nH, ptrPixFmt);
+  return niNew cBitmap2D(nW, nH, ptrPixFmt);
 }
 
 ///////////////////////////////////////////////
@@ -252,7 +184,7 @@ iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemoryEx(tU32 nW, tU32 nH, iPixelF
 {
   niAssert(nW > 0 && nH > 0);
   niCheckSilent(nW > 0 && nH > 0, NULL);
-  return niNew cBitmap2D(this, NULL, nW, nH, pFmt, anPitch, ptrAddr, bFreeAddr);
+  return niNew cBitmap2D(nW, nH, pFmt, anPitch, ptrAddr, bFreeAddr);
 }
 iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemory(tU32 nW, tU32 nH, const achar* aszPixFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr)
 {
@@ -263,7 +195,7 @@ iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemory(tU32 nW, tU32 nH, const ach
     niError(niFmt(_A("Can't create pixel format '%s'."), aszPixFmt));
     return NULL;
   }
-  return niNew cBitmap2D(this, NULL, nW, nH, ptrPixFmt, anPitch, ptrAddr, bFreeAddr);
+  return niNew cBitmap2D(nW, nH, ptrPixFmt, anPitch, ptrAddr, bFreeAddr);
 }
 
 ///////////////////////////////////////////////
@@ -271,7 +203,7 @@ iBitmapCube* cGraphics::CreateBitmapCubeEx(tU32 ulSize, iPixelFormat* pFmt)
 {
   niAssert(ulSize > 0);
   niCheckSilent(ulSize > 0, NULL);
-  return niNew cBitmapCube(this, NULL, ulSize, pFmt);
+  return niNew cBitmapCube(ulSize, pFmt);
 }
 iBitmapCube* cGraphics::CreateBitmapCube(tU32 ulSize, const achar* aszPixFmt)
 {
@@ -282,7 +214,7 @@ iBitmapCube* cGraphics::CreateBitmapCube(tU32 ulSize, const achar* aszPixFmt)
     niError(niFmt(_A("Can't create pixel format '%s'."), aszPixFmt));
     return NULL;
   }
-  return niNew cBitmapCube(this, NULL, ulSize, ptrPixFmt);
+  return niNew cBitmapCube(ulSize, ptrPixFmt);
 }
 
 ///////////////////////////////////////////////
@@ -290,7 +222,7 @@ iBitmap3D* cGraphics::CreateBitmap3DEx(tU32 nW, tU32 nH, tU32 nD, iPixelFormat* 
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
-  return niNew cBitmap3D(this, NULL, nW, nH, nD, pFmt, eTrue);
+  return niNew cBitmap3D(nW, nH, nD, pFmt, eTrue);
 }
 iBitmap3D* cGraphics::CreateBitmap3D(tU32 nW, tU32 nH, tU32 nD, const achar* aszPixFmt)
 {
@@ -301,7 +233,7 @@ iBitmap3D* cGraphics::CreateBitmap3D(tU32 nW, tU32 nH, tU32 nD, const achar* asz
     niError(niFmt(_A("Can't create pixel format '%s'."), aszPixFmt));
     return NULL;
   }
-  return niNew cBitmap3D(this, NULL, nW, nH, nD, ptrPixFmt, eTrue);
+  return niNew cBitmap3D(nW, nH, nD, ptrPixFmt, eTrue);
 }
 
 ///////////////////////////////////////////////
@@ -309,7 +241,7 @@ iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemoryEx(tU32 nW, tU32 nH, tU32 nD
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
-  Ptr<iBitmap3D> bmp = niNew cBitmap3D(this,NULL,nW,nH,nD,pFmt,eFalse);
+  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW,nH,nD,pFmt,eFalse);
   bmp->SetMemoryAddress(ptrAddr,bFreeAddr,anRowPitch,anSlicePitch);
   return bmp.GetRawAndSetNull();
 }
@@ -322,7 +254,7 @@ iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemory(tU32 nW, tU32 nH, tU32 nD, 
     niError(niFmt(_A("Can't create pixel format '%s'."), aszPixFmt));
     return NULL;
   }
-  Ptr<iBitmap3D> bmp = niNew cBitmap3D(this,NULL,nW,nH,nD,ptrPixFmt,eFalse);
+  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW,nH,nD,ptrPixFmt,eFalse);
   bmp->SetMemoryAddress(ptrAddr,bFreeAddr,anRowPitch,anSlicePitch);
   return bmp.GetRawAndSetNull();
 }

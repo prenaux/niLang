@@ -462,55 +462,53 @@ tBool __stdcall cGraphics::BlitTextureToBitmap3D(iTexture* apSrc, tU32 anSrcLeve
 iBitmapBase* __stdcall cGraphics::CreateBitmapFromTexture(iTexture* apSrc) {
   niCheck(niIsOK(apSrc),NULL);
 
-  Ptr<iBitmapBase> bmp = CreateBitmap(
-      apSrc->GetDeviceResourceName(),
-      apSrc->GetType(),
-      apSrc->GetPixelFormat()->GetFormat(),
-      apSrc->GetNumMipMaps(),
-      apSrc->GetWidth(),
-      apSrc->GetHeight(),
-      apSrc->GetDepth()
-                                      );
-  niCheck(bmp.IsOK(),NULL);
+  switch (apSrc->GetType()) {
+    case eBitmapType_2D: {
+      QPtr<iBitmap2D> bmp2d = CreateBitmap2DEx(apSrc->GetWidth(),apSrc->GetHeight(),apSrc->GetPixelFormat()->Clone());
+      niCheck(bmp2d.IsOK(),NULL);
+      if (apSrc->GetNumMipMaps()) {
+        bmp2d->CreateMipMaps(apSrc->GetNumMipMaps(),eFalse);
+      }
+      if (!BlitTextureToBitmap(apSrc,eInvalidHandle,bmp2d)) {
+        niError(_A("Can't blit texture to bitmap."));
+        return NULL;
+      }
+      return bmp2d.GetRawAndSetNull();
+    }
 
-  switch (bmp->GetType()) {
-    case eBitmapType_2D:
-      {
-        QPtr<iBitmap2D> bmp2d = bmp.ptr();
-        niCheck(bmp2d.IsOK(),NULL);
-        if (!BlitTextureToBitmap(apSrc,eInvalidHandle,bmp2d)) {
-          niError(_A("Can't blit texture to bitmap."));
+    case eBitmapType_3D: {
+      QPtr<iBitmap3D> bmp3d = CreateBitmap3DEx(apSrc->GetWidth(),apSrc->GetHeight(),apSrc->GetDepth(),apSrc->GetPixelFormat()->Clone());
+      niCheck(bmp3d.IsOK(),NULL);
+      if (apSrc->GetNumMipMaps()) {
+        bmp3d->CreateMipMaps(apSrc->GetNumMipMaps(),eFalse);
+      }
+      if (!BlitTextureToBitmap3D(apSrc,eInvalidHandle,bmp3d)) {
+        niError(_A("Can't blit texture to bitmap3d."));
+        return NULL;
+      }
+      return bmp3d.GetRawAndSetNull();
+    }
+
+    case eBitmapType_Cube: {
+      QPtr<iBitmapCube> bmpCube = CreateBitmapCubeEx(apSrc->GetWidth(),apSrc->GetPixelFormat()->Clone());
+      niCheck(bmpCube.IsOK(),NULL);
+      if (apSrc->GetNumMipMaps()) {
+        bmpCube->CreateMipMaps(apSrc->GetNumMipMaps(),eFalse);
+      }
+      niLoop(i,6) {
+        Ptr<iBitmap2D>  bmpFace = bmpCube->GetFace((eBitmapCubeFace)i);
+        niCheck(bmpFace.IsOK(),NULL);
+        Ptr<iTexture>   texFace = apSrc->GetSubTexture(i);
+        niCheck(texFace.IsOK(),NULL);
+        if (!BlitTextureToBitmap(texFace,eInvalidHandle,bmpFace)) {
+          niError(_A("Can't blit cube texture to bitmap."));
           return NULL;
         }
-        break;
       }
-    case eBitmapType_3D:
-      {
-        QPtr<iBitmap3D> bmp3d = bmp.ptr();
-        niCheck(bmp3d.IsOK(),NULL);
-        if (!BlitTextureToBitmap3D(apSrc,eInvalidHandle,bmp3d)) {
-          niError(_A("Can't blit texture to bitmap3d."));
-          return NULL;
-        }
-        break;
-      }
-    case eBitmapType_Cube:
-      {
-        QPtr<iBitmapCube> bmpCube = bmp.ptr();
-        niCheck(bmpCube.IsOK(),NULL);
-        niLoop(i,6) {
-          Ptr<iBitmap2D>  bmpFace = bmpCube->GetFace((eBitmapCubeFace)i);
-          niCheck(bmpFace.IsOK(),NULL);
-          Ptr<iTexture>   texFace = apSrc->GetSubTexture(i);
-          niCheck(texFace.IsOK(),NULL);
-          if (!BlitTextureToBitmap(texFace,eInvalidHandle,bmpFace)) {
-            niError(_A("Can't blit cube texture to bitmap."));
-            return NULL;
-          }
-        }
-        break;
-      }
+      return bmpCube.GetRawAndSetNull();
+    }
   }
 
-  return bmp.GetRawAndSetNull();
+  niError(niFmt("Invalid texture bitmap type '%d'.", apSrc->GetType()));
+  return nullptr;
 }

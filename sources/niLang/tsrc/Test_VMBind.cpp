@@ -1,13 +1,117 @@
 #include "stdafx.h"
 #include "../src/API/niLang/Utils/VMBind.h"
+#include "../src/API/niLang/Utils/BetterEnum.h"
 
+//----------------------------------------------------------------------------
+//
+// Section: Declare some types
+//
+//----------------------------------------------------------------------------
 namespace ni { namespace vmbind {
 
 DECLARE_VMBIND_PARAM_ENUM_TRAITS(ni::eFileOpenMode, eType_Enum, "eFileOpenMode");
 
 }}
 
+//----------------------------------------------------------------------------
+//
+// Section: Macro enums :|
+//
+//----------------------------------------------------------------------------
+namespace _macro_enums {
+
+#define DECLARE_GPU_INDEX_TYPE(X) \
+    X(U16, 0, ) \
+    X(U32, 1, ) \
+    X(Last, 2, niMaybeUnused)
+
+// Generate enum
+#define ENUM_ENTRY(name, value, attr) eGpuIndexType_##name attr = value,
+enum eGpuIndexType {
+    DECLARE_GPU_INDEX_TYPE(ENUM_ENTRY)
+    eGpuIndexType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
+};
+#undef ENUM_ENTRY
+
+// Generate reflection
+#define ENUM_VALUE_DEF(name, value, attr) { #name, eGpuIndexType_##name },
+static const ni::sEnumValueDef Enum_eGpuIndexType_Values[] = {
+    DECLARE_GPU_INDEX_TYPE(ENUM_VALUE_DEF)
+};
+#undef ENUM_VALUE_DEF
+
+}
+
+//----------------------------------------------------------------------------
+//
+// Section: Better enums
+//
+//----------------------------------------------------------------------------
+namespace _better_enums {
+
+template <typename TENUM>
+struct enum_traits {
+  constexpr static size_t size = TENUM::_size();
+
+  constexpr static TENUM get_value(size_t index) {
+    return TENUM::_values()[index];
+  }
+
+  constexpr static const char* get_identifier(size_t index) {
+    return TENUM::_names()[index];
+  }
+
+  constexpr static TENUM get_last_value() {
+    return get_value(size - 1);
+  }
+};
+
+// Utility to build array per enum value
+template<typename E, size_t... I>
+constexpr auto MakeEnumValueDefs(std::index_sequence<I...>) {
+    static const ni::sEnumValueDef values[] = {
+        { E::_names()[I], E::_values()[I] }...
+    };
+    return values;
+}
+
+template<typename E>
+constexpr const ni::sEnumDef* MakeEnumDef() {
+    constexpr auto size = E::_size();
+    static const auto values = MakeEnumValueDefs<E>(std::make_index_sequence<size>());
+    static const ni::sEnumDef def = {
+        E::_name(),
+        size,
+        values
+    };
+    return &def;
+}
+
+BETTER_ENUM(eFileOpenMode, ni::tU32,
+  //! Read open mode.
+  Read = niBit(0),
+  //! Write open mode.
+  Write = niBit(1),
+  //! Append open mode.
+  Append = niBit(2)|Write,
+  //! Optimized form random access.
+  Random = niBit(3)
+)
+
+static const ni::sEnumDef* GetEnumDef_eFileOpenMode() {
+  return MakeEnumDef<eFileOpenMode>();
+}
+
+}
+
+//----------------------------------------------------------------------------
+//
+// Section: Test that generated interface def is the same as the previous code
+// generator
+//
+//----------------------------------------------------------------------------
 namespace _ {
+
 using namespace ni;
 
 niExportFunc(const ni::sInterfaceDef*) ManualInterfaceDef_iFileSystem() {
@@ -224,6 +328,22 @@ niExportFunc(const ni::sInterfaceDef*) TestInterfaceDef_iFileSystem() {
   return &InterfaceDef_iFileSystem;
 }
 
+static const ni::sEnumDef* ManualGetEnumDef_eFileOpenMode() {
+
+static const ni::sEnumValueDef Enum_eFileOpenMode_Values[] = {
+	{ "Read", ni::eFileOpenMode_Read },
+	{ "Write", ni::eFileOpenMode_Write },
+	{ "Append", ni::eFileOpenMode_Append },
+	{ "Random", ni::eFileOpenMode_Random },
+};
+static const ni::sEnumDef Enum_eFileOpenMode = {
+	"eFileOpenMode",
+  niCountOf(Enum_eFileOpenMode_Values), Enum_eFileOpenMode_Values
+};
+
+	return &Enum_eFileOpenMode;
+}
+
 struct FVMBind {
 };
 
@@ -250,7 +370,7 @@ static inline tBool MatchTypeName(const achar* aM, const achar* aT) {
   return eFalse;
 }
 
-TEST_FIXTURE(FVMBind,Base) {
+TEST_FIXTURE(FVMBind,InterfaceDef) {
   niLet midef = ManualInterfaceDef_iFileSystem();
   niLet tidef = TestInterfaceDef_iFileSystem();
   niDebugFmt(("... tidef->maszName: %s", tidef->maszName));
@@ -283,6 +403,26 @@ TEST_FIXTURE(FVMBind,Base) {
     //CHECK_EQUAL(mmeth->mReturnTypeName,tmeth->mReturnTypeName);
     CHECK(MatchTypeName(mmeth->mReturnTypeName,tmeth->mReturnTypeName));
     CHECK_EQUAL(mmeth->mnNumParameters,tmeth->mnNumParameters);
+  }
+}
+
+TEST_FIXTURE(FVMBind,EnumDef) {
+  niLet medef = ManualGetEnumDef_eFileOpenMode();
+  niLet tedef = _better_enums::GetEnumDef_eFileOpenMode();
+  CHECK_EQUAL(4, medef->mnNumValues);
+  CHECK_EQUAL(4, tedef->mnNumValues);
+  CHECK_EQUAL(medef->mnNumValues, tedef->mnNumValues);
+
+  CHECK_EQUAL(eFileOpenMode_Read,_better_enums::eFileOpenMode::Read);
+  CHECK_EQUAL(eFileOpenMode_Read|eFileOpenMode_Write,_better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write);
+
+  //_better_enums::eFileOpenMode bmode = _better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write;
+
+  niLoop(i,ni::Min(medef->mnNumValues,tedef->mnNumValues)) {
+    niDebugFmt(("... medef[%d]: %s = %d", i, medef->mpValues[i].maszName, medef->mpValues[i].mnValue));
+    niDebugFmt(("... tedef[%d]: %s = %d", i, tedef->mpValues[i].maszName, tedef->mpValues[i].mnValue));
+    CHECK_EQUAL(medef->mpValues[i].maszName, tedef->mpValues[i].maszName);
+    CHECK_EQUAL(medef->mpValues[i].mnValue, tedef->mpValues[i].mnValue);
   }
 }
 

@@ -34,8 +34,6 @@ class cBitmap2D : public ImplRC<iBitmap2D,
   iHString* __stdcall GetDeviceResourceName() const {
     return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
   }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
 
   // Infos functions1
   tU32  __stdcall GetWidth() const;

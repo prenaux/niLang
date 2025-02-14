@@ -35,8 +35,6 @@ class cSoundSource : public ImplRC<iSoundSource>
   tBool __stdcall SetSoundBuffer(iSoundBuffer* apBuffer);
   iSoundBuffer* __stdcall GetSoundBuffer() const;
   iHString* __stdcall GetDeviceResourceName() const;
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
   iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
   void __stdcall SetMode(eSoundMode aMode);
   eSoundMode __stdcall GetMode() const;

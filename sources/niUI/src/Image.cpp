@@ -260,7 +260,7 @@ class cImage : public ImplRC<iImage>
           // if the texture resource has been reset or just created we force a
           // full blit of the whole bitmap regardless of whether its been
           // marked as dirty
-          if (mptrTexture->HasDeviceResourceBeenReset(eTrue) || textureWasCreated) {
+          if (textureWasCreated) {
             _AddDirtyRect(mrectBmpDirtyRect,sRecti(0,0),0);
             mnFlags |= IMAGEFLAGS_BMPDIRTY;
           }

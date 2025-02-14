@@ -343,12 +343,6 @@ struct sMetalFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDevi
   iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) niImpl {
     return this;
   }
@@ -581,12 +575,6 @@ struct sMetalPipeline : public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDevi
 
   iHString* __stdcall GetDeviceResourceName() const {
     return _hspName;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
     return this;
@@ -859,12 +847,6 @@ struct sMetalBuffer : public ni::ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDevi
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return nullptr;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) {
     return this;
   }
@@ -996,12 +978,6 @@ struct cMetalTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
 
   virtual iHString *  __stdcall GetDeviceResourceName () const {
     return mhspName;
-  }
-  virtual tBool  __stdcall HasDeviceResourceBeenReset (tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource () {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
     return this;

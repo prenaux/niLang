@@ -51,12 +51,6 @@ struct sVideoDecoderTexture : public ImplAggregate<iTexture,
   virtual iHString* __stdcall GetDeviceResourceName() const {
     return mhspName;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() {
-    return eTrue;
-  }
   virtual eBitmapType __stdcall GetType() const {
     return eBitmapType_2D;
   }

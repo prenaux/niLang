@@ -10,24 +10,31 @@ namespace _ {
 using namespace ni;
 
 //
-// TODO (1/1):
-// - [ ] p0: Ray trace a rotating cube with the camera moving around
-//  - https://youtu.be/kYb4Io7TQp4?si=loEyfkB7XRrjFn-e&t=19
-// - [ ] p0: Ray trace with bary centric coordinates
-// - [ ] p0: Ray trace a sphere with a custom intersection test
-// - [ ] p0: Ray trace a SDF with a union or difference between two SDF
-//  - https://www.youtube.com/watch?v=BNZtUB7yhX4
-//  - https://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/
-//  - https://danielchasehooper.com/posts/code-animated-rick/
-//  - https://github.com/sungiant/sdf
-// - [ ] p1: Checkerboard floor
-// - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
-// - [ ] p1: One reflective sphere on checkerboard floor
-// - [ ] p1: Ref PT cornell box white-furnace sky
-// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive quad should be the light source
-// - [ ] p1: Visualize: base color
-// - [ ] p1: Visualize: normals
-// - [ ] p1: Visualize: worldspace position
+// TODO:
+// - [ ] p0: Setup bindless descriptor support and eGpuFunctionBindType_BindlessRayTracing
+// - [ ] p0: Access vertex data & normals through bindless buffers
+// - [ ] p0: Rotating cube with basic lighting (1-2 hardcoded lights) using vertex normals
+// - [ ] p0: Ray trace with bary centric coordinates visualization
+// - [ ] p0: Ray trace a sphere with custom intersection test
+// - [ ] p0: Ray trace basic SDFs with union/difference operations
+//
+// Reference scenes (p1):
+// - [ ] Checkerboard floor
+// - [ ] Four reflective spheres on checkerboard (white, red, green, blue)
+// - [ ] One reflective sphere on checkerboard
+// - [ ] Cornell box with white-furnace sky
+// - [ ] Cornell box with ceiling light
+//
+// Debug visualizations (p1):
+// - [ ] Base color, normals, worldspace position
+//
+// References:
+// - Rotating cube w/lighting: https://youtu.be/kYb4Io7TQp4?si=loEyfkB7XRrjFn-e&t=19
+// - SDF resources:
+//   - https://www.youtube.com/watch?v=BNZtUB7yhX4
+//   - https://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/
+//   - https://danielchasehooper.com/posts/code-animated-rick/
+//   - https://github.com/sungiant/sdf
 //
 
 static const tF32 kfRunSpeed = 256.0f;

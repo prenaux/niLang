@@ -1592,12 +1592,6 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }
@@ -1734,15 +1728,6 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
   virtual iHString* __stdcall GetDeviceResourceName() const override {
     return _name;
   }
-
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) override {
-    return eFalse;
-  }
-
-  virtual tBool __stdcall ResetDeviceResource() override {
-    return eTrue;
-  }
-
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
     return this;
   }
@@ -2068,12 +2053,6 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }
@@ -2192,12 +2171,6 @@ struct sVulkanRasterPipeline :
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _hspName;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
@@ -3485,12 +3458,6 @@ struct sVulkanRayTrianglePrimitivesDesc
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }
@@ -3646,12 +3613,6 @@ struct sVulkanRayProceduralPrimitivesDesc
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }
@@ -3738,12 +3699,6 @@ struct sVulkanRayPrimitives :
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }
@@ -3773,12 +3728,6 @@ struct sVulkanRayInstancesDesc : public ImplRC<
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
@@ -3923,12 +3872,6 @@ struct sVulkanRayInstances :
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
@@ -4332,15 +4275,6 @@ struct sVulkanRayPipeline :
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return _name;
   }
-
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
-
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return this;
   }

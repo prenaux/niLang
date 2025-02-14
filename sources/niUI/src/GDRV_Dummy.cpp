@@ -78,12 +78,6 @@ struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   virtual iHString *  __stdcall GetDeviceResourceName () const {
     return mhspName;
   }
-  virtual tBool  __stdcall HasDeviceResourceBeenReset (tBool abClearFlag) {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource () {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
     return this;
   }

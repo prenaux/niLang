@@ -25,8 +25,6 @@ class cBitmapCube : public ImplRC<iBitmapCube,
   iHString* __stdcall GetDeviceResourceName() const {
     return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
   }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
   iPixelFormat* __stdcall GetPixelFormat() const;
   tU32 __stdcall GetWidth() const;
   tU32 __stdcall GetHeight() const { return GetWidth(); }

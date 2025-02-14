@@ -10,4 +10,4 @@ SRC = [ tkPkgSrc ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
-# DEPENDS Run_ci : [ runInDir Test_niUI_GDRV ] ;
+runInDir Test_niUI_GDRV ;

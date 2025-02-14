@@ -18,11 +18,6 @@ struct iDeviceResource : public iUnknown
   //! \return NULL if the resource is not named.
   //! {Property}
   virtual iHString* __stdcall GetDeviceResourceName() const = 0;
-  //! Check whether the device resource has just been reset.
-  //! \param abClearFlag: if true the next call to HasDeviceResourceBeenReset will return false.
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) = 0;
-  //! Reset the device resource.
-  virtual tBool __stdcall ResetDeviceResource() = 0;
   //! Called when the resource is going to be used by the device.
   //! \param  apDevice is an implementation/device specific object passed to bind to support
   //!         things such as virtual device resources.
@@ -62,17 +57,6 @@ struct iDeviceResourceManager : public iUnknown
   //!         be registered eInvalidHandle is returned instead.
   virtual tU32 __stdcall Register(iDeviceResource* apRes) = 0;
   //! Unregister a resource in the manager.
-  //! \remark When you unregister a resource in an Invalidate method
-  //!         or destructor you need to prevent against double
-  //!         unregistrations which would lead to problems in
-  //!         unexpected places down the line. Two ways to do so are
-  //!         to set the device resource's name to null once
-  //!         unregistered, or better yet, to make sure that
-  //!         Unregister is never called twice even if the
-  //!         Invalidate method or destructor are called more than
-  //!         once. Note that just setting the device resource's name
-  //!         to null will still require the device resource manager
-  //!         to lookup the resource by pointer which is inefficient.
   virtual tBool __stdcall Unregister(iDeviceResource* apRes) = 0;
   //! Get the index of the first resource that has the specified name. eInvalidHandle if it cant be found.
   virtual tU32 __stdcall GetIndexFromName(iHString* ahspName) const = 0;

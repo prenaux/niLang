@@ -510,12 +510,6 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return NULL;
   }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
-  }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return _buffer->Bind(apDevice);
   }
@@ -584,12 +578,6 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
 
   virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
     return NULL;
-  }
-  virtual tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) niImpl {
-    return eFalse;
-  }
-  virtual tBool __stdcall ResetDeviceResource() niImpl {
-    return eTrue;
   }
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     return _buffer->Bind(apDevice);

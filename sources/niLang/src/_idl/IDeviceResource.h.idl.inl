@@ -23,22 +23,6 @@ IDLC_METH_BEGIN(ni,iDeviceResource,GetDeviceResourceName,0)
 	IDLC_RET_FROM_INTF(iHString,_Ret)
 IDLC_METH_END(ni,iDeviceResource,GetDeviceResourceName,0)
 
-/** ni -> iDeviceResource::HasDeviceResourceBeenReset/1 **/
-IDLC_METH_BEGIN(ni,iDeviceResource,HasDeviceResourceBeenReset,1)
-	IDLC_DECL_VAR(tBool,abClearFlag)
-	IDLC_BUF_TO_BASE(ni::eType_I8,abClearFlag)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iDeviceResource,HasDeviceResourceBeenReset,1,(abClearFlag))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iDeviceResource,HasDeviceResourceBeenReset,1)
-
-/** ni -> iDeviceResource::ResetDeviceResource/0 **/
-IDLC_METH_BEGIN(ni,iDeviceResource,ResetDeviceResource,0)
-	IDLC_DECL_RETVAR(tBool,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iDeviceResource,ResetDeviceResource,0,())
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
-IDLC_METH_END(ni,iDeviceResource,ResetDeviceResource,0)
-
 /** ni -> iDeviceResource::Bind/1 **/
 IDLC_METH_BEGIN(ni,iDeviceResource,Bind,1)
 	IDLC_DECL_VAR(iUnknown*,apDevice)

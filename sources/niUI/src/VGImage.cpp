@@ -250,12 +250,6 @@ class cVGImage : public ImplRC<iVGImage>
         }
         else {
           // copy texture to bitmap
-          if (mptrTexture->HasDeviceResourceBeenReset(eTrue) &&
-              mptrBitmap.IsOK())
-          {
-            _AddDirtyRect(mrectBmpDirtyRect,sRecti(0,0),0);
-            mnFlags |= VGIMAGEFLAGS_BMPDIRTY;
-          }
           if (mnFlags&VGIMAGEFLAGS_BMPDIRTY) {
             niAssert(mptrTexture.IsOK());
             if (!mptrGraphics->BlitBitmapToTexture(

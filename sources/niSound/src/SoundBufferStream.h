@@ -30,8 +30,6 @@ class cSoundBufferStream : public ImplRC<iSoundBuffer>
   tBool __stdcall GetIsInstance() const;
   iHString* __stdcall GetDeviceResourceName() const;
   iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
   tBool __stdcall GetIsStreamed() const;
   iSoundData* __stdcall GetStreamSoundData() const { return mptrData; }
   eSoundFormat __stdcall GetFormat() const;

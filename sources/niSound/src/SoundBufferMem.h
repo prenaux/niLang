@@ -26,8 +26,6 @@ class cSoundBufferMem : public ImplRC<iSoundBuffer>
   iSoundBuffer* __stdcall CreateInstance();
   tBool __stdcall GetIsInstance() const;
   iHString* __stdcall GetDeviceResourceName() const;
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
   iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
   tBool __stdcall GetIsStreamed() const;
   iSoundData* __stdcall GetStreamSoundData() const { return NULL; }

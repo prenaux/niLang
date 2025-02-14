@@ -42,8 +42,6 @@ class cBitmap3D : public ImplRC<iBitmap3D,
   iHString* __stdcall GetDeviceResourceName() const {
     return ni::HStringIsEmpty(mhspName)?(iHString*)NULL:mhspName.ptr();
   }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
   tTextureFlags __stdcall GetFlags() const {
     return eTextureFlags_SystemMemory|
         eTextureFlags_Dynamic|

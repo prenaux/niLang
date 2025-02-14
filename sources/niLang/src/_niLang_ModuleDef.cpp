@@ -6129,33 +6129,6 @@ static const ni::sMethodDef iDeviceResource_GetDeviceResourceName = {
 #endif
 };
 
-// Method: HasDeviceResourceBeenReset
-static const ni::sParameterDef iDeviceResource_HasDeviceResourceBeenReset_Parameters[1] = {
-  { "abClearFlag", ni::eType_I8, NULL, "tBool" }
-};
-static const ni::sMethodDef iDeviceResource_HasDeviceResourceBeenReset = {
-  "HasDeviceResourceBeenReset",
-  0|ni::eType_I8, NULL, "tBool",
-  1, iDeviceResource_HasDeviceResourceBeenReset_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iDeviceResource_HasDeviceResourceBeenReset)
-#else
-  NULL
-#endif
-};
-
-// Method: ResetDeviceResource
-static const ni::sMethodDef iDeviceResource_ResetDeviceResource = {
-  "ResetDeviceResource",
-  0|ni::eType_I8, NULL, "tBool",
-  0, NULL,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iDeviceResource_ResetDeviceResource)
-#else
-  NULL
-#endif
-};
-
 // Method: Bind
 static const ni::sParameterDef iDeviceResource_Bind_Parameters[1] = {
   { "apDevice", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
@@ -6173,8 +6146,6 @@ static const ni::sMethodDef iDeviceResource_Bind = {
 
 static const ni::sMethodDef* Methods_iDeviceResource[] = {
 	&iDeviceResource_GetDeviceResourceName,
-	&iDeviceResource_HasDeviceResourceBeenReset,
-	&iDeviceResource_ResetDeviceResource,
 	&iDeviceResource_Bind,
 
 };

@@ -44,8 +44,6 @@ class cGenericIndexArray : public ImplRC<iIndexArray>
   iHString* __stdcall GetDeviceResourceName() const {
     return NULL;
   }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
 
   ///////////////////////////////////////////////
   eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {

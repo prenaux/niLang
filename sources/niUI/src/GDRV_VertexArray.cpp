@@ -46,8 +46,6 @@ class cGenericVertexArray : public ImplRC<iVertexArray>
   iHString* __stdcall GetDeviceResourceName() const {
     return NULL;
   }
-  tBool __stdcall HasDeviceResourceBeenReset(tBool abClearFlag) { return eFalse; }
-  tBool __stdcall ResetDeviceResource() { return eFalse; }
 
   ///////////////////////////////////////////////
   tFVF __stdcall GetFVF() const {

@@ -1,5 +1,7 @@
 #include <niScriptCpp/Utils/ScriptCppImpl.h>
 #include <niLang/Utils/ConcurrentImpl.h>
+// Note: Here to test build dependencies, not needed for the code
+#include <niScriptCpp_ModuleDef.h>
 
 using namespace ni;
 

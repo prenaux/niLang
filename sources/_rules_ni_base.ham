@@ -69,6 +69,24 @@ rule niHdrGrist {
 }
 SUBDIRRULES += niHdrGrist ;
 
+# logInfoVar HAMCMDARGS ;
+# logInfoVar HAMCMDNUMPASS ;
+# logInfoVar HAMCMDJOBS ;
+
+# Target to enable code generation
+NOTFILE codegen ;
+CODEGEN ?= [ ListContains $(HAMCMDARGS) : codegen ] ;
+if $(CODEGEN) = 1 {
+  logInfo "CODEGEN enabled." ;
+}
+
+GEN_MODULEDEF ?= $(CODEGEN) ;
+if $(NO_NI_EXE) = 1 {
+  logWarning "Can't find Ni executable" $(NI_EXE) "disabled ModuleDef generation." ;
+  GEN_MODULEDEF = ;
+}
+# logInfoVar GEN_MODULEDEF ;
+
 #----------------------------------------------------------------------
 #     Modules
 #----------------------------------------------------------------------
@@ -176,7 +194,7 @@ rule niGenIDLs {
     #     IDLS += [ FDirName API $(3) $(_i)".idl.xml" ] ;
     DEPENDS $(<) : $(d) ;
     VMCALLS += $(x) ;
-    if ! ( $(NO_MODULEDEF) = 1 ) {
+    if ( $(GEN_MODULEDEF) = 1 ) {
       niIDL $(d) $(x) : $(s) ;
       MakeDirForTarget $(d) $(x) : $(IDLDIR) ;
     }
@@ -186,7 +204,7 @@ rule niGenIDLs {
   return $(IDLS) ;
 }
 
-if ! ( $(NO_MODULEDEF) = 1 ) {
+if ( $(GEN_MODULEDEF) = 1 ) {
   # niIDL target : source ;
   # REM: Requires the fully qualified path (absolute path)
   rule niIDL {
@@ -259,7 +277,7 @@ rule niBuildModuleDef_
   local xml = [ FGetAbsolutePath [ FDirName $(SUBDIR) _$(PACKAGE)_ModuleDef.xml ] ] ;
   GENERATED $(xml) ;
 
-  if ! ( $(NO_MODULEDEF) = 1 ) {
+  if ( $(GEN_MODULEDEF) = 1 ) {
     DEPENDS $(MODXML) : $(tidl) ;
     niMergeXML $(xml) : $(MODXML) : $(PACKAGE_DIR) ;
 

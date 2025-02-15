@@ -27,7 +27,7 @@ else if $(LINUX) = 1 {
   SRC_EXTRA = [ tkPkgSrcSubDir linux ] ;
 }
 else {
-  logWarn "Platform not supported - NoSound only." ;
+  logWarning "Platform not supported - NoSound only." ;
 }
 
 tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ;
